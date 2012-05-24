@@ -1,0 +1,69 @@
+%define alphatag                        #ALPHATAG#
+
+Summary:   Software management tools for GNOME
+Name:      gnome-software
+Version:   #VERSION#
+Release:   0.#BUILD#%{?alphatag}%{?dist}
+License:   GPLv2+
+Group:     Applications/System
+URL:       http://projects.gnome.org/gnome-software/
+Source0:   http://download.gnome.org/sources/gnome-software/3.5/%{name}-%{version}.tar.xz
+
+Requires:  gnome-icon-theme
+
+BuildRequires: gtk3-devel >= 3.0.0
+BuildRequires: gettext
+BuildRequires: intltool
+BuildRequires: glib2-devel >= 2.25.9-2
+
+Requires(post):   /usr/bin/gtk-update-icon-cache
+Requires(postun): /usr/bin/gtk-update-icon-cache
+
+# obsolete sub-package
+Obsoletes: gnome-software-devel <= 3.1.1
+
+%description
+gnome-software is an application that makes it easy to add, remove
+and update software in the GNOME desktop.
+
+%prep
+%setup -q
+
+%build
+%configure
+make %{?_smp_mflags}
+
+%install
+make install DESTDIR=$RPM_BUILD_ROOT
+
+%find_lang %name --with-gnome
+
+%post
+touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
+update-desktop-database %{_datadir}/applications &> /dev/null || :
+
+%postun
+if [ $1 -eq 0 ]; then
+    touch --no-create %{_datadir}/icons/hicolor &> /dev/null || :
+    gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
+    glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
+fi
+update-desktop-database %{_datadir}/applications &> /dev/null || :
+
+%posttrans
+gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
+glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
+
+%files -f %{name}.lang
+%defattr(-,root,root,-)
+%doc AUTHORS COPYING NEWS README
+%{_bindir}/gnome-software
+#%dir %{_datadir}/gnome-software
+#%{_datadir}/icons/hicolor/*/*/*.png
+#%{_datadir}/icons/hicolor/scalable/*/*.svg*
+%{_datadir}/applications/gnome-software.desktop
+
+%changelog
+* #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#
+- Update from GIT
+

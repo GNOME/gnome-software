@@ -1,0 +1,64 @@
+INCLUDES =						\
+	$(GLIB_CFLAGS)					\
+	$(GTK_CFLAGS)					\
+	$(PACKAGEKIT_CFLAGS)				\
+	-DG_LOG_DOMAIN=\"Gs\"				\
+	-DBINDIR=\"$(bindir)\"				\
+	-DDATADIR=\"$(datadir)\"			\
+	-DVERSION="\"$(VERSION)\""			\
+	-DLOCALEDIR=\""$(localedir)"\"			\
+	-DGS_DATA=\"$(pkgdatadir)\"
+
+@INTLTOOL_DESKTOP_RULE@
+desktopdir = $(datadir)/applications
+desktop_in_files =					\
+	gnome-software.desktop.in
+desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
+
+UI_FILES =						\
+	gnome-software.ui
+
+bin_PROGRAMS =						\
+	gnome-software
+
+gnome_software_SOURCES =				\
+	gs-resources.c					\
+	gs-resources.h					\
+	gs-main.c
+
+gnome_software_LDADD =					\
+	$(GLIB_LIBS)					\
+	$(GTK_LIBS)					\
+	$(PACKAGEKIT_LIBS)				\
+	-lm
+
+gnome_software_CFLAGS =					\
+	$(WARNINGFLAGS_C)
+
+gs-resources.c: gnome-software.gresource.xml ./gnome-software.ui
+	glib-compile-resources --target=$@ --generate-source --c-name gs $(srcdir)/gnome-software.gresource.xml
+gs-resources.h: gnome-software.gresource.xml
+	glib-compile-resources --target=$@ --generate-header --c-name gs $(srcdir)/gnome-software.gresource.xml
+
+BUILT_SOURCES =						\
+	gs-resources.c					\
+	gs-resources.h
+
+EXTRA_DIST =						\
+	gnome-software.gresource.xml			\
+	$(desktop_in_files)				\
+	$(UI_FILES)
+
+clean-local:
+	rm -f *~
+
+CLEANFILES = $(BUILT_SOURCES)
+
+MAINTAINERCLEANFILES =					\
+	*~						\
+	Makefile.in
+
+DISTCLEANFILES =					\
+	gnome-software.desktop
+
+-include $(top_srcdir)/git.mk
