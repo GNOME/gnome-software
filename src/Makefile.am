@@ -3,6 +3,7 @@ INCLUDES =						\
 	$(GTK_CFLAGS)					\
 	$(PACKAGEKIT_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
+	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
 	-DVERSION="\"$(VERSION)\""			\
