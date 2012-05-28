@@ -29,7 +29,8 @@
 typedef enum {
 	GS_MAIN_MODE_NEW,
 	GS_MAIN_MODE_INSTALLED,
-	GS_MAIN_MODE_UPDATES
+	GS_MAIN_MODE_UPDATES,
+	GS_MAIN_MODE_WAITING
 } GsMainMode;
 
 
@@ -57,7 +58,10 @@ typedef struct {
 	GtkIconSize		 custom_icon_size;
 	PkDesktop		*desktop;
 	PkTask			*task;
+	guint			 waiting_tab_id;
 } GsMainPrivate;
+
+static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode);
 
 /**
  * gs_main_activate_cb:
@@ -72,6 +76,18 @@ gs_main_activate_cb (GApplication *application, GsMainPrivate *priv)
 
 
 /**
+ * gs_main_show_waiting_tab_cb:
+ **/
+static gboolean
+gs_main_show_waiting_tab_cb (gpointer user_data)
+{
+	GsMainPrivate *priv = (GsMainPrivate *) user_data;
+	gs_main_set_overview_mode_ui (priv, GS_MAIN_MODE_WAITING);
+	priv->waiting_tab_id = 0;
+	return FALSE;
+}
+
+/**
  * gs_main_progress_cb:
  **/
 static void
@@ -79,9 +95,11 @@ gs_main_progress_cb (PkProgress *progress,
 		     PkProgressType type,
 		     GsMainPrivate *priv)
 {
-	PkStatusEnum status;
-	gint percentage;
+	const gchar *status_text = NULL;
 	gboolean allow_cancel;
+	gint percentage;
+	GtkWidget *widget;
+	PkStatusEnum status;
 
 	g_object_get (progress,
 		      "status", &status,
@@ -92,6 +110,54 @@ gs_main_progress_cb (PkProgress *progress,
 		 pk_status_enum_to_string (status),
 		 percentage,
 		 allow_cancel);
+
+	/* set label */
+	switch (status) {
+	case PK_STATUS_ENUM_SETUP:
+	case PK_STATUS_ENUM_FINISHED:
+	case PK_STATUS_ENUM_UNKNOWN:
+		break;
+	case PK_STATUS_ENUM_WAIT:
+	case PK_STATUS_ENUM_WAITING_FOR_LOCK:
+		/* TRANSLATORS: this is the transaction status */
+		status_text = _("Waiting for package manager...");
+		break;
+	case PK_STATUS_ENUM_LOADING_CACHE:
+		/* TRANSLATORS: this is the transaction status */
+		status_text = _("Loading list of packages...");
+		break;
+	case PK_STATUS_ENUM_QUERY:
+		/* TRANSLATORS: this is the transaction status */
+		status_text = _("Querying...");
+		break;
+	default:
+		status_text = pk_status_enum_to_string (status);
+		g_warning ("no translation for %s", status_text);
+		break;
+	}
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_waiting"));
+	if (status_text != NULL) {
+		gtk_label_set_markup (GTK_LABEL (widget), status_text);
+		gtk_widget_show (widget);
+	} else {
+		gtk_widget_hide (widget);
+	}
+
+	/* show the waiting panel if the delay is significant */
+	if (status == PK_STATUS_ENUM_SETUP ||
+	    status == PK_STATUS_ENUM_FINISHED) {
+		gs_main_set_overview_mode_ui (priv, priv->mode);
+		if (priv->waiting_tab_id > 0) {
+			g_source_remove (priv->waiting_tab_id);
+			priv->waiting_tab_id = 0;
+		}
+	} else {
+		if (priv->waiting_tab_id == 0) {
+			priv->waiting_tab_id = g_timeout_add (500,
+							      gs_main_show_waiting_tab_cb,
+							      priv);
+		}
+	}
 }
 
 /**
@@ -414,14 +480,13 @@ gs_main_get_popular (GsMainPrivate *priv)
 }
 
 /**
- * gs_main_set_overview_mode:
+ * gs_main_set_overview_mode_ui:
  **/
 static void
-gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
+gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 {
 	GtkWidget *widget;
 
-	priv->mode = mode;
 	switch (mode) {
 	case GS_MAIN_MODE_NEW:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
@@ -431,7 +496,8 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		gtk_entry_set_text (GTK_ENTRY (widget), "");
 		gtk_widget_show (widget);
-		gs_main_get_popular (priv);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
+		gtk_spinner_stop (GTK_SPINNER (widget));
 		break;
 	case GS_MAIN_MODE_INSTALLED:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
@@ -441,7 +507,8 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		gtk_entry_set_text (GTK_ENTRY (widget), "");
 		gtk_widget_show (widget);
-		gs_main_get_installed_packages (priv);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
+		gtk_spinner_stop (GTK_SPINNER (widget));
 		break;
 	case GS_MAIN_MODE_UPDATES:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
@@ -450,7 +517,18 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
 		gtk_widget_show (widget);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		gtk_widget_hide (widget);
-		gs_main_get_updates (priv);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
+		gtk_spinner_stop (GTK_SPINNER (widget));
+		break;
+	case GS_MAIN_MODE_WAITING:
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_all"));
+		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
+		gtk_spinner_start (GTK_SPINNER (widget));
 		break;
 	default:
 		g_assert_not_reached ();
@@ -464,9 +542,38 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed"));
 	gtk_widget_set_sensitive (widget, mode != GS_MAIN_MODE_INSTALLED);
 
-
+	/* set panel */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (widget), mode);
+}
+
+/**
+ * gs_main_set_overview_mode:
+ **/
+static void
+gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
+{
+	/* set controls */
+	gs_main_set_overview_mode_ui (priv, mode);
+
+	/* do action for mode */
+	priv->mode = mode;
+	switch (mode) {
+	case GS_MAIN_MODE_NEW:
+		gs_main_get_popular (priv);
+		break;
+	case GS_MAIN_MODE_INSTALLED:
+		gs_main_get_installed_packages (priv);
+		break;
+	case GS_MAIN_MODE_UPDATES:
+		gs_main_get_updates (priv);
+		break;
+	case GS_MAIN_MODE_WAITING:
+		gs_main_get_updates (priv);
+		break;
+	default:
+		g_assert_not_reached ();
+	}
 }
 
 /**
@@ -742,6 +849,8 @@ out:
 		g_object_unref (priv->application);
 		if (priv->builder != NULL)
 			g_object_unref (priv->builder);
+		if (priv->waiting_tab_id > 0)
+			g_source_remove (priv->waiting_tab_id);
 		g_free (priv);
 	}
 	return status;
