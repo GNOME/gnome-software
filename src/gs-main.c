@@ -42,6 +42,13 @@ enum {
 	COLUMN_LAST
 };
 
+enum {
+	COLUMN_POPULAR_PACKAGE_ID,
+	COLUMN_POPULAR_MARKUP,
+	COLUMN_POPULAR_PIXBUF,
+	COLUMN_POPULAR_LAST
+};
+
 typedef struct {
 	GCancellable		*cancellable;
 	GsMainMode		 mode;
@@ -386,13 +393,14 @@ gs_main_get_updates (GsMainPrivate *priv)
 }
 
 /**
- * gs_main_get_featured:
+ * gs_main_get_popular:
  **/
 static void
-gs_main_get_featured (GsMainPrivate *priv)
+gs_main_get_popular (GsMainPrivate *priv)
 {
 	PkBitfield filter;
-	const gchar *packages[] = { "firefox", "gimp", "xchat", NULL };
+//	const gchar *packages[] = { "firefox", "gimp", "xchat", NULL };
+	const gchar *packages[] = { "transmission-gtk", "cheese", "inkscape", "sound-juicer", "gedit", NULL };
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH,
 					 PK_FILTER_ENUM_APPLICATION,
 					 PK_FILTER_ENUM_NEWEST,
@@ -423,7 +431,7 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		gtk_entry_set_text (GTK_ENTRY (widget), "");
 		gtk_widget_show (widget);
-		gs_main_get_featured (priv);
+		gs_main_get_popular (priv);
 		break;
 	case GS_MAIN_MODE_INSTALLED:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
@@ -574,6 +582,11 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_updates"));
 	gs_main_add_columns (priv, treeview);
 
+	/* set up popular icon vew */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "iconview_popular"));
+	gtk_icon_view_set_markup_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_MARKUP);
+	gtk_icon_view_set_pixbuf_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_PIXBUF);
+
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
 	g_object_set_data (G_OBJECT (widget),
@@ -673,12 +686,14 @@ main (int argc, char **argv)
 	status = g_application_run (G_APPLICATION (priv->application), argc, argv);
 
 out:
-	g_object_unref (priv->task);
-	g_object_unref (priv->desktop);
-	g_object_unref (priv->cancellable);
-	g_object_unref (priv->application);
-	if (priv->builder != NULL)
-		g_object_unref (priv->builder);
-	g_free (priv);
+	if (priv != NULL) {
+		g_object_unref (priv->task);
+		g_object_unref (priv->desktop);
+		g_object_unref (priv->cancellable);
+		g_object_unref (priv->application);
+		if (priv->builder != NULL)
+			g_object_unref (priv->builder);
+		g_free (priv);
+	}
 	return status;
 }
