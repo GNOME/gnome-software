@@ -34,12 +34,12 @@ typedef enum {
 
 
 enum {
-	INSTALLED_COLUMN_PACKAGE_ID,
-	INSTALLED_COLUMN_ICON_NAME,
-	INSTALLED_COLUMN_PACKAGE_NAME,
-	INSTALLED_COLUMN_PACKAGE_VERSION,
-	INSTALLED_COLUMN_PACKAGE_SUMMARY,
-	INSTALLED_COLUMN_LAST
+	COLUMN_PACKAGE_ID,
+	COLUMN_ICON_NAME,
+	COLUMN_PACKAGE_NAME,
+	COLUMN_PACKAGE_VERSION,
+	COLUMN_PACKAGE_SUMMARY,
+	COLUMN_LAST
 };
 
 typedef struct {
@@ -129,24 +129,44 @@ gs_main_get_pretty_version (const gchar *version)
 }
 
 /**
+ * gs_main_is_pkg_installed_target:
+ **/
+static gboolean
+gs_main_is_pkg_installed_target (PkPackage *pkg)
+{
+	gboolean ret;
+	ret = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (pkg),
+						  "gnome-software::target-installed"));
+	return ret;
+}
+
+/**
  * gs_main_installed_add_package:
  **/
 static void
 gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 {
-	GtkTreeIter iter;
+	gboolean target_installed;
 	gchar *tmp;
 	GtkListStore *list_store;
+	GtkTreeIter iter;
 
-	list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_installed"));
+	target_installed = gs_main_is_pkg_installed_target (pkg);
+	if (target_installed) {
+		list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder,
+								     "liststore_installed"));
+	} else {
+		list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder,
+								     "liststore_updates"));
+	}
 	gtk_list_store_append (list_store, &iter);
 	tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
 	gtk_list_store_set (list_store, &iter,
-			    INSTALLED_COLUMN_PACKAGE_ID, pk_package_get_id (pkg),
-			    INSTALLED_COLUMN_ICON_NAME, "icon-missing",
-			    INSTALLED_COLUMN_PACKAGE_NAME, pk_package_get_name (pkg),
-			    INSTALLED_COLUMN_PACKAGE_VERSION, tmp,
-			    INSTALLED_COLUMN_PACKAGE_SUMMARY, pk_package_get_summary (pkg),
+			    COLUMN_PACKAGE_ID, pk_package_get_id (pkg),
+			    COLUMN_ICON_NAME, "icon-missing",
+			    COLUMN_PACKAGE_NAME, pk_package_get_name (pkg),
+			    COLUMN_PACKAGE_VERSION, tmp,
+			    COLUMN_PACKAGE_SUMMARY, pk_package_get_summary (pkg),
 			    -1);
 	g_free (tmp);
 }
@@ -160,6 +180,7 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 				    const gchar *desktop_file)
 {
 	gboolean ret;
+	gboolean target_installed;
 	gchar *comment = NULL;
 	gchar *icon = NULL;
 	gchar *name = NULL;
@@ -204,15 +225,22 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 		comment = g_strdup (pk_package_get_summary (pkg));
 
 	/* add to list store */
-	list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_installed"));
+	target_installed = gs_main_is_pkg_installed_target (pkg);
+	if (target_installed) {
+		list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder,
+								     "liststore_installed"));
+	} else {
+		list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder,
+								     "liststore_updates"));
+	}
 	gtk_list_store_append (list_store, &iter);
 	version_tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
 	gtk_list_store_set (list_store, &iter,
-			    INSTALLED_COLUMN_PACKAGE_ID, pk_package_get_id (pkg),
-			    INSTALLED_COLUMN_ICON_NAME, icon,
-			    INSTALLED_COLUMN_PACKAGE_NAME, name,
-			    INSTALLED_COLUMN_PACKAGE_VERSION, version_tmp,
-			    INSTALLED_COLUMN_PACKAGE_SUMMARY, comment,
+			    COLUMN_PACKAGE_ID, pk_package_get_id (pkg),
+			    COLUMN_ICON_NAME, icon,
+			    COLUMN_PACKAGE_NAME, name,
+			    COLUMN_PACKAGE_VERSION, version_tmp,
+			    COLUMN_PACKAGE_SUMMARY, comment,
 			    -1);
 out:
 	g_key_file_unref (key_file);
@@ -299,6 +327,13 @@ gs_main_get_packages_cb (PkClient *client,
 	for (i=0; i<array->len; i++) {
 		item = g_ptr_array_index (array, i);
 		g_debug ("add %s", pk_package_get_id (item));
+
+		/* use different listviews for each kind of request */
+		if (pk_results_get_role (results) != PK_ROLE_ENUM_GET_UPDATES) {
+			g_object_set_data (G_OBJECT (item),
+					   "gnome-software::target-installed",
+					   GINT_TO_POINTER (TRUE));
+		}
 		gs_main_installed_add_item (priv, item);
 	}
 
@@ -439,21 +474,18 @@ gs_main_overview_button_cb (GtkWidget *widget, GsMainPrivate *priv)
 }
 
 static void
-gs_main_add_columns_installed (GsMainPrivate *priv)
+gs_main_add_columns (GsMainPrivate *priv, GtkTreeView *treeview)
 {
 	GtkCellRenderer *renderer;
 	GtkTreeViewColumn *column;
-	GtkTreeView *treeview;
 	GtkCellArea *area;
-
-	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_installed"));
 
 	/* column for images */
 	column = gtk_tree_view_column_new ();
 	renderer = gtk_cell_renderer_pixbuf_new ();
 	g_object_set (renderer, "stock-size", priv->custom_icon_size, NULL);
 	gtk_tree_view_column_pack_start (column, renderer, FALSE);
-	gtk_tree_view_column_add_attribute (column, renderer, "icon-name", INSTALLED_COLUMN_ICON_NAME);
+	gtk_tree_view_column_add_attribute (column, renderer, "icon-name", COLUMN_ICON_NAME);
 	gtk_tree_view_append_column (treeview, column);
 
 	/* column for name|version */
@@ -469,7 +501,7 @@ gs_main_add_columns_installed (GsMainPrivate *priv)
 				      FALSE, /* expand */
 				      FALSE, /* align */
 				      FALSE); /* fixed */
-	gtk_cell_area_attribute_connect (area, renderer, "markup", INSTALLED_COLUMN_PACKAGE_NAME);
+	gtk_cell_area_attribute_connect (area, renderer, "markup", COLUMN_PACKAGE_NAME);
 	renderer = gtk_cell_renderer_text_new ();
 	g_object_set (renderer,
 		      "yalign", 0.0f,
@@ -480,7 +512,7 @@ gs_main_add_columns_installed (GsMainPrivate *priv)
 				      TRUE, /* expand */
 				      FALSE, /* align */
 				      FALSE); /* fixed */
-	gtk_cell_area_attribute_connect (area, renderer, "markup", INSTALLED_COLUMN_PACKAGE_VERSION);
+	gtk_cell_area_attribute_connect (area, renderer, "markup", COLUMN_PACKAGE_VERSION);
 	column = gtk_tree_view_column_new_with_area (area);
 	gtk_tree_view_append_column (treeview, column);
 
@@ -492,7 +524,7 @@ gs_main_add_columns_installed (GsMainPrivate *priv)
 		      "wrap-mode", PANGO_WRAP_WORD,
 		      NULL);
 	column = gtk_tree_view_column_new_with_attributes (NULL, renderer,
-							   "markup", INSTALLED_COLUMN_PACKAGE_SUMMARY, NULL);
+							   "markup", COLUMN_PACKAGE_SUMMARY, NULL);
 	gtk_tree_view_append_column (treeview, column);
 }
 
@@ -504,6 +536,7 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 {
 	GError *error = NULL;
 	gint retval;
+	GtkTreeView *treeview;
 	GtkWidget *main_window;
 	GtkWidget *widget;
 
@@ -536,7 +569,10 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	gs_main_set_overview_mode (priv, GS_MAIN_MODE_INSTALLED);
 
 	/* add columns to the tree view */
-	gs_main_add_columns_installed (priv);
+	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_installed"));
+	gs_main_add_columns (priv, treeview);
+	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_updates"));
+	gs_main_add_columns (priv, treeview);
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
