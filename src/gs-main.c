@@ -537,6 +537,52 @@ gs_main_add_columns (GsMainPrivate *priv, GtkTreeView *treeview)
 }
 
 /**
+ * gs_main_setup_featured:
+ **/
+static void
+gs_main_setup_featured (GsMainPrivate *priv)
+{
+	GError *error = NULL;
+	GdkPixbuf *pixbuf;
+	GtkImage *image;
+
+	/* 1 : TODO: generate these automatically */
+	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "image_featured1"));
+	pixbuf = gdk_pixbuf_new_from_file_at_scale ("./featured-firefox.png", -1, -1, TRUE, &error);
+	if (pixbuf == NULL) {
+		g_warning ("failed to load featured tile: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+	gtk_image_set_from_pixbuf (image, pixbuf);
+	g_object_unref (pixbuf);
+
+	/* 2 */
+	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "image_featured2"));
+	pixbuf = gdk_pixbuf_new_from_file_at_scale ("./featured-gimp.png", -1, -1, TRUE, &error);
+	if (pixbuf == NULL) {
+		g_warning ("failed to load featured tile: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+	gtk_image_set_from_pixbuf (image, pixbuf);
+	g_object_unref (pixbuf);
+
+	/* 3 */
+	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "image_featured3"));
+	pixbuf = gdk_pixbuf_new_from_file_at_scale ("./featured-xchat.png", -1, -1, TRUE, &error);
+	if (pixbuf == NULL) {
+		g_warning ("failed to load featured tile: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+	gtk_image_set_from_pixbuf (image, pixbuf);
+	g_object_unref (pixbuf);
+out:
+	return;
+}
+
+/**
  * gs_main_startup_cb:
  **/
 static void
@@ -586,6 +632,9 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "iconview_popular"));
 	gtk_icon_view_set_markup_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_MARKUP);
 	gtk_icon_view_set_pixbuf_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_PIXBUF);
+
+	/* setup featured tiles */
+	gs_main_setup_featured (priv);
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));

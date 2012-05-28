@@ -206,6 +206,7 @@
                   <object class="GtkBox" id="box4">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
+                    <property name="halign">center</property>
                     <child>
                       <object class="GtkImage" id="image_featured1">
                         <property name="visible">True</property>
@@ -213,8 +214,8 @@
                         <property name="stock">gtk-delete</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
@@ -225,8 +226,8 @@
                         <property name="stock">gtk-delete</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
@@ -237,8 +238,8 @@
                         <property name="stock">gtk-delete</property>
                       </object>
                       <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
+                        <property name="expand">False</property>
+                        <property name="fill">False</property>
                         <property name="position">2</property>
                       </packing>
                     </child>
@@ -274,6 +275,7 @@
                     <property name="can_focus">True</property>
                     <property name="hscroll_policy">natural</property>
                     <property name="vscroll_policy">natural</property>
+                    <property name="selection_mode">none</property>
                     <property name="model">liststore_popular</property>
                   </object>
                   <packing>
