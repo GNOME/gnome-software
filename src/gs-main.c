@@ -655,7 +655,7 @@ gs_main_setup_featured (GsMainPrivate *priv)
 
 	/* 1 : TODO: generate these automatically */
 	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "image_featured1"));
-	pixbuf = gdk_pixbuf_new_from_file_at_scale ("./featured-firefox.png", -1, -1, TRUE, &error);
+	pixbuf = gdk_pixbuf_new_from_file_at_scale (DATADIR "/gnome-software/featured-firefox.png", -1, -1, TRUE, &error);
 	if (pixbuf == NULL) {
 		g_warning ("failed to load featured tile: %s", error->message);
 		g_error_free (error);
@@ -666,7 +666,7 @@ gs_main_setup_featured (GsMainPrivate *priv)
 
 	/* 2 */
 	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "image_featured2"));
-	pixbuf = gdk_pixbuf_new_from_file_at_scale ("./featured-gimp.png", -1, -1, TRUE, &error);
+	pixbuf = gdk_pixbuf_new_from_file_at_scale (DATADIR "/gnome-software/featured-gimp.png", -1, -1, TRUE, &error);
 	if (pixbuf == NULL) {
 		g_warning ("failed to load featured tile: %s", error->message);
 		g_error_free (error);
@@ -677,7 +677,7 @@ gs_main_setup_featured (GsMainPrivate *priv)
 
 	/* 3 */
 	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "image_featured3"));
-	pixbuf = gdk_pixbuf_new_from_file_at_scale ("./featured-xchat.png", -1, -1, TRUE, &error);
+	pixbuf = gdk_pixbuf_new_from_file_at_scale (DATADIR "/gnome-software/featured-xchat.png", -1, -1, TRUE, &error);
 	if (pixbuf == NULL) {
 		g_warning ("failed to load featured tile: %s", error->message);
 		g_error_free (error);
