@@ -96,6 +96,28 @@ gs_main_show_waiting_tab_cb (gpointer user_data)
 }
 
 /**
+ * gs_main_get_app_widget_for_id:
+ **/
+static GsAppWidget *
+gs_main_get_app_widget_for_id (EggListBox *list_box, const gchar *id)
+{
+	GList *list, *l;
+	GsAppWidget *tmp;
+
+	/* look for this widget */
+	list = gtk_container_get_children (GTK_CONTAINER (list_box));
+	for (l = list; l != NULL; l = l->next) {
+		tmp = GS_APP_WIDGET (l->data);
+		if (g_strcmp0 (gs_app_widget_get_id (tmp), id) == 0)
+			goto out;
+	}
+	tmp = NULL;
+out:
+	g_list_free (list);
+	return tmp;
+}
+
+/**
  * gs_main_progress_cb:
  **/
 static void
@@ -106,8 +128,37 @@ gs_main_progress_cb (PkProgress *progress,
 	const gchar *status_text = NULL;
 	gboolean allow_cancel;
 	gint percentage;
+	GsAppWidget *app_widget;
 	GtkWidget *widget;
+	PkItemProgress *item_progress;
+	PkRoleEnum role;
 	PkStatusEnum status;
+
+	/* action item, so no waiting panel */
+	g_object_get (progress,
+		      "role", &role,
+		      NULL);
+	if (role == PK_ROLE_ENUM_INSTALL_PACKAGES ||
+	    role == PK_ROLE_ENUM_UPDATE_PACKAGES ||
+	    role == PK_ROLE_ENUM_REMOVE_PACKAGES) {
+
+		/* update this item in situ */
+		if (type == PK_PROGRESS_TYPE_ITEM_PROGRESS) {
+			g_object_get (progress,
+				      "item-progress", &item_progress,
+				      "status", &status,
+				      NULL);
+			g_warning ("need to find %s and update",
+				   pk_item_progress_get_package_id (item_progress));
+			app_widget = gs_main_get_app_widget_for_id (priv->list_box_installed,
+								    pk_item_progress_get_package_id (item_progress));
+			if (app_widget != NULL) {
+				gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
+				gs_app_widget_set_status (app_widget, pk_status_enum_to_string (status));
+			}
+		}
+		return;
+	}
 
 	g_object_get (progress,
 		      "status", &status,
@@ -222,6 +273,53 @@ gs_main_is_pkg_installed_target (PkPackage *pkg)
 }
 
 /**
+ * gs_main_remove_packages_cb:
+ **/
+static void
+gs_main_remove_packages_cb (PkClient *client,
+			    GAsyncResult *res,
+			    GsMainPrivate *priv)
+{
+	GError *error = NULL;
+	GPtrArray *array = NULL;
+	guint i;
+	PkError *error_code = NULL;
+	PkPackage *item;
+	PkResults *results;
+
+	/* get the results */
+	results = pk_client_generic_finish (client, res, &error);
+	if (results == NULL) {
+		g_warning ("failed to search: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* check error code */
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		g_warning ("failed to search: %s, %s",
+			   pk_error_enum_to_string (pk_error_get_code (error_code)),
+			   pk_error_get_details (error_code));
+		goto out;
+	}
+
+	/* get data */
+	array = pk_results_get_package_array (results);
+	for (i=0; i<array->len; i++) {
+		item = g_ptr_array_index (array, i);
+		g_debug ("removed %s", pk_package_get_id (item));
+	}
+out:
+	if (error_code != NULL)
+		g_object_unref (error_code);
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	if (results != NULL)
+		g_object_unref (results);
+}
+
+/**
  * gs_main_app_widget_button_clicked_cb:
  **/
 static void
@@ -229,15 +327,45 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 {
 	const gchar *package_id;
 	GsAppWidgetKind kind;
+	const gchar *to_array[] = { NULL, NULL };
 
 	kind = gs_app_widget_get_kind (app_widget);
 	package_id = gs_app_widget_get_id (app_widget);
-	if (kind == GS_APP_WIDGET_KIND_UPDATE)
+	if (kind == GS_APP_WIDGET_KIND_UPDATE) {
 		g_debug ("update %s", package_id);
-	else if (kind == GS_APP_WIDGET_KIND_INSTALL)
+		to_array[0] = package_id;
+		pk_task_update_packages_async (priv->task,
+					       (gchar**)to_array,
+					       priv->cancellable,
+					       (PkProgressCallback) gs_main_progress_cb,
+					       priv,
+					       (GAsyncReadyCallback) gs_main_remove_packages_cb,
+					       priv);
+	} else if (kind == GS_APP_WIDGET_KIND_INSTALL) {
 		g_debug ("install %s", package_id);
-	else if (kind == GS_APP_WIDGET_KIND_REMOVE)
+		to_array[0] = package_id;
+		pk_task_install_packages_async (priv->task,
+					        (gchar**)to_array,
+					        priv->cancellable,
+					        (PkProgressCallback) gs_main_progress_cb,
+					        priv,
+					        (GAsyncReadyCallback) gs_main_remove_packages_cb,
+					        priv);
+	} else if (kind == GS_APP_WIDGET_KIND_REMOVE) {
 		g_debug ("remove %s", package_id);
+		to_array[0] = package_id;
+		pk_task_remove_packages_async (priv->task,
+					       (gchar**)to_array,
+					       FALSE, /* allow deps */
+					       FALSE, /* autoremove */
+					       priv->cancellable,
+					       (PkProgressCallback) gs_main_progress_cb,
+					       priv,
+					       (GAsyncReadyCallback) gs_main_remove_packages_cb,
+					       priv);
+	}
+	gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
+//	gs_app_widget_set_status (app_widget, "Installing...");
 }
 
 /**
