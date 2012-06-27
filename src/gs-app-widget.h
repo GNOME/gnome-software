@@ -48,6 +48,7 @@ struct _GsAppWidget
 struct _GsAppWidgetClass
 {
 	GtkBoxClass		 parent_class;
+	void			(*button_clicked)	(GsAppWidget	*app_widget);
 };
 
 typedef enum {

@@ -43,6 +43,13 @@ struct _GsAppWidgetPrivate
 
 G_DEFINE_TYPE (GsAppWidget, gs_app_widget, GTK_TYPE_BOX)
 
+enum {
+	SIGNAL_BUTTON_CLICKED,
+	SIGNAL_LAST
+};
+
+static guint signals [SIGNAL_LAST] = { 0 };
+
 /**
  * gs_app_widget_refresh:
  **/
@@ -211,11 +218,29 @@ gs_app_widget_destroy (GtkWidget *object)
 }
 
 static void
-gs_app_widget_class_init (GsAppWidgetClass *class)
+gs_app_widget_class_init (GsAppWidgetClass *klass)
 {
-	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (class);
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 	widget_class->destroy = gs_app_widget_destroy;
-	g_type_class_add_private (class, sizeof (GsAppWidgetPrivate));
+
+	signals [SIGNAL_BUTTON_CLICKED] =
+		g_signal_new ("button-clicked",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsAppWidgetClass, button_clicked),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
+
+	g_type_class_add_private (klass, sizeof (GsAppWidgetPrivate));
+}
+
+/**
+ * gs_app_widget_button_clicked_cb:
+ **/
+static void
+gs_app_widget_button_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
+{
+	g_signal_emit (app_widget, signals[SIGNAL_BUTTON_CLICKED], 0);
 }
 
 /**
@@ -286,6 +311,8 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_button), 9);
 	gtk_widget_set_size_request (priv->widget_button, 100, -1);
 	gtk_widget_set_vexpand (priv->widget_button, FALSE);
+	g_signal_connect (priv->widget_button, "clicked",
+			  G_CALLBACK (gs_app_widget_button_clicked_cb), app_widget);
 	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_box_pack_start (GTK_BOX (box),
 			    GTK_WIDGET (priv->widget_button),

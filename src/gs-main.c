@@ -222,6 +222,25 @@ gs_main_is_pkg_installed_target (PkPackage *pkg)
 }
 
 /**
+ * gs_main_app_widget_button_clicked_cb:
+ **/
+static void
+gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *priv)
+{
+	const gchar *package_id;
+	GsAppWidgetKind kind;
+
+	kind = gs_app_widget_get_kind (app_widget);
+	package_id = gs_app_widget_get_id (app_widget);
+	if (kind == GS_APP_WIDGET_KIND_UPDATE)
+		g_debug ("update %s", package_id);
+	else if (kind == GS_APP_WIDGET_KIND_INSTALL)
+		g_debug ("install %s", package_id);
+	else if (kind == GS_APP_WIDGET_KIND_REMOVE)
+		g_debug ("remove %s", package_id);
+}
+
+/**
  * gs_main_installed_add_package:
  **/
 static void
@@ -239,6 +258,9 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 						priv->custom_icon_size);
 
 	widget = gs_app_widget_new ();
+	g_signal_connect (widget, "button-clicked",
+			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
+			  priv);
 	target_installed = gs_main_is_pkg_installed_target (pkg);
 	if (target_installed) {
 		list_box = priv->list_box_installed;
@@ -349,6 +371,9 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 
 	/* add to list store */
 	widget = gs_app_widget_new ();
+	g_signal_connect (widget, "button-clicked",
+			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
+			  priv);
 	target_installed = gs_main_is_pkg_installed_target (pkg);
 	if (target_installed) {
 		list_box = priv->list_box_installed;
@@ -406,6 +431,9 @@ gs_main_installed_add_os_update (GsMainPrivate *priv, PkPackage *pkg)
 	}
 
 	priv->os_update_widget = gs_app_widget_new ();
+	g_signal_connect (priv->os_update_widget, "button-clicked",
+			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
+			  priv);
 	gs_app_widget_set_kind (GS_APP_WIDGET (priv->os_update_widget),
 				GS_APP_WIDGET_KIND_UPDATE);
 	gs_app_widget_set_id (GS_APP_WIDGET (priv->os_update_widget), "");
