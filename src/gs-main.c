@@ -776,20 +776,51 @@ gs_main_installed_filter_func (GtkWidget *child, void *user_data)
 	GtkWidget *widget;
 	GsMainPrivate *priv = (GsMainPrivate *) user_data;
 	GsAppWidget *app_widget = GS_APP_WIDGET (child);
+        gchar *needle;
+        gchar *haystack;
+        gboolean result;
+
+        result = TRUE;
+
+        needle = NULL;
+        haystack = NULL;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	tmp = gtk_entry_get_text (GTK_ENTRY (widget));
 	if (tmp[0] == '\0')
-		return TRUE;
-	if (g_strstr_len (gs_app_widget_get_description (app_widget), -1, tmp) != NULL)
-		return TRUE;
-	if (g_strstr_len (gs_app_widget_get_name (app_widget), -1, tmp) != NULL)
-		return TRUE;
-	if (g_strstr_len (gs_app_widget_get_version (app_widget), -1, tmp) != NULL)
-		return TRUE;
-	if (g_strstr_len (gs_app_widget_get_id (app_widget), -1, tmp) != NULL)
-		return TRUE;
-	return FALSE;
+                goto out;
+
+        needle = g_utf8_casefold (tmp, -1);
+        haystack = g_utf8_casefold (gs_app_widget_get_description (app_widget), -1);
+
+	if (strstr (haystack, needle) != NULL)
+		goto out;
+
+        g_free (haystack);
+        haystack = g_utf8_casefold (gs_app_widget_get_name (app_widget), -1);
+
+	if (strstr (haystack, needle) != NULL)
+		goto out;
+
+        g_free (haystack);
+        haystack = g_utf8_casefold (gs_app_widget_get_version (app_widget), -1);
+
+	if (strstr (haystack, needle) != NULL)
+		goto out;
+
+        g_free (haystack);
+        haystack = g_utf8_casefold (gs_app_widget_get_id (app_widget), -1);
+
+	if (strstr (haystack, needle) != NULL)
+		goto out;
+
+	result = FALSE;
+
+out:
+        g_free (needle);
+        g_free (haystack);
+
+        return result;
 }
 
 
