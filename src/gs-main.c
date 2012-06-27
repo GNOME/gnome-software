@@ -26,6 +26,11 @@
 #include <locale.h>
 #include <packagekit-glib2/packagekit.h>
 
+#include "egg-list-box.h"
+#include "gs-app-widget.h"
+
+#define	GS_MAIN_ICON_SIZE	64
+
 typedef enum {
 	GS_MAIN_MODE_NEW,
 	GS_MAIN_MODE_INSTALLED,
@@ -59,6 +64,9 @@ typedef struct {
 	PkDesktop		*desktop;
 	PkTask			*task;
 	guint			 waiting_tab_id;
+	EggListBox		*list_box_installed;
+	EggListBox		*list_box_updates;
+	GtkWidget		*os_update_widget;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode);
@@ -219,28 +227,38 @@ gs_main_is_pkg_installed_target (PkPackage *pkg)
 static void
 gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 {
+	EggListBox *list_box;
 	gboolean target_installed;
 	gchar *tmp;
-	GtkListStore *list_store;
-	GtkTreeIter iter;
+	GtkWidget *widget;
+	GdkPixbuf *pixbuf;
 
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
+	pixbuf = gtk_widget_render_icon_pixbuf (widget,
+						"icon-missing",
+						priv->custom_icon_size);
+
+	widget = gs_app_widget_new ();
 	target_installed = gs_main_is_pkg_installed_target (pkg);
 	if (target_installed) {
-		list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder,
-								     "liststore_installed"));
+		list_box = priv->list_box_installed;
+		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+					GS_APP_WIDGET_KIND_REMOVE);
 	} else {
-		list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder,
-								     "liststore_updates"));
+		list_box = priv->list_box_updates;
+		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+					GS_APP_WIDGET_KIND_UPDATE);
 	}
-	gtk_list_store_append (list_store, &iter);
 	tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
-	gtk_list_store_set (list_store, &iter,
-			    COLUMN_PACKAGE_ID, pk_package_get_id (pkg),
-			    COLUMN_ICON_NAME, "icon-missing",
-			    COLUMN_PACKAGE_NAME, pk_package_get_name (pkg),
-			    COLUMN_PACKAGE_VERSION, tmp,
-			    COLUMN_PACKAGE_SUMMARY, pk_package_get_summary (pkg),
-			    -1);
+	gs_app_widget_set_description (GS_APP_WIDGET (widget), pk_package_get_summary (pkg));
+	gs_app_widget_set_id (GS_APP_WIDGET (widget), pk_package_get_id (pkg));
+	gs_app_widget_set_name (GS_APP_WIDGET (widget), pk_package_get_summary (pkg));
+	gs_app_widget_set_pixbuf (GS_APP_WIDGET (widget), pixbuf);
+	gs_app_widget_set_version (GS_APP_WIDGET (widget), tmp);
+	gtk_container_add (GTK_CONTAINER (list_box), widget);
+	gtk_widget_show_all (widget);
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
 	g_free (tmp);
 }
 
@@ -252,16 +270,17 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 				    PkPackage *pkg,
 				    const gchar *desktop_file)
 {
+	EggListBox *list_box;
 	gboolean ret;
 	gboolean target_installed;
 	gchar *comment = NULL;
 	gchar *icon = NULL;
 	gchar *name = NULL;
 	gchar *version_tmp = NULL;
+	GdkPixbuf *pixbuf = NULL;
 	GError *error = NULL;
 	GKeyFile *key_file;
-	GtkListStore *list_store;
-	GtkTreeIter iter;
+	GtkWidget *widget;
 
 	/* load desktop file */
 	key_file = g_key_file_new ();
@@ -289,7 +308,7 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 				      G_KEY_FILE_DESKTOP_KEY_ICON,
 				      NULL);
 	if (icon == NULL)
-		icon = g_strdup ("icon-missing");
+		icon = g_strdup (GTK_STOCK_MISSING_IMAGE);
 	comment = g_key_file_get_string (key_file,
 					 G_KEY_FILE_DESKTOP_GROUP,
 					 G_KEY_FILE_DESKTOP_KEY_COMMENT,
@@ -297,30 +316,111 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 	if (comment == NULL)
 		comment = g_strdup (pk_package_get_summary (pkg));
 
+	/* load icon */
+	if (icon != NULL && icon[0] == '/') {
+		pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
+							   GS_MAIN_ICON_SIZE,
+							   GS_MAIN_ICON_SIZE,
+							   &error);
+	} else {
+		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+						   icon,
+						   GS_MAIN_ICON_SIZE,
+						   GTK_ICON_LOOKUP_USE_BUILTIN |
+						   GTK_ICON_LOOKUP_FORCE_SIZE,
+						   &error);
+		if (pixbuf == NULL) {
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
+			pixbuf = gtk_widget_render_icon_pixbuf (widget,
+								icon,
+								priv->custom_icon_size);
+		}
+	}
+	if (pixbuf == NULL) {
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
+		pixbuf = gtk_widget_render_icon_pixbuf (widget,
+							GTK_STOCK_MISSING_IMAGE,
+							priv->custom_icon_size);
+		g_warning ("Failed to open theme icon or builtin %s: %s",
+			   icon,
+			   error->message);
+		g_error_free (error);
+	}
+
 	/* add to list store */
+	widget = gs_app_widget_new ();
 	target_installed = gs_main_is_pkg_installed_target (pkg);
 	if (target_installed) {
-		list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder,
-								     "liststore_installed"));
+		list_box = priv->list_box_installed;
+		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+					GS_APP_WIDGET_KIND_REMOVE);
 	} else {
-		list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder,
-								     "liststore_updates"));
+		list_box = priv->list_box_updates;
+		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+					GS_APP_WIDGET_KIND_UPDATE);
 	}
-	gtk_list_store_append (list_store, &iter);
 	version_tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
-	gtk_list_store_set (list_store, &iter,
-			    COLUMN_PACKAGE_ID, pk_package_get_id (pkg),
-			    COLUMN_ICON_NAME, icon,
-			    COLUMN_PACKAGE_NAME, name,
-			    COLUMN_PACKAGE_VERSION, version_tmp,
-			    COLUMN_PACKAGE_SUMMARY, comment,
-			    -1);
+	gs_app_widget_set_description (GS_APP_WIDGET (widget), comment);
+	gs_app_widget_set_id (GS_APP_WIDGET (widget), pk_package_get_id (pkg));
+	gs_app_widget_set_name (GS_APP_WIDGET (widget), name);
+	gs_app_widget_set_pixbuf (GS_APP_WIDGET (widget), pixbuf);
+	gs_app_widget_set_version (GS_APP_WIDGET (widget), version_tmp);
+	gtk_container_add (GTK_CONTAINER (list_box), widget);
+	gtk_widget_show_all (widget);
 out:
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
 	g_key_file_unref (key_file);
 	g_free (name);
 	g_free (comment);
 	g_free (icon);
 	g_free (version_tmp);
+}
+
+/**
+ * gs_main_installed_add_os_update:
+ **/
+static void
+gs_main_installed_add_os_update (GsMainPrivate *priv, PkPackage *pkg)
+{
+	GdkPixbuf *pixbuf = NULL;
+	GError *error = NULL;
+
+	/* try to find existing OS Update entry */
+	if (priv->os_update_widget != NULL) {
+		gs_app_widget_set_name (GS_APP_WIDGET (priv->os_update_widget), _("OS Updates"));
+		goto out;
+	}
+
+	/* add OS Update entry */
+	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+					   "software-update-available-symbolic",
+					   GS_MAIN_ICON_SIZE,
+					   GTK_ICON_LOOKUP_USE_BUILTIN |
+					   GTK_ICON_LOOKUP_FORCE_SIZE,
+					   &error);
+	if (pixbuf == NULL) {
+		g_warning ("Failed to find software-update-available-symbolic: %s",
+			   error->message);
+		g_error_free (error);
+	}
+
+	priv->os_update_widget = gs_app_widget_new ();
+	gs_app_widget_set_kind (GS_APP_WIDGET (priv->os_update_widget),
+				GS_APP_WIDGET_KIND_UPDATE);
+	gs_app_widget_set_id (GS_APP_WIDGET (priv->os_update_widget), "");
+	gs_app_widget_set_name (GS_APP_WIDGET (priv->os_update_widget), _("OS Update"));
+	gs_app_widget_set_description (GS_APP_WIDGET (priv->os_update_widget),
+				       _("Includes performance, stability and security improvements for all users"));
+	gs_app_widget_set_pixbuf (GS_APP_WIDGET (priv->os_update_widget), pixbuf);
+	gs_app_widget_set_version (GS_APP_WIDGET (priv->os_update_widget), "3.4.3");
+	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), priv->os_update_widget);
+	gtk_widget_show_all (priv->os_update_widget);
+	g_object_add_weak_pointer (G_OBJECT (priv->os_update_widget),
+				   (gpointer *) &priv->os_update_widget);
+out:
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
 }
 
 /**
@@ -330,8 +430,9 @@ static void
 gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 {
 	const gchar *desktop_file;
+	gboolean target_installed;
 	GError *error = NULL;
-	GPtrArray *files;
+	GPtrArray *files = NULL;
 	guint i;
 
 	/* try to get the list of desktop files for this package */
@@ -344,6 +445,16 @@ gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 			   error->message);
 		g_error_free (error);
 		gs_main_installed_add_package (priv, pkg);
+		goto out;
+	}
+	if (files->len == 0) {
+		g_debug ("not an application %s",
+			 pk_package_get_id (pkg));
+		target_installed = gs_main_is_pkg_installed_target (pkg);
+		if (!target_installed)
+//			gs_main_installed_add_package (priv, pkg);
+//		else
+			gs_main_installed_add_os_update (priv, pkg);
 		goto out;
 	}
 
@@ -360,6 +471,27 @@ out:
 }
 
 /**
+ * _gtk_container_remove_all_cb:
+ **/
+static void
+_gtk_container_remove_all_cb (GtkWidget *widget, gpointer user_data)
+{
+	GtkContainer *container = GTK_CONTAINER (user_data);
+	gtk_container_remove (container, widget);
+}
+
+/**
+ * _gtk_container_remove_all:
+ **/
+static void
+_gtk_container_remove_all (GtkContainer *container)
+{
+	gtk_container_foreach (container,
+			       _gtk_container_remove_all_cb,
+			       container);
+}
+
+/**
  * gs_main_get_packages_cb:
  **/
 static void
@@ -369,7 +501,6 @@ gs_main_get_packages_cb (PkClient *client,
 {
 	GError *error = NULL;
 	GPtrArray *array = NULL;
-	GtkListStore *list_store;
 	GtkWidget *widget;
 	guint i;
 	PkError *error_code = NULL;
@@ -394,8 +525,10 @@ gs_main_get_packages_cb (PkClient *client,
 	}
 
 	/* get data */
-	list_store = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_installed"));
-	gtk_list_store_clear (list_store);
+	if (pk_results_get_role (results) == PK_ROLE_ENUM_GET_UPDATES)
+		_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
+	else if (pk_results_get_role (results) == PK_ROLE_ENUM_GET_PACKAGES)
+		_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
 	array = pk_results_get_package_array (results);
 	for (i=0; i<array->len; i++) {
 		item = g_ptr_array_index (array, i);
@@ -449,7 +582,6 @@ gs_main_get_updates (GsMainPrivate *priv)
 {
 	PkBitfield filter;
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH,
-					 PK_FILTER_ENUM_APPLICATION,
 					 -1);
 	pk_client_get_updates_async (PK_CLIENT(priv->task),
 				     filter,
@@ -588,61 +720,6 @@ gs_main_overview_button_cb (GtkWidget *widget, GsMainPrivate *priv)
 	gs_main_set_overview_mode (priv, mode);
 }
 
-static void
-gs_main_add_columns (GsMainPrivate *priv, GtkTreeView *treeview)
-{
-	GtkCellRenderer *renderer;
-	GtkTreeViewColumn *column;
-	GtkCellArea *area;
-
-	/* column for images */
-	column = gtk_tree_view_column_new ();
-	renderer = gtk_cell_renderer_pixbuf_new ();
-	g_object_set (renderer, "stock-size", priv->custom_icon_size, NULL);
-	gtk_tree_view_column_pack_start (column, renderer, FALSE);
-	gtk_tree_view_column_add_attribute (column, renderer, "icon-name", COLUMN_ICON_NAME);
-	gtk_tree_view_append_column (treeview, column);
-
-	/* column for name|version */
-	area = gtk_cell_area_box_new ();
-	gtk_orientable_set_orientation (GTK_ORIENTABLE (area), GTK_ORIENTATION_VERTICAL);
-	renderer = gtk_cell_renderer_text_new ();
-	g_object_set (renderer,
-		      "weight", 800,
-		      "yalign", 0.0f,
-		      "ypad", 18,
-		      NULL);
-	gtk_cell_area_box_pack_start (GTK_CELL_AREA_BOX (area), renderer,
-				      FALSE, /* expand */
-				      FALSE, /* align */
-				      FALSE); /* fixed */
-	gtk_cell_area_attribute_connect (area, renderer, "markup", COLUMN_PACKAGE_NAME);
-	renderer = gtk_cell_renderer_text_new ();
-	g_object_set (renderer,
-		      "yalign", 0.0f,
-		      "ypad", 0,
-		      NULL);
-	g_object_set (G_OBJECT (renderer), "xalign", 0.0F, NULL);
-	gtk_cell_area_box_pack_start (GTK_CELL_AREA_BOX (area), renderer,
-				      TRUE, /* expand */
-				      FALSE, /* align */
-				      FALSE); /* fixed */
-	gtk_cell_area_attribute_connect (area, renderer, "markup", COLUMN_PACKAGE_VERSION);
-	column = gtk_tree_view_column_new_with_area (area);
-	gtk_tree_view_append_column (treeview, column);
-
-	/* column for summary */
-	renderer = gtk_cell_renderer_text_new ();
-	g_object_set (renderer,
-		      "yalign", 0.0f,
-		      "ypad", 18,
-		      "wrap-mode", PANGO_WRAP_WORD,
-		      NULL);
-	column = gtk_tree_view_column_new_with_attributes (NULL, renderer,
-							   "markup", COLUMN_PACKAGE_SUMMARY, NULL);
-	gtk_tree_view_append_column (treeview, column);
-}
-
 /**
  * gs_main_setup_featured:
  **/
@@ -690,6 +767,58 @@ out:
 }
 
 /**
+ * gs_main_installed_filter_func:
+ **/
+static gboolean
+gs_main_installed_filter_func (GtkWidget *child, void *user_data)
+{
+	const gchar *tmp;
+	GtkWidget *widget;
+	GsMainPrivate *priv = (GsMainPrivate *) user_data;
+	GsAppWidget *app_widget = GS_APP_WIDGET (child);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	tmp = gtk_entry_get_text (GTK_ENTRY (widget));
+	if (tmp[0] == '\0')
+		return TRUE;
+	if (g_strstr_len (gs_app_widget_get_description (app_widget), -1, tmp) != NULL)
+		return TRUE;
+	if (g_strstr_len (gs_app_widget_get_name (app_widget), -1, tmp) != NULL)
+		return TRUE;
+	if (g_strstr_len (gs_app_widget_get_version (app_widget), -1, tmp) != NULL)
+		return TRUE;
+	if (g_strstr_len (gs_app_widget_get_id (app_widget), -1, tmp) != NULL)
+		return TRUE;
+	return FALSE;
+}
+
+
+/**
+ * gs_main_filter_text_changed_cb:
+ **/
+static gboolean
+gs_main_filter_text_changed_cb (GtkEntry *entry, GsMainPrivate *priv)
+{
+	egg_list_box_refilter (priv->list_box_installed);
+	egg_list_box_refilter (priv->list_box_updates);
+	return FALSE;
+}
+
+/**
+ * gs_main_installed_sort_func:
+ **/
+static gint
+gs_main_installed_sort_func (gconstpointer a,
+			     gconstpointer b,
+			     gpointer user_data)
+{
+	GsAppWidget *aw1 = GS_APP_WIDGET (a);
+	GsAppWidget *aw2 = GS_APP_WIDGET (b);
+	return g_strcmp0 (gs_app_widget_get_name (aw1),
+			  gs_app_widget_get_name (aw2));
+}
+
+/**
  * gs_main_startup_cb:
  **/
 static void
@@ -697,7 +826,6 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 {
 	GError *error = NULL;
 	gint retval;
-	GtkTreeView *treeview;
 	GtkWidget *main_window;
 	GtkWidget *widget;
 
@@ -729,12 +857,6 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (widget), FALSE);
 	gs_main_set_overview_mode (priv, GS_MAIN_MODE_INSTALLED);
 
-	/* add columns to the tree view */
-	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_installed"));
-	gs_main_add_columns (priv, treeview);
-	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_updates"));
-	gs_main_add_columns (priv, treeview);
-
 	/* set up popular icon vew */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "iconview_popular"));
 	gtk_icon_view_set_markup_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_MARKUP);
@@ -742,6 +864,32 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* setup featured tiles */
 	gs_main_setup_featured (priv);
+
+	/* setup installed */
+	priv->list_box_installed = egg_list_box_new ();
+	egg_list_box_set_filter_func (priv->list_box_installed,
+				      gs_main_installed_filter_func,
+				      priv,
+				      NULL);
+	egg_list_box_set_sort_func (priv->list_box_installed,
+				    gs_main_installed_sort_func,
+				    priv,
+				    NULL);
+	egg_list_box_set_selection_mode (priv->list_box_installed,
+					 GTK_SELECTION_NONE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_install"));
+	egg_list_box_add_to_scrolled (priv->list_box_installed,
+				      GTK_SCROLLED_WINDOW (widget));
+	gtk_widget_show (GTK_WIDGET (priv->list_box_installed));
+
+	/* setup updates */
+	priv->list_box_updates = egg_list_box_new ();
+	egg_list_box_set_selection_mode (priv->list_box_updates,
+					 GTK_SELECTION_NONE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
+	egg_list_box_add_to_scrolled (priv->list_box_updates,
+				      GTK_SCROLLED_WINDOW (widget));
+	gtk_widget_show (GTK_WIDGET (priv->list_box_updates));
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
@@ -762,6 +910,11 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 			   GINT_TO_POINTER (GS_MAIN_MODE_UPDATES));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_main_overview_button_cb), priv);
+
+	/* refilter on search box changing */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	g_signal_connect (GTK_EDITABLE (widget), "changed",
+			  G_CALLBACK (gs_main_filter_text_changed_cb), priv);
 
 	/* show main UI */
 	gtk_widget_show (main_window);
@@ -807,7 +960,9 @@ main (int argc, char **argv)
 	priv = g_new0 (GsMainPrivate, 1);
 
 	/* we want the large icon size according to the width of the window */
-	priv->custom_icon_size = gtk_icon_size_register ("custom", 96, 96);
+	priv->custom_icon_size = gtk_icon_size_register ("custom",
+							 GS_MAIN_ICON_SIZE,
+							 GS_MAIN_ICON_SIZE);
 
 	/* ensure single instance */
 	priv->application = gtk_application_new ("org.gnome.Software", 0);
@@ -827,7 +982,7 @@ main (int argc, char **argv)
 	priv->desktop = pk_desktop_new ();
 	ret = pk_desktop_open_database (priv->desktop, &error);
 	if (!ret) {
-		g_warning ("failed to parse options: %s", error->message);
+		g_warning ("failed to open database: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}

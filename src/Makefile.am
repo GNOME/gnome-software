@@ -25,6 +25,10 @@ bin_PROGRAMS =						\
 gnome_software_SOURCES =				\
 	gs-resources.c					\
 	gs-resources.h					\
+	gs-app-widget.c					\
+	gs-app-widget.h					\
+	egg-list-box.c					\
+	egg-list-box.h					\
 	gs-main.c
 
 gnome_software_LDADD =					\
