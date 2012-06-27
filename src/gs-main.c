@@ -640,6 +640,21 @@ gs_main_get_popular (GsMainPrivate *priv)
 }
 
 /**
+ * gs_main_label_set_dim:
+ **/
+static void
+gs_main_label_set_dim (GtkWidget *widget, gboolean use_dim_label)
+{
+	GtkStyleContext *context;
+	context = gtk_widget_get_style_context (widget);
+	if (use_dim_label) {
+		gtk_style_context_add_class (context, "dim-label");
+	} else {
+		gtk_style_context_remove_class (context, "dim-label");
+	}
+}
+
+/**
  * gs_main_set_overview_mode_ui:
  **/
 static void
@@ -695,12 +710,12 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 	}
 
 	/* fix sensitivities */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
-	gtk_widget_set_sensitive (widget, mode != GS_MAIN_MODE_NEW);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
-	gtk_widget_set_sensitive (widget, mode != GS_MAIN_MODE_UPDATES);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed"));
-	gtk_widget_set_sensitive (widget, mode != GS_MAIN_MODE_INSTALLED);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_button_new"));
+	gs_main_label_set_dim (widget, mode != GS_MAIN_MODE_NEW);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_button_updates"));
+	gs_main_label_set_dim (widget, mode != GS_MAIN_MODE_UPDATES);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_button_installed"));
+	gs_main_label_set_dim (widget, mode != GS_MAIN_MODE_INSTALLED);
 
 	/* set panel */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
