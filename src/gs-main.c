@@ -278,7 +278,7 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 	gs_app_widget_set_pixbuf (GS_APP_WIDGET (widget), pixbuf);
 	gs_app_widget_set_version (GS_APP_WIDGET (widget), tmp);
 	gtk_container_add (GTK_CONTAINER (list_box), widget);
-	gtk_widget_show_all (widget);
+	gtk_widget_show (widget);
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
 	g_free (tmp);
@@ -391,7 +391,7 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 	gs_app_widget_set_pixbuf (GS_APP_WIDGET (widget), pixbuf);
 	gs_app_widget_set_version (GS_APP_WIDGET (widget), version_tmp);
 	gtk_container_add (GTK_CONTAINER (list_box), widget);
-	gtk_widget_show_all (widget);
+	gtk_widget_show (widget);
 out:
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);

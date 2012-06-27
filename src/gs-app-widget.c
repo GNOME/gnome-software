@@ -31,14 +31,17 @@ struct _GsAppWidgetPrivate
 	gchar		*id;
 	gchar		*name;
 	gchar		*description;
+	gchar		*status;
 	gchar		*version;
 	GdkPixbuf	*pixbuf;
 	GsAppWidgetKind	 kind;
 	GtkWidget	*widget_name;
 	GtkWidget	*widget_description;
+	GtkWidget	*widget_status;
 	GtkWidget	*widget_version;
 	GtkWidget	*widget_image;
 	GtkWidget	*widget_button;
+	GtkWidget	*widget_spinner;
 };
 
 G_DEFINE_TYPE (GsAppWidget, gs_app_widget, GTK_TYPE_BOX)
@@ -60,8 +63,14 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 
 	gtk_label_set_label (GTK_LABEL (priv->widget_name), priv->name);
 	gtk_label_set_label (GTK_LABEL (priv->widget_description), priv->description);
+	gtk_label_set_label (GTK_LABEL (priv->widget_status), priv->status);
 	gtk_label_set_label (GTK_LABEL (priv->widget_version), priv->version);
 	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->widget_image), priv->pixbuf);
+	gtk_widget_set_visible (priv->widget_name, TRUE);
+	gtk_widget_set_visible (priv->widget_description, TRUE);
+	gtk_widget_set_visible (priv->widget_status, priv->status != NULL);
+	gtk_widget_set_visible (priv->widget_version, TRUE);
+	gtk_widget_set_visible (priv->widget_image, TRUE);
 
 	if (app_widget->priv->kind == GS_APP_WIDGET_KIND_INSTALL) {
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
@@ -69,10 +78,21 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	} else if (app_widget->priv->kind == GS_APP_WIDGET_KIND_REMOVE) {
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
 				      _("Remove"));
-	} else {
+	} else if (app_widget->priv->kind == GS_APP_WIDGET_KIND_UPDATE) {
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
 				      _("Update"));
-	} 
+	}
+
+	/* show / hide widgets */
+	if (app_widget->priv->kind == GS_APP_WIDGET_KIND_BUSY) {
+		gtk_widget_set_visible (priv->widget_button, FALSE);
+		gtk_widget_set_visible (priv->widget_spinner, TRUE);
+		gtk_spinner_start (GTK_SPINNER (priv->widget_spinner));
+	} else {
+		gtk_widget_set_visible (priv->widget_button, TRUE);
+		gtk_widget_set_visible (priv->widget_spinner, FALSE);
+		gtk_spinner_stop (GTK_SPINNER (priv->widget_spinner));
+	}
 }
 
 /**
@@ -112,6 +132,16 @@ gs_app_widget_get_description (GsAppWidget *app_widget)
 {
 	g_return_val_if_fail (GS_IS_APP_WIDGET (app_widget), NULL);
 	return app_widget->priv->description;
+}
+
+/**
+ * gs_app_widget_get_status:
+ **/
+const gchar *
+gs_app_widget_get_status (GsAppWidget *app_widget)
+{
+	g_return_val_if_fail (GS_IS_APP_WIDGET (app_widget), NULL);
+	return app_widget->priv->status;
 }
 
 /**
@@ -176,6 +206,19 @@ gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description
 }
 
 /**
+ * gs_app_widget_set_status:
+ **/
+void
+gs_app_widget_set_status (GsAppWidget *app_widget, const gchar *status)
+{
+	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
+	g_return_if_fail (status != NULL);
+	g_free (app_widget->priv->status);
+	app_widget->priv->status = g_strdup (status);
+	gs_app_widget_refresh (app_widget);
+}
+
+/**
  * gs_app_widget_set_pixbuf:
  **/
 void
@@ -213,6 +256,14 @@ gs_app_widget_destroy (GtkWidget *object)
 
 	g_free (priv->id);
 	priv->id = NULL;
+	g_free (priv->name);
+	priv->name = NULL;
+	g_free (priv->description);
+	priv->description = NULL;
+	g_free (priv->status);
+	priv->status = NULL;
+	if (priv->pixbuf != NULL)
+		g_clear_object (&priv->pixbuf);
 
 	GTK_WIDGET_CLASS (gs_app_widget_parent_class)->destroy (object);
 }
@@ -250,6 +301,7 @@ static void
 gs_app_widget_init (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv;
+	GtkStyleContext *context;
 	GtkWidget *box;
 	PangoAttrList *attr_list;
 
@@ -275,6 +327,7 @@ gs_app_widget_init (GsAppWidget *app_widget)
 
 	/* name > version */
 	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+	gtk_widget_set_visible (box, TRUE);
 	priv->widget_name = gtk_label_new ("name");
 	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_name),
 				 PANGO_ELLIPSIZE_NONE);
@@ -313,9 +366,31 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	gtk_widget_set_vexpand (priv->widget_button, FALSE);
 	g_signal_connect (priv->widget_button, "clicked",
 			  G_CALLBACK (gs_app_widget_button_clicked_cb), app_widget);
-	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+
+	/* spinner */
+	priv->widget_spinner = gtk_spinner_new ();
+	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_spinner), 18);
+	gtk_widget_set_size_request (priv->widget_spinner, 48, 48);
+
+	/* status */
+	priv->widget_status = gtk_label_new ("status");
+	context = gtk_widget_get_style_context (priv->widget_status);
+	gtk_style_context_add_class (context, "dim-label");
+	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_status),
+				 PANGO_ELLIPSIZE_NONE);
+	gtk_label_set_line_wrap (GTK_LABEL (priv->widget_status), TRUE);
+	gtk_label_set_max_width_chars (GTK_LABEL (priv->widget_status), 20);
+	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_status), 9);
+	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);
+	gtk_widget_set_visible (box, TRUE);
 	gtk_box_pack_start (GTK_BOX (box),
 			    GTK_WIDGET (priv->widget_button),
+			    FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (box),
+			    GTK_WIDGET (priv->widget_spinner),
+			    FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (box),
+			    GTK_WIDGET (priv->widget_status),
 			    FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (app_widget),
 			    GTK_WIDGET (box),

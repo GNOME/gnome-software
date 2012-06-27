@@ -55,6 +55,7 @@ typedef enum {
 	GS_APP_WIDGET_KIND_INSTALL,
 	GS_APP_WIDGET_KIND_UPDATE,
 	GS_APP_WIDGET_KIND_REMOVE,
+	GS_APP_WIDGET_KIND_BUSY,
 	GS_APP_WIDGET_KIND_LAST
 } GsAppWidgetKind;
 
@@ -72,6 +73,9 @@ void		 gs_app_widget_set_version		(GsAppWidget	*app_widget,
 const gchar	*gs_app_widget_get_description		(GsAppWidget	*app_widget);
 void		 gs_app_widget_set_description		(GsAppWidget	*app_widget,
 							 const gchar	*description);
+const gchar	*gs_app_widget_get_status		(GsAppWidget	*app_widget);
+void		 gs_app_widget_set_status		(GsAppWidget	*app_widget,
+							 const gchar	*status);
 void		 gs_app_widget_set_pixbuf		(GsAppWidget	*app_widget,
 							 GdkPixbuf	*pixbuf);
 GsAppWidgetKind	 gs_app_widget_get_kind			(GsAppWidget	*app_widget);
