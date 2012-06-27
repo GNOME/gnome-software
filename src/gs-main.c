@@ -767,6 +767,20 @@ out:
 }
 
 /**
+ * gs_main_utf8_filter_helper:
+ **/
+static gboolean
+gs_main_utf8_filter_helper (const gchar *haystack, const gchar *needle_utf8)
+{
+	gboolean ret;
+	gchar *haystack_utf8;
+	haystack_utf8 = g_utf8_casefold (haystack, -1);
+	ret = strstr (haystack_utf8, needle_utf8) != NULL;
+	g_free (haystack_utf8);
+	return ret;
+}
+
+/**
  * gs_main_installed_filter_func:
  **/
 static gboolean
@@ -776,51 +790,34 @@ gs_main_installed_filter_func (GtkWidget *child, void *user_data)
 	GtkWidget *widget;
 	GsMainPrivate *priv = (GsMainPrivate *) user_data;
 	GsAppWidget *app_widget = GS_APP_WIDGET (child);
-        gchar *needle;
-        gchar *haystack;
-        gboolean result;
-
-        result = TRUE;
-
-        needle = NULL;
-        haystack = NULL;
+	gchar *needle_utf8 = NULL;
+	gboolean ret = TRUE;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	tmp = gtk_entry_get_text (GTK_ENTRY (widget));
 	if (tmp[0] == '\0')
-                goto out;
-
-        needle = g_utf8_casefold (tmp, -1);
-        haystack = g_utf8_casefold (gs_app_widget_get_description (app_widget), -1);
-
-	if (strstr (haystack, needle) != NULL)
 		goto out;
 
-        g_free (haystack);
-        haystack = g_utf8_casefold (gs_app_widget_get_name (app_widget), -1);
-
-	if (strstr (haystack, needle) != NULL)
+	needle_utf8 = g_utf8_casefold (tmp, -1);
+	ret = gs_main_utf8_filter_helper (gs_app_widget_get_name (app_widget),
+					  needle_utf8);
+	if (ret)
 		goto out;
-
-        g_free (haystack);
-        haystack = g_utf8_casefold (gs_app_widget_get_version (app_widget), -1);
-
-	if (strstr (haystack, needle) != NULL)
+	ret = gs_main_utf8_filter_helper (gs_app_widget_get_description (app_widget),
+					  needle_utf8);
+	if (ret)
 		goto out;
-
-        g_free (haystack);
-        haystack = g_utf8_casefold (gs_app_widget_get_id (app_widget), -1);
-
-	if (strstr (haystack, needle) != NULL)
+	ret = gs_main_utf8_filter_helper (gs_app_widget_get_version (app_widget),
+					  needle_utf8);
+	if (ret)
 		goto out;
-
-	result = FALSE;
-
+	ret = gs_main_utf8_filter_helper (gs_app_widget_get_id (app_widget),
+					  needle_utf8);
+	if (ret)
+		goto out;
 out:
-        g_free (needle);
-        g_free (haystack);
-
-        return result;
+	g_free (needle_utf8);
+	return ret;
 }
 
 
