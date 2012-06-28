@@ -286,6 +286,7 @@ gs_main_remove_packages_cb (PkClient *client,
 	PkError *error_code = NULL;
 	PkPackage *item;
 	PkResults *results;
+	GsAppWidget *app_widget;
 
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);
@@ -309,6 +310,18 @@ gs_main_remove_packages_cb (PkClient *client,
 	for (i=0; i<array->len; i++) {
 		item = g_ptr_array_index (array, i);
 		g_debug ("removed %s", pk_package_get_id (item));
+		app_widget = gs_main_get_app_widget_for_id (priv->list_box_installed,
+							    pk_package_get_id (item));
+		if (app_widget != NULL) {
+			gtk_container_remove (GTK_CONTAINER (priv->list_box_installed),
+					      GTK_WIDGET (app_widget));
+		}
+		app_widget = gs_main_get_app_widget_for_id (priv->list_box_updates,
+							    pk_package_get_id (item));
+		if (app_widget != NULL) {
+			gtk_container_remove (GTK_CONTAINER (priv->list_box_updates),
+					      GTK_WIDGET (app_widget));
+		}
 	}
 out:
 	if (error_code != NULL)
