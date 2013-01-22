@@ -272,13 +272,20 @@ gs_main_is_pkg_installed_target (PkPackage *pkg)
 	return ret;
 }
 
+typedef struct {
+	GsAppWidget	*app_widget;
+	GsMainPrivate	*priv;
+	GsAppWidgetKind	 original_kind;
+	const gchar	*package_id;
+} GsMainMethodData;
+
 /**
  * gs_main_remove_packages_cb:
  **/
 static void
 gs_main_remove_packages_cb (PkClient *client,
 			    GAsyncResult *res,
-			    GsMainPrivate *priv)
+			    GsMainMethodData *data)
 {
 	GError *error = NULL;
 	GPtrArray *array = NULL;
@@ -291,7 +298,9 @@ gs_main_remove_packages_cb (PkClient *client,
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);
 	if (results == NULL) {
-		g_warning ("failed to search: %s", error->message);
+		/* reset this back to what it was before */
+		gs_app_widget_set_kind (data->app_widget, data->original_kind);
+		g_warning ("failed to remove packages: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}
@@ -299,7 +308,9 @@ gs_main_remove_packages_cb (PkClient *client,
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
 	if (error_code != NULL) {
-		g_warning ("failed to search: %s, %s",
+		/* reset this back to what it was before */
+		gs_app_widget_set_kind (data->app_widget, data->original_kind);
+		g_warning ("failed to remove packages: %s, %s",
 			   pk_error_enum_to_string (pk_error_get_code (error_code)),
 			   pk_error_get_details (error_code));
 		goto out;
@@ -307,23 +318,24 @@ gs_main_remove_packages_cb (PkClient *client,
 
 	/* get data */
 	array = pk_results_get_package_array (results);
-	for (i=0; i<array->len; i++) {
+	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
 		g_debug ("removed %s", pk_package_get_id (item));
-		app_widget = gs_main_get_app_widget_for_id (priv->list_box_installed,
+		app_widget = gs_main_get_app_widget_for_id (data->priv->list_box_installed,
 							    pk_package_get_id (item));
 		if (app_widget != NULL) {
-			gtk_container_remove (GTK_CONTAINER (priv->list_box_installed),
+			gtk_container_remove (GTK_CONTAINER (data->priv->list_box_installed),
 					      GTK_WIDGET (app_widget));
 		}
-		app_widget = gs_main_get_app_widget_for_id (priv->list_box_updates,
+		app_widget = gs_main_get_app_widget_for_id (data->priv->list_box_updates,
 							    pk_package_get_id (item));
 		if (app_widget != NULL) {
-			gtk_container_remove (GTK_CONTAINER (priv->list_box_updates),
+			gtk_container_remove (GTK_CONTAINER (data->priv->list_box_updates),
 					      GTK_WIDGET (app_widget));
 		}
 	}
 out:
+	g_free (data);
 	if (error_code != NULL)
 		g_object_unref (error_code);
 	if (array != NULL)
@@ -341,9 +353,18 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 	const gchar *package_id;
 	GsAppWidgetKind kind;
 	const gchar *to_array[] = { NULL, NULL };
+	GsMainMethodData *data;
 
 	kind = gs_app_widget_get_kind (app_widget);
 	package_id = gs_app_widget_get_id (app_widget);
+
+	/* save, so we can recover a failed action */
+	data = g_new0 (GsMainMethodData, 1);
+	data->original_kind = kind;
+	data->app_widget = app_widget;
+	data->package_id = package_id;
+	data->priv = priv;
+
 	if (kind == GS_APP_WIDGET_KIND_UPDATE) {
 		g_debug ("update %s", package_id);
 		to_array[0] = package_id;
@@ -353,7 +374,7 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 					       (PkProgressCallback) gs_main_progress_cb,
 					       priv,
 					       (GAsyncReadyCallback) gs_main_remove_packages_cb,
-					       priv);
+					       data);
 	} else if (kind == GS_APP_WIDGET_KIND_INSTALL) {
 		g_debug ("install %s", package_id);
 		to_array[0] = package_id;
@@ -363,7 +384,7 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 					        (PkProgressCallback) gs_main_progress_cb,
 					        priv,
 					        (GAsyncReadyCallback) gs_main_remove_packages_cb,
-					        priv);
+					        data);
 	} else if (kind == GS_APP_WIDGET_KIND_REMOVE) {
 		g_debug ("remove %s", package_id);
 		to_array[0] = package_id;
@@ -375,7 +396,7 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 					       (PkProgressCallback) gs_main_progress_cb,
 					       priv,
 					       (GAsyncReadyCallback) gs_main_remove_packages_cb,
-					       priv);
+					       data);
 	}
 	gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
 //	gs_app_widget_set_status (app_widget, "Installing...");
