@@ -25,23 +25,29 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-widget.h"
+#include "ch-markdown.h"
 
 struct _GsAppWidgetPrivate
 {
+	ChMarkdown	*markdown;
+	gboolean	 expanded;
+	gchar		*description;
+	gchar		*description_more;
 	gchar		*id;
 	gchar		*name;
-	gchar		*description;
 	gchar		*status;
 	gchar		*version;
 	GdkPixbuf	*pixbuf;
 	GsAppWidgetKind	 kind;
-	GtkWidget	*widget_name;
+	GtkWidget	*widget_button;
 	GtkWidget	*widget_description;
+	GtkWidget	*widget_description_more;
+	GtkWidget	*widget_image;
+	GtkWidget	*widget_more;
+	GtkWidget	*widget_name;
+	GtkWidget	*widget_spinner;
 	GtkWidget	*widget_status;
 	GtkWidget	*widget_version;
-	GtkWidget	*widget_image;
-	GtkWidget	*widget_button;
-	GtkWidget	*widget_spinner;
 };
 
 G_DEFINE_TYPE (GsAppWidget, gs_app_widget, GTK_TYPE_BOX)
@@ -63,14 +69,20 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 
 	gtk_label_set_label (GTK_LABEL (priv->widget_name), priv->name);
 	gtk_label_set_label (GTK_LABEL (priv->widget_description), priv->description);
+	gtk_label_set_label (GTK_LABEL (priv->widget_description_more), priv->description_more);
 	gtk_label_set_label (GTK_LABEL (priv->widget_status), priv->status);
 	gtk_label_set_label (GTK_LABEL (priv->widget_version), priv->version);
 	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->widget_image), priv->pixbuf);
 	gtk_widget_set_visible (priv->widget_name, TRUE);
 	gtk_widget_set_visible (priv->widget_description, TRUE);
+	gtk_widget_set_visible (priv->widget_description_more,
+				priv->expanded && priv->description_more != NULL);
 	gtk_widget_set_visible (priv->widget_status, priv->status != NULL);
 	gtk_widget_set_visible (priv->widget_version, TRUE);
 	gtk_widget_set_visible (priv->widget_image, TRUE);
+	gtk_widget_set_visible (priv->widget_button, TRUE);
+	gtk_widget_set_visible (priv->widget_more,
+				!priv->expanded && app_widget->priv->description_more != NULL);
 
 	if (app_widget->priv->kind == GS_APP_WIDGET_KIND_INSTALL) {
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
@@ -198,10 +210,27 @@ gs_app_widget_set_version (GsAppWidget *app_widget, const gchar *version)
 void
 gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description)
 {
+	gchar **split;
+	gchar *tmp;
+	GsAppWidgetPrivate *priv = app_widget->priv;
+
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
 	g_return_if_fail (description != NULL);
-	g_free (app_widget->priv->description);
-	app_widget->priv->description = g_strdup (description);
+
+	g_free (priv->description);
+	g_free (priv->description_more);
+
+	/* parse markdown format */
+	split = g_strsplit (description, "\n", -1);
+	priv->description = ch_markdown_parse (priv->markdown, split[0]);
+	if (split[1] != NULL) {
+		tmp = g_strjoinv ("\n", &split[1]);
+		priv->description_more = ch_markdown_parse (priv->markdown, tmp);
+		g_free (tmp);
+	}
+	g_strfreev (split);
+
+	/* refresh */
 	gs_app_widget_refresh (app_widget);
 }
 
@@ -264,6 +293,8 @@ gs_app_widget_destroy (GtkWidget *object)
 	priv->status = NULL;
 	if (priv->pixbuf != NULL)
 		g_clear_object (&priv->pixbuf);
+	if (priv->markdown != NULL)
+		g_clear_object (&priv->markdown);
 
 	GTK_WIDGET_CLASS (gs_app_widget_parent_class)->destroy (object);
 }
@@ -295,6 +326,16 @@ gs_app_widget_button_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
 }
 
 /**
+ * gs_app_widget_more_clicked_cb:
+ **/
+static void
+gs_app_widget_more_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
+{
+	app_widget->priv->expanded = TRUE;
+	gs_app_widget_refresh (app_widget);
+}
+
+/**
  * gs_app_widget_init:
  **/
 static void
@@ -310,6 +351,7 @@ gs_app_widget_init (GsAppWidget *app_widget)
 							GS_TYPE_APP_WIDGET,
 							GsAppWidgetPrivate);
 	priv = app_widget->priv;
+	priv->markdown = ch_markdown_new ();
 
 	/* set defaults */
 	gtk_box_set_spacing (GTK_BOX (app_widget), 3);
@@ -353,10 +395,33 @@ gs_app_widget_init (GsAppWidget *app_widget)
 			    FALSE, TRUE, 0);
 
 	/* description */
+	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+	gtk_widget_set_visible (box, TRUE);
 	priv->widget_description = gtk_label_new ("description");
 	gtk_misc_set_alignment (GTK_MISC (priv->widget_description), 0.0, 0.0);
-	gtk_box_pack_start (GTK_BOX (app_widget),
+	gtk_box_pack_start (GTK_BOX (box),
 			    GTK_WIDGET (priv->widget_description),
+			    TRUE, TRUE, 0);
+
+	/* 'More' Expander */
+	priv->widget_more = gtk_button_new_with_label (_("More  ▾"));
+	context = gtk_widget_get_style_context (priv->widget_more);
+	gtk_style_context_add_class (context, "dim-label");
+	gtk_button_set_relief (GTK_BUTTON (priv->widget_more), GTK_RELIEF_NONE);
+	gtk_widget_set_margin_right (priv->widget_more, 36);
+	gtk_widget_set_halign (priv->widget_more, GTK_ALIGN_END);
+	gtk_box_pack_start (GTK_BOX (box), priv->widget_more, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (app_widget),
+			    GTK_WIDGET (box),
+			    TRUE, TRUE, 0);
+	g_signal_connect (priv->widget_more, "clicked",
+			  G_CALLBACK (gs_app_widget_more_clicked_cb), app_widget);
+
+	/* description - more */
+	priv->widget_description_more = gtk_label_new ("description-more");
+	gtk_misc_set_alignment (GTK_MISC (priv->widget_description_more), 0.0, 0.0);
+	gtk_box_pack_start (GTK_BOX (box),
+			    GTK_WIDGET (priv->widget_description_more),
 			    TRUE, TRUE, 0);
 
 	/* button */

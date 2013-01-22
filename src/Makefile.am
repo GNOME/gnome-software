@@ -27,6 +27,8 @@ gnome_software_SOURCES =				\
 	gs-resources.h					\
 	gs-app-widget.c					\
 	gs-app-widget.h					\
+	ch-markdown.c					\
+	ch-markdown.h					\
 	egg-list-box.c					\
 	egg-list-box.h					\
 	gs-main.c
