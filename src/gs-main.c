@@ -582,7 +582,9 @@ gs_main_installed_add_os_update (GsMainPrivate *priv, PkPackage *pkg)
 	gs_app_widget_set_description (GS_APP_WIDGET (priv->os_update_widget),
 				       _("Includes performance, stability and security improvements for all users"));
 	gs_app_widget_set_pixbuf (GS_APP_WIDGET (priv->os_update_widget), pixbuf);
-	gs_app_widget_set_version (GS_APP_WIDGET (priv->os_update_widget), "3.4.3");
+	gs_app_widget_set_version (GS_APP_WIDGET (priv->os_update_widget), "Version 3.4.3");
+	/* TRANSLATORS: the update requires the user to reboot the computer */
+	gs_app_widget_set_status (GS_APP_WIDGET (priv->os_update_widget), _("Requires restart"));
 	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), priv->os_update_widget);
 	gtk_widget_show_all (priv->os_update_widget);
 	g_object_add_weak_pointer (G_OBJECT (priv->os_update_widget),
