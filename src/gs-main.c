@@ -681,7 +681,7 @@ gs_main_get_packages_cb (PkClient *client,
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);
 	if (results == NULL) {
-		g_warning ("failed to search: %s", error->message);
+		g_warning ("failed to get-packages: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}
@@ -689,7 +689,7 @@ gs_main_get_packages_cb (PkClient *client,
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
 	if (error_code != NULL) {
-		g_warning ("failed to search: %s, %s",
+		g_warning ("failed to get-packages: %s, %s",
 			   pk_error_enum_to_string (pk_error_get_code (error_code)),
 			   pk_error_get_details (error_code));
 		goto out;
@@ -701,7 +701,7 @@ gs_main_get_packages_cb (PkClient *client,
 	else if (pk_results_get_role (results) == PK_ROLE_ENUM_GET_PACKAGES)
 		_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
 	array = pk_results_get_package_array (results);
-	for (i=0; i<array->len; i++) {
+	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
 		g_debug ("add %s", pk_package_get_id (item));
 
