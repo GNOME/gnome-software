@@ -364,6 +364,8 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_button), 9);
 	gtk_widget_set_size_request (priv->widget_button, 100, -1);
 	gtk_widget_set_vexpand (priv->widget_button, FALSE);
+	gtk_widget_set_hexpand (priv->widget_button, FALSE);
+	gtk_widget_set_halign (priv->widget_button, GTK_ALIGN_END);
 	g_signal_connect (priv->widget_button, "clicked",
 			  G_CALLBACK (gs_app_widget_button_clicked_cb), app_widget);
 
@@ -374,6 +376,7 @@ gs_app_widget_init (GsAppWidget *app_widget)
 
 	/* status */
 	priv->widget_status = gtk_label_new ("status");
+	gtk_misc_set_alignment (GTK_MISC (priv->widget_status), 1.0, 0.0);
 	context = gtk_widget_get_style_context (priv->widget_status);
 	gtk_style_context_add_class (context, "dim-label");
 	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_status),
