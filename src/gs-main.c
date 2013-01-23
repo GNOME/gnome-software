@@ -302,7 +302,7 @@ gs_main_remove_packages_cb (PkClient *client,
 	GPtrArray *array = NULL;
 	guint i;
 	PkError *error_code = NULL;
-	PkPackage *item;
+	PkPackage *package;
 	PkResults *results;
 	GsAppWidget *app_widget;
 
@@ -330,16 +330,16 @@ gs_main_remove_packages_cb (PkClient *client,
 	/* get data */
 	array = pk_results_get_package_array (results);
 	for (i = 0; i < array->len; i++) {
-		item = g_ptr_array_index (array, i);
-		g_debug ("removed %s", pk_package_get_id (item));
+		package = g_ptr_array_index (array, i);
+		g_debug ("removed %s", pk_package_get_id (package));
 		app_widget = gs_main_get_app_widget_for_id (data->priv->list_box_installed,
-							    pk_package_get_id (item));
+							    pk_package_get_id (package));
 		if (app_widget != NULL) {
 			gtk_container_remove (GTK_CONTAINER (data->priv->list_box_installed),
 					      GTK_WIDGET (app_widget));
 		}
 		app_widget = gs_main_get_app_widget_for_id (data->priv->list_box_updates,
-							    pk_package_get_id (item));
+							    pk_package_get_id (package));
 		if (app_widget != NULL) {
 			gtk_container_remove (GTK_CONTAINER (data->priv->list_box_updates),
 					      GTK_WIDGET (app_widget));
@@ -419,11 +419,14 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 static void
 gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 {
+	const gchar *description;
 	EggListBox *list_box;
 	gboolean target_installed;
 	gchar *tmp;
-	GtkWidget *widget;
+	gchar *update_changelog = NULL;
+	gchar *update_text = NULL;
 	GdkPixbuf *pixbuf;
+	GtkWidget *widget;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
 	pixbuf = gtk_widget_render_icon_pixbuf (widget,
@@ -445,7 +448,19 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 					GS_APP_WIDGET_KIND_UPDATE);
 	}
 	tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
-	gs_app_widget_set_description (GS_APP_WIDGET (widget), pk_package_get_summary (pkg));
+
+	/* try to get update data if it's present */
+	g_object_get (pkg,
+		      "update-text", &update_text,
+		      "update-changelog", &update_changelog,
+		      NULL);
+	if (update_text != NULL)
+		description = update_text;
+	else if (update_changelog != NULL)
+		description = update_changelog;
+	else
+		description = pk_package_get_summary (pkg);
+	gs_app_widget_set_description (GS_APP_WIDGET (widget), description);
 	gs_app_widget_set_id (GS_APP_WIDGET (widget), pk_package_get_id (pkg));
 	gs_app_widget_set_name (GS_APP_WIDGET (widget), pk_package_get_summary (pkg));
 	gs_app_widget_set_pixbuf (GS_APP_WIDGET (widget), pixbuf);
@@ -454,6 +469,8 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 	gtk_widget_show (widget);
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
+	g_free (update_text);
+	g_free (update_changelog);
 	g_free (tmp);
 }
 
@@ -504,10 +521,22 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 				      NULL);
 	if (icon == NULL)
 		icon = g_strdup (GTK_STOCK_MISSING_IMAGE);
-	comment = g_key_file_get_string (key_file,
-					 G_KEY_FILE_DESKTOP_GROUP,
-					 G_KEY_FILE_DESKTOP_KEY_COMMENT,
-					 NULL);
+
+	/* prefer the update text */
+	g_object_get (pkg,
+		      "update-text", &comment,
+		      NULL);
+	if (comment == NULL) {
+		g_object_get (pkg,
+			      "update-changelog", &comment,
+			      NULL);
+	}
+	if (comment == NULL) {
+		comment = g_key_file_get_string (key_file,
+						 G_KEY_FILE_DESKTOP_GROUP,
+						 G_KEY_FILE_DESKTOP_KEY_COMMENT,
+						 NULL);
+	}
 	if (comment == NULL)
 		comment = g_strdup (pk_package_get_summary (pkg));
 
@@ -695,6 +724,86 @@ _gtk_container_remove_all (GtkContainer *container)
 }
 
 /**
+ * gs_main_get_update_details_cb:
+ **/
+static void
+gs_main_get_update_details_cb (PkPackageSack *sack,
+				GAsyncResult *res,
+				GsMainPrivate *priv)
+{
+	gboolean ret;
+	GError *error = NULL;
+	GPtrArray *array = NULL;
+	guint i;
+	PkPackage *package;
+
+	/* add packages */
+	ret = pk_package_sack_merge_generic_finish (sack, res, &error);
+	if (!ret) {
+		g_warning ("failed to get-update-details: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* clear existing updates */
+	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
+	array = pk_package_sack_get_array (sack);
+	for (i = 0; i < array->len; i++) {
+		package = g_ptr_array_index (array, i);
+		g_debug ("add update %s", pk_package_get_id (package));
+		gs_main_installed_add_item (priv, package);
+	}
+out:
+	if (array != NULL)
+		g_ptr_array_unref (array);
+}
+
+/**
+ * gs_main_get_updates_cb:
+ **/
+static void
+gs_main_get_updates_cb (PkClient *client,
+			GAsyncResult *res,
+			GsMainPrivate *priv)
+{
+	GError *error = NULL;
+	PkError *error_code = NULL;
+	PkPackageSack *sack = NULL;
+	PkResults *results;
+
+	/* get the results */
+	results = pk_client_generic_finish (client, res, &error);
+	if (results == NULL) {
+		g_warning ("failed to get-updates: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* check error code */
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		g_warning ("failed to get-packages: %s, %s",
+			   pk_error_enum_to_string (pk_error_get_code (error_code)),
+			   pk_error_get_details (error_code));
+		goto out;
+	}
+
+	/* get the update details */
+	sack = pk_results_get_package_sack (results);
+	pk_package_sack_get_update_detail_async (sack,
+						 priv->cancellable,
+						 (PkProgressCallback) gs_main_progress_cb, priv,
+						 (GAsyncReadyCallback) gs_main_get_update_details_cb, priv);
+out:
+	if (error_code != NULL)
+		g_object_unref (error_code);
+	if (sack != NULL)
+		g_object_unref (sack);
+	if (results != NULL)
+		g_object_unref (results);
+}
+
+/**
  * gs_main_get_packages_cb:
  **/
 static void
@@ -707,7 +816,7 @@ gs_main_get_packages_cb (PkClient *client,
 	GtkWidget *widget;
 	guint i;
 	PkError *error_code = NULL;
-	PkPackage *item;
+	PkPackage *package;
 	PkResults *results;
 
 	/* get the results */
@@ -728,22 +837,16 @@ gs_main_get_packages_cb (PkClient *client,
 	}
 
 	/* get data */
-	if (pk_results_get_role (results) == PK_ROLE_ENUM_GET_UPDATES)
-		_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
-	else if (pk_results_get_role (results) == PK_ROLE_ENUM_GET_PACKAGES)
+	if (pk_results_get_role (results) == PK_ROLE_ENUM_GET_PACKAGES)
 		_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
 	array = pk_results_get_package_array (results);
 	for (i = 0; i < array->len; i++) {
-		item = g_ptr_array_index (array, i);
-		g_debug ("add %s", pk_package_get_id (item));
-
-		/* use different listviews for each kind of request */
-		if (pk_results_get_role (results) != PK_ROLE_ENUM_GET_UPDATES) {
-			g_object_set_data (G_OBJECT (item),
-					   "gnome-software::target-installed",
-					   GINT_TO_POINTER (TRUE));
-		}
-		gs_main_installed_add_item (priv, item);
+		package = g_ptr_array_index (array, i);
+		g_object_set_data (G_OBJECT (package),
+				   "gnome-software::target-installed",
+				   GINT_TO_POINTER (TRUE));
+		g_debug ("add %s", pk_package_get_id (package));
+		gs_main_installed_add_item (priv, package);
 	}
 
 	/* focus back to the text extry */
@@ -790,7 +893,7 @@ gs_main_get_updates (GsMainPrivate *priv)
 				     filter,
 				     priv->cancellable,
 				     (PkProgressCallback) gs_main_progress_cb, priv,
-				     (GAsyncReadyCallback) gs_main_get_packages_cb, priv);
+				     (GAsyncReadyCallback) gs_main_get_updates_cb, priv);
 }
 
 /**
