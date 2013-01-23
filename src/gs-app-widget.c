@@ -363,6 +363,7 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	priv->widget_image = gtk_image_new_from_icon_name ("edit-paste",
 							   GTK_ICON_SIZE_DIALOG);
 	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_image), 9);
+	gtk_widget_set_valign (priv->widget_image, GTK_ALIGN_START);
 	gtk_box_pack_start (GTK_BOX (app_widget),
 			    GTK_WIDGET (priv->widget_image),
 			    FALSE, FALSE, 0);
