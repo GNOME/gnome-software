@@ -69,6 +69,7 @@ typedef struct {
 	EggListBox		*list_box_updates;
 	GtkWidget		*os_update_widget;
 	GtkCssProvider		*provider;
+	gboolean		ignore_primary_buttons;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode);
@@ -928,6 +929,22 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 {
 	GtkWidget *widget;
 
+	if (priv->ignore_primary_buttons)
+		return;
+
+	priv->ignore_primary_buttons = TRUE;
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_MAIN_MODE_NEW);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed"));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_MAIN_MODE_INSTALLED);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_MAIN_MODE_UPDATES);
+	priv->ignore_primary_buttons = FALSE;
+
+	widget = NULL;
+
 	switch (mode) {
 	case GS_MAIN_MODE_NEW:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
@@ -1306,6 +1323,7 @@ main (int argc, char **argv)
 	g_option_context_free (context);
 
 	priv = g_new0 (GsMainPrivate, 1);
+	priv->ignore_primary_buttons = FALSE;
 
 	/* we want the large icon size according to the width of the window */
 	priv->custom_icon_size = gtk_icon_size_register ("custom",
