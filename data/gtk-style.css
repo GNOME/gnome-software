@@ -1,0 +1,40 @@
+
+
+GtkViewport {
+    background-color: transparent;
+}
+
+
+GtkEventBox.gradient_box_software {
+	/* TODO: Borders are broken for GtkEventBox
+	border-style: solid;
+	border-color: 204a87;
+	border-width: 5px 0px 5px 0px;
+	*/
+
+	background-image:
+		-gtk-gradient (
+			linear,
+			left top,
+			left bottom,
+			from (#214b88),
+			to (#3465a4));
+}
+
+
+.toolbar-primary-buttons-software:active {
+	font-weight: bold;
+}
+
+.index-title-alignment-software > GtkLabel {
+	font-weight: bold;
+	color: #555753;
+	font-size: 14;
+}
+
+
+GtkNotebook.main-notebook-software > GtkScrolledWindow {
+	border-bottom-width: 0px;
+	border-left-width: 0px;
+	border-right-width: 0px;
+}

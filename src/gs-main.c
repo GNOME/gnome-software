@@ -29,6 +29,7 @@
 #include "egg-list-box.h"
 #include "gs-app-widget.h"
 
+#define CSS_FILE DATADIR "/gnome-software/gtk-style.css"
 #define	GS_MAIN_ICON_SIZE	64
 
 typedef enum {
@@ -67,6 +68,7 @@ typedef struct {
 	EggListBox		*list_box_installed;
 	EggListBox		*list_box_updates;
 	GtkWidget		*os_update_widget;
+	GtkCssProvider		*provider;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode);
@@ -917,20 +919,6 @@ gs_main_get_popular (GsMainPrivate *priv)
 				 (GAsyncReadyCallback) gs_main_get_packages_cb, priv);
 }
 
-/**
- * gs_main_label_set_dim:
- **/
-static void
-gs_main_label_set_dim (GtkWidget *widget, gboolean use_dim_label)
-{
-	GtkStyleContext *context;
-	context = gtk_widget_get_style_context (widget);
-	if (use_dim_label) {
-		gtk_style_context_add_class (context, "dim-label");
-	} else {
-		gtk_style_context_remove_class (context, "dim-label");
-	}
-}
 
 /**
  * gs_main_set_overview_mode_ui:
@@ -987,13 +975,6 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 		g_assert_not_reached ();
 	}
 
-	/* fix sensitivities */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_button_new"));
-	gs_main_label_set_dim (widget, mode != GS_MAIN_MODE_NEW);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_button_updates"));
-	gs_main_label_set_dim (widget, mode != GS_MAIN_MODE_UPDATES);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_button_installed"));
-	gs_main_label_set_dim (widget, mode != GS_MAIN_MODE_INSTALLED);
 
 	/* set panel */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
@@ -1178,6 +1159,24 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	GtkWidget *main_window;
 	GtkWidget *widget;
 
+	/* get CSS */
+	if (priv->provider == NULL) {
+		priv->provider = gtk_css_provider_new ();
+
+
+		gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
+							   GTK_STYLE_PROVIDER (priv->provider),
+							   G_MAXUINT);
+
+		gtk_css_provider_load_from_path (priv->provider, CSS_FILE, &error);
+		if (error != NULL) {
+			g_warning ("Error loading stylesheet from file %s. %s", CSS_FILE, error->message);
+			g_error_free (error);
+			error = NULL;
+		}
+	}
+
+
 	/* get UI */
 	priv->builder = gtk_builder_new ();
 	retval = gtk_builder_add_from_resource (priv->builder,
@@ -1351,6 +1350,8 @@ out:
 		g_object_unref (priv->desktop);
 		g_object_unref (priv->cancellable);
 		g_object_unref (priv->application);
+		if (priv->provider != NULL)
+			g_object_unref (priv->provider);
 		if (priv->builder != NULL)
 			g_object_unref (priv->builder);
 		if (priv->waiting_tab_id > 0)
