@@ -185,7 +185,18 @@ gs_main_progress_cb (PkProgress *progress,
 		/* TRANSLATORS: this is the transaction status */
 		status_text = _("Loading list of packages...");
 		break;
+	case PK_STATUS_ENUM_DOWNLOAD:
+	case PK_STATUS_ENUM_DOWNLOAD_REPOSITORY:
+	case PK_STATUS_ENUM_DOWNLOAD_PACKAGELIST:
+	case PK_STATUS_ENUM_DOWNLOAD_FILELIST:
+	case PK_STATUS_ENUM_DOWNLOAD_CHANGELOG:
+	case PK_STATUS_ENUM_DOWNLOAD_GROUP:
+	case PK_STATUS_ENUM_DOWNLOAD_UPDATEINFO:
+		/* TRANSLATORS: this is the transaction status */
+		status_text = _("Downloading...");
+		break;
 	case PK_STATUS_ENUM_QUERY:
+	case PK_STATUS_ENUM_INFO:
 		/* TRANSLATORS: this is the transaction status */
 		status_text = _("Querying...");
 		break;
