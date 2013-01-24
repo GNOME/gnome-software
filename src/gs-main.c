@@ -457,9 +457,9 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 		      "update-text", &update_text,
 		      "update-changelog", &update_changelog,
 		      NULL);
-	if (update_text != NULL)
+	if (update_text != NULL && update_text[0] != '\0')
 		description = update_text;
-	else if (update_changelog != NULL)
+	else if (update_changelog != NULL && update_changelog[0] != '\0')
 		description = update_changelog;
 	else
 		description = pk_package_get_summary (pkg);
@@ -529,12 +529,12 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 	g_object_get (pkg,
 		      "update-text", &comment,
 		      NULL);
-	if (comment == NULL) {
+	if (comment == NULL || comment[0] == '\0') {
 		g_object_get (pkg,
 			      "update-changelog", &comment,
 			      NULL);
 	}
-	if (comment == NULL) {
+	if (comment == NULL || comment[0] == '\0') {
 		comment = g_key_file_get_string (key_file,
 						 G_KEY_FILE_DESKTOP_GROUP,
 						 G_KEY_FILE_DESKTOP_KEY_COMMENT,

@@ -216,6 +216,7 @@ gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description
 
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
 	g_return_if_fail (description != NULL);
+	g_return_if_fail (description[0] != '\0');
 
 	g_free (priv->description);
 	g_free (priv->description_more);
