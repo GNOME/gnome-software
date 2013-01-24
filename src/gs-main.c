@@ -137,10 +137,17 @@ gs_main_progress_cb (PkProgress *progress,
 	PkRoleEnum role;
 	PkStatusEnum status;
 
-	/* action item, so no waiting panel */
+	/* don't flicker between GetUpdates and GetUpdateDetails */
 	g_object_get (progress,
+		      "status", &status,
 		      "role", &role,
 		      NULL);
+	if (role == PK_ROLE_ENUM_GET_UPDATES &&
+	    status == PK_STATUS_ENUM_FINISHED) {
+		return;
+	}
+
+	/* action item, so no waiting panel */
 	if (role == PK_ROLE_ENUM_INSTALL_PACKAGES ||
 	    role == PK_ROLE_ENUM_UPDATE_PACKAGES ||
 	    role == PK_ROLE_ENUM_REMOVE_PACKAGES) {
@@ -164,7 +171,6 @@ gs_main_progress_cb (PkProgress *progress,
 	}
 
 	g_object_get (progress,
-		      "status", &status,
 		      "percentage", &percentage,
 		      "allow-cancel", &allow_cancel,
 		      NULL);
