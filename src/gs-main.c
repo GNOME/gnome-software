@@ -929,9 +929,6 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 {
 	GtkWidget *widget;
 
-	if (priv->ignore_primary_buttons)
-		return;
-
 	priv->ignore_primary_buttons = TRUE;
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_MAIN_MODE_NEW);
@@ -1004,6 +1001,9 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 static void
 gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
 {
+	if (priv->ignore_primary_buttons)
+		return;
+
 	/* set controls */
 	gs_main_set_overview_mode_ui (priv, mode);
 
