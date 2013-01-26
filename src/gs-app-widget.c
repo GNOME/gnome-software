@@ -70,7 +70,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv = app_widget->priv;
 
-	gtk_label_set_markup (GTK_LABEL (priv->widget_name), priv->name);
+	gtk_label_set_label (GTK_LABEL (priv->widget_name), priv->name);
 	gtk_label_set_markup (GTK_LABEL (priv->widget_description), priv->description);
 	gtk_label_set_markup (GTK_LABEL (priv->widget_description_more), priv->description_more);
 	gtk_label_set_label (GTK_LABEL (priv->widget_status), priv->status);
