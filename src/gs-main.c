@@ -1205,7 +1205,6 @@ static gboolean
 gs_main_filter_text_changed_cb (GtkEntry *entry, GsMainPrivate *priv)
 {
 	egg_list_box_refilter (priv->list_box_installed);
-	egg_list_box_refilter (priv->list_box_updates);
 	return FALSE;
 }
 
