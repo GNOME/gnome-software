@@ -485,6 +485,7 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	gtk_widget_set_visible (box, TRUE);
 	priv->widget_description = gtk_label_new ("description");
 	gtk_misc_set_alignment (GTK_MISC (priv->widget_description), 0.0, 0.0);
+	gtk_label_set_line_wrap (GTK_LABEL (priv->widget_description), TRUE);
 	gtk_box_pack_start (GTK_BOX (box),
 			    GTK_WIDGET (priv->widget_description),
 			    TRUE, TRUE, 0);
@@ -506,11 +507,10 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	/* description - more */
 	priv->widget_description_more = gtk_label_new ("description-more");
 	gtk_misc_set_alignment (GTK_MISC (priv->widget_description_more), 0.0, 0.0);
+	gtk_label_set_line_wrap (GTK_LABEL (priv->widget_description_more), TRUE);
 	gtk_box_pack_start (GTK_BOX (box),
 			    GTK_WIDGET (priv->widget_description_more),
 			    TRUE, TRUE, 0);
-	gtk_label_set_line_wrap_mode (priv->widget_description_more,
-				      PANGO_WRAP_WORD);
 
 	/* button */
 	priv->widget_button = gtk_button_new_with_label ("button");
