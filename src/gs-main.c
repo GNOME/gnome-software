@@ -1136,6 +1136,28 @@ gs_main_utf8_filter_helper (const gchar *haystack, const gchar *needle_utf8)
 }
 
 /**
+ * gs_main_egg_list_separator_func
+ **/
+static void
+gs_main_egg_list_separator_func (GtkWidget **separator,
+				 GtkWidget *child,
+				 GtkWidget *before,
+				 gpointer user_data)
+{
+	/* first entry */
+	if (before == NULL) {
+		g_clear_object (separator);
+		return;
+	}
+
+	if (*separator != NULL)
+		return;
+
+	*separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	g_object_ref_sink (*separator);
+}
+
+/**
  * gs_main_installed_filter_func:
  **/
 static gboolean
@@ -1268,6 +1290,10 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* setup installed */
 	priv->list_box_installed = egg_list_box_new ();
+	egg_list_box_set_separator_funcs (priv->list_box_installed,
+					  gs_main_egg_list_separator_func,
+					  priv,
+					  NULL);
 	egg_list_box_set_filter_func (priv->list_box_installed,
 				      gs_main_installed_filter_func,
 				      priv,
@@ -1285,6 +1311,10 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* setup updates */
 	priv->list_box_updates = egg_list_box_new ();
+	egg_list_box_set_separator_funcs (priv->list_box_updates,
+					  gs_main_egg_list_separator_func,
+					  priv,
+					  NULL);
 	egg_list_box_set_selection_mode (priv->list_box_updates,
 					 GTK_SELECTION_NONE);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
