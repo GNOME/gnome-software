@@ -30,7 +30,6 @@
 #include "gs-app-widget.h"
 #include "gs-resources.h"
 
-#define CSS_FILE DATADIR "/gnome-software/gtk-style.css"
 #define	GS_MAIN_ICON_SIZE	64
 
 typedef enum {
@@ -1228,28 +1227,40 @@ gs_main_installed_sort_func (gconstpointer a,
 static void
 gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 {
+	GBytes *data = NULL;
 	GError *error = NULL;
 	gint retval;
 	GtkWidget *main_window;
 	GtkWidget *widget;
+	gboolean ret;
 
 	/* get CSS */
 	if (priv->provider == NULL) {
 		priv->provider = gtk_css_provider_new ();
-
-
 		gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
 							   GTK_STYLE_PROVIDER (priv->provider),
 							   G_MAXUINT);
-
-		gtk_css_provider_load_from_path (priv->provider, CSS_FILE, &error);
-		if (error != NULL) {
-			g_warning ("Error loading stylesheet from file %s. %s", CSS_FILE, error->message);
+		data = g_resource_lookup_data (gs_get_resource (),
+					       "/org/gnome/software/gtk-style.css",
+					       G_RESOURCE_LOOKUP_FLAGS_NONE,
+					       &error);
+		if (data == NULL) {
+			g_warning ("failed to load stylesheet data: %s",
+				   error->message);
 			g_error_free (error);
-			error = NULL;
+			goto out;
+		}
+		ret = gtk_css_provider_load_from_data (priv->provider,
+						       g_bytes_get_data (data, NULL),
+						       g_bytes_get_size (data),
+						       &error);
+		if (!ret) {
+			g_warning ("failed to load stylesheet: %s",
+				   error->message);
+			g_error_free (error);
+			goto out;
 		}
 	}
-
 
 	/* get UI */
 	priv->builder = gtk_builder_new ();
@@ -1286,7 +1297,6 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* setup featured tiles */
 	gs_main_setup_featured (priv);
-
 	/* setup installed */
 	priv->list_box_installed = egg_list_box_new ();
 	egg_list_box_set_separator_funcs (priv->list_box_installed,
@@ -1349,7 +1359,8 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	/* show main UI */
 	gtk_widget_show (main_window);
 out:
-	return;
+	if (data != NULL)
+		g_bytes_unref (data);
 }
 
 /**

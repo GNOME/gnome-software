@@ -2,8 +2,7 @@ resourcesdir = $(datadir)/gnome-software
 dist_resources_DATA =					\
 	featured-gimp.png				\
 	featured-firefox.png				\
-	featured-xchat.png				\
-	gtk-style.css
+	featured-xchat.png
 
 MAINTAINERCLEANFILES =					\
 	*~						\

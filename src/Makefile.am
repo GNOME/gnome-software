@@ -54,6 +54,7 @@ BUILT_SOURCES =						\
 EXTRA_DIST =						\
 	core-apps.txt					\
 	gnome-software.gresource.xml			\
+	gtk-style.css					\
 	$(desktop_in_files)				\
 	$(UI_FILES)
 
