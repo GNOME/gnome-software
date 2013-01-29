@@ -425,6 +425,8 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	gtk_box_pack_start (GTK_BOX (box),
 			    GTK_WIDGET (priv->widget_description_more),
 			    TRUE, TRUE, 0);
+	gtk_label_set_line_wrap_mode (priv->widget_description_more,
+				      PANGO_WRAP_WORD);
 
 	/* button */
 	priv->widget_button = gtk_button_new_with_label ("button");
