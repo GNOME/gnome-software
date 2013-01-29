@@ -281,15 +281,22 @@ gs_main_get_pretty_version (const gchar *version)
 	return new;
 }
 
+typedef enum {
+	GS_MAIN_TARGET_INSTALLED,
+	GS_MAIN_TARGET_UPDATES,
+	GS_MAIN_TARGET_POPULAR,
+	GS_MAIN_TARGET_UNKNOWN
+} GsMainTarget;
+
 /**
- * gs_main_is_pkg_installed_target:
+ * gs_main_get_pkg_target:
  **/
-static gboolean
-gs_main_is_pkg_installed_target (PkPackage *pkg)
+static GsMainTarget
+gs_main_get_pkg_target (PkPackage *pkg)
 {
-	gboolean ret;
+	GsMainTarget ret;
 	ret = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (pkg),
-						  "gnome-software::target-installed"));
+						  "gnome-software::target"));
 	return ret;
 }
 
@@ -430,13 +437,18 @@ static void
 gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 {
 	const gchar *description;
-	EggListBox *list_box;
-	gboolean target_installed;
+	EggListBox *list_box = NULL;
 	gchar *tmp;
 	gchar *update_changelog = NULL;
 	gchar *update_text = NULL;
 	GdkPixbuf *pixbuf;
 	GtkWidget *widget;
+	GsMainTarget target;
+
+	/* never show packages here */
+	target = gs_main_get_pkg_target (pkg);
+	if (target == GS_MAIN_TARGET_POPULAR)
+		return;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
 	pixbuf = gtk_widget_render_icon_pixbuf (widget,
@@ -447,12 +459,11 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 	g_signal_connect (widget, "button-clicked",
 			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
 			  priv);
-	target_installed = gs_main_is_pkg_installed_target (pkg);
-	if (target_installed) {
+	if (target == GS_MAIN_TARGET_INSTALLED) {
 		list_box = priv->list_box_installed;
 		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
 					GS_APP_WIDGET_KIND_REMOVE);
-	} else {
+	} else if (target == GS_MAIN_TARGET_UPDATES) {
 		list_box = priv->list_box_updates;
 		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
 					GS_APP_WIDGET_KIND_UPDATE);
@@ -492,9 +503,8 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 				    PkPackage *pkg,
 				    const gchar *desktop_file)
 {
-	EggListBox *list_box;
+	EggListBox *list_box = NULL;
 	gboolean ret;
-	gboolean target_installed;
 	gchar *comment = NULL;
 	gchar *icon = NULL;
 	gchar *name = NULL;
@@ -502,6 +512,9 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 	GdkPixbuf *pixbuf = NULL;
 	GError *error = NULL;
 	GKeyFile *key_file;
+	GsMainTarget target;
+	GtkListStore *liststore;
+	GtkTreeIter iter;
 	GtkWidget *widget;
 
 	/* load desktop file */
@@ -582,28 +595,40 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 	}
 
 	/* add to list store */
-	widget = gs_app_widget_new ();
-	g_signal_connect (widget, "button-clicked",
-			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
-			  priv);
-	target_installed = gs_main_is_pkg_installed_target (pkg);
-	if (target_installed) {
-		list_box = priv->list_box_installed;
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					GS_APP_WIDGET_KIND_REMOVE);
+	target = gs_main_get_pkg_target (pkg);
+	if (target == GS_MAIN_TARGET_POPULAR) {
+		liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_popular"));
+		gtk_list_store_append (liststore, &iter);
+		gtk_list_store_set (liststore,
+				    &iter,
+				    COLUMN_POPULAR_PACKAGE_ID, pk_package_get_id (pkg),
+				    COLUMN_POPULAR_MARKUP, name,
+				    COLUMN_POPULAR_PIXBUF, pixbuf,
+				    -1);
 	} else {
-		list_box = priv->list_box_updates;
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					GS_APP_WIDGET_KIND_UPDATE);
+		widget = gs_app_widget_new ();
+		g_signal_connect (widget, "button-clicked",
+				  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
+				  priv);
+		target = gs_main_get_pkg_target (pkg);
+		if (target == GS_MAIN_TARGET_INSTALLED) {
+			list_box = priv->list_box_installed;
+			gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+						GS_APP_WIDGET_KIND_REMOVE);
+		} else if (target == GS_MAIN_TARGET_UPDATES) {
+			list_box = priv->list_box_updates;
+			gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+						GS_APP_WIDGET_KIND_UPDATE);
+		}
+		version_tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
+		gs_app_widget_set_description (GS_APP_WIDGET (widget), comment);
+		gs_app_widget_set_id (GS_APP_WIDGET (widget), pk_package_get_id (pkg));
+		gs_app_widget_set_name (GS_APP_WIDGET (widget), name);
+		gs_app_widget_set_pixbuf (GS_APP_WIDGET (widget), pixbuf);
+		gs_app_widget_set_version (GS_APP_WIDGET (widget), version_tmp);
+		gtk_container_add (GTK_CONTAINER (list_box), widget);
+		gtk_widget_show (widget);
 	}
-	version_tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
-	gs_app_widget_set_description (GS_APP_WIDGET (widget), comment);
-	gs_app_widget_set_id (GS_APP_WIDGET (widget), pk_package_get_id (pkg));
-	gs_app_widget_set_name (GS_APP_WIDGET (widget), name);
-	gs_app_widget_set_pixbuf (GS_APP_WIDGET (widget), pixbuf);
-	gs_app_widget_set_version (GS_APP_WIDGET (widget), version_tmp);
-	gtk_container_add (GTK_CONTAINER (list_box), widget);
-	gtk_widget_show (widget);
 out:
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
@@ -697,9 +722,9 @@ gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 {
 	const gchar *desktop_file;
 	gboolean ret;
-	gboolean target_installed;
 	GError *error = NULL;
 	GPtrArray *files = NULL;
+	GsMainTarget target;
 	guint i;
 
 	/* try to get the list of desktop files for this package */
@@ -717,10 +742,8 @@ gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 	if (files->len == 0) {
 		g_debug ("not an application %s",
 			 pk_package_get_id (pkg));
-		target_installed = gs_main_is_pkg_installed_target (pkg);
-		if (!target_installed)
-//			gs_main_installed_add_package (priv, pkg);
-//		else
+		target = gs_main_get_pkg_target (pkg);
+		if (target == GS_MAIN_TARGET_UPDATES)
 			gs_main_installed_add_os_update (priv, pkg);
 		goto out;
 	}
@@ -788,6 +811,9 @@ gs_main_get_update_details_cb (PkPackageSack *sack,
 	array = pk_package_sack_get_array (sack);
 	for (i = 0; i < array->len; i++) {
 		package = g_ptr_array_index (array, i);
+		g_object_set_data (G_OBJECT (package),
+				   "gnome-software::target",
+				   GINT_TO_POINTER (GS_MAIN_TARGET_UPDATES));
 		g_debug ("add update %s", pk_package_get_id (package));
 		gs_main_installed_add_item (priv, package);
 	}
@@ -881,8 +907,8 @@ gs_main_get_packages_cb (PkClient *client,
 	for (i = 0; i < array->len; i++) {
 		package = g_ptr_array_index (array, i);
 		g_object_set_data (G_OBJECT (package),
-				   "gnome-software::target-installed",
-				   GINT_TO_POINTER (TRUE));
+				   "gnome-software::target",
+				   GINT_TO_POINTER (GS_MAIN_TARGET_INSTALLED));
 		g_debug ("add %s", pk_package_get_id (package));
 		gs_main_installed_add_item (priv, package);
 	}
@@ -890,6 +916,62 @@ gs_main_get_packages_cb (PkClient *client,
 	/* focus back to the text extry */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	gtk_widget_grab_focus (widget);
+out:
+	if (error_code != NULL)
+		g_object_unref (error_code);
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	if (results != NULL)
+		g_object_unref (results);
+}
+/**
+ * gs_main_get_popular_cb:
+ **/
+static void
+gs_main_get_popular_cb (PkClient *client,
+			GAsyncResult *res,
+			GsMainPrivate *priv)
+{
+	GError *error = NULL;
+	GPtrArray *array = NULL;
+	guint i;
+	PkError *error_code = NULL;
+	PkPackage *package;
+	PkResults *results;
+	GtkListStore *liststore;
+
+	/* get the results */
+	results = pk_client_generic_finish (client, res, &error);
+	if (results == NULL) {
+		g_warning ("failed to get-packages: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* check error code */
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		g_warning ("failed to get-packages: %s, %s",
+			   pk_error_enum_to_string (pk_error_get_code (error_code)),
+			   pk_error_get_details (error_code));
+		goto out;
+	}
+
+	/* clear current entries: */
+	liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_popular"));
+	gtk_list_store_clear (liststore);
+
+	/* get data */
+	array = pk_results_get_package_array (results);
+	for (i = 0; i < array->len; i++) {
+		package = g_ptr_array_index (array, i);
+		g_object_set_data (G_OBJECT (package),
+				   "gnome-software::target",
+				   GINT_TO_POINTER (GS_MAIN_TARGET_POPULAR));
+		g_debug ("add popular %s", pk_package_get_id (package));
+		gs_main_installed_add_item (priv, package);
+	}
+
 out:
 	if (error_code != NULL)
 		g_object_unref (error_code);
@@ -952,7 +1034,7 @@ gs_main_get_popular (GsMainPrivate *priv)
 				 (gchar **) packages,
 				 priv->cancellable,
 				 (PkProgressCallback) gs_main_progress_cb, priv,
-				 (GAsyncReadyCallback) gs_main_get_packages_cb, priv);
+				 (GAsyncReadyCallback) gs_main_get_popular_cb, priv);
 }
 
 
