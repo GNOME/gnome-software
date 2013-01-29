@@ -52,6 +52,7 @@ BUILT_SOURCES =						\
 	gs-resources.h
 
 EXTRA_DIST =						\
+	core-apps.txt					\
 	gnome-software.gresource.xml			\
 	$(desktop_in_files)				\
 	$(UI_FILES)

@@ -28,6 +28,7 @@
 
 #include "egg-list-box.h"
 #include "gs-app-widget.h"
+#include "gs-resources.h"
 
 #define CSS_FILE DATADIR "/gnome-software/gtk-style.css"
 #define	GS_MAIN_ICON_SIZE	64
@@ -70,6 +71,7 @@ typedef struct {
 	GtkWidget		*os_update_widget;
 	GtkCssProvider		*provider;
 	gboolean		ignore_primary_buttons;
+	gchar			**blacklisted_remove;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode);
@@ -665,12 +667,37 @@ out:
 }
 
 /**
+ * gs_main_installed_is_blacklisted:
+ **/
+static gboolean
+gs_main_installed_is_blacklisted (GsMainPrivate *priv,
+				  const gchar *desktop_file)
+{
+	gboolean ret = FALSE;
+	gchar *app_id;
+	guint i;
+
+	app_id = g_path_get_basename (desktop_file);
+	g_strdelimit (app_id, ".", '\0');
+	for (i = 0; priv->blacklisted_remove[i] != NULL; i++) {
+		if (g_strcmp0 (app_id, priv->blacklisted_remove[i]) == 0) {
+			g_debug ("%s is blacklisted, not showing", app_id);
+			ret = TRUE;
+			break;
+		}
+	}
+	g_free (app_id);
+	return ret;
+}
+
+/**
  * gs_main_installed_add_package:
  **/
 static void
 gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 {
 	const gchar *desktop_file;
+	gboolean ret;
 	gboolean target_installed;
 	GError *error = NULL;
 	GPtrArray *files = NULL;
@@ -702,6 +729,9 @@ gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 	/* add each of the desktop files */
 	for (i = 0; i < files->len; i++) {
 		desktop_file = g_ptr_array_index (files, i);
+		ret = gs_main_installed_is_blacklisted (priv, desktop_file);
+		if (ret)
+			continue;
 		gs_main_installed_add_desktop_file (priv,
 						    pkg,
 						    desktop_file);
@@ -1299,11 +1329,12 @@ out:
 int
 main (int argc, char **argv)
 {
-	GsMainPrivate *priv = NULL;
-	GOptionContext *context;
-	int status = 0;
 	gboolean ret;
+	GBytes *data;
 	GError *error = NULL;
+	GOptionContext *context;
+	GsMainPrivate *priv = NULL;
+	int status = 0;
 
 	const GOptionEntry options[] = {
 		{ NULL}
@@ -1365,6 +1396,21 @@ main (int argc, char **argv)
 	if (!ret)
 		g_warning ("Failure opening database");
 
+	/* get blacklisted app-ids */
+	data = g_resource_lookup_data (gs_get_resource (),
+				       "/org/gnome/software/core-apps.txt",
+				       G_RESOURCE_LOOKUP_FLAGS_NONE,
+				       &error);
+	if (data == NULL) {
+		g_warning ("failed to open resources: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+	priv->blacklisted_remove = g_strsplit (g_bytes_get_data (data, NULL), "\n", -1);
+	g_debug ("Loaded %i blacklisted app-ids",
+		 g_strv_length (priv->blacklisted_remove));
+	g_bytes_unref (data);
+
 	/* wait */
 	status = g_application_run (G_APPLICATION (priv->application), argc, argv);
 
@@ -1380,6 +1426,7 @@ out:
 			g_object_unref (priv->builder);
 		if (priv->waiting_tab_id > 0)
 			g_source_remove (priv->waiting_tab_id);
+		g_strfreev (priv->blacklisted_remove);
 		g_free (priv);
 	}
 	return status;
