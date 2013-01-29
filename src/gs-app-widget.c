@@ -50,6 +50,9 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*widget_version;
 };
 
+
+#define	GS_APP_WIDGET_MAX_LINES_NO_EXPANDER	3
+
 G_DEFINE_TYPE (GsAppWidget, gs_app_widget, GTK_TYPE_BOX)
 
 enum {
@@ -204,15 +207,55 @@ gs_app_widget_set_version (GsAppWidget *app_widget, const gchar *version)
 	gs_app_widget_refresh (app_widget);
 }
 
+static guint
+_g_string_replace (GString *string, const gchar *search, const gchar *replace)
+{
+	gchar *tmp;
+	guint cnt = 0;
+	guint replace_len;
+	guint search_len;
+
+	search_len = strlen (search);
+	replace_len = strlen (replace);
+
+	do {
+		tmp = g_strstr_len (string->str, -1, search);
+		if (tmp == NULL)
+			goto out;
+
+		/* reallocate the string if required */
+		if (search_len > replace_len) {
+			g_string_erase (string,
+					tmp - string->str,
+					search_len - replace_len);
+		}
+		if (search_len < replace_len) {
+			g_string_insert_len (string,
+					     tmp - string->str,
+					     search,
+					     replace_len - search_len);
+		}
+
+		/* just memcmp in the new string */
+		memcpy (tmp, replace, replace_len);
+		cnt++;
+	} while (TRUE);
+out:
+	return cnt;
+}
+
 /**
  * gs_app_widget_set_description:
  **/
 void
 gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description)
 {
-	gchar **split;
-	gchar *tmp;
+	gchar **split = NULL;
 	GsAppWidgetPrivate *priv = app_widget->priv;
+	GString *description2;
+	GString *tmp_description_more = NULL;
+	GString *tmp_description = NULL;
+	guint i;
 
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
 	g_return_if_fail (description != NULL);
@@ -221,18 +264,59 @@ gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description
 	g_free (priv->description);
 	g_free (priv->description_more);
 
-	/* parse markdown format */
-	split = g_strsplit (description, "\n", -1);
-	priv->description = ch_markdown_parse (priv->markdown, split[0]);
-	if (split[1] != NULL) {
-		tmp = g_strjoinv ("\n", &split[1]);
-		priv->description_more = ch_markdown_parse (priv->markdown, tmp);
-		g_free (tmp);
-	}
-	g_strfreev (split);
+	/* force split with bullet */
+	description2 = g_string_new (description);
+	_g_string_replace (description2, ". ", "\n* ");
 
-	/* refresh */
+	/* common case, no newlines at all */
+	if (g_strstr_len (description, -1, "\n") == NULL) {
+		priv->description = ch_markdown_parse (priv->markdown,
+						       description2->str);
+		priv->description_more = NULL;
+		goto out;
+	}
+
+	/* split up description into extra parts */
+	split = g_strsplit (description2->str, "\n", -1);
+	tmp_description = g_string_new ("");
+	tmp_description_more = g_string_new ("");
+	for (i = 0; split[i] != NULL; i++) {
+		if (i <= GS_APP_WIDGET_MAX_LINES_NO_EXPANDER) {
+			g_string_append_printf (tmp_description,
+						"%s\n", split[i]);
+		} else {
+			g_string_append_printf (tmp_description_more,
+						"%s\n", split[i]);
+		}
+	}
+
+	/* remove trailing newline */
+	if (tmp_description->len > 0) {
+		g_string_set_size (tmp_description,
+				   tmp_description->len - 1);
+	}
+	if (tmp_description_more->len > 0) {
+		g_string_set_size (tmp_description_more,
+				   tmp_description_more->len - 1);
+	}
+
+	/* parse markdown */
+	priv->description = ch_markdown_parse (priv->markdown,
+					       tmp_description->str);
+	if (tmp_description_more->len > 0) {
+		priv->description_more = ch_markdown_parse (priv->markdown,
+							    tmp_description_more->str);
+	} else {
+		priv->description_more = NULL;
+	}
+out:
 	gs_app_widget_refresh (app_widget);
+	g_string_free (description2, TRUE);
+	if (tmp_description != NULL)
+		g_string_free (tmp_description, TRUE);
+	if (tmp_description_more != NULL)
+		g_string_free (tmp_description_more, TRUE);
+	g_strfreev (split);
 }
 
 /**
