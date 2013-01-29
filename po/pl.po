@@ -4,14 +4,14 @@
 # pomóc w jego rozwijaniu i pielęgnowaniu, napisz do nas:
 # gnomepl@aviary.pl
 # -=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-=-
-# Piotr Drąg <piotrdrag@gmail.com>, 2012.
-# Aviary.pl <gnomepl@aviary.pl>, 2012.
+# Piotr Drąg <piotrdrag@gmail.com>, 2012-2013.
+# Aviary.pl <gnomepl@aviary.pl>, 2012-2013.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-09-04 00:17+0200\n"
-"PO-Revision-Date: 2012-09-04 00:18+0200\n"
+"POT-Creation-Date: 2013-01-29 17:07+0100\n"
+"PO-Revision-Date: 2013-01-29 17:08+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -49,7 +49,7 @@ msgstr "Zaktualizuj wszystkie"
 
 #: ../src/gnome-software.ui.h:6
 msgid "Featured"
-msgstr ""
+msgstr "Polecane"
 
 #: ../src/gnome-software.ui.h:7
 msgid "Popular"
@@ -59,48 +59,63 @@ msgstr "Popularne"
 msgid "Categories"
 msgstr "Kategorie"
 
-#: ../src/gs-app-widget.c:77
+#: ../src/gs-app-widget.c:92
 msgid "Install"
 msgstr "Zainstaluj"
 
-#: ../src/gs-app-widget.c:80
+#: ../src/gs-app-widget.c:95
 msgid "Remove"
 msgstr "Usuń"
 
-#: ../src/gs-app-widget.c:83
+#: ../src/gs-app-widget.c:98
 msgid "Update"
 msgstr "Zaktualizuj"
 
+#. 'More' Expander
+#: ../src/gs-app-widget.c:494
+msgid "More  ▾"
+msgstr "Więcej  ▾"
+
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:182
+#: ../src/gs-main.c:193
 msgid "Waiting for package manager..."
 msgstr "Oczekiwanie na menedżera pakietów..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:186
+#: ../src/gs-main.c:197
 msgid "Loading list of packages..."
 msgstr "Wczytywanie listy pakietów..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:190
+#: ../src/gs-main.c:207
+msgid "Downloading..."
+msgstr "Pobieranie..."
+
+#. TRANSLATORS: this is the transaction status
+#: ../src/gs-main.c:212
 msgid "Querying..."
 msgstr "Odpytywanie..."
 
 #. then remove any distro suffix
-#: ../src/gs-main.c:245
+#: ../src/gs-main.c:267
 msgid "Version"
 msgstr "Wersja"
 
-#: ../src/gs-main.c:557
+#: ../src/gs-main.c:629
 msgid "OS Updates"
 msgstr "Aktualizacje systemu"
 
-#: ../src/gs-main.c:581
+#: ../src/gs-main.c:653
 msgid "OS Update"
 msgstr "Aktualizacja systemu"
 
-#: ../src/gs-main.c:583
+#: ../src/gs-main.c:655
 msgid "Includes performance, stability and security improvements for all users"
 msgstr ""
 "Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa dla wszystkich "
 "użytkowników"
+
+#. TRANSLATORS: the update requires the user to reboot the computer
+#: ../src/gs-main.c:659
+msgid "Requires restart"
+msgstr "Wymaga ponownego uruchomienia"
