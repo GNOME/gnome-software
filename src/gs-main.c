@@ -822,6 +822,29 @@ out:
 }
 
 /**
+ * gs_main_is_package_an_app:
+ **/
+static gboolean
+gs_main_is_package_an_app (GsMainPrivate *priv, PkPackage *pkg)
+{
+	gboolean ret = FALSE;
+	GPtrArray *files;
+
+	files = pk_desktop_get_shown_for_package (priv->desktop,
+						  pk_package_get_name (pkg),
+						  NULL);
+	if (files == NULL)
+		goto out;
+	if (files->len == 0)
+		goto out;
+	ret = TRUE;
+out:
+	if (files != NULL)
+		g_ptr_array_unref (files);
+	return ret;
+}
+
+/**
  * gs_main_get_updates_cb:
  **/
 static void
@@ -829,10 +852,16 @@ gs_main_get_updates_cb (PkClient *client,
 			GAsyncResult *res,
 			GsMainPrivate *priv)
 {
+	gboolean ret;
 	GError *error = NULL;
+	GPtrArray *array = NULL;
+	guint i;
 	PkError *error_code = NULL;
-	PkPackageSack *sack = NULL;
+	PkPackage *package;
+	PkPackageSack *sack_apps = NULL;
+	PkPackageSack *sack_system = NULL;
 	PkResults *results;
+	gboolean got_one_system_update = FALSE;
 
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);
@@ -851,17 +880,46 @@ gs_main_get_updates_cb (PkClient *client,
 		goto out;
 	}
 
+	/* filter out the requests for apps and os-updates, and do the
+	 * latter after the UI has loaded */
+	sack_apps = pk_package_sack_new ();
+	sack_system = pk_package_sack_new ();
+	array = pk_results_get_package_array (results);
+	for (i = 0; i < array->len; i++) {
+		package = g_ptr_array_index (array, i);
+		ret = gs_main_is_package_an_app (priv, package);
+		if (ret) {
+			pk_package_sack_add_package (sack_apps, package);
+		} else {
+			/* ensure we load at least one of the os updates
+			 * in the fast path */
+			if (!got_one_system_update) {
+				got_one_system_update = TRUE;
+				pk_package_sack_add_package (sack_apps, package);
+			} else {
+				pk_package_sack_add_package (sack_system, package);
+			}
+		}
+	}
+
 	/* get the update details */
-	sack = pk_results_get_package_sack (results);
-	pk_package_sack_get_update_detail_async (sack,
+	pk_package_sack_get_update_detail_async (sack_apps,
 						 priv->cancellable,
 						 (PkProgressCallback) gs_main_progress_cb, priv,
 						 (GAsyncReadyCallback) gs_main_get_update_details_cb, priv);
+	pk_package_sack_get_update_detail_async (sack_system,
+						 priv->cancellable,
+						 NULL, priv,
+						 (GAsyncReadyCallback) gs_main_get_update_details_cb, priv);
 out:
+	if (array != NULL)
+		g_ptr_array_unref (array);
 	if (error_code != NULL)
 		g_object_unref (error_code);
-	if (sack != NULL)
-		g_object_unref (sack);
+	if (sack_apps != NULL)
+		g_object_unref (sack_apps);
+	if (sack_system != NULL)
+		g_object_unref (sack_system);
 	if (results != NULL)
 		g_object_unref (results);
 }
