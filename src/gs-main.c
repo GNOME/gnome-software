@@ -807,7 +807,6 @@ gs_main_get_update_details_cb (PkPackageSack *sack,
 	}
 
 	/* clear existing updates */
-	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 	array = pk_package_sack_get_array (sack);
 	for (i = 0; i < array->len; i++) {
 		package = g_ptr_array_index (array, i);
@@ -901,8 +900,6 @@ gs_main_get_packages_cb (PkClient *client,
 	}
 
 	/* get data */
-	if (pk_results_get_role (results) == PK_ROLE_ENUM_GET_PACKAGES)
-		_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
 	array = pk_results_get_package_array (results);
 	for (i = 0; i < array->len; i++) {
 		package = g_ptr_array_index (array, i);
@@ -988,6 +985,7 @@ static void
 gs_main_get_installed_packages (GsMainPrivate *priv)
 {
 	PkBitfield filter;
+	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
 					 PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,
@@ -1007,6 +1005,7 @@ static void
 gs_main_get_updates (GsMainPrivate *priv)
 {
 	PkBitfield filter;
+	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH,
 					 -1);
 	pk_client_get_updates_async (PK_CLIENT(priv->task),
