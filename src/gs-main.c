@@ -496,6 +496,30 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 }
 
 /**
+ * gs_main_installed_is_blacklisted:
+ **/
+static gboolean
+gs_main_installed_is_blacklisted (GsMainPrivate *priv,
+				  const gchar *desktop_file)
+{
+	gboolean ret = FALSE;
+	gchar *app_id;
+	guint i;
+
+	app_id = g_path_get_basename (desktop_file);
+	g_strdelimit (app_id, ".", '\0');
+	for (i = 0; priv->blacklisted_remove[i] != NULL; i++) {
+		if (g_strcmp0 (app_id, priv->blacklisted_remove[i]) == 0) {
+			g_debug ("%s is blacklisted, not showing", app_id);
+			ret = TRUE;
+			break;
+		}
+	}
+	g_free (app_id);
+	return ret;
+}
+
+/**
  * gs_main_installed_add_desktop_file:
  **/
 static void
@@ -505,6 +529,7 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 {
 	EggListBox *list_box = NULL;
 	gboolean ret;
+	gboolean blacklisted;
 	gchar *comment = NULL;
 	gchar *icon = NULL;
 	gchar *name = NULL;
@@ -613,8 +638,9 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 		target = gs_main_get_pkg_target (pkg);
 		if (target == GS_MAIN_TARGET_INSTALLED) {
 			list_box = priv->list_box_installed;
+			blacklisted = gs_main_installed_is_blacklisted (priv, desktop_file);
 			gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-						GS_APP_WIDGET_KIND_REMOVE);
+						blacklisted ? GS_APP_WIDGET_KIND_BLANK : GS_APP_WIDGET_KIND_REMOVE);
 		} else if (target == GS_MAIN_TARGET_UPDATES) {
 			list_box = priv->list_box_updates;
 			gs_app_widget_set_kind (GS_APP_WIDGET (widget),
@@ -691,37 +717,12 @@ out:
 }
 
 /**
- * gs_main_installed_is_blacklisted:
- **/
-static gboolean
-gs_main_installed_is_blacklisted (GsMainPrivate *priv,
-				  const gchar *desktop_file)
-{
-	gboolean ret = FALSE;
-	gchar *app_id;
-	guint i;
-
-	app_id = g_path_get_basename (desktop_file);
-	g_strdelimit (app_id, ".", '\0');
-	for (i = 0; priv->blacklisted_remove[i] != NULL; i++) {
-		if (g_strcmp0 (app_id, priv->blacklisted_remove[i]) == 0) {
-			g_debug ("%s is blacklisted, not showing", app_id);
-			ret = TRUE;
-			break;
-		}
-	}
-	g_free (app_id);
-	return ret;
-}
-
-/**
  * gs_main_installed_add_package:
  **/
 static void
 gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 {
 	const gchar *desktop_file;
-	gboolean ret;
 	GError *error = NULL;
 	GPtrArray *files = NULL;
 	GsMainTarget target;
@@ -751,9 +752,6 @@ gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 	/* add each of the desktop files */
 	for (i = 0; i < files->len; i++) {
 		desktop_file = g_ptr_array_index (files, i);
-		ret = gs_main_installed_is_blacklisted (priv, desktop_file);
-		if (ret)
-			continue;
 		gs_main_installed_add_desktop_file (priv,
 						    pkg,
 						    desktop_file);

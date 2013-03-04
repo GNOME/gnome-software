@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2012 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2012-2013 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -87,26 +87,34 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	gtk_widget_set_visible (priv->widget_more,
 				!priv->expanded && app_widget->priv->description_more != NULL);
 
-	if (app_widget->priv->kind == GS_APP_WIDGET_KIND_INSTALL) {
+	/* show / hide widgets depending on kind */
+	switch (app_widget->priv->kind) {
+	case GS_APP_WIDGET_KIND_INSTALL:
+		gtk_widget_set_visible (priv->widget_spinner, FALSE);
+		gtk_widget_set_visible (priv->widget_button, TRUE);
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
 				      _("Install"));
-	} else if (app_widget->priv->kind == GS_APP_WIDGET_KIND_REMOVE) {
+		break;
+	case GS_APP_WIDGET_KIND_REMOVE:
+		gtk_widget_set_visible (priv->widget_spinner, FALSE);
+		gtk_widget_set_visible (priv->widget_button, TRUE);
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
 				      _("Remove"));
-	} else if (app_widget->priv->kind == GS_APP_WIDGET_KIND_UPDATE) {
+		break;
+	case GS_APP_WIDGET_KIND_UPDATE:
+		gtk_widget_set_visible (priv->widget_spinner, FALSE);
+		gtk_widget_set_visible (priv->widget_button, TRUE);
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
 				      _("Update"));
-	}
-
-	/* show / hide widgets */
-	if (app_widget->priv->kind == GS_APP_WIDGET_KIND_BUSY) {
-		gtk_widget_set_visible (priv->widget_button, FALSE);
-		gtk_widget_set_visible (priv->widget_spinner, TRUE);
+		break;
+	case GS_APP_WIDGET_KIND_BUSY:
 		gtk_spinner_start (GTK_SPINNER (priv->widget_spinner));
-	} else {
-		gtk_widget_set_visible (priv->widget_button, TRUE);
-		gtk_widget_set_visible (priv->widget_spinner, FALSE);
-		gtk_spinner_stop (GTK_SPINNER (priv->widget_spinner));
+		gtk_widget_set_visible (priv->widget_spinner, TRUE);
+		gtk_widget_set_visible (priv->widget_button, FALSE);
+		break;
+	default:
+		gtk_widget_set_visible (priv->widget_button, FALSE);
+		break;
 	}
 }
 
