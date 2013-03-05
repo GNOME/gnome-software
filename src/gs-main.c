@@ -1077,19 +1077,37 @@ gs_main_get_updates (GsMainPrivate *priv)
 static void
 gs_main_get_popular (GsMainPrivate *priv)
 {
+	GBytes *data;
+	gchar **packages = NULL;
+	GError *error = NULL;
 	PkBitfield filter;
-//	const gchar *packages[] = { "firefox", "gimp", "xchat", NULL };
-	const gchar *packages[] = { "transmission-gtk", "cheese", "inkscape", "sound-juicer", "gedit", NULL };
+
+	data = g_resource_lookup_data (gs_get_resource (),
+				       "/org/gnome/software/popular-apps.txt",
+				       G_RESOURCE_LOOKUP_FLAGS_NONE,
+				       &error);
+	if (data == NULL) {
+		g_warning ("failed to open resources: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+	packages = g_strsplit (g_bytes_get_data (data, NULL), "\n", -1);
+	g_debug ("Loaded %i favourite packages",
+		 g_strv_length (packages));
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH,
 					 PK_FILTER_ENUM_APPLICATION,
 					 PK_FILTER_ENUM_NEWEST,
 					 -1);
 	pk_client_resolve_async (PK_CLIENT(priv->task),
 				 filter,
-				 (gchar **) packages,
+				 packages,
 				 priv->cancellable,
 				 (PkProgressCallback) gs_main_progress_cb, priv,
 				 (GAsyncReadyCallback) gs_main_get_popular_cb, priv);
+out:
+	if (data != NULL)
+		g_bytes_unref (data);
+	g_strfreev (packages);
 }
 
 
