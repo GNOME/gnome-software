@@ -135,17 +135,32 @@ out:
 }
 
 /**
- * gs_plugin_loader_remove_packages:
+ * gs_plugin_loader_app_is_valid:
+ **/
+static gboolean
+gs_plugin_loader_app_is_valid (GsApp *app)
+{
+	/* don't show unconverted packages in the application view */
+	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE)
+		return FALSE;
+	/* don't show apps that do not have a name */
+	if (gs_app_get_name (app) == NULL)
+		return FALSE;
+	return TRUE;
+}
+
+/**
+ * gs_plugin_loader_remove_invalid:
  **/
 static GList *
-gs_plugin_loader_remove_packages (GList *list)
+gs_plugin_loader_remove_invalid (GList *list)
 {
 	GList *l;
 	GsApp *app;
 
 	for (l = list; l != NULL;) {
 		app = GS_APP (l->data);
-		if (gs_app_get_kind (app) != GS_APP_KIND_PACKAGE) {
+		if (gs_plugin_loader_app_is_valid (app)) {
 			l = l->next;
 			continue;
 		}
@@ -215,7 +230,7 @@ gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader, GError **error)
 
 		/* remove any packages that are not proper applications or
 		 * OS updates */
-		list = gs_plugin_loader_remove_packages (list);
+		list = gs_plugin_loader_remove_invalid (list);
 	}
 
 out:
@@ -236,7 +251,7 @@ gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader, GError **error)
 	list = gs_plugin_loader_run_results (plugin_loader,
 					     "gs_plugin_add_installed",
 					     error);
-	list = gs_plugin_loader_remove_packages (list);
+	list = gs_plugin_loader_remove_invalid (list);
 	if (list == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_LOADER_ERROR,
@@ -258,7 +273,7 @@ gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader, GError **error)
 	list = gs_plugin_loader_run_results (plugin_loader,
 					     "gs_plugin_add_popular",
 					     error);
-	list = gs_plugin_loader_remove_packages (list);
+	list = gs_plugin_loader_remove_invalid (list);
 	if (list == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_LOADER_ERROR,
@@ -311,7 +326,7 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader, const gchar *value, GErr
 		goto out;
 
 	/* success */
-	list = gs_plugin_loader_remove_packages (list);
+	list = gs_plugin_loader_remove_invalid (list);
 	if (list == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_LOADER_ERROR,

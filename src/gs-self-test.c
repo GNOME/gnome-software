@@ -79,7 +79,7 @@ gs_plugin_loader_func (void)
 	list = gs_plugin_loader_get_popular (loader, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
-	g_assert_cmpint (g_list_length (list), ==, 7);
+	g_assert_cmpint (g_list_length (list), ==, 6);
 	app = g_list_nth_data (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-boxes");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Boxes");
