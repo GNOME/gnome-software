@@ -127,6 +127,13 @@ gs_plugin_loader_func (void)
 	g_assert (gs_app_get_pixbuf (app) != NULL);
 	g_list_free_full (list, (GDestroyNotify) g_object_unref);
 
+	/* do this again, which should be much faster */
+	list = gs_plugin_loader_get_installed (loader, &error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+	g_assert_cmpint (g_list_length (list), >, 50);
+	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+
 	g_object_unref (loader);
 }
 

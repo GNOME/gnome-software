@@ -75,9 +75,14 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			continue;
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
+		g_timer_start (plugin->timer);
 		ret = plugin_func (plugin, list, error);
 		if (!ret)
 			goto out;
+		g_debug ("%s(%s) took %.0fms",
+			 plugin->name,
+			 function_name,
+			 g_timer_elapsed (plugin->timer, NULL) * 1000);
 	}
 out:
 	return ret;
@@ -109,9 +114,14 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			continue;
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
+		g_timer_start (plugin->timer);
 		ret = plugin_func (plugin, &list, error);
 		if (!ret)
 			goto out;
+		g_debug ("%s(%s) took %.0fms",
+			 plugin->name,
+			 function_name,
+			 g_timer_elapsed (plugin->timer, NULL) * 1000);
 	}
 
 	/* run refine() on each one */
@@ -285,9 +295,14 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader, const gchar *value, GErr
 			continue;
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
+		g_timer_start (plugin->timer);
 		ret = plugin_func (plugin, value, &list, error);
 		if (!ret)
 			goto out;
+		g_debug ("%s(%s) took %.0fms",
+			 plugin->name,
+			 function_name,
+			 g_timer_elapsed (plugin->timer, NULL) * 1000);
 	}
 
 	/* run refine() on each one */
@@ -337,6 +352,7 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			continue;
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
+		g_timer_start (plugin->timer);
 		ret = plugin_func (plugin, app, &error_local);
 		if (!ret) {
 			if (g_error_matches (error_local,
@@ -350,6 +366,10 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 				goto out;
 			}
 		}
+		g_debug ("%s(%s) took %.0fms",
+			 plugin->name,
+			 function_name,
+			 g_timer_elapsed (plugin->timer, NULL) * 1000);
 	}
 
 	/* nothing ran */
@@ -495,6 +515,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->pixbuf_size = 64;
 	plugin->priority = plugin_prio (plugin);
 	plugin->name = g_strdup (plugin_name ());
+	plugin->timer = g_timer_new ();
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
 
 	/* add to array */
@@ -599,6 +620,7 @@ gs_plugin_loader_plugin_free (GsPlugin *plugin)
 	g_free (plugin->priv);
 	g_free (plugin->name);
 	g_module_close (plugin->module);
+	g_timer_destroy (plugin->timer);
 	g_free (plugin);
 }
 

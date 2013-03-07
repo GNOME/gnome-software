@@ -41,6 +41,7 @@ typedef struct {
 	GsPluginPrivate		*priv;
 	GCancellable		*cancellable;
 	guint			 pixbuf_size;
+	GTimer			*timer;
 } GsPlugin;
 
 typedef enum {
