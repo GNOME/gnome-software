@@ -4,6 +4,7 @@ INCLUDES =						\
 	$(PACKAGEKIT_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
+	-DLIBDIR=\"$(libdir)\"				\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
 	-DVERSION="\"$(VERSION)\""			\
@@ -29,6 +30,9 @@ gnome_software_SOURCES =				\
 	gs-app.h					\
 	gs-app-widget.c					\
 	gs-app-widget.h					\
+	gs-plugin.h					\
+	gs-plugin-loader.c				\
+	gs-plugin-loader.h				\
 	ch-markdown.c					\
 	ch-markdown.h					\
 	egg-list-box.c					\
@@ -64,6 +68,7 @@ check_PROGRAMS =						\
 
 gs_self_test_SOURCES =						\
 	gs-app.c						\
+	gs-plugin-loader.c					\
 	gs-self-test.c
 
 gs_self_test_LDADD =						\

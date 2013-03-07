@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-plugin-loader.h"
 
 static void
 gs_app_func (void)
@@ -40,6 +41,25 @@ gs_app_func (void)
 	g_object_unref (app);
 }
 
+static void
+gs_plugin_loader_func (void)
+{
+	gboolean ret;
+	GError *error = NULL;
+	GsPluginLoader *loader;
+
+	loader = gs_plugin_loader_new ();
+	g_assert (GS_IS_PLUGIN_LOADER (loader));
+
+	/* load the plugins */
+	gs_plugin_loader_set_location (loader, "./plugins/.libs");
+	ret = gs_plugin_loader_setup (loader, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	g_object_unref (loader);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -52,6 +72,7 @@ main (int argc, char **argv)
 
 	/* tests go here */
 	g_test_add_func ("/gnome-software/app", gs_app_func);
+	g_test_add_func ("/gnome-software/plugin-loader", gs_plugin_loader_func);
 
 	return g_test_run ();
 }

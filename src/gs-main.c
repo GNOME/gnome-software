@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2012 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2012-2013 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -29,6 +29,7 @@
 #include "egg-list-box.h"
 #include "gs-app-widget.h"
 #include "gs-resources.h"
+#include "gs-plugin-loader.h"
 
 #define	GS_MAIN_ICON_SIZE	64
 
@@ -61,6 +62,7 @@ typedef struct {
 	GtkCssProvider		*provider;
 	gboolean		ignore_primary_buttons;
 	gchar			**blacklisted_remove;
+	GsPluginLoader		*plugin_loader;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode);
@@ -1609,10 +1611,21 @@ main (int argc, char **argv)
 		 g_strv_length (priv->blacklisted_remove));
 	g_bytes_unref (data);
 
+	/* load the plugins */
+	priv->plugin_loader = gs_plugin_loader_new ();
+	gs_plugin_loader_set_location (priv->plugin_loader, NULL);
+	ret = gs_plugin_loader_setup (priv->plugin_loader, &error);
+	if (!ret) {
+		g_warning ("Failed to setup plugins: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+
 	/* wait */
 	status = g_application_run (G_APPLICATION (priv->application), argc, argv);
 out:
 	if (priv != NULL) {
+		g_object_unref (priv->plugin_loader);
 		g_object_unref (priv->task);
 		g_object_unref (priv->desktop);
 		g_object_unref (priv->cancellable);
