@@ -46,6 +46,8 @@ gs_plugin_loader_func (void)
 {
 	gboolean ret;
 	GError *error = NULL;
+	GList *list;
+	GsApp *app;
 	GsPluginLoader *loader;
 
 	loader = gs_plugin_loader_new ();
@@ -62,8 +64,19 @@ gs_plugin_loader_func (void)
 	g_assert (ret);
 	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-kind", TRUE);
 	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-popular", TRUE);
+	g_assert (ret);
 	ret = gs_plugin_loader_set_enabled (loader, "notgoingtoexist", TRUE);
 	g_assert (!ret);
+
+	list = gs_plugin_loader_get_popular (loader, &error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+	g_assert_cmpint (g_list_length (list), ==, 7);
+	app = g_list_nth_data (list, 0);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-boxes");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "Boxes");
+	g_list_free_full (list, (GDestroyNotify) g_object_unref);
 
 	g_object_unref (loader);
 }
