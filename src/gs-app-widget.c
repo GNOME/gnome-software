@@ -186,17 +186,22 @@ gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description
 {
 	gchar **split = NULL;
 	GsAppWidgetPrivate *priv = app_widget->priv;
-	GString *description2;
+	GString *description2 = NULL;
 	GString *tmp_description_more = NULL;
 	GString *tmp_description = NULL;
 	guint i;
 
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
-	g_return_if_fail (description != NULL);
-	g_return_if_fail (description[0] != '\0');
 
 	g_free (priv->description);
 	g_free (priv->description_more);
+
+	/* nothing to set, so use placeholder */
+	if (description == NULL) {
+		priv->description = g_strdup ("No description");
+		priv->description_more = NULL;
+		goto out;
+	}
 
 	/* force split with bullet */
 	description2 = g_string_new (description);
@@ -244,7 +249,8 @@ gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description
 		priv->description_more = NULL;
 	}
 out:
-	g_string_free (description2, TRUE);
+	if (description2 != NULL)
+		g_string_free (description2, TRUE);
 	if (tmp_description != NULL)
 		g_string_free (tmp_description, TRUE);
 	if (tmp_description_more != NULL)
