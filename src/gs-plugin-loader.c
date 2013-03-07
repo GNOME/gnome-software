@@ -526,7 +526,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	}
 
 	/* print what we know */
-	plugin = g_new0 (GsPlugin, 1);
+	plugin = g_slice_new0 (GsPlugin);
 	plugin->enabled = FALSE;
 	plugin->module = module;
 	plugin->pixbuf_size = 64;
@@ -638,7 +638,7 @@ gs_plugin_loader_plugin_free (GsPlugin *plugin)
 	g_free (plugin->name);
 	g_module_close (plugin->module);
 	g_timer_destroy (plugin->timer);
-	g_free (plugin);
+	g_slice_free (GsPlugin, plugin);
 }
 
 /**
