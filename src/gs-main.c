@@ -1575,12 +1575,6 @@ main (int argc, char **argv)
 		goto out;
 	}
 
-	/* get localized data from sqlite database */
-	priv->desktop = pk_desktop_new ();
-	ret = pk_desktop_open_database (priv->desktop, NULL);
-	if (!ret)
-		g_warning ("Failure opening database");
-
 	/* get blacklisted app-ids */
 	data = g_resource_lookup_data (gs_get_resource (),
 				       "/org/gnome/software/core-apps.txt",
