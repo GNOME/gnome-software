@@ -912,79 +912,46 @@ out:
 }
 
 /**
- * gs_main_get_packages_cb:
+ * gs_main_get_installed_packages:
  **/
 static void
-gs_main_get_packages_cb (PkClient *client,
-			 GAsyncResult *res,
-			 GsMainPrivate *priv)
+gs_main_get_installed_packages (GsMainPrivate *priv)
 {
-	GError *error = NULL;
-	GPtrArray *array = NULL;
 	GtkWidget *widget;
-	guint i;
-	PkError *error_code = NULL;
-	PkPackage *package;
-	PkResults *results;
+	GError *error = NULL;
+	GList *l;
+	GList *list;
+	GsApp *app;
 
-	/* get the results */
-	results = pk_client_generic_finish (client, res, &error);
-	if (results == NULL) {
-		g_warning ("failed to get-packages: %s", error->message);
+	/* remove old entries */
+	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
+
+	/* get popular apps */
+	list = gs_plugin_loader_get_installed (priv->plugin_loader, &error);
+	if (list == NULL) {
+		g_warning ("failed to get installed apps: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}
-
-	/* check error code */
-	error_code = pk_results_get_error_code (results);
-	if (error_code != NULL) {
-		g_warning ("failed to get-packages: %s, %s",
-			   pk_error_enum_to_string (pk_error_get_code (error_code)),
-			   pk_error_get_details (error_code));
-		goto out;
-	}
-
-	/* get data */
-	array = pk_results_get_package_array (results);
-	for (i = 0; i < array->len; i++) {
-		package = g_ptr_array_index (array, i);
-		g_object_set_data (G_OBJECT (package),
-				   "gnome-software::target",
-				   GINT_TO_POINTER (GS_MAIN_TARGET_INSTALLED));
-		g_debug ("add %s", pk_package_get_id (package));
-		gs_main_installed_add_item (priv, package);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		g_debug ("adding installed %s", gs_app_get_id (app));
+		widget = gs_app_widget_new ();
+		g_signal_connect (widget, "button-clicked",
+				  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
+				  priv);
+		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+					gs_app_get_kind (app) == GS_APP_KIND_SYSTEM ? GS_APP_WIDGET_KIND_BLANK : GS_APP_WIDGET_KIND_REMOVE);
+		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
+		gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
+		gtk_widget_show (widget);
 	}
 
 	/* focus back to the text extry */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	gtk_widget_grab_focus (widget);
 out:
-	if (error_code != NULL)
-		g_object_unref (error_code);
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (results != NULL)
-		g_object_unref (results);
-}
-
-/**
- * gs_main_get_installed_packages:
- **/
-static void
-gs_main_get_installed_packages (GsMainPrivate *priv)
-{
-	PkBitfield filter;
-	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
-					 PK_FILTER_ENUM_NEWEST,
-					 PK_FILTER_ENUM_ARCH,
-					 PK_FILTER_ENUM_APPLICATION,
-					 -1);
-	pk_client_get_packages_async (PK_CLIENT(priv->task),
-				      filter,
-				      priv->cancellable,
-				      (PkProgressCallback) gs_main_progress_cb, priv,
-				      (GAsyncReadyCallback) gs_main_get_packages_cb, priv);
+	return;
 }
 
 /**
@@ -1377,7 +1344,6 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	/* setup callbacks */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (widget), FALSE);
-	gs_main_set_overview_mode (priv, GS_MAIN_MODE_INSTALLED);
 
 	/* set up popular icon vew */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "iconview_popular"));
@@ -1447,6 +1413,7 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* show main UI */
 	gtk_widget_show (main_window);
+	gs_main_set_overview_mode (priv, GS_MAIN_MODE_INSTALLED);
 out:
 	if (data != NULL)
 		g_bytes_unref (data);
