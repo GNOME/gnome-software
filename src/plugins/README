@@ -95,3 +95,14 @@ Overview:	Uses the PackageKit desktop.db cache to map package names to
 Methods:	<nothing>
 Requires:	<nothing>
 Refines:	{package-name}->{datadir-desktop-filename}
+
+== datadir-apps ==
+Overview:	Uses the files in /usr/share/applications to provide icons and
+		translations for installed applications.
+Methods:	<nothing>
+Requires:	<nothing>
+Refines:	{datadir-desktop-filename}->[name]
+		{datadir-desktop-filename}->[summary]
+		{datadir-desktop-filename}->[pixbuf]
+		{datadir-desktop-filename}->[id]
+		{datadir-desktop-filename}->[kind]

@@ -47,6 +47,7 @@ gs_plugin_loader_func (void)
 	gboolean ret;
 	GError *error = NULL;
 	GList *list;
+	GList *l;
 	GsApp *app;
 	GsPluginLoader *loader;
 
@@ -78,6 +79,52 @@ gs_plugin_loader_func (void)
 	app = g_list_nth_data (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-boxes");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Boxes");
+	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+
+	/* get updates */
+	list = gs_plugin_loader_get_updates (loader, &error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+	g_assert_cmpint (g_list_length (list), ==, 2);
+	app = g_list_nth_data (list, 0);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "os-update:gnome-boxes-libs;0.0.1;i386;updates-testing,libvirt-glib-devel;0.0.1;noarch;fedora");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Update");
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "This updates the system:\nDo not segfault when using newer versons of libvirt.\nFix several memory leaks.");
+	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_OS_UPDATE);
+
+	app = g_list_nth_data (list, 1);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-boxes");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "Boxes");
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Do not segfault when using newer versons of libvirt.");
+	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_NORMAL);
+	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+
+	/* test packagekit */
+	gs_plugin_loader_set_enabled (loader, "dummy", FALSE);
+	ret = gs_plugin_loader_set_enabled (loader, "packagekit", TRUE);
+	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "desktopdb", TRUE);
+	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "datadir-apps", TRUE);
+	g_assert (ret);
+
+	list = gs_plugin_loader_get_installed (loader, &error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+	g_assert_cmpint (g_list_length (list), >, 50);
+
+	/* find a specific app */
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		if (g_strcmp0 (gs_app_get_id (app), "gnome-screenshot") == 0)
+			break;
+	}
+	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-screenshot");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "Screenshot");
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Save images of your screen or individual windows");
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_SYSTEM);
+	g_assert (gs_app_get_pixbuf (app) != NULL);
 	g_list_free_full (list, (GDestroyNotify) g_object_unref);
 
 	g_object_unref (loader);
