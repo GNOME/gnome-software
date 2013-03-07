@@ -235,7 +235,118 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app, GError **error)
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to remove packages: %s, %s",
+			     "failed to install package: %s, %s",
+			     pk_error_enum_to_string (pk_error_get_code (error_code)),
+			     pk_error_get_details (error_code));
+		goto out;
+	}
+out:
+	if (error_code != NULL)
+		g_object_unref (error_code);
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	if (results != NULL)
+		g_object_unref (results);
+	return ret;
+}
+
+/**
+ * gs_plugin_app_remove:
+ */
+gboolean
+gs_plugin_app_remove (GsPlugin *plugin, GsApp *app, GError **error)
+{
+	const gchar *package_id;
+	const gchar *to_array[] = { NULL, NULL };
+	gboolean ret = TRUE;
+	GPtrArray *array = NULL;
+	PkError *error_code = NULL;
+	PkResults *results = NULL;
+
+	package_id = gs_app_get_metadata_item (app, "package-id");
+	if (package_id == NULL) {
+		ret = FALSE;
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "removing not supported");
+		goto out;
+	}
+	to_array[0] = package_id;
+	results = pk_task_remove_packages_sync (plugin->priv->task,
+						(gchar **) to_array,
+						FALSE, FALSE,
+						plugin->cancellable,
+						NULL, NULL,
+						error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+
+	/* check error code */
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to remove package: %s, %s",
+			     pk_error_enum_to_string (pk_error_get_code (error_code)),
+			     pk_error_get_details (error_code));
+		goto out;
+	}
+out:
+	if (error_code != NULL)
+		g_object_unref (error_code);
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	if (results != NULL)
+		g_object_unref (results);
+	return ret;
+}
+
+/**
+ * gs_plugin_app_update:
+ */
+gboolean
+gs_plugin_app_update (GsPlugin *plugin, GsApp *app, GError **error)
+{
+	const gchar *package_id;
+	const gchar *to_array[] = { NULL, NULL };
+	gboolean ret = TRUE;
+	GPtrArray *array = NULL;
+	PkError *error_code = NULL;
+	PkResults *results = NULL;
+
+	package_id = gs_app_get_metadata_item (app, "package-id");
+	if (package_id == NULL) {
+		ret = FALSE;
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "installing not supported");
+		goto out;
+	}
+	to_array[0] = package_id;
+	results = pk_task_update_packages_sync (plugin->priv->task,
+						(gchar **) to_array,
+						plugin->cancellable,
+						NULL, NULL,
+						error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+
+	/* check error code */
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to updayte package: %s, %s",
 			     pk_error_enum_to_string (pk_error_get_code (error_code)),
 			     pk_error_get_details (error_code));
 		goto out;
