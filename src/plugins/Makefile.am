@@ -18,6 +18,7 @@ AM_CPPFLAGS =						\
 
 plugindir = $(libdir)/gs-plugins
 plugin_LTLIBRARIES =					\
+	libgs_plugin_desktopdb.la			\
 	libgs_plugin_dummy.la				\
 	libgs_plugin_hardcoded-kind.la			\
 	libgs_plugin_hardcoded-popular.la		\
@@ -48,5 +49,10 @@ libgs_plugin_packagekit_la_SOURCES = gs-plugin-packagekit.c
 libgs_plugin_packagekit_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+
+libgs_plugin_desktopdb_la_SOURCES = gs-plugin-desktopdb.c
+libgs_plugin_desktopdb_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
+libgs_plugin_desktopdb_la_LDFLAGS = -module -avoid-version
+libgs_plugin_desktopdb_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 -include $(top_srcdir)/git.mk

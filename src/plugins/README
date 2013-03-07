@@ -88,3 +88,10 @@ Refines:	<nothing>
 Sets:		{package-id}
 		{package-name}
 		{package-summary}
+
+== desktopdb ==
+Overview:	Uses the PackageKit desktop.db cache to map package names to
+		desktop names.
+Methods:	<nothing>
+Requires:	<nothing>
+Refines:	{package-name}->{datadir-desktop-filename}

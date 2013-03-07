@@ -1626,6 +1626,7 @@ main (int argc, char **argv)
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-popular", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-ratings", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "packagekit", TRUE);
+	gs_plugin_loader_set_enabled (priv->plugin_loader, "desktopdb", TRUE);
 
 	/* wait */
 	status = g_application_run (G_APPLICATION (priv->application), argc, argv);
