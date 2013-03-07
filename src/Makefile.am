@@ -1,3 +1,6 @@
+SUBDIRS =						\
+	plugins
+
 INCLUDES =						\
 	$(GLIB_CFLAGS)					\
 	$(GTK_CFLAGS)					\

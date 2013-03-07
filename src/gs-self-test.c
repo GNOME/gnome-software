@@ -57,6 +57,12 @@ gs_plugin_loader_func (void)
 	g_assert_no_error (error);
 	g_assert (ret);
 
+	/* enable some that will give us predictable results */
+	ret = gs_plugin_loader_set_enabled (loader, "dummy", TRUE);
+	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "notgoingtoexist", TRUE);
+	g_assert (!ret);
+
 	g_object_unref (loader);
 }
 

@@ -84,6 +84,7 @@ Makefile
 po/Makefile.in
 data/Makefile
 src/Makefile
+src/plugins/Makefile
 ])
 AC_OUTPUT
 
