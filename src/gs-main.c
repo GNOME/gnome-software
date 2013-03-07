@@ -233,50 +233,6 @@ gs_main_progress_cb (PkProgress *progress,
 	}
 }
 
-/**
- * gs_main_get_pretty_version:
- *
- * convert 1:1.6.2-7.fc17 into 1.6.2
- **/
-static gchar *
-gs_main_get_pretty_version (const gchar *version)
-{
-	guint i;
-	gchar *new;
-	gchar *f;
-
-	/* first remove any epoch */
-	for (i = 0; version[i] != '\0'; i++) {
-		if (version[i] == ':') {
-			version = &version[i+1];
-			break;
-		}
-		if (!g_ascii_isdigit (version[i]))
-			break;
-	}
-
-	/* then remove any distro suffix */
-	new = g_strdup_printf ("%s %s", _("Version"), version);
-	f = g_strstr_len (new, -1, ".fc");
-	if (f != NULL)
-		*f= '\0';
-
-	/* then remove any release */
-	f = g_strrstr_len (new, -1, "-");
-	if (f != NULL)
-		*f= '\0';
-
-	/* then remove any git suffix */
-	f = g_strrstr_len (new, -1, ".2012");
-	if (f != NULL)
-		*f= '\0';
-	f = g_strrstr_len (new, -1, ".2013");
-	if (f != NULL)
-		*f= '\0';
-
-	return new;
-}
-
 typedef struct {
 	GsAppWidget	*app_widget;
 	GsMainPrivate	*priv;
@@ -416,7 +372,6 @@ static void
 gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 {
 	const gchar *description;
-	gchar *tmp;
 	gchar *update_changelog = NULL;
 	gchar *update_text = NULL;
 	GdkPixbuf *pixbuf;
@@ -434,7 +389,6 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 			  priv);
 	gs_app_widget_set_kind (GS_APP_WIDGET (widget),
 				GS_APP_WIDGET_KIND_UPDATE);
-	tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
 
 	/* try to get update data if it's present */
 	g_object_get (pkg,
@@ -451,7 +405,7 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 	gs_app_set_id (app, pk_package_get_id (pkg));
 	gs_app_set_name (app, pk_package_get_summary (pkg));
 	gs_app_set_pixbuf (app, pixbuf);
-	gs_app_set_version (app, tmp);
+	gs_app_set_version (app, pk_package_get_version (pkg));
 	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
 	gtk_widget_show (widget);
@@ -460,7 +414,6 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 	g_object_unref (app);
 	g_free (update_text);
 	g_free (update_changelog);
-	g_free (tmp);
 }
 
 /**
