@@ -146,6 +146,8 @@ gs_plugin_loader_app_is_valid (GsApp *app)
 	/* don't show apps that do not have a name */
 	if (gs_app_get_name (app) == NULL)
 		return FALSE;
+	if (gs_app_get_summary (app) == NULL)
+		return FALSE;
 	return TRUE;
 }
 
