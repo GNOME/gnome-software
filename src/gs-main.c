@@ -61,7 +61,6 @@ typedef struct {
 	GsApp			*os_update;
 	GtkCssProvider		*provider;
 	gboolean		ignore_primary_buttons;
-	gchar			**blacklisted_remove;
 	GsPluginLoader		*plugin_loader;
 } GsMainPrivate;
 
@@ -278,24 +277,6 @@ gs_main_get_pretty_version (const gchar *version)
 	return new;
 }
 
-typedef enum {
-	GS_MAIN_TARGET_INSTALLED,
-	GS_MAIN_TARGET_UPDATES,
-	GS_MAIN_TARGET_UNKNOWN
-} GsMainTarget;
-
-/**
- * gs_main_get_pkg_target:
- **/
-static GsMainTarget
-gs_main_get_pkg_target (PkPackage *pkg)
-{
-	GsMainTarget ret;
-	ret = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (pkg),
-						  "gnome-software::target"));
-	return ret;
-}
-
 typedef struct {
 	GsAppWidget	*app_widget;
 	GsMainPrivate	*priv;
@@ -435,16 +416,13 @@ static void
 gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 {
 	const gchar *description;
-	EggListBox *list_box = NULL;
 	gchar *tmp;
 	gchar *update_changelog = NULL;
 	gchar *update_text = NULL;
 	GdkPixbuf *pixbuf;
 	GsApp *app = NULL;
 	GtkWidget *widget;
-	GsMainTarget target;
 
-	target = gs_main_get_pkg_target (pkg);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
 	pixbuf = gtk_widget_render_icon_pixbuf (widget,
 						"icon-missing",
@@ -454,15 +432,8 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 	g_signal_connect (widget, "button-clicked",
 			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
 			  priv);
-	if (target == GS_MAIN_TARGET_INSTALLED) {
-		list_box = priv->list_box_installed;
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					GS_APP_WIDGET_KIND_REMOVE);
-	} else if (target == GS_MAIN_TARGET_UPDATES) {
-		list_box = priv->list_box_updates;
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					GS_APP_WIDGET_KIND_UPDATE);
-	}
+	gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+				GS_APP_WIDGET_KIND_UPDATE);
 	tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
 
 	/* try to get update data if it's present */
@@ -482,7 +453,7 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 	gs_app_set_pixbuf (app, pixbuf);
 	gs_app_set_version (app, tmp);
 	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-	gtk_container_add (GTK_CONTAINER (list_box), widget);
+	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
 	gtk_widget_show (widget);
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
@@ -493,30 +464,6 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 }
 
 /**
- * gs_main_installed_is_blacklisted:
- **/
-static gboolean
-gs_main_installed_is_blacklisted (GsMainPrivate *priv,
-				  const gchar *desktop_file)
-{
-	gboolean ret = FALSE;
-	gchar *app_id;
-	guint i;
-
-	app_id = g_path_get_basename (desktop_file);
-	g_strdelimit (app_id, ".", '\0');
-	for (i = 0; priv->blacklisted_remove[i] != NULL; i++) {
-		if (g_strcmp0 (app_id, priv->blacklisted_remove[i]) == 0) {
-			g_debug ("%s is blacklisted, not showing", app_id);
-			ret = TRUE;
-			break;
-		}
-	}
-	g_free (app_id);
-	return ret;
-}
-
-/**
  * gs_main_installed_add_desktop_file:
  **/
 static void
@@ -524,9 +471,7 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 				    PkPackage *pkg,
 				    const gchar *desktop_file)
 {
-	EggListBox *list_box = NULL;
 	gboolean ret;
-	gboolean blacklisted;
 	gchar *comment = NULL;
 	gchar *icon = NULL;
 	gchar *name = NULL;
@@ -534,7 +479,6 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 	GdkPixbuf *pixbuf = NULL;
 	GError *error = NULL;
 	GKeyFile *key_file;
-	GsMainTarget target;
 	GtkWidget *widget;
 	GsApp *app = NULL;
 
@@ -616,29 +560,19 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 	}
 
 	/* add to list store */
-	target = gs_main_get_pkg_target (pkg);
 	widget = gs_app_widget_new ();
 	g_signal_connect (widget, "button-clicked",
 			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
 			  priv);
-	target = gs_main_get_pkg_target (pkg);
-	if (target == GS_MAIN_TARGET_INSTALLED) {
-		list_box = priv->list_box_installed;
-		blacklisted = gs_main_installed_is_blacklisted (priv, desktop_file);
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					blacklisted ? GS_APP_WIDGET_KIND_BLANK : GS_APP_WIDGET_KIND_REMOVE);
-	} else if (target == GS_MAIN_TARGET_UPDATES) {
-		list_box = priv->list_box_updates;
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					GS_APP_WIDGET_KIND_UPDATE);
-	}
+	gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+				GS_APP_WIDGET_KIND_UPDATE);
 	app = gs_app_new (pk_package_get_id (pkg));
 	gs_app_set_summary (app, comment);
 	gs_app_set_name (app, name);
 	gs_app_set_pixbuf (app, pixbuf);
 	gs_app_set_version (app, pk_package_get_version (pkg));
 	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-	gtk_container_add (GTK_CONTAINER (list_box), widget);
+	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
 	gtk_widget_show (widget);
 out:
 	if (app != NULL)
@@ -714,7 +648,6 @@ gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 	const gchar *desktop_file;
 	GError *error = NULL;
 	GPtrArray *files = NULL;
-	GsMainTarget target;
 	guint i;
 
 	/* try to get the list of desktop files for this package */
@@ -732,9 +665,7 @@ gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
 	if (files->len == 0) {
 		g_debug ("not an application %s",
 			 pk_package_get_id (pkg));
-		target = gs_main_get_pkg_target (pkg);
-		if (target == GS_MAIN_TARGET_UPDATES)
-			gs_main_installed_add_os_update (priv, pkg);
+		gs_main_installed_add_os_update (priv, pkg);
 		goto out;
 	}
 
@@ -797,9 +728,6 @@ gs_main_get_update_details_cb (PkPackageSack *sack,
 	array = pk_package_sack_get_array (sack);
 	for (i = 0; i < array->len; i++) {
 		package = g_ptr_array_index (array, i);
-		g_object_set_data (G_OBJECT (package),
-				   "gnome-software::target",
-				   GINT_TO_POINTER (GS_MAIN_TARGET_UPDATES));
 		g_debug ("add update %s", pk_package_get_id (package));
 		gs_main_installed_add_item (priv, package);
 	}
@@ -1426,7 +1354,6 @@ int
 main (int argc, char **argv)
 {
 	gboolean ret;
-	GBytes *data;
 	GError *error = NULL;
 	GOptionContext *context;
 	GsMainPrivate *priv = NULL;
@@ -1486,21 +1413,6 @@ main (int argc, char **argv)
 		goto out;
 	}
 
-	/* get blacklisted app-ids */
-	data = g_resource_lookup_data (gs_get_resource (),
-				       "/org/gnome/software/core-apps.txt",
-				       G_RESOURCE_LOOKUP_FLAGS_NONE,
-				       &error);
-	if (data == NULL) {
-		g_warning ("failed to open resources: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-	priv->blacklisted_remove = g_strsplit (g_bytes_get_data (data, NULL), "\n", -1);
-	g_debug ("Loaded %i blacklisted app-ids",
-		 g_strv_length (priv->blacklisted_remove));
-	g_bytes_unref (data);
-
 	/* load the plugins */
 	priv->plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_set_location (priv->plugin_loader, NULL);
@@ -1535,7 +1447,6 @@ out:
 			g_object_unref (priv->builder);
 		if (priv->waiting_tab_id > 0)
 			g_source_remove (priv->waiting_tab_id);
-		g_strfreev (priv->blacklisted_remove);
 		g_free (priv);
 	}
 	return status;
