@@ -69,6 +69,10 @@ gs_plugin_loader_func (void)
 	g_assert (ret);
 	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-ratings", TRUE);
 	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "datadir-filename", TRUE);
+	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "datadir-apps", TRUE);
+	g_assert (ret);
 	ret = gs_plugin_loader_set_enabled (loader, "notgoingtoexist", TRUE);
 	g_assert (!ret);
 
@@ -79,6 +83,11 @@ gs_plugin_loader_func (void)
 	app = g_list_nth_data (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-boxes");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Boxes");
+
+	app = g_list_nth_data (list, 1);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "gedit");
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Edit text files");
+
 	g_list_free_full (list, (GDestroyNotify) g_object_unref);
 
 	/* get updates */

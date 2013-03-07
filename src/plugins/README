@@ -106,3 +106,12 @@ Refines:	{datadir-desktop-filename}->[name]
 		{datadir-desktop-filename}->[pixbuf]
 		{datadir-desktop-filename}->[id]
 		{datadir-desktop-filename}->[kind]
+
+== datadir-filename ==
+Overview:	Uses the existance of a files in /usr/share/applications
+		named $id.desktop to set the correct desktop filename.
+		This is useful if we just have a bare [id] from something like
+		AddPopular and want to get the details using 'datadir-apps'
+Methods:	<nothing>
+Requires:	<nothing>
+Refines:	[id]->{datadir-desktop-filename}
