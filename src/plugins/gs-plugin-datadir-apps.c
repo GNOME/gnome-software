@@ -27,6 +27,13 @@ struct GsPluginPrivate {
 	GHashTable		*cache;
 };
 
+typedef struct {
+	gchar		*id;
+	gchar		*name;
+	gchar		*summary;
+	GdkPixbuf	*pixbuf;
+} GsPluginDataDirAppsCacheItem;
+
 /**
  * gs_plugin_get_name:
  */
@@ -34,6 +41,20 @@ const gchar *
 gs_plugin_get_name (void)
 {
 	return "datadir-apps";
+}
+
+/**
+ * gs_plugin_datadir_apps_cache_item_free:
+ */
+static void
+gs_plugin_datadir_apps_cache_item_free (GsPluginDataDirAppsCacheItem *cache_item)
+{
+	g_free (cache_item->id);
+	g_free (cache_item->name);
+	g_free (cache_item->summary);
+	if (cache_item->pixbuf != NULL)
+		g_object_unref (cache_item->pixbuf);
+	g_slice_free (GsPluginDataDirAppsCacheItem, cache_item);
 }
 
 /**
@@ -47,7 +68,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	plugin->priv->cache = g_hash_table_new_full (g_str_hash,
 						     g_str_equal,
 						     g_free,
-						     (GDestroyNotify) g_key_file_unref);
+						     (GDestroyNotify) gs_plugin_datadir_apps_cache_item_free);
 }
 
 /**
@@ -69,6 +90,25 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_datadir_apps_set_from_cache_item:
+ */
+static void
+gs_plugin_datadir_apps_set_from_cache_item (GsApp *app,
+					    GsPluginDataDirAppsCacheItem *cache_item)
+{
+	gs_app_set_id (app, cache_item->id);
+	if (cache_item->pixbuf != NULL)
+		gs_app_set_name (app, cache_item->name);
+	if (cache_item->summary != NULL)
+		gs_app_set_summary (app, cache_item->summary);
+	if (cache_item->pixbuf != NULL)
+		gs_app_set_pixbuf (app, cache_item->pixbuf);
+
+	/* mark as an application */
+	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+}
+
+/**
  * gs_plugin_datadir_apps_extract_desktop_data:
  */
 static gboolean
@@ -79,29 +119,32 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 {
 	const gchar *basename_tmp = NULL;
 	gboolean ret = TRUE;
-	gboolean in_cache = FALSE;
 	gchar *basename = NULL;
 	gchar *comment = NULL;
 	gchar *name = NULL;
 	gchar *icon = NULL;
-	GKeyFile *key_file;
+	GKeyFile *key_file = NULL;
 	GdkPixbuf *pixbuf = NULL;
+	GsPluginDataDirAppsCacheItem *cache_item;
 
 	/* is in cache */
-	key_file = g_hash_table_lookup (plugin->priv->cache, desktop_file);
-	if (key_file != NULL) {
-		g_key_file_ref (key_file);
-		in_cache = TRUE;
-	} else {
-		/* load desktop file */
-		key_file = g_key_file_new ();
-		ret = g_key_file_load_from_file (key_file,
-						 desktop_file,
-						 G_KEY_FILE_NONE,
-						 error);
-		if (!ret)
-			goto out;
+	cache_item = g_hash_table_lookup (plugin->priv->cache, desktop_file);
+	if (cache_item != NULL) {
+		gs_plugin_datadir_apps_set_from_cache_item (app, cache_item);
+		goto out;
 	}
+
+	/* load desktop file */
+	key_file = g_key_file_new ();
+	ret = g_key_file_load_from_file (key_file,
+					 desktop_file,
+					 G_KEY_FILE_NONE,
+					 error);
+	if (!ret)
+		goto out;
+
+	/* create a new cache entry */
+	cache_item = g_slice_new0 (GsPluginDataDirAppsCacheItem);
 
 	/* get desktop name */
 	name = g_key_file_get_string (key_file,
@@ -109,7 +152,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 				      G_KEY_FILE_DESKTOP_KEY_NAME,
 				      NULL);
 	if (name != NULL && name[0] != '\0')
-		gs_app_set_name (app, name);
+		cache_item->name = g_strdup (name);
 
 	/* get desktop summary */
 	comment = g_key_file_get_string (key_file,
@@ -117,7 +160,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 					 G_KEY_FILE_DESKTOP_KEY_COMMENT,
 					 NULL);
 	if (comment != NULL && comment[0] != '\0')
-		gs_app_set_summary (app, comment);
+		cache_item->summary = g_strdup (comment);
 
 	/* get desktop icon */
 	icon = g_key_file_get_string (key_file,
@@ -142,7 +185,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 						   NULL);
 	}
 	if (pixbuf != NULL)
-		gs_app_set_pixbuf (app, pixbuf);
+		cache_item->pixbuf = g_object_ref (pixbuf);
 
 	/* set new id */
 	basename = g_path_get_basename (desktop_file);
@@ -152,19 +195,16 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 		basename_tmp += 7;
 	g_debug ("setting new id for %s to %s",
 		 gs_app_get_id (app), basename_tmp);
-	gs_app_set_id (app, basename_tmp);
-
-	/* mark as an application */
-	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+	cache_item->id = g_strdup (basename_tmp);
 
 	/* add to cache */
-	if (!in_cache) {
-		g_hash_table_insert (plugin->priv->cache,
-				     g_strdup (desktop_file),
-				     g_key_file_ref (key_file));
-	}
+	gs_plugin_datadir_apps_set_from_cache_item (app, cache_item);
+	g_hash_table_insert (plugin->priv->cache,
+			     g_strdup (desktop_file),
+			     cache_item);
 out:
-	g_key_file_unref (key_file);
+	if (key_file != NULL)
+		g_key_file_unref (key_file);
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
 	g_free (basename);
