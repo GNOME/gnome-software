@@ -74,3 +74,17 @@ Overview:	Provides some hardcoded static ratings for applications.
 Methods:	<nothing>
 Requires:	<nothing>
 Refines:	[id]->[rating]
+
+== packagekit ==
+Overview:	Uses the system PackageKit instance to return package data.
+Methods:	Search
+		AddUpdates
+		AddInstalled
+		Install
+		Remove
+		Update
+Requires:	{package-id}
+Refines:	<nothing>
+Sets:		{package-id}
+		{package-name}
+		{package-summary}
