@@ -57,7 +57,7 @@ typedef struct {
 	guint			 waiting_tab_id;
 	EggListBox		*list_box_installed;
 	EggListBox		*list_box_updates;
-	GtkWidget		*os_update_widget;
+	GsApp			*os_update;
 	GtkCssProvider		*provider;
 	gboolean		ignore_primary_buttons;
 	gchar			**blacklisted_remove;
@@ -97,12 +97,14 @@ gs_main_get_app_widget_for_id (EggListBox *list_box, const gchar *id)
 {
 	GList *list, *l;
 	GsAppWidget *tmp;
+	GsApp *app;
 
 	/* look for this widget */
 	list = gtk_container_get_children (GTK_CONTAINER (list_box));
 	for (l = list; l != NULL; l = l->next) {
 		tmp = GS_APP_WIDGET (l->data);
-		if (g_strcmp0 (gs_app_widget_get_id (tmp), id) == 0)
+		app = gs_app_widget_get_app (tmp);
+		if (g_strcmp0 (gs_app_get_id (app), id) == 0)
 			goto out;
 	}
 	tmp = NULL;
@@ -267,6 +269,9 @@ gs_main_get_pretty_version (const gchar *version)
 	f = g_strrstr_len (new, -1, ".2012");
 	if (f != NULL)
 		*f= '\0';
+	f = g_strrstr_len (new, -1, ".2013");
+	if (f != NULL)
+		*f= '\0';
 
 	return new;
 }
@@ -370,11 +375,13 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 {
 	const gchar *package_id;
 	GsAppWidgetKind kind;
+	GsApp *app;
 	const gchar *to_array[] = { NULL, NULL };
 	GsMainMethodData *data;
 
 	kind = gs_app_widget_get_kind (app_widget);
-	package_id = gs_app_widget_get_id (app_widget);
+	app = gs_app_widget_get_app (app_widget);
+	package_id = gs_app_get_id (app);
 
 	/* save, so we can recover a failed action */
 	data = g_new0 (GsMainMethodData, 1);
@@ -432,6 +439,7 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 	gchar *update_changelog = NULL;
 	gchar *update_text = NULL;
 	GdkPixbuf *pixbuf;
+	GsApp *app = NULL;
 	GtkWidget *widget;
 	GsMainTarget target;
 
@@ -471,15 +479,17 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 		description = update_changelog;
 	else
 		description = pk_package_get_summary (pkg);
-	gs_app_widget_set_description (GS_APP_WIDGET (widget), description);
-	gs_app_widget_set_id (GS_APP_WIDGET (widget), pk_package_get_id (pkg));
-	gs_app_widget_set_name (GS_APP_WIDGET (widget), pk_package_get_summary (pkg));
-	gs_app_widget_set_pixbuf (GS_APP_WIDGET (widget), pixbuf);
-	gs_app_widget_set_version (GS_APP_WIDGET (widget), tmp);
+	gs_app_set_summary (app, description);
+	gs_app_set_id (app, pk_package_get_id (pkg));
+	gs_app_set_name (app, pk_package_get_summary (pkg));
+	gs_app_set_pixbuf (app, pixbuf);
+	gs_app_set_version (app, tmp);
+	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 	gtk_container_add (GTK_CONTAINER (list_box), widget);
 	gtk_widget_show (widget);
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
+	g_object_unref (app);
 	g_free (update_text);
 	g_free (update_changelog);
 	g_free (tmp);
@@ -531,6 +541,7 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 	GtkListStore *liststore;
 	GtkTreeIter iter;
 	GtkWidget *widget;
+	GsApp *app = NULL;
 
 	/* load desktop file */
 	key_file = g_key_file_new ();
@@ -636,16 +647,18 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 			gs_app_widget_set_kind (GS_APP_WIDGET (widget),
 						GS_APP_WIDGET_KIND_UPDATE);
 		}
-		version_tmp = gs_main_get_pretty_version (pk_package_get_version (pkg));
-		gs_app_widget_set_description (GS_APP_WIDGET (widget), comment);
-		gs_app_widget_set_id (GS_APP_WIDGET (widget), pk_package_get_id (pkg));
-		gs_app_widget_set_name (GS_APP_WIDGET (widget), name);
-		gs_app_widget_set_pixbuf (GS_APP_WIDGET (widget), pixbuf);
-		gs_app_widget_set_version (GS_APP_WIDGET (widget), version_tmp);
+		app = gs_app_new (pk_package_get_id (pkg));
+		gs_app_set_summary (app, comment);
+		gs_app_set_name (app, name);
+		gs_app_set_pixbuf (app, pixbuf);
+		gs_app_set_version (app, pk_package_get_version (pkg));
+		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 		gtk_container_add (GTK_CONTAINER (list_box), widget);
 		gtk_widget_show (widget);
 	}
 out:
+	if (app != NULL)
+		g_object_unref (app);
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
 	g_key_file_unref (key_file);
@@ -663,14 +676,16 @@ gs_main_installed_add_os_update (GsMainPrivate *priv, PkPackage *pkg)
 {
 	GdkPixbuf *pixbuf = NULL;
 	GError *error = NULL;
+	GtkWidget *widget;
 
 	/* try to find existing OS Update entry */
-	if (priv->os_update_widget != NULL) {
-		gs_app_widget_set_name (GS_APP_WIDGET (priv->os_update_widget), _("OS Updates"));
+	if (priv->os_update != NULL) {
+		gs_app_set_name (priv->os_update, _("OS Updates"));
 		goto out;
 	}
 
 	/* add OS Update entry */
+	widget = gs_app_widget_new ();
 	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 					   "software-update-available-symbolic",
 					   GS_MAIN_ICON_SIZE,
@@ -683,24 +698,24 @@ gs_main_installed_add_os_update (GsMainPrivate *priv, PkPackage *pkg)
 		g_error_free (error);
 	}
 
-	priv->os_update_widget = gs_app_widget_new ();
-	g_signal_connect (priv->os_update_widget, "button-clicked",
+	priv->os_update = gs_app_new ("");
+	g_signal_connect (widget, "button-clicked",
 			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
 			  priv);
-	gs_app_widget_set_kind (GS_APP_WIDGET (priv->os_update_widget),
+	gs_app_widget_set_kind (GS_APP_WIDGET (widget),
 				GS_APP_WIDGET_KIND_UPDATE);
-	gs_app_widget_set_id (GS_APP_WIDGET (priv->os_update_widget), "");
-	gs_app_widget_set_name (GS_APP_WIDGET (priv->os_update_widget), _("OS Update"));
-	gs_app_widget_set_description (GS_APP_WIDGET (priv->os_update_widget),
-				       _("Includes performance, stability and security improvements for all users"));
-	gs_app_widget_set_pixbuf (GS_APP_WIDGET (priv->os_update_widget), pixbuf);
-	gs_app_widget_set_version (GS_APP_WIDGET (priv->os_update_widget), "Version 3.4.3");
+	gs_app_set_name (priv->os_update, _("OS Update"));
+	gs_app_set_summary (priv->os_update, _("Includes performance, stability and security improvements for all users"));
+	gs_app_set_pixbuf (priv->os_update, pixbuf);
+	gs_app_set_version (priv->os_update, "3.4.3");
+	gs_app_widget_set_app (GS_APP_WIDGET (widget), priv->os_update);
+
 	/* TRANSLATORS: the update requires the user to reboot the computer */
-	gs_app_widget_set_status (GS_APP_WIDGET (priv->os_update_widget), _("Requires restart"));
-	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), priv->os_update_widget);
-	gtk_widget_show_all (priv->os_update_widget);
-	g_object_add_weak_pointer (G_OBJECT (priv->os_update_widget),
-				   (gpointer *) &priv->os_update_widget);
+	gs_app_widget_set_status (GS_APP_WIDGET (widget), _("Requires restart"));
+	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
+	gtk_widget_show_all (widget);
+	g_object_add_weak_pointer (G_OBJECT (widget),
+				   (gpointer *) &widget);
 out:
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
@@ -1313,26 +1328,28 @@ gs_main_installed_filter_func (GtkWidget *child, void *user_data)
 	GsAppWidget *app_widget = GS_APP_WIDGET (child);
 	gchar *needle_utf8 = NULL;
 	gboolean ret = TRUE;
+	GsApp *app;
 
+	app = gs_app_widget_get_app (app_widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	tmp = gtk_entry_get_text (GTK_ENTRY (widget));
 	if (tmp[0] == '\0')
 		goto out;
 
 	needle_utf8 = g_utf8_casefold (tmp, -1);
-	ret = gs_main_utf8_filter_helper (gs_app_widget_get_name (app_widget),
+	ret = gs_main_utf8_filter_helper (gs_app_get_name (app),
 					  needle_utf8);
 	if (ret)
 		goto out;
-	ret = gs_main_utf8_filter_helper (gs_app_widget_get_description (app_widget),
+	ret = gs_main_utf8_filter_helper (gs_app_get_summary (app),
 					  needle_utf8);
 	if (ret)
 		goto out;
-	ret = gs_main_utf8_filter_helper (gs_app_widget_get_version (app_widget),
+	ret = gs_main_utf8_filter_helper (gs_app_get_version (app),
 					  needle_utf8);
 	if (ret)
 		goto out;
-	ret = gs_main_utf8_filter_helper (gs_app_widget_get_id (app_widget),
+	ret = gs_main_utf8_filter_helper (gs_app_get_id (app),
 					  needle_utf8);
 	if (ret)
 		goto out;
@@ -1362,8 +1379,10 @@ gs_main_installed_sort_func (gconstpointer a,
 {
 	GsAppWidget *aw1 = GS_APP_WIDGET (a);
 	GsAppWidget *aw2 = GS_APP_WIDGET (b);
-	return g_strcmp0 (gs_app_widget_get_name (aw1),
-			  gs_app_widget_get_name (aw2));
+	GsApp *a1 = gs_app_widget_get_app (aw1);
+	GsApp *a2 = gs_app_widget_get_app (aw2);
+	return g_strcmp0 (gs_app_get_name (a1),
+			  gs_app_get_name (a2));
 }
 
 /**

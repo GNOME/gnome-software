@@ -33,11 +33,8 @@ struct _GsAppWidgetPrivate
 	gboolean	 expanded;
 	gchar		*description;
 	gchar		*description_more;
-	gchar		*id;
-	gchar		*name;
+	GsApp		*app;
 	gchar		*status;
-	gchar		*version;
-	GdkPixbuf	*pixbuf;
 	GsAppWidgetKind	 kind;
 	GtkWidget	*widget_button;
 	GtkWidget	*widget_description;
@@ -70,12 +67,18 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv = app_widget->priv;
 
-	gtk_label_set_label (GTK_LABEL (priv->widget_name), priv->name);
+	if (app_widget->priv->app == NULL)
+		return;
+
+	gtk_label_set_label (GTK_LABEL (priv->widget_name),
+			     gs_app_get_name (priv->app));
 	gtk_label_set_markup (GTK_LABEL (priv->widget_description), priv->description);
 	gtk_label_set_markup (GTK_LABEL (priv->widget_description_more), priv->description_more);
 	gtk_label_set_label (GTK_LABEL (priv->widget_status), priv->status);
-	gtk_label_set_label (GTK_LABEL (priv->widget_version), priv->version);
-	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->widget_image), priv->pixbuf);
+	gtk_label_set_label (GTK_LABEL (priv->widget_version),
+			     gs_app_get_version (priv->app));
+	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->widget_image),
+				   gs_app_get_pixbuf (priv->app));
 	gtk_widget_set_visible (priv->widget_name, TRUE);
 	gtk_widget_set_visible (priv->widget_description, TRUE);
 	gtk_widget_set_visible (priv->widget_description_more,
@@ -119,45 +122,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 }
 
 /**
- * gs_app_widget_get_id:
- **/
-const gchar *
-gs_app_widget_get_id (GsAppWidget *app_widget)
-{
-	g_return_val_if_fail (GS_IS_APP_WIDGET (app_widget), NULL);
-	return app_widget->priv->id;
-}
-/**
- * gs_app_widget_get_name:
- **/
-const gchar *
-gs_app_widget_get_name (GsAppWidget *app_widget)
-{
-	g_return_val_if_fail (GS_IS_APP_WIDGET (app_widget), NULL);
-	return app_widget->priv->name;
-}
-
-/**
- * gs_app_widget_get_version:
- **/
-const gchar *
-gs_app_widget_get_version (GsAppWidget *app_widget)
-{
-	g_return_val_if_fail (GS_IS_APP_WIDGET (app_widget), NULL);
-	return app_widget->priv->version;
-}
-
-/**
- * gs_app_widget_get_description:
- **/
-const gchar *
-gs_app_widget_get_description (GsAppWidget *app_widget)
-{
-	g_return_val_if_fail (GS_IS_APP_WIDGET (app_widget), NULL);
-	return app_widget->priv->description;
-}
-
-/**
  * gs_app_widget_get_status:
  **/
 const gchar *
@@ -175,44 +139,6 @@ gs_app_widget_get_kind (GsAppWidget *app_widget)
 {
 	g_return_val_if_fail (GS_IS_APP_WIDGET (app_widget), 0);
 	return app_widget->priv->kind;
-}
-
-/**
- * gs_app_widget_set_id:
- **/
-void
-gs_app_widget_set_id (GsAppWidget *app_widget, const gchar *id)
-{
-	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
-	g_return_if_fail (id != NULL);
-	g_free (app_widget->priv->id);
-	app_widget->priv->id = g_strdup (id);
-}
-
-/**
- * gs_app_widget_set_name:
- **/
-void
-gs_app_widget_set_name (GsAppWidget *app_widget, const gchar *name)
-{
-	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
-	g_return_if_fail (name != NULL);
-	g_free (app_widget->priv->name);
-	app_widget->priv->name = g_strdup (name);
-	gs_app_widget_refresh (app_widget);
-}
-
-/**
- * gs_app_widget_set_version:
- **/
-void
-gs_app_widget_set_version (GsAppWidget *app_widget, const gchar *version)
-{
-	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
-	g_return_if_fail (version != NULL);
-	g_free (app_widget->priv->version);
-	app_widget->priv->version = g_strdup (version);
-	gs_app_widget_refresh (app_widget);
 }
 
 static guint
@@ -255,7 +181,7 @@ out:
 /**
  * gs_app_widget_set_description:
  **/
-void
+static void
 gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description)
 {
 	gchar **split = NULL;
@@ -318,13 +244,35 @@ gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description
 		priv->description_more = NULL;
 	}
 out:
-	gs_app_widget_refresh (app_widget);
 	g_string_free (description2, TRUE);
 	if (tmp_description != NULL)
 		g_string_free (tmp_description, TRUE);
 	if (tmp_description_more != NULL)
 		g_string_free (tmp_description_more, TRUE);
 	g_strfreev (split);
+}
+
+/**
+ * gs_app_widget_get_app:
+ **/
+GsApp *
+gs_app_widget_get_app (GsAppWidget *app_widget)
+{
+	g_return_val_if_fail (GS_IS_APP_WIDGET (app_widget), NULL);
+	return app_widget->priv->app;
+}
+
+/**
+ * gs_app_widget_set_app:
+ **/
+void
+gs_app_widget_set_app (GsAppWidget *app_widget, GsApp *app)
+{
+	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
+	g_return_if_fail (GS_IS_APP (app));
+	app_widget->priv->app = g_object_ref (app);
+	gs_app_widget_set_description (app_widget, gs_app_get_summary (app));
+	gs_app_widget_refresh (app_widget);
 }
 
 /**
@@ -337,22 +285,6 @@ gs_app_widget_set_status (GsAppWidget *app_widget, const gchar *status)
 	g_return_if_fail (status != NULL);
 	g_free (app_widget->priv->status);
 	app_widget->priv->status = g_strdup (status);
-	gs_app_widget_refresh (app_widget);
-}
-
-/**
- * gs_app_widget_set_pixbuf:
- **/
-void
-gs_app_widget_set_pixbuf (GsAppWidget *app_widget, GdkPixbuf *pixbuf)
-{
-	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
-	if (app_widget->priv->pixbuf != NULL) {
-		g_object_unref (app_widget->priv->pixbuf);
-		app_widget->priv->pixbuf = NULL;
-	}
-	if (pixbuf != NULL)
-		app_widget->priv->pixbuf = g_object_ref (pixbuf);
 	gs_app_widget_refresh (app_widget);
 }
 
@@ -376,18 +308,16 @@ gs_app_widget_destroy (GtkWidget *object)
 	GsAppWidget *app_widget = GS_APP_WIDGET (object);
 	GsAppWidgetPrivate *priv = app_widget->priv;
 
-	g_free (priv->id);
-	priv->id = NULL;
-	g_free (priv->name);
-	priv->name = NULL;
+	g_free (priv->description_more);
+	priv->description_more = NULL;
 	g_free (priv->description);
 	priv->description = NULL;
 	g_free (priv->status);
 	priv->status = NULL;
-	if (priv->pixbuf != NULL)
-		g_clear_object (&priv->pixbuf);
 	if (priv->markdown != NULL)
 		g_clear_object (&priv->markdown);
+	if (priv->app != NULL)
+		g_clear_object (&priv->app);
 
 	GTK_WIDGET_CLASS (gs_app_widget_parent_class)->destroy (object);
 }

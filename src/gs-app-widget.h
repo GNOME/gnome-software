@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#include "gs-app.h"
+
 #define GS_TYPE_APP_WIDGET		(gs_app_widget_get_type())
 #define GS_APP_WIDGET(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_APP_WIDGET, GsAppWidget))
 #define GS_APP_WIDGET_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_APP_WIDGET, GsAppWidgetClass))
@@ -62,23 +64,12 @@ typedef enum {
 
 GType		 gs_app_widget_get_type			(void);
 GtkWidget	*gs_app_widget_new			(void);
-const gchar	*gs_app_widget_get_id			(GsAppWidget	*app_widget);
-void		 gs_app_widget_set_id			(GsAppWidget	*app_widget,
-							 const gchar	*id);
-const gchar	*gs_app_widget_get_name			(GsAppWidget	*app_widget);
-void		 gs_app_widget_set_name			(GsAppWidget	*app_widget,
-							 const gchar	*name);
-const gchar	*gs_app_widget_get_version		(GsAppWidget	*app_widget);
-void		 gs_app_widget_set_version		(GsAppWidget	*app_widget,
-							 const gchar	*version);
-const gchar	*gs_app_widget_get_description		(GsAppWidget	*app_widget);
-void		 gs_app_widget_set_description		(GsAppWidget	*app_widget,
-							 const gchar	*description);
+GsApp		*gs_app_widget_get_app			(GsAppWidget	*app_widget);
+void		 gs_app_widget_set_app			(GsAppWidget	*app_widget,
+							 GsApp		*app);
 const gchar	*gs_app_widget_get_status		(GsAppWidget	*app_widget);
 void		 gs_app_widget_set_status		(GsAppWidget	*app_widget,
 							 const gchar	*status);
-void		 gs_app_widget_set_pixbuf		(GsAppWidget	*app_widget,
-							 GdkPixbuf	*pixbuf);
 GsAppWidgetKind	 gs_app_widget_get_kind			(GsAppWidget	*app_widget);
 void		 gs_app_widget_set_kind			(GsAppWidget	*app_widget,
 							 GsAppWidgetKind kind);
