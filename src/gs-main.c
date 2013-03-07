@@ -233,6 +233,49 @@ gs_main_progress_cb (PkProgress *progress,
 	}
 }
 
+/**
+ * gs_main_progress_cb:
+ **/
+static void
+gs_main_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
+					 GsApp *app,
+					 GsPluginStatus status,
+					 GsMainPrivate	*priv)
+{
+	GtkWidget *widget;
+	const gchar *status_text = NULL;
+
+	/* translate */
+	if (status == GS_PLUGIN_STATUS_WAITING) {
+		/* TRANSLATORS: we're waiting for something to happen */
+		status_text = _("Waiting...");
+	}
+
+	/* update the label */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_waiting"));
+	if (status_text != NULL) {
+		gtk_label_set_markup (GTK_LABEL (widget), status_text);
+		gtk_widget_show (widget);
+	} else {
+		gtk_widget_hide (widget);
+	}
+
+	/* show the waiting panel if the delay is significant */
+	if (status == GS_PLUGIN_STATUS_FINISHED) {
+		gs_main_set_overview_mode_ui (priv, priv->mode);
+		if (priv->waiting_tab_id > 0) {
+			g_source_remove (priv->waiting_tab_id);
+			priv->waiting_tab_id = 0;
+		}
+	} else {
+		if (priv->waiting_tab_id == 0) {
+			priv->waiting_tab_id = g_timeout_add (50,
+							      gs_main_show_waiting_tab_cb,
+							      priv);
+		}
+	}
+}
+
 typedef struct {
 	GsAppWidget	*app_widget;
 	GsMainPrivate	*priv;
@@ -1291,6 +1334,10 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	g_signal_connect (GTK_EDITABLE (widget), "changed",
 			  G_CALLBACK (gs_main_filter_text_changed_cb), priv);
+
+	/* show the status on a different page */
+	g_signal_connect (priv->plugin_loader, "status-changed",
+			  G_CALLBACK (gs_main_plugin_loader_status_changed_cb), priv);
 
 	/* show main UI */
 	gtk_widget_show (main_window);

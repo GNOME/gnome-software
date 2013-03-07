@@ -32,9 +32,17 @@ struct GsPluginLoaderPrivate
 {
 	GPtrArray		*plugins;
 	gchar			*location;
+	GsPluginStatus		 status_last;
 };
 
 G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
+
+enum {
+	SIGNAL_STATUS_CHANGED,
+	SIGNAL_LAST
+};
+
+static guint signals [SIGNAL_LAST] = { 0 };
 
 /**
  * gs_plugin_loader_error_quark:
@@ -79,6 +87,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, list, error);
 		if (!ret)
 			goto out;
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		g_debug ("%s(%s) took %.0fms",
 			 plugin->name,
 			 function_name,
@@ -118,6 +127,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, &list, error);
 		if (!ret)
 			goto out;
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		g_debug ("%s(%s) took %.0fms",
 			 plugin->name,
 			 function_name,
@@ -316,6 +326,7 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader, const gchar *value, GErr
 		ret = plugin_func (plugin, value, &list, error);
 		if (!ret)
 			goto out;
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		g_debug ("%s(%s) took %.0fms",
 			 plugin->name,
 			 function_name,
@@ -383,6 +394,7 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 				goto out;
 			}
 		}
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		g_debug ("%s(%s) took %.0fms",
 			 plugin->name,
 			 function_name,
@@ -456,6 +468,7 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
 		plugin_func (plugin);
@@ -483,6 +496,44 @@ gs_plugin_loader_set_enabled (GsPluginLoader *plugin_loader,
 		}
 	}
 	return ret;
+}
+
+/**
+ * gs_plugin_loader_status_to_string:
+ */
+static const gchar *
+gs_plugin_loader_status_to_string (GsPluginStatus status)
+{
+	if (status == GS_PLUGIN_STATUS_WAITING)
+		return "waiting";
+	if (status == GS_PLUGIN_STATUS_FINISHED)
+		return "finished";
+	return "unknown";
+}
+
+/**
+ * gs_plugin_loader_status_update_cb:
+ */
+static void
+gs_plugin_loader_status_update_cb (GsPlugin *plugin,
+				   GsApp *app,
+				   GsPluginStatus status,
+				   gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+
+	/* same as last time */
+	if (app == NULL && status == plugin_loader->priv->status_last)
+		return;
+
+	/* new, or an app, so emit */
+	g_debug ("emitting %s(%s)",
+		 gs_plugin_loader_status_to_string (status),
+		 app != NULL ? gs_app_get_id (app) : "<general>");
+	plugin_loader->priv->status_last = status;
+	g_signal_emit (plugin_loader,
+		       signals[SIGNAL_STATUS_CHANGED],
+		       0, app, status);
 }
 
 /**
@@ -533,6 +584,8 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->priority = plugin_prio (plugin);
 	plugin->name = g_strdup (plugin_name ());
 	plugin->timer = g_timer_new ();
+	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
+	plugin->status_update_user_data = plugin_loader;
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
 
 	/* add to array */
@@ -652,6 +705,13 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 
 	object_class->finalize = gs_plugin_loader_finalize;
 
+	signals [SIGNAL_STATUS_CHANGED] =
+		g_signal_new ("status-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginLoaderClass, status_changed),
+			      NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
+
 	g_type_class_add_private (klass, sizeof (GsPluginLoaderPrivate));
 }
 
@@ -663,6 +723,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
 	plugin_loader->priv = GS_PLUGIN_LOADER_GET_PRIVATE (plugin_loader);
 	plugin_loader->priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
+	plugin_loader->priv->status_last = GS_PLUGIN_STATUS_LAST;
 }
 
 /**

@@ -141,6 +141,9 @@ gs_plugin_add_installed (GsPlugin *plugin, GList **list, GError **error)
 	PkBitfield filter;
 	PkResults *results;
 
+	/* update UI as this might take some time */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+
 	/* do sync call */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
 					 PK_FILTER_ENUM_NEWEST,
@@ -174,6 +177,9 @@ gs_plugin_add_updates (GsPlugin *plugin, GList **list, GError **error)
 	gboolean ret = TRUE;
 	PkBitfield filter;
 	PkResults *results;
+
+	/* update UI as this might take some time */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 
 	/* do sync call */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH, -1);

@@ -31,9 +31,22 @@
 
 G_BEGIN_DECLS
 
-typedef struct GsPluginPrivate GsPluginPrivate;
+typedef struct	GsPluginPrivate	GsPluginPrivate;
+typedef struct	GsPlugin	GsPlugin;
 
-typedef struct {
+typedef enum {
+	GS_PLUGIN_STATUS_UNKNOWN,
+	GS_PLUGIN_STATUS_WAITING,
+	GS_PLUGIN_STATUS_FINISHED,
+	GS_PLUGIN_STATUS_LAST
+} GsPluginStatus;
+
+typedef void (*GsPluginStatusUpdate)	(GsPlugin	*plugin,
+					 GsApp		*app,
+					 GsPluginStatus	 status,
+					 gpointer	 user_data);
+
+struct GsPlugin {
 	GModule			*module;
 	gdouble			 priority;	/* largest number gets run first */
 	gboolean		 enabled;
@@ -42,7 +55,9 @@ typedef struct {
 	GCancellable		*cancellable;
 	guint			 pixbuf_size;
 	GTimer			*timer;
-} GsPlugin;
+	GsPluginStatusUpdate	 status_update_fn;
+	gpointer		 status_update_user_data;
+};
 
 typedef enum {
 	GS_PLUGIN_ERROR_FAILED,
@@ -52,6 +67,7 @@ typedef enum {
 
 /* helpers */
 #define	gs_plugin_add_app(l,a)				(*l=g_list_prepend(*l,a))
+#define	gs_plugin_status_update(p,a,s)			(p->status_update_fn(p,a,s,p->status_update_user_data))
 #define	GS_PLUGIN_ERROR					1
 #define	GS_PLUGIN_GET_PRIVATE(x)			g_new0 (x,1)
 

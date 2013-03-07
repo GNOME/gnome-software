@@ -25,6 +25,7 @@
 #include <glib-object.h>
 
 #include "gs-app.h"
+#include "gs-plugin.h"
 
 G_BEGIN_DECLS
 
@@ -47,6 +48,9 @@ typedef struct
 typedef struct
 {
 	GObjectClass		 parent_class;
+	void			(*status_changed)	(GsPluginLoader	*plugin_loader,
+							 GsApp		*app,
+							 GsPluginStatus	 status);
 } GsPluginLoaderClass;
 
 typedef enum

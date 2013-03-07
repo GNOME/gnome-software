@@ -41,6 +41,17 @@ gs_app_func (void)
 	g_object_unref (app);
 }
 
+static guint _status_changed_cnt = 0;
+
+static void
+gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
+				    GsApp *app,
+				    GsPluginStatus status,
+				    gpointer user_data)
+{
+	_status_changed_cnt++;
+}
+
 static void
 gs_plugin_loader_func (void)
 {
@@ -53,6 +64,8 @@ gs_plugin_loader_func (void)
 
 	loader = gs_plugin_loader_new ();
 	g_assert (GS_IS_PLUGIN_LOADER (loader));
+	g_signal_connect (loader, "status-changed",
+			  G_CALLBACK (gs_plugin_loader_status_changed_cb), NULL);
 
 	/* load the plugins */
 	gs_plugin_loader_set_location (loader, "./plugins/.libs");
@@ -91,9 +104,11 @@ gs_plugin_loader_func (void)
 	g_list_free_full (list, (GDestroyNotify) g_object_unref);
 
 	/* get updates */
+	g_assert_cmpint (_status_changed_cnt, ==, 0);
 	list = gs_plugin_loader_get_updates (loader, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
+	g_assert_cmpint (_status_changed_cnt, ==, 1);
 	g_assert_cmpint (g_list_length (list), ==, 2);
 	app = g_list_nth_data (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "os-update:gnome-boxes-libs;0.0.1;i386;updates-testing,libvirt-glib-devel;0.0.1;noarch;fedora");

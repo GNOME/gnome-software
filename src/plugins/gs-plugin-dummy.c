@@ -82,6 +82,12 @@ gs_plugin_add_updates (GsPlugin *plugin, GList **list, GError **error)
 {
 	GsApp *app;
 
+	/* update UI as this might take some time */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+
+	/* spin */
+	g_usleep (2 * G_USEC_PER_SEC);
+
 	/* add a normal application */
 	app = gs_app_new ("gnome-boxes");
 	gs_app_set_name (app, "Boxes");
