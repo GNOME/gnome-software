@@ -281,7 +281,6 @@ gs_main_get_pretty_version (const gchar *version)
 typedef enum {
 	GS_MAIN_TARGET_INSTALLED,
 	GS_MAIN_TARGET_UPDATES,
-	GS_MAIN_TARGET_POPULAR,
 	GS_MAIN_TARGET_UNKNOWN
 } GsMainTarget;
 
@@ -445,11 +444,7 @@ gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
 	GtkWidget *widget;
 	GsMainTarget target;
 
-	/* never show packages here */
 	target = gs_main_get_pkg_target (pkg);
-	if (target == GS_MAIN_TARGET_POPULAR)
-		return;
-
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
 	pixbuf = gtk_widget_render_icon_pixbuf (widget,
 						"icon-missing",
@@ -540,8 +535,6 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 	GError *error = NULL;
 	GKeyFile *key_file;
 	GsMainTarget target;
-	GtkListStore *liststore;
-	GtkTreeIter iter;
 	GtkWidget *widget;
 	GsApp *app = NULL;
 
@@ -624,40 +617,29 @@ gs_main_installed_add_desktop_file (GsMainPrivate *priv,
 
 	/* add to list store */
 	target = gs_main_get_pkg_target (pkg);
-	if (target == GS_MAIN_TARGET_POPULAR) {
-		liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_popular"));
-		gtk_list_store_append (liststore, &iter);
-		gtk_list_store_set (liststore,
-				    &iter,
-				    COLUMN_POPULAR_PACKAGE_ID, pk_package_get_id (pkg),
-				    COLUMN_POPULAR_MARKUP, name,
-				    COLUMN_POPULAR_PIXBUF, pixbuf,
-				    -1);
-	} else {
-		widget = gs_app_widget_new ();
-		g_signal_connect (widget, "button-clicked",
-				  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
-				  priv);
-		target = gs_main_get_pkg_target (pkg);
-		if (target == GS_MAIN_TARGET_INSTALLED) {
-			list_box = priv->list_box_installed;
-			blacklisted = gs_main_installed_is_blacklisted (priv, desktop_file);
-			gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-						blacklisted ? GS_APP_WIDGET_KIND_BLANK : GS_APP_WIDGET_KIND_REMOVE);
-		} else if (target == GS_MAIN_TARGET_UPDATES) {
-			list_box = priv->list_box_updates;
-			gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-						GS_APP_WIDGET_KIND_UPDATE);
-		}
-		app = gs_app_new (pk_package_get_id (pkg));
-		gs_app_set_summary (app, comment);
-		gs_app_set_name (app, name);
-		gs_app_set_pixbuf (app, pixbuf);
-		gs_app_set_version (app, pk_package_get_version (pkg));
-		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-		gtk_container_add (GTK_CONTAINER (list_box), widget);
-		gtk_widget_show (widget);
+	widget = gs_app_widget_new ();
+	g_signal_connect (widget, "button-clicked",
+			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
+			  priv);
+	target = gs_main_get_pkg_target (pkg);
+	if (target == GS_MAIN_TARGET_INSTALLED) {
+		list_box = priv->list_box_installed;
+		blacklisted = gs_main_installed_is_blacklisted (priv, desktop_file);
+		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+					blacklisted ? GS_APP_WIDGET_KIND_BLANK : GS_APP_WIDGET_KIND_REMOVE);
+	} else if (target == GS_MAIN_TARGET_UPDATES) {
+		list_box = priv->list_box_updates;
+		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+					GS_APP_WIDGET_KIND_UPDATE);
 	}
+	app = gs_app_new (pk_package_get_id (pkg));
+	gs_app_set_summary (app, comment);
+	gs_app_set_name (app, name);
+	gs_app_set_pixbuf (app, pixbuf);
+	gs_app_set_version (app, pk_package_get_version (pkg));
+	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
+	gtk_container_add (GTK_CONTAINER (list_box), widget);
+	gtk_widget_show (widget);
 out:
 	if (app != NULL)
 		g_object_unref (app);
@@ -984,62 +966,6 @@ out:
 	if (results != NULL)
 		g_object_unref (results);
 }
-/**
- * gs_main_get_popular_cb:
- **/
-static void
-gs_main_get_popular_cb (PkClient *client,
-			GAsyncResult *res,
-			GsMainPrivate *priv)
-{
-	GError *error = NULL;
-	GPtrArray *array = NULL;
-	guint i;
-	PkError *error_code = NULL;
-	PkPackage *package;
-	PkResults *results;
-	GtkListStore *liststore;
-
-	/* get the results */
-	results = pk_client_generic_finish (client, res, &error);
-	if (results == NULL) {
-		g_warning ("failed to get-packages: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-
-	/* check error code */
-	error_code = pk_results_get_error_code (results);
-	if (error_code != NULL) {
-		g_warning ("failed to get-packages: %s, %s",
-			   pk_error_enum_to_string (pk_error_get_code (error_code)),
-			   pk_error_get_details (error_code));
-		goto out;
-	}
-
-	/* clear current entries: */
-	liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_popular"));
-	gtk_list_store_clear (liststore);
-
-	/* get data */
-	array = pk_results_get_package_array (results);
-	for (i = 0; i < array->len; i++) {
-		package = g_ptr_array_index (array, i);
-		g_object_set_data (G_OBJECT (package),
-				   "gnome-software::target",
-				   GINT_TO_POINTER (GS_MAIN_TARGET_POPULAR));
-		g_debug ("add popular %s", pk_package_get_id (package));
-		gs_main_installed_add_item (priv, package);
-	}
-
-out:
-	if (error_code != NULL)
-		g_object_unref (error_code);
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (results != NULL)
-		g_object_unref (results);
-}
 
 /**
  * gs_main_get_installed_packages:
@@ -1084,39 +1010,36 @@ gs_main_get_updates (GsMainPrivate *priv)
 static void
 gs_main_get_popular (GsMainPrivate *priv)
 {
-	GBytes *data;
-	gchar **packages = NULL;
 	GError *error = NULL;
-	PkBitfield filter;
+	GList *l;
+	GList *list;
+	GsApp *app;
+	GtkListStore *liststore;
+	GtkTreeIter iter;
 
-	data = g_resource_lookup_data (gs_get_resource (),
-				       "/org/gnome/software/popular-apps.txt",
-				       G_RESOURCE_LOOKUP_FLAGS_NONE,
-				       &error);
-	if (data == NULL) {
-		g_warning ("failed to open resources: %s", error->message);
+	/* get popular apps */
+	list = gs_plugin_loader_get_popular (priv->plugin_loader, &error);
+	if (list == NULL) {
+		g_warning ("failed to get popular apps: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}
-	packages = g_strsplit (g_bytes_get_data (data, NULL), "\n", -1);
-	g_debug ("Loaded %i favourite packages",
-		 g_strv_length (packages));
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH,
-					 PK_FILTER_ENUM_APPLICATION,
-					 PK_FILTER_ENUM_NEWEST,
-					 -1);
-	pk_client_resolve_async (PK_CLIENT(priv->task),
-				 filter,
-				 packages,
-				 priv->cancellable,
-				 (PkProgressCallback) gs_main_progress_cb, priv,
-				 (GAsyncReadyCallback) gs_main_get_popular_cb, priv);
+	liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_popular"));
+	gtk_list_store_clear (liststore);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		g_debug ("adding favourite %s", gs_app_get_id (app));
+		gtk_list_store_append (liststore, &iter);
+		gtk_list_store_set (liststore,
+				    &iter,
+				    COLUMN_POPULAR_PACKAGE_ID, gs_app_get_metadata_item (app, "package-name"),
+				    COLUMN_POPULAR_MARKUP, gs_app_get_name (app),
+				    COLUMN_POPULAR_PIXBUF, gs_app_get_pixbuf (app),
+				    -1);
+	}
 out:
-	if (data != NULL)
-		g_bytes_unref (data);
-	g_strfreev (packages);
+	return;
 }
-
 
 /**
  * gs_main_set_overview_mode_ui:
