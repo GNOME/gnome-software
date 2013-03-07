@@ -39,16 +39,6 @@ typedef enum {
 	GS_MAIN_MODE_WAITING
 } GsMainMode;
 
-
-enum {
-	COLUMN_PACKAGE_ID,
-	COLUMN_ICON_NAME,
-	COLUMN_PACKAGE_NAME,
-	COLUMN_PACKAGE_VERSION,
-	COLUMN_PACKAGE_SUMMARY,
-	COLUMN_LAST
-};
-
 enum {
 	COLUMN_POPULAR_PACKAGE_ID,
 	COLUMN_POPULAR_MARKUP,
@@ -1608,7 +1598,6 @@ main (int argc, char **argv)
 
 	/* wait */
 	status = g_application_run (G_APPLICATION (priv->application), argc, argv);
-
 out:
 	if (priv != NULL) {
 		g_object_unref (priv->task);
