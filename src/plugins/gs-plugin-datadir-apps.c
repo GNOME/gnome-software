@@ -23,6 +23,10 @@
 
 #include <gs-plugin.h>
 
+struct GsPluginPrivate {
+	GHashTable		*cache;
+};
+
 /**
  * gs_plugin_get_name:
  */
@@ -30,6 +34,20 @@ const gchar *
 gs_plugin_get_name (void)
 {
 	return "datadir-apps";
+}
+
+/**
+ * gs_plugin_initialize:
+ */
+void
+gs_plugin_initialize (GsPlugin *plugin)
+{
+	/* create private area */
+	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	plugin->priv->cache = g_hash_table_new_full (g_str_hash,
+						     g_str_equal,
+						     g_free,
+						     (GDestroyNotify) g_key_file_unref);
 }
 
 /**
@@ -42,6 +60,15 @@ gs_plugin_get_priority (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_destroy:
+ */
+void
+gs_plugin_destroy (GsPlugin *plugin)
+{
+	g_hash_table_unref (plugin->priv->cache);
+}
+
+/**
  * gs_plugin_datadir_apps_extract_desktop_data:
  */
 static gboolean
@@ -51,7 +78,8 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 					     GError **error)
 {
 	const gchar *basename_tmp = NULL;
-	gboolean ret;
+	gboolean ret = TRUE;
+	gboolean in_cache = FALSE;
 	gchar *basename = NULL;
 	gchar *comment = NULL;
 	gchar *name = NULL;
@@ -59,14 +87,21 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	GKeyFile *key_file;
 	GdkPixbuf *pixbuf = NULL;
 
-	/* load desktop file */
-	key_file = g_key_file_new ();
-	ret = g_key_file_load_from_file (key_file,
-					 desktop_file,
-					 G_KEY_FILE_NONE,
-					 error);
-	if (!ret)
-		goto out;
+	/* is in cache */
+	key_file = g_hash_table_lookup (plugin->priv->cache, desktop_file);
+	if (key_file != NULL) {
+		g_key_file_ref (key_file);
+		in_cache = TRUE;
+	} else {
+		/* load desktop file */
+		key_file = g_key_file_new ();
+		ret = g_key_file_load_from_file (key_file,
+						 desktop_file,
+						 G_KEY_FILE_NONE,
+						 error);
+		if (!ret)
+			goto out;
+	}
 
 	/* get desktop name */
 	name = g_key_file_get_string (key_file,
@@ -121,6 +156,13 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 
 	/* mark as an application */
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+
+	/* add to cache */
+	if (!in_cache) {
+		g_hash_table_insert (plugin->priv->cache,
+				     g_strdup (desktop_file),
+				     g_key_file_ref (key_file));
+	}
 out:
 	g_key_file_unref (key_file);
 	if (pixbuf != NULL)
