@@ -1372,7 +1372,7 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* Hide window first so that the dialogue resizes itself without redrawing */
 	gtk_widget_hide (main_window);
-	gtk_window_set_default_size (GTK_WINDOW (main_window), 1200, 400);
+	gtk_window_set_default_size (GTK_WINDOW (main_window), 1200, 800);
 
 	/* setup callbacks */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
