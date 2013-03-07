@@ -29,6 +29,7 @@
 struct GsPluginPrivate {
 	PkDesktop		*desktop;
 	gboolean		 loaded;
+	GHashTable		*cache;
 };
 
 /**
@@ -49,6 +50,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->desktop = pk_desktop_new ();
+	plugin->priv->cache = g_hash_table_new_full (g_str_hash,
+						     g_str_equal,
+						     g_free,
+						     g_free);
 }
 
 /**
@@ -67,6 +72,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_object_unref (plugin->priv->desktop);
+	g_hash_table_unref (plugin->priv->cache);
 }
 
 /**
@@ -81,23 +87,33 @@ gs_plugin_desktopdb_set_metadata (GsPlugin *plugin,
 	GError *error = NULL;
 	GPtrArray *files = NULL;
 
-	/* try to get the list of desktop files for this package */
-	files = pk_desktop_get_shown_for_package (plugin->priv->desktop,
-						  pkg_name,
-						  &error);
-	if (files == NULL) {
-		g_warning ("failed to get files for %s: %s",
-			   pkg_name, error->message);
-		g_error_free (error);
-		goto out;
-	}
-	if (files->len == 0) {
-		g_debug ("not an application %s", pkg_name);
-		goto out;
-	}
+	/* is in cache */
+	desktop_file = g_hash_table_lookup (plugin->priv->cache, pkg_name);
+	if (desktop_file == NULL) {
 
-	/* add just the first desktop file */
-	desktop_file = g_ptr_array_index (files, 0);
+		/* try to get the list of desktop files for this package */
+		files = pk_desktop_get_shown_for_package (plugin->priv->desktop,
+							  pkg_name,
+							  &error);
+		if (files == NULL) {
+			g_warning ("failed to get files for %s: %s",
+				   pkg_name, error->message);
+			g_error_free (error);
+			goto out;
+		}
+		if (files->len == 0) {
+			g_debug ("not an application %s", pkg_name);
+			goto out;
+		}
+
+		/* add just the first desktop file */
+		desktop_file = g_ptr_array_index (files, 0);
+
+		/* add to the cache */
+		g_hash_table_insert (plugin->priv->cache,
+				     g_strdup (pkg_name),
+				     g_strdup (desktop_file));
+	}
 	gs_app_set_metadata (app,
 			     "datadir-desktop-filename",
 			     desktop_file);
