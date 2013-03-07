@@ -18,11 +18,17 @@ AM_CPPFLAGS =						\
 
 plugindir = $(libdir)/gs-plugins
 plugin_LTLIBRARIES =					\
-	libgs_plugin_dummy.la
+	libgs_plugin_dummy.la			\
+	libgs_plugin_hardcoded-kind.la
 
 libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
 libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+
+libgs_plugin_hardcoded_kind_la_SOURCES = gs-plugin-hardcoded-kind.c
+libgs_plugin_hardcoded_kind_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_hardcoded_kind_la_LDFLAGS = -module -avoid-version
+libgs_plugin_hardcoded_kind_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 -include $(top_srcdir)/git.mk

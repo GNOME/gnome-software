@@ -1621,6 +1621,9 @@ main (int argc, char **argv)
 		goto out;
 	}
 
+	/* FIXME: use GSettings key rather than hard-coding this */
+	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-kind", TRUE);
+
 	/* wait */
 	status = g_application_run (G_APPLICATION (priv->application), argc, argv);
 out:

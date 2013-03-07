@@ -60,6 +60,8 @@ gs_plugin_loader_func (void)
 	/* enable some that will give us predictable results */
 	ret = gs_plugin_loader_set_enabled (loader, "dummy", TRUE);
 	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-kind", TRUE);
+	g_assert (ret);
 	ret = gs_plugin_loader_set_enabled (loader, "notgoingtoexist", TRUE);
 	g_assert (!ret);
 
