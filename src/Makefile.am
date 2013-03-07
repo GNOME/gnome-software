@@ -53,6 +53,27 @@ BUILT_SOURCES =						\
 	gs-resources.c					\
 	gs-resources.h
 
+TESTS_ENVIRONMENT =						\
+	libtool --mode=execute valgrind				\
+	--quiet							\
+	--leak-check=full					\
+	--show-possibly-lost=no
+
+check_PROGRAMS =						\
+	gs-self-test
+
+gs_self_test_SOURCES =						\
+	gs-app.c						\
+	gs-self-test.c
+
+gs_self_test_LDADD =						\
+	$(GLIB_LIBS)						\
+	$(GTK_LIBS)
+
+gs_self_test_CFLAGS = $(WARNINGFLAGS_C)
+
+TESTS = gs-self-test
+
 EXTRA_DIST =						\
 	core-apps.txt					\
 	gnome-software.gresource.xml			\
