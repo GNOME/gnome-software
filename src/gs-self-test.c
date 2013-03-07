@@ -66,6 +66,8 @@ gs_plugin_loader_func (void)
 	g_assert (ret);
 	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-popular", TRUE);
 	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-ratings", TRUE);
+	g_assert (ret);
 	ret = gs_plugin_loader_set_enabled (loader, "notgoingtoexist", TRUE);
 	g_assert (!ret);
 
