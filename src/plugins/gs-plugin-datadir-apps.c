@@ -240,7 +240,8 @@ gs_plugin_refine (GsPlugin *plugin, GList *list, GError **error)
 			goto out;
 
 		/* we know it's installed as we read the desktop file */
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	}
 out:
 	return ret;
