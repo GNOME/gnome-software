@@ -38,6 +38,9 @@ typedef enum {
 	GS_PLUGIN_STATUS_UNKNOWN,
 	GS_PLUGIN_STATUS_WAITING,
 	GS_PLUGIN_STATUS_FINISHED,
+	GS_PLUGIN_STATUS_SETUP,
+	GS_PLUGIN_STATUS_DOWNLOADING,
+	GS_PLUGIN_STATUS_QUERYING,
 	GS_PLUGIN_STATUS_LAST
 } GsPluginStatus;
 
@@ -65,10 +68,9 @@ typedef enum {
 } GsPluginError;
 
 /* helpers */
-#define	gs_plugin_add_app(l,a)				(*l=g_list_prepend(*l,a))
-#define	gs_plugin_status_update(p,a,s)			(p->status_update_fn(p,a,s,p->status_update_user_data))
 #define	GS_PLUGIN_ERROR					1
 #define	GS_PLUGIN_GET_PRIVATE(x)			g_new0 (x,1)
+#define	GS_PLUGIN(x)					((GsPlugin *) x);
 
 typedef const gchar	*(*GsPluginGetNameFunc)		(void);
 typedef gdouble		 (*GsPluginGetPriorityFunc)	(GsPlugin	*plugin);
@@ -94,6 +96,11 @@ typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
 const gchar	*gs_plugin_get_name			(void);
 void		 gs_plugin_initialize			(GsPlugin	*plugin);
 void		 gs_plugin_destroy			(GsPlugin	*plugin);
+void		 gs_plugin_add_app			(GList		**list,
+							 GsApp		*app);
+void		 gs_plugin_status_update		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsPluginStatus	 status);
 gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
 							 const gchar	*value,
 							 GList		*list,

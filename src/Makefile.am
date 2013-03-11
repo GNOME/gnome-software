@@ -33,6 +33,7 @@ gnome_software_SOURCES =				\
 	gs-app.h					\
 	gs-app-widget.c					\
 	gs-app-widget.h					\
+	gs-plugin.c					\
 	gs-plugin.h					\
 	gs-plugin-loader.c				\
 	gs-plugin-loader.h				\
@@ -73,6 +74,7 @@ check_PROGRAMS =						\
 
 gs_self_test_SOURCES =						\
 	gs-app.c						\
+	gs-plugin.c						\
 	gs-plugin-loader.c					\
 	gs-plugin-loader-sync.c					\
 	gs-self-test.c

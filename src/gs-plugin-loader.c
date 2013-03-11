@@ -845,6 +845,12 @@ gs_plugin_loader_status_to_string (GsPluginStatus status)
 		return "waiting";
 	if (status == GS_PLUGIN_STATUS_FINISHED)
 		return "finished";
+	if (status == GS_PLUGIN_STATUS_SETUP)
+		return "setup";
+	if (status == GS_PLUGIN_STATUS_DOWNLOADING)
+		return "downloading";
+	if (status == GS_PLUGIN_STATUS_QUERYING)
+		return "querying";
 	return "unknown";
 }
 

@@ -72,6 +72,59 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_packagekit_progress_cb:
+ **/
+static void
+gs_plugin_packagekit_progress_cb (PkProgress *progress,
+				  PkProgressType type,
+				  gpointer user_data)
+{
+	GsPluginStatus plugin_status = GS_PLUGIN_STATUS_UNKNOWN;
+	PkStatusEnum status;
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+
+	if (type != PK_PROGRESS_TYPE_STATUS)
+		return;
+	g_object_get (progress,
+		      "status", &status,
+		      NULL);
+
+	/* set label */
+	switch (status) {
+	case PK_STATUS_ENUM_SETUP:
+	case PK_STATUS_ENUM_FINISHED:
+	case PK_STATUS_ENUM_UNKNOWN:
+		break;
+	case PK_STATUS_ENUM_WAIT:
+	case PK_STATUS_ENUM_WAITING_FOR_LOCK:
+		plugin_status = GS_PLUGIN_STATUS_WAITING;
+		break;
+	case PK_STATUS_ENUM_LOADING_CACHE:
+		plugin_status = GS_PLUGIN_STATUS_SETUP;
+		break;
+	case PK_STATUS_ENUM_DOWNLOAD:
+	case PK_STATUS_ENUM_DOWNLOAD_REPOSITORY:
+	case PK_STATUS_ENUM_DOWNLOAD_PACKAGELIST:
+	case PK_STATUS_ENUM_DOWNLOAD_FILELIST:
+	case PK_STATUS_ENUM_DOWNLOAD_CHANGELOG:
+	case PK_STATUS_ENUM_DOWNLOAD_GROUP:
+	case PK_STATUS_ENUM_DOWNLOAD_UPDATEINFO:
+		plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
+		break;
+	case PK_STATUS_ENUM_QUERY:
+	case PK_STATUS_ENUM_INFO:
+		plugin_status = GS_PLUGIN_STATUS_QUERYING;
+		break;
+	default:
+		g_warning ("no mapping for %s",
+			   pk_status_enum_to_string (status));
+		break;
+	}
+	if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
+		gs_plugin_status_update (plugin, NULL, plugin_status);
+}
+
+/**
  * gs_plugin_add_search:
  */
 gboolean
@@ -156,8 +209,8 @@ gs_plugin_add_installed (GsPlugin *plugin,
 					 -1);
 	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
 					  filter,
-					  NULL, NULL,
 					  cancellable,
+					  gs_plugin_packagekit_progress_cb, plugin,
 					  error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -194,8 +247,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH, -1);
 	results = pk_client_get_updates (PK_CLIENT(plugin->priv->task),
 					 filter,
-					 NULL, NULL,
 					 cancellable,
+					 gs_plugin_packagekit_progress_cb, plugin,
 					 error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -239,7 +292,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	results = pk_task_install_packages_sync (plugin->priv->task,
 						 (gchar **) to_array,
 						 cancellable,
-						 NULL, NULL,
+						 gs_plugin_packagekit_progress_cb, plugin,
 						 error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -298,7 +351,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 						(gchar **) to_array,
 						FALSE, FALSE,
 						cancellable,
-						NULL, NULL,
+						gs_plugin_packagekit_progress_cb, plugin,
 						error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -356,7 +409,7 @@ gs_plugin_app_update (GsPlugin *plugin,
 	results = pk_task_update_packages_sync (plugin->priv->task,
 						(gchar **) to_array,
 						cancellable,
-						NULL, NULL,
+						gs_plugin_packagekit_progress_cb, plugin,
 						error);
 	if (results == NULL) {
 		ret = FALSE;

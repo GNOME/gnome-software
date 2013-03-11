@@ -246,9 +246,25 @@ gs_main_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 	const gchar *status_text = NULL;
 
 	/* translate */
-	if (status == GS_PLUGIN_STATUS_WAITING) {
+	switch (status) {
+	case GS_PLUGIN_STATUS_WAITING:
 		/* TRANSLATORS: we're waiting for something to happen */
 		status_text = _("Waiting...");
+		break;
+	case GS_PLUGIN_STATUS_SETUP:
+		/* TRANSLATORS: we're waiting for something to happen */
+		status_text = _("Setting up...");
+		break;
+	case GS_PLUGIN_STATUS_DOWNLOADING:
+		/* TRANSLATORS: we're waiting for something to happen */
+		status_text = _("Downloading...");
+		break;
+	case GS_PLUGIN_STATUS_QUERYING:
+		/* TRANSLATORS: we're waiting for something to happen */
+		status_text = _("Querying...");
+		break;
+	default:
+		break;
 	}
 
 	/* update the label */
