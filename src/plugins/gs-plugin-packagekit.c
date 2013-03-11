@@ -159,8 +159,10 @@ gs_plugin_add_installed (GsPlugin *plugin,
 					  NULL, NULL,
 					  cancellable,
 					  error);
-	if (results == NULL)
+	if (results == NULL) {
+		ret = FALSE;
 		goto out;
+	}
 
 	/* add results */
 	ret = gs_plugin_packagekit_add_results (plugin, list, results);
