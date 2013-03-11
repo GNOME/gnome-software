@@ -92,6 +92,7 @@ gs_plugin_loader_func (void)
 	list = gs_plugin_loader_get_popular (loader, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
+	g_assert_cmpint (_status_changed_cnt, ==, 1);
 	g_assert_cmpint (g_list_length (list), ==, 6);
 	app = g_list_nth_data (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-boxes");
@@ -108,7 +109,7 @@ gs_plugin_loader_func (void)
 	list = gs_plugin_loader_get_updates (loader, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
-	g_assert_cmpint (_status_changed_cnt, ==, 1);
+	g_assert_cmpint (_status_changed_cnt, ==, 2);
 	g_assert_cmpint (g_list_length (list), ==, 2);
 	app = g_list_nth_data (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "os-update:gnome-boxes-libs;0.0.1;i386;updates-testing,libvirt-glib-devel;0.0.1;noarch;fedora");
