@@ -96,4 +96,6 @@ gboolean	 gs_plugin_loader_app_remove		(GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
+G_END_DECLS
+
 #endif /* __GS_PLUGIN_LOADER_H */
