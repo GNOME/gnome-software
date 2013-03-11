@@ -89,7 +89,7 @@ gs_plugin_loader_func (void)
 	ret = gs_plugin_loader_set_enabled (loader, "notgoingtoexist", TRUE);
 	g_assert (!ret);
 
-	list = gs_plugin_loader_get_popular (loader, &error);
+	list = gs_plugin_loader_get_popular (loader, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (g_list_length (list), ==, 6);
@@ -104,8 +104,8 @@ gs_plugin_loader_func (void)
 	g_list_free_full (list, (GDestroyNotify) g_object_unref);
 
 	/* get updates */
-	g_assert_cmpint (_status_changed_cnt, ==, 0);
-	list = gs_plugin_loader_get_updates (loader, &error);
+	_status_changed_cnt = 0;
+	list = gs_plugin_loader_get_updates (loader, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (_status_changed_cnt, ==, 1);
@@ -132,7 +132,7 @@ gs_plugin_loader_func (void)
 	ret = gs_plugin_loader_set_enabled (loader, "datadir-apps", TRUE);
 	g_assert (ret);
 
-	list = gs_plugin_loader_get_installed (loader, &error);
+	list = gs_plugin_loader_get_installed (loader, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (g_list_length (list), >, 50);
@@ -152,7 +152,7 @@ gs_plugin_loader_func (void)
 	g_list_free_full (list, (GDestroyNotify) g_object_unref);
 
 	/* do this again, which should be much faster */
-	list = gs_plugin_loader_get_installed (loader, &error);
+	list = gs_plugin_loader_get_installed (loader, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (g_list_length (list), >, 50);

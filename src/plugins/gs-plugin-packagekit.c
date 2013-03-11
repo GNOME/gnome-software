@@ -78,6 +78,7 @@ gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      const gchar *value,
 		      GList *list,
+		      GCancellable *cancellable,
 		      GError **error)
 {
 	return TRUE;
@@ -135,7 +136,10 @@ out:
  * gs_plugin_add_installed:
  */
 gboolean
-gs_plugin_add_installed (GsPlugin *plugin, GList **list, GError **error)
+gs_plugin_add_installed (GsPlugin *plugin,
+			 GList **list,
+			 GCancellable *cancellable,
+			 GError **error)
 {
 	gboolean ret = TRUE;
 	PkBitfield filter;
@@ -153,7 +157,7 @@ gs_plugin_add_installed (GsPlugin *plugin, GList **list, GError **error)
 	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
 					  filter,
 					  NULL, NULL,
-					  plugin->cancellable,
+					  cancellable,
 					  error);
 	if (results == NULL)
 		goto out;
@@ -172,7 +176,10 @@ out:
  * gs_plugin_add_updates:
  */
 gboolean
-gs_plugin_add_updates (GsPlugin *plugin, GList **list, GError **error)
+gs_plugin_add_updates (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
 {
 	gboolean ret = TRUE;
 	PkBitfield filter;
@@ -186,7 +193,7 @@ gs_plugin_add_updates (GsPlugin *plugin, GList **list, GError **error)
 	results = pk_client_get_updates (PK_CLIENT(plugin->priv->task),
 					 filter,
 					 NULL, NULL,
-					 plugin->cancellable,
+					 cancellable,
 					 error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -205,7 +212,10 @@ out:
  * gs_plugin_app_install:
  */
 gboolean
-gs_plugin_app_install (GsPlugin *plugin, GsApp *app, GError **error)
+gs_plugin_app_install (GsPlugin *plugin,
+		       GsApp *app,
+		       GCancellable *cancellable,
+		       GError **error)
 {
 	const gchar *package_id;
 	const gchar *to_array[] = { NULL, NULL };
@@ -226,7 +236,7 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app, GError **error)
 	to_array[0] = package_id;
 	results = pk_task_install_packages_sync (plugin->priv->task,
 						 (gchar **) to_array,
-						 plugin->cancellable,
+						 cancellable,
 						 NULL, NULL,
 						 error);
 	if (results == NULL) {
@@ -260,7 +270,10 @@ out:
  * gs_plugin_app_remove:
  */
 gboolean
-gs_plugin_app_remove (GsPlugin *plugin, GsApp *app, GError **error)
+gs_plugin_app_remove (GsPlugin *plugin,
+		      GsApp *app,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	const gchar *package_id;
 	const gchar *to_array[] = { NULL, NULL };
@@ -282,7 +295,7 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app, GError **error)
 	results = pk_task_remove_packages_sync (plugin->priv->task,
 						(gchar **) to_array,
 						FALSE, FALSE,
-						plugin->cancellable,
+						cancellable,
 						NULL, NULL,
 						error);
 	if (results == NULL) {
@@ -316,7 +329,10 @@ out:
  * gs_plugin_app_update:
  */
 gboolean
-gs_plugin_app_update (GsPlugin *plugin, GsApp *app, GError **error)
+gs_plugin_app_update (GsPlugin *plugin,
+		      GsApp *app,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	const gchar *package_id;
 	const gchar *to_array[] = { NULL, NULL };
@@ -337,7 +353,7 @@ gs_plugin_app_update (GsPlugin *plugin, GsApp *app, GError **error)
 	to_array[0] = package_id;
 	results = pk_task_update_packages_sync (plugin->priv->task,
 						(gchar **) to_array,
-						plugin->cancellable,
+						cancellable,
 						NULL, NULL,
 						error);
 	if (results == NULL) {

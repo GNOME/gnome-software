@@ -45,7 +45,10 @@ gs_plugin_get_priority (GsPlugin *plugin)
  * gs_plugin_add_popular:
  */
 gboolean
-gs_plugin_add_popular (GsPlugin *plugin, GList **list, GError **error)
+gs_plugin_add_popular (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
 {
 	GsApp *app;
 	guint i;

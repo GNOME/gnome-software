@@ -69,7 +69,11 @@ gs_plugin_destroy (GsPlugin *plugin)
  * gs_plugin_add_search:
  */
 gboolean
-gs_plugin_add_search (GsPlugin *plugin, const gchar *value, GList *list, GError **error)
+gs_plugin_add_search (GsPlugin *plugin,
+		      const gchar *value,
+		      GList *list,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	return TRUE;
 }
@@ -78,7 +82,10 @@ gs_plugin_add_search (GsPlugin *plugin, const gchar *value, GList *list, GError 
  * gs_plugin_add_updates:
  */
 gboolean
-gs_plugin_add_updates (GsPlugin *plugin, GList **list, GError **error)
+gs_plugin_add_updates (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
 {
 	GsApp *app;
 
@@ -116,7 +123,10 @@ gs_plugin_add_updates (GsPlugin *plugin, GList **list, GError **error)
  * gs_plugin_add_installed:
  */
 gboolean
-gs_plugin_add_installed (GsPlugin *plugin, GList **list, GError **error)
+gs_plugin_add_installed (GsPlugin *plugin,
+			 GList **list,
+			 GCancellable *cancellable,
+			 GError **error)
 {
 	GsApp *app;
 
@@ -134,7 +144,10 @@ gs_plugin_add_installed (GsPlugin *plugin, GList **list, GError **error)
  * gs_plugin_add_popular:
  */
 gboolean
-gs_plugin_add_popular (GsPlugin *plugin, GList **list, GError **error)
+gs_plugin_add_popular (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
 {
 	GsApp *app;
 
@@ -152,7 +165,10 @@ gs_plugin_add_popular (GsPlugin *plugin, GList **list, GError **error)
  * gs_plugin_refine:
  */
 gboolean
-gs_plugin_refine (GsPlugin *plugin, GList *list, GError **error)
+gs_plugin_refine (GsPlugin *plugin,
+		  GList *list,
+		  GCancellable *cancellable,
+		  GError **error)
 {
 	GsApp *app;
 	GList *l;

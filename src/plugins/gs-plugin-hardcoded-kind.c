@@ -45,7 +45,10 @@ gs_plugin_get_priority (GsPlugin *plugin)
  * gs_plugin_refine:
  */
 gboolean
-gs_plugin_refine (GsPlugin *plugin, GList *list, GError **error)
+gs_plugin_refine (GsPlugin *plugin,
+		  GList *list,
+		  GCancellable *cancellable,
+		  GError **error)
 {
 	GList *l;
 	GsApp *app;

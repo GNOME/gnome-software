@@ -64,13 +64,17 @@ GType		 gs_plugin_loader_get_type		(void);
 
 GsPluginLoader	*gs_plugin_loader_new			(void);
 GList		*gs_plugin_loader_get_installed		(GsPluginLoader	*plugin_loader,
+							 GCancellable	*cancellable,
 							 GError		**error);
 GList		*gs_plugin_loader_get_updates		(GsPluginLoader	*plugin_loader,
+							 GCancellable	*cancellable,
 							 GError		**error);
 GList		*gs_plugin_loader_get_popular		(GsPluginLoader	*plugin_loader,
+							 GCancellable	*cancellable,
 							 GError		**error);
 GList		*gs_plugin_loader_search		(GsPluginLoader	*plugin_loader,
 							 const gchar	*value,
+							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
 							 GError		**error);
@@ -81,12 +85,15 @@ void		 gs_plugin_loader_set_location		(GsPluginLoader	*plugin_loader,
 							 const gchar	*location);
 gboolean	 gs_plugin_loader_app_install		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
+							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_loader_app_update		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
+							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_loader_app_remove		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
+							 GCancellable	*cancellable,
 							 GError		**error);
 
 #endif /* __GS_PLUGIN_LOADER_H */

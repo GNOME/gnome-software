@@ -126,7 +126,10 @@ out:
  * gs_plugin_refine:
  */
 gboolean
-gs_plugin_refine (GsPlugin *plugin, GList *list, GError **error)
+gs_plugin_refine (GsPlugin *plugin,
+		  GList *list,
+		  GCancellable *cancellable,
+		  GError **error)
 {
 	GsApp *app;
 	GList *l;

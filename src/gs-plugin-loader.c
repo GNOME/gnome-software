@@ -63,6 +63,7 @@ gs_plugin_loader_error_quark (void)
 static gboolean
 gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     GList *list,
+			     GCancellable *cancellable,
 			     GError **error)
 {
 	gboolean ret = TRUE;
@@ -84,7 +85,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
 		g_timer_start (plugin->timer);
-		ret = plugin_func (plugin, list, error);
+		ret = plugin_func (plugin, list, cancellable, error);
 		if (!ret)
 			goto out;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
@@ -103,9 +104,10 @@ out:
 static GList *
 gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			      const gchar *function_name,
+			      GCancellable *cancellable,
 			      GError **error)
 {
-	gboolean ret;
+	gboolean ret = TRUE;
 	GList *list = NULL;
 	GsPlugin *plugin;
 	GsPluginResultsFunc plugin_func = NULL;
@@ -116,6 +118,11 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
+		ret = g_cancellable_set_error_if_cancelled (cancellable, error);
+		if (ret) {
+			ret = FALSE;
+			goto out;
+		}
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
@@ -124,7 +131,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
 		g_timer_start (plugin->timer);
-		ret = plugin_func (plugin, &list, error);
+		ret = plugin_func (plugin, &list, cancellable, error);
 		if (!ret)
 			goto out;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
@@ -135,12 +142,19 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	}
 
 	/* run refine() on each one */
-	ret = gs_plugin_loader_run_refine (plugin_loader, list, error);
+	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   list,
+					   cancellable,
+					   error);
 	if (!ret)
 		goto out;
 
 	/* success */
 out:
+	if (!ret) {
+		g_list_free_full (list, (GDestroyNotify) g_object_unref);
+		list = NULL;
+	}
 	return list;
 }
 
@@ -187,7 +201,9 @@ gs_plugin_loader_remove_invalid (GList *list)
  * gs_plugin_loader_get_updates:
  **/
 GList *
-gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader, GError **error)
+gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader,
+			      GCancellable *cancellable,
+			      GError **error)
 {
 	GList *list;
 	GList *l;
@@ -199,6 +215,7 @@ gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader, GError **error)
 
 	list = gs_plugin_loader_run_results (plugin_loader,
 					     "gs_plugin_add_updates",
+					     cancellable,
 					     error);
 	if (list == NULL) {
 		g_set_error (error,
@@ -257,11 +274,14 @@ out:
  * gs_plugin_loader_get_installed:
  **/
 GList *
-gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader, GError **error)
+gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader,
+				GCancellable *cancellable,
+				GError **error)
 {
 	GList *list;
 	list = gs_plugin_loader_run_results (plugin_loader,
 					     "gs_plugin_add_installed",
+					     cancellable,
 					     error);
 	list = gs_plugin_loader_remove_invalid (list);
 	if (list == NULL) {
@@ -279,11 +299,14 @@ out:
  * gs_plugin_loader_get_popular:
  **/
 GList *
-gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader, GError **error)
+gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
+			      GCancellable *cancellable,
+			      GError **error)
 {
 	GList *list;
 	list = gs_plugin_loader_run_results (plugin_loader,
 					     "gs_plugin_add_popular",
+					     cancellable,
 					     error);
 	list = gs_plugin_loader_remove_invalid (list);
 	if (list == NULL) {
@@ -301,10 +324,13 @@ out:
  * gs_plugin_loader_search:
  **/
 GList *
-gs_plugin_loader_search (GsPluginLoader *plugin_loader, const gchar *value, GError **error)
+gs_plugin_loader_search (GsPluginLoader *plugin_loader,
+			 const gchar *value,
+			 GCancellable *cancellable,
+			 GError **error)
 {
 	const gchar *function_name = "gs_plugin_add_search";
-	gboolean ret;
+	gboolean ret = TRUE;
 	GList *list = NULL;
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
@@ -315,6 +341,11 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader, const gchar *value, GErr
 		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
+		ret = g_cancellable_set_error_if_cancelled (cancellable, error);
+		if (ret) {
+			ret = FALSE;
+			goto out;
+		}
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
@@ -323,7 +354,7 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader, const gchar *value, GErr
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
 		g_timer_start (plugin->timer);
-		ret = plugin_func (plugin, value, &list, error);
+		ret = plugin_func (plugin, value, &list, cancellable, error);
 		if (!ret)
 			goto out;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
@@ -334,7 +365,10 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader, const gchar *value, GErr
 	}
 
 	/* run refine() on each one */
-	ret = gs_plugin_loader_run_refine (plugin_loader, list, error);
+	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   list,
+					   cancellable,
+					   error);
 	if (!ret)
 		goto out;
 
@@ -348,6 +382,10 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader, const gchar *value, GErr
 		goto out;
 	}
 out:
+	if (!ret) {
+		g_list_free_full (list, (GDestroyNotify) g_object_unref);
+		list = NULL;
+	}
 	return list;
 }
 
@@ -359,6 +397,7 @@ static gboolean
 gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			     GsApp *app,
 			     const gchar *function_name,
+			     GCancellable *cancellable,
 			     GError **error)
 {
 	gboolean exists;
@@ -373,6 +412,11 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
+		ret = g_cancellable_set_error_if_cancelled (cancellable, error);
+		if (ret) {
+			ret = FALSE;
+			goto out;
+		}
 		exists = g_module_symbol (plugin->module,
 					  function_name,
 					  (gpointer *) &plugin_func);
@@ -381,7 +425,7 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
 		g_timer_start (plugin->timer);
-		ret = plugin_func (plugin, app, &error_local);
+		ret = plugin_func (plugin, app, cancellable, &error_local);
 		if (!ret) {
 			if (g_error_matches (error_local,
 					     GS_PLUGIN_ERROR,
@@ -417,11 +461,15 @@ out:
  * gs_plugin_loader_app_update:
  **/
 gboolean
-gs_plugin_loader_app_update (GsPluginLoader *plugin_loader, GsApp *app, GError **error)
+gs_plugin_loader_app_update (GsPluginLoader *plugin_loader,
+			     GsApp *app,
+			     GCancellable *cancellable,
+			     GError **error)
 {
 	return gs_plugin_loader_run_action (plugin_loader,
 					    app,
 					    "gs_plugin_app_update",
+					    cancellable,
 					    error);
 }
 
@@ -429,11 +477,15 @@ gs_plugin_loader_app_update (GsPluginLoader *plugin_loader, GsApp *app, GError *
  * gs_plugin_loader_app_install:
  **/
 gboolean
-gs_plugin_loader_app_install (GsPluginLoader *plugin_loader, GsApp *app, GError **error)
+gs_plugin_loader_app_install (GsPluginLoader *plugin_loader,
+			      GsApp *app,
+			      GCancellable *cancellable,
+			      GError **error)
 {
 	return gs_plugin_loader_run_action (plugin_loader,
 					    app,
 					    "gs_plugin_app_install",
+					    cancellable,
 					    error);
 }
 
@@ -441,11 +493,15 @@ gs_plugin_loader_app_install (GsPluginLoader *plugin_loader, GsApp *app, GError 
  * gs_plugin_loader_app_remove:
  **/
 gboolean
-gs_plugin_loader_app_remove (GsPluginLoader *plugin_loader, GsApp *app, GError **error)
+gs_plugin_loader_app_remove (GsPluginLoader *plugin_loader,
+			     GsApp *app,
+			     GCancellable *cancellable,
+			     GError **error)
 {
 	return gs_plugin_loader_run_action (plugin_loader,
 					    app,
 					    "gs_plugin_app_remove",
+					    cancellable,
 					    error);
 }
 

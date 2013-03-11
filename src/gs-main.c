@@ -851,7 +851,9 @@ gs_main_get_installed_packages (GsMainPrivate *priv)
 	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
 
 	/* get popular apps */
-	list = gs_plugin_loader_get_installed (priv->plugin_loader, &error);
+	list = gs_plugin_loader_get_installed (priv->plugin_loader,
+					       priv->cancellable,
+					       &error);
 	if (list == NULL) {
 		g_warning ("failed to get installed apps: %s", error->message);
 		g_error_free (error);
@@ -909,7 +911,9 @@ gs_main_get_popular (GsMainPrivate *priv)
 	GtkTreeIter iter;
 
 	/* get popular apps */
-	list = gs_plugin_loader_get_popular (priv->plugin_loader, &error);
+	list = gs_plugin_loader_get_popular (priv->plugin_loader,
+					     priv->cancellable,
+					     &error);
 	if (list == NULL) {
 		g_warning ("failed to get popular apps: %s", error->message);
 		g_error_free (error);

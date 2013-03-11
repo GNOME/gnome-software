@@ -702,7 +702,10 @@ gs_plugin_hardcoded_ratings_add (GsPlugin *plugin, GError **error)
  * gs_plugin_refine:
  */
 gboolean
-gs_plugin_refine (GsPlugin *plugin, GList *list, GError **error)
+gs_plugin_refine (GsPlugin *plugin,
+		  GList *list,
+		  GCancellable *cancellable,
+		  GError **error)
 {
 	gboolean ret = TRUE;
 	GList *l;
