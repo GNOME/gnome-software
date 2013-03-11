@@ -836,25 +836,6 @@ gs_plugin_loader_set_enabled (GsPluginLoader *plugin_loader,
 }
 
 /**
- * gs_plugin_loader_status_to_string:
- */
-static const gchar *
-gs_plugin_loader_status_to_string (GsPluginStatus status)
-{
-	if (status == GS_PLUGIN_STATUS_WAITING)
-		return "waiting";
-	if (status == GS_PLUGIN_STATUS_FINISHED)
-		return "finished";
-	if (status == GS_PLUGIN_STATUS_SETUP)
-		return "setup";
-	if (status == GS_PLUGIN_STATUS_DOWNLOADING)
-		return "downloading";
-	if (status == GS_PLUGIN_STATUS_QUERYING)
-		return "querying";
-	return "unknown";
-}
-
-/**
  * gs_plugin_loader_status_update_cb:
  */
 static void
@@ -871,7 +852,7 @@ gs_plugin_loader_status_update_cb (GsPlugin *plugin,
 
 	/* new, or an app, so emit */
 	g_debug ("emitting %s(%s)",
-		 gs_plugin_loader_status_to_string (status),
+		 gs_plugin_status_to_string (status),
 		 app != NULL ? gs_app_get_id (app) : "<general>");
 	plugin_loader->priv->status_last = status;
 	g_signal_emit (plugin_loader,

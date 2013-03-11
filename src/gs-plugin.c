@@ -26,6 +26,25 @@
 #include "gs-plugin.h"
 
 /**
+ * gs_plugin_status_to_string:
+ */
+const gchar *
+gs_plugin_status_to_string (GsPluginStatus status)
+{
+	if (status == GS_PLUGIN_STATUS_WAITING)
+		return "waiting";
+	if (status == GS_PLUGIN_STATUS_FINISHED)
+		return "finished";
+	if (status == GS_PLUGIN_STATUS_SETUP)
+		return "setup";
+	if (status == GS_PLUGIN_STATUS_DOWNLOADING)
+		return "downloading";
+	if (status == GS_PLUGIN_STATUS_QUERYING)
+		return "querying";
+	return "unknown";
+}
+
+/**
  * gs_plugin_add_app:
  **/
 void

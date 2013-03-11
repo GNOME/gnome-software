@@ -101,6 +101,7 @@ void		 gs_plugin_add_app			(GList		**list,
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
+const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
 gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
 							 const gchar	*value,
 							 GList		*list,
