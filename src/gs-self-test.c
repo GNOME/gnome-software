@@ -27,6 +27,7 @@
 
 #include "gs-app.h"
 #include "gs-plugin-loader.h"
+#include "gs-plugin-loader-sync.h"
 
 static void
 gs_app_func (void)

@@ -836,24 +836,24 @@ out:
 }
 
 /**
- * gs_main_get_installed_packages:
+ * gs_main_get_installed_cb:
  **/
 static void
-gs_main_get_installed_packages (GsMainPrivate *priv)
+gs_main_get_installed_cb (GObject *source_object,
+			  GAsyncResult *res,
+			  gpointer user_data)
 {
-	GtkWidget *widget;
 	GError *error = NULL;
 	GList *l;
 	GList *list;
 	GsApp *app;
+	GsMainPrivate *priv = (GsMainPrivate *) user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GtkWidget *widget;
 
-	/* remove old entries */
-	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
-
-	/* get popular apps */
-	list = gs_plugin_loader_get_installed (priv->plugin_loader,
-					       priv->cancellable,
-					       &error);
+	list = gs_plugin_loader_get_installed_finish (plugin_loader,
+						      res,
+						      &error);
 	if (list == NULL) {
 		g_warning ("failed to get installed apps: %s", error->message);
 		g_error_free (error);
@@ -881,6 +881,22 @@ out:
 }
 
 /**
+ * gs_main_get_installed:
+ **/
+static void
+gs_main_get_installed (GsMainPrivate *priv)
+{
+	/* remove old entries */
+	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
+
+	/* get popular apps */
+	gs_plugin_loader_get_installed_async (priv->plugin_loader,
+					      priv->cancellable,
+					      gs_main_get_installed_cb,
+					      priv);
+}
+
+/**
  * gs_main_get_updates:
  **/
 static void
@@ -897,33 +913,39 @@ gs_main_get_updates (GsMainPrivate *priv)
 				     (GAsyncReadyCallback) gs_main_get_updates_cb, priv);
 }
 
+
 /**
- * gs_main_get_popular:
+ * gs_main_get_popular_cb:
  **/
 static void
-gs_main_get_popular (GsMainPrivate *priv)
+gs_main_get_popular_cb (GObject *source_object,
+			GAsyncResult *res,
+			gpointer user_data)
 {
 	GError *error = NULL;
 	GList *l;
 	GList *list;
 	GsApp *app;
+	GsMainPrivate *priv = (GsMainPrivate *) user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkListStore *liststore;
 	GtkTreeIter iter;
 
 	/* get popular apps */
-	list = gs_plugin_loader_get_popular (priv->plugin_loader,
-					     priv->cancellable,
-					     &error);
+	list = gs_plugin_loader_get_popular_finish (plugin_loader,
+						    res,
+						    &error);
 	if (list == NULL) {
 		g_warning ("failed to get popular apps: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}
+
 	liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_popular"));
 	gtk_list_store_clear (liststore);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		g_debug ("adding favourite %s", gs_app_get_id (app));
+		g_debug ("adding popular %s", gs_app_get_id (app));
 		gtk_list_store_append (liststore, &iter);
 		gtk_list_store_set (liststore,
 				    &iter,
@@ -934,6 +956,25 @@ gs_main_get_popular (GsMainPrivate *priv)
 	}
 out:
 	return;
+}
+
+/**
+ * gs_main_get_popular:
+ **/
+static void
+gs_main_get_popular (GsMainPrivate *priv)
+{
+	GtkListStore *liststore;
+
+	/* remove old entries */
+	liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_popular"));
+	gtk_list_store_clear (liststore);
+
+	/* get popular apps */
+	gs_plugin_loader_get_popular_async (priv->plugin_loader,
+					    priv->cancellable,
+					    gs_main_get_popular_cb,
+					    priv);
 }
 
 /**
@@ -1029,7 +1070,7 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
 		gs_main_get_popular (priv);
 		break;
 	case GS_MAIN_MODE_INSTALLED:
-		gs_main_get_installed_packages (priv);
+		gs_main_get_installed (priv);
 		break;
 	case GS_MAIN_MODE_UPDATES:
 		gs_main_get_updates (priv);

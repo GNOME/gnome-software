@@ -36,6 +36,8 @@ gnome_software_SOURCES =				\
 	gs-plugin.h					\
 	gs-plugin-loader.c				\
 	gs-plugin-loader.h				\
+	gs-plugin-loader-sync.c				\
+	gs-plugin-loader-sync.h				\
 	ch-markdown.c					\
 	ch-markdown.h					\
 	egg-list-box.c					\
@@ -72,6 +74,7 @@ check_PROGRAMS =						\
 gs_self_test_SOURCES =						\
 	gs-app.c						\
 	gs-plugin-loader.c					\
+	gs-plugin-loader-sync.c					\
 	gs-self-test.c
 
 gs_self_test_LDADD =						\
