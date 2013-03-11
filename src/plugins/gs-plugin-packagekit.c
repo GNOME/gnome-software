@@ -138,11 +138,15 @@ gs_plugin_add_search (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_packagekit_add_results:
+ * gs_plugin_packagekit_add_installed_results:
  */
 static gboolean
-gs_plugin_packagekit_add_results (GsPlugin *plugin, GList **list, PkResults *results)
+gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
+					    GList **list,
+					    PkResults *results,
+					    GError **error)
 {
+	gboolean ret = TRUE;
 	GPtrArray *array = NULL;
 	GsApp *app;
 	guint i;
@@ -152,9 +156,13 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin, GList **list, PkResults *res
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
 	if (error_code != NULL) {
-		g_warning ("failed to get-packages: %s, %s",
-			   pk_error_enum_to_string (pk_error_get_code (error_code)),
-			   pk_error_get_details (error_code));
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to get-packages: %s, %s",
+			     pk_error_enum_to_string (pk_error_get_code (error_code)),
+			     pk_error_get_details (error_code));
 		goto out;
 	}
 
@@ -182,7 +190,7 @@ out:
 		g_object_unref (error_code);
 	if (array != NULL)
 		g_ptr_array_unref (array);
-	return TRUE;
+	return ret;
 }
 
 /**
@@ -218,12 +226,85 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	}
 
 	/* add results */
-	ret = gs_plugin_packagekit_add_results (plugin, list, results);
+	ret = gs_plugin_packagekit_add_installed_results (plugin,
+							  list,
+							  results,
+							  error);
 	if (!ret)
 		goto out;
 out:
 	if (results != NULL)
 		g_object_unref (results);
+	return ret;
+}
+
+/**
+ * gs_plugin_packagekit_add_updates_results:
+ */
+static gboolean
+gs_plugin_packagekit_add_updates_results (GsPlugin *plugin,
+					  GList **list,
+					  PkResults *results,
+					  GError **error)
+{
+	gboolean ret = TRUE;
+	gchar *package_id;
+	gchar **split;
+	gchar *update_text;
+	GPtrArray *array = NULL;
+	GsApp *app;
+	guint i;
+	PkError *error_code = NULL;
+	PkUpdateDetail *update_detail;
+
+	/* check error code */
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to get-update-details: %s, %s",
+			     pk_error_enum_to_string (pk_error_get_code (error_code)),
+			     pk_error_get_details (error_code));
+		goto out;
+	}
+
+	/* get data */
+	array = pk_results_get_update_detail_array (results);
+	if (array->len == 0) {
+		ret = FALSE;
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "no update details were returned");
+		goto out;
+	}
+	for (i = 0; i < array->len; i++) {
+		update_detail = g_ptr_array_index (array, i);
+		g_object_get (update_detail,
+			      "package-id", &package_id,
+			      "update-text", &update_text,
+			      NULL);
+		split = pk_package_id_split (package_id);
+		app = gs_app_new (package_id);
+		gs_app_set_metadata (app, "package-id", package_id);
+		gs_app_set_metadata (app, "package-name", split[PK_PACKAGE_ID_NAME]);
+		gs_app_set_metadata (app, "update-name", split[PK_PACKAGE_ID_NAME]);
+		gs_app_set_metadata (app, "update-details", update_text);
+		gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
+		gs_plugin_add_app (list, app);
+		g_free (package_id);
+		g_free (update_text);
+		g_strfreev (split);
+	}
+out:
+	if (error_code != NULL)
+		g_object_unref (error_code);
+	if (array != NULL)
+		g_ptr_array_unref (array);
 	return ret;
 }
 
@@ -237,15 +318,18 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GError **error)
 {
 	gboolean ret = TRUE;
+	gchar **package_ids = NULL;
 	PkBitfield filter;
-	PkResults *results;
+	PkPackageSack *sack = NULL;
+	PkResults *results = NULL;
+	PkResults *results2 = NULL;
 
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 
 	/* do sync call */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH, -1);
-	results = pk_client_get_updates (PK_CLIENT(plugin->priv->task),
+	results = pk_client_get_updates (PK_CLIENT (plugin->priv->task),
 					 filter,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, plugin,
@@ -255,11 +339,36 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		goto out;
 	}
 
+	/* get update details */
+	sack = pk_results_get_package_sack (results);
+	if (pk_package_sack_get_size (sack) == 0)
+		goto out;
+	package_ids = pk_package_sack_get_ids (sack);
+	results2 = pk_client_get_update_detail (PK_CLIENT (plugin->priv->task),
+						package_ids,
+						cancellable,
+						gs_plugin_packagekit_progress_cb, plugin,
+						error);
+	if (results2 == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+
 	/* add results */
-	ret = gs_plugin_packagekit_add_results (plugin, list, results);
+	ret = gs_plugin_packagekit_add_updates_results (plugin,
+							list,
+							results2,
+							error);
+	if (!ret)
+		goto out;
 out:
+	g_strfreev (package_ids);
+	if (sack != NULL)
+		g_object_unref (sack);
 	if (results != NULL)
 		g_object_unref (results);
+	if (results2 != NULL)
+		g_object_unref (results2);
 	return ret;
 }
 

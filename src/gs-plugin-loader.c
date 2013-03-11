@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <glib/gi18n.h>
+
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
 
@@ -160,7 +162,14 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	if (!ret)
 		goto out;
 
-	/* success */
+	/* no results */
+	if (list == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_LOADER_ERROR,
+			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     "no updates to show");
+		goto out;
+	}
 out:
 	if (!ret) {
 		g_list_free_full (list, (GDestroyNotify) g_object_unref);
@@ -257,6 +266,7 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 					GCancellable *cancellable)
 {
 	gboolean has_os_update = FALSE;
+	GdkPixbuf *pixbuf = NULL;
 	GError *error = NULL;
 	GList *l;
 	GsApp *app;
@@ -288,7 +298,8 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 
 	/* smush them all together */
 	if (has_os_update) {
-		str_summary = g_string_new ("This updates the system:\n");
+		str_summary = g_string_new (_("Includes performance, stability and security improvements for all users"));
+		g_string_append (str_summary, "\n\n\n");
 		str_id = g_string_new ("os-update:");
 		for (l = state->list; l != NULL; l = l->next) {
 			app_tmp = GS_APP (l->data);
@@ -296,17 +307,33 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 				continue;
 			g_string_append_printf (str_id, "%s,",
 						gs_app_get_id (app_tmp));
-			g_string_append_printf (str_summary, "%s\n",
-						gs_app_get_summary (app_tmp));
+			g_string_append_printf (str_summary, "%s:\n\n%s\n\n",
+						gs_app_get_metadata_item (app_tmp, "update-name"),
+						gs_app_get_metadata_item (app_tmp, "update-details"));
 		}
 		g_string_truncate (str_id, str_id->len - 1);
 		g_string_truncate (str_summary, str_summary->len - 1);
 
+		/* load icon */
+		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+						   "software-update-available-symbolic",
+						   64,
+						   GTK_ICON_LOOKUP_USE_BUILTIN |
+						   GTK_ICON_LOOKUP_FORCE_SIZE,
+						   &error);
+		if (pixbuf == NULL) {
+			g_warning ("Failed to find software-update-available-symbolic: %s",
+				   error->message);
+			g_error_free (error);
+		}
+
 		/* create new meta object */
 		app = gs_app_new (str_id->str);
 		gs_app_set_kind (app, GS_APP_KIND_OS_UPDATE);
-		gs_app_set_name (app, "OS Update");
+		gs_app_set_name (app, _("OS Updates"));
 		gs_app_set_summary (app, str_summary->str);
+		gs_app_set_version (app, "3.6.3");
+		gs_app_set_pixbuf (app, pixbuf);
 		gs_plugin_add_app (&state->list, app);
 
 		/* remove any packages that are not proper applications or
@@ -327,11 +354,12 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 	state->ret = TRUE;
 	cd_plugin_loader_get_all_state_finish (state, NULL);
 out:
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
 	if (str_id != NULL)
 		g_string_free (str_id, TRUE);
 	if (str_summary != NULL)
 		g_string_free (str_summary, TRUE);
-	return;
 }
 
 /**

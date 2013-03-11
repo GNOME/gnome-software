@@ -53,12 +53,10 @@ typedef struct {
 	GtkApplication		*application;
 	GtkBuilder		*builder;
 	GtkIconSize		 custom_icon_size;
-	PkDesktop		*desktop;
 	PkTask			*task;
 	guint			 waiting_tab_id;
 	EggListBox		*list_box_installed;
 	EggListBox		*list_box_updates;
-	GsApp			*os_update;
 	GtkCssProvider		*provider;
 	gboolean		ignore_primary_buttons;
 	GsPluginLoader		*plugin_loader;
@@ -424,274 +422,17 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 //	gs_app_widget_set_status (app_widget, "Installing...");
 }
 
-/**
- * gs_main_installed_add_package:
- **/
-static void
-gs_main_installed_add_package (GsMainPrivate *priv, PkPackage *pkg)
-{
-	const gchar *description;
-	gchar *update_changelog = NULL;
-	gchar *update_text = NULL;
-	GdkPixbuf *pixbuf;
-	GsApp *app = NULL;
-	GtkWidget *widget;
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
-	pixbuf = gtk_widget_render_icon_pixbuf (widget,
-						"icon-missing",
-						priv->custom_icon_size);
-
-	widget = gs_app_widget_new ();
-	g_signal_connect (widget, "button-clicked",
-			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
-			  priv);
-	gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-				GS_APP_WIDGET_KIND_UPDATE);
-
-	/* try to get update data if it's present */
-	g_object_get (pkg,
-		      "update-text", &update_text,
-		      "update-changelog", &update_changelog,
-		      NULL);
-	if (update_text != NULL && update_text[0] != '\0')
-		description = update_text;
-	else if (update_changelog != NULL && update_changelog[0] != '\0')
-		description = update_changelog;
-	else
-		description = pk_package_get_summary (pkg);
-	gs_app_set_summary (app, description);
-	gs_app_set_id (app, pk_package_get_id (pkg));
-	gs_app_set_name (app, pk_package_get_summary (pkg));
-	gs_app_set_pixbuf (app, pixbuf);
-	gs_app_set_version (app, pk_package_get_version (pkg));
-	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
-	gtk_widget_show (widget);
-	if (pixbuf != NULL)
-		g_object_unref (pixbuf);
-	g_object_unref (app);
-	g_free (update_text);
-	g_free (update_changelog);
-}
-
-/**
- * gs_main_installed_add_desktop_file:
- **/
-static void
-gs_main_installed_add_desktop_file (GsMainPrivate *priv,
-				    PkPackage *pkg,
-				    const gchar *desktop_file)
-{
-	gboolean ret;
-	gchar *comment = NULL;
-	gchar *icon = NULL;
-	gchar *name = NULL;
-	gchar *version_tmp = NULL;
-	GdkPixbuf *pixbuf = NULL;
-	GError *error = NULL;
-	GKeyFile *key_file;
-	GtkWidget *widget;
-	GsApp *app = NULL;
-
-	/* load desktop file */
-	key_file = g_key_file_new ();
-	ret = g_key_file_load_from_file (key_file,
-					 desktop_file,
-					 G_KEY_FILE_NONE,
-					 &error);
-	if (!ret) {
-		g_warning ("failed to get files for %s: %s",
-			   pk_package_get_id (pkg),
-			   error->message);
-		g_error_free (error);
-		goto out;
-	}
-
-	/* get desktop data */
-	name = g_key_file_get_string (key_file,
-				      G_KEY_FILE_DESKTOP_GROUP,
-				      G_KEY_FILE_DESKTOP_KEY_NAME,
-				      NULL);
-	if (name == NULL)
-		name = g_strdup (pk_package_get_name (pkg));
-	icon = g_key_file_get_string (key_file,
-				      G_KEY_FILE_DESKTOP_GROUP,
-				      G_KEY_FILE_DESKTOP_KEY_ICON,
-				      NULL);
-	if (icon == NULL)
-		icon = g_strdup (GTK_STOCK_MISSING_IMAGE);
-
-	/* prefer the update text */
-	g_object_get (pkg,
-		      "update-text", &comment,
-		      NULL);
-	if (comment == NULL || comment[0] == '\0') {
-		g_object_get (pkg,
-			      "update-changelog", &comment,
-			      NULL);
-	}
-	if (comment == NULL || comment[0] == '\0') {
-		comment = g_key_file_get_string (key_file,
-						 G_KEY_FILE_DESKTOP_GROUP,
-						 G_KEY_FILE_DESKTOP_KEY_COMMENT,
-						 NULL);
-	}
-	if (comment == NULL)
-		comment = g_strdup (pk_package_get_summary (pkg));
-
-	/* load icon */
-	if (icon != NULL && icon[0] == '/') {
-		pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
-							   GS_MAIN_ICON_SIZE,
-							   GS_MAIN_ICON_SIZE,
-							   &error);
-	} else {
-		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						   icon,
-						   GS_MAIN_ICON_SIZE,
-						   GTK_ICON_LOOKUP_USE_BUILTIN |
-						   GTK_ICON_LOOKUP_FORCE_SIZE,
-						   &error);
-		if (pixbuf == NULL) {
-			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
-			pixbuf = gtk_widget_render_icon_pixbuf (widget,
-								icon,
-								priv->custom_icon_size);
-		}
-	}
-	if (pixbuf == NULL) {
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
-		pixbuf = gtk_widget_render_icon_pixbuf (widget,
-							GTK_STOCK_MISSING_IMAGE,
-							priv->custom_icon_size);
-		g_warning ("Failed to open theme icon or builtin %s: %s",
-			   icon,
-			   error->message);
-		g_error_free (error);
-	}
-
-	/* add to list store */
-	widget = gs_app_widget_new ();
-	g_signal_connect (widget, "button-clicked",
-			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
-			  priv);
-	gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-				GS_APP_WIDGET_KIND_UPDATE);
-	app = gs_app_new (pk_package_get_id (pkg));
-	gs_app_set_summary (app, comment);
-	gs_app_set_name (app, name);
-	gs_app_set_pixbuf (app, pixbuf);
-	gs_app_set_version (app, pk_package_get_version (pkg));
-	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
-	gtk_widget_show (widget);
-out:
-	if (app != NULL)
-		g_object_unref (app);
-	if (pixbuf != NULL)
-		g_object_unref (pixbuf);
-	g_key_file_unref (key_file);
-	g_free (name);
-	g_free (comment);
-	g_free (icon);
-	g_free (version_tmp);
-}
-
+#if 0
 /**
  * gs_main_installed_add_os_update:
  **/
 static void
 gs_main_installed_add_os_update (GsMainPrivate *priv, PkPackage *pkg)
 {
-	GdkPixbuf *pixbuf = NULL;
-	GError *error = NULL;
-	GtkWidget *widget;
-
-	/* try to find existing OS Update entry */
-	if (priv->os_update != NULL) {
-		gs_app_set_name (priv->os_update, _("OS Updates"));
-		goto out;
-	}
-
-	/* add OS Update entry */
-	widget = gs_app_widget_new ();
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   "software-update-available-symbolic",
-					   GS_MAIN_ICON_SIZE,
-					   GTK_ICON_LOOKUP_USE_BUILTIN |
-					   GTK_ICON_LOOKUP_FORCE_SIZE,
-					   &error);
-	if (pixbuf == NULL) {
-		g_warning ("Failed to find software-update-available-symbolic: %s",
-			   error->message);
-		g_error_free (error);
-	}
-
-	priv->os_update = gs_app_new ("");
-	g_signal_connect (widget, "button-clicked",
-			  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
-			  priv);
-	gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-				GS_APP_WIDGET_KIND_UPDATE);
-	gs_app_set_name (priv->os_update, _("OS Update"));
-	gs_app_set_summary (priv->os_update, _("Includes performance, stability and security improvements for all users"));
-	gs_app_set_pixbuf (priv->os_update, pixbuf);
-	gs_app_set_version (priv->os_update, "3.4.3");
-	gs_app_widget_set_app (GS_APP_WIDGET (widget), priv->os_update);
-
 	/* TRANSLATORS: the update requires the user to reboot the computer */
 	gs_app_widget_set_status (GS_APP_WIDGET (widget), _("Requires restart"));
-	gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
-	gtk_widget_show_all (widget);
-	g_object_add_weak_pointer (G_OBJECT (widget),
-				   (gpointer *) &widget);
-out:
-	if (pixbuf != NULL)
-		g_object_unref (pixbuf);
 }
-
-/**
- * gs_main_installed_add_package:
- **/
-static void
-gs_main_installed_add_item (GsMainPrivate *priv, PkPackage *pkg)
-{
-	const gchar *desktop_file;
-	GError *error = NULL;
-	GPtrArray *files = NULL;
-	guint i;
-
-	/* try to get the list of desktop files for this package */
-	files = pk_desktop_get_shown_for_package (priv->desktop,
-						  pk_package_get_name (pkg),
-						  &error);
-	if (files == NULL) {
-		g_warning ("failed to get files for %s: %s",
-			   pk_package_get_id (pkg),
-			   error->message);
-		g_error_free (error);
-		gs_main_installed_add_package (priv, pkg);
-		goto out;
-	}
-	if (files->len == 0) {
-		g_debug ("not an application %s",
-			 pk_package_get_id (pkg));
-		gs_main_installed_add_os_update (priv, pkg);
-		goto out;
-	}
-
-	/* add each of the desktop files */
-	for (i = 0; i < files->len; i++) {
-		desktop_file = g_ptr_array_index (files, i);
-		gs_main_installed_add_desktop_file (priv,
-						    pkg,
-						    desktop_file);
-	}
-out:
-	if (files != NULL)
-		g_ptr_array_unref (files);
-}
+#endif
 
 /**
  * _gtk_container_remove_all_cb:
@@ -715,140 +456,46 @@ _gtk_container_remove_all (GtkContainer *container)
 }
 
 /**
- * gs_main_get_update_details_cb:
- **/
-static void
-gs_main_get_update_details_cb (PkPackageSack *sack,
-				GAsyncResult *res,
-				GsMainPrivate *priv)
-{
-	gboolean ret;
-	GError *error = NULL;
-	GPtrArray *array = NULL;
-	guint i;
-	PkPackage *package;
-
-	/* add packages */
-	ret = pk_package_sack_merge_generic_finish (sack, res, &error);
-	if (!ret) {
-		g_warning ("failed to get-update-details: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-
-	/* clear existing updates */
-	array = pk_package_sack_get_array (sack);
-	for (i = 0; i < array->len; i++) {
-		package = g_ptr_array_index (array, i);
-		g_debug ("add update %s", pk_package_get_id (package));
-		gs_main_installed_add_item (priv, package);
-	}
-out:
-	if (array != NULL)
-		g_ptr_array_unref (array);
-}
-
-/**
- * gs_main_is_package_an_app:
- **/
-static gboolean
-gs_main_is_package_an_app (GsMainPrivate *priv, PkPackage *pkg)
-{
-	gboolean ret = FALSE;
-	GPtrArray *files;
-
-	files = pk_desktop_get_shown_for_package (priv->desktop,
-						  pk_package_get_name (pkg),
-						  NULL);
-	if (files == NULL)
-		goto out;
-	if (files->len == 0)
-		goto out;
-	ret = TRUE;
-out:
-	if (files != NULL)
-		g_ptr_array_unref (files);
-	return ret;
-}
-
-/**
  * gs_main_get_updates_cb:
  **/
 static void
-gs_main_get_updates_cb (PkClient *client,
+gs_main_get_updates_cb (GsPluginLoader *plugin_loader,
 			GAsyncResult *res,
 			GsMainPrivate *priv)
 {
-	gboolean ret;
 	GError *error = NULL;
-	GPtrArray *array = NULL;
-	guint i;
-	PkError *error_code = NULL;
-	PkPackage *package;
-	PkPackageSack *sack_apps = NULL;
-	PkPackageSack *sack_system = NULL;
-	PkResults *results;
-	gboolean got_one_system_update = FALSE;
+	GList *list;
+	GList *l;
+	GsApp *app;
+	GtkWidget *widget;
 
 	/* get the results */
-	results = pk_client_generic_finish (client, res, &error);
-	if (results == NULL) {
-		g_warning ("failed to get-updates: %s", error->message);
+	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		g_warning ("failed to get updates: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}
-
-	/* check error code */
-	error_code = pk_results_get_error_code (results);
-	if (error_code != NULL) {
-		g_warning ("failed to get-packages: %s, %s",
-			   pk_error_enum_to_string (pk_error_get_code (error_code)),
-			   pk_error_get_details (error_code));
-		goto out;
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		g_debug ("adding update %s", gs_app_get_id (app));
+		widget = gs_app_widget_new ();
+		g_signal_connect (widget, "button-clicked",
+				  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
+				  priv);
+		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
+					GS_APP_WIDGET_KIND_UPDATE);
+		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
+		gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
+		gtk_widget_show (widget);
 	}
 
-	/* filter out the requests for apps and os-updates, and do the
-	 * latter after the UI has loaded */
-	sack_apps = pk_package_sack_new ();
-	sack_system = pk_package_sack_new ();
-	array = pk_results_get_package_array (results);
-	for (i = 0; i < array->len; i++) {
-		package = g_ptr_array_index (array, i);
-		ret = gs_main_is_package_an_app (priv, package);
-		if (ret) {
-			pk_package_sack_add_package (sack_apps, package);
-		} else {
-			/* ensure we load at least one of the os updates
-			 * in the fast path */
-			if (!got_one_system_update) {
-				got_one_system_update = TRUE;
-				pk_package_sack_add_package (sack_apps, package);
-			} else {
-				pk_package_sack_add_package (sack_system, package);
-			}
-		}
-	}
-
-	/* get the update details */
-	pk_package_sack_get_update_detail_async (sack_apps,
-						 priv->cancellable,
-						 (PkProgressCallback) gs_main_progress_cb, priv,
-						 (GAsyncReadyCallback) gs_main_get_update_details_cb, priv);
-	pk_package_sack_get_update_detail_async (sack_system,
-						 priv->cancellable,
-						 NULL, priv,
-						 (GAsyncReadyCallback) gs_main_get_update_details_cb, priv);
+	/* focus back to the text extry */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	gtk_widget_grab_focus (widget);
 out:
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (error_code != NULL)
-		g_object_unref (error_code);
-	if (sack_apps != NULL)
-		g_object_unref (sack_apps);
-	if (sack_system != NULL)
-		g_object_unref (sack_system);
-	if (results != NULL)
-		g_object_unref (results);
+	if (list != NULL)
+		g_list_free_full (list, (GDestroyNotify) g_object_unref);
 }
 
 /**
@@ -918,15 +565,10 @@ gs_main_get_installed (GsMainPrivate *priv)
 static void
 gs_main_get_updates (GsMainPrivate *priv)
 {
-	PkBitfield filter;
 	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH,
-					 -1);
-	pk_client_get_updates_async (PK_CLIENT(priv->task),
-				     filter,
-				     priv->cancellable,
-				     (PkProgressCallback) gs_main_progress_cb, priv,
-				     (GAsyncReadyCallback) gs_main_get_updates_cb, priv);
+	gs_plugin_loader_get_updates_async (priv->plugin_loader,
+					    priv->cancellable,
+					    (GAsyncReadyCallback) gs_main_get_updates_cb, priv);
 }
 
 
@@ -1465,15 +1107,6 @@ main (int argc, char **argv)
 		      "background", FALSE,
 		      NULL);
 
-	/* get localized data from sqlite database */
-	priv->desktop = pk_desktop_new ();
-	ret = pk_desktop_open_database (priv->desktop, &error);
-	if (!ret) {
-		g_warning ("failed to open database: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-
 	/* load the plugins */
 	priv->plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_set_location (priv->plugin_loader, NULL);
@@ -1499,7 +1132,6 @@ out:
 	if (priv != NULL) {
 		g_object_unref (priv->plugin_loader);
 		g_object_unref (priv->task);
-		g_object_unref (priv->desktop);
 		g_object_unref (priv->cancellable);
 		g_object_unref (priv->application);
 		if (priv->provider != NULL)
