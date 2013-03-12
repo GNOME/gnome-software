@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-08 20:50+0100\n"
-"PO-Revision-Date: 2013-03-08 20:51+0100\n"
+"POT-Creation-Date: 2013-03-12 18:51+0100\n"
+"PO-Revision-Date: 2013-03-12 18:52+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -77,45 +77,48 @@ msgid "More  ▾"
 msgstr "Więcej  ▾"
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:185
+#: ../src/gs-main.c:183
 msgid "Waiting for package manager..."
 msgstr "Oczekiwanie na menedżera pakietów..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:189
+#: ../src/gs-main.c:187
 msgid "Loading list of packages..."
 msgstr "Wczytywanie listy pakietów..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:199
+#. TRANSLATORS: we're waiting for something to happen
+#: ../src/gs-main.c:197 ../src/gs-main.c:258
 msgid "Downloading..."
 msgstr "Pobieranie..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:204
+#. TRANSLATORS: we're waiting for something to happen
+#: ../src/gs-main.c:202 ../src/gs-main.c:262
 msgid "Querying..."
 msgstr "Odpytywanie..."
 
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:251
+#: ../src/gs-main.c:250
 msgid "Waiting..."
 msgstr "Oczekiwanie..."
 
-#: ../src/gs-main.c:597
-msgid "OS Updates"
-msgstr "Aktualizacje systemu"
+#. TRANSLATORS: we're waiting for something to happen
+#: ../src/gs-main.c:254
+msgid "Setting up..."
+msgstr "Ustawianie..."
 
-#: ../src/gs-main.c:621
-msgid "OS Update"
-msgstr "Aktualizacja systemu"
+#. TRANSLATORS: the update requires the user to reboot the computer
+#: ../src/gs-main.c:433
+msgid "Requires restart"
+msgstr "Wymaga ponownego uruchomienia"
 
-#: ../src/gs-main.c:622
+#: ../src/gs-plugin-loader.c:306
 msgid "Includes performance, stability and security improvements for all users"
 msgstr ""
 "Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa dla wszystkich "
 "użytkowników"
 
-#. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:628
-msgid "Requires restart"
-msgstr "Wymaga ponownego uruchomienia"
+#: ../src/gs-plugin-loader.c:338
+msgid "OS Updates"
+msgstr "Aktualizacje systemu"
