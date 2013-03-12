@@ -10,7 +10,6 @@ AC_CONFIG_MACRO_DIR([m4])
 # enable nice build output on automake1.11
 m4_ifdef([AM_SILENT_RULES],[AM_SILENT_RULES([yes])])
 
-AS_ALL_LINGUAS
 AC_PROG_CC
 AC_PROG_CXX
 AC_PROG_INSTALL
@@ -74,7 +73,7 @@ dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.31.10 gobject-2.0 gthread-2.0 gio-2.0 >= 2.25.9 gmodule-2.0)
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.5.6)
-PKG_CHECK_MODULES(PACKAGEKIT, packagekit-glib2 >= 0.7.5)
+PKG_CHECK_MODULES(PACKAGEKIT, packagekit-glib2 >= 0.8.6)
 
 dnl ---------------------------------------------------------------------------
 dnl - Makefiles, etc.
