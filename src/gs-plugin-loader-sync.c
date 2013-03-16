@@ -27,6 +27,7 @@
 typedef struct {
 	GError		**error;
 	GList		*list;
+	GMainContext    *context;
 	GMainLoop	*loop;
 } GsPluginLoaderHelper;
 
@@ -52,8 +53,11 @@ gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader,
 	GsPluginLoaderHelper helper;
 
 	/* create temp object */
-	helper.loop = g_main_loop_new (NULL, FALSE);
+	helper.context = g_main_context_new ();
+	helper.loop = g_main_loop_new (helper.context, FALSE);
 	helper.error = error;
+
+	g_main_context_push_thread_default (helper.context);
 
 	/* run async method */
 	gs_plugin_loader_get_installed_async (plugin_loader,
@@ -61,7 +65,11 @@ gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader,
 					      (GAsyncReadyCallback) gs_plugin_loader_get_installed_finish_sync,
 					      &helper);
 	g_main_loop_run (helper.loop);
+
+	g_main_context_pop_thread_default (helper.context);
+
 	g_main_loop_unref (helper.loop);
+	g_main_context_unref (helper.context);
 
 	return helper.list;
 }
@@ -88,8 +96,11 @@ gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader,
 	GsPluginLoaderHelper helper;
 
 	/* create temp object */
-	helper.loop = g_main_loop_new (NULL, FALSE);
+	helper.context = g_main_context_new ();
+	helper.loop = g_main_loop_new (helper.context, FALSE);
 	helper.error = error;
+
+	g_main_context_push_thread_default (helper.context);
 
 	/* run async method */
 	gs_plugin_loader_get_updates_async (plugin_loader,
@@ -97,7 +108,11 @@ gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader,
 					    (GAsyncReadyCallback) gs_plugin_loader_get_updates_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
+
+	g_main_context_pop_thread_default (helper.context);
+
 	g_main_loop_unref (helper.loop);
+	g_main_context_unref (helper.context);
 
 	return helper.list;
 }
@@ -124,8 +139,11 @@ gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
 	GsPluginLoaderHelper helper;
 
 	/* create temp object */
-	helper.loop = g_main_loop_new (NULL, FALSE);
+	helper.context = g_main_context_new ();
+	helper.loop = g_main_loop_new (helper.context, FALSE);
 	helper.error = error;
+
+	g_main_context_push_thread_default (helper.context);
 
 	/* run async method */
 	gs_plugin_loader_get_popular_async (plugin_loader,
@@ -133,7 +151,11 @@ gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
 					    (GAsyncReadyCallback) gs_plugin_loader_get_popular_finish_sync,
 					    &helper);
 	g_main_loop_run (helper.loop);
+
+	g_main_context_pop_thread_default (helper.context);
+
 	g_main_loop_unref (helper.loop);
+	g_main_context_unref (helper.context);
 
 	return helper.list;
 }
