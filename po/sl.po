@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-03-08 09:06+0000\n"
-"PO-Revision-Date: 2013-03-11 16:14+0100\n"
+"POT-Creation-Date: 2013-03-14 19:50+0000\n"
+"PO-Revision-Date: 2013-03-15 16:43+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: \n"
@@ -76,43 +76,50 @@ msgid "More  ▾"
 msgstr "More  ▾"
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:185
+#: ../src/gs-main.c:183
 msgid "Waiting for package manager..."
 msgstr "Čakanje na zaklep upravljalnika paketov ..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:189
+#: ../src/gs-main.c:187
 msgid "Loading list of packages..."
 msgstr "Nalaganje seznama paketov ..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:199
+#. TRANSLATORS: we're waiting for something to happen
+#: ../src/gs-main.c:197
+#: ../src/gs-main.c:258
 msgid "Downloading..."
 msgstr "Prejemanje ..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:204
+#. TRANSLATORS: we're waiting for something to happen
+#: ../src/gs-main.c:202
+#: ../src/gs-main.c:262
 msgid "Querying..."
 msgstr "Poizvedovanje ..."
 
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:251
+#: ../src/gs-main.c:250
 msgid "Waiting..."
 msgstr "Na čakanju ..."
 
-#: ../src/gs-main.c:597
-msgid "OS Updates"
-msgstr "Posodobitve sistema"
+#. TRANSLATORS: we're waiting for something to happen
+#: ../src/gs-main.c:254
+#| msgid "Waiting..."
+msgid "Setting up..."
+msgstr "Nastavljanje ..."
 
-#: ../src/gs-main.c:621
-msgid "OS Update"
-msgstr "Posodobitev sistema"
+#. TRANSLATORS: the update requires the user to reboot the computer
+#: ../src/gs-main.c:433
+msgid "Requires restart"
+msgstr "Zahteva ponovni zagon"
 
-#: ../src/gs-main.c:622
+#: ../src/gs-plugin-loader.c:306
 msgid "Includes performance, stability and security improvements for all users"
 msgstr "Vključuje izboljšave delovanja, stabilnosti in varnosti za vse uporabnike"
 
-#. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:628
-msgid "Requires restart"
-msgstr "Zahteva ponovni zagon"
+#: ../src/gs-plugin-loader.c:338
+msgid "OS Updates"
+msgstr "Posodobitve sistema"
+
