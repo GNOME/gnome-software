@@ -36,6 +36,9 @@ make %{?_smp_mflags}
 %install
 make install DESTDIR=$RPM_BUILD_ROOT
 
+rm %{_libdir}/gs-plugins/*.a
+rm %{_libdir}/gs-plugins/*.la
+
 %find_lang %name --with-gnome
 
 %post
@@ -63,6 +66,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 #%{_datadir}/icons/hicolor/scalable/*/*.svg*
 %{_datadir}/applications/gnome-software.desktop
 %{_datadir}/gnome-software/featured-*.png
+%{_libdir}/gs-plugins/*.so
 
 %changelog
 * #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#
