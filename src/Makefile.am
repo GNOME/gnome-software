@@ -88,7 +88,6 @@ gs_self_test_CFLAGS = $(WARNINGFLAGS_C)
 TESTS = gs-self-test
 
 EXTRA_DIST =						\
-	core-apps.txt					\
 	gnome-software.gresource.xml			\
 	gtk-style.css					\
 	$(desktop_in_files)				\
