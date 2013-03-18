@@ -820,6 +820,48 @@ gs_plugin_loader_app_remove (GsPluginLoader *plugin_loader,
 }
 
 /**
+ * gs_plugin_loader_app_set_rating:
+ **/
+gboolean
+gs_plugin_loader_app_set_rating (GsPluginLoader *plugin_loader,
+				 GsApp *app,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	return gs_plugin_loader_run_action (plugin_loader,
+					    app,
+					    "gs_plugin_app_set_rating",
+					    cancellable,
+					    error);
+}
+
+/**
+ * gs_plugin_loader_app_refine:
+ *
+ * ...really just for make check use.
+ **/
+gboolean
+gs_plugin_loader_app_refine (GsPluginLoader *plugin_loader,
+			     GsApp *app,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	gboolean ret;
+	GList *list = NULL;
+
+	gs_plugin_add_app (&list, app);
+	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   list,
+					   cancellable,
+					   error);
+	if (!ret)
+		goto out;
+	g_list_free (list);
+out:
+	return ret;
+}
+
+/**
  * gs_plugin_loader_run:
  **/
 static void

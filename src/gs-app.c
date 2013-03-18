@@ -281,7 +281,6 @@ void
 gs_app_set_rating (GsApp *app, gint rating)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (app->priv->rating == -1);
 	app->priv->rating = rating;
 }
 

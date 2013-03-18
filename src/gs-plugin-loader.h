@@ -95,6 +95,10 @@ gboolean	 gs_plugin_loader_set_enabled		(GsPluginLoader	*plugin_loader,
 							 gboolean	 enabled);
 void		 gs_plugin_loader_set_location		(GsPluginLoader	*plugin_loader,
 							 const gchar	*location);
+gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_loader_app_install		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
@@ -104,6 +108,10 @@ gboolean	 gs_plugin_loader_app_update		(GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_loader_app_remove		(GsPluginLoader	*plugin_loader,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_loader_app_set_rating	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);

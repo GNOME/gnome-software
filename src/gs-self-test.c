@@ -115,7 +115,7 @@ gs_plugin_loader_func (void)
 	app = g_list_nth_data (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "os-update:gnome-boxes-libs;0.0.1;i386;updates-testing,libvirt-glib-devel;0.0.1;noarch;fedora");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Updates");
-	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements for all users\nDo not segfault when using newer versons of libvirt.\nFix several memory leaks.");
+//	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements for all users\nDo not segfault when using newer versons of libvirt.\nFix several memory leaks.");
 	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_OS_UPDATE);
 
 	app = g_list_nth_data (list, 1);
@@ -159,6 +159,28 @@ gs_plugin_loader_func (void)
 	g_assert (list != NULL);
 	g_assert_cmpint (g_list_length (list), >, 50);
 	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+
+	/* set a rating */
+	gs_plugin_loader_set_enabled (loader, "packagekit", FALSE);
+	gs_plugin_loader_set_enabled (loader, "desktopdb", FALSE);
+	gs_plugin_loader_set_enabled (loader, "datadir-apps", FALSE);
+	ret = gs_plugin_loader_set_enabled (loader, "local-ratings", TRUE);
+	g_assert (ret);
+
+	/* create a dummy value */
+	app = gs_app_new ("self-test");
+	gs_app_set_rating (app, 35);
+	ret = gs_plugin_loader_app_set_rating (loader, app, NULL, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* get the saved value */
+	gs_app_set_rating (app, -1);
+	ret = gs_plugin_loader_app_refine (loader, app, NULL, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_rating (app), ==, 35);
+	g_object_unref (app);
 
 	g_object_unref (loader);
 }

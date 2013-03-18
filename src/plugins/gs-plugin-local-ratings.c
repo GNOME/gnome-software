@@ -168,6 +168,48 @@ gs_plugin_local_find_app (GsPlugin *plugin, const gchar *app_id)
 }
 
 /**
+ * gs_plugin_app_set_rating:
+ */
+gboolean
+gs_plugin_app_set_rating (GsPlugin *plugin,
+			  GsApp *app,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	gboolean ret = TRUE;
+	gchar *error_msg = NULL;
+	gchar *statement = NULL;
+	gint rc;
+
+	/* already loaded */
+	if (!plugin->priv->loaded) {
+		ret = gs_plugin_local_ratings_load_db (plugin, error);
+		if (!ret)
+			goto out;
+	}
+
+	/* insert the entry */
+	statement = g_strdup_printf ("INSERT OR REPLACE INTO ratings (app_id, rating) "
+				     "VALUES ('%s', '%i');",
+				     gs_app_get_id (app),
+				     gs_app_get_rating (app));
+	rc = sqlite3_exec (plugin->priv->db, statement, NULL, NULL, &error_msg);
+	if (rc != SQLITE_OK) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "SQL error: %s", error_msg);
+		sqlite3_free (error_msg);
+		ret = FALSE;
+		goto out;
+	}
+out:
+	g_free (statement);
+	return ret;
+
+}
+
+/**
  * gs_plugin_refine:
  */
 gboolean
