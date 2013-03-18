@@ -6,6 +6,7 @@ AM_CPPFLAGS =						\
 	$(GTK_CFLAGS)					\
 	$(SQLITE_CFLAGS)				\
 	$(PACKAGEKIT_CFLAGS)				\
+	$(SQLITE_CFLAGS)				\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
 	-DG_LOG_DOMAIN=\"GsPlugin\"			\
@@ -25,6 +26,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_hardcoded-kind.la			\
 	libgs_plugin_hardcoded-popular.la		\
 	libgs_plugin_hardcoded-ratings.la		\
+	libgs_plugin_local-ratings.la			\
 	libgs_plugin_packagekit.la
 
 libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
@@ -43,9 +45,14 @@ libgs_plugin_hardcoded_popular_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_popular_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_hardcoded_ratings_la_SOURCES = gs-plugin-hardcoded-ratings.c
-libgs_plugin_hardcoded_ratings_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_hardcoded_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
 libgs_plugin_hardcoded_ratings_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+
+libgs_plugin_local_ratings_la_SOURCES = gs-plugin-local-ratings.c
+libgs_plugin_local_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
+libgs_plugin_local_ratings_la_LDFLAGS = -module -avoid-version
+libgs_plugin_local_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_packagekit_la_SOURCES = gs-plugin-packagekit.c
 libgs_plugin_packagekit_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
