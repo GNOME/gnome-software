@@ -54,10 +54,10 @@ gnome_software_LDADD =					\
 gnome_software_CFLAGS =					\
 	$(WARNINGFLAGS_C)
 
-gs-resources.c: gnome-software.gresource.xml ./gnome-software.ui
-	glib-compile-resources --target=$@ --generate-source --c-name gs $(srcdir)/gnome-software.gresource.xml
+gs-resources.c: gnome-software.gresource.xml $(srcdir)/gnome-software.ui
+	glib-compile-resources --sourcedir=$(srcdir) --target=$@ --generate-source --c-name gs $(srcdir)/gnome-software.gresource.xml
 gs-resources.h: gnome-software.gresource.xml
-	glib-compile-resources --target=$@ --generate-header --c-name gs $(srcdir)/gnome-software.gresource.xml
+	glib-compile-resources --sourcedir=$(srcdir) --target=$@ --generate-header --c-name gs $(srcdir)/gnome-software.gresource.xml
 
 BUILT_SOURCES =						\
 	gs-resources.c					\
