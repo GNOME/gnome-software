@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-03-12 18:51+0100\n"
-"PO-Revision-Date: 2013-03-12 18:52+0100\n"
+"POT-Creation-Date: 2013-04-09 19:31+0200\n"
+"PO-Revision-Date: 2013-04-09 19:32+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -44,24 +44,48 @@ msgid "Updates"
 msgstr "Aktualizacje"
 
 #: ../src/gnome-software.ui.h:5
+msgid "Overview"
+msgstr "Przegląd"
+
+#: ../src/gnome-software.ui.h:6
+msgid "Reviews"
+msgstr "Recenzje"
+
+#: ../src/gnome-software.ui.h:7
+msgid "Related"
+msgstr "Powiązane"
+
+#: ../src/gnome-software.ui.h:8 ../src/gs-app-widget.c:99
+msgid "Install"
+msgstr "Zainstaluj"
+
+#: ../src/gnome-software.ui.h:9
 msgid "Update All"
 msgstr "Zaktualizuj wszystkie"
 
-#: ../src/gnome-software.ui.h:6
+#: ../src/gnome-software.ui.h:10
 msgid "Featured"
 msgstr "Polecane"
 
-#: ../src/gnome-software.ui.h:7
+#: ../src/gnome-software.ui.h:11
 msgid "Popular"
 msgstr "Popularne"
 
-#: ../src/gnome-software.ui.h:8
+#: ../src/gnome-software.ui.h:12
 msgid "Categories"
 msgstr "Kategorie"
 
-#: ../src/gs-app-widget.c:99
-msgid "Install"
-msgstr "Zainstaluj"
+#: ../src/gnome-software.ui.h:13
+msgid "Description"
+msgstr "Opis"
+
+#: ../src/gnome-software.ui.h:14
+msgid ""
+"Shotwell is a digital photo organiser that runs on Linux. It is the default "
+"photo manager in Ubuntu and Fedora."
+msgstr ""
+"Shotwell to cyfrowy organizator zdjęć dla systemu Linux. Jest domyślnym "
+"menedżerem zdjęć w Ubuntu i Fedorze."
 
 #: ../src/gs-app-widget.c:105
 msgid "Remove"
@@ -77,41 +101,47 @@ msgid "More  ▾"
 msgstr "Więcej  ▾"
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:183
+#: ../src/gs-main.c:185
 msgid "Waiting for package manager..."
 msgstr "Oczekiwanie na menedżera pakietów..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:187
+#: ../src/gs-main.c:189
 msgid "Loading list of packages..."
 msgstr "Wczytywanie listy pakietów..."
 
 #. TRANSLATORS: this is the transaction status
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:197 ../src/gs-main.c:258
+#: ../src/gs-main.c:199 ../src/gs-main.c:260
 msgid "Downloading..."
 msgstr "Pobieranie..."
 
 #. TRANSLATORS: this is the transaction status
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:202 ../src/gs-main.c:262
+#: ../src/gs-main.c:204 ../src/gs-main.c:264
 msgid "Querying..."
 msgstr "Odpytywanie..."
 
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:250
+#: ../src/gs-main.c:252
 msgid "Waiting..."
 msgstr "Oczekiwanie..."
 
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:254
+#: ../src/gs-main.c:256
 msgid "Setting up..."
 msgstr "Ustawianie..."
 
 #. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:433
+#: ../src/gs-main.c:435
 msgid "Requires restart"
 msgstr "Wymaga ponownego uruchomienia"
+
+#: ../src/gs-main.c:803
+msgid ""
+"The author of this software has not included a 'Description' in the desktop "
+"file..."
+msgstr "Autor tego oprogramowania nie dołączył opisu w pliku .desktop."
 
 #: ../src/gs-plugin-loader.c:306
 msgid "Includes performance, stability and security improvements for all users"
