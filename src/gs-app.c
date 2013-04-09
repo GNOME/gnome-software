@@ -33,6 +33,7 @@ struct GsAppPrivate
 	gchar			*name;
 	gchar			*version;
 	gchar			*summary;
+	gchar			*screenshot;
 	gint			 rating;
 	GsAppKind		 kind;
 	GsAppState		 state;
@@ -46,6 +47,7 @@ enum {
 	PROP_NAME,
 	PROP_VERSION,
 	PROP_SUMMARY,
+	PROP_SCREENSHOT,
 	PROP_RATING,
 	PROP_KIND,
 	PROP_STATE,
@@ -265,6 +267,27 @@ gs_app_set_summary (GsApp *app, const gchar *summary)
 }
 
 /**
+ * gs_app_get_screenshot:
+ */
+const gchar *
+gs_app_get_screenshot (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->screenshot;
+}
+
+/**
+ * gs_app_set_screenshot:
+ */
+void
+gs_app_set_screenshot (GsApp *app, const gchar *screenshot)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->screenshot);
+	app->priv->screenshot = g_strdup (screenshot);
+}
+
+/**
  * gs_app_get_rating:
  */
 gint
@@ -330,6 +353,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_SUMMARY:
 		g_value_set_string (value, priv->summary);
 		break;
+	case PROP_SCREENSHOT:
+		g_value_set_string (value, priv->screenshot);
+		break;
 	case PROP_RATING:
 		g_value_set_uint (value, priv->rating);
 		break;
@@ -365,6 +391,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_SUMMARY:
 		gs_app_set_summary (app, g_value_get_string (value));
+		break;
+	case PROP_SCREENSHOT:
+		gs_app_set_screenshot (app, g_value_get_string (value));
 		break;
 	case PROP_RATING:
 		gs_app_set_rating (app, g_value_get_int (value));
@@ -427,6 +456,14 @@ gs_app_class_init (GsAppClass *klass)
 	g_object_class_install_property (object_class, PROP_SUMMARY, pspec);
 
 	/**
+	 * GsApp:screenshot:
+	 */
+	pspec = g_param_spec_string ("screenshot", NULL, NULL,
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_SCREENSHOT, pspec);
+
+	/**
 	 * GsApp:rating:
 	 */
 	pspec = g_param_spec_int ("rating", NULL, NULL,
@@ -485,6 +522,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->version);
 	g_free (priv->summary);
+	g_free (priv->screenshot);
 	g_hash_table_unref (priv->metadata);
 	if (priv->pixbuf != NULL)
 		g_object_unref (priv->pixbuf);

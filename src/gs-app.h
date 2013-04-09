@@ -91,6 +91,9 @@ void 		 gs_app_set_version		(GsApp		*app,
 const gchar	*gs_app_get_summary		(GsApp		*app);
 void		 gs_app_set_summary		(GsApp		*app,
 						 const gchar	*summary);
+const gchar	*gs_app_get_screenshot		(GsApp		*app);
+void		 gs_app_set_screenshot		(GsApp		*app,
+						 const gchar	*screenshot);
 GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
 void		 gs_app_set_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);
