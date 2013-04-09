@@ -37,11 +37,12 @@ typedef enum {
 	GS_MAIN_MODE_NEW,
 	GS_MAIN_MODE_INSTALLED,
 	GS_MAIN_MODE_UPDATES,
-	GS_MAIN_MODE_WAITING
+	GS_MAIN_MODE_WAITING,
+	GS_MAIN_MODE_DETAILS
 } GsMainMode;
 
 enum {
-	COLUMN_POPULAR_PACKAGE_ID,
+	COLUMN_POPULAR_APP,
 	COLUMN_POPULAR_MARKUP,
 	COLUMN_POPULAR_PIXBUF,
 	COLUMN_POPULAR_LAST
@@ -60,6 +61,7 @@ typedef struct {
 	GtkCssProvider		*provider;
 	gboolean		ignore_primary_buttons;
 	GsPluginLoader		*plugin_loader;
+	guint			 tab_back_id;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode);
@@ -607,7 +609,7 @@ gs_main_get_popular_cb (GObject *source_object,
 		gtk_list_store_append (liststore, &iter);
 		gtk_list_store_set (liststore,
 				    &iter,
-				    COLUMN_POPULAR_PACKAGE_ID, gs_app_get_metadata_item (app, "package-name"),
+				    COLUMN_POPULAR_APP, app,
 				    COLUMN_POPULAR_MARKUP, gs_app_get_name (app),
 				    COLUMN_POPULAR_PIXBUF, gs_app_get_pixbuf (app),
 				    -1);
@@ -644,6 +646,37 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 	GtkWidget *widget;
 
 	priv->ignore_primary_buttons = TRUE;
+
+	switch (mode) {
+	case GS_MAIN_MODE_DETAILS:
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_detail"));
+		gtk_widget_set_visible (widget, TRUE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+		gtk_widget_set_visible (widget, TRUE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	case GS_MAIN_MODE_NEW:
+	case GS_MAIN_MODE_INSTALLED:
+	case GS_MAIN_MODE_UPDATES:
+	case GS_MAIN_MODE_WAITING:
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+		gtk_widget_set_visible (widget, TRUE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_detail"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	default:
+		break;
+	}
+
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_MAIN_MODE_NEW);
 
@@ -699,6 +732,16 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
 		gtk_spinner_start (GTK_SPINNER (widget));
 		break;
+	case GS_MAIN_MODE_DETAILS:
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_name"));
+		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_summary"));
+		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_description"));
+		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_detail_screenshot"));
+		gtk_widget_hide (widget);
+		break;
 	default:
 		g_assert_not_reached ();
 	}
@@ -713,8 +756,12 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
  * gs_main_set_overview_mode:
  **/
 static void
-gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
+gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 {
+	GtkWidget *widget;
+	const gchar *tmp;
+	GdkPixbuf *pixbuf;
+
 	if (priv->ignore_primary_buttons)
 		return;
 
@@ -736,6 +783,47 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode)
 	case GS_MAIN_MODE_WAITING:
 		gs_main_get_updates (priv);
 		break;
+	case GS_MAIN_MODE_DETAILS:
+
+		tmp = gs_app_get_name (app);
+		if (tmp != NULL && tmp[0] != '\0') {
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_name"));
+			gtk_label_set_label (GTK_LABEL (widget), tmp);
+			gtk_widget_set_visible (widget, TRUE);
+		}
+		tmp = gs_app_get_summary (app);
+		if (tmp != NULL && tmp[0] != '\0') {
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_summary"));
+			gtk_label_set_label (GTK_LABEL (widget), tmp);
+			gtk_widget_set_visible (widget, TRUE);
+		}
+		tmp = NULL; // gs_app_get_description (app);
+		if (tmp == NULL)
+			tmp = _("The author of this software has not included a 'Description' in the desktop file...");
+		if (tmp != NULL && tmp[0] != '\0') {
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_description"));
+			gtk_label_set_label (GTK_LABEL (widget), tmp);
+			gtk_widget_set_visible (widget, TRUE);
+		}
+		pixbuf = gs_app_get_pixbuf (app);
+		if (pixbuf != NULL) {
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_detail_icon"));
+			gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
+			gtk_widget_set_visible (widget, TRUE);
+		}
+		tmp = gs_app_get_screenshot (app);
+		if (tmp != NULL && tmp[0] != '\0') {
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_detail_screenshot"));
+			pixbuf = gdk_pixbuf_new_from_file_at_size (tmp, 1000, 500, NULL);
+			gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
+			g_object_unref (pixbuf);
+			gtk_widget_set_visible (widget, TRUE);
+		}
+
+		/* add install button if available */
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
+		gtk_widget_set_visible (widget, gs_app_get_state (app) == GS_APP_STATE_AVAILABLE);
+		break;
 	default:
 		g_assert_not_reached ();
 	}
@@ -750,7 +838,16 @@ gs_main_overview_button_cb (GtkWidget *widget, GsMainPrivate *priv)
 	GsMainMode mode;
 	mode = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
 						   "gnome-software::overview-mode"));
-	gs_main_set_overview_mode (priv, mode);
+	gs_main_set_overview_mode (priv, mode, NULL);
+}
+
+/**
+ * gs_main_back_button_cb:
+ **/
+static void
+gs_main_back_button_cb (GtkWidget *widget, GsMainPrivate *priv)
+{
+	gs_main_set_overview_mode (priv, priv->tab_back_id, NULL);
 }
 
 /**
@@ -905,6 +1002,35 @@ gs_main_installed_sort_func (gconstpointer a,
 }
 
 /**
+ * gs_main_popular_activated_cb:
+ **/
+static void
+gs_main_popular_activated_cb (GtkIconView *iconview, GtkTreePath *path, GsMainPrivate *priv)
+{
+	gboolean ret;
+	GsApp *app;
+	GtkTreeIter iter;
+	GtkTreeModel *model;
+
+	model = gtk_icon_view_get_model (iconview);
+	ret = gtk_tree_model_get_iter_from_string (model, &iter, gtk_tree_path_to_string (path));
+	if (!ret)
+		return;
+
+	gtk_tree_model_get (model, &iter,
+			    COLUMN_POPULAR_APP, &app,
+			    -1);
+	g_debug ("show details with %s", gs_app_get_name (app));
+
+	/* save current mode */
+	priv->tab_back_id = priv->mode;
+
+	/* switch to overview mode */
+	gs_main_set_overview_mode (priv, GS_MAIN_MODE_DETAILS, app);
+	g_object_unref (app);
+}
+
+/**
  * gs_main_startup_cb:
  **/
 static void
@@ -976,6 +1102,9 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "iconview_popular"));
 	gtk_icon_view_set_markup_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_MARKUP);
 	gtk_icon_view_set_pixbuf_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_PIXBUF);
+	gtk_icon_view_set_activate_on_single_click (GTK_ICON_VIEW (widget), TRUE);
+	g_signal_connect (widget, "item-activated",
+			  G_CALLBACK (gs_main_popular_activated_cb), priv);
 
 	/* setup featured tiles */
 	gs_main_setup_featured (priv);
@@ -1014,6 +1143,9 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	gtk_widget_show (GTK_WIDGET (priv->list_box_updates));
 
 	/* setup buttons */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_main_back_button_cb), priv);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
 	g_object_set_data (G_OBJECT (widget),
 			   "gnome-software::overview-mode",
@@ -1044,7 +1176,7 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* show main UI */
 	gtk_widget_show (main_window);
-	gs_main_set_overview_mode (priv, GS_MAIN_MODE_INSTALLED);
+	gs_main_set_overview_mode (priv, GS_MAIN_MODE_INSTALLED, NULL);
 out:
 	if (data != NULL)
 		g_bytes_unref (data);
