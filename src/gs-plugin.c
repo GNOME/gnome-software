@@ -85,6 +85,7 @@ void
 gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 {
 	GsPluginStatusHelper *helper;
+	//return;
 	helper = g_slice_new0 (GsPluginStatusHelper);
 	helper->plugin = plugin;
 	helper->status = status;

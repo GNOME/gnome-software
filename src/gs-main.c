@@ -761,6 +761,7 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 	GtkWidget *widget;
 	const gchar *tmp;
 	GdkPixbuf *pixbuf;
+	gint rating;
 
 	if (priv->ignore_primary_buttons)
 		return;
@@ -818,6 +819,21 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 			gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
 			g_object_unref (pixbuf);
 			gtk_widget_set_visible (widget, TRUE);
+		}
+
+		/* show rating */
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_detail_rating"));
+		rating = gs_app_get_rating (app);
+		if (rating < 20) {
+			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars0.png");
+		} else if (rating < 40) {
+			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars1.png");
+		} else if (rating < 60) {
+			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars2.png");
+		} else if (rating < 80) {
+			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars3.png");
+		} else {
+			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars4.png");
 		}
 
 		/* add install button if available */
@@ -1020,7 +1036,7 @@ gs_main_popular_activated_cb (GtkIconView *iconview, GtkTreePath *path, GsMainPr
 	gtk_tree_model_get (model, &iter,
 			    COLUMN_POPULAR_APP, &app,
 			    -1);
-	g_debug ("show details with %s", gs_app_get_name (app));
+	g_debug ("show details with %s", gs_app_get_id (app));
 
 	/* save current mode */
 	priv->tab_back_id = priv->mode;
@@ -1253,6 +1269,7 @@ main (int argc, char **argv)
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-kind", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-popular", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-ratings", TRUE);
+	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-screenshots", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "local-ratings", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "packagekit", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "desktopdb", TRUE);
