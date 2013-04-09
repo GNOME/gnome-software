@@ -77,7 +77,7 @@ Refines:	[id]->[rating]
 
 == local-ratings ==
 Overview:	Provides a local SQL database of user-set ratings, mainly useful for testing.
-Methods:	<nothing>
+Methods:	AppSetRating
 Requires:	<nothing>
 Refines:	[id]->[rating]
 
@@ -86,9 +86,9 @@ Overview:	Uses the system PackageKit instance to return package data.
 Methods:	Search
 		AddUpdates
 		AddInstalled
-		Install
-		Remove
-		Update
+		AppInstall
+		AppRemove
+		AppUpdate
 Requires:	{package-id}
 Refines:	<nothing>
 Sets:		{package-id}
