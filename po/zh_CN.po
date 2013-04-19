@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-03-11 21:05+0000\n"
-"PO-Revision-Date: 2013-02-17 20:39+0800\n"
+"POT-Creation-Date: 2013-04-11 16:20+0000\n"
+"PO-Revision-Date: 2013-04-13 14:03+0800\n"
 "Last-Translator: tuhaihe <1132321739qq@gmail.com>\n"
 "Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
@@ -39,24 +39,48 @@ msgid "Updates"
 msgstr "更新"
 
 #: ../src/gnome-software.ui.h:5
+msgid "Overview"
+msgstr "概览"
+
+#: ../src/gnome-software.ui.h:6
+msgid "Reviews"
+msgstr "评论"
+
+#: ../src/gnome-software.ui.h:7
+msgid "Related"
+msgstr "相关软件"
+
+#: ../src/gnome-software.ui.h:8 ../src/gs-app-widget.c:99
+msgid "Install"
+msgstr "安装"
+
+#: ../src/gnome-software.ui.h:9
 msgid "Update All"
 msgstr "更新全部"
 
-#: ../src/gnome-software.ui.h:6
+#: ../src/gnome-software.ui.h:10
 msgid "Featured"
 msgstr "特色软件"
 
-#: ../src/gnome-software.ui.h:7
+#: ../src/gnome-software.ui.h:11
 msgid "Popular"
 msgstr "流行软件"
 
-#: ../src/gnome-software.ui.h:8
+#: ../src/gnome-software.ui.h:12
 msgid "Categories"
 msgstr "软件分类"
 
-#: ../src/gs-app-widget.c:99
-msgid "Install"
-msgstr "安装"
+#: ../src/gnome-software.ui.h:13
+msgid "Description"
+msgstr "软件描述"
+
+#: ../src/gnome-software.ui.h:14
+msgid ""
+"Shotwell is a digital photo organiser that runs on Linux. It is the default "
+"photo manager in Ubuntu and Fedora."
+msgstr ""
+"Shotwell 是一款运行在 Linux 上的数码照片管理工具。它是 Ubuntu 和 Fedora 默认"
+"的照片管理器。"
 
 #: ../src/gs-app-widget.c:105
 msgid "Remove"
@@ -72,41 +96,47 @@ msgid "More  ▾"
 msgstr "更多  ▾"
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:183
+#: ../src/gs-main.c:185
 msgid "Waiting for package manager..."
 msgstr "正在等待软件包管理器..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:187
+#: ../src/gs-main.c:189
 msgid "Loading list of packages..."
 msgstr "正在加载软件包列表..."
 
 #. TRANSLATORS: this is the transaction status
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:197 ../src/gs-main.c:258
+#: ../src/gs-main.c:199 ../src/gs-main.c:260
 msgid "Downloading..."
 msgstr "正在下载..."
 
 #. TRANSLATORS: this is the transaction status
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:202 ../src/gs-main.c:262
+#: ../src/gs-main.c:204 ../src/gs-main.c:264
 msgid "Querying..."
 msgstr "正在查询..."
 
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:250
+#: ../src/gs-main.c:252
 msgid "Waiting..."
 msgstr "正在等待..."
 
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:254
+#: ../src/gs-main.c:256
 msgid "Setting up..."
 msgstr "正在安装..."
 
 #. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:433
+#: ../src/gs-main.c:435
 msgid "Requires restart"
 msgstr "需要重启电脑"
+
+#: ../src/gs-main.c:803
+msgid ""
+"The author of this software has not included a 'Description' in the desktop "
+"file..."
+msgstr "该软件作者没有在桌面文件中添加“软件描述”..."
 
 #: ../src/gs-plugin-loader.c:306
 msgid "Includes performance, stability and security improvements for all users"
