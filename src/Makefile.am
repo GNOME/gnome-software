@@ -1,7 +1,7 @@
 SUBDIRS =						\
 	plugins
 
-INCLUDES =						\
+AM_CPPFLAGS =						\
 	$(GLIB_CFLAGS)					\
 	$(GTK_CFLAGS)					\
 	$(PACKAGEKIT_CFLAGS)				\
