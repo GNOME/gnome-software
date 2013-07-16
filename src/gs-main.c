@@ -412,7 +412,7 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 		to_array[0] = package_id;
 		pk_task_remove_packages_async (priv->task,
 					       (gchar**)to_array,
-					       FALSE, /* allow deps */
+					       TRUE, /* allow deps */
 					       FALSE, /* autoremove */
 					       priv->cancellable,
 					       (PkProgressCallback) gs_main_progress_cb,

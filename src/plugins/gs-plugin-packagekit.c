@@ -458,7 +458,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	to_array[0] = package_id;
 	results = pk_task_remove_packages_sync (plugin->priv->task,
 						(gchar **) to_array,
-						FALSE, FALSE,
+						TRUE, FALSE,
 						cancellable,
 						gs_plugin_packagekit_progress_cb, plugin,
 						error);
