@@ -26,7 +26,6 @@
 #include <locale.h>
 #include <packagekit-glib2/packagekit.h>
 
-#include "egg-list-box.h"
 #include "gs-app-widget.h"
 #include "gs-resources.h"
 #include "gs-plugin-loader.h"
@@ -56,8 +55,8 @@ typedef struct {
 	GtkIconSize		 custom_icon_size;
 	PkTask			*task;
 	guint			 waiting_tab_id;
-	EggListBox		*list_box_installed;
-	EggListBox		*list_box_updates;
+	GtkListBox		*list_box_installed;
+	GtkListBox		*list_box_updates;
 	GtkCssProvider		*provider;
 	gboolean		ignore_primary_buttons;
 	GsPluginLoader		*plugin_loader;
@@ -94,7 +93,7 @@ gs_main_show_waiting_tab_cb (gpointer user_data)
  * gs_main_get_app_widget_for_id:
  **/
 static GsAppWidget *
-gs_main_get_app_widget_for_id (EggListBox *list_box, const gchar *id)
+gs_main_get_app_widget_for_id (GtkListBox *list_box, const gchar *id)
 {
 	GList *list, *l;
 	GsAppWidget *tmp;
@@ -927,37 +926,41 @@ gs_main_utf8_filter_helper (const gchar *haystack, const gchar *needle_utf8)
 }
 
 /**
- * gs_main_egg_list_separator_func
+ * gs_main_list_header_func
  **/
 static void
-gs_main_egg_list_separator_func (GtkWidget **separator,
-				 GtkWidget *child,
-				 GtkWidget *before,
-				 gpointer user_data)
+gs_main_list_header_func (GtkListBoxRow *row,
+			  GtkListBoxRow *before,
+			  gpointer user_data)
 {
+	GtkWidget *header;
+
 	/* first entry */
+	header = gtk_list_box_row_get_header (row);
 	if (before == NULL) {
-		g_clear_object (separator);
+		gtk_list_box_row_set_header (row, NULL);
 		return;
 	}
 
-	if (*separator != NULL)
+	/* already set */
+	if (header != NULL)
 		return;
 
-	*separator = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	g_object_ref_sink (*separator);
+	/* set new */
+	header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	gtk_list_box_row_set_header (row, header);
 }
 
 /**
  * gs_main_installed_filter_func:
  **/
 static gboolean
-gs_main_installed_filter_func (GtkWidget *child, void *user_data)
+gs_main_installed_filter_func (GtkListBoxRow *row, void *user_data)
 {
 	const gchar *tmp;
 	GtkWidget *widget;
 	GsMainPrivate *priv = (GsMainPrivate *) user_data;
-	GsAppWidget *app_widget = GS_APP_WIDGET (child);
+	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
 	gchar *needle_utf8 = NULL;
 	gboolean ret = TRUE;
 	GsApp *app;
@@ -997,7 +1000,7 @@ out:
 static gboolean
 gs_main_filter_text_changed_cb (GtkEntry *entry, GsMainPrivate *priv)
 {
-	egg_list_box_refilter (priv->list_box_installed);
+	gtk_list_box_invalidate_filter (priv->list_box_installed);
 	return FALSE;
 }
 
@@ -1005,12 +1008,12 @@ gs_main_filter_text_changed_cb (GtkEntry *entry, GsMainPrivate *priv)
  * gs_main_installed_sort_func:
  **/
 static gint
-gs_main_installed_sort_func (gconstpointer a,
-			     gconstpointer b,
+gs_main_installed_sort_func (GtkListBoxRow *a,
+			     GtkListBoxRow *b,
 			     gpointer user_data)
 {
-	GsAppWidget *aw1 = GS_APP_WIDGET (a);
-	GsAppWidget *aw2 = GS_APP_WIDGET (b);
+	GsAppWidget *aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (a)));
+	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
 	GsApp *a1 = gs_app_widget_get_app (aw1);
 	GsApp *a2 = gs_app_widget_get_app (aw2);
 	return g_strcmp0 (gs_app_get_name (a1),
@@ -1125,37 +1128,35 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	/* setup featured tiles */
 	gs_main_setup_featured (priv);
 	/* setup installed */
-	priv->list_box_installed = egg_list_box_new ();
-	egg_list_box_set_separator_funcs (priv->list_box_installed,
-					  gs_main_egg_list_separator_func,
-					  priv,
-					  NULL);
-	egg_list_box_set_filter_func (priv->list_box_installed,
+	priv->list_box_installed = GTK_LIST_BOX (gtk_list_box_new ());
+	gtk_list_box_set_header_func (priv->list_box_installed,
+				      gs_main_list_header_func,
+				      priv,
+				      NULL);
+	gtk_list_box_set_filter_func (priv->list_box_installed,
 				      gs_main_installed_filter_func,
 				      priv,
 				      NULL);
-	egg_list_box_set_sort_func (priv->list_box_installed,
+	gtk_list_box_set_sort_func (priv->list_box_installed,
 				    gs_main_installed_sort_func,
 				    priv,
 				    NULL);
-	egg_list_box_set_selection_mode (priv->list_box_installed,
+	gtk_list_box_set_selection_mode (priv->list_box_installed,
 					 GTK_SELECTION_NONE);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_install"));
-	egg_list_box_add_to_scrolled (priv->list_box_installed,
-				      GTK_SCROLLED_WINDOW (widget));
+	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_installed));
 	gtk_widget_show (GTK_WIDGET (priv->list_box_installed));
 
 	/* setup updates */
-	priv->list_box_updates = egg_list_box_new ();
-	egg_list_box_set_separator_funcs (priv->list_box_updates,
-					  gs_main_egg_list_separator_func,
-					  priv,
-					  NULL);
-	egg_list_box_set_selection_mode (priv->list_box_updates,
+	priv->list_box_updates = GTK_LIST_BOX (gtk_list_box_new ());
+	gtk_list_box_set_header_func (priv->list_box_updates,
+				      gs_main_list_header_func,
+				      priv,
+				      NULL);
+	gtk_list_box_set_selection_mode (priv->list_box_updates,
 					 GTK_SELECTION_NONE);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
-	egg_list_box_add_to_scrolled (priv->list_box_updates,
-				      GTK_SCROLLED_WINDOW (widget));
+	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_updates));
 	gtk_widget_show (GTK_WIDGET (priv->list_box_updates));
 
 	/* setup buttons */

@@ -41,8 +41,6 @@ gnome_software_SOURCES =				\
 	gs-plugin-loader-sync.h				\
 	ch-markdown.c					\
 	ch-markdown.h					\
-	egg-list-box.c					\
-	egg-list-box.h					\
 	gs-main.c
 
 gnome_software_LDADD =					\
