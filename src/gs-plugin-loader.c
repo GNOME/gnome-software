@@ -217,6 +217,28 @@ gs_plugin_loader_remove_invalid (GList *list)
 	return list;
 }
 
+/**
+ * gs_plugin_loader_remove_system:
+ **/
+static GList *
+gs_plugin_loader_remove_system (GList *list)
+{
+	GList *l;
+	GsApp *app;
+
+	for (l = list; l != NULL;) {
+		app = GS_APP (l->data);
+		if (gs_app_get_kind (app) != GS_APP_KIND_SYSTEM) {
+			l = l->next;
+			continue;
+		}
+		g_debug ("removing package %s", gs_app_get_id (app));
+		g_object_unref (app);
+		l = list = g_list_delete_link (list, l);
+	}
+	return list;
+}
+
 /******************************************************************************/
 
 /* async state */
@@ -449,6 +471,7 @@ cd_plugin_loader_get_installed_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
+	state->list = gs_plugin_loader_remove_system (state->list);
 	state->list = gs_plugin_loader_remove_invalid (state->list);
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
