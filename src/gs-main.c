@@ -389,6 +389,8 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 	if (kind == GS_APP_WIDGET_KIND_UPDATE) {
 		g_debug ("update %s", package_id);
 		to_array[0] = package_id;
+		gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
+		gs_app_widget_set_status (app_widget, "Updating...");
 		pk_task_update_packages_async (priv->task,
 					       (gchar**)to_array,
 					       priv->cancellable,
@@ -399,6 +401,8 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 	} else if (kind == GS_APP_WIDGET_KIND_INSTALL) {
 		g_debug ("install %s", package_id);
 		to_array[0] = package_id;
+		gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
+		gs_app_widget_set_status (app_widget, "Installing...");
 		pk_task_install_packages_async (priv->task,
 					        (gchar**)to_array,
 					        priv->cancellable,
@@ -407,20 +411,48 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 					        (GAsyncReadyCallback) gs_main_remove_packages_cb,
 					        data);
 	} else if (kind == GS_APP_WIDGET_KIND_REMOVE) {
-		g_debug ("remove %s", package_id);
-		to_array[0] = package_id;
-		pk_task_remove_packages_async (priv->task,
-					       (gchar**)to_array,
-					       TRUE, /* allow deps */
-					       FALSE, /* autoremove */
-					       priv->cancellable,
-					       (PkProgressCallback) gs_main_progress_cb,
-					       priv,
-					       (GAsyncReadyCallback) gs_main_remove_packages_cb,
-					       data);
+
+		GtkWidget *dialog;
+		GtkWindow *window;
+		GtkResponseType response;
+		GString *markup;
+
+		window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
+		markup = g_string_new ("");
+		g_string_append_printf (markup,
+					_("Are you sure you want to remove %s?"),
+					gs_app_get_name (app));
+		g_string_prepend (markup, "<b>");
+		g_string_append (markup, "</b>");
+		dialog = gtk_message_dialog_new (window,
+						 GTK_DIALOG_MODAL,
+						 GTK_MESSAGE_QUESTION,
+						 GTK_BUTTONS_CANCEL,
+						 NULL);
+		gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), markup->str);
+		gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
+							    _("%s will be removed, and you will have to install it to use it again."),
+							    gs_app_get_name (app));
+		gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
+		response = gtk_dialog_run (GTK_DIALOG (dialog));
+		if (response == GTK_RESPONSE_OK) {
+			g_debug ("remove %s", package_id);
+			to_array[0] = package_id;
+			gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
+			gs_app_widget_set_status (app_widget, "Removing...");
+			pk_task_remove_packages_async (priv->task,
+						       (gchar**)to_array,
+						       TRUE, /* allow deps */
+						       FALSE, /* autoremove */
+						       priv->cancellable,
+						       (PkProgressCallback) gs_main_progress_cb,
+						       priv,
+						       (GAsyncReadyCallback) gs_main_remove_packages_cb,
+						       data);
+		}
+		g_string_free (markup, TRUE);
+		gtk_widget_destroy (dialog);
 	}
-	gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
-//	gs_app_widget_set_status (app_widget, "Installing...");
 }
 
 #if 0
