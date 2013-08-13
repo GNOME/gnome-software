@@ -504,6 +504,12 @@ gs_main_get_updates_cb (GsPluginLoader *plugin_loader,
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_updates_up_to_date"));
+	gtk_widget_set_visible (widget, list == NULL);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
+	gtk_widget_set_visible (widget, list != NULL);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+	gtk_widget_set_visible (widget, list != NULL);
 	if (list == NULL) {
 		g_warning ("failed to get updates: %s", error->message);
 		g_error_free (error);
