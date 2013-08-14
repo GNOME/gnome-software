@@ -39,6 +39,7 @@ struct GsAppPrivate
 	GsAppState		 state;
 	GHashTable		*metadata;
 	GdkPixbuf		*pixbuf;
+	GPtrArray		*related; /* of GsApp */
 };
 
 enum {
@@ -213,7 +214,7 @@ gs_app_get_pretty_version (const gchar *version)
 	}
 
 	/* then remove any distro suffix */
-	new = g_strdup_printf ("%s %s", "Version", version);
+	new = g_strdup (version);
 	f = g_strstr_len (new, -1, ".fc");
 	if (f != NULL)
 		*f= '\0';
@@ -329,6 +330,26 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 	g_hash_table_insert (app->priv->metadata,
 			     g_strdup (key),
 			     g_strdup (value));
+}
+
+/**
+ * gs_app_get_related:
+ */
+GPtrArray *
+gs_app_get_related (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->related;
+}
+
+/**
+ * gs_app_add_related:
+ */
+void
+gs_app_add_related (GsApp *app, GsApp *app2)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_ptr_array_add (app->priv->related, g_object_ref (app2));
 }
 
 /**
@@ -502,6 +523,7 @@ gs_app_init (GsApp *app)
 {
 	app->priv = GS_APP_GET_PRIVATE (app);
 	app->priv->rating = -1;
+	app->priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->metadata = g_hash_table_new_full (g_str_hash,
 						     g_str_equal,
 						     g_free,
@@ -524,6 +546,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->summary);
 	g_free (priv->screenshot);
 	g_hash_table_unref (priv->metadata);
+	g_ptr_array_unref (priv->related);
 	if (priv->pixbuf != NULL)
 		g_object_unref (priv->pixbuf);
 

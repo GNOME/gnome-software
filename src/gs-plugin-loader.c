@@ -296,7 +296,6 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 	GsApp *app_tmp;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GString *str_id = NULL;
 	GString *str_summary = NULL;
 
 	/* do things that would block */
@@ -325,21 +324,19 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 
 	/* smush them all together */
 	if (has_os_update) {
-		str_summary = g_string_new (_("Includes performance, stability and security improvements for all users"));
-		g_string_append (str_summary, "\n\n\n");
-		str_id = g_string_new ("os-update:");
+
+		/* create new meta object */
+		app = gs_app_new ("os-update");
+		gs_app_set_kind (app, GS_APP_KIND_OS_UPDATE);
+		gs_app_set_name (app, _("OS Updates"));
+		gs_app_set_summary (app, _("Includes performance, stability and security improvements for all users."));
+		gs_app_set_version (app, "3.10.1");
 		for (l = state->list; l != NULL; l = l->next) {
 			app_tmp = GS_APP (l->data);
 			if (gs_app_get_kind (app_tmp) != GS_APP_KIND_PACKAGE)
 				continue;
-			g_string_append_printf (str_id, "%s,",
-						gs_app_get_id (app_tmp));
-			g_string_append_printf (str_summary, "%s:\n\n%s\n\n",
-						gs_app_get_metadata_item (app_tmp, "update-name"),
-						gs_app_get_metadata_item (app_tmp, "update-details"));
+			gs_app_add_related (app, app_tmp);
 		}
-		g_string_truncate (str_id, str_id->len - 1);
-		g_string_truncate (str_summary, str_summary->len - 1);
 
 		/* load icon */
 		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
@@ -353,13 +350,6 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 				   error->message);
 			g_error_free (error);
 		}
-
-		/* create new meta object */
-		app = gs_app_new (str_id->str);
-		gs_app_set_kind (app, GS_APP_KIND_OS_UPDATE);
-		gs_app_set_name (app, _("OS Updates"));
-		gs_app_set_summary (app, str_summary->str);
-		gs_app_set_version (app, "3.6.3");
 		gs_app_set_pixbuf (app, pixbuf);
 		gs_plugin_add_app (&state->list, app);
 
@@ -383,8 +373,6 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 out:
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
-	if (str_id != NULL)
-		g_string_free (str_id, TRUE);
 	if (str_summary != NULL)
 		g_string_free (str_summary, TRUE);
 }

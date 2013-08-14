@@ -30,15 +30,12 @@
 struct _GsAppWidgetPrivate
 {
 	ChMarkdown	*markdown;
-	gboolean	 expanded;
 	gchar		*description;
-	gchar		*description_more;
 	GsApp		*app;
 	gchar		*status;
 	GsAppWidgetKind	 kind;
 	GtkWidget	*widget_button;
 	GtkWidget	*widget_description;
-	GtkWidget	*widget_description_more;
 	GtkWidget	*widget_image;
 	GtkWidget	*widget_more;
 	GtkWidget	*widget_name;
@@ -54,6 +51,7 @@ G_DEFINE_TYPE (GsAppWidget, gs_app_widget, GTK_TYPE_BOX)
 
 enum {
 	SIGNAL_BUTTON_CLICKED,
+	SIGNAL_MORE,
 	SIGNAL_LAST
 };
 
@@ -73,7 +71,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	gtk_label_set_label (GTK_LABEL (priv->widget_name),
 			     gs_app_get_name (priv->app));
 	gtk_label_set_markup (GTK_LABEL (priv->widget_description), priv->description);
-	gtk_label_set_markup (GTK_LABEL (priv->widget_description_more), priv->description_more);
 	gtk_label_set_label (GTK_LABEL (priv->widget_status), priv->status);
 	gtk_label_set_label (GTK_LABEL (priv->widget_version),
 			     gs_app_get_version (priv->app));
@@ -81,14 +78,11 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 				   gs_app_get_pixbuf (priv->app));
 	gtk_widget_set_visible (priv->widget_name, TRUE);
 	gtk_widget_set_visible (priv->widget_description, TRUE);
-	gtk_widget_set_visible (priv->widget_description_more,
-				priv->expanded && priv->description_more != NULL);
 	gtk_widget_set_visible (priv->widget_status, priv->status != NULL);
 	gtk_widget_set_visible (priv->widget_version, TRUE);
 	gtk_widget_set_visible (priv->widget_image, TRUE);
 	gtk_widget_set_visible (priv->widget_button, TRUE);
-	gtk_widget_set_visible (priv->widget_more,
-				!priv->expanded && app_widget->priv->description_more != NULL);
+	gtk_widget_set_visible (priv->widget_more, TRUE);
 
 	/* show / hide widgets depending on kind */
 	switch (app_widget->priv->kind) {
@@ -187,74 +181,28 @@ gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description
 	gchar **split = NULL;
 	GsAppWidgetPrivate *priv = app_widget->priv;
 	GString *description2 = NULL;
-	GString *tmp_description_more = NULL;
 	GString *tmp_description = NULL;
-	guint i;
 
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
 
 	g_free (priv->description);
-	g_free (priv->description_more);
 
 	/* nothing to set, so use placeholder */
 	if (description == NULL) {
 		priv->description = g_strdup ("No description");
-		priv->description_more = NULL;
 		goto out;
 	}
 
 	/* force split with bullet */
 	description2 = g_string_new (description);
 	_g_string_replace (description2, ". ", "\n* ");
-
-	/* common case, no newlines at all */
-	if (g_strstr_len (description, -1, "\n") == NULL) {
-		priv->description = ch_markdown_parse (priv->markdown,
-						       description2->str);
-		priv->description_more = NULL;
-		goto out;
-	}
-
-	/* split up description into extra parts */
-	split = g_strsplit (description2->str, "\n", -1);
-	tmp_description = g_string_new ("");
-	tmp_description_more = g_string_new ("");
-	for (i = 0; split[i] != NULL; i++) {
-		if (i <= GS_APP_WIDGET_MAX_LINES_NO_EXPANDER) {
-			g_string_append_printf (tmp_description,
-						"%s\n", split[i]);
-		} else {
-			g_string_append_printf (tmp_description_more,
-						"%s\n", split[i]);
-		}
-	}
-
-	/* remove trailing newline */
-	if (tmp_description->len > 0) {
-		g_string_set_size (tmp_description,
-				   tmp_description->len - 1);
-	}
-	if (tmp_description_more->len > 0) {
-		g_string_set_size (tmp_description_more,
-				   tmp_description_more->len - 1);
-	}
-
-	/* parse markdown */
 	priv->description = ch_markdown_parse (priv->markdown,
-					       tmp_description->str);
-	if (tmp_description_more->len > 0) {
-		priv->description_more = ch_markdown_parse (priv->markdown,
-							    tmp_description_more->str);
-	} else {
-		priv->description_more = NULL;
-	}
+					       description2->str);
 out:
 	if (description2 != NULL)
 		g_string_free (description2, TRUE);
 	if (tmp_description != NULL)
 		g_string_free (tmp_description, TRUE);
-	if (tmp_description_more != NULL)
-		g_string_free (tmp_description_more, TRUE);
 	g_strfreev (split);
 }
 
@@ -314,8 +262,6 @@ gs_app_widget_destroy (GtkWidget *object)
 	GsAppWidget *app_widget = GS_APP_WIDGET (object);
 	GsAppWidgetPrivate *priv = app_widget->priv;
 
-	g_free (priv->description_more);
-	priv->description_more = NULL;
 	g_free (priv->description);
 	priv->description = NULL;
 	g_free (priv->status);
@@ -341,6 +287,12 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 			      G_STRUCT_OFFSET (GsAppWidgetClass, button_clicked),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
+	signals [SIGNAL_MORE] =
+		g_signal_new ("more",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsAppWidgetClass, more),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (GsAppWidgetPrivate));
 }
@@ -360,8 +312,7 @@ gs_app_widget_button_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
 static void
 gs_app_widget_more_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
 {
-	app_widget->priv->expanded = TRUE;
-	gs_app_widget_refresh (app_widget);
+	g_signal_emit (app_widget, signals[SIGNAL_MORE], 0);
 }
 
 /**
@@ -435,7 +386,7 @@ gs_app_widget_init (GsAppWidget *app_widget)
 			    TRUE, TRUE, 0);
 
 	/* 'More' Expander */
-	priv->widget_more = gtk_button_new_with_label (_("More  ▾"));
+	priv->widget_more = gtk_button_new_with_label (_("More"));
 	context = gtk_widget_get_style_context (priv->widget_more);
 	gtk_style_context_add_class (context, "dim-label");
 	gtk_button_set_relief (GTK_BUTTON (priv->widget_more), GTK_RELIEF_NONE);
@@ -447,14 +398,6 @@ gs_app_widget_init (GsAppWidget *app_widget)
 			    TRUE, TRUE, 0);
 	g_signal_connect (priv->widget_more, "clicked",
 			  G_CALLBACK (gs_app_widget_more_clicked_cb), app_widget);
-
-	/* description - more */
-	priv->widget_description_more = gtk_label_new ("description-more");
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_description_more), 0.0, 0.0);
-	gtk_label_set_line_wrap (GTK_LABEL (priv->widget_description_more), TRUE);
-	gtk_box_pack_start (GTK_BOX (box),
-			    GTK_WIDGET (priv->widget_description_more),
-			    TRUE, TRUE, 0);
 
 	/* button */
 	priv->widget_button = gtk_button_new_with_label ("button");
