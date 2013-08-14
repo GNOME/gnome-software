@@ -2,22 +2,23 @@
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 # Rafael Ferreira <rafael.f.f1@gmail.com>, 2013.
+# Enrico Nicoletto <liverig@gmail.com>,  2013.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-04-09 15:56+0000\n"
-"PO-Revision-Date: 2013-04-09 22:30-0300\n"
-"Last-Translator: Rafael Ferreira <rafael.f.f1@gmail.com>\n"
+"POT-Creation-Date: 2013-08-14 13:44+0000\n"
+"PO-Revision-Date: 2013-08-14 11:08-0300\n"
+"Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
 msgid "Software"
@@ -51,7 +52,7 @@ msgstr "Análises"
 msgid "Related"
 msgstr "Relacionado"
 
-#: ../src/gnome-software.ui.h:8 ../src/gs-app-widget.c:99
+#: ../src/gnome-software.ui.h:8 ../src/gs-app-widget.c:93
 msgid "Install"
 msgstr "Instalar"
 
@@ -72,10 +73,14 @@ msgid "Categories"
 msgstr "Categorias"
 
 #: ../src/gnome-software.ui.h:13
+msgid "Software is up to date"
+msgstr "O software está atualizado"
+
+#: ../src/gnome-software.ui.h:14
 msgid "Description"
 msgstr "Descrição"
 
-#: ../src/gnome-software.ui.h:14
+#: ../src/gnome-software.ui.h:15
 msgid ""
 "Shotwell is a digital photo organiser that runs on Linux. It is the default "
 "photo manager in Ubuntu and Fedora."
@@ -83,57 +88,71 @@ msgstr ""
 "Shotwell é um organizador de fotos digitais que funciona no Linux. Ele é o "
 "gerenciador de fotos padrão do Ubuntu e do Fedora."
 
-#: ../src/gs-app-widget.c:105
+#: ../src/gnome-software.ui.h:16
+msgid "Done"
+msgstr "Concluído"
+
+#: ../src/gs-app-widget.c:99 ../src/gs-main.c:562
 msgid "Remove"
 msgstr "Remover"
 
-#: ../src/gs-app-widget.c:111
+#: ../src/gs-app-widget.c:105
 msgid "Update"
 msgstr "Atualizar"
 
 #. 'More' Expander
-#: ../src/gs-app-widget.c:438
-msgid "More  ▾"
-msgstr "Mais  ▾"
+#: ../src/gs-app-widget.c:389
+msgid "More"
+msgstr "Mais"
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:185
+#: ../src/gs-main.c:191
 msgid "Waiting for package manager..."
 msgstr "Esperando pelo gerenciador de pacotes..."
 
 #. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:189
+#: ../src/gs-main.c:195
 msgid "Loading list of packages..."
 msgstr "Carregando a lista de pacotes..."
 
 #. TRANSLATORS: this is the transaction status
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:199 ../src/gs-main.c:260
+#: ../src/gs-main.c:205 ../src/gs-main.c:266
 msgid "Downloading..."
 msgstr "Baixando..."
 
 #. TRANSLATORS: this is the transaction status
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:204 ../src/gs-main.c:264
+#: ../src/gs-main.c:210 ../src/gs-main.c:270
 msgid "Querying..."
 msgstr "Consultando..."
 
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:252
+#: ../src/gs-main.c:258
 msgid "Waiting..."
 msgstr "Esperando..."
 
 #. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:256
+#: ../src/gs-main.c:262
 msgid "Setting up..."
 msgstr "Configurando..."
 
+#: ../src/gs-main.c:549
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Você tem certeza de que deseja remover %s?"
+
+#: ../src/gs-main.c:560
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr "%s será removido e para usá-lo novamente, você precisará instalá-lo."
+
 #. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:435
+#: ../src/gs-main.c:592
 msgid "Requires restart"
 msgstr "Requer reinício"
 
-#: ../src/gs-main.c:803
+#: ../src/gs-main.c:969
 msgid ""
 "The author of this software has not included a 'Description' in the desktop "
 "file..."
@@ -141,15 +160,16 @@ msgstr ""
 "O autor deste software não inclui uma \"Description\" (descrição) no arquivo "
 "desktop..."
 
-#: ../src/gs-plugin-loader.c:306
-msgid "Includes performance, stability and security improvements for all users"
-msgstr ""
-"Inclui melhoras na performance, estabilidade e segurança para todos os "
-"usuários"
-
-#: ../src/gs-plugin-loader.c:338
+#: ../src/gs-plugin-loader.c:331
 msgid "OS Updates"
 msgstr "Atualizações do SO"
+
+#: ../src/gs-plugin-loader.c:332
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr ""
+"Inclui melhorias de desempenho, estabilidade e segurança para todos os "
+"usuários."
 
 #~ msgid "OS Update"
 #~ msgstr "Atualização do OS"
