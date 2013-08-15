@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.15.2 on Thu Aug 15 14:23:55 2013 -->
+<!-- Generated with glade 3.15.2 on Thu Aug 15 16:53:09 2013 -->
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <object class="GtkListStore" id="liststore_update">
@@ -313,6 +313,8 @@
                         <child>
                           <object class="GtkButton" id="featured_button">
                             <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="receives_default">False</property>
                             <property name="halign">center</property>
                             <property name="relief">none</property>
                             <child>
@@ -324,6 +326,11 @@
                               </object>
                             </child>
                           </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
                         </child>
                         <child>
                           <object class="GtkAlignment" id="alignment2">
@@ -937,7 +944,44 @@ with multi-level undo.
             </child>
             <child>
               <object class="GtkGrid" id="category_detail_grid">
+                <property name="can_focus">False</property>
+                <property name="margin_left">12</property>
+                <property name="margin_right">12</property>
+                <property name="margin_top">12</property>
+                <property name="margin_bottom">12</property>
+                <property name="row_spacing">12</property>
+                <property name="column_spacing">12</property>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
               </object>
+              <packing>
+                <property name="position">6</property>
+              </packing>
             </child>
             <child type="tab">
               <object class="GtkLabel" id="label11">
@@ -962,9 +1006,9 @@ with multi-level undo.
   </object>
   <object class="GtkDialog" id="dialog_update">
     <property name="can_focus">False</property>
+    <property name="default_height">600</property>
     <property name="type_hint">dialog</property>
     <property name="transient_for">window_software</property>
-    <property name="default-height">600</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="can_focus">False</property>
@@ -1112,9 +1156,9 @@ with multi-level undo.
               <object class="GtkScrolledWindow" id="scrolledwindow_update">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="vexpand">True</property>
                 <property name="shadow_type">in</property>
                 <property name="kinetic_scrolling">False</property>
-                <property name="vexpand">True</property>
                 <child>
                   <object class="GtkTreeView" id="treeview_update">
                     <property name="visible">True</property>
@@ -1126,6 +1170,9 @@ with multi-level undo.
                     <property name="search_column">1</property>
                     <property name="show_expanders">False</property>
                     <property name="activate_on_single_click">True</property>
+                    <child internal-child="selection">
+                      <object class="GtkTreeSelection" id="treeview-selection1"/>
+                    </child>
                   </object>
                 </child>
               </object>
