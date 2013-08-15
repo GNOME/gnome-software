@@ -91,6 +91,12 @@ void 		 gs_app_set_version		(GsApp		*app,
 const gchar	*gs_app_get_summary		(GsApp		*app);
 void		 gs_app_set_summary		(GsApp		*app,
 						 const gchar	*summary);
+const gchar	*gs_app_get_description		(GsApp		*app);
+void		 gs_app_set_description		(GsApp		*app,
+						 const gchar	*description);
+const gchar	*gs_app_get_url                 (GsApp		*app);
+void		 gs_app_set_url 		(GsApp		*app,
+						 const gchar	*url);
 const gchar	*gs_app_get_screenshot		(GsApp		*app);
 void		 gs_app_set_screenshot		(GsApp		*app,
 						 const gchar	*screenshot);

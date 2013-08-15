@@ -33,7 +33,9 @@ struct GsAppPrivate
 	gchar			*name;
 	gchar			*version;
 	gchar			*summary;
+	gchar			*description;
 	gchar			*screenshot;
+        gchar                   *url;
 	gint			 rating;
 	GsAppKind		 kind;
 	GsAppState		 state;
@@ -48,6 +50,8 @@ enum {
 	PROP_NAME,
 	PROP_VERSION,
 	PROP_SUMMARY,
+	PROP_DESCRIPTION,
+	PROP_URL,
 	PROP_SCREENSHOT,
 	PROP_RATING,
 	PROP_KIND,
@@ -267,6 +271,36 @@ gs_app_set_summary (GsApp *app, const gchar *summary)
 	app->priv->summary = g_strdup (summary);
 }
 
+const gchar *
+gs_app_get_description (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->description;
+}
+
+void
+gs_app_set_description (GsApp *app, const gchar *description)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->description);
+	app->priv->description = g_strdup (description);
+}
+
+const gchar *
+gs_app_get_url (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->url;
+}
+
+void
+gs_app_set_url (GsApp *app, const gchar *url)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->url);
+	app->priv->url = g_strdup (url);
+}
+
 /**
  * gs_app_get_screenshot:
  */
@@ -374,6 +408,12 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_SUMMARY:
 		g_value_set_string (value, priv->summary);
 		break;
+	case PROP_DESCRIPTION:
+		g_value_set_string (value, priv->description);
+		break;
+	case PROP_URL:
+		g_value_set_string (value, priv->url);
+		break;
 	case PROP_SCREENSHOT:
 		g_value_set_string (value, priv->screenshot);
 		break;
@@ -412,6 +452,12 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_SUMMARY:
 		gs_app_set_summary (app, g_value_get_string (value));
+		break;
+	case PROP_DESCRIPTION:
+		gs_app_set_description (app, g_value_get_string (value));
+		break;
+	case PROP_URL:
+		gs_app_set_url (app, g_value_get_string (value));
 		break;
 	case PROP_SCREENSHOT:
 		gs_app_set_screenshot (app, g_value_get_string (value));
@@ -475,6 +521,16 @@ gs_app_class_init (GsAppClass *klass)
 				     NULL,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_SUMMARY, pspec);
+
+	pspec = g_param_spec_string ("description", NULL, NULL,
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_DESCRIPTION, pspec);
+
+	pspec = g_param_spec_string ("url", NULL, NULL,
+				     NULL,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_URL, pspec);
 
 	/**
 	 * GsApp:screenshot:
