@@ -65,7 +65,7 @@ GETTEXT_PACKAGE=AC_PACKAGE_NAME
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE(GETTEXT_PACKAGE, "AC_PACKAGE_NAME", [gnome-software])
 
-AM_PATH_GLIB_2_0(2.31.10, :, AC_MSG_ERROR([GLib is required]), gobject gmodule-no-export gio)
+AM_PATH_GLIB_2_0(2.31.10, :, AC_MSG_ERROR([GLib is required]), gobject gmodule gio)
 AM_GLIB_GNU_GETTEXT
 GLIB_GSETTINGS
 
