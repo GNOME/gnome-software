@@ -65,14 +65,13 @@ GETTEXT_PACKAGE=AC_PACKAGE_NAME
 AC_SUBST(GETTEXT_PACKAGE)
 AC_DEFINE(GETTEXT_PACKAGE, "AC_PACKAGE_NAME", [gnome-software])
 
-AM_PATH_GLIB_2_0
+AM_PATH_GLIB_2_0(2.31.10, :, AC_MSG_ERROR([GLib is required]), gobject gmodule-no-export gio)
 AM_GLIB_GNU_GETTEXT
 GLIB_GSETTINGS
 
 dnl ---------------------------------------------------------------------------
 dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
-PKG_CHECK_MODULES(GLIB, glib-2.0 >= 2.31.10 gobject-2.0 gthread-2.0 gio-2.0 >= 2.25.9 gmodule-2.0)
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.5.6)
 PKG_CHECK_MODULES(PACKAGEKIT, packagekit-glib2 >= 0.8.10)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
