@@ -839,7 +839,7 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 		break;
 	}
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_MAIN_MODE_NEW);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed"));
@@ -1328,7 +1328,7 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_main_back_button_cb), priv);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_new"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all"));
 	g_object_set_data (G_OBJECT (widget),
 			   "gnome-software::overview-mode",
 			   GINT_TO_POINTER (GS_MAIN_MODE_NEW));
