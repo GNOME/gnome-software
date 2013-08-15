@@ -739,6 +739,38 @@ gs_main_get_updates (GsMainPrivate *priv)
 					    (GAsyncReadyCallback) gs_main_get_updates_cb, priv);
 }
 
+static GtkWidget *
+create_popular_tile (GsApp *app)
+{
+        GtkWidget *button, *frame, *ebox, *box, *image, *label;
+        GtkWidget *f;
+
+        f = gtk_aspect_frame_new (NULL, 0.5, 0.5, 1, FALSE);
+        gtk_frame_set_shadow_type (GTK_FRAME (f), GTK_SHADOW_NONE);
+        button = gtk_button_new ();
+        gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+        frame = gtk_aspect_frame_new (NULL, 0.5, 1, 1, FALSE);
+        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+        ebox = gtk_event_box_new ();
+        gtk_container_add (GTK_CONTAINER (frame), ebox);
+        gtk_event_box_set_visible_window (GTK_EVENT_BOX (ebox), TRUE);
+        gtk_style_context_add_class (gtk_widget_get_style_context (ebox), "view");
+        box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+        gtk_container_add (GTK_CONTAINER (ebox), box);
+        image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
+        g_object_set (box, "margin", 12, NULL);
+        gtk_box_pack_start (GTK_BOX (box), image, FALSE, TRUE, 0);
+        label = gtk_label_new (gs_app_get_name (app));
+        g_object_set (label, "margin", 6, NULL);
+        gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
+        gtk_widget_set_halign (frame, GTK_ALIGN_FILL);
+        gtk_widget_set_valign (frame, GTK_ALIGN_FILL);
+        gtk_container_add (GTK_CONTAINER (button), frame);
+        gtk_container_add (GTK_CONTAINER (f), button);
+        gtk_widget_show_all (f);
+
+        return f;
+}
 
 /**
  * gs_main_get_popular_cb:
@@ -752,10 +784,11 @@ gs_main_get_popular_cb (GObject *source_object,
 	GList *l;
 	GList *list;
 	GsApp *app;
+        gint i;
+        GtkWidget *tile;
 	GsMainPrivate *priv = (GsMainPrivate *) user_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GtkListStore *liststore;
-	GtkTreeIter iter;
+        GtkWidget *grid;
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader,
@@ -767,21 +800,28 @@ gs_main_get_popular_cb (GObject *source_object,
 		goto out;
 	}
 
-	liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_popular"));
-	gtk_list_store_clear (liststore);
-	for (l = list; l != NULL; l = l->next) {
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_popular"));
+	for (l = list, i = 0; l != NULL; l = l->next, i++) {
 		app = GS_APP (l->data);
 		g_debug ("adding popular %s", gs_app_get_id (app));
-		gtk_list_store_append (liststore, &iter);
-		gtk_list_store_set (liststore,
-				    &iter,
-				    COLUMN_POPULAR_APP, app,
-				    COLUMN_POPULAR_MARKUP, gs_app_get_name (app),
-				    COLUMN_POPULAR_PIXBUF, gs_app_get_pixbuf (app),
-				    -1);
+                tile = create_popular_tile (app);
+                gtk_grid_attach (GTK_GRID (grid), tile, i, 0, 1, 1);
 	}
 out:
 	return;
+}
+
+static void
+container_remove_all (GtkContainer *container)
+{
+  GList *children, *l;
+
+  children = gtk_container_get_children (container);
+
+  for (l = children; l; l = l->next)
+    gtk_container_remove (container, GTK_WIDGET (l->data));
+
+  g_list_free (children);
 }
 
 /**
@@ -790,17 +830,65 @@ out:
 static void
 gs_main_get_popular (GsMainPrivate *priv)
 {
-	GtkListStore *liststore;
+        GtkWidget *grid;
 
-	/* remove old entries */
-	liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_popular"));
-	gtk_list_store_clear (liststore);
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_popular"));
+        container_remove_all (GTK_CONTAINER (grid));
 
 	/* get popular apps */
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
 					    priv->cancellable,
 					    gs_main_get_popular_cb,
 					    priv);
+}
+
+static GtkWidget *
+create_category_tile (const gchar *category)
+{
+        GtkWidget *button, *frame, *ebox, *label;
+
+        button = gtk_button_new ();
+        gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+        frame = gtk_frame_new (NULL);
+        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+        ebox = gtk_event_box_new ();
+        gtk_container_add (GTK_CONTAINER (frame), ebox);
+        gtk_event_box_set_visible_window (GTK_EVENT_BOX (ebox), TRUE);
+        gtk_style_context_add_class (gtk_widget_get_style_context (ebox), "view");
+        label = gtk_label_new (category);
+        g_object_set (label,
+                      "margin", 12,
+                      "xalign", 0,
+                      NULL);
+        gtk_container_add (GTK_CONTAINER (ebox), label);
+        gtk_container_add (GTK_CONTAINER (button), frame);
+        gtk_widget_show_all (button);
+
+        return button;
+}
+
+static void
+gs_main_get_categories (GsMainPrivate *priv)
+{
+        GtkWidget *grid;
+        const gchar *categories[] = {
+          "Add-ons", "Books", "Business & Finance",
+          "Entertainment", "Education", "Games",
+          "Lifestyle", "Music", "Navigation",
+          "News", "Photo & Video", "Productivity",
+          "Social Networking", "Utility", "Weather",
+        };
+        gint i;
+        GtkWidget *tile;
+
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
+        container_remove_all (GTK_CONTAINER (grid));
+
+        for (i = 0; i < G_N_ELEMENTS (categories); i++) {
+                tile = create_category_tile (categories[i]);
+                gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
+        }
+ 
 }
 
 /**
@@ -928,6 +1016,7 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 	switch (mode) {
 	case GS_MAIN_MODE_NEW:
 		gs_main_get_popular (priv);
+		gs_main_get_categories (priv);
 		break;
 	case GS_MAIN_MODE_INSTALLED:
 		gs_main_get_installed (priv);
@@ -1282,6 +1371,7 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (widget), FALSE);
 
+#if 0
 	/* set up popular icon vew */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "iconview_popular"));
 	gtk_icon_view_set_markup_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_MARKUP);
@@ -1289,6 +1379,7 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	gtk_icon_view_set_activate_on_single_click (GTK_ICON_VIEW (widget), TRUE);
 	g_signal_connect (widget, "item-activated",
 			  G_CALLBACK (gs_main_popular_activated_cb), priv);
+#endif
 
 	/* setup featured tiles */
 	gs_main_setup_featured (priv);

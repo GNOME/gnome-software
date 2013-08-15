@@ -2,16 +2,6 @@
 <!-- Generated with glade 3.15.2 on Wed Aug 14 13:18:05 2013 -->
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
-  <object class="GtkListStore" id="liststore_popular">
-    <columns>
-      <!-- column-name app -->
-      <column type="GObject"/>
-      <!-- column-name markup -->
-      <column type="gchararray"/>
-      <!-- column-name pixbuf -->
-      <column type="GdkPixbuf"/>
-    </columns>
-  </object>
   <object class="GtkListStore" id="liststore_update">
     <columns>
       <!-- column-name app -->
@@ -30,7 +20,7 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">5</property>
+        <property name="spacing">0</property>
         <child>
           <object class="GtkHeaderBar" id="header">
             <property name="visible">True</property>
@@ -158,81 +148,81 @@
                 <property name="pack-type">end</property>
               </packing>
             </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkToolbar" id="search_bar">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <style>
+              <class name="primary-toolbar"/>
+            </style>
             <child>
-              <object class="GtkToolbar" id="search_bar">
+              <object class="GtkToolItem" id="search_toolitem">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <style>
-                  <class name="primary-toolbar"/>
-                </style>
                 <child>
-                  <object class="GtkToolItem" id="search_toolitem">
+                  <object class="GtkBox" id="search_toolbox">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkBox" id="search_toolbox">
+                      <object class="GtkBox" id="box_left">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <property name="halign">start</property>
+                        <property name="hexpand">True</property>
                         <child>
-                          <object class="GtkBox" id="box_left">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <property name="halign">start</property>
-                            <property name="hexpand">True</property>
-                            <child>
-                              <placeholder/>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">0</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkSearchEntry" id="entry_search">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="activates_default">True</property>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
-                        </child>
-                        <child>
-                          <object class="GtkBox" id="box_right">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="orientation">vertical</property>
-                            <property name="halign">start</property>
-                            <property name="hexpand">True</property>
-                            <child>
-                              <placeholder/>
-                            </child>
-                          </object>
-                          <packing>
-                            <property name="expand">True</property>
-                            <property name="fill">True</property>
-                            <property name="position">2</property>
-                          </packing>
+                          <placeholder/>
                         </child>
                       </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkSearchEntry" id="entry_search">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="activates_default">True</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="box_right">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="orientation">vertical</property>
+                        <property name="halign">start</property>
+                        <property name="hexpand">True</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                  </packing>
                 </child>
               </object>
               <packing>
-                <property name="expand">False</property>
-                <property name="fill">True</property>
+                <property name="expand">True</property>
               </packing>
             </child>
           </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+          </packing>
         </child>
         <child>
           <object class="GtkNotebook" id="notebook_main">
@@ -244,6 +234,7 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
+                <property name="hscrollbar-policy">never</property>
                 <style>
                   <class name="main-scrolled-software"/>
                 </style>
@@ -367,13 +358,15 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkIconView" id="iconview_popular">
+                          <object class="GtkGrid" id="grid_popular">
                             <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="margin">0</property>
-                            <property name="hscroll_policy">natural</property>
-                            <property name="vscroll_policy">natural</property>
-                            <property name="model">liststore_popular</property>
+                            <property name="row-spacing">12</property>
+                            <property name="column-spacing">12</property>
+                            <property name="row-homogeneous">True</property>
+                            <property name="column-homogeneous">True</property>
+                            <property name="halign">fill</property>
+                            <property name="margin-left">12</property>
+                            <property name="margin-right">12</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -383,6 +376,7 @@
                         </child>
                         <child>
                           <object class="GtkAlignment" id="alignment3">
+                            <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="top_padding">10</property>
                             <property name="left_padding">20</property>
@@ -406,9 +400,15 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkLabel" id="label7">
-                            <property name="can_focus">False</property>
-                            <property name="label">Social Networking</property>
+                          <object class="GtkGrid" id="grid_categories">
+                            <property name="visible">True</property>
+                            <property name="row-spacing">12</property>
+                            <property name="column-spacing">12</property>
+                            <property name="row-homogeneous">True</property>
+                            <property name="column-homogeneous">True</property>
+                            <property name="halign">fill</property>
+                            <property name="margin-left">12</property>
+                            <property name="margin-right">12</property>
                           </object>
                           <packing>
                             <property name="expand">False</property>
