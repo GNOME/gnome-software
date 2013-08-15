@@ -964,6 +964,7 @@ with multi-level undo.
     <property name="can_focus">False</property>
     <property name="type_hint">dialog</property>
     <property name="transient_for">window_software</property>
+    <property name="default-height">600</property>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="can_focus">False</property>
@@ -971,7 +972,6 @@ with multi-level undo.
         <property name="margin_right">6</property>
         <property name="margin_top">6</property>
         <property name="margin_bottom">6</property>
-        <property name="resize_mode">immediate</property>
         <property name="orientation">vertical</property>
         <property name="spacing">2</property>
         <child internal-child="action_area">
@@ -1114,6 +1114,7 @@ with multi-level undo.
                 <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
                 <property name="kinetic_scrolling">False</property>
+                <property name="vexpand">True</property>
                 <child>
                   <object class="GtkTreeView" id="treeview_update">
                     <property name="visible">True</property>
