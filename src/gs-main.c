@@ -38,7 +38,6 @@ typedef enum {
 	GS_MAIN_MODE_UPDATES,
 	GS_MAIN_MODE_WAITING,
 	GS_MAIN_MODE_DETAILS,
-        GS_MAIN_MODE_APPLICATION,
         GS_MAIN_MODE_CATEGORY
 } GsMainMode;
 
@@ -750,7 +749,7 @@ app_tile_clicked (GtkButton *button, gpointer data)
         GsApp *app;
 
         app = g_object_get_data (button, "app");
-        gs_main_set_overview_mode (priv, GS_MAIN_MODE_APPLICATION, app);
+        gs_main_set_overview_mode (priv, GS_MAIN_MODE_DETAILS, app);
 }
 
 static GtkWidget *
@@ -859,6 +858,16 @@ gs_main_get_popular (GsMainPrivate *priv)
 					    priv);
 }
 
+static void
+category_tile_clicked (GtkButton *button, gpointer data)
+{
+        GsMainPrivate *priv = data;
+        GsApp *app;
+
+        app = g_object_get_data (button, "category");
+        gs_main_set_overview_mode (priv, GS_MAIN_MODE_CATEGORY, app);
+}
+
 static GtkWidget *
 create_category_tile (const gchar *category)
 {
@@ -920,20 +929,6 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 	priv->ignore_primary_buttons = TRUE;
 
 	switch (mode) {
-	case GS_MAIN_MODE_DETAILS:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-		gtk_widget_set_visible (widget, TRUE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_detail_header"));
-		gtk_widget_set_visible (widget, FALSE);
-		break;
 	case GS_MAIN_MODE_NEW:
 	case GS_MAIN_MODE_INSTALLED:
 	case GS_MAIN_MODE_UPDATES:
@@ -946,13 +941,13 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 		gtk_widget_set_visible (widget, FALSE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
 		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_detail_header"));
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 		gtk_widget_set_visible (widget, FALSE);
 		break;
-	case GS_MAIN_MODE_APPLICATION:
+	case GS_MAIN_MODE_DETAILS:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_detail_header"));
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 		gtk_widget_set_visible (widget, TRUE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 		gtk_widget_set_visible (widget, TRUE);
@@ -1016,21 +1011,10 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 		gtk_spinner_start (GTK_SPINNER (widget));
 		break;
 	case GS_MAIN_MODE_DETAILS:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_name"));
-		gtk_widget_hide (widget);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_summary"));
-		gtk_widget_hide (widget);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_description"));
-		gtk_widget_hide (widget);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_detail_screenshot"));
-		gtk_widget_hide (widget);
-		break;
-	case GS_MAIN_MODE_APPLICATION:
 		break;
 	default:
 		g_assert_not_reached ();
 	}
-
 
 	/* set panel */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
@@ -1044,6 +1028,7 @@ static void
 gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 {
 	GtkWidget *widget;
+	GtkWidget *widget2;
 	const gchar *tmp;
 	GdkPixbuf *pixbuf;
 	gint rating;
@@ -1071,62 +1056,57 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 		gs_main_get_updates (priv);
 		break;
 	case GS_MAIN_MODE_DETAILS:
-
 		tmp = gs_app_get_name (app);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_title"));
+		widget2 = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 		if (tmp != NULL && tmp[0] != '\0') {
-			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_name"));
 			gtk_label_set_label (GTK_LABEL (widget), tmp);
+			gtk_label_set_label (GTK_LABEL (widget2), tmp);
 			gtk_widget_set_visible (widget, TRUE);
 		}
+                else {
+			gtk_widget_set_visible (widget, FALSE);
+			gtk_label_set_label (GTK_LABEL (widget2), "");
+                }
 		tmp = gs_app_get_summary (app);
+	        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_summary"));
 		if (tmp != NULL && tmp[0] != '\0') {
-			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_summary"));
 			gtk_label_set_label (GTK_LABEL (widget), tmp);
 			gtk_widget_set_visible (widget, TRUE);
 		}
-		tmp = NULL; // gs_app_get_description (app);
+                else {
+			gtk_widget_set_visible (widget, FALSE);
+                }
+		tmp = gs_app_get_description (app);
 		if (tmp == NULL)
 			tmp = _("The author of this software has not included a 'Description' in the desktop file...");
-		if (tmp != NULL && tmp[0] != '\0') {
-			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_detail_description"));
-			gtk_label_set_label (GTK_LABEL (widget), tmp);
-			gtk_widget_set_visible (widget, TRUE);
-		}
+
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_description"));
+		gtk_label_set_label (GTK_LABEL (widget), tmp);
+		gtk_widget_set_visible (widget, TRUE);
+
 		pixbuf = gs_app_get_pixbuf (app);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
 		if (pixbuf != NULL) {
-			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_detail_icon"));
 			gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
 			gtk_widget_set_visible (widget, TRUE);
 		}
-		tmp = gs_app_get_screenshot (app);
-		if (tmp != NULL && tmp[0] != '\0') {
-			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_detail_screenshot"));
-			pixbuf = gdk_pixbuf_new_from_file_at_size (tmp, 1000, 500, NULL);
-			gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
-			g_object_unref (pixbuf);
-			gtk_widget_set_visible (widget, TRUE);
-		}
+                else {
+			gtk_widget_set_visible (widget, FALSE);
+                }
 
-		/* show rating */
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_detail_rating"));
-		rating = gs_app_get_rating (app);
-		if (rating < 20) {
-			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars0.png");
-		} else if (rating < 40) {
-			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars1.png");
-		} else if (rating < 60) {
-			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars2.png");
-		} else if (rating < 80) {
-			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars3.png");
-		} else {
-			gtk_image_set_from_file (GTK_IMAGE (widget), DATADIR "/gnome-software/stars4.png");
-		}
+                tmp = gs_app_get_url (app);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_url"));
+                if (tmp != NULL && tmp[0] != '\0') {
+                        gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), tmp);
+                        gtk_widget_set_visible (widget, TRUE);
+                }
+                else {
+			gtk_widget_set_visible (widget, FALSE);
+                }
 
-		/* add install button if available */
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
-		gtk_widget_set_visible (widget, gs_app_get_state (app) == GS_APP_STATE_AVAILABLE);
 		break;
-	case GS_MAIN_MODE_APPLICATION:
+	case GS_MAIN_MODE_CATEGORY:
 		break;
 	default:
 		g_assert_not_reached ();
@@ -1304,35 +1284,6 @@ gs_main_installed_sort_func (GtkListBoxRow *a,
 	GsApp *a2 = gs_app_widget_get_app (aw2);
 	return g_strcmp0 (gs_app_get_name (a1),
 			  gs_app_get_name (a2));
-}
-
-/**
- * gs_main_popular_activated_cb:
- **/
-static void
-gs_main_popular_activated_cb (GtkIconView *iconview, GtkTreePath *path, GsMainPrivate *priv)
-{
-	gboolean ret;
-	GsApp *app;
-	GtkTreeIter iter;
-	GtkTreeModel *model;
-
-	model = gtk_icon_view_get_model (iconview);
-	ret = gtk_tree_model_get_iter_from_string (model, &iter, gtk_tree_path_to_string (path));
-	if (!ret)
-		return;
-
-	gtk_tree_model_get (model, &iter,
-			    COLUMN_POPULAR_APP, &app,
-			    -1);
-	g_debug ("show details with %s", gs_app_get_id (app));
-
-	/* save current mode */
-	priv->tab_back_id = priv->mode;
-
-	/* switch to overview mode */
-	gs_main_set_overview_mode (priv, GS_MAIN_MODE_DETAILS, app);
-	g_object_unref (app);
 }
 
 /**
