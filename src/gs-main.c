@@ -37,7 +37,9 @@ typedef enum {
 	GS_MAIN_MODE_INSTALLED,
 	GS_MAIN_MODE_UPDATES,
 	GS_MAIN_MODE_WAITING,
-	GS_MAIN_MODE_DETAILS
+	GS_MAIN_MODE_DETAILS,
+        GS_MAIN_MODE_APPLICATION,
+        GS_MAIN_MODE_CATEGORY
 } GsMainMode;
 
 enum {
@@ -70,7 +72,9 @@ typedef struct {
 	guint			 tab_back_id;
 } GsMainPrivate;
 
-static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode);
+static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app);
+static void gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app);
+static void app_tile_clicked (GtkButton *button, gpointer data);
 
 /**
  * gs_main_activate_cb:
@@ -91,7 +95,7 @@ static gboolean
 gs_main_show_waiting_tab_cb (gpointer user_data)
 {
 	GsMainPrivate *priv = (GsMainPrivate *) user_data;
-	gs_main_set_overview_mode_ui (priv, GS_MAIN_MODE_WAITING);
+	gs_main_set_overview_mode_ui (priv, GS_MAIN_MODE_WAITING, NULL);
 	priv->waiting_tab_id = 0;
 	return FALSE;
 }
@@ -225,7 +229,7 @@ gs_main_progress_cb (PkProgress *progress,
 	/* show the waiting panel if the delay is significant */
 	if (status == PK_STATUS_ENUM_SETUP ||
 	    status == PK_STATUS_ENUM_FINISHED) {
-		gs_main_set_overview_mode_ui (priv, priv->mode);
+		gs_main_set_overview_mode_ui (priv, priv->mode, NULL);
 		if (priv->waiting_tab_id > 0) {
 			g_source_remove (priv->waiting_tab_id);
 			priv->waiting_tab_id = 0;
@@ -284,7 +288,7 @@ gs_main_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 
 	/* show the waiting panel if the delay is significant */
 	if (status == GS_PLUGIN_STATUS_FINISHED) {
-		gs_main_set_overview_mode_ui (priv, priv->mode);
+		gs_main_set_overview_mode_ui (priv, priv->mode, NULL);
 		if (priv->waiting_tab_id > 0) {
 			g_source_remove (priv->waiting_tab_id);
 			priv->waiting_tab_id = 0;
@@ -739,8 +743,18 @@ gs_main_get_updates (GsMainPrivate *priv)
 					    (GAsyncReadyCallback) gs_main_get_updates_cb, priv);
 }
 
+static void
+app_tile_clicked (GtkButton *button, gpointer data)
+{
+        GsMainPrivate *priv = data;
+        GsApp *app;
+
+        app = g_object_get_data (button, "app");
+        gs_main_set_overview_mode (priv, GS_MAIN_MODE_APPLICATION, app);
+}
+
 static GtkWidget *
-create_popular_tile (GsApp *app)
+create_popular_tile (GsMainPrivate *priv, GsApp *app)
 {
         GtkWidget *button, *frame, *ebox, *box, *image, *label;
         GtkWidget *f;
@@ -768,6 +782,9 @@ create_popular_tile (GsApp *app)
         gtk_container_add (GTK_CONTAINER (button), frame);
         gtk_container_add (GTK_CONTAINER (f), button);
         gtk_widget_show_all (f);
+        g_object_set_data_full (button, "app", g_object_ref (app), g_object_unref);
+        g_signal_connect (button, "clicked",
+                          G_CALLBACK (app_tile_clicked), priv);
 
         return f;
 }
@@ -804,7 +821,7 @@ gs_main_get_popular_cb (GObject *source_object,
 	for (l = list, i = 0; l != NULL; l = l->next, i++) {
 		app = GS_APP (l->data);
 		g_debug ("adding popular %s", gs_app_get_id (app));
-                tile = create_popular_tile (app);
+                tile = create_popular_tile (priv, app);
                 gtk_grid_attach (GTK_GRID (grid), tile, i, 0, 1, 1);
 	}
 out:
@@ -895,9 +912,10 @@ gs_main_get_categories (GsMainPrivate *priv)
  * gs_main_set_overview_mode_ui:
  **/
 static void
-gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
+gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 {
 	GtkWidget *widget;
+        GsAppState state;
 
 	priv->ignore_primary_buttons = TRUE;
 
@@ -909,7 +927,11 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 		gtk_widget_set_visible (widget, TRUE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
 		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
+		gtk_widget_set_visible (widget, FALSE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_detail_header"));
 		gtk_widget_set_visible (widget, FALSE);
 		break;
 	case GS_MAIN_MODE_NEW:
@@ -921,6 +943,25 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 		gtk_widget_set_visible (widget, FALSE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_detail_header"));
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	case GS_MAIN_MODE_APPLICATION:
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_detail_header"));
+		gtk_widget_set_visible (widget, TRUE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+		gtk_widget_set_visible (widget, TRUE);
+                state = gs_app_get_state (app);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
+		gtk_widget_set_visible (widget, state != GS_APP_STATE_INSTALLED);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
+		gtk_widget_set_visible (widget, state == GS_APP_STATE_INSTALLED);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 		gtk_widget_set_visible (widget, FALSE);
 		break;
 	default:
@@ -984,6 +1025,8 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_detail_screenshot"));
 		gtk_widget_hide (widget);
 		break;
+	case GS_MAIN_MODE_APPLICATION:
+		break;
 	default:
 		g_assert_not_reached ();
 	}
@@ -1009,7 +1052,7 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 		return;
 
 	/* set controls */
-	gs_main_set_overview_mode_ui (priv, mode);
+	gs_main_set_overview_mode_ui (priv, mode, app);
 
 	/* do action for mode */
 	priv->mode = mode;
@@ -1083,6 +1126,8 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
 		gtk_widget_set_visible (widget, gs_app_get_state (app) == GS_APP_STATE_AVAILABLE);
 		break;
+	case GS_MAIN_MODE_APPLICATION:
+		break;
 	default:
 		g_assert_not_reached ();
 	}
@@ -1128,9 +1173,11 @@ gs_main_setup_featured (GsMainPrivate *priv)
 	GError *error = NULL;
 	GdkPixbuf *pixbuf;
 	GtkImage *image;
+        GtkButton *button;
+        GsApp *app;
 
 	/* 1 : TODO: generate these automatically */
-	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "image_featured1"));
+	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "featured_image"));
 	pixbuf = gdk_pixbuf_new_from_file_at_scale (DATADIR "/gnome-software/featured-firefox.png", -1, -1, TRUE, &error);
 	if (pixbuf == NULL) {
 		g_warning ("failed to load featured tile: %s", error->message);
@@ -1140,27 +1187,12 @@ gs_main_setup_featured (GsMainPrivate *priv)
 	gtk_image_set_from_pixbuf (image, pixbuf);
 	g_object_unref (pixbuf);
 
-	/* 2 */
-	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "image_featured2"));
-	pixbuf = gdk_pixbuf_new_from_file_at_scale (DATADIR "/gnome-software/featured-gimp.png", -1, -1, TRUE, &error);
-	if (pixbuf == NULL) {
-		g_warning ("failed to load featured tile: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-	gtk_image_set_from_pixbuf (image, pixbuf);
-	g_object_unref (pixbuf);
+        button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_button"));
+        app = gs_app_new ("firefox");
+        g_object_set_data_full (G_OBJECT (button), "app", app, g_object_unref);
+        g_signal_connect (button, "clicked",
+                          G_CALLBACK (app_tile_clicked), priv);
 
-	/* 3 */
-	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "image_featured3"));
-	pixbuf = gdk_pixbuf_new_from_file_at_scale (DATADIR "/gnome-software/featured-xchat.png", -1, -1, TRUE, &error);
-	if (pixbuf == NULL) {
-		g_warning ("failed to load featured tile: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-	gtk_image_set_from_pixbuf (image, pixbuf);
-	g_object_unref (pixbuf);
 out:
 	return;
 }

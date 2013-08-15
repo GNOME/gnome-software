@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!-- Generated with glade 3.15.2 on Wed Aug 14 13:18:05 2013 -->
+<!-- Generated with glade 3.15.2 on Thu Aug 15 14:23:55 2013 -->
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
   <object class="GtkListStore" id="liststore_update">
@@ -20,52 +20,106 @@
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <property name="spacing">0</property>
         <child>
           <object class="GtkHeaderBar" id="header">
             <property name="visible">True</property>
-            <property name="show-close-button">True</property>
+            <property name="can_focus">False</property>
+            <property name="show_close_button">True</property>
             <child>
               <object class="GtkButton" id="button_back">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
                 <style>
                   <class name="image-button"/>
                 </style>
                 <child>
                   <object class="GtkImage" id="back_image">
                     <property name="visible">True</property>
-                    <property name="icon-name">go-previous-symbolic</property>
-                    <property name="icon-size">1</property>
+                    <property name="can_focus">False</property>
+                    <property name="icon_name">go-previous-symbolic</property>
+                    <property name="icon_size">1</property>
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="pack-type">start</property>
-              </packing>
             </child>
             <child type="title">
-              <object class="GtkButtonBox" id="buttonbox_main">
+              <object class="GtkBox" id="title_box">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="layout_style">center</property>
-                <style>
-                  <class name="linked"/>
-                </style>
                 <child>
-                  <object class="GtkToggleButton" id="button_all">
+                  <object class="GtkButtonBox" id="buttonbox_main">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="layout_style">center</property>
                     <style>
-                      <class name="toolbar-primary-buttons-software"/>
+                      <class name="linked"/>
                     </style>
                     <child>
-                      <object class="GtkLabel" id="label_button_all">
+                      <object class="GtkToggleButton" id="button_all">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">All</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <style>
+                          <class name="toolbar-primary-buttons-software"/>
+                        </style>
+                        <child>
+                          <object class="GtkLabel" id="label_button_all">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">All</property>
+                          </object>
+                        </child>
                       </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="button_installed">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <style>
+                          <class name="toolbar-primary-buttons-software"/>
+                        </style>
+                        <child>
+                          <object class="GtkLabel" id="label_button_installed">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Installed</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">1</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkToggleButton" id="button_updates">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="receives_default">True</property>
+                        <style>
+                          <class name="toolbar-primary-buttons-software"/>
+                        </style>
+                        <child>
+                          <object class="GtkLabel" id="label_button_updates">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Updates</property>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">2</property>
+                      </packing>
                     </child>
                   </object>
                   <packing>
@@ -75,47 +129,14 @@
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkToggleButton" id="button_installed">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <style>
-                      <class name="toolbar-primary-buttons-software"/>
-                    </style>
-                    <child>
-                      <object class="GtkLabel" id="label_button_installed">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Installed</property>
-                      </object>
-                    </child>
+                  <object class="GtkLabel" id="application_detail_header">
+                    <property name="can_focus">False</property>
+                    <property name="label">GNU Image Manipulation Program</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkToggleButton" id="button_updates">
-                    <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="receives_default">True</property>
-                    <style>
-                      <class name="toolbar-primary-buttons-software"/>
-                    </style>
-                    <child>
-                      <object class="GtkLabel" id="label_button_updates">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Updates</property>
-                      </object>
-                    </child>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">2</property>
                   </packing>
                 </child>
               </object>
@@ -131,13 +152,12 @@
                 </style>
               </object>
               <packing>
-                <property name="pack-type">end</property>
+                <property name="pack_type">end</property>
               </packing>
             </child>
             <child>
               <object class="GtkButton" id="button_install">
                 <property name="label" translatable="yes">Install</property>
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <style>
@@ -145,10 +165,28 @@
                 </style>
               </object>
               <packing>
-                <property name="pack-type">end</property>
+                <property name="pack_type">end</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_remove">
+                <property name="label" translatable="yes">Remove</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <style>
+                  <class name="destructive-action"/>
+                </style>
+              </object>
+              <packing>
+                <property name="pack_type">end</property>
               </packing>
             </child>
           </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+            <property name="position">0</property>
+          </packing>
         </child>
         <child>
           <object class="GtkToolbar" id="search_bar">
@@ -169,9 +207,9 @@
                       <object class="GtkBox" id="box_left">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
                         <property name="halign">start</property>
                         <property name="hexpand">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <placeholder/>
                         </child>
@@ -198,9 +236,9 @@
                       <object class="GtkBox" id="box_right">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="orientation">vertical</property>
                         <property name="halign">start</property>
                         <property name="hexpand">True</property>
+                        <property name="orientation">vertical</property>
                         <child>
                           <placeholder/>
                         </child>
@@ -222,6 +260,7 @@
           <packing>
             <property name="expand">False</property>
             <property name="fill">True</property>
+            <property name="position">1</property>
           </packing>
         </child>
         <child>
@@ -233,8 +272,8 @@
               <object class="GtkScrolledWindow" id="scrolledwindow1">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">never</property>
                 <property name="shadow_type">in</property>
-                <property name="hscrollbar-policy">never</property>
                 <style>
                   <class name="main-scrolled-software"/>
                 </style>
@@ -272,65 +311,19 @@
                           </packing>
                         </child>
                         <child>
-                          <object class="GtkEventBox" id="gradient_box_software">
+                          <object class="GtkButton" id="featured_button">
                             <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <style>
-                              <class name="gradient_box_software"/>
-                            </style>
+                            <property name="halign">center</property>
+                            <property name="relief">none</property>
                             <child>
-                              <object class="GtkBox" id="box4">
+                              <object class="GtkImage" id="featured_image">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">center</property>
-                                <property name="spacing">5</property>
-                                <child>
-                                  <object class="GtkImage" id="image_featured1">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="ypad">5</property>
-                                    <property name="stock">gtk-delete</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="position">0</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkImage" id="image_featured2">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="ypad">5</property>
-                                    <property name="stock">gtk-delete</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="position">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkImage" id="image_featured3">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="ypad">5</property>
-                                    <property name="stock">gtk-delete</property>
-                                  </object>
-                                  <packing>
-                                    <property name="expand">False</property>
-                                    <property name="fill">False</property>
-                                    <property name="position">2</property>
-                                  </packing>
-                                </child>
+                                <property name="ypad">5</property>
+                                <property name="stock">gtk-delete</property>
                               </object>
                             </child>
                           </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">True</property>
-                            <property name="position">1</property>
-                          </packing>
                         </child>
                         <child>
                           <object class="GtkAlignment" id="alignment2">
@@ -360,13 +353,40 @@
                         <child>
                           <object class="GtkGrid" id="grid_popular">
                             <property name="visible">True</property>
-                            <property name="row-spacing">12</property>
-                            <property name="column-spacing">12</property>
-                            <property name="row-homogeneous">True</property>
-                            <property name="column-homogeneous">True</property>
-                            <property name="halign">fill</property>
-                            <property name="margin-left">12</property>
-                            <property name="margin-right">12</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_left">12</property>
+                            <property name="margin_right">12</property>
+                            <property name="row_spacing">12</property>
+                            <property name="column_spacing">12</property>
+                            <property name="row_homogeneous">True</property>
+                            <property name="column_homogeneous">True</property>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -402,13 +422,40 @@
                         <child>
                           <object class="GtkGrid" id="grid_categories">
                             <property name="visible">True</property>
-                            <property name="row-spacing">12</property>
-                            <property name="column-spacing">12</property>
-                            <property name="row-homogeneous">True</property>
-                            <property name="column-homogeneous">True</property>
-                            <property name="halign">fill</property>
-                            <property name="margin-left">12</property>
-                            <property name="margin-right">12</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_left">12</property>
+                            <property name="margin_right">12</property>
+                            <property name="row_spacing">12</property>
+                            <property name="column_spacing">12</property>
+                            <property name="row_homogeneous">True</property>
+                            <property name="column_homogeneous">True</property>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
+                            <child>
+                              <placeholder/>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -426,7 +473,7 @@
               <object class="GtkLabel" id="label2">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label">New</property>
+                <property name="label">All</property>
               </object>
               <packing>
                 <property name="tab_fill">False</property>
@@ -589,10 +636,10 @@
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel" id="label9">
+              <object class="GtkLabel" id="label8">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label">Detail Overview</property>
+                <property name="label">Waiting</property>
               </object>
               <packing>
                 <property name="position">2</property>
@@ -755,13 +802,151 @@
               </packing>
             </child>
             <child type="tab">
-              <object class="GtkLabel" id="label8">
+              <object class="GtkLabel" id="label9">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
-                <property name="label">Waiting</property>
+                <property name="label">Detail Overview</property>
               </object>
               <packing>
                 <property name="position">2</property>
+                <property name="tab_fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkGrid" id="grid2">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="margin_left">80</property>
+                <property name="margin_right">80</property>
+                <property name="margin_top">40</property>
+                <property name="margin_bottom">40</property>
+                <property name="hexpand">False</property>
+                <property name="column_spacing">20</property>
+                <child>
+                  <object class="GtkImage" id="application_details_icon">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="valign">start</property>
+                    <property name="pixel_size">96</property>
+                    <property name="icon_name">gimp</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">0</property>
+                    <property name="width">1</property>
+                    <property name="height">3</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="application_details_title">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="valign">start</property>
+                    <property name="margin_bottom">10</property>
+                    <property name="hexpand">True</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">GNU Image Manipulation Program</property>
+                    <attributes>
+                      <attribute name="weight" value="bold"/>
+                      <attribute name="scale" value="1"/>
+                    </attributes>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">0</property>
+                    <property name="width">1</property>
+                    <property name="height">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLinkButton" id="application_details_link">
+                    <property name="label" translatable="yes">Visit website</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                    <property name="halign">start</property>
+                    <property name="relief">none</property>
+                    <property name="uri"> http://www.gimp.org/</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">4</property>
+                    <property name="width">2</property>
+                    <property name="height">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="application_details_subtitle">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="valign">start</property>
+                    <property name="hexpand">True</property>
+                    <property name="label" translatable="yes">The Gimp</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">1</property>
+                    <property name="top_attach">1</property>
+                    <property name="width">1</property>
+                    <property name="height">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label12">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
+                    <property name="label" translatable="yes">GIMP (GNU Image Manipulation Program) is a powerful image composition and
+editing program, which can be extremely useful for creating logos and other
+graphics for webpages. GIMP has many of the tools and filters you would expect
+to find in similar commercial offerings, and some interesting extras as well.
+GIMP provides a large image manipulation toolbox, including channel operations
+and layers, effects, sub-pixel imaging and anti-aliasing, and conversions, all
+with multi-level undo.
+</property>
+                    <property name="wrap">True</property>
+                  </object>
+                  <packing>
+                    <property name="left_attach">0</property>
+                    <property name="top_attach">3</property>
+                    <property name="width">2</property>
+                    <property name="height">1</property>
+                  </packing>
+                </child>
+                <child>
+                  <placeholder/>
+                </child>
+              </object>
+              <packing>
+                <property name="position">5</property>
+              </packing>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label7">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Application</property>
+              </object>
+              <packing>
+                <property name="position">5</property>
+                <property name="tab_fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkGrid" id="category_detail_grid">
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label11">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Category</property>
+              </object>
+              <packing>
+                <property name="position">6</property>
                 <property name="tab_fill">False</property>
               </packing>
             </child>
@@ -961,7 +1146,6 @@
   </object>
   <object class="GtkSizeGroup" id="sizegroup_header_center"/>
   <object class="GtkSizeGroup" id="sizegroup_searchentry">
-    <property name="mode">horizontal</property>
     <widgets>
       <widget name="buttonbox_main"/>
       <widget name="entry_search"/>

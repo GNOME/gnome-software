@@ -33,7 +33,7 @@ GtkEventBox.gradient_box_software {
 .index-title-alignment-software > GtkLabel {
 	font-weight: bold;
 	color: #555753;
-	font-size: 14;
+	font-size: 14px;
 }
 
 
@@ -42,3 +42,58 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
 	border-left-width: 0px;
 	border-right-width: 0px;
 }
+
+@define-color destructive_action_button_a #e03d3d;
+@define-color destructive_action_button_b #ef2929;
+@define-color destructive_action_button_border #9d4242;
+@define-color destructive_action_button_fg @theme_base_color;
+@define-color destructive_action_button_shadow shade(@destructive_action_button_border, 1.15);
+
+.destructive-action.button {
+    background-image: linear-gradient(to bottom,
+                                      @destructive_action_button_a,
+                                      @destructive_action_button_b);
+    border-image: none;
+    border-color: @destructive_action_button_border;
+    border-width: 1px;
+
+    color: @destructive_action_button_fg;
+}
+
+.destructive-action.button:hover {
+    background-image: linear-gradient(to bottom,
+                                      shade(@destructive_action_button_a, 1.10),
+                                      shade(@destructive_action_button_b, 1.05));
+}
+
+.destructive-action.button:active,
+.destructive-action.button:hover:active {
+    background-image: linear-gradient(to bottom,
+                                      @destructive_action_button_b,
+                                      @destructive_action_button_a);
+
+    color: @destructive_action_button_fg;
+}
+
+.destructive-action.button:backdrop {
+    background-image: none;
+    border-image: none;
+    border-color: @unfocused_borders;
+}
+
+.destructive-action.button {
+    text-shadow: 0 1px @destructive_action_button_shadow;
+    icon-shadow: 0 1px @destructive_action_button_shadow;
+}
+
+.destructive-action.button:active,
+.destructive-action.button:hover:active {
+    text-shadow: 0 1px shade(@destructive_action_button_shadow, 1.15);
+    icon-shadow: 0 1px shade(@destructive_action_button_shadow, 1.15);
+}
+
+.destructive-action.button:backdrop {
+    text-shadow: none;
+    icon-shadow: none;
+}
+
