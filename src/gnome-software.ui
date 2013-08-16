@@ -823,7 +823,10 @@ with multi-level undo.
   </object>
   <object class="GtkDialog" id="dialog_update">
     <property name="can_focus">False</property>
+    <property name="modal">True</property>
+    <property name="default_width">600</property>
     <property name="default_height">600</property>
+    <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
     <property name="transient_for">window_software</property>
     <child internal-child="vbox">
@@ -965,6 +968,7 @@ with multi-level undo.
                 <property name="label">New in kmod 14-1
 * Moo
 * bar</property>
+                <property name="wrap">True</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -977,6 +981,7 @@ with multi-level undo.
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="vexpand">True</property>
+                <property name="hscrollbar_policy">never</property>
                 <property name="shadow_type">in</property>
                 <property name="kinetic_scrolling">False</property>
                 <child>

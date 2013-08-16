@@ -364,22 +364,18 @@ out:
 }
 
 /**
- * gs_main_app_widget_more_cb:
+ * gs_main_set_updates_description_ui:
  **/
 static void
-gs_main_app_widget_more_cb (GsAppWidget *app_widget, GsMainPrivate *priv)
+gs_main_set_updates_description_ui (GsMainPrivate *priv, GsApp *app)
 {
-	GsAppKind kind;
-	GsApp *app;
-	GsApp *app_related;
-	GtkWidget *widget;
 	gchar *tmp;
-
-	app = gs_app_widget_get_app (app_widget);
-	kind = gs_app_get_kind (app);
+	GsAppKind kind;
+	GtkWidget *widget;
 
 	/* set window title */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
+	kind = gs_app_get_kind (app);
 	if (kind == GS_APP_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (widget), gs_app_get_name (app));
 	} else {
@@ -392,15 +388,34 @@ gs_main_app_widget_more_cb (GsAppWidget *app_widget, GsMainPrivate *priv)
 
 	/* set update header */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
-//	gtk_widget_set_visible (widget, kind != GS_APP_KIND_OS_UPDATE);
+	gtk_widget_set_visible (widget, kind == GS_APP_KIND_NORMAL);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
 	gtk_widget_set_visible (widget, kind != GS_APP_KIND_OS_UPDATE);
+	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_metadata_item (app, "update-details"));
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_update_icon"));
 	gtk_image_set_from_pixbuf (GTK_IMAGE (widget), gs_app_get_pixbuf (app));
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_name"));
 	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_name (app));
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_summary"));
 	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_summary (app));
+}
+
+/**
+ * gs_main_app_widget_more_cb:
+ **/
+static void
+gs_main_app_widget_more_cb (GsAppWidget *app_widget, GsMainPrivate *priv)
+{
+	GsAppKind kind;
+	GsApp *app;
+	GsApp *app_related;
+	GtkWidget *widget;
+
+	app = gs_app_widget_get_app (app_widget);
+	kind = gs_app_get_kind (app);
+
+	/* set update header */
+	gs_main_set_updates_description_ui (priv, app);
 
 	/* only OS updates can go back, and only on selection */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
@@ -420,7 +435,6 @@ gs_main_app_widget_more_cb (GsAppWidget *app_widget, GsMainPrivate *priv)
 		for (i = 0; i < related->len; i++) {
 			app_related = g_ptr_array_index (related, i);
 			gtk_list_store_append (liststore, &iter);
-			g_warning ("%s", gs_app_get_id (app_related));
 			gtk_list_store_set (liststore,
 					    &iter,
 					    COLUMN_UPDATE_APP, app_related,
@@ -428,25 +442,11 @@ gs_main_app_widget_more_cb (GsAppWidget *app_widget, GsMainPrivate *priv)
 					    COLUMN_UPDATE_VERSION, gs_app_get_version (app_related),
 					    -1);
 		}
-	} else {
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
-		gtk_label_set_label (GTK_LABEL (widget), gs_app_get_metadata_item (app, "update-details"));
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
 	gtk_window_present (GTK_WINDOW (widget));
-
-	g_warning ("ooo");
-
-#if 0
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		g_debug ("adding popular %s", gs_app_get_id (app));
-	}
-#endif
-
 //	xxxx
-	
 }
 
 /**
@@ -460,6 +460,7 @@ gs_main_update_row_activated_cb (GtkTreeView *treeview, GtkTreePath *path,
 	GsApp *app = NULL;
 	GtkTreeIter iter;
 	GtkTreeModel *model;
+	GtkWidget *widget;
 
 	/* get selection */
 	model = gtk_tree_view_get_model (treeview);
@@ -474,9 +475,12 @@ gs_main_update_row_activated_cb (GtkTreeView *treeview, GtkTreePath *path,
 			    COLUMN_UPDATE_APP, &app,
 			    -1);
 
-	/* on click, hide listbox, show button_update_back, show label_update_details, set label_update_details to the correct one for the click */
-
-	g_error ("moo: %s", gs_app_get_name (app));
+	/* setup package view */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
+	gtk_widget_hide (widget);
+	gs_main_set_updates_description_ui (priv, app);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
+	gtk_widget_show (widget);
 out:
 	if (app != NULL)
 		g_object_unref (app);
@@ -1304,6 +1308,23 @@ gs_main_button_updates_close_cb (GtkWidget *widget, GsMainPrivate *priv)
 }
 
 /**
+ * gs_main_button_updates_back_cb:
+ **/
+static void
+gs_main_button_updates_back_cb (GtkWidget *widget, GsMainPrivate *priv)
+{
+	/* return to the list view */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
+	gtk_widget_show (widget);
+}
+
+/**
  * gs_main_back_button_cb:
  **/
 static void
@@ -1583,8 +1604,10 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_close"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_main_button_updates_close_cb), priv);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_main_button_updates_back_cb), priv);
 	//FIXME: connect to dialog_update and just hide widget if user closes modal
-//	button_update_back
 
 
 {
