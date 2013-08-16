@@ -98,7 +98,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		break;
 	case GS_APP_WIDGET_KIND_UPDATE:
 		gtk_widget_set_visible (priv->widget_spinner, FALSE);
-		gtk_widget_set_visible (priv->widget_button, TRUE);
+		gtk_widget_set_visible (priv->widget_button, FALSE);
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
 				      _("Update"));
 		break;
