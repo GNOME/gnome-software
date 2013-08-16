@@ -944,17 +944,23 @@ create_app_tile (GsMainPrivate *priv, GsApp *app)
 }
 
 static void
-gs_main_populate_category (GsMainPrivate *priv, const gchar *category)
+gs_main_populate_filtered_category (GsMainPrivate *priv,
+                                    const gchar   *category,
+                                    const gchar   *filter)
 {
         gint i;
         GtkWidget *tile;
-        GtkWidget *grid;
         GsApp *app;
+        GtkWidget *grid;
 
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-        container_remove_all (GTK_CONTAINER (grid));
+        gtk_grid_remove_column (GTK_GRID (grid), 2);
+        gtk_grid_remove_column (GTK_GRID (grid), 1);
+        if (filter == NULL) {
+                gtk_grid_remove_column (GTK_GRID (grid), 0);
+        }
 
-        /* FIXME load apps for this category */
+        /* FIXME load apps for this category and filter */
         app = gs_app_new ("gnome-boxes");
         gs_app_set_name (app, "Boxes");
         gs_app_set_summary (app, "View and use virtual machines");
@@ -965,10 +971,107 @@ gs_main_populate_category (GsMainPrivate *priv, const gchar *category)
 
         for (i = 0; i < 30; i++) {
                 tile = create_app_tile (priv, app);
-                gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
+                if (filter) {
+                        gtk_grid_attach (GTK_GRID (grid), tile, 1 + (i % 2), i / 2, 1, 1);
+                }
+                else {
+                        gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
+                }
         }
 
         g_object_unref (app);
+}
+
+static void
+add_separator (GtkListBoxRow *row,
+               GtkListBoxRow *before,
+               gpointer       data)
+{
+        if (!before) {
+                return;
+        }
+
+        gtk_list_box_row_set_header (row, gtk_separator_new (GTK_ORIENTATION_HORIZONTAL));
+}
+
+static void
+filter_selected (GtkListBox    *filters,
+                 GtkListBoxRow *row,
+                 gpointer       data)
+{
+        GsMainPrivate *priv = data;
+        const gchar *filter;
+        const gchar *category;
+
+        if (row == NULL)
+                return;
+
+        filter = gtk_label_get_label (GTK_LABEL (gtk_bin_get_child (GTK_BIN (row))));
+        category = (const gchar*)g_object_get_data (G_OBJECT (filters), "category");
+        gs_main_populate_filtered_category (priv, category, filter);
+}
+
+static void
+create_filter_list (GsMainPrivate *priv, const gchar *category, const gchar *filters[])
+{
+        GtkWidget *grid;
+        GtkWidget *list;
+        GtkWidget *row;
+        GtkWidget *frame;
+        guint i;
+
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
+        list = gtk_list_box_new ();
+        g_object_set_data (G_OBJECT (list), "category", (gpointer)category);
+        gtk_list_box_set_selection_mode (GTK_LIST_BOX (list), GTK_SELECTION_BROWSE);
+        g_signal_connect (list, "row-selected", G_CALLBACK (filter_selected), priv);
+        gtk_list_box_set_header_func (GTK_LIST_BOX (list), add_separator, NULL, NULL);
+        for (i = 0; filters[i]; i++) {
+                row = gtk_label_new (filters[i]);
+                g_object_set (row, "xalign", 0.0, "margin", 6, NULL);
+                gtk_list_box_insert (GTK_LIST_BOX (list), row, i);
+        }
+        frame = gtk_frame_new (NULL);
+        g_object_set (frame, "margin", 6, NULL);
+        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
+        gtk_container_add (GTK_CONTAINER (frame), list);
+        gtk_widget_show_all (frame);
+        gtk_widget_set_valign (frame, GTK_ALIGN_START);
+        gtk_grid_attach (GTK_GRID (grid), frame, 0, 0, 1, 5);
+        gtk_list_box_select_row (GTK_LIST_BOX (list),
+                                 gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
+}
+
+static void
+gs_main_populate_category (GsMainPrivate *priv, const gchar *category)
+{
+        GtkWidget *grid;
+
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
+        container_remove_all (GTK_CONTAINER (grid));
+
+        /* FIXME: get actual filters */
+        if (g_str_equal (category, "Games")) {
+                const gchar *filters[] = {
+                        "Popular", "Action", "Arcade", "Board",
+                        "Blocks", "Card", "Kids", "Logic", "Role Playing",
+                        "Shooter", "Simulation", "Sports", "Strategy",
+                        NULL
+                };
+                create_filter_list (priv, category, filters);
+        }
+        else if (g_str_equal (category, "Add-ons")) {
+                const gchar *filters[] = {
+                        "Popular", "Codecs", "Fonts",
+                        "Input Sources", "Language Packs",
+                        NULL
+                };
+                create_filter_list (priv, category, filters);
+        }
+        else {
+                gs_main_populate_filtered_category (priv, category, NULL);
+        }
 }
 
 /**
