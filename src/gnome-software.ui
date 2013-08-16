@@ -499,9 +499,6 @@
                   <placeholder/>
                 </child>
               </object>
-              <packing>
-                <property name="position">1</property>
-              </packing>
             </child>
             <child type="tab">
               <object class="GtkLabel" id="label3">
@@ -509,10 +506,6 @@
                 <property name="can_focus">False</property>
                 <property name="label">Installed</property>
               </object>
-              <packing>
-                <property name="position">1</property>
-                <property name="tab_fill">False</property>
-              </packing>
             </child>
             <child>
               <object class="GtkBox" id="box6">
@@ -578,9 +571,6 @@
                   </packing>
                 </child>
               </object>
-              <packing>
-                <property name="position">2</property>
-              </packing>
             </child>
             <child type="tab">
               <object class="GtkLabel" id="label4">
@@ -588,15 +578,10 @@
                 <property name="can_focus">False</property>
                 <property name="label">Updates</property>
               </object>
-              <packing>
-                <property name="position">2</property>
-                <property name="tab_fill">False</property>
-              </packing>
             </child>
             <child>
               <object class="GtkScrolledWindow" id="scrolledwindow2">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
                 <property name="shadow_type">in</property>
                 <child>
                   <object class="GtkViewport" id="viewport2">
@@ -638,9 +623,6 @@
                   </object>
                 </child>
               </object>
-              <packing>
-                <property name="position">3</property>
-              </packing>
             </child>
             <child type="tab">
               <object class="GtkLabel" id="label8">
@@ -648,10 +630,6 @@
                 <property name="can_focus">False</property>
                 <property name="label">Waiting</property>
               </object>
-              <packing>
-                <property name="position">2</property>
-                <property name="tab_fill">False</property>
-              </packing>
             </child>
             <child>
               <object class="GtkGrid" id="grid2">
@@ -762,9 +740,6 @@ with multi-level undo.
                   <placeholder/>
                 </child>
               </object>
-              <packing>
-                <property name="position">4</property>
-              </packing>
             </child>
             <child type="tab">
               <object class="GtkLabel" id="label7">
@@ -772,51 +747,62 @@ with multi-level undo.
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Application</property>
               </object>
-              <packing>
-                <property name="position">4</property>
-                <property name="tab_fill">False</property>
-              </packing>
             </child>
             <child>
-              <object class="GtkGrid" id="category_detail_grid">
+              <object class="GtkScrolledWindow" id="scrolledwindow3">
+                <property name="visible">True</property>
+                <property name="shadow_type">in</property>
                 <property name="can_focus">False</property>
-                <property name="margin_left">12</property>
-                <property name="margin_right">12</property>
-                <property name="margin_top">12</property>
-                <property name="margin_bottom">12</property>
-                <property name="row_spacing">12</property>
-                <property name="column_spacing">12</property>
+                <property name="hscrollbar_policy">never</property>
                 <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
-                </child>
-                <child>
-                  <placeholder/>
+                  <object class="GtkViewport" id="viewport3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <child>
+                      <object class="GtkGrid" id="category_detail_grid">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_left">12</property>
+                        <property name="margin_right">12</property>
+                        <property name="margin_top">12</property>
+                        <property name="margin_bottom">12</property>
+                        <property name="row_spacing">12</property>
+                        <property name="column_spacing">12</property>
+                        <property name="row_homogeneous">True</property>
+                        <property name="column_homogeneous">True</property>
+                        <property name="hexpand">True</property>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                        <child>
+                          <placeholder/>
+                        </child>
+                      </object>
+                    </child>
+                  </object>
                 </child>
               </object>
-              <packing>
-                <property name="position">5</property>
-              </packing>
             </child>
             <child type="tab">
               <object class="GtkLabel" id="label11">
@@ -824,10 +810,6 @@ with multi-level undo.
                 <property name="can_focus">False</property>
                 <property name="label" translatable="yes">Category</property>
               </object>
-              <packing>
-                <property name="position">5</property>
-                <property name="tab_fill">False</property>
-              </packing>
             </child>
           </object>
           <packing>

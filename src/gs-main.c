@@ -30,8 +30,6 @@
 #include "gs-resources.h"
 #include "gs-plugin-loader.h"
 
-#define	GS_MAIN_ICON_SIZE	64
-
 typedef enum {
 	GS_MAIN_MODE_NEW,
 	GS_MAIN_MODE_INSTALLED,
@@ -40,13 +38,6 @@ typedef enum {
 	GS_MAIN_MODE_DETAILS,
         GS_MAIN_MODE_CATEGORY
 } GsMainMode;
-
-enum {
-	COLUMN_POPULAR_APP,
-	COLUMN_POPULAR_MARKUP,
-	COLUMN_POPULAR_PIXBUF,
-	COLUMN_POPULAR_LAST
-};
 
 enum {
 	COLUMN_UPDATE_APP,
@@ -60,7 +51,6 @@ typedef struct {
 	GsMainMode		 mode;
 	GtkApplication		*application;
 	GtkBuilder		*builder;
-	GtkIconSize		 custom_icon_size;
 	PkTask			*task;
 	guint			 waiting_tab_id;
 	GtkListBox		*list_box_installed;
@@ -72,7 +62,7 @@ typedef struct {
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app);
-static void gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app);
+static void gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app, const gchar *category);
 static void app_tile_clicked (GtkButton *button, gpointer data);
 
 /**
@@ -748,14 +738,14 @@ app_tile_clicked (GtkButton *button, gpointer data)
         GsMainPrivate *priv = data;
         GsApp *app;
 
-        app = g_object_get_data (button, "app");
-        gs_main_set_overview_mode (priv, GS_MAIN_MODE_DETAILS, app);
+        app = g_object_get_data (G_OBJECT (button), "app");
+        gs_main_set_overview_mode (priv, GS_MAIN_MODE_DETAILS, app, NULL);
 }
 
 static GtkWidget *
 create_popular_tile (GsMainPrivate *priv, GsApp *app)
 {
-        GtkWidget *button, *frame, *ebox, *box, *image, *label;
+        GtkWidget *button, *frame, *box, *image, *label;
         GtkWidget *f;
 
         f = gtk_aspect_frame_new (NULL, 0.5, 0.5, 1, FALSE);
@@ -764,12 +754,9 @@ create_popular_tile (GsMainPrivate *priv, GsApp *app)
         gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
         frame = gtk_aspect_frame_new (NULL, 0.5, 1, 1, FALSE);
         gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-        ebox = gtk_event_box_new ();
-        gtk_container_add (GTK_CONTAINER (frame), ebox);
-        gtk_event_box_set_visible_window (GTK_EVENT_BOX (ebox), TRUE);
-        gtk_style_context_add_class (gtk_widget_get_style_context (ebox), "view");
+        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
         box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-        gtk_container_add (GTK_CONTAINER (ebox), box);
+        gtk_container_add (GTK_CONTAINER (frame), box);
         image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
         g_object_set (box, "margin", 12, NULL);
         gtk_box_pack_start (GTK_BOX (box), image, FALSE, TRUE, 0);
@@ -781,7 +768,7 @@ create_popular_tile (GsMainPrivate *priv, GsApp *app)
         gtk_container_add (GTK_CONTAINER (button), frame);
         gtk_container_add (GTK_CONTAINER (f), button);
         gtk_widget_show_all (f);
-        g_object_set_data_full (button, "app", g_object_ref (app), g_object_unref);
+        g_object_set_data_full (G_OBJECT (button), "app", g_object_ref (app), g_object_unref);
         g_signal_connect (button, "clicked",
                           G_CALLBACK (app_tile_clicked), priv);
 
@@ -819,7 +806,6 @@ gs_main_get_popular_cb (GObject *source_object,
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_popular"));
 	for (l = list, i = 0; l != NULL; l = l->next, i++) {
 		app = GS_APP (l->data);
-		g_debug ("adding popular %s", gs_app_get_id (app));
                 tile = create_popular_tile (priv, app);
                 gtk_grid_attach (GTK_GRID (grid), tile, i, 0, 1, 1);
 	}
@@ -862,33 +848,30 @@ static void
 category_tile_clicked (GtkButton *button, gpointer data)
 {
         GsMainPrivate *priv = data;
-        GsApp *app;
+        const gchar *category;
 
-        app = g_object_get_data (button, "category");
-        gs_main_set_overview_mode (priv, GS_MAIN_MODE_CATEGORY, app);
+        category = g_object_get_data (G_OBJECT (button), "category");
+        gs_main_set_overview_mode (priv, GS_MAIN_MODE_CATEGORY, NULL, category);
 }
 
 static GtkWidget *
-create_category_tile (const gchar *category)
+create_category_tile (GsMainPrivate *priv, const gchar *category)
 {
-        GtkWidget *button, *frame, *ebox, *label;
+        GtkWidget *button, *frame, *label;
 
         button = gtk_button_new ();
         gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
         frame = gtk_frame_new (NULL);
-        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-        ebox = gtk_event_box_new ();
-        gtk_container_add (GTK_CONTAINER (frame), ebox);
-        gtk_event_box_set_visible_window (GTK_EVENT_BOX (ebox), TRUE);
-        gtk_style_context_add_class (gtk_widget_get_style_context (ebox), "view");
-        label = gtk_label_new (category);
-        g_object_set (label,
-                      "margin", 12,
-                      "xalign", 0,
-                      NULL);
-        gtk_container_add (GTK_CONTAINER (ebox), label);
         gtk_container_add (GTK_CONTAINER (button), frame);
+        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
+        label = gtk_label_new (category);
+        g_object_set (label, "margin", 12, "xalign", 0, NULL);
+        gtk_container_add (GTK_CONTAINER (frame), label);
         gtk_widget_show_all (button);
+        g_object_set_data (G_OBJECT (button), "category", (gpointer)category);
+        g_signal_connect (button, "clicked",
+                          G_CALLBACK (category_tile_clicked), priv);
 
         return button;
 }
@@ -896,6 +879,7 @@ create_category_tile (const gchar *category)
 static void
 gs_main_get_categories (GsMainPrivate *priv)
 {
+        /* FIXME get real categories */
         GtkWidget *grid;
         const gchar *categories[] = {
           "Add-ons", "Books", "Business & Finance",
@@ -904,17 +888,87 @@ gs_main_get_categories (GsMainPrivate *priv)
           "News", "Photo & Video", "Productivity",
           "Social Networking", "Utility", "Weather",
         };
-        gint i;
+        guint i;
         GtkWidget *tile;
 
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
         container_remove_all (GTK_CONTAINER (grid));
 
         for (i = 0; i < G_N_ELEMENTS (categories); i++) {
-                tile = create_category_tile (categories[i]);
+                tile = create_category_tile (priv, categories[i]);
                 gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
         }
- 
+}
+
+static GtkWidget *
+create_app_tile (GsMainPrivate *priv, GsApp *app)
+{
+        GtkWidget *button, *frame, *label;
+        GtkWidget *image, *grid;
+        const gchar *tmp;
+        PangoAttrList *attrs;
+
+        button = gtk_button_new ();
+        gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
+        frame = gtk_frame_new (NULL);
+        gtk_container_add (GTK_CONTAINER (button), frame);
+        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
+        grid = gtk_grid_new ();
+        gtk_container_add (GTK_CONTAINER (frame), grid);
+        g_object_set (grid, "margin", 12, "row-spacing", 6, "column-spacing", 6, NULL);
+        image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
+        gtk_grid_attach (GTK_GRID (grid), image, 0, 0, 1, 2);
+        label = gtk_label_new (gs_app_get_name (app));
+        attrs = pango_attr_list_new ();
+        pango_attr_list_insert (attrs, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
+        gtk_label_set_attributes (GTK_LABEL (label), attrs);
+        pango_attr_list_unref (attrs);
+        g_object_set (label, "xalign", 0, NULL);
+        gtk_grid_attach (GTK_GRID (grid), label, 1, 0, 1, 1);
+        tmp = gs_app_get_summary (app);
+        if (tmp != NULL && tmp[0] != '\0') {
+                label = gtk_label_new (tmp);
+                g_object_set (label, "xalign", 0, NULL);
+                gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
+                gtk_grid_attach (GTK_GRID (grid), label, 1, 1, 1, 1);
+        }
+
+        gtk_widget_show_all (button);
+
+        g_object_set_data_full (G_OBJECT (button), "app", g_object_ref (app), g_object_unref);
+        g_signal_connect (button, "clicked",
+                          G_CALLBACK (app_tile_clicked), priv);
+
+        return button;
+}
+
+static void
+gs_main_populate_category (GsMainPrivate *priv, const gchar *category)
+{
+        gint i;
+        GtkWidget *tile;
+        GtkWidget *grid;
+        GsApp *app;
+
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
+        container_remove_all (GTK_CONTAINER (grid));
+
+        /* FIXME load apps for this category */
+        app = gs_app_new ("gnome-boxes");
+        gs_app_set_name (app, "Boxes");
+        gs_app_set_summary (app, "View and use virtual machines");
+        gs_app_set_url (app, "http://www.box.org");
+        gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+        gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+        gs_app_set_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/gnome-boxes.png", NULL));
+
+        for (i = 0; i < 30; i++) {
+                tile = create_app_tile (priv, app);
+                gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
+        }
+
+        g_object_unref (app);
 }
 
 /**
@@ -945,21 +999,28 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 		gtk_widget_set_visible (widget, FALSE);
 		break;
 	case GS_MAIN_MODE_DETAILS:
+	case GS_MAIN_MODE_CATEGORY:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_set_visible (widget, FALSE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 		gtk_widget_set_visible (widget, TRUE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 		gtk_widget_set_visible (widget, TRUE);
-                state = gs_app_get_state (app);
+                if (app) {
+                        state = gs_app_get_state (app);
+                }
+                else {
+                        state = GS_APP_STATE_UNKNOWN;
+                }
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
-		gtk_widget_set_visible (widget, state != GS_APP_STATE_INSTALLED);
+		gtk_widget_set_visible (widget, state == GS_APP_STATE_AVAILABLE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
 		gtk_widget_set_visible (widget, state == GS_APP_STATE_INSTALLED);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 		gtk_widget_set_visible (widget, FALSE);
 		break;
 	default:
+                g_assert_not_reached ();
 		break;
 	}
 
@@ -1011,6 +1072,7 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 		gtk_spinner_start (GTK_SPINNER (widget));
 		break;
 	case GS_MAIN_MODE_DETAILS:
+	case GS_MAIN_MODE_CATEGORY:
 		break;
 	default:
 		g_assert_not_reached ();
@@ -1025,13 +1087,12 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
  * gs_main_set_overview_mode:
  **/
 static void
-gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
+gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app, const gchar *category)
 {
 	GtkWidget *widget;
 	GtkWidget *widget2;
 	const gchar *tmp;
 	GdkPixbuf *pixbuf;
-	gint rating;
 
 	if (priv->ignore_primary_buttons)
 		return;
@@ -1107,6 +1168,10 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 
 		break;
 	case GS_MAIN_MODE_CATEGORY:
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
+                gtk_label_set_label (GTK_LABEL (widget), category);
+		gs_main_populate_category (priv, category);
+
 		break;
 	default:
 		g_assert_not_reached ();
@@ -1122,7 +1187,7 @@ gs_main_overview_button_cb (GtkWidget *widget, GsMainPrivate *priv)
 	GsMainMode mode;
 	mode = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
 						   "gnome-software::overview-mode"));
-	gs_main_set_overview_mode (priv, mode, NULL);
+	gs_main_set_overview_mode (priv, mode, NULL, NULL);
 }
 
 /**
@@ -1141,7 +1206,7 @@ gs_main_button_updates_close_cb (GtkWidget *widget, GsMainPrivate *priv)
 static void
 gs_main_back_button_cb (GtkWidget *widget, GsMainPrivate *priv)
 {
-	gs_main_set_overview_mode (priv, priv->tab_back_id, NULL);
+	gs_main_set_overview_mode (priv, priv->tab_back_id, NULL, NULL);
 }
 
 /**
@@ -1153,7 +1218,7 @@ gs_main_setup_featured (GsMainPrivate *priv)
 	GError *error = NULL;
 	GdkPixbuf *pixbuf;
 	GtkImage *image;
-        GtkButton *button;
+        GtkWidget *button;
         GsApp *app;
 
 	/* 1 : TODO: generate these automatically */
@@ -1354,16 +1419,6 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (widget), FALSE);
 
-#if 0
-	/* set up popular icon vew */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "iconview_popular"));
-	gtk_icon_view_set_markup_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_MARKUP);
-	gtk_icon_view_set_pixbuf_column (GTK_ICON_VIEW (widget), COLUMN_POPULAR_PIXBUF);
-	gtk_icon_view_set_activate_on_single_click (GTK_ICON_VIEW (widget), TRUE);
-	g_signal_connect (widget, "item-activated",
-			  G_CALLBACK (gs_main_popular_activated_cb), priv);
-#endif
-
 	/* setup featured tiles */
 	gs_main_setup_featured (priv);
 	/* setup installed */
@@ -1474,7 +1529,7 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* show main UI */
 	gtk_widget_show (main_window);
-	gs_main_set_overview_mode (priv, GS_MAIN_MODE_INSTALLED, NULL);
+	gs_main_set_overview_mode (priv, GS_MAIN_MODE_INSTALLED, NULL, NULL);
 out:
 	if (data != NULL)
 		g_bytes_unref (data);
@@ -1517,11 +1572,6 @@ main (int argc, char **argv)
 
 	priv = g_new0 (GsMainPrivate, 1);
 	priv->ignore_primary_buttons = FALSE;
-
-	/* we want the large icon size according to the width of the window */
-	priv->custom_icon_size = gtk_icon_size_register ("custom",
-							 GS_MAIN_ICON_SIZE,
-							 GS_MAIN_ICON_SIZE);
 
 	/* ensure single instance */
 	priv->application = gtk_application_new ("org.gnome.Software", 0);
