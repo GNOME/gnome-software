@@ -401,6 +401,21 @@ gs_main_set_updates_description_ui (GsMainPrivate *priv, GsApp *app)
 }
 
 /**
+ * gs_main_updates_unselect_treeview_cb:
+ **/
+static gboolean
+gs_main_updates_unselect_treeview_cb (gpointer user_data)
+{
+	GsMainPrivate *priv = (GsMainPrivate *) user_data;
+	GtkTreeView *treeview;
+
+	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_update"));
+	gtk_tree_selection_unselect_all (gtk_tree_view_get_selection (treeview));
+
+	return FALSE;
+}
+
+/**
  * gs_main_app_widget_more_cb:
  **/
 static void
@@ -442,11 +457,13 @@ gs_main_app_widget_more_cb (GsAppWidget *app_widget, GsMainPrivate *priv)
 					    COLUMN_UPDATE_VERSION, gs_app_get_version (app_related),
 					    -1);
 		}
+
+		/* unselect treeview by default */
+		g_idle_add (gs_main_updates_unselect_treeview_cb, priv);
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
 	gtk_window_present (GTK_WINDOW (widget));
-//	xxxx
 }
 
 /**
