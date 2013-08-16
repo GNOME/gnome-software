@@ -49,6 +49,7 @@ enum {
 typedef struct {
 	GCancellable		*cancellable;
 	GsMainMode		 mode;
+	GsMainMode		 app_startup_mode;
 	GtkApplication		*application;
 	GtkBuilder		*builder;
 	PkTask			*task;
@@ -1672,7 +1673,7 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* show main UI */
 	gtk_widget_show (main_window);
-	gs_main_set_overview_mode (priv, GS_MAIN_MODE_INSTALLED, NULL, NULL);
+	gs_main_set_overview_mode (priv, priv->app_startup_mode, NULL, NULL);
 out:
 	if (data != NULL)
 		g_bytes_unref (data);
@@ -1685,12 +1686,15 @@ int
 main (int argc, char **argv)
 {
 	gboolean ret;
+	gchar *mode = NULL;
 	GError *error = NULL;
 	GOptionContext *context;
 	GsMainPrivate *priv = NULL;
 	int status = 0;
 
 	const GOptionEntry options[] = {
+		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
+		  _("Start up mode, either 'updates', 'installed' or 'new'"), NULL },
 		{ NULL}
 	};
 
@@ -1730,6 +1734,21 @@ main (int argc, char **argv)
 		      "background", FALSE,
 		      NULL);
 
+	/* specified what page to open */
+	if (mode != NULL) {
+		if (g_strcmp0 (mode, "updates") == 0) {
+			priv->app_startup_mode = GS_MAIN_MODE_UPDATES;
+		} else if (g_strcmp0 (mode, "installed") == 0) {
+			priv->app_startup_mode = GS_MAIN_MODE_INSTALLED;
+		} else if (g_strcmp0 (mode, "new") == 0) {
+			priv->app_startup_mode = GS_MAIN_MODE_NEW;
+		} else {
+			g_warning ("Mode '%s' not recognised", mode);
+		}
+	} else {
+		priv->app_startup_mode = GS_MAIN_MODE_INSTALLED;
+	}
+
 	/* load the plugins */
 	priv->plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_set_location (priv->plugin_loader, NULL);
@@ -1754,6 +1773,7 @@ main (int argc, char **argv)
 	/* wait */
 	status = g_application_run (G_APPLICATION (priv->application), argc, argv);
 out:
+	g_free (mode);
 	if (priv != NULL) {
 		g_object_unref (priv->plugin_loader);
 		g_object_unref (priv->task);
