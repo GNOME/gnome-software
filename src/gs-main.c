@@ -417,57 +417,6 @@ gs_main_updates_unselect_treeview_cb (gpointer user_data)
 }
 
 /**
- * gs_main_app_widget_more_cb:
- **/
-static void
-gs_main_app_widget_more_cb (GsAppWidget *app_widget, GsMainPrivate *priv)
-{
-	GsAppKind kind;
-	GsApp *app;
-	GsApp *app_related;
-	GtkWidget *widget;
-
-	app = gs_app_widget_get_app (app_widget);
-	kind = gs_app_get_kind (app);
-
-	/* set update header */
-	gs_main_set_updates_description_ui (priv, app);
-
-	/* only OS updates can go back, and only on selection */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
-	gtk_widget_hide (widget);
-
-	/* set update description */
-	if (kind == GS_APP_KIND_OS_UPDATE) {
-		GPtrArray *related;
-		GtkListStore *liststore;
-		GtkTreeIter iter;
-		guint i;
-
-		/* add the related packages to the list view */
-		liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_update"));
-		gtk_list_store_clear (liststore);
-		related = gs_app_get_related (app);
-		for (i = 0; i < related->len; i++) {
-			app_related = g_ptr_array_index (related, i);
-			gtk_list_store_append (liststore, &iter);
-			gtk_list_store_set (liststore,
-					    &iter,
-					    COLUMN_UPDATE_APP, app_related,
-					    COLUMN_UPDATE_NAME, gs_app_get_name (app_related),
-					    COLUMN_UPDATE_VERSION, gs_app_get_version (app_related),
-					    -1);
-		}
-
-		/* unselect treeview by default */
-		g_idle_add (gs_main_updates_unselect_treeview_cb, priv);
-	}
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-	gtk_window_present (GTK_WINDOW (widget));
-}
-
-/**
  * gs_main_update_row_activated_cb:
  **/
 static void
@@ -662,9 +611,6 @@ gs_main_get_updates_cb (GsPluginLoader *plugin_loader,
 		widget = gs_app_widget_new ();
 		g_signal_connect (widget, "button-clicked",
 				  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
-				  priv);
-		g_signal_connect (widget, "more",
-				  G_CALLBACK (gs_main_app_widget_more_cb),
 				  priv);
 		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
 					GS_APP_WIDGET_KIND_UPDATE);
@@ -1494,6 +1440,58 @@ gs_main_installed_sort_func (GtkListBoxRow *a,
 }
 
 /**
+ * gs_main_updates_activated_cb:
+ **/
+static void
+gs_main_updates_activated_cb (GtkListBox *list_box, GtkListBoxRow *row, GsMainPrivate *priv)
+{
+	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+	GsApp *app = gs_app_widget_get_app (app_widget);
+	GsApp *app_related;
+	GsAppKind kind;
+	GtkWidget *widget;
+
+	app = gs_app_widget_get_app (app_widget);
+	kind = gs_app_get_kind (app);
+
+	/* set update header */
+	gs_main_set_updates_description_ui (priv, app);
+
+	/* only OS updates can go back, and only on selection */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
+	gtk_widget_hide (widget);
+
+	/* set update description */
+	if (kind == GS_APP_KIND_OS_UPDATE) {
+		GPtrArray *related;
+		GtkListStore *liststore;
+		GtkTreeIter iter;
+		guint i;
+
+		/* add the related packages to the list view */
+		liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_update"));
+		gtk_list_store_clear (liststore);
+		related = gs_app_get_related (app);
+		for (i = 0; i < related->len; i++) {
+			app_related = g_ptr_array_index (related, i);
+			gtk_list_store_append (liststore, &iter);
+			gtk_list_store_set (liststore,
+					    &iter,
+					    COLUMN_UPDATE_APP, app_related,
+					    COLUMN_UPDATE_NAME, gs_app_get_name (app_related),
+					    COLUMN_UPDATE_VERSION, gs_app_get_version (app_related),
+					    -1);
+		}
+
+		/* unselect treeview by default */
+		g_idle_add (gs_main_updates_unselect_treeview_cb, priv);
+	}
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
+	gtk_window_present (GTK_WINDOW (widget));
+}
+
+/**
  * gs_main_startup_cb:
  **/
 static void
@@ -1585,6 +1583,8 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* setup updates */
 	priv->list_box_updates = GTK_LIST_BOX (gtk_list_box_new ());
+	g_signal_connect (priv->list_box_updates, "row-activated",
+			  G_CALLBACK (gs_main_updates_activated_cb), priv);
 	gtk_list_box_set_header_func (priv->list_box_updates,
 				      gs_main_list_header_func,
 				      priv,

@@ -51,7 +51,6 @@ G_DEFINE_TYPE (GsAppWidget, gs_app_widget, GTK_TYPE_BOX)
 
 enum {
 	SIGNAL_BUTTON_CLICKED,
-	SIGNAL_MORE,
 	SIGNAL_LAST
 };
 
@@ -82,7 +81,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	gtk_widget_set_visible (priv->widget_version, TRUE);
 	gtk_widget_set_visible (priv->widget_image, TRUE);
 	gtk_widget_set_visible (priv->widget_button, TRUE);
-	gtk_widget_set_visible (priv->widget_more, TRUE);
 
 	/* show / hide widgets depending on kind */
 	switch (app_widget->priv->kind) {
@@ -287,12 +285,6 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 			      G_STRUCT_OFFSET (GsAppWidgetClass, button_clicked),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
-	signals [SIGNAL_MORE] =
-		g_signal_new ("more",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsAppWidgetClass, more),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (GsAppWidgetPrivate));
 }
@@ -304,15 +296,6 @@ static void
 gs_app_widget_button_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
 {
 	g_signal_emit (app_widget, signals[SIGNAL_BUTTON_CLICKED], 0);
-}
-
-/**
- * gs_app_widget_more_clicked_cb:
- **/
-static void
-gs_app_widget_more_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
-{
-	g_signal_emit (app_widget, signals[SIGNAL_MORE], 0);
 }
 
 /**
@@ -384,20 +367,9 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	gtk_box_pack_start (GTK_BOX (box),
 			    GTK_WIDGET (priv->widget_description),
 			    TRUE, TRUE, 0);
-
-	/* 'More' Expander */
-	priv->widget_more = gtk_button_new_with_label (_("More"));
-	context = gtk_widget_get_style_context (priv->widget_more);
-	gtk_style_context_add_class (context, "dim-label");
-	gtk_button_set_relief (GTK_BUTTON (priv->widget_more), GTK_RELIEF_NONE);
-	gtk_widget_set_margin_right (priv->widget_more, 36);
-	gtk_widget_set_halign (priv->widget_more, GTK_ALIGN_END);
-	gtk_box_pack_start (GTK_BOX (box), priv->widget_more, FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (app_widget),
 			    GTK_WIDGET (box),
 			    TRUE, TRUE, 0);
-	g_signal_connect (priv->widget_more, "clicked",
-			  G_CALLBACK (gs_app_widget_more_clicked_cb), app_widget);
 
 	/* button */
 	priv->widget_button = gtk_button_new_with_label ("button");
