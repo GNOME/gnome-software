@@ -167,7 +167,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		g_set_error (error,
 			     GS_PLUGIN_LOADER_ERROR,
 			     GS_PLUGIN_LOADER_ERROR_FAILED,
-			     "no updates to show");
+			     "no results to show");
 		goto out;
 	}
 out:
@@ -618,6 +618,106 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
  **/
 GList *
 gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
+				     GAsyncResult *res,
+				     GError **error)
+{
+	GSimpleAsyncResult *simple;
+
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	/* failed */
+	simple = G_SIMPLE_ASYNC_RESULT (res);
+	if (g_simple_async_result_propagate_error (simple, error))
+		return NULL;
+
+	/* grab detail */
+	return g_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
+}
+
+/******************************************************************************/
+
+/**
+ * cd_plugin_loader_get_featured_thread_cb:
+ **/
+static void
+cd_plugin_loader_get_featured_thread_cb (GSimpleAsyncResult *res,
+					  GObject *object,
+					  GCancellable *cancellable)
+{
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
+
+	/* do things that would block */
+	state->list = gs_plugin_loader_run_results (plugin_loader,
+						    "gs_plugin_add_featured",
+						    cancellable,
+						    &error);
+	if (state->list == NULL) {
+		cd_plugin_loader_get_all_state_finish (state, error);
+		g_error_free (error);
+		goto out;
+	}
+	state->list = gs_plugin_loader_remove_invalid (state->list);
+	if (state->list == NULL) {
+		g_set_error_literal (&error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_FAILED,
+				     "no featured apps to show");
+		cd_plugin_loader_get_all_state_finish (state, error);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* success */
+	state->ret = TRUE;
+	cd_plugin_loader_get_all_state_finish (state, NULL);
+out:
+	return;
+}
+
+/**
+ * gs_plugin_loader_get_featured_async:
+ **/
+void
+gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
+				      GCancellable *cancellable,
+				      GAsyncReadyCallback callback,
+				      gpointer user_data)
+{
+	GCancellable *tmp;
+	GsPluginLoaderAsyncState *state;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->res = g_simple_async_result_new (G_OBJECT (plugin_loader),
+						callback,
+						user_data,
+						gs_plugin_loader_get_featured_async);
+	state->plugin_loader = g_object_ref (plugin_loader);
+	if (cancellable != NULL)
+		state->cancellable = g_object_ref (cancellable);
+
+	/* run in a thread */
+	tmp = g_cancellable_new ();
+	g_object_set_data (G_OBJECT (tmp), "state", state);
+	g_simple_async_result_run_in_thread (G_SIMPLE_ASYNC_RESULT (state->res),
+					     cd_plugin_loader_get_featured_thread_cb,
+					     0,
+					     (GCancellable *) tmp);
+	g_object_unref (tmp);
+}
+
+/**
+ * gs_plugin_loader_get_featured_finish:
+ **/
+GList *
+gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 				     GAsyncResult *res,
 				     GError **error)
 {

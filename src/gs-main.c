@@ -1298,36 +1298,61 @@ gs_main_back_button_cb (GtkWidget *widget, GsMainPrivate *priv)
 }
 
 /**
+ * gs_main_get_featured_cb:
+ **/
+static void
+gs_main_get_featured_cb (GObject *source_object,
+			  GAsyncResult *res,
+			  gpointer user_data)
+{
+	GdkPixbuf *pixbuf;
+	GError *error = NULL;
+	GList *list;
+	GsApp *app;
+	GsMainPrivate *priv = (GsMainPrivate *) user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GtkImage *image;
+	GtkWidget *button;
+	GtkWidget *widget;
+
+	list = gs_plugin_loader_get_featured_finish (plugin_loader,
+						     res,
+						     &error);
+	if (list == NULL) {
+		g_warning ("failed to get featured apps: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* at the moment, we only care about the first app */
+	app = GS_APP (list->data);
+	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "featured_image"));
+	pixbuf = gs_app_get_featured_pixbuf (app);
+	gtk_image_set_from_pixbuf (image, pixbuf);
+	button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_button"));
+	g_object_set_data_full (G_OBJECT (button), "app", app, g_object_unref);
+	g_signal_connect (button, "clicked",
+			  G_CALLBACK (app_tile_clicked), priv);
+
+	/* focus back to the text extry */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	gtk_widget_grab_focus (widget);
+out:
+	g_list_free (list);
+	return;
+}
+
+/**
  * gs_main_setup_featured:
  **/
 static void
 gs_main_setup_featured (GsMainPrivate *priv)
 {
-	GError *error = NULL;
-	GdkPixbuf *pixbuf;
-	GtkImage *image;
-        GtkWidget *button;
-        GsApp *app;
-
-	/* 1 : TODO: generate these automatically */
-	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "featured_image"));
-	pixbuf = gdk_pixbuf_new_from_file_at_scale (DATADIR "/gnome-software/featured-firefox.png", -1, -1, TRUE, &error);
-	if (pixbuf == NULL) {
-		g_warning ("failed to load featured tile: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-	gtk_image_set_from_pixbuf (image, pixbuf);
-	g_object_unref (pixbuf);
-
-        button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_button"));
-        app = gs_app_new ("firefox");
-        g_object_set_data_full (G_OBJECT (button), "app", app, g_object_unref);
-        g_signal_connect (button, "clicked",
-                          G_CALLBACK (app_tile_clicked), priv);
-
-out:
-	return;
+	/* get popular apps */
+	gs_plugin_loader_get_featured_async (priv->plugin_loader,
+					     priv->cancellable,
+					     gs_main_get_featured_cb,
+					     priv);
 }
 
 /**
@@ -1760,6 +1785,7 @@ main (int argc, char **argv)
 	}
 
 	/* FIXME: use GSettings key rather than hard-coding this */
+	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-featured", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-kind", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-popular", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-ratings", TRUE);

@@ -103,6 +103,9 @@ void		 gs_app_set_screenshot		(GsApp		*app,
 GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
 void		 gs_app_set_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);
+GdkPixbuf	*gs_app_get_featured_pixbuf	(GsApp		*app);
+void		 gs_app_set_featured_pixbuf	(GsApp		*app,
+						 GdkPixbuf	*pixbuf);
 const gchar	*gs_app_get_metadata_item	(GsApp		*app,
 						 const gchar	*key);
 void		 gs_app_set_metadata		(GsApp		*app,

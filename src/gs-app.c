@@ -41,6 +41,7 @@ struct GsAppPrivate
 	GsAppState		 state;
 	GHashTable		*metadata;
 	GdkPixbuf		*pixbuf;
+	GdkPixbuf		*featured_pixbuf;
 	GPtrArray		*related; /* of GsApp */
 };
 
@@ -178,6 +179,27 @@ gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (app->priv->pixbuf == NULL);
 	app->priv->pixbuf = g_object_ref (pixbuf);
+}
+
+/**
+ * gs_app_get_featured_pixbuf:
+ */
+GdkPixbuf *
+gs_app_get_featured_pixbuf (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->featured_pixbuf;
+}
+
+/**
+ * gs_app_set_featured_pixbuf:
+ */
+void
+gs_app_set_featured_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (app->priv->featured_pixbuf == NULL);
+	app->priv->featured_pixbuf = g_object_ref (pixbuf);
 }
 
 /**
@@ -605,6 +627,8 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (priv->related);
 	if (priv->pixbuf != NULL)
 		g_object_unref (priv->pixbuf);
+	if (priv->featured_pixbuf != NULL)
+		g_object_unref (priv->featured_pixbuf);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
