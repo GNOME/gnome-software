@@ -37,7 +37,6 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*widget_button;
 	GtkWidget	*widget_description;
 	GtkWidget	*widget_image;
-	GtkWidget	*widget_more;
 	GtkWidget	*widget_name;
 	GtkWidget	*widget_spinner;
 	GtkWidget	*widget_status;
@@ -63,6 +62,7 @@ static void
 gs_app_widget_refresh (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv = app_widget->priv;
+	GtkStyleContext *context;
 
 	if (app_widget->priv->app == NULL)
 		return;
@@ -89,12 +89,16 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		gtk_widget_set_visible (priv->widget_button, TRUE);
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
 				      _("Install"));
+		context = gtk_widget_get_style_context (priv->widget_button);
+		gtk_style_context_remove_class (context, "destructive-action");
 		break;
 	case GS_APP_WIDGET_KIND_REMOVE:
 		gtk_widget_set_visible (priv->widget_spinner, FALSE);
 		gtk_widget_set_visible (priv->widget_button, TRUE);
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
 				      _("Remove"));
+		context = gtk_widget_get_style_context (priv->widget_button);
+		gtk_style_context_add_class (context, "destructive-action");
 		break;
 	case GS_APP_WIDGET_KIND_UPDATE:
 		gtk_widget_set_visible (priv->widget_spinner, FALSE);
