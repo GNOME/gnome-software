@@ -1719,7 +1719,7 @@ main (int argc, char **argv)
 
 	const GOptionEntry options[] = {
 		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
-		  _("Start up mode, either 'updates', 'installed' or 'new'"), NULL },
+		  _("Start up mode, either 'updates', 'installed' or 'new'"), _("MODE") },
 		{ NULL}
 	};
 
