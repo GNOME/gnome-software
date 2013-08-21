@@ -35,6 +35,8 @@ gnome_software_SOURCES =				\
 	gs-app-widget.h					\
 	gs-plugin.c					\
 	gs-plugin.h					\
+	gs-shell-updates.c				\
+	gs-shell-updates.h				\
 	gs-plugin-loader.c				\
 	gs-plugin-loader.h				\
 	gs-plugin-loader-sync.c				\

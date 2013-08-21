@@ -28,6 +28,7 @@
 
 #include "gs-app-widget.h"
 #include "gs-resources.h"
+#include "gs-shell-updates.h"
 #include "gs-plugin-loader.h"
 
 typedef enum {
@@ -39,13 +40,6 @@ typedef enum {
         GS_MAIN_MODE_CATEGORY
 } GsMainMode;
 
-enum {
-	COLUMN_UPDATE_APP,
-	COLUMN_UPDATE_NAME,
-	COLUMN_UPDATE_VERSION,
-	COLUMN_UPDATE_LAST
-};
-
 typedef struct {
 	GCancellable		*cancellable;
 	GsMainMode		 mode;
@@ -55,12 +49,12 @@ typedef struct {
 	PkTask			*task;
 	guint			 waiting_tab_id;
 	GtkListBox		*list_box_installed;
-	GtkListBox		*list_box_updates;
 	GtkCssProvider		*provider;
 	gboolean		 ignore_primary_buttons;
 	GsPluginLoader		*plugin_loader;
 	guint			 tab_back_id;
         gint                     pending_apps;
+	GsShellUpdates		*shell_updates;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app);
@@ -370,12 +364,12 @@ gs_main_remove_packages_cb (PkClient *client,
 			gtk_container_remove (GTK_CONTAINER (data->priv->list_box_installed),
 					      GTK_WIDGET (app_widget));
 		}
-		app_widget = gs_main_get_app_widget_for_id (data->priv->list_box_updates,
-							    pk_package_get_id (package));
-		if (app_widget != NULL) {
-			gtk_container_remove (GTK_CONTAINER (data->priv->list_box_updates),
-					      GTK_WIDGET (app_widget));
-		}
+//		app_widget = gs_main_get_app_widget_for_id (data->priv->list_box_updates,
+//							    pk_package_get_id (package));
+//		if (app_widget != NULL) {
+//			gtk_container_remove (GTK_CONTAINER (data->priv->list_box_updates),
+//					      GTK_WIDGET (app_widget));
+//		}
 	}
 out:
 	g_free (data);
@@ -385,95 +379,6 @@ out:
 		g_ptr_array_unref (array);
 	if (results != NULL)
 		g_object_unref (results);
-}
-
-/**
- * gs_main_set_updates_description_ui:
- **/
-static void
-gs_main_set_updates_description_ui (GsMainPrivate *priv, GsApp *app)
-{
-	gchar *tmp;
-	GsAppKind kind;
-	GtkWidget *widget;
-
-	/* set window title */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-	kind = gs_app_get_kind (app);
-	if (kind == GS_APP_KIND_OS_UPDATE) {
-		gtk_window_set_title (GTK_WINDOW (widget), gs_app_get_name (app));
-	} else {
-		tmp = g_strdup_printf ("%s %s",
-				       gs_app_get_name (app),
-				       gs_app_get_version (app));
-		gtk_window_set_title (GTK_WINDOW (widget), tmp);
-		g_free (tmp);
-	}
-
-	/* set update header */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
-	gtk_widget_set_visible (widget, kind == GS_APP_KIND_NORMAL);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
-	gtk_widget_set_visible (widget, kind != GS_APP_KIND_OS_UPDATE);
-	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_metadata_item (app, "update-details"));
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_update_icon"));
-	gtk_image_set_from_pixbuf (GTK_IMAGE (widget), gs_app_get_pixbuf (app));
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_name"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_name (app));
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_summary"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_summary (app));
-}
-
-/**
- * gs_main_updates_unselect_treeview_cb:
- **/
-static gboolean
-gs_main_updates_unselect_treeview_cb (gpointer user_data)
-{
-	GsMainPrivate *priv = (GsMainPrivate *) user_data;
-	GtkTreeView *treeview;
-
-	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_update"));
-	gtk_tree_selection_unselect_all (gtk_tree_view_get_selection (treeview));
-
-	return FALSE;
-}
-
-/**
- * gs_main_update_row_activated_cb:
- **/
-static void
-gs_main_update_row_activated_cb (GtkTreeView *treeview, GtkTreePath *path,
-				 GtkTreeViewColumn *col, GsMainPrivate *priv)
-{
-	gboolean ret;
-	GsApp *app = NULL;
-	GtkTreeIter iter;
-	GtkTreeModel *model;
-	GtkWidget *widget;
-
-	/* get selection */
-	model = gtk_tree_view_get_model (treeview);
-	ret = gtk_tree_model_get_iter (model, &iter, path);
-	if (!ret) {
-		g_warning ("failed to get selection");
-		goto out;
-	}
-
-	/* get data */
-	gtk_tree_model_get (model, &iter,
-			    COLUMN_UPDATE_APP, &app,
-			    -1);
-
-	/* setup package view */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
-	gtk_widget_hide (widget);
-	gs_main_set_updates_description_ui (priv, app);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
-	gtk_widget_show (widget);
-out:
-	if (app != NULL)
-		g_object_unref (app);
 }
 
 /**
@@ -606,55 +511,6 @@ _gtk_container_remove_all (GtkContainer *container)
 }
 
 /**
- * gs_main_get_updates_cb:
- **/
-static void
-gs_main_get_updates_cb (GsPluginLoader *plugin_loader,
-			GAsyncResult *res,
-			GsMainPrivate *priv)
-{
-	GError *error = NULL;
-	GList *list;
-	GList *l;
-	GsApp *app;
-	GtkWidget *widget;
-
-	/* get the results */
-	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_updates_up_to_date"));
-	gtk_widget_set_visible (widget, list == NULL);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
-	gtk_widget_set_visible (widget, list != NULL);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-	gtk_widget_set_visible (widget, list != NULL);
-	if (list == NULL) {
-		g_warning ("failed to get updates: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		g_debug ("adding update %s", gs_app_get_id (app));
-		widget = gs_app_widget_new ();
-		g_signal_connect (widget, "button-clicked",
-				  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
-				  priv);
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					GS_APP_WIDGET_KIND_UPDATE);
-		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-		gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
-		gtk_widget_show (widget);
-	}
-
-	/* focus back to the text extry */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_widget_grab_focus (widget);
-out:
-	if (list != NULL)
-		g_list_free_full (list, (GDestroyNotify) g_object_unref);
-}
-
-/**
  * gs_main_get_installed_cb:
  **/
 static void
@@ -713,18 +569,6 @@ gs_main_get_installed (GsMainPrivate *priv)
 					      priv->cancellable,
 					      gs_main_get_installed_cb,
 					      priv);
-}
-
-/**
- * gs_main_get_updates:
- **/
-static void
-gs_main_get_updates (GsMainPrivate *priv)
-{
-	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
-	gs_plugin_loader_get_updates_async (priv->plugin_loader,
-					    priv->cancellable,
-					    (GAsyncReadyCallback) gs_main_get_updates_cb, priv);
 }
 
 static void
@@ -1209,7 +1053,7 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app, con
 		gs_main_get_installed (priv);
 		break;
 	case GS_MAIN_MODE_UPDATES:
-		gs_main_get_updates (priv);
+		gs_shell_updates_refresh (priv->shell_updates, priv->cancellable);
 		break;
 	case GS_MAIN_MODE_WAITING:
 		break;
@@ -1491,58 +1335,6 @@ gs_main_installed_sort_func (GtkListBoxRow *a,
 }
 
 /**
- * gs_main_updates_activated_cb:
- **/
-static void
-gs_main_updates_activated_cb (GtkListBox *list_box, GtkListBoxRow *row, GsMainPrivate *priv)
-{
-	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	GsApp *app = gs_app_widget_get_app (app_widget);
-	GsApp *app_related;
-	GsAppKind kind;
-	GtkWidget *widget;
-
-	app = gs_app_widget_get_app (app_widget);
-	kind = gs_app_get_kind (app);
-
-	/* set update header */
-	gs_main_set_updates_description_ui (priv, app);
-
-	/* only OS updates can go back, and only on selection */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
-	gtk_widget_hide (widget);
-
-	/* set update description */
-	if (kind == GS_APP_KIND_OS_UPDATE) {
-		GPtrArray *related;
-		GtkListStore *liststore;
-		GtkTreeIter iter;
-		guint i;
-
-		/* add the related packages to the list view */
-		liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_update"));
-		gtk_list_store_clear (liststore);
-		related = gs_app_get_related (app);
-		for (i = 0; i < related->len; i++) {
-			app_related = g_ptr_array_index (related, i);
-			gtk_list_store_append (liststore, &iter);
-			gtk_list_store_set (liststore,
-					    &iter,
-					    COLUMN_UPDATE_APP, app_related,
-					    COLUMN_UPDATE_NAME, gs_app_get_name (app_related),
-					    COLUMN_UPDATE_VERSION, gs_app_get_version (app_related),
-					    -1);
-		}
-
-		/* unselect treeview by default */
-		g_idle_add (gs_main_updates_unselect_treeview_cb, priv);
-	}
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-	gtk_window_present (GTK_WINDOW (widget));
-}
-
-/**
  * gs_main_startup_cb:
  **/
 static void
@@ -1632,20 +1424,6 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_installed));
 	gtk_widget_show (GTK_WIDGET (priv->list_box_installed));
 
-	/* setup updates */
-	priv->list_box_updates = GTK_LIST_BOX (gtk_list_box_new ());
-	g_signal_connect (priv->list_box_updates, "row-activated",
-			  G_CALLBACK (gs_main_updates_activated_cb), priv);
-	gtk_list_box_set_header_func (priv->list_box_updates,
-				      gs_main_list_header_func,
-				      priv,
-				      NULL);
-	gtk_list_box_set_selection_mode (priv->list_box_updates,
-					 GTK_SELECTION_NONE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
-	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_updates));
-	gtk_widget_show (GTK_WIDGET (priv->list_box_updates));
-
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 	g_signal_connect (widget, "clicked",
@@ -1678,40 +1456,11 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 			  G_CALLBACK (gs_main_button_updates_back_cb), priv);
 	//FIXME: connect to dialog_update and just hide widget if user closes modal
 
-
-{
-	GtkCellRenderer *renderer;
-	GtkTreeViewColumn *column;
-	GtkTreeView *treeview;
-
-	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_update"));
-
-	/* column for name */
-	renderer = gtk_cell_renderer_text_new ();
-	g_object_set (renderer,
-		      "xpad", 6,
-		      "ypad", 6,
-		      NULL);
-	column = gtk_tree_view_column_new_with_attributes ("name", renderer,
-							   "markup", COLUMN_UPDATE_NAME, NULL);
-	gtk_tree_view_column_set_sort_column_id (column, COLUMN_UPDATE_NAME);
-	gtk_tree_view_column_set_expand (column, TRUE);
-	gtk_tree_view_append_column (treeview, column);
-
-	renderer = gtk_cell_renderer_text_new ();
-	g_object_set (renderer,
-		      "xpad", 6,
-		      "ypad", 6,
-		      NULL);
-	column = gtk_tree_view_column_new_with_attributes ("version", renderer,
-							   "markup", COLUMN_UPDATE_VERSION, NULL);
-	gtk_tree_view_append_column (treeview, column);
-	g_signal_connect (treeview, "row-activated",
-			  G_CALLBACK (gs_main_update_row_activated_cb), priv);
-
-}
-
-
+	/* setup updates UI */
+	priv->shell_updates = gs_shell_updates_new ();
+	gs_shell_updates_setup (priv->shell_updates,
+				priv->plugin_loader,
+				priv->builder);
 
 	/* refilter on search box changing */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
@@ -1832,6 +1581,8 @@ out:
 		g_object_unref (priv->task);
 		g_object_unref (priv->cancellable);
 		g_object_unref (priv->application);
+		if (priv->shell_updates != NULL)
+			g_object_unref (priv->shell_updates);
 		if (priv->provider != NULL)
 			g_object_unref (priv->provider);
 		if (priv->builder != NULL)
