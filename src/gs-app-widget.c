@@ -30,7 +30,6 @@
 struct _GsAppWidgetPrivate
 {
 	ChMarkdown	*markdown;
-	gchar		*description;
 	GsApp		*app;
 	gchar		*status;
 	GsAppWidgetKind	 kind;
@@ -60,6 +59,7 @@ static guint signals [SIGNAL_LAST] = { 0 };
 static void
 gs_app_widget_refresh (GsAppWidget *app_widget)
 {
+	const gchar *tmp;
 	GsAppWidgetPrivate *priv = app_widget->priv;
 	GtkStyleContext *context;
 
@@ -68,7 +68,10 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 
 	gtk_label_set_label (GTK_LABEL (priv->widget_name),
 			     gs_app_get_name (priv->app));
-	gtk_label_set_markup (GTK_LABEL (priv->widget_description), priv->description);
+	tmp = gs_app_get_description (priv->app);
+	if (tmp == NULL)
+		tmp = _("The author of this software has not included a long description...");
+	gtk_label_set_markup (GTK_LABEL (priv->widget_description), tmp);
 	gtk_label_set_label (GTK_LABEL (priv->widget_version),
 			     gs_app_get_version (priv->app));
 	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->widget_image),
@@ -175,27 +178,6 @@ out:
 }
 
 /**
- * gs_app_widget_set_description:
- **/
-static void
-gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description)
-{
-	GsAppWidgetPrivate *priv = app_widget->priv;
-
-	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
-
-	g_free (priv->description);
-
-	/* nothing to set, so use placeholder */
-	if (description == NULL) {
-		priv->description = g_strdup ("No description");
-	}
-
-        priv->description = g_strdup (description);
-}
-
-
-/**
  * gs_app_widget_get_app:
  **/
 GsApp *
@@ -214,11 +196,6 @@ gs_app_widget_set_app (GsAppWidget *app_widget, GsApp *app)
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
 	g_return_if_fail (GS_IS_APP (app));
 	app_widget->priv->app = g_object_ref (app);
-        if (gs_app_get_description (app) != NULL)
-        	gs_app_widget_set_description (app_widget, gs_app_get_description (app));
-        else
-                gs_app_widget_set_description (app_widget,
-"An Open Source vector graphics editor, with capabilities similar to Illustrator, CorelDraw, or Xara X, using the W3C standard Scalable Vector Graphics (SVG) file format. Inkscape supports many advanced SVG features (markers, clones, alpha blending, etc.) and great care is taken in designing a streamlined interface. It is very easy to edit nodes, perform complex path operations, trace bitmaps and much more. We also aim to maintain a thriving user and developer community by using open, community-oriented development.");
 	gs_app_widget_refresh (app_widget);
 }
 
@@ -255,8 +232,6 @@ gs_app_widget_destroy (GtkWidget *object)
 	GsAppWidget *app_widget = GS_APP_WIDGET (object);
 	GsAppWidgetPrivate *priv = app_widget->priv;
 
-	g_free (priv->description);
-	priv->description = NULL;
 	g_free (priv->status);
 	priv->status = NULL;
 	if (priv->markdown != NULL)

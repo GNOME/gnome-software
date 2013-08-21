@@ -45,6 +45,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	plugin->priv->loaded = FALSE;
 	plugin->priv->cache = g_hash_table_new_full (g_str_hash,
 						     g_str_equal,
 						     NULL,

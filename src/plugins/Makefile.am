@@ -30,6 +30,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_datadir_filename.la		\
 	libgs_plugin_desktopdb.la			\
 	libgs_plugin_dummy.la				\
+	libgs_plugin_hardcoded-descriptions.la		\
 	libgs_plugin_hardcoded-featured.la		\
 	libgs_plugin_hardcoded-kind.la			\
 	libgs_plugin_hardcoded-popular.la		\
@@ -52,6 +53,11 @@ libgs_plugin_hardcoded_popular_la_SOURCES = gs-plugin-hardcoded-popular.c
 libgs_plugin_hardcoded_popular_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_popular_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_popular_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+
+libgs_plugin_hardcoded_descriptions_la_SOURCES = gs-plugin-hardcoded-descriptions.c
+libgs_plugin_hardcoded_descriptions_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_hardcoded_descriptions_la_LDFLAGS = -module -avoid-version
+libgs_plugin_hardcoded_descriptions_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_hardcoded_featured_la_SOURCES = gs-plugin-hardcoded-featured.c
 libgs_plugin_hardcoded_featured_la_LIBADD = $(GS_PLUGIN_LIBS)
