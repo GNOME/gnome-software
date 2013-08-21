@@ -230,8 +230,6 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_name (app) != NULL)
-			continue;
 		tmp = gs_app_get_metadata_item (app, "datadir-desktop-filename");
 		if (tmp == NULL)
 			continue;
