@@ -180,10 +180,7 @@ out:
 static void
 gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description)
 {
-	gchar **split = NULL;
 	GsAppWidgetPrivate *priv = app_widget->priv;
-	GString *description2 = NULL;
-	GString *tmp_description = NULL;
 
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
 
@@ -192,21 +189,11 @@ gs_app_widget_set_description (GsAppWidget *app_widget, const gchar *description
 	/* nothing to set, so use placeholder */
 	if (description == NULL) {
 		priv->description = g_strdup ("No description");
-		goto out;
 	}
 
-	/* force split with bullet */
-	description2 = g_string_new (description);
-	_g_string_replace (description2, ". ", "\n* ");
-	priv->description = ch_markdown_parse (priv->markdown,
-					       description2->str);
-out:
-	if (description2 != NULL)
-		g_string_free (description2, TRUE);
-	if (tmp_description != NULL)
-		g_string_free (tmp_description, TRUE);
-	g_strfreev (split);
+        priv->description = g_strdup (description);
 }
+
 
 /**
  * gs_app_widget_get_app:
@@ -227,7 +214,11 @@ gs_app_widget_set_app (GsAppWidget *app_widget, GsApp *app)
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
 	g_return_if_fail (GS_IS_APP (app));
 	app_widget->priv->app = g_object_ref (app);
-	gs_app_widget_set_description (app_widget, gs_app_get_summary (app));
+        if (gs_app_get_description (app) != NULL)
+        	gs_app_widget_set_description (app_widget, gs_app_get_description (app));
+        else
+                gs_app_widget_set_description (app_widget,
+"An Open Source vector graphics editor, with capabilities similar to Illustrator, CorelDraw, or Xara X, using the W3C standard Scalable Vector Graphics (SVG) file format. Inkscape supports many advanced SVG features (markers, clones, alpha blending, etc.) and great care is taken in designing a streamlined interface. It is very easy to edit nodes, perform complex path operations, trace bitmaps and much more. We also aim to maintain a thriving user and developer community by using open, community-oriented development.");
 	gs_app_widget_refresh (app_widget);
 }
 
@@ -386,22 +377,25 @@ gs_app_widget_init (GsAppWidget *app_widget)
 
 	/* spinner */
 	priv->widget_spinner = gtk_spinner_new ();
+	gtk_widget_set_halign (box, GTK_ALIGN_END);
+	gtk_widget_set_valign (box, GTK_ALIGN_CENTER);
 	gtk_widget_set_margin_left (GTK_WIDGET (priv->widget_spinner), 6);
 	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_spinner), 6);
 
 	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
+	gtk_widget_set_size_request (box, 200, -1);
 	gtk_widget_set_halign (box, GTK_ALIGN_END);
 	gtk_widget_set_valign (box, GTK_ALIGN_CENTER);
 	gtk_widget_set_visible (box, TRUE);
-	gtk_box_pack_start (GTK_BOX (box),
-			    GTK_WIDGET (priv->widget_spinner),
-			    FALSE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (box),
-			    GTK_WIDGET (priv->widget_button),
-			    FALSE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (app_widget),
-			    GTK_WIDGET (box),
-			    FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (box),
+			  GTK_WIDGET (priv->widget_button),
+			  FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (box),
+		          GTK_WIDGET (priv->widget_spinner),
+	       	          FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (app_widget),
+			  GTK_WIDGET (box),
+			  FALSE, FALSE, 0);
 
 	/* refresh */
 	gs_app_widget_refresh (app_widget);
