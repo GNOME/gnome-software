@@ -1798,7 +1798,7 @@ main (int argc, char **argv)
 			g_warning ("Mode '%s' not recognised", mode);
 		}
 	} else {
-		priv->app_startup_mode = GS_MAIN_MODE_INSTALLED;
+		priv->app_startup_mode = GS_MAIN_MODE_NEW;
 	}
 
 	/* load the plugins */
