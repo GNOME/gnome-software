@@ -57,9 +57,10 @@ typedef struct {
 	GtkListBox		*list_box_installed;
 	GtkListBox		*list_box_updates;
 	GtkCssProvider		*provider;
-	gboolean		ignore_primary_buttons;
+	gboolean		 ignore_primary_buttons;
 	GsPluginLoader		*plugin_loader;
 	guint			 tab_back_id;
+        gint                     pending_apps;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app);
@@ -292,6 +293,26 @@ gs_main_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 	}
 }
 
+static void
+update_pending_apps (GsMainPrivate *priv, gint delta)
+{
+        GtkWidget *widget;
+        gchar *label;
+
+        priv->pending_apps += delta;
+        g_assert (priv->pending_apps >= 0);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_button_installed"));
+
+        if (priv->pending_apps == 0)
+                label = g_strdup (_("Installed"));
+        else
+                label = g_strdup_printf (_("Installed (%d)"), priv->pending_apps);
+
+        gtk_label_set_label (GTK_LABEL (widget), label);
+        g_free (label);
+}
+
 typedef struct {
 	GsAppWidget	*app_widget;
 	GsMainPrivate	*priv;
@@ -314,6 +335,8 @@ gs_main_remove_packages_cb (PkClient *client,
 	PkPackage *package;
 	PkResults *results;
 	GsAppWidget *app_widget;
+
+        update_pending_apps (data->priv, -1);
 
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);
@@ -477,10 +500,11 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 	data->priv = priv;
 
 	if (kind == GS_APP_WIDGET_KIND_UPDATE) {
+                update_pending_apps (data->priv, 1);
 		g_debug ("update %s", package_id);
 		to_array[0] = package_id;
 		gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
-		gs_app_widget_set_status (app_widget, "Updating...");
+		gs_app_widget_set_status (app_widget, "Updating");
 		pk_task_update_packages_async (priv->task,
 					       (gchar**)to_array,
 					       priv->cancellable,
@@ -489,10 +513,11 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 					       (GAsyncReadyCallback) gs_main_remove_packages_cb,
 					       data);
 	} else if (kind == GS_APP_WIDGET_KIND_INSTALL) {
+                update_pending_apps (data->priv, 1);
 		g_debug ("install %s", package_id);
 		to_array[0] = package_id;
 		gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
-		gs_app_widget_set_status (app_widget, "Installing...");
+		gs_app_widget_set_status (app_widget, "Installing");
 		pk_task_install_packages_async (priv->task,
 					        (gchar**)to_array,
 					        priv->cancellable,
@@ -526,10 +551,12 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 		gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
 		response = gtk_dialog_run (GTK_DIALOG (dialog));
 		if (response == GTK_RESPONSE_OK) {
+                        update_pending_apps (data->priv, 1);
 			g_debug ("remove %s", package_id);
 			to_array[0] = package_id;
 			gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
-			gs_app_widget_set_status (app_widget, "Removing...");
+			gs_app_widget_set_status (app_widget, "Removing");
+
 			pk_task_remove_packages_async (priv->task,
 						       (gchar**)to_array,
 						       TRUE, /* allow deps */
