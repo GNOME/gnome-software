@@ -39,7 +39,6 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*widget_image;
 	GtkWidget	*widget_name;
 	GtkWidget	*widget_spinner;
-	GtkWidget	*widget_status;
 	GtkWidget	*widget_version;
 };
 
@@ -70,46 +69,47 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	gtk_label_set_label (GTK_LABEL (priv->widget_name),
 			     gs_app_get_name (priv->app));
 	gtk_label_set_markup (GTK_LABEL (priv->widget_description), priv->description);
-	gtk_label_set_label (GTK_LABEL (priv->widget_status), priv->status);
 	gtk_label_set_label (GTK_LABEL (priv->widget_version),
 			     gs_app_get_version (priv->app));
 	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->widget_image),
 				   gs_app_get_pixbuf (priv->app));
 	gtk_widget_set_visible (priv->widget_name, TRUE);
 	gtk_widget_set_visible (priv->widget_description, TRUE);
-	gtk_widget_set_visible (priv->widget_status, priv->status != NULL);
 	gtk_widget_set_visible (priv->widget_version, TRUE);
 	gtk_widget_set_visible (priv->widget_image, TRUE);
 	gtk_widget_set_visible (priv->widget_button, TRUE);
+	gtk_widget_set_sensitive (priv->widget_button, TRUE);
 
 	/* show / hide widgets depending on kind */
+	context = gtk_widget_get_style_context (priv->widget_button);
+	gtk_style_context_remove_class (context, "destructive-action");
+	gtk_style_context_remove_class (context, "suggested-action");
+
 	switch (app_widget->priv->kind) {
 	case GS_APP_WIDGET_KIND_INSTALL:
 		gtk_widget_set_visible (priv->widget_spinner, FALSE);
 		gtk_widget_set_visible (priv->widget_button, TRUE);
-		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
-				      _("Install"));
-		context = gtk_widget_get_style_context (priv->widget_button);
-		gtk_style_context_remove_class (context, "destructive-action");
+		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Install"));
+		gtk_style_context_add_class (context, "suggested-action");
 		break;
 	case GS_APP_WIDGET_KIND_REMOVE:
 		gtk_widget_set_visible (priv->widget_spinner, FALSE);
 		gtk_widget_set_visible (priv->widget_button, TRUE);
-		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
-				      _("Remove"));
-		context = gtk_widget_get_style_context (priv->widget_button);
+		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Remove"));
 		gtk_style_context_add_class (context, "destructive-action");
 		break;
 	case GS_APP_WIDGET_KIND_UPDATE:
 		gtk_widget_set_visible (priv->widget_spinner, FALSE);
 		gtk_widget_set_visible (priv->widget_button, FALSE);
-		gtk_button_set_label (GTK_BUTTON (priv->widget_button),
-				      _("Update"));
+		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Update"));
+		gtk_style_context_add_class (context, "suggested-action");
 		break;
 	case GS_APP_WIDGET_KIND_BUSY:
 		gtk_spinner_start (GTK_SPINNER (priv->widget_spinner));
 		gtk_widget_set_visible (priv->widget_spinner, TRUE);
-		gtk_widget_set_visible (priv->widget_button, FALSE);
+		gtk_widget_set_visible (priv->widget_button, TRUE);
+		gtk_widget_set_sensitive (priv->widget_button, FALSE);
+		gtk_button_set_label (GTK_BUTTON (priv->widget_button), priv->status);
 		break;
 	default:
 		gtk_widget_set_visible (priv->widget_button, FALSE);
@@ -309,7 +309,6 @@ static void
 gs_app_widget_init (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv;
-	GtkStyleContext *context;
 	GtkWidget *box;
 	PangoAttrList *attr_list;
 
@@ -357,7 +356,7 @@ gs_app_widget_init (GsAppWidget *app_widget)
 			    FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (box),
 			    GTK_WIDGET (priv->widget_version),
-			    FALSE, FALSE, 12);
+			    FALSE, FALSE, 6);
 	gtk_box_pack_start (GTK_BOX (app_widget),
 			    GTK_WIDGET (box),
 			    FALSE, TRUE, 0);
@@ -387,29 +386,18 @@ gs_app_widget_init (GsAppWidget *app_widget)
 
 	/* spinner */
 	priv->widget_spinner = gtk_spinner_new ();
-	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_spinner), 18);
-	gtk_widget_set_size_request (priv->widget_spinner, 48, 48);
+	gtk_widget_set_margin_left (GTK_WIDGET (priv->widget_spinner), 6);
+	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_spinner), 6);
 
-	/* status */
-	priv->widget_status = gtk_label_new ("status");
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_status), 1.0, 0.0);
-	context = gtk_widget_get_style_context (priv->widget_status);
-	gtk_style_context_add_class (context, "dim-label");
-	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_status),
-				 PANGO_ELLIPSIZE_NONE);
-	gtk_label_set_line_wrap (GTK_LABEL (priv->widget_status), TRUE);
-	gtk_label_set_max_width_chars (GTK_LABEL (priv->widget_status), 20);
-	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_status), 9);
-	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 3);
+	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
+	gtk_widget_set_halign (box, GTK_ALIGN_END);
+	gtk_widget_set_valign (box, GTK_ALIGN_CENTER);
 	gtk_widget_set_visible (box, TRUE);
-	gtk_box_pack_start (GTK_BOX (box),
-			    GTK_WIDGET (priv->widget_button),
-			    FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (box),
 			    GTK_WIDGET (priv->widget_spinner),
 			    FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (box),
-			    GTK_WIDGET (priv->widget_status),
+			    GTK_WIDGET (priv->widget_button),
 			    FALSE, FALSE, 0);
 	gtk_box_pack_start (GTK_BOX (app_widget),
 			    GTK_WIDGET (box),
