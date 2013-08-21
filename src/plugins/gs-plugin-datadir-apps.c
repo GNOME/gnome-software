@@ -97,7 +97,7 @@ gs_plugin_datadir_apps_set_from_cache_item (GsApp *app,
 					    GsPluginDataDirAppsCacheItem *cache_item)
 {
 	gs_app_set_id (app, cache_item->id);
-	if (cache_item->pixbuf != NULL)
+	if (cache_item->name != NULL)
 		gs_app_set_name (app, cache_item->name);
 	if (cache_item->summary != NULL)
 		gs_app_set_summary (app, cache_item->summary);
