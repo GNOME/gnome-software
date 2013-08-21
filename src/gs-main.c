@@ -1212,7 +1212,6 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app, con
 		gs_main_get_updates (priv);
 		break;
 	case GS_MAIN_MODE_WAITING:
-		gs_main_get_updates (priv);
 		break;
 	case GS_MAIN_MODE_DETAILS:
 		tmp = gs_app_get_name (app);
