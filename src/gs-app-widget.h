@@ -73,6 +73,9 @@ void		 gs_app_widget_set_status		(GsAppWidget	*app_widget,
 GsAppWidgetKind	 gs_app_widget_get_kind			(GsAppWidget	*app_widget);
 void		 gs_app_widget_set_kind			(GsAppWidget	*app_widget,
 							 GsAppWidgetKind kind);
+void             gs_app_widget_set_size_groups          (GsAppWidget    *app_widget,
+                                                         GtkSizeGroup   *image,
+                                                         GtkSizeGroup   *name);
 
 G_END_DECLS
 

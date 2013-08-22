@@ -34,7 +34,10 @@ struct _GsAppWidgetPrivate
 	gchar		*status;
 	GsAppWidgetKind	 kind;
 	GtkWidget	*widget_button;
-	GtkWidget	*widget_description;
+	GtkWidget	*widget_description1;
+	GtkWidget	*widget_description2;
+	GtkWidget	*widget_description3;
+	GtkWidget	*widget_read_more;
 	GtkWidget	*widget_image;
 	GtkWidget	*widget_name;
 	GtkWidget	*widget_spinner;
@@ -59,7 +62,6 @@ static guint signals [SIGNAL_LAST] = { 0 };
 static void
 gs_app_widget_refresh (GsAppWidget *app_widget)
 {
-	const gchar *tmp;
 	GsAppWidgetPrivate *priv = app_widget->priv;
 	GtkStyleContext *context;
 
@@ -68,16 +70,12 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 
 	gtk_label_set_label (GTK_LABEL (priv->widget_name),
 			     gs_app_get_name (priv->app));
-	tmp = gs_app_get_description (priv->app);
-	if (tmp == NULL)
-		tmp = _("The author of this software has not included a long description...");
-	gtk_label_set_markup (GTK_LABEL (priv->widget_description), tmp);
 	gtk_label_set_label (GTK_LABEL (priv->widget_version),
 			     gs_app_get_version (priv->app));
-	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->widget_image),
-				   gs_app_get_pixbuf (priv->app));
+        if (gs_app_get_pixbuf (priv->app))
+        	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->widget_image),
+				           gs_app_get_pixbuf (priv->app));
 	gtk_widget_set_visible (priv->widget_name, TRUE);
-	gtk_widget_set_visible (priv->widget_description, TRUE);
 	gtk_widget_set_visible (priv->widget_version, TRUE);
 	gtk_widget_set_visible (priv->widget_image, TRUE);
 	gtk_widget_set_visible (priv->widget_button, TRUE);
@@ -143,38 +141,38 @@ gs_app_widget_get_kind (GsAppWidget *app_widget)
 static guint
 _g_string_replace (GString *string, const gchar *search, const gchar *replace)
 {
-	gchar *tmp;
-	guint cnt = 0;
-	guint replace_len;
-	guint search_len;
+       gchar *tmp;
+       guint cnt = 0;
+       guint replace_len;
+       guint search_len;
 
-	search_len = strlen (search);
-	replace_len = strlen (replace);
+       search_len = strlen (search);
+       replace_len = strlen (replace);
 
-	do {
-		tmp = g_strstr_len (string->str, -1, search);
-		if (tmp == NULL)
-			goto out;
+       do {
+               tmp = g_strstr_len (string->str, -1, search);
+               if (tmp == NULL)
+                       goto out;
 
-		/* reallocate the string if required */
-		if (search_len > replace_len) {
-			g_string_erase (string,
-					tmp - string->str,
-					search_len - replace_len);
-		}
-		if (search_len < replace_len) {
-			g_string_insert_len (string,
-					     tmp - string->str,
-					     search,
-					     replace_len - search_len);
-		}
+               /* reallocate the string if required */
+               if (search_len > replace_len) {
+                       g_string_erase (string,
+                                       tmp - string->str,
+-                                       search_len - replace_len);
+               }
+               if (search_len < replace_len) {
+                       g_string_insert_len (string,
+                                            tmp - string->str,
+                                            search,
+                                            replace_len - search_len);
+               }
 
-		/* just memcmp in the new string */
-		memcpy (tmp, replace, replace_len);
-		cnt++;
-	} while (TRUE);
+               /* just memcmp in the new string */
+               memcpy (tmp, replace, replace_len);
+               cnt++;
+       } while (TRUE);
 out:
-	return cnt;
+       return cnt;
 }
 
 /**
@@ -268,6 +266,108 @@ gs_app_widget_button_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
 	g_signal_emit (app_widget, signals[SIGNAL_BUTTON_CLICKED], 0);
 }
 
+static void
+break_lines (PangoContext *context,
+             const gchar *text, const gchar *end,
+             gint width,
+             gchar **line1, gchar **line2, gchar **line3)
+{
+        PangoLayout *layout;
+        PangoLayoutIter *iter;
+        gchar *tmp;
+        gchar *p, *p2, *r;
+        gint i2 = 0, i3 = 0, i4 = 0;
+        gint lines;
+
+        layout = pango_layout_new (context);
+        pango_layout_set_width (layout, width * PANGO_SCALE);
+        pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
+
+        tmp = g_strconcat (text, end, NULL);
+        pango_layout_set_text (layout, tmp, -1);
+        g_free (tmp);
+
+        lines = pango_layout_get_line_count (layout);
+
+        iter = pango_layout_get_iter (layout);
+        if (pango_layout_iter_next_line (iter))
+                i2 = pango_layout_iter_get_index (iter);
+        else
+                goto out;
+        if (pango_layout_iter_next_line (iter))
+                i3 = pango_layout_iter_get_index (iter);
+        else
+                goto out;
+        if (pango_layout_iter_next_line (iter))
+                i4 = pango_layout_iter_get_index (iter);
+        else
+                goto out;
+        pango_layout_iter_free (iter);
+
+        p = (gchar *)text + i4;
+        while (text <= p && pango_layout_get_line_count (layout) > 3) {
+                p = g_utf8_prev_char (p);
+                r = g_strndup (text, p - text);
+                p2 = g_strconcat (r, "...", end, NULL);
+                pango_layout_set_text (layout, p2, -1);
+                g_free (p2);
+                g_free (r);
+        }
+
+out:
+        g_object_unref (layout);
+
+        if (lines == 1) {
+                *line1 = g_strdup (text);
+                *line2 = NULL;
+                *line3 = NULL;
+        }
+        else if (lines == 2) {
+                i2 = MIN (i2, (gint)strlen (text));
+                *line1 = g_strndup (text, i2);
+                *line2 = g_strdup (text + i2);
+                *line3 = NULL;
+        }
+        else {
+                i2 = MIN (i2, (gint)strlen (text));
+                i3 = MIN (i3, (gint)strlen (text));
+                *line1 = g_strndup (text, i2);
+                *line2 = g_strndup (text + i2, i3 - i2);
+                *line3 = g_strdup (text + i3);
+        }
+}
+
+static void
+size_allocate_cb (GtkWidget     *box,
+                  GtkAllocation *allocation,
+                  GsAppWidget   *app_widget)
+{
+        gchar *tmp;
+        gchar *line1, *line2, *line3;
+        GString *s = NULL;
+
+	tmp = (gchar *)gs_app_get_description (app_widget->priv->app);
+	if (tmp == NULL) {
+		tmp = _("The author of this software has not included a long description.");
+        }
+        else {
+                s = g_string_new (tmp);
+                _g_string_replace (s, "\n", " ");
+                tmp = s->str;
+        }
+
+        break_lines (gtk_widget_get_pango_context (box),
+                     tmp, _("Read More"), allocation->width,
+                     &line1, &line2, &line3);
+
+        gtk_label_set_label (GTK_LABEL (app_widget->priv->widget_description1), line1);
+        gtk_label_set_label (GTK_LABEL (app_widget->priv->widget_description2), line2);
+        gtk_label_set_label (GTK_LABEL (app_widget->priv->widget_description3), line3);
+
+        if (s)
+                g_string_free (s, TRUE);
+}
+
 /**
  * gs_app_widget_init:
  **/
@@ -275,7 +375,8 @@ static void
 gs_app_widget_init (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv;
-	GtkWidget *box;
+	GtkWidget *box, *box2;
+        gchar *tmp;
 	PangoAttrList *attr_list;
 
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
@@ -292,13 +393,13 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	gtk_widget_set_margin_bottom (GTK_WIDGET (app_widget), 9);
 
 	/* pixbuf */
-	priv->widget_image = gtk_image_new_from_icon_name ("edit-paste",
+	priv->widget_image = gtk_image_new_from_icon_name ("missing-image",
 							   GTK_ICON_SIZE_DIALOG);
-	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_image), 9);
+        gtk_image_set_pixel_size (GTK_IMAGE (priv->widget_image), 64);
+
+	gtk_widget_set_margin_right (priv->widget_image, 9);
 	gtk_widget_set_valign (priv->widget_image, GTK_ALIGN_START);
-	gtk_box_pack_start (GTK_BOX (app_widget),
-			    GTK_WIDGET (priv->widget_image),
-			    FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (app_widget), priv->widget_image, FALSE, FALSE, 0);
 
 	/* name > version */
 	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -317,32 +418,45 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	pango_attr_list_unref (attr_list);
 	priv->widget_version = gtk_label_new ("version");
 	gtk_misc_set_alignment (GTK_MISC (priv->widget_version), 0.0, 0.5);
-	gtk_box_pack_start (GTK_BOX (box),
-			    GTK_WIDGET (priv->widget_name),
-			    FALSE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (box),
-			    GTK_WIDGET (priv->widget_version),
-			    FALSE, FALSE, 6);
-	gtk_box_pack_start (GTK_BOX (app_widget),
-			    GTK_WIDGET (box),
-			    FALSE, TRUE, 0);
+	gtk_box_pack_start (GTK_BOX (box), priv->widget_name, FALSE, FALSE, 0);
+	gtk_box_pack_start (GTK_BOX (box), priv->widget_version, FALSE, FALSE, 6);
+	gtk_box_pack_start (GTK_BOX (app_widget), box, FALSE, TRUE, 0);
 
 	/* description */
 	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_set_visible (box, TRUE);
-	priv->widget_description = gtk_label_new ("description");
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_description), 0.0, 0.0);
-	gtk_label_set_line_wrap (GTK_LABEL (priv->widget_description), TRUE);
-	gtk_box_pack_start (GTK_BOX (box),
-			    GTK_WIDGET (priv->widget_description),
-			    TRUE, TRUE, 0);
-	gtk_box_pack_start (GTK_BOX (app_widget),
-			    GTK_WIDGET (box),
-			    TRUE, TRUE, 0);
+        gtk_widget_set_hexpand (box, TRUE);
+        gtk_widget_set_halign (box, GTK_ALIGN_FILL);
+	priv->widget_description1 = gtk_label_new (NULL);
+	gtk_misc_set_alignment (GTK_MISC (priv->widget_description1), 0.0, 0.5);
+	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_description1), PANGO_ELLIPSIZE_END);
+        gtk_container_add (GTK_CONTAINER (box), priv->widget_description1);
+	priv->widget_description2 = gtk_label_new (NULL);
+	gtk_misc_set_alignment (GTK_MISC (priv->widget_description2), 0.0, 0.5);
+	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_description2), PANGO_ELLIPSIZE_END);
+        gtk_container_add (GTK_CONTAINER (box), priv->widget_description2);
+        box2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+	gtk_box_pack_start (GTK_BOX (box), box2, TRUE, TRUE, 0);
+	priv->widget_description3 = gtk_label_new (NULL);
+	gtk_misc_set_alignment (GTK_MISC (priv->widget_description3), 0.0, 0.5);
+	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_description3), PANGO_ELLIPSIZE_END);
+        gtk_widget_set_size_request (priv->widget_description3, 100, -1);
+        gtk_container_add (GTK_CONTAINER (box2), priv->widget_description3);
+        priv->widget_read_more = gtk_label_new (NULL);
+        tmp = g_markup_printf_escaped ("<a href=''>%s</a>", _("Read More"));
+        gtk_label_set_markup (GTK_LABEL (priv->widget_read_more), tmp);
+        g_free (tmp);
+        gtk_misc_set_alignment (GTK_MISC (priv->widget_read_more), 1, 0.5);
+        gtk_widget_set_halign (priv->widget_read_more, GTK_ALIGN_END);
+        gtk_box_pack_start (GTK_BOX (box2), priv->widget_read_more, TRUE, TRUE, 0);
+
+	gtk_box_pack_start (GTK_BOX (app_widget), box, TRUE, TRUE, 0);
+        g_signal_connect (box, "size-allocate", G_CALLBACK (size_allocate_cb), app_widget);
+        gtk_widget_show_all (box);
+
 
 	/* button */
 	priv->widget_button = gtk_button_new_with_label ("button");
-	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_button), 9);
+	gtk_widget_set_margin_right (priv->widget_button, 9);
 	gtk_widget_set_size_request (priv->widget_button, 100, -1);
 	gtk_widget_set_vexpand (priv->widget_button, FALSE);
 	gtk_widget_set_hexpand (priv->widget_button, FALSE);
@@ -352,28 +466,35 @@ gs_app_widget_init (GsAppWidget *app_widget)
 
 	/* spinner */
 	priv->widget_spinner = gtk_spinner_new ();
-	gtk_widget_set_halign (box, GTK_ALIGN_END);
-	gtk_widget_set_valign (box, GTK_ALIGN_CENTER);
-	gtk_widget_set_margin_left (GTK_WIDGET (priv->widget_spinner), 6);
-	gtk_widget_set_margin_right (GTK_WIDGET (priv->widget_spinner), 6);
+	gtk_widget_set_halign (priv->widget_spinner, GTK_ALIGN_END);
+	gtk_widget_set_valign (priv->widget_spinner, GTK_ALIGN_CENTER);
+	gtk_widget_set_margin_left (priv->widget_spinner, 6);
+	gtk_widget_set_margin_right (priv->widget_spinner, 6);
 
 	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
 	gtk_widget_set_size_request (box, 200, -1);
 	gtk_widget_set_halign (box, GTK_ALIGN_END);
 	gtk_widget_set_valign (box, GTK_ALIGN_CENTER);
 	gtk_widget_set_visible (box, TRUE);
-	gtk_box_pack_end (GTK_BOX (box),
-			  GTK_WIDGET (priv->widget_button),
-			  FALSE, FALSE, 0);
-	gtk_box_pack_end (GTK_BOX (box),
-		          GTK_WIDGET (priv->widget_spinner),
-	       	          FALSE, FALSE, 0);
-	gtk_box_pack_end (GTK_BOX (app_widget),
-			  GTK_WIDGET (box),
-			  FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (box), priv->widget_button, FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (box), priv->widget_spinner, FALSE, FALSE, 0);
+	gtk_box_pack_end (GTK_BOX (app_widget), box, FALSE, FALSE, 0);
 
 	/* refresh */
 	gs_app_widget_refresh (app_widget);
+}
+
+void
+gs_app_widget_set_size_groups (GsAppWidget  *app_widget,
+                               GtkSizeGroup *image,
+                               GtkSizeGroup *name)
+{
+        GtkWidget *box;
+
+        gtk_size_group_add_widget (image, app_widget->priv->widget_image);
+
+        box = gtk_widget_get_parent (app_widget->priv->widget_name);
+        gtk_size_group_add_widget (name, box);
 }
 
 /**

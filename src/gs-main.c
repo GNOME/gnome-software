@@ -55,6 +55,8 @@ typedef struct {
 	guint			 tab_back_id;
         gint                     pending_apps;
 	GsShellUpdates		*shell_updates;
+        GtkSizeGroup            *sizegroup_image;
+        GtkSizeGroup            *sizegroup_name;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app);
@@ -545,6 +547,9 @@ gs_main_get_installed_cb (GObject *source_object,
 					gs_app_get_kind (app) == GS_APP_KIND_SYSTEM ? GS_APP_WIDGET_KIND_BLANK : GS_APP_WIDGET_KIND_REMOVE);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
+                gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
+                                               priv->sizegroup_image,
+                                               priv->sizegroup_name);
 		gtk_widget_show (widget);
 	}
 
@@ -1423,6 +1428,9 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_install"));
 	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_installed));
 	gtk_widget_show (GTK_WIDGET (priv->list_box_installed));
+
+        priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+        priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
