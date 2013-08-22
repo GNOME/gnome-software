@@ -149,6 +149,49 @@ gs_shell_installed_app_widget_read_more_clicked_cb (GsAppWidget *app_widget,
 
 	gtk_window_present (GTK_WINDOW (details));
 }
+/**
+ * gs_shell_installed_app_remove_cb:
+ **/
+static void
+gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
+				  GsShellInstalled *shell_installed)
+{
+	GsApp *app;
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+	GString *markup;
+	GtkResponseType response;
+	GtkWidget *dialog;
+	GtkWindow *window;
+
+	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
+	markup = g_string_new ("");
+	app = gs_app_widget_get_app (app_widget);
+	g_string_append_printf (markup,
+				_("Are you sure you want to remove %s?"),
+				gs_app_get_name (app));
+	g_string_prepend (markup, "<b>");
+	g_string_append (markup, "</b>");
+	dialog = gtk_message_dialog_new (window,
+					 GTK_DIALOG_MODAL,
+					 GTK_MESSAGE_QUESTION,
+					 GTK_BUTTONS_CANCEL,
+					 NULL);
+	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), markup->str);
+	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
+						    _("%s will be removed, and you will have to install it to use it again."),
+						    gs_app_get_name (app));
+	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
+	response = gtk_dialog_run (GTK_DIALOG (dialog));
+	if (response == GTK_RESPONSE_OK) {
+		g_debug ("remove %s", gs_app_get_id (app));
+		gs_app_widget_set_status (app_widget, "Removing");
+		gs_plugin_loader_app_remove (priv->plugin_loader,
+					     app,
+					     NULL); /* cancellable */
+	}
+	g_string_free (markup, TRUE);
+	gtk_widget_destroy (dialog);
+}
 
 /**
  * gs_shell_installed_get_installed_cb:
@@ -179,10 +222,9 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 		app = GS_APP (l->data);
 		g_debug ("adding installed %s", gs_app_get_id (app));
 		widget = gs_app_widget_new ();
-//FIXME: We need to connect this to allow removal in the list
-//		g_signal_connect (widget, "button-clicked",
-//				  G_CALLBACK (gs_shell_installed_app_widget_button_clicked_cb),
-//				  shell_installed);
+		g_signal_connect (widget, "button-clicked",
+				  G_CALLBACK (gs_shell_installed_app_remove_cb),
+				  shell_installed);
 		g_signal_connect (widget, "read-more-clicked",
 				  G_CALLBACK (gs_shell_installed_app_widget_read_more_clicked_cb),
 				  shell_installed);
@@ -341,6 +383,29 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 }
 
 /**
+ * gs_shell_installed_pending_apps_changed_cb:
+ */
+static void
+gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
+					    GsShellInstalled *shell_installed)
+{
+	gchar *label;
+	GPtrArray *pending;
+	GtkWidget *widget;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (shell_installed->priv->builder,
+						     "label_button_installed"));
+	pending = gs_plugin_loader_get_pending (plugin_loader);
+	if (pending->len == 0)
+		label = g_strdup (_("Installed"));
+	else
+		label = g_strdup_printf (_("Installed (%d)"), pending->len);
+	gtk_label_set_label (GTK_LABEL (widget), label);
+	g_free (label);
+	g_ptr_array_unref (pending);
+}
+
+/**
  * gs_shell_installed_setup:
  */
 void
@@ -354,6 +419,10 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 	g_return_if_fail (GS_IS_SHELL_INSTALLED (shell_installed));
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
+	g_signal_connect (priv->plugin_loader, "pending-apps-changed",
+			  G_CALLBACK (gs_shell_installed_pending_apps_changed_cb),
+			  shell_installed);
+
 	priv->builder = g_object_ref (builder);
 
 	/* refilter on search box changing */

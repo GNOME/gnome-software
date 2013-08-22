@@ -914,36 +914,99 @@ gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 	return g_ptr_array_ref (plugin_loader->priv->pending_apps);
 }
 
+typedef struct {
+	GsPluginLoader	*plugin_loader;
+	GsApp		*app;
+	GCancellable	*cancellable;
+	GThread		*thread;
+	const gchar	*function_name;
+	GsAppState	 state_progress;
+	GsAppState	 state_success;
+	GsAppState	 state_failure;
+} GsPluginLoaderThreadHelper;
+
+/**
+ * gs_plugin_loader_thread_func:
+ **/
+static gpointer
+gs_plugin_loader_thread_func (gpointer user_data)
+{
+	GsPluginLoaderThreadHelper *helper = (GsPluginLoaderThreadHelper *) user_data;
+	gboolean ret;
+	GError *error = NULL;
+
+	/* add to list */
+	gs_app_set_state (helper->app, helper->state_progress);
+	g_ptr_array_add (helper->plugin_loader->priv->pending_apps, helper->app);
+	g_signal_emit (helper->plugin_loader, signals[SIGNAL_PENDING_APPS_CHANGED], 0);
+
+	/* run action */
+	ret = gs_plugin_loader_run_action (helper->plugin_loader,
+					   helper->app,
+					   helper->function_name,
+					   helper->cancellable,
+					   &error);
+	if (!ret) {
+		gs_app_set_state (helper->app, helper->state_failure);
+		g_warning ("failed to install: %s", error->message);
+		g_error_free (error);
+	} else {
+		gs_app_set_state (helper->app, helper->state_success);
+	}
+
+	/* remove from list */
+	g_ptr_array_remove (helper->plugin_loader->priv->pending_apps, helper->app);
+	g_signal_emit (helper->plugin_loader, signals[SIGNAL_PENDING_APPS_CHANGED], 0);
+
+	g_object_unref (helper->plugin_loader);
+	g_object_unref (helper->app);
+	g_object_unref (helper->cancellable);
+	g_free (helper);
+	return NULL;
+}
+
 /**
  * gs_plugin_loader_app_install:
  **/
-gboolean
+void
 gs_plugin_loader_app_install (GsPluginLoader *plugin_loader,
 			      GsApp *app,
-			      GCancellable *cancellable,
-			      GError **error)
+			      GCancellable *cancellable)
 {
-	return gs_plugin_loader_run_action (plugin_loader,
-					    app,
-					    "gs_plugin_app_install",
-					    cancellable,
-					    error);
+	GsPluginLoaderThreadHelper *helper;
+	helper = g_new0 (GsPluginLoaderThreadHelper, 1);
+	helper->plugin_loader = g_object_ref (plugin_loader);
+	helper->app = g_object_ref (app);
+	helper->cancellable = g_object_ref (cancellable);
+	helper->function_name = "gs_plugin_app_install";
+	helper->state_progress = GS_APP_STATE_INSTALLING;
+	helper->state_success = GS_APP_STATE_INSTALLED;
+	helper->state_failure = GS_APP_STATE_AVAILABLE;
+	helper->thread = g_thread_new ("GsPluginLoader::install",
+				       gs_plugin_loader_thread_func,
+				       helper);
 }
 
 /**
  * gs_plugin_loader_app_remove:
  **/
-gboolean
+void
 gs_plugin_loader_app_remove (GsPluginLoader *plugin_loader,
 			     GsApp *app,
-			     GCancellable *cancellable,
-			     GError **error)
+			     GCancellable *cancellable)
 {
-	return gs_plugin_loader_run_action (plugin_loader,
-					    app,
-					    "gs_plugin_app_remove",
-					    cancellable,
-					    error);
+	GsPluginLoaderThreadHelper *helper;
+	helper = g_new0 (GsPluginLoaderThreadHelper, 1);
+	helper->plugin_loader = g_object_ref (plugin_loader);
+	helper->app = g_object_ref (app);
+	helper->cancellable = g_object_ref (cancellable);
+	helper->function_name = "gs_plugin_app_remove";
+	helper->state_progress = GS_APP_STATE_REMOVING;
+	helper->state_success = GS_APP_STATE_AVAILABLE;
+	helper->state_failure = GS_APP_STATE_INSTALLED;
+	helper->thread = g_thread_new ("GsPluginLoader::remove",
+				       gs_plugin_loader_thread_func,
+				       helper);
 }
 
 /**

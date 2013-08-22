@@ -107,14 +107,12 @@ gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_plugin_loader_app_install		(GsPluginLoader	*plugin_loader,
+void		 gs_plugin_loader_app_install		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-gboolean	 gs_plugin_loader_app_remove		(GsPluginLoader	*plugin_loader,
+							 GCancellable	*cancellable);
+void		 gs_plugin_loader_app_remove		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
+							 GCancellable	*cancellable);
 gboolean	 gs_plugin_loader_app_set_rating	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
