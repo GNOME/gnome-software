@@ -26,6 +26,7 @@
 #include "gs-app-widget.h"
 
 static void	gs_shell_updates_finalize	(GObject	*object);
+static void     show_update_details             (GsAppWidget *app_widget, GsShellUpdates *shell_updates);
 
 #define GS_SHELL_UPDATES_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_UPDATES, GsShellUpdatesPrivate))
 
@@ -98,6 +99,8 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		app = GS_APP (l->data);
 		g_debug ("adding update %s", gs_app_get_id (app));
 		widget = gs_app_widget_new ();
+                g_signal_connect (widget, "read-more-clicked",
+                                  G_CALLBACK (show_update_details), shell_updates);
 		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
 					GS_APP_WIDGET_KIND_UPDATE);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
@@ -221,15 +224,11 @@ gs_shell_updates_unselect_treeview_cb (gpointer user_data)
 	return FALSE;
 }
 
-/**
- * gs_shell_updates_activated_cb:
- **/
 static void
-gs_shell_updates_activated_cb (GtkListBox *list_box,
-			       GtkListBoxRow *row,
-			       GsShellUpdates *shell_updates)
+show_update_details (GsAppWidget *app_widget, GsShellUpdates *shell_updates)
 {
-	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+
+
 	GsApp *app = gs_app_widget_get_app (app_widget);
 	GsApp *app_related;
 	GsAppKind kind;
@@ -274,6 +273,19 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
 	gtk_window_present (GTK_WINDOW (widget));
+}
+
+/**
+ * gs_shell_updates_activated_cb:
+ **/
+static void
+gs_shell_updates_activated_cb (GtkListBox *list_box,
+			       GtkListBoxRow *row,
+			       GsShellUpdates *shell_updates)
+{
+	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+
+        show_update_details (app_widget, shell_updates);
 }
 
 /**
