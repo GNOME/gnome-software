@@ -382,6 +382,13 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	gtk_widget_hide (main_window);
 	gtk_window_set_default_size (GTK_WINDOW (main_window), 1200, 800);
 
+        /* fix up the header bar */
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
+        g_object_ref (widget);
+        gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (widget)), widget);
+        gtk_window_set_titlebar (GTK_WINDOW (main_window), widget);
+        g_object_unref (widget);
+
 	/* setup callbacks */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
 	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (widget), FALSE);
