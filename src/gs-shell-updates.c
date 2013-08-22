@@ -144,6 +144,14 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 	/* set window title */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
 	kind = gs_app_get_kind (app);
+g_print ("app %s: ", gs_app_get_name (app));
+switch (kind) {
+case GS_APP_KIND_UNKNOWN: g_print ("unknown\n"); break;
+case GS_APP_KIND_SYSTEM: g_print ("system\n"); break;
+case GS_APP_KIND_PACKAGE: g_print ("package\n"); break;
+case GS_APP_KIND_OS_UPDATE: g_print ("os update\n"); break;
+default:;
+}
 	if (kind == GS_APP_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (widget), gs_app_get_name (app));
 	} else {
@@ -156,9 +164,12 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 
 	/* set update header */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
-	gtk_widget_set_visible (widget, kind == GS_APP_KIND_NORMAL);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
+	gtk_widget_set_visible (widget, kind == GS_APP_KIND_NORMAL || kind == GS_APP_KIND_SYSTEM);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update_details"));
 	gtk_widget_set_visible (widget, kind != GS_APP_KIND_OS_UPDATE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
+	gtk_widget_set_visible (widget, kind == GS_APP_KIND_OS_UPDATE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
 	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_metadata_item (app, "update-details"));
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_update_icon"));
 	gtk_image_set_from_pixbuf (GTK_IMAGE (widget), gs_app_get_pixbuf (app));

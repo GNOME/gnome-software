@@ -1250,7 +1250,7 @@ gs_main_button_updates_back_cb (GtkWidget *widget, GsMainPrivate *priv)
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
 	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update_details"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
 	gtk_widget_show (widget);
@@ -1553,10 +1553,13 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_close"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_main_button_updates_close_cb), priv);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
+        g_signal_connect (widget, "delete-event",
+                          G_CALLBACK (gtk_widget_hide_on_delete), NULL);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_main_button_updates_back_cb), priv);
-	//FIXME: connect to dialog_update and just hide widget if user closes modal
+        
 
 	/* setup updates UI */
 	priv->shell_updates = gs_shell_updates_new ();

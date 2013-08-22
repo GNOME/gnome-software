@@ -960,15 +960,27 @@ with multi-level undo.
               </packing>
             </child>
             <child>
-              <object class="GtkLabel" id="label_update_details">
+              <object class="GtkScrolledWindow" id="scrolledwindow_update_details">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="xalign">0</property>
-                <property name="yalign">0</property>
-                <property name="label">New in kmod 14-1
+                <property name="can_focus">True</property>
+                <property name="vexpand">True</property>
+                <property name="hscrollbar_policy">never</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <property name="shadow_type">in</property>
+                <property name="kinetic_scrolling">False</property>
+                <child>
+                  <object class="GtkLabel" id="label_update_details">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="xalign">0</property>
+                    <property name="yalign">0</property>
+                    <property name="margin">6</property>
+                    <property name="label">New in kmod 14-1
 * Moo
 * bar</property>
-                <property name="wrap">True</property>
+                    <property name="wrap">True</property>
+                  </object>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -982,6 +994,7 @@ with multi-level undo.
                 <property name="can_focus">True</property>
                 <property name="vexpand">True</property>
                 <property name="hscrollbar_policy">never</property>
+                <property name="hscrollbar_policy">automatic</property>
                 <property name="shadow_type">in</property>
                 <property name="kinetic_scrolling">False</property>
                 <child>
@@ -1022,6 +1035,14 @@ with multi-level undo.
     <widgets>
       <widget name="buttonbox_main"/>
       <widget name="entry_search"/>
+    </widgets>
+  </object>
+  <object class="GtkSizeGroup" id="sizegroup_update_details">
+    <property name="ignore-hidden">False</property>
+    <property name="mode">horizontal</property>
+    <widgets>
+      <widget name="scrolledwindow_update"/>
+      <widget name="scrolledwindow_update_details"/>
     </widgets>
   </object>
 </interface>
