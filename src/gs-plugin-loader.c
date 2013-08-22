@@ -960,7 +960,8 @@ gs_plugin_loader_thread_func (gpointer user_data)
 
 	g_object_unref (helper->plugin_loader);
 	g_object_unref (helper->app);
-	g_object_unref (helper->cancellable);
+	if (helper->cancellable != NULL)
+		g_object_unref (helper->cancellable);
 	g_free (helper);
 	return NULL;
 }
@@ -977,7 +978,8 @@ gs_plugin_loader_app_install (GsPluginLoader *plugin_loader,
 	helper = g_new0 (GsPluginLoaderThreadHelper, 1);
 	helper->plugin_loader = g_object_ref (plugin_loader);
 	helper->app = g_object_ref (app);
-	helper->cancellable = g_object_ref (cancellable);
+	if (cancellable != NULL)
+		helper->cancellable = g_object_ref (cancellable);
 	helper->function_name = "gs_plugin_app_install";
 	helper->state_progress = GS_APP_STATE_INSTALLING;
 	helper->state_success = GS_APP_STATE_INSTALLED;
@@ -999,7 +1001,8 @@ gs_plugin_loader_app_remove (GsPluginLoader *plugin_loader,
 	helper = g_new0 (GsPluginLoaderThreadHelper, 1);
 	helper->plugin_loader = g_object_ref (plugin_loader);
 	helper->app = g_object_ref (app);
-	helper->cancellable = g_object_ref (cancellable);
+	if (cancellable != NULL)
+		helper->cancellable = g_object_ref (cancellable);
 	helper->function_name = "gs_plugin_app_remove";
 	helper->state_progress = GS_APP_STATE_REMOVING;
 	helper->state_success = GS_APP_STATE_AVAILABLE;
