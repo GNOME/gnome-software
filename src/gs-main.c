@@ -29,6 +29,7 @@
 #include "gs-app-widget.h"
 #include "gs-resources.h"
 #include "gs-shell-updates.h"
+#include "gs-shell-installed.h"
 #include "gs-plugin-loader.h"
 
 typedef enum {
@@ -48,15 +49,13 @@ typedef struct {
 	GtkBuilder		*builder;
 	PkTask			*task;
 	guint			 waiting_tab_id;
-	GtkListBox		*list_box_installed;
 	GtkCssProvider		*provider;
 	gboolean		 ignore_primary_buttons;
 	GsPluginLoader		*plugin_loader;
 	guint			 tab_back_id;
         gint                     pending_apps;
 	GsShellUpdates		*shell_updates;
-        GtkSizeGroup            *sizegroup_image;
-        GtkSizeGroup            *sizegroup_name;
+	GsShellInstalled	*shell_installed;
 } GsMainPrivate;
 
 static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app);
@@ -87,6 +86,7 @@ gs_main_show_waiting_tab_cb (gpointer user_data)
 	return FALSE;
 }
 
+#if 0
 /**
  * gs_main_get_app_widget_for_id:
  **/
@@ -110,7 +110,9 @@ out:
 	g_list_free (list);
 	return tmp;
 }
+#endif
 
+#if 0
 /**
  * gs_main_progress_cb:
  **/
@@ -151,12 +153,12 @@ gs_main_progress_cb (PkProgress *progress,
 				      NULL);
 			g_warning ("need to find %s and update",
 				   pk_item_progress_get_package_id (item_progress));
-			app_widget = gs_main_get_app_widget_for_id (priv->list_box_installed,
-								    pk_item_progress_get_package_id (item_progress));
-			if (app_widget != NULL) {
-				gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
-				gs_app_widget_set_status (app_widget, pk_status_enum_to_string (status));
-			}
+//			app_widget = gs_main_get_app_widget_for_id (priv->list_box_installed,
+//								    pk_item_progress_get_package_id (item_progress));
+//			if (app_widget != NULL) {
+//				gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
+//				gs_app_widget_set_status (app_widget, pk_status_enum_to_string (status));
+//			}
 		}
 		return;
 	}
@@ -229,6 +231,7 @@ gs_main_progress_cb (PkProgress *progress,
 		}
 	}
 }
+#endif
 
 /**
  * gs_main_progress_cb:
@@ -289,6 +292,7 @@ gs_main_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 	}
 }
 
+#if 0
 static void
 update_pending_apps (GsMainPrivate *priv, gint delta)
 {
@@ -308,6 +312,7 @@ update_pending_apps (GsMainPrivate *priv, gint delta)
         gtk_label_set_label (GTK_LABEL (widget), label);
         g_free (label);
 }
+#endif
 
 typedef struct {
 	GsAppWidget	*app_widget;
@@ -316,6 +321,7 @@ typedef struct {
 	const gchar	*package_id;
 } GsMainMethodData;
 
+#if 0
 /**
  * gs_main_remove_packages_cb:
  **/
@@ -360,12 +366,12 @@ gs_main_remove_packages_cb (PkClient *client,
 	for (i = 0; i < array->len; i++) {
 		package = g_ptr_array_index (array, i);
 		g_debug ("removed %s", pk_package_get_id (package));
-		app_widget = gs_main_get_app_widget_for_id (data->priv->list_box_installed,
-							    pk_package_get_id (package));
-		if (app_widget != NULL) {
-			gtk_container_remove (GTK_CONTAINER (data->priv->list_box_installed),
-					      GTK_WIDGET (app_widget));
-		}
+//		app_widget = gs_main_get_app_widget_for_id (data->priv->list_box_installed,
+//							    pk_package_get_id (package));
+//		if (app_widget != NULL) {
+//			gtk_container_remove (GTK_CONTAINER (data->priv->list_box_installed),
+//					      GTK_WIDGET (app_widget));
+//		}
 //		app_widget = gs_main_get_app_widget_for_id (data->priv->list_box_updates,
 //							    pk_package_get_id (package));
 //		if (app_widget != NULL) {
@@ -382,7 +388,9 @@ out:
 	if (results != NULL)
 		g_object_unref (results);
 }
+#endif
 
+#if 0
 /**
  * gs_main_app_widget_button_clicked_cb:
  **/
@@ -478,170 +486,7 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 		gtk_widget_destroy (dialog);
 	}
 }
-
-static void
-gs_main_app_widget_read_more_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *priv)
-{
-        GtkWidget *details, *button, *grid;
-        GtkWidget *image, *label;
-        GsApp *app;
-        PangoAttrList *attr_list;
-        const gchar *tmp;
-
-        app = gs_app_widget_get_app (app_widget);
-
-        details = gtk_dialog_new_with_buttons (_("Details"),
-                                               GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (app_widget))),
-                                               GTK_DIALOG_MODAL,
-                                               _("_Done"), GTK_RESPONSE_CLOSE,
-                                               NULL);
-        gtk_container_set_border_width (GTK_CONTAINER (details), 20);
-        button = gtk_dialog_get_widget_for_response (GTK_DIALOG (details), GTK_RESPONSE_CLOSE);
-        gtk_style_context_add_class (gtk_widget_get_style_context (button), "suggested-action");
-        g_signal_connect_swapped (button, "clicked", G_CALLBACK (gtk_widget_destroy), details);
-
-        grid = gtk_grid_new ();
-        gtk_widget_show (grid);
-        gtk_widget_set_halign (grid, GTK_ALIGN_FILL);
-        gtk_grid_set_column_spacing (GTK_GRID (grid), 20);
-        gtk_container_add (GTK_CONTAINER (gtk_dialog_get_content_area (GTK_DIALOG (details))), grid);
-
-        image = gtk_image_new ();
-        if (gs_app_get_pixbuf (app)) {
-                gtk_image_set_from_pixbuf (GTK_IMAGE (image), gs_app_get_pixbuf (app));         gtk_widget_show (image);
-        }
-        gtk_grid_attach (GTK_GRID (grid), image, 0, 0, 1, 3);
-
-        label = gtk_label_new (gs_app_get_name (app));
-        gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
-        gtk_widget_set_hexpand (label, TRUE);
-        gtk_widget_set_margin_bottom (label, 10);
-        attr_list = pango_attr_list_new ();
-        pango_attr_list_insert (attr_list, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
-        pango_attr_list_insert (attr_list, pango_attr_scale_new (1));
-        gtk_label_set_attributes (GTK_LABEL (label), attr_list);
-        pango_attr_list_unref (attr_list);
-        gtk_widget_show (label);
-        gtk_grid_attach (GTK_GRID (grid), label, 1, 0, 1, 1);
-
-        label = gtk_label_new (NULL);
-        gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
-        gtk_widget_set_hexpand (label, TRUE);
-        gtk_widget_set_margin_bottom (label, 20);
-        if (gs_app_get_summary (app)) {
-                gtk_label_set_label (GTK_LABEL (label), gs_app_get_summary (app));
-                gtk_widget_show (label);
-        }
-        gtk_grid_attach (GTK_GRID (grid), label, 1, 1, 1, 1);
-        tmp = gs_app_get_description (app);
-        if (!tmp) {
-                tmp = _("The author of this software has not included a long description.");
-        }
-        label = gtk_label_new (tmp);
-        gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
-        gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
-        gtk_widget_show (label);
-        gtk_grid_attach (GTK_GRID (grid), label, 0, 3, 2, 1);
-
-        if (gs_app_get_url (app)) {
-                button = gtk_link_button_new_with_label (gs_app_get_url (app), _("Visit website"));
-                gtk_widget_set_halign (button, GTK_ALIGN_START);
-                gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-                gtk_widget_show (button);
-                gtk_grid_attach (GTK_GRID (grid), button, 0, 4, 2, 1);
-        }
-
-        gtk_window_present (GTK_WINDOW (details));
-}
-
-/**
- * _gtk_container_remove_all_cb:
- **/
-static void
-_gtk_container_remove_all_cb (GtkWidget *widget, gpointer user_data)
-{
-	GtkContainer *container = GTK_CONTAINER (user_data);
-	gtk_container_remove (container, widget);
-}
-
-/**
- * _gtk_container_remove_all:
- **/
-static void
-_gtk_container_remove_all (GtkContainer *container)
-{
-	gtk_container_foreach (container,
-			       _gtk_container_remove_all_cb,
-			       container);
-}
-
-/**
- * gs_main_get_installed_cb:
- **/
-static void
-gs_main_get_installed_cb (GObject *source_object,
-			  GAsyncResult *res,
-			  gpointer user_data)
-{
-	GError *error = NULL;
-	GList *l;
-	GList *list;
-	GsApp *app;
-	GsMainPrivate *priv = (GsMainPrivate *) user_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GtkWidget *widget;
-
-	list = gs_plugin_loader_get_installed_finish (plugin_loader,
-						      res,
-						      &error);
-	if (list == NULL) {
-		g_warning ("failed to get installed apps: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		g_debug ("adding installed %s", gs_app_get_id (app));
-		widget = gs_app_widget_new ();
-		g_signal_connect (widget, "button-clicked",
-				  G_CALLBACK (gs_main_app_widget_button_clicked_cb),
-				  priv);
-		g_signal_connect (widget, "read-more-clicked",
-				  G_CALLBACK (gs_main_app_widget_read_more_clicked_cb),
-				  priv);
-
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					gs_app_get_kind (app) == GS_APP_KIND_SYSTEM ? GS_APP_WIDGET_KIND_BLANK : GS_APP_WIDGET_KIND_REMOVE);
-		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-		gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
-                gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
-                                               priv->sizegroup_image,
-                                               priv->sizegroup_name);
-		gtk_widget_show (widget);
-	}
-
-	/* focus back to the text extry */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_widget_grab_focus (widget);
-out:
-	return;
-}
-
-/**
- * gs_main_get_installed:
- **/
-static void
-gs_main_get_installed (GsMainPrivate *priv)
-{
-	/* remove old entries */
-	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
-
-	/* get popular apps */
-	gs_plugin_loader_get_installed_async (priv->plugin_loader,
-					      priv->cancellable,
-					      gs_main_get_installed_cb,
-					      priv);
-}
+#endif
 
 static void
 app_tile_clicked (GtkButton *button, gpointer data)
@@ -1136,7 +981,7 @@ gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app, con
 		gs_main_get_categories (priv);
 		break;
 	case GS_MAIN_MODE_INSTALLED:
-		gs_main_get_installed (priv);
+		gs_shell_installed_refresh (priv->shell_installed, priv->cancellable);
 		break;
 	case GS_MAIN_MODE_UPDATES:
 		gs_shell_updates_refresh (priv->shell_updates, priv->cancellable);
@@ -1313,115 +1158,6 @@ gs_main_setup_featured (GsMainPrivate *priv)
 }
 
 /**
- * gs_main_utf8_filter_helper:
- **/
-static gboolean
-gs_main_utf8_filter_helper (const gchar *haystack, const gchar *needle_utf8)
-{
-	gboolean ret;
-	gchar *haystack_utf8;
-	haystack_utf8 = g_utf8_casefold (haystack, -1);
-	ret = strstr (haystack_utf8, needle_utf8) != NULL;
-	g_free (haystack_utf8);
-	return ret;
-}
-
-/**
- * gs_main_list_header_func
- **/
-static void
-gs_main_list_header_func (GtkListBoxRow *row,
-			  GtkListBoxRow *before,
-			  gpointer user_data)
-{
-	GtkWidget *header;
-
-	/* first entry */
-	header = gtk_list_box_row_get_header (row);
-	if (before == NULL) {
-		gtk_list_box_row_set_header (row, NULL);
-		return;
-	}
-
-	/* already set */
-	if (header != NULL)
-		return;
-
-	/* set new */
-	header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
-}
-
-/**
- * gs_main_installed_filter_func:
- **/
-static gboolean
-gs_main_installed_filter_func (GtkListBoxRow *row, void *user_data)
-{
-	const gchar *tmp;
-	GtkWidget *widget;
-	GsMainPrivate *priv = (GsMainPrivate *) user_data;
-	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	gchar *needle_utf8 = NULL;
-	gboolean ret = TRUE;
-	GsApp *app;
-
-	app = gs_app_widget_get_app (app_widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	tmp = gtk_entry_get_text (GTK_ENTRY (widget));
-	if (tmp[0] == '\0')
-		goto out;
-
-	needle_utf8 = g_utf8_casefold (tmp, -1);
-	ret = gs_main_utf8_filter_helper (gs_app_get_name (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-	ret = gs_main_utf8_filter_helper (gs_app_get_summary (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-	ret = gs_main_utf8_filter_helper (gs_app_get_version (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-	ret = gs_main_utf8_filter_helper (gs_app_get_id (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-out:
-	g_free (needle_utf8);
-	return ret;
-}
-
-
-/**
- * gs_main_filter_text_changed_cb:
- **/
-static gboolean
-gs_main_filter_text_changed_cb (GtkEntry *entry, GsMainPrivate *priv)
-{
-	gtk_list_box_invalidate_filter (priv->list_box_installed);
-	return FALSE;
-}
-
-/**
- * gs_main_installed_sort_func:
- **/
-static gint
-gs_main_installed_sort_func (GtkListBoxRow *a,
-			     GtkListBoxRow *b,
-			     gpointer user_data)
-{
-	GsAppWidget *aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (a)));
-	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
-	GsApp *a1 = gs_app_widget_get_app (aw1);
-	GsApp *a2 = gs_app_widget_get_app (aw2);
-	return g_strcmp0 (gs_app_get_name (a1),
-			  gs_app_get_name (a2));
-}
-
-/**
  * gs_main_startup_cb:
  **/
 static void
@@ -1491,28 +1227,6 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 
 	/* setup featured tiles */
 	gs_main_setup_featured (priv);
-	/* setup installed */
-	priv->list_box_installed = GTK_LIST_BOX (gtk_list_box_new ());
-	gtk_list_box_set_header_func (priv->list_box_installed,
-				      gs_main_list_header_func,
-				      priv,
-				      NULL);
-	gtk_list_box_set_filter_func (priv->list_box_installed,
-				      gs_main_installed_filter_func,
-				      priv,
-				      NULL);
-	gtk_list_box_set_sort_func (priv->list_box_installed,
-				    gs_main_installed_sort_func,
-				    priv,
-				    NULL);
-	gtk_list_box_set_selection_mode (priv->list_box_installed,
-					 GTK_SELECTION_NONE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_install"));
-	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_installed));
-	gtk_widget_show (GTK_WIDGET (priv->list_box_installed));
-
-        priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-        priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
@@ -1549,16 +1263,15 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 			  G_CALLBACK (gs_main_button_updates_back_cb), priv);
         
 
-	/* setup updates UI */
+	/* setup UI */
 	priv->shell_updates = gs_shell_updates_new ();
 	gs_shell_updates_setup (priv->shell_updates,
 				priv->plugin_loader,
 				priv->builder);
-
-	/* refilter on search box changing */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	g_signal_connect (GTK_EDITABLE (widget), "changed",
-			  G_CALLBACK (gs_main_filter_text_changed_cb), priv);
+	priv->shell_installed = gs_shell_installed_new ();
+	gs_shell_installed_setup (priv->shell_installed,
+				  priv->plugin_loader,
+				  priv->builder);
 
 	/* show the status on a different page */
 	g_signal_connect (priv->plugin_loader, "status-changed",
@@ -1676,6 +1389,8 @@ out:
 		g_object_unref (priv->application);
 		if (priv->shell_updates != NULL)
 			g_object_unref (priv->shell_updates);
+		if (priv->shell_installed != NULL)
+			g_object_unref (priv->shell_installed);
 		if (priv->provider != NULL)
 			g_object_unref (priv->provider);
 		if (priv->builder != NULL)
