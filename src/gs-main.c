@@ -1063,33 +1063,6 @@ gs_main_overview_button_cb (GtkWidget *widget, GsMainPrivate *priv)
 }
 
 /**
- * gs_main_button_updates_close_cb:
- **/
-static void
-gs_main_button_updates_close_cb (GtkWidget *widget, GsMainPrivate *priv)
-{
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-	gtk_widget_hide (widget);
-}
-
-/**
- * gs_main_button_updates_back_cb:
- **/
-static void
-gs_main_button_updates_back_cb (GtkWidget *widget, GsMainPrivate *priv)
-{
-	/* return to the list view */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update_details"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
-	gtk_widget_show (widget);
-}
-
-/**
  * gs_main_back_button_cb:
  **/
 static void
@@ -1250,18 +1223,6 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 			   GINT_TO_POINTER (GS_MAIN_MODE_UPDATES));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_main_overview_button_cb), priv);
-
-	/* setup update details window */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_close"));
-	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_main_button_updates_close_cb), priv);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-        g_signal_connect (widget, "delete-event",
-                          G_CALLBACK (gtk_widget_hide_on_delete), NULL);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
-	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_main_button_updates_back_cb), priv);
-        
 
 	/* setup UI */
 	priv->shell_updates = gs_shell_updates_new ();

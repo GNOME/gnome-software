@@ -318,6 +318,36 @@ gs_shell_updates_list_header_func (GtkListBoxRow *row,
 }
 
 /**
+ * gs_shell_updates_button_close_cb:
+ **/
+static void
+gs_shell_updates_button_close_cb (GtkWidget *widget, GsShellUpdates *shell_updates)
+{
+	GsShellUpdatesPrivate *priv = shell_updates->priv;
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
+	gtk_widget_hide (widget);
+}
+
+/**
+ * gs_shell_updates_button_back_cb:
+ **/
+static void
+gs_shell_updates_button_back_cb (GtkWidget *widget, GsShellUpdates *shell_updates)
+{
+	GsShellUpdatesPrivate *priv = shell_updates->priv;
+
+	/* return to the list view */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update_details"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
+	gtk_widget_show (widget);
+}
+
+/**
  * gs_shell_updates_setup:
  */
 void
@@ -373,6 +403,20 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	gtk_tree_view_append_column (treeview, column);
 	g_signal_connect (treeview, "row-activated",
 			  G_CALLBACK (gs_shell_updates_row_activated_cb),
+			  shell_updates);
+
+	/* setup update details window */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_close"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_updates_button_close_cb),
+			  shell_updates);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
+        g_signal_connect (widget, "delete-event",
+			  G_CALLBACK (gtk_widget_hide_on_delete),
+			  shell_updates);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_updates_button_back_cb),
 			  shell_updates);
 }
 
