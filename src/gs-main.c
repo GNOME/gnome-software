@@ -28,63 +28,19 @@
 
 #include "gs-app-widget.h"
 #include "gs-resources.h"
-#include "gs-shell-updates.h"
-#include "gs-shell-installed.h"
+#include "gs-shell.h"
 #include "gs-plugin-loader.h"
-
-typedef enum {
-	GS_MAIN_MODE_NEW,
-	GS_MAIN_MODE_INSTALLED,
-	GS_MAIN_MODE_UPDATES,
-	GS_MAIN_MODE_WAITING,
-	GS_MAIN_MODE_DETAILS,
-        GS_MAIN_MODE_CATEGORY
-} GsMainMode;
 
 typedef struct {
 	GCancellable		*cancellable;
-	GsMainMode		 mode;
-	GsMainMode		 app_startup_mode;
 	GtkApplication		*application;
-	GtkBuilder		*builder;
 	PkTask			*task;
 	guint			 waiting_tab_id;
 	GtkCssProvider		*provider;
-	gboolean		 ignore_primary_buttons;
 	GsPluginLoader		*plugin_loader;
-	guint			 tab_back_id;
-        gint                     pending_apps;
-	GsShellUpdates		*shell_updates;
-	GsShellInstalled	*shell_installed;
+	gint			 pending_apps;
+	GsShell			*shell;
 } GsMainPrivate;
-
-static void gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app);
-static void gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app, const gchar *category);
-static void app_tile_clicked (GtkButton *button, gpointer data);
-
-/**
- * gs_main_activate_cb:
- **/
-static void
-gs_main_activate_cb (GApplication *application, GsMainPrivate *priv)
-{
-	GtkWindow *window;
-	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
-	gtk_window_present (window);
-}
-
-
-/**
- * gs_main_show_waiting_tab_cb:
- **/
-static gboolean
-gs_main_show_waiting_tab_cb (gpointer user_data)
-{
-	GsMainPrivate *priv = (GsMainPrivate *) user_data;
-	gs_main_set_overview_mode_ui (priv, GS_MAIN_MODE_WAITING, NULL);
-	priv->waiting_tab_id = 0;
-	return FALSE;
-}
 
 #if 0
 /**
@@ -233,6 +189,7 @@ gs_main_progress_cb (PkProgress *progress,
 }
 #endif
 
+#if 0
 /**
  * gs_main_progress_cb:
  **/
@@ -291,29 +248,31 @@ gs_main_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 		}
 	}
 }
+#endif
 
 #if 0
 static void
 update_pending_apps (GsMainPrivate *priv, gint delta)
 {
-        GtkWidget *widget;
-        gchar *label;
+	GtkWidget *widget;
+	gchar *label;
 
-        priv->pending_apps += delta;
-        g_assert (priv->pending_apps >= 0);
+	priv->pending_apps += delta;
+	g_assert (priv->pending_apps >= 0);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_button_installed"));
 
-        if (priv->pending_apps == 0)
-                label = g_strdup (_("Installed"));
-        else
-                label = g_strdup_printf (_("Installed (%d)"), priv->pending_apps);
+	if (priv->pending_apps == 0)
+		label = g_strdup (_("Installed"));
+	else
+		label = g_strdup_printf (_("Installed (%d)"), priv->pending_apps);
 
-        gtk_label_set_label (GTK_LABEL (widget), label);
-        g_free (label);
+	gtk_label_set_label (GTK_LABEL (widget), label);
+	g_free (label);
 }
 #endif
 
+#if 0
 typedef struct {
 	GsAppWidget	*app_widget;
 	GsMainPrivate	*priv;
@@ -321,7 +280,6 @@ typedef struct {
 	const gchar	*package_id;
 } GsMainMethodData;
 
-#if 0
 /**
  * gs_main_remove_packages_cb:
  **/
@@ -338,7 +296,7 @@ gs_main_remove_packages_cb (PkClient *client,
 	PkResults *results;
 	GsAppWidget *app_widget;
 
-        update_pending_apps (data->priv, -1);
+	update_pending_apps (data->priv, -1);
 
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);
@@ -415,7 +373,7 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 	data->priv = priv;
 
 	if (kind == GS_APP_WIDGET_KIND_UPDATE) {
-                update_pending_apps (data->priv, 1);
+		update_pending_apps (data->priv, 1);
 		g_debug ("update %s", package_id);
 		to_array[0] = package_id;
 		gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
@@ -428,18 +386,18 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 					       (GAsyncReadyCallback) gs_main_remove_packages_cb,
 					       data);
 	} else if (kind == GS_APP_WIDGET_KIND_INSTALL) {
-                update_pending_apps (data->priv, 1);
+		update_pending_apps (data->priv, 1);
 		g_debug ("install %s", package_id);
 		to_array[0] = package_id;
 		gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
 		gs_app_widget_set_status (app_widget, "Installing");
 		pk_task_install_packages_async (priv->task,
-					        (gchar**)to_array,
-					        priv->cancellable,
-					        (PkProgressCallback) gs_main_progress_cb,
-					        priv,
-					        (GAsyncReadyCallback) gs_main_remove_packages_cb,
-					        data);
+						(gchar**)to_array,
+						priv->cancellable,
+						(PkProgressCallback) gs_main_progress_cb,
+						priv,
+						(GAsyncReadyCallback) gs_main_remove_packages_cb,
+						data);
 	} else if (kind == GS_APP_WIDGET_KIND_REMOVE) {
 
 		GtkWidget *dialog;
@@ -466,7 +424,7 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 		gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
 		response = gtk_dialog_run (GTK_DIALOG (dialog));
 		if (response == GTK_RESPONSE_OK) {
-                        update_pending_apps (data->priv, 1);
+			update_pending_apps (data->priv, 1);
 			g_debug ("remove %s", package_id);
 			to_array[0] = package_id;
 			gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
@@ -488,648 +446,6 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 }
 #endif
 
-static void
-app_tile_clicked (GtkButton *button, gpointer data)
-{
-        GsMainPrivate *priv = data;
-        GsApp *app;
-
-        app = g_object_get_data (G_OBJECT (button), "app");
-        gs_main_set_overview_mode (priv, GS_MAIN_MODE_DETAILS, app, NULL);
-}
-
-static GtkWidget *
-create_popular_tile (GsMainPrivate *priv, GsApp *app)
-{
-        GtkWidget *button, *frame, *box, *image, *label;
-        GtkWidget *f;
-
-        f = gtk_aspect_frame_new (NULL, 0.5, 0.5, 1, FALSE);
-        gtk_frame_set_shadow_type (GTK_FRAME (f), GTK_SHADOW_NONE);
-        button = gtk_button_new ();
-        gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-        frame = gtk_aspect_frame_new (NULL, 0.5, 1, 1, FALSE);
-        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
-        box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-        gtk_container_add (GTK_CONTAINER (frame), box);
-        image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
-        g_object_set (box, "margin", 12, NULL);
-        gtk_box_pack_start (GTK_BOX (box), image, FALSE, TRUE, 0);
-        label = gtk_label_new (gs_app_get_name (app));
-        g_object_set (label, "margin", 6, NULL);
-        gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
-        gtk_widget_set_halign (frame, GTK_ALIGN_FILL);
-        gtk_widget_set_valign (frame, GTK_ALIGN_FILL);
-        gtk_container_add (GTK_CONTAINER (button), frame);
-        gtk_container_add (GTK_CONTAINER (f), button);
-        gtk_widget_show_all (f);
-        g_object_set_data_full (G_OBJECT (button), "app", g_object_ref (app), g_object_unref);
-        g_signal_connect (button, "clicked",
-                          G_CALLBACK (app_tile_clicked), priv);
-
-        return f;
-}
-
-/**
- * gs_main_get_popular_cb:
- **/
-static void
-gs_main_get_popular_cb (GObject *source_object,
-			GAsyncResult *res,
-			gpointer user_data)
-{
-	GError *error = NULL;
-	GList *l;
-	GList *list;
-	GsApp *app;
-        gint i;
-        GtkWidget *tile;
-	GsMainPrivate *priv = (GsMainPrivate *) user_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-        GtkWidget *grid;
-
-	/* get popular apps */
-	list = gs_plugin_loader_get_popular_finish (plugin_loader,
-						    res,
-						    &error);
-	if (list == NULL) {
-		g_warning ("failed to get popular apps: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_popular"));
-	for (l = list, i = 0; l != NULL; l = l->next, i++) {
-		app = GS_APP (l->data);
-                tile = create_popular_tile (priv, app);
-                gtk_grid_attach (GTK_GRID (grid), tile, i, 0, 1, 1);
-	}
-out:
-	return;
-}
-
-static void
-container_remove_all (GtkContainer *container)
-{
-  GList *children, *l;
-
-  children = gtk_container_get_children (container);
-
-  for (l = children; l; l = l->next)
-    gtk_container_remove (container, GTK_WIDGET (l->data));
-
-  g_list_free (children);
-}
-
-/**
- * gs_main_get_popular:
- **/
-static void
-gs_main_get_popular (GsMainPrivate *priv)
-{
-        GtkWidget *grid;
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_popular"));
-        container_remove_all (GTK_CONTAINER (grid));
-
-	/* get popular apps */
-	gs_plugin_loader_get_popular_async (priv->plugin_loader,
-					    priv->cancellable,
-					    gs_main_get_popular_cb,
-					    priv);
-}
-
-static void
-category_tile_clicked (GtkButton *button, gpointer data)
-{
-        GsMainPrivate *priv = data;
-        const gchar *category;
-
-        category = g_object_get_data (G_OBJECT (button), "category");
-        gs_main_set_overview_mode (priv, GS_MAIN_MODE_CATEGORY, NULL, category);
-}
-
-static GtkWidget *
-create_category_tile (GsMainPrivate *priv, const gchar *category)
-{
-        GtkWidget *button, *frame, *label;
-
-        button = gtk_button_new ();
-        gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-        frame = gtk_frame_new (NULL);
-        gtk_container_add (GTK_CONTAINER (button), frame);
-        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
-        label = gtk_label_new (category);
-        g_object_set (label, "margin", 12, "xalign", 0, NULL);
-        gtk_container_add (GTK_CONTAINER (frame), label);
-        gtk_widget_show_all (button);
-        g_object_set_data (G_OBJECT (button), "category", (gpointer)category);
-        g_signal_connect (button, "clicked",
-                          G_CALLBACK (category_tile_clicked), priv);
-
-        return button;
-}
-
-static void
-gs_main_get_categories (GsMainPrivate *priv)
-{
-        /* FIXME get real categories */
-        GtkWidget *grid;
-        const gchar *categories[] = {
-          "Add-ons", "Books", "Business & Finance",
-          "Entertainment", "Education", "Games",
-          "Lifestyle", "Music", "Navigation",
-          "News", "Photo & Video", "Productivity",
-          "Social Networking", "Utility", "Weather",
-        };
-        guint i;
-        GtkWidget *tile;
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
-        container_remove_all (GTK_CONTAINER (grid));
-
-        for (i = 0; i < G_N_ELEMENTS (categories); i++) {
-                tile = create_category_tile (priv, categories[i]);
-                gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
-        }
-}
-
-static GtkWidget *
-create_app_tile (GsMainPrivate *priv, GsApp *app)
-{
-        GtkWidget *button, *frame, *label;
-        GtkWidget *image, *grid;
-        const gchar *tmp;
-        PangoAttrList *attrs;
-
-        button = gtk_button_new ();
-        gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-        frame = gtk_frame_new (NULL);
-        gtk_container_add (GTK_CONTAINER (button), frame);
-        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
-        grid = gtk_grid_new ();
-        gtk_container_add (GTK_CONTAINER (frame), grid);
-        g_object_set (grid, "margin", 12, "row-spacing", 6, "column-spacing", 6, NULL);
-        image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
-        gtk_grid_attach (GTK_GRID (grid), image, 0, 0, 1, 2);
-        label = gtk_label_new (gs_app_get_name (app));
-        attrs = pango_attr_list_new ();
-        pango_attr_list_insert (attrs, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
-        gtk_label_set_attributes (GTK_LABEL (label), attrs);
-        pango_attr_list_unref (attrs);
-        g_object_set (label, "xalign", 0, NULL);
-        gtk_grid_attach (GTK_GRID (grid), label, 1, 0, 1, 1);
-        tmp = gs_app_get_summary (app);
-        if (tmp != NULL && tmp[0] != '\0') {
-                label = gtk_label_new (tmp);
-                g_object_set (label, "xalign", 0, NULL);
-                gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
-                gtk_grid_attach (GTK_GRID (grid), label, 1, 1, 1, 1);
-        }
-
-        gtk_widget_show_all (button);
-
-        g_object_set_data_full (G_OBJECT (button), "app", g_object_ref (app), g_object_unref);
-        g_signal_connect (button, "clicked",
-                          G_CALLBACK (app_tile_clicked), priv);
-
-        return button;
-}
-
-static void
-gs_main_populate_filtered_category (GsMainPrivate *priv,
-                                    const gchar   *category,
-                                    const gchar   *filter)
-{
-        gint i;
-        GtkWidget *tile;
-        GsApp *app;
-        GtkWidget *grid;
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-        gtk_grid_remove_column (GTK_GRID (grid), 2);
-        gtk_grid_remove_column (GTK_GRID (grid), 1);
-        if (filter == NULL) {
-                gtk_grid_remove_column (GTK_GRID (grid), 0);
-        }
-
-        /* FIXME load apps for this category and filter */
-        app = gs_app_new ("gnome-boxes");
-        gs_app_set_name (app, "Boxes");
-        gs_app_set_summary (app, "View and use virtual machines");
-        gs_app_set_url (app, "http://www.box.org");
-        gs_app_set_kind (app, GS_APP_KIND_NORMAL);
-        gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-        gs_app_set_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/gnome-boxes.png", NULL));
-
-        for (i = 0; i < 30; i++) {
-                tile = create_app_tile (priv, app);
-                if (filter) {
-                        gtk_grid_attach (GTK_GRID (grid), tile, 1 + (i % 2), i / 2, 1, 1);
-                }
-                else {
-                        gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
-                }
-        }
-
-        g_object_unref (app);
-}
-
-static void
-add_separator (GtkListBoxRow *row,
-               GtkListBoxRow *before,
-               gpointer       data)
-{
-        if (!before) {
-                return;
-        }
-
-        gtk_list_box_row_set_header (row, gtk_separator_new (GTK_ORIENTATION_HORIZONTAL));
-}
-
-static void
-filter_selected (GtkListBox    *filters,
-                 GtkListBoxRow *row,
-                 gpointer       data)
-{
-        GsMainPrivate *priv = data;
-        const gchar *filter;
-        const gchar *category;
-
-        if (row == NULL)
-                return;
-
-        filter = gtk_label_get_label (GTK_LABEL (gtk_bin_get_child (GTK_BIN (row))));
-        category = (const gchar*)g_object_get_data (G_OBJECT (filters), "category");
-        gs_main_populate_filtered_category (priv, category, filter);
-}
-
-static void
-create_filter_list (GsMainPrivate *priv, const gchar *category, const gchar *filters[])
-{
-        GtkWidget *grid;
-        GtkWidget *list;
-        GtkWidget *row;
-        GtkWidget *frame;
-        guint i;
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-        list = gtk_list_box_new ();
-        g_object_set_data (G_OBJECT (list), "category", (gpointer)category);
-        gtk_list_box_set_selection_mode (GTK_LIST_BOX (list), GTK_SELECTION_BROWSE);
-        g_signal_connect (list, "row-selected", G_CALLBACK (filter_selected), priv);
-        gtk_list_box_set_header_func (GTK_LIST_BOX (list), add_separator, NULL, NULL);
-        for (i = 0; filters[i]; i++) {
-                row = gtk_label_new (filters[i]);
-                g_object_set (row, "xalign", 0.0, "margin", 6, NULL);
-                gtk_list_box_insert (GTK_LIST_BOX (list), row, i);
-        }
-        frame = gtk_frame_new (NULL);
-        g_object_set (frame, "margin", 6, NULL);
-        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
-        gtk_container_add (GTK_CONTAINER (frame), list);
-        gtk_widget_show_all (frame);
-        gtk_widget_set_valign (frame, GTK_ALIGN_START);
-        gtk_grid_attach (GTK_GRID (grid), frame, 0, 0, 1, 5);
-        gtk_list_box_select_row (GTK_LIST_BOX (list),
-                                 gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
-}
-
-static void
-gs_main_populate_category (GsMainPrivate *priv, const gchar *category)
-{
-        GtkWidget *grid;
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-        container_remove_all (GTK_CONTAINER (grid));
-
-        /* FIXME: get actual filters */
-        if (g_str_equal (category, "Games")) {
-                const gchar *filters[] = {
-                        "Popular", "Action", "Arcade", "Board",
-                        "Blocks", "Card", "Kids", "Logic", "Role Playing",
-                        "Shooter", "Simulation", "Sports", "Strategy",
-                        NULL
-                };
-                create_filter_list (priv, category, filters);
-        }
-        else if (g_str_equal (category, "Add-ons")) {
-                const gchar *filters[] = {
-                        "Popular", "Codecs", "Fonts",
-                        "Input Sources", "Language Packs",
-                        NULL
-                };
-                create_filter_list (priv, category, filters);
-        }
-        else {
-                gs_main_populate_filtered_category (priv, category, NULL);
-        }
-}
-
-/**
- * gs_main_set_overview_mode_ui:
- **/
-static void
-gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
-{
-	GtkWidget *widget;
-        GsAppState state;
-
-	priv->ignore_primary_buttons = TRUE;
-
-	switch (mode) {
-	case GS_MAIN_MODE_NEW:
-	case GS_MAIN_MODE_INSTALLED:
-	case GS_MAIN_MODE_UPDATES:
-	case GS_MAIN_MODE_WAITING:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-		gtk_widget_set_visible (widget, TRUE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-		gtk_widget_set_visible (widget, FALSE);
-		break;
-
-	case GS_MAIN_MODE_DETAILS:
-	case GS_MAIN_MODE_CATEGORY:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-		gtk_widget_set_visible (widget, TRUE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-		gtk_widget_set_visible (widget, TRUE);
-                if (app) {
-                        state = gs_app_get_state (app);
-                }
-                else {
-                        state = GS_APP_STATE_UNKNOWN;
-                }
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
-		gtk_widget_set_visible (widget, state == GS_APP_STATE_AVAILABLE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
-		gtk_widget_set_visible (widget, state == GS_APP_STATE_INSTALLED);
-#ifdef SEARCH
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_set_visible (widget, FALSE);
-#endif
-		break;
-
-	default:
-                g_assert_not_reached ();
-		break;
-	}
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all"));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_MAIN_MODE_NEW);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed"));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_MAIN_MODE_INSTALLED);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_MAIN_MODE_UPDATES);
-	priv->ignore_primary_buttons = FALSE;
-
-	widget = NULL;
-
-	switch (mode) {
-	case GS_MAIN_MODE_NEW:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-		gtk_widget_hide (widget);
-#ifdef SEARCH
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-		gtk_entry_set_text (GTK_ENTRY (widget), "");
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_show (widget);
-#endif
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
-		gtk_spinner_stop (GTK_SPINNER (widget));
-		break;
-
-	case GS_MAIN_MODE_INSTALLED:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-		gtk_widget_hide (widget);
-#ifdef SEARCH
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-		gtk_entry_set_text (GTK_ENTRY (widget), "");
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_show (widget);
-#endif
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
-		gtk_spinner_stop (GTK_SPINNER (widget));
-		break;
-
-	case GS_MAIN_MODE_UPDATES:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-		gtk_widget_show (widget);
-#ifdef SEARCH
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_hide (widget);
-#endif
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
-		gtk_spinner_stop (GTK_SPINNER (widget));
-		break;
-
-	case GS_MAIN_MODE_WAITING:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-		gtk_widget_hide (widget);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
-		gtk_spinner_start (GTK_SPINNER (widget));
-		break;
-
-	case GS_MAIN_MODE_DETAILS:
-	case GS_MAIN_MODE_CATEGORY:
-		break;
-	default:
-		g_assert_not_reached ();
-	}
-
-	/* set panel */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
-	gtk_notebook_set_current_page (GTK_NOTEBOOK (widget), mode);
-}
-
-/**
- * gs_main_set_overview_mode:
- **/
-static void
-gs_main_set_overview_mode (GsMainPrivate *priv, GsMainMode mode, GsApp *app, const gchar *category)
-{
-	GtkWidget *widget;
-	GtkWidget *widget2;
-	const gchar *tmp;
-	GdkPixbuf *pixbuf;
-
-	if (priv->ignore_primary_buttons)
-		return;
-
-	/* set controls */
-	gs_main_set_overview_mode_ui (priv, mode, app);
-
-	/* do action for mode */
-	priv->mode = mode;
-	switch (mode) {
-	case GS_MAIN_MODE_NEW:
-		gs_main_get_popular (priv);
-		gs_main_get_categories (priv);
-		break;
-	case GS_MAIN_MODE_INSTALLED:
-		gs_shell_installed_refresh (priv->shell_installed, priv->cancellable);
-		break;
-	case GS_MAIN_MODE_UPDATES:
-		gs_shell_updates_refresh (priv->shell_updates, priv->cancellable);
-		break;
-	case GS_MAIN_MODE_WAITING:
-		break;
-	case GS_MAIN_MODE_DETAILS:
-		tmp = gs_app_get_name (app);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_title"));
-		widget2 = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-		if (tmp != NULL && tmp[0] != '\0') {
-			gtk_label_set_label (GTK_LABEL (widget), tmp);
-			gtk_label_set_label (GTK_LABEL (widget2), tmp);
-			gtk_widget_set_visible (widget, TRUE);
-		}
-                else {
-			gtk_widget_set_visible (widget, FALSE);
-			gtk_label_set_label (GTK_LABEL (widget2), "");
-                }
-		tmp = gs_app_get_summary (app);
-	        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_summary"));
-		if (tmp != NULL && tmp[0] != '\0') {
-			gtk_label_set_label (GTK_LABEL (widget), tmp);
-			gtk_widget_set_visible (widget, TRUE);
-		}
-                else {
-			gtk_widget_set_visible (widget, FALSE);
-                }
-		tmp = gs_app_get_description (app);
-		if (tmp == NULL)
-			tmp = _("The author of this software has not included a 'Description' in the desktop file...");
-
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_description"));
-		gtk_label_set_label (GTK_LABEL (widget), tmp);
-		gtk_widget_set_visible (widget, TRUE);
-
-		pixbuf = gs_app_get_pixbuf (app);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
-		if (pixbuf != NULL) {
-			gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
-			gtk_widget_set_visible (widget, TRUE);
-		}
-                else {
-			gtk_widget_set_visible (widget, FALSE);
-                }
-
-                tmp = gs_app_get_url (app);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_url"));
-                if (tmp != NULL && tmp[0] != '\0') {
-                        gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), tmp);
-                        gtk_widget_set_visible (widget, TRUE);
-                }
-                else {
-			gtk_widget_set_visible (widget, FALSE);
-                }
-
-		break;
-	case GS_MAIN_MODE_CATEGORY:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-                gtk_label_set_label (GTK_LABEL (widget), category);
-		gs_main_populate_category (priv, category);
-
-		break;
-	default:
-		g_assert_not_reached ();
-	}
-}
-
-/**
- * gs_main_overview_button_cb:
- **/
-static void
-gs_main_overview_button_cb (GtkWidget *widget, GsMainPrivate *priv)
-{
-	GsMainMode mode;
-	mode = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
-						   "gnome-software::overview-mode"));
-	gs_main_set_overview_mode (priv, mode, NULL, NULL);
-}
-
-/**
- * gs_main_back_button_cb:
- **/
-static void
-gs_main_back_button_cb (GtkWidget *widget, GsMainPrivate *priv)
-{
-	gs_main_set_overview_mode (priv, priv->tab_back_id, NULL, NULL);
-}
-
-/**
- * gs_main_get_featured_cb:
- **/
-static void
-gs_main_get_featured_cb (GObject *source_object,
-			  GAsyncResult *res,
-			  gpointer user_data)
-{
-	GdkPixbuf *pixbuf;
-	GError *error = NULL;
-	GList *list;
-	GsApp *app;
-	GsMainPrivate *priv = (GsMainPrivate *) user_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GtkImage *image;
-	GtkWidget *button;
-
-	list = gs_plugin_loader_get_featured_finish (plugin_loader,
-						     res,
-						     &error);
-	if (list == NULL) {
-		g_warning ("failed to get featured apps: %s", error->message);
-		g_error_free (error);
-		goto out;
-	}
-
-	/* at the moment, we only care about the first app */
-	app = GS_APP (list->data);
-	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "featured_image"));
-	pixbuf = gs_app_get_featured_pixbuf (app);
-	gtk_image_set_from_pixbuf (image, pixbuf);
-	button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_button"));
-	g_object_set_data_full (G_OBJECT (button), "app", app, g_object_unref);
-	g_signal_connect (button, "clicked",
-			  G_CALLBACK (app_tile_clicked), priv);
-
-#ifdef SEARCH
-	/* focus back to the text extry */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_widget_grab_focus (widget);
-#endif
-out:
-	g_list_free (list);
-	return;
-}
-
-/**
- * gs_main_setup_featured:
- **/
-static void
-gs_main_setup_featured (GsMainPrivate *priv)
-{
-	/* get popular apps */
-	gs_plugin_loader_get_featured_async (priv->plugin_loader,
-					     priv->cancellable,
-					     gs_main_get_featured_cb,
-					     priv);
-}
-
 /**
  * gs_main_startup_cb:
  **/
@@ -1138,10 +454,8 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 {
 	GBytes *data = NULL;
 	GError *error = NULL;
-	gint retval;
-	GtkWidget *main_window;
-	GtkWidget *widget;
 	gboolean ret;
+	GtkWindow *window;
 
 	/* get CSS */
 	if (priv->provider == NULL) {
@@ -1171,79 +485,25 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 		}
 	}
 
-	/* get UI */
-	priv->builder = gtk_builder_new ();
-	retval = gtk_builder_add_from_resource (priv->builder,
-						"/org/gnome/software/gnome-software.ui",
-						&error);
-	if (retval == 0) {
-		g_warning ("failed to load ui: %s",
-			   error->message);
-		g_error_free (error);
-		goto out;
-	}
-
-	/* add application specific icons to search path */
-	gtk_icon_theme_append_search_path (gtk_icon_theme_get_default (),
-					   GS_DATA G_DIR_SEPARATOR_S "icons");
-
-	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	gtk_application_add_window (priv->application, GTK_WINDOW (main_window));
-
-	/* Hide window first so that the dialogue resizes itself without redrawing */
-	gtk_widget_hide (main_window);
-	gtk_window_set_default_size (GTK_WINDOW (main_window), 1200, 800);
-
-	/* setup callbacks */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
-	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (widget), FALSE);
-
-	/* setup featured tiles */
-	gs_main_setup_featured (priv);
-
-	/* setup buttons */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_main_back_button_cb), priv);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all"));
-	g_object_set_data (G_OBJECT (widget),
-			   "gnome-software::overview-mode",
-			   GINT_TO_POINTER (GS_MAIN_MODE_NEW));
-	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_main_overview_button_cb), priv);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_installed"));
-	g_object_set_data (G_OBJECT (widget),
-			   "gnome-software::overview-mode",
-			   GINT_TO_POINTER (GS_MAIN_MODE_INSTALLED));
-	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_main_overview_button_cb), priv);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
-	g_object_set_data (G_OBJECT (widget),
-			   "gnome-software::overview-mode",
-			   GINT_TO_POINTER (GS_MAIN_MODE_UPDATES));
-	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_main_overview_button_cb), priv);
-
 	/* setup UI */
-	priv->shell_updates = gs_shell_updates_new ();
-	gs_shell_updates_setup (priv->shell_updates,
-				priv->plugin_loader,
-				priv->builder);
-	priv->shell_installed = gs_shell_installed_new ();
-	gs_shell_installed_setup (priv->shell_installed,
-				  priv->plugin_loader,
-				  priv->builder);
+	window = gs_shell_setup (priv->shell, priv->plugin_loader, priv->cancellable);
+	gtk_application_add_window (priv->application, GTK_WINDOW (window));
 
 	/* show the status on a different page */
-	g_signal_connect (priv->plugin_loader, "status-changed",
-			  G_CALLBACK (gs_main_plugin_loader_status_changed_cb), priv);
-
-	/* show main UI */
-	gtk_widget_show (main_window);
-	gs_main_set_overview_mode (priv, priv->app_startup_mode, NULL, NULL);
+//	g_signal_connect (priv->plugin_loader, "status-changed",
+//			  G_CALLBACK (gs_main_plugin_loader_status_changed_cb), priv);
 out:
 	if (data != NULL)
 		g_bytes_unref (data);
+}
+
+/**
+ * gs_main_activate_cb:
+ **/
+static void
+gs_main_activate_cb (GApplication *application, GsMainPrivate *priv)
+{
+	gs_shell_activate (priv->shell);
 }
 
 /**
@@ -1261,7 +521,7 @@ main (int argc, char **argv)
 
 	const GOptionEntry options[] = {
 		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
-		  _("Start up mode, either 'updates', 'installed' or 'new'"), _("MODE") },
+		  _("Start up mode, either 'updates', 'installed' or 'overview'"), _("MODE") },
 		{ NULL}
 	};
 
@@ -1285,7 +545,6 @@ main (int argc, char **argv)
 	g_option_context_free (context);
 
 	priv = g_new0 (GsMainPrivate, 1);
-	priv->ignore_primary_buttons = FALSE;
 
 	/* ensure single instance */
 	priv->application = gtk_application_new ("org.gnome.Software", 0);
@@ -1302,18 +561,19 @@ main (int argc, char **argv)
 		      NULL);
 
 	/* specified what page to open */
+	priv->shell = gs_shell_new ();
 	if (mode != NULL) {
 		if (g_strcmp0 (mode, "updates") == 0) {
-			priv->app_startup_mode = GS_MAIN_MODE_UPDATES;
+			gs_shell_set_default_mode (priv->shell, GS_SHELL_MODE_UPDATES);
 		} else if (g_strcmp0 (mode, "installed") == 0) {
-			priv->app_startup_mode = GS_MAIN_MODE_INSTALLED;
-		} else if (g_strcmp0 (mode, "new") == 0) {
-			priv->app_startup_mode = GS_MAIN_MODE_NEW;
+			gs_shell_set_default_mode (priv->shell, GS_SHELL_MODE_INSTALLED);
+		} else if (g_strcmp0 (mode, "overview") == 0) {
+			gs_shell_set_default_mode (priv->shell, GS_SHELL_MODE_OVERVIEW);
 		} else {
 			g_warning ("Mode '%s' not recognised", mode);
 		}
 	} else {
-		priv->app_startup_mode = GS_MAIN_MODE_NEW;
+		gs_shell_set_default_mode (priv->shell, GS_SHELL_MODE_OVERVIEW);
 	}
 
 	/* load the plugins */
@@ -1348,14 +608,10 @@ out:
 		g_object_unref (priv->task);
 		g_object_unref (priv->cancellable);
 		g_object_unref (priv->application);
-		if (priv->shell_updates != NULL)
-			g_object_unref (priv->shell_updates);
-		if (priv->shell_installed != NULL)
-			g_object_unref (priv->shell_installed);
+		if (priv->shell != NULL)
+			g_object_unref (priv->shell);
 		if (priv->provider != NULL)
 			g_object_unref (priv->provider);
-		if (priv->builder != NULL)
-			g_object_unref (priv->builder);
 		if (priv->waiting_tab_id > 0)
 			g_source_remove (priv->waiting_tab_id);
 		g_free (priv);
