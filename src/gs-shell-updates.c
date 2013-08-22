@@ -23,6 +23,7 @@
 
 #include <glib/gi18n.h>
 
+#include "gs-shell.h"
 #include "gs-shell-updates.h"
 #include "gs-app.h"
 #include "gs-app-widget.h"
@@ -93,15 +94,21 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	GsApp *app;
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
+        GtkWidget *notebook;
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_updates_up_to_date"));
 	gtk_widget_set_visible (widget, list == NULL);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
 	gtk_widget_set_visible (widget, list != NULL);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-	gtk_widget_set_visible (widget, list != NULL);
+
+        notebook = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
+        if (gtk_notebook_get_current_page (GTK_NOTEBOOK (notebook)) == GS_SHELL_MODE_UPDATES) {
+        	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+	        gtk_widget_set_visible (widget, list != NULL);
+        }
 	if (list == NULL) {
 		g_warning ("failed to get updates: %s", error->message);
 		g_error_free (error);
@@ -109,7 +116,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		g_debug ("adding update %s", gs_app_get_id (app));
+		g_debug ("adding update %s, kind %d state %d", gs_app_get_id (app), gs_app_get_kind (app), gs_app_get_state (app));
 		widget = gs_app_widget_new ();
 		g_signal_connect (widget, "read-more-clicked",
 				  G_CALLBACK (show_update_details), shell_updates);
