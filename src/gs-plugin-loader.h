@@ -110,10 +110,6 @@ gboolean	 gs_plugin_loader_app_install		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_plugin_loader_app_update		(GsPluginLoader	*plugin_loader,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
 gboolean	 gs_plugin_loader_app_remove		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GCancellable	*cancellable,

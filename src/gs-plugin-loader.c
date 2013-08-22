@@ -883,22 +883,6 @@ out:
 }
 
 /**
- * gs_plugin_loader_app_update:
- **/
-gboolean
-gs_plugin_loader_app_update (GsPluginLoader *plugin_loader,
-			     GsApp *app,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	return gs_plugin_loader_run_action (plugin_loader,
-					    app,
-					    "gs_plugin_app_update",
-					    cancellable,
-					    error);
-}
-
-/**
  * gs_plugin_loader_app_install:
  **/
 gboolean
