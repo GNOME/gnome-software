@@ -318,7 +318,7 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 			/* if we have update text, then use it */
 			tmp = gs_app_get_metadata_item (app_tmp, "update-details");
 			if (tmp != NULL && tmp[0] != '\0')
-				gs_app_set_summary (app_tmp, tmp);
+				gs_app_set_description (app_tmp, tmp);
 		}
 	}
 
