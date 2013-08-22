@@ -34,6 +34,7 @@ struct GsShellOverviewPrivate
 {
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
+	gboolean		 cache_valid;
 };
 
 enum {
@@ -44,6 +45,15 @@ enum {
 G_DEFINE_TYPE (GsShellOverview, gs_shell_overview, G_TYPE_OBJECT)
 
 static guint signals [SIGNAL_LAST] = { 0 };
+
+/**
+ * gs_shell_overview_invalidate:
+ **/
+void
+gs_shell_overview_invalidate (GsShellOverview *shell_overview)
+{
+	shell_overview->priv->cache_valid = FALSE;
+}
 
 static void
 container_remove_all (GtkContainer *container)
@@ -419,6 +429,10 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview, GCancellable *cancel
 	guint i;
 	GtkWidget *tile;
 
+	/* no need to refresh */
+	if (priv->cache_valid)
+		return;
+
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
 	container_remove_all (GTK_CONTAINER (grid));
 
@@ -441,6 +455,7 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview, GCancellable *cancel
 					     cancellable,
 					     gs_shell_overview_get_featured_cb,
 					     shell_overview);
+	priv->cache_valid = TRUE;
 }
 
 /**

@@ -56,6 +56,7 @@ typedef struct
 GType		 gs_shell_overview_get_type	(void);
 
 GsShellOverview	*gs_shell_overview_new		(void);
+void		 gs_shell_overview_invalidate	(GsShellOverview	*shell_overview);
 void		 gs_shell_overview_refresh	(GsShellOverview	*shell_overview,
 						 GCancellable		*cancellable);
 void 		 gs_shell_overview_setup	(GsShellOverview	*shell_overview,

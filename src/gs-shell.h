@@ -69,5 +69,7 @@ void		 gs_shell_set_default_mode	(GsShell	*shell,
 GtkWindow	*gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);
+void		 gs_shell_invalidate		(GsShell	*shell);
+gboolean	 gs_shell_is_cache_valid	(GsShell	*shell);
 
 #endif /* __GS_SHELL_H */

@@ -35,6 +35,7 @@ struct GsShellUpdatesPrivate
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
 	GtkListBox		*list_box_updates;
+	gboolean		 cache_valid;
 };
 
 enum {
@@ -45,6 +46,15 @@ enum {
 };
 
 G_DEFINE_TYPE (GsShellUpdates, gs_shell_updates, G_TYPE_OBJECT)
+
+/**
+ * gs_shell_updates_invalidate:
+ **/
+void
+gs_shell_updates_invalidate (GsShellUpdates *shell_updates)
+{
+	shell_updates->priv->cache_valid = FALSE;
+}
 
 /**
  * _gtk_container_remove_all_cb:
@@ -123,11 +133,17 @@ void
 gs_shell_updates_refresh (GsShellUpdates *shell_updates, GCancellable *cancellable)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
+
+	/* no need to refresh */
+	if (priv->cache_valid)
+		return;
+
 	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
 					    cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
 					    shell_updates);
+	priv->cache_valid = TRUE;
 }
 
 /**

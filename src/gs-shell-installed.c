@@ -39,9 +39,19 @@ struct GsShellInstalledPrivate
 	GtkListBox		*list_box_installed;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
+	gboolean		 cache_valid;
 };
 
 G_DEFINE_TYPE (GsShellInstalled, gs_shell_installed, G_TYPE_OBJECT)
+
+/**
+ * gs_shell_installed_invalidate:
+ **/
+void
+gs_shell_installed_invalidate (GsShellInstalled *shell_installed)
+{
+	shell_installed->priv->cache_valid = FALSE;
+}
 
 /**
  * _gtk_container_remove_all_cb:
@@ -203,6 +213,10 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed,
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 
+	/* no need to refresh */
+	if (priv->cache_valid)
+		return;
+
 	/* remove old entries */
 	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
 
@@ -211,6 +225,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed,
 					      cancellable,
 					      gs_shell_installed_get_installed_cb,
 					      shell_installed);
+	priv->cache_valid = TRUE;
 }
 
 /**
