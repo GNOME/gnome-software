@@ -945,6 +945,7 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 		gtk_widget_set_visible (widget, FALSE);
 		break;
+
 	case GS_MAIN_MODE_DETAILS:
 	case GS_MAIN_MODE_CATEGORY:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
@@ -963,9 +964,12 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 		gtk_widget_set_visible (widget, state == GS_APP_STATE_AVAILABLE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
 		gtk_widget_set_visible (widget, state == GS_APP_STATE_INSTALLED);
+#ifdef SEARCH
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 		gtk_widget_set_visible (widget, FALSE);
+#endif
 		break;
+
 	default:
                 g_assert_not_reached ();
 		break;
@@ -987,37 +991,47 @@ gs_main_set_overview_mode_ui (GsMainPrivate *priv, GsMainMode mode, GsApp *app)
 	case GS_MAIN_MODE_NEW:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 		gtk_widget_hide (widget);
+#ifdef SEARCH
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		gtk_entry_set_text (GTK_ENTRY (widget), "");
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 		gtk_widget_show (widget);
+#endif
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
 		gtk_spinner_stop (GTK_SPINNER (widget));
 		break;
+
 	case GS_MAIN_MODE_INSTALLED:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 		gtk_widget_hide (widget);
+#ifdef SEARCH
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		gtk_entry_set_text (GTK_ENTRY (widget), "");
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 		gtk_widget_show (widget);
+#endif
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
 		gtk_spinner_stop (GTK_SPINNER (widget));
 		break;
+
 	case GS_MAIN_MODE_UPDATES:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 		gtk_widget_show (widget);
+#ifdef SEARCH
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 		gtk_widget_hide (widget);
+#endif
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
 		gtk_spinner_stop (GTK_SPINNER (widget));
 		break;
+
 	case GS_MAIN_MODE_WAITING:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 		gtk_widget_hide (widget);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_waiting"));
 		gtk_spinner_start (GTK_SPINNER (widget));
 		break;
+
 	case GS_MAIN_MODE_DETAILS:
 	case GS_MAIN_MODE_CATEGORY:
 		break;
@@ -1209,9 +1223,11 @@ gs_main_get_featured_cb (GObject *source_object,
 	g_signal_connect (button, "clicked",
 			  G_CALLBACK (app_tile_clicked), priv);
 
+#ifdef SEARCH
 	/* focus back to the text extry */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	gtk_widget_grab_focus (widget);
+#endif
 out:
 	g_list_free (list);
 	return;
