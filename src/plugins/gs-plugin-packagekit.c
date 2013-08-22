@@ -97,9 +97,11 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		break;
 	case PK_STATUS_ENUM_WAIT:
 	case PK_STATUS_ENUM_WAITING_FOR_LOCK:
+	case PK_STATUS_ENUM_WAITING_FOR_AUTH:
 		plugin_status = GS_PLUGIN_STATUS_WAITING;
 		break;
 	case PK_STATUS_ENUM_LOADING_CACHE:
+	case PK_STATUS_ENUM_TEST_COMMIT:
 		plugin_status = GS_PLUGIN_STATUS_SETUP;
 		break;
 	case PK_STATUS_ENUM_DOWNLOAD:
@@ -113,6 +115,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		break;
 	case PK_STATUS_ENUM_QUERY:
 	case PK_STATUS_ENUM_INFO:
+	case PK_STATUS_ENUM_DEP_RESOLVE:
 		plugin_status = GS_PLUGIN_STATUS_QUERYING;
 		break;
 	default:
