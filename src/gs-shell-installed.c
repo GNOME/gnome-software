@@ -41,13 +41,6 @@ struct GsShellInstalledPrivate
 	GtkSizeGroup		*sizegroup_name;
 };
 
-enum {
-	COLUMN_UPDATE_APP,
-	COLUMN_UPDATE_NAME,
-	COLUMN_UPDATE_VERSION,
-	COLUMN_UPDATE_LAST
-};
-
 G_DEFINE_TYPE (GsShellInstalled, gs_shell_installed, G_TYPE_OBJECT)
 
 /**
