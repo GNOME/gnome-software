@@ -51,6 +51,7 @@ typedef struct
 	void			(*status_changed)	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
+	void			(*pending_apps_changed)	(GsPluginLoader	*plugin_loader);
 } GsPluginLoaderClass;
 
 typedef enum
@@ -118,6 +119,9 @@ gboolean	 gs_plugin_loader_app_set_rating	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
+GsAppState	 gs_plugin_loader_get_state_for_app	(GsPluginLoader	*plugin_loader,
+							 GsApp		*app);
+GPtrArray	*gs_plugin_loader_get_pending		(GsPluginLoader	*plugin_loader);
 
 G_END_DECLS
 

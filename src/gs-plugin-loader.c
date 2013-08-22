@@ -35,12 +35,14 @@ struct GsPluginLoaderPrivate
 	GPtrArray		*plugins;
 	gchar			*location;
 	GsPluginStatus		 status_last;
+	GPtrArray		*pending_apps;
 };
 
 G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
 enum {
 	SIGNAL_STATUS_CHANGED,
+	SIGNAL_PENDING_APPS_CHANGED,
 	SIGNAL_LAST
 };
 
@@ -883,6 +885,36 @@ out:
 }
 
 /**
+ * gs_plugin_loader_get_state_for_app:
+ **/
+GsAppState
+gs_plugin_loader_get_state_for_app (GsPluginLoader *plugin_loader, GsApp *app)
+{
+	GsAppState state = GS_APP_STATE_UNKNOWN;
+	GsApp *tmp;
+	GsPluginLoaderPrivate *priv = plugin_loader->priv;
+	guint i;
+
+	for (i = 0; i < priv->pending_apps->len; i++) {
+		tmp = g_ptr_array_index (priv->pending_apps, i);
+		if (g_strcmp0 (gs_app_get_id (tmp), gs_app_get_id (app)) == 0) {
+			state = gs_app_get_state (tmp);
+			break;
+		}
+	}
+	return state;
+}
+
+/**
+ * gs_plugin_loader_get_pending:
+ **/
+GPtrArray *
+gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
+{
+	return g_ptr_array_ref (plugin_loader->priv->pending_apps);
+}
+
+/**
  * gs_plugin_loader_app_install:
  **/
 gboolean
@@ -1205,6 +1237,12 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 			      G_STRUCT_OFFSET (GsPluginLoaderClass, status_changed),
 			      NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
+	signals [SIGNAL_PENDING_APPS_CHANGED] =
+		g_signal_new ("pending-apps-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginLoaderClass, pending_apps_changed),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (GsPluginLoaderPrivate));
 }
@@ -1218,6 +1256,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	plugin_loader->priv = GS_PLUGIN_LOADER_GET_PRIVATE (plugin_loader);
 	plugin_loader->priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
 	plugin_loader->priv->status_last = GS_PLUGIN_STATUS_LAST;
+	plugin_loader->priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 }
 
 /**
@@ -1239,6 +1278,7 @@ gs_plugin_loader_finalize (GObject *object)
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
 
+	g_ptr_array_unref (plugin_loader->priv->pending_apps);
 	g_ptr_array_unref (plugin_loader->priv->plugins);
 	g_free (plugin_loader->priv->location);
 
