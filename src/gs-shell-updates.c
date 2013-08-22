@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <glib/gi18n.h>
+
 #include "gs-shell-updates.h"
 #include "gs-app.h"
 #include "gs-app-widget.h"
@@ -371,6 +373,32 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	gs_shell_updates_invalidate (shell_updates);
 }
 
+static void
+gs_shell_updates_button_update_all_cb (GtkButton      *button,
+                                       GsShellUpdates *updates)
+{
+        GtkWindow *window;
+        GtkWidget *dialog;
+        gint response;
+
+        window = GTK_WINDOW (gtk_builder_get_object (updates->priv->builder, "window_software"));
+        dialog = gtk_message_dialog_new (window,
+                                         GTK_DIALOG_MODAL,
+                                         GTK_MESSAGE_QUESTION,
+                                         GTK_BUTTONS_CANCEL,
+                                         _("Restart & Install"));
+        gtk_dialog_add_button (GTK_DIALOG (dialog), _("Restart & Install"), GTK_RESPONSE_OK);
+        gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+                                                  _("Make sure you have no unsaved documents before proceeding."));
+        response = gtk_dialog_run (GTK_DIALOG (dialog));
+
+        gtk_widget_destroy (dialog);
+
+        if (response == GTK_RESPONSE_OK) {
+                /* do something */
+        }
+}
+
 /**
  * gs_shell_updates_setup:
  */
@@ -431,6 +459,9 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	g_signal_connect (treeview, "row-activated",
 			  G_CALLBACK (gs_shell_updates_row_activated_cb),
 			  shell_updates);
+
+       widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+        g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), shell_updates);
 
 	/* setup update details window */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_close"));
