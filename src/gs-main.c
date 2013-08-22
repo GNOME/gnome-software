@@ -554,18 +554,6 @@ gs_main_app_widget_read_more_clicked_cb (GsAppWidget *app_widget, GsMainPrivate 
         gtk_window_present (GTK_WINDOW (details));
 }
 
-#if 0
-/**
- * gs_main_installed_add_os_update:
- **/
-static void
-gs_main_installed_add_os_update (GsMainPrivate *priv, PkPackage *pkg)
-{
-	/* TRANSLATORS: the update requires the user to reboot the computer */
-	gs_app_widget_set_status (GS_APP_WIDGET (widget), _("Requires restart"));
-}
-#endif
-
 /**
  * _gtk_container_remove_all_cb:
  **/
