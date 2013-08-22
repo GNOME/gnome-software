@@ -96,6 +96,14 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	GtkWidget *widget;
         GtkWidget *notebook;
 
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_wait"));
+        gtk_spinner_stop (GTK_SPINNER (widget));
+        gtk_widget_hide (widget);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
+        gtk_widget_hide (widget);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+        gtk_widget_show (widget);
+
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 
@@ -140,12 +148,26 @@ void
 gs_shell_updates_refresh (GsShellUpdates *shell_updates, GCancellable *cancellable)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
+        GtkWidget *widget;
 
 	/* no need to refresh */
 	if (priv->cache_valid)
 		return;
 
 	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
+
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_wait"));
+        gtk_spinner_start (GTK_SPINNER (widget));
+        gtk_widget_show (widget);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
+        gtk_widget_show (widget);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+        gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_updates_up_to_date"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
+	gtk_widget_show (widget);
+
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
 					    cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,

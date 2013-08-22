@@ -240,6 +240,12 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *widget;
 
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_wait"));
+        gtk_spinner_stop (GTK_SPINNER (widget));
+        gtk_widget_hide (widget);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
+        gtk_widget_hide (widget);
+
 	list = gs_plugin_loader_get_installed_finish (plugin_loader,
 						      res,
 						      &error);
@@ -281,6 +287,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed,
 			    GCancellable *cancellable)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
+        GtkWidget *widget;
 
 	/* no need to refresh */
 	if (priv->cache_valid)
@@ -288,6 +295,12 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed,
 
 	/* remove old entries */
 	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
+
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_wait"));
+        gtk_spinner_start (GTK_SPINNER (widget));
+        gtk_widget_show (widget);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
+        gtk_widget_show (widget);
 
 	/* get popular apps */
 	gs_plugin_loader_get_installed_async (priv->plugin_loader,
