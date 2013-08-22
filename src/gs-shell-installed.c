@@ -184,7 +184,6 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (response == GTK_RESPONSE_OK) {
 		g_debug ("remove %s", gs_app_get_id (app));
-		gs_app_widget_set_status (app_widget, "Removing");
 		gs_plugin_loader_app_remove (priv->plugin_loader,
 					     app,
 					     NULL); /* cancellable */
@@ -228,9 +227,6 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 		g_signal_connect (widget, "read-more-clicked",
 				  G_CALLBACK (gs_shell_installed_app_widget_read_more_clicked_cb),
 				  shell_installed);
-
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					gs_app_get_kind (app) == GS_APP_KIND_SYSTEM ? GS_APP_WIDGET_KIND_BLANK : GS_APP_WIDGET_KIND_REMOVE);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
 		gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),

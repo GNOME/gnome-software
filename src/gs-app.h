@@ -46,6 +46,7 @@ typedef struct
 typedef struct
 {
 	GObjectClass		 parent_class;
+	void			(*state_changed)	(GsApp		*app);
 } GsAppClass;
 
 typedef enum {
@@ -68,6 +69,7 @@ typedef enum {
 	GS_APP_STATE_AVAILABLE,
 	GS_APP_STATE_INSTALLING,
 	GS_APP_STATE_REMOVING,
+	GS_APP_STATE_UPDATABLE,
 	GS_APP_STATE_LAST
 } GsAppState;
 

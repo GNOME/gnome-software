@@ -35,7 +35,7 @@ struct GsAppPrivate
 	gchar			*summary;
 	gchar			*description;
 	gchar			*screenshot;
-        gchar                   *url;
+        gchar			*url;
 	gint			 rating;
 	GsAppKind		 kind;
 	GsAppState		 state;
@@ -61,6 +61,13 @@ enum {
 };
 
 G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
+
+enum {
+	SIGNAL_STATE_CHANGED,
+	SIGNAL_LAST
+};
+
+static guint signals [SIGNAL_LAST] = { 0 };
 
 /**
  * gs_app_error_quark:
@@ -115,8 +122,8 @@ void
 gs_app_set_state (GsApp *app, GsAppState state)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (app->priv->state == GS_APP_STATE_UNKNOWN);
 	app->priv->state = state;
+	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
 /**
@@ -589,6 +596,13 @@ gs_app_class_init (GsAppClass *klass)
 				   GS_APP_STATE_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_STATE, pspec);
+
+	signals [SIGNAL_STATE_CHANGED] =
+		g_signal_new ("state-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsAppClass, state_changed),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (GsAppPrivate));
 }

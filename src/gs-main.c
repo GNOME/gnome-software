@@ -112,7 +112,6 @@ gs_main_progress_cb (PkProgress *progress,
 //			app_widget = gs_main_get_app_widget_for_id (priv->list_box_installed,
 //								    pk_item_progress_get_package_id (item_progress));
 //			if (app_widget != NULL) {
-//				gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
 //				gs_app_widget_set_status (app_widget, pk_status_enum_to_string (status));
 //			}
 		}
@@ -347,12 +346,10 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 	data->package_id = package_id;
 	data->priv = priv;
 
-	if (kind == GS_APP_WIDGET_KIND_UPDATE) {
-	} else if (kind == GS_APP_WIDGET_KIND_INSTALL) {
+	if (kind == GS_APP_STATE_UPDATE) {
+	} else if (kind == GS_APP_STATE_INSTALL) {
 		g_debug ("install %s", package_id);
 		to_array[0] = package_id;
-		gs_app_widget_set_kind (app_widget, GS_APP_WIDGET_KIND_BUSY);
-		gs_app_widget_set_status (app_widget, "Installing");
 		pk_task_install_packages_async (priv->task,
 						(gchar**)to_array,
 						priv->cancellable,

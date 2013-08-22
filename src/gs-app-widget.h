@@ -54,29 +54,14 @@ struct _GsAppWidgetClass
 	void			(*read_more_clicked)   	(GsAppWidget	*app_widget);
 };
 
-typedef enum {
-	GS_APP_WIDGET_KIND_INSTALL,
-	GS_APP_WIDGET_KIND_UPDATE,
-	GS_APP_WIDGET_KIND_REMOVE,
-	GS_APP_WIDGET_KIND_BUSY,
-	GS_APP_WIDGET_KIND_BLANK,
-	GS_APP_WIDGET_KIND_LAST
-} GsAppWidgetKind;
-
 GType		 gs_app_widget_get_type			(void);
 GtkWidget	*gs_app_widget_new			(void);
 GsApp		*gs_app_widget_get_app			(GsAppWidget	*app_widget);
 void		 gs_app_widget_set_app			(GsAppWidget	*app_widget,
 							 GsApp		*app);
-const gchar	*gs_app_widget_get_status		(GsAppWidget	*app_widget);
-void		 gs_app_widget_set_status		(GsAppWidget	*app_widget,
-							 const gchar	*status);
-GsAppWidgetKind	 gs_app_widget_get_kind			(GsAppWidget	*app_widget);
-void		 gs_app_widget_set_kind			(GsAppWidget	*app_widget,
-							 GsAppWidgetKind kind);
-void             gs_app_widget_set_size_groups          (GsAppWidget    *app_widget,
-                                                         GtkSizeGroup   *image,
-                                                         GtkSizeGroup   *name);
+void		 gs_app_widget_set_size_groups		(GsAppWidget	*app_widget,
+							 GtkSizeGroup	*image,
+							 GtkSizeGroup	*name);
 
 G_END_DECLS
 

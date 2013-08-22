@@ -26,7 +26,7 @@
 #include "gs-app-widget.h"
 
 static void	gs_shell_updates_finalize	(GObject	*object);
-static void     show_update_details             (GsAppWidget *app_widget, GsShellUpdates *shell_updates);
+static void     show_update_details	     (GsAppWidget *app_widget, GsShellUpdates *shell_updates);
 
 #define GS_SHELL_UPDATES_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_UPDATES, GsShellUpdatesPrivate))
 
@@ -109,10 +109,8 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		app = GS_APP (l->data);
 		g_debug ("adding update %s", gs_app_get_id (app));
 		widget = gs_app_widget_new ();
-                g_signal_connect (widget, "read-more-clicked",
-                                  G_CALLBACK (show_update_details), shell_updates);
-		gs_app_widget_set_kind (GS_APP_WIDGET (widget),
-					GS_APP_WIDGET_KIND_UPDATE);
+		g_signal_connect (widget, "read-more-clicked",
+				  G_CALLBACK (show_update_details), shell_updates);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
 		gtk_widget_show (widget);
@@ -304,7 +302,7 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 {
 	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
 
-        show_update_details (app_widget, shell_updates);
+	show_update_details (app_widget, shell_updates);
 }
 
 /**
@@ -427,7 +425,7 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			  G_CALLBACK (gs_shell_updates_button_close_cb),
 			  shell_updates);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-        g_signal_connect (widget, "delete-event",
+	g_signal_connect (widget, "delete-event",
 			  G_CALLBACK (gtk_widget_hide_on_delete),
 			  shell_updates);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));

@@ -330,6 +330,7 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 		/* create new meta object */
 		app = gs_app_new ("os-update");
 		gs_app_set_kind (app, GS_APP_KIND_OS_UPDATE);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		gs_app_set_name (app, _("OS Updates"));
 		gs_app_set_summary (app, _("Includes performance, stability and security improvements for all users."));
 		gs_app_set_description (app, _("Includes performance, stability and security improvements for all users."));
