@@ -144,14 +144,6 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 	/* set window title */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
 	kind = gs_app_get_kind (app);
-g_print ("app %s: ", gs_app_get_name (app));
-switch (kind) {
-case GS_APP_KIND_UNKNOWN: g_print ("unknown\n"); break;
-case GS_APP_KIND_SYSTEM: g_print ("system\n"); break;
-case GS_APP_KIND_PACKAGE: g_print ("package\n"); break;
-case GS_APP_KIND_OS_UPDATE: g_print ("os update\n"); break;
-default:;
-}
 	if (kind == GS_APP_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (widget), gs_app_get_name (app));
 	} else {
