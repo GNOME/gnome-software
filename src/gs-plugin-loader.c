@@ -924,6 +924,8 @@ typedef struct {
 	GsAppState	 state_progress;
 	GsAppState	 state_success;
 	GsAppState	 state_failure;
+	GsPluginLoaderFinishedFunc func;
+	gpointer	 func_user_data;
 } GsPluginLoaderThreadHelper;
 
 /**
@@ -959,6 +961,13 @@ gs_plugin_loader_thread_func (gpointer user_data)
 	g_ptr_array_remove (helper->plugin_loader->priv->pending_apps, helper->app);
 	g_signal_emit (helper->plugin_loader, signals[SIGNAL_PENDING_APPS_CHANGED], 0);
 
+	/* fire finished func */
+	if (helper->func != NULL) {
+		helper->func (helper->plugin_loader,
+			      ret ? helper->app : NULL,
+			      helper->func_user_data);
+	}
+
 	g_object_unref (helper->plugin_loader);
 	g_object_unref (helper->app);
 	if (helper->cancellable != NULL)
@@ -973,12 +982,16 @@ gs_plugin_loader_thread_func (gpointer user_data)
 void
 gs_plugin_loader_app_install (GsPluginLoader *plugin_loader,
 			      GsApp *app,
-			      GCancellable *cancellable)
+			      GCancellable *cancellable,
+			      GsPluginLoaderFinishedFunc func,
+			      gpointer user_data)
 {
 	GsPluginLoaderThreadHelper *helper;
 	helper = g_new0 (GsPluginLoaderThreadHelper, 1);
 	helper->plugin_loader = g_object_ref (plugin_loader);
 	helper->app = g_object_ref (app);
+	helper->func = func;
+	helper->func_user_data = user_data;
 	if (cancellable != NULL)
 		helper->cancellable = g_object_ref (cancellable);
 	helper->function_name = "gs_plugin_app_install";
@@ -996,12 +1009,16 @@ gs_plugin_loader_app_install (GsPluginLoader *plugin_loader,
 void
 gs_plugin_loader_app_remove (GsPluginLoader *plugin_loader,
 			     GsApp *app,
-			     GCancellable *cancellable)
+			     GCancellable *cancellable,
+			     GsPluginLoaderFinishedFunc func,
+			     gpointer user_data)
 {
 	GsPluginLoaderThreadHelper *helper;
 	helper = g_new0 (GsPluginLoaderThreadHelper, 1);
 	helper->plugin_loader = g_object_ref (plugin_loader);
 	helper->app = g_object_ref (app);
+	helper->func = func;
+	helper->func_user_data = user_data;
 	if (cancellable != NULL)
 		helper->cancellable = g_object_ref (cancellable);
 	helper->function_name = "gs_plugin_app_remove";

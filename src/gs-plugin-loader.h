@@ -60,6 +60,10 @@ typedef enum
 	GS_PLUGIN_LOADER_ERROR_LAST
 } GsPluginLoaderError;
 
+typedef void	 (*GsPluginLoaderFinishedFunc)		(GsPluginLoader	*plugin_loader,
+							 GsApp		*app,
+							 gpointer	 user_data);
+
 GQuark		 gs_plugin_loader_error_quark		(void);
 GType		 gs_plugin_loader_get_type		(void);
 
@@ -109,10 +113,14 @@ gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_app_install		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GCancellable	*cancellable);
+							 GCancellable	*cancellable,
+							 GsPluginLoaderFinishedFunc func,
+							 gpointer	 user_data);
 void		 gs_plugin_loader_app_remove		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GCancellable	*cancellable);
+							 GCancellable	*cancellable,
+							 GsPluginLoaderFinishedFunc func,
+							 gpointer	 user_data);
 gboolean	 gs_plugin_loader_app_set_rating	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GCancellable	*cancellable,

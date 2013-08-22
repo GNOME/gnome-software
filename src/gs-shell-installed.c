@@ -149,6 +149,31 @@ gs_shell_installed_app_widget_read_more_clicked_cb (GsAppWidget *app_widget,
 
 	gtk_window_present (GTK_WINDOW (details));
 }
+
+typedef struct {
+	GsAppWidget		*app_widget;
+	GsShellInstalled	*shell_installed;
+} GsShellInstalledHelper;
+
+/**
+ * gs_shell_installed_finished_func:
+ **/
+static void
+gs_shell_installed_finished_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
+{
+	GsShellInstalledHelper *helper = (GsShellInstalledHelper *) user_data;
+	GsShellInstalledPrivate *priv = helper->shell_installed->priv;
+
+	/* remove from the list */
+	if (app != NULL) {
+		gtk_container_remove (GTK_CONTAINER (priv->list_box_installed),
+				      gtk_widget_get_parent (GTK_WIDGET (helper->app_widget)));
+	}
+	g_object_unref (helper->app_widget);
+	g_object_unref (helper->shell_installed);
+	g_free (helper);
+}
+
 /**
  * gs_shell_installed_app_remove_cb:
  **/
@@ -162,6 +187,7 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 	GtkResponseType response;
 	GtkWidget *dialog;
 	GtkWindow *window;
+	GsShellInstalledHelper *helper;
 
 	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 	markup = g_string_new ("");
@@ -184,9 +210,14 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (response == GTK_RESPONSE_OK) {
 		g_debug ("remove %s", gs_app_get_id (app));
+		helper = g_new0 (GsShellInstalledHelper, 1);
+		helper->shell_installed = g_object_ref (shell_installed);
+		helper->app_widget = g_object_ref (app_widget);
 		gs_plugin_loader_app_remove (priv->plugin_loader,
 					     app,
-					     NULL); /* cancellable */
+					     NULL, /* cancellable */
+					     gs_shell_installed_finished_func,
+					     helper);
 	}
 	g_string_free (markup, TRUE);
 	gtk_widget_destroy (dialog);
