@@ -202,13 +202,13 @@ gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const 
 	priv->mode = mode;
 	switch (mode) {
 	case GS_SHELL_MODE_OVERVIEW:
-		gs_shell_overview_refresh (priv->shell_overview, priv->cancellable);
+		gs_shell_overview_refresh (priv->shell_overview);
 		break;
 	case GS_SHELL_MODE_INSTALLED:
-		gs_shell_installed_refresh (priv->shell_installed, priv->cancellable);
+		gs_shell_installed_refresh (priv->shell_installed);
 		break;
 	case GS_SHELL_MODE_UPDATES:
-		gs_shell_updates_refresh (priv->shell_updates, priv->cancellable);
+		gs_shell_updates_refresh (priv->shell_updates);
 		break;
 	case GS_SHELL_MODE_DETAILS:
 		tmp = gs_app_get_name (app);
@@ -394,13 +394,16 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	gs_shell_updates_setup (priv->shell_updates,
 				priv->plugin_loader,
-				priv->builder);
+				priv->builder,
+				priv->cancellable);
 	gs_shell_installed_setup (priv->shell_installed,
 				  priv->plugin_loader,
-				  priv->builder);
+				  priv->builder,
+				  priv->cancellable);
 	gs_shell_overview_setup (priv->shell_overview,
 				 priv->plugin_loader,
-				 priv->builder);
+				 priv->builder,
+				 priv->cancellable);
 	g_signal_connect (priv->shell_overview, "set-overview-mode",
 			  G_CALLBACK (gs_shell_set_overview_mode_cb), shell);
 

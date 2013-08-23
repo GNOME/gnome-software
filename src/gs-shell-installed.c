@@ -36,6 +36,7 @@ struct GsShellInstalledPrivate
 {
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
+	GCancellable		*cancellable;
 	GtkListBox		*list_box_installed;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
@@ -216,7 +217,7 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 		helper->app_widget = g_object_ref (app_widget);
 		gs_plugin_loader_app_remove (priv->plugin_loader,
 					     app,
-					     NULL, /* cancellable */
+					     priv->cancellable,
 					     gs_shell_installed_finished_func,
 					     helper);
 	}
@@ -283,8 +284,7 @@ out: ;
  * gs_shell_installed_refresh:
  **/
 void
-gs_shell_installed_refresh (GsShellInstalled *shell_installed,
-			    GCancellable *cancellable)
+gs_shell_installed_refresh (GsShellInstalled *shell_installed)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
         GtkWidget *widget;
@@ -307,7 +307,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed,
 
 	/* get popular apps */
 	gs_plugin_loader_get_installed_async (priv->plugin_loader,
-					      cancellable,
+					      priv->cancellable,
 					      gs_shell_installed_get_installed_cb,
 					      shell_installed);
 	priv->waiting = TRUE;
@@ -454,7 +454,8 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 void
 gs_shell_installed_setup (GsShellInstalled *shell_installed,
 			  GsPluginLoader *plugin_loader,
-			  GtkBuilder *builder)
+			  GtkBuilder *builder,
+			  GCancellable *cancellable)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 	GtkWidget *widget;
@@ -467,6 +468,7 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 			  shell_installed);
 
 	priv->builder = g_object_ref (builder);
+	priv->cancellable = g_object_ref (cancellable);
 
 	/* refilter on search box changing */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
@@ -530,6 +532,7 @@ gs_shell_installed_finalize (GObject *object)
 
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
+	g_object_unref (priv->cancellable);
 
 	G_OBJECT_CLASS (gs_shell_installed_parent_class)->finalize (object);
 }

@@ -37,6 +37,7 @@ struct GsShellUpdatesPrivate
 {
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
+	GCancellable		*cancellable;
 	GtkListBox		*list_box_updates;
 	gboolean		 cache_valid;
 	gboolean		 waiting;
@@ -145,7 +146,7 @@ out:
  * gs_shell_updates_refresh:
  **/
 void
-gs_shell_updates_refresh (GsShellUpdates *shell_updates, GCancellable *cancellable)
+gs_shell_updates_refresh (GsShellUpdates *shell_updates)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
         GtkWidget *widget;
@@ -173,7 +174,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates, GCancellable *cancellab
 	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
-					    cancellable,
+					    priv->cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
 					    shell_updates);
 	priv->waiting = TRUE;
@@ -279,8 +280,6 @@ gs_shell_updates_unselect_treeview_cb (gpointer user_data)
 static void
 show_update_details (GsAppWidget *app_widget, GsShellUpdates *shell_updates)
 {
-
-
 	GsApp *app = gs_app_widget_get_app (app_widget);
 	GsApp *app_related;
 	GsAppKind kind;
@@ -438,7 +437,8 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 void
 gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			GsPluginLoader *plugin_loader,
-			GtkBuilder *builder)
+			GtkBuilder *builder,
+			GCancellable *cancellable)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkCellRenderer *renderer;
@@ -453,6 +453,7 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			  G_CALLBACK (gs_shell_updates_pending_apps_changed_cb),
 			  shell_updates);
 	priv->builder = g_object_ref (builder);
+	priv->cancellable = g_object_ref (cancellable);
 
 	/* setup updates */
 	priv->list_box_updates = GTK_LIST_BOX (gtk_list_box_new ());
@@ -543,6 +544,7 @@ gs_shell_updates_finalize (GObject *object)
 
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
+	g_object_unref (priv->cancellable);
 
 	G_OBJECT_CLASS (gs_shell_updates_parent_class)->finalize (object);
 }

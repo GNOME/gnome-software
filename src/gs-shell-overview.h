@@ -57,11 +57,11 @@ GType		 gs_shell_overview_get_type	(void);
 
 GsShellOverview	*gs_shell_overview_new		(void);
 void		 gs_shell_overview_invalidate	(GsShellOverview	*shell_overview);
-void		 gs_shell_overview_refresh	(GsShellOverview	*shell_overview,
-						 GCancellable		*cancellable);
+void		 gs_shell_overview_refresh	(GsShellOverview	*shell_overview);
 void 		 gs_shell_overview_setup	(GsShellOverview	*shell_overview,
 						 GsPluginLoader		*plugin_loader,
-						 GtkBuilder		*builder);
+						 GtkBuilder		*builder,
+						 GCancellable		*cancellable);
 void		 gs_shell_overview_set_category	(GsShellOverview	*shell_overview,
 						 const gchar		*category);
 

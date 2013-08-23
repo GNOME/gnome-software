@@ -34,6 +34,7 @@ struct GsShellOverviewPrivate
 {
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
+	GCancellable		*cancellable;
 	gboolean		 cache_valid;
 };
 
@@ -419,7 +420,7 @@ out:
  * gs_shell_overview_refresh:
  **/
 void
-gs_shell_overview_refresh (GsShellOverview *shell_overview, GCancellable *cancellable)
+gs_shell_overview_refresh (GsShellOverview *shell_overview)
 {
 	GsShellOverviewPrivate *priv = shell_overview->priv;
 	/* FIXME get real categories */
@@ -451,13 +452,13 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview, GCancellable *cancel
 
 	/* get popular apps */
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
-					    cancellable,
+					    priv->cancellable,
 					    gs_shell_overview_get_popular_cb,
 					    shell_overview);
 
 	/* get featured apps */
 	gs_plugin_loader_get_featured_async (priv->plugin_loader,
-					     cancellable,
+					     priv->cancellable,
 					     gs_shell_overview_get_featured_cb,
 					     shell_overview);
 	priv->cache_valid = TRUE;
@@ -468,8 +469,9 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview, GCancellable *cancel
  */
 void
 gs_shell_overview_setup (GsShellOverview *shell_overview,
-		    GsPluginLoader *plugin_loader,
-		    GtkBuilder *builder)
+			 GsPluginLoader *plugin_loader,
+			 GtkBuilder *builder,
+			 GCancellable *cancellable)
 {
 	GsShellOverviewPrivate *priv = shell_overview->priv;
 
@@ -477,6 +479,7 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
+	priv->cancellable = g_object_ref (cancellable);
 }
 
 /**
@@ -518,6 +521,7 @@ gs_shell_overview_finalize (GObject *object)
 
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
+	g_object_unref (priv->cancellable);
 
 	G_OBJECT_CLASS (gs_shell_overview_parent_class)->finalize (object);
 }

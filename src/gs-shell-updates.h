@@ -53,10 +53,10 @@ GType		 gs_shell_updates_get_type	(void);
 
 GsShellUpdates	*gs_shell_updates_new		(void);
 void		 gs_shell_updates_invalidate	(GsShellUpdates		*shell_updates);
-void		 gs_shell_updates_refresh	(GsShellUpdates		*shell_updates,
-						 GCancellable		*cancellable);
+void		 gs_shell_updates_refresh	(GsShellUpdates		*shell_updates);
 void 		 gs_shell_updates_setup		(GsShellUpdates		*shell_updates,
 						 GsPluginLoader		*plugin_loader,
-						 GtkBuilder		*builder);
+						 GtkBuilder		*builder,
+						 GCancellable		*cancellable);
 
 #endif /* __GS_SHELL_UPDATES_H */
