@@ -269,8 +269,6 @@ gs_shell_set_overview_mode_cb (GsShellOverview *shell_overview,
 GtkWindow *
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
-	GError *error = NULL;
-	gint retval;
 	GsShellPrivate *priv = shell->priv;
 	GtkWidget *main_window = NULL;
 	GtkWidget *widget;
@@ -281,16 +279,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	priv->cancellable = g_object_ref (cancellable);
 
 	/* get UI */
-	priv->builder = gtk_builder_new ();
-	retval = gtk_builder_add_from_resource (priv->builder,
-						"/org/gnome/software/gnome-software.ui",
-						&error);
-	if (retval == 0) {
-		g_warning ("failed to load ui: %s",
-			   error->message);
-		g_error_free (error);
-		goto out;
-	}
+	priv->builder = gtk_builder_new_from_resource ("/org/gnome/software/gnome-software.ui");
 
 	/* add application specific icons to search path */
 	gtk_icon_theme_append_search_path (gtk_icon_theme_get_default (),
@@ -357,7 +346,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* show main UI */
 	gtk_widget_show (main_window);
 	gs_shell_set_overview_mode (shell, priv->app_startup_mode, NULL, NULL);
-out:
+
 	return GTK_WINDOW (main_window);
 }
 
