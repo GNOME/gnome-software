@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-08-22 17:20+0000\n"
-"PO-Revision-Date: 2013-08-22 20:18+0200\n"
+"POT-Creation-Date: 2013-08-23 01:55+0000\n"
+"PO-Revision-Date: 2013-08-23 07:29+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -31,7 +31,7 @@ msgstr "Přidat, odebrat nebo aktualizovat software v tomto počítači"
 msgid "All"
 msgstr "Vše"
 
-#: ../src/gnome-software.ui.h:3
+#: ../src/gnome-software.ui.h:3 ../src/gs-shell-installed.c:443
 msgid "Installed"
 msgstr "Nainstalováné"
 
@@ -39,47 +39,53 @@ msgstr "Nainstalováné"
 msgid "Updates"
 msgstr "Aktualizace"
 
-#: ../src/gnome-software.ui.h:5
+#: ../src/gnome-software.ui.h:5 ../src/gs-shell-updates.c:422
+#: ../src/gs-shell-updates.c:423
 msgid "Restart & Install"
 msgstr "Restartovat a instalovat"
 
-#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:93
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:137
 msgid "Install"
 msgstr "Instalovat"
 
-#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:99
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:143
+#: ../src/gs-shell-installed.c:210
 msgid "Remove"
 msgstr "Odebrat"
 
 #: ../src/gnome-software.ui.h:8
+msgid "Refreshing"
+msgstr "Aktualizuje se"
+
+#: ../src/gnome-software.ui.h:9
 msgid "Featured"
 msgstr "Důležité"
 
-#: ../src/gnome-software.ui.h:9
+#: ../src/gnome-software.ui.h:10
 msgid "Picks"
 msgstr "Doporučené"
 
-#: ../src/gnome-software.ui.h:10
+#: ../src/gnome-software.ui.h:11
 msgid "Categories"
 msgstr "Kategorie"
 
-#: ../src/gnome-software.ui.h:11
+#: ../src/gnome-software.ui.h:12
 msgid "Software is up to date"
 msgstr "Software je aktuální"
 
-#: ../src/gnome-software.ui.h:12
+#: ../src/gnome-software.ui.h:13
 msgid "GNU Image Manipulation Program"
 msgstr "GNU Image Manipulation Program"
 
-#: ../src/gnome-software.ui.h:13
+#: ../src/gnome-software.ui.h:14 ../src/gs-shell-installed.c:144
 msgid "Visit website"
 msgstr "Navštívit web"
 
-#: ../src/gnome-software.ui.h:14
+#: ../src/gnome-software.ui.h:15
 msgid "The Gimp"
 msgstr "The Gimp"
 
-#: ../src/gnome-software.ui.h:15
+#: ../src/gnome-software.ui.h:16
 msgid ""
 "GIMP (GNU Image Manipulation Program) is a powerful image composition and\n"
 "editing program, which can be extremely useful for creating logos and other\n"
@@ -106,43 +112,29 @@ msgstr ""
 "změny\n"
 "o více kroků zpět.\n"
 
-#: ../src/gnome-software.ui.h:23
+#: ../src/gnome-software.ui.h:24
 msgid "Application"
 msgstr "Aplikace"
 
-#: ../src/gnome-software.ui.h:24
+#: ../src/gnome-software.ui.h:25
 msgid "Category"
 msgstr "Kategorie"
 
-#: ../src/gnome-software.ui.h:25
+#: ../src/gnome-software.ui.h:26
 msgid "Done"
 msgstr "Hotovo"
 
-#: ../src/gs-app-widget.c:105
+#: ../src/gs-app-widget.c:149
 msgid "Update"
 msgstr "Aktualizovat"
 
-#: ../src/gs-app-widget.c:113
-#| msgid "Install"
+#: ../src/gs-app-widget.c:157
 msgid "Installing"
 msgstr "Instaluje se"
 
-#: ../src/gs-app-widget.c:120
-#| msgid "Remove"
+#: ../src/gs-app-widget.c:164
 msgid "Removing"
 msgstr "Odebírá se"
-
-#: ../src/gs-app-widget.c:334
-#| msgid ""
-#| "The author of this software has not included a 'Description' in the "
-#| "desktop file..."
-msgid "The author of this software has not included a long description."
-msgstr "Autor tohoto softwaru nepřiložil žádný dlouhý popis."
-
-#: ../src/gs-app-widget.c:343 ../src/gs-app-widget.c:438
-#| msgid "More"
-msgid "Read More"
-msgstr "Přečíst si více"
 
 #. TRANSLATORS: this is the transaction status
 #: ../src/gs-main.c:139
@@ -177,7 +169,6 @@ msgid "Setting up..."
 msgstr "Nastavuje se…"
 
 #: ../src/gs-main.c:439
-#| msgid "Start up mode, either 'updates', 'installed' or 'new'"
 msgid "Start up mode, either 'updates', 'installed' or 'overview'"
 msgstr ""
 "Režim spuštění, buď „updates“ (aktualizace), „installed“ (nainstalované) "
@@ -196,3 +187,33 @@ msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
 "Zahrnuje zdokonalení výkonu, stability a bezpečnosti pro všechny uživatele."
+
+#: ../src/gs-shell-installed.c:93
+msgid "Details"
+msgstr "Podrobnosti"
+
+#: ../src/gs-shell-installed.c:96
+msgid "_Done"
+msgstr "_Hotovo"
+
+#: ../src/gs-shell-installed.c:197
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Opravdu chcete odebrat %s?"
+
+#: ../src/gs-shell-installed.c:208
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr ""
+"%s bude odebrán a když jej budete chtít použít, budete jej muset znovu "
+"nainstalovat."
+
+#: ../src/gs-shell-installed.c:445
+#, c-format
+msgid "Installed (%d)"
+msgstr "Nainstalováné (%d)"
+
+#: ../src/gs-shell-updates.c:425
+msgid "Make sure you have no unsaved documents before proceeding."
+msgstr ""
+"Před provedením se ujistěte, že nemáte neuložené rozpracované dokumenty."
