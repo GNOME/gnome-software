@@ -448,7 +448,7 @@ main (int argc, char **argv)
 
 	gtk_init (&argc, &argv);
 
-	context = g_option_context_new ("gnome-color-manager profile main");
+	context = g_option_context_new ("");
 	g_option_context_add_main_entries (context, options, NULL);
 	g_option_context_add_group (context, gtk_get_option_group (TRUE));
 	ret = g_option_context_parse (context, &argc, &argv, &error);
