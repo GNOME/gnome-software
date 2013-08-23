@@ -852,8 +852,9 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			if (g_error_matches (error_local,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
-				g_debug ("not supported for plugin %s",
-					 plugin->name);
+				g_debug ("not supported for plugin %s: %s",
+					 plugin->name,
+					 error_local->message);
 				g_clear_error (&error_local);
 			} else {
 				g_propagate_error (error, error_local);

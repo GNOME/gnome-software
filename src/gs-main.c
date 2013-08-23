@@ -510,6 +510,7 @@ main (int argc, char **argv)
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "hardcoded-screenshots", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "local-ratings", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "packagekit", TRUE);
+	gs_plugin_loader_set_enabled (priv->plugin_loader, "packagekit-refine", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "desktopdb", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "datadir-apps", TRUE);
 	gs_plugin_loader_set_enabled (priv->plugin_loader, "datadir-filename", TRUE);

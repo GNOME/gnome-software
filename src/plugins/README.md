@@ -110,6 +110,15 @@ Requires:    | `{package-id}`
 Refines:     | `nothing`
 Refines:     | `{package-id}`, `{package-name}`, `{package-summary}`, `{update-name}`, `{update-details}`
 
+### packagekit-refine ###
+Uses the system PackageKit instance to return convert filenames to package-ids.
+
+Overview:    | <p>
+-------------|---
+Methods:     | `nothing`
+Requires:    | `{datadir-desktop-filename}`
+Refines:     | `{package-id}`, `[installed]`
+
 ### desktopdb ###
 Uses the PackageKit desktop.db cache to map package names to, desktop names.
 
