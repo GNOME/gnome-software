@@ -87,23 +87,28 @@ create_popular_tile (GsShellOverview *shell_overview, GsApp *app)
 	GtkWidget *button, *frame, *box, *image, *label;
 	GtkWidget *f;
 
-	f = gtk_aspect_frame_new (NULL, 0.5, 0.5, 1, FALSE);
+	f = gtk_aspect_frame_new (NULL, 0.5, 0, 1, FALSE);
+	gtk_widget_set_valign (f, GTK_ALIGN_START);
 	gtk_frame_set_shadow_type (GTK_FRAME (f), GTK_SHADOW_NONE);
+        gtk_widget_set_size_request (f, -1, 200);
 	button = gtk_button_new ();
 	gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
 	frame = gtk_aspect_frame_new (NULL, 0.5, 1, 1, FALSE);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
 	gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
-	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_container_add (GTK_CONTAINER (frame), box);
-	image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
-	g_object_set (box, "margin", 12, NULL);
-	gtk_box_pack_start (GTK_BOX (box), image, FALSE, TRUE, 0);
-	label = gtk_label_new (gs_app_get_name (app));
-	g_object_set (label, "margin", 6, NULL);
-	gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
 	gtk_widget_set_halign (frame, GTK_ALIGN_FILL);
 	gtk_widget_set_valign (frame, GTK_ALIGN_FILL);
+	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
+	gtk_container_add (GTK_CONTAINER (frame), box);
+	gtk_widget_set_valign (box, GTK_ALIGN_FILL);
+	image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
+	gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
+	g_object_set (box, "margin", 12, NULL);
+	gtk_box_pack_start (GTK_BOX (box), image, TRUE, TRUE, 0);
+	label = gtk_label_new (gs_app_get_name (app));
+	gtk_widget_set_valign (label, GTK_ALIGN_END);
+	g_object_set (label, "margin", 6, NULL);
+	gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
 	gtk_container_add (GTK_CONTAINER (button), frame);
 	gtk_container_add (GTK_CONTAINER (f), button);
 	gtk_widget_show_all (f);
@@ -143,11 +148,11 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 		goto out;
 	}
 
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_popular"));
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
 	for (l = list, i = 0; l != NULL; l = l->next, i++) {
 		app = GS_APP (l->data);
 		tile = create_popular_tile (shell_overview, app);
-		gtk_grid_attach (GTK_GRID (grid), tile, i, 0, 1, 1);
+                gtk_box_pack_start (GTK_BOX (grid), tile, TRUE, TRUE, 0);
 	}
 out:
 	return;
@@ -441,7 +446,7 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview, GCancellable *cancel
 		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
 	}
 
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_popular"));
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
 	container_remove_all (GTK_CONTAINER (grid));
 
 	/* get popular apps */
