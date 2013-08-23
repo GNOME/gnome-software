@@ -104,10 +104,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		return;
 
 	tmp = (gchar *)gs_app_get_description (app_widget->priv->app);
-	if (tmp == NULL) {
-		tmp = _("The author of this software has not included a long description.");
-	}
-	else {
+	if (tmp) {
 		s = g_string_new (tmp);
 		_g_string_replace (s, "\n", " ");
 		tmp = s->str;

@@ -134,9 +134,6 @@ gs_shell_installed_app_widget_activated_cb (GtkListBox *list_box,
 	}
 	gtk_grid_attach (GTK_GRID (grid), label, 1, 1, 1, 1);
 	tmp = gs_app_get_description (app);
-	if (!tmp) {
-		tmp = _("The author of this software has not included a long description.");
-	}
 	label = gtk_label_new (tmp);
 	gtk_misc_set_alignment (GTK_MISC (label), 0, 0.5);
 	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);

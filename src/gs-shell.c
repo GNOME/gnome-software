@@ -231,12 +231,14 @@ gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const 
 			gtk_widget_set_visible (widget, FALSE);
 		}
 		tmp = gs_app_get_description (app);
-		if (tmp == NULL)
-			tmp = _("The author of this software has not included a 'Description' in the desktop file...");
-
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_description"));
-		gtk_label_set_label (GTK_LABEL (widget), tmp);
-		gtk_widget_set_visible (widget, TRUE);
+		if (tmp != NULL && tmp[0] != '\0') {
+			gtk_label_set_label (GTK_LABEL (widget), tmp);
+			gtk_widget_set_visible (widget, TRUE);
+		}
+		else {
+			gtk_widget_set_visible (widget, FALSE);
+		}
 
 		pixbuf = gs_app_get_pixbuf (app);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
