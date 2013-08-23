@@ -361,6 +361,74 @@ gs_main_app_widget_button_clicked_cb (GsAppWidget *app_widget, GsMainPrivate *pr
 }
 #endif
 
+static void
+about_activated (GSimpleAction *action,
+                 GVariant      *parameter,
+                 gpointer       app)
+{
+        const gchar *authors[] = {
+                "Richard Hughes",
+                "Matthias Clasen",
+                NULL
+        };
+        const gchar *designers[] = {
+                "William Jon McCann",
+                "Allan Day",
+                "Ryan Lerch",
+                NULL
+        };
+        GtkIconTheme *icon_theme;
+        GdkPixbuf *logo;
+        GtkWidget *dialog;
+        GList *windows;
+        GtkWindow *parent = NULL;
+
+        windows = gtk_application_get_windows (GTK_APPLICATION (app));
+        if (windows)
+                parent = windows->data;
+
+        icon_theme = gtk_icon_theme_get_default ();
+        logo = gtk_icon_theme_load_icon (icon_theme, "system-software-install", 256, 0, NULL);
+
+        dialog = gtk_about_dialog_new ();
+
+        if (parent) {
+                gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+                gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
+                gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
+        }
+
+        gtk_window_set_title (GTK_WINDOW (dialog), _("About GNOME Software"));
+        gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG (dialog), _("GNOME Software"));
+        gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (dialog), VERSION);
+        gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (dialog), _("A nice way to manage the software on your system."));
+        gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (dialog), logo);
+        gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG (dialog), GTK_LICENSE_GPL_2_0);
+        gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (dialog), authors);
+        gtk_about_dialog_add_credit_section (GTK_ABOUT_DIALOG (dialog), _("Design by"), designers);
+        gtk_about_dialog_set_translator_credits (GTK_ABOUT_DIALOG (dialog), _("translator-credits"));
+
+        g_signal_connect (dialog, "response",
+                          G_CALLBACK (gtk_widget_destroy), NULL);
+
+        gtk_window_present (GTK_WINDOW (dialog));
+
+        g_object_unref (logo);
+}
+
+static void
+quit_activated (GSimpleAction *action,
+                GVariant      *parameter,
+                gpointer       app)
+{
+        g_application_quit (G_APPLICATION (app));
+}
+
+static GActionEntry actions[] = {
+        { "about", about_activated, NULL, NULL, NULL },
+        { "quit", quit_activated, NULL, NULL, NULL }
+};
+
 /**
  * gs_main_startup_cb:
  **/
@@ -371,6 +439,17 @@ gs_main_startup_cb (GApplication *application, GsMainPrivate *priv)
 	GError *error = NULL;
 	gboolean ret;
 	GtkWindow *window;
+        GtkBuilder *builder;
+        GMenuModel *app_menu;
+
+        /* set up the app menu */
+        g_action_map_add_action_entries (G_ACTION_MAP (application),
+                                         actions, G_N_ELEMENTS (actions),
+                                         application);
+        builder = gtk_builder_new_from_resource ("/org/gnome/software/app-menu.ui");
+        app_menu = G_MENU_MODEL (gtk_builder_get_object (builder, "appmenu"));
+        gtk_application_set_app_menu (GTK_APPLICATION (application), app_menu);
+        g_object_unref (builder);
 
 	/* get CSS */
 	if (priv->provider == NULL) {
@@ -420,6 +499,7 @@ gs_main_activate_cb (GApplication *application, GsMainPrivate *priv)
 {
 	gs_shell_activate (priv->shell);
 }
+
 
 /**
  * main:

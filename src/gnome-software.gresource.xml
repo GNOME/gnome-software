@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <gresources>
  <gresource prefix="/org/gnome/software">
-  <file compressed="true">gnome-software.ui</file>
+  <file preprocess="xml-stripblanks">gnome-software.ui</file>
+  <file preprocess="xml-stripblanks">app-menu.ui</file>
   <file>gtk-style.css</file>
  </gresource>
 </gresources>

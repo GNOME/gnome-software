@@ -21,7 +21,8 @@ desktop_in_files =					\
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
 UI_FILES =						\
-	gnome-software.ui
+	gnome-software.ui				\
+	app-menu.ui
 
 bin_PROGRAMS =						\
 	gnome-software
