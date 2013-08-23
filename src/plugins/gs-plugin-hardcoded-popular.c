@@ -64,10 +64,6 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	/* just add each one */
 	for (i = 0; apps[i] != NULL; i++) {
 		app = gs_app_new (apps[i]);
-                if ((i % 2) == 0)
-                        gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-                else
-                        gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 		gs_plugin_add_app (list, app);
 	}
 	return TRUE;
