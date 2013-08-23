@@ -40,6 +40,7 @@ struct GsShellInstalledPrivate
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	gboolean		 cache_valid;
+	gboolean		 waiting;
 };
 
 G_DEFINE_TYPE (GsShellInstalled, gs_shell_installed, G_TYPE_OBJECT)
@@ -243,11 +244,14 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *widget;
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_wait"));
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
         gtk_spinner_stop (GTK_SPINNER (widget));
         gtk_widget_hide (widget);
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
         gtk_widget_hide (widget);
+
+        priv->waiting = FALSE;
+        priv->cache_valid = TRUE;
 
 	list = gs_plugin_loader_get_installed_finish (plugin_loader,
 						      res,
@@ -275,8 +279,7 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	/* focus back to the text extry */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	gtk_widget_grab_focus (widget);
-out:
-	return;
+out: ;
 }
 
 /**
@@ -293,21 +296,24 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed,
 	if (priv->cache_valid)
 		return;
 
-	/* remove old entries */
-	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
-
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_wait"));
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
         gtk_spinner_start (GTK_SPINNER (widget));
         gtk_widget_show (widget);
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
         gtk_widget_show (widget);
+
+        if (priv->waiting)
+                return;
+
+	/* remove old entries */
+	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
 
 	/* get popular apps */
 	gs_plugin_loader_get_installed_async (priv->plugin_loader,
 					      cancellable,
 					      gs_shell_installed_get_installed_cb,
 					      shell_installed);
-	priv->cache_valid = TRUE;
+	priv->waiting = TRUE;
 }
 
 /**
