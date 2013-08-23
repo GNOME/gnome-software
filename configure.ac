@@ -72,7 +72,7 @@ GLIB_GSETTINGS
 dnl ---------------------------------------------------------------------------
 dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
-PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.5.6)
+PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.9.13)
 PKG_CHECK_MODULES(PACKAGEKIT, packagekit-glib2 >= 0.8.10)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
 
