@@ -142,6 +142,13 @@
               </object>
             </child>
             <child>
+              <object class="GtkSpinner" id="header_spinner">
+              </object>
+              <packing>
+                <property name="pack_type">end</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="button_update_all">
                 <property name="label" translatable="yes">Restart &amp; Install</property>
                 <property name="visible">True</property>
@@ -176,13 +183,6 @@
                 <style>
                   <class name="destructive-action"/>
                 </style>
-              </object>
-              <packing>
-                <property name="pack_type">end</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinner" id="spinner_wait">
               </object>
               <packing>
                 <property name="pack_type">end</property>
