@@ -109,6 +109,9 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		_g_string_replace (s, "\n", " ");
 		tmp = s->str;
 	}
+        else {
+                tmp = (gchar *)gs_app_get_summary (app_widget->priv->app);
+        }
 	gtk_label_set_label (GTK_LABEL (priv->widget_description), tmp);
         if (s)
                 g_string_free (s, TRUE);
