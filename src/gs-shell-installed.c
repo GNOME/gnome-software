@@ -75,19 +75,22 @@ _gtk_container_remove_all (GtkContainer *container)
 }
 
 static void
-gs_shell_installed_app_widget_read_more_clicked_cb (GsAppWidget *app_widget,
-						    GsShellInstalled *shell_installed)
+gs_shell_installed_app_widget_activated_cb (GtkListBox *list_box,
+                                            GtkListBoxRow *row,
+					    GsShellInstalled *shell_installed)
 {
 	const gchar *tmp;
 	GsApp *app;
 	GtkWidget *details, *button, *grid;
 	GtkWidget *image, *label;
 	PangoAttrList *attr_list;
+        GsAppWidget *app_widget;
 
+        app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
 	app = gs_app_widget_get_app (app_widget);
 
 	details = gtk_dialog_new_with_buttons (_("Details"),
-					       GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (app_widget))),
+					       GTK_WINDOW (gtk_widget_get_toplevel (GTK_WIDGET (list_box))),
 					       GTK_DIALOG_MODAL,
 					       _("_Done"), GTK_RESPONSE_CLOSE,
 					       NULL);
@@ -260,9 +263,6 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 		widget = gs_app_widget_new ();
 		g_signal_connect (widget, "button-clicked",
 				  G_CALLBACK (gs_shell_installed_app_remove_cb),
-				  shell_installed);
-		g_signal_connect (widget, "read-more-clicked",
-				  G_CALLBACK (gs_shell_installed_app_widget_read_more_clicked_cb),
 				  shell_installed);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
@@ -472,6 +472,8 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 
 	/* setup installed */
 	priv->list_box_installed = GTK_LIST_BOX (gtk_list_box_new ());
+	g_signal_connect (priv->list_box_installed, "row-activated",
+			  G_CALLBACK (gs_shell_installed_app_widget_activated_cb), shell_installed);
 	gtk_list_box_set_header_func (priv->list_box_installed,
 				      gs_shell_installed_list_header_func,
 				      shell_installed,

@@ -32,10 +32,7 @@ struct _GsAppWidgetPrivate
 	ChMarkdown	*markdown;
 	GsApp		*app;
 	GtkWidget	*widget_button;
-	GtkWidget	*widget_description1;
-	GtkWidget	*widget_description2;
-	GtkWidget	*widget_description3;
-	GtkWidget	*widget_read_more;
+	GtkWidget	*widget_description;
 	GtkWidget	*widget_image;
 	GtkWidget	*widget_name;
 	GtkWidget	*widget_spinner;
@@ -49,11 +46,47 @@ G_DEFINE_TYPE (GsAppWidget, gs_app_widget, GTK_TYPE_BOX)
 
 enum {
 	SIGNAL_BUTTON_CLICKED,
-	SIGNAL_READ_MORE_CLICKED,
 	SIGNAL_LAST
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
+
+static guint
+_g_string_replace (GString *string, const gchar *search, const gchar *replace)
+{
+       gchar *tmp;
+       guint cnt = 0;
+       guint replace_len;
+       guint search_len;
+
+       search_len = strlen (search);
+       replace_len = strlen (replace);
+
+       do {
+	       tmp = g_strstr_len (string->str, -1, search);
+	       if (tmp == NULL)
+		       goto out;
+
+	       /* reallocate the string if required */
+	       if (search_len > replace_len) {
+		       g_string_erase (string,
+				       tmp - string->str,
+-				       search_len - replace_len);
+	       }
+	       if (search_len < replace_len) {
+		       g_string_insert_len (string,
+					    tmp - string->str,
+					    search,
+					    replace_len - search_len);
+	       }
+
+	       /* just memcmp in the new string */
+	       memcpy (tmp, replace, replace_len);
+	       cnt++;
+       } while (TRUE);
+out:
+       return cnt;
+}
 
 /**
  * gs_app_widget_refresh:
@@ -64,10 +97,24 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	GsAppWidgetPrivate *priv = app_widget->priv;
 	GtkStyleContext *context;
 	GtkWidget *box;
+        const gchar *tmp;
+        GString *s = NULL;
 
 	if (app_widget->priv->app == NULL)
 		return;
 
+	tmp = (gchar *)gs_app_get_description (app_widget->priv->app);
+	if (tmp == NULL) {
+		tmp = _("The author of this software has not included a long description.");
+	}
+	else {
+		s = g_string_new (tmp);
+		_g_string_replace (s, "\n", " ");
+		tmp = s->str;
+	}
+	gtk_label_set_label (GTK_LABEL (priv->widget_description), tmp);
+        if (s)
+                g_string_free (s, TRUE);
 	gtk_label_set_label (GTK_LABEL (priv->widget_name),
 			     gs_app_get_name (priv->app));
 	gtk_label_set_label (GTK_LABEL (priv->widget_version),
@@ -126,43 +173,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	box = gtk_widget_get_parent (priv->widget_button);
 	gtk_widget_set_visible (box, gtk_widget_get_visible (priv->widget_spinner) ||
 				     gtk_widget_get_visible (priv->widget_button));
-}
-
-static guint
-_g_string_replace (GString *string, const gchar *search, const gchar *replace)
-{
-       gchar *tmp;
-       guint cnt = 0;
-       guint replace_len;
-       guint search_len;
-
-       search_len = strlen (search);
-       replace_len = strlen (replace);
-
-       do {
-	       tmp = g_strstr_len (string->str, -1, search);
-	       if (tmp == NULL)
-		       goto out;
-
-	       /* reallocate the string if required */
-	       if (search_len > replace_len) {
-		       g_string_erase (string,
-				       tmp - string->str,
--				       search_len - replace_len);
-	       }
-	       if (search_len < replace_len) {
-		       g_string_insert_len (string,
-					    tmp - string->str,
-					    search,
-					    replace_len - search_len);
-	       }
-
-	       /* just memcmp in the new string */
-	       memcpy (tmp, replace, replace_len);
-	       cnt++;
-       } while (TRUE);
-out:
-       return cnt;
 }
 
 /**
@@ -230,12 +240,6 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 			      G_STRUCT_OFFSET (GsAppWidgetClass, button_clicked),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
-	signals [SIGNAL_READ_MORE_CLICKED] =
-		g_signal_new ("read-more-clicked",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsAppWidgetClass, read_more_clicked),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (GsAppWidgetPrivate));
 }
@@ -249,118 +253,6 @@ gs_app_widget_button_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
 	g_signal_emit (app_widget, signals[SIGNAL_BUTTON_CLICKED], 0);
 }
 
-static void
-break_lines (PangoContext *context,
-	     const gchar *text, const gchar *end,
-	     gint width,
-	     gchar **line1, gchar **line2, gchar **line3)
-{
-	PangoLayout *layout;
-	PangoLayoutIter *iter;
-	gchar *tmp;
-	gchar *p, *p2, *r;
-	gint i2 = 0, i3 = 0, i4 = 0;
-	gint lines;
-
-	layout = pango_layout_new (context);
-	pango_layout_set_width (layout, width * PANGO_SCALE);
-	pango_layout_set_wrap (layout, PANGO_WRAP_WORD);
-
-	tmp = g_strconcat (text, end, NULL);
-	pango_layout_set_text (layout, tmp, -1);
-	g_free (tmp);
-
-	lines = pango_layout_get_line_count (layout);
-
-	iter = pango_layout_get_iter (layout);
-	if (pango_layout_iter_next_line (iter))
-		i2 = pango_layout_iter_get_index (iter);
-	else
-		goto out;
-	if (pango_layout_iter_next_line (iter))
-		i3 = pango_layout_iter_get_index (iter);
-	else
-		goto out;
-	if (pango_layout_iter_next_line (iter))
-		i4 = pango_layout_iter_get_index (iter);
-	else
-		goto out;
-	pango_layout_iter_free (iter);
-
-	p = (gchar *)text + i4;
-	while (text <= p && pango_layout_get_line_count (layout) > 3) {
-		p = g_utf8_prev_char (p);
-		r = g_strndup (text, p - text);
-		p2 = g_strconcat (r, "...", end, NULL);
-		pango_layout_set_text (layout, p2, -1);
-		g_free (p2);
-		g_free (r);
-	}
-
-out:
-	g_object_unref (layout);
-
-	if (lines == 1) {
-		*line1 = g_strdup (text);
-		*line2 = NULL;
-		*line3 = NULL;
-	}
-	else if (lines == 2) {
-		i2 = MIN (i2, (gint)strlen (text));
-		*line1 = g_strndup (text, i2);
-		*line2 = g_strdup (text + i2);
-		*line3 = NULL;
-	}
-	else {
-		i2 = MIN (i2, (gint)strlen (text));
-		i3 = MIN (i3, (gint)strlen (text));
-		*line1 = g_strndup (text, i2);
-		*line2 = g_strndup (text + i2, i3 - i2);
-		*line3 = g_strdup (text + i3);
-	}
-}
-
-static void
-size_allocate_cb (GtkWidget     *box,
-		  GtkAllocation *allocation,
-		  GsAppWidget   *app_widget)
-{
-	gchar *tmp;
-	gchar *line1, *line2, *line3;
-	GString *s = NULL;
-
-	tmp = (gchar *)gs_app_get_description (app_widget->priv->app);
-	if (tmp == NULL) {
-		tmp = _("The author of this software has not included a long description.");
-	}
-	else {
-		s = g_string_new (tmp);
-		_g_string_replace (s, "\n", " ");
-		tmp = s->str;
-	}
-
-	break_lines (gtk_widget_get_pango_context (box),
-		     tmp, _("Read More"), allocation->width,
-		     &line1, &line2, &line3);
-
-	gtk_label_set_label (GTK_LABEL (app_widget->priv->widget_description1), line1);
-	gtk_label_set_label (GTK_LABEL (app_widget->priv->widget_description2), line2);
-	gtk_label_set_label (GTK_LABEL (app_widget->priv->widget_description3), line3);
-
-	if (s)
-		g_string_free (s, TRUE);
-}
-
-static gboolean
-read_more_cb (GtkLabel    *widget,
-	      const gchar *uri,
-	      GsAppWidget *app_widget)
-{
-	g_signal_emit (app_widget, signals[SIGNAL_READ_MORE_CLICKED], 0);
-
-	return TRUE;
-}
-
 /**
  * gs_app_widget_init:
  **/
@@ -368,8 +260,7 @@ static void
 gs_app_widget_init (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv;
-	GtkWidget *box, *box2;
-	gchar *tmp;
+	GtkWidget *box;
 	PangoAttrList *attr_list;
 
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
@@ -414,38 +305,16 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	gtk_box_pack_start (GTK_BOX (app_widget), box, FALSE, TRUE, 0);
 
 	/* description */
-	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_set_hexpand (box, TRUE);
-	gtk_widget_set_halign (box, GTK_ALIGN_FILL);
-	priv->widget_description1 = gtk_label_new (NULL);
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_description1), 0.0, 0.5);
-	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_description1), PANGO_ELLIPSIZE_END);
-	gtk_container_add (GTK_CONTAINER (box), priv->widget_description1);
-	priv->widget_description2 = gtk_label_new (NULL);
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_description2), 0.0, 0.5);
-	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_description2), PANGO_ELLIPSIZE_END);
-	gtk_container_add (GTK_CONTAINER (box), priv->widget_description2);
-	box2 = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
-	gtk_box_pack_start (GTK_BOX (box), box2, TRUE, TRUE, 0);
-	priv->widget_description3 = gtk_label_new (NULL);
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_description3), 0.0, 0.5);
-	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_description3), PANGO_ELLIPSIZE_END);
-	gtk_widget_set_size_request (priv->widget_description3, 100, -1);
-	gtk_container_add (GTK_CONTAINER (box2), priv->widget_description3);
-	priv->widget_read_more = gtk_label_new (NULL);
-	g_signal_connect (priv->widget_read_more, "activate-link",
-			  G_CALLBACK (read_more_cb), app_widget);
-	tmp = g_markup_printf_escaped ("<a href=''>%s</a>", _("Read More"));
-	gtk_label_set_markup (GTK_LABEL (priv->widget_read_more), tmp);
-	g_free (tmp);
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_read_more), 1, 0.5);
-	gtk_widget_set_halign (priv->widget_read_more, GTK_ALIGN_END);
-	gtk_box_pack_start (GTK_BOX (box2), priv->widget_read_more, TRUE, TRUE, 0);
+	priv->widget_description = gtk_label_new (NULL);
+        gtk_widget_show (priv->widget_description);
+        gtk_label_set_line_wrap (GTK_LABEL (priv->widget_description), TRUE);
+        gtk_label_set_lines (GTK_LABEL (priv->widget_description), 3);
+	gtk_widget_set_hexpand (priv->widget_description, TRUE);
+	gtk_widget_set_halign (priv->widget_description, GTK_ALIGN_FILL);
+	gtk_misc_set_alignment (GTK_MISC (priv->widget_description), 0.0, 0.5);
+	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_description), PANGO_ELLIPSIZE_END);
 
-	gtk_box_pack_start (GTK_BOX (app_widget), box, TRUE, TRUE, 0);
-	g_signal_connect (box, "size-allocate", G_CALLBACK (size_allocate_cb), app_widget);
-	gtk_widget_show_all (box);
-
+	gtk_box_pack_start (GTK_BOX (app_widget), priv->widget_description, TRUE, TRUE, 0);
 
 	/* button */
 	priv->widget_button = gtk_button_new_with_label ("button");

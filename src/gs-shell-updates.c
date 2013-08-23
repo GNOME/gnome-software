@@ -126,8 +126,6 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		app = GS_APP (l->data);
 		g_debug ("adding update %s, kind %d state %d", gs_app_get_id (app), gs_app_get_kind (app), gs_app_get_state (app));
 		widget = gs_app_widget_new ();
-		g_signal_connect (widget, "read-more-clicked",
-				  G_CALLBACK (show_update_details), shell_updates);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
 		gtk_widget_show (widget);
