@@ -406,29 +406,63 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
+reboot_failed (GObject      *source,
+               GAsyncResult *res,
+               gpointer      data)
+{
+        GVariant *ret;
+        const gchar *command;
+        GError *error = NULL;
+
+        ret = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
+        if (ret)
+                g_variant_unref (ret);
+
+        if (error) {
+                g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s\n", error->message);
+                g_error_free (error);
+                return;
+        }
+
+        command = "pkexec /usr/libexec/pk-trigger-offline-update --cancel";
+        g_debug ("calling '%s'", command);
+        if (!g_spawn_command_line_sync (command, NULL, NULL, NULL, &error)) {
+                g_warning ("Failed to call '%s': %s\n", command, error->message);
+                g_error_free (error);
+        }
+}
+
+static void
 gs_shell_updates_button_update_all_cb (GtkButton      *button,
                                        GsShellUpdates *updates)
 {
-        GtkWindow *window;
-        GtkWidget *dialog;
-        gint response;
+        GDBusConnection *bus;
+        const gchar *command;
+        GError *error = NULL;
 
-        window = GTK_WINDOW (gtk_builder_get_object (updates->priv->builder, "window_software"));
-        dialog = gtk_message_dialog_new (window,
-                                         GTK_DIALOG_MODAL,
-                                         GTK_MESSAGE_QUESTION,
-                                         GTK_BUTTONS_CANCEL,
-                                         _("Restart & Install"));
-        gtk_dialog_add_button (GTK_DIALOG (dialog), _("Restart & Install"), GTK_RESPONSE_OK);
-        gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-                                                  _("Make sure you have no unsaved documents before proceeding."));
-        response = gtk_dialog_run (GTK_DIALOG (dialog));
-
-        gtk_widget_destroy (dialog);
-
-        if (response == GTK_RESPONSE_OK) {
-                /* do something */
+        command = "pkexec /usr/libexec/pk-trigger-offline-update";
+        g_debug ("calling '%s'", command);
+        if (!g_spawn_command_line_sync (command, NULL, NULL, NULL, &error)) {
+                g_warning ("Failed to call '%s': %s\n", command, error->message);
+                g_error_free (error);
+                return;
         }
+
+        g_debug ("calling org.gnome.SessionManager.Reboot");
+        bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+        g_dbus_connection_call (bus,
+                                "org.gnome.SessionManager",
+                                "/org/gnome/SessionManager",
+                                "org.gnome.SessionManager",
+                                "Reboot",
+                                NULL,
+                                NULL,
+                                G_DBUS_CALL_FLAGS_NONE,
+                                G_MAXINT,
+                                NULL,
+                                reboot_failed,
+                                NULL);
+        g_object_unref (bus);
 }
 
 /**
