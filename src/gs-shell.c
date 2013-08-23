@@ -25,6 +25,7 @@
 #include <glib/gi18n.h>
 
 #include "gs-shell.h"
+#include "gs-shell-details.h"
 #include "gs-shell-installed.h"
 #include "gs-shell-overview.h"
 #include "gs-shell-updates.h"
@@ -43,13 +44,13 @@ struct GsShellPrivate
 	GsShellMode		 mode;
 	GsShellOverview		*shell_overview;
 	GsShellUpdates		*shell_updates;
+	GsShellDetails		*shell_details;
 	GtkBuilder		*builder;
 	guint			 tab_back_id;
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
 
-static void gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode, GsApp *app);
 static void gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const gchar *category);
 
 /**
@@ -67,11 +68,9 @@ gs_shell_activate (GsShell *shell)
  * gs_shell_set_overview_mode_ui:
  **/
 static void
-gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode, GsApp *app)
+gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode)
 {
 	GtkWidget *widget;
-	GsAppState state;
-	GsAppKind kind;
 	GsShellPrivate *priv = shell->priv;
 
 	priv->ignore_primary_buttons = TRUE;
@@ -103,6 +102,17 @@ gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode, GsApp *app)
 		break;
 
 	case GS_SHELL_MODE_DETAILS:
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
+		gtk_widget_set_visible (widget, TRUE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+		gtk_widget_set_visible (widget, TRUE);
+#ifdef SEARCH
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+		gtk_widget_set_visible (widget, FALSE);
+#endif
+		break;
 	case GS_SHELL_MODE_CATEGORY:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_set_visible (widget, FALSE);
@@ -110,21 +120,6 @@ gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode, GsApp *app)
 		gtk_widget_set_visible (widget, TRUE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 		gtk_widget_set_visible (widget, TRUE);
-		if (app) {
-			kind = gs_app_get_kind (app);
-			state = gs_app_get_state (app);
-		} else {
-			kind = GS_APP_KIND_UNKNOWN;
-			state = GS_APP_STATE_UNKNOWN;
-		}
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
-		gtk_widget_set_visible (widget, state == GS_APP_STATE_AVAILABLE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
-		gtk_widget_set_visible (widget, state == GS_APP_STATE_INSTALLED && kind == GS_APP_KIND_NORMAL);
-#ifdef SEARCH
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_set_visible (widget, FALSE);
-#endif
 		break;
 
 	default:
@@ -186,17 +181,14 @@ gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode, GsApp *app)
 static void
 gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const gchar *category)
 {
-	const gchar *tmp;
-	GdkPixbuf *pixbuf;
 	GsShellPrivate *priv = shell->priv;
 	GtkWidget *widget;
-	GtkWidget *widget2;
 
 	if (priv->ignore_primary_buttons)
 		return;
 
 	/* set controls */
-	gs_shell_set_overview_mode_ui (shell, mode, app);
+	gs_shell_set_overview_mode_ui (shell, mode);
 
 	/* do action for mode */
 	priv->mode = mode;
@@ -211,57 +203,8 @@ gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const 
 		gs_shell_updates_refresh (priv->shell_updates);
 		break;
 	case GS_SHELL_MODE_DETAILS:
-		tmp = gs_app_get_name (app);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_title"));
-		widget2 = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-		if (tmp != NULL && tmp[0] != '\0') {
-			gtk_label_set_label (GTK_LABEL (widget), tmp);
-			gtk_label_set_label (GTK_LABEL (widget2), tmp);
-			gtk_widget_set_visible (widget, TRUE);
-		}
-		else {
-			gtk_widget_set_visible (widget, FALSE);
-			gtk_label_set_label (GTK_LABEL (widget2), "");
-		}
-		tmp = gs_app_get_summary (app);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_summary"));
-		if (tmp != NULL && tmp[0] != '\0') {
-			gtk_label_set_label (GTK_LABEL (widget), tmp);
-			gtk_widget_set_visible (widget, TRUE);
-		}
-		else {
-			gtk_widget_set_visible (widget, FALSE);
-		}
-		tmp = gs_app_get_description (app);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_description"));
-		if (tmp != NULL && tmp[0] != '\0') {
-			gtk_label_set_label (GTK_LABEL (widget), tmp);
-			gtk_widget_set_visible (widget, TRUE);
-		}
-		else {
-			gtk_widget_set_visible (widget, FALSE);
-		}
-
-		pixbuf = gs_app_get_pixbuf (app);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
-		if (pixbuf != NULL) {
-			gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
-			gtk_widget_set_visible (widget, TRUE);
-		}
-		else {
-			gtk_widget_set_visible (widget, FALSE);
-		}
-
-		tmp = gs_app_get_url (app);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_url"));
-		if (tmp != NULL && tmp[0] != '\0') {
-			gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), tmp);
-			gtk_widget_set_visible (widget, TRUE);
-		}
-		else {
-			gtk_widget_set_visible (widget, FALSE);
-		}
-
+		gs_shell_details_set_app (priv->shell_details, app);
+		gs_shell_details_refresh (priv->shell_details);
 		break;
 	case GS_SHELL_MODE_CATEGORY:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
@@ -406,6 +349,10 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				 priv->cancellable);
 	g_signal_connect (priv->shell_overview, "set-overview-mode",
 			  G_CALLBACK (gs_shell_set_overview_mode_cb), shell);
+	gs_shell_details_setup (priv->shell_details,
+				priv->plugin_loader,
+				priv->builder,
+				priv->cancellable);
 
 	/* show main UI */
 	gtk_widget_show (main_window);
@@ -445,6 +392,7 @@ gs_shell_init (GsShell *shell)
 	shell->priv->shell_updates = gs_shell_updates_new ();
 	shell->priv->shell_installed = gs_shell_installed_new ();
 	shell->priv->shell_overview = gs_shell_overview_new ();
+	shell->priv->shell_details = gs_shell_details_new ();
 	shell->priv->app_startup_mode = GS_SHELL_MODE_OVERVIEW;
 	shell->priv->ignore_primary_buttons = FALSE;
 }
@@ -464,6 +412,7 @@ gs_shell_finalize (GObject *object)
 	g_object_unref (priv->shell_overview);
 	g_object_unref (priv->shell_updates);
 	g_object_unref (priv->shell_installed);
+	g_object_unref (priv->shell_details);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
 }
