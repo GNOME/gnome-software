@@ -71,6 +71,7 @@ gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode, GsApp *app)
 {
 	GtkWidget *widget;
 	GsAppState state;
+	GsAppKind kind;
 	GsShellPrivate *priv = shell->priv;
 
 	priv->ignore_primary_buttons = TRUE;
@@ -110,15 +111,16 @@ gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode, GsApp *app)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 		gtk_widget_set_visible (widget, TRUE);
 		if (app) {
+			kind = gs_app_get_kind (app);
 			state = gs_app_get_state (app);
-		}
-		else {
+		} else {
+			kind = GS_APP_KIND_UNKNOWN;
 			state = GS_APP_STATE_UNKNOWN;
 		}
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
 		gtk_widget_set_visible (widget, state == GS_APP_STATE_AVAILABLE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
-		gtk_widget_set_visible (widget, state == GS_APP_STATE_INSTALLED);
+		gtk_widget_set_visible (widget, state == GS_APP_STATE_INSTALLED && kind == GS_APP_KIND_NORMAL);
 #ifdef SEARCH
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 		gtk_widget_set_visible (widget, FALSE);
