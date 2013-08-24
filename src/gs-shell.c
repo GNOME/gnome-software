@@ -40,7 +40,6 @@ struct GsShellPrivate
 	GCancellable		*cancellable;
 	GsPluginLoader		*plugin_loader;
 	GsShellInstalled	*shell_installed;
-	GsShellMode		 app_startup_mode;
 	GsShellMode		 mode;
 	GsShellOverview		*shell_overview;
 	GsShellUpdates		*shell_updates;
@@ -345,18 +344,18 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	/* show main UI */
 	gtk_widget_show (main_window);
-	gs_shell_set_overview_mode (shell, priv->app_startup_mode, NULL, NULL);
+        gs_shell_set_mode (shell, GS_SHELL_MODE_OVERVIEW);
 
 	return GTK_WINDOW (main_window);
 }
 
 /**
- * gs_shell_set_default_mode:
+ * gs_shell_set_mode:
  **/
 void
-gs_shell_set_default_mode (GsShell *shell, GsShellMode mode)
+gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
-	shell->priv->app_startup_mode = mode;
+        gs_shell_set_overview_mode (shell, mode, NULL, NULL);
 }
 
 /**
@@ -382,7 +381,6 @@ gs_shell_init (GsShell *shell)
 	shell->priv->shell_installed = gs_shell_installed_new ();
 	shell->priv->shell_overview = gs_shell_overview_new ();
 	shell->priv->shell_details = gs_shell_details_new ();
-	shell->priv->app_startup_mode = GS_SHELL_MODE_OVERVIEW;
 	shell->priv->ignore_primary_buttons = FALSE;
 }
 

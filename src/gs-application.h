@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2012-2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -19,29 +19,22 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "config.h"
+#ifndef __GS_APPLICATION_H
+#define __GS_APPLICATION_H
 
-#include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <locale.h>
 
-#include "gs-application.h"
 
-int
-main (int argc, char **argv)
-{
-	int status = 0;
-        GsApplication *application;
+#define GS_APPLICATION_TYPE (gs_application_get_type ())
+#define GS_APPLICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GS_APPLICATION_TYPE, GsApplication))
 
-	setlocale (LC_ALL, "");
 
-	bindtextdomain (GETTEXT_PACKAGE, LOCALEDIR);
-	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
-	textdomain (GETTEXT_PACKAGE);
+typedef struct _GsApplication      GsApplication;
+typedef struct _GsApplicationClass GsApplicationClass;
 
-	application = gs_application_new ();
-	status = g_application_run (G_APPLICATION (application), argc, argv);
-        g_object_unref (application);
 
-	return status;
-}
+GType           gs_application_get_type    (void);
+GsApplication  *gs_application_new         (void);
+
+
+#endif  /* __GS_APPLICATION_H */
