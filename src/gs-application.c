@@ -168,7 +168,9 @@ gs_application_startup (GApplication *application)
         app->cancellable = g_cancellable_new ();
 
         window = gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
-        gtk_application_add_window (GTK_APPLICATION (app), GTK_WINDOW (window));
+        gtk_application_add_window (GTK_APPLICATION (app), window);
+
+        gtk_widget_show (GTK_WIDGET (window));
 }
 
 static void

@@ -286,8 +286,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	/* Hide window first so that the dialogue resizes itself without redrawing */
 	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	gtk_widget_hide (main_window);
-	gtk_window_set_default_size (GTK_WINDOW (main_window), 1200, 800);
 
         /* fix up the header bar */
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
@@ -343,7 +341,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				priv->cancellable);
 
 	/* show main UI */
-	gtk_widget_show (main_window);
         gs_shell_set_mode (shell, GS_SHELL_MODE_OVERVIEW);
 
 	return GTK_WINDOW (main_window);
