@@ -369,17 +369,14 @@ about_activated (GSimpleAction *action,
         const gchar *authors[] = {
                 "Richard Hughes",
                 "Matthias Clasen",
-                NULL
-        };
-        const gchar *designers[] = {
-                "William Jon McCann",
                 "Allan Day",
                 "Ryan Lerch",
+                "William Jon McCann",
                 NULL
         };
+        const gchar *copyright = "Copyright \xc2\xa9 2013 Richard Hughes, Matthias Clasen";
         GtkIconTheme *icon_theme;
         GdkPixbuf *logo;
-        GtkWidget *dialog;
         GList *windows;
         GtkWindow *parent = NULL;
 
@@ -390,28 +387,17 @@ about_activated (GSimpleAction *action,
         icon_theme = gtk_icon_theme_get_default ();
         logo = gtk_icon_theme_load_icon (icon_theme, "system-software-install", 256, 0, NULL);
 
-        dialog = gtk_about_dialog_new ();
-
-        if (parent) {
-                gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
-                gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
-                gtk_window_set_destroy_with_parent (GTK_WINDOW (dialog), TRUE);
-        }
-
-        gtk_window_set_title (GTK_WINDOW (dialog), _("About GNOME Software"));
-        gtk_about_dialog_set_program_name (GTK_ABOUT_DIALOG (dialog), _("GNOME Software"));
-        gtk_about_dialog_set_version (GTK_ABOUT_DIALOG (dialog), VERSION);
-        gtk_about_dialog_set_comments (GTK_ABOUT_DIALOG (dialog), _("A nice way to manage the software on your system."));
-        gtk_about_dialog_set_logo (GTK_ABOUT_DIALOG (dialog), logo);
-        gtk_about_dialog_set_license_type (GTK_ABOUT_DIALOG (dialog), GTK_LICENSE_GPL_2_0);
-        gtk_about_dialog_set_authors (GTK_ABOUT_DIALOG (dialog), authors);
-        gtk_about_dialog_add_credit_section (GTK_ABOUT_DIALOG (dialog), _("Design by"), designers);
-        gtk_about_dialog_set_translator_credits (GTK_ABOUT_DIALOG (dialog), _("translator-credits"));
-
-        g_signal_connect (dialog, "response",
-                          G_CALLBACK (gtk_widget_destroy), NULL);
-
-        gtk_window_present (GTK_WINDOW (dialog));
+        gtk_show_about_dialog (parent,
+                               "title", _("About GNOME Software"),
+                               "program-name", _("GNOME Software"),
+                               "authors", authors,
+                               "comments", _("A nice way to manager the software on your system."),
+                               "copyright", copyright,
+                               "license-type", GTK_LICENSE_GPL_2_0,
+                               "logo", logo,
+                               "translator-credits", _("translator-credits"),
+                               "version", VERSION,
+                               NULL);
 
         g_object_unref (logo);
 }
