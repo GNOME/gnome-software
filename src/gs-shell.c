@@ -29,6 +29,7 @@
 #include "gs-shell-installed.h"
 #include "gs-shell-overview.h"
 #include "gs-shell-updates.h"
+#include "gs-shell-category.h"
 
 static void	gs_shell_finalize	(GObject	*object);
 
@@ -44,6 +45,7 @@ struct GsShellPrivate
 	GsShellOverview		*shell_overview;
 	GsShellUpdates		*shell_updates;
 	GsShellDetails		*shell_details;
+	GsShellCategory         *shell_category;
 	GtkBuilder		*builder;
 	guint			 tab_back_id;
 };
@@ -181,7 +183,6 @@ static void
 gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const gchar *category)
 {
 	GsShellPrivate *priv = shell->priv;
-	GtkWidget *widget;
 
 	if (priv->ignore_primary_buttons)
 		return;
@@ -206,9 +207,8 @@ gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const 
 		gs_shell_details_refresh (priv->shell_details);
 		break;
 	case GS_SHELL_MODE_CATEGORY:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-		gtk_label_set_label (GTK_LABEL (widget), category);
-		gs_shell_overview_set_category (priv->shell_overview, category);
+		gs_shell_category_set_category (priv->shell_category, category);
+		gs_shell_category_refresh (priv->shell_category);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -234,32 +234,6 @@ static void
 gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 {
 	gs_shell_set_overview_mode (shell, shell->priv->tab_back_id, NULL, NULL);
-}
-
-#if 0
-/**
- * gs_shell_refresh:
- **/
-void
-gs_shell_refresh (GsShell *shell, GCancellable *cancellable)
-{
-	GsShellPrivate *priv = shell->priv;
-
-}
-#endif
-
-/**
- * gs_shell_set_overview_mode_cb:
- **/
-static void
-gs_shell_set_overview_mode_cb (GsShellOverview *shell_overview,
-			       GsShellMode mode,
-			       GsApp *app,
-			       const gchar *cat,
-			       GsShell *shell)
-{
-	g_return_if_fail (GS_IS_SHELL (shell));
-	gs_shell_set_overview_mode (shell, mode, app, cat);
 }
 
 /**
@@ -330,15 +304,17 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				  priv->builder,
 				  priv->cancellable);
 	gs_shell_overview_setup (priv->shell_overview,
+                                 shell,
 				 priv->plugin_loader,
 				 priv->builder,
 				 priv->cancellable);
-	g_signal_connect (priv->shell_overview, "set-overview-mode",
-			  G_CALLBACK (gs_shell_set_overview_mode_cb), shell);
 	gs_shell_details_setup (priv->shell_details,
 				priv->plugin_loader,
 				priv->builder,
 				priv->cancellable);
+	gs_shell_category_setup (priv->shell_category,
+                                 shell,
+				 priv->builder);
 
 	/* show main UI */
         gs_shell_set_mode (shell, GS_SHELL_MODE_OVERVIEW);
@@ -353,6 +329,18 @@ void
 gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
         gs_shell_set_overview_mode (shell, mode, NULL, NULL);
+}
+
+void
+gs_shell_show_details (GsShell *shell, GsApp *app)
+{
+        gs_shell_set_overview_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL);
+}
+
+void
+gs_shell_show_category (GsShell *shell, const gchar *category)
+{
+        gs_shell_set_overview_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category);
 }
 
 /**
@@ -378,6 +366,7 @@ gs_shell_init (GsShell *shell)
 	shell->priv->shell_installed = gs_shell_installed_new ();
 	shell->priv->shell_overview = gs_shell_overview_new ();
 	shell->priv->shell_details = gs_shell_details_new ();
+	shell->priv->shell_category = gs_shell_category_new ();
 	shell->priv->ignore_primary_buttons = FALSE;
 }
 
@@ -397,6 +386,7 @@ gs_shell_finalize (GObject *object)
 	g_object_unref (priv->shell_updates);
 	g_object_unref (priv->shell_installed);
 	g_object_unref (priv->shell_details);
+	g_object_unref (priv->shell_overview);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
 }

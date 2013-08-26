@@ -25,6 +25,8 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-app.h"
+#include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
@@ -47,10 +49,6 @@ typedef struct
 typedef struct
 {
 	GObjectClass		 parent_class;
-	void			(*set_overview_mode)	(GsShellOverview *shell_overview,
-							 GsShellMode	 mode,
-							 GsApp		*app,
-							 const gchar	*cat);
 } GsShellOverviewClass;
 
 GType		 gs_shell_overview_get_type	(void);
@@ -59,6 +57,7 @@ GsShellOverview	*gs_shell_overview_new		(void);
 void		 gs_shell_overview_invalidate	(GsShellOverview	*shell_overview);
 void		 gs_shell_overview_refresh	(GsShellOverview	*shell_overview);
 void 		 gs_shell_overview_setup	(GsShellOverview	*shell_overview,
+                                                 GsShell                *shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);

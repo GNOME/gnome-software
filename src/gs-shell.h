@@ -65,6 +65,10 @@ void		 gs_shell_refresh		(GsShell	*shell,
 						 GCancellable	*cancellable);
 void		 gs_shell_set_mode	        (GsShell	*shell,
 						 GsShellMode	 mode);
+void             gs_shell_show_details          (GsShell        *shell,
+                                                 GsApp          *app);
+void             gs_shell_show_category         (GsShell        *shell,
+                                                 const gchar    *category);
 GtkWindow	*gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);

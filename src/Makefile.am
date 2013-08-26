@@ -40,6 +40,8 @@ gnome_software_SOURCES =				\
 	gs-shell.h					\
 	gs-shell-details.c				\
 	gs-shell-details.h				\
+	gs-shell-category.c				\
+	gs-shell-category.h				\
 	gs-shell-installed.c				\
 	gs-shell-installed.h				\
 	gs-shell-overview.c				\
