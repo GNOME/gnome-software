@@ -258,19 +258,13 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	gtk_icon_theme_append_search_path (gtk_icon_theme_get_default (),
 					   GS_DATA G_DIR_SEPARATOR_S "icons");
 
-	/* Hide window first so that the dialogue resizes itself without redrawing */
-	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-
         /* fix up the header bar */
+	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
         g_object_ref (widget);
         gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (widget)), widget);
         gtk_window_set_titlebar (GTK_WINDOW (main_window), widget);
         g_object_unref (widget);
-
-	/* setup callbacks */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
-	gtk_notebook_set_show_tabs (GTK_NOTEBOOK (widget), FALSE);
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
