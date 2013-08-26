@@ -374,8 +374,8 @@ gs_shell_overview_set_category (GsShellOverview *shell_overview, const gchar *ca
  **/
 static void
 gs_shell_overview_get_featured_cb (GObject *source_object,
-			  GAsyncResult *res,
-			  gpointer user_data)
+               	 		   GAsyncResult *res,
+	         		   gpointer user_data)
 {
 	GdkPixbuf *pixbuf;
 	GError *error = NULL;
@@ -416,15 +416,12 @@ out:
 	return;
 }
 
-/**
- * gs_shell_overview_refresh:
- **/
-void
-gs_shell_overview_refresh (GsShellOverview *shell_overview)
+static void
+gs_shell_overview_get_categories (GsShellOverview *shell_overview)
 {
 	GsShellOverviewPrivate *priv = shell_overview->priv;
-	/* FIXME get real categories */
 	GtkWidget *grid;
+	/* FIXME get real categories */
 	const gchar *categories[] = {
 	  "Add-ons", "Books", "Business & Finance",
 	  "Entertainment", "Education", "Games",
@@ -435,20 +432,35 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 	guint i;
 	GtkWidget *tile;
 
-	/* no need to refresh */
-	if (priv->cache_valid)
-		return;
-
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
-	container_remove_all (GTK_CONTAINER (grid));
 
 	for (i = 0; i < G_N_ELEMENTS (categories); i++) {
 		tile = create_category_tile (shell_overview, categories[i]);
 		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
 	}
+}
+
+/**
+ * gs_shell_overview_refresh:
+ **/
+void
+gs_shell_overview_refresh (GsShellOverview *shell_overview)
+{
+	GsShellOverviewPrivate *priv = shell_overview->priv;
+	GtkWidget *grid;
+
+	/* no need to refresh */
+	if (priv->cache_valid)
+		return;
 
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
 	container_remove_all (GTK_CONTAINER (grid));
+
+	/* get featured apps */
+	gs_plugin_loader_get_featured_async (priv->plugin_loader,
+					     priv->cancellable,
+					     gs_shell_overview_get_featured_cb,
+					     shell_overview);
 
 	/* get popular apps */
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
@@ -456,11 +468,11 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 					    gs_shell_overview_get_popular_cb,
 					    shell_overview);
 
-	/* get featured apps */
-	gs_plugin_loader_get_featured_async (priv->plugin_loader,
-					     priv->cancellable,
-					     gs_shell_overview_get_featured_cb,
-					     shell_overview);
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
+	container_remove_all (GTK_CONTAINER (grid));
+
+        gs_shell_overview_get_categories (shell_overview);
+
 	priv->cache_valid = TRUE;
 }
 
