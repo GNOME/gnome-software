@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-05-31 01:23+0200\n"
-"PO-Revision-Date: 2013-05-31 01:27+0200\n"
+"POT-Creation-Date: 2013-08-27 01:44+0200\n"
+"PO-Revision-Date: 2013-08-27 01:49+0200\n"
 "Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
 "Language-Team: gnome-l10n-gl@gnome.org\n"
 "Language: gl\n"
@@ -17,6 +17,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Generator: Virtaal 0.7.1\n"
+
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "_Sobre"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "_Saír"
 
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
 msgid "Software"
@@ -27,10 +35,10 @@ msgid "Add, remove or update software on this computer"
 msgstr "Engadir, quitar ou anovar software neste computador"
 
 #: ../src/gnome-software.ui.h:2
-msgid "New"
-msgstr "Novo"
+msgid "All"
+msgstr "Todos"
 
-#: ../src/gnome-software.ui.h:3
+#: ../src/gnome-software.ui.h:3 ../src/gs-shell-installed.c:443
 msgid "Installed"
 msgstr "Instalado"
 
@@ -39,112 +47,215 @@ msgid "Updates"
 msgstr "Anovacións"
 
 #: ../src/gnome-software.ui.h:5
-msgid "Overview"
-msgstr "Vista previa"
+msgid "Restart & Install"
+msgstr "Reiniciar e instalar"
 
-#: ../src/gnome-software.ui.h:6
-msgid "Reviews"
-msgstr "Opinións"
-
-#: ../src/gnome-software.ui.h:7
-msgid "Related"
-msgstr "Relacionado"
-
-#: ../src/gnome-software.ui.h:8 ../src/gs-app-widget.c:99
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:140
+#: ../src/gs-shell-details.c:73
 msgid "Install"
 msgstr "Instalar"
 
-#: ../src/gnome-software.ui.h:9
-msgid "Update All"
-msgstr "Anovar todos"
-
-#: ../src/gnome-software.ui.h:10
-msgid "Featured"
-msgstr "Destacado"
-
-#: ../src/gnome-software.ui.h:11
-msgid "Popular"
-msgstr "Popular"
-
-#: ../src/gnome-software.ui.h:12
-msgid "Categories"
-msgstr "Categorías"
-
-#: ../src/gnome-software.ui.h:13
-msgid "Description"
-msgstr "Descrición"
-
-#: ../src/gnome-software.ui.h:14
-msgid ""
-"Shotwell is a digital photo organiser that runs on Linux. It is the default "
-"photo manager in Ubuntu and Fedora."
-msgstr ""
-"Shotwell é unorganizador de fotografías dixitais que se executa en Linux. É "
-"o xestor de fotos predefinido en Ubuntu e Fedora."
-
-#: ../src/gs-app-widget.c:105
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:146
+#: ../src/gs-shell-details.c:97 ../src/gs-shell-details.c:229
+#: ../src/gs-shell-installed.c:211
 msgid "Remove"
 msgstr "Retirar"
 
-#: ../src/gs-app-widget.c:111
+#: ../src/gnome-software.ui.h:8
+msgid "Refreshing"
+msgstr "Actualizando"
+
+#: ../src/gnome-software.ui.h:9
+msgid "Featured"
+msgstr "Destacado"
+
+#: ../src/gnome-software.ui.h:10
+msgid "Picks"
+msgstr "Seleccións"
+
+#: ../src/gnome-software.ui.h:11
+msgid "Categories"
+msgstr "Categorías"
+
+#: ../src/gnome-software.ui.h:12
+msgid "Software is up to date"
+msgstr "Todos o software está actualizado"
+
+#: ../src/gnome-software.ui.h:13
+msgid "GNU Image Manipulation Program"
+msgstr "Programa de Manipulación de Imaxes de GNU"
+
+#: ../src/gnome-software.ui.h:14 ../src/gs-shell-installed.c:145
+msgid "Visit website"
+msgstr "Visitar o sitio web"
+
+#: ../src/gnome-software.ui.h:15
+msgid "The Gimp"
+msgstr "O Gimp"
+
+#: ../src/gnome-software.ui.h:16
+msgid ""
+"GIMP (GNU Image Manipulation Program) is a powerful image composition and\n"
+"editing program, which can be extremely useful for creating logos and other\n"
+"graphics for webpages. GIMP has many of the tools and filters you would "
+"expect\n"
+"to find in similar commercial offerings, and some interesting extras as "
+"well.\n"
+"GIMP provides a large image manipulation toolbox, including channel "
+"operations\n"
+"and layers, effects, sub-pixel imaging and anti-aliasing, and conversions, "
+"all\n"
+"with multi-level undo.\n"
+msgstr ""
+"GIMP (Programa de manipulación de imaxes de GNU) é un compositor de imaxes e "
+"\n"
+"programa de edición moi potente, que pode ser extremadamente útil para crear "
+"\n"
+"logotipos e outros gráficos para páxinas web. GIMPM ten moitas das "
+"ferramentas\n"
+"e filtros que podería agardar dunha alternativa comercial similar, e algúns\n"
+"engadidos tamén. GIMP fornece un conxunto de ferramentas moi amplo de "
+"manipulación\n"
+"de imaxes, incluindo operacións de canles e capas, efectos, imaxe sub-pixel "
+"e\n"
+"suavizado, conversións, todo con operacións de desfacer de varios niveis."
+
+#: ../src/gnome-software.ui.h:24
+msgid "Application"
+msgstr "Aplicativo"
+
+#: ../src/gnome-software.ui.h:25
+msgid "Category"
+msgstr "Categoría"
+
+#: ../src/gnome-software.ui.h:26
+msgid "Done"
+msgstr "Feito"
+
+#: ../src/gs-application.c:84
+msgid "About GNOME Software"
+msgstr "Sobre GNOME Software"
+
+#: ../src/gs-application.c:85
+msgid "GNOME Software"
+msgstr "GNOME Software"
+
+#: ../src/gs-application.c:87
+msgid "A nice way to manager the software on your system."
+msgstr "Unha gran forma de xestionar o software no seu sistema."
+
+#: ../src/gs-application.c:91
+msgid "translator-credits"
+msgstr "Fran Dieguez <frandieguez@gnome.org>, 2013."
+
+#: ../src/gs-application.c:192
+msgid "Start up mode, either 'updates', 'installed' or 'overview'"
+msgstr "Modo de inicio, ou «updates», «installed» ou «overview»"
+
+#: ../src/gs-application.c:192
+msgid "MODE"
+msgstr "MODO"
+
+#: ../src/gs-app-widget.c:152
 msgid "Update"
 msgstr "Anovar"
 
-#. 'More' Expander
-#: ../src/gs-app-widget.c:438
-msgid "More  ▾"
-msgstr "Máis  ▾"
+#: ../src/gs-app-widget.c:160 ../src/gs-shell-details.c:78
+msgid "Installing"
+msgstr "Instalando"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:185
-msgid "Waiting for package manager..."
-msgstr "Agardando polo xestor de paquetes…"
+#: ../src/gs-app-widget.c:167 ../src/gs-shell-details.c:102
+msgid "Removing"
+msgstr "Retirando"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:189
-msgid "Loading list of packages..."
-msgstr "Cargando lista de paquetes…"
-
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:199 ../src/gs-main.c:260
-msgid "Downloading..."
-msgstr "Descargando…"
-
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:204 ../src/gs-main.c:264
-msgid "Querying..."
-msgstr "Consultando…"
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:252
-msgid "Waiting..."
-msgstr "Agardando…"
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:256
-msgid "Setting up..."
-msgstr "Configurando…"
-
-#. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:435
-msgid "Requires restart"
-msgstr "Require reiniciar"
-
-#: ../src/gs-main.c:803
-msgid ""
-"The author of this software has not included a 'Description' in the desktop "
-"file..."
-msgstr ""
-"O autor deste software non incluíu unha «Descrición» no ficheiro desktop…"
-
-#: ../src/gs-plugin-loader.c:306
-msgid "Includes performance, stability and security improvements for all users"
-msgstr ""
-"Inclúe melloras no rendemento, estabilidade e seguridade para todos os "
-"usuarios"
-
-#: ../src/gs-plugin-loader.c:338
+#: ../src/gs-plugin-loader.c:334
 msgid "OS Updates"
 msgstr "Anovacións do sistema operativo"
+
+#: ../src/gs-plugin-loader.c:335 ../src/gs-plugin-loader.c:336
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr ""
+"Inclúe melloras no rendemento, estabilidade e seguridade para todos os "
+"usuarios."
+
+#: ../src/gs-shell-details.c:216 ../src/gs-shell-installed.c:198
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Está seguro de que desexa retirar «%s»?"
+
+#: ../src/gs-shell-details.c:227 ../src/gs-shell-installed.c:209
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr "%s vaise retirar, e terá que instalalo para usalo de novo."
+
+#: ../src/gs-shell-installed.c:94
+msgid "Details"
+msgstr "Detalles"
+
+#: ../src/gs-shell-installed.c:97
+msgid "_Done"
+msgstr "_Feito"
+
+#: ../src/gs-shell-installed.c:445
+#, c-format
+msgid "Installed (%d)"
+msgstr "Instalado (%d)"
+
+#~ msgid "New"
+#~ msgstr "Novo"
+
+#~ msgid "Overview"
+#~ msgstr "Vista previa"
+
+#~ msgid "Reviews"
+#~ msgstr "Opinións"
+
+#~ msgid "Related"
+#~ msgstr "Relacionado"
+
+#~ msgid "Update All"
+#~ msgstr "Anovar todos"
+
+#~ msgid "Popular"
+#~ msgstr "Popular"
+
+#~ msgid "Description"
+#~ msgstr "Descrición"
+
+#~ msgid ""
+#~ "Shotwell is a digital photo organiser that runs on Linux. It is the "
+#~ "default photo manager in Ubuntu and Fedora."
+#~ msgstr ""
+#~ "Shotwell é unorganizador de fotografías dixitais que se executa en Linux. "
+#~ "É o xestor de fotos predefinido en Ubuntu e Fedora."
+
+#~ msgid "More  ▾"
+#~ msgstr "Máis  ▾"
+
+#~ msgid "Waiting for package manager..."
+#~ msgstr "Agardando polo xestor de paquetes…"
+
+#~ msgid "Loading list of packages..."
+#~ msgstr "Cargando lista de paquetes…"
+
+#~ msgid "Downloading..."
+#~ msgstr "Descargando…"
+
+#~ msgid "Querying..."
+#~ msgstr "Consultando…"
+
+#~ msgid "Waiting..."
+#~ msgstr "Agardando…"
+
+#~ msgid "Setting up..."
+#~ msgstr "Configurando…"
+
+#~ msgid "Requires restart"
+#~ msgstr "Require reiniciar"
+
+#~ msgid ""
+#~ "The author of this software has not included a 'Description' in the "
+#~ "desktop file..."
+#~ msgstr ""
+#~ "O autor deste software non incluíu unha «Descrición» no ficheiro desktop…"
