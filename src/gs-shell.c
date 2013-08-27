@@ -289,6 +289,11 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_overview_button_cb), shell);
 
+	gs_shell_overview_setup (priv->shell_overview,
+                                 shell,
+				 priv->plugin_loader,
+				 priv->builder,
+				 priv->cancellable);
 	gs_shell_updates_setup (priv->shell_updates,
 				priv->plugin_loader,
 				priv->builder,
@@ -297,11 +302,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				  priv->plugin_loader,
 				  priv->builder,
 				  priv->cancellable);
-	gs_shell_overview_setup (priv->shell_overview,
-                                 shell,
-				 priv->plugin_loader,
-				 priv->builder,
-				 priv->cancellable);
 	gs_shell_details_setup (priv->shell_details,
 				priv->plugin_loader,
 				priv->builder,
@@ -356,9 +356,9 @@ static void
 gs_shell_init (GsShell *shell)
 {
 	shell->priv = GS_SHELL_GET_PRIVATE (shell);
+	shell->priv->shell_overview = gs_shell_overview_new ();
 	shell->priv->shell_updates = gs_shell_updates_new ();
 	shell->priv->shell_installed = gs_shell_installed_new ();
-	shell->priv->shell_overview = gs_shell_overview_new ();
 	shell->priv->shell_details = gs_shell_details_new ();
 	shell->priv->shell_category = gs_shell_category_new ();
 	shell->priv->ignore_primary_buttons = FALSE;
