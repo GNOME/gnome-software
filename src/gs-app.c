@@ -42,7 +42,8 @@ struct GsAppPrivate
 	GHashTable		*metadata;
 	GdkPixbuf		*pixbuf;
 	GdkPixbuf		*featured_pixbuf;
-	GPtrArray		*related; /* of GsApp */
+        GPtrArray		*related; /* of GsApp */
+        guint64                  install_date;
 };
 
 enum {
@@ -57,6 +58,7 @@ enum {
 	PROP_RATING,
 	PROP_KIND,
 	PROP_STATE,
+        PROP_INSTALL_DATE,
 	PROP_LAST
 };
 
@@ -415,6 +417,20 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 	g_ptr_array_add (app->priv->related, g_object_ref (app2));
 }
 
+guint64
+gs_app_get_install_date (GsApp *app)
+{
+        g_return_val_if_fail (GS_IS_APP (app), 0);
+        return app->priv->install_date;
+}
+
+void
+gs_app_set_install_date (GsApp *app, guint64 install_date)
+{
+        g_return_if_fail (GS_IS_APP (app));
+        app->priv->install_date = install_date;
+}
+
 /**
  * gs_app_get_property:
  */
@@ -454,6 +470,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		break;
 	case PROP_STATE:
 		g_value_set_uint (value, priv->state);
+		break;
+	case PROP_INSTALL_DATE:
+		g_value_set_uint64 (value, priv->install_date);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -499,6 +518,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_STATE:
 		gs_app_set_state (app, g_value_get_uint (value));
+		break;
+	case PROP_INSTALL_DATE:
+		gs_app_set_install_date (app, g_value_get_uint64 (value));
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -596,6 +618,11 @@ gs_app_class_init (GsAppClass *klass)
 				   GS_APP_STATE_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_STATE, pspec);
+
+	pspec = g_param_spec_uint64 ("install-date", NULL, NULL,
+				     0, G_MAXUINT64, 0,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_INSTALL_DATE, pspec);
 
 	signals [SIGNAL_STATE_CHANGED] =
 		g_signal_new ("state-changed",
