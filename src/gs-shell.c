@@ -40,9 +40,9 @@ struct GsShellPrivate
 	gboolean		 ignore_primary_buttons;
 	GCancellable		*cancellable;
 	GsPluginLoader		*plugin_loader;
-	GsShellInstalled	*shell_installed;
 	GsShellMode		 mode;
 	GsShellOverview		*shell_overview;
+	GsShellInstalled	*shell_installed;
 	GsShellUpdates		*shell_updates;
 	GsShellDetails		*shell_details;
 	GsShellCategory         *shell_category;
@@ -300,10 +300,10 @@ gs_shell_finalize (GObject *object)
 	g_object_unref (priv->cancellable);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->shell_overview);
-	g_object_unref (priv->shell_updates);
 	g_object_unref (priv->shell_installed);
+	g_object_unref (priv->shell_updates);
 	g_object_unref (priv->shell_details);
-	g_object_unref (priv->shell_overview);
+	g_object_unref (priv->shell_category);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
 }
