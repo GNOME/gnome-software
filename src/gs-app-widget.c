@@ -275,8 +275,7 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	g_object_set (app_widget, "margin", 9, NULL);
 
 	/* pixbuf */
-	priv->widget_image = gtk_image_new_from_icon_name ("missing-image",
-							   GTK_ICON_SIZE_DIALOG);
+	priv->widget_image = gtk_image_new ();
 	gtk_image_set_pixel_size (GTK_IMAGE (priv->widget_image), 64);
 
 	gtk_widget_set_margin_right (priv->widget_image, 9);
