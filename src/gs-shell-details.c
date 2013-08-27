@@ -61,6 +61,11 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget;
 
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
+        gtk_widget_show (widget);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+        gtk_widget_show (widget);
+
 	kind = gs_app_get_kind (priv->app);
 	state = gs_app_get_state (priv->app);
 

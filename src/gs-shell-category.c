@@ -45,7 +45,10 @@ gs_shell_category_refresh (GsShellCategory *shell)
 	GsShellCategoryPrivate *priv = shell->priv;
         GtkWidget *widget;
 
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+        gtk_widget_show (widget);
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
+        gtk_widget_show (widget);
         gtk_label_set_label (GTK_LABEL (widget), priv->category);
 }
 

@@ -257,7 +257,11 @@ void
 gs_shell_overview_refresh (GsShellOverview *shell_overview)
 {
 	GsShellOverviewPrivate *priv = shell_overview->priv;
+	GtkWidget *widget;
 	GtkWidget *grid;
+
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+        gtk_widget_show (widget);
 
 	/* no need to refresh */
 	if (priv->cache_valid)

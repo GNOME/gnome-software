@@ -66,68 +66,39 @@ gs_shell_activate (GsShell *shell)
 }
 
 /**
- * gs_shell_set_overview_mode_ui:
+ * gs_shell_set_overview_mode:
  **/
 static void
-gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode)
+gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const gchar *category)
 {
-	GtkWidget *widget;
 	GsShellPrivate *priv = shell->priv;
+        GtkWidget *widget;
 
-	priv->ignore_primary_buttons = TRUE;
+	if (priv->ignore_primary_buttons)
+		return;
 
         /* hide all mode specific header widgets here, they will be shown in the
          * refresh functions
          */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-	gtk_widget_set_visible (widget, FALSE);
+	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
-	gtk_widget_set_visible (widget, FALSE);
+	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
-	gtk_widget_set_visible (widget, FALSE);
+	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
-	gtk_widget_set_visible (widget, FALSE);
+	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
-	gtk_widget_set_visible (widget, FALSE);
+	gtk_widget_hide (widget);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+	gtk_widget_hide (widget);
 
-	switch (mode) {
-	case GS_SHELL_MODE_OVERVIEW:
-	case GS_SHELL_MODE_INSTALLED:
-	case GS_SHELL_MODE_UPDATES:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-		gtk_widget_set_visible (widget, TRUE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-		gtk_widget_set_visible (widget, FALSE);
-		break;
-
-	case GS_SHELL_MODE_DETAILS:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-		gtk_widget_set_visible (widget, TRUE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-		gtk_widget_set_visible (widget, TRUE);
-#ifdef SEARCH
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_set_visible (widget, FALSE);
-#endif
-		break;
-	case GS_SHELL_MODE_CATEGORY:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-		gtk_widget_set_visible (widget, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-		gtk_widget_set_visible (widget, TRUE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-		gtk_widget_set_visible (widget, TRUE);
-		break;
-
-	default:
-		g_assert_not_reached ();
-		break;
-	}
-
+        /* update main buttons according to mode */
+	priv->ignore_primary_buttons = TRUE;
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_OVERVIEW);
 
@@ -138,57 +109,9 @@ gs_shell_set_overview_mode_ui (GsShell *shell, GsShellMode mode)
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_UPDATES);
 	priv->ignore_primary_buttons = FALSE;
 
-	switch (mode) {
-	case GS_SHELL_MODE_OVERVIEW:
-#ifdef SEARCH
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-		gtk_entry_set_text (GTK_ENTRY (widget), "");
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_show (widget);
-#endif
-		break;
-
-	case GS_SHELL_MODE_INSTALLED:
-#ifdef SEARCH
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-		gtk_entry_set_text (GTK_ENTRY (widget), "");
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_show (widget);
-#endif
-		break;
-
-	case GS_SHELL_MODE_UPDATES:
-#ifdef SEARCH
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_hide (widget);
-#endif
-		break;
-
-	case GS_SHELL_MODE_DETAILS:
-	case GS_SHELL_MODE_CATEGORY:
-		break;
-	default:
-		g_assert_not_reached ();
-	}
-
-	/* set panel */
+	/* switch page */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (widget), mode);
-}
-
-/**
- * gs_shell_set_overview_mode:
- **/
-static void
-gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const gchar *category)
-{
-	GsShellPrivate *priv = shell->priv;
-
-	if (priv->ignore_primary_buttons)
-		return;
-
-	/* set controls */
-	gs_shell_set_overview_mode_ui (shell, mode);
 
 	/* do action for mode */
 	priv->mode = mode;
