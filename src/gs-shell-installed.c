@@ -157,6 +157,34 @@ typedef struct {
 	GsShellInstalled	*shell_installed;
 } GsShellInstalledHelper;
 
+static void
+row_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer data)
+{
+        GtkWidget *row, *list;
+
+        row = gtk_widget_get_parent (GTK_WIDGET (revealer));
+        list = gtk_widget_get_parent (row);
+
+        gtk_container_remove (GTK_CONTAINER (list), row);
+}
+
+static void
+remove_row (GtkListBox *list_box, GtkWidget *child)
+{
+        GtkWidget *row, *revealer;
+
+        gtk_widget_set_sensitive (child, FALSE);
+        row = gtk_widget_get_parent (child);
+        revealer = gtk_revealer_new ();
+        gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), TRUE);
+        gtk_widget_show (revealer);
+        gtk_widget_reparent (child, revealer);
+        gtk_container_add (GTK_CONTAINER (row), revealer);
+        g_signal_connect (revealer, "notify::child-revealed",
+                          G_CALLBACK (row_unrevealed), NULL);
+        gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), FALSE);
+}
+
 /**
  * gs_shell_installed_finished_func:
  **/
@@ -168,8 +196,8 @@ gs_shell_installed_finished_func (GsPluginLoader *plugin_loader, GsApp *app, gpo
 
 	/* remove from the list */
 	if (app != NULL) {
-		gtk_container_remove (GTK_CONTAINER (priv->list_box_installed),
-				      gtk_widget_get_parent (GTK_WIDGET (helper->app_widget)));
+                remove_row (GTK_LIST_BOX (priv->list_box_installed),
+                            GTK_WIDGET (helper->app_widget));
 	}
 	g_object_unref (helper->app_widget);
 	g_object_unref (helper->shell_installed);
