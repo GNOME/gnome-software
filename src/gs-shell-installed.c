@@ -308,6 +308,30 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 out: ;
 }
 
+static void
+reset_date (GtkWidget *row, gpointer data)
+{
+        GtkWidget *child;
+        GsApp *app;
+
+        child = gtk_bin_get_child (GTK_BIN (row));
+        app = gs_app_widget_get_app (GS_APP_WIDGET (child));
+
+        if (gs_app_get_state (app) == GS_APP_STATE_REMOVING) {
+                gs_app_set_install_date (app, G_MAXUINT - 2);
+                gtk_list_box_row_changed (GTK_LIST_BOX_ROW (row));
+        }
+}
+
+static void
+resort_list (GsShellInstalled *shell)
+{
+	GsShellInstalledPrivate *priv = shell->priv;
+
+        gtk_container_foreach (GTK_CONTAINER (priv->list_box_installed),
+                               reset_date, NULL);
+}
+
 /**
  * gs_shell_installed_refresh:
  **/
@@ -319,6 +343,8 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed)
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
         gtk_widget_show (widget);
+
+        resort_list (shell_installed);
 
 	/* no need to refresh */
 	if (priv->cache_valid)
@@ -368,6 +394,14 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
 	GsApp *a1 = gs_app_widget_get_app (aw1);
 	GsApp *a2 = gs_app_widget_get_app (aw2);
+        guint64 date1 = gs_app_get_install_date (a1);
+        guint64 date2 = gs_app_get_install_date (a2);
+
+        if (date1 < date2)
+                return 1;
+        else if (date2 < date1)
+                return -1;
+
 	return g_strcmp0 (gs_app_get_name (a1),
 			  gs_app_get_name (a2));
 }
