@@ -167,8 +167,6 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 				      G_KEY_FILE_DESKTOP_GROUP,
 				      G_KEY_FILE_DESKTOP_KEY_ICON,
 				      NULL);
-	if (icon == NULL)
-		icon = g_strdup (GTK_STOCK_MISSING_IMAGE);
 
 	/* set pixbuf */
 	if (icon[0] == '/') {
