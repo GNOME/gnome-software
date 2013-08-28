@@ -41,6 +41,7 @@ struct GsShellUpdatesPrivate
 	GtkListBox		*list_box_updates;
 	gboolean		 cache_valid;
 	gboolean		 waiting;
+        GsShell                 *shell;
 };
 
 enum {
@@ -96,16 +97,17 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	GsApp *app;
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
-        GtkWidget *notebook;
 
         priv->waiting = FALSE;
         priv->cache_valid = TRUE;
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
-        gtk_spinner_stop (GTK_SPINNER (widget));
-        gtk_widget_hide (widget);
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
-        gtk_widget_hide (widget);
+        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
+                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
+                gtk_spinner_stop (GTK_SPINNER (widget));
+                gtk_widget_hide (widget);
+                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
+                gtk_widget_hide (widget);
+        }
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
@@ -115,8 +117,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
 	gtk_widget_set_visible (widget, list != NULL);
 
-        notebook = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
-        if (gtk_notebook_get_current_page (GTK_NOTEBOOK (notebook)) == GS_SHELL_MODE_UPDATES) {
+        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
         	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 	        gtk_widget_set_visible (widget, list != NULL);
         }
@@ -473,6 +474,7 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
  */
 void
 gs_shell_updates_setup (GsShellUpdates *shell_updates,
+                        GsShell *shell,
 			GsPluginLoader *plugin_loader,
 			GtkBuilder *builder,
 			GCancellable *cancellable)
@@ -484,6 +486,8 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	GtkWidget *widget;
 
 	g_return_if_fail (GS_IS_SHELL_UPDATES (shell_updates));
+
+        priv->shell = shell;
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (priv->plugin_loader, "pending-apps-changed",

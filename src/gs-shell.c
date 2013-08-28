@@ -218,6 +218,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				 priv->builder,
 				 priv->cancellable);
 	gs_shell_updates_setup (priv->shell_updates,
+                                shell,
 				priv->plugin_loader,
 				priv->builder,
 				priv->cancellable);

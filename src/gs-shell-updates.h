@@ -25,6 +25,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
@@ -55,6 +56,7 @@ GsShellUpdates	*gs_shell_updates_new		(void);
 void		 gs_shell_updates_invalidate	(GsShellUpdates		*shell_updates);
 void		 gs_shell_updates_refresh	(GsShellUpdates		*shell_updates);
 void 		 gs_shell_updates_setup		(GsShellUpdates		*shell_updates,
+                                                 GsShell                *shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);
