@@ -103,14 +103,26 @@ TESTS = gs-self-test
 
 EXTRA_DIST =						\
 	gnome-software.gresource.xml			\
+	gnome-software.sgml				\
 	gtk-style.css					\
 	$(desktop_in_files)				\
 	$(UI_FILES)
 
+man_MANS =						\
+	gnome-software.1
+
+gnome-software.1: gnome-software.sgml
+	docbook2man $? > /dev/null
+
 clean-local:
 	rm -f *~
+	rm -f *.1
+	rm -f manpage.*
 
-CLEANFILES = $(BUILT_SOURCES)
+CLEANFILES =						\
+	$(BUILT_SOURCES)				\
+	gnome-software.1				\
+	manpage.*
 
 MAINTAINERCLEANFILES =					\
 	*~						\

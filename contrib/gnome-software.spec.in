@@ -14,6 +14,7 @@ Requires:  gnome-icon-theme
 BuildRequires: gtk3-devel >= 3.0.0
 BuildRequires: gettext
 BuildRequires: intltool
+BuildRequires: docbook-utils
 BuildRequires: glib2-devel >= 2.25.9-2
 
 Requires(post):   /usr/bin/gtk-update-icon-cache
@@ -66,6 +67,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 #%{_datadir}/icons/hicolor/scalable/*/*.svg*
 %{_datadir}/applications/gnome-software.desktop
 %{_datadir}/gnome-software/*.png
+%{_mandir}/man1/gnome-software.1.gz
 %{_libdir}/gs-plugins/*.so
 
 %changelog
