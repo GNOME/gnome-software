@@ -187,9 +187,11 @@ gs_application_command_line (GApplication            *application,
         GOptionContext *context;
         gchar *mode = NULL;
         gboolean help = FALSE;
+        gboolean verbose = FALSE;
         const GOptionEntry options[] = {
                 { "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
                   _("Start up mode, either 'updates', 'installed' or 'overview'"), _("MODE") },
+                { "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, NULL, NULL },
                 { "help", '?', 0, G_OPTION_ARG_NONE, &help, NULL, NULL },
 
                 { NULL}
@@ -221,6 +223,8 @@ gs_application_command_line (GApplication            *application,
                 g_application_command_line_print (cmdline, "%s",  text);
                 g_free (text);
         }
+        if (verbose)
+                g_setenv ("G_MESSAGES_DEBUG", "all", FALSE);
         if (mode) {
                 if (g_strcmp0 (mode, "updates") == 0) {
                         gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
