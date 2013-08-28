@@ -108,8 +108,10 @@ EXTRA_DIST =						\
 	$(desktop_in_files)				\
 	$(UI_FILES)
 
-man_MANS =						\
-	gnome-software.1
+man_MANS =
+if ENABLE_MAN
+man_MANS += gnome-software.1
+endif
 
 gnome-software.1: gnome-software.sgml
 	docbook2man $? > /dev/null
