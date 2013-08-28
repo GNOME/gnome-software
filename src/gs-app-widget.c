@@ -307,7 +307,7 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	priv->widget_description = gtk_label_new (NULL);
         gtk_widget_show (priv->widget_description);
         gtk_label_set_line_wrap (GTK_LABEL (priv->widget_description), TRUE);
-#if GTK_CHECK_VERSION (3, 9, 20)
+#if GTK_CHECK_VERSION (3, 9, 13)
         gtk_label_set_lines (GTK_LABEL (priv->widget_description), 3);
 #endif
 	gtk_widget_set_hexpand (priv->widget_description, TRUE);
