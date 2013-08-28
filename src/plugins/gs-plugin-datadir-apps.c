@@ -169,18 +169,20 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 				      NULL);
 
 	/* set pixbuf */
-	if (icon[0] == '/') {
-		pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
+	if (icon != NULL) {
+		if (icon[0] == '/') {
+			pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
+								   plugin->pixbuf_size,
+								   plugin->pixbuf_size,
+								   NULL);
+		} else {
+			pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+							   icon,
 							   plugin->pixbuf_size,
-							   plugin->pixbuf_size,
+							   GTK_ICON_LOOKUP_USE_BUILTIN |
+							   GTK_ICON_LOOKUP_FORCE_SIZE,
 							   NULL);
-	} else {
-		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						   icon,
-						   plugin->pixbuf_size,
-						   GTK_ICON_LOOKUP_USE_BUILTIN |
-						   GTK_ICON_LOOKUP_FORCE_SIZE,
-						   NULL);
+		}
 	}
 	if (pixbuf != NULL)
 		cache_item->pixbuf = g_object_ref (pixbuf);
