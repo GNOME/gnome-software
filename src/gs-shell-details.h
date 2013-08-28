@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
@@ -58,6 +59,7 @@ void		 gs_shell_details_set_app	(GsShellDetails		*shell_details,
 						 GsApp			*app);
 void		 gs_shell_details_refresh	(GsShellDetails		*shell_details);
 void 		 gs_shell_details_setup		(GsShellDetails		*shell_details,
+                                                 GsShell                *shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);

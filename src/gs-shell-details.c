@@ -37,6 +37,7 @@ struct GsShellDetailsPrivate
 	GCancellable		*cancellable;
 	gboolean		 cache_valid;
 	GsApp			*app;
+        GsShell                 *shell;
 };
 
 G_DEFINE_TYPE (GsShellDetails, gs_shell_details, G_TYPE_OBJECT)
@@ -56,10 +57,13 @@ gs_shell_details_invalidate (GsShellDetails *shell_details)
 void
 gs_shell_details_refresh (GsShellDetails *shell_details)
 {
+	GsShellDetailsPrivate *priv = shell_details->priv;
 	GsAppKind kind;
 	GsAppState state;
-	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget;
+
+        if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_DETAILS)
+                return;
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
         gtk_widget_show (widget);
@@ -264,6 +268,7 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell
  */
 void
 gs_shell_details_setup (GsShellDetails *shell_details,
+                        GsShell        *shell,
 			GsPluginLoader *plugin_loader,
 			GtkBuilder *builder,
 			GCancellable *cancellable)
@@ -272,6 +277,8 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	GtkWidget *widget;
 
 	g_return_if_fail (GS_IS_SHELL_DETAILS (shell_details));
+
+        priv->shell = shell;
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
