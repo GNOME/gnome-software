@@ -248,6 +248,14 @@ gs_shell_set_mode (GsShell *shell, GsShellMode mode)
         gs_shell_set_overview_mode (shell, mode, NULL, NULL);
 }
 
+GsShellMode
+gs_shell_get_mode (GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+
+        return priv->mode;
+}
+
 void
 gs_shell_show_details (GsShell *shell, GsApp *app)
 {
