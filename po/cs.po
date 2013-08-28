@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-08-23 01:55+0000\n"
-"PO-Revision-Date: 2013-08-23 07:29+0200\n"
+"POT-Creation-Date: 2013-08-24 11:24+0000\n"
+"PO-Revision-Date: 2013-08-28 11:08+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -18,6 +18,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Gtranslator 2.91.6\n"
+
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "O _aplikaci"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "U_končit"
 
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
 msgid "Software"
@@ -39,17 +47,18 @@ msgstr "Nainstalováné"
 msgid "Updates"
 msgstr "Aktualizace"
 
-#: ../src/gnome-software.ui.h:5 ../src/gs-shell-updates.c:422
-#: ../src/gs-shell-updates.c:423
+#: ../src/gnome-software.ui.h:5
 msgid "Restart & Install"
 msgstr "Restartovat a instalovat"
 
-#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:137
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:140
+#: ../src/gs-shell-details.c:73
 msgid "Install"
 msgstr "Instalovat"
 
-#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:143
-#: ../src/gs-shell-installed.c:210
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:146
+#: ../src/gs-shell-details.c:97 ../src/gs-shell-details.c:229
+#: ../src/gs-shell-installed.c:211
 msgid "Remove"
 msgstr "Odebrat"
 
@@ -77,7 +86,7 @@ msgstr "Software je aktuální"
 msgid "GNU Image Manipulation Program"
 msgstr "GNU Image Manipulation Program"
 
-#: ../src/gnome-software.ui.h:14 ../src/gs-shell-installed.c:144
+#: ../src/gnome-software.ui.h:14 ../src/gs-shell-installed.c:145
 msgid "Visit website"
 msgstr "Navštívit web"
 
@@ -124,59 +133,44 @@ msgstr "Kategorie"
 msgid "Done"
 msgstr "Hotovo"
 
-#: ../src/gs-app-widget.c:149
-msgid "Update"
-msgstr "Aktualizovat"
+#: ../src/gs-application.c:84
+msgid "About GNOME Software"
+msgstr "O aplikaci Software GNOME"
 
-#: ../src/gs-app-widget.c:157
-msgid "Installing"
-msgstr "Instaluje se"
+#: ../src/gs-application.c:85
+#| msgid "Software"
+msgid "GNOME Software"
+msgstr "Software GNOME"
 
-#: ../src/gs-app-widget.c:164
-msgid "Removing"
-msgstr "Odebírá se"
+#: ../src/gs-application.c:87
+msgid "A nice way to manager the software on your system."
+msgstr "Elegantní způsob správy softwaru ve vašem počítači."
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:139
-msgid "Waiting for package manager..."
-msgstr "Čeká se na správce balíčků…"
+#: ../src/gs-application.c:91
+msgid "translator-credits"
+msgstr "Marek Černocký <marek@manet.cz>"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:143
-msgid "Loading list of packages..."
-msgstr "Načítá se seznam balíčků…"
-
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:153 ../src/gs-main.c:216
-msgid "Downloading..."
-msgstr "Stahuje se…"
-
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:158 ../src/gs-main.c:220
-msgid "Querying..."
-msgstr "Dotazuje se…"
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:208
-msgid "Waiting..."
-msgstr "Čeká se…"
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:212
-msgid "Setting up..."
-msgstr "Nastavuje se…"
-
-#: ../src/gs-main.c:439
+#: ../src/gs-application.c:190
 msgid "Start up mode, either 'updates', 'installed' or 'overview'"
 msgstr ""
 "Režim spuštění, buď „updates“ (aktualizace), „installed“ (nainstalované) "
 "nebo „overview“ (přehled)"
 
-#: ../src/gs-main.c:439
+#: ../src/gs-application.c:190
 msgid "MODE"
 msgstr "REŽIM"
+
+#: ../src/gs-app-widget.c:152
+msgid "Update"
+msgstr "Aktualizovat"
+
+#: ../src/gs-app-widget.c:160 ../src/gs-shell-details.c:78
+msgid "Installing"
+msgstr "Instaluje se"
+
+#: ../src/gs-app-widget.c:167 ../src/gs-shell-details.c:102
+msgid "Removing"
+msgstr "Odebírá se"
 
 #: ../src/gs-plugin-loader.c:334
 msgid "OS Updates"
@@ -188,32 +182,27 @@ msgid ""
 msgstr ""
 "Zahrnuje zdokonalení výkonu, stability a bezpečnosti pro všechny uživatele."
 
-#: ../src/gs-shell-installed.c:93
-msgid "Details"
-msgstr "Podrobnosti"
-
-#: ../src/gs-shell-installed.c:96
-msgid "_Done"
-msgstr "_Hotovo"
-
-#: ../src/gs-shell-installed.c:197
+#: ../src/gs-shell-details.c:216 ../src/gs-shell-installed.c:198
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Opravdu chcete odebrat %s?"
 
-#: ../src/gs-shell-installed.c:208
+#: ../src/gs-shell-details.c:227 ../src/gs-shell-installed.c:209
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
 "%s bude odebrán a když jej budete chtít použít, budete jej muset znovu "
 "nainstalovat."
 
+#: ../src/gs-shell-installed.c:94
+msgid "Details"
+msgstr "Podrobnosti"
+
+#: ../src/gs-shell-installed.c:97
+msgid "_Done"
+msgstr "_Hotovo"
+
 #: ../src/gs-shell-installed.c:445
 #, c-format
 msgid "Installed (%d)"
 msgstr "Nainstalováné (%d)"
-
-#: ../src/gs-shell-updates.c:425
-msgid "Make sure you have no unsaved documents before proceeding."
-msgstr ""
-"Před provedením se ujistěte, že nemáte neuložené rozpracované dokumenty."
