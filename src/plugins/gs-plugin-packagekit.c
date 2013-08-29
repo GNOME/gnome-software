@@ -128,19 +128,6 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 }
 
 /**
- * gs_plugin_add_search:
- */
-gboolean
-gs_plugin_add_search (GsPlugin *plugin,
-		      const gchar *value,
-		      GList *list,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	return TRUE;
-}
-
-/**
  * gs_plugin_packagekit_add_installed_results:
  */
 static gboolean
@@ -174,7 +161,6 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 	for (i = 0; i < array->len; i++) {
 		package = g_ptr_array_index (array, i);
 		app = gs_app_new (pk_package_get_id (package));
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		gs_app_set_metadata (app,
 				     "package-id",
 				     pk_package_get_id (package));
@@ -185,7 +171,18 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 				     "package-summary",
 				     pk_package_get_summary (package));
 		gs_app_set_version (app, pk_package_get_version (package));
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		switch (pk_package_get_info (package)) {
+		case PK_INFO_ENUM_INSTALLED:
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			break;
+		case PK_INFO_ENUM_AVAILABLE:
+			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+			break;
+		default:
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+			g_warning ("unknown info state of %s",
+				   pk_info_enum_to_string (pk_package_get_info (package)));
+		}
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 		gs_plugin_add_app (list, app);
 	}
@@ -194,6 +191,54 @@ out:
 		g_object_unref (error_code);
 	if (array != NULL)
 		g_ptr_array_unref (array);
+	return ret;
+}
+
+/**
+ * gs_plugin_add_search:
+ */
+gboolean
+gs_plugin_add_search (GsPlugin *plugin,
+		      const gchar *value,
+		      GList **list,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	const gchar *values[2] = { NULL, NULL };
+	gboolean ret = TRUE;
+	PkBitfield filter;
+	PkResults *results;
+
+	/* update UI as this might take some time */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+
+	/* do sync call */
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+					 PK_FILTER_ENUM_ARCH,
+					 PK_FILTER_ENUM_APPLICATION,
+					 -1);
+	values[0] = value;
+	results = pk_client_search_details (PK_CLIENT(plugin->priv->task),
+					    filter,
+					    (gchar **) values,
+					    cancellable,
+					    gs_plugin_packagekit_progress_cb, plugin,
+					    error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+
+	/* add results */
+	ret = gs_plugin_packagekit_add_installed_results (plugin,
+							  list,
+							  results,
+							  error);
+	if (!ret)
+		goto out;
+out:
+	if (results != NULL)
+		g_object_unref (results);
 	return ret;
 }
 

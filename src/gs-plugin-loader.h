@@ -96,9 +96,13 @@ void		 gs_plugin_loader_get_featured_async	(GsPluginLoader	*plugin_loader,
 GList		*gs_plugin_loader_get_featured_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
-GList		*gs_plugin_loader_search		(GsPluginLoader	*plugin_loader,
+void		 gs_plugin_loader_search_async		(GsPluginLoader	*plugin_loader,
 							 const gchar	*value,
 							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GList		*gs_plugin_loader_search_finish		(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
 							 GError		**error);
 gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
 							 GError		**error);

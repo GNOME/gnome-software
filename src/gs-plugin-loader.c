@@ -250,6 +250,7 @@ typedef struct {
 	GList				*list;
 	GSimpleAsyncResult		*res;
 	GsPluginLoader			*plugin_loader;
+	gchar				*value;
 } GsPluginLoaderAsyncState;
 
 /******************************************************************************/
@@ -273,6 +274,7 @@ cd_plugin_loader_get_all_state_finish (GsPluginLoaderAsyncState *state,
 	if (state->cancellable != NULL)
 		g_object_unref (state->cancellable);
 
+	g_free (state->value);
 	g_list_free (state->list);
 	g_object_unref (state->res);
 	g_object_unref (state->plugin_loader);
@@ -742,17 +744,18 @@ gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 /**
- * gs_plugin_loader_search:
+ * cd_plugin_loader_search_thread_cb:
  **/
-GList *
-gs_plugin_loader_search (GsPluginLoader *plugin_loader,
-			 const gchar *value,
-			 GCancellable *cancellable,
-			 GError **error)
+static void
+cd_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
+				   GObject *object,
+				   GCancellable *cancellable)
 {
 	const gchar *function_name = "gs_plugin_add_search";
 	gboolean ret = TRUE;
-	GList *list = NULL;
+	GError *error = NULL;
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
@@ -762,9 +765,11 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader,
 		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
-		ret = g_cancellable_set_error_if_cancelled (cancellable, error);
+		ret = g_cancellable_set_error_if_cancelled (cancellable, &error);
 		if (ret) {
 			ret = FALSE;
+			cd_plugin_loader_get_all_state_finish (state, error);
+			g_error_free (error);
 			goto out;
 		}
 		ret = g_module_symbol (plugin->module,
@@ -775,9 +780,12 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader,
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
 		g_timer_start (plugin->timer);
-		ret = plugin_func (plugin, value, &list, cancellable, error);
-		if (!ret)
+		ret = plugin_func (plugin, state->value, &state->list, cancellable, &error);
+		if (!ret) {
+			cd_plugin_loader_get_all_state_finish (state, error);
+			g_error_free (error);
 			goto out;
+		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		g_debug ("%s(%s) took %.0fms",
 			 plugin->name,
@@ -787,29 +795,96 @@ gs_plugin_loader_search (GsPluginLoader *plugin_loader,
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
-					   list,
+					   state->list,
 					   cancellable,
-					   error);
-	if (!ret)
+					   &error);
+	if (!ret) {
+		cd_plugin_loader_get_all_state_finish (state, error);
+		g_error_free (error);
 		goto out;
+	}
 
 	/* success */
-	list = gs_plugin_loader_remove_invalid (list);
-	if (list == NULL) {
-		g_set_error (error,
+	state->list = gs_plugin_loader_remove_system (state->list);
+	state->list = gs_plugin_loader_remove_invalid (state->list);
+	if (state->list == NULL) {
+		g_set_error (&error,
 			     GS_PLUGIN_LOADER_ERROR,
 			     GS_PLUGIN_LOADER_ERROR_FAILED,
 			     "no search results to show");
+		cd_plugin_loader_get_all_state_finish (state, error);
+		g_error_free (error);
 		goto out;
 	}
+
+	/* success */
+	state->ret = TRUE;
+	cd_plugin_loader_get_all_state_finish (state, NULL);
 out:
-	if (!ret) {
-		g_list_free_full (list, (GDestroyNotify) g_object_unref);
-		list = NULL;
-	}
-	return list;
+	return;
 }
 
+/**
+ * gs_plugin_loader_search_async:
+ **/
+void
+gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
+			       const gchar *value,
+			       GCancellable *cancellable,
+			       GAsyncReadyCallback callback,
+			       gpointer user_data)
+{
+	GCancellable *tmp;
+	GsPluginLoaderAsyncState *state;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->res = g_simple_async_result_new (G_OBJECT (plugin_loader),
+						callback,
+						user_data,
+						gs_plugin_loader_search_async);
+	state->plugin_loader = g_object_ref (plugin_loader);
+	state->value = g_strdup (value);
+	if (cancellable != NULL)
+		state->cancellable = g_object_ref (cancellable);
+
+	/* run in a thread */
+	tmp = g_cancellable_new ();
+	g_object_set_data (G_OBJECT (tmp), "state", state);
+	g_simple_async_result_run_in_thread (G_SIMPLE_ASYNC_RESULT (state->res),
+					     cd_plugin_loader_search_thread_cb,
+					     0,
+					     (GCancellable *) tmp);
+	g_object_unref (tmp);
+}
+
+/**
+ * gs_plugin_loader_search_finish:
+ **/
+GList *
+gs_plugin_loader_search_finish (GsPluginLoader *plugin_loader,
+				GAsyncResult *res,
+				GError **error)
+{
+	GSimpleAsyncResult *simple;
+
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	/* failed */
+	simple = G_SIMPLE_ASYNC_RESULT (res);
+	if (g_simple_async_result_propagate_error (simple, error))
+		return NULL;
+
+	/* grab detail */
+	return g_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
+}
+
+/******************************************************************************/
 
 /**
  * gs_plugin_loader_run_action:
