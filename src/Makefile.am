@@ -50,6 +50,8 @@ gnome_software_SOURCES =				\
 	gs-shell-overview.h				\
 	gs-shell-updates.c				\
 	gs-shell-updates.h				\
+	gs-shell-search.c				\
+	gs-shell-search.h				\
 	gs-plugin-loader.c				\
 	gs-plugin-loader.h				\
 	gs-plugin-loader-sync.c				\

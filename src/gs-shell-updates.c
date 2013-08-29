@@ -170,6 +170,9 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
 	gtk_widget_show (widget);
 
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	gtk_widget_hide (widget);
+
         if (priv->waiting)
                 return;
 

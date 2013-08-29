@@ -27,6 +27,7 @@
 #include "gs-shell.h"
 #include "gs-shell-details.h"
 #include "gs-shell-installed.h"
+#include "gs-shell-search.h"
 #include "gs-shell-overview.h"
 #include "gs-shell-updates.h"
 #include "gs-shell-category.h"
@@ -43,6 +44,7 @@ struct GsShellPrivate
 	GsShellMode		 mode;
 	GsShellOverview		*shell_overview;
 	GsShellInstalled	*shell_installed;
+	GsShellSearch		*shell_search;
 	GsShellUpdates		*shell_updates;
 	GsShellDetails		*shell_details;
 	GsShellCategory         *shell_category;
@@ -73,6 +75,7 @@ gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const 
 {
 	GsShellPrivate *priv = shell->priv;
         GtkWidget *widget;
+        const gchar *text;
 
 	if (priv->ignore_primary_buttons)
 		return;
@@ -91,6 +94,8 @@ gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_widget_hide (widget);
 
         /* update main buttons according to mode */
@@ -117,6 +122,11 @@ gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const 
 		break;
 	case GS_SHELL_MODE_INSTALLED:
 		gs_shell_installed_refresh (priv->shell_installed);
+		break;
+	case GS_SHELL_MODE_SEARCH:
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+		text = gtk_entry_get_text (GTK_ENTRY (widget));
+		gs_shell_search_refresh (priv->shell_search, text);
 		break;
 	case GS_SHELL_MODE_UPDATES:
 		gs_shell_updates_refresh (priv->shell_updates);
@@ -222,6 +232,10 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				  priv->plugin_loader,
 				  priv->builder,
 				  priv->cancellable);
+	gs_shell_search_setup (priv->shell_search,
+			       priv->plugin_loader,
+			       priv->builder,
+			       priv->cancellable);
 	gs_shell_details_setup (priv->shell_details,
                                 shell,
 				priv->plugin_loader,
@@ -290,6 +304,7 @@ gs_shell_init (GsShell *shell)
 	shell->priv->shell_installed = gs_shell_installed_new ();
 	shell->priv->shell_details = gs_shell_details_new ();
 	shell->priv->shell_category = gs_shell_category_new ();
+	shell->priv->shell_search = gs_shell_search_new ();
 	shell->priv->ignore_primary_buttons = FALSE;
 }
 
@@ -310,6 +325,7 @@ gs_shell_finalize (GObject *object)
 	g_object_unref (priv->shell_updates);
 	g_object_unref (priv->shell_details);
 	g_object_unref (priv->shell_category);
+	g_object_unref (priv->shell_search);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
 }
