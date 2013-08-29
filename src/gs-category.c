@@ -108,11 +108,12 @@ gs_category_finalize (GObject *object)
 }
 
 GsCategory *
-gs_category_new (GsCategory *parent, const gchar *id)
+gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
 {
 	GsCategory *category;
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
         category->priv->parent = parent;
         category->priv->id = g_strdup (id);
+        category->priv->name = g_strdup (name);
 	return GS_CATEGORY (category);
 }

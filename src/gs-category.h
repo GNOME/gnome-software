@@ -49,7 +49,8 @@ typedef struct
 GType		 gs_category_get_type		(void);
 
 GsCategory	*gs_category_new		(GsCategory             *parent,
-                                                 const gchar	        *id);
+                                                 const gchar	        *id,
+                                                 const gchar            *name);
 const gchar	*gs_category_get_id		(GsCategory		*category);
 GsCategory      *gs_category_get_parent         (GsCategory             *category);
 const gchar	*gs_category_get_name		(GsCategory		*category);
