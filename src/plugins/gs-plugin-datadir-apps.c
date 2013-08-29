@@ -226,6 +226,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	const gchar *tmp;
 	gboolean ret = TRUE;
 	GList *l;
+	GError *error_local = NULL;
 	GsApp *app;
 
 	for (l = list; l != NULL; l = l->next) {
@@ -236,14 +237,22 @@ gs_plugin_refine (GsPlugin *plugin,
 		ret = gs_plugin_datadir_apps_extract_desktop_data (plugin,
 								   app,
 								   tmp,
-								   error);
-		if (!ret)
-			goto out;
+								   &error_local);
+		if (!ret) {
+			g_warning ("failed to extract desktop data for %s: %s",
+				   gs_app_get_id (app),
+				   error_local->message);
+			g_clear_error (&error_local);
+			continue;
+		}
 
 		/* we know it's installed as we read the desktop file */
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	}
+
+	/* success */
+	ret = TRUE;
 out:
 	return ret;
 }
