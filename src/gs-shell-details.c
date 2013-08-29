@@ -331,6 +331,8 @@ gs_shell_details_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
+        if (priv->app)
+                g_object_unref (priv->app);
 
 	G_OBJECT_CLASS (gs_shell_details_parent_class)->finalize (object);
 }
