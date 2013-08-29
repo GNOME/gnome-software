@@ -54,7 +54,7 @@ struct GsShellPrivate
 
 G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
 
-static void gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const gchar *category);
+static void gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *category);
 
 /**
  * gs_shell_activate:
@@ -71,7 +71,7 @@ gs_shell_activate (GsShell *shell)
  * gs_shell_set_overview_mode:
  **/
 static void
-gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const gchar *category)
+gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *category)
 {
 	GsShellPrivate *priv = shell->priv;
         GtkWidget *widget;
@@ -275,7 +275,7 @@ gs_shell_show_details (GsShell *shell, GsApp *app)
 }
 
 void
-gs_shell_show_category (GsShell *shell, const gchar *category)
+gs_shell_show_category (GsShell *shell, GsCategory *category)
 {
         gs_shell_set_overview_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category);
 }

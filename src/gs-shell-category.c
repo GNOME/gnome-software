@@ -34,7 +34,7 @@ struct GsShellCategoryPrivate
 {
         GtkBuilder        *builder;
         GsShell           *shell;
-	gchar             *category;
+        GsCategory        *category;
 };
 
 G_DEFINE_TYPE (GsShellCategory, gs_shell_category, G_TYPE_OBJECT)
@@ -49,7 +49,7 @@ gs_shell_category_refresh (GsShellCategory *shell)
         gtk_widget_show (widget);
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
         gtk_widget_show (widget);
-        gtk_label_set_label (GTK_LABEL (widget), priv->category);
+        gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (priv->category));
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_widget_hide (widget);
@@ -119,7 +119,7 @@ create_app_tile (GsShellCategory *shell, GsApp *app)
 }
 
 static void
-gs_shell_category_populate_filtered (GsShellCategory *shell, const gchar *category, const gchar *filter)
+gs_shell_category_populate_filtered (GsShellCategory *shell, GsCategory *subcategory)
 {
         GsShellCategoryPrivate *priv = shell->priv;
         gint i;
@@ -130,9 +130,8 @@ gs_shell_category_populate_filtered (GsShellCategory *shell, const gchar *catego
         grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
         gtk_grid_remove_column (GTK_GRID (grid), 2);
         gtk_grid_remove_column (GTK_GRID (grid), 1);
-        if (filter == NULL) {
+        if (!subcategory)
                 gtk_grid_remove_column (GTK_GRID (grid), 0);
-        }
 
         /* FIXME load apps for this category and filter */
         app = gs_app_new ("gnome-boxes");
@@ -145,7 +144,7 @@ gs_shell_category_populate_filtered (GsShellCategory *shell, const gchar *catego
 
         for (i = 0; i < 30; i++) {
                 tile = create_app_tile (shell, app);
-                if (filter) {
+                if (subcategory) {
                         gtk_grid_attach (GTK_GRID (grid), tile, 1 + (i % 2), i / 2, 1, 1);
                 }
                 else {
@@ -170,19 +169,17 @@ static void
 filter_selected (GtkListBox *filters, GtkListBoxRow *row, gpointer data)
 {
         GsShellCategory *shell = GS_SHELL_CATEGORY (data);
-        const gchar *filter;
-        const gchar *category;
+        GsCategory *subcategory;
 
         if (row == NULL)
                 return;
 
-        filter = gtk_label_get_label (GTK_LABEL (gtk_bin_get_child (GTK_BIN (row))));
-        category = (const gchar*)g_object_get_data (G_OBJECT (filters), "category");
-        gs_shell_category_populate_filtered (shell, category, filter);
+        subcategory = g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "subcategory");
+        gs_shell_category_populate_filtered (shell, subcategory);
 }
 
-static void
-create_filter_list (GsShellCategory *shell, const gchar *category, const gchar *filters[])
+static GsCategory *
+create_filter_list (GsShellCategory *shell, GsCategory *category)
 {
         GsShellCategoryPrivate *priv = shell->priv;
         GtkWidget *grid;
@@ -190,18 +187,28 @@ create_filter_list (GsShellCategory *shell, const gchar *category, const gchar *
         GtkWidget *row;
         GtkWidget *frame;
         guint i;
+        GList *subcategories, *l;
+        GsCategory *subcategory;
+
+        subcategories = gs_category_get_subcategories (category);
+
+        if (!subcategories)
+                return NULL;
 
         grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
         list = gtk_list_box_new ();
-        g_object_set_data (G_OBJECT (list), "category", (gpointer)category);
         gtk_list_box_set_selection_mode (GTK_LIST_BOX (list), GTK_SELECTION_BROWSE);
         g_signal_connect (list, "row-selected", G_CALLBACK (filter_selected), shell);
         gtk_list_box_set_header_func (GTK_LIST_BOX (list), add_separator, NULL, NULL);
-        for (i = 0; filters[i]; i++) {
-                row = gtk_label_new (filters[i]);
+        for  (l = subcategories, i = 0; l; l = l->next, i++) {
+                subcategory = l->data;
+                row = gtk_label_new (gs_category_get_name (subcategory));
+                g_object_set_data_full (G_OBJECT (row), "subcategory", g_object_ref (subcategory), g_object_unref);
                 g_object_set (row, "xalign", 0.0, "margin", 6, NULL);
                 gtk_list_box_insert (GTK_LIST_BOX (list), row, i);
         }
+        g_list_free (subcategories);
+
         frame = gtk_frame_new (NULL);
         g_object_set (frame, "margin", 6, NULL);
         gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
@@ -210,43 +217,31 @@ create_filter_list (GsShellCategory *shell, const gchar *category, const gchar *
         gtk_widget_show_all (frame);
         gtk_widget_set_valign (frame, GTK_ALIGN_START);
         gtk_grid_attach (GTK_GRID (grid), frame, 0, 0, 1, 5);
-        gtk_list_box_select_row (GTK_LIST_BOX (list),
-                                 gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
+
+        row = GTK_WIDGET (gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
+        gtk_list_box_select_row (GTK_LIST_BOX (list), GTK_LIST_BOX_ROW (row));
+
+        return GS_CATEGORY (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "subcategory"));
 }
 
 void
-gs_shell_category_set_category (GsShellCategory *shell, const gchar *category)
+gs_shell_category_set_category (GsShellCategory *shell, GsCategory *category)
 {
 	GsShellCategoryPrivate *priv = shell->priv;
         GtkWidget *grid;
+        GsCategory *subcategory;
 
-	g_free (priv->category);
-	priv->category = g_strdup (category);
+        if (priv->category)
+                g_object_unref (priv->category);
+	priv->category = category;
+        if (priv->category)
+                g_object_ref (priv->category);
 
         grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
         container_remove_all (GTK_CONTAINER (grid));
 
-        /* FIXME: get actual filters */
-        if (g_str_equal (category, "Games")) {
-                const gchar *filters[] = {
-                        "Popular", "Action", "Arcade", "Board",
-                        "Blocks", "Card", "Kids", "Logic", "Role Playing",
-                        "Shooter", "Simulation", "Sports", "Strategy",
-                        NULL
-                };
-                create_filter_list (shell, category, filters);
-        }
-        else if (g_str_equal (category, "Add-ons")) {
-                const gchar *filters[] = {
-                        "Popular", "Codecs", "Fonts",
-                        "Input Sources", "Language Packs",
-                        NULL
-                };
-                create_filter_list (shell, category, filters);
-        }
-        else {
-                gs_shell_category_populate_filtered (shell, category, NULL);
-        }
+        subcategory = create_filter_list (shell, category);
+        gs_shell_category_populate_filtered (shell, subcategory);
 }
 
 static void
@@ -271,7 +266,7 @@ gs_shell_category_finalize (GObject *object)
 	GsShellCategoryPrivate *priv = shell->priv;
 
 	g_object_unref (priv->builder);
-        g_free (priv->category);
+        g_object_unref (priv->category);
 
 	G_OBJECT_CLASS (gs_shell_category_parent_class)->finalize (object);
 }
@@ -285,9 +280,6 @@ gs_shell_category_setup (GsShellCategory *shell_category, GsShell *shell, GtkBui
         priv->shell = shell;
 }
 
-/**
- * gs_shell_category_new:
- **/
 GsShellCategory *
 gs_shell_category_new (void)
 {

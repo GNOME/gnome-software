@@ -21,9 +21,12 @@
 
 #include "config.h"
 
+#include <glib/gi18n.h>
+
 #include "gs-shell.h"
 #include "gs-shell-overview.h"
 #include "gs-app.h"
+#include "gs-category.h"
 #include "gs-app-widget.h"
 
 static void	gs_shell_overview_finalize	(GObject	*object);
@@ -151,14 +154,14 @@ static void
 category_tile_clicked (GtkButton *button, gpointer data)
 {
 	GsShellOverview *shell_overview = GS_SHELL_OVERVIEW (data);
-	const gchar *category;
+        GsCategory *category;
 
-	category = g_object_get_data (G_OBJECT (button), "category");
+	category = GS_CATEGORY (g_object_get_data (G_OBJECT (button), "category"));
         gs_shell_show_category (shell_overview->priv->shell, category);
 }
 
 static GtkWidget *
-create_category_tile (GsShellOverview *shell_overview, const gchar *category)
+create_category_tile (GsShellOverview *shell_overview, GsCategory *category)
 {
 	GtkWidget *button, *frame, *label;
 
@@ -168,11 +171,11 @@ create_category_tile (GsShellOverview *shell_overview, const gchar *category)
 	gtk_container_add (GTK_CONTAINER (button), frame);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
 	gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
-	label = gtk_label_new (category);
+	label = gtk_label_new (gs_category_get_name (category));
 	g_object_set (label, "margin", 12, "xalign", 0, NULL);
 	gtk_container_add (GTK_CONTAINER (frame), label);
 	gtk_widget_show_all (button);
-	g_object_set_data (G_OBJECT (button), "category", (gpointer)category);
+	g_object_set_data_full (G_OBJECT (button), "category", g_object_ref (category), g_object_unref);
 	g_signal_connect (button, "clicked",
 			  G_CALLBACK (category_tile_clicked), shell_overview);
 
@@ -225,28 +228,60 @@ out:
 	return;
 }
 
-static void
+static GList *
 gs_shell_overview_get_categories (GsShellOverview *shell_overview)
 {
-	GsShellOverviewPrivate *priv = shell_overview->priv;
-	GtkWidget *grid;
-	/* FIXME get real categories */
-	const gchar *categories[] = {
-	  "Add-ons", "Books", "Business & Finance",
-	  "Entertainment", "Education", "Games",
-	  "Lifestyle", "Music", "Navigation",
-	  "Overviews", "Photo & Video", "Productivity",
-	  "Social Networking", "Utility", "Weather",
-	};
-	guint i;
-	GtkWidget *tile;
+        GsCategory *category;
+        GList *list = NULL;
 
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
+        category = gs_category_new (NULL, "add-ons", _("Add-ons"));
+        list = g_list_append (list, category);
+        gs_category_add_subcategory (category, gs_category_new (category, "codecs", _("Codecs")));
+        gs_category_add_subcategory (category, gs_category_new (category, "fonts", _("Fonts")));
+        gs_category_add_subcategory (category, gs_category_new (category, "inputs", _("Input Sources")));
+        gs_category_add_subcategory (category, gs_category_new (category, "languages", _("Language Packs")));
+        category = gs_category_new (NULL, "books", _("Books"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "business", _("Business & Finance"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "entertainment", _("Entertainment"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "education", _("Education"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "games", _("Games"));
+        list = g_list_append (list, category);
+        gs_category_add_subcategory (category, gs_category_new (category, "action", _("Action")));
+        gs_category_add_subcategory (category, gs_category_new (category, "arcade", _("Arcade")));
+        gs_category_add_subcategory (category, gs_category_new (category, "board", _("Board")));
+        gs_category_add_subcategory (category, gs_category_new (category, "blocks", _("Blocks")));
+        gs_category_add_subcategory (category, gs_category_new (category, "card", _("Card")));
+        gs_category_add_subcategory (category, gs_category_new (category, "kids", _("Kids")));
+        gs_category_add_subcategory (category, gs_category_new (category, "logic", _("Logic")));
+        gs_category_add_subcategory (category, gs_category_new (category, "role", _("Role Playing")));
+        gs_category_add_subcategory (category, gs_category_new (category, "shooter", _("Shooter")));
+        gs_category_add_subcategory (category, gs_category_new (category, "simulation", _("Simulation")));
+        gs_category_add_subcategory (category, gs_category_new (category, "sports", _("Sports")));
+        gs_category_add_subcategory (category, gs_category_new (category, "strategy", _("Strategy")));
+        category = gs_category_new (NULL, "lifestyle", _("Lifestyle"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "music", _("Music"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "navigation", _("Navigation"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "overviews", _("Overviews"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "photos", _("Photo & Video"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "productivity", _("Productivity"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "social", _("Social Networking"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "utility", _("Utility"));
+        list = g_list_append (list, category);
+        category = gs_category_new (NULL, "weather", _("Weather"));
+        list = g_list_append (list, category);
 
-	for (i = 0; i < G_N_ELEMENTS (categories); i++) {
-		tile = create_category_tile (shell_overview, categories[i]);
-		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
-	}
+        return list;
 }
 
 /**
@@ -258,6 +293,10 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 	GsShellOverviewPrivate *priv = shell_overview->priv;
 	GtkWidget *widget;
 	GtkWidget *grid;
+        GList *list, *l;
+        gint i;
+        GtkWidget *tile;
+        GsCategory *category;
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
         gtk_widget_show (widget);
@@ -293,7 +332,13 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
 	container_remove_all (GTK_CONTAINER (grid));
 
-        gs_shell_overview_get_categories (shell_overview);
+        list = gs_shell_overview_get_categories (shell_overview);
+	for (l = list, i = 0; l; l = l->next, i++) {
+                category = l->data;
+		tile = create_category_tile (shell_overview, category);
+		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
+	}
+        g_list_free_full (list, g_object_unref);
 
 	priv->cache_valid = TRUE;
 }

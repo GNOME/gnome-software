@@ -25,7 +25,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "gs-app.h"
+#include "gs-category.h"
 #include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
@@ -55,7 +55,7 @@ GType		 gs_shell_category_get_type	(void);
 
 GsShellCategory	*gs_shell_category_new		(void);
 void		 gs_shell_category_set_category	(GsShellCategory *shell_category,
-						 const gchar     *category);
+						 GsCategory      *category);
 void		 gs_shell_category_refresh	(GsShellCategory *shell_category);
 void             gs_shell_category_setup        (GsShellCategory *shell_category,
                                                  GsShell         *shell,

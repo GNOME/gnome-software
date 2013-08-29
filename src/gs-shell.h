@@ -26,6 +26,8 @@
 #include <gtk/gtk.h>
 
 #include "gs-plugin-loader.h"
+#include "gs-category.h"
+#include "gs-app.h"
 
 G_BEGIN_DECLS
 
@@ -70,7 +72,7 @@ GsShellMode      gs_shell_get_mode              (GsShell        *shell);
 void             gs_shell_show_details          (GsShell        *shell,
                                                  GsApp          *app);
 void             gs_shell_show_category         (GsShell        *shell,
-                                                 const gchar    *category);
+                                                 GsCategory     *category);
 GtkWindow	*gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);
