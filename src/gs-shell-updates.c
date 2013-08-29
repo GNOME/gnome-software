@@ -113,6 +113,12 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
 	gtk_widget_set_visible (widget, list != NULL);
 
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
+        if (list != NULL && gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES)
+                gtk_style_context_add_class (gtk_widget_get_style_context (widget), "needs-attention");
+        else
+                gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
+
         if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
         	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 	        gtk_widget_set_visible (widget, list != NULL);
@@ -155,6 +161,8 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
 
 	/* no need to refresh */
 	if (priv->cache_valid) {
+                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
+                gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
                 widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
                 list = gtk_container_get_children (GTK_CONTAINER (priv->list_box_updates));
                 gtk_widget_set_visible (widget, list != NULL);
