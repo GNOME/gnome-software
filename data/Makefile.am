@@ -9,6 +9,12 @@ dist_resources_DATA =					\
 	stars3.png					\
 	stars4.png
 
+appdatadir = $(datadir)/appdata
+appdata_files = gnome-software.appdata.xml
+
+EXTRA_DIST =						\
+	$(appdata_files)
+
 MAINTAINERCLEANFILES =					\
 	*~						\
 	Makefile.in
