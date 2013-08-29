@@ -165,6 +165,17 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 	gs_shell_set_overview_mode (shell, shell->priv->tab_back_id, NULL, NULL);
 }
 
+static void
+initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
+{
+        GsShell *shell = data;
+
+        g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
+
+	gs_shell_updates_refresh (shell->priv->shell_updates);
+	gs_shell_installed_refresh (shell->priv->shell_installed);
+}
+
 /**
  * gs_shell_setup:
  */
@@ -245,7 +256,8 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
                                  shell,
 				 priv->builder);
 
-	/* show main UI */
+        g_signal_connect (priv->shell_overview, "refreshed",
+                          G_CALLBACK (initial_overview_load_done), shell);
         gs_shell_set_mode (shell, GS_SHELL_MODE_OVERVIEW);
 
 	return GTK_WINDOW (main_window);
