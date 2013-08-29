@@ -266,7 +266,8 @@ gs_shell_category_finalize (GObject *object)
 	GsShellCategoryPrivate *priv = shell->priv;
 
 	g_object_unref (priv->builder);
-        g_object_unref (priv->category);
+        if (priv->category)
+                g_object_unref (priv->category);
 
 	G_OBJECT_CLASS (gs_shell_category_parent_class)->finalize (object);
 }
