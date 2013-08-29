@@ -148,6 +148,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
         GtkWidget *widget;
         GtkSpinner *spinner;
+        GList *list;
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
         gtk_widget_show (widget);
@@ -155,7 +156,9 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
 	/* no need to refresh */
 	if (priv->cache_valid) {
                 widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-                gtk_widget_show (widget);
+                list = gtk_container_get_children (priv->list_box_updates);
+                gtk_widget_set_visible (widget, list != NULL);
+                g_list_free (list);
 		return;
         }
 
