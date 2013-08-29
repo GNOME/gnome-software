@@ -299,10 +299,6 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 					       priv->sizegroup_name);
 		gtk_widget_show (widget);
 	}
-
-	/* focus back to the text extry */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_widget_grab_focus (widget);
 out: ;
 }
 
@@ -376,18 +372,6 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed)
 }
 
 /**
- * gs_shell_installed_filter_text_changed_cb:
- **/
-static gboolean
-gs_shell_installed_filter_text_changed_cb (GtkEntry *entry,
-					   GsShellInstalled *shell_installed)
-{
-	GsShellInstalledPrivate *priv = shell_installed->priv;
-	gtk_list_box_invalidate_filter (priv->list_box_installed);
-	return FALSE;
-}
-
-/**
  * gs_shell_installed_sort_func:
  **/
 static gint
@@ -409,64 +393,6 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 
 	return g_strcmp0 (gs_app_get_name (a1),
 			  gs_app_get_name (a2));
-}
-
-/**
- * gs_shell_installed_utf8_filter_helper:
- **/
-static gboolean
-gs_shell_installed_utf8_filter_helper (const gchar *haystack,
-				       const gchar *needle_utf8)
-{
-	gboolean ret;
-	gchar *haystack_utf8;
-	haystack_utf8 = g_utf8_casefold (haystack, -1);
-	ret = strstr (haystack_utf8, needle_utf8) != NULL;
-	g_free (haystack_utf8);
-	return ret;
-}
-
-/**
- * gs_shell_installed_filter_func:
- **/
-static gboolean
-gs_shell_installed_filter_func (GtkListBoxRow *row, void *user_data)
-{
-	const gchar *tmp;
-	gboolean ret = TRUE;
-	gchar *needle_utf8 = NULL;
-	GsApp *app;
-	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	GsShellInstalled *shell_installed = GS_SHELL_INSTALLED (user_data);
-	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GtkWidget *widget;
-
-	app = gs_app_widget_get_app (app_widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	tmp = gtk_entry_get_text (GTK_ENTRY (widget));
-	if (tmp[0] == '\0')
-		goto out;
-
-	needle_utf8 = g_utf8_casefold (tmp, -1);
-	ret = gs_shell_installed_utf8_filter_helper (gs_app_get_name (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-	ret = gs_shell_installed_utf8_filter_helper (gs_app_get_summary (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-	ret = gs_shell_installed_utf8_filter_helper (gs_app_get_version (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-	ret = gs_shell_installed_utf8_filter_helper (gs_app_get_id (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-out:
-	g_free (needle_utf8);
-	return ret;
 }
 
 /**
@@ -540,21 +466,12 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);
 
-	/* refilter on search box changing */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	g_signal_connect (GTK_EDITABLE (widget), "changed",
-			  G_CALLBACK (gs_shell_installed_filter_text_changed_cb), shell_installed);
-
 	/* setup installed */
 	priv->list_box_installed = GTK_LIST_BOX (gtk_list_box_new ());
 	g_signal_connect (priv->list_box_installed, "row-activated",
 			  G_CALLBACK (gs_shell_installed_app_widget_activated_cb), shell_installed);
 	gtk_list_box_set_header_func (priv->list_box_installed,
 				      gs_shell_installed_list_header_func,
-				      shell_installed,
-				      NULL);
-	gtk_list_box_set_filter_func (priv->list_box_installed,
-				      gs_shell_installed_filter_func,
 				      shell_installed,
 				      NULL);
 	gtk_list_box_set_sort_func (priv->list_box_installed,
