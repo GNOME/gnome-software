@@ -339,11 +339,16 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed)
 	GsShellInstalledPrivate *priv = shell_installed->priv;
         GtkWidget *widget;
         GtkSpinner *spinner;
+        GtkAdjustment *adj;
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
         gtk_widget_show (widget);
 
         resort_list (shell_installed);
+
+        /* scroll to top */
+        adj = gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (gtk_builder_get_object (priv->builder, "scrolledwindow_install")));
+        gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 
 	/* no need to refresh */
 	if (priv->cache_valid)
