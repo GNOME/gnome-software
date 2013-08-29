@@ -187,13 +187,19 @@ static gboolean
 gs_plugin_loader_app_is_valid (GsApp *app)
 {
 	/* don't show unconverted packages in the application view */
-	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE)
+	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
+		g_debug ("app invalid as only a package %s", gs_app_get_id (app));
 		return FALSE;
+	}
 	/* don't show apps that do not have a name */
-	if (gs_app_get_name (app) == NULL)
+	if (gs_app_get_name (app) == NULL) {
+		g_debug ("app invalid as no name %s", gs_app_get_id (app));
 		return FALSE;
-	if (gs_app_get_summary (app) == NULL)
+	}
+	if (gs_app_get_summary (app) == NULL) {
+		g_debug ("app invalid as no summary %s", gs_app_get_id (app));
 		return FALSE;
+	}
 	return TRUE;
 }
 
@@ -212,7 +218,6 @@ gs_plugin_loader_remove_invalid (GList *list)
 			l = l->next;
 			continue;
 		}
-		g_debug ("removing package %s", gs_app_get_id (app));
 		g_object_unref (app);
 		l = list = g_list_delete_link (list, l);
 	}
