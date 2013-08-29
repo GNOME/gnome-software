@@ -125,4 +125,6 @@ guint64          gs_app_get_install_date        (GsApp          *app);
 void             gs_app_set_install_date        (GsApp          *app,
                                                  guint64         install_date);
 
+G_END_DECLS
+
 #endif /* __GS_APP_H */

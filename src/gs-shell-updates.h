@@ -61,4 +61,6 @@ void 		 gs_shell_updates_setup		(GsShellUpdates		*shell_updates,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);
 
+G_END_DECLS
+
 #endif /* __GS_SHELL_UPDATES_H */
