@@ -49,6 +49,8 @@ typedef struct
 typedef struct
 {
 	GObjectClass		 parent_class;
+
+        void  (*refreshed)      (GsShellOverview *shell);
 } GsShellOverviewClass;
 
 GType		 gs_shell_overview_get_type	(void);

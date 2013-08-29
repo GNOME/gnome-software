@@ -40,9 +40,17 @@ struct GsShellOverviewPrivate
 	GCancellable		*cancellable;
 	gboolean		 cache_valid;
         GsShell                 *shell;
+        gint                     refresh_count;
 };
 
 G_DEFINE_TYPE (GsShellOverview, gs_shell_overview, G_TYPE_OBJECT)
+
+enum {
+        SIGNAL_REFRESHED,
+        SIGNAL_LAST
+};
+
+static guint signals [SIGNAL_LAST] = { 0 };
 
 /**
  * gs_shell_overview_invalidate:
@@ -147,7 +155,9 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
                 gtk_box_pack_start (GTK_BOX (grid), tile, TRUE, TRUE, 0);
 	}
 out:
-	return;
+        priv->refresh_count--;
+        if (priv->refresh_count == 0)
+                g_signal_emit (shell_overview, signals[SIGNAL_REFRESHED], 0);
 }
 
 static void
@@ -225,7 +235,10 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	gtk_widget_grab_focus (widget);
 out:
 	g_list_free (list);
-	return;
+
+        priv->refresh_count--;
+        if (priv->refresh_count == 0)
+                g_signal_emit (shell_overview, signals[SIGNAL_REFRESHED], 0);
 }
 
 static GList *
@@ -317,6 +330,8 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
 	container_remove_all (GTK_CONTAINER (grid));
 
+        priv->refresh_count = 2;
+
 	/* get featured apps */
 	gs_plugin_loader_get_featured_async (priv->plugin_loader,
 					     priv->cancellable,
@@ -388,6 +403,13 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_shell_overview_finalize;
+
+        signals [SIGNAL_REFRESHED] =
+                g_signal_new ("refreshed",
+                              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+                              G_STRUCT_OFFSET (GsShellOverviewClass, refreshed),
+                              NULL, NULL, g_cclosure_marshal_VOID__VOID,
+                              G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (GsShellOverviewPrivate));
 }
