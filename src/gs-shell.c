@@ -86,10 +86,6 @@ gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, const 
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
 	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
-	gtk_widget_hide (widget);
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));

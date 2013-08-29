@@ -12,7 +12,7 @@
       <column type="gchararray"/>
     </columns>
   </object>
-  <object class="GtkApplicationWindow" id="window_software">
+  <object class="GtkWindow" id="window_software">
     <property name="can_focus">False</property>
     <property name="default-width">1200</property>
     <property name="default-height">800</property>
@@ -144,13 +144,6 @@
               </object>
             </child>
             <child>
-              <object class="GtkSpinner" id="header_spinner">
-              </object>
-              <packing>
-                <property name="pack_type">end</property>
-              </packing>
-            </child>
-            <child>
               <object class="GtkButton" id="button_update_all">
                 <property name="label" translatable="yes">Restart &amp; Install</property>
                 <property name="visible">True</property>
@@ -185,15 +178,6 @@
                 <style>
                   <class name="destructive-action"/>
                 </style>
-              </object>
-              <packing>
-                <property name="pack_type">end</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_wait">
-                <property name="label" translatable="yes">Refreshing</property>
-                <property name="sensitive">False</property>
               </object>
               <packing>
                 <property name="pack_type">end</property>
@@ -468,34 +452,18 @@
               </packing>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow_install">
+              <object class="GtkOverlay" id="overlay_install">
                 <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="hscrollbar_policy">never</property>
-                <property name="vscrollbar_policy">automatic</property>
-                <property name="shadow_type">none</property>
-                <style>
-                  <class name="main-scrolled-software"/>
-                </style>
-                <child>
-                  <placeholder/>
+                <child type="overlay">
+                  <object class="GtkSpinner" id="spinner_install">
+                    <property name="width_request">128</property>
+                    <property name="height_request">128</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                  </object>
                 </child>
-              </object>
-            </child>
-            <child type="tab">
-              <object class="GtkLabel" id="label3">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="label">Installed</property>
-              </object>
-            </child>
-            <child>
-              <object class="GtkBox" id="box6">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="orientation">vertical</property>
                 <child>
-                  <object class="GtkScrolledWindow" id="scrolledwindow_updates">
+                  <object class="GtkScrolledWindow" id="scrolledwindow_install">
                     <property name="visible">True</property>
                     <property name="can_focus">True</property>
                     <property name="hscrollbar_policy">never</property>
@@ -508,50 +476,94 @@
                       <placeholder/>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
+                </child>
+              </object>
+            </child>
+            <child type="tab">
+              <object class="GtkLabel" id="label3">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label">Installed</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkOverlay" id="overlay_updates">
+                <property name="visible">True</property>
+                <child type="overlay">
+                  <object class="GtkSpinner" id="spinner_updates">
+                    <property name="width_request">128</property>
+                    <property name="height_request">128</property>
+                    <property name="halign">center</property>
+                    <property name="valign">center</property>
+                  </object>
                 </child>
                 <child>
-                  <object class="GtkBox" id="box_updates_up_to_date">
+                  <object class="GtkBox" id="box6">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkImage" id="image_updates">
+                      <object class="GtkScrolledWindow" id="scrolledwindow_updates">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="opacity">0.34000000357627869</property>
-                        <property name="yalign">1</property>
-                        <property name="pixel_size">128</property>
-                        <property name="icon_name">object-select-symbolic</property>
+                        <property name="can_focus">True</property>
+                        <property name="hscrollbar_policy">never</property>
+                        <property name="vscrollbar_policy">automatic</property>
+                        <property name="shadow_type">none</property>
+                        <style>
+                          <class name="main-scrolled-software"/>
+                        </style>
+                        <child>
+                          <placeholder/>
+                        </child>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
+                        <property name="expand">True</property>
                         <property name="fill">True</property>
                         <property name="position">0</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkLabel" id="label10">
+                      <object class="GtkBox" id="box_updates_up_to_date">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="label" translatable="yes">Software is up to date</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkImage" id="image_updates">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="yalign">1</property>
+                            <property name="pixel_size">196</property>
+                            <property name="icon_name">object-select-symbolic</property>
+                            <style>
+                              <class name="dim-label"/>
+                            </style>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkLabel" id="label10">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="label" translatable="yes">Software is up to date</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
+                        <property name="expand">True</property>
+                        <property name="fill">False</property>
                         <property name="position">1</property>
                       </packing>
                     </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">False</property>
-                    <property name="position">1</property>
-                  </packing>
                 </child>
               </object>
             </child>

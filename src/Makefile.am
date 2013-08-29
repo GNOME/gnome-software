@@ -30,6 +30,8 @@ bin_PROGRAMS =						\
 gnome_software_SOURCES =				\
 	gs-resources.c					\
 	gs-resources.h					\
+	gs-utils.c					\
+	gs-utils.h					\
 	gs-app.c					\
 	gs-app.h					\
 	gs-app-widget.c					\

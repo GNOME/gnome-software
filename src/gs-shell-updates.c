@@ -25,6 +25,7 @@
 
 #include "gs-shell.h"
 #include "gs-shell-updates.h"
+#include "gs-utils.h"
 #include "gs-app.h"
 #include "gs-app-widget.h"
 
@@ -101,13 +102,8 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
         priv->waiting = FALSE;
         priv->cache_valid = TRUE;
 
-        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
-                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
-                gtk_spinner_stop (GTK_SPINNER (widget));
-                gtk_widget_hide (widget);
-                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
-                gtk_widget_hide (widget);
-        }
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_updates"));
+        gs_stop_spinner (GTK_SPINNER (widget));
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
@@ -151,6 +147,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
         GtkWidget *widget;
+        GtkSpinner *spinner;
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
         gtk_widget_show (widget);
@@ -162,11 +159,9 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
 		return;
         }
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
-        gtk_spinner_start (GTK_SPINNER (widget));
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_updates"));
         gtk_widget_show (widget);
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_wait"));
-        gtk_widget_show (widget);
+
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_updates_up_to_date"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
@@ -181,6 +176,10 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
 					    priv->cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
 					    shell_updates);
+
+        spinner = GTK_SPINNER (gtk_builder_get_object (priv->builder, "spinner_updates"));
+        gs_start_spinner (spinner);
+
 	priv->waiting = TRUE;
 }
 
