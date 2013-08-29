@@ -38,3 +38,12 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
 	border-left-width: 0px;
 	border-right-width: 0px;
 }
+
+@keyframes throbbing {
+        0% { background-image: linear-gradient(to bottom, transparent, transparent); }
+}
+
+.needs-attention {
+        background-image: linear-gradient(to bottom, @theme_selected_bg_color, @theme_selected_bg_color);
+        animation: throbbing linear 1s infinite alternate;
+}
