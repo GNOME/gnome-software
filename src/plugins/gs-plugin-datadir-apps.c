@@ -252,7 +252,5 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* success */
-	ret = TRUE;
-out:
-	return ret;
+	return TRUE;
 }
