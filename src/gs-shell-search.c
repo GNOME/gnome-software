@@ -472,7 +472,7 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 
 	/* refilter on search box changing */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	g_signal_connect (GTK_EDITABLE (widget), "changed",
+	g_signal_connect (GTK_EDITABLE (widget), "search-changed",
 			  G_CALLBACK (gs_shell_search_filter_text_changed_cb), shell_search);
 
 	/* setup search */

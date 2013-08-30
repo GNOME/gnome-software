@@ -176,6 +176,12 @@ initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 	gs_shell_installed_refresh (shell->priv->shell_installed);
 }
 
+static void
+gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
+{
+        gs_shell_set_mode (shell, GS_SHELL_MODE_SEARCH);
+}
+
 /**
  * gs_shell_setup:
  */
@@ -228,6 +234,10 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			   GINT_TO_POINTER (GS_SHELL_MODE_UPDATES));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_overview_button_cb), shell);
+
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+        g_signal_connect (GTK_EDITABLE (widget), "activate",
+                          G_CALLBACK (gs_shell_search_activated_cb), shell);
 
 	gs_shell_overview_setup (priv->shell_overview,
                                  shell,

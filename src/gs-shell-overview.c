@@ -315,17 +315,12 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
         gtk_widget_show (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+        gtk_entry_set_text (GTK_ENTRY (widget), "");
 
 	/* no need to refresh */
 	if (priv->cache_valid)
 		return;
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	gtk_widget_show (widget);
-
-	/* clear search items */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_entry_set_text (GTK_ENTRY (widget), "");
 
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
 	container_remove_all (GTK_CONTAINER (grid));
@@ -358,19 +353,6 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 	priv->cache_valid = TRUE;
 }
 
-/**
- * gs_shell_overview_search_activated_cb:
- */
-static void
-gs_shell_overview_search_activated_cb (GtkEntry *entry, GsShellOverview *shell_overview)
-{
-	GsShellOverviewPrivate *priv = shell_overview->priv;
-	gs_shell_set_mode (priv->shell, GS_SHELL_MODE_SEARCH);
-}
-
-/**
- * gs_shell_overview_setup:
- */
 void
 gs_shell_overview_setup (GsShellOverview *shell_overview,
                          GsShell *shell,
@@ -379,17 +361,12 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 			 GCancellable *cancellable)
 {
 	GsShellOverviewPrivate *priv = shell_overview->priv;
-	GtkWidget *widget;
 
 	g_return_if_fail (GS_IS_SHELL_OVERVIEW (shell_overview));
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	g_signal_connect (GTK_EDITABLE (widget), "activate",
-			  G_CALLBACK (gs_shell_overview_search_activated_cb), shell_overview);
 
         /* avoid a ref cycle */
         priv->shell = shell;
