@@ -51,18 +51,48 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		       GError **error)
 {
 	GsApp *app;
-	guint i;
 	const gchar *apps[] = {
 		"transmission-gtk",
-		"cheese",
-		"inkscape",
-		"sound-juicer",
-		"gedit",
-		"gnome-boxes",
-		NULL };
+                "inkscape",
+                "scribus",
+                "simple-scan",
+                "tomboy",
+                "gtg",
+                "stellarium",
+                "gnome-maps",
+                "calibre",
+                "hotot-gtk",
+                "musique",
+                "aisleriot",
+                "shutter",
+                "gnucash",
+                "iagno",
+                "thunderbird",
+                "geary",
+                "pdfshuffler"
+        };
+        gint primes[] = {
+                 2,  3,  5,  7, 11, 13, 17, 19, 23, 29,
+                31, 37, 41, 43, 47, 53, 59, 61, 67, 71,
+                73, 79, 83
+        };
+        GDateTime *date;
+        gboolean hit[G_N_ELEMENTS (apps)];
+        const gint n = G_N_ELEMENTS (apps);
+        gint d, i, k;
 
-	/* just add each one */
-	for (i = 0; apps[i] != NULL; i++) {
+        date = g_date_time_new_now_utc ();
+        d = (((gint)g_date_time_get_day_of_year (date)) % (G_N_ELEMENTS (primes) * 3)) / 3;
+        g_date_time_unref (date);
+
+        for (i = 0; i < n; i++) hit[i] = 0;
+
+        i = d % n;
+        for (k = 0; k < n; k++) {
+                i = (i + primes[d]) % n;
+                while (hit[i]) i = (i + 1) % n;
+                hit[i] = 1;
+
 		app = gs_app_new (apps[i]);
 		gs_plugin_add_app (list, app);
 	}
