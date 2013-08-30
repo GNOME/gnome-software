@@ -25,6 +25,7 @@
 #include <glib-object.h>
 
 #include "gs-app.h"
+#include "gs-category.h"
 #include "gs-plugin.h"
 
 G_BEGIN_DECLS
@@ -94,6 +95,21 @@ void		 gs_plugin_loader_get_featured_async	(GsPluginLoader	*plugin_loader,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
 GList		*gs_plugin_loader_get_featured_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
+void		 gs_plugin_loader_get_categories_async	(GsPluginLoader	*plugin_loader,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GList		*gs_plugin_loader_get_categories_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
+void		 gs_plugin_loader_get_category_apps_async (GsPluginLoader	*plugin_loader,
+							 GsCategory	*category,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GList		*gs_plugin_loader_get_category_apps_finish (GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
 void		 gs_plugin_loader_search_async		(GsPluginLoader	*plugin_loader,

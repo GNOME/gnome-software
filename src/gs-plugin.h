@@ -28,6 +28,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-category.h"
 
 G_BEGIN_DECLS
 
@@ -113,6 +114,15 @@ gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_updates			(GsPlugin	*plugin,
+							 GList		**list,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
+							 GList		**list,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
+							 const gchar	*id,
 							 GList		**list,
 							 GCancellable	*cancellable,
 							 GError		**error);

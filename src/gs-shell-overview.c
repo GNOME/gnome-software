@@ -237,60 +237,42 @@ out:
                 g_signal_emit (shell_overview, signals[SIGNAL_REFRESHED], 0);
 }
 
-static GList *
-gs_shell_overview_get_categories (GsShellOverview *shell_overview)
+/**
+ * gs_shell_overview_get_categories_cb:
+ **/
+static void
+gs_shell_overview_get_categories_cb (GObject *source_object,
+				     GAsyncResult *res,
+				     gpointer user_data)
 {
-        GsCategory *category;
-        GList *list = NULL;
+	GError *error = NULL;
+	gint i;
+	GList *l;
+	GList *list;
+	GsCategory *cat;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GsShellOverview *shell_overview = GS_SHELL_OVERVIEW (user_data);
+	GsShellOverviewPrivate *priv = shell_overview->priv;
+	GtkWidget *grid;
+	GtkWidget *tile;
 
-        category = gs_category_new (NULL, "add-ons", _("Add-ons"));
-        list = g_list_append (list, category);
-        gs_category_add_subcategory (category, gs_category_new (category, "codecs", _("Codecs")));
-        gs_category_add_subcategory (category, gs_category_new (category, "fonts", _("Fonts")));
-        gs_category_add_subcategory (category, gs_category_new (category, "inputs", _("Input Sources")));
-        gs_category_add_subcategory (category, gs_category_new (category, "languages", _("Language Packs")));
-        category = gs_category_new (NULL, "books", _("Books"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "business", _("Business & Finance"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "entertainment", _("Entertainment"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "education", _("Education"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "games", _("Games"));
-        list = g_list_append (list, category);
-        gs_category_add_subcategory (category, gs_category_new (category, "action", _("Action")));
-        gs_category_add_subcategory (category, gs_category_new (category, "arcade", _("Arcade")));
-        gs_category_add_subcategory (category, gs_category_new (category, "board", _("Board")));
-        gs_category_add_subcategory (category, gs_category_new (category, "blocks", _("Blocks")));
-        gs_category_add_subcategory (category, gs_category_new (category, "card", _("Card")));
-        gs_category_add_subcategory (category, gs_category_new (category, "kids", _("Kids")));
-        gs_category_add_subcategory (category, gs_category_new (category, "logic", _("Logic")));
-        gs_category_add_subcategory (category, gs_category_new (category, "role", _("Role Playing")));
-        gs_category_add_subcategory (category, gs_category_new (category, "shooter", _("Shooter")));
-        gs_category_add_subcategory (category, gs_category_new (category, "simulation", _("Simulation")));
-        gs_category_add_subcategory (category, gs_category_new (category, "sports", _("Sports")));
-        gs_category_add_subcategory (category, gs_category_new (category, "strategy", _("Strategy")));
-        category = gs_category_new (NULL, "lifestyle", _("Lifestyle"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "music", _("Music"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "navigation", _("Navigation"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "overviews", _("Overviews"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "photos", _("Photo & Video"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "productivity", _("Productivity"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "social", _("Social Networking"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "utility", _("Utility"));
-        list = g_list_append (list, category);
-        category = gs_category_new (NULL, "weather", _("Weather"));
-        list = g_list_append (list, category);
-
-        return list;
+	list = gs_plugin_loader_get_featured_finish (plugin_loader,
+						     res,
+						     &error);
+	if (list == NULL) {
+		g_warning ("failed to get categories: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
+	for (l = list, i = 0; l; l = l->next, i++) {
+		cat = GS_CATEGORY (l->data);
+		tile = create_category_tile (shell_overview, cat);
+		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
+	}
+        g_list_free_full (list, g_object_unref);
+out:
+	priv->cache_valid = TRUE;
 }
 
 /**
@@ -302,10 +284,6 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 	GsShellOverviewPrivate *priv = shell_overview->priv;
 	GtkWidget *widget;
 	GtkWidget *grid;
-        GList *list, *l;
-        gint i;
-        GtkWidget *tile;
-        GsCategory *category;
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
         gtk_widget_show (widget);
@@ -338,15 +316,11 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
 	container_remove_all (GTK_CONTAINER (grid));
 
-        list = gs_shell_overview_get_categories (shell_overview);
-	for (l = list, i = 0; l; l = l->next, i++) {
-                category = l->data;
-		tile = create_category_tile (shell_overview, category);
-		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
-	}
-        g_list_free_full (list, g_object_unref);
-
-	priv->cache_valid = TRUE;
+	/* get categories */
+	gs_plugin_loader_get_categories_async (priv->plugin_loader,
+					       priv->cancellable,
+					       gs_shell_overview_get_categories_cb,
+					       shell_overview);
 }
 
 void

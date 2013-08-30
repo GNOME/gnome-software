@@ -23,6 +23,7 @@
 
 #define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
 #include <packagekit-glib2/packagekit.h>
+#include <glib/gi18n.h>
 
 #include <gs-plugin.h>
 
@@ -548,4 +549,34 @@ out:
 	if (results != NULL)
 		g_object_unref (results);
 	return ret;
+}
+
+/**
+ * gs_plugin_add_categories:
+ */
+gboolean
+gs_plugin_add_categories (GsPlugin *plugin,
+			  GList **list,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	GsCategory *category;
+
+	/* Add Ons */
+	category = gs_category_new (NULL, "PK::add-ons", _("Add-ons"));
+	gs_category_add_subcategory (category, gs_category_new (category,
+								"PK::codecs",
+								_("Codecs")));
+	gs_category_add_subcategory (category, gs_category_new (category,
+								"PK::fonts",
+								_("Fonts")));
+	gs_category_add_subcategory (category, gs_category_new (category,
+								"PK::inputs",
+								_("Input Sources")));
+	gs_category_add_subcategory (category, gs_category_new (category,
+								"PK::languages",
+								_("Language Packs")));
+	*list = g_list_prepend (*list, category);
+
+	return TRUE;
 }
