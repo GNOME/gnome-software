@@ -24,6 +24,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gs-utils.h"
 #include "gs-shell-category.h"
 
 static void	gs_shell_category_finalize	(GObject	*object);
@@ -50,16 +51,6 @@ gs_shell_category_refresh (GsShellCategory *shell)
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
         gtk_widget_show (widget);
         gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (priv->category));
-}
-
-static void
-container_remove_all (GtkContainer *container)
-{
-        GList *children, *l;
-        children = gtk_container_get_children (container);
-        for (l = children; l; l = l->next)
-                gtk_container_remove (container, GTK_WIDGET (l->data));
-        g_list_free (children);
 }
 
 static void
@@ -235,7 +226,7 @@ gs_shell_category_set_category (GsShellCategory *shell, GsCategory *category)
                 g_object_ref (priv->category);
 
         grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-        container_remove_all (GTK_CONTAINER (grid));
+        gs_container_remove_all (GTK_CONTAINER (grid));
 
         subcategory = create_filter_list (shell, category);
         gs_shell_category_populate_filtered (shell, subcategory);

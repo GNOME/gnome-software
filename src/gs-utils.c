@@ -82,3 +82,16 @@ gs_start_spinner (GtkSpinner *spinner)
                                 GUINT_TO_POINTER (id), remove_source);
 }
 
+static void
+remove_all_cb (GtkWidget *widget, gpointer user_data)
+{
+        GtkContainer *container = GTK_CONTAINER (user_data);
+        gtk_container_remove (container, widget);
+}
+
+void
+gs_container_remove_all (GtkContainer *container)
+{
+        gtk_container_foreach (container, remove_all_cb, container);
+}
+

@@ -64,27 +64,6 @@ gs_shell_updates_invalidate (GsShellUpdates *shell_updates)
 }
 
 /**
- * _gtk_container_remove_all_cb:
- **/
-static void
-_gtk_container_remove_all_cb (GtkWidget *widget, gpointer user_data)
-{
-	GtkContainer *container = GTK_CONTAINER (user_data);
-	gtk_container_remove (container, widget);
-}
-
-/**
- * _gtk_container_remove_all:
- **/
-static void
-_gtk_container_remove_all (GtkContainer *container)
-{
-	gtk_container_foreach (container,
-			       _gtk_container_remove_all_cb,
-			       container);
-}
-
-/**
  * gs_shell_updates_get_updates_cb:
  **/
 static void
@@ -183,7 +162,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
         if (priv->waiting)
                 return;
 
-	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
+	gs_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
 					    priv->cancellable,

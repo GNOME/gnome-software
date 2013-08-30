@@ -28,6 +28,7 @@ G_BEGIN_DECLS
 
 void gs_start_spinner (GtkSpinner *spinner);
 void gs_stop_spinner (GtkSpinner *spinner);
+void gs_container_remove_all (GtkContainer *container);
 
 G_END_DECLS
 

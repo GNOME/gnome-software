@@ -58,27 +58,6 @@ gs_shell_installed_invalidate (GsShellInstalled *shell_installed)
 	shell_installed->priv->cache_valid = FALSE;
 }
 
-/**
- * _gtk_container_remove_all_cb:
- **/
-static void
-_gtk_container_remove_all_cb (GtkWidget *widget, gpointer user_data)
-{
-	GtkContainer *container = GTK_CONTAINER (user_data);
-	gtk_container_remove (container, widget);
-}
-
-/**
- * _gtk_container_remove_all:
- **/
-static void
-_gtk_container_remove_all (GtkContainer *container)
-{
-	gtk_container_foreach (container,
-			       _gtk_container_remove_all_cb,
-			       container);
-}
-
 static void
 gs_shell_installed_app_widget_activated_cb (GtkListBox *list_box,
                                             GtkListBoxRow *row,
@@ -365,7 +344,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed)
                 return;
 
 	/* remove old entries */
-	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
+	gs_container_remove_all (GTK_CONTAINER (priv->list_box_installed));
 
 	/* get popular apps */
 	gs_plugin_loader_get_installed_async (priv->plugin_loader,

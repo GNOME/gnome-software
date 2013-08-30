@@ -46,27 +46,6 @@ struct GsShellSearchPrivate
 
 G_DEFINE_TYPE (GsShellSearch, gs_shell_search, G_TYPE_OBJECT)
 
-/**
- * _gtk_container_remove_all_cb:
- **/
-static void
-_gtk_container_remove_all_cb (GtkWidget *widget, gpointer user_data)
-{
-	GtkContainer *container = GTK_CONTAINER (user_data);
-	gtk_container_remove (container, widget);
-}
-
-/**
- * _gtk_container_remove_all:
- **/
-static void
-_gtk_container_remove_all (GtkContainer *container)
-{
-	gtk_container_foreach (container,
-			       _gtk_container_remove_all_cb,
-			       container);
-}
-
 static void
 gs_shell_search_app_widget_activated_cb (GtkListBox *list_box,
                                          GtkListBoxRow *row,
@@ -293,7 +272,7 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value)
                 return;
 
 	/* remove old entries */
-	_gtk_container_remove_all (GTK_CONTAINER (priv->list_box_search));
+	gs_container_remove_all (GTK_CONTAINER (priv->list_box_search));
 
 	/* search for apps */
 	gs_plugin_loader_search_async (priv->plugin_loader,
