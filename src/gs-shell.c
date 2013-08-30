@@ -196,100 +196,100 @@ gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
 }
 
 static gboolean
-is_keynav_event (GdkEvent *event,
-                 guint     keyval)
+is_keynav_event (GdkEvent *event, guint keyval)
 {
-  GdkModifierType state = 0;
+        GdkModifierType state = 0;
 
-  gdk_event_get_state (event, &state);
+        gdk_event_get_state (event, &state);
 
-  if (keyval == GDK_KEY_Tab ||
-      keyval == GDK_KEY_KP_Tab ||
-      keyval == GDK_KEY_Up ||
-      keyval == GDK_KEY_KP_Up ||
-      keyval == GDK_KEY_Down ||
-      keyval == GDK_KEY_KP_Down ||
-      keyval == GDK_KEY_Left ||
-      keyval == GDK_KEY_KP_Left ||
-      keyval == GDK_KEY_Right ||
-      keyval == GDK_KEY_KP_Right ||
-      keyval == GDK_KEY_Home ||
-      keyval == GDK_KEY_KP_Home ||
-      keyval == GDK_KEY_End ||
-      keyval == GDK_KEY_KP_End ||
-      keyval == GDK_KEY_Page_Up ||
-      keyval == GDK_KEY_KP_Page_Up ||
-      keyval == GDK_KEY_Page_Down ||
-      keyval == GDK_KEY_KP_Page_Down ||
-      ((state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)) != 0))
-        return TRUE;
+        if (keyval == GDK_KEY_Tab ||
+            keyval == GDK_KEY_KP_Tab ||
+            keyval == GDK_KEY_Up ||
+            keyval == GDK_KEY_KP_Up ||
+            keyval == GDK_KEY_Down ||
+            keyval == GDK_KEY_KP_Down ||
+            keyval == GDK_KEY_Left ||
+            keyval == GDK_KEY_KP_Left ||
+            keyval == GDK_KEY_Right ||
+            keyval == GDK_KEY_KP_Right ||
+            keyval == GDK_KEY_Home ||
+            keyval == GDK_KEY_KP_Home ||
+            keyval == GDK_KEY_End ||
+            keyval == GDK_KEY_KP_End ||
+            keyval == GDK_KEY_Page_Up ||
+            keyval == GDK_KEY_KP_Page_Up ||
+            keyval == GDK_KEY_Page_Down ||
+            keyval == GDK_KEY_KP_Page_Down ||
+            ((state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)) != 0))
+                return TRUE;
 
-  return FALSE;
+        return FALSE;
 }
 
 static gboolean
 entry_keypress_handler (GtkWidget *widget, GdkEvent *event, GsShell *shell)
 {
-  guint keyval;
-  GtkWidget *entry;
+        guint keyval;
+        GtkWidget *entry;
 
-  if (!gdk_event_get_keyval (event, &keyval) ||
-      keyval != GDK_KEY_Escape)
-    return GDK_EVENT_PROPAGATE;
+        if (!gdk_event_get_keyval (event, &keyval) ||
+            keyval != GDK_KEY_Escape)
+                return GDK_EVENT_PROPAGATE;
 
-  entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
-  gtk_entry_set_text (GTK_ENTRY (entry), "");
+        entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
+        gtk_entry_set_text (GTK_ENTRY (entry), "");
 
-  return GDK_EVENT_STOP;
+        return GDK_EVENT_STOP;
 }
 
 static void
 preedit_changed_cb (GtkEntry *entry, GtkWidget *popup, gboolean *preedit_changed)
 {
-  *preedit_changed = TRUE;
+        *preedit_changed = TRUE;
 }
 
 static gboolean
 window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 {
-  GtkWidget *entry;
-  guint keyval;
-  gboolean handled;
-  gboolean preedit_changed;
-  guint preedit_change_id;
-  gboolean res;
-  gchar *old_text, *new_text;
+        GtkWidget *entry;
+        guint keyval;
+        gboolean handled;
+        gboolean preedit_changed;
+        guint preedit_change_id;
+        gboolean res;
+        gchar *old_text, *new_text;
 
-  if (gs_shell_get_mode (shell) != GS_SHELL_MODE_OVERVIEW &&
-      gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
-    return GDK_EVENT_PROPAGATE;
+        if (gs_shell_get_mode (shell) != GS_SHELL_MODE_OVERVIEW &&
+            gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
+                return GDK_EVENT_PROPAGATE;
 
-  if (!gdk_event_get_keyval (event, &keyval) ||
-      is_keynav_event (event, keyval) ||
-      keyval == GDK_KEY_space ||
-      keyval == GDK_KEY_Menu)
-    return GDK_EVENT_PROPAGATE;
+        if (!gdk_event_get_keyval (event, &keyval) ||
+            is_keynav_event (event, keyval) ||
+            keyval == GDK_KEY_space ||
+            keyval == GDK_KEY_Menu)
+                return GDK_EVENT_PROPAGATE;
 
-  entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
+        entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
 
-  handled = GDK_EVENT_PROPAGATE;
-  preedit_changed = FALSE;
-  preedit_change_id = g_signal_connect (entry, "preedit-changed",
-                                        G_CALLBACK (preedit_changed_cb), &preedit_changed);
+        handled = GDK_EVENT_PROPAGATE;
+        preedit_changed = FALSE;
+        preedit_change_id = g_signal_connect (entry, "preedit-changed",
+                                              G_CALLBACK (preedit_changed_cb), &preedit_changed);
 
-  old_text = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
-  res = gtk_widget_event (entry, event);
-  new_text = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
+        old_text = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
+        res = gtk_widget_event (entry, event);
+        new_text = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
 
-  g_signal_handler_disconnect (entry, preedit_change_id);
+        g_signal_handler_disconnect (entry, preedit_change_id);
 
-  if ((res && g_strcmp0 (new_text, old_text) != 0) || preedit_changed)
-    handled = GDK_EVENT_STOP;
+        if ((res && g_strcmp0 (new_text, old_text) != 0) ||
+            preedit_changed)
+                handled = GDK_EVENT_STOP;
 
-  g_free (old_text);
-  g_free (new_text);
+        g_free (old_text);
+        g_free (new_text);
 
-  return handled;
+        return handled;
 }
 
 static void
