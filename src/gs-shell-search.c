@@ -246,9 +246,6 @@ gs_shell_search_get_search_cb (GObject *source_object,
 		gtk_widget_show (widget);
 	}
 
-	/* focus back to the text extry */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_widget_grab_focus (widget);
 out: ;
 }
 

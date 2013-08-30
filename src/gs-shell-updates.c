@@ -116,9 +116,6 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		gtk_widget_show (widget);
 	}
 
-	/* focus back to the text extry */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_widget_grab_focus (widget);
 out:
 	if (list != NULL)
 		g_list_free_full (list, (GDestroyNotify) g_object_unref);

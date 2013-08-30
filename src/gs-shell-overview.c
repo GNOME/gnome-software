@@ -209,7 +209,6 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkImage *image;
 	GtkWidget *button;
-	GtkWidget *widget;
 
 	list = gs_plugin_loader_get_featured_finish (plugin_loader,
 						     res,
@@ -230,9 +229,6 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	g_signal_connect (button, "clicked",
 			  G_CALLBACK (app_tile_clicked), shell_overview);
 
-	/* focus back to the text extry */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_widget_grab_focus (widget);
 out:
 	g_list_free (list);
 
