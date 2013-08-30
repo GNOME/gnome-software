@@ -257,6 +257,7 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 
 	g_debug ("adding to installed list: %s", gs_app_get_id (app));
 	widget = gs_app_widget_new ();
+        gs_app_widget_set_colorful (GS_APP_WIDGET (widget), FALSE);
 	g_signal_connect (widget, "button-clicked",
 			  G_CALLBACK (gs_shell_installed_app_remove_cb), shell);
         g_signal_connect_object (app, "state-changed",
