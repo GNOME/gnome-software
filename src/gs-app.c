@@ -663,6 +663,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->version);
 	g_free (priv->summary);
+	g_free (priv->description);
 	g_free (priv->screenshot);
 	g_hash_table_unref (priv->metadata);
 	g_ptr_array_unref (priv->related);
