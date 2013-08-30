@@ -56,6 +56,8 @@ struct _GsAppWidgetClass
 
 GType		 gs_app_widget_get_type			(void);
 GtkWidget	*gs_app_widget_new			(void);
+void             gs_app_widget_set_colorful             (GsAppWidget    *app_widget,
+                                                         gboolean        colorful);
 GsApp		*gs_app_widget_get_app			(GsAppWidget	*app_widget);
 void		 gs_app_widget_set_app			(GsAppWidget	*app_widget,
 							 GsApp		*app);

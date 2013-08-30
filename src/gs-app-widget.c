@@ -37,6 +37,7 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*widget_name;
 	GtkWidget	*widget_spinner;
 	GtkWidget	*widget_version;
+        gboolean         colorful;
 };
 
 
@@ -131,26 +132,24 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	/* show / hide widgets depending on kind */
 	context = gtk_widget_get_style_context (priv->widget_button);
 	gtk_style_context_remove_class (context, "destructive-action");
-	gtk_style_context_remove_class (context, "suggested-action");
 
 	switch (gs_app_get_state (app_widget->priv->app)) {
 	case GS_APP_STATE_AVAILABLE:
 		gtk_widget_set_visible (priv->widget_spinner, FALSE);
 		gtk_widget_set_visible (priv->widget_button, TRUE);
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Install"));
-		gtk_style_context_add_class (context, "suggested-action");
 		break;
 	case GS_APP_STATE_INSTALLED:
 		gtk_widget_set_visible (priv->widget_spinner, FALSE);
 		gtk_widget_set_visible (priv->widget_button, TRUE);
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Remove"));
-		gtk_style_context_add_class (context, "destructive-action");
+                if (priv->colorful)
+        		gtk_style_context_add_class (context, "destructive-action");
 		break;
 	case GS_APP_STATE_UPDATABLE:
 		gtk_widget_set_visible (priv->widget_spinner, FALSE);
 		gtk_widget_set_visible (priv->widget_button, FALSE);
 		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Update"));
-		gtk_style_context_add_class (context, "suggested-action");
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_spinner_start (GTK_SPINNER (priv->widget_spinner));
@@ -270,6 +269,8 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	priv = app_widget->priv;
 	priv->markdown = ch_markdown_new ();
 
+        priv->colorful = TRUE;
+
 	/* set defaults */
 	gtk_box_set_spacing (GTK_BOX (app_widget), 3);
 	g_object_set (app_widget, "margin", 9, NULL);
@@ -358,6 +359,13 @@ gs_app_widget_set_size_groups (GsAppWidget  *app_widget,
 
 	box = gtk_widget_get_parent (app_widget->priv->widget_name);
 	gtk_size_group_add_widget (name, box);
+}
+
+void
+gs_app_widget_set_colorful (GsAppWidget *app_widget,
+                            gboolean     colorful)
+{
+        app_widget->priv->colorful = colorful;
 }
 
 /**
