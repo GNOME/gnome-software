@@ -3,6 +3,8 @@ dist_resources_DATA =					\
 	featured-gimp.png				\
 	featured-firefox.png				\
 	featured-xchat.png				\
+	featured-gnome-weather.png			\
+	featured-gnome-sudoku.png			\
 	stars0.png					\
 	stars1.png					\
 	stars2.png					\
