@@ -357,7 +357,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed)
         resort_list (shell_installed);
 
         /* scroll to top */
-        adj = gtk_scrolled_window_get_hadjustment (GTK_SCROLLED_WINDOW (gtk_builder_get_object (priv->builder, "scrolledwindow_install")));
+        adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (gtk_builder_get_object (priv->builder, "scrolledwindow_install")));
         gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 
 	/* no need to refresh */
