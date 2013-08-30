@@ -349,10 +349,6 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed)
         if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_INSTALLED) {
                 widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
                 gtk_widget_show (widget);
-                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-                gtk_widget_show (widget);
-                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-                gtk_entry_set_text (GTK_ENTRY (widget), "");
         }
 
         resort_list (shell_installed);

@@ -261,7 +261,7 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
   gchar *old_text, *new_text;
 
   if (gs_shell_get_mode (shell) != GS_SHELL_MODE_OVERVIEW &&
-      gs_shell_get_mode (shell) != GS_SHELL_MODE_INSTALLED)
+      gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
     return GDK_EVENT_PROPAGATE;
 
   if (!gdk_event_get_keyval (event, &keyval) ||
