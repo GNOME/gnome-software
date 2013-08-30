@@ -405,29 +405,6 @@ gs_shell_search_list_header_func (GtkListBoxRow *row,
 }
 
 /**
- * gs_shell_search_pending_apps_changed_cb:
- */
-static void
-gs_shell_search_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
-					    GsShellSearch *shell_search)
-{
-	gchar *label;
-	GPtrArray *pending;
-	GtkWidget *widget;
-
-	widget = GTK_WIDGET (gtk_builder_get_object (shell_search->priv->builder,
-						     "label_button_search"));
-	pending = gs_plugin_loader_get_pending (plugin_loader);
-	if (pending->len == 0)
-		label = g_strdup (_("Search"));
-	else
-		label = g_strdup_printf (_("Search (%d)"), pending->len);
-	gtk_label_set_label (GTK_LABEL (widget), label);
-	g_free (label);
-	g_ptr_array_unref (pending);
-}
-
-/**
  * gs_shell_search_setup:
  */
 void
@@ -442,10 +419,6 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 	g_return_if_fail (GS_IS_SHELL_SEARCH (shell_search));
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
-	g_signal_connect (priv->plugin_loader, "pending-apps-changed",
-			  G_CALLBACK (gs_shell_search_pending_apps_changed_cb),
-			  shell_search);
-
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);
 

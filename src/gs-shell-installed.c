@@ -31,6 +31,8 @@
 #include "gs-app-widget.h"
 
 static void	gs_shell_installed_finalize	(GObject	*object);
+static void     remove_row                      (GtkListBox *list_box,
+                                                 GtkWidget *child);
 
 #define GS_SHELL_INSTALLED_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_INSTALLED, GsShellInstalledPrivate))
 
@@ -235,6 +237,38 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 	gtk_widget_destroy (dialog);
 }
 
+static void
+app_state_changed (GsApp *app, GtkWidget *widget)
+{
+        GtkWidget *row, *list;
+
+        if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE) {
+                row = gtk_widget_get_parent (widget);
+                list = gtk_widget_get_parent (row);
+                remove_row (GTK_LIST_BOX (list), widget);
+        }
+}
+
+static void
+gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
+{
+	GsShellInstalledPrivate *priv = shell->priv;
+        GtkWidget *widget;
+
+	g_debug ("adding to installed list: %s", gs_app_get_id (app));
+	widget = gs_app_widget_new ();
+	g_signal_connect (widget, "button-clicked",
+			  G_CALLBACK (gs_shell_installed_app_remove_cb), shell);
+        g_signal_connect_object (app, "state-changed",
+                                 G_CALLBACK (app_state_changed), widget, 0);
+	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
+	gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
+	gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
+				       priv->sizegroup_image,
+				       priv->sizegroup_name);
+	gtk_widget_show (widget);
+}
+
 /**
  * gs_shell_installed_get_installed_cb:
  **/
@@ -268,17 +302,7 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	}
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		g_debug ("adding installed %s", gs_app_get_id (app));
-		widget = gs_app_widget_new ();
-		g_signal_connect (widget, "button-clicked",
-				  G_CALLBACK (gs_shell_installed_app_remove_cb),
-				  shell_installed);
-		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-		gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
-		gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
-					       priv->sizegroup_image,
-					       priv->sizegroup_name);
-		gtk_widget_show (widget);
+                gs_shell_installed_add_app (shell_installed, app);
 	}
 out: ;
 }
@@ -293,6 +317,9 @@ reset_date (GtkWidget *row, gpointer data)
         app = gs_app_widget_get_app (GS_APP_WIDGET (child));
 
         if (gs_app_get_state (app) == GS_APP_STATE_REMOVING) {
+                /* sort removing apps above installed apps,
+                 * below installing apps
+                 */
                 gs_app_set_install_date (app, G_MAXUINT - 2);
                 gtk_list_box_row_changed (GTK_LIST_BOX_ROW (row));
         }
@@ -418,6 +445,8 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	gchar *label;
 	GPtrArray *pending;
 	GtkWidget *widget;
+        guint i;
+        GsApp *app;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (shell_installed->priv->builder,
 						     "label_button_installed"));
@@ -426,6 +455,17 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 		label = g_strdup (_("Installed"));
 	else
 		label = g_strdup_printf (_("Installed (%d)"), pending->len);
+        for (i = 0; i < pending->len; i++) {
+                app = GS_APP (g_ptr_array_index (pending, i));
+                if (gs_app_get_state (app) == GS_APP_STATE_INSTALLING) {
+                        /* sort installing apps above removing and
+                         * installed apps
+                         */
+                        gs_app_set_install_date (app, G_MAXUINT - 1);
+                        gs_shell_installed_add_app (shell_installed, app);
+                }
+        }
+
 	gtk_label_set_label (GTK_LABEL (widget), label);
 	g_free (label);
 	g_ptr_array_unref (pending);
