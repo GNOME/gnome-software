@@ -726,12 +726,15 @@ with multi-level undo.
               </object>
             </child>
             <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow3">
+              <object class="GtkScrolledWindow" id="scrolledwindow_category">
                 <property name="visible">True</property>
-                <property name="shadow_type">in</property>
+                <property name="shadow_type">none</property>
                 <property name="can_focus">False</property>
                 <property name="hscrollbar_policy">never</property>
                 <property name="vscrollbar_policy">automatic</property>
+                <style>
+                  <class name="main-scrolled-software"/>
+                </style>
                 <child>
                   <object class="GtkViewport" id="viewport3">
                     <property name="visible">True</property>
@@ -944,7 +947,7 @@ with multi-level undo.
                 <property name="vexpand">True</property>
                 <property name="hscrollbar_policy">never</property>
                 <property name="vscrollbar_policy">automatic</property>
-                <property name="shadow_type">in</property>
+                <property name="shadow_type">none</property>
                 <property name="kinetic_scrolling">False</property>
                 <child>
                   <object class="GtkLabel" id="label_update_details">
