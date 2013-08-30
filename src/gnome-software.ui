@@ -227,6 +227,9 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="activates_default">True</property>
+                        <property name="width_request">500</property>
+                        <property name="hexpand">True</property>
+                        <property name="halign">center</property>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1012,12 +1015,6 @@ with multi-level undo.
     </child>
   </object>
   <object class="GtkSizeGroup" id="sizegroup_header_center"/>
-  <object class="GtkSizeGroup" id="sizegroup_searchentry">
-    <widgets>
-      <widget name="buttonbox_main"/>
-      <widget name="entry_search"/>
-    </widgets>
-  </object>
   <object class="GtkSizeGroup" id="sizegroup_update_details">
     <property name="ignore-hidden">False</property>
     <property name="mode">horizontal</property>
