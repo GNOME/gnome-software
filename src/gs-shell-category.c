@@ -50,9 +50,6 @@ gs_shell_category_refresh (GsShellCategory *shell)
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
         gtk_widget_show (widget);
         gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (priv->category));
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	gtk_widget_hide (widget);
 }
 
 static void

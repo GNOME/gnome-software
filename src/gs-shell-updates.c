@@ -156,8 +156,10 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
         GtkSpinner *spinner;
         GList *list;
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-        gtk_widget_show (widget);
+        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
+                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+                gtk_widget_show (widget);
+        }
 
 	/* no need to refresh */
 	if (priv->cache_valid) {
@@ -177,9 +179,6 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
 	gtk_widget_show (widget);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	gtk_widget_hide (widget);
 
         if (priv->waiting)
                 return;

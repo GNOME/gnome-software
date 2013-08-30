@@ -24,6 +24,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gs-shell.h"
 #include "gs-shell-installed.h"
 #include "gs-app.h"
 #include "gs-utils.h"
@@ -43,6 +44,7 @@ struct GsShellInstalledPrivate
 	GtkSizeGroup		*sizegroup_name;
 	gboolean		 cache_valid;
 	gboolean		 waiting;
+        GsShell                 *shell;
 };
 
 G_DEFINE_TYPE (GsShellInstalled, gs_shell_installed, G_TYPE_OBJECT)
@@ -337,12 +339,14 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed)
         GtkSpinner *spinner;
         GtkAdjustment *adj;
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-        gtk_widget_show (widget);
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-        gtk_widget_show (widget);
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-        gtk_entry_set_text (GTK_ENTRY (widget), "");
+        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_INSTALLED) {
+                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+                gtk_widget_show (widget);
+                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+                gtk_widget_show (widget);
+                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+                gtk_entry_set_text (GTK_ENTRY (widget), "");
+        }
 
         resort_list (shell_installed);
 
@@ -453,6 +457,7 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
  */
 void
 gs_shell_installed_setup (GsShellInstalled *shell_installed,
+                          GsShell *shell,
 			  GsPluginLoader *plugin_loader,
 			  GtkBuilder *builder,
 			  GCancellable *cancellable)
@@ -462,6 +467,7 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 
 	g_return_if_fail (GS_IS_SHELL_INSTALLED (shell_installed));
 
+        priv->shell = shell;
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (priv->plugin_loader, "pending-apps-changed",
 			  G_CALLBACK (gs_shell_installed_pending_apps_changed_cb),
