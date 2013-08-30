@@ -55,25 +55,35 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	GdkPixbuf *pixbuf;
 	GsApp *app;
 	guint i;
+        GDateTime *date;
 	const gchar *apps[] = {
-		"firefox",
-		NULL };
+                "gimp",
+                "gnome-weather",
+                "gnome-sudoku",
+		NULL
+        };
 
-	/* just add each one */
-	for (i = 0; apps[i] != NULL; i++) {
-		app = gs_app_new (apps[i]);
-		gs_plugin_add_app (list, app);
-		path = g_strdup_printf ("%s/gnome-software/featured-%s.png",
-					DATADIR, apps[i]);
-		pixbuf = gdk_pixbuf_new_from_file_at_scale (path, -1, -1, TRUE, error);
-		g_free (path);
-		if (pixbuf == NULL) {
-			ret = FALSE;
-			goto out;
-		}
-		gs_app_set_featured_pixbuf (app, pixbuf);
-		g_object_unref (pixbuf);
+        /* In lieu of a random number generator, just
+         * rotate the featured apps, giving each app
+         * 3 days apiece.
+         */
+        date = g_date_time_new_now_utc ();
+        i = g_date_time_get_day_of_year (date);
+        g_date_time_unref (date);
+        i = (i % (G_N_ELEMENTS (apps) * 3)) / 3;
+
+        app = gs_app_new (apps[i]);
+	gs_plugin_add_app (list, app);
+	path = g_strdup_printf ("%s/gnome-software/featured-%s.png",
+				DATADIR, apps[i]);
+	pixbuf = gdk_pixbuf_new_from_file_at_scale (path, -1, -1, TRUE, error);
+	g_free (path);
+	if (pixbuf == NULL) {
+		ret = FALSE;
+		goto out;
 	}
+	gs_app_set_featured_pixbuf (app, pixbuf);
+	g_object_unref (pixbuf);
 out:
 	return ret;
 }
