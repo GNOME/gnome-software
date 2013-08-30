@@ -49,7 +49,8 @@ struct GsShellPrivate
 	GsShellDetails		*shell_details;
 	GsShellCategory         *shell_category;
 	GtkBuilder		*builder;
-	guint			 tab_back_id;
+	GsShellMode		 tab_back_id;
+	GsShellMode		 search_back_id;
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -179,7 +180,15 @@ initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 static void
 gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
 {
-        gs_shell_set_mode (shell, GS_SHELL_MODE_SEARCH);
+	GsShellPrivate *priv = shell->priv;
+
+        if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
+                gs_shell_search_refresh (shell->priv->shell_search,
+                                         gtk_entry_get_text (entry));
+        } else {
+                priv->search_back_id = priv->mode;
+                gs_shell_set_mode (shell, GS_SHELL_MODE_SEARCH);
+        }
 }
 
 static gboolean
@@ -279,6 +288,19 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
   return handled;
 }
 
+static void
+text_changed_handler (GObject *entry, GParamSpec *pspec, GsShell *shell)
+{
+        const gchar *text;
+
+        if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
+                return;
+
+        text = gtk_entry_get_text (GTK_ENTRY (entry));
+        if (text[0] == '\0')
+                gs_shell_set_mode (shell, shell->priv->search_back_id);
+}
+
 /**
  * gs_shell_setup:
  */
@@ -369,6 +391,8 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
         g_signal_connect (widget, "key-press-event",
                           G_CALLBACK (entry_keypress_handler), shell);
+        g_signal_connect (widget, "notify::text",
+                          G_CALLBACK (text_changed_handler), shell);
 
         /* load content */
         g_signal_connect (priv->shell_overview, "refreshed",
