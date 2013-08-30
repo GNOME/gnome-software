@@ -36,6 +36,7 @@ struct GsPluginLoaderPrivate
 	gchar			*location;
 	GsPluginStatus		 status_last;
 	GPtrArray		*pending_apps;
+	GHashTable		*app_cache;
 };
 
 G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
@@ -59,6 +60,50 @@ gs_plugin_loader_error_quark (void)
 	if (!quark)
 		quark = g_quark_from_static_string ("gs_plugin_loader_error");
 	return quark;
+}
+
+/**
+ * gs_plugin_loader_dedupe:
+ */
+GsApp *
+gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
+{
+	GsApp *new_app;
+	GsPluginLoaderPrivate *priv = plugin_loader->priv;
+
+	/* already exists */
+	new_app = g_hash_table_lookup (priv->app_cache, gs_app_get_id (app));
+	if (new_app != NULL) {
+		/* this looks a little odd to unref the method parameter,
+		 * but it allows us to do:
+		 * app = gs_plugin_loader_dedupe (cache, app);
+		 */
+		g_debug ("deduped %s", gs_app_get_id (app));
+		g_object_unref (app);
+		g_object_ref (new_app);
+		goto out;
+	}
+
+	/* insert new entry */
+	g_hash_table_insert (priv->app_cache,
+			     (gpointer) gs_app_get_id (app),
+			     g_object_ref (app));
+
+	/* no ref */
+	new_app = app;
+out:
+	return new_app;
+}
+
+/**
+ * gs_plugin_loader_list_dedupe:
+ **/
+static void
+gs_plugin_loader_list_dedupe (GsPluginLoader *plugin_loader, GList *list)
+{
+	GList *l;
+	for (l = list; l != NULL; l = l->next)
+		l->data = gs_plugin_loader_dedupe (plugin_loader, GS_APP (l->data));
 }
 
 /**
@@ -155,6 +200,9 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			 function_name,
 			 g_timer_elapsed (plugin->timer, NULL) * 1000);
 	}
+
+	/* dedupe applications we already know about */
+	gs_plugin_loader_list_dedupe (plugin_loader, list);
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
@@ -317,6 +365,9 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
+
+	/* dedupe applications we already know about */
+	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
 
 	/* coalesce all packages down into one os-update */
 	for (l = state->list; l != NULL; l = l->next) {
@@ -797,6 +848,9 @@ cd_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 			 function_name,
 			 g_timer_elapsed (plugin->timer, NULL) * 1000);
 	}
+
+	/* dedupe applications we already know about */
+	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
@@ -1422,6 +1476,10 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	plugin_loader->priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
 	plugin_loader->priv->status_last = GS_PLUGIN_STATUS_LAST;
 	plugin_loader->priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	plugin_loader->priv->app_cache = g_hash_table_new_full (g_str_hash,
+								 g_str_equal,
+								 NULL,
+								 (GFreeFunc) g_object_unref);
 }
 
 /**
@@ -1443,6 +1501,7 @@ gs_plugin_loader_finalize (GObject *object)
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
 
+	g_hash_table_unref (plugin_loader->priv->app_cache);
 	g_ptr_array_unref (plugin_loader->priv->pending_apps);
 	g_ptr_array_unref (plugin_loader->priv->plugins);
 	g_free (plugin_loader->priv->location);

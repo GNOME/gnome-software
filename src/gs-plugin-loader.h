@@ -132,6 +132,8 @@ gboolean	 gs_plugin_loader_app_set_rating	(GsPluginLoader	*plugin_loader,
 GsAppState	 gs_plugin_loader_get_state_for_app	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app);
 GPtrArray	*gs_plugin_loader_get_pending		(GsPluginLoader	*plugin_loader);
+GsApp		*gs_plugin_loader_dedupe		(GsPluginLoader	*plugin_loader,
+							 GsApp		*app);
 
 G_END_DECLS
 

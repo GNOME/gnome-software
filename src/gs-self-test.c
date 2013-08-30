@@ -54,6 +54,33 @@ gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
+gs_plugin_loader_dedupe_func (void)
+{
+	GsApp *app1;
+	GsApp *app2;
+	GsPluginLoader *loader;
+
+	loader = gs_plugin_loader_new ();
+
+	/* add app */
+	app1 = gs_app_new ("app1");
+	gs_app_set_description (app1, "description");
+	app1 = gs_plugin_loader_dedupe (loader, app1);
+	g_assert_cmpstr (gs_app_get_id (app1), ==, "app1");
+	g_assert_cmpstr (gs_app_get_description (app1), ==, "description");
+
+	app2 = gs_app_new ("app1");
+	app2 = gs_plugin_loader_dedupe (loader, app2);
+	g_assert_cmpstr (gs_app_get_id (app2), ==, "app1");
+	g_assert_cmpstr (gs_app_get_description (app2), ==, "description");
+
+	g_object_unref (app1);
+	g_object_unref (app2);
+
+	g_object_unref (loader);
+}
+
+static void
 gs_plugin_loader_func (void)
 {
 	gboolean ret;
@@ -197,6 +224,7 @@ main (int argc, char **argv)
 
 	/* tests go here */
 	g_test_add_func ("/gnome-software/app", gs_app_func);
+	g_test_add_func ("/gnome-software/plugin-loader{dedupe}", gs_plugin_loader_dedupe_func);
 	g_test_add_func ("/gnome-software/plugin-loader", gs_plugin_loader_func);
 
 	return g_test_run ();
