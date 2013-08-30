@@ -181,10 +181,14 @@ static void
 gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
+        const gchar *text;
+
+        text = gtk_entry_get_text (entry);
+        if (text[0] == '\0')
+                return;
 
         if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
-                gs_shell_search_refresh (shell->priv->shell_search,
-                                         gtk_entry_get_text (entry));
+                gs_shell_search_refresh (shell->priv->shell_search, text);
         } else {
                 priv->search_back_id = priv->mode;
                 gs_shell_set_mode (shell, GS_SHELL_MODE_SEARCH);
