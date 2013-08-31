@@ -69,7 +69,8 @@
                           <object class="GtkLabel" id="label_button_all">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">All</property>
+                            <property name="use_underline">True</property>
+                            <property name="label" translatable="yes">_All</property>
                           </object>
                         </child>
                       </object>
@@ -91,7 +92,8 @@
                           <object class="GtkLabel" id="label_button_installed">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Installed</property>
+                            <property name="use_underline">True</property>
+                            <property name="label" translatable="yes">_Installed</property>
                           </object>
                         </child>
                       </object>
@@ -113,7 +115,8 @@
                           <object class="GtkLabel" id="label_button_updates">
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="label" translatable="yes">Updates</property>
+                            <property name="use_underline">True</property>
+                            <property name="label" translatable="yes">_Updates</property>
                           </object>
                         </child>
                       </object>
@@ -275,7 +278,7 @@
             <property name="show_border">False</property>
             <property name="show_tabs">False</property>
             <child>
-              <object class="GtkScrolledWindow" id="scrolledwindow1">
+              <object class="GtkScrolledWindow" id="scrolledwindow_overview">
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="hscrollbar_policy">never</property>
