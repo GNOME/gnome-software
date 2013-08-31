@@ -166,10 +166,24 @@ save_back_entry (GsShell *shell)
         entry = g_new0 (BackEntry, 1);
         entry->mode = priv->mode;
 
-        if (priv->mode == GS_SHELL_MODE_CATEGORY)
+        if (priv->mode == GS_SHELL_MODE_CATEGORY) {
                 entry->category = gs_shell_category_get_category (priv->shell_category);
+                g_object_ref (entry->category);
+        }
+        else if (priv->mode == GS_SHELL_MODE_DETAILS) {
+                entry->app = gs_shell_details_get_app (priv->shell_details);
+                g_object_ref (entry->app);
+        }
 
         priv->back_entry_stack = g_slist_prepend (priv->back_entry_stack, entry);
+}
+
+static void
+free_back_entry (BackEntry *entry)
+{
+        g_clear_object (&entry->category);
+        g_clear_object (&entry->app);
+        g_free (entry);
 }
 
 /**
@@ -187,7 +201,7 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 
 	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category);
 
-        g_free (entry);
+        free_back_entry (entry);
 }
 
 static void
