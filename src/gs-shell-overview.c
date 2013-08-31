@@ -28,6 +28,7 @@
 #include "gs-app.h"
 #include "gs-category.h"
 #include "gs-app-widget.h"
+#include "gs-utils.h"
 
 static void	gs_shell_overview_finalize	(GObject	*object);
 
@@ -284,6 +285,7 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 	GsShellOverviewPrivate *priv = shell_overview->priv;
 	GtkWidget *widget;
 	GtkWidget *grid;
+        GtkAdjustment *adj;
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
         gtk_widget_show (widget);
@@ -291,6 +293,12 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview)
 	gtk_widget_show (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
         gtk_entry_set_text (GTK_ENTRY (widget), "");
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_overview"));
+        adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
+        gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+
+        gs_grab_focus_when_mapped (widget);
 
 	/* no need to refresh */
 	if (priv->cache_valid)
