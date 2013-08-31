@@ -60,7 +60,7 @@ app_tile_clicked (GtkButton *button, gpointer data)
         GsApp *app;
 
         app = g_object_get_data (G_OBJECT (button), "app");
-        gs_shell_show_details (shell->priv->shell, app);
+        gs_shell_show_app (shell->priv->shell, app);
 }
 
 static GtkWidget *

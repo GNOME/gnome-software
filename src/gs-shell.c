@@ -55,8 +55,6 @@ struct GsShellPrivate
 
 G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
 
-static void gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *category);
-
 /**
  * gs_shell_activate:
  **/
@@ -68,11 +66,8 @@ gs_shell_activate (GsShell *shell)
 	gtk_window_present (window);
 }
 
-/**
- * gs_shell_set_overview_mode:
- **/
 static void
-gs_shell_set_overview_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *category)
+gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *category)
 {
 	GsShellPrivate *priv = shell->priv;
         GtkWidget *widget;
@@ -154,7 +149,7 @@ gs_shell_overview_button_cb (GtkWidget *widget, GsShell *shell)
 	GsShellMode mode;
 	mode = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
 						   "gnome-software::overview-mode"));
-	gs_shell_set_overview_mode (shell, mode, NULL, NULL);
+	gs_shell_change_mode (shell, mode, NULL, NULL);
 }
 
 /**
@@ -163,7 +158,7 @@ gs_shell_overview_button_cb (GtkWidget *widget, GsShell *shell)
 static void
 gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 {
-	gs_shell_set_overview_mode (shell, shell->priv->tab_back_id, NULL, NULL);
+	gs_shell_change_mode (shell, shell->priv->tab_back_id, NULL, NULL);
 }
 
 static void
@@ -413,7 +408,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 void
 gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
-        gs_shell_set_overview_mode (shell, mode, NULL, NULL);
+        gs_shell_change_mode (shell, mode, NULL, NULL);
 }
 
 GsShellMode
@@ -425,15 +420,15 @@ gs_shell_get_mode (GsShell *shell)
 }
 
 void
-gs_shell_show_details (GsShell *shell, GsApp *app)
+gs_shell_show_app (GsShell *shell, GsApp *app)
 {
-        gs_shell_set_overview_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL);
+        gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL);
 }
 
 void
 gs_shell_show_category (GsShell *shell, GsCategory *category)
 {
-        gs_shell_set_overview_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category);
+        gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category);
 }
 
 /**
