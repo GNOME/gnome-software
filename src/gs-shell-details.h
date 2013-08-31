@@ -57,6 +57,7 @@ GsShellDetails	*gs_shell_details_new		(void);
 void		 gs_shell_details_invalidate	(GsShellDetails		*shell_details);
 void		 gs_shell_details_set_app	(GsShellDetails		*shell_details,
 						 GsApp			*app);
+GsApp           *gs_shell_details_get_app       (GsShellDetails         *shell_details);
 void		 gs_shell_details_refresh	(GsShellDetails		*shell_details);
 void 		 gs_shell_details_setup		(GsShellDetails		*shell_details,
                                                  GsShell                *shell,

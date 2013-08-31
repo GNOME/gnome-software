@@ -197,6 +197,12 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	}
 }
 
+GsApp *
+gs_shell_details_get_app (GsShellDetails *shell_details)
+{
+        return shell_details->priv->app;
+}
+
 /**
  * gs_shell_details_finished_func:
  **/
