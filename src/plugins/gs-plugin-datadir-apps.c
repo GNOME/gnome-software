@@ -25,6 +25,7 @@
 #include <gs-plugin.h>
 
 struct GsPluginPrivate {
+	GMutex                   plugin_mutex;
 	GHashTable		*cache;
 };
 
@@ -70,6 +71,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 						     g_str_equal,
 						     g_free,
 						     (GDestroyNotify) gs_plugin_datadir_apps_cache_item_free);
+	g_mutex_init (&plugin->priv->plugin_mutex);
 }
 
 /**
@@ -88,6 +90,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_hash_table_unref (plugin->priv->cache);
+	g_mutex_clear (&plugin->priv->plugin_mutex);
 }
 
 /**
@@ -130,11 +133,14 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	GsPluginDataDirAppsCacheItem *cache_item;
 
 	/* is in cache */
+	g_mutex_lock (&plugin->priv->plugin_mutex);
 	cache_item = g_hash_table_lookup (plugin->priv->cache, desktop_file);
 	if (cache_item != NULL) {
 		gs_plugin_datadir_apps_set_from_cache_item (app, cache_item);
+		g_mutex_unlock (&plugin->priv->plugin_mutex);
 		goto out;
 	}
+	g_mutex_unlock (&plugin->priv->plugin_mutex);
 
 	/* load desktop file */
 	key_file = g_key_file_new ();
@@ -203,9 +209,11 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 
 	/* add to cache */
 	gs_plugin_datadir_apps_set_from_cache_item (app, cache_item);
+	g_mutex_lock (&plugin->priv->plugin_mutex);
 	g_hash_table_insert (plugin->priv->cache,
 			     g_strdup (desktop_file),
 			     cache_item);
+	g_mutex_unlock (&plugin->priv->plugin_mutex);
 out:
 	if (key_file != NULL)
 		g_key_file_unref (key_file);

@@ -25,7 +25,7 @@
 
 struct GsPluginPrivate {
 	GHashTable		*cache;
-	gboolean		 loaded;
+	gsize    		 loaded;
 };
 
 /**
@@ -111,7 +111,6 @@ gs_plugin_hardcoded_descriptions_add (GsPlugin *plugin, GError **error)
 				     (gpointer) descriptions[i].desc);
 	}
 
-	plugin->priv->loaded = TRUE;
 	return TRUE;
 }
 
@@ -130,9 +129,10 @@ gs_plugin_refine (GsPlugin *plugin,
 	GList *l;
 	GsApp *app;
 
-	/* already loaded */
-	if (!plugin->priv->loaded) {
+	if (g_once_init_enter (&plugin->priv->loaded)) {
 		ret = gs_plugin_hardcoded_descriptions_add (plugin, error);
+		g_once_init_leave (&plugin->priv->loaded, TRUE);
+
 		if (!ret)
 			goto out;
 	}

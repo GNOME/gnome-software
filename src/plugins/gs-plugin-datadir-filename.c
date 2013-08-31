@@ -24,6 +24,7 @@
 #include <gs-plugin.h>
 
 struct GsPluginPrivate {
+	GMutex                   plugin_mutex;
 	GHashTable		*cache;
 };
 
@@ -48,6 +49,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 						     g_str_equal,
 						     g_free,
 						     g_free);
+	g_mutex_init (&plugin->priv->plugin_mutex);
 }
 
 /**
@@ -66,17 +68,18 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_hash_table_unref (plugin->priv->cache);
+	g_mutex_clear (&plugin->priv->plugin_mutex);
 }
 
 /**
  * gs_plugin_datadir_filename_find:
  */
-static const gchar *
+static gchar *
 gs_plugin_datadir_filename_find (GsPlugin *plugin,
 				 GsApp *app)
 {
 	const gchar *id;
-	const gchar *path_tmp = NULL;
+	gchar *path_tmp = NULL;
 	gboolean ret;
 	gchar *path = NULL;
 	const char * const *datadirs;
@@ -86,14 +89,19 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		goto out;
+
+	g_mutex_lock (&plugin->priv->plugin_mutex);
 	ret = g_hash_table_lookup_extended (plugin->priv->cache,
 					    id,
 					    NULL,
 					    (gpointer *) &path_tmp);
 	if (ret) {
 		g_debug ("found existing %s", id);
+		path_tmp = g_strdup (path_tmp);
+		g_mutex_unlock (&plugin->priv->plugin_mutex);
 		goto out;
 	}
+	g_mutex_unlock (&plugin->priv->plugin_mutex);
 
 	/* find if the file exists */
 	datadirs = g_get_system_data_dirs ();
@@ -102,18 +110,22 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 					datadirs[i], gs_app_get_id (app));
 		if (g_file_test (path, G_FILE_TEST_EXISTS)) {
 			path_tmp = g_strdup (path);
+			g_mutex_lock (&plugin->priv->plugin_mutex);
 			g_hash_table_insert (plugin->priv->cache,
 					     g_strdup (id),
-					     (gpointer) path_tmp);
+					     g_strdup (path));
+			g_mutex_unlock (&plugin->priv->plugin_mutex);
 			break;
 		}
 	}
 
 	if (path_tmp == NULL) {
 		/* add an empty key to the cache to avoid stat'ing again */
+		g_mutex_lock (&plugin->priv->plugin_mutex);
 		g_hash_table_insert (plugin->priv->cache,
 				     g_strdup (id),
 				     NULL);
+		g_mutex_unlock (&plugin->priv->plugin_mutex);
 	}
 out:
 	g_free (path);
@@ -129,7 +141,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	const gchar *tmp;
+	gchar *tmp;
 	GList *l;
 	GsApp *app;
 
@@ -137,14 +149,15 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_name (app) != NULL)
 			continue;
-		tmp = gs_app_get_metadata_item (app, "datadir-desktop-filename");
-		if (tmp != NULL)
+		if (gs_app_get_metadata_item (app, "datadir-desktop-filename") != NULL)
 			continue;
+
 		tmp = gs_plugin_datadir_filename_find (plugin, app);
 		if (tmp != NULL) {
 			gs_app_set_metadata (app,
 					     "datadir-desktop-filename",
 					     tmp);
+			g_free (tmp);
 		}
 	}
 	return TRUE;

@@ -28,7 +28,7 @@
 #include <gs-plugin.h>
 
 struct GsPluginPrivate {
-	gboolean		 loaded;
+	gsize                    loaded;
 	gchar			*db_path;
 	sqlite3			*db;
 };
@@ -132,7 +132,6 @@ gs_plugin_local_ratings_load_db (GsPlugin *plugin,
 	}
 
 	/* success */
-	plugin->priv->loaded = TRUE;
 out:
 	return ret;
 }
@@ -182,8 +181,10 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 	gint rc;
 
 	/* already loaded */
-	if (!plugin->priv->loaded) {
+	if (g_once_init_enter (&plugin->priv->loaded)) {
 		ret = gs_plugin_local_ratings_load_db (plugin, error);
+		g_once_init_leave (&plugin->priv->loaded, TRUE);
+
 		if (!ret)
 			goto out;
 	}
@@ -224,8 +225,10 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 
 	/* already loaded */
-	if (!plugin->priv->loaded) {
+	if (g_once_init_enter (&plugin->priv->loaded)) {
 		ret = gs_plugin_local_ratings_load_db (plugin, error);
+		g_once_init_leave (&plugin->priv->loaded, TRUE);
+
 		if (!ret)
 			goto out;
 	}

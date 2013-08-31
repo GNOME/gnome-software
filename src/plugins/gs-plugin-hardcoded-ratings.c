@@ -25,8 +25,7 @@
 
 struct GsPluginPrivate {
 	GHashTable		*cache;
-	gboolean		 loaded;
-	GMutex			 mutex;
+	gsize    		 loaded;
 };
 
 /**
@@ -51,9 +50,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 						     g_str_equal,
 						     NULL,
 						     NULL);
-
-	/* can only load from one thread */
-	g_mutex_init (&plugin->priv->mutex);
 }
 
 /**
@@ -72,7 +68,6 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_hash_table_unref (plugin->priv->cache);
-	g_mutex_clear (&plugin->priv->mutex);
 }
 
 /**
@@ -693,12 +688,6 @@ gs_plugin_hardcoded_ratings_setup (GsPlugin *plugin, GError **error)
 		{ -1	,NULL}
 	};
 
-	/* protect */
-	g_mutex_lock (&plugin->priv->mutex);
-
-	if (plugin->priv->loaded)
-		goto out;
-
 	/* add each one to a hash table */
 	for (i = 0; ratings[i].id != NULL; i++) {
 		g_hash_table_insert (plugin->priv->cache,
@@ -706,9 +695,6 @@ gs_plugin_hardcoded_ratings_setup (GsPlugin *plugin, GError **error)
 				     GINT_TO_POINTER (ratings[i].value));
 	}
 
-	plugin->priv->loaded = TRUE;
-out:
-	g_mutex_unlock (&plugin->priv->mutex);
 	return TRUE;
 }
 
@@ -728,9 +714,13 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 
 	/* already loaded */
-	ret = gs_plugin_hardcoded_ratings_setup (plugin, error);
-	if (!ret)
-		goto out;
+	if (g_once_init_enter (&plugin->priv->loaded)) {
+		ret = gs_plugin_hardcoded_ratings_setup (plugin, error);
+		g_once_init_leave (&plugin->priv->loaded, TRUE);
+
+		if (!ret)
+			goto out;
+	}
 
 	/* add any missing ratings data */
 	for (l = list; l != NULL; l = l->next) {
