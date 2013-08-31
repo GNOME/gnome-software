@@ -50,7 +50,6 @@ struct GsShellPrivate
 	GsShellCategory         *shell_category;
 	GtkBuilder		*builder;
 	GsShellMode		 tab_back_id;
-	GsShellMode		 search_back_id;
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -183,9 +182,8 @@ gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
                 return;
 
         if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
-                gs_shell_search_refresh (shell->priv->shell_search, text);
+                gs_shell_search_refresh (priv->shell_search, text);
         } else {
-                priv->search_back_id = priv->mode;
                 gs_shell_set_mode (shell, GS_SHELL_MODE_SEARCH);
         }
 }
@@ -297,7 +295,7 @@ text_changed_handler (GObject *entry, GParamSpec *pspec, GsShell *shell)
 
         text = gtk_entry_get_text (GTK_ENTRY (entry));
         if (text[0] == '\0')
-                gs_shell_set_mode (shell, shell->priv->search_back_id);
+                gs_shell_set_mode (shell, GS_SHELL_MODE_OVERVIEW);
 }
 
 /**
