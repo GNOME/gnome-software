@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include <string.h>
 #include <gs-plugin.h>
 
 struct GsPluginPrivate {
@@ -123,6 +124,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	gchar *comment = NULL;
 	gchar *name = NULL;
 	gchar *icon = NULL;
+	gchar *dot;
 	GKeyFile *key_file = NULL;
 	GdkPixbuf *pixbuf = NULL;
 	GsPluginDataDirAppsCacheItem *cache_item;
@@ -189,7 +191,9 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 
 	/* set new id */
 	basename = g_path_get_basename (desktop_file);
-	g_strdelimit (basename, ".", '\0');
+	dot = strrchr (basename, '.');
+	if (dot)
+		*dot = '\0';
 	basename_tmp = basename;
 	if (g_str_has_prefix (basename_tmp, "fedora-"))
 		basename_tmp += 7;
