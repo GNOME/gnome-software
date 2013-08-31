@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-04-09 19:31+0200\n"
-"PO-Revision-Date: 2013-04-09 19:32+0200\n"
+"POT-Creation-Date: 2013-08-31 22:25+0200\n"
+"PO-Revision-Date: 2013-08-31 22:28+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -23,6 +23,14 @@ msgstr ""
 "X-Poedit-Language: Polish\n"
 "X-Poedit-Country: Poland\n"
 
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "_O programie"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "Za_kończ"
+
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
 msgid "Software"
 msgstr "Oprogramowanie"
@@ -32,10 +40,10 @@ msgid "Add, remove or update software on this computer"
 msgstr "Dodawanie, usuwanie i aktualizowanie oprogramowania na komputerze"
 
 #: ../src/gnome-software.ui.h:2
-msgid "New"
-msgstr "Nowe"
+msgid "All"
+msgstr "Wszystkie"
 
-#: ../src/gnome-software.ui.h:3
+#: ../src/gnome-software.ui.h:3 ../src/gs-shell-installed.c:452
 msgid "Installed"
 msgstr "Zainstalowane"
 
@@ -44,111 +52,133 @@ msgid "Updates"
 msgstr "Aktualizacje"
 
 #: ../src/gnome-software.ui.h:5
-msgid "Overview"
-msgstr "Przegląd"
+msgid "Restart & Install"
+msgstr "Uruchom ponownie i zainstaluj"
 
-#: ../src/gnome-software.ui.h:6
-msgid "Reviews"
-msgstr "Recenzje"
-
-#: ../src/gnome-software.ui.h:7
-msgid "Related"
-msgstr "Powiązane"
-
-#: ../src/gnome-software.ui.h:8 ../src/gs-app-widget.c:99
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:140
+#: ../src/gs-shell-details.c:82
 msgid "Install"
 msgstr "Zainstaluj"
 
-#: ../src/gnome-software.ui.h:9
-msgid "Update All"
-msgstr "Zaktualizuj wszystkie"
-
-#: ../src/gnome-software.ui.h:10
-msgid "Featured"
-msgstr "Polecane"
-
-#: ../src/gnome-software.ui.h:11
-msgid "Popular"
-msgstr "Popularne"
-
-#: ../src/gnome-software.ui.h:12
-msgid "Categories"
-msgstr "Kategorie"
-
-#: ../src/gnome-software.ui.h:13
-msgid "Description"
-msgstr "Opis"
-
-#: ../src/gnome-software.ui.h:14
-msgid ""
-"Shotwell is a digital photo organiser that runs on Linux. It is the default "
-"photo manager in Ubuntu and Fedora."
-msgstr ""
-"Shotwell to cyfrowy organizator zdjęć dla systemu Linux. Jest domyślnym "
-"menedżerem zdjęć w Ubuntu i Fedorze."
-
-#: ../src/gs-app-widget.c:105
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:145
+#: ../src/gs-shell-details.c:106 ../src/gs-shell-details.c:238
+#: ../src/gs-shell-installed.c:223 ../src/gs-shell-search.c:161
 msgid "Remove"
 msgstr "Usuń"
 
-#: ../src/gs-app-widget.c:111
+#: ../src/gnome-software.ui.h:8
+msgid "Featured"
+msgstr "Polecane"
+
+#: ../src/gnome-software.ui.h:9
+msgid "Picks"
+msgstr "Nasz wybór"
+
+#: ../src/gnome-software.ui.h:10
+msgid "Categories"
+msgstr "Kategorie"
+
+#: ../src/gnome-software.ui.h:11
+msgid "Software is up to date"
+msgstr "Oprogramowanie jest aktualne"
+
+#: ../src/gnome-software.ui.h:12
+msgid "GNU Image Manipulation Program"
+msgstr "Edytor obrazów GIMP"
+
+#: ../src/gnome-software.ui.h:13 ../src/gs-shell-installed.c:129
+#: ../src/gs-shell-search.c:115
+msgid "Visit website"
+msgstr "Witryna"
+
+#: ../src/gnome-software.ui.h:14
+msgid "The Gimp"
+msgstr "GIMP"
+
+#: ../src/gnome-software.ui.h:23
+msgid "Application"
+msgstr "Program"
+
+#: ../src/gnome-software.ui.h:24
+msgid "Category"
+msgstr "Kategoria"
+
+#: ../src/gnome-software.ui.h:25
+msgid "Done"
+msgstr "Gotowe"
+
+#: ../src/gs-application.c:84
+msgid "About GNOME Software"
+msgstr "O menedżerze oprogramowania GNOME"
+
+#: ../src/gs-application.c:85
+msgid "GNOME Software"
+msgstr "Menedżer oprogramowania GNOME"
+
+#: ../src/gs-application.c:87
+msgid "A nice way to manager the software on your system."
+msgstr "Łatwy sposób na zarządzanie oprogramowaniem na komputerze."
+
+#: ../src/gs-application.c:91
+msgid "translator-credits"
+msgstr ""
+"Piotr Drąg <piotrdrag@gmail.com>, 2012-2013\n"
+"Aviary.pl <gnomepl@aviary.pl>, 2012-2013"
+
+#: ../src/gs-application.c:194
+msgid "Start up mode, either 'updates', 'installed' or 'overview'"
+msgstr "Tryb startowy, może wynosić \"updates\", \"installed\" lub \"overview\""
+
+#: ../src/gs-application.c:194
+msgid "MODE"
+msgstr "TRYB"
+
+#: ../src/gs-app-widget.c:152
 msgid "Update"
 msgstr "Zaktualizuj"
 
-#. 'More' Expander
-#: ../src/gs-app-widget.c:438
-msgid "More  ▾"
-msgstr "Więcej  ▾"
+#: ../src/gs-app-widget.c:159 ../src/gs-shell-details.c:87
+msgid "Installing"
+msgstr "Instalowanie"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:185
-msgid "Waiting for package manager..."
-msgstr "Oczekiwanie na menedżera pakietów..."
+#: ../src/gs-app-widget.c:166 ../src/gs-shell-details.c:111
+msgid "Removing"
+msgstr "Usuwanie"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:189
-msgid "Loading list of packages..."
-msgstr "Wczytywanie listy pakietów..."
-
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:199 ../src/gs-main.c:260
-msgid "Downloading..."
-msgstr "Pobieranie..."
-
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:204 ../src/gs-main.c:264
-msgid "Querying..."
-msgstr "Odpytywanie..."
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:252
-msgid "Waiting..."
-msgstr "Oczekiwanie..."
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:256
-msgid "Setting up..."
-msgstr "Ustawianie..."
-
-#. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:435
-msgid "Requires restart"
-msgstr "Wymaga ponownego uruchomienia"
-
-#: ../src/gs-main.c:803
-msgid ""
-"The author of this software has not included a 'Description' in the desktop "
-"file..."
-msgstr "Autor tego oprogramowania nie dołączył opisu w pliku .desktop."
-
-#: ../src/gs-plugin-loader.c:306
-msgid "Includes performance, stability and security improvements for all users"
-msgstr ""
-"Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa dla wszystkich "
-"użytkowników"
-
-#: ../src/gs-plugin-loader.c:338
+#: ../src/gs-plugin-loader.c:392
 msgid "OS Updates"
 msgstr "Aktualizacje systemu"
+
+#: ../src/gs-plugin-loader.c:393 ../src/gs-plugin-loader.c:394
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr ""
+"Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa dla wszystkich "
+"użytkowników."
+
+#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:210
+#: ../src/gs-shell-search.c:148
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Na pewno usunąć program %s?"
+
+#: ../src/gs-shell-details.c:236 ../src/gs-shell-installed.c:221
+#: ../src/gs-shell-search.c:159
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr ""
+"Program %s zostanie usunięty. Należy go zainstalować, aby móc używać go "
+"ponownie."
+
+#: ../src/gs-shell-installed.c:78 ../src/gs-shell-search.c:64
+msgid "Details"
+msgstr "Szczegóły"
+
+#: ../src/gs-shell-installed.c:81 ../src/gs-shell-search.c:67
+msgid "_Done"
+msgstr "_Gotowe"
+
+#: ../src/gs-shell-installed.c:454
+#, c-format
+msgid "Installed (%d)"
+msgstr "Zainstalowane (%d)"
