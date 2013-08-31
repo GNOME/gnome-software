@@ -58,7 +58,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
         GDateTime *date;
 	const gchar *apps[] = {
                 "gimp",
-                "gnome-weather",
+                "org.gnome.Weather.Application",
                 "gnome-sudoku",
 		NULL
         };
