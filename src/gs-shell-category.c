@@ -232,6 +232,12 @@ gs_shell_category_set_category (GsShellCategory *shell, GsCategory *category)
         gs_shell_category_populate_filtered (shell, subcategory);
 }
 
+GsCategory *
+gs_shell_category_get_category (GsShellCategory *shell)
+{
+        return shell->priv->category;
+}
+
 static void
 gs_shell_category_class_init (GsShellCategoryClass *klass)
 {

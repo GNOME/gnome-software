@@ -36,6 +36,12 @@ static void	gs_shell_finalize	(GObject	*object);
 
 #define GS_SHELL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL, GsShellPrivate))
 
+typedef struct {
+        GsShellMode mode;
+        GsApp *app;
+        GsCategory *category;
+} BackEntry;
+
 struct GsShellPrivate
 {
 	gboolean		 ignore_primary_buttons;
@@ -49,7 +55,7 @@ struct GsShellPrivate
 	GsShellDetails		*shell_details;
 	GsShellCategory         *shell_category;
 	GtkBuilder		*builder;
-	GsShellMode		 tab_back_id;
+	GSList                  *back_entry_stack;
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -151,13 +157,37 @@ gs_shell_overview_button_cb (GtkWidget *widget, GsShell *shell)
 	gs_shell_change_mode (shell, mode, NULL, NULL);
 }
 
+static void
+save_back_entry (GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+        BackEntry *entry;
+
+        entry = g_new0 (BackEntry, 1);
+        entry->mode = priv->mode;
+
+        if (priv->mode == GS_SHELL_MODE_CATEGORY)
+                entry->category = gs_shell_category_get_category (priv->shell_category);
+
+        priv->back_entry_stack = g_slist_prepend (priv->back_entry_stack, entry);
+}
+
 /**
  * gs_shell_back_button_cb:
  **/
 static void
 gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 {
-	gs_shell_change_mode (shell, shell->priv->tab_back_id, NULL, NULL);
+	GsShellPrivate *priv = shell->priv;
+        BackEntry *entry;
+
+        g_assert (priv->back_entry_stack);
+        entry = priv->back_entry_stack->data;
+        priv->back_entry_stack = g_slist_remove (priv->back_entry_stack, entry);
+
+	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category);
+
+        g_free (entry);
 }
 
 static void
@@ -420,12 +450,14 @@ gs_shell_get_mode (GsShell *shell)
 void
 gs_shell_show_app (GsShell *shell, GsApp *app)
 {
+        save_back_entry (shell);
         gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL);
 }
 
 void
 gs_shell_show_category (GsShell *shell, GsCategory *category)
 {
+        save_back_entry (shell);
         gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category);
 }
 
