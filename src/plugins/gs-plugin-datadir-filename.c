@@ -79,6 +79,8 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 	const gchar *path_tmp = NULL;
 	gboolean ret;
 	gchar *path = NULL;
+	const char * const *datadirs;
+	int i;
 
 	/* try and get from cache */
 	id = gs_app_get_id (app);
@@ -94,14 +96,20 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 	}
 
 	/* find if the file exists */
-	path = g_strdup_printf ("/usr/share/applications/%s.desktop",
-				gs_app_get_id (app));
-	if (g_file_test (path, G_FILE_TEST_EXISTS)) {
-		path_tmp = g_strdup (path);
-		g_hash_table_insert (plugin->priv->cache,
-				     g_strdup (id),
-				     (gpointer) path_tmp);
-	} else {
+	datadirs = g_get_system_data_dirs ();
+	for (i = 0; datadirs[i]; i++) {
+		path = g_strdup_printf ("%s/applications/%s.desktop",
+					datadirs[i], gs_app_get_id (app));
+		if (g_file_test (path, G_FILE_TEST_EXISTS)) {
+			path_tmp = g_strdup (path);
+			g_hash_table_insert (plugin->priv->cache,
+					     g_strdup (id),
+					     (gpointer) path_tmp);
+			break;
+		}
+	}
+
+	if (path_tmp == NULL) {
 		/* add an empty key to the cache to avoid stat'ing again */
 		g_hash_table_insert (plugin->priv->cache,
 				     g_strdup (id),
