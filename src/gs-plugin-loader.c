@@ -35,7 +35,11 @@ struct GsPluginLoaderPrivate
 	GPtrArray		*plugins;
 	gchar			*location;
 	GsPluginStatus		 status_last;
+
+	GMutex                   pending_apps_mutex;
 	GPtrArray		*pending_apps;
+
+	GMutex                   app_cache_mutex;
 	GHashTable		*app_cache;
 };
 
@@ -71,6 +75,8 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 	GsApp *new_app;
 	GsPluginLoaderPrivate *priv = plugin_loader->priv;
 
+	g_mutex_lock (&plugin_loader->priv->app_cache_mutex);
+
 	/* not yet set */
 	if (gs_app_get_id (app) == NULL) {
 		new_app = app;
@@ -80,6 +86,8 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 	/* already exists */
 	new_app = g_hash_table_lookup (priv->app_cache, gs_app_get_id (app));
 	if (new_app != NULL) {
+		/* already exists */
+
 		/* this looks a little odd to unref the method parameter,
 		 * but it allows us to do:
 		 * app = gs_plugin_loader_dedupe (cache, app);
@@ -98,6 +106,7 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 	/* no ref */
 	new_app = app;
 out:
+	g_mutex_unlock (&plugin_loader->priv->app_cache_mutex);
 	return new_app;
 }
 
@@ -1423,6 +1432,15 @@ typedef struct {
 	gpointer	 func_user_data;
 } GsPluginLoaderThreadHelper;
 
+static gboolean
+emit_pending_apps_idle (gpointer loader)
+{
+	g_signal_emit (loader, signals[SIGNAL_PENDING_APPS_CHANGED], 0);
+	g_object_unref (loader);
+
+	return G_SOURCE_REMOVE;
+}
+
 /**
  * gs_plugin_loader_thread_func:
  **/
@@ -1435,8 +1453,10 @@ gs_plugin_loader_thread_func (gpointer user_data)
 
 	/* add to list */
 	gs_app_set_state (helper->app, helper->state_progress);
+	g_mutex_lock (&helper->plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_add (helper->plugin_loader->priv->pending_apps, helper->app);
-	g_signal_emit (helper->plugin_loader, signals[SIGNAL_PENDING_APPS_CHANGED], 0);
+	g_mutex_unlock (&helper->plugin_loader->priv->pending_apps_mutex);
+	g_idle_add (emit_pending_apps_idle, g_object_ref (helper->plugin_loader));
 
 	/* run action */
 	ret = gs_plugin_loader_run_action (helper->plugin_loader,
@@ -1453,8 +1473,10 @@ gs_plugin_loader_thread_func (gpointer user_data)
 	}
 
 	/* remove from list */
+	g_mutex_lock (&helper->plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_remove (helper->plugin_loader->priv->pending_apps, helper->app);
-	g_signal_emit (helper->plugin_loader, signals[SIGNAL_PENDING_APPS_CHANGED], 0);
+	g_mutex_unlock (&helper->plugin_loader->priv->pending_apps_mutex);
+	g_idle_add (emit_pending_apps_idle, g_object_ref (helper->plugin_loader));
 
 	/* fire finished func */
 	if (helper->func != NULL) {
@@ -1840,6 +1862,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 								 g_str_equal,
 								 NULL,
 								 (GFreeFunc) g_object_unref);
+
+	g_mutex_init (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_init (&plugin_loader->priv->app_cache_mutex);
 }
 
 /**
@@ -1865,6 +1890,9 @@ gs_plugin_loader_finalize (GObject *object)
 	g_ptr_array_unref (plugin_loader->priv->pending_apps);
 	g_ptr_array_unref (plugin_loader->priv->plugins);
 	g_free (plugin_loader->priv->location);
+
+	g_mutex_clear (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_clear (&plugin_loader->priv->app_cache_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->finalize (object);
 }
