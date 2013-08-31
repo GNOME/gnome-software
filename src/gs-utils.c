@@ -95,3 +95,19 @@ gs_container_remove_all (GtkContainer *container)
         gtk_container_foreach (container, remove_all_cb, container);
 }
 
+static void
+grab_focus (GtkWidget *widget)
+{
+        g_signal_handlers_disconnect_by_func (widget, grab_focus, NULL);
+        gtk_widget_grab_focus (widget);
+}
+
+void
+gs_grab_focus_when_mapped (GtkWidget *widget)
+{
+        if (gtk_widget_get_mapped (widget))
+                gtk_widget_grab_focus (widget);
+        else
+                g_signal_connect_after (widget, "map",
+                                        G_CALLBACK (grab_focus), NULL);
+}

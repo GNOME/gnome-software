@@ -29,6 +29,7 @@ G_BEGIN_DECLS
 void gs_start_spinner (GtkSpinner *spinner);
 void gs_stop_spinner (GtkSpinner *spinner);
 void gs_container_remove_all (GtkContainer *container);
+void gs_grab_focus_when_mapped (GtkWidget *widget);
 
 G_END_DECLS
 
