@@ -177,18 +177,14 @@ gs_plugin_packagekit_refine_app (GsPlugin *plugin, GsApp *app, GCancellable *can
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
-	if (packages->len != 1) {
-		ret = FALSE;
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to to find one package for: %s, %s [%i]",
-			     gs_app_get_id (app), filename, packages->len);
-		goto out;
+	if (packages->len == 1) {
+		package = g_ptr_array_index (packages, 0);
+		gs_app_set_metadata (app, "package-id", pk_package_get_id (package));
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	} else {
+		g_warning ("Failed to find one package for %s, %s, [%d]",
+			   gs_app_get_id (app), filename, packages->len);
 	}
-	package = g_ptr_array_index (packages, 0);
-	gs_app_set_metadata (app, "package-id", pk_package_get_id (package));
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 out:
 	if (packages != NULL)
 		g_ptr_array_unref (packages);
