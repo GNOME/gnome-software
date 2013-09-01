@@ -59,7 +59,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 gdouble
 gs_plugin_get_priority (GsPlugin *plugin)
 {
-	return -150.0f;
+	return 150.0f;
 }
 
 /**
@@ -127,13 +127,13 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		gs_plugin_status_update (plugin, NULL, plugin_status);
 }
 
-/**
- * gs_plugin_packagekit_refine_app:
- */
 static gboolean
-gs_plugin_packagekit_refine_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
+gs_plugin_packagekit_refine_package (GsPlugin      *plugin,
+				     GsApp         *app,
+				     const char    *package_name,
+				     GCancellable  *cancellable,
+				     GError       **error)
 {
-	const gchar *filename;
 	const gchar *to_array[] = { NULL, NULL };
 	gboolean ret = TRUE;
 	GPtrArray *array = NULL;
@@ -142,14 +142,71 @@ gs_plugin_packagekit_refine_app (GsPlugin *plugin, GsApp *app, GCancellable *can
 	PkPackage *package;
 	PkResults *results = NULL;
 
-	filename = gs_app_get_metadata_item (app, "datadir-desktop-filename");
-	if (filename == NULL) {
-		g_warning ("refining %s without filename not supported -- "
-			   "perhaps not installed and no AppStream data",
-			   gs_app_get_id (app));
-		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+	to_array[0] = package_name;
+	results = pk_client_resolve (plugin->priv->client,
+				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, -1),
+				     (gchar **) to_array,
+				     cancellable,
+				     gs_plugin_packagekit_progress_cb, plugin,
+				     error);
+	if (results == NULL) {
+		ret = FALSE;
 		goto out;
 	}
+
+	/* check error code */
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to resolve: %s, %s",
+			     pk_error_enum_to_string (pk_error_get_code (error_code)),
+			     pk_error_get_details (error_code));
+		goto out;
+	}
+
+	/* get results */
+	packages = pk_results_get_package_array (results);
+	if (packages->len == 1) {
+		package = g_ptr_array_index (packages, 0);
+		gs_app_set_metadata (app, "package-id", pk_package_get_id (package));
+		gs_app_set_state (app,
+				  pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED ?
+				  GS_APP_STATE_INSTALLED :
+				  GS_APP_STATE_AVAILABLE);
+	} else {
+		g_warning ("Failed to find one package for %s, %s, [%d]",
+			   gs_app_get_id (app), package_name, packages->len);
+	}
+out:
+	if (packages != NULL)
+		g_ptr_array_unref (packages);
+	if (error_code != NULL)
+		g_object_unref (error_code);
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	if (results != NULL)
+		g_object_unref (results);
+	return ret;
+}
+
+static gboolean
+gs_plugin_packagekit_refine_from_desktop (GsPlugin      *plugin,
+					  GsApp         *app,
+					  const char    *filename,
+					  GCancellable  *cancellable,
+					  GError       **error)
+{
+	const gchar *to_array[] = { NULL, NULL };
+	gboolean ret = TRUE;
+	GPtrArray *array = NULL;
+	GPtrArray *packages = NULL;
+	PkError *error_code = NULL;
+	PkPackage *package;
+	PkResults *results = NULL;
+
 	to_array[0] = filename;
 	results = pk_client_search_files (plugin->priv->client,
 					  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
@@ -195,6 +252,28 @@ out:
 	if (results != NULL)
 		g_object_unref (results);
 	return ret;
+}
+
+/**
+ * gs_plugin_packagekit_refine_app:
+ */
+static gboolean
+gs_plugin_packagekit_refine_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
+{
+	const gchar *filename;
+	const gchar *package_name;
+
+	package_name = gs_app_get_metadata_item (app, "package-name");
+	if (package_name != NULL)
+		return gs_plugin_packagekit_refine_package (plugin, app, package_name, cancellable, error);
+
+	filename = gs_app_get_metadata_item (app, "datadir-desktop-filename");
+	if (filename != NULL)
+		return gs_plugin_packagekit_refine_from_desktop (plugin, app, filename, cancellable, error);
+
+	g_warning ("refining %s without .desktop filename or package-name not supported",
+		   gs_app_get_id (app));
+	return TRUE;
 }
 
 /**
