@@ -72,7 +72,7 @@ gs_shell_activate (GsShell *shell)
 }
 
 static void
-gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *category)
+gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *category, gboolean scroll_up)
 {
 	GsShellPrivate *priv = shell->priv;
         GtkWidget *widget;
@@ -119,10 +119,10 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 	priv->mode = mode;
 	switch (mode) {
 	case GS_SHELL_MODE_OVERVIEW:
-		gs_shell_overview_refresh (priv->shell_overview);
+		gs_shell_overview_refresh (priv->shell_overview, scroll_up);
 		break;
 	case GS_SHELL_MODE_INSTALLED:
-		gs_shell_installed_refresh (priv->shell_installed);
+		gs_shell_installed_refresh (priv->shell_installed, scroll_up);
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
@@ -130,7 +130,7 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 		gs_shell_search_refresh (priv->shell_search, text);
 		break;
 	case GS_SHELL_MODE_UPDATES:
-		gs_shell_updates_refresh (priv->shell_updates);
+		gs_shell_updates_refresh (priv->shell_updates, scroll_up);
 		break;
 	case GS_SHELL_MODE_DETAILS:
 		gs_shell_details_set_app (priv->shell_details, app);
@@ -154,7 +154,7 @@ gs_shell_overview_button_cb (GtkWidget *widget, GsShell *shell)
 	GsShellMode mode;
 	mode = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
 						   "gnome-software::overview-mode"));
-	gs_shell_change_mode (shell, mode, NULL, NULL);
+	gs_shell_change_mode (shell, mode, NULL, NULL, TRUE);
 }
 
 static void
@@ -199,7 +199,7 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
         entry = priv->back_entry_stack->data;
         priv->back_entry_stack = g_slist_remove (priv->back_entry_stack, entry);
 
-	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category);
+	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category, FALSE);
 
         free_back_entry (entry);
 }
@@ -211,8 +211,8 @@ initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 
         g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
 
-	gs_shell_updates_refresh (shell->priv->shell_updates);
-	gs_shell_installed_refresh (shell->priv->shell_installed);
+	gs_shell_updates_refresh (shell->priv->shell_updates, TRUE);
+	gs_shell_installed_refresh (shell->priv->shell_installed, TRUE);
 }
 
 static void
@@ -228,7 +228,7 @@ gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
         if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
                 gs_shell_search_refresh (priv->shell_search, text);
         } else {
-                gs_shell_set_mode (shell, GS_SHELL_MODE_SEARCH);
+                gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
         }
 }
 
@@ -339,7 +339,7 @@ text_changed_handler (GObject *entry, GParamSpec *pspec, GsShell *shell)
 
         text = gtk_entry_get_text (GTK_ENTRY (entry));
         if (text[0] == '\0')
-                gs_shell_set_mode (shell, GS_SHELL_MODE_OVERVIEW);
+                gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
 }
 
 /**
@@ -439,7 +439,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
         /* load content */
         g_signal_connect (priv->shell_overview, "refreshed",
                           G_CALLBACK (initial_overview_load_done), shell);
-        gs_shell_set_mode (shell, GS_SHELL_MODE_OVERVIEW);
+        gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
 
 	return GTK_WINDOW (main_window);
 }
@@ -450,7 +450,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 void
 gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
-        gs_shell_change_mode (shell, mode, NULL, NULL);
+        gs_shell_change_mode (shell, mode, NULL, NULL, TRUE);
 }
 
 GsShellMode
@@ -465,14 +465,14 @@ void
 gs_shell_show_app (GsShell *shell, GsApp *app)
 {
         save_back_entry (shell);
-        gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL);
+        gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL, TRUE);
 }
 
 void
 gs_shell_show_category (GsShell *shell, GsCategory *category)
 {
         save_back_entry (shell);
-        gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category);
+        gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category, TRUE);
 }
 
 /**

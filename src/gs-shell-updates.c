@@ -125,7 +125,7 @@ out:
  * gs_shell_updates_refresh:
  **/
 void
-gs_shell_updates_refresh (GsShellUpdates *shell_updates)
+gs_shell_updates_refresh (GsShellUpdates *shell_updates, gboolean scroll_up)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
         GtkWidget *widget;
@@ -135,6 +135,13 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates)
         if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
                 widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
                 gtk_widget_show (widget);
+        }
+
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_install"));
+        if (scroll_up) {
+                GtkAdjustment *adj;
+                adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
+                gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
         }
 
 	/* no need to refresh */

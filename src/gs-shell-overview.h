@@ -57,7 +57,8 @@ GType		 gs_shell_overview_get_type	(void);
 
 GsShellOverview	*gs_shell_overview_new		(void);
 void		 gs_shell_overview_invalidate	(GsShellOverview	*shell_overview);
-void		 gs_shell_overview_refresh	(GsShellOverview	*shell_overview);
+void		 gs_shell_overview_refresh	(GsShellOverview	*shell_overview,
+                                                 gboolean                scroll_up);
 void 		 gs_shell_overview_setup	(GsShellOverview	*shell_overview,
                                                  GsShell                *shell,
 						 GsPluginLoader		*plugin_loader,

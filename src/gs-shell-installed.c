@@ -276,12 +276,11 @@ resort_list (GsShellInstalled *shell)
  * gs_shell_installed_refresh:
  **/
 void
-gs_shell_installed_refresh (GsShellInstalled *shell_installed)
+gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_up)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
         GtkWidget *widget;
         GtkSpinner *spinner;
-        GtkAdjustment *adj;
 
         if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_INSTALLED) {
                 widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
@@ -290,12 +289,15 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed)
 
         resort_list (shell_installed);
 
-        /* scroll to top */
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_install"));
-        adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
-        gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-
-        gs_grab_focus_when_mapped (widget);
+        if (scroll_up) {
+                GtkAdjustment *adj;
+                adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
+                gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+        }
+        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_INSTALLED) {
+                gs_grab_focus_when_mapped (widget);
+        }
 
 	/* no need to refresh */
 	if (priv->cache_valid)
