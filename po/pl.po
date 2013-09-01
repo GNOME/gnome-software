@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-08-31 22:25+0200\n"
-"PO-Revision-Date: 2013-08-31 22:28+0200\n"
+"POT-Creation-Date: 2013-09-02 01:39+0200\n"
+"PO-Revision-Date: 2013-09-02 01:40+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -40,16 +40,16 @@ msgid "Add, remove or update software on this computer"
 msgstr "Dodawanie, usuwanie i aktualizowanie oprogramowania na komputerze"
 
 #: ../src/gnome-software.ui.h:2
-msgid "All"
-msgstr "Wszystkie"
+msgid "_All"
+msgstr "_Wszystkie"
 
-#: ../src/gnome-software.ui.h:3 ../src/gs-shell-installed.c:452
-msgid "Installed"
-msgstr "Zainstalowane"
+#: ../src/gnome-software.ui.h:3
+msgid "_Installed"
+msgstr "_Zainstalowane"
 
 #: ../src/gnome-software.ui.h:4
-msgid "Updates"
-msgstr "Aktualizacje"
+msgid "_Updates"
+msgstr "_Aktualizacje"
 
 #: ../src/gnome-software.ui.h:5
 msgid "Restart & Install"
@@ -61,8 +61,8 @@ msgid "Install"
 msgstr "Zainstaluj"
 
 #: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:145
-#: ../src/gs-shell-details.c:106 ../src/gs-shell-details.c:238
-#: ../src/gs-shell-installed.c:223 ../src/gs-shell-search.c:161
+#: ../src/gs-shell-details.c:106 ../src/gs-shell-details.c:244
+#: ../src/gs-shell-installed.c:160 ../src/gs-shell-search.c:161
 msgid "Remove"
 msgstr "Usuń"
 
@@ -79,31 +79,34 @@ msgid "Categories"
 msgstr "Kategorie"
 
 #: ../src/gnome-software.ui.h:11
+msgid "No Application Found"
+msgstr "Nie odnaleziono żadnego programu"
+
+#: ../src/gnome-software.ui.h:12
 msgid "Software is up to date"
 msgstr "Oprogramowanie jest aktualne"
 
-#: ../src/gnome-software.ui.h:12
+#: ../src/gnome-software.ui.h:13
 msgid "GNU Image Manipulation Program"
 msgstr "Edytor obrazów GIMP"
 
-#: ../src/gnome-software.ui.h:13 ../src/gs-shell-installed.c:129
-#: ../src/gs-shell-search.c:115
+#: ../src/gnome-software.ui.h:14 ../src/gs-shell-search.c:115
 msgid "Visit website"
 msgstr "Witryna"
 
-#: ../src/gnome-software.ui.h:14
+#: ../src/gnome-software.ui.h:15
 msgid "The Gimp"
 msgstr "GIMP"
 
-#: ../src/gnome-software.ui.h:23
+#: ../src/gnome-software.ui.h:24
 msgid "Application"
 msgstr "Program"
 
-#: ../src/gnome-software.ui.h:24
+#: ../src/gnome-software.ui.h:25
 msgid "Category"
 msgstr "Kategoria"
 
-#: ../src/gnome-software.ui.h:25
+#: ../src/gnome-software.ui.h:26
 msgid "Done"
 msgstr "Gotowe"
 
@@ -125,11 +128,12 @@ msgstr ""
 "Piotr Drąg <piotrdrag@gmail.com>, 2012-2013\n"
 "Aviary.pl <gnomepl@aviary.pl>, 2012-2013"
 
-#: ../src/gs-application.c:194
+#: ../src/gs-application.c:195
 msgid "Start up mode, either 'updates', 'installed' or 'overview'"
-msgstr "Tryb startowy, może wynosić \"updates\", \"installed\" lub \"overview\""
+msgstr ""
+"Tryb startowy, może wynosić \"updates\", \"installed\" lub \"overview\""
 
-#: ../src/gs-application.c:194
+#: ../src/gs-application.c:195
 msgid "MODE"
 msgstr "TRYB"
 
@@ -145,24 +149,24 @@ msgstr "Instalowanie"
 msgid "Removing"
 msgstr "Usuwanie"
 
-#: ../src/gs-plugin-loader.c:392
+#: ../src/gs-plugin-loader.c:432
 msgid "OS Updates"
 msgstr "Aktualizacje systemu"
 
-#: ../src/gs-plugin-loader.c:393 ../src/gs-plugin-loader.c:394
+#: ../src/gs-plugin-loader.c:433 ../src/gs-plugin-loader.c:434
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
 "Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa dla wszystkich "
 "użytkowników."
 
-#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:210
+#: ../src/gs-shell-details.c:231 ../src/gs-shell-installed.c:147
 #: ../src/gs-shell-search.c:148
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Na pewno usunąć program %s?"
 
-#: ../src/gs-shell-details.c:236 ../src/gs-shell-installed.c:221
+#: ../src/gs-shell-details.c:242 ../src/gs-shell-installed.c:158
 #: ../src/gs-shell-search.c:159
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -170,15 +174,19 @@ msgstr ""
 "Program %s zostanie usunięty. Należy go zainstalować, aby móc używać go "
 "ponownie."
 
-#: ../src/gs-shell-installed.c:78 ../src/gs-shell-search.c:64
-msgid "Details"
-msgstr "Szczegóły"
+#: ../src/gs-shell-installed.c:398
+msgid "Installed"
+msgstr "Zainstalowane"
 
-#: ../src/gs-shell-installed.c:81 ../src/gs-shell-search.c:67
-msgid "_Done"
-msgstr "_Gotowe"
-
-#: ../src/gs-shell-installed.c:454
+#: ../src/gs-shell-installed.c:400
 #, c-format
 msgid "Installed (%d)"
 msgstr "Zainstalowane (%d)"
+
+#: ../src/gs-shell-search.c:64
+msgid "Details"
+msgstr "Szczegóły"
+
+#: ../src/gs-shell-search.c:67
+msgid "_Done"
+msgstr "_Gotowe"
