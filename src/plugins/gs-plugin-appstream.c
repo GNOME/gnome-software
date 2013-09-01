@@ -46,14 +46,13 @@ typedef struct {
 } GsAppstreamItem;
 
 struct GsPluginPrivate {
-	GMutex			 mutex;
 	gchar			*cachedir;
 	GsAppstreamXmlSection	 section;
 	GsAppstreamItem		*item_temp;
 	GPtrArray		*array;		/* of GsAppstreamItem */
 	GHashTable		*hash_id;	/* of GsAppstreamItem{id} */
 	GHashTable		*hash_pkgname;	/* of GsAppstreamItem{pkgname} */
-	gboolean		 done_init;
+	gsize    		 done_init;
 };
 
 /**
@@ -135,67 +134,6 @@ gs_plugin_decompress_icons (GsPlugin *plugin, GError **error)
 		goto out;
 	}
 out:
-	return ret;
-}
-
-/**
- * gs_plugin_decompress_xml:
- */
-static gboolean
-gs_plugin_decompress_xml (GsPlugin *plugin, GError **error)
-{
-	const gchar *argv[6];
-	const gchar *tmpdir = "/tmp";
-	gboolean ret = TRUE;
-	gint exit_status = 0;
-	gchar *data = NULL;
-	gsize len;
-
-	/* already exists */
-	if (g_file_test ("/tmp/appstream.xml.gz", G_FILE_TEST_EXISTS))
-		goto out;
-
-	/* copy to /tmp */
-	ret = g_file_get_contents (DATADIR "/gnome-software/appstream.xml.gz",
-				   &data,
-				   &len,
-				   error);
-	if (!ret)
-		goto out;
-	ret = g_file_set_contents ("/tmp/appstream.xml.gz",
-				   data,
-				   len,
-				   error);
-	if (!ret)
-		goto out;
-
-	/* decompress */
-	argv[0] = "gunzip";
-	argv[1] = "/tmp/appstream.xml.gz";
-	argv[2] = NULL;
-	g_debug ("Decompressing %s to %s", argv[2], tmpdir);
-	ret = g_spawn_sync (tmpdir,
-			    (gchar **) argv,
-			    NULL,
-			    G_SPAWN_SEARCH_PATH,
-			    NULL, NULL,
-			    NULL,
-			    NULL,
-			    &exit_status,
-			    error);
-	if (!ret)
-		goto out;
-	if (exit_status != 0) {
-		ret = FALSE;
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to unzip XML data to %s [%i]",
-			     tmpdir, exit_status);
-		goto out;
-	}
-out:
-	g_free (data);
 	return ret;
 }
 
@@ -454,26 +392,55 @@ gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
 	gboolean ret;
 	GMarkupParseContext *ctx;
 	gchar *data;
-	gsize len;
+	gssize len;
+	GFile *file;
+	GConverter *converter;
+	GInputStream *file_stream;
+	GInputStream *converter_stream;
 	const GMarkupParser parser = {
 		gs_appstream_start_element_cb,
 		gs_appstream_end_element_cb,
 		gs_appstream_text_cb,
 		NULL /* passthrough */,
 		NULL /* error */ };
+
+	file = g_file_new_for_path (DATADIR "/gnome-software/appstream.xml.gz");
+	file_stream = G_INPUT_STREAM (g_file_read (file, NULL, error));
+	g_object_unref (file);
+	if (!file_stream)
+		return FALSE;
+
+	converter = G_CONVERTER (g_zlib_decompressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP));
+	converter_stream = g_converter_input_stream_new (file_stream, converter);
+
 	ctx = g_markup_parse_context_new (&parser,
 					  G_MARKUP_PREFIX_ERROR_POSITION,
 					  plugin,
 					  NULL);
-	ret = g_file_get_contents ("/tmp/appstream.xml", &data, &len, error);
-	if (!ret)
-		goto out;
-	ret = g_markup_parse_context_parse (ctx, data, len, error);
-	if (!ret)
-		goto out;
-out:
+
+	ret = TRUE;
+	data = g_malloc (32 * 1024);
+	while ((len = g_input_stream_read (converter_stream, data, 32 * 1024, NULL, error)) > 0) {
+		ret = g_markup_parse_context_parse (ctx, data, len, error);
+		if (!ret)
+			goto out;
+	}
+
+	if (len < 0)
+		ret = FALSE;
+
+ out:
+	/* Reset in case we failed parsing */
+	if (plugin->priv->item_temp) {
+		gs_appstream_item_free (plugin->priv->item_temp);
+		plugin->priv->item_temp = NULL;
+	}
+
 	g_markup_parse_context_free (ctx);
 	g_free (data);
+	g_object_unref (converter_stream);
+	g_object_unref (file_stream);
+	g_object_unref (converter);
 	return ret;
 }
 
@@ -499,9 +466,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	plugin->priv->cachedir = g_build_filename (g_get_user_cache_dir(),
 						   "gnome-software",
 						   NULL);
-
-	/* can only load from one thread */
-	g_mutex_init (&plugin->priv->mutex);
 }
 
 /**
@@ -523,7 +487,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_ptr_array_unref (plugin->priv->array);
 	g_hash_table_unref (plugin->priv->hash_id);
 	g_hash_table_unref (plugin->priv->hash_pkgname);
-	g_mutex_clear (&plugin->priv->mutex);
 }
 
 
@@ -536,27 +499,12 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	gboolean ret = TRUE;
 	GTimer *timer = NULL;
 
-	/* protect */
-	g_mutex_lock (&plugin->priv->mutex);
-
-	/* already done */
-	if (plugin->priv->done_init)
-		goto out;
-
 	/* get the icons ready for use */
 	timer = g_timer_new ();
 	ret = gs_plugin_decompress_icons (plugin, error);
 	if (!ret)
 		goto out;
 	g_debug ("Decompressing icons\t:%.1fms", g_timer_elapsed (timer, NULL) * 1000);
-
-	/* Decompress the XML ready for use */
-	g_timer_reset (timer);
-	ret = gs_plugin_decompress_xml (plugin, error);
-	if (!ret)
-		goto out;
-	g_debug ("Decompressing XML\t:%.1fms",
-		 g_timer_elapsed (timer, NULL) * 1000);
 
 	/* Parse the XML */
 	g_timer_reset (timer);
@@ -567,12 +515,9 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 		 plugin->priv->array->len,
 		 g_timer_elapsed (timer, NULL) * 1000);
 
-	/* done */
-	plugin->priv->done_init = TRUE;
 out:
 	if (timer != NULL)
 		g_timer_destroy (timer);
-	g_mutex_unlock (&plugin->priv->mutex);
 	return ret;
 }
 
@@ -708,9 +653,13 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 
 	/* load XML files */
-	ret = gs_plugin_startup (plugin, error);
-	if (!ret)
-		goto out;
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+
+		if (!ret)
+			goto out;
+	}
 
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
