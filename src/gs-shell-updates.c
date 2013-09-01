@@ -485,18 +485,13 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	priv->cancellable = g_object_ref (cancellable);
 
 	/* setup updates */
-	priv->list_box_updates = GTK_LIST_BOX (gtk_list_box_new ());
+	priv->list_box_updates = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_updates"));
 	g_signal_connect (priv->list_box_updates, "row-activated",
 			  G_CALLBACK (gs_shell_updates_activated_cb), shell_updates);
 	gtk_list_box_set_header_func (priv->list_box_updates,
 				      gs_shell_updates_list_header_func,
 				      shell_updates,
 				      NULL);
-	gtk_list_box_set_selection_mode (priv->list_box_updates,
-					 GTK_SELECTION_NONE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
-	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_updates));
-	gtk_widget_show (GTK_WIDGET (priv->list_box_updates));
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "list_box_update"));
 	g_signal_connect (GTK_LIST_BOX (widget), "row-activated",

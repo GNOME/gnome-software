@@ -425,7 +425,6 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 			  GCancellable *cancellable)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GtkWidget *widget;
 
 	g_return_if_fail (GS_IS_SHELL_INSTALLED (shell_installed));
 
@@ -439,22 +438,15 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 	priv->cancellable = g_object_ref (cancellable);
 
 	/* setup installed */
-	priv->list_box_installed = GTK_LIST_BOX (gtk_list_box_new ());
+	priv->list_box_installed = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_install"));
 	g_signal_connect (priv->list_box_installed, "row-activated",
 			  G_CALLBACK (gs_shell_installed_app_widget_activated_cb), shell_installed);
 	gtk_list_box_set_header_func (priv->list_box_installed,
 				      gs_shell_installed_list_header_func,
-				      shell_installed,
-				      NULL);
+				      shell_installed, NULL);
 	gtk_list_box_set_sort_func (priv->list_box_installed,
 				    gs_shell_installed_sort_func,
-				    shell_installed,
-				    NULL);
-	gtk_list_box_set_selection_mode (priv->list_box_installed,
-					 GTK_SELECTION_NONE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_install"));
-	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_installed));
-	gtk_widget_show (GTK_WIDGET (priv->list_box_installed));
+				    shell_installed, NULL);
 }
 
 /**

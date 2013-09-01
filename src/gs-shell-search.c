@@ -428,26 +428,18 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 			  G_CALLBACK (gs_shell_search_filter_text_changed_cb), shell_search);
 
 	/* setup search */
-	priv->list_box_search = GTK_LIST_BOX (gtk_list_box_new ());
+	priv->list_box_search = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_search"));
 	g_signal_connect (priv->list_box_search, "row-activated",
 			  G_CALLBACK (gs_shell_search_app_widget_activated_cb), shell_search);
 	gtk_list_box_set_header_func (priv->list_box_search,
 				      gs_shell_search_list_header_func,
-				      shell_search,
-				      NULL);
+				      shell_search, NULL);
 	gtk_list_box_set_filter_func (priv->list_box_search,
 				      gs_shell_search_filter_func,
-				      shell_search,
-				      NULL);
+				      shell_search, NULL);
 	gtk_list_box_set_sort_func (priv->list_box_search,
 				    gs_shell_search_sort_func,
-				    shell_search,
-				    NULL);
-	gtk_list_box_set_selection_mode (priv->list_box_search,
-					 GTK_SELECTION_NONE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_search"));
-	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_search));
-	gtk_widget_show (GTK_WIDGET (priv->list_box_search));
+				    shell_search, NULL);
 }
 
 /**
