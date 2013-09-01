@@ -1747,7 +1747,7 @@ gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
 {
 	GsPlugin **pa = (GsPlugin **) a;
 	GsPlugin **pb = (GsPlugin **) b;
-	return (*pa)->priority < (*pb)->priority;
+	return (*pa)->priority - (*pb)->priority;
 }
 
 /**
