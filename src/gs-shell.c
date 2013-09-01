@@ -372,6 +372,13 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
         gtk_window_set_titlebar (GTK_WINDOW (main_window), widget);
         g_object_unref (widget);
 
+	/* fix icon in RTL */
+	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL)
+	{
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "back_image"));
+		gtk_image_set_from_icon_name (GTK_IMAGE (widget), "go-previous-rtl-symbolic", GTK_ICON_SIZE_MENU);
+	}
+
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 	g_signal_connect (widget, "clicked",
