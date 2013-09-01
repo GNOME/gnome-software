@@ -84,6 +84,7 @@ gs_plugin_desktopdb_set_metadata (GsPlugin *plugin,
 				  const gchar *pkg_name)
 {
 	const gchar *desktop_file;
+	gchar *id = NULL;
 	GError *error = NULL;
 	GPtrArray *files = NULL;
 
@@ -114,10 +115,19 @@ gs_plugin_desktopdb_set_metadata (GsPlugin *plugin,
 				     g_strdup (pkg_name),
 				     g_strdup (desktop_file));
 	}
+
+	/* also set the ID if it's missing */
+	if (gs_app_get_id (app) == NULL) {
+		id = g_path_get_basename (desktop_file);
+		g_strdelimit (id, ".", '\0');
+		gs_app_set_id (app, id);
+	}
+
 	gs_app_set_metadata (app,
 			     "datadir-desktop-filename",
 			     desktop_file);
 out:
+	g_free (id);
 	if (files != NULL)
 		g_ptr_array_unref (files);
 }
