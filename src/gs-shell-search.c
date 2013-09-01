@@ -220,17 +220,18 @@ gs_shell_search_get_search_cb (GObject *source_object,
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_search"));
         gs_stop_spinner (GTK_SPINNER (widget));
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_search"));
 
         priv->waiting = FALSE;
 
-	list = gs_plugin_loader_search_finish (plugin_loader,
-						      res,
-						      &error);
+	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		g_warning ("failed to get search apps: %s", error->message);
 		g_error_free (error);
+                gtk_stack_set_visible_child_name (GTK_STACK (widget), "no-results");
 		goto out;
 	}
+        gtk_stack_set_visible_child_name (GTK_STACK (widget), "results");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		g_debug ("adding search %s", gs_app_get_id (app));
@@ -278,6 +279,8 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value)
 				       gs_shell_search_get_search_cb,
 				       shell_search);
 
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_search"));
+        gtk_stack_set_visible_child_name (GTK_STACK (widget), "spinner");
         spinner = GTK_SPINNER (gtk_builder_get_object (priv->builder, "spinner_search"));
         gs_start_spinner (spinner);
 	priv->waiting = TRUE;

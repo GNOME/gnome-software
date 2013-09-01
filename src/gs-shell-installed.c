@@ -226,6 +226,8 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_install"));
         gs_stop_spinner (GTK_SPINNER (widget));
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_install"));
+        gtk_stack_set_visible_child_name (GTK_STACK (widget), "view");
 
         priv->waiting = FALSE;
         priv->cache_valid = TRUE;
@@ -320,6 +322,8 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 
         spinner = GTK_SPINNER (gtk_builder_get_object (shell_installed->priv->builder, "spinner_install"));
         gs_start_spinner (spinner);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_install"));
+        gtk_stack_set_visible_child_name (GTK_STACK (widget), "spinner");
 
 	priv->waiting = TRUE;
 }

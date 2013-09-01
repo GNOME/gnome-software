@@ -87,10 +87,13 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_updates_up_to_date"));
-	gtk_widget_set_visible (widget, list == NULL);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
-	gtk_widget_set_visible (widget, list != NULL);
+       	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_updates"));
+        if (list == NULL) {
+                gtk_stack_set_visible_child_name (GTK_STACK (widget), "uptodate");
+        }
+        else {
+                gtk_stack_set_visible_child_name (GTK_STACK (widget), "view");
+        }
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
         if (list != NULL && gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES)
@@ -137,7 +140,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates, gboolean scroll_up)
                 gtk_widget_show (widget);
         }
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_install"));
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
         if (scroll_up) {
                 GtkAdjustment *adj;
                 adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
@@ -155,14 +158,6 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates, gboolean scroll_up)
 		return;
         }
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_updates"));
-        gtk_widget_show (widget);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_updates_up_to_date"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
-	gtk_widget_show (widget);
-
         if (priv->waiting)
                 return;
 
@@ -175,6 +170,8 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates, gboolean scroll_up)
 
         spinner = GTK_SPINNER (gtk_builder_get_object (priv->builder, "spinner_updates"));
         gs_start_spinner (spinner);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_updates"));
+        gtk_stack_set_visible_child_name (GTK_STACK (widget), "spinner");
 
 	priv->waiting = TRUE;
 }

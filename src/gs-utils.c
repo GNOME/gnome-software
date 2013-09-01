@@ -55,7 +55,6 @@ start_spinning (gpointer data)
 
         gtk_widget_set_opacity (spinner, 0);
         gtk_spinner_start (GTK_SPINNER (spinner));
-        gtk_widget_show (spinner);
         id = g_timeout_add (100, fade_in, spinner);
         g_object_set_data_full (G_OBJECT (spinner), "fade-timeout",
                                 GUINT_TO_POINTER (id), remove_source);
@@ -66,7 +65,6 @@ start_spinning (gpointer data)
 void
 gs_stop_spinner (GtkSpinner *spinner)
 {
-        gtk_widget_hide (GTK_WIDGET (spinner));
         gtk_spinner_stop (spinner);
 }
 
