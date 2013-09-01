@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-08-16 13:56+0000\n"
-"PO-Revision-Date: 2013-08-17 15:53+0100\n"
+"POT-Creation-Date: 2013-09-01 18:46+0000\n"
+"PO-Revision-Date: 2013-09-01 22:20+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -22,6 +22,14 @@ msgstr ""
 "X-Poedit-SourceCharset: utf-8\n"
 "X-Generator: Poedit 1.5.4\n"
 
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "_O programu"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "_Končaj"
+
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
 msgid "Software"
 msgstr "Programska oprema"
@@ -31,26 +39,29 @@ msgid "Add, remove or update software on this computer"
 msgstr "Dodajanje, odstranjevanje in posodabljanje programske opreme."
 
 #: ../src/gnome-software.ui.h:2
-msgid "All"
-msgstr "Vse"
+msgid "_All"
+msgstr "_Vse"
 
 #: ../src/gnome-software.ui.h:3
-msgid "Installed"
-msgstr "Nameščeno"
+msgid "_Installed"
+msgstr "_Nameščeno"
 
 #: ../src/gnome-software.ui.h:4
-msgid "Updates"
-msgstr "Posodobitve"
+msgid "_Updates"
+msgstr "_Posodobitve"
 
 #: ../src/gnome-software.ui.h:5
-msgid "Update All"
-msgstr "Posodobi vse"
+msgid "Restart & Install"
+msgstr "Namestitev in ponovni zagon"
 
-#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:91
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:140
+#: ../src/gs-shell-details.c:82
 msgid "Install"
 msgstr "Namesti"
 
-#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:99 ../src/gs-main.c:526
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:145
+#: ../src/gs-shell-details.c:106 ../src/gs-shell-details.c:244
+#: ../src/gs-shell-installed.c:160 ../src/gs-shell-search.c:161
 msgid "Remove"
 msgstr "Odstrani"
 
@@ -67,23 +78,28 @@ msgid "Categories"
 msgstr "Kategorije"
 
 #: ../src/gnome-software.ui.h:11
+#, fuzzy
+msgid "No Application Found"
+msgstr "Ni najdenih predmetov"
+
+#: ../src/gnome-software.ui.h:12
 msgid "Software is up to date"
 msgstr "Programska oprema je posodobljena"
 
-#: ../src/gnome-software.ui.h:12
+#: ../src/gnome-software.ui.h:13
 #, fuzzy
 msgid "GNU Image Manipulation Program"
 msgstr "Program osvetlitve, uporabljen med zajemanjem slike"
 
-#: ../src/gnome-software.ui.h:13
+#: ../src/gnome-software.ui.h:14 ../src/gs-shell-search.c:115
 msgid "Visit website"
 msgstr "Obišči spletišče"
 
-#: ../src/gnome-software.ui.h:14
+#: ../src/gnome-software.ui.h:15
 msgid "The Gimp"
 msgstr "Gimp"
 
-#: ../src/gnome-software.ui.h:15
+#: ../src/gnome-software.ui.h:16
 msgid ""
 "GIMP (GNU Image Manipulation Program) is a powerful image composition and\n"
 "editing program, which can be extremely useful for creating logos and other\n"
@@ -98,92 +114,745 @@ msgid ""
 "with multi-level undo.\n"
 msgstr ""
 
-#: ../src/gnome-software.ui.h:23
+#: ../src/gnome-software.ui.h:24
 msgid "Application"
 msgstr "Program"
 
-#: ../src/gnome-software.ui.h:24
+#: ../src/gnome-software.ui.h:25
 msgid "Category"
 msgstr "Kategorija"
 
-#: ../src/gnome-software.ui.h:25
+#: ../src/gnome-software.ui.h:26
 msgid "Done"
 msgstr "Končano"
 
-#: ../src/gs-app-widget.c:107
-msgid "Update"
-msgstr "Posodobi"
+#: ../src/gs-application.c:84
+#, fuzzy
+msgid "About GNOME Software"
+msgstr "O programu"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:185
-msgid "Waiting for package manager..."
-msgstr "Čakanje na zaklep upravljalnika paketov ..."
+#: ../src/gs-application.c:85
+#, fuzzy
+msgid "GNOME Software"
+msgstr "Posodobitev programske opreme ..."
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:189
-msgid "Loading list of packages..."
-msgstr "Nalaganje seznama paketov ..."
+#: ../src/gs-application.c:87
+msgid "A nice way to manager the software on your system."
+msgstr "Enostaven način upravljanja s programsko opremo sistema."
 
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:199 ../src/gs-main.c:260
-msgid "Downloading..."
-msgstr "Prejemanje ..."
+#: ../src/gs-application.c:91
+#, fuzzy
+msgid "translator-credits"
+msgstr "Matej Urbančič"
 
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:204 ../src/gs-main.c:264
-msgid "Querying..."
-msgstr "Poizvedovanje ..."
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:252
-msgid "Waiting..."
-msgstr "Na čakanju ..."
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:256
-msgid "Setting up..."
-msgstr "Nastavljanje ..."
-
-#: ../src/gs-main.c:513
-#, c-format
-msgid "Are you sure you want to remove %s?"
-msgstr "Ali ste prepričani, da želite odstraniti %s?"
-
-#: ../src/gs-main.c:524
-#, c-format
-msgid "%s will be removed, and you will have to install it to use it again."
-msgstr ""
-"Program %s bo odstranjen. Za ponovno uporabo ga bo treba znova namestiti."
-
-#. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:556
-msgid "Requires restart"
-msgstr "Zahteva ponovni zagon"
-
-#: ../src/gs-main.c:1214
-msgid ""
-"The author of this software has not included a 'Description' in the desktop "
-"file..."
-msgstr "Avtor programske opreme ni dodan v 'Opisu' v datoteki namizja ..."
-
-#: ../src/gs-main.c:1722
-msgid "Start up mode, either 'updates', 'installed' or 'new'"
+#: ../src/gs-application.c:195
+#, fuzzy
+msgid "Start up mode, either 'updates', 'installed' or 'overview'"
 msgstr ""
 "Začetni zagon je lahko v prikaz 'posodobitev', 'nameščenih' ali 'novih "
 "paketov'."
 
-#: ../src/gs-plugin-loader.c:331
+#: ../src/gs-application.c:195
+msgid "MODE"
+msgstr "NAČIN"
+
+#: ../src/gs-app-widget.c:152
+msgid "Update"
+msgstr "Posodobi"
+
+#: ../src/gs-app-widget.c:159 ../src/gs-shell-details.c:87
+msgid "Installing"
+msgstr "Nameščanje"
+
+#: ../src/gs-app-widget.c:166 ../src/gs-shell-details.c:111
+msgid "Removing"
+msgstr "Odstranjevanje"
+
+#: ../src/gs-plugin-loader.c:423
 msgid "OS Updates"
 msgstr "Posodobitve sistema"
 
-#: ../src/gs-plugin-loader.c:332
+#: ../src/gs-plugin-loader.c:424 ../src/gs-plugin-loader.c:425
 #, fuzzy
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
 "Vključuje izboljšave delovanja, stabilnosti in varnosti za vse uporabnike"
+
+#: ../src/gs-shell-details.c:231 ../src/gs-shell-installed.c:147
+#: ../src/gs-shell-search.c:148
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Ali ste prepričani, da želite odstraniti %s?"
+
+#: ../src/gs-shell-details.c:242 ../src/gs-shell-installed.c:158
+#: ../src/gs-shell-search.c:159
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr ""
+"Program %s bo odstranjen. Za ponovno uporabo ga bo treba znova namestiti."
+
+#: ../src/gs-shell-installed.c:398
+msgid "Installed"
+msgstr "Nameščeno"
+
+#: ../src/gs-shell-installed.c:400
+#, c-format
+msgid "Installed (%d)"
+msgstr "Nameščeno (%d)"
+
+#: ../src/gs-shell-search.c:64
+msgid "Details"
+msgstr "Podrobnosti"
+
+#: ../src/gs-shell-search.c:67
+msgid "_Done"
+msgstr "_Končano"
+
+#. Audio
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:57
+msgid "Audio"
+msgstr "Zvok"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:60
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:578
+msgid "Editing"
+msgstr "Urejanje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:63
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:100
+msgid "Databases"
+msgstr "Podatkovne zbirke"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:66
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:584
+msgid "Disc Burning"
+msgstr "Zapisovanje diska"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:69
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:317
+#, fuzzy
+msgid "Ham Radio"
+msgstr "radijski gumb"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:72
+msgid "MIDI"
+msgstr "MIDI"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:75
+#, fuzzy
+msgid "Mixer"
+msgstr "Navpično postavljen induktor (evropski)"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:78
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:200
+msgid "Music"
+msgstr "Glasba"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:81
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
+msgid "Players"
+msgstr "Predvajalniki"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:84
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:590
+msgid "Recorders"
+msgstr "Snemalniki"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:87
+msgid "Sequencers"
+msgstr ""
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:90
+msgid "Tuners"
+msgstr "Uravnalniki"
+
+#. Development
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:94
+#, fuzzy
+msgid "Development Tools"
+msgstr "Razvojna orodja"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:97
+#, fuzzy
+msgid "Building"
+msgstr "Zgradba"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:103
+msgid "Debuggers"
+msgstr "Razhroščevalniki"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:106
+#, fuzzy
+msgid "GUI Designers"
+msgstr "Gumb grafičnega uporabniškega vmesnika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:109
+#, fuzzy
+msgid "IDE"
+msgstr "_Skrij"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:112
+#, fuzzy
+msgid "Profiling"
+msgstr "Profiliranje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:115
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:387
+#, fuzzy
+msgid "Project Management"
+msgstr "Upravljanje projektov"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:118
+#, fuzzy
+msgid "Revision Control"
+msgstr "Nadzor obrazca"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:121
+msgid "Translation"
+msgstr "Prevajanje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:124
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:347
+#, fuzzy
+msgid "Web Development"
+msgstr "Urejevalnik spletnega razvoja"
+
+#. Education
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:128
+msgid "Education"
+msgstr "Izobraževanje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:131
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:406
+msgid "Art"
+msgstr "Oblikovanje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:134
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:409
+msgid "Artificial Intelligence"
+msgstr "Umetna inteligenca"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:137
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:412
+msgid "Astronomy"
+msgstr "Astronomija"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:140
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:415
+msgid "Biology"
+msgstr "Biologija"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:143
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:418
+msgid "Chemistry"
+msgstr "Kemija"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:146
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:421
+msgid "Computer Science"
+msgstr "Računalniške znanosti"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:149
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:424
+msgid "Construction"
+msgstr "Gradnja"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:152
+#, fuzzy
+msgid "Data Visualization"
+msgstr "Veliko_st predočenja:"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:155
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:430
+msgid "Economy"
+msgstr "Ekonomija"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:158
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:433
+msgid "Electricity"
+msgstr "Elektrika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:161
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:436
+msgid "Electronics"
+msgstr "Elektronika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:164
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:439
+msgid "Engineering"
+msgstr "Inženirstvo"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:167
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:442
+msgid "Geography"
+msgstr "Geografija"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:170
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:445
+msgid "Geology"
+msgstr "Geologija"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:173
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:448
+msgid "Geoscience"
+msgstr "Geoznanost"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:176
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:451
+msgid "History"
+msgstr "Zgodovina"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:179
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:454
+msgid "Humanities"
+msgstr ""
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:182
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
+msgid "Image Processing"
+msgstr "Obdelava slik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:185
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:460
+msgid "Languages"
+msgstr "Jeziki"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:188
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:463
+msgid "Literature"
+msgstr "Literatura"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:191
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:466
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
+msgid "Maps"
+msgstr "Zemljevidi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:194
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:469
+msgid "Math"
+msgstr "Matematika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:197
+msgid "Medical"
+msgstr "Zdravstvo"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:203
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:475
+msgid "Numerical Analysis"
+msgstr "Številska analiza"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:206
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:478
+#, fuzzy
+msgid "Parallel Computing"
+msgstr "[%s] Računanje razlik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:209
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:481
+msgid "Physics"
+msgstr "Fizika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:212
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
+msgid "Robotics"
+msgstr "Robotika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:215
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:487
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
+msgid "Spirituality"
+msgstr "Duhovnost in vera"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:218
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:261
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:490
+msgid "Sports"
+msgstr "Šport"
+
+#. Games
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:222
+msgid "Games"
+msgstr "Igre"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:225
+#, fuzzy
+msgid "Action"
+msgstr "Dejanje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:228
+msgid "Adventure"
+msgstr "Pustolovščine"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:231
+msgid "Arcade"
+msgstr "Arkadne igre"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:234
+msgid "Blocks"
+msgstr "Bloki"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:237
+msgid "Board"
+msgstr "Tabla"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:240
+msgid "Card"
+msgstr "Karte"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:243
+msgid "Emulators"
+msgstr "Posnemovalniki"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:246
+msgid "Kids"
+msgstr "Za otroke"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:249
+msgid "Logic"
+msgstr "Logika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:252
+msgid "Role Playing"
+msgstr "Igra vlog"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:255
+msgid "Shooter"
+msgstr ""
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:258
+#, fuzzy
+msgid "Simulation"
+msgstr "zaženi navidezni način delovanja"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:264
+msgid "Strategy"
+msgstr "Strategija"
+
+#. Graphics
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:268
+msgid "Graphics"
+msgstr "Grafika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:271
+msgid "2D Graphics"
+msgstr "2D grafika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:274
+msgid "3D Graphics"
+msgstr "3D grafika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:277
+msgid "OCR"
+msgstr "OCR"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:280
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:381
+msgid "Photography"
+msgstr "Fotografija"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:283
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:390
+msgid "Publishing"
+msgstr "Založništvo"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:286
+msgid "Raster Graphics"
+msgstr "Rastrska grafika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:289
+msgid "Scanning"
+msgstr "Preiskovanje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:292
+msgid "Vector Graphics"
+msgstr "Vectorska grafika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:295
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:396
+msgid "Viewer"
+msgstr "Pregledovalnik"
+
+#. Network
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:299
+msgid "Network"
+msgstr "Omrežje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:302
+msgid "Chat"
+msgstr "Klepet"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:305
+msgid "Dialup"
+msgstr ""
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:308
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:369
+msgid "Email"
+msgstr "Elektronska pošta"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:311
+msgid "Feed"
+msgstr "Vir"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:314
+msgid "File Transfer"
+msgstr "Prenos datotek"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:320
+msgid "Instant Messaging"
+msgstr "Hipno sporočanje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:323
+msgid "IRC Clients"
+msgstr "Odjemalci IRC"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:326
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
+#, fuzzy
+msgid "Monitor"
+msgstr "Zaslon"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:329
+msgid "News"
+msgstr "Novice"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:332
+msgid "P2P"
+msgstr "P2P"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:335
+msgid "Remote Access"
+msgstr "Oddaljeni dostop"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:338
+msgid "Telephony"
+msgstr "Telefonija"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:341
+#, fuzzy
+msgid "Video Conference"
+msgstr "Začni z _video konferenco"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:344
+msgid "Web Browser"
+msgstr "Spletni brskalnik"
+
+#. Office
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:351
+msgid "Office"
+msgstr "Pisarna"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:354
+msgid "Calendar"
+msgstr "Koledar"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:357
+#, fuzzy
+msgid "Chart"
+msgstr "Graf"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:360
+#, fuzzy
+msgid "Contact Management"
+msgstr "— upravljanje s stiki"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:363
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:581
+msgid "Database"
+msgstr "Podatkovna zbirka"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:366
+msgid "Dictionary"
+msgstr "Slovar"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
+msgid "Finance"
+msgstr "Finance"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:375
+#, fuzzy
+msgid "Flow Chart"
+msgstr "Finančni grafikon"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:378
+msgid "PDA"
+msgstr "Dlančnik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:384
+msgid "Presentation"
+msgstr "Predstavitev"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:393
+msgid "Spreadsheet"
+msgstr "Preglednica"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:399
+#, fuzzy
+msgid "Word Processor"
+msgstr "Tvoj urejevalnik besedila"
+
+#. Science
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:403
+msgid "Science"
+msgstr "Znanost"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:427
+msgid "DataVisualization"
+msgstr "Predstavljanje podatkov"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:472
+#, fuzzy
+msgid "Medical Software"
+msgstr "Posodobitev programske opreme ..."
+
+#. Settings
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:494
+msgid "Settings"
+msgstr "Nastavitve"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:497
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:544
+msgid "Accessibility"
+msgstr "Dostopnost"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:500
+#, fuzzy
+msgid "Desktop Settings"
+msgstr "Uporabniške nastavitve"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:503
+#, fuzzy
+msgid "Hardware Settings"
+msgstr "Uporabniške nastavitve"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
+msgid "Package Manager"
+msgstr "Upravljalnik paketov"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
+msgid "Printing"
+msgstr "Tiskanje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:534
+msgid "Security"
+msgstr "Varnost"
+
+#. System
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:516
+msgid "System"
+msgstr "Sistem"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:519
+msgid "Emulator"
+msgstr "Posnemovalnik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:522
+msgid "File Manager"
+msgstr "Upravljalnik datotek"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:525
+msgid "Filesystem"
+msgstr "Datotečni sistem"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:559
+msgid "File Tools"
+msgstr "Datotečna orodja"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:537
+msgid "Terminal Emulator"
+msgstr "Posnemovalnik terminala"
+
+#. Utility
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:541
+msgid "Utility"
+msgstr "Pripomočki"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:547
+msgid "Archiving"
+msgstr "Arhiviranje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:550
+msgid "Calculator"
+msgstr "Računalo"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:553
+msgid "Clock"
+msgstr "Ura"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:556
+msgid "Compression"
+msgstr "Stiskanje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
+msgid "Telephony Tools"
+msgstr "Programi za telefoniranje"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
+msgid "Text Editor"
+msgstr "Urejevalnik besedil"
+
+#. Video
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
+msgid "Video"
+msgstr "Video"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:593
+msgid "TV"
+msgstr "TV"
+
+#. Add Ons
+#: ../src/plugins/gs-plugin-packagekit.c:557
+msgid "Add-ons"
+msgstr "Dodatki"
+
+#: ../src/plugins/gs-plugin-packagekit.c:560
+msgid "Codecs"
+msgstr "Kodeki"
+
+#: ../src/plugins/gs-plugin-packagekit.c:563
+msgid "Fonts"
+msgstr "Pisave"
+
+#: ../src/plugins/gs-plugin-packagekit.c:566
+msgid "Input Sources"
+msgstr "Vhodni viri"
+
+#: ../src/plugins/gs-plugin-packagekit.c:569
+msgid "Language Packs"
+msgstr "Jezikovni paketi"
+
+#~ msgid "All"
+#~ msgstr "Vse"
+
+#~ msgid "Update All"
+#~ msgstr "Posodobi vse"
+
+#~ msgid "Waiting for package manager..."
+#~ msgstr "Čakanje na zaklep upravljalnika paketov ..."
+
+#~ msgid "Loading list of packages..."
+#~ msgstr "Nalaganje seznama paketov ..."
+
+#~ msgid "Downloading..."
+#~ msgstr "Prejemanje ..."
+
+#~ msgid "Querying..."
+#~ msgstr "Poizvedovanje ..."
+
+#~ msgid "Waiting..."
+#~ msgstr "Na čakanju ..."
+
+#~ msgid "Requires restart"
+#~ msgstr "Zahteva ponovni zagon"
+
+#~ msgid ""
+#~ "The author of this software has not included a 'Description' in the "
+#~ "desktop file..."
+#~ msgstr "Avtor programske opreme ni dodan v 'Opisu' v datoteki namizja ..."
 
 #~ msgid "New"
 #~ msgstr "Novo"
