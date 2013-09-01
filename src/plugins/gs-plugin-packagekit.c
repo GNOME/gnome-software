@@ -185,15 +185,6 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 				   pk_info_enum_to_string (pk_package_get_info (package)));
 		}
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
-
-		//FIXME: hack until we've got AppStream data to use.
-		if (pk_results_get_role (results) == PK_ROLE_ENUM_SEARCH_DETAILS) {
-			g_warning ("REALLY need AppStream data");
-			gs_app_set_name (app, pk_package_get_name (package));
-			gs_app_set_summary (app, pk_package_get_summary (package));
-			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
-		}
-
 		gs_plugin_add_app (list, app);
 	}
 out:
