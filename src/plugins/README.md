@@ -128,6 +128,15 @@ Methods:     | `nothing`
 Requires:    | `nothing`
 Refines:     | `{package-name}->{datadir-desktop-filename}`
 
+### appstream ###
+Uses offline AppStream data to refine package results.
+
+Overview:    | <p>
+-------------|---
+Methods:     | `AddCategoryApps`
+Requires:    | `nothing`
+Refines:     | `{package-name}->[name,summary,pixbuf,id,kind]`
+
 ### datadir-apps ###
 Uses the files in /usr/share/applications to provide icons and, translations for
 installed applications.

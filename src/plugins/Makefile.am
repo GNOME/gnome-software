@@ -26,6 +26,7 @@ dist_resources_DATA =					\
 
 plugindir = $(libdir)/gs-plugins
 plugin_LTLIBRARIES =					\
+	libgs_plugin_appstream.la			\
 	libgs_plugin_datadir_apps.la			\
 	libgs_plugin_datadir_filename.la		\
 	libgs_plugin_desktopdb.la			\
@@ -45,6 +46,11 @@ libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
 libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+
+libgs_plugin_appstream_la_SOURCES = gs-plugin-appstream.c
+libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
+libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_hardcoded_kind_la_SOURCES = gs-plugin-hardcoded-kind.c
 libgs_plugin_hardcoded_kind_la_LIBADD = $(GS_PLUGIN_LIBS)

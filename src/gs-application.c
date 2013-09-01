@@ -158,7 +158,8 @@ gs_application_startup (GApplication *application)
         gs_plugin_loader_set_enabled (app->plugin_loader, "hardcoded-menu-spec", TRUE);
         gs_plugin_loader_set_enabled (app->plugin_loader, "local-ratings", TRUE);
         gs_plugin_loader_set_enabled (app->plugin_loader, "packagekit", TRUE);
-        gs_plugin_loader_set_enabled (app->plugin_loader, "packagekit-refine", TRUE);
+//        gs_plugin_loader_set_enabled (app->plugin_loader, "packagekit-refine", TRUE);
+        gs_plugin_loader_set_enabled (app->plugin_loader, "appstream", TRUE);
         gs_plugin_loader_set_enabled (app->plugin_loader, "desktopdb", TRUE);
         gs_plugin_loader_set_enabled (app->plugin_loader, "datadir-apps", TRUE);
         gs_plugin_loader_set_enabled (app->plugin_loader, "datadir-filename", TRUE);
