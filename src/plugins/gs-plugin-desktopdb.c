@@ -131,10 +131,10 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	GsApp *app;
-	GList *l;
-	const gchar *tmp;
+	const gchar *pkgname;
 	gboolean ret = TRUE;
+	GList *l;
+	GsApp *app;
 
 	/* not loaded yet */
 	if (!plugin->priv->loaded) {
@@ -150,10 +150,10 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 		if (gs_app_get_metadata_item (app, "datadir-desktop-filename") != NULL)
 			continue;
-		tmp = gs_app_get_metadata_item (app, "package-name");
-		if (tmp == NULL)
+		pkgname = gs_app_get_metadata_item (app, "package-name");
+		if (pkgname == NULL)
 			continue;
-		gs_plugin_desktopdb_set_metadata (plugin, app, tmp);
+		gs_plugin_desktopdb_set_metadata (plugin, app, pkgname);
 	}
 out:
 	return ret;

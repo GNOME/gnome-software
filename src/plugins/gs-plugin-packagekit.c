@@ -161,7 +161,7 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 	array = pk_results_get_package_array (results);
 	for (i = 0; i < array->len; i++) {
 		package = g_ptr_array_index (array, i);
-		app = gs_app_new (pk_package_get_id (package));
+		app = gs_app_new (NULL);
 		gs_app_set_metadata (app,
 				     "package-id",
 				     pk_package_get_id (package));
@@ -346,7 +346,7 @@ gs_plugin_packagekit_add_updates_results (GsPlugin *plugin,
 			      "update-text", &update_text,
 			      NULL);
 		split = pk_package_id_split (package_id);
-		app = gs_app_new (package_id);
+		app = gs_app_new (NULL);
 		gs_app_set_metadata (app, "package-id", package_id);
 		gs_app_set_metadata (app, "package-name", split[PK_PACKAGE_ID_NAME]);
 		gs_app_set_metadata (app, "update-name", split[PK_PACKAGE_ID_NAME]);

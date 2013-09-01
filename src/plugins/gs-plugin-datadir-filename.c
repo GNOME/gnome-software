@@ -82,6 +82,8 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 
 	/* try and get from cache */
 	id = gs_app_get_id (app);
+	if (id == NULL)
+		goto out;
 	ret = g_hash_table_lookup_extended (plugin->priv->cache,
 					    id,
 					    NULL,

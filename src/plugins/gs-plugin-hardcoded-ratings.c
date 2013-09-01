@@ -721,6 +721,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
+	const gchar *id;
 	gboolean ret = TRUE;
 	GList *l;
 	gpointer value;
@@ -736,8 +737,10 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_rating (app) != -1)
 			continue;
-		value = g_hash_table_lookup (plugin->priv->cache,
-					     gs_app_get_id (app));
+		id = gs_app_get_id (app);
+		if (id == NULL)
+			continue;
+		value = g_hash_table_lookup (plugin->priv->cache, id);
 		if (value != NULL) {
 			gs_app_set_rating (app, GPOINTER_TO_INT (value));
 		} else {

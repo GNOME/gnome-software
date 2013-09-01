@@ -124,9 +124,10 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
+	const gchar *id;
+	const gchar *value;
 	gboolean ret = TRUE;
 	GList *l;
-	const gchar *value;
 	GsApp *app;
 
 	/* already loaded */
@@ -141,8 +142,10 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_description (app) != NULL)
 			continue;
-		value = g_hash_table_lookup (plugin->priv->cache,
-					     gs_app_get_id (app));
+		id = gs_app_get_id (app);
+		if (id == NULL)
+			continue;
+		value = g_hash_table_lookup (plugin->priv->cache, id);
 		if (value != NULL)
 			gs_app_set_description (app, value);
 	}

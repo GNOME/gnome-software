@@ -101,8 +101,6 @@ void
 gs_app_set_id (GsApp *app, const gchar *id)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (id != NULL);
-
 	g_free (app->priv->id);
 	app->priv->id = g_strdup (id);
 }

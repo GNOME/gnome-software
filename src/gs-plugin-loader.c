@@ -71,6 +71,12 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 	GsApp *new_app;
 	GsPluginLoaderPrivate *priv = plugin_loader->priv;
 
+	/* not yet set */
+	if (gs_app_get_id (app) == NULL) {
+		new_app = app;
+		goto out;
+	}
+
 	/* already exists */
 	new_app = g_hash_table_lookup (priv->app_cache, gs_app_get_id (app));
 	if (new_app != NULL) {
@@ -229,6 +235,28 @@ out:
 }
 
 /**
+ * gs_plugin_loader_get_app_str:
+ **/
+static const gchar *
+gs_plugin_loader_get_app_str (GsApp *app)
+{
+	const gchar *id;
+
+	/* first try the actual id */
+	id = gs_app_get_id (app);
+	if (id != NULL)
+		return id;
+
+	/* first try the actual id */
+	id = gs_app_get_metadata_item (app, "package-id");
+	if (id != NULL)
+		return id;
+
+	/* urmmm */
+	return "<invalid>";
+}
+
+/**
  * gs_plugin_loader_app_is_valid:
  **/
 static gboolean
@@ -236,16 +264,19 @@ gs_plugin_loader_app_is_valid (GsApp *app)
 {
 	/* don't show unconverted packages in the application view */
 	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
-		g_debug ("app invalid as only a package %s", gs_app_get_id (app));
+		g_debug ("app invalid as only a package %s",
+			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
 	/* don't show apps that do not have a name */
 	if (gs_app_get_name (app) == NULL) {
-		g_debug ("app invalid as no name %s", gs_app_get_id (app));
+		g_debug ("app invalid as no name %s",
+			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
 	if (gs_app_get_summary (app) == NULL) {
-		g_debug ("app invalid as no summary %s", gs_app_get_id (app));
+		g_debug ("app invalid as no summary %s",
+			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
 	return TRUE;
