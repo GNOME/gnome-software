@@ -63,11 +63,11 @@ gs_plugin_add_popular (GsPlugin *plugin,
                 "calibre",
                 "hotot-gtk",
                 "musique",
-                "aisleriot",
+                "sol", /* aisleriot */
                 "shutter",
                 "gnucash",
                 "iagno",
-                "thunderbird",
+                "mozilla-thunderbird",
                 "geary",
                 "pdfshuffler"
         };
