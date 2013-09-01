@@ -27,12 +27,7 @@
 #include "gs-utils.h"
 #include "gs-shell-category.h"
 
-static void	gs_shell_category_finalize	(GObject	*object);
-
-#define GS_SHELL_CATEGORY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_CATEGORY, GsShellCategoryPrivate))
-
-struct GsShellCategoryPrivate
-{
+struct GsShellCategoryPrivate {
         GtkBuilder        *builder;
         GsShell           *shell;
         GsCategory        *category;
@@ -45,12 +40,16 @@ gs_shell_category_refresh (GsShellCategory *shell)
 {
 	GsShellCategoryPrivate *priv = shell->priv;
         GtkWidget *widget;
+        GsCategory *category;
 
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
         gtk_widget_show (widget);
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
         gtk_widget_show (widget);
-        gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (priv->category));
+        category = priv->category;
+        if (gs_category_get_parent (category))
+                category = gs_category_get_parent (category);
+        gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (category));
 }
 
 static void
@@ -98,7 +97,6 @@ create_app_tile (GsShellCategory *shell, GsApp *app)
         }
 
         gtk_widget_show_all (button);
-
         g_object_set_data_full (G_OBJECT (button), "app", g_object_ref (app), g_object_unref);
         g_signal_connect (button, "clicked",
                           G_CALLBACK (app_tile_clicked), shell);
@@ -107,7 +105,7 @@ create_app_tile (GsShellCategory *shell, GsApp *app)
 }
 
 static void
-gs_shell_category_populate_filtered (GsShellCategory *shell, GsCategory *subcategory)
+gs_shell_category_populate_filtered (GsShellCategory *shell, GsCategory *category)
 {
         GsShellCategoryPrivate *priv = shell->priv;
         gint i;
@@ -118,7 +116,7 @@ gs_shell_category_populate_filtered (GsShellCategory *shell, GsCategory *subcate
         grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
         gtk_grid_remove_column (GTK_GRID (grid), 2);
         gtk_grid_remove_column (GTK_GRID (grid), 1);
-        if (!subcategory)
+        if (!category)
                 gtk_grid_remove_column (GTK_GRID (grid), 0);
 
         /* FIXME load apps for this category and filter */
@@ -132,12 +130,10 @@ gs_shell_category_populate_filtered (GsShellCategory *shell, GsCategory *subcate
 
         for (i = 0; i < 30; i++) {
                 tile = create_app_tile (shell, app);
-                if (subcategory) {
+                if (category)
                         gtk_grid_attach (GTK_GRID (grid), tile, 1 + (i % 2), i / 2, 1, 1);
-                }
-                else {
+                else
                         gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
-                }
         }
 
         g_object_unref (app);
@@ -157,79 +153,90 @@ static void
 filter_selected (GtkListBox *filters, GtkListBoxRow *row, gpointer data)
 {
         GsShellCategory *shell = GS_SHELL_CATEGORY (data);
-        GsCategory *subcategory;
+        GsCategory *category;
 
         if (row == NULL)
                 return;
 
-        subcategory = g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "subcategory");
-        gs_shell_category_populate_filtered (shell, subcategory);
+        category = g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "category");
+        g_clear_object (&shell->priv->category);
+        shell->priv->category = g_object_ref (category);
+        gs_shell_category_populate_filtered (shell, category);
 }
 
-static GsCategory *
-create_filter_list (GsShellCategory *shell, GsCategory *category)
+static void
+gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *category, GsCategory *subcategory)
 {
         GsShellCategoryPrivate *priv = shell->priv;
         GtkWidget *grid;
-        GtkWidget *list;
+        GtkWidget *list_box;
         GtkWidget *row;
         GtkWidget *frame;
         guint i;
-        GList *subcategories, *l;
-        GsCategory *subcategory;
-
-        subcategories = gs_category_get_subcategories (category);
-
-        if (!subcategories)
-                return NULL;
+        GList *list, *l;
+        GsCategory *s;
 
         grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-        list = gtk_list_box_new ();
-        gtk_list_box_set_selection_mode (GTK_LIST_BOX (list), GTK_SELECTION_BROWSE);
-        g_signal_connect (list, "row-selected", G_CALLBACK (filter_selected), shell);
-        gtk_list_box_set_header_func (GTK_LIST_BOX (list), add_separator, NULL, NULL);
-        for  (l = subcategories, i = 0; l; l = l->next, i++) {
-                subcategory = l->data;
-                row = gtk_label_new (gs_category_get_name (subcategory));
-                g_object_set_data_full (G_OBJECT (row), "subcategory", g_object_ref (subcategory), g_object_unref);
+        gs_container_remove_all (GTK_CONTAINER (grid));
+
+        list = gs_category_get_subcategories (category);
+        if (!list)
+                return;
+
+        list_box = gtk_list_box_new ();
+        gtk_list_box_set_selection_mode (GTK_LIST_BOX (list_box), GTK_SELECTION_BROWSE);
+        g_signal_connect (list_box, "row-selected", G_CALLBACK (filter_selected), shell);
+        gtk_list_box_set_header_func (GTK_LIST_BOX (list_box), add_separator, NULL, NULL);
+        for  (l = list, i = 0; l; l = l->next, i++) {
+                s = l->data;
+                row = gtk_label_new (gs_category_get_name (s));
+                g_object_set_data_full (G_OBJECT (row), "category", g_object_ref (s), g_object_unref);
                 g_object_set (row, "xalign", 0.0, "margin", 6, NULL);
-                gtk_list_box_insert (GTK_LIST_BOX (list), row, i);
+                gtk_list_box_insert (GTK_LIST_BOX (list_box), row, i);
+                if (subcategory == s)
+                        gtk_list_box_select_row (GTK_LIST_BOX (list_box), GTK_LIST_BOX_ROW (gtk_widget_get_parent (row)));
         }
-        g_list_free (subcategories);
+        g_list_free (list);
 
         frame = gtk_frame_new (NULL);
         g_object_set (frame, "margin", 6, NULL);
         gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
         gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
-        gtk_container_add (GTK_CONTAINER (frame), list);
+        gtk_container_add (GTK_CONTAINER (frame), list_box);
         gtk_widget_show_all (frame);
         gtk_widget_set_valign (frame, GTK_ALIGN_START);
-        gtk_grid_attach (GTK_GRID (grid), frame, 0, 0, 1, 5);
-
-        row = GTK_WIDGET (gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
-        gtk_list_box_select_row (GTK_LIST_BOX (list), GTK_LIST_BOX_ROW (row));
-
-        return GS_CATEGORY (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "subcategory"));
+        gtk_grid_attach (GTK_GRID (grid), frame, 0, 0, 1, 20);
 }
 
 void
 gs_shell_category_set_category (GsShellCategory *shell, GsCategory *category)
 {
 	GsShellCategoryPrivate *priv = shell->priv;
-        GtkWidget *grid;
-        GsCategory *subcategory;
+        GsCategory *parent, *sub;
+        GList *list;
 
-        if (priv->category)
-                g_object_unref (priv->category);
-	priv->category = category;
-        if (priv->category)
-                g_object_ref (priv->category);
+        if (gs_category_get_parent (category)) {
+                parent = gs_category_get_parent (category);
+                sub = category;
+        }
+        else {
+                parent = category;
+                sub = NULL;
+                list = gs_category_get_subcategories (category);
+                if (list) {
+                        sub = GS_CATEGORY (list->data);
+                        g_list_free (list);
+                }
+        }
 
-        grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-        gs_container_remove_all (GTK_CONTAINER (grid));
+        g_clear_object (&priv->category);
+        if (sub)
+                priv->category = g_object_ref (sub);
+        else
+                priv->category = g_object_ref (parent);
 
-        subcategory = create_filter_list (shell, category);
-        gs_shell_category_populate_filtered (shell, subcategory);
+        gs_shell_category_create_filter_list (shell, parent, sub);
+        gs_shell_category_populate_filtered (shell, sub);
 }
 
 GsCategory *
@@ -239,18 +246,9 @@ gs_shell_category_get_category (GsShellCategory *shell)
 }
 
 static void
-gs_shell_category_class_init (GsShellCategoryClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	object_class->finalize = gs_shell_category_finalize;
-
-	g_type_class_add_private (klass, sizeof (GsShellCategoryPrivate));
-}
-
-static void
 gs_shell_category_init (GsShellCategory *shell)
 {
-	shell->priv = GS_SHELL_CATEGORY_GET_PRIVATE (shell);
+	shell->priv = G_TYPE_INSTANCE_GET_PRIVATE (shell, GS_TYPE_SHELL_CATEGORY, GsShellCategoryPrivate);
 }
 
 static void
@@ -259,11 +257,20 @@ gs_shell_category_finalize (GObject *object)
 	GsShellCategory *shell = GS_SHELL_CATEGORY (object);
 	GsShellCategoryPrivate *priv = shell->priv;
 
-	g_object_unref (priv->builder);
-        if (priv->category)
-                g_object_unref (priv->category);
+	g_clear_object (&priv->builder);
+        g_clear_object (&priv->category);
 
 	G_OBJECT_CLASS (gs_shell_category_parent_class)->finalize (object);
+}
+
+static void
+gs_shell_category_class_init (GsShellCategoryClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->finalize = gs_shell_category_finalize;
+
+	g_type_class_add_private (klass, sizeof (GsShellCategoryPrivate));
 }
 
 void
@@ -279,6 +286,8 @@ GsShellCategory *
 gs_shell_category_new (void)
 {
 	GsShellCategory *shell;
+
 	shell = g_object_new (GS_TYPE_SHELL_CATEGORY, NULL);
-	return GS_SHELL_CATEGORY (shell);
+
+	return shell;
 }
