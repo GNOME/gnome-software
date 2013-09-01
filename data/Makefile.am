@@ -14,6 +14,14 @@ dist_resources_DATA =					\
 appdatadir = $(datadir)/appdata
 appdata_files = gnome-software.appdata.xml
 
+appstream.xml.gz:
+	wget -N http://people.freedesktop.org/~hughsient/temp/appstream.xml.gz
+appstream-icons.tar.gz:
+	wget -N http://people.freedesktop.org/~hughsient/temp/appstream-icons.tar.gz
+
+appstreamdir = $(datadir)/gnome-software
+dist_appstream_DATA = appstream.xml.gz appstream-icons.tar.gz
+
 EXTRA_DIST =						\
 	$(appdata_files)
 
