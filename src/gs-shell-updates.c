@@ -30,7 +30,6 @@
 #include "gs-app-widget.h"
 
 static void	gs_shell_updates_finalize	(GObject	*object);
-static void     show_update_details	     (GsAppWidget *app_widget, GsShellUpdates *shell_updates);
 
 #define GS_SHELL_UPDATES_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_UPDATES, GsShellUpdatesPrivate))
 
@@ -43,6 +42,7 @@ struct GsShellUpdatesPrivate
 	gboolean		 cache_valid;
 	gboolean		 waiting;
         GsShell                 *shell;
+        GsApp                   *app;
 };
 
 enum {
@@ -277,15 +277,13 @@ gs_shell_updates_unselect_treeview_cb (gpointer user_data)
 }
 
 static void
-show_update_details (GsAppWidget *app_widget, GsShellUpdates *shell_updates)
+show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 {
-	GsApp *app = gs_app_widget_get_app (app_widget);
+	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GsApp *app_related;
 	GsAppKind kind;
 	GtkWidget *widget;
-	GsShellUpdatesPrivate *priv = shell_updates->priv;
 
-	app = gs_app_widget_get_app (app_widget);
 	kind = gs_app_get_kind (app);
 
 	/* set update header */
@@ -333,9 +331,17 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 			       GtkListBoxRow *row,
 			       GsShellUpdates *shell_updates)
 {
-	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+	GsShellUpdatesPrivate *priv = shell_updates->priv;
+	GsAppWidget *app_widget;
+	GsApp *app;
 
-	show_update_details (app_widget, shell_updates);
+        app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+        app = gs_app_widget_get_app (app_widget);
+
+        g_clear_object (&priv->app);
+        priv->app = g_object_ref (app);
+
+	show_update_details (priv->app, shell_updates);
 }
 
 /**
@@ -392,6 +398,9 @@ gs_shell_updates_button_back_cb (GtkWidget *widget, GsShellUpdates *shell_update
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
 	gtk_widget_show (widget);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
+	gtk_window_set_title (GTK_WINDOW (widget), gs_app_get_name (priv->app));
 }
 
 /**
@@ -473,6 +482,12 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
                 gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
 }
 
+static void
+dialog_update_hide_cb (GtkWidget *dialog, GsShellUpdates *shell_updates)
+{
+        g_clear_object (&shell_updates->priv->app);
+}
+
 void
 gs_shell_updates_setup (GsShellUpdates *shell_updates,
                         GsShell *shell,
@@ -547,8 +562,10 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			  shell_updates);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
 	g_signal_connect (widget, "delete-event",
-			  G_CALLBACK (gtk_widget_hide_on_delete),
-			  shell_updates);
+			  G_CALLBACK (gtk_widget_hide_on_delete), shell_updates);
+        g_signal_connect (widget, "hide",
+                          G_CALLBACK (dialog_update_hide_cb), shell_updates);
+
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_updates_button_back_cb),
@@ -592,6 +609,7 @@ gs_shell_updates_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
+        g_clear_object (&priv->app);
 
 	G_OBJECT_CLASS (gs_shell_updates_parent_class)->finalize (object);
 }
