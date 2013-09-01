@@ -474,7 +474,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 gdouble
 gs_plugin_get_priority (GsPlugin *plugin)
 {
-	return 1.0f;
+	return 2.0f;
 }
 
 /**
@@ -572,6 +572,9 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* set package name */
 	if (item->pkgname != NULL && gs_app_get_metadata_item (app, "package-name") == NULL)
 		gs_app_set_metadata (app, "package-name", item->pkgname);
+
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 out:
 	g_free (icon_path);
 	if (pixbuf != NULL)
