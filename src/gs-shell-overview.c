@@ -150,7 +150,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	}
 
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
-	for (l = list, i = 0; l != NULL; l = l->next, i++) {
+	for (l = list, i = 0; l != NULL && i < 6; l = l->next, i++) {
 		app = GS_APP (l->data);
 		tile = create_popular_tile (shell_overview, app);
                 gtk_box_pack_start (GTK_BOX (grid), tile, TRUE, TRUE, 0);
