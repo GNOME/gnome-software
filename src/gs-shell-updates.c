@@ -217,60 +217,22 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_summary (app));
 }
 
-/**
- * gs_shell_updates_row_activated_cb:
- **/
 static void
-gs_shell_updates_row_activated_cb (GtkTreeView *treeview,
-				   GtkTreePath *path,
-				   GtkTreeViewColumn *col,
+gs_shell_updates_row_activated_cb (GtkListBox *list_box,
+                                   GtkListBoxRow *row,
 				   GsShellUpdates *shell_updates)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
-	gboolean ret;
 	GsApp *app = NULL;
-	GtkTreeIter iter;
-	GtkTreeModel *model;
 	GtkWidget *widget;
 
-	/* get selection */
-	model = gtk_tree_view_get_model (treeview);
-	ret = gtk_tree_model_get_iter (model, &iter, path);
-	if (!ret) {
-		g_warning ("failed to get selection");
-		goto out;
-	}
-
-	/* get data */
-	gtk_tree_model_get (model, &iter,
-			    COLUMN_UPDATE_APP, &app,
-			    -1);
-
+        app = GS_APP (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "app"));
 	/* setup package view */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
 	gtk_widget_hide (widget);
 	gs_shell_updates_set_updates_description_ui (shell_updates, app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
 	gtk_widget_show (widget);
-out:
-	if (app != NULL)
-		g_object_unref (app);
-}
-
-/**
- * gs_shell_updates_unselect_treeview_cb:
- **/
-static gboolean
-gs_shell_updates_unselect_treeview_cb (gpointer user_data)
-{
-	GsShellUpdates *shell_updates = GS_SHELL_UPDATES (user_data);
-	GsShellUpdatesPrivate *priv = shell_updates->priv;
-	GtkTreeView *treeview;
-
-	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_update"));
-	gtk_tree_selection_unselect_all (gtk_tree_view_get_selection (treeview));
-
-	return FALSE;
 }
 
 static void
@@ -293,27 +255,42 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 	/* set update description */
 	if (kind == GS_APP_KIND_OS_UPDATE) {
 		GPtrArray *related;
-		GtkListStore *liststore;
-		GtkTreeIter iter;
+                GtkListBox *list_box;
 		guint i;
+                GtkWidget *row, *label;
 
-		/* add the related packages to the list view */
-		liststore = GTK_LIST_STORE (gtk_builder_get_object (priv->builder, "liststore_update"));
-		gtk_list_store_clear (liststore);
+                list_box = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_update"));
+                gs_container_remove_all (GTK_CONTAINER (list_box));
 		related = gs_app_get_related (app);
 		for (i = 0; i < related->len; i++) {
 			app_related = g_ptr_array_index (related, i);
-			gtk_list_store_append (liststore, &iter);
-			gtk_list_store_set (liststore,
-					    &iter,
-					    COLUMN_UPDATE_APP, app_related,
-					    COLUMN_UPDATE_NAME, gs_app_get_name (app_related),
-					    COLUMN_UPDATE_VERSION, gs_app_get_version (app_related),
-					    -1);
+                        row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+                        g_object_set_data_full (G_OBJECT (row), "app", g_object_ref (app_related), g_object_unref);
+                        label = gtk_label_new (gs_app_get_name (app_related));
+                        g_object_set (label,
+                                      "margin-left", 20,
+                                      "margin-right", 20,
+                                      "margin-top", 6,
+                                      "margin-bottom", 6,
+                                      "xalign", 0.0,
+                                      NULL);
+                        gtk_widget_set_halign (label, GTK_ALIGN_START);
+                        gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
+                        gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
+                        label = gtk_label_new (gs_app_get_version (app_related));
+                        g_object_set (label,
+                                      "margin-left", 20,
+                                      "margin-right", 20,
+                                      "margin-top", 6,
+                                      "margin-bottom", 6,
+                                      "xalign", 1.0,
+                                      NULL);
+                        gtk_widget_set_halign (label, GTK_ALIGN_END);
+                        gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
+                        gtk_box_pack_start (GTK_BOX (row), label, FALSE, FALSE, 0);
+                        gtk_widget_show_all (row);
+                        gtk_list_box_insert (list_box,row, -1);
 		}
-
-		/* unselect treeview by default */
-		g_idle_add (gs_shell_updates_unselect_treeview_cb, shell_updates);
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
@@ -493,9 +470,6 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			GCancellable *cancellable)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
-	GtkCellRenderer *renderer;
-	GtkTreeViewColumn *column;
-	GtkTreeView *treeview;
 	GtkWidget *widget;
         GtkWidget *sw;
 
@@ -524,30 +498,13 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	gtk_container_add (GTK_CONTAINER (widget), GTK_WIDGET (priv->list_box_updates));
 	gtk_widget_show (GTK_WIDGET (priv->list_box_updates));
 
-	/* column for name */
-	treeview = GTK_TREE_VIEW (gtk_builder_get_object (priv->builder, "treeview_update"));
-	renderer = gtk_cell_renderer_text_new ();
-	g_object_set (renderer,
-		      "xpad", 6,
-		      "ypad", 6,
-		      NULL);
-	column = gtk_tree_view_column_new_with_attributes ("name", renderer,
-							   "markup", COLUMN_UPDATE_NAME, NULL);
-	gtk_tree_view_column_set_sort_column_id (column, COLUMN_UPDATE_NAME);
-	gtk_tree_view_column_set_expand (column, TRUE);
-	gtk_tree_view_append_column (treeview, column);
-
-	renderer = gtk_cell_renderer_text_new ();
-	g_object_set (renderer,
-		      "xpad", 6,
-		      "ypad", 6,
-		      NULL);
-	column = gtk_tree_view_column_new_with_attributes ("version", renderer,
-							   "markup", COLUMN_UPDATE_VERSION, NULL);
-	gtk_tree_view_append_column (treeview, column);
-	g_signal_connect (treeview, "row-activated",
-			  G_CALLBACK (gs_shell_updates_row_activated_cb),
-			  shell_updates);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "list_box_update"));
+	g_signal_connect (GTK_LIST_BOX (widget), "row-activated",
+			  G_CALLBACK (gs_shell_updates_row_activated_cb), shell_updates);
+	gtk_list_box_set_header_func (GTK_LIST_BOX (widget),
+				      gs_shell_updates_list_header_func,
+				      shell_updates,
+				      NULL);
 
        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
         g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), shell_updates);
