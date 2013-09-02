@@ -737,6 +737,14 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	GsCategory *parent;
 	guint i;
 
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			goto out;
+	}
+
 	/* get the two search terms */
 	search_id1 = gs_category_get_id (category);
 	parent = gs_category_get_parent (category);
