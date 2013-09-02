@@ -536,6 +536,7 @@ gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
 	/* grab detail */
 	list = g_simple_async_result_get_op_res_gpointer (simple);
 
+#if 0
         for (l = list; l; l = l->next) {
                 GsApp *app = l->data;
 
@@ -544,6 +545,7 @@ gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
                 g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_INSTALLED);
                 g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_AVAILABLE);
         }
+#endif
 
         return g_list_copy (list);
 }
@@ -649,6 +651,7 @@ gs_plugin_loader_get_installed_finish (GsPluginLoader *plugin_loader,
 	/* grab detail */
 	list = g_simple_async_result_get_op_res_gpointer (simple);
 
+#if 0
         for (l = list; l; l = l->next) {
                 GsApp *app = l->data;
 
@@ -656,6 +659,7 @@ gs_plugin_loader_get_installed_finish (GsPluginLoader *plugin_loader,
                 g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_UNKNOWN);
                 g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_AVAILABLE);
         }
+#endif
 
         return g_list_copy (list);
 }
@@ -760,12 +764,14 @@ gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
 	/* grab detail */
 	list = g_simple_async_result_get_op_res_gpointer (simple);
 
+#if 0
         for (l = list; l; l = l->next) {
                 GsApp *app = l->data;
 
                 g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_NORMAL);
                 g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_UNKNOWN);
         }
+#endif
 
         return g_list_copy (list);
 }
@@ -869,12 +875,15 @@ gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 
 	/* grab detail */
 	list = g_simple_async_result_get_op_res_gpointer (simple);
+
+#if 0
         for (l = list; l; l = l->next) {
                 GsApp *app = l->data;
 
                 g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_NORMAL);
                 g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_UNKNOWN);
         }
+#endif
 
         return g_list_copy (list);
 }
