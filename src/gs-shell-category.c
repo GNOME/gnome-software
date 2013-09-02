@@ -139,15 +139,18 @@ gs_shell_category_get_apps_cb (GObject *source_object,
         gtk_grid_remove_column (GTK_GRID (grid), 2);
         gtk_grid_remove_column (GTK_GRID (grid), 1);
 
-        for (l = list; l != NULL; l = l->next) {
+        for (l = list, i = 0; l != NULL; l = l->next, i++) {
                 app = GS_APP (l->data);
                 tile = create_app_tile (shell, app);
                 if (gs_category_get_parent (priv->category) != NULL)
                         gtk_grid_attach (GTK_GRID (grid), tile, 1 + (i % 2), i / 2, 1, 1);
                 else
                         gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
-                i++;
         }
+
+        if (i == 1)
+                gtk_grid_attach (GTK_GRID (grid), priv->col2_placeholder, 2, 0, 1, 1);
+
 out:
 	g_list_free (list);
 
