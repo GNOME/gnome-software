@@ -122,7 +122,10 @@ void
 gs_app_set_state (GsApp *app, GsAppState state)
 {
 	g_return_if_fail (GS_IS_APP (app));
+        if (app->priv->state == state)
+                return;
 	app->priv->state = state;
+        g_object_notify (G_OBJECT (app), "state");
 	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
