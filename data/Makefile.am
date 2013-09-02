@@ -25,6 +25,9 @@ dist_appstream_DATA = appstream.xml.gz appstream-icons.tar.gz
 EXTRA_DIST =						\
 	$(appdata_files)
 
+CLEANFILES =						\
+	$(dist_appstream_DATA)
+
 MAINTAINERCLEANFILES =					\
 	*~						\
 	Makefile.in
