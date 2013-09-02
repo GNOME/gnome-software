@@ -82,11 +82,39 @@ app_tile_clicked (GtkButton *button, gpointer data)
         gs_shell_show_app (shell_overview->priv->shell, app);
 }
 
+static gboolean
+transform_state_func (GBinding *binding,
+                      const GValue *source,
+                      GValue *target,
+                      gpointer user_data)
+{
+        GsAppState state;
+        gboolean installed;
+
+        state = g_value_get_uint (source);
+
+        switch (state) {
+        case GS_APP_STATE_INSTALLED:
+        case GS_APP_STATE_INSTALLING:
+        case GS_APP_STATE_REMOVING:
+        case GS_APP_STATE_UPDATABLE:
+                installed = TRUE;
+                break;
+        case GS_APP_STATE_AVAILABLE:
+        default:
+                installed = FALSE;
+                break;
+        }
+        g_value_set_boolean (target, installed);
+
+        return TRUE;
+}
+
 static GtkWidget *
 create_popular_tile (GsShellOverview *shell_overview, GsApp *app)
 {
 	GtkWidget *button, *frame, *box, *image, *label;
-	GtkWidget *f;
+	GtkWidget *f, *o, *e;
 
 	f = gtk_aspect_frame_new (NULL, 0.5, 0, 1, FALSE);
 	gtk_widget_set_valign (f, GTK_ALIGN_START);
@@ -99,8 +127,35 @@ create_popular_tile (GsShellOverview *shell_overview, GsApp *app)
 	gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
 	gtk_widget_set_halign (frame, GTK_ALIGN_FILL);
 	gtk_widget_set_valign (frame, GTK_ALIGN_FILL);
+        o = gtk_overlay_new ();
+	gtk_widget_set_halign (o, GTK_ALIGN_FILL);
+	gtk_widget_set_valign (o, GTK_ALIGN_FILL);
+        e = gtk_event_box_new ();
+        gtk_widget_set_no_show_all (e, TRUE);
+        g_object_bind_property_full (app, "state",
+                                     e, "visible",
+                                     G_BINDING_SYNC_CREATE,
+                                     transform_state_func,
+                                     NULL, NULL, NULL);
+        gtk_overlay_add_overlay (GTK_OVERLAY (o), e);
+        gtk_event_box_set_visible_window (GTK_EVENT_BOX (e), TRUE);
+        gtk_style_context_add_class (gtk_widget_get_style_context (e), "installed-overlay-box");
+        gtk_widget_set_halign (e, GTK_ALIGN_END);
+        gtk_widget_set_valign (e, GTK_ALIGN_END);
+        gtk_widget_set_margin_bottom (e, 35);
+
+        label = gtk_label_new (_("Installed"));
+        gtk_widget_show (label);
+        gtk_container_add (GTK_CONTAINER (e), label);
+        gtk_style_context_add_class (gtk_widget_get_style_context (label), "installed-overlay-label");
+        gtk_widget_set_margin_left (label, 16);
+        gtk_widget_set_margin_right (label, 16);
+        gtk_widget_set_margin_top (label, 4);
+        gtk_widget_set_margin_bottom (label, 4);
+
+	gtk_container_add (GTK_CONTAINER (frame), o);
 	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_container_add (GTK_CONTAINER (frame), box);
+	gtk_container_add (GTK_CONTAINER (o), box);
 	gtk_widget_set_valign (box, GTK_ALIGN_FILL);
 	image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
 	gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
