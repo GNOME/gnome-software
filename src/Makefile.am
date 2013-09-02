@@ -94,6 +94,7 @@ check_PROGRAMS =						\
 
 gs_self_test_SOURCES =						\
 	gs-app.c						\
+	gs-category.c						\
 	gs-plugin.c						\
 	gs-plugin-loader.c					\
 	gs-plugin-loader-sync.c					\
