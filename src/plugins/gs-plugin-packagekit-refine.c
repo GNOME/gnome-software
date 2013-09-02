@@ -128,24 +128,37 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 }
 
 static gboolean
-gs_plugin_packagekit_refine_package (GsPlugin      *plugin,
-				     GsApp         *app,
-				     const char    *package_name,
-				     GCancellable  *cancellable,
-				     GError       **error)
+gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
+				      GList *list,
+				      GCancellable *cancellable,
+				      GError **error)
 {
-	const gchar *to_array[] = { NULL, NULL };
+	const gchar *pkgname;
 	gboolean ret = TRUE;
+	const gchar **package_ids;
+	GList *l;
 	GPtrArray *array = NULL;
 	GPtrArray *packages = NULL;
+	GsApp *app;
+	guint cnt = 0;
+	guint i = 0;
+	guint size;
 	PkError *error_code = NULL;
 	PkPackage *package;
 	PkResults *results = NULL;
 
-	to_array[0] = package_name;
+	size = g_list_length (list);
+	package_ids = g_new0 (const gchar *, size + 1);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		pkgname = gs_app_get_metadata_item (app, "package-name");
+		package_ids[i++] = pkgname;
+	}
+
+	/* resolve them all at once */
 	results = pk_client_resolve (plugin->priv->client,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
-				     (gchar **) to_array,
+				     (gchar **) package_ids,
 				     cancellable,
 				     gs_plugin_packagekit_progress_cb, plugin,
 				     error);
@@ -169,16 +182,30 @@ gs_plugin_packagekit_refine_package (GsPlugin      *plugin,
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
-	if (packages->len == 1) {
-		package = g_ptr_array_index (packages, 0);
-		gs_app_set_metadata (app, "package-id", pk_package_get_id (package));
-		gs_app_set_state (app,
-				  pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED ?
-				  GS_APP_STATE_INSTALLED :
-				  GS_APP_STATE_AVAILABLE);
-	} else {
-		g_warning ("Failed to find one package for %s, %s, [%d]",
-			   gs_app_get_id (app), package_name, packages->len);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		pkgname = gs_app_get_metadata_item (app, "package-name");
+
+		/* find any packages that match the package name */
+		cnt = 0;
+		for (i = 0; i < packages->len; i++) {
+			package = g_ptr_array_index (packages, i);
+			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
+				gs_app_set_metadata (app, "package-id", pk_package_get_id (package));
+				gs_app_set_state (app,
+						  pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED ?
+						  GS_APP_STATE_INSTALLED :
+						  GS_APP_STATE_AVAILABLE);
+				cnt++;
+			}
+		}
+		if (cnt == 0) {
+			g_warning ("Failed to find any package for %s, %s",
+				   gs_app_get_id (app), pkgname);
+		} else if (cnt > 1) {
+			g_warning ("found duplicate packages for %s, %s, [%d]",
+				   gs_app_get_id (app), pkgname, cnt);
+		}
 	}
 out:
 	if (packages != NULL)
@@ -255,28 +282,6 @@ out:
 }
 
 /**
- * gs_plugin_packagekit_refine_app:
- */
-static gboolean
-gs_plugin_packagekit_refine_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
-{
-	const gchar *filename;
-	const gchar *package_name;
-
-	package_name = gs_app_get_metadata_item (app, "package-name");
-	if (package_name != NULL)
-		return gs_plugin_packagekit_refine_package (plugin, app, package_name, cancellable, error);
-
-	filename = gs_app_get_metadata_item (app, "datadir-desktop-filename");
-	if (filename != NULL)
-		return gs_plugin_packagekit_refine_from_desktop (plugin, app, filename, cancellable, error);
-
-	g_warning ("refining %s without .desktop filename or package-name not supported",
-		   gs_app_get_id (app));
-	return TRUE;
-}
-
-/**
  * gs_plugin_refine:
  */
 gboolean
@@ -288,13 +293,39 @@ gs_plugin_refine (GsPlugin *plugin,
 	gboolean ret = TRUE;
 	GList *l;
 	GsApp *app;
+	const gchar *tmp;
+	GList *resolve_all = NULL;
+
+	/* can we resolve in one go? */
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		if (gs_app_get_metadata_item (app, "package-id") != NULL)
+			continue;
+		tmp = gs_app_get_metadata_item (app, "package-name");
+		if (tmp != NULL)
+			resolve_all = g_list_prepend (resolve_all, app);
+	}
+	if (resolve_all != NULL) {
+		ret = gs_plugin_packagekit_refine_packages (plugin,
+							    resolve_all,
+							    cancellable,
+							    error);
+		g_list_free (resolve_all);
+	}
 
 	/* add any missing ratings data */
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_metadata_item (app, "package-id") != NULL)
 			continue;
-		ret = gs_plugin_packagekit_refine_app (plugin, app, cancellable, error);
+		tmp = gs_app_get_metadata_item (app, "datadir-desktop-filename");
+		if (tmp == NULL)
+			continue;
+		ret = gs_plugin_packagekit_refine_from_desktop (plugin,
+								app,
+								tmp,
+								cancellable,
+								error);
 		if (!ret)
 			goto out;
 	}
