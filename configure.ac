@@ -80,10 +80,10 @@ AC_ARG_ENABLE(man,
                               [generate man pages [default=auto]])],,
               enable_man=maybe)
 AS_IF([test "$enable_man" != no], [
-  AC_PATH_PROG(DOCBOOK2MAN, docbook2man)
-  AS_IF([test -z "$DOCBOOK2MAN"], [
+  AC_PATH_PROG([XSLTPROC], [xsltproc])
+  AS_IF([test -z "$XSLTPROC"], [
     AS_IF([test "$enable_man" = yes], [
-      AC_MSG_ERROR([docbook2man is required for --enable-man])
+      AC_MSG_ERROR([xsltproc is required for --enable-man])
     ])
     enable_man=no
   ])
