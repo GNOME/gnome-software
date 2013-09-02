@@ -544,6 +544,7 @@ out:
 	return ret;
 }
 
+#if 0
 /**
  * gs_plugin_add_categories:
  */
@@ -573,3 +574,4 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	return TRUE;
 }
+#endif
