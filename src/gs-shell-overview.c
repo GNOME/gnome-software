@@ -119,7 +119,7 @@ create_popular_tile (GsShellOverview *shell_overview, GsApp *app)
 	f = gtk_aspect_frame_new (NULL, 0.5, 0, 1, FALSE);
 	gtk_widget_set_valign (f, GTK_ALIGN_START);
 	gtk_frame_set_shadow_type (GTK_FRAME (f), GTK_SHADOW_NONE);
-        gtk_widget_set_size_request (f, -1, 200);
+        gtk_widget_set_size_request (f, -1, 180);
 	button = gtk_button_new ();
 	gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
 	frame = gtk_aspect_frame_new (NULL, 0.5, 1, 1, FALSE);
@@ -162,6 +162,9 @@ create_popular_tile (GsShellOverview *shell_overview, GsApp *app)
 	g_object_set (box, "margin", 12, NULL);
 	gtk_box_pack_start (GTK_BOX (box), image, TRUE, TRUE, 0);
 	label = gtk_label_new (gs_app_get_name (app));
+        gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
+        gtk_label_set_width_chars (GTK_LABEL (label), 10);
+        gtk_label_set_max_width_chars (GTK_LABEL (label), 15);
 	gtk_widget_set_valign (label, GTK_ALIGN_END);
 	g_object_set (label, "margin", 6, NULL);
 	gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
