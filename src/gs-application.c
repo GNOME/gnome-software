@@ -164,6 +164,9 @@ gs_application_startup (GApplication *application)
         gs_plugin_loader_set_enabled (app->plugin_loader, "datadir-apps", TRUE);
         gs_plugin_loader_set_enabled (app->plugin_loader, "datadir-filename", TRUE);
 
+        /* show the priority of each plugin */
+        gs_plugin_loader_dump_state (app->plugin_loader);
+
         /* setup UI */
         app->shell = gs_shell_new ();
 

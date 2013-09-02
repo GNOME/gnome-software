@@ -1733,8 +1733,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	gboolean ret = TRUE;
 	gchar *filename_plugin;
 	GDir *dir;
-	GsPlugin *plugin;
-	guint i;
 
 	g_return_val_if_fail (plugin_loader->priv->location != NULL, FALSE);
 
@@ -1764,21 +1762,31 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	g_ptr_array_sort (plugin_loader->priv->plugins,
 			  gs_plugin_loader_plugin_sort_fn);
 
-	/* print what the priorities are */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
-		g_debug ("%.1f\t->\t%s [%s]",
-			 plugin->priority,
-			 plugin->name,
-			 plugin->enabled ? "enabled" : "disabled");
-	}
-
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_initialize");
 out:
 	if (dir != NULL)
 		g_dir_close (dir);
 	return ret;
+}
+
+/**
+ * gs_plugin_loader_dump_state:
+ **/
+void
+gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
+{
+	GsPlugin *plugin;
+	guint i;
+
+	/* print what the priorities are */
+	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+		g_debug ("[%s]\t%.1f\t->\t%s",
+			 plugin->enabled ? "enabled" : "disabled",
+			 plugin->priority,
+			 plugin->name);
+	}
 }
 
 /**
