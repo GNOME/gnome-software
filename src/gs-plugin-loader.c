@@ -879,7 +879,6 @@ cd_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 			continue;
 		ret = g_cancellable_set_error_if_cancelled (cancellable, &error);
 		if (ret) {
-			ret = FALSE;
 			cd_plugin_loader_get_all_state_finish (state, error);
 			g_error_free (error);
 			goto out;
@@ -1036,7 +1035,6 @@ cd_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 			continue;
 		ret = g_cancellable_set_error_if_cancelled (cancellable, &error);
 		if (ret) {
-			ret = FALSE;
 			cd_plugin_loader_get_all_state_finish (state, error);
 			g_error_free (error);
 			goto out;
@@ -1169,7 +1167,6 @@ cd_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 			continue;
 		ret = g_cancellable_set_error_if_cancelled (cancellable, &error);
 		if (ret) {
-			ret = FALSE;
 			cd_plugin_loader_get_all_state_finish (state, error);
 			g_error_free (error);
 			goto out;
