@@ -1026,6 +1026,7 @@ cd_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginResultsFunc plugin_func = NULL;
+	GList *l;
 	guint i;
 
 	/* run each plugin */
@@ -1063,6 +1064,8 @@ cd_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 
 	/* sort by name */
 	state->list = g_list_sort (state->list, gs_plugin_loader_category_sort_cb);
+	for (l = state->list; l != NULL; l = l->next)
+		gs_category_sort_subcategories (GS_CATEGORY (l->data));
 
 	/* success */
 	if (state->list == NULL) {

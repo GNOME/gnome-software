@@ -56,6 +56,7 @@ GsCategory      *gs_category_get_parent         (GsCategory             *categor
 const gchar	*gs_category_get_name		(GsCategory		*category);
 void 		 gs_category_set_name		(GsCategory		*category,
 						 const gchar	        *name);
+void		 gs_category_sort_subcategories	(GsCategory		*category);
 GList           *gs_category_get_subcategories  (GsCategory             *category);
 void             gs_category_add_subcategory    (GsCategory             *category,
                                                  GsCategory             *subcategory);

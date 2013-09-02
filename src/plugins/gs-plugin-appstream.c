@@ -743,6 +743,12 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	if (parent != NULL)
 		search_id2 = gs_category_get_id (parent);
 
+	/* the "General" item has no ID */
+	if (search_id1 == NULL) {
+		search_id1 = search_id2;
+		search_id2 = NULL;
+	}
+
 	/* just look at each app in turn */
 	for (i = 0; i < plugin->priv->array->len; i++) {
 		item = g_ptr_array_index (plugin->priv->array, i);

@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <glib/gi18n.h>
+
 #include "gs-category.h"
 
 static void	gs_category_finalize	(GObject	*object);
@@ -78,6 +80,48 @@ gs_category_add_subcategory (GsCategory *category, GsCategory *subcategory)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
         category->priv->subcategories = g_list_prepend (category->priv->subcategories, g_object_ref (subcategory));
+}
+
+/**
+ * gs_category_sort_subcategories_cb:
+ **/
+static gint
+gs_category_sort_subcategories_cb (gconstpointer a, gconstpointer b)
+{
+	return g_strcmp0 (gs_category_get_name (GS_CATEGORY (a)),
+			  gs_category_get_name (GS_CATEGORY (b)));
+}
+
+/**
+ * gs_category_sort_subcategories:
+ **/
+void
+gs_category_sort_subcategories (GsCategory *category)
+{
+	gboolean subcat_all = FALSE;
+	GList *l;
+	GsCategory *all;
+	GsCategoryPrivate *priv = category->priv;
+
+	/* nothing here */
+	if (priv->subcategories == NULL)
+		return;
+
+	/* ensure there is a general entry */
+	for (l = priv->subcategories; l != NULL; l = l->next) {
+		if (gs_category_get_id (GS_CATEGORY (l->data)) == NULL) {
+			subcat_all = TRUE;
+			break;
+		}
+	}
+	if (!subcat_all) {
+		all = gs_category_new (category, NULL, _("General"));
+		gs_category_add_subcategory (category, all);
+	}
+
+	/* actually sort the data */
+	priv->subcategories = g_list_sort (priv->subcategories,
+					   gs_category_sort_subcategories_cb);
 }
 
 static void
