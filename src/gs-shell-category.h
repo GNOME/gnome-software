@@ -60,6 +60,8 @@ GsCategory      *gs_shell_category_get_category (GsShellCategory *shell_category
 void		 gs_shell_category_refresh	(GsShellCategory *shell_category);
 void             gs_shell_category_setup        (GsShellCategory *shell_category,
                                                  GsShell         *shell,
-                                                 GtkBuilder      *builder);
+                                                 GsPluginLoader  *plugin_loader,
+                                                 GtkBuilder      *builder,
+                                                 GCancellable    *cancellable);
 
 #endif /* __GS_SHELL_CATEGORY_H */

@@ -45,6 +45,7 @@ typedef struct {
 	gchar		*name;
 	gchar		*summary;
 	gchar		*icon;
+	GPtrArray	*appcategories;
 } GsAppstreamItem;
 
 struct GsPluginPrivate {
@@ -69,6 +70,7 @@ gs_appstream_item_free (gpointer data)
 	g_free (item->name);
 	g_free (item->summary);
 	g_free (item->icon);
+	g_ptr_array_unref (item->appcategories);
 	g_free (item);
 }
 
@@ -241,6 +243,7 @@ gs_appstream_start_element_cb (GMarkupParseContext *context,
 			return;
 		}
 		plugin->priv->item_temp = g_new0 (GsAppstreamItem, 1);
+		plugin->priv->item_temp->appcategories = g_ptr_array_new_with_free_func (g_free);
 		break;
 	case GS_APPSTREAM_XML_SECTION_ID:
 	case GS_APPSTREAM_XML_SECTION_PKGNAME:
@@ -328,8 +331,18 @@ gs_appstream_text_cb (GMarkupParseContext *context,
 	case GS_APPSTREAM_XML_SECTION_APPLICATIONS:
 	case GS_APPSTREAM_XML_SECTION_APPLICATION:
 	case GS_APPSTREAM_XML_SECTION_APPCATEGORIES:
-	case GS_APPSTREAM_XML_SECTION_APPCATEGORY:
 		/* ignore */
+		break;
+	case GS_APPSTREAM_XML_SECTION_APPCATEGORY:
+		if (plugin->priv->item_temp == NULL) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED,
+					     "item_temp category invalid");
+			return;
+		}
+		g_ptr_array_add (plugin->priv->item_temp->appcategories,
+				 g_strndup (text, text_len));
 		break;
 	case GS_APPSTREAM_XML_SECTION_ID:
 		if (plugin->priv->item_temp == NULL ||
@@ -504,7 +517,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_hash_table_unref (plugin->priv->hash_id);
 	g_hash_table_unref (plugin->priv->hash_pkgname);
 }
-
 
 /**
  * gs_plugin_startup:
@@ -689,6 +701,65 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* sucess */
 	ret = TRUE;
+out:
+	return ret;
+}
+
+static gboolean
+in_array (GPtrArray *array, const gchar *search)
+{
+	const gchar *tmp;
+	guint i;
+
+	for (i = 0; i < array->len; i++) {
+		tmp = g_ptr_array_index (array, i);
+		if (g_strcmp0 (tmp, search) == 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * gs_plugin_add_category_apps:
+ */
+gboolean
+gs_plugin_add_category_apps (GsPlugin *plugin,
+			     GsCategory *category,
+			     GList **list,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	const gchar *search_id1;
+	const gchar *search_id2 = NULL;
+	gboolean ret = TRUE;
+	GsApp *app;
+	GsAppstreamItem *item;
+	GsCategory *parent;
+	guint i;
+
+	/* get the two search terms */
+	search_id1 = gs_category_get_id (category);
+	parent = gs_category_get_parent (category);
+	if (parent != NULL)
+		search_id2 = gs_category_get_id (parent);
+
+	/* just look at each app in turn */
+	for (i = 0; i < plugin->priv->array->len; i++) {
+		item = g_ptr_array_index (plugin->priv->array, i);
+		if (item->id == NULL)
+			continue;
+		if (!in_array (item->appcategories, search_id1))
+			continue;
+		if (search_id2 != NULL && !in_array (item->appcategories, search_id2))
+			continue;
+
+		/* got a search match, so add all the data we can */
+		app = gs_app_new (item->id);
+		ret = gs_plugin_refine_item (plugin, app, item, error);
+		if (!ret)
+			goto out;
+		gs_plugin_add_app (list, app);
+	}
 out:
 	return ret;
 }

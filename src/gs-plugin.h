@@ -81,6 +81,11 @@ typedef gboolean	 (*GsPluginSearchFunc)		(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginCategoryFunc)	(GsPlugin	*plugin,
+							 GsCategory	*category,
+							 GList		**list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginResultsFunc)		(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,
@@ -122,7 +127,7 @@ gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
-							 const gchar	*id,
+							 GsCategory	*category,
 							 GList		**list,
 							 GCancellable	*cancellable,
 							 GError		**error);

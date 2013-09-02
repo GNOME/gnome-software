@@ -431,7 +431,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				priv->cancellable);
 	gs_shell_category_setup (priv->shell_category,
                                  shell,
-				 priv->builder);
+				 priv->plugin_loader,
+				 priv->builder,
+				 priv->cancellable);
 
         /* set up search */
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));

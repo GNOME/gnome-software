@@ -312,9 +312,9 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GtkWidget *grid;
 	GtkWidget *tile;
 
-	list = gs_plugin_loader_get_featured_finish (plugin_loader,
-						     res,
-						     &error);
+	list = gs_plugin_loader_get_categories_finish (plugin_loader,
+						       res,
+						       &error);
 	if (list == NULL) {
 		g_warning ("failed to get categories: %s", error->message);
 		g_error_free (error);

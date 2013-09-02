@@ -359,6 +359,7 @@ typedef struct {
 	GSimpleAsyncResult		*res;
 	GsPluginLoader			*plugin_loader;
 	gchar				*value;
+	GsCategory			*category;
 } GsPluginLoaderAsyncState;
 
 /******************************************************************************/
@@ -1155,7 +1156,7 @@ cd_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
-	GsPluginSearchFunc plugin_func = NULL;
+	GsPluginCategoryFunc plugin_func = NULL;
 	guint i;
 
 	/* run each plugin */
@@ -1178,7 +1179,7 @@ cd_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 		g_debug ("run %s on %s", function_name,
 			 g_module_name (plugin->module));
 		g_timer_start (plugin->timer);
-		ret = plugin_func (plugin, state->value, &state->list, cancellable, &error);
+		ret = plugin_func (plugin, state->category, &state->list, cancellable, &error);
 		if (!ret) {
 			cd_plugin_loader_get_all_state_finish (state, error);
 			g_error_free (error);
@@ -1220,6 +1221,7 @@ cd_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 
 	/* success */
 	state->ret = TRUE;
+	g_object_unref (state->category);
 	cd_plugin_loader_get_all_state_finish (state, NULL);
 out:
 	return;
@@ -1248,7 +1250,7 @@ gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 						user_data,
 						gs_plugin_loader_get_category_apps_async);
 	state->plugin_loader = g_object_ref (plugin_loader);
-	state->value = g_strdup (gs_category_get_id (category));
+	state->category = g_object_ref (category);
 	if (cancellable != NULL)
 		state->cancellable = g_object_ref (cancellable);
 
