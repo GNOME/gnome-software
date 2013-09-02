@@ -212,10 +212,83 @@ gs_plugin_loader_func (void)
 	g_object_unref (loader);
 }
 
+static void
+gs_plugin_loader_empty_func (void)
+{
+	gboolean ret;
+	GError *error = NULL;
+	GList *apps;
+	GList *l;
+	GList *l2;
+	GList *list;
+	GList *subcats;
+	GsCategory *category;
+	GsCategory *sub;
+	GsPluginLoader *loader;
+	guint empty_subcats_cnt = 0;
+
+	/* load the plugins */
+	loader = gs_plugin_loader_new ();
+	gs_plugin_loader_set_location (loader, "./plugins/.libs");
+	ret = gs_plugin_loader_setup (loader, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-menu-spec", TRUE);
+	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "appstream", TRUE);
+	g_assert (ret);
+	ret = gs_plugin_loader_set_enabled (loader, "self-test", TRUE);
+	g_assert (ret);
+
+	/* get the list of categories */
+	list = gs_plugin_loader_get_categories (loader, NULL, &error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+
+	/* find how many packages each sub category has */
+	for (l = list; l != NULL; l = l->next) {
+		category = GS_CATEGORY (l->data);
+		subcats = gs_category_get_subcategories (category);
+		if (subcats == NULL)
+			continue;
+		for (l2 = subcats; l2 != NULL; l2 = l2->next) {
+			sub = GS_CATEGORY (l2->data);
+
+			/* ignore general */
+			if (gs_category_get_id (sub) == NULL)
+				continue;
+
+			/* find subcaegories that have no applications */
+			apps = gs_plugin_loader_get_category_apps (loader,
+								   sub,
+								   NULL,
+								   &error);
+			if (apps == NULL) {
+				g_debug ("NOAPPS:\t%s/%s",
+					 gs_category_get_id (category),
+					 gs_category_get_id (sub));
+				g_clear_error (&error);
+				empty_subcats_cnt++;
+				//g_warning ("MOO");
+			} else {
+				g_debug ("APPS[%i]:\t%s/%s",
+					 g_list_length (apps),
+					 gs_category_get_id (category),
+					 gs_category_get_id (sub));
+			}
+			g_list_free_full (apps, (GDestroyNotify) g_object_unref);
+		}
+	}
+	g_assert_cmpint (empty_subcats_cnt, ==, 0);
+
+	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+	g_object_unref (loader);
+}
+
 int
 main (int argc, char **argv)
 {
-	g_type_init ();
 	gtk_init (&argc, &argv);
 	g_test_init (&argc, &argv, NULL);
 
@@ -224,6 +297,7 @@ main (int argc, char **argv)
 
 	/* tests go here */
 	g_test_add_func ("/gnome-software/app", gs_app_func);
+	g_test_add_func ("/gnome-software/plugin-loader{empty}", gs_plugin_loader_empty_func);
 	g_test_add_func ("/gnome-software/plugin-loader{dedupe}", gs_plugin_loader_dedupe_func);
 	g_test_add_func ("/gnome-software/plugin-loader", gs_plugin_loader_func);
 
