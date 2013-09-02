@@ -218,6 +218,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,
 					 PK_FILTER_ENUM_APPLICATION,
+					 PK_FILTER_ENUM_NOT_COLLECTIONS,
 					 -1);
 	values[0] = value;
 	results = pk_client_search_details (PK_CLIENT(plugin->priv->task),
@@ -265,6 +266,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 					 PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,
 					 PK_FILTER_ENUM_APPLICATION,
+					 PK_FILTER_ENUM_NOT_COLLECTIONS,
 					 -1);
 	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
 					  filter,
