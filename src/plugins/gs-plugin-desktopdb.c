@@ -174,8 +174,6 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* can we convert a package to an application */
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_kind (app) != GS_APP_KIND_PACKAGE)
-			continue;
 		if (gs_app_get_metadata_item (app, "datadir-desktop-filename") != NULL)
 			continue;
 		pkgname = gs_app_get_metadata_item (app, "package-name");
