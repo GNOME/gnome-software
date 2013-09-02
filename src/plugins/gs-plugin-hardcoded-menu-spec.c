@@ -24,6 +24,8 @@
 #include <gs-plugin.h>
 #include <glib/gi18n.h>
 
+//#define SHOW_EMPTY_SUB_CATS
+
 /**
  * gs_plugin_get_name:
  */
@@ -58,12 +60,14 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"AudioVideoEditing",
 								_("Editing")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Database",
 								_("Databases")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DiscBurning",
 								_("Disc Burning")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"HamRadio",
 								_("Ham Radio")));
@@ -92,9 +96,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* Development */
 	category = gs_category_new (NULL, "Development", _("Development Tools"));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Building",
 								_("Building")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Database",
 								_("Databases")));
@@ -126,9 +132,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* Education */
 	category = gs_category_new (NULL, "Education", _("Education"));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Art",
 								_("Art")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ArtificialIntelligence",
 								_("Artificial Intelligence")));
@@ -144,9 +152,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ComputerScience",
 								_("Computer Science")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Construction",
 								_("Construction")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DataVisualization",
 								_("Data Visualization")));
@@ -165,30 +175,36 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geography",
 								_("Geography")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geology",
 								_("Geology")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geoscience",
 								_("Geoscience")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"History",
 								_("History")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Humanities",
 								_("Humanities")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ImageProcessing",
 								_("Image Processing")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Languages",
 								_("Languages")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Literature",
 								_("Literature")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Maps",
 								_("Maps")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Math",
 								_("Math")));
@@ -210,12 +226,14 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Robotics",
 								_("Robotics")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Spirituality",
 								_("Spirituality")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Sports",
 								_("Sports")));
+#endif
 	*list = g_list_prepend (*list, category);
 
 	/* Games */
@@ -250,9 +268,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"RolePlaying",
 								_("Role Playing")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Shooter",
 								_("Shooter")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Simulation",
 								_("Simulation")));
@@ -300,9 +320,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Chat",
 								_("Chat")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Dialup",
 								_("Dialup")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Email",
 								_("Email")));
@@ -336,15 +358,19 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Telephony",
 								_("Telephony")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"VideoConference",
 								_("Video Conference")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"WebBrowser",
 								_("Web Browser")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"WebDevelopment",
 								_("Web Development")));
+#endif
 	*list = g_list_prepend (*list, category);
 
 	/* Office */
@@ -352,9 +378,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Calendar",
 								_("Calendar")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Chart",
 								_("Chart")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ContactManagement",
 								_("Contact Management")));
@@ -370,6 +398,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Finance",
 								_("Finance")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"FlowChart",
 								_("Flow Chart")));
@@ -382,6 +411,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Presentation",
 								_("Presentation")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ProjectManagement",
 								_("Project Management")));
@@ -401,9 +431,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* Science */
 	category = gs_category_new (NULL, "Science", _("Science"));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Art",
 								_("Art")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ArtificialIntelligence",
 								_("Artificial Intelligence")));
@@ -419,9 +451,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ComputerScience",
 								_("Computer Science")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Construction",
 								_("Construction")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DataVisualization",
 								_("DataVisualization")));
@@ -440,27 +474,33 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geography",
 								_("Geography")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geology",
 								_("Geology")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geoscience",
 								_("Geoscience")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"History",
 								_("History")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Humanities",
 								_("Humanities")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ImageProcessing",
 								_("Image Processing")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Languages",
 								_("Languages")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Literature",
 								_("Literature")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Maps",
 								_("Maps")));
@@ -482,19 +522,23 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Robotics",
 								_("Robotics")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Spirituality",
 								_("Spirituality")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Sports",
 								_("Sports")));
+#endif
 	*list = g_list_prepend (*list, category);
 
 	/* Settings */
 	category = gs_category_new (NULL, "Settings", _("Settings"));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Accessibility",
 								_("Accessibility")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DesktopSettings",
 								_("Desktop Settings")));
@@ -504,9 +548,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"PackageManager",
 								_("Package Manager")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Printing",
 								_("Printing")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Security",
 								_("Security")));
@@ -557,6 +603,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"FileTools",
 								_("File Tools")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Maps",
 								_("Maps")));
@@ -566,6 +613,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"TelephonyTools",
 								_("Telephony Tools")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"TextEditor",
 								_("Text Editor")));
@@ -576,21 +624,25 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"AudioVideoEditing",
 								_("Editing")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Database",
 								_("Database")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DiscBurning",
 								_("Disc Burning")));
+#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Player",
 								_("Players")));
+#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Recorder",
 								_("Recorders")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"TV",
 								_("TV")));
+#endif
 	*list = g_list_prepend (*list, category);
 
 	return TRUE;
