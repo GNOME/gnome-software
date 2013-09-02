@@ -271,12 +271,27 @@ gs_plugin_loader_get_app_str (GsApp *app)
 static gboolean
 gs_plugin_loader_app_is_valid (GsApp *app)
 {
+	/* don't show unknown state */
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
+		g_debug ("app invalid as state unknown %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
+
+	/* don't show unknown kind */
+	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN) {
+		g_debug ("app invalid as kind unknown %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
+
 	/* don't show unconverted packages in the application view */
 	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
 		g_debug ("app invalid as only a package %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
+
 	/* don't show apps that do not have a name */
 	if (gs_app_get_name (app) == NULL) {
 		g_debug ("app invalid as no name %s",
@@ -522,7 +537,6 @@ gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
 				       GError **error)
 {
 	GSimpleAsyncResult *simple;
-        GList *list, *l;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), NULL);
@@ -534,20 +548,7 @@ gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
 		return NULL;
 
 	/* grab detail */
-	list = g_simple_async_result_get_op_res_gpointer (simple);
-
-#if 0
-        for (l = list; l; l = l->next) {
-                GsApp *app = l->data;
-
-                g_assert_cmpint (gs_app_get_kind (app), !=, GS_APP_KIND_UNKNOWN);
-                g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_UNKNOWN);
-                g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_INSTALLED);
-                g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_AVAILABLE);
-        }
-#endif
-
-        return g_list_copy (list);
+	return g_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
 }
 
 /******************************************************************************/
@@ -637,7 +638,6 @@ gs_plugin_loader_get_installed_finish (GsPluginLoader *plugin_loader,
 				       GError **error)
 {
 	GSimpleAsyncResult *simple;
-        GList *list, *l;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), NULL);
@@ -649,19 +649,7 @@ gs_plugin_loader_get_installed_finish (GsPluginLoader *plugin_loader,
 		return NULL;
 
 	/* grab detail */
-	list = g_simple_async_result_get_op_res_gpointer (simple);
-
-#if 0
-        for (l = list; l; l = l->next) {
-                GsApp *app = l->data;
-
-                g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_NORMAL);
-                g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_UNKNOWN);
-                g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_AVAILABLE);
-        }
-#endif
-
-        return g_list_copy (list);
+	return g_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
 }
 
 /******************************************************************************/
@@ -750,7 +738,6 @@ gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
 				     GError **error)
 {
 	GSimpleAsyncResult *simple;
-        GList *list, *l;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), NULL);
@@ -762,18 +749,7 @@ gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
 		return NULL;
 
 	/* grab detail */
-	list = g_simple_async_result_get_op_res_gpointer (simple);
-
-#if 0
-        for (l = list; l; l = l->next) {
-                GsApp *app = l->data;
-
-                g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_NORMAL);
-                g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_UNKNOWN);
-        }
-#endif
-
-        return g_list_copy (list);
+	return g_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
 }
 
 /******************************************************************************/
@@ -862,7 +838,6 @@ gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 				     GError **error)
 {
 	GSimpleAsyncResult *simple;
-        GList *list, *l;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), NULL);
@@ -874,18 +849,7 @@ gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 		return NULL;
 
 	/* grab detail */
-	list = g_simple_async_result_get_op_res_gpointer (simple);
-
-#if 0
-        for (l = list; l; l = l->next) {
-                GsApp *app = l->data;
-
-                g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_NORMAL);
-                g_assert_cmpint (gs_app_get_state (app), !=, GS_APP_STATE_UNKNOWN);
-        }
-#endif
-
-        return g_list_copy (list);
+	return g_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
 }
 
 /******************************************************************************/
