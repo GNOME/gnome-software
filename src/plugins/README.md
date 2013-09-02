@@ -108,7 +108,7 @@ Overview:    | <p>
 Methods:     | Search, AddUpdates, AddInstalled, AppInstall, AppRemove, AppUpdate
 Requires:    | `{package-id}`
 Refines:     | `nothing`
-Refines:     | `{package-id}`, `{package-name}`, `{package-summary}`, `{update-name}`, `{update-details}`
+Refines:     | `{package-id}`, `{package-name}`, `{package-summary}`, `{update-name}`, `{update-details}`, `{install-kind}`
 
 ### packagekit-refine ###
 Uses the system PackageKit instance to return convert filenames to package-ids.
@@ -157,3 +157,13 @@ Overview:    | <p>
 Methods:     | `nothing`
 Requires:    | `nothing`
 Refines:     | `[id]->{datadir-desktop-filename}`
+
+### datadir-filename-local ###
+Sets any applications not installed with datadir or /usr as installed as these
+might have been installed manually or using jhbuild.
+
+Overview:    | <p>
+-------------|---
+Methods:     | `nothing`
+Requires:    | `nothing`
+Refines:     | `{datadir-desktop-filename}->[state]`, `{install-kind}`
