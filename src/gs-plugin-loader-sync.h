@@ -37,6 +37,13 @@ GList		*gs_plugin_loader_get_updates		(GsPluginLoader	*plugin_loader,
 GList		*gs_plugin_loader_get_popular		(GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable,
 							 GError		**error);
+GList		*gs_plugin_loader_get_categories	(GsPluginLoader	*plugin_loader,
+							 GCancellable	*cancellable,
+							 GError		**error);
+GList		*gs_plugin_loader_get_category_apps	(GsPluginLoader	*plugin_loader,
+							 GsCategory	*category,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 G_END_DECLS
 
