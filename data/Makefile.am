@@ -14,6 +14,7 @@ dist_resources_DATA =					\
 appdatadir = $(datadir)/appdata
 appdata_files = gnome-software.appdata.xml
 
+if ENABLE_OFFLINE_APPSTREAM_DATA
 appstream.xml.gz:
 	wget -N http://people.freedesktop.org/~hughsient/temp/appstream.xml.gz
 appstream-icons.tar.gz:
@@ -24,6 +25,7 @@ dist_appstream_DATA = appstream.xml.gz appstream-icons.tar.gz
 
 EXTRA_DIST =						\
 	$(appdata_files)
+endif
 
 CLEANFILES =						\
 	$(dist_appstream_DATA)
