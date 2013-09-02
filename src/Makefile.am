@@ -110,7 +110,7 @@ TESTS = gs-self-test
 
 EXTRA_DIST =						\
 	gnome-software.gresource.xml			\
-	gnome-software.sgml				\
+	gnome-software.xml				\
 	gtk-style.css					\
 	$(desktop_in_files)				\
 	$(UI_FILES)
