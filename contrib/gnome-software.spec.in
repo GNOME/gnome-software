@@ -14,12 +14,10 @@ Requires:  gnome-icon-theme
 BuildRequires: gettext
 BuildRequires: intltool
 BuildRequires: docbook-utils
+BuildRequires: desktop-file-utils
 BuildRequires: glib2-devel >= 2.25.9-2
 BuildRequires: gtk3-devel >= 3.9.12
 BuildRequires: PackageKit-glib-devel >= 0.8.10
-
-Requires(post):   /usr/bin/gtk-update-icon-cache
-Requires(postun): /usr/bin/gtk-update-icon-cache
 
 %description
 gnome-software is an application that makes it easy to add, remove
@@ -33,16 +31,18 @@ and update software in the GNOME desktop.
 make %{?_smp_mflags}
 
 %install
-make install DESTDIR=$RPM_BUILD_ROOT
+%make_install
 
-rm $RPM_BUILD_ROOT%{_libdir}/gs-plugins/*.a
-rm $RPM_BUILD_ROOT%{_libdir}/gs-plugins/*.la
+rm %{buildroot}%{_libdir}/gs-plugins/*.a
+rm %{buildroot}%{_libdir}/gs-plugins/*.la
 
 %find_lang %name --with-gnome
 
+%check
+desktop-file-validate %{buildroot}%{_datadir}/applications/gnome-software.desktop
+
 %post
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
-update-desktop-database %{_datadir}/applications &> /dev/null || :
 
 %postun
 if [ $1 -eq 0 ]; then
@@ -50,19 +50,20 @@ if [ $1 -eq 0 ]; then
     gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
     glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 fi
-update-desktop-database %{_datadir}/applications &> /dev/null || :
 
 %posttrans
 gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 %files -f %{name}.lang
-%defattr(-,root,root,-)
 %doc AUTHORS COPYING NEWS README
 %{_bindir}/gnome-software
 %{_datadir}/applications/gnome-software.desktop
+%dir %{_datadir}/gnome-software
 %{_datadir}/gnome-software/*.png
+%{_datadir}/gnome-software/*.gz
 %{_mandir}/man1/gnome-software.1.gz
+%dir %{_libdir}/gs-plugins
 %{_libdir}/gs-plugins/*.so
 
 %changelog
