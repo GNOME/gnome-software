@@ -137,9 +137,16 @@
               </object>
             </child>
             <child>
+              <object class="GtkSpinner" id="header_spinner">
+                <property name="can_focus">False</property>
+              </object>
+              <packing>
+                <property name="pack_type">end</property>
+              </packing>
+            </child>
+            <child>
               <object class="GtkButton" id="button_update_all">
                 <property name="label" translatable="yes">Restart &amp; Install</property>
-                <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
                 <style>

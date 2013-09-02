@@ -86,6 +86,9 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
          */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
+        gtk_spinner_stop (GTK_SPINNER (widget));
+	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));

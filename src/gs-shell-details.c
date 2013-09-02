@@ -79,11 +79,13 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	case GS_APP_STATE_AVAILABLE:
 		gtk_widget_set_visible (widget, TRUE);
 		gtk_widget_set_sensitive (widget, TRUE);
+                gtk_style_context_add_class (gtk_widget_get_style_context (widget), "suggested-action");
 		gtk_button_set_label (GTK_BUTTON (widget), _("Install"));
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (widget, TRUE);
 		gtk_widget_set_sensitive (widget, FALSE);
+                gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "suggested-action");
 		gtk_button_set_label (GTK_BUTTON (widget), _("Installing"));
 		break;
 	case GS_APP_STATE_INSTALLED:
@@ -103,11 +105,13 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		case GS_APP_STATE_INSTALLED:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, TRUE);
+                        gtk_style_context_add_class (gtk_widget_get_style_context (widget), "destructive-action");
 			gtk_button_set_label (GTK_BUTTON (widget), _("Remove"));
 			break;
 		case GS_APP_STATE_REMOVING:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, FALSE);
+                        gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
 			gtk_button_set_label (GTK_BUTTON (widget), _("Removing"));
 			break;
 		case GS_APP_STATE_AVAILABLE:
@@ -118,6 +122,28 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 			g_assert_not_reached ();
 		}
 	}
+
+        /* spinner */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
+        if (kind == GS_APP_KIND_SYSTEM) {
+		gtk_widget_set_visible (widget, FALSE);
+                gtk_spinner_stop (GTK_SPINNER (widget));
+        } else {
+                switch (state) {
+                case GS_APP_STATE_INSTALLED:
+                case GS_APP_STATE_AVAILABLE:
+                        gtk_widget_set_visible (widget, FALSE);
+                        gtk_spinner_stop (GTK_SPINNER (widget));
+                        break;
+                case GS_APP_STATE_INSTALLING:
+                case GS_APP_STATE_REMOVING:
+                        gtk_spinner_start (GTK_SPINNER (widget));
+                        gtk_widget_set_visible (widget, TRUE);
+                        break;
+		default:
+			g_assert_not_reached ();
+                }
+        }
 }
 
 /**
