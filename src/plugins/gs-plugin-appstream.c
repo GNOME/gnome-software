@@ -23,6 +23,8 @@
 
 #include <gs-plugin.h>
 
+#define GS_PLUGIN_APPSTREAM_ICONS_HASH	"e6c366af886562819019fd25b408b7b94a6f9a16"
+
 typedef enum {
 	GS_APPSTREAM_XML_SECTION_UNKNOWN,
 	GS_APPSTREAM_XML_SECTION_APPLICATIONS,
@@ -87,21 +89,29 @@ gs_plugin_decompress_icons (GsPlugin *plugin, GError **error)
 {
 	const gchar *argv[6];
 	gboolean ret = TRUE;
+	gchar *hash_check_file = NULL;
 	gint exit_status = 0;
 
-	/* cache already exists [FIXME: How to test for new enough...] */
-	if (g_file_test (plugin->priv->cachedir, G_FILE_TEST_EXISTS))
-		goto out;
-
 	/* create directory */
-	exit_status = g_mkdir_with_parents (plugin->priv->cachedir, 0700);
-	if (exit_status != 0) {
-		ret = FALSE;
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to create %s",
-			     plugin->priv->cachedir);
+	if (!g_file_test (plugin->priv->cachedir, G_FILE_TEST_EXISTS)) {
+		exit_status = g_mkdir_with_parents (plugin->priv->cachedir, 0700);
+		if (exit_status != 0) {
+			ret = FALSE;
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "Failed to create %s",
+				     plugin->priv->cachedir);
+			goto out;
+		}
+	}
+
+	/* is cache new enough? */
+	hash_check_file = g_build_filename (plugin->priv->cachedir,
+					    GS_PLUGIN_APPSTREAM_ICONS_HASH,
+					    NULL);
+	if (g_file_test (hash_check_file, G_FILE_TEST_EXISTS)) {
+		g_debug ("Icon cache new enough, skipping decompression");
 		goto out;
 	}
 
@@ -133,7 +143,13 @@ gs_plugin_decompress_icons (GsPlugin *plugin, GError **error)
 			     plugin->priv->cachedir, exit_status);
 		goto out;
 	}
+
+	/* mark as done */
+	ret = g_file_set_contents (hash_check_file, "", -1, error);
+	if (!ret)
+		goto out;
 out:
+	g_free (hash_check_file);
 	return ret;
 }
 
