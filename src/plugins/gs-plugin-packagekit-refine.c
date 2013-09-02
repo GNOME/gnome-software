@@ -144,7 +144,7 @@ gs_plugin_packagekit_refine_package (GsPlugin      *plugin,
 
 	to_array[0] = package_name;
 	results = pk_client_resolve (plugin->priv->client,
-				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, -1),
+				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
 				     (gchar **) to_array,
 				     cancellable,
 				     gs_plugin_packagekit_progress_cb, plugin,
