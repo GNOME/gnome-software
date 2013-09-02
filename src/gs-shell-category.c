@@ -33,6 +33,8 @@ struct GsShellCategoryPrivate {
 	GCancellable      *cancellable;
         GsShell           *shell;
         GsCategory        *category;
+        GtkWidget         *col1_placeholder;
+        GtkWidget         *col2_placeholder;
 };
 
 G_DEFINE_TYPE (GsShellCategory, gs_shell_category, G_TYPE_OBJECT)
@@ -134,6 +136,9 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 		goto out;
 	}
         grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
+        gtk_grid_remove_column (GTK_GRID (grid), 2);
+        gtk_grid_remove_column (GTK_GRID (grid), 1);
+
         for (l = list; l != NULL; l = l->next) {
                 app = GS_APP (l->data);
                 tile = create_app_tile (shell, app);
@@ -149,29 +154,34 @@ out:
 }
 
 static void
-gs_shell_category_populate_filtered (GsShellCategory *shell, GsCategory *category)
+gs_shell_category_populate_filtered (GsShellCategory *shell)
 {
         GsShellCategoryPrivate *priv = shell->priv;
         GtkWidget *grid;
         GsCategory *parent;
 
-        grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-        gtk_grid_remove_column (GTK_GRID (grid), 2);
-        gtk_grid_remove_column (GTK_GRID (grid), 1);
-        if (!category)
-                gtk_grid_remove_column (GTK_GRID (grid), 0);
-
-        parent = gs_category_get_parent (category);
+        parent = gs_category_get_parent (priv->category);
         if (parent == NULL) {
                 g_debug ("search using %s",
-                         gs_category_get_id (category));
+                         gs_category_get_id (priv->category));
         } else {
                 g_debug ("search using %s/%s",
                          gs_category_get_id (parent),
-                         gs_category_get_id (category));
+                         gs_category_get_id (priv->category));
         }
+
+        /* Remove old content. Be careful not to remove the
+         * subcategories and put placeholders there to keep
+         * the subcategory list from growing
+         */
+        grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
+        gtk_grid_remove_column (GTK_GRID (grid), 2);
+        gtk_grid_remove_column (GTK_GRID (grid), 1);
+        gtk_grid_attach (GTK_GRID (grid), priv->col1_placeholder, 1, 0, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid), priv->col2_placeholder, 2, 0, 1, 1);
+
         gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
-                                                  category,
+                                                  priv->category,
                                                   priv->cancellable,
                                                   gs_shell_category_get_apps_cb,
                                                   shell);
@@ -199,7 +209,7 @@ filter_selected (GtkListBox *filters, GtkListBoxRow *row, gpointer data)
         category = g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "category");
         g_clear_object (&shell->priv->category);
         shell->priv->category = g_object_ref (category);
-        gs_shell_category_populate_filtered (shell, category);
+        gs_shell_category_populate_filtered (shell);
 }
 
 static void
@@ -220,6 +230,9 @@ gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *catego
         list = gs_category_get_subcategories (category);
         if (!list)
                 return;
+
+        gtk_grid_attach (GTK_GRID (grid), priv->col1_placeholder, 1, 0, 1, 1);
+        gtk_grid_attach (GTK_GRID (grid), priv->col2_placeholder, 2, 0, 1, 1);
 
         list_box = gtk_list_box_new ();
         gtk_list_box_set_selection_mode (GTK_LIST_BOX (list_box), GTK_SELECTION_BROWSE);
@@ -291,7 +304,16 @@ gs_shell_category_get_category (GsShellCategory *shell)
 static void
 gs_shell_category_init (GsShellCategory *shell)
 {
-	shell->priv = G_TYPE_INSTANCE_GET_PRIVATE (shell, GS_TYPE_SHELL_CATEGORY, GsShellCategoryPrivate);
+        GsShellCategoryPrivate *priv;
+
+	priv = G_TYPE_INSTANCE_GET_PRIVATE (shell, GS_TYPE_SHELL_CATEGORY, GsShellCategoryPrivate);
+        shell->priv = priv;
+
+        priv->col1_placeholder = g_object_ref_sink (gtk_label_new (""));
+        priv->col2_placeholder = g_object_ref_sink (gtk_label_new (""));
+
+        gtk_widget_show (priv->col1_placeholder);
+        gtk_widget_show (priv->col2_placeholder);
 }
 
 static void
@@ -304,6 +326,8 @@ gs_shell_category_finalize (GObject *object)
         g_clear_object (&priv->category);
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->cancellable);
+        g_clear_object (&priv->col1_placeholder);
+        g_clear_object (&priv->col2_placeholder);
 
 	G_OBJECT_CLASS (gs_shell_category_parent_class)->finalize (object);
 }
