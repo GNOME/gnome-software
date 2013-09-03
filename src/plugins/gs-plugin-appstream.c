@@ -341,7 +341,6 @@ gs_appstream_end_element_cb (GMarkupParseContext *context,
 	section_new = gs_appstream_selection_from_text (element_name);
 	switch (section_new) {
 	case GS_APPSTREAM_XML_SECTION_APPLICATIONS:
-	case GS_APPSTREAM_XML_SECTION_APPCATEGORIES:
 	case GS_APPSTREAM_XML_SECTION_APPCATEGORY:
 		/* ignore */
 		break;
@@ -359,6 +358,7 @@ gs_appstream_end_element_cb (GMarkupParseContext *context,
 		break;
 	case GS_APPSTREAM_XML_SECTION_ID:
 	case GS_APPSTREAM_XML_SECTION_PKGNAME:
+	case GS_APPSTREAM_XML_SECTION_APPCATEGORIES:
 	case GS_APPSTREAM_XML_SECTION_NAME:
 	case GS_APPSTREAM_XML_SECTION_ICON:
 	case GS_APPSTREAM_XML_SECTION_SUMMARY:
@@ -368,6 +368,7 @@ gs_appstream_end_element_cb (GMarkupParseContext *context,
 		break;
 	default:
 		/* ignore unknown entries */
+		plugin->priv->section = GS_APPSTREAM_XML_SECTION_APPLICATION;
 		break;
 	}
 }
