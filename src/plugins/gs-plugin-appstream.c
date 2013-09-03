@@ -39,13 +39,21 @@ typedef enum {
 	GS_APPSTREAM_XML_SECTION_LAST
 } GsAppstreamXmlSection;
 
+typedef enum {
+	GS_APPSTREAM_ICON_KIND_STOCK,
+	GS_APPSTREAM_ICON_KIND_CACHED,
+	GS_APPSTREAM_ICON_KIND_UNKNOWN,
+	GS_APPSTREAM_ICON_KIND_LAST
+} GsAppstreamIconKind;
+
 typedef struct {
-	gchar		*id;
-	gchar		*pkgname;
-	gchar		*name;
-	gchar		*summary;
-	gchar		*icon;
-	GPtrArray	*appcategories;
+	gchar			*id;
+	gchar			*pkgname;
+	gchar			*name;
+	gchar			*summary;
+	gchar			*icon;
+	GsAppstreamIconKind	 icon_kind;
+	GPtrArray		*appcategories;
 } GsAppstreamItem;
 
 struct GsPluginPrivate {
@@ -210,6 +218,21 @@ gs_appstream_selection_to_text (GsAppstreamXmlSection section)
 }
 
 /**
+ * gs_appstream_icon_kind_from_text:
+ */
+static GsAppstreamIconKind
+gs_appstream_icon_kind_from_text (const gchar *kind_str)
+{
+	if (g_strcmp0 (kind_str, "stock") == 0)
+		return GS_APPSTREAM_ICON_KIND_STOCK;
+	if (g_strcmp0 (kind_str, "local") == 0 ||
+	    g_strcmp0 (kind_str, "cached") == 0)
+		return GS_APPSTREAM_ICON_KIND_CACHED;
+	g_warning ("icon type %s not recognised", kind_str);
+	return GS_APPSTREAM_ICON_KIND_UNKNOWN;
+}
+
+/**
  * gs_appstream_start_element_cb:
  */
 static void
@@ -222,6 +245,7 @@ gs_appstream_start_element_cb (GMarkupParseContext *context,
 {
 	GsPlugin *plugin = (GsPlugin *) user_data;
 	GsAppstreamXmlSection section_new;
+	guint i;
 
 	/* process tag start */
 	section_new = gs_appstream_selection_from_text (element_name);
@@ -244,12 +268,28 @@ gs_appstream_start_element_cb (GMarkupParseContext *context,
 		}
 		plugin->priv->item_temp = g_new0 (GsAppstreamItem, 1);
 		plugin->priv->item_temp->appcategories = g_ptr_array_new_with_free_func (g_free);
+		plugin->priv->item_temp->icon_kind = GS_APPSTREAM_ICON_KIND_UNKNOWN;
+		break;
+
+	case GS_APPSTREAM_XML_SECTION_ICON:
+		/* get the icon kind */
+		for (i = 0; attribute_names[i] != NULL; i++) {
+			if (g_strcmp0 (attribute_names[i], "type") == 0) {
+				plugin->priv->item_temp->icon_kind = gs_appstream_icon_kind_from_text (attribute_values[i]);
+				break;
+			}
+		}
+		if (plugin->priv->item_temp->icon_kind == GS_APPSTREAM_ICON_KIND_UNKNOWN) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED,
+					     "icon type not set");
+		}
 		break;
 	case GS_APPSTREAM_XML_SECTION_ID:
 	case GS_APPSTREAM_XML_SECTION_PKGNAME:
 	case GS_APPSTREAM_XML_SECTION_NAME:
 	case GS_APPSTREAM_XML_SECTION_SUMMARY:
-	case GS_APPSTREAM_XML_SECTION_ICON:
 		if (plugin->priv->item_temp == NULL ||
 		    plugin->priv->section != GS_APPSTREAM_XML_SECTION_APPLICATION) {
 			g_set_error (error,
@@ -583,13 +623,24 @@ gs_plugin_refine_item (GsPlugin *plugin,
 
 	/* set icon */
 	if (item->icon != NULL && gs_app_get_pixbuf (app) == NULL) {
-		icon_path = g_strdup_printf ("%s/%s.png",
-					     plugin->priv->cachedir,
-					     item->icon);
-		pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path,
+		if (item->icon_kind == GS_APPSTREAM_ICON_KIND_STOCK) {
+			pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+							   item->icon,
 							   plugin->pixbuf_size,
-							   plugin->pixbuf_size,
+							   GTK_ICON_LOOKUP_USE_BUILTIN |
+							   GTK_ICON_LOOKUP_FORCE_SIZE,
 							   error);
+		} else if (item->icon_kind == GS_APPSTREAM_ICON_KIND_CACHED) {
+			icon_path = g_strdup_printf ("%s/%s.png",
+						     plugin->priv->cachedir,
+						     item->icon);
+			pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path,
+								   plugin->pixbuf_size,
+								   plugin->pixbuf_size,
+								   error);
+		} else {
+			g_assert_not_reached ();
+		}
 		if (pixbuf == NULL) {
 			ret = FALSE;
 			goto out;
