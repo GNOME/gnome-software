@@ -131,7 +131,9 @@ gs_shell_category_get_apps_cb (GObject *source_object,
                                                           res,
                                                           &error);
 	if (list == NULL) {
-		g_warning ("failed to get apps for category apps: %s", error->message);
+                if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+        		g_warning ("failed to get apps for category apps: %s", error->message);
+                }
 		g_error_free (error);
 		goto out;
 	}
@@ -162,6 +164,9 @@ gs_shell_category_populate_filtered (GsShellCategory *shell)
         GsShellCategoryPrivate *priv = shell->priv;
         GtkWidget *grid;
         GsCategory *parent;
+
+        g_cancellable_cancel (priv->cancellable);
+        g_cancellable_reset (priv->cancellable);
 
         parent = gs_category_get_parent (priv->category);
         if (parent == NULL) {
@@ -356,7 +361,7 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
         priv->builder = g_object_ref (builder);
-	priv->cancellable = g_object_ref (cancellable);
+	priv->cancellable = g_cancellable_new ();
         priv->shell = shell;
 }
 
