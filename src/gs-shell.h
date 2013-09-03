@@ -49,6 +49,8 @@ typedef struct
 typedef struct
 {
 	GObjectClass			 parent_class;
+
+        void (* loaded)                 (GsShell *shell);
 } GsShellClass;
 
 typedef enum {

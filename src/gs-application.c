@@ -176,7 +176,8 @@ gs_application_startup (GApplication *application)
         window = gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
         gtk_application_add_window (GTK_APPLICATION (app), window);
 
-        gtk_window_present (window);
+        g_signal_connect_swapped (app->shell, "loaded",
+                                  G_CALLBACK (gtk_window_present), window);
 }
 
 static void

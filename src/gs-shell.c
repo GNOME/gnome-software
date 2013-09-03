@@ -60,6 +60,13 @@ struct GsShellPrivate
 
 G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
 
+enum {
+        SIGNAL_LOADED,
+        SIGNAL_LAST
+};
+
+static guint signals [SIGNAL_LAST] = { 0 };
+
 /**
  * gs_shell_activate:
  **/
@@ -216,6 +223,8 @@ initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 
 	gs_shell_updates_refresh (shell->priv->shell_updates, TRUE);
 	gs_shell_installed_refresh (shell->priv->shell_installed, TRUE);
+
+        g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 }
 
 static void
@@ -495,6 +504,13 @@ gs_shell_class_init (GsShellClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_shell_finalize;
+
+       signals [SIGNAL_LOADED] =
+                g_signal_new ("loaded",
+                              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+                              G_STRUCT_OFFSET (GsShellClass, loaded),
+                              NULL, NULL, g_cclosure_marshal_VOID__VOID,
+                              G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (GsShellPrivate));
 }
