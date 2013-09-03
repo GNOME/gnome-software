@@ -67,6 +67,16 @@ gs_plugin_loader_error_quark (void)
 }
 
 /**
+ * gs_plugin_loader_app_sort_cb:
+ **/
+static gint
+gs_plugin_loader_app_sort_cb (gconstpointer a, gconstpointer b)
+{
+	return g_strcmp0 (gs_app_get_name (GS_APP (a)),
+			  gs_app_get_name (GS_APP (b)));
+}
+
+/**
  * gs_plugin_loader_dedupe:
  */
 GsApp *
@@ -1218,6 +1228,9 @@ cd_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
+
+	/* sort, just in case the UI doesn't do this */
+	state->list = g_list_sort (state->list, gs_plugin_loader_app_sort_cb);
 
 	/* success */
 	state->ret = TRUE;
