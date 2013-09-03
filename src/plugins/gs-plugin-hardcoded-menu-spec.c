@@ -584,7 +584,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	*list = g_list_prepend (*list, category);
 
 	/* Utility */
-	category = gs_category_new (NULL, "Utility", _("Utility"));
+	category = gs_category_new (NULL, "Utility", _("Utilities"));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Accessibility",
 								_("Accessibility")));
