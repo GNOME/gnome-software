@@ -33,6 +33,8 @@ typedef enum {
 	GS_APPSTREAM_XML_SECTION_PKGNAME,
 	GS_APPSTREAM_XML_SECTION_NAME,
 	GS_APPSTREAM_XML_SECTION_SUMMARY,
+	GS_APPSTREAM_XML_SECTION_DESCRIPTION,
+	GS_APPSTREAM_XML_SECTION_URL,
 	GS_APPSTREAM_XML_SECTION_ICON,
 	GS_APPSTREAM_XML_SECTION_APPCATEGORIES,
 	GS_APPSTREAM_XML_SECTION_APPCATEGORY,
@@ -51,6 +53,8 @@ typedef struct {
 	gchar			*pkgname;
 	gchar			*name;
 	gchar			*summary;
+	gchar			*url;
+	gchar			*description;
 	gchar			*icon;
 	GsAppstreamIconKind	 icon_kind;
 	GPtrArray		*appcategories;
@@ -77,6 +81,8 @@ gs_appstream_item_free (gpointer data)
 	g_free (item->pkgname);
 	g_free (item->name);
 	g_free (item->summary);
+	g_free (item->url);
+	g_free (item->description);
 	g_free (item->icon);
 	g_ptr_array_unref (item->appcategories);
 	g_free (item);
@@ -181,6 +187,10 @@ gs_appstream_selection_from_text (const gchar *element_name)
 		return GS_APPSTREAM_XML_SECTION_NAME;
 	if (g_strcmp0 (element_name, "summary") == 0)
 		return GS_APPSTREAM_XML_SECTION_SUMMARY;
+	if (g_strcmp0 (element_name, "url") == 0)
+		return GS_APPSTREAM_XML_SECTION_URL;
+	if (g_strcmp0 (element_name, "description") == 0)
+		return GS_APPSTREAM_XML_SECTION_DESCRIPTION;
 	if (g_strcmp0 (element_name, "icon") == 0)
 		return GS_APPSTREAM_XML_SECTION_ICON;
 	if (g_strcmp0 (element_name, "appcategories") == 0)
@@ -208,6 +218,10 @@ gs_appstream_selection_to_text (GsAppstreamXmlSection section)
 		return "name";
 	if (section == GS_APPSTREAM_XML_SECTION_SUMMARY)
 		return "summary";
+	if (section == GS_APPSTREAM_XML_SECTION_URL)
+		return "url";
+	if (section == GS_APPSTREAM_XML_SECTION_DESCRIPTION)
+		return "description";
 	if (section == GS_APPSTREAM_XML_SECTION_ICON)
 		return "icon";
 	if (section == GS_APPSTREAM_XML_SECTION_APPCATEGORIES)
@@ -290,6 +304,8 @@ gs_appstream_start_element_cb (GMarkupParseContext *context,
 	case GS_APPSTREAM_XML_SECTION_PKGNAME:
 	case GS_APPSTREAM_XML_SECTION_NAME:
 	case GS_APPSTREAM_XML_SECTION_SUMMARY:
+	case GS_APPSTREAM_XML_SECTION_URL:
+	case GS_APPSTREAM_XML_SECTION_DESCRIPTION:
 		if (plugin->priv->item_temp == NULL ||
 		    plugin->priv->section != GS_APPSTREAM_XML_SECTION_APPLICATION) {
 			g_set_error (error,
@@ -346,6 +362,8 @@ gs_appstream_end_element_cb (GMarkupParseContext *context,
 	case GS_APPSTREAM_XML_SECTION_NAME:
 	case GS_APPSTREAM_XML_SECTION_ICON:
 	case GS_APPSTREAM_XML_SECTION_SUMMARY:
+	case GS_APPSTREAM_XML_SECTION_URL:
+	case GS_APPSTREAM_XML_SECTION_DESCRIPTION:
 		plugin->priv->section = GS_APPSTREAM_XML_SECTION_APPLICATION;
 		break;
 	default:
@@ -434,6 +452,28 @@ gs_appstream_text_cb (GMarkupParseContext *context,
 			return;
 		}
 		plugin->priv->item_temp->summary = g_strndup (text, text_len);
+		break;
+	case GS_APPSTREAM_XML_SECTION_URL:
+		if (plugin->priv->item_temp == NULL ||
+		    plugin->priv->item_temp->url != NULL) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED,
+					     "item_temp url invalid");
+			return;
+		}
+		plugin->priv->item_temp->url = g_strndup (text, text_len);
+		break;
+	case GS_APPSTREAM_XML_SECTION_DESCRIPTION:
+		if (plugin->priv->item_temp == NULL ||
+		    plugin->priv->item_temp->description != NULL) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED,
+					     "item_temp description invalid");
+			return;
+		}
+		plugin->priv->item_temp->description = g_strndup (text, text_len);
 		break;
 	case GS_APPSTREAM_XML_SECTION_ICON:
 		if (plugin->priv->item_temp == NULL ||
@@ -620,6 +660,14 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* set summary */
 	if (item->summary != NULL && gs_app_get_summary (app) == NULL)
 		gs_app_set_summary (app, item->summary);
+
+	/* set url */
+	if (item->url != NULL && gs_app_get_url (app) == NULL)
+		gs_app_set_url (app, item->url);
+
+	/* set description */
+	if (item->description != NULL && gs_app_get_description (app) == NULL)
+		gs_app_set_description (app, item->description);
 
 	/* set icon */
 	if (item->icon != NULL && gs_app_get_pixbuf (app) == NULL) {
