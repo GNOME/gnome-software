@@ -23,7 +23,9 @@
 
 #include <gs-plugin.h>
 
-#define GS_PLUGIN_APPSTREAM_ICONS_HASH	"81f92592ce464df3baf4c480c4a4cc6e18efee51"
+#include "gs-appstream-item.h"
+
+#define GS_PLUGIN_APPSTREAM_ICONS_HASH	"81f92592ce464df3baf4c480c4a4cc6e18efee52"
 
 typedef enum {
 	GS_APPSTREAM_XML_SECTION_UNKNOWN,
@@ -41,25 +43,6 @@ typedef enum {
 	GS_APPSTREAM_XML_SECTION_LAST
 } GsAppstreamXmlSection;
 
-typedef enum {
-	GS_APPSTREAM_ICON_KIND_STOCK,
-	GS_APPSTREAM_ICON_KIND_CACHED,
-	GS_APPSTREAM_ICON_KIND_UNKNOWN,
-	GS_APPSTREAM_ICON_KIND_LAST
-} GsAppstreamIconKind;
-
-typedef struct {
-	gchar			*id;
-	gchar			*pkgname;
-	gchar			*name;
-	gchar			*summary;
-	gchar			*url;
-	gchar			*description;
-	gchar			*icon;
-	GsAppstreamIconKind	 icon_kind;
-	GPtrArray		*appcategories;
-} GsAppstreamItem;
-
 struct GsPluginPrivate {
 	gchar			*cachedir;
 	GsAppstreamXmlSection	 section;
@@ -69,24 +52,6 @@ struct GsPluginPrivate {
 	GHashTable		*hash_pkgname;	/* of GsAppstreamItem{pkgname} */
 	gsize    		 done_init;
 };
-
-/**
- * gs_appstream_item_free:
- */
-static void
-gs_appstream_item_free (gpointer data)
-{
-	GsAppstreamItem *item = (GsAppstreamItem *) data;
-	g_free (item->id);
-	g_free (item->pkgname);
-	g_free (item->name);
-	g_free (item->summary);
-	g_free (item->url);
-	g_free (item->description);
-	g_free (item->icon);
-	g_ptr_array_unref (item->appcategories);
-	g_free (item);
-}
 
 /**
  * gs_plugin_get_name:
@@ -234,16 +199,16 @@ gs_appstream_selection_to_text (GsAppstreamXmlSection section)
 /**
  * gs_appstream_icon_kind_from_text:
  */
-static GsAppstreamIconKind
+static GsAppstreamItemIconKind
 gs_appstream_icon_kind_from_text (const gchar *kind_str)
 {
 	if (g_strcmp0 (kind_str, "stock") == 0)
-		return GS_APPSTREAM_ICON_KIND_STOCK;
+		return GS_APPSTREAM_ITEM_ICON_KIND_STOCK;
 	if (g_strcmp0 (kind_str, "local") == 0 ||
 	    g_strcmp0 (kind_str, "cached") == 0)
-		return GS_APPSTREAM_ICON_KIND_CACHED;
+		return GS_APPSTREAM_ITEM_ICON_KIND_CACHED;
 	g_warning ("icon type %s not recognised", kind_str);
-	return GS_APPSTREAM_ICON_KIND_UNKNOWN;
+	return GS_APPSTREAM_ITEM_ICON_KIND_UNKNOWN;
 }
 
 /**
@@ -280,20 +245,19 @@ gs_appstream_start_element_cb (GMarkupParseContext *context,
 				     gs_appstream_selection_to_text (plugin->priv->section));
 			return;
 		}
-		plugin->priv->item_temp = g_new0 (GsAppstreamItem, 1);
-		plugin->priv->item_temp->appcategories = g_ptr_array_new_with_free_func (g_free);
-		plugin->priv->item_temp->icon_kind = GS_APPSTREAM_ICON_KIND_UNKNOWN;
+		plugin->priv->item_temp = gs_appstream_item_new ();
 		break;
 
 	case GS_APPSTREAM_XML_SECTION_ICON:
 		/* get the icon kind */
 		for (i = 0; attribute_names[i] != NULL; i++) {
 			if (g_strcmp0 (attribute_names[i], "type") == 0) {
-				plugin->priv->item_temp->icon_kind = gs_appstream_icon_kind_from_text (attribute_values[i]);
+				gs_appstream_item_set_icon_kind (plugin->priv->item_temp,
+								 gs_appstream_icon_kind_from_text (attribute_values[i]));
 				break;
 			}
 		}
-		if (plugin->priv->item_temp->icon_kind == GS_APPSTREAM_ICON_KIND_UNKNOWN) {
+		if (gs_appstream_item_get_icon_kind (plugin->priv->item_temp) == GS_APPSTREAM_ITEM_ICON_KIND_UNKNOWN) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED,
@@ -348,10 +312,10 @@ gs_appstream_end_element_cb (GMarkupParseContext *context,
 		/* save */
 		g_ptr_array_add (plugin->priv->array, plugin->priv->item_temp);
 		g_hash_table_insert (plugin->priv->hash_id,
-				     (gpointer) plugin->priv->item_temp->id,
+				     (gpointer) gs_appstream_item_get_id (plugin->priv->item_temp),
 				     plugin->priv->item_temp);
 		g_hash_table_insert (plugin->priv->hash_pkgname,
-				     (gpointer) plugin->priv->item_temp->pkgname,
+				     (gpointer) gs_appstream_item_get_pkgname (plugin->priv->item_temp),
 				     plugin->priv->item_temp);
 		plugin->priv->item_temp = NULL;
 		plugin->priv->section = GS_APPSTREAM_XML_SECTION_APPLICATIONS;
@@ -400,12 +364,11 @@ gs_appstream_text_cb (GMarkupParseContext *context,
 					     "item_temp category invalid");
 			return;
 		}
-		g_ptr_array_add (plugin->priv->item_temp->appcategories,
-				 g_strndup (text, text_len));
+		gs_appstream_item_add_category (plugin->priv->item_temp, text, text_len);
 		break;
 	case GS_APPSTREAM_XML_SECTION_ID:
 		if (plugin->priv->item_temp == NULL ||
-		    plugin->priv->item_temp->id != NULL) {
+		    gs_appstream_item_get_id (plugin->priv->item_temp) != NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED,
@@ -419,73 +382,73 @@ gs_appstream_text_cb (GMarkupParseContext *context,
 					     "desktop id invalid");
 			return;
 		}
-		plugin->priv->item_temp->id = g_strndup (text, text_len - 8);
+		gs_appstream_item_set_id (plugin->priv->item_temp, text, text_len - 8);
 		break;
 	case GS_APPSTREAM_XML_SECTION_PKGNAME:
 		if (plugin->priv->item_temp == NULL ||
-		    plugin->priv->item_temp->pkgname != NULL) {
+		    gs_appstream_item_get_pkgname (plugin->priv->item_temp) != NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED,
 					     "item_temp pkgname invalid");
 			return;
 		}
-		plugin->priv->item_temp->pkgname = g_strndup (text, text_len);
+		gs_appstream_item_set_pkgname (plugin->priv->item_temp, text, text_len);
 		break;
 	case GS_APPSTREAM_XML_SECTION_NAME:
 		if (plugin->priv->item_temp == NULL ||
-		    plugin->priv->item_temp->name != NULL) {
+		    gs_appstream_item_get_name (plugin->priv->item_temp) != NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED,
 					     "item_temp name invalid");
 			return;
 		}
-		plugin->priv->item_temp->name = g_strndup (text, text_len);
+		gs_appstream_item_set_name (plugin->priv->item_temp, text, text_len);
 		break;
 	case GS_APPSTREAM_XML_SECTION_SUMMARY:
 		if (plugin->priv->item_temp == NULL ||
-		    plugin->priv->item_temp->summary != NULL) {
+		    gs_appstream_item_get_summary (plugin->priv->item_temp) != NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED,
 					     "item_temp summary invalid");
 			return;
 		}
-		plugin->priv->item_temp->summary = g_strndup (text, text_len);
+		gs_appstream_item_set_summary (plugin->priv->item_temp, text, text_len);
 		break;
 	case GS_APPSTREAM_XML_SECTION_URL:
 		if (plugin->priv->item_temp == NULL ||
-		    plugin->priv->item_temp->url != NULL) {
+		    gs_appstream_item_get_url (plugin->priv->item_temp) != NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED,
 					     "item_temp url invalid");
 			return;
 		}
-		plugin->priv->item_temp->url = g_strndup (text, text_len);
+		gs_appstream_item_set_url (plugin->priv->item_temp, text, text_len);
 		break;
 	case GS_APPSTREAM_XML_SECTION_DESCRIPTION:
 		if (plugin->priv->item_temp == NULL ||
-		    plugin->priv->item_temp->description != NULL) {
+		    gs_appstream_item_get_description (plugin->priv->item_temp) != NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED,
 					     "item_temp description invalid");
 			return;
 		}
-		plugin->priv->item_temp->description = g_strndup (text, text_len);
+		gs_appstream_item_set_description (plugin->priv->item_temp, text, text_len);
 		break;
 	case GS_APPSTREAM_XML_SECTION_ICON:
 		if (plugin->priv->item_temp == NULL ||
-		    plugin->priv->item_temp->icon != NULL) {
+		    gs_appstream_item_get_icon (plugin->priv->item_temp) != NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_FAILED,
 					     "item_temp icon invalid");
 			return;
 		}
-		plugin->priv->item_temp->icon = g_strndup (text, text_len);
+		gs_appstream_item_set_icon (plugin->priv->item_temp, text, text_len);
 		break;
 	default:
 		/* ignore unknown entries */
@@ -597,7 +560,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->array = g_ptr_array_new_with_free_func (gs_appstream_item_free);
+	plugin->priv->array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_appstream_item_free);
 	plugin->priv->hash_id = g_hash_table_new_full (g_str_hash,
 						       g_str_equal,
 						       NULL,
@@ -686,38 +649,38 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 
 	/* set id */
-	if (item->id != NULL && gs_app_get_id (app) == NULL)
-		gs_app_set_id (app, item->id);
+	if (gs_appstream_item_get_id (item) != NULL && gs_app_get_id (app) == NULL)
+		gs_app_set_id (app, gs_appstream_item_get_id (item));
 
 	/* set name */
-	if (item->name != NULL && gs_app_get_name (app) == NULL)
-		gs_app_set_name (app, item->name);
+	if (gs_appstream_item_get_name (item) != NULL && gs_app_get_name (app) == NULL)
+		gs_app_set_name (app, gs_appstream_item_get_name (item));
 
 	/* set summary */
-	if (item->summary != NULL && gs_app_get_summary (app) == NULL)
-		gs_app_set_summary (app, item->summary);
+	if (gs_appstream_item_get_summary (item) != NULL && gs_app_get_summary (app) == NULL)
+		gs_app_set_summary (app, gs_appstream_item_get_summary (item));
 
 	/* set url */
-	if (item->url != NULL && gs_app_get_url (app) == NULL)
-		gs_app_set_url (app, item->url);
+	if (gs_appstream_item_get_url (item) != NULL && gs_app_get_url (app) == NULL)
+		gs_app_set_url (app, gs_appstream_item_get_url (item));
 
 	/* set description */
-	if (item->description != NULL && gs_app_get_description (app) == NULL)
-		gs_app_set_description (app, item->description);
+	if (gs_appstream_item_get_description (item) != NULL && gs_app_get_description (app) == NULL)
+		gs_app_set_description (app, gs_appstream_item_get_description (item));
 
 	/* set icon */
-	if (item->icon != NULL && gs_app_get_pixbuf (app) == NULL) {
-		if (item->icon_kind == GS_APPSTREAM_ICON_KIND_STOCK) {
+	if (gs_appstream_item_get_icon (item) != NULL && gs_app_get_pixbuf (app) == NULL) {
+		if (gs_appstream_item_get_icon_kind (item) == GS_APPSTREAM_ITEM_ICON_KIND_STOCK) {
 			pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-							   item->icon,
+							   gs_appstream_item_get_icon (item),
 							   plugin->pixbuf_size,
 							   GTK_ICON_LOOKUP_USE_BUILTIN |
 							   GTK_ICON_LOOKUP_FORCE_SIZE,
 							   error);
-		} else if (item->icon_kind == GS_APPSTREAM_ICON_KIND_CACHED) {
+		} else if (gs_appstream_item_get_icon_kind (item) == GS_APPSTREAM_ITEM_ICON_KIND_CACHED) {
 			icon_path = g_strdup_printf ("%s/%s.png",
 						     plugin->priv->cachedir,
-						     item->icon);
+						     gs_appstream_item_get_icon (item));
 			pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path,
 								   plugin->pixbuf_size,
 								   plugin->pixbuf_size,
@@ -733,8 +696,8 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	}
 
 	/* set package name */
-	if (item->pkgname != NULL && gs_app_get_metadata_item (app, "package-name") == NULL)
-		gs_app_set_metadata (app, "package-name", item->pkgname);
+	if (gs_appstream_item_get_pkgname (item) != NULL && gs_app_get_metadata_item (app, "package-name") == NULL)
+		gs_app_set_metadata (app, "package-name", gs_appstream_item_get_pkgname (item));
 out:
 	g_free (icon_path);
 	if (pixbuf != NULL)
@@ -840,20 +803,6 @@ out:
 	return ret;
 }
 
-static gboolean
-in_array (GPtrArray *array, const gchar *search)
-{
-	const gchar *tmp;
-	guint i;
-
-	for (i = 0; i < array->len; i++) {
-		tmp = g_ptr_array_index (array, i);
-		if (g_strcmp0 (tmp, search) == 0)
-			return TRUE;
-	}
-	return FALSE;
-}
-
 /**
  * gs_plugin_add_category_apps:
  */
@@ -895,15 +844,15 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	/* just look at each app in turn */
 	for (i = 0; i < plugin->priv->array->len; i++) {
 		item = g_ptr_array_index (plugin->priv->array, i);
-		if (item->id == NULL)
+		if (gs_appstream_item_get_id (item) == NULL)
 			continue;
-		if (!in_array (item->appcategories, search_id1))
+		if (!gs_appstream_item_has_category (item, search_id1))
 			continue;
-		if (search_id2 != NULL && !in_array (item->appcategories, search_id2))
+		if (search_id2 != NULL && !gs_appstream_item_has_category (item, search_id2))
 			continue;
 
 		/* got a search match, so add all the data we can */
-		app = gs_app_new (item->id);
+		app = gs_app_new (gs_appstream_item_get_id (item));
 		ret = gs_plugin_refine_item (plugin, app, item, error);
 		if (!ret)
 			goto out;

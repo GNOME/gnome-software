@@ -54,7 +54,7 @@ libgs_plugin_self_test_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_self_test_la_LDFLAGS = -module -avoid-version
 libgs_plugin_self_test_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
-libgs_plugin_appstream_la_SOURCES = gs-plugin-appstream.c
+libgs_plugin_appstream_la_SOURCES = gs-plugin-appstream.c gs-appstream-item.c gs-appstream-item.h
 libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
 libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
