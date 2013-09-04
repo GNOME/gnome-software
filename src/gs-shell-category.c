@@ -50,7 +50,7 @@ gs_shell_category_refresh (GsShellCategory *shell)
         gtk_widget_show (widget);
         widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
         gtk_widget_show (widget);
-        category = g_object_ref (priv->category);
+        category = priv->category;
         if (gs_category_get_parent (category))
                 category = gs_category_get_parent (category);
         gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (category));
