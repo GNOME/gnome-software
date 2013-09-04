@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-02 01:39+0200\n"
-"PO-Revision-Date: 2013-09-02 01:40+0200\n"
+"POT-Creation-Date: 2013-09-04 01:58+0200\n"
+"PO-Revision-Date: 2013-09-04 01:59+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -56,12 +56,12 @@ msgid "Restart & Install"
 msgstr "Uruchom ponownie i zainstaluj"
 
 #: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:140
-#: ../src/gs-shell-details.c:82
+#: ../src/gs-shell-details.c:83
 msgid "Install"
 msgstr "Zainstaluj"
 
 #: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:145
-#: ../src/gs-shell-details.c:106 ../src/gs-shell-details.c:244
+#: ../src/gs-shell-details.c:109 ../src/gs-shell-details.c:270
 #: ../src/gs-shell-installed.c:160 ../src/gs-shell-search.c:161
 msgid "Remove"
 msgstr "Usuń"
@@ -128,12 +128,12 @@ msgstr ""
 "Piotr Drąg <piotrdrag@gmail.com>, 2012-2013\n"
 "Aviary.pl <gnomepl@aviary.pl>, 2012-2013"
 
-#: ../src/gs-application.c:195
+#: ../src/gs-application.c:200
 msgid "Start up mode, either 'updates', 'installed' or 'overview'"
 msgstr ""
 "Tryb startowy, może wynosić \"updates\", \"installed\" lub \"overview\""
 
-#: ../src/gs-application.c:195
+#: ../src/gs-application.c:200
 msgid "MODE"
 msgstr "TRYB"
 
@@ -141,32 +141,36 @@ msgstr "TRYB"
 msgid "Update"
 msgstr "Zaktualizuj"
 
-#: ../src/gs-app-widget.c:159 ../src/gs-shell-details.c:87
+#: ../src/gs-app-widget.c:159 ../src/gs-shell-details.c:89
 msgid "Installing"
 msgstr "Instalowanie"
 
-#: ../src/gs-app-widget.c:166 ../src/gs-shell-details.c:111
+#: ../src/gs-app-widget.c:166 ../src/gs-shell-details.c:115
 msgid "Removing"
 msgstr "Usuwanie"
 
-#: ../src/gs-plugin-loader.c:432
+#: ../src/gs-category.c:118
+msgid "General"
+msgstr "Ogólne"
+
+#: ../src/gs-plugin-loader.c:458
 msgid "OS Updates"
 msgstr "Aktualizacje systemu"
 
-#: ../src/gs-plugin-loader.c:433 ../src/gs-plugin-loader.c:434
+#: ../src/gs-plugin-loader.c:459 ../src/gs-plugin-loader.c:460
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
 "Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa dla wszystkich "
 "użytkowników."
 
-#: ../src/gs-shell-details.c:231 ../src/gs-shell-installed.c:147
+#: ../src/gs-shell-details.c:257 ../src/gs-shell-installed.c:147
 #: ../src/gs-shell-search.c:148
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Na pewno usunąć program %s?"
 
-#: ../src/gs-shell-details.c:242 ../src/gs-shell-installed.c:158
+#: ../src/gs-shell-details.c:268 ../src/gs-shell-installed.c:158
 #: ../src/gs-shell-search.c:159
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -174,7 +178,7 @@ msgstr ""
 "Program %s zostanie usunięty. Należy go zainstalować, aby móc używać go "
 "ponownie."
 
-#: ../src/gs-shell-installed.c:398
+#: ../src/gs-shell-installed.c:398 ../src/gs-shell-overview.c:147
 msgid "Installed"
 msgstr "Zainstalowane"
 
