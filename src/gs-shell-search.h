@@ -25,6 +25,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
@@ -55,6 +56,7 @@ GsShellSearch	*gs_shell_search_new		(void);
 void		 gs_shell_search_refresh	(GsShellSearch		*shell_search,
 						 const gchar		*text);
 void 		 gs_shell_search_setup		(GsShellSearch		*shell_search,
+                                                 GsShell                *shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);

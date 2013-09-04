@@ -430,6 +430,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				  priv->builder,
 				  priv->cancellable);
 	gs_shell_search_setup (priv->shell_search,
+                               shell,
 			       priv->plugin_loader,
 			       priv->builder,
 			       priv->cancellable);
