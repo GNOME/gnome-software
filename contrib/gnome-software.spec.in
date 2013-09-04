@@ -62,7 +62,8 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/applications/gnome-software.desktop
 %dir %{_datadir}/gnome-software
 %{_datadir}/gnome-software/*.png
-%{_datadir}/gnome-software/*.gz
+%{_datadir}/app-info/xmls/*.gz
+%{_datadir}/app-info/icons/*.gz
 %{_mandir}/man1/gnome-software.1.gz
 %dir %{_libdir}/gs-plugins
 %{_libdir}/gs-plugins/*.so

@@ -15,20 +15,23 @@ appdatadir = $(datadir)/appdata
 appdata_files = gnome-software.appdata.xml
 
 if ENABLE_OFFLINE_APPSTREAM_DATA
-appstream.xml.gz:
-	wget -N http://people.freedesktop.org/~hughsient/temp/appstream.xml.gz
-appstream-icons.tar.gz:
-	wget -N http://people.freedesktop.org/~hughsient/temp/appstream-icons.tar.gz
+fedora-20.xml.gz:
+	wget -O fedora-20.xml.gz http://people.freedesktop.org/~hughsient/temp/appstream.xml.gz
+fedora-20.tar.gz:
+	wget -O fedora-20.tar.gz http://people.freedesktop.org/~hughsient/temp/appstream-icons.tar.gz
 
-appstreamdir = $(datadir)/gnome-software
-dist_appstream_DATA = appstream.xml.gz appstream-icons.tar.gz
+appstreamxmldir = $(datadir)/app-info/xmls
+dist_appstreamxml_DATA = fedora-20.xml.gz
+appstreamiconsdir = $(datadir)/app-info/icons
+dist_appstreamicons_DATA = fedora-20.tar.gz
+endif
 
 EXTRA_DIST =						\
 	$(appdata_files)
-endif
 
 CLEANFILES =						\
-	$(dist_appstream_DATA)
+	$(dist_appstreamxml_DATA)			\
+	$(dist_appstreamicons_DATA)
 
 MAINTAINERCLEANFILES =					\
 	*~						\

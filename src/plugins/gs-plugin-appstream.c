@@ -134,7 +134,7 @@ gs_plugin_decompress_icons (GsPlugin *plugin, GError **error)
 	/* decompress */
 	argv[0] = "tar";
 	argv[1] = "-zxvf";
-	argv[2] = DATADIR "/gnome-software/appstream-icons.tar.gz";
+	argv[2] = DATADIR "/app-info/icons/fedora-20.tar.gz";
 	argv[3] = "-C";
 	argv[4] = plugin->priv->cachedir;
 	argv[5] = NULL;
@@ -494,19 +494,23 @@ gs_appstream_text_cb (GMarkupParseContext *context,
 }
 
 /**
- * gs_plugin_parse_xml:
+ * gs_plugin_parse_xml_file:
  */
 static gboolean
-gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
+gs_plugin_parse_xml_file (GsPlugin *plugin,
+			  const gchar *parent_dir,
+			  const gchar *filename,
+			  GError **error)
 {
-	gboolean ret;
-	GMarkupParseContext *ctx;
-	gchar *data;
-	gssize len;
+	gboolean ret = TRUE;
+	gchar *data = NULL;
+	gchar *path;
+	GConverter *converter = NULL;
 	GFile *file;
-	GConverter *converter;
+	GInputStream *converter_stream = NULL;
 	GInputStream *file_stream;
-	GInputStream *converter_stream;
+	GMarkupParseContext *ctx = NULL;
+	gssize len;
 	const GMarkupParser parser = {
 		gs_appstream_start_element_cb,
 		gs_appstream_end_element_cb,
@@ -514,43 +518,74 @@ gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
 		NULL /* passthrough */,
 		NULL /* error */ };
 
-	file = g_file_new_for_path (DATADIR "/gnome-software/appstream.xml.gz");
+	path  = g_build_filename (parent_dir, filename, NULL);
+	file = g_file_new_for_path (path);
 	file_stream = G_INPUT_STREAM (g_file_read (file, NULL, error));
-	g_object_unref (file);
-	if (!file_stream)
-		return FALSE;
-
+	if (file_stream == NULL) {
+		ret = FALSE;
+		goto out;
+	}
 	converter = G_CONVERTER (g_zlib_decompressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP));
 	converter_stream = g_converter_input_stream_new (file_stream, converter);
-
 	ctx = g_markup_parse_context_new (&parser,
 					  G_MARKUP_PREFIX_ERROR_POSITION,
 					  plugin,
 					  NULL);
-
-	ret = TRUE;
 	data = g_malloc (32 * 1024);
 	while ((len = g_input_stream_read (converter_stream, data, 32 * 1024, NULL, error)) > 0) {
 		ret = g_markup_parse_context_parse (ctx, data, len, error);
 		if (!ret)
 			goto out;
 	}
-
 	if (len < 0)
 		ret = FALSE;
-
- out:
-	/* Reset in case we failed parsing */
+out:
+	/* reset in case we failed parsing */
 	if (plugin->priv->item_temp) {
 		gs_appstream_item_free (plugin->priv->item_temp);
 		plugin->priv->item_temp = NULL;
 	}
 
-	g_markup_parse_context_free (ctx);
 	g_free (data);
-	g_object_unref (converter_stream);
+	g_free (path);
+	if (ctx != NULL)
+		g_markup_parse_context_free (ctx);
+	if (converter_stream != NULL)
+		g_object_unref (converter_stream);
+	if (converter != NULL)
+		g_object_unref (converter);
+	g_object_unref (file);
 	g_object_unref (file_stream);
-	g_object_unref (converter);
+	return ret;
+}
+
+/**
+ * gs_plugin_parse_xml:
+ */
+static gboolean
+gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
+{
+	GDir *dir;
+	gchar *parent_dir;
+	const gchar *tmp;
+	gboolean ret = TRUE;
+
+	/* search all files */
+	parent_dir = g_build_filename (DATADIR, "app-info", "xmls", NULL);
+	dir = g_dir_open (parent_dir, 0, error);
+	if (dir == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+	while ((tmp = g_dir_read_name (dir)) != NULL) {
+		ret = gs_plugin_parse_xml_file (plugin, parent_dir, tmp, error);
+		if (!ret)
+			goto out;
+	}
+out:
+	g_free (parent_dir);
+	if (dir != NULL)
+		g_dir_close (dir);
 	return ret;
 }
 
