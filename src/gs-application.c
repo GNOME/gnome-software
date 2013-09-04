@@ -28,6 +28,7 @@
 #include <gtk/gtk.h>
 #include <packagekit-glib2/packagekit.h>
 
+#include "gs-box.h"
 #include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
@@ -119,6 +120,8 @@ gs_application_startup (GApplication *application)
         GError *error = NULL;
 
         G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
+
+        g_type_ensure (GS_TYPE_BOX);
 
         /* set up the app menu */
         g_action_map_add_action_entries (G_ACTION_MAP (app),

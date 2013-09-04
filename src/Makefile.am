@@ -38,6 +38,8 @@ gnome_software_SOURCES =				\
 	gs-category.h					\
 	gs-app-widget.c					\
 	gs-app-widget.h					\
+	gs-box.h					\
+	gs-box.c					\
 	gs-plugin.c					\
 	gs-plugin.h					\
 	gs-shell.c					\
