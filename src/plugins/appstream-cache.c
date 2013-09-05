@@ -292,11 +292,12 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		id = appstream_app_get_id (helper->item_temp);
 		item = g_hash_table_lookup (priv->hash_id, id);
 		if (item != NULL) {
-			g_set_error (error,
-				     APPSTREAM_CACHE_ERROR,
-				     APPSTREAM_CACHE_ERROR_FAILED,
-				     "duplicate AppStream entry: %s", id);
+//			g_set_error (error,
+//				     APPSTREAM_CACHE_ERROR,
+//				     APPSTREAM_CACHE_ERROR_FAILED,
+//				     "duplicate AppStream entry: %s", id);
 			appstream_app_free (helper->item_temp);
+			g_warning ("duplicate AppStream entry: %s", id);
 		} else {
 			g_ptr_array_add (priv->array, helper->item_temp);
 			g_hash_table_insert (priv->hash_id,
