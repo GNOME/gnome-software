@@ -155,7 +155,6 @@ gs_application_startup (GApplication *application)
                 g_warning ("Failed to setup plugins: %s", error->message);
                 exit (1);
         }
-        gs_plugin_loader_set_enabled (app->plugin_loader, "hardcoded-descriptions", TRUE);
         gs_plugin_loader_set_enabled (app->plugin_loader, "hardcoded-featured", TRUE);
         gs_plugin_loader_set_enabled (app->plugin_loader, "hardcoded-kind", TRUE);
         gs_plugin_loader_set_enabled (app->plugin_loader, "hardcoded-popular", TRUE);
