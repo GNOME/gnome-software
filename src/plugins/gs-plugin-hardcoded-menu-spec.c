@@ -458,7 +458,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 #endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DataVisualization",
-								_("DataVisualization")));
+								_("Data Visualization")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Economy",
 								_("Economy")));
