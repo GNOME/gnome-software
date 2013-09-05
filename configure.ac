@@ -91,13 +91,6 @@ AS_IF([test "$enable_man" != no], [
 ])
 AM_CONDITIONAL(ENABLE_MAN, test "$enable_man" != no)
 
-# ostree doesn't have networking
-AC_ARG_ENABLE(offline-appstream-data,
-              [AS_HELP_STRING([--enable-offline-appstream-data],
-                              [ship offline appstream data [default=yes]])],,
-              enable_offline_appstream_data=yes)
-AM_CONDITIONAL(ENABLE_OFFLINE_APPSTREAM_DATA, test "$enable_offline_appstream_data" != no)
-
 dnl ---------------------------------------------------------------------------
 dnl - Makefiles, etc.
 dnl ---------------------------------------------------------------------------
@@ -117,7 +110,6 @@ echo "
 
         prefix:                    ${prefix}
         datadir:                   ${datadir}
-        Offline AppStream data:    ${enable_offline_appstream_data}
         compiler:                  ${CC}
         cflags:                    ${CFLAGS}
         cppflags:                  ${CPPFLAGS}

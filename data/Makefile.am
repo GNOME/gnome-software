@@ -14,24 +14,19 @@ dist_resources_DATA =					\
 appdatadir = $(datadir)/appdata
 appdata_files = gnome-software.appdata.xml
 
-if ENABLE_OFFLINE_APPSTREAM_DATA
-fedora-20.xml.gz:
-	wget -O fedora-20.xml.gz http://people.freedesktop.org/~hughsient/temp/appstream.xml.gz
-fedora-20.tar.gz:
-	wget -O fedora-20.tar.gz http://people.freedesktop.org/~hughsient/temp/appstream-icons.tar.gz
-
-appstreamxmldir = $(datadir)/app-info/xmls
-dist_appstreamxml_DATA = fedora-20.xml.gz
-appstreamiconsdir = $(datadir)/app-info/icons
-dist_appstreamicons_DATA = fedora-20.tar.gz
-endif
+install-sample-data:
+	wget -O fedora-20.xml.gz http://people.freedesktop.org/~hughsient/temp/fedora-20.xml.gz; \
+	mkdir -p $(DESTDIR)$(datadir)/app-info/xmls; \
+	cp fedora-20.xml.gz $(DESTDIR)$(datadir)/app-info/xmls/; \
+	wget -O fedora-20-icons.tar.gz http://people.freedesktop.org/~hughsient/temp/fedora-20-icons.tar.gz; \
+	cp fedora-20-icons.tar.gz $(DESTDIR)$(datadir)/app-info/icons; \
+	cd $(DESTDIR)$(datadir)/app-info/icons; \
+	tar xvzf fedora-20-icons.tar.gz &> /dev/null; \
+	rm fedora-20-icons.tar.gz; \
+	cd -
 
 EXTRA_DIST =						\
 	$(appdata_files)
-
-CLEANFILES =						\
-	$(dist_appstreamxml_DATA)			\
-	$(dist_appstreamicons_DATA)
 
 MAINTAINERCLEANFILES =					\
 	*~						\

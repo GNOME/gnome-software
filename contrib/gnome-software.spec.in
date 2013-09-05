@@ -7,7 +7,9 @@ Release:   0.#BUILD#%{?alphatag}%{?dist}
 License:   GPLv2+
 Group:     Applications/System
 URL:       https://wiki.gnome.org/Apps/Software
-Source0:   http://people.freedesktop.org/~hughsient/temp/%{name}-%{version}.tar.xz
+Source0:   http://download.gnome.org/sources/gnome-software/3.9/%{name}-%{version}.tar.xz
+Source1:   http://people.freedesktop.org/~hughsient/temp/fedora-20.xml.gz
+Source2:   http://people.freedesktop.org/~hughsient/temp/fedora-20-icons.tar.gz
 
 Requires:  gnome-icon-theme
 
@@ -34,8 +36,18 @@ make %{?_smp_mflags}
 %install
 %make_install
 
-rm %{buildroot}%{_libdir}/gs-plugins/*.a
-rm %{buildroot}%{_libdir}/gs-plugins/*.la
+%__rm %{buildroot}%{_libdir}/gs-plugins/*.a
+%__rm %{buildroot}%{_libdir}/gs-plugins/*.la
+
+# install AppStream data for Fedora
+%__mkdir_p %{buildroot}%{_datadir}/app-info/xmls
+%__cp %{SOURCE1} %{buildroot}%{_datadir}/app-info/xmls
+
+# decompress and install AppStream icons
+%__mkdir_p %{buildroot}%{_datadir}/app-info/icons
+cd %{buildroot}%{_datadir}/app-info/icons
+%__tar xvzf %{SOURCE2}
+cd -
 
 %find_lang %name --with-gnome
 
