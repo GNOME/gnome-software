@@ -61,11 +61,19 @@ gs_shell_search_app_widget_activated_cb (GtkListBox *list_box,
         gs_shell_show_app (shell_search->priv->shell, app);
 }
 
+static void
+gs_shell_search_installed_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
+{
+        if (app) {
+                gs_app_notify_installed (app);
+        }
+}
+
 /**
  * gs_shell_search_finished_func:
  **/
 static void
-gs_shell_search_finished_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
+gs_shell_search_removed_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
 {
 }
 
@@ -104,7 +112,7 @@ gs_shell_search_app_remove (GsShellSearch *shell_search, GsApp *app)
 		gs_plugin_loader_app_remove (priv->plugin_loader,
 					     app,
 					     priv->cancellable,
-					     gs_shell_search_finished_func,
+					     gs_shell_search_removed_func,
 					     shell_search);
 	}
 	g_string_free (markup, TRUE);
@@ -121,7 +129,7 @@ gs_shell_search_app_install (GsShellSearch *shell_search, GsApp *app)
 	gs_plugin_loader_app_install (priv->plugin_loader,
 				      app,
 				      priv->cancellable,
-				      gs_shell_search_finished_func,
+				      gs_shell_search_installed_func,
 				      shell_search);
 }
 
