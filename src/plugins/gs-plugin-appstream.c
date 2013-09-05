@@ -132,8 +132,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->cache = appstream_cache_new ();
-
-	/* this is per-user */
 	plugin->priv->cachedir = g_build_filename (DATADIR,
 						   "app-info",
 						   "icons",
@@ -175,6 +173,11 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	if (!ret)
 		goto out;
 	size = appstream_cache_get_size (plugin->priv->cache);
+	if (size == 0) {
+		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
+		g_assert_not_reached ();
+		goto out;
+	}
 	g_debug ("Parsed %i entries of XML\t:%.1fms", size,
 		 g_timer_elapsed (timer, NULL) * 1000);
 out:
