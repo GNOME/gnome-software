@@ -21,6 +21,11 @@
 
 #include "config.h"
 
+#include <glib/gi18n.h>
+#include <gio/gdesktopappinfo.h>
+#include <libnotify/notify.h>
+
+#include "gs-app.h"
 #include "gs-utils.h"
 
 #define SPINNER_DELAY 500
@@ -109,3 +114,61 @@ gs_grab_focus_when_mapped (GtkWidget *widget)
                 g_signal_connect_after (widget, "map",
                                         G_CALLBACK (grab_focus), NULL);
 }
+
+
+static void
+launch_app (NotifyNotification *n, gchar *action, gpointer data)
+{
+        GsApp *app = data;
+        GdkDisplay *display;
+        GAppLaunchContext *context;
+        gchar *id;
+        GAppInfo *appinfo;
+        GError *error = NULL;
+
+        notify_notification_close (n, NULL);
+        if (g_strcmp0 (action, "launch") == 0) {
+                display = gdk_display_get_default ();
+                id = g_strconcat (gs_app_get_id (app), ".desktop", NULL);
+                appinfo = G_APP_INFO (g_desktop_app_info_new (id));
+                if (!appinfo) {
+                        g_warning ("no such desktop file: %s", id);
+                        goto out;
+                }
+                g_free (id);
+
+                context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
+                if (!g_app_info_launch (appinfo, NULL, context, &error)) {
+                        g_warning ("launching %s failed: %s",
+                                   gs_app_get_id (app), error->message);
+                        g_error_free (error);
+                }
+
+                g_object_unref (appinfo);
+                g_object_unref (context);
+        }
+out: ;
+}
+
+static void
+on_notification_closed (NotifyNotification *n, gpointer data)
+{
+        g_object_unref (n);
+}
+
+void
+gs_app_notify_installed (GsApp *app)
+{
+        gchar *summary;
+        NotifyNotification *n;
+
+        summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
+        n = notify_notification_new (summary, NULL, "system-software-install");
+        notify_notification_add_action (n, "launch", _("Launch"),
+                                        launch_app, g_object_ref (app), g_object_unref);
+        g_signal_connect (n, "closed", G_CALLBACK (on_notification_closed), NULL);
+        notify_notification_show (n, NULL);
+
+        g_free (summary);
+}
+
