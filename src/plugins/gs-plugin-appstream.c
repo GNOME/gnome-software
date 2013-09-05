@@ -56,6 +56,7 @@ gs_plugin_parse_xml_file (GsPlugin *plugin,
 
 	/* load this specific file */
 	path  = g_build_filename (parent_dir, filename, NULL);
+	g_debug ("Loading AppStream XML %s", path);
 	file = g_file_new_for_path (path);
 	ret = appstream_cache_parse_file (plugin->priv->cache, file, NULL, error);
 	if (!ret)
@@ -67,32 +68,58 @@ out:
 }
 
 /**
- * gs_plugin_parse_xml:
+ * gs_plugin_parse_xml_dir:
  */
 static gboolean
-gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
+gs_plugin_parse_xml_dir (GsPlugin *plugin,
+			 const gchar *path,
+			 GError **error)
 {
-	GDir *dir;
-	gchar *parent_dir;
 	const gchar *tmp;
 	gboolean ret = TRUE;
+	GDir *dir = NULL;
 
 	/* search all files */
-	parent_dir = g_build_filename (DATADIR, "app-info", "xmls", NULL);
-	dir = g_dir_open (parent_dir, 0, error);
+	if (!g_file_test (path, G_FILE_TEST_EXISTS))
+		goto out;
+	dir = g_dir_open (path, 0, error);
 	if (dir == NULL) {
 		ret = FALSE;
 		goto out;
 	}
 	while ((tmp = g_dir_read_name (dir)) != NULL) {
-		ret = gs_plugin_parse_xml_file (plugin, parent_dir, tmp, error);
+		ret = gs_plugin_parse_xml_file (plugin, path, tmp, error);
 		if (!ret)
 			goto out;
 	}
 out:
-	g_free (parent_dir);
 	if (dir != NULL)
 		g_dir_close (dir);
+	return ret;
+}
+
+/**
+ * gs_plugin_parse_xml:
+ */
+static gboolean
+gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
+{
+	gboolean ret;
+	gchar *path_usr = NULL;
+	gchar *path_var = NULL;
+
+	/* search all files */
+	path_usr = g_build_filename (DATADIR, "app-info", "xmls", NULL);
+	ret = gs_plugin_parse_xml_dir (plugin, path_usr, error);
+	if (!ret)
+		goto out;
+	path_var = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL);
+	ret = gs_plugin_parse_xml_dir (plugin, path_var, error);
+	if (!ret)
+		goto out;
+out:
+	g_free (path_usr);
+	g_free (path_var);
 	return ret;
 }
 
