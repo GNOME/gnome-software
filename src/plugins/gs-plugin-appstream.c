@@ -26,8 +26,6 @@
 #include "appstream-app.h"
 #include "appstream-cache.h"
 
-#define GS_PLUGIN_APPSTREAM_ICONS_HASH	"81f92592ce464df3baf4c480c4a4cc6e18efee52"
-
 struct GsPluginPrivate {
 	AppstreamCache		*cache;
 	gchar			*cachedir;
@@ -41,78 +39,6 @@ const gchar *
 gs_plugin_get_name (void)
 {
 	return "appstream";
-}
-
-/**
- * gs_plugin_decompress_icons:
- */
-static gboolean
-gs_plugin_decompress_icons (GsPlugin *plugin, GError **error)
-{
-	const gchar *argv[6];
-	gboolean ret = TRUE;
-	gchar *hash_check_file = NULL;
-	gint exit_status = 0;
-
-	/* create directory */
-	if (!g_file_test (plugin->priv->cachedir, G_FILE_TEST_EXISTS)) {
-		exit_status = g_mkdir_with_parents (plugin->priv->cachedir, 0700);
-		if (exit_status != 0) {
-			ret = FALSE;
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "Failed to create %s",
-				     plugin->priv->cachedir);
-			goto out;
-		}
-	}
-
-	/* is cache new enough? */
-	hash_check_file = g_build_filename (plugin->priv->cachedir,
-					    GS_PLUGIN_APPSTREAM_ICONS_HASH,
-					    NULL);
-	if (g_file_test (hash_check_file, G_FILE_TEST_EXISTS)) {
-		g_debug ("Icon cache new enough, skipping decompression");
-		goto out;
-	}
-
-	/* decompress */
-	argv[0] = "tar";
-	argv[1] = "-zxvf";
-	argv[2] = DATADIR "/app-info/icons/fedora-20.tar.gz";
-	argv[3] = "-C";
-	argv[4] = plugin->priv->cachedir;
-	argv[5] = NULL;
-	g_debug ("Decompressing %s to %s", argv[2], plugin->priv->cachedir);
-	ret = g_spawn_sync (NULL,
-			    (gchar **) argv,
-			    NULL,
-			    G_SPAWN_SEARCH_PATH | G_SPAWN_STDOUT_TO_DEV_NULL,
-			    NULL, NULL,
-			    NULL,
-			    NULL,
-			    &exit_status,
-			    error);
-	if (!ret)
-		goto out;
-	if (exit_status != 0) {
-		ret = FALSE;
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to extract icon data to %s [%i]",
-			     plugin->priv->cachedir, exit_status);
-		goto out;
-	}
-
-	/* mark as done */
-	ret = g_file_set_contents (hash_check_file, "", -1, error);
-	if (!ret)
-		goto out;
-out:
-	g_free (hash_check_file);
-	return ret;
 }
 
 /**
@@ -181,8 +107,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	plugin->priv->cache = appstream_cache_new ();
 
 	/* this is per-user */
-	plugin->priv->cachedir = g_build_filename (g_get_user_cache_dir(),
-						   "gnome-software",
+	plugin->priv->cachedir = g_build_filename (DATADIR,
+						   "app-info",
+						   "icons",
 						   NULL);
 }
 
@@ -213,23 +140,16 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 {
 	gboolean ret = TRUE;
 	GTimer *timer = NULL;
-
-	/* get the icons ready for use */
-	timer = g_timer_new ();
-	ret = gs_plugin_decompress_icons (plugin, error);
-	if (!ret)
-		goto out;
-	g_debug ("Decompressing icons\t:%.1fms", g_timer_elapsed (timer, NULL) * 1000);
+	guint size;
 
 	/* Parse the XML */
-	g_timer_reset (timer);
+	timer = g_timer_new ();
 	ret = gs_plugin_parse_xml (plugin, error);
 	if (!ret)
 		goto out;
-	g_debug ("Parsed %i entries of XML\t:%.1fms",
-		 appstream_cache_get_size (plugin->priv->cache),
+	size = appstream_cache_get_size (plugin->priv->cache);
+	g_debug ("Parsed %i entries of XML\t:%.1fms", size,
 		 g_timer_elapsed (timer, NULL) * 1000);
-
 out:
 	if (timer != NULL)
 		g_timer_destroy (timer);
