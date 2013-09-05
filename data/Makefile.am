@@ -19,6 +19,7 @@ install-sample-data:
 	mkdir -p $(DESTDIR)$(datadir)/app-info/xmls; \
 	cp fedora-20.xml.gz $(DESTDIR)$(datadir)/app-info/xmls/; \
 	wget -O fedora-20-icons.tar.gz http://people.freedesktop.org/~hughsient/temp/fedora-20-icons.tar.gz; \
+	mkdir -p $(DESTDIR)$(datadir)/app-info/icons; \
 	cp fedora-20-icons.tar.gz $(DESTDIR)$(datadir)/app-info/icons; \
 	cd $(DESTDIR)$(datadir)/app-info/icons; \
 	tar xvzf fedora-20-icons.tar.gz &> /dev/null; \
