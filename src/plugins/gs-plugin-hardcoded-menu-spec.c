@@ -316,7 +316,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	*list = g_list_prepend (*list, category);
 
 	/* Network */
-	category = gs_category_new (NULL, "Network", _("Network"));
+	category = gs_category_new (NULL, "Network", _("Internet"));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Chat",
 								_("Chat")));
