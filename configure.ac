@@ -72,9 +72,10 @@ GLIB_GSETTINGS
 dnl ---------------------------------------------------------------------------
 dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
-PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.9.12)
+PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.9.12 gio-unix-2.0)
 PKG_CHECK_MODULES(PACKAGEKIT, packagekit-glib2 >= 0.8.10)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
+PKG_CHECK_MODULES(NOTIFY, libnotify)
 AC_ARG_ENABLE(man,
               [AS_HELP_STRING([--enable-man],
                               [generate man pages [default=auto]])],,

@@ -5,6 +5,7 @@ AM_CPPFLAGS =						\
 	$(GLIB_CFLAGS)					\
 	$(GTK_CFLAGS)					\
 	$(PACKAGEKIT_CFLAGS)				\
+	$(NOTIFY_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DLIBDIR=\"$(libdir)\"				\
@@ -70,6 +71,7 @@ gnome_software_LDADD =					\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)					\
 	$(PACKAGEKIT_LIBS)				\
+	$(NOTIFY_LIBS)					\
 	-lm
 
 gnome_software_CFLAGS =					\

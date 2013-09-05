@@ -27,6 +27,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <packagekit-glib2/packagekit.h>
+#include <libnotify/notify.h>
 
 #include "gs-box.h"
 #include "gs-shell.h"
@@ -120,6 +121,8 @@ gs_application_startup (GApplication *application)
         GError *error = NULL;
 
         G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
+
+        notify_init ("gnome-software");
 
         g_type_ensure (GS_TYPE_BOX);
 
