@@ -11,6 +11,9 @@ dist_resources_DATA =					\
 	stars3.png					\
 	stars4.png
 
+iconsdir = $(datadir)/gnome-software/icons/hicolor/scalable/apps
+dist_icons_DATA = gnome-software-symbolic.svg
+
 appdatadir = $(datadir)/appdata
 appdata_files = gnome-software.appdata.xml
 
