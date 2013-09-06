@@ -92,9 +92,12 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		break;
 	case GS_APP_STATE_INSTALLED:
 	case GS_APP_STATE_REMOVING:
+	case GS_APP_STATE_UPDATABLE:
 		gtk_widget_set_visible (widget, FALSE);
 		break;
 	default:
+		g_warning ("App unexpectedly in state %s",
+			   gs_app_state_to_string (state));
 		g_assert_not_reached ();
 	}
 
@@ -116,11 +119,14 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
                         gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
 			gtk_button_set_label (GTK_BUTTON (widget), _("Removing"));
 			break;
+		case GS_APP_STATE_UPDATABLE:
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_INSTALLING:
 			gtk_widget_set_visible (widget, FALSE);
 			break;
 		default:
+			g_warning ("App unexpectedly in state %s",
+				   gs_app_state_to_string (state));
 			g_assert_not_reached ();
 		}
 	}

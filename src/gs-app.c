@@ -89,7 +89,7 @@ gs_app_error_quark (void)
 /**
  * gs_app_kind_to_string:
  **/
-static const gchar *
+const gchar *
 gs_app_kind_to_string (GsAppKind kind)
 {
 	if (kind == GS_APP_KIND_UNKNOWN)
@@ -108,7 +108,7 @@ gs_app_kind_to_string (GsAppKind kind)
 /**
  * gs_app_state_to_string:
  **/
-static const gchar *
+const gchar *
 gs_app_state_to_string (GsAppState state)
 {
 	if (state == GS_APP_STATE_UNKNOWN)
