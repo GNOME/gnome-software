@@ -98,24 +98,27 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	GsAppWidgetPrivate *priv = app_widget->priv;
 	GtkStyleContext *context;
 	GtkWidget *box;
-        const gchar *tmp;
-        GString *s = NULL;
+	const gchar *tmp = NULL;
+	GString *str = NULL;
 
 	if (app_widget->priv->app == NULL)
 		return;
 
-	tmp = (gchar *)gs_app_get_description (app_widget->priv->app);
-	if (tmp) {
-		s = g_string_new (tmp);
-		_g_string_replace (s, "\n", " ");
-		tmp = s->str;
-	}
-        else {
-                tmp = (gchar *)gs_app_get_summary (app_widget->priv->app);
-        }
-	gtk_label_set_label (GTK_LABEL (priv->widget_description), tmp);
-        if (s)
-                g_string_free (s, TRUE);
+	/* get the main body text */
+	if (gs_app_get_state (app_widget->priv->app) == GS_APP_STATE_UPDATABLE)
+		tmp = gs_app_get_metadata_item (app_widget->priv->app, "update-details");
+	if (tmp == NULL)
+		tmp = gs_app_get_description (app_widget->priv->app);
+	if (tmp == NULL)
+		tmp = gs_app_get_summary (app_widget->priv->app);
+	if (tmp == NULL)
+		tmp = gs_app_get_name (app_widget->priv->app);
+
+	/* join the lines*/
+	str = g_string_new (tmp);
+	_g_string_replace (str, "\n", " ");
+
+	gtk_label_set_label (GTK_LABEL (priv->widget_description), str->str);
 	gtk_label_set_label (GTK_LABEL (priv->widget_name),
 			     gs_app_get_name (priv->app));
 	gtk_label_set_label (GTK_LABEL (priv->widget_version),
@@ -172,6 +175,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	box = gtk_widget_get_parent (priv->widget_button);
 	gtk_widget_set_visible (box, gtk_widget_get_visible (priv->widget_spinner) ||
 				     gtk_widget_get_visible (priv->widget_button));
+	g_string_free (str, TRUE);
 }
 
 /**

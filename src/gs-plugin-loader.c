@@ -440,11 +440,6 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 		app_tmp = GS_APP (l->data);
 		if (gs_app_get_kind (app_tmp) == GS_APP_KIND_PACKAGE) {
 			has_os_update = TRUE;
-		} else {
-			/* if we have update text, then use it */
-			tmp = gs_app_get_metadata_item (app_tmp, "update-details");
-			if (tmp != NULL && tmp[0] != '\0')
-				gs_app_set_description (app_tmp, tmp);
 		}
 	}
 
