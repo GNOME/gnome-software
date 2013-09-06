@@ -116,6 +116,7 @@ EXTRA_DIST =						\
 	gnome-software.gresource.xml			\
 	gnome-software.xml				\
 	gtk-style.css					\
+	shadow.png					\
 	$(desktop_in_files)				\
 	$(UI_FILES)
 

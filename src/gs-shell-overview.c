@@ -125,6 +125,7 @@ create_popular_tile (GsShellOverview *shell_overview, GsApp *app)
 	frame = gtk_aspect_frame_new (NULL, 0.5, 1, 1, FALSE);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
 	gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
+	gtk_style_context_add_class (gtk_widget_get_style_context (frame), "tile");
 	gtk_widget_set_halign (frame, GTK_ALIGN_FILL);
 	gtk_widget_set_valign (frame, GTK_ALIGN_FILL);
         o = gtk_overlay_new ();
@@ -240,6 +241,7 @@ create_category_tile (GsShellOverview *shell_overview, GsCategory *category)
 	gtk_container_add (GTK_CONTAINER (button), frame);
 	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
 	gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
+	gtk_style_context_add_class (gtk_widget_get_style_context (frame), "tile");
 	label = gtk_label_new (gs_category_get_name (category));
 	g_object_set (label, "margin", 12, "xalign", 0, NULL);
 	gtk_container_add (GTK_CONTAINER (frame), label);

@@ -81,6 +81,7 @@ create_app_tile (GsShellCategory *shell, GsApp *app)
         gtk_container_add (GTK_CONTAINER (button), frame);
         gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
         gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
+        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "tile");
         grid = gtk_grid_new ();
         gtk_container_add (GTK_CONTAINER (frame), grid);
         g_object_set (grid, "margin", 12, "row-spacing", 6, "column-spacing", 6, NULL);

@@ -55,3 +55,8 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
         background-image: linear-gradient(to bottom, @theme_selected_bg_color, @theme_selected_bg_color);
         animation: throbbing linear 1s infinite alternate;
 }
+
+.view.tile {
+        border-width: 4;
+        border-image: url("shadow.png") 4 4 4 4 stretch;
+}
