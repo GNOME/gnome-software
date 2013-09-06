@@ -46,6 +46,7 @@ typedef enum {
 struct AppstreamCachePrivate
 {
 	GPtrArray		*array;		/* of AppstreamApp */
+	GPtrArray		*icon_path_array;
 	GHashTable		*hash_id;	/* of AppstreamApp{id} */
 	GHashTable		*hash_pkgname;	/* of AppstreamApp{pkgname} */
 };
@@ -181,6 +182,7 @@ appstream_cache_icon_kind_from_string (const gchar *kind_str)
 }
 
 typedef struct {
+	const gchar		*path_icons;
 	AppstreamApp		*item_temp;
 	AppstreamCache		*cache;
 	AppstreamCacheSection	 section;
@@ -221,6 +223,9 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			return;
 		}
 		helper->item_temp = appstream_app_new ();
+		appstream_app_set_userdata (helper->item_temp,
+					    (gpointer) helper->path_icons,
+					    NULL);
 		break;
 
 	case APPSTREAM_CACHE_SECTION_ICON:
@@ -448,12 +453,14 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 gboolean
 appstream_cache_parse_file (AppstreamCache *cache,
 			    GFile *file,
+			    const gchar *path_icons,
 			    GCancellable *cancellable,
 			    GError **error)
 {
 	const gchar *content_type = NULL;
 	gboolean ret = TRUE;
 	gchar *data = NULL;
+	gchar *icon_path_tmp = NULL;
 	GConverter *converter = NULL;
 	GFileInfo *info = NULL;
 	GInputStream *file_stream;
@@ -502,8 +509,14 @@ appstream_cache_parse_file (AppstreamCache *cache,
 			     "cannot process file of type %s",
 			     content_type);
 	}
+
+	/* add to array to maintain a ref for the lifetime of the AppstreamApp */
+	icon_path_tmp = g_strdup (path_icons);
+	g_ptr_array_add (cache->priv->icon_path_array, icon_path_tmp);
+
 	helper = g_new0 (AppstreamCacheHelper, 1);
 	helper->cache = cache;
+	helper->path_icons = icon_path_tmp;
 	ctx = g_markup_parse_context_new (&parser,
 					  G_MARKUP_PREFIX_ERROR_POSITION,
 					  helper,
@@ -553,6 +566,7 @@ appstream_cache_init (AppstreamCache *cache)
 	AppstreamCachePrivate *priv;
 	priv = cache->priv = APPSTREAM_CACHE_GET_PRIVATE (cache);
 	priv->array = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_app_free);
+	priv->icon_path_array = g_ptr_array_new_with_free_func (g_free);
 	priv->hash_id = g_hash_table_new_full (g_str_hash,
 					       g_str_equal,
 					       NULL,
@@ -573,6 +587,7 @@ appstream_cache_finalize (GObject *object)
 	AppstreamCachePrivate *priv = cache->priv;
 
 	g_ptr_array_unref (priv->array);
+	g_ptr_array_unref (priv->icon_path_array);
 	g_hash_table_unref (priv->hash_id);
 	g_hash_table_unref (priv->hash_pkgname);
 

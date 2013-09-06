@@ -61,6 +61,7 @@ GType		 appstream_cache_get_type		(void);
 AppstreamCache	*appstream_cache_new			(void);
 gboolean	 appstream_cache_parse_file		(AppstreamCache	*cache,
 							 GFile		*file,
+							 const gchar	*path_icons,
 							 GCancellable	*cancellable,
 							 GError		**error);
 guint		 appstream_cache_get_size		(AppstreamCache	*cache);

@@ -48,6 +48,7 @@ static gboolean
 gs_plugin_parse_xml_file (GsPlugin *plugin,
 			  const gchar *parent_dir,
 			  const gchar *filename,
+			  const gchar *path_icons,
 			  GError **error)
 {
 	gboolean ret;
@@ -56,9 +57,13 @@ gs_plugin_parse_xml_file (GsPlugin *plugin,
 
 	/* load this specific file */
 	path  = g_build_filename (parent_dir, filename, NULL);
-	g_debug ("Loading AppStream XML %s", path);
+	g_debug ("Loading AppStream XML %s with icon path %s", path, path_icons);
 	file = g_file_new_for_path (path);
-	ret = appstream_cache_parse_file (plugin->priv->cache, file, NULL, error);
+	ret = appstream_cache_parse_file (plugin->priv->cache,
+					  file,
+					  path_icons,
+					  NULL,
+					  error);
 	if (!ret)
 		goto out;
 out:
@@ -72,7 +77,8 @@ out:
  */
 static gboolean
 gs_plugin_parse_xml_dir (GsPlugin *plugin,
-			 const gchar *path,
+			 const gchar *path_xml,
+			 const gchar *path_icons,
 			 GError **error)
 {
 	const gchar *tmp;
@@ -80,15 +86,15 @@ gs_plugin_parse_xml_dir (GsPlugin *plugin,
 	GDir *dir = NULL;
 
 	/* search all files */
-	if (!g_file_test (path, G_FILE_TEST_EXISTS))
+	if (!g_file_test (path_xml, G_FILE_TEST_EXISTS))
 		goto out;
-	dir = g_dir_open (path, 0, error);
+	dir = g_dir_open (path_xml, 0, error);
 	if (dir == NULL) {
 		ret = FALSE;
 		goto out;
 	}
 	while ((tmp = g_dir_read_name (dir)) != NULL) {
-		ret = gs_plugin_parse_xml_file (plugin, path, tmp, error);
+		ret = gs_plugin_parse_xml_file (plugin, path_xml, tmp, path_icons, error);
 		if (!ret)
 			goto out;
 	}
@@ -104,22 +110,31 @@ out:
 static gboolean
 gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
 {
+	const gchar * const * data_dirs;
 	gboolean ret;
-	gchar *path_usr = NULL;
-	gchar *path_var = NULL;
+	gchar *path_xml = NULL;
+	gchar *path_icons = NULL;
+	guint i;
 
 	/* search all files */
-	path_usr = g_build_filename (DATADIR, "app-info", "xmls", NULL);
-	ret = gs_plugin_parse_xml_dir (plugin, path_usr, error);
-	if (!ret)
-		goto out;
-	path_var = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL);
-	ret = gs_plugin_parse_xml_dir (plugin, path_var, error);
+	data_dirs = g_get_system_data_dirs ();
+	for (i = 0; data_dirs[i] != NULL; i++) {
+		path_xml = g_build_filename (data_dirs[i], "app-info", "xmls", NULL);
+		path_icons = g_build_filename (data_dirs[i], "app-info", "icons", NULL);
+		ret = gs_plugin_parse_xml_dir (plugin, path_xml, path_icons, error);
+		g_free (path_xml);
+		g_free (path_icons);
+		if (!ret)
+			goto out;
+	}
+	path_xml = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL);
+	path_icons = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "icons", NULL);
+	ret = gs_plugin_parse_xml_dir (plugin, path_xml, path_icons, error);
+	g_free (path_xml);
+	g_free (path_icons);
 	if (!ret)
 		goto out;
 out:
-	g_free (path_usr);
-	g_free (path_var);
 	return ret;
 }
 
@@ -195,6 +210,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		       AppstreamApp *item,
 		       GError **error)
 {
+	const gchar *icon_dir;
 	gboolean ret = TRUE;
 	gchar *icon_path = NULL;
 	GdkPixbuf *pixbuf = NULL;
@@ -236,8 +252,9 @@ gs_plugin_refine_item (GsPlugin *plugin,
 							   GTK_ICON_LOOKUP_FORCE_SIZE,
 							   error);
 		} else if (appstream_app_get_icon_kind (item) == APPSTREAM_APP_ICON_KIND_CACHED) {
+			icon_dir = appstream_app_get_userdata (item);
 			icon_path = g_strdup_printf ("%s/%s.png",
-						     plugin->priv->cachedir,
+						     icon_dir,
 						     appstream_app_get_icon (item));
 			pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path,
 								   plugin->pixbuf_size,
