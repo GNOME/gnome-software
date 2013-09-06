@@ -59,4 +59,10 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
 .view.tile {
         border-width: 4;
         border-image: url("shadow.png") 4 4 4 4 stretch;
+        background-image: none;
+        background-color: @list_box_bg;
+}
+
+.view.tile:hover {
+        background-color: @content_view_bg;
 }

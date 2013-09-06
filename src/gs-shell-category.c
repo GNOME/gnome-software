@@ -69,21 +69,17 @@ app_tile_clicked (GtkButton *button, gpointer data)
 static GtkWidget *
 create_app_tile (GsShellCategory *shell, GsApp *app)
 {
-        GtkWidget *button, *frame, *label;
+        GtkWidget *button, *label;
         GtkWidget *image, *grid;
         const gchar *tmp;
         PangoAttrList *attrs;
 
         button = gtk_button_new ();
         gtk_widget_set_hexpand (button, TRUE);
-        gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-        frame = gtk_frame_new (NULL);
-        gtk_container_add (GTK_CONTAINER (button), frame);
-        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "view");
-        gtk_style_context_add_class (gtk_widget_get_style_context (frame), "tile");
+        gtk_style_context_add_class (gtk_widget_get_style_context (button), "view");
+        gtk_style_context_add_class (gtk_widget_get_style_context (button), "tile");
         grid = gtk_grid_new ();
-        gtk_container_add (GTK_CONTAINER (frame), grid);
+        gtk_container_add (GTK_CONTAINER (button), grid);
         g_object_set (grid, "margin", 12, "row-spacing", 6, "column-spacing", 6, NULL);
         image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
         gtk_grid_attach (GTK_GRID (grid), image, 0, 0, 1, 2);
