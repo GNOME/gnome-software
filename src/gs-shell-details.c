@@ -140,6 +140,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
                 switch (state) {
                 case GS_APP_STATE_INSTALLED:
                 case GS_APP_STATE_AVAILABLE:
+		case GS_APP_STATE_UPDATABLE:
                         gtk_widget_set_visible (widget, FALSE);
                         gtk_spinner_stop (GTK_SPINNER (widget));
                         break;
@@ -149,6 +150,8 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
                         gtk_widget_set_visible (widget, TRUE);
                         break;
 		default:
+			g_warning ("App unexpectedly in state %s",
+				   gs_app_state_to_string (state));
 			g_assert_not_reached ();
                 }
         }
