@@ -77,6 +77,8 @@ GQuark		 gs_app_error_quark		(void);
 GType		 gs_app_get_type		(void);
 
 GsApp		*gs_app_new			(const gchar	*id);
+gchar		*gs_app_to_string		(GsApp		*app);
+
 const gchar	*gs_app_get_id			(GsApp		*app);
 void 		 gs_app_set_id			(GsApp		*app,
 						 const gchar	*id);

@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #include "gs-app.h"
 
 static void	gs_app_finalize	(GObject	*object);
@@ -82,6 +84,95 @@ gs_app_error_quark (void)
 	if (!quark)
 		quark = g_quark_from_static_string ("gs_app_error");
 	return quark;
+}
+
+/**
+ * gs_app_kind_to_string:
+ **/
+static const gchar *
+gs_app_kind_to_string (GsAppKind kind)
+{
+	if (kind == GS_APP_KIND_UNKNOWN)
+		return "unknown";
+	if (kind == GS_APP_KIND_NORMAL)
+		return "normal";
+	if (kind == GS_APP_KIND_SYSTEM)
+		return "system";
+	if (kind == GS_APP_KIND_PACKAGE)
+		return "package";
+	if (kind == GS_APP_KIND_OS_UPDATE)
+		return "os-update";
+	return NULL;
+}
+
+/**
+ * gs_app_state_to_string:
+ **/
+static const gchar *
+gs_app_state_to_string (GsAppState state)
+{
+	if (state == GS_APP_STATE_UNKNOWN)
+		return "unknown";
+	if (state == GS_APP_STATE_INSTALLED)
+		return "installed";
+	if (state == GS_APP_STATE_AVAILABLE)
+		return "available";
+	if (state == GS_APP_STATE_INSTALLING)
+		return "installing";
+	if (state == GS_APP_STATE_REMOVING)
+		return "removing";
+	if (state == GS_APP_STATE_UPDATABLE)
+		return "updatable";
+	return NULL;
+}
+
+/**
+ * gs_app_to_string:
+ **/
+gchar *
+gs_app_to_string (GsApp *app)
+{
+	const gchar *tmp;
+	GList *keys;
+	GList *l;
+	GsAppPrivate *priv = app->priv;
+	GString *str;
+
+	str = g_string_new ("GsApp:\n");
+	g_string_append_printf (str, "\tkind:\t%s\n",
+				gs_app_kind_to_string (priv->kind));
+	g_string_append_printf (str, "\tstate:\t%s\n",
+				gs_app_state_to_string (priv->state));
+	if (priv->id != NULL)
+		g_string_append_printf (str, "\tid:\t%s\n", priv->id);
+	if (priv->name != NULL)
+		g_string_append_printf (str, "\tname:\t%s\n", priv->name);
+	if (priv->version != NULL)
+		g_string_append_printf (str, "\tversion:\t%s\n", priv->version);
+	if (priv->summary != NULL)
+		g_string_append_printf (str, "\tsummary:\t%s\n", priv->summary);
+	if (priv->description != NULL)
+		g_string_append_printf (str, "\tdescription:\t%lu\n", strlen (priv->description));
+	if (priv->screenshot != NULL)
+		g_string_append_printf (str, "\tscreenshot:\t%s\n", priv->screenshot);
+	if (priv->url != NULL)
+		g_string_append_printf (str, "\turl:\t%s\n", priv->url);
+	if (priv->rating != -1)
+		g_string_append_printf (str, "\trating:\t%i\n", priv->rating);
+	if (priv->pixbuf != NULL)
+		g_string_append_printf (str, "\tpixbuf:\t%p\n", priv->pixbuf);
+	if (priv->featured_pixbuf != NULL)
+		g_string_append_printf (str, "\tfeatured-pixbuf:\t%p\n", priv->featured_pixbuf);
+	if (priv->related != NULL)
+		g_string_append_printf (str, "\trelated:\t%i\n", priv->related->len);
+	keys = g_hash_table_get_keys (priv->metadata);
+	for (l = keys; l != NULL; l = l->next) {
+		tmp = g_hash_table_lookup (priv->metadata, l->data);
+		g_string_append_printf (str, "\t{%s}:\t%s\n",
+					(const gchar *) l->data, tmp);
+	}
+	g_list_free (keys);
+	return g_string_free (str, FALSE);
 }
 
 /**
