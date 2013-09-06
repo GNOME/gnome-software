@@ -76,6 +76,11 @@ void		 appstream_app_add_category		(AppstreamApp	*app,
 void		 appstream_app_set_icon_kind		(AppstreamApp	*app,
 							 AppstreamAppIconKind icon_kind);
 
+gpointer	 appstream_app_get_userdata		(AppstreamApp	*app);
+void		 appstream_app_set_userdata		(AppstreamApp	*app,
+							 gpointer	 userdata,
+							 GDestroyNotify	 userdata_destroy_func);
+
 G_END_DECLS
 
 #endif /* __APPSTREAM_APP_H */

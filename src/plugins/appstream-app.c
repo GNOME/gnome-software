@@ -34,6 +34,8 @@ struct AppstreamApp
 	gchar			*icon;
 	AppstreamAppIconKind	 icon_kind;
 	GPtrArray		*appcategories;
+	gpointer		 userdata;
+	GDestroyNotify		 userdata_destroy_func;
 };
 
 /**
@@ -50,7 +52,30 @@ appstream_app_free (AppstreamApp *app)
 	g_free (app->description);
 	g_free (app->icon);
 	g_ptr_array_unref (app->appcategories);
+	if (app->userdata_destroy_func != NULL)
+		app->userdata_destroy_func (app->userdata);
 	g_slice_free (AppstreamApp, app);
+}
+
+/**
+ * appstream_app_get_userdata:
+ */
+gpointer
+appstream_app_get_userdata (AppstreamApp *app)
+{
+	return app->userdata;
+}
+
+/**
+ * appstream_app_set_userdata:
+ */
+void
+appstream_app_set_userdata (AppstreamApp *app,
+			    gpointer userdata,
+			    GDestroyNotify userdata_destroy_func)
+{
+	app->userdata = userdata;
+	app->userdata_destroy_func = userdata_destroy_func;
 }
 
 /**
