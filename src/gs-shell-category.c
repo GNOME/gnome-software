@@ -225,9 +225,16 @@ gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *catego
         GtkWidget *row;
         GList *list, *l;
         GsCategory *s;
+        GtkWidget *frame, *swin;
 
         grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
         gs_container_remove_all (GTK_CONTAINER (grid));
+
+
+        frame = GTK_WIDGET (gtk_builder_get_object (priv->builder, "frame_filter"));
+        swin = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_filter"));
+        gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+        gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin), GTK_SHADOW_NONE);
 
         list = gs_category_get_subcategories (category);
         if (!list)
@@ -335,6 +342,22 @@ gs_shell_category_class_init (GsShellCategoryClass *klass)
 	g_type_class_add_private (klass, sizeof (GsShellCategoryPrivate));
 }
 
+static void
+scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
+{
+        GtkWidget *frame;
+
+        frame = gtk_bin_get_child (GTK_BIN (gtk_bin_get_child (GTK_BIN (swin))));
+        if (gtk_widget_get_mapped (GTK_WIDGET (sb))) {
+                gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_IN);
+                gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
+        }
+        else {
+                gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+                gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
+        }
+}
+
 void
 gs_shell_category_setup (GsShellCategory *shell_category,
                          GsShell *shell,
@@ -343,16 +366,22 @@ gs_shell_category_setup (GsShellCategory *shell_category,
                          GCancellable *cancellable)
 {
 	GsShellCategoryPrivate *priv = shell_category->priv;
-        GtkWidget *list_box;
+        GtkWidget *widget;
+        GtkWidget *sw;
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
         priv->builder = g_object_ref (builder);
 	priv->cancellable = g_cancellable_new ();
         priv->shell = shell;
 
-        list_box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_filter"));
-        g_signal_connect (list_box, "row-selected", G_CALLBACK (filter_selected), shell_category);
-        gtk_list_box_set_header_func (GTK_LIST_BOX (list_box), add_separator, NULL, NULL);
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_filter"));
+        g_signal_connect (widget, "row-selected", G_CALLBACK (filter_selected), shell_category);
+        gtk_list_box_set_header_func (GTK_LIST_BOX (widget), add_separator, NULL, NULL);
+
+        sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_filter"));
+        widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
+        g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
+        g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
 }
 
 GsShellCategory *
