@@ -272,6 +272,16 @@ gs_plugin_loader_empty_func (void)
 				empty_subcats_cnt++;
 				//g_warning ("MOO");
 			} else {
+				GList *g;
+				if (g_getenv ("DUMPGROUPS") != NULL) {
+					for (g = apps; g != NULL; g = g->next) {
+						g_print ("Cat: %s\tSubCat: %s\tPkgName: %s\tAppId: %s\n",
+							 gs_category_get_id (category),
+							 gs_category_get_id (sub),
+							 gs_app_get_metadata_item (GS_APP (g->data), "package-name"),
+							 gs_app_get_id (GS_APP (g->data)));
+					}
+				}
 				g_debug ("APPS[%i]:\t%s/%s",
 					 g_list_length (apps),
 					 gs_category_get_id (category),
@@ -297,7 +307,8 @@ main (int argc, char **argv)
 
 	/* tests go here */
 	g_test_add_func ("/gnome-software/app", gs_app_func);
-	if(0)g_test_add_func ("/gnome-software/plugin-loader{empty}", gs_plugin_loader_empty_func);
+	if (g_getenv ("HAS_APPSTREAM") != NULL)
+		g_test_add_func ("/gnome-software/plugin-loader{empty}", gs_plugin_loader_empty_func);
 	g_test_add_func ("/gnome-software/plugin-loader{dedupe}", gs_plugin_loader_dedupe_func);
 	if(0)g_test_add_func ("/gnome-software/plugin-loader", gs_plugin_loader_func);
 
