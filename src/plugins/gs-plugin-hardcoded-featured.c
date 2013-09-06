@@ -60,7 +60,6 @@ gs_plugin_add_featured (GsPlugin *plugin,
                 "gimp",
                 "org.gnome.Weather.Application",
                 "gnome-sudoku",
-		NULL
         };
 
         /* In lieu of a random number generator, just
@@ -74,8 +73,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 
         app = gs_app_new (apps[i]);
 	gs_plugin_add_app (list, app);
-	path = g_strdup_printf ("%s/gnome-software/featured-%s.png",
-				DATADIR, apps[i]);
+	path = g_strconcat (DATADIR, "/gnome-software/featured-", apps[i], ".png", NULL);
 	pixbuf = gdk_pixbuf_new_from_file_at_scale (path, -1, -1, TRUE, error);
 	g_free (path);
 	if (pixbuf == NULL) {
