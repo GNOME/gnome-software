@@ -42,6 +42,7 @@ struct GsShellOverviewPrivate
 	gboolean		 cache_valid;
         GsShell                 *shell;
         gint                     refresh_count;
+        GtkCssProvider          *feature_style;
 };
 
 G_DEFINE_TYPE (GsShellOverview, gs_shell_overview, G_TYPE_OBJECT)
@@ -265,7 +266,6 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GtkWidget *widget;
         const gchar *text;
         gchar *css;
-        GtkCssProvider *provider;
 
 	list = gs_plugin_loader_get_featured_finish (plugin_loader,
 						     res,
@@ -326,11 +326,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
                 gs_app_get_metadata_item (app, "featured-gradient1-color"),
                 gs_app_get_metadata_item (app, "featured-gradient2-color"));
 
-        provider = gtk_css_provider_new ();
-        gtk_css_provider_load_from_data (provider, css, -1, NULL);
-        gtk_style_context_add_provider_for_screen (gtk_widget_get_screen (button),
-                                                   GTK_STYLE_PROVIDER (provider),
-                                                   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+        gtk_css_provider_load_from_data (priv->feature_style, css, -1, NULL);
 
         g_free (css);
 
@@ -458,6 +454,11 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 
         /* avoid a ref cycle */
         priv->shell = shell;
+
+        priv->feature_style = gtk_css_provider_new ();
+        gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
+                                                   GTK_STYLE_PROVIDER (priv->feature_style),
+                                                   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
 /**
@@ -500,6 +501,7 @@ gs_shell_overview_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
+        g_object_unref (priv->feature_style);
 
 	G_OBJECT_CLASS (gs_shell_overview_parent_class)->finalize (object);
 }
