@@ -31,19 +31,18 @@ struct _GsAppWidgetPrivate
 {
 	ChMarkdown	*markdown;
 	GsApp		*app;
-	GtkWidget	*widget_button;
-	GtkWidget	*widget_description;
-	GtkWidget	*widget_image;
-	GtkWidget	*widget_name;
-	GtkWidget	*widget_spinner;
-	GtkWidget	*widget_version;
+	GtkWidget	*image;
+	GtkWidget	*name_box;
+	GtkWidget	*name_label;
+	GtkWidget	*version_label;
+	GtkWidget	*description_label;
+	GtkWidget	*button_box;
+	GtkWidget	*button;
+	GtkWidget	*spinner;
         gboolean         colorful;
 };
 
-
-#define	GS_APP_WIDGET_MAX_LINES_NO_EXPANDER	3
-
-G_DEFINE_TYPE (GsAppWidget, gs_app_widget, GTK_TYPE_BOX)
+G_DEFINE_TYPE_WITH_PRIVATE (GsAppWidget, gs_app_widget, GTK_TYPE_BIN)
 
 enum {
 	SIGNAL_BUTTON_CLICKED,
@@ -97,7 +96,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv = app_widget->priv;
 	GtkStyleContext *context;
-	GtkWidget *box;
 	const gchar *tmp = NULL;
 	GString *str = NULL;
 
@@ -105,77 +103,73 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		return;
 
 	/* get the main body text */
-	if (gs_app_get_state (app_widget->priv->app) == GS_APP_STATE_UPDATABLE)
-		tmp = gs_app_get_metadata_item (app_widget->priv->app, "update-details");
+	if (gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE)
+		tmp = gs_app_get_metadata_item (priv->app, "update-details");
 	if (tmp == NULL)
-		tmp = gs_app_get_description (app_widget->priv->app);
+		tmp = gs_app_get_description (priv->app);
 	if (tmp == NULL)
-		tmp = gs_app_get_summary (app_widget->priv->app);
+		tmp = gs_app_get_summary (priv->app);
 	if (tmp == NULL)
-		tmp = gs_app_get_name (app_widget->priv->app);
+		tmp = gs_app_get_name (priv->app);
 
 	/* join the lines*/
 	str = g_string_new (tmp);
 	_g_string_replace (str, "\n", " ");
 
-	gtk_label_set_label (GTK_LABEL (priv->widget_description), str->str);
-	gtk_label_set_label (GTK_LABEL (priv->widget_name),
-			     gs_app_get_name (priv->app));
-	gtk_label_set_label (GTK_LABEL (priv->widget_version),
+	gtk_label_set_label (GTK_LABEL (priv->description_label), str->str);
+	g_string_free (str, TRUE);
+
+	gtk_label_set_label (GTK_LABEL (priv->name_label),
+                             gs_app_get_name (priv->app));
+	gtk_label_set_label (GTK_LABEL (priv->version_label),
 			     gs_app_get_version (priv->app));
 	if (gs_app_get_pixbuf (priv->app))
-		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->widget_image),
+		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image),
 					   gs_app_get_pixbuf (priv->app));
-	gtk_widget_set_visible (priv->widget_name, TRUE);
-	gtk_widget_set_visible (priv->widget_version, TRUE);
-	gtk_widget_set_visible (priv->widget_image, TRUE);
-	gtk_widget_set_visible (priv->widget_button, TRUE);
-	gtk_widget_set_sensitive (priv->widget_button, TRUE);
+	gtk_widget_set_visible (priv->button, TRUE);
+	gtk_widget_set_sensitive (priv->button, TRUE);
 
-	/* show / hide widgets depending on kind */
-	context = gtk_widget_get_style_context (priv->widget_button);
+	context = gtk_widget_get_style_context (priv->button);
 	gtk_style_context_remove_class (context, "destructive-action");
 
 	switch (gs_app_get_state (app_widget->priv->app)) {
 	case GS_APP_STATE_AVAILABLE:
-		gtk_widget_set_visible (priv->widget_spinner, FALSE);
-		gtk_widget_set_visible (priv->widget_button, TRUE);
-		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Install"));
+		gtk_widget_set_visible (priv->spinner, FALSE);
+		gtk_widget_set_visible (priv->button, TRUE);
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
 		break;
 	case GS_APP_STATE_INSTALLED:
-		gtk_widget_set_visible (priv->widget_spinner, FALSE);
-		gtk_widget_set_visible (priv->widget_button, TRUE);
-		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Remove"));
+		gtk_widget_set_visible (priv->spinner, FALSE);
+		gtk_widget_set_visible (priv->button, TRUE);
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
                 if (priv->colorful)
         		gtk_style_context_add_class (context, "destructive-action");
 		break;
 	case GS_APP_STATE_UPDATABLE:
-		gtk_widget_set_visible (priv->widget_spinner, FALSE);
-		gtk_widget_set_visible (priv->widget_button, FALSE);
-		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Update"));
+		gtk_widget_set_visible (priv->spinner, FALSE);
+		gtk_widget_set_visible (priv->button, FALSE);
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
 		break;
 	case GS_APP_STATE_INSTALLING:
-		gtk_spinner_start (GTK_SPINNER (priv->widget_spinner));
-		gtk_widget_set_visible (priv->widget_spinner, TRUE);
-		gtk_widget_set_visible (priv->widget_button, TRUE);
-		gtk_widget_set_sensitive (priv->widget_button, FALSE);
-		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Installing"));
+		gtk_spinner_start (GTK_SPINNER (priv->spinner));
+		gtk_widget_set_visible (priv->spinner, TRUE);
+		gtk_widget_set_visible (priv->button, TRUE);
+		gtk_widget_set_sensitive (priv->button, FALSE);
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
 		break;
 	case GS_APP_STATE_REMOVING:
-		gtk_spinner_start (GTK_SPINNER (priv->widget_spinner));
-		gtk_widget_set_visible (priv->widget_spinner, TRUE);
-		gtk_widget_set_visible (priv->widget_button, TRUE);
-		gtk_widget_set_sensitive (priv->widget_button, FALSE);
-		gtk_button_set_label (GTK_BUTTON (priv->widget_button), _("Removing"));
+		gtk_spinner_start (GTK_SPINNER (priv->spinner));
+		gtk_widget_set_visible (priv->spinner, TRUE);
+		gtk_widget_set_visible (priv->button, TRUE);
+		gtk_widget_set_sensitive (priv->button, FALSE);
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Removing"));
 		break;
 	default:
-		gtk_widget_set_visible (priv->widget_button, FALSE);
+		gtk_widget_set_visible (priv->button, FALSE);
 		break;
 	}
-	box = gtk_widget_get_parent (priv->widget_button);
-	gtk_widget_set_visible (box, gtk_widget_get_visible (priv->widget_spinner) ||
-				     gtk_widget_get_visible (priv->widget_button));
-	g_string_free (str, TRUE);
+	gtk_widget_set_visible (priv->button_box, gtk_widget_get_visible (priv->spinner) ||
+				                  gtk_widget_get_visible (priv->button));
 }
 
 /**
@@ -213,10 +207,8 @@ gs_app_widget_destroy (GtkWidget *object)
 	GsAppWidget *app_widget = GS_APP_WIDGET (object);
 	GsAppWidgetPrivate *priv = app_widget->priv;
 
-	if (priv->markdown != NULL)
-		g_clear_object (&priv->markdown);
-	if (priv->app != NULL)
-		g_clear_object (&priv->app);
+	g_clear_object (&priv->markdown);
+	g_clear_object (&priv->app);
 
 	GTK_WIDGET_CLASS (gs_app_widget_parent_class)->destroy (object);
 }
@@ -226,6 +218,7 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
 	widget_class->destroy = gs_app_widget_destroy;
 
 	signals [SIGNAL_BUTTON_CLICKED] =
@@ -235,112 +228,40 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
-	g_type_class_add_private (klass, sizeof (GsAppWidgetPrivate));
+        gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/app-widget.ui");
+
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, image);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_box);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_label);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, version_label);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, description_label);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button_box);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, spinner);
 }
 
-/**
- * gs_app_widget_button_clicked_cb:
- **/
 static void
-gs_app_widget_button_clicked_cb (GtkWidget *widget, GsAppWidget *app_widget)
+button_clicked (GtkWidget *widget, GsAppWidget *app_widget)
 {
 	g_signal_emit (app_widget, signals[SIGNAL_BUTTON_CLICKED], 0);
 }
 
-/**
- * gs_app_widget_init:
- **/
 static void
 gs_app_widget_init (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv;
-	GtkWidget *box;
-	PangoAttrList *attr_list;
 
-	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
-	app_widget->priv = G_TYPE_INSTANCE_GET_PRIVATE (app_widget,
-							GS_TYPE_APP_WIDGET,
-							GsAppWidgetPrivate);
-	priv = app_widget->priv;
+	priv = gs_app_widget_get_instance_private (app_widget);
+	app_widget->priv = priv;
+
+        gtk_widget_set_has_window (GTK_WIDGET (app_widget), FALSE);
+        gtk_widget_init_template (GTK_WIDGET (app_widget));
+
 	priv->markdown = ch_markdown_new ();
-
         priv->colorful = TRUE;
 
-	/* set defaults */
-	gtk_box_set_spacing (GTK_BOX (app_widget), 3);
-	g_object_set (app_widget, "margin", 9, NULL);
-
-	/* pixbuf */
-	priv->widget_image = gtk_image_new ();
-	gtk_image_set_pixel_size (GTK_IMAGE (priv->widget_image), 64);
-
-	gtk_widget_set_margin_right (priv->widget_image, 9);
-	gtk_widget_set_valign (priv->widget_image, GTK_ALIGN_START);
-	gtk_box_pack_start (GTK_BOX (app_widget), priv->widget_image, FALSE, FALSE, 0);
-
-	/* name > version */
-	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_set_visible (box, TRUE);
-	priv->widget_name = gtk_label_new ("name");
-	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_name),
-				 PANGO_ELLIPSIZE_NONE);
-	gtk_label_set_line_wrap (GTK_LABEL (priv->widget_name), TRUE);
-	gtk_label_set_max_width_chars (GTK_LABEL (priv->widget_name), 20);
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_name), 0.0, 0.5);
-	gtk_widget_set_size_request (priv->widget_name, 200, -1);
-	attr_list = pango_attr_list_new ();
-	pango_attr_list_insert (attr_list,
-				pango_attr_weight_new (PANGO_WEIGHT_BOLD));
-	gtk_label_set_attributes (GTK_LABEL (priv->widget_name), attr_list);
-	pango_attr_list_unref (attr_list);
-	priv->widget_version = gtk_label_new ("version");
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_version), 0.0, 0.5);
-	gtk_box_pack_start (GTK_BOX (box), priv->widget_name, FALSE, FALSE, 0);
-	gtk_box_pack_start (GTK_BOX (box), priv->widget_version, FALSE, FALSE, 6);
-	gtk_box_pack_start (GTK_BOX (app_widget), box, FALSE, TRUE, 0);
-
-	/* description */
-	priv->widget_description = gtk_label_new (NULL);
-        gtk_widget_show (priv->widget_description);
-        gtk_label_set_line_wrap (GTK_LABEL (priv->widget_description), TRUE);
-#if GTK_CHECK_VERSION (3, 9, 13)
-        gtk_label_set_lines (GTK_LABEL (priv->widget_description), 3);
-#endif
-	gtk_widget_set_hexpand (priv->widget_description, TRUE);
-	gtk_widget_set_halign (priv->widget_description, GTK_ALIGN_FILL);
-	gtk_misc_set_alignment (GTK_MISC (priv->widget_description), 0.0, 0.5);
-	gtk_label_set_ellipsize (GTK_LABEL (priv->widget_description), PANGO_ELLIPSIZE_END);
-
-	gtk_box_pack_start (GTK_BOX (app_widget), priv->widget_description, TRUE, TRUE, 0);
-
-	/* button */
-	priv->widget_button = gtk_button_new_with_label ("button");
-	gtk_widget_set_margin_right (priv->widget_button, 9);
-	gtk_widget_set_size_request (priv->widget_button, 100, -1);
-	gtk_widget_set_vexpand (priv->widget_button, FALSE);
-	gtk_widget_set_hexpand (priv->widget_button, FALSE);
-	gtk_widget_set_halign (priv->widget_button, GTK_ALIGN_END);
-	g_signal_connect (priv->widget_button, "clicked",
-			  G_CALLBACK (gs_app_widget_button_clicked_cb), app_widget);
-
-	/* spinner */
-	priv->widget_spinner = gtk_spinner_new ();
-	gtk_widget_set_halign (priv->widget_spinner, GTK_ALIGN_END);
-	gtk_widget_set_valign (priv->widget_spinner, GTK_ALIGN_CENTER);
-	gtk_widget_set_margin_left (priv->widget_spinner, 6);
-	gtk_widget_set_margin_right (priv->widget_spinner, 6);
-
-	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 3);
-	gtk_widget_set_size_request (box, 200, -1);
-	gtk_widget_set_halign (box, GTK_ALIGN_END);
-	gtk_widget_set_valign (box, GTK_ALIGN_CENTER);
-	gtk_widget_set_visible (box, TRUE);
-	gtk_box_pack_end (GTK_BOX (box), priv->widget_button, FALSE, FALSE, 0);
-	gtk_box_pack_end (GTK_BOX (box), priv->widget_spinner, FALSE, FALSE, 0);
-	gtk_box_pack_end (GTK_BOX (app_widget), box, FALSE, FALSE, 0);
-
-	/* refresh */
-	gs_app_widget_refresh (app_widget);
+	g_signal_connect (priv->button, "clicked",
+			  G_CALLBACK (button_clicked), app_widget);
 }
 
 void
@@ -348,12 +269,8 @@ gs_app_widget_set_size_groups (GsAppWidget  *app_widget,
 			       GtkSizeGroup *image,
 			       GtkSizeGroup *name)
 {
-	GtkWidget *box;
-
-	gtk_size_group_add_widget (image, app_widget->priv->widget_image);
-
-	box = gtk_widget_get_parent (app_widget->priv->widget_name);
-	gtk_size_group_add_widget (name, box);
+	gtk_size_group_add_widget (image, app_widget->priv->image);
+	gtk_size_group_add_widget (name, app_widget->priv->name_box);
 }
 
 void
@@ -363,9 +280,6 @@ gs_app_widget_set_colorful (GsAppWidget *app_widget,
         app_widget->priv->colorful = colorful;
 }
 
-/**
- * gs_app_widget_new:
- **/
 GtkWidget *
 gs_app_widget_new (void)
 {

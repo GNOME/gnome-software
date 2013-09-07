@@ -41,7 +41,7 @@ typedef struct _GsAppWidgetPrivate		GsAppWidgetPrivate;
 
 struct _GsAppWidget
 {
-	GtkBox			 parent;
+	GtkBin			 parent;
 
 	/*< private >*/
 	GsAppWidgetPrivate	*priv;
@@ -49,7 +49,7 @@ struct _GsAppWidget
 
 struct _GsAppWidgetClass
 {
-	GtkBoxClass		 parent_class;
+	GtkBinClass		 parent_class;
 	void			(*button_clicked)	(GsAppWidget	*app_widget);
 	void			(*read_more_clicked)   	(GsAppWidget	*app_widget);
 };
