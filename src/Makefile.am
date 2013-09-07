@@ -45,6 +45,8 @@ gnome_software_SOURCES =				\
 	gs-feature-tile.h				\
 	gs-category-tile.c				\
 	gs-category-tile.h				\
+	gs-app-tile.c					\
+	gs-app-tile.h					\
 	gs-box.h					\
 	gs-box.c					\
 	gs-plugin.c					\

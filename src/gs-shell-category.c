@@ -25,6 +25,7 @@
 #include <glib/gi18n.h>
 
 #include "gs-utils.h"
+#include "gs-app-tile.h"
 #include "gs-shell-category.h"
 
 struct GsShellCategoryPrivate {
@@ -57,54 +58,13 @@ gs_shell_category_refresh (GsShellCategory *shell)
 }
 
 static void
-app_tile_clicked (GtkButton *button, gpointer data)
+app_tile_clicked (GsAppTile *tile, gpointer data)
 {
         GsShellCategory *shell = GS_SHELL_CATEGORY (data);
         GsApp *app;
 
-        app = g_object_get_data (G_OBJECT (button), "app");
+        app = gs_app_tile_get_app (tile);
         gs_shell_show_app (shell->priv->shell, app);
-}
-
-static GtkWidget *
-create_app_tile (GsShellCategory *shell, GsApp *app)
-{
-        GtkWidget *button, *label;
-        GtkWidget *image, *grid;
-        const gchar *tmp;
-        PangoAttrList *attrs;
-
-        button = gtk_button_new ();
-        gtk_widget_set_hexpand (button, TRUE);
-        gtk_style_context_add_class (gtk_widget_get_style_context (button), "view");
-        gtk_style_context_add_class (gtk_widget_get_style_context (button), "tile");
-        grid = gtk_grid_new ();
-        gtk_container_add (GTK_CONTAINER (button), grid);
-        g_object_set (grid, "margin", 12, "row-spacing", 6, "column-spacing", 6, NULL);
-        image = gtk_image_new_from_pixbuf (gs_app_get_pixbuf (app));
-        gtk_grid_attach (GTK_GRID (grid), image, 0, 0, 1, 2);
-        label = gtk_label_new (gs_app_get_name (app));
-        gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
-        attrs = pango_attr_list_new ();
-        pango_attr_list_insert (attrs, pango_attr_weight_new (PANGO_WEIGHT_BOLD));
-        gtk_label_set_attributes (GTK_LABEL (label), attrs);
-        pango_attr_list_unref (attrs);
-        g_object_set (label, "xalign", 0, NULL);
-        gtk_grid_attach (GTK_GRID (grid), label, 1, 0, 1, 1);
-        tmp = gs_app_get_summary (app);
-        if (tmp != NULL && tmp[0] != '\0') {
-                label = gtk_label_new (tmp);
-                g_object_set (label, "xalign", 0, NULL);
-                gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
-                gtk_grid_attach (GTK_GRID (grid), label, 1, 1, 1, 1);
-        }
-
-        gtk_widget_show_all (button);
-        g_object_set_data_full (G_OBJECT (button), "app", g_object_ref (app), g_object_unref);
-        g_signal_connect (button, "clicked",
-                          G_CALLBACK (app_tile_clicked), shell);
-
-        return button;
 }
 
 /**
@@ -142,7 +102,9 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 
         for (l = list, i = 0; l != NULL; l = l->next, i++) {
                 app = GS_APP (l->data);
-                tile = create_app_tile (shell, app);
+                tile = gs_app_tile_new (app);
+                g_signal_connect (tile, "clicked",
+                                  G_CALLBACK (app_tile_clicked), shell);
                 gtk_grid_attach (GTK_GRID (grid), tile, (i % 2), i / 2, 1, 1);
         }
 
