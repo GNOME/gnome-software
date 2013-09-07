@@ -51,7 +51,6 @@ struct _GsAppWidgetClass
 {
 	GtkBinClass		 parent_class;
 	void			(*button_clicked)	(GsAppWidget	*app_widget);
-	void			(*read_more_clicked)   	(GsAppWidget	*app_widget);
 };
 
 GType		 gs_app_widget_get_type			(void);
