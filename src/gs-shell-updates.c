@@ -194,7 +194,7 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 		gtk_window_set_title (GTK_WINDOW (widget), gs_app_get_name (app));
 	} else {
 		tmp = g_strdup_printf ("%s %s",
-				       gs_app_get_name (app),
+				       gs_app_get_metadata_item (app, "package-name"),
 				       gs_app_get_version (app));
 		gtk_window_set_title (GTK_WINDOW (widget), tmp);
 		g_free (tmp);
@@ -266,7 +266,7 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 			app_related = g_ptr_array_index (related, i);
                         row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
                         g_object_set_data_full (G_OBJECT (row), "app", g_object_ref (app_related), g_object_unref);
-                        label = gtk_label_new (gs_app_get_name (app_related));
+                        label = gtk_label_new (gs_app_get_metadata_item (app_related, "package-name"));
                         g_object_set (label,
                                       "margin-left", 20,
                                       "margin-right", 20,
