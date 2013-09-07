@@ -82,7 +82,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
          * 3 days apiece.
          */
         date = g_date_time_new_now_utc ();
-        i = g_date_time_get_seconds (date);
+        i = g_date_time_get_day_of_year (date);
         g_date_time_unref (date);
         i = (i % (n_apps * 3)) / 3;
         group = apps[i];
