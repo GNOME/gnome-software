@@ -21,6 +21,8 @@
 
 #include "config.h"
 
+#include <string.h>
+
 #include "appstream-app.h"
 
 struct AppstreamApp
@@ -28,15 +30,43 @@ struct AppstreamApp
 	gchar			*id;
 	gchar			*pkgname;
 	gchar			*name;
+	guint			 name_value;
 	gchar			*summary;
-	gchar			*url;
+	guint			 summary_value;
 	gchar			*description;
+	guint			 description_value;
+	gchar			*url;
 	gchar			*icon;
 	AppstreamAppIconKind	 icon_kind;
 	GPtrArray		*appcategories;
 	gpointer		 userdata;
 	GDestroyNotify		 userdata_destroy_func;
 };
+
+/**
+ * appstream_app_get_locale_value:
+ *
+ * Returns a metric on how good a match the locale is, with 0 being an
+ * exact match and higher numbers meaning further away from perfect.
+ */
+static guint
+appstream_app_get_locale_value (const gchar *lang)
+{
+	const gchar * const *locales;
+	guint i;
+
+	/* shortcut as C will always match */
+	if (lang == NULL || strcmp (lang, "C") == 0)
+		return G_MAXUINT - 1;
+
+	locales = g_get_language_names ();
+	for (i = 0; locales[i] != NULL; i++) {
+		if (g_ascii_strcasecmp (locales[i], lang) == 0)
+			return i;
+	}
+
+	return G_MAXUINT;
+}
 
 /**
  * appstream_app_free:
@@ -46,11 +76,11 @@ appstream_app_free (AppstreamApp *app)
 {
 	g_free (app->id);
 	g_free (app->pkgname);
+	g_free (app->url);
+	g_free (app->icon);
 	g_free (app->name);
 	g_free (app->summary);
-	g_free (app->url);
 	g_free (app->description);
-	g_free (app->icon);
 	g_ptr_array_unref (app->appcategories);
 	if (app->userdata_destroy_func != NULL)
 		app->userdata_destroy_func (app->userdata);
@@ -87,6 +117,9 @@ appstream_app_new (void)
 	AppstreamApp *app;
 	app = g_slice_new0 (AppstreamApp);
 	app->appcategories = g_ptr_array_new_with_free_func (g_free);
+	app->name_value = G_MAXUINT;
+	app->summary_value = G_MAXUINT;
+	app->description_value = G_MAXUINT;
 	app->icon_kind = APPSTREAM_APP_ICON_KIND_UNKNOWN;
 	return app;
 }
@@ -207,10 +240,18 @@ appstream_app_set_pkgname (AppstreamApp *app,
  */
 void 
 appstream_app_set_name (AppstreamApp *app,
+			const gchar *lang,
 			const gchar *name,
 			gsize length)
 {
-	app->name = g_strndup (name, length);
+	guint new_value;
+
+	new_value = appstream_app_get_locale_value (lang);
+	if (new_value < app->name_value) {
+		g_free (app->name);
+		app->name = g_strndup (name, length);
+		app->name_value = new_value;
+	}
 }
 
 /**
@@ -218,10 +259,18 @@ appstream_app_set_name (AppstreamApp *app,
  */
 void 
 appstream_app_set_summary (AppstreamApp *app,
+			   const gchar *lang,
 			   const gchar *summary,
 			   gsize length)
 {
-	app->summary = g_strndup (summary, length);
+	guint new_value;
+
+	new_value = appstream_app_get_locale_value (lang);
+	if (new_value < app->summary_value) {
+		g_free (app->summary);
+		app->summary = g_strndup (summary, length);
+		app->summary_value = new_value;
+	}
 }
 
 /**
@@ -240,10 +289,18 @@ appstream_app_set_url (AppstreamApp *app,
  */
 void 
 appstream_app_set_description (AppstreamApp *app,
+			       const gchar *lang,
 			       const gchar *description,
 			       gsize length)
 {
-	app->description = g_strndup (description, length);
+	guint new_value;
+
+	new_value = appstream_app_get_locale_value (lang);
+	if (new_value < app->description_value) {
+		g_free (app->description);
+		app->description = g_strndup (description, length);
+		app->description_value = new_value;
+	}
 }
 
 /**

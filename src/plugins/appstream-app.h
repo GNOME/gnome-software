@@ -56,15 +56,18 @@ void		 appstream_app_set_pkgname		(AppstreamApp	*app,
 							 const gchar	*pkgname,
 							 gsize		 length);
 void		 appstream_app_set_name			(AppstreamApp	*app,
+							 const gchar    *lang,
 							 const gchar	*name,
 							 gsize		 length);
 void		 appstream_app_set_summary		(AppstreamApp	*app,
+							 const gchar    *lang,
 							 const gchar	*summary,
 							 gsize		 length);
 void		 appstream_app_set_url			(AppstreamApp	*app,
 							 const gchar	*summary,
 							 gsize		 length);
 void		 appstream_app_set_description		(AppstreamApp	*app,
+							 const gchar    *lang,
 							 const gchar	*description,
 							 gsize		 length);
 void		 appstream_app_set_icon			(AppstreamApp	*app,

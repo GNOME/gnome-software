@@ -184,6 +184,7 @@ appstream_cache_icon_kind_from_string (const gchar *kind_str)
 typedef struct {
 	const gchar		*path_icons;
 	AppstreamApp		*item_temp;
+	char                    *lang_temp;
 	AppstreamCache		*cache;
 	AppstreamCacheSection	 section;
 } AppstreamCacheHelper;
@@ -246,9 +247,21 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 		break;
 	case APPSTREAM_CACHE_SECTION_ID:
 	case APPSTREAM_CACHE_SECTION_PKGNAME:
+	case APPSTREAM_CACHE_SECTION_URL:
+		if (helper->item_temp == NULL ||
+		    helper->section != APPSTREAM_CACHE_SECTION_APPLICATION) {
+			g_set_error (error,
+				     APPSTREAM_CACHE_ERROR,
+				     APPSTREAM_CACHE_ERROR_FAILED,
+				     "XML start %s invalid, section %s",
+				     element_name,
+				     appstream_cache_selection_to_string (helper->section));
+			return;
+		}
+		break;
+
 	case APPSTREAM_CACHE_SECTION_NAME:
 	case APPSTREAM_CACHE_SECTION_SUMMARY:
-	case APPSTREAM_CACHE_SECTION_URL:
 	case APPSTREAM_CACHE_SECTION_DESCRIPTION:
 		if (helper->item_temp == NULL ||
 		    helper->section != APPSTREAM_CACHE_SECTION_APPLICATION) {
@@ -260,6 +273,13 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 				     appstream_cache_selection_to_string (helper->section));
 			return;
 		}
+		if (!g_markup_collect_attributes (element_name, attribute_names, attribute_values, error,
+						  G_MARKUP_COLLECT_STRDUP | G_MARKUP_COLLECT_OPTIONAL,
+						  "xml:lang", &helper->lang_temp,
+						  G_MARKUP_COLLECT_INVALID))
+			return;
+		if (!helper->lang_temp)
+			helper->lang_temp = g_strdup ("C");
 		break;
 	default:
 		/* ignore unknown entries */
@@ -314,12 +334,16 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_CACHE_SECTION_ID:
 	case APPSTREAM_CACHE_SECTION_PKGNAME:
 	case APPSTREAM_CACHE_SECTION_APPCATEGORIES:
-	case APPSTREAM_CACHE_SECTION_NAME:
-	case APPSTREAM_CACHE_SECTION_ICON:
-	case APPSTREAM_CACHE_SECTION_SUMMARY:
 	case APPSTREAM_CACHE_SECTION_URL:
+	case APPSTREAM_CACHE_SECTION_ICON:
+		helper->section = APPSTREAM_CACHE_SECTION_APPLICATION;
+		break;
+	case APPSTREAM_CACHE_SECTION_NAME:
+	case APPSTREAM_CACHE_SECTION_SUMMARY:
 	case APPSTREAM_CACHE_SECTION_DESCRIPTION:
 		helper->section = APPSTREAM_CACHE_SECTION_APPLICATION;
+		g_free (helper->lang_temp);
+		helper->lang_temp = NULL;
 		break;
 	default:
 		/* ignore unknown entries */
@@ -387,26 +411,24 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		appstream_app_set_pkgname (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_CACHE_SECTION_NAME:
-		if (helper->item_temp == NULL ||
-		    appstream_app_get_name (helper->item_temp) != NULL) {
+		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
 					     APPSTREAM_CACHE_ERROR_FAILED,
 					     "item_temp name invalid");
 			return;
 		}
-		appstream_app_set_name (helper->item_temp, text, text_len);
+		appstream_app_set_name (helper->item_temp, helper->lang_temp, text, text_len);
 		break;
 	case APPSTREAM_CACHE_SECTION_SUMMARY:
-		if (helper->item_temp == NULL ||
-		    appstream_app_get_summary (helper->item_temp) != NULL) {
+		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
 					     APPSTREAM_CACHE_ERROR_FAILED,
 					     "item_temp summary invalid");
 			return;
 		}
-		appstream_app_set_summary (helper->item_temp, text, text_len);
+		appstream_app_set_summary (helper->item_temp, helper->lang_temp, text, text_len);
 		break;
 	case APPSTREAM_CACHE_SECTION_URL:
 		if (helper->item_temp == NULL ||
@@ -420,15 +442,14 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		appstream_app_set_url (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_CACHE_SECTION_DESCRIPTION:
-		if (helper->item_temp == NULL ||
-		    appstream_app_get_description (helper->item_temp) != NULL) {
+		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
 					     APPSTREAM_CACHE_ERROR_FAILED,
 					     "item_temp description invalid");
 			return;
 		}
-		appstream_app_set_description (helper->item_temp, text, text_len);
+		appstream_app_set_description (helper->item_temp, helper->lang_temp, text, text_len);
 		break;
 	case APPSTREAM_CACHE_SECTION_ICON:
 		if (helper->item_temp == NULL ||
