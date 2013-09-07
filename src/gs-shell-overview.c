@@ -262,6 +262,10 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkImage *image;
 	GtkWidget *button;
+	GtkWidget *widget;
+        const gchar *text;
+        gchar *css;
+        GtkCssProvider *provider;
 
 	list = gs_plugin_loader_get_featured_finish (plugin_loader,
 						     res,
@@ -277,10 +281,58 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "featured_image"));
 	pixbuf = gs_app_get_featured_pixbuf (app);
 	gtk_image_set_from_pixbuf (image, pixbuf);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_title"));
+        text = gs_app_get_metadata_item (app, "featured-title");
+        gtk_label_set_label (GTK_LABEL (widget), text);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_subtitle"));
+        text = gs_app_get_metadata_item (app, "featured-subtitle");
+        gtk_label_set_label (GTK_LABEL (widget), text);
+
 	button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_button"));
 	g_object_set_data_full (G_OBJECT (button), "app", app, g_object_unref);
 	g_signal_connect (button, "clicked",
 			  G_CALLBACK (app_tile_clicked), shell_overview);
+
+        css = g_strdup_printf (
+                ".button.featured-tile {\n"
+                "  padding: 0;\n"
+                "  border-radius: 0;\n"
+                "  border-width: 1px;\n"
+                "  border-image: none;\n"
+                "  border-color: %s;\n"
+                "  color: %s;\n"
+                "  -GtkWidget-focus-padding: 0;\n"
+                "  outline-color: alpha(%s, 0.75);\n"
+                "  outline-style: dashed;\n"
+                "  outline-offset: 2px;\n"
+                "  background-image: -gtk-gradient(linear,\n"
+                "                       0 0, 0 1,\n"
+                "                       color-stop(0,%s),\n"
+                "                       color-stop(1,%s));\n"
+                "}\n"
+                ".button.featured-tile:hover {\n"
+                "  background-image: -gtk-gradient(linear,\n"
+                "                       0 0, 0 1,\n"
+                "                       color-stop(0,alpha(%s,0.80)),\n"
+                "                       color-stop(1,alpha(%s,0.80)));\n"
+                "}\n",
+                gs_app_get_metadata_item (app, "featured-stroke-color"),
+                gs_app_get_metadata_item (app, "featured-text-color"),
+                gs_app_get_metadata_item (app, "featured-text-color"),
+                gs_app_get_metadata_item (app, "featured-gradient1-color"),
+                gs_app_get_metadata_item (app, "featured-gradient2-color"),
+                gs_app_get_metadata_item (app, "featured-gradient1-color"),
+                gs_app_get_metadata_item (app, "featured-gradient2-color"));
+
+        provider = gtk_css_provider_new ();
+        gtk_css_provider_load_from_data (provider, css, -1, NULL);
+        gtk_style_context_add_provider_for_screen (gtk_widget_get_screen (button),
+                                                   GTK_STYLE_PROVIDER (provider),
+                                                   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+        g_free (css);
 
 out:
 	g_list_free (list);
