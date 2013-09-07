@@ -56,32 +56,90 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	GsApp *app;
 	guint i;
         GDateTime *date;
-	const gchar *apps[] = {
-                "gimp",
-                "org.gnome.Weather.Application",
-                "gnome-sudoku",
-        };
+        gchar **apps;
+        gsize n_apps;
+        GError *local_error = NULL;
+        GKeyFile *kf;
+        gchar *s;
+        const gchar *group;
+
+        apps = NULL;
+
+        path = g_build_filename (DATADIR, "gnome-software", "featured.ini", NULL);
+        kf = g_key_file_new ();
+        if (!g_key_file_load_from_file (kf, path, 0, &local_error)) {
+                g_warning ("Failed to read %s: %s", path, local_error->message);
+                ret = FALSE;
+                goto out;
+        }
+        g_free (path);
+
+        apps = g_key_file_get_groups (kf, &n_apps)
+;
 
         /* In lieu of a random number generator, just
          * rotate the featured apps, giving each app
          * 3 days apiece.
          */
         date = g_date_time_new_now_utc ();
-        i = g_date_time_get_day_of_year (date);
+        i = g_date_time_get_seconds (date);
         g_date_time_unref (date);
-        i = (i % (G_N_ELEMENTS (apps) * 3)) / 3;
+        i = (i % (n_apps * 3)) / 3;
+        group = apps[i];
 
-        app = gs_app_new (apps[i]);
-	gs_plugin_add_app (list, app);
-	path = g_strconcat (DATADIR, "/gnome-software/featured-", apps[i], ".png", NULL);
-	pixbuf = gdk_pixbuf_new_from_file_at_scale (path, -1, -1, TRUE, error);
-	g_free (path);
+        s = g_key_file_get_string (kf, group, "image", NULL);
+	path = g_build_filename (DATADIR, "gnome-software", s, NULL);
+        g_free (s);
+	pixbuf = gdk_pixbuf_new_from_file_at_scale (path, -1, -1, TRUE, &local_error);
 	if (pixbuf == NULL) {
+                g_warning ("Failed to load %s: %s", path, local_error->message);
+                g_propagate_error (error, local_error);
+                g_key_file_unref (kf);
+                g_free (path);
 		ret = FALSE;
 		goto out;
 	}
+
+        app = gs_app_new (apps[i]);
 	gs_app_set_featured_pixbuf (app, pixbuf);
-	g_object_unref (pixbuf);
+        gs_app_set_metadata (app, "featured-image-path", path);
+        s = g_key_file_get_locale_string (kf, group, "title", NULL, NULL);
+        if (s) {
+                gs_app_set_metadata (app, "featured-title", s);
+                g_free (s);
+        }
+        s = g_key_file_get_locale_string (kf, group, "subtitle", NULL, NULL);
+        if (s) {
+                gs_app_set_metadata (app, "featured-subtitle", s);
+                g_free (s);
+        }
+        s = g_key_file_get_string (kf, group, "gradient1", NULL);
+        if (s) {
+                gs_app_set_metadata (app, "featured-gradient1-color", s);
+                g_free (s);
+        }
+        s = g_key_file_get_string (kf, group, "gradient2", NULL);
+        if (s) {
+                gs_app_set_metadata (app, "featured-gradient2-color", s);
+                g_free (s);
+        }
+        s = g_key_file_get_string (kf, group, "stroke", NULL);
+        if (s) {
+                gs_app_set_metadata (app, "featured-stroke-color", s);
+                g_free (s);
+        }
+        s = g_key_file_get_string (kf, group, "text", NULL);
+        if (s) {
+                gs_app_set_metadata (app, "featured-text-color", s);
+                g_free (s);
+        }
+
+       	g_object_unref (pixbuf);
+	gs_plugin_add_app (list, app);
+	g_free (path);
+
 out:
+        g_strfreev (apps);
+
 	return ret;
 }
