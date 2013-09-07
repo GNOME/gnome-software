@@ -41,6 +41,8 @@ gnome_software_SOURCES =				\
 	gs-app-widget.h					\
 	gs-popular-tile.c				\
 	gs-popular-tile.h				\
+	gs-feature-tile.c				\
+	gs-feature-tile.h				\
 	gs-box.h					\
 	gs-box.c					\
 	gs-plugin.c					\

@@ -28,6 +28,7 @@
 #include "gs-app.h"
 #include "gs-category.h"
 #include "gs-popular-tile.h"
+#include "gs-feature-tile.h"
 #include "gs-utils.h"
 
 static void	gs_shell_overview_finalize	(GObject	*object);
@@ -61,16 +62,6 @@ void
 gs_shell_overview_invalidate (GsShellOverview *shell_overview)
 {
 	shell_overview->priv->cache_valid = FALSE;
-}
-
-static void
-app_tile_clicked (GtkButton *button, gpointer data)
-{
-	GsShellOverview *shell_overview = GS_SHELL_OVERVIEW (data);
-	GsApp *app;
-
-	app = g_object_get_data (G_OBJECT (button), "app");
-        gs_shell_show_app (shell_overview->priv->shell, app);
 }
 
 static void
@@ -155,30 +146,31 @@ create_category_tile (GsShellOverview *shell_overview, GsCategory *category)
 	return button;
 }
 
-/**
- * gs_shell_overview_get_featured_cb:
- **/
+static void
+feature_tile_clicked (GsFeatureTile *tile, gpointer data)
+{
+	GsShellOverview *shell = GS_SHELL_OVERVIEW (data);
+        GsApp *app;
+
+        app = gs_feature_tile_get_app (tile);
+        gs_shell_show_app (shell->priv->shell, app);
+}
+
 static void
 gs_shell_overview_get_featured_cb (GObject *source_object,
                	 		   GAsyncResult *res,
 	         		   gpointer user_data)
 {
-	GdkPixbuf *pixbuf;
-	GError *error = NULL;
-	GList *list;
-	GsApp *app;
-	GsShellOverview *shell_overview = GS_SHELL_OVERVIEW (user_data);
-	GsShellOverviewPrivate *priv = shell_overview->priv;
+	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
+	GsShellOverviewPrivate *priv = shell->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GtkImage *image;
-	GtkWidget *button;
-	GtkWidget *widget;
-        const gchar *text;
-        gchar *css;
+	GtkWidget *tile;
+	GtkWidget *box;
+        GList *list;
+        GError *error = NULL;
+        GsApp *app;
 
-	list = gs_plugin_loader_get_featured_finish (plugin_loader,
-						     res,
-						     &error);
+	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		g_warning ("failed to get featured apps: %s", error->message);
 		g_error_free (error);
@@ -187,64 +179,20 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 
 	/* at the moment, we only care about the first app */
 	app = GS_APP (list->data);
-	image = GTK_IMAGE (gtk_builder_get_object (priv->builder, "featured_image"));
-	pixbuf = gs_app_get_featured_pixbuf (app);
-	gtk_image_set_from_pixbuf (image, pixbuf);
+        box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "feature"));
+        tile = gs_feature_tile_new (app);
+	g_signal_connect (tile, "clicked",
+			  G_CALLBACK (feature_tile_clicked), shell);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_title"));
-        text = gs_app_get_metadata_item (app, "featured-title");
-        gtk_label_set_label (GTK_LABEL (widget), text);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_subtitle"));
-        text = gs_app_get_metadata_item (app, "featured-subtitle");
-        gtk_label_set_label (GTK_LABEL (widget), text);
-
-	button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_button"));
-	g_object_set_data_full (G_OBJECT (button), "app", app, g_object_unref);
-	g_signal_connect (button, "clicked",
-			  G_CALLBACK (app_tile_clicked), shell_overview);
-
-        css = g_strdup_printf (
-                ".button.featured-tile {\n"
-                "  padding: 0;\n"
-                "  border-radius: 0;\n"
-                "  border-width: 1px;\n"
-                "  border-image: none;\n"
-                "  border-color: %s;\n"
-                "  color: %s;\n"
-                "  -GtkWidget-focus-padding: 0;\n"
-                "  outline-color: alpha(%s, 0.75);\n"
-                "  outline-style: dashed;\n"
-                "  outline-offset: 2px;\n"
-                "  background-image: -gtk-gradient(linear,\n"
-                "                       0 0, 0 1,\n"
-                "                       color-stop(0,%s),\n"
-                "                       color-stop(1,%s));\n"
-                "}\n"
-                ".button.featured-tile:hover {\n"
-                "  background-image: -gtk-gradient(linear,\n"
-                "                       0 0, 0 1,\n"
-                "                       color-stop(0,alpha(%s,0.80)),\n"
-                "                       color-stop(1,alpha(%s,0.80)));\n"
-                "}\n",
-                gs_app_get_metadata_item (app, "featured-stroke-color"),
-                gs_app_get_metadata_item (app, "featured-text-color"),
-                gs_app_get_metadata_item (app, "featured-text-color"),
-                gs_app_get_metadata_item (app, "featured-gradient1-color"),
-                gs_app_get_metadata_item (app, "featured-gradient2-color"),
-                gs_app_get_metadata_item (app, "featured-gradient1-color"),
-                gs_app_get_metadata_item (app, "featured-gradient2-color"));
-
-        gtk_css_provider_load_from_data (priv->feature_style, css, -1, NULL);
-
-        g_free (css);
+        gs_container_remove_all (GTK_CONTAINER (box));
+        gtk_container_add (GTK_CONTAINER (box), tile);
 
 out:
 	g_list_free (list);
 
         priv->refresh_count--;
         if (priv->refresh_count == 0)
-                g_signal_emit (shell_overview, signals[SIGNAL_REFRESHED], 0);
+                g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
 }
 
 /**
