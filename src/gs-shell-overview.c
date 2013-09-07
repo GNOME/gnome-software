@@ -64,16 +64,6 @@ gs_shell_overview_invalidate (GsShellOverview *shell_overview)
 }
 
 static void
-container_remove_all (GtkContainer *container)
-{
-	GList *children, *l;
-	children = gtk_container_get_children (container);
-	for (l = children; l; l = l->next)
-		gtk_container_remove (container, GTK_WIDGET (l->data));
-	g_list_free (children);
-}
-
-static void
 app_tile_clicked (GtkButton *button, gpointer data)
 {
 	GsShellOverview *shell_overview = GS_SHELL_OVERVIEW (data);
@@ -330,7 +320,7 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview, gboolean scroll_up)
 		return;
 
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
-	container_remove_all (GTK_CONTAINER (grid));
+	gs_container_remove_all (GTK_CONTAINER (grid));
 
         priv->refresh_count = 2;
 
@@ -347,7 +337,7 @@ gs_shell_overview_refresh (GsShellOverview *shell_overview, gboolean scroll_up)
 					    shell_overview);
 
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
-	container_remove_all (GTK_CONTAINER (grid));
+	gs_container_remove_all (GTK_CONTAINER (grid));
 
 	/* get categories */
 	gs_plugin_loader_get_categories_async (priv->plugin_loader,
