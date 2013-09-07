@@ -29,6 +29,7 @@
 #include "gs-category.h"
 #include "gs-popular-tile.h"
 #include "gs-feature-tile.h"
+#include "gs-category-tile.h"
 #include "gs-utils.h"
 
 struct GsShellOverviewPrivate
@@ -111,35 +112,6 @@ out:
 }
 
 static void
-category_tile_clicked (GtkButton *button, gpointer data)
-{
-	GsShellOverview *shell = GS_SHELL_OVERVIEW (data);
-        GsCategory *category;
-
-	category = GS_CATEGORY (g_object_get_data (G_OBJECT (button), "category"));
-        gs_shell_show_category (shell->priv->shell, category);
-}
-
-static GtkWidget *
-create_category_tile (GsShellOverview *shell, GsCategory *category)
-{
-	GtkWidget *button, *label;
-
-	button = gtk_button_new ();
-	gtk_style_context_add_class (gtk_widget_get_style_context (button), "view");
-	gtk_style_context_add_class (gtk_widget_get_style_context (button), "tile");
-	label = gtk_label_new (gs_category_get_name (category));
-	g_object_set (label, "margin", 12, "xalign", 0, NULL);
-	gtk_container_add (GTK_CONTAINER (button), label);
-	gtk_widget_show_all (button);
-	g_object_set_data_full (G_OBJECT (button), "category", g_object_ref (category), g_object_unref);
-	g_signal_connect (button, "clicked",
-			  G_CALLBACK (category_tile_clicked), shell);
-
-	return button;
-}
-
-static void
 feature_tile_clicked (GsFeatureTile *tile, gpointer data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (data);
@@ -188,6 +160,16 @@ out:
                 g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
 }
 
+static void
+category_tile_clicked (GsCategoryTile *tile, gpointer data)
+{
+	GsShellOverview *shell = GS_SHELL_OVERVIEW (data);
+        GsCategory *category;
+
+	category = gs_category_tile_get_category (tile);
+        gs_shell_show_category (shell->priv->shell, category);
+}
+
 /**
  * gs_shell_overview_get_categories_cb:
  **/
@@ -216,7 +198,9 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
 	for (l = list, i = 0; l; l = l->next, i++) {
 		cat = GS_CATEGORY (l->data);
-		tile = create_category_tile (shell, cat);
+                tile = gs_category_tile_new (cat);
+	        g_signal_connect (tile, "clicked",
+			          G_CALLBACK (category_tile_clicked), shell);
 		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
 	}
         g_list_free_full (list, g_object_unref);
