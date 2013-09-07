@@ -49,13 +49,13 @@ struct _GsFeatureTileClass
 {
 	GtkBinClass     	 parent_class;
 
-	void			(*clicked)      (GsFeatureTile	*feature_tile);
+	void			(*clicked)      (GsFeatureTile	*tile);
 };
 
 GType		 gs_feature_tile_get_type		(void);
 GtkWidget	*gs_feature_tile_new			(GsApp *app);
-GsApp		*gs_feature_tile_get_app		(GsFeatureTile	*feature_tile);
-void		 gs_feature_tile_set_app		(GsFeatureTile	*feature_tile,
+GsApp		*gs_feature_tile_get_app		(GsFeatureTile	*tile);
+void		 gs_feature_tile_set_app		(GsFeatureTile	*tile,
 							 GsApp		*app);
 
 G_END_DECLS

@@ -49,13 +49,13 @@ struct _GsPopularTileClass
 {
 	GtkBinClass     	 parent_class;
 
-	void			(*clicked)      (GsPopularTile	*popular_tile);
+	void			(*clicked)      (GsPopularTile	*tile);
 };
 
 GType		 gs_popular_tile_get_type		(void);
-GtkWidget	*gs_popular_tile_new			(GsApp *app);
-GsApp		*gs_popular_tile_get_app		(GsPopularTile	*popular_tile);
-void		 gs_popular_tile_set_app		(GsPopularTile	*popular_tile,
+GtkWidget	*gs_popular_tile_new			(GsApp          *app);
+GsApp		*gs_popular_tile_get_app		(GsPopularTile	*tile);
+void		 gs_popular_tile_set_app		(GsPopularTile	*tile,
 							 GsApp		*app);
 
 G_END_DECLS
