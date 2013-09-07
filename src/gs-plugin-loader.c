@@ -1449,7 +1449,7 @@ gs_plugin_loader_thread_func (gpointer user_data)
 					   &error);
 	if (!ret) {
 		gs_app_set_state (helper->app, helper->state_failure);
-		g_warning ("failed to install: %s", error->message);
+		g_warning ("failed to complete %s: %s", helper->function_name, error->message);
 		g_error_free (error);
 	} else {
 		gs_app_set_state (helper->app, helper->state_success);
