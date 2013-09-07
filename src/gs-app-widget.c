@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-widget.h"
+#include "gs-utils.h"
 #include "ch-markdown.h"
 
 struct _GsAppWidgetPrivate
@@ -50,43 +51,6 @@ enum {
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
-
-static guint
-_g_string_replace (GString *string, const gchar *search, const gchar *replace)
-{
-       gchar *tmp;
-       guint cnt = 0;
-       guint replace_len;
-       guint search_len;
-
-       search_len = strlen (search);
-       replace_len = strlen (replace);
-
-       do {
-	       tmp = g_strstr_len (string->str, -1, search);
-	       if (tmp == NULL)
-		       goto out;
-
-	       /* reallocate the string if required */
-	       if (search_len > replace_len) {
-		       g_string_erase (string,
-				       tmp - string->str,
--				       search_len - replace_len);
-	       }
-	       if (search_len < replace_len) {
-		       g_string_insert_len (string,
-					    tmp - string->str,
-					    search,
-					    replace_len - search_len);
-	       }
-
-	       /* just memcmp in the new string */
-	       memcpy (tmp, replace, replace_len);
-	       cnt++;
-       } while (TRUE);
-out:
-       return cnt;
-}
 
 /**
  * gs_app_widget_refresh:
@@ -114,7 +78,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 
 	/* join the lines*/
 	str = g_string_new (tmp);
-	_g_string_replace (str, "\n", " ");
+	gs_string_replace (str, "\n", " ");
 
 	gtk_label_set_label (GTK_LABEL (priv->description_label), str->str);
 	g_string_free (str, TRUE);

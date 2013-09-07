@@ -35,6 +35,8 @@ void gs_grab_focus_when_mapped (GtkWidget *widget);
 
 void gs_app_notify_installed (GsApp *app);
 
+guint gs_string_replace (GString *string, const gchar *search, const gchar *replace);
+
 G_END_DECLS
 
 #endif /* __GS_UTILS_H */
