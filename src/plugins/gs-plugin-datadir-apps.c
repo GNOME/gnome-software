@@ -253,9 +253,11 @@ gs_plugin_refine (GsPlugin *plugin,
 								   tmp,
 								   &error_local);
 		if (!ret) {
-			g_warning ("failed to extract desktop data for %s: %s",
-				   gs_app_get_id (app),
-				   error_local->message);
+			if (!g_error_matches (error_local, G_FILE_ERROR, G_FILE_ERROR_NOENT)) {
+				g_warning ("failed to extract desktop data for %s: %s",
+					   gs_app_get_id (app),
+					   error_local->message);
+			}
 			g_clear_error (&error_local);
 			continue;
 		}
