@@ -8,17 +8,24 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-03-12 23:51+0000\n"
-"PO-Revision-Date: 2013-03-13 21:21+0100\n"
-"Last-Translator: Mario Blättermann <mario.blaettermann@gmail.com>\n"
+"POT-Creation-Date: 2013-09-07 17:27+0000\n"
+"PO-Revision-Date: 2013-09-08 20:50+0100\n"
+"Last-Translator: Benjamin Steinwender <b@stbe.at>\n"
 "Language-Team: German <gnome-de@gnome.org>\n"
 "Language: de\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Poedit-Language: German\n"
-"X-Poedit-Country: GERMANY\n"
+"X-Generator: Poedit 1.5.7\n"
+
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "_Info"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "_Beenden"
 
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
 msgid "Software"
@@ -29,93 +36,801 @@ msgid "Add, remove or update software on this computer"
 msgstr "Software auf diesem Rechner hinzufügen, entfernen oder aktualisieren"
 
 #: ../src/gnome-software.ui.h:2
-msgid "New"
-msgstr "Neu"
+msgid "_All"
+msgstr "_Alle"
 
 #: ../src/gnome-software.ui.h:3
-msgid "Installed"
-msgstr "Installiert"
+msgid "_Installed"
+msgstr "_Installiert"
 
 #: ../src/gnome-software.ui.h:4
-msgid "Updates"
-msgstr "Aktualisierungen"
+msgid "_Updates"
+msgstr "_Aktualisierungen"
 
 #: ../src/gnome-software.ui.h:5
-msgid "Update All"
-msgstr "Alle aktualisieren"
+msgid "Restart & Install"
+msgstr "Neu starten und installieren"
 
-#: ../src/gnome-software.ui.h:6
-msgid "Featured"
-msgstr ""
-
-#: ../src/gnome-software.ui.h:7
-msgid "Popular"
-msgstr "Beliebt"
-
-#: ../src/gnome-software.ui.h:8
-msgid "Categories"
-msgstr "Kategorien"
-
-#: ../src/gs-app-widget.c:99
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:103
+#: ../src/gs-shell-details.c:85
 msgid "Install"
 msgstr "Installieren"
 
-#: ../src/gs-app-widget.c:105
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:108
+#: ../src/gs-shell-details.c:114 ../src/gs-shell-details.c:289
+#: ../src/gs-shell-installed.c:160 ../src/gs-shell-search.c:108
 msgid "Remove"
 msgstr "Entfernen"
 
-#: ../src/gs-app-widget.c:111
+#: ../src/gnome-software.ui.h:8
+msgid "Featured"
+msgstr "Vorgestellt"
+
+#: ../src/gnome-software.ui.h:9
+msgid "Picks"
+msgstr "Ausgewählt"
+
+#: ../src/gnome-software.ui.h:10
+msgid "Categories"
+msgstr "Kategorien"
+
+#: ../src/gnome-software.ui.h:11
+msgid "No Application Found"
+msgstr "Keine Anwendung Gefunden"
+
+#: ../src/gnome-software.ui.h:12
+msgid "Software is up to date"
+msgstr "Die Software ist aktuell"
+
+#: ../src/gnome-software.ui.h:13
+msgid "GNU Image Manipulation Program"
+msgstr "GNU-Bildbearbeitungsprogramm"
+
+#: ../src/gnome-software.ui.h:14
+msgid "Visit website"
+msgstr "Internetseite besuchen"
+
+#: ../src/gnome-software.ui.h:15
+msgid "The Gimp"
+msgstr "Das Gimp"
+
+#: ../src/gnome-software.ui.h:16
+msgid ""
+"GIMP (GNU Image Manipulation Program) is a powerful image composition and\n"
+"editing program, which can be extremely useful for creating logos and other\n"
+"graphics for webpages. GIMP has many of the tools and filters you would "
+"expect\n"
+"to find in similar commercial offerings, and some interesting extras as "
+"well.\n"
+"GIMP provides a large image manipulation toolbox, including channel "
+"operations\n"
+"and layers, effects, sub-pixel imaging and anti-aliasing, and conversions, "
+"all\n"
+"with multi-level undo.\n"
+msgstr ""
+"Das GIMP (GNU-Bildbearbeitungsprogramm) ist ein hochentwickeltes "
+"Bildkompositions- und Bildverarbeitungsprogramm, welches zur Erstellung von "
+"Logos und anderen Grafiken für Internetseiten nützlich sein kann. GIMP "
+"enthält eine Reihe von Werkzeugen und Filtern, die auch in ähnlicher "
+"kommerzieller Software gefunden werden können, inklusive einiger "
+"interessanter zusätzlicher Funktionen. Das GIMP bietet eine viele Werkzeuge "
+"zur Bildmanipulation, mit Kanalverarbeitung und Ebenen, Effekten, Subpixel-"
+"Verarbeitung und Anti-Aliasing, mit Umwandlung, und das alles mit "
+"levelübergreifendem Wiederherstellen ausgeführter Aktionen.\n"
+
+#: ../src/gnome-software.ui.h:24
+msgid "Application"
+msgstr "Anwendung"
+
+#: ../src/gnome-software.ui.h:25
+msgid "Category"
+msgstr "Kategorie"
+
+#: ../src/gnome-software.ui.h:26
+msgid "Done"
+msgstr "Fertig"
+
+#: ../src/gs-application.c:86
+msgid "About GNOME Software"
+msgstr "Über GNOME-Software"
+
+#: ../src/gs-application.c:87
+msgid "GNOME Software"
+msgstr "GNOME-Software"
+
+#: ../src/gs-application.c:89
+msgid "A nice way to manager the software on your system."
+msgstr "Ein angenehmer Weg, um Software auf Ihrem System zu verwalten."
+
+#: ../src/gs-application.c:93
+msgid "translator-credits"
+msgstr ""
+"Eduard Gotwig <gotwig@ubuntu.com>, 2013\n"
+"Christian Kirbach <christian.kirbach@gmail.com>, 2013"
+
+#: ../src/gs-application.c:208
+msgid "Start up mode, either 'updates', 'installed' or 'overview'"
+msgstr "Startmodus, entweder »updates«, »installed« oder »overview«"
+
+#: ../src/gs-application.c:208
+msgid "MODE"
+msgstr "MODUS"
+
+#: ../src/gs-app-widget.c:115
 msgid "Update"
 msgstr "Aktualisieren"
 
-#. 'More' Expander
-#: ../src/gs-app-widget.c:438
-msgid "More  ▾"
-msgstr "Mehr ▾"
+#: ../src/gs-app-widget.c:122 ../src/gs-shell-details.c:91
+msgid "Installing"
+msgstr "Installieren"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:183
-msgid "Waiting for package manager..."
-msgstr "Auf Paketverwaltung wird gewartet …"
+#: ../src/gs-app-widget.c:129 ../src/gs-shell-details.c:120
+msgid "Removing"
+msgstr "Entfernen"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:187
-msgid "Loading list of packages..."
-msgstr "Paketliste wird heruntergeladen …"
+#: ../src/gs-category.c:118
+msgid "General"
+msgstr "Allgemein"
 
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:197 ../src/gs-main.c:258
-msgid "Downloading..."
-msgstr "Herunterladen …"
-
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:202 ../src/gs-main.c:262
-msgid "Querying..."
-msgstr "Anfragen …"
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:250
-msgid "Waiting..."
-msgstr "Warten …"
-
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:254
-msgid "Setting up..."
-msgstr "Wird eingerichtet …"
-
-#. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:433
-msgid "Requires restart"
-msgstr "Erfordert Neustart"
-
-#: ../src/gs-plugin-loader.c:306
-msgid "Includes performance, stability and security improvements for all users"
-msgstr ""
-"Beinhaltet Leistungs-, Stabilitäts- und Sicherheitsverbesserungen für alle "
-"Benutzer …"
-
-#: ../src/gs-plugin-loader.c:338
+#: ../src/gs-plugin-loader.c:453
 msgid "OS Updates"
 msgstr "Betriebssystemaktualisierungen"
+
+#: ../src/gs-plugin-loader.c:454 ../src/gs-plugin-loader.c:455
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr ""
+"Beinhaltet Leistungs-, Stabilitäts- und Sicherheitsverbesserungen für alle "
+"Benutzer."
+
+#: ../src/gs-shell-details.c:276 ../src/gs-shell-installed.c:147
+#: ../src/gs-shell-search.c:95
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Soll %s wirklich entfernt werden?"
+
+#: ../src/gs-shell-details.c:287 ../src/gs-shell-installed.c:158
+#: ../src/gs-shell-search.c:106
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr ""
+"%s wird entfernt und muss erneut installiert werden, um genutzt werden zu "
+"können."
+
+#: ../src/gs-shell-installed.c:398 ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "Installiert"
+
+#: ../src/gs-shell-installed.c:400
+#, c-format
+msgid "Installed (%d)"
+msgstr "Installiert (%d)"
+
+#: ../src/gs-utils.c:165
+#, c-format
+msgid "%s is now installed"
+msgstr "%s ist jetzt installiert"
+
+#: ../src/gs-utils.c:167
+msgid "Launch"
+msgstr "Starten"
+
+#. Audio
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:59
+msgid "Audio"
+msgstr "Audio"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:62
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:626
+msgid "Editing"
+msgstr "Bearbeiten"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:66
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:106
+msgid "Databases"
+msgstr "Datenbanken"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:69
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:633
+msgid "Disc Burning"
+msgstr "CD-Brennen"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:73
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:339
+msgid "Ham Radio"
+msgstr "Amateurfunk"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:76
+msgid "MIDI"
+msgstr "MIDI"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:79
+msgid "Mixer"
+msgstr "Mischer"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:82
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:216
+msgid "Music"
+msgstr "Musik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:85
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:637
+msgid "Players"
+msgstr "Wiedergabe"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:88
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:641
+msgid "Recorders"
+msgstr "Aufnahme"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:91
+msgid "Sequencers"
+msgstr "Sequenzer"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:94
+msgid "Tuners"
+msgstr "Empfänger"
+
+#. Development
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:98
+msgid "Development Tools"
+msgstr "Entwicklungswerkzeuge"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:102
+msgid "Building"
+msgstr "Erstellung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:109
+msgid "Debuggers"
+msgstr "Fehlerdiagnose"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:112
+msgid "GUI Designers"
+msgstr "GUI-Entwurf"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:115
+msgid "IDE"
+msgstr "Integrierte Entwicklungsumgebung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:118
+msgid "Profiling"
+msgstr "Profiling"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:121
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:417
+msgid "Project Management"
+msgstr "Projektverwaltung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:124
+msgid "Revision Control"
+msgstr "Revisionskontrolle"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:127
+msgid "Translation"
+msgstr "Übersetzung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:130
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
+msgid "Web Development"
+msgstr "Web-Entwicklung"
+
+#. Education
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:134
+msgid "Education"
+msgstr "Bildung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:138
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:437
+msgid "Art"
+msgstr "Kunst"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:142
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:441
+msgid "Artificial Intelligence"
+msgstr "Künstliche Intelligenz"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:145
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:444
+msgid "Astronomy"
+msgstr "Astronomie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:148
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:447
+msgid "Biology"
+msgstr "Biologie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:151
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:450
+msgid "Chemistry"
+msgstr "Chemie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:154
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:453
+msgid "Computer Science"
+msgstr "Informatik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:158
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
+msgid "Construction"
+msgstr "Konstruktion"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:162
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:461
+msgid "Data Visualization"
+msgstr "Datenvisualisierung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:165
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:464
+msgid "Economy"
+msgstr "Wirtschaft"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:168
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:467
+msgid "Electricity"
+msgstr "Elektrizität"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:171
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:470
+msgid "Electronics"
+msgstr "Elektronik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:174
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:473
+msgid "Engineering"
+msgstr "Ingineurwesen"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:177
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:476
+msgid "Geography"
+msgstr "Geographie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:181
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:480
+msgid "Geology"
+msgstr "Geologie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:185
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
+msgid "Geoscience"
+msgstr "Geowissenschaft"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:189
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:488
+msgid "History"
+msgstr "Geschichte"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:192
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:491
+msgid "Humanities"
+msgstr "Geisteswissenschaften"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:196
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:495
+msgid "Image Processing"
+msgstr "Bildverarbeitung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:199
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:499
+msgid "Languages"
+msgstr "Sprachen"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:203
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:502
+msgid "Literature"
+msgstr "Literatur"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:206
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:609
+msgid "Maps"
+msgstr "Karten"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:210
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
+msgid "Math"
+msgstr "Mathematik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:213
+msgid "Medical"
+msgstr "Medizin"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:219
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:515
+msgid "Numerical Analysis"
+msgstr "Numerische Analysis"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:222
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:518
+msgid "Parallel Computing"
+msgstr "Parallele Berechnung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:225
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:521
+msgid "Physics"
+msgstr "Physik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:228
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:524
+msgid "Robotics"
+msgstr "Robotik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:232
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:612
+msgid "Spirituality"
+msgstr "Geistigkeit"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:235
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:281
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
+msgid "Sports"
+msgstr "Sport"
+
+#. Games
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:240
+msgid "Games"
+msgstr "Spiele"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:243
+msgid "Action"
+msgstr "Action"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:246
+msgid "Adventure"
+msgstr "Abenteuer"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:249
+msgid "Arcade"
+msgstr "Arkade"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:252
+msgid "Blocks"
+msgstr "Blockspiele"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:255
+msgid "Board"
+msgstr "Brettspiele"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:258
+msgid "Card"
+msgstr "Kartenspiele"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:261
+msgid "Emulators"
+msgstr "Emulatoren"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:264
+msgid "Kids"
+msgstr "Kinderspiele"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:267
+msgid "Logic"
+msgstr "Logik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:270
+msgid "Role Playing"
+msgstr "Rollenspiele"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:274
+msgid "Shooter"
+msgstr "Shooter"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:278
+msgid "Simulation"
+msgstr "Simulation"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:284
+msgid "Strategy"
+msgstr "Strategie"
+
+#. Graphics
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:288
+msgid "Graphics"
+msgstr "Grafik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:291
+msgid "2D Graphics"
+msgstr "2D-Grafik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:294
+msgid "3D Graphics"
+msgstr "3D-Grafik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:297
+msgid "OCR"
+msgstr "Texterkennung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:300
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:410
+msgid "Photography"
+msgstr "Fotografie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:303
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:420
+msgid "Publishing"
+msgstr "Veröffentlichen"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:306
+msgid "Raster Graphics"
+msgstr "Rastergrafiken"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:309
+msgid "Scanning"
+msgstr "Scannen"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:312
+msgid "Vector Graphics"
+msgstr "Vektorgrafiken"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:315
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:426
+msgid "Viewer"
+msgstr "Betrachter"
+
+#. Network
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:319
+msgid "Internet"
+msgstr "Internet"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:322
+msgid "Chat"
+msgstr "Chat"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:326
+msgid "Dialup"
+msgstr "Verbindungsaufbau"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:330
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:397
+msgid "Email"
+msgstr "E-Mail"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:333
+msgid "Feed"
+msgstr "News-Feed"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:336
+msgid "File Transfer"
+msgstr "Dateiübertragung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:342
+msgid "Instant Messaging"
+msgstr "Sofortnachrichten"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:345
+msgid "IRC Clients"
+msgstr "IRC-Anwendungen"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:348
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:577
+msgid "Monitor"
+msgstr "Überwachung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:351
+msgid "News"
+msgstr "Neuigkeiten"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:354
+msgid "P2P"
+msgstr "P2P"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:357
+msgid "Remote Access"
+msgstr "Fernzugriff"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:360
+msgid "Telephony"
+msgstr "Telefonie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:364
+msgid "Video Conference"
+msgstr "Videokonferenz"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:368
+msgid "Web Browser"
+msgstr "Internetbrowser"
+
+#. Office
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:377
+msgid "Office"
+msgstr "Büro"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:380
+msgid "Calendar"
+msgstr "Kalender"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:384
+msgid "Chart"
+msgstr "Diagramm"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:388
+msgid "Contact Management"
+msgstr "Kontaktverwaltung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:391
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:630
+msgid "Database"
+msgstr "Datenbank"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:394
+msgid "Dictionary"
+msgstr "Wörterbuch"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:400
+msgid "Finance"
+msgstr "Finanzplanung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:404
+msgid "Flow Chart"
+msgstr "Fließdiagramm"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:407
+msgid "PDA"
+msgstr "PDA"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:413
+msgid "Presentation"
+msgstr "Präsentation"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:423
+msgid "Spreadsheet"
+msgstr "Tabellenverarbeitung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:429
+msgid "Word Processor"
+msgstr "Textverarbeitung"
+
+#. Science
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:433
+msgid "Science"
+msgstr "Wissenschaft"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
+msgid "Medical Software"
+msgstr "Medizin-Software"
+
+#. Settings
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:536
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:540
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:590
+msgid "Accessibility"
+msgstr "Barrierefreiheit"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:544
+msgid "Desktop Settings"
+msgstr "Arbeitsumgebungseinstellungen"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:547
+msgid "Hardware Settings"
+msgstr "Hardware-Einstellungen"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:550
+msgid "Package Manager"
+msgstr "Paketverwaltung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:554
+msgid "Printing"
+msgstr "Drucken"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:558
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:580
+msgid "Security"
+msgstr "Sicherheit"
+
+#. System
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
+msgid "System"
+msgstr "System"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
+msgid "Emulator"
+msgstr "Emulator"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
+msgid "File Manager"
+msgstr "Dateiverwaltung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
+msgid "Filesystem"
+msgstr "Dateisystem"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:574
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:605
+msgid "File Tools"
+msgstr "Dateiwerkzeuge"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:583
+msgid "Terminal Emulator"
+msgstr "Terminal-Emulator"
+
+#. Utility
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
+msgid "Utilities"
+msgstr "Zubehör"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:593
+msgid "Archiving"
+msgstr "Archivierung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:596
+msgid "Calculator"
+msgstr "Taschenrechner"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:599
+msgid "Clock"
+msgstr "Uhr"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:602
+msgid "Compression"
+msgstr "Komprimierung"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:615
+msgid "Telephony Tools"
+msgstr "Telefoniewerkzeuge"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:619
+msgid "Text Editor"
+msgstr "Texteditor"
+
+#. Video
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:623
+msgid "Video"
+msgstr "Video"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:644
+msgid "TV"
+msgstr "TV"
+
+#. Add Ons
+#: ../src/plugins/gs-plugin-packagekit.c:561
+msgid "Add-ons"
+msgstr "Add-ons"
+
+#: ../src/plugins/gs-plugin-packagekit.c:564
+msgid "Codecs"
+msgstr "Codecs"
+
+#: ../src/plugins/gs-plugin-packagekit.c:567
+msgid "Fonts"
+msgstr "Schriftarten"
+
+#: ../src/plugins/gs-plugin-packagekit.c:570
+msgid "Input Sources"
+msgstr "Eingabequellen"
+
+#: ../src/plugins/gs-plugin-packagekit.c:573
+msgid "Language Packs"
+msgstr "Sprachpakete"
+
+#~ msgid "New"
+#~ msgstr "Neu"
+
+#~ msgid "Update All"
+#~ msgstr "Alle aktualisieren"
+
+#~ msgid "Popular"
+#~ msgstr "Beliebt"
+
+#~ msgid "More  ▾"
+#~ msgstr "Mehr  ▾"
+
+#~ msgid "Waiting for package manager..."
+#~ msgstr "Auf Paketverwaltung wird gewartet …"
+
+#~ msgid "Loading list of packages..."
+#~ msgstr "Paketliste wird heruntergeladen …"
+
+#~ msgid "Downloading..."
+#~ msgstr "Herunterladen …"
+
+#~ msgid "Querying..."
+#~ msgstr "Anfragen …"
+
+#~ msgid "Waiting..."
+#~ msgstr "Warten …"
+
+#~ msgid "Requires restart"
+#~ msgstr "Erfordert Neustart"
