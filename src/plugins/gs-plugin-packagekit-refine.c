@@ -192,10 +192,12 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 			package = g_ptr_array_index (packages, i);
 			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
 				gs_app_set_metadata (app, "package-id", pk_package_get_id (package));
-				gs_app_set_state (app,
-						  pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED ?
-						  GS_APP_STATE_INSTALLED :
-						  GS_APP_STATE_AVAILABLE);
+				if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
+					gs_app_set_state (app,
+							  pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED ?
+							  GS_APP_STATE_INSTALLED :
+							  GS_APP_STATE_AVAILABLE);
+				}
 				cnt++;
 			}
 		}
