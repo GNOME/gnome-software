@@ -496,7 +496,8 @@ appstream_cache_parse_file (AppstreamCache *cache,
 
 	/* decompress if required */
 	content_type = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
-	if (g_strcmp0 (content_type, "application/gzip") == 0) {
+	if (g_strcmp0 (content_type, "application/gzip") == 0 ||
+	    g_strcmp0 (content_type, "application/x-gzip") == 0) {
 		converter = G_CONVERTER (g_zlib_decompressor_new (G_ZLIB_COMPRESSOR_FORMAT_GZIP));
 		stream_data = g_converter_input_stream_new (file_stream, converter);
 	} else if (g_strcmp0 (content_type, "application/xml") == 0) {
