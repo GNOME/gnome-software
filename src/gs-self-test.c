@@ -265,9 +265,10 @@ gs_plugin_loader_empty_func (void)
 								   NULL,
 								   &error);
 			if (apps == NULL) {
-				g_debug ("NOAPPS:\t%s/%s",
+				g_debug ("NOAPPS:\t%s/%s: %s",
 					 gs_category_get_id (category),
-					 gs_category_get_id (sub));
+					 gs_category_get_id (sub),
+					 error->message);
 				g_clear_error (&error);
 				empty_subcats_cnt++;
 				//g_warning ("MOO");
