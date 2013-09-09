@@ -155,18 +155,20 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	cache_item = g_slice_new0 (GsPluginDataDirAppsCacheItem);
 
 	/* get desktop name */
-	name = g_key_file_get_string (key_file,
-				      G_KEY_FILE_DESKTOP_GROUP,
-				      G_KEY_FILE_DESKTOP_KEY_NAME,
-				      NULL);
+	name = g_key_file_get_locale_string (key_file,
+					     G_KEY_FILE_DESKTOP_GROUP,
+					     G_KEY_FILE_DESKTOP_KEY_NAME,
+					     NULL,
+					     NULL);
 	if (name != NULL && name[0] != '\0')
 		cache_item->name = g_strdup (name);
 
 	/* get desktop summary */
-	comment = g_key_file_get_string (key_file,
-					 G_KEY_FILE_DESKTOP_GROUP,
-					 G_KEY_FILE_DESKTOP_KEY_COMMENT,
-					 NULL);
+	comment = g_key_file_get_locale_string (key_file,
+						G_KEY_FILE_DESKTOP_GROUP,
+						G_KEY_FILE_DESKTOP_KEY_COMMENT,
+						NULL,
+						NULL);
 	if (comment != NULL && comment[0] != '\0')
 		cache_item->summary = g_strdup (comment);
 
