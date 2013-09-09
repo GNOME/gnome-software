@@ -107,8 +107,7 @@ Overview:    | <p>
 -------------|---
 Methods:     | Search, AddUpdates, AddInstalled, AppInstall, AppRemove, AppUpdate
 Requires:    | `{package-id}`
-Refines:     | `nothing`
-Refines:     | `{package-id}`, `{package-name}`, `{package-summary}`, `{update-name}`, `{update-details}`, `{install-kind}`
+Refines:     | `{package-id}`, `[source]`, `{package-summary}`, `[update-details]`, `{install-kind}`
 
 ### packagekit-refine ###
 Uses the system PackageKit instance to return convert filenames to package-ids.
@@ -126,7 +125,7 @@ Overview:    | <p>
 -------------|---
 Methods:     | `nothing`
 Requires:    | `nothing`
-Refines:     | `{package-name}->{datadir-desktop-filename}`
+Refines:     | `[source]->{datadir-desktop-filename}`
 
 ### appstream ###
 Uses offline AppStream data to refine package results.
@@ -135,7 +134,7 @@ Overview:    | <p>
 -------------|---
 Methods:     | `AddCategoryApps`
 Requires:    | `nothing`
-Refines:     | `{package-name}->[name,summary,pixbuf,id,kind]`
+Refines:     | `[source]->[name,summary,pixbuf,id,kind]`
 
 ### datadir-apps ###
 Uses the files in /usr/share/applications to provide icons and, translations for

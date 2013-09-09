@@ -33,11 +33,14 @@ struct GsAppPrivate
 {
 	gchar			*id;
 	gchar			*name;
+	gchar			*source;
 	gchar			*version;
 	gchar			*summary;
 	gchar			*description;
 	gchar			*screenshot;
         gchar			*url;
+        gchar			*update_version;
+        gchar			*update_details;
 	gint			 rating;
 	GsAppKind		 kind;
 	GsAppState		 state;
@@ -255,6 +258,8 @@ gs_app_get_name (GsApp *app)
 
 /**
  * gs_app_set_name:
+ * @app:	A #GsApp instance
+ * @name:	The short localized name, e.g. "Calculator"
  */
 void
 gs_app_set_name (GsApp *app, const gchar *name)
@@ -262,6 +267,33 @@ gs_app_set_name (GsApp *app, const gchar *name)
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->priv->name);
 	app->priv->name = g_strdup (name);
+}
+
+/**
+ * gs_app_get_source:
+ */
+const gchar *
+gs_app_get_source (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->source;
+}
+
+/**
+ * gs_app_set_source:
+ * @app:	A #GsApp instance
+ * @source:	The non-localized short name, e.g. "gnome-calculator"
+ *
+ * This name is used for the update page if the application is collected into
+ * the 'OS Updates' group. It is typically the package name, although this
+ * should not be relied upon.
+ */
+void
+gs_app_set_source (GsApp *app, const gchar *source)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->source);
+	app->priv->source = g_strdup (source);
 }
 
 /**
@@ -368,6 +400,11 @@ out:
 
 /**
  * gs_app_set_version:
+ * @app:	A #GsApp instance
+ * @version:	The version, e.g. "2:1.2.3.fc19"
+ *
+ * This saves the version after stripping out any non-friendly parts, such as
+ * distro tags, git revisions and that kind of thing.
  */
 void
 gs_app_set_version (GsApp *app, const gchar *version)
@@ -389,6 +426,8 @@ gs_app_get_summary (GsApp *app)
 
 /**
  * gs_app_set_summary:
+ * @app:	A #GsApp instance
+ * @summary:	The medium length localized name, e.g. "A graphical calculator for GNOME"
  */
 void
 gs_app_set_summary (GsApp *app, const gchar *summary)
@@ -398,6 +437,9 @@ gs_app_set_summary (GsApp *app, const gchar *summary)
 	app->priv->summary = g_strdup (summary);
 }
 
+/**
+ * gs_app_get_description:
+ */
 const gchar *
 gs_app_get_description (GsApp *app)
 {
@@ -405,6 +447,11 @@ gs_app_get_description (GsApp *app)
 	return app->priv->description;
 }
 
+/**
+ * gs_app_set_description:
+ * @app:	A #GsApp instance
+ * @summary:	The multiline localized description, e.g. "GNOME Calculator is a graphical calculator for GNOME....."
+ */
 void
 gs_app_set_description (GsApp *app, const gchar *description)
 {
@@ -413,6 +460,9 @@ gs_app_set_description (GsApp *app, const gchar *description)
 	app->priv->description = g_strdup (description);
 }
 
+/**
+ * gs_app_get_url:
+ */
 const gchar *
 gs_app_get_url (GsApp *app)
 {
@@ -420,6 +470,11 @@ gs_app_get_url (GsApp *app)
 	return app->priv->url;
 }
 
+/**
+ * gs_app_set_url:
+ * @app:	A #GsApp instance
+ * @summary:	The home page URL, e.g. "http://www.foo.com/gcalctool/"
+ */
 void
 gs_app_set_url (GsApp *app, const gchar *url)
 {
@@ -447,6 +502,48 @@ gs_app_set_screenshot (GsApp *app, const gchar *screenshot)
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->priv->screenshot);
 	app->priv->screenshot = g_strdup (screenshot);
+}
+
+/**
+ * gs_app_get_update_version:
+ */
+const gchar *
+gs_app_get_update_version (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->update_version;
+}
+
+/**
+ * gs_app_set_update_version:
+ */
+void
+gs_app_set_update_version (GsApp *app, const gchar *update_version)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->update_version);
+	app->priv->update_version = gs_app_get_pretty_version (update_version);
+}
+
+/**
+ * gs_app_get_update_details:
+ */
+const gchar *
+gs_app_get_update_details (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->update_details;
+}
+
+/**
+ * gs_app_set_update_version:
+ */
+void
+gs_app_set_update_details (GsApp *app, const gchar *update_details)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->update_details);
+	app->priv->update_details = g_strdup (update_details);
 }
 
 /**
@@ -757,10 +854,13 @@ gs_app_finalize (GObject *object)
 
 	g_free (priv->id);
 	g_free (priv->name);
+	g_free (priv->source);
 	g_free (priv->version);
 	g_free (priv->summary);
 	g_free (priv->description);
 	g_free (priv->screenshot);
+	g_free (priv->update_version);
+	g_free (priv->update_details);
 	g_hash_table_unref (priv->metadata);
 	g_ptr_array_unref (priv->related);
 	if (priv->pixbuf != NULL)

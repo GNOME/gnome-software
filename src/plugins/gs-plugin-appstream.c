@@ -271,8 +271,8 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	}
 
 	/* set package name */
-	if (appstream_app_get_pkgname (item) != NULL && gs_app_get_metadata_item (app, "package-name") == NULL)
-		gs_app_set_metadata (app, "package-name", appstream_app_get_pkgname (item));
+	if (appstream_app_get_pkgname (item) != NULL && gs_app_get_source (app) == NULL)
+		gs_app_set_source (app, appstream_app_get_pkgname (item));
 out:
 	g_free (icon_path);
 	if (pixbuf != NULL)
@@ -323,7 +323,7 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	AppstreamApp *item;
 
 	/* find anything that matches the ID */
-	pkgname = gs_app_get_metadata_item (app, "package-name");
+	pkgname = gs_app_get_source (app);
 	if (pkgname == NULL)
 		goto out;
 	item = appstream_cache_get_item_by_pkgname (plugin->priv->cache, pkgname);

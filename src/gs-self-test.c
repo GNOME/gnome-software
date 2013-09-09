@@ -279,7 +279,7 @@ gs_plugin_loader_empty_func (void)
 						g_print ("Cat: %s\tSubCat: %s\tPkgName: %s\tAppId: %s\n",
 							 gs_category_get_id (category),
 							 gs_category_get_id (sub),
-							 gs_app_get_metadata_item (GS_APP (g->data), "package-name"),
+							 gs_app_get_source (GS_APP (g->data)),
 							 gs_app_get_id (GS_APP (g->data)));
 					}
 				}

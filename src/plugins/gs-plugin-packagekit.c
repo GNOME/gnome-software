@@ -166,11 +166,9 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 				     "package-id",
 				     pk_package_get_id (package));
 		gs_app_set_metadata (app,
-				     "package-name",
-				     pk_package_get_name (package));
-		gs_app_set_metadata (app,
 				     "package-summary",
 				     pk_package_get_summary (package));
+		gs_app_set_source (app, pk_package_get_name (package));
 		gs_app_set_metadata (app, "install-kind", "package");
 		gs_app_set_version (app, pk_package_get_version (package));
 		switch (pk_package_get_info (package)) {
@@ -341,12 +339,11 @@ gs_plugin_packagekit_add_updates_results (GsPlugin *plugin,
 			      NULL);
 		split = pk_package_id_split (package_id);
 		app = gs_app_new (NULL);
-		gs_app_set_metadata (app, "package-id", package_id);
-		gs_app_set_metadata (app, "package-name", split[PK_PACKAGE_ID_NAME]);
-		gs_app_set_metadata (app, "update-name", split[PK_PACKAGE_ID_NAME]);
-		gs_app_set_metadata (app, "update-details", update_text);
+		gs_app_set_source (app, split[PK_PACKAGE_ID_NAME]);
+		gs_app_set_update_details (app, update_text);
+		gs_app_set_update_version (app, split[PK_PACKAGE_ID_VERSION]);
+		gs_app_set_metadata (app, "update-package-id", package_id);
 		gs_app_set_metadata (app, "install-kind", "package");
-		gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 		gs_plugin_add_app (list, app);

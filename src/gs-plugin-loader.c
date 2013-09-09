@@ -302,7 +302,12 @@ gs_plugin_loader_app_is_valid (GsApp *app)
 		return FALSE;
 	}
 
-	/* don't show apps that do not have a name */
+	/* don't show apps that do not have the required details */
+	if (gs_app_get_source (app) == NULL) {
+		g_debug ("app invalid as no source %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
 	if (gs_app_get_name (app) == NULL) {
 		g_debug ("app invalid as no name %s",
 			 gs_plugin_loader_get_app_str (app));
@@ -450,6 +455,7 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 		app = gs_app_new ("os-update");
 		gs_app_set_kind (app, GS_APP_KIND_OS_UPDATE);
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+		gs_app_set_source (app, "os-update");
 		gs_app_set_name (app, _("OS Updates"));
 		gs_app_set_summary (app, _("Includes performance, stability and security improvements for all users."));
 		gs_app_set_description (app, _("Includes performance, stability and security improvements for all users."));

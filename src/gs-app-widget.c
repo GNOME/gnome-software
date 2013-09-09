@@ -68,7 +68,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 
 	/* get the main body text */
 	if (gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE)
-		tmp = gs_app_get_metadata_item (priv->app, "update-details");
+		tmp = gs_app_get_update_details (priv->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_description (priv->app);
 	if (tmp == NULL)
@@ -85,8 +85,13 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
                              gs_app_get_name (priv->app));
-	gtk_label_set_label (GTK_LABEL (priv->version_label),
-			     gs_app_get_version (priv->app));
+	if (gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
+		gtk_label_set_label (GTK_LABEL (priv->version_label),
+				     gs_app_get_update_version (priv->app));
+	} else {
+		gtk_label_set_label (GTK_LABEL (priv->version_label),
+				     gs_app_get_version (priv->app));
+	}
 	if (gs_app_get_pixbuf (priv->app))
 		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image),
 					   gs_app_get_pixbuf (priv->app));

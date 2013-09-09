@@ -176,7 +176,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_metadata_item (app, "datadir-desktop-filename") != NULL)
 			continue;
-		pkgname = gs_app_get_metadata_item (app, "package-name");
+		pkgname = gs_app_get_source (app);
 		if (pkgname == NULL)
 			continue;
 		gs_plugin_desktopdb_set_metadata (plugin, app, pkgname);

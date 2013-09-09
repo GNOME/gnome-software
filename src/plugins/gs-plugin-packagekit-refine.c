@@ -151,7 +151,7 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 	package_ids = g_new0 (const gchar *, size + 1);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		pkgname = gs_app_get_metadata_item (app, "package-name");
+		pkgname = gs_app_get_source (app);
 		package_ids[i++] = pkgname;
 	}
 
@@ -184,7 +184,7 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 	packages = pk_results_get_package_array (results);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		pkgname = gs_app_get_metadata_item (app, "package-name");
+		pkgname = gs_app_get_source (app);
 
 		/* find any packages that match the package name */
 		cnt = 0;
@@ -303,7 +303,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_metadata_item (app, "package-id") != NULL)
 			continue;
-		tmp = gs_app_get_metadata_item (app, "package-name");
+		tmp = gs_app_get_source (app);
 		if (tmp != NULL)
 			resolve_all = g_list_prepend (resolve_all, app);
 	}

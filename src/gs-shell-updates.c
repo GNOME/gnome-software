@@ -194,8 +194,8 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 		gtk_window_set_title (GTK_WINDOW (widget), gs_app_get_name (app));
 	} else {
 		tmp = g_strdup_printf ("%s %s",
-				       gs_app_get_metadata_item (app, "package-name"),
-				       gs_app_get_version (app));
+				       gs_app_get_source (app),
+				       gs_app_get_update_version (app));
 		gtk_window_set_title (GTK_WINDOW (widget), tmp);
 		g_free (tmp);
 	}
@@ -208,7 +208,7 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
 	gtk_widget_set_visible (widget, kind == GS_APP_KIND_OS_UPDATE);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_metadata_item (app, "update-details"));
+	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_update_details (app));
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_update_icon"));
 	gtk_image_set_from_pixbuf (GTK_IMAGE (widget), gs_app_get_pixbuf (app));
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_name"));
@@ -266,7 +266,7 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 			app_related = g_ptr_array_index (related, i);
                         row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
                         g_object_set_data_full (G_OBJECT (row), "app", g_object_ref (app_related), g_object_unref);
-                        label = gtk_label_new (gs_app_get_metadata_item (app_related, "package-name"));
+                        label = gtk_label_new (gs_app_get_source (app_related));
                         g_object_set (label,
                                       "margin-left", 20,
                                       "margin-right", 20,
@@ -277,7 +277,7 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
                         gtk_widget_set_halign (label, GTK_ALIGN_START);
                         gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
                         gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
-                        label = gtk_label_new (gs_app_get_version (app_related));
+                        label = gtk_label_new (gs_app_get_update_version (app_related));
                         g_object_set (label,
                                       "margin-left", 20,
                                       "margin-right", 20,

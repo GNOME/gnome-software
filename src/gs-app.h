@@ -93,6 +93,9 @@ void		 gs_app_set_state		(GsApp		*app,
 const gchar	*gs_app_get_name		(GsApp		*app);
 void 		 gs_app_set_name		(GsApp		*app,
 						 const gchar	*name);
+const gchar	*gs_app_get_source		(GsApp		*app);
+void 		 gs_app_set_source		(GsApp		*app,
+						 const gchar	*source);
 const gchar	*gs_app_get_version		(GsApp		*app);
 void 		 gs_app_set_version		(GsApp		*app,
 						 const gchar	*version);
@@ -108,6 +111,12 @@ void		 gs_app_set_url 		(GsApp		*app,
 const gchar	*gs_app_get_screenshot		(GsApp		*app);
 void		 gs_app_set_screenshot		(GsApp		*app,
 						 const gchar	*screenshot);
+const gchar	*gs_app_get_update_version	(GsApp		*app);
+void		 gs_app_set_update_version	(GsApp		*app,
+						 const gchar	*update_version);
+const gchar	*gs_app_get_update_details	(GsApp		*app);
+void		 gs_app_set_update_details	(GsApp		*app,
+						 const gchar	*update_details);
 GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
 void		 gs_app_set_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);
