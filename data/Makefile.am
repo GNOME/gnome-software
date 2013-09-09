@@ -1,3 +1,6 @@
+SUBDIRS =						\
+	icons
+
 resourcesdir = $(datadir)/gnome-software
 dist_resources_DATA =					\
 	featured-gimp.png				\
@@ -13,9 +16,6 @@ dist_resources_DATA =					\
 	stars2.png					\
 	stars3.png					\
 	stars4.png
-
-iconsdir = $(datadir)/gnome-software/icons/hicolor/scalable/apps
-dist_icons_DATA = gnome-software-symbolic.svg
 
 appdatadir = $(datadir)/appdata
 appdata_files = gnome-software.appdata.xml
