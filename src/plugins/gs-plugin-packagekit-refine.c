@@ -191,7 +191,7 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 		for (i = 0; i < packages->len; i++) {
 			package = g_ptr_array_index (packages, i);
 			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
-				gs_app_set_metadata (app, "package-id", pk_package_get_id (package));
+				gs_app_set_metadata (app, "PackageKit::package-id", pk_package_get_id (package));
 				if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
 					gs_app_set_state (app,
 							  pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED ?
@@ -265,7 +265,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin      *plugin,
 	packages = pk_results_get_package_array (results);
 	if (packages->len == 1) {
 		package = g_ptr_array_index (packages, 0);
-		gs_app_set_metadata (app, "package-id", pk_package_get_id (package));
+		gs_app_set_metadata (app, "PackageKit::package-id", pk_package_get_id (package));
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	} else {
 		g_warning ("Failed to find one package for %s, %s, [%d]",
@@ -301,7 +301,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* can we resolve in one go? */
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_metadata_item (app, "package-id") != NULL)
+		if (gs_app_get_metadata_item (app, "PackageKit::package-id") != NULL)
 			continue;
 		tmp = gs_app_get_source (app);
 		if (tmp != NULL)
@@ -318,7 +318,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* add any missing ratings data */
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_metadata_item (app, "package-id") != NULL)
+		if (gs_app_get_metadata_item (app, "PackageKit::package-id") != NULL)
 			continue;
 		tmp = gs_app_get_metadata_item (app, "datadir-desktop-filename");
 		if (tmp == NULL)

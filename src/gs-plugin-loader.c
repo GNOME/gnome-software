@@ -267,7 +267,7 @@ gs_plugin_loader_get_app_str (GsApp *app)
 		return id;
 
 	/* first try the actual id */
-	id = gs_app_get_metadata_item (app, "package-id");
+	id = gs_app_get_metadata_item (app, "PackageKit::package-id");
 	if (id != NULL)
 		return id;
 

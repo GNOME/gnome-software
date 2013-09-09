@@ -106,8 +106,8 @@ Uses the system PackageKit instance to return package data.
 Overview:    | <p>
 -------------|---
 Methods:     | Search, AddUpdates, AddInstalled, AppInstall, AppRemove, AppUpdate
-Requires:    | `{package-id}`
-Refines:     | `{package-id}`, `[source]`, `{package-summary}`, `[update-details]`, `{install-kind}`
+Requires:    | `{PackageKit::package-id}`
+Refines:     | `{PackageKit::package-id}`, `[source]`, `{package-summary}`, `[update-details]`, `{install-kind}`
 
 ### packagekit-refine ###
 Uses the system PackageKit instance to return convert filenames to package-ids.
@@ -116,7 +116,7 @@ Overview:    | <p>
 -------------|---
 Methods:     | `nothing`
 Requires:    | `{datadir-desktop-filename}`
-Refines:     | `{package-id}`, `[installed]`
+Refines:     | `{PackageKit::package-id}`, `[installed]`
 
 ### desktopdb ###
 Uses the PackageKit desktop.db cache to map package names to, desktop names.
