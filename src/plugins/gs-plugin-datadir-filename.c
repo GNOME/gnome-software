@@ -149,13 +149,13 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_name (app) != NULL)
 			continue;
-		if (gs_app_get_metadata_item (app, "datadir-desktop-filename") != NULL)
+		if (gs_app_get_metadata_item (app, "DataDir::desktop-filename") != NULL)
 			continue;
 
 		tmp = gs_plugin_datadir_filename_find (plugin, app);
 		if (tmp != NULL) {
 			gs_app_set_metadata (app,
-					     "datadir-desktop-filename",
+					     "DataDir::desktop-filename",
 					     tmp);
 			g_free (tmp);
 		}

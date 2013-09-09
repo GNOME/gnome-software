@@ -58,7 +58,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) != GS_APP_STATE_UNKNOWN)
 			continue;
-		tmp = gs_app_get_metadata_item (app, "datadir-desktop-filename");
+		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
 		if (tmp == NULL)
 			continue;
 		if (!g_str_has_prefix (tmp, "/usr")) {

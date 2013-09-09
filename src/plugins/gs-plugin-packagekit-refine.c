@@ -320,7 +320,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_metadata_item (app, "PackageKit::package-id") != NULL)
 			continue;
-		tmp = gs_app_get_metadata_item (app, "datadir-desktop-filename");
+		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
 		if (tmp == NULL)
 			continue;
 		ret = gs_plugin_packagekit_refine_from_desktop (plugin,

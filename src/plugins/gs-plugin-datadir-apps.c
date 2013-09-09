@@ -245,7 +245,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		tmp = gs_app_get_metadata_item (app, "datadir-desktop-filename");
+		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
 		if (tmp == NULL)
 			continue;
 		ret = gs_plugin_datadir_apps_extract_desktop_data (plugin,

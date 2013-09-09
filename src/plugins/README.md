@@ -115,7 +115,7 @@ Uses the system PackageKit instance to return convert filenames to package-ids.
 Overview:    | <p>
 -------------|---
 Methods:     | `nothing`
-Requires:    | `{datadir-desktop-filename}`
+Requires:    | `{DataDir::desktop-filename}`
 Refines:     | `{PackageKit::package-id}`, `[installed]`
 
 ### desktopdb ###
@@ -125,7 +125,7 @@ Overview:    | <p>
 -------------|---
 Methods:     | `nothing`
 Requires:    | `nothing`
-Refines:     | `[source]->{datadir-desktop-filename}`
+Refines:     | `[source]->{DataDir::desktop-filename}`
 
 ### appstream ###
 Uses offline AppStream data to refine package results.
@@ -144,7 +144,7 @@ Overview:    | <p>
 -------------|---
 Methods:     | `nothing`
 Requires:    | `nothing`
-Refines:     | `{datadir-desktop-filename}->[name]`, `{datadir-desktop-filename}->[summary]`, `{datadir-desktop-filename}->[pixbuf]`, `{datadir-desktop-filename}->[id]`, `{datadir-desktop-filename}->[kind]`
+Refines:     | `{DataDir::desktop-filename}->[name]`, `{DataDir::desktop-filename}->[summary]`, `{DataDir::desktop-filename}->[pixbuf]`, `{DataDir::desktop-filename}->[id]`, `{DataDir::desktop-filename}->[kind]`
 
 ### datadir-filename ###
 Uses the existance of a files in /usr/share/applications, named $id.desktop to
@@ -155,7 +155,7 @@ Overview:    | <p>
 -------------|---
 Methods:     | `nothing`
 Requires:    | `nothing`
-Refines:     | `[id]->{datadir-desktop-filename}`
+Refines:     | `[id]->{DataDir::desktop-filename}`
 
 ### datadir-filename-local ###
 Sets any applications not installed with datadir or /usr as installed as these
@@ -165,4 +165,4 @@ Overview:    | <p>
 -------------|---
 Methods:     | `nothing`
 Requires:    | `nothing`
-Refines:     | `{datadir-desktop-filename}->[state]`, `{install-kind}`
+Refines:     | `{DataDir::desktop-filename}->[state]`, `{install-kind}`

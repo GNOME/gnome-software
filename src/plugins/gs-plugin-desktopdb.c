@@ -138,7 +138,7 @@ gs_plugin_desktopdb_set_metadata (GsPlugin *plugin,
 	}
 
 	gs_app_set_metadata (app,
-			     "datadir-desktop-filename",
+			     "DataDir::desktop-filename",
 			     desktop_file);
 	g_free (desktop_file);
 
@@ -174,7 +174,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* can we convert a package to an application */
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_metadata_item (app, "datadir-desktop-filename") != NULL)
+		if (gs_app_get_metadata_item (app, "DataDir::desktop-filename") != NULL)
 			continue;
 		pkgname = gs_app_get_source (app);
 		if (pkgname == NULL)
