@@ -137,8 +137,11 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 					    PkResults *results,
 					    GError **error)
 {
+	const gchar *package_id;
 	gboolean ret = TRUE;
+	GHashTable *installed = NULL;
 	GPtrArray *array = NULL;
+	GPtrArray *array_filtered = NULL;
 	GsApp *app;
 	guint i;
 	PkError *error_code = NULL;
@@ -157,10 +160,36 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 		goto out;
 	}
 
-	/* get data */
+	/* add all installed packages to a hash */
+	installed = g_hash_table_new (g_str_hash, g_str_equal);
 	array = pk_results_get_package_array (results);
 	for (i = 0; i < array->len; i++) {
 		package = g_ptr_array_index (array, i);
+		if (pk_package_get_info (package) != PK_INFO_ENUM_INSTALLED)
+			continue;
+		g_hash_table_insert (installed,
+				     (const gpointer) pk_package_get_name (package),
+				     (const gpointer) pk_package_get_id (package));
+	}
+
+	/* if the search returns more than one package with the same name,
+	 * ignore everything with that name except the installed package */
+	array_filtered = g_ptr_array_new ();
+	for (i = 0; i < array->len; i++) {
+		package = g_ptr_array_index (array, i);
+		package_id = g_hash_table_lookup (installed, pk_package_get_name (package));
+		if (pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED || package_id == NULL) {
+			g_ptr_array_add (array_filtered, package);
+		} else {
+			g_debug ("ignoring available %s as installed %s also reported",
+				 pk_package_get_id (package), package_id);
+		}
+	}
+
+	/* process packages */
+	for (i = 0; i < array_filtered->len; i++) {
+		package = g_ptr_array_index (array_filtered, i);
+
 		app = gs_app_new (NULL);
 		gs_app_set_metadata (app,
 				     "package-id",
@@ -187,10 +216,14 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 		gs_plugin_add_app (list, app);
 	}
 out:
+	if (installed != NULL)
+		g_hash_table_unref (installed);
 	if (error_code != NULL)
 		g_object_unref (error_code);
 	if (array != NULL)
 		g_ptr_array_unref (array);
+	if (array_filtered != NULL)
+		g_ptr_array_unref (array_filtered);
 	return ret;
 }
 
