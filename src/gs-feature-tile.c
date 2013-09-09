@@ -72,10 +72,8 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 
         gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image),
                                    gs_app_get_featured_pixbuf (priv->app));
-        gtk_label_set_label (GTK_LABEL (priv->title),
-                             gs_app_get_metadata_item (app, "Featured::title"));
-        gtk_label_set_label (GTK_LABEL (priv->subtitle),
-                             gs_app_get_metadata_item (app, "Featured::subtitle"));
+        gtk_label_set_label (GTK_LABEL (priv->title), gs_app_get_name (app));
+        gtk_label_set_label (GTK_LABEL (priv->subtitle), gs_app_get_summary (app));
         data = g_strdup_printf (
                 ".button.featured-tile {\n"
                 "  padding: 0;\n"

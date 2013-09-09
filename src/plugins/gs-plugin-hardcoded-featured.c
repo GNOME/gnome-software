@@ -103,16 +103,6 @@ gs_plugin_add_featured (GsPlugin *plugin,
         app = gs_app_new (apps[i]);
 	gs_app_set_featured_pixbuf (app, pixbuf);
         gs_app_set_metadata (app, "Featured::image-path", path);
-        s = g_key_file_get_locale_string (kf, group, "title", NULL, NULL);
-        if (s) {
-                gs_app_set_metadata (app, "Featured::title", s);
-                g_free (s);
-        }
-        s = g_key_file_get_locale_string (kf, group, "subtitle", NULL, NULL);
-        if (s) {
-                gs_app_set_metadata (app, "Featured::subtitle", s);
-                g_free (s);
-        }
         s = g_key_file_get_string (kf, group, "gradient1", NULL);
         if (s) {
                 gs_app_set_metadata (app, "Featured::gradient1-color", s);
