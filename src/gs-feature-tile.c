@@ -73,9 +73,9 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
         gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image),
                                    gs_app_get_featured_pixbuf (priv->app));
         gtk_label_set_label (GTK_LABEL (priv->title),
-                             gs_app_get_metadata_item (app, "featured-title"));
+                             gs_app_get_metadata_item (app, "Featured::title"));
         gtk_label_set_label (GTK_LABEL (priv->subtitle),
-                             gs_app_get_metadata_item (app, "featured-subtitle"));
+                             gs_app_get_metadata_item (app, "Featured::subtitle"));
         data = g_strdup_printf (
                 ".button.featured-tile {\n"
                 "  padding: 0;\n"
@@ -99,13 +99,13 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
                 "                       color-stop(0,alpha(%s,0.80)),\n"
                 "                       color-stop(1,alpha(%s,0.80)));\n"
                 "}\n",
-                gs_app_get_metadata_item (app, "featured-stroke-color"),
-                gs_app_get_metadata_item (app, "featured-text-color"),
-                gs_app_get_metadata_item (app, "featured-text-color"),
-                gs_app_get_metadata_item (app, "featured-gradient1-color"),
-                gs_app_get_metadata_item (app, "featured-gradient2-color"),
-                gs_app_get_metadata_item (app, "featured-gradient1-color"),
-                gs_app_get_metadata_item (app, "featured-gradient2-color"));
+                gs_app_get_metadata_item (app, "Featured::stroke-color"),
+                gs_app_get_metadata_item (app, "Featured::text-color"),
+                gs_app_get_metadata_item (app, "Featured::text-color"),
+                gs_app_get_metadata_item (app, "Featured::gradient1-color"),
+                gs_app_get_metadata_item (app, "Featured::gradient2-color"),
+                gs_app_get_metadata_item (app, "Featured::gradient1-color"),
+                gs_app_get_metadata_item (app, "Featured::gradient2-color"));
 
         gtk_css_provider_load_from_data (priv->provider, data, -1, NULL);
         g_free (data);

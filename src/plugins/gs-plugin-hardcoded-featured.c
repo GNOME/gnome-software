@@ -102,35 +102,35 @@ gs_plugin_add_featured (GsPlugin *plugin,
 
         app = gs_app_new (apps[i]);
 	gs_app_set_featured_pixbuf (app, pixbuf);
-        gs_app_set_metadata (app, "featured-image-path", path);
+        gs_app_set_metadata (app, "Featured::image-path", path);
         s = g_key_file_get_locale_string (kf, group, "title", NULL, NULL);
         if (s) {
-                gs_app_set_metadata (app, "featured-title", s);
+                gs_app_set_metadata (app, "Featured::title", s);
                 g_free (s);
         }
         s = g_key_file_get_locale_string (kf, group, "subtitle", NULL, NULL);
         if (s) {
-                gs_app_set_metadata (app, "featured-subtitle", s);
+                gs_app_set_metadata (app, "Featured::subtitle", s);
                 g_free (s);
         }
         s = g_key_file_get_string (kf, group, "gradient1", NULL);
         if (s) {
-                gs_app_set_metadata (app, "featured-gradient1-color", s);
+                gs_app_set_metadata (app, "Featured::gradient1-color", s);
                 g_free (s);
         }
         s = g_key_file_get_string (kf, group, "gradient2", NULL);
         if (s) {
-                gs_app_set_metadata (app, "featured-gradient2-color", s);
+                gs_app_set_metadata (app, "Featured::gradient2-color", s);
                 g_free (s);
         }
         s = g_key_file_get_string (kf, group, "stroke", NULL);
         if (s) {
-                gs_app_set_metadata (app, "featured-stroke-color", s);
+                gs_app_set_metadata (app, "Featured::stroke-color", s);
                 g_free (s);
         }
         s = g_key_file_get_string (kf, group, "text", NULL);
         if (s) {
-                gs_app_set_metadata (app, "featured-text-color", s);
+                gs_app_set_metadata (app, "Featured::text-color", s);
                 g_free (s);
         }
 
