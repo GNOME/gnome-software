@@ -80,7 +80,7 @@ about_activated (GSimpleAction *action,
                 parent = windows->data;
 
         icon_theme = gtk_icon_theme_get_default ();
-        logo = gtk_icon_theme_load_icon (icon_theme, "system-software-install", 256, 0, NULL);
+        logo = gtk_icon_theme_load_icon (icon_theme, "gnome-software", 256, 0, NULL);
 
         gtk_show_about_dialog (parent,
                                "title", _("About GNOME Software"),
