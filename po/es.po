@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-05 13:33+0000\n"
-"PO-Revision-Date: 2013-09-06 10:11+0200\n"
+"POT-Creation-Date: 2013-09-09 13:44+0000\n"
+"PO-Revision-Date: 2013-09-09 16:33+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -51,13 +51,13 @@ msgstr "_Actualizaciones"
 msgid "Restart & Install"
 msgstr "Reiniciar e instalar"
 
-#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:140
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:103
 #: ../src/gs-shell-details.c:85
 msgid "Install"
 msgstr "Instalar"
 
-#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:145
-#: ../src/gs-shell-details.c:111 ../src/gs-shell-details.c:280
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:108
+#: ../src/gs-shell-details.c:114 ../src/gs-shell-details.c:289
 #: ../src/gs-shell-installed.c:160 ../src/gs-shell-search.c:108
 msgid "Remove"
 msgstr "Eliminar"
@@ -143,31 +143,32 @@ msgid "GNOME Software"
 msgstr "Software de GNOME"
 
 #: ../src/gs-application.c:89
-msgid "A nice way to manager the software on your system."
+#| msgid "A nice way to manager the software on your system."
+msgid "A nice way to manage the software on your system."
 msgstr "Una buena manera de gestionar el software en su sistema."
 
 #: ../src/gs-application.c:93
 msgid "translator-credits"
 msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013"
 
-#: ../src/gs-application.c:206
+#: ../src/gs-application.c:208
 msgid "Start up mode, either 'updates', 'installed' or 'overview'"
 msgstr ""
 "Modo de inicio, puede ser «actualizaciones», «instalados» o «vista general»"
 
-#: ../src/gs-application.c:206
+#: ../src/gs-application.c:208
 msgid "MODE"
 msgstr "MODO"
 
-#: ../src/gs-app-widget.c:152
+#: ../src/gs-app-widget.c:115
 msgid "Update"
 msgstr "Actualizar"
 
-#: ../src/gs-app-widget.c:159 ../src/gs-shell-details.c:91
+#: ../src/gs-app-widget.c:122 ../src/gs-shell-details.c:91
 msgid "Installing"
 msgstr "Instalando"
 
-#: ../src/gs-app-widget.c:166 ../src/gs-shell-details.c:117
+#: ../src/gs-app-widget.c:129 ../src/gs-shell-details.c:120
 msgid "Removing"
 msgstr "Quitando"
 
@@ -175,30 +176,30 @@ msgstr "Quitando"
 msgid "General"
 msgstr "General"
 
-#: ../src/gs-plugin-loader.c:458
+#: ../src/gs-plugin-loader.c:453
 msgid "OS Updates"
 msgstr "Actualizaciones del SO"
 
-#: ../src/gs-plugin-loader.c:459 ../src/gs-plugin-loader.c:460
+#: ../src/gs-plugin-loader.c:454 ../src/gs-plugin-loader.c:455
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
 "Incluye mejoras en el rendimiento, la estabilidad y la seguridad para todos "
 "los usuarios."
 
-#: ../src/gs-shell-details.c:267 ../src/gs-shell-installed.c:147
+#: ../src/gs-shell-details.c:276 ../src/gs-shell-installed.c:147
 #: ../src/gs-shell-search.c:95
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "¿Está seguro de querer quitar %s?"
 
-#: ../src/gs-shell-details.c:278 ../src/gs-shell-installed.c:158
+#: ../src/gs-shell-details.c:287 ../src/gs-shell-installed.c:158
 #: ../src/gs-shell-search.c:106
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo."
 
-#: ../src/gs-shell-installed.c:398 ../src/gs-shell-overview.c:147
+#: ../src/gs-shell-installed.c:398 ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalado"
 
@@ -786,23 +787,23 @@ msgid "TV"
 msgstr "TV"
 
 #. Add Ons
-#: ../src/plugins/gs-plugin-packagekit.c:562
+#: ../src/plugins/gs-plugin-packagekit.c:561
 msgid "Add-ons"
 msgstr "Complementos"
 
-#: ../src/plugins/gs-plugin-packagekit.c:565
+#: ../src/plugins/gs-plugin-packagekit.c:564
 msgid "Codecs"
 msgstr "Codificadores"
 
-#: ../src/plugins/gs-plugin-packagekit.c:568
+#: ../src/plugins/gs-plugin-packagekit.c:567
 msgid "Fonts"
 msgstr "Tipografías"
 
-#: ../src/plugins/gs-plugin-packagekit.c:571
+#: ../src/plugins/gs-plugin-packagekit.c:570
 msgid "Input Sources"
 msgstr "Fuentes de entrada"
 
-#: ../src/plugins/gs-plugin-packagekit.c:574
+#: ../src/plugins/gs-plugin-packagekit.c:573
 msgid "Language Packs"
 msgstr "Paquetes de idiomas"
 
