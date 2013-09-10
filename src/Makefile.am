@@ -22,8 +22,15 @@ desktop_in_files =					\
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
 UI_FILES =						\
+	app-menu.ui					\
+	app-tile.ui					\
+	app-widget.ui					\
+	category-tile.ui				\
+	feature-tile.ui					\
 	gnome-software.ui				\
-	app-menu.ui
+	gnome-software.ui				\
+	popular-tile.ui
+
 
 bin_PROGRAMS =						\
 	gnome-software
