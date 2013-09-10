@@ -195,7 +195,7 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 				     "PackageKit::package-id",
 				     pk_package_get_id (package));
 		gs_app_set_metadata (app,
-				     "package-summary",
+				     "PackageKit::package-summary",
 				     pk_package_get_summary (package));
 		gs_app_set_source (app, pk_package_get_name (package));
 		gs_app_set_management_plugin (app, "PackageKit");
