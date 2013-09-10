@@ -107,7 +107,7 @@ Overview:    | <p>
 -------------|---
 Methods:     | Search, AddUpdates, AddInstalled, AppInstall, AppRemove, AppUpdate
 Requires:    | `{PackageKit::package-id}`
-Refines:     | `{PackageKit::package-id}`, `[source]`, `{package-summary}`, `[update-details]`, `{install-kind}`
+Refines:     | `{PackageKit::package-id}`, `[source]`, `{package-summary}`, `[update-details]`, `[management-plugin]`
 
 ### packagekit-refine ###
 Uses the system PackageKit instance to return convert filenames to package-ids.
@@ -165,4 +165,4 @@ Overview:    | <p>
 -------------|---
 Methods:     | `nothing`
 Requires:    | `nothing`
-Refines:     | `{DataDir::desktop-filename}->[state]`, `{install-kind}`
+Refines:     | `{DataDir::desktop-filename}->[state]`, `[management-plugin]`

@@ -191,6 +191,7 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 		for (i = 0; i < packages->len; i++) {
 			package = g_ptr_array_index (packages, i);
 			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
+				gs_app_set_management_plugin (app, "PackageKit");
 				gs_app_set_metadata (app, "PackageKit::package-id", pk_package_get_id (package));
 				if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
 					gs_app_set_state (app,
@@ -267,6 +268,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin      *plugin,
 		package = g_ptr_array_index (packages, 0);
 		gs_app_set_metadata (app, "PackageKit::package-id", pk_package_get_id (package));
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gs_app_set_management_plugin (app, "PackageKit");
 	} else {
 		g_warning ("Failed to find one package for %s, %s, [%d]",
 			   gs_app_get_id (app), filename, packages->len);

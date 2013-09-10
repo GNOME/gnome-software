@@ -198,7 +198,7 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 				     "package-summary",
 				     pk_package_get_summary (package));
 		gs_app_set_source (app, pk_package_get_name (package));
-		gs_app_set_metadata (app, "install-kind", "package");
+		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_set_version (app, pk_package_get_version (package));
 		switch (pk_package_get_info (package)) {
 		case PK_INFO_ENUM_INSTALLED:
@@ -375,7 +375,7 @@ gs_plugin_packagekit_add_updates_results (GsPlugin *plugin,
 		gs_app_set_source (app, split[PK_PACKAGE_ID_NAME]);
 		gs_app_set_update_details (app, update_text);
 		gs_app_set_update_version (app, split[PK_PACKAGE_ID_VERSION]);
-		gs_app_set_metadata (app, "install-kind", "package");
+		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 		gs_plugin_add_app (list, app);

@@ -117,6 +117,9 @@ void		 gs_app_set_update_version	(GsApp		*app,
 const gchar	*gs_app_get_update_details	(GsApp		*app);
 void		 gs_app_set_update_details	(GsApp		*app,
 						 const gchar	*update_details);
+const gchar	*gs_app_get_management_plugin	(GsApp		*app);
+void		 gs_app_set_management_plugin	(GsApp		*app,
+						 const gchar	*management_plugin);
 GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
 void		 gs_app_set_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);

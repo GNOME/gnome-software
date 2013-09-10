@@ -68,7 +68,6 @@ gs_plugin_refine (GsPlugin *plugin,
 			g_debug ("Desktop file not in /usr, assuming installed");
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
-			gs_app_set_metadata (app, "install-kind", "local");
 		}
 	}
 	return TRUE;
