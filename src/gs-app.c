@@ -316,12 +316,61 @@ gs_app_get_kind (GsApp *app)
 
 /**
  * gs_app_set_kind:
+ *
+ * This sets the kind of the application. The following state diagram explains
+ * the typical states. All applications start with kind %GS_APP_KIND_UNKNOWN.
+ *
+ * PACKAGE --> NORMAL
+ * PACKAGE --> SYSTEM
+ * NORMAL  --> SYSTEM
  */
 void
 gs_app_set_kind (GsApp *app, GsAppKind kind)
 {
+	gboolean state_change_ok = FALSE;
+	GsAppPrivate *priv = app->priv;
+
 	g_return_if_fail (GS_IS_APP (app));
-	app->priv->kind = kind;
+	if (priv->kind == kind)
+		return;
+
+	/* check the state change is allowed */
+	switch (priv->kind) {
+	case GS_APP_KIND_UNKNOWN:
+		/* unknown can go into any state */
+		state_change_ok = TRUE;
+		break;
+	case GS_APP_KIND_PACKAGE:
+		/* package can become either normal or a system application */
+		if (kind == GS_APP_KIND_NORMAL ||
+		    kind == GS_APP_KIND_SYSTEM)
+			state_change_ok = TRUE;
+		break;
+	case GS_APP_KIND_NORMAL:
+		/* normal can only be promoted to system */
+		if (kind == GS_APP_KIND_SYSTEM)
+			state_change_ok = TRUE;
+		break;
+	case GS_APP_KIND_SYSTEM:
+	case GS_APP_KIND_OS_UPDATE:
+		/* this can never change state */
+		break;
+	default:
+		g_warning ("kind %s unhandled",
+			   gs_app_kind_to_string (priv->kind));
+		g_assert_not_reached ();
+	}
+
+	/* this state change was unexpected */
+	if (!state_change_ok) {
+		g_warning ("Kind change on %s from %s to %s is not OK",
+			   priv->id,
+			   gs_app_kind_to_string (priv->kind),
+			   gs_app_kind_to_string (kind));
+		return;
+	}
+
+	priv->kind = kind;
 }
 
 /**
