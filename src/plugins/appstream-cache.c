@@ -552,7 +552,7 @@ appstream_cache_parse_file (AppstreamCache *cache,
 	if (len < 0)
 		ret = FALSE;
 out:
-	if (helper->item_temp)
+	if (helper != NULL && helper->item_temp != NULL)
 		appstream_app_free (helper->item_temp);
 	if (info != NULL)
 		g_object_unref (info);
