@@ -1012,3 +1012,5 @@ gs_app_new (const gchar *id)
 			    NULL);
 	return GS_APP (app);
 }
+
+/* vim: set noexpandtab: */
