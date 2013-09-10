@@ -77,11 +77,22 @@ gs_plugin_add_featured (GsPlugin *plugin,
         apps = g_key_file_get_groups (kf, &n_apps)
 ;
 
+        group = NULL;
+
 #ifdef DEBUG
-        group = g_getenv ("GNOME_SOFTWARE_FEATURED");
-        if (!group ||!g_list_find_custom (apps, group, g_str_equal))
+        if (g_getenv ("GNOME_SOFTWARE_FEATURED")) {
+                const gchar *featured;
+                featured = g_getenv ("GNOME_SOFTWARE_FEATURED");
+                for (i = 0; apps[i]; i++) {
+                        if (g_strcmp0 (apps[i], featured) == 0) {
+                                group = featured;
+                                break;
+                        }
+                }
+        }
 #endif
-        {
+
+        if (!group) {
                 /* In lieu of a random number generator, just
                  * rotate the featured apps, giving each app
                  * 3 days apiece.
