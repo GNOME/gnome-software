@@ -97,6 +97,7 @@ dnl ---------------------------------------------------------------------------
 AC_CONFIG_FILES([
 Makefile
 po/Makefile.in
+data/featured.ini
 data/Makefile
 data/icons/Makefile
 data/icons/16x16/Makefile

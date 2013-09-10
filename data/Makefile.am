@@ -33,7 +33,8 @@ install-sample-data:
 	cd -
 
 EXTRA_DIST =						\
-	$(appdata_files)
+	$(appdata_files)				\
+	featured.ini.in
 
 MAINTAINERCLEANFILES =					\
 	*~						\
