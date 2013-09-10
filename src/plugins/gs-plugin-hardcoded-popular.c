@@ -81,7 +81,6 @@ gs_plugin_add_popular (GsPlugin *plugin,
         const gint n = G_N_ELEMENTS (apps);
         gint d, i, k;
 
-#ifdef DEBUG
         if (g_getenv ("GNOME_SOFTWARE_POPULAR")) {
                 gchar **popular;
 
@@ -94,7 +93,6 @@ gs_plugin_add_popular (GsPlugin *plugin,
                 g_strfreev (popular);
                 return TRUE;
         }
-#endif
 
         date = g_date_time_new_now_utc ();
         d = (((gint)g_date_time_get_day_of_year (date)) % (G_N_ELEMENTS (primes) * 3)) / 3;
