@@ -231,15 +231,76 @@ gs_app_get_state (GsApp *app)
 
 /**
  * gs_app_set_state:
+ *
+ * This sets the state of the application. The following state diagram explains
+ * the typical states. All applications start in state %GS_APP_STATE_UNKNOWN.
+ *
+ * UPDATABLE --> INSTALLING --> INSTALLED
+ * UPDATABLE --> REMOVING   --> AVAILABLE
+ * INSTALLED --> REMOVING   --> AVAILABLE
+ * AVAILABLE --> INSTALLING --> INSTALLED
  */
 void
 gs_app_set_state (GsApp *app, GsAppState state)
 {
+	gboolean state_change_ok = FALSE;
+	GsAppPrivate *priv = app->priv;
+
 	g_return_if_fail (GS_IS_APP (app));
-        if (app->priv->state == state)
-                return;
-	app->priv->state = state;
-        g_object_notify (G_OBJECT (app), "state");
+	if (priv->state == state)
+		return;
+
+	/* check the state change is allowed */
+	switch (priv->state) {
+	case GS_APP_STATE_UNKNOWN:
+		/* unknown has to go into one of the stable states */
+		if (state == GS_APP_STATE_INSTALLED ||
+		    state == GS_APP_STATE_AVAILABLE ||
+		    state == GS_APP_STATE_UPDATABLE)
+			state_change_ok = TRUE;
+		break;
+	case GS_APP_STATE_INSTALLED:
+		/* installed has to go into an action state */
+		if (state == GS_APP_STATE_REMOVING)
+			state_change_ok = TRUE;
+		break;
+	case GS_APP_STATE_AVAILABLE:
+		/* available has to go into an action state */
+		if (state == GS_APP_STATE_INSTALLING)
+			state_change_ok = TRUE;
+		break;
+	case GS_APP_STATE_INSTALLING:
+		/* installing has to go into an stable state */
+		if (state == GS_APP_STATE_INSTALLED)
+			state_change_ok = TRUE;
+		break;
+	case GS_APP_STATE_REMOVING:
+		/* removing has to go into an stable state */
+		if (state == GS_APP_STATE_AVAILABLE)
+			state_change_ok = TRUE;
+		break;
+	case GS_APP_STATE_UPDATABLE:
+		/* updatable has to go into an action state */
+		if (state == GS_APP_STATE_REMOVING)
+			state_change_ok = TRUE;
+		break;
+	default:
+		g_warning ("state %s unhandled",
+			   gs_app_state_to_string (priv->state));
+		g_assert_not_reached ();
+	}
+
+	/* this state change was unexpected */
+	if (!state_change_ok) {
+		g_warning ("State change on %s from %s to %s is not OK",
+			   priv->id,
+			   gs_app_state_to_string (priv->state),
+			   gs_app_state_to_string (state));
+		return;
+	}
+
+	priv->state = state;
+	g_object_notify (G_OBJECT (app), "state");
 	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
