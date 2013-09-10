@@ -673,7 +673,7 @@ gs_app_get_update_details (GsApp *app)
 }
 
 /**
- * gs_app_set_update_version:
+ * gs_app_set_update_details:
  */
 void
 gs_app_set_update_details (GsApp *app, const gchar *update_details)
