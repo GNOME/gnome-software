@@ -63,6 +63,7 @@ struct GsAppPrivate
         gchar			*url;
         gchar			*update_version;
         gchar			*update_details;
+        gchar			*management_plugin;
 	gint			 rating;
 	GsAppKind		 kind;
 	GsAppState		 state;
@@ -683,6 +684,30 @@ gs_app_set_update_details (GsApp *app, const gchar *update_details)
 }
 
 /**
+ * gs_app_get_management_plugin:
+ */
+const gchar *
+gs_app_get_management_plugin (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->management_plugin;
+}
+
+/**
+ * gs_app_set_management_plugin:
+ *
+ * The management plugin is the plugin that can handle doing install and remove
+ * operations on the #GsApp. Typical values include "PackageKit" and "jhbuild"
+ */
+void
+gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->management_plugin);
+	app->priv->management_plugin = g_strdup (management_plugin);
+}
+
+/**
  * gs_app_get_rating:
  */
 gint
@@ -997,6 +1022,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->screenshot);
 	g_free (priv->update_version);
 	g_free (priv->update_details);
+	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
 	g_ptr_array_unref (priv->related);
 	if (priv->pixbuf != NULL)
