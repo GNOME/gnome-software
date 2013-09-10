@@ -15,7 +15,9 @@ dist_resources_DATA =					\
 	stars1.png					\
 	stars2.png					\
 	stars3.png					\
-	stars4.png
+	stars4.png          \
+	weather.png         \
+	weather-bg.png
 
 appdatadir = $(datadir)/appdata
 appdata_files = gnome-software.appdata.xml
