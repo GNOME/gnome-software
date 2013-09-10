@@ -507,6 +507,25 @@ out:
 
 /**
  * gs_plugin_loader_get_updates_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_updates()
+ * function. The plugins can either return #GsApp objects of kind
+ * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ *
+ * Once the list of updates is refined, some of the #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
+ * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ *
+ * Any #GsApp's of kind %GS_APP_KIND_PACKAGE that remain after refining are
+ * added to a new virtual #GsApp of kind %GS_APP_KIND_OS_UPDATE and all the
+ * %GS_APP_KIND_PACKAGE objects are moved to related packages of this object.
+ *
+ * This means all of the #GsApp's returning from this function are of kind
+ * %GS_APP_KIND_NORMAL, %GS_APP_KIND_SYSTEM or %GS_APP_KIND_OS_UPDATE.
+ *
+ * The #GsApps may be in state %GS_APP_STATE_INSTALLED or %GS_APP_STATE_AVAILABLE
+ * and the UI may want to filter the two classes of applications differently.
  **/
 void
 gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
@@ -608,6 +627,23 @@ out:
 
 /**
  * gs_plugin_loader_get_installed_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_installed()
+ * function. The plugins can either return #GsApp objects of kind
+ * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ *
+ * Once the list of updates is refined, some of the #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
+ * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ *
+ * Any #GsApp's of kind %GS_APP_KIND_PACKAGE or %GS_APP_KIND_SYSTEM that remain
+ * after refining are automatically removed.
+ *
+ * This means all of the #GsApp's returning from this function are of kind
+ * %GS_APP_KIND_NORMAL.
+ *
+ * The #GsApps will all initially be in state %GS_APP_STATE_INSTALLED.
  **/
 void
 gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
@@ -808,6 +844,24 @@ out:
 
 /**
  * gs_plugin_loader_get_featured_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_featured()
+ * function. The plugins can either return #GsApp objects of kind
+ * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ *
+ * Once the list of updates is refined, some of the #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
+ * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ *
+ * Any #GsApp's of kind %GS_APP_KIND_PACKAGE that remain after refining are
+ * automatically removed.
+ *
+ * This means all of the #GsApp's returning from this function are of kind
+ * %GS_APP_KIND_NORMAL or %GS_APP_KIND_SYSTEM.
+ *
+ * The #GsApps may be in state %GS_APP_STATE_INSTALLED or %GS_APP_STATE_AVAILABLE
+ * and the UI may want to filter the two classes of applications differently.
  **/
 void
 gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
@@ -951,6 +1005,24 @@ out:
 
 /**
  * gs_plugin_loader_search_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_search()
+ * function. The plugins can either return #GsApp objects of kind
+ * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ *
+ * Once the list of updates is refined, some of the #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
+ * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ *
+ * Any #GsApp's of kind %GS_APP_KIND_PACKAGE or %GS_APP_KIND_SYSTEM that remain
+ * after refining are automatically removed.
+ *
+ * This means all of the #GsApp's returning from this function are of kind
+ * %GS_APP_KIND_NORMAL.
+ *
+ * The #GsApps may be in state %GS_APP_STATE_INSTALLED or %GS_APP_STATE_AVAILABLE
+ * and the UI may want to filter the two classes of applications differently.
  **/
 void
 gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
@@ -1096,6 +1168,9 @@ out:
 
 /**
  * gs_plugin_loader_get_categories_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_categories()
+ * function. The plugins return #GsCategory objects.
  **/
 void
 gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
@@ -1243,6 +1318,24 @@ out:
 
 /**
  * gs_plugin_loader_get_category_apps_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_category_apps()
+ * function. The plugins can either return #GsApp objects of kind
+ * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ *
+ * Once the list of updates is refined, some of the #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
+ * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ *
+ * Any #GsApp's of kind %GS_APP_KIND_PACKAGE or %GS_APP_KIND_SYSTEM that remain
+ * after refining are automatically removed.
+ *
+ * This means all of the #GsApp's returning from this function are of kind
+ * %GS_APP_KIND_NORMAL.
+ *
+ * The #GsApps may be in state %GS_APP_STATE_INSTALLED or %GS_APP_STATE_AVAILABLE
+ * and the UI may want to filter the two classes of applications differently.
  **/
 void
 gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,

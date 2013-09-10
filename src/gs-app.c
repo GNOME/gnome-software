@@ -19,6 +19,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * SECTION:gs-app
+ * @short_description: An application that is either installed or that can be installed
+ *
+ * This object represents a 1:1 mapping to a .desktop file. The design is such
+ * so you can't have different GsApp's for different versions or arcitectures
+ * of a package.
+ *
+ * In the #GsPluginLoader the deduplication functionality uses the id to try
+ * and remove duplicate entries, so this should be the primary key for this
+ * object.
+ *
+ * Infrormation about other #GsApp objects can be stored in this object, for
+ * instance in the gs_app_add_related() method or the future method
+ * gs_app_get_history().
+ */
+
 #include "config.h"
 
 #include <string.h>
