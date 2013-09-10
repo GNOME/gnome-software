@@ -415,7 +415,6 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 					GObject *object,
 					GCancellable *cancellable)
 {
-	const gchar *tmp;
 	gboolean has_os_update = FALSE;
 	GdkPixbuf *pixbuf = NULL;
 	GError *error = NULL;
