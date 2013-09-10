@@ -52,7 +52,6 @@ gs_plugin_add_featured (GsPlugin *plugin,
 {
 	gboolean ret = TRUE;
 	gchar *path;
-	GdkPixbuf *pixbuf;
 	GsApp *app;
 	guint i;
         GDateTime *date;
@@ -104,40 +103,10 @@ gs_plugin_add_featured (GsPlugin *plugin,
                 group = apps[i];
         }
 
-        s = g_key_file_get_string (kf, group, "image", NULL);
-	path = g_build_filename (DATADIR, "gnome-software", s, NULL);
-        g_free (s);
-	pixbuf = gdk_pixbuf_new_from_file_at_scale (path, -1, -1, TRUE, &local_error);
-	if (pixbuf == NULL) {
-                g_warning ("Failed to load %s: %s", path, local_error->message);
-                g_propagate_error (error, local_error);
-                g_key_file_unref (kf);
-                g_free (path);
-		ret = FALSE;
-		goto out;
-	}
-
         app = gs_app_new (group);
-	gs_app_set_featured_pixbuf (app, pixbuf);
-        gs_app_set_metadata (app, "Featured::image-path", path);
-        s = g_key_file_get_string (kf, group, "size", NULL);
+        s = g_key_file_get_string (kf, group, "background", NULL);
         if (s) {
-                gs_app_set_metadata (app, "Featured::image-size", s);
-                g_free (s);
-        }
-        s = g_key_file_get_string (kf, group, "position", NULL);
-        if (s) {
-                gs_app_set_metadata (app, "Featured::image-position", s);
-                g_free (s);
-        }
-        s = g_key_file_get_string (kf, group, "gradient1", NULL);
-        if (s) {
-                gs_app_set_metadata (app, "Featured::gradient1-color", s);
-                g_free (s);
-        }
-        s = g_key_file_get_string (kf, group, "gradient2", NULL);
-        if (s) {
-                gs_app_set_metadata (app, "Featured::gradient2-color", s);
+                gs_app_set_metadata (app, "Featured::background", s);
                 g_free (s);
         }
         s = g_key_file_get_string (kf, group, "stroke", NULL);
@@ -150,10 +119,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
                 gs_app_set_metadata (app, "Featured::text-color", s);
                 g_free (s);
         }
-
-       	g_object_unref (pixbuf);
 	gs_plugin_add_app (list, app);
-	g_free (path);
 
 out:
         g_strfreev (apps);

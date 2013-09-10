@@ -73,11 +73,6 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
         gtk_label_set_label (GTK_LABEL (priv->title), gs_app_get_name (app));
         gtk_label_set_label (GTK_LABEL (priv->subtitle), gs_app_get_summary (app));
         data = g_strdup_printf (
-                ".featured-image {\n"
-                "  background-image: url('%s');\n"
-                "  background-size: %s;\n"
-                "  background-position: %s;\n"
-                "}\n"
                 ".button.featured-tile {\n"
                 "  padding: 0;\n"
                 "  border-radius: 0;\n"
@@ -89,27 +84,12 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
                 "  outline-color: alpha(%s, 0.75);\n"
                 "  outline-style: dashed;\n"
                 "  outline-offset: 2px;\n"
-                "  background-image: -gtk-gradient(linear,\n"
-                "                       0 0, 0 1,\n"
-                "                       color-stop(0,%s),\n"
-                "                       color-stop(1,%s));\n"
-                "}\n"
-                ".button.featured-tile:hover {\n"
-                "  background-image: -gtk-gradient(linear,\n"
-                "                       0 0, 0 1,\n"
-                "                       color-stop(0,alpha(%s,0.80)),\n"
-                "                       color-stop(1,alpha(%s,0.80)));\n"
+                "  background: %s;\n"
                 "}\n",
-                gs_app_get_metadata_item (app, "Featured::image-path"),
-                gs_app_get_metadata_item (app, "Featured::image-size"),
-                gs_app_get_metadata_item (app, "Featured::image-position"),
                 gs_app_get_metadata_item (app, "Featured::stroke-color"),
                 gs_app_get_metadata_item (app, "Featured::text-color"),
                 gs_app_get_metadata_item (app, "Featured::text-color"),
-                gs_app_get_metadata_item (app, "Featured::gradient1-color"),
-                gs_app_get_metadata_item (app, "Featured::gradient2-color"),
-                gs_app_get_metadata_item (app, "Featured::gradient1-color"),
-                gs_app_get_metadata_item (app, "Featured::gradient2-color"));
+                gs_app_get_metadata_item (app, "Featured::background"));
 
         gtk_css_provider_load_from_data (priv->provider, data, -1, NULL);
         g_free (data);
