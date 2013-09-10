@@ -106,9 +106,19 @@ gs_plugin_add_featured (GsPlugin *plugin,
 		goto out;
 	}
 
-        app = gs_app_new (apps[i]);
+        app = gs_app_new (group);
 	gs_app_set_featured_pixbuf (app, pixbuf);
         gs_app_set_metadata (app, "Featured::image-path", path);
+        s = g_key_file_get_string (kf, group, "size", NULL);
+        if (s) {
+                gs_app_set_metadata (app, "Featured::image-size", s);
+                g_free (s);
+        }
+        s = g_key_file_get_string (kf, group, "position", NULL);
+        if (s) {
+                gs_app_set_metadata (app, "Featured::image-position", s);
+                g_free (s);
+        }
         s = g_key_file_get_string (kf, group, "gradient1", NULL);
         if (s) {
                 gs_app_set_metadata (app, "Featured::gradient1-color", s);

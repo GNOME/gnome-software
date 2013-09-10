@@ -70,11 +70,14 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
         g_clear_object (&priv->app);
 	priv->app = g_object_ref (app);
 
-        gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image),
-                                   gs_app_get_featured_pixbuf (priv->app));
         gtk_label_set_label (GTK_LABEL (priv->title), gs_app_get_name (app));
         gtk_label_set_label (GTK_LABEL (priv->subtitle), gs_app_get_summary (app));
         data = g_strdup_printf (
+                ".featured-image {\n"
+                "  background-image: url('%s');\n"
+                "  background-size: %s;\n"
+                "  background-position: %s;\n"
+                "}\n"
                 ".button.featured-tile {\n"
                 "  padding: 0;\n"
                 "  border-radius: 0;\n"
@@ -97,6 +100,9 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
                 "                       color-stop(0,alpha(%s,0.80)),\n"
                 "                       color-stop(1,alpha(%s,0.80)));\n"
                 "}\n",
+                gs_app_get_metadata_item (app, "Featured::image-path"),
+                gs_app_get_metadata_item (app, "Featured::image-size"),
+                gs_app_get_metadata_item (app, "Featured::image-position"),
                 gs_app_get_metadata_item (app, "Featured::stroke-color"),
                 gs_app_get_metadata_item (app, "Featured::text-color"),
                 gs_app_get_metadata_item (app, "Featured::text-color"),
