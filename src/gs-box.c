@@ -197,6 +197,10 @@ gs_box_get_child_property (GtkContainer *container,
                         break;
                 }
         }
+        if (child == NULL) {
+                GTK_CONTAINER_WARN_INVALID_CHILD_PROPERTY_ID (container, property_id, pspec);
+                return;
+        }
 
         switch (property_id) {
         case CHILD_PROP_RELATIVE_SIZE:
@@ -224,6 +228,10 @@ gs_box_set_child_property (GtkContainer *container,
                 if (child->widget == widget) {
                         break;
                 }
+        }
+        if (child == NULL) {
+                GTK_CONTAINER_WARN_INVALID_CHILD_PROPERTY_ID (container, property_id, pspec);
+                return;
         }
 
         switch (property_id) {
