@@ -8,8 +8,8 @@ dist_resources_DATA =					\
 	featured-xchat.png				\
 	featured-org.gnome.Weather.Application.png	\
 	featured-gnome-sudoku.png			\
-	featured-darktable.png				\
-	featured-mypaint.png				\
+	darktable.png				\
+	mypaint.png				\
 	featured.ini					\
 	stars0.png					\
 	stars1.png					\
