@@ -77,15 +77,21 @@ gs_plugin_add_featured (GsPlugin *plugin,
         apps = g_key_file_get_groups (kf, &n_apps)
 ;
 
-        /* In lieu of a random number generator, just
-         * rotate the featured apps, giving each app
-         * 3 days apiece.
-         */
-        date = g_date_time_new_now_utc ();
-        i = g_date_time_get_day_of_year (date);
-        g_date_time_unref (date);
-        i = (i % (n_apps * 3)) / 3;
-        group = apps[i];
+#ifdef DEBUG
+        group = g_getenv ("GNOME_SOFTWARE_FEATURED");
+        if (!group ||!g_list_find_custom (apps, group, g_str_equal))
+#endif
+        {
+                /* In lieu of a random number generator, just
+                 * rotate the featured apps, giving each app
+                 * 3 days apiece.
+                 */
+                date = g_date_time_new_now_utc ();
+                i = g_date_time_get_day_of_year (date);
+                g_date_time_unref (date);
+                i = (i % (n_apps * 3)) / 3;
+                group = apps[i];
+        }
 
         s = g_key_file_get_string (kf, group, "image", NULL);
 	path = g_build_filename (DATADIR, "gnome-software", s, NULL);
