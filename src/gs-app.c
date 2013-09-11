@@ -281,12 +281,14 @@ gs_app_set_state (GsApp *app, GsAppState state)
 		break;
 	case GS_APP_STATE_INSTALLING:
 		/* installing has to go into an stable state */
-		if (state == GS_APP_STATE_INSTALLED)
+		if (state == GS_APP_STATE_INSTALLED ||
+		    state == GS_APP_STATE_AVAILABLE)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_REMOVING:
 		/* removing has to go into an stable state */
-		if (state == GS_APP_STATE_AVAILABLE)
+		if (state == GS_APP_STATE_AVAILABLE ||
+		    state == GS_APP_STATE_INSTALLED)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_UPDATABLE:
