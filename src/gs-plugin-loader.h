@@ -155,3 +155,5 @@ GsApp		*gs_plugin_loader_dedupe		(GsPluginLoader	*plugin_loader,
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_LOADER_H */
+
+/* vim: set noexpandtab: */

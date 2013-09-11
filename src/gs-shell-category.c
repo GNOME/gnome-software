@@ -352,3 +352,5 @@ gs_shell_category_new (void)
 
 	return shell;
 }
+
+/* vim: set noexpandtab: */

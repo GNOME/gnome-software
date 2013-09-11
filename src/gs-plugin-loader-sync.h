@@ -48,3 +48,5 @@ GList		*gs_plugin_loader_get_category_apps	(GsPluginLoader	*plugin_loader,
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_LOADER_SYNC_H */
+
+/* vim: set noexpandtab: */

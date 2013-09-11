@@ -65,3 +65,5 @@ void 		 gs_shell_updates_setup		(GsShellUpdates		*shell_updates,
 G_END_DECLS
 
 #endif /* __GS_SHELL_UPDATES_H */
+
+/* vim: set noexpandtab: */

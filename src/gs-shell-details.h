@@ -66,3 +66,5 @@ void 		 gs_shell_details_setup		(GsShellDetails		*shell_details,
 						 GCancellable		*cancellable);
 
 #endif /* __GS_SHELL_DETAILS_H */
+
+/* vim: set noexpandtab: */

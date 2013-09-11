@@ -46,3 +46,4 @@ G_END_DECLS
 
 #endif /* GS_BOX_H */
 
+/* vim: set noexpandtab: */

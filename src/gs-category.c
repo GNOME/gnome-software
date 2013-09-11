@@ -161,3 +161,5 @@ gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
         category->priv->name = g_strdup (name);
 	return GS_CATEGORY (category);
 }
+
+/* vim: set noexpandtab: */

@@ -62,3 +62,5 @@ void 		 gs_shell_search_setup		(GsShellSearch		*shell_search,
 						 GCancellable		*cancellable);
 
 #endif /* __GS_SHELL_SEARCH_H */
+
+/* vim: set noexpandtab: */

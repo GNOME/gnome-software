@@ -64,3 +64,5 @@ void 		 gs_shell_installed_setup	(GsShellInstalled	*shell_installed,
 G_END_DECLS
 
 #endif /* __GS_SHELL_INSTALLED_H */
+
+/* vim: set noexpandtab: */

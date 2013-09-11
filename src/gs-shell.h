@@ -84,3 +84,5 @@ gboolean	 gs_shell_is_cache_valid	(GsShell	*shell);
 G_END_DECLS
 
 #endif /* __GS_SHELL_H */
+
+/* vim: set noexpandtab: */

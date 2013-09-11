@@ -62,3 +62,4 @@ G_END_DECLS
 
 #endif /* GS_CATEGORY_TILE_H */
 
+/* vim: set noexpandtab: */

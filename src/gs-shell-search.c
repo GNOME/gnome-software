@@ -440,3 +440,5 @@ gs_shell_search_new (void)
 	shell_search = g_object_new (GS_TYPE_SHELL_SEARCH, NULL);
 	return GS_SHELL_SEARCH (shell_search);
 }
+
+/* vim: set noexpandtab: */

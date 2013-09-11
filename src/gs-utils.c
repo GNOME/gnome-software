@@ -208,3 +208,5 @@ gs_string_replace (GString *string, const gchar *search, const gchar *replace)
 out:
        return count;
 }
+
+/* vim: set noexpandtab: */

@@ -163,3 +163,5 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_H */
+
+/* vim: set noexpandtab: */

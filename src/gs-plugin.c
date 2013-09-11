@@ -93,3 +93,5 @@ gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 		helper->app = g_object_ref (app);
 	g_idle_add (gs_plugin_status_update_cb, helper);
 }
+
+/* vim: set noexpandtab: */

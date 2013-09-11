@@ -70,3 +70,5 @@ void		 gs_shell_overview_set_category	(GsShellOverview	*shell_overview,
 G_END_DECLS
 
 #endif /* __GS_SHELL_OVERVIEW_H */
+
+/* vim: set noexpandtab: */

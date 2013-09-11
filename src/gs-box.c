@@ -295,3 +295,5 @@ gs_box_add (GsBox *box, GtkWidget *widget, gdouble relative_size)
         box->children = g_list_append (box->children, child);
         gtk_widget_set_parent (widget, GTK_WIDGET (box));
 }
+
+/* vim: set noexpandtab: */

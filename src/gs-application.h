@@ -38,3 +38,5 @@ GsApplication  *gs_application_new         (void);
 
 
 #endif  /* __GS_APPLICATION_H */
+
+/* vim: set noexpandtab: */

@@ -542,3 +542,5 @@ gs_shell_details_new (void)
 	shell_details = g_object_new (GS_TYPE_SHELL_DETAILS, NULL);
 	return GS_SHELL_DETAILS (shell_details);
 }
+
+/* vim: set noexpandtab: */

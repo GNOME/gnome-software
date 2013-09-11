@@ -65,3 +65,5 @@ void             gs_category_add_subcategory    (GsCategory             *categor
 G_END_DECLS
 
 #endif /* __GS_CATEGORY_H */
+
+/* vim: set noexpandtab: */

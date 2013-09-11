@@ -65,3 +65,5 @@ void             gs_shell_category_setup        (GsShellCategory *shell_category
                                                  GCancellable    *cancellable);
 
 #endif /* __GS_SHELL_CATEGORY_H */
+
+/* vim: set noexpandtab: */

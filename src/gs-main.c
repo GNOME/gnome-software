@@ -45,3 +45,5 @@ main (int argc, char **argv)
 
 	return status;
 }
+
+/* vim: set noexpandtab: */

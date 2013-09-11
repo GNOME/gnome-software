@@ -68,3 +68,4 @@ G_END_DECLS
 
 #endif /* GS_APP_WIDGET_H */
 
+/* vim: set noexpandtab: */

@@ -132,3 +132,4 @@ gs_category_tile_new (GsCategory *cat)
         return GTK_WIDGET (tile);
 }
 
+/* vim: set noexpandtab: */

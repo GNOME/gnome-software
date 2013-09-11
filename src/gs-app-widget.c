@@ -251,3 +251,4 @@ gs_app_widget_new (void)
 	return g_object_new (GS_TYPE_APP_WIDGET, NULL);
 }
 
+/* vim: set noexpandtab: */

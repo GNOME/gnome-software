@@ -62,3 +62,5 @@ G_END_DECLS
 
 #endif /* GS_POPULAR_TILE_H */
 
+
+/* vim: set noexpandtab: */

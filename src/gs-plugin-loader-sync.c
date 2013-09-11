@@ -247,3 +247,5 @@ gs_plugin_loader_get_category_apps (GsPluginLoader *plugin_loader,
 
 	return helper.list;
 }
+
+/* vim: set noexpandtab: */

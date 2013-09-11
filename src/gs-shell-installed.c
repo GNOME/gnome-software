@@ -498,3 +498,5 @@ gs_shell_installed_new (void)
 	shell_installed = g_object_new (GS_TYPE_SHELL_INSTALLED, NULL);
 	return GS_SHELL_INSTALLED (shell_installed);
 }
+
+/* vim: set noexpandtab: */

@@ -573,3 +573,5 @@ gs_shell_updates_new (void)
 	shell_updates = g_object_new (GS_TYPE_SHELL_UPDATES, NULL);
 	return GS_SHELL_UPDATES (shell_updates);
 }
+
+/* vim: set noexpandtab: */

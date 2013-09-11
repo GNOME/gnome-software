@@ -147,3 +147,5 @@ void             gs_app_set_install_date        (GsApp          *app,
 G_END_DECLS
 
 #endif /* __GS_APP_H */
+
+/* vim: set noexpandtab: */

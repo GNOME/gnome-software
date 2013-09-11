@@ -331,3 +331,5 @@ gs_shell_overview_new (void)
 {
 	return GS_SHELL_OVERVIEW (g_object_new (GS_TYPE_SHELL_OVERVIEW, NULL));
 }
+
+/* vim: set noexpandtab: */

@@ -291,3 +291,5 @@ gs_application_new (void)
                             "flags", G_APPLICATION_HANDLES_COMMAND_LINE,
                             NULL);
 }
+
+/* vim: set noexpandtab: */

@@ -141,3 +141,4 @@ gs_app_tile_new (GsApp *cat)
         return GTK_WIDGET (tile);
 }
 
+/* vim: set noexpandtab: */

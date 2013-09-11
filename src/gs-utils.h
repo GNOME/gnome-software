@@ -40,3 +40,5 @@ guint gs_string_replace (GString *string, const gchar *search, const gchar *repl
 G_END_DECLS
 
 #endif /* __GS_UTILS_H */
+
+/* vim: set noexpandtab: */
