@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-10 00:43+0200\n"
-"PO-Revision-Date: 2013-09-10 00:44+0200\n"
+"POT-Creation-Date: 2013-09-12 00:21+0200\n"
+"PO-Revision-Date: 2013-09-12 00:22+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -55,14 +55,14 @@ msgstr "_Aktualizacje"
 msgid "Restart & Install"
 msgstr "Uruchom ponownie i zainstaluj"
 
-#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:108
-#: ../src/gs-shell-details.c:85
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:107
+#: ../src/gs-shell-details.c:86
 msgid "Install"
 msgstr "Zainstaluj"
 
-#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:113
-#: ../src/gs-shell-details.c:114 ../src/gs-shell-details.c:289
-#: ../src/gs-shell-installed.c:160 ../src/gs-shell-search.c:108
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:112
+#: ../src/gs-shell-details.c:115 ../src/gs-shell-details.c:296
+#: ../src/gs-shell-installed.c:161 ../src/gs-shell-search.c:108
 msgid "Remove"
 msgstr "Usuń"
 
@@ -87,48 +87,32 @@ msgid "Software is up to date"
 msgstr "Oprogramowanie jest aktualne"
 
 #: ../src/gnome-software.ui.h:13
-msgid "GNU Image Manipulation Program"
-msgstr "Edytor obrazów GIMP"
-
-#: ../src/gnome-software.ui.h:14
 msgid "Visit website"
 msgstr "Witryna"
+
+#: ../src/gnome-software.ui.h:14
+msgid "View History"
+msgstr "Wyświetl historię"
 
 #: ../src/gnome-software.ui.h:15
 msgid "The Gimp"
 msgstr "GIMP"
 
 #: ../src/gnome-software.ui.h:16
-msgid ""
-"GIMP (GNU Image Manipulation Program) is a powerful image composition and\n"
-"editing program, which can be extremely useful for creating logos and other\n"
-"graphics for webpages. GIMP has many of the tools and filters you would "
-"expect\n"
-"to find in similar commercial offerings, and some interesting extras as "
-"well.\n"
-"GIMP provides a large image manipulation toolbox, including channel "
-"operations\n"
-"and layers, effects, sub-pixel imaging and anti-aliasing, and conversions, "
-"all\n"
-"with multi-level undo.\n"
-msgstr ""
-"GIMP to program do edycji obrazów o wielu możliwościach, przydatny\n"
-"zwłaszcza do tworzenia logo i innych grafik dla stron WWW. Program GIMP\n"
-"posiada wiele narzędzi i filtrów obecnych w podobnych programach\n"
-"komercyjnych, a także kilka interesujących dodatków. GIMP dostarcza wiele\n"
-"funkcji manipulacji obrazem, w tym działania na kanałach i warstwach,\n"
-"efekty, antyaliasing i konwersje, a wszystko to z wielopoziomową\n"
-"możliwością cofania.\n"
-
-#: ../src/gnome-software.ui.h:24
 msgid "Application"
 msgstr "Program"
 
-#: ../src/gnome-software.ui.h:25
+#: ../src/gnome-software.ui.h:17
 msgid "Category"
 msgstr "Kategoria"
 
-#: ../src/gnome-software.ui.h:26
+#: ../src/gnome-software.ui.h:18
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:189
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:488
+msgid "History"
+msgstr "Historia"
+
+#: ../src/gnome-software.ui.h:19
 msgid "Done"
 msgstr "Gotowe"
 
@@ -150,49 +134,49 @@ msgstr ""
 "Piotr Drąg <piotrdrag@gmail.com>, 2012-2013\n"
 "Aviary.pl <gnomepl@aviary.pl>, 2012-2013"
 
-#: ../src/gs-application.c:208
+#: ../src/gs-application.c:209
 msgid "Start up mode, either 'updates', 'installed' or 'overview'"
 msgstr ""
 "Tryb startowy, może wynosić \"updates\", \"installed\" lub \"overview\""
 
-#: ../src/gs-application.c:208
+#: ../src/gs-application.c:209
 msgid "MODE"
 msgstr "TRYB"
 
-#: ../src/gs-app-widget.c:120
+#: ../src/gs-app-widget.c:119
 msgid "Update"
 msgstr "Zaktualizuj"
 
-#: ../src/gs-app-widget.c:127 ../src/gs-shell-details.c:91
+#: ../src/gs-app-widget.c:126 ../src/gs-shell-details.c:92
 msgid "Installing"
 msgstr "Instalowanie"
 
-#: ../src/gs-app-widget.c:134 ../src/gs-shell-details.c:120
+#: ../src/gs-app-widget.c:133 ../src/gs-shell-details.c:121
 msgid "Removing"
 msgstr "Usuwanie"
 
-#: ../src/gs-category.c:118
+#: ../src/gs-category.c:119
 msgid "General"
 msgstr "Ogólne"
 
-#: ../src/gs-plugin-loader.c:459
+#: ../src/gs-plugin-loader.c:458
 msgid "OS Updates"
 msgstr "Aktualizacje systemu"
 
-#: ../src/gs-plugin-loader.c:460 ../src/gs-plugin-loader.c:461
+#: ../src/gs-plugin-loader.c:459 ../src/gs-plugin-loader.c:460
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
 "Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa dla wszystkich "
 "użytkowników."
 
-#: ../src/gs-shell-details.c:276 ../src/gs-shell-installed.c:147
+#: ../src/gs-shell-details.c:283 ../src/gs-shell-installed.c:148
 #: ../src/gs-shell-search.c:95
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Na pewno usunąć program %s?"
 
-#: ../src/gs-shell-details.c:287 ../src/gs-shell-installed.c:158
+#: ../src/gs-shell-details.c:294 ../src/gs-shell-installed.c:159
 #: ../src/gs-shell-search.c:106
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -200,21 +184,34 @@ msgstr ""
 "Program %s zostanie usunięty. Należy go zainstalować, aby móc używać go "
 "ponownie."
 
-#: ../src/gs-shell-installed.c:398 ../src/popular-tile.ui.h:1
+#: ../src/gs-shell-details.c:351
+msgid "Removed"
+msgstr "Usunięte"
+
+#: ../src/gs-shell-details.c:354 ../src/gs-shell-installed.c:399
+#: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Zainstalowane"
 
-#: ../src/gs-shell-installed.c:400
+#: ../src/gs-shell-details.c:357
+msgid "Updated"
+msgstr "Zaktualizowane"
+
+#: ../src/gs-shell-details.c:360
+msgid "Unknown"
+msgstr "Nieznane"
+
+#: ../src/gs-shell-installed.c:401
 #, c-format
 msgid "Installed (%d)"
 msgstr "Zainstalowane (%d)"
 
-#: ../src/gs-utils.c:165
+#: ../src/gs-utils.c:164
 #, c-format
 msgid "%s is now installed"
 msgstr "Zainstalowano program %s"
 
-#: ../src/gs-utils.c:167
+#: ../src/gs-utils.c:166
 msgid "Launch"
 msgstr "Uruchom"
 
@@ -396,11 +393,6 @@ msgstr "Geologia"
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
 msgid "Geoscience"
 msgstr "Nauki o Ziemi"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:189
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:488
-msgid "History"
-msgstr "Historia"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:192
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:491
