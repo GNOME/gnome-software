@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-09 13:44+0000\n"
-"PO-Revision-Date: 2013-09-09 16:33+0200\n"
+"POT-Creation-Date: 2013-09-11 14:46+0000\n"
+"PO-Revision-Date: 2013-09-11 17:50+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -51,13 +51,13 @@ msgstr "_Actualizaciones"
 msgid "Restart & Install"
 msgstr "Reiniciar e instalar"
 
-#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:103
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:108
 #: ../src/gs-shell-details.c:85
 msgid "Install"
 msgstr "Instalar"
 
-#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:108
-#: ../src/gs-shell-details.c:114 ../src/gs-shell-details.c:289
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:113
+#: ../src/gs-shell-details.c:114 ../src/gs-shell-details.c:295
 #: ../src/gs-shell-installed.c:160 ../src/gs-shell-search.c:108
 msgid "Remove"
 msgstr "Eliminar"
@@ -83,54 +83,33 @@ msgid "Software is up to date"
 msgstr "El software está actualizado"
 
 #: ../src/gnome-software.ui.h:13
-msgid "GNU Image Manipulation Program"
-msgstr "Programa de manipulación de imágenes de GNU"
-
-#: ../src/gnome-software.ui.h:14
 msgid "Visit website"
 msgstr "Visitar la página web"
+
+#: ../src/gnome-software.ui.h:14
+#| msgid "History"
+msgid "View History"
+msgstr "Ver histórico"
 
 #: ../src/gnome-software.ui.h:15
 msgid "The Gimp"
 msgstr "Gimp"
 
 #: ../src/gnome-software.ui.h:16
-msgid ""
-"GIMP (GNU Image Manipulation Program) is a powerful image composition and\n"
-"editing program, which can be extremely useful for creating logos and other\n"
-"graphics for webpages. GIMP has many of the tools and filters you would "
-"expect\n"
-"to find in similar commercial offerings, and some interesting extras as "
-"well.\n"
-"GIMP provides a large image manipulation toolbox, including channel "
-"operations\n"
-"and layers, effects, sub-pixel imaging and anti-aliasing, and conversions, "
-"all\n"
-"with multi-level undo.\n"
-msgstr ""
-"GIMP (programa de manipulación de imágenes de GNU) es un potente programa "
-"de\n"
-"composición y edición de imágenes que puede resultar muy útil para crear "
-"logos y otras\n"
-"imágenes para páginas web. GIMP tiene muchas de las herramientas y filtros "
-"que espera\n"
-"para parecerse a otras herramientas comerciales similares, así como algunos "
-"extras interesantes.\n"
-"GIMP proporciona una gran caja de herramientas para manipulación de "
-"imágenes, incluyendo\n"
-"operaciones sobre canales y capas, efectos, imágenes con subpíxeles y "
-"alisado y conversiones,\n"
-"todo ello con posibilidad de deshacer.\n"
-
-#: ../src/gnome-software.ui.h:24
 msgid "Application"
 msgstr "Aplicación"
 
-#: ../src/gnome-software.ui.h:25
+#: ../src/gnome-software.ui.h:17
 msgid "Category"
 msgstr "Categoría"
 
-#: ../src/gnome-software.ui.h:26
+#: ../src/gnome-software.ui.h:18
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:189
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:488
+msgid "History"
+msgstr "Historia"
+
+#: ../src/gnome-software.ui.h:19
 msgid "Done"
 msgstr "Hecho"
 
@@ -143,7 +122,6 @@ msgid "GNOME Software"
 msgstr "Software de GNOME"
 
 #: ../src/gs-application.c:89
-#| msgid "A nice way to manager the software on your system."
 msgid "A nice way to manage the software on your system."
 msgstr "Una buena manera de gestionar el software en su sistema."
 
@@ -151,24 +129,24 @@ msgstr "Una buena manera de gestionar el software en su sistema."
 msgid "translator-credits"
 msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013"
 
-#: ../src/gs-application.c:208
+#: ../src/gs-application.c:209
 msgid "Start up mode, either 'updates', 'installed' or 'overview'"
 msgstr ""
 "Modo de inicio, puede ser «actualizaciones», «instalados» o «vista general»"
 
-#: ../src/gs-application.c:208
+#: ../src/gs-application.c:209
 msgid "MODE"
 msgstr "MODO"
 
-#: ../src/gs-app-widget.c:115
+#: ../src/gs-app-widget.c:120
 msgid "Update"
 msgstr "Actualizar"
 
-#: ../src/gs-app-widget.c:122 ../src/gs-shell-details.c:91
+#: ../src/gs-app-widget.c:127 ../src/gs-shell-details.c:91
 msgid "Installing"
 msgstr "Instalando"
 
-#: ../src/gs-app-widget.c:129 ../src/gs-shell-details.c:120
+#: ../src/gs-app-widget.c:134 ../src/gs-shell-details.c:120
 msgid "Removing"
 msgstr "Quitando"
 
@@ -176,32 +154,47 @@ msgstr "Quitando"
 msgid "General"
 msgstr "General"
 
-#: ../src/gs-plugin-loader.c:453
+#: ../src/gs-plugin-loader.c:458
 msgid "OS Updates"
 msgstr "Actualizaciones del SO"
 
-#: ../src/gs-plugin-loader.c:454 ../src/gs-plugin-loader.c:455
+#: ../src/gs-plugin-loader.c:459 ../src/gs-plugin-loader.c:460
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
 "Incluye mejoras en el rendimiento, la estabilidad y la seguridad para todos "
 "los usuarios."
 
-#: ../src/gs-shell-details.c:276 ../src/gs-shell-installed.c:147
+#: ../src/gs-shell-details.c:282 ../src/gs-shell-installed.c:147
 #: ../src/gs-shell-search.c:95
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "¿Está seguro de querer quitar %s?"
 
-#: ../src/gs-shell-details.c:287 ../src/gs-shell-installed.c:158
+#: ../src/gs-shell-details.c:293 ../src/gs-shell-installed.c:158
 #: ../src/gs-shell-search.c:106
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo."
 
-#: ../src/gs-shell-installed.c:398 ../src/popular-tile.ui.h:1
+#: ../src/gs-shell-details.c:350
+#| msgid "Remove"
+msgid "Removed"
+msgstr "Eliminado"
+
+#: ../src/gs-shell-details.c:353 ../src/gs-shell-installed.c:398
+#: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalado"
+
+#: ../src/gs-shell-details.c:356
+#| msgid "Update"
+msgid "Updated"
+msgstr "Actualizado"
+
+#: ../src/gs-shell-details.c:359
+msgid "Unknown"
+msgstr "Desconocido"
 
 #: ../src/gs-shell-installed.c:400
 #, c-format
@@ -395,11 +388,6 @@ msgstr "Geología"
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
 msgid "Geoscience"
 msgstr "Ciencias de la Tierra"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:189
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:488
-msgid "History"
-msgstr "Historia"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:192
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:491
@@ -787,25 +775,57 @@ msgid "TV"
 msgstr "TV"
 
 #. Add Ons
-#: ../src/plugins/gs-plugin-packagekit.c:561
+#: ../src/plugins/gs-plugin-packagekit.c:590
 msgid "Add-ons"
 msgstr "Complementos"
 
-#: ../src/plugins/gs-plugin-packagekit.c:564
+#: ../src/plugins/gs-plugin-packagekit.c:593
 msgid "Codecs"
 msgstr "Codificadores"
 
-#: ../src/plugins/gs-plugin-packagekit.c:567
+#: ../src/plugins/gs-plugin-packagekit.c:596
 msgid "Fonts"
 msgstr "Tipografías"
 
-#: ../src/plugins/gs-plugin-packagekit.c:570
+#: ../src/plugins/gs-plugin-packagekit.c:599
 msgid "Input Sources"
 msgstr "Fuentes de entrada"
 
-#: ../src/plugins/gs-plugin-packagekit.c:573
+#: ../src/plugins/gs-plugin-packagekit.c:602
 msgid "Language Packs"
 msgstr "Paquetes de idiomas"
+
+#~ msgid "GNU Image Manipulation Program"
+#~ msgstr "Programa de manipulación de imágenes de GNU"
+
+#~ msgid ""
+#~ "GIMP (GNU Image Manipulation Program) is a powerful image composition "
+#~ "and\n"
+#~ "editing program, which can be extremely useful for creating logos and "
+#~ "other\n"
+#~ "graphics for webpages. GIMP has many of the tools and filters you would "
+#~ "expect\n"
+#~ "to find in similar commercial offerings, and some interesting extras as "
+#~ "well.\n"
+#~ "GIMP provides a large image manipulation toolbox, including channel "
+#~ "operations\n"
+#~ "and layers, effects, sub-pixel imaging and anti-aliasing, and "
+#~ "conversions, all\n"
+#~ "with multi-level undo.\n"
+#~ msgstr ""
+#~ "GIMP (programa de manipulación de imágenes de GNU) es un potente programa "
+#~ "de\n"
+#~ "composición y edición de imágenes que puede resultar muy útil para crear "
+#~ "logos y otras\n"
+#~ "imágenes para páginas web. GIMP tiene muchas de las herramientas y "
+#~ "filtros que espera\n"
+#~ "para parecerse a otras herramientas comerciales similares, así como "
+#~ "algunos extras interesantes.\n"
+#~ "GIMP proporciona una gran caja de herramientas para manipulación de "
+#~ "imágenes, incluyendo\n"
+#~ "operaciones sobre canales y capas, efectos, imágenes con subpíxeles y "
+#~ "alisado y conversiones,\n"
+#~ "todo ello con posibilidad de deshacer.\n"
 
 #~ msgid "Network"
 #~ msgstr "Red"
