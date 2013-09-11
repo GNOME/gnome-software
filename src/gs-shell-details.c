@@ -176,6 +176,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	GdkPixbuf *pixbuf;
 	GtkWidget *widget;
 	GtkWidget *widget2;
+	GPtrArray *history;
 	GsShellDetailsPrivate *priv = shell_details->priv;
 
 	/* save app */
@@ -232,6 +233,11 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	} else {
 		gtk_widget_set_visible (widget, FALSE);
 	}
+
+	/* only show the history button if there is available history */
+	history = gs_app_get_history (app);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
+	gtk_widget_set_visible (widget, history->len > 0);
 }
 
 GsApp *
@@ -315,6 +321,126 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell
 }
 
 /**
+ * gs_shell_details_app_history_button_cb:
+ **/
+static void
+gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	const gchar *tmp;
+	gchar *date_str;
+	GDateTime *datetime;
+	GPtrArray *history;
+	GsApp *app;
+	GtkBox *box;
+	GtkListBox *list_box;
+	guint i;
+
+	/* add each history package to the dialog */
+	list_box = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_history"));
+	gs_container_remove_all (GTK_CONTAINER (list_box));
+	history = gs_app_get_history (priv->app);
+	for (i = 0; i < history->len; i++) {
+		app = g_ptr_array_index (history, i);
+		box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+
+		/* add the action */
+		switch (gs_app_get_state (app)) {
+		case GS_APP_STATE_AVAILABLE:
+			tmp = _("Removed");
+			break;
+		case GS_APP_STATE_INSTALLED:
+			tmp = _("Installed");
+			break;
+		case GS_APP_STATE_UPDATABLE:
+			tmp = _("Updated");
+			break;
+		default:
+			tmp = _("Unknown");
+			break;
+		}
+		widget = gtk_label_new (tmp);
+		g_object_set (widget,
+			      "margin-left", 20,
+			      "margin-right", 20,
+			      "margin-top", 6,
+			      "margin-bottom", 6,
+			      "xalign", 0.0,
+			      NULL);
+		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
+
+		/* add the timestamp */
+		datetime = g_date_time_new_from_unix_utc (gs_app_get_install_date (app));
+		date_str = g_date_time_format (datetime, "%x");
+		widget = gtk_label_new (date_str);
+		g_object_set (widget,
+			      "margin-left", 20,
+			      "margin-right", 20,
+			      "margin-top", 6,
+			      "margin-bottom", 6,
+			      "xalign", 0.4,
+			      NULL);
+		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
+		g_free (date_str);
+		g_date_time_unref (datetime);
+
+		/* add the version */
+		widget = gtk_label_new (gs_app_get_version (app));
+		g_object_set (widget,
+			      "margin-left", 20,
+			      "margin-right", 20,
+			      "margin-top", 6,
+			      "margin-bottom", 6,
+			      "xalign", 1.0,
+			      NULL);
+		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
+
+		gtk_widget_show_all (GTK_WIDGET (box));
+		gtk_list_box_insert (list_box, GTK_WIDGET (box), -1);
+	}
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_history"));
+	gtk_window_present (GTK_WINDOW (widget));
+}
+
+/**
+ * gs_shell_details_button_close_cb:
+ **/
+static void
+gs_shell_details_button_close_cb (GtkWidget *widget, GsShellDetails *shell_details)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_history"));
+	gtk_widget_hide (widget);
+}
+
+/**
+ * gs_shell_details_list_header_func
+ **/
+static void
+gs_shell_details_list_header_func (GtkListBoxRow *row,
+				   GtkListBoxRow *before,
+				   gpointer user_data)
+{
+	GtkWidget *header;
+
+	/* first entry */
+	header = gtk_list_box_row_get_header (row);
+	if (before == NULL) {
+		gtk_list_box_row_set_header (row, NULL);
+		return;
+	}
+
+	/* already set */
+	if (header != NULL)
+		return;
+
+	/* set new */
+	header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	gtk_list_box_row_set_header (row, header);
+}
+
+/**
  * gs_shell_details_setup:
  */
 void
@@ -326,6 +452,7 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget;
+	GtkListBox *list_box;
 
 	g_return_if_fail (GS_IS_SHELL_DETAILS (shell_details));
 
@@ -334,6 +461,13 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);
+
+	/* setup history */
+	list_box = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_history"));
+	gtk_list_box_set_header_func (list_box,
+				      gs_shell_details_list_header_func,
+				      shell_details,
+				      NULL);
 
 	/* setup details */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
@@ -344,6 +478,19 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_details_app_remove_button_cb),
 			  shell_details);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_details_app_history_button_cb),
+			  shell_details);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history_close"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_details_button_close_cb),
+			  shell_details);
+
+	/* setup history window */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_history"));
+	g_signal_connect (widget, "delete-event",
+			  G_CALLBACK (gtk_widget_hide_on_delete), shell_details);
 }
 
 /**
