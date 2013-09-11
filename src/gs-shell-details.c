@@ -235,10 +235,10 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 		gtk_widget_set_visible (widget, FALSE);
 	}
 
-	/* only show the history button if there is available history */
+	/* make history button insensitive if there is none */
 	history = gs_app_get_history (app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
-	gtk_widget_set_visible (widget, history->len > 0);
+	gtk_widget_set_sensitive (widget, history->len > 0);
 }
 
 GsApp *
@@ -356,6 +356,15 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell
 		case GS_APP_STATE_UPDATABLE:
 			tmp = _("Updated");
 			break;
+		case GS_APP_STATE_INSTALLING:
+			tmp = _("Installing");
+			break;
+		case GS_APP_STATE_REMOVING:
+			tmp = _("Removing");
+			break;
+		case GS_APP_STATE_LAST:
+			tmp = _("Last");
+			break;
 		default:
 			tmp = _("Unknown");
 			break;
@@ -372,7 +381,7 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell
 
 		/* add the timestamp */
 		datetime = g_date_time_new_from_unix_utc (gs_app_get_install_date (app));
-		date_str = g_date_time_format (datetime, "%x");
+		date_str = g_date_time_format (datetime, "%e %B %Y");
 		widget = gtk_label_new (date_str);
 		g_object_set (widget,
 			      "margin-left", 20,
@@ -441,6 +450,22 @@ gs_shell_details_list_header_func (GtkListBoxRow *row,
 	gtk_list_box_row_set_header (row, header);
 }
 
+static void
+scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
+{
+        GtkWidget *frame;
+
+        frame = gtk_bin_get_child (GTK_BIN (gtk_bin_get_child (GTK_BIN (swin))));
+        if (gtk_widget_get_mapped (GTK_WIDGET (sb))) {
+                gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_IN);
+                gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
+        }
+        else {
+                gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
+                gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
+        }
+}
+
 /**
  * gs_shell_details_setup:
  */
@@ -454,6 +479,7 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget;
 	GtkListBox *list_box;
+	GtkWidget *sw;
 
 	g_return_if_fail (GS_IS_SHELL_DETAILS (shell_details));
 
@@ -492,6 +518,11 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_history"));
 	g_signal_connect (widget, "delete-event",
 			  G_CALLBACK (gtk_widget_hide_on_delete), shell_details);
+
+        sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_history"));
+        widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
+        g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
+        g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
 }
 
 /**
