@@ -78,7 +78,6 @@ gs_plugin_add_featured (GsPlugin *plugin,
 
 	group = NULL;
 
-#ifdef DEBUG
 	if (g_getenv ("GNOME_SOFTWARE_FEATURED")) {
 		const gchar *featured;
 		featured = g_getenv ("GNOME_SOFTWARE_FEATURED");
@@ -89,7 +88,6 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			}
 		}
 	}
-#endif
 
 	if (!group) {
 		/* In lieu of a random number generator, just
