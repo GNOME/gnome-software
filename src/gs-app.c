@@ -37,8 +37,7 @@
  * signals on the GsApp.
  *
  * Information about other #GsApp objects can be stored in this object, for
- * instance in the gs_app_add_related() method or the future method
- * gs_app_get_history().
+ * instance in the gs_app_add_related() method or gs_app_get_history().
  */
 
 #include "config.h"
@@ -71,6 +70,7 @@ struct GsAppPrivate
 	GdkPixbuf		*pixbuf;
 	GdkPixbuf		*featured_pixbuf;
         GPtrArray		*related; /* of GsApp */
+        GPtrArray		*history; /* of GsApp */
         guint64                  install_date;
 };
 
@@ -194,6 +194,8 @@ gs_app_to_string (GsApp *app)
 
 	if (priv->related != NULL)
 		g_string_append_printf (str, "\trelated:\t%i\n", priv->related->len);
+	if (priv->history->len > 0)
+		g_string_append_printf (str, "\thistory:\t%i\n", priv->history->len);
 	keys = g_hash_table_get_keys (priv->metadata);
 	for (l = keys; l != NULL; l = l->next) {
 		tmp = g_hash_table_lookup (priv->metadata, l->data);
@@ -773,6 +775,26 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 	g_ptr_array_add (app->priv->related, g_object_ref (app2));
 }
 
+/**
+ * gs_app_get_history:
+ */
+GPtrArray *
+gs_app_get_history (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->history;
+}
+
+/**
+ * gs_app_add_history:
+ */
+void
+gs_app_add_history (GsApp *app, GsApp *app2)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_ptr_array_add (app->priv->history, g_object_ref (app2));
+}
+
 guint64
 gs_app_get_install_date (GsApp *app)
 {
@@ -999,6 +1021,7 @@ gs_app_init (GsApp *app)
 	app->priv = GS_APP_GET_PRIVATE (app);
 	app->priv->rating = -1;
 	app->priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	app->priv->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->metadata = g_hash_table_new_full (g_str_hash,
 						     g_str_equal,
 						     g_free,
@@ -1027,6 +1050,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
 	g_ptr_array_unref (priv->related);
+	g_ptr_array_unref (priv->history);
 	if (priv->pixbuf != NULL)
 		g_object_unref (priv->pixbuf);
 	if (priv->featured_pixbuf != NULL)

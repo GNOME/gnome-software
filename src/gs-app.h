@@ -137,6 +137,9 @@ void		 gs_app_set_rating		(GsApp		*app,
 GPtrArray	*gs_app_get_related		(GsApp		*app);
 void		 gs_app_add_related		(GsApp		*app,
 						 GsApp		*app2);
+GPtrArray	*gs_app_get_history		(GsApp		*app);
+void		 gs_app_add_history		(GsApp		*app,
+						 GsApp		*app2);
 guint64          gs_app_get_install_date        (GsApp          *app);
 void             gs_app_set_install_date        (GsApp          *app,
                                                  guint64         install_date);
