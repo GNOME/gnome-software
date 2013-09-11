@@ -37,9 +37,9 @@ static void	gs_shell_finalize	(GObject	*object);
 #define GS_SHELL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL, GsShellPrivate))
 
 typedef struct {
-        GsShellMode mode;
-        GsApp *app;
-        GsCategory *category;
+	GsShellMode	 mode;
+	GsApp		*app;
+	GsCategory	*category;
 } BackEntry;
 
 struct GsShellPrivate
@@ -53,16 +53,16 @@ struct GsShellPrivate
 	GsShellSearch		*shell_search;
 	GsShellUpdates		*shell_updates;
 	GsShellDetails		*shell_details;
-	GsShellCategory         *shell_category;
+	GsShellCategory		*shell_category;
 	GtkBuilder		*builder;
-	GSList                  *back_entry_stack;
+	GSList			*back_entry_stack;
 };
 
 G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
 
 enum {
-        SIGNAL_LOADED,
-        SIGNAL_LAST
+	SIGNAL_LOADED,
+	SIGNAL_LAST
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
@@ -82,25 +82,25 @@ static void
 gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *category, gboolean scroll_up)
 {
 	GsShellPrivate *priv = shell->priv;
-        GtkWidget *widget;
-        const gchar *text;
+	GtkWidget *widget;
+	const gchar *text;
 
 	if (priv->ignore_primary_buttons)
 		return;
 
-        /* hide all mode specific header widgets here, they will be shown in the
-         * refresh functions
-         */
+	/* hide all mode specific header widgets here, they will be shown in the
+	 * refresh functions
+	 */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
-        gtk_spinner_stop (GTK_SPINNER (widget));
+	gtk_spinner_stop (GTK_SPINNER (widget));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
 	gtk_widget_hide (widget);
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 	gtk_widget_hide (widget);
@@ -109,7 +109,7 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_widget_hide (widget);
 
-        /* update main buttons according to mode */
+	/* update main buttons according to mode */
 	priv->ignore_primary_buttons = TRUE;
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_all"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_OVERVIEW);
@@ -171,29 +171,29 @@ static void
 save_back_entry (GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
-        BackEntry *entry;
+	BackEntry *entry;
 
-        entry = g_new0 (BackEntry, 1);
-        entry->mode = priv->mode;
+	entry = g_new0 (BackEntry, 1);
+	entry->mode = priv->mode;
 
-        if (priv->mode == GS_SHELL_MODE_CATEGORY) {
-                entry->category = gs_shell_category_get_category (priv->shell_category);
-                g_object_ref (entry->category);
-        }
-        else if (priv->mode == GS_SHELL_MODE_DETAILS) {
-                entry->app = gs_shell_details_get_app (priv->shell_details);
-                g_object_ref (entry->app);
-        }
+	if (priv->mode == GS_SHELL_MODE_CATEGORY) {
+		entry->category = gs_shell_category_get_category (priv->shell_category);
+		g_object_ref (entry->category);
+	}
+	else if (priv->mode == GS_SHELL_MODE_DETAILS) {
+		entry->app = gs_shell_details_get_app (priv->shell_details);
+		g_object_ref (entry->app);
+	}
 
-        priv->back_entry_stack = g_slist_prepend (priv->back_entry_stack, entry);
+	priv->back_entry_stack = g_slist_prepend (priv->back_entry_stack, entry);
 }
 
 static void
 free_back_entry (BackEntry *entry)
 {
-        g_clear_object (&entry->category);
-        g_clear_object (&entry->app);
-        g_free (entry);
+	g_clear_object (&entry->category);
+	g_clear_object (&entry->app);
+	g_free (entry);
 }
 
 /**
@@ -203,155 +203,155 @@ static void
 gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
-        BackEntry *entry;
+	BackEntry *entry;
 
-        g_assert (priv->back_entry_stack);
-        entry = priv->back_entry_stack->data;
-        priv->back_entry_stack = g_slist_remove (priv->back_entry_stack, entry);
+	g_assert (priv->back_entry_stack);
+	entry = priv->back_entry_stack->data;
+	priv->back_entry_stack = g_slist_remove (priv->back_entry_stack, entry);
 
 	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category, FALSE);
 
-        free_back_entry (entry);
+	free_back_entry (entry);
 }
 
 static void
 initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 {
-        GsShell *shell = data;
+	GsShell *shell = data;
 
-        g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
+	g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
 
 	gs_shell_updates_refresh (shell->priv->shell_updates, TRUE);
 	gs_shell_installed_refresh (shell->priv->shell_installed, TRUE);
 
-        g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
+	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 }
 
 static void
 gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
-        const gchar *text;
+	const gchar *text;
 
-        text = gtk_entry_get_text (entry);
-        if (text[0] == '\0')
-                return;
+	text = gtk_entry_get_text (entry);
+	if (text[0] == '\0')
+		return;
 
-        if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
-                gs_shell_search_refresh (priv->shell_search, text);
-        } else {
-                gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
-        }
+	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
+		gs_shell_search_refresh (priv->shell_search, text);
+	} else {
+		gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
+	}
 }
 
 static gboolean
 is_keynav_event (GdkEvent *event, guint keyval)
 {
-        GdkModifierType state = 0;
+	GdkModifierType state = 0;
 
-        gdk_event_get_state (event, &state);
+	gdk_event_get_state (event, &state);
 
-        if (keyval == GDK_KEY_Tab ||
-            keyval == GDK_KEY_KP_Tab ||
-            keyval == GDK_KEY_Up ||
-            keyval == GDK_KEY_KP_Up ||
-            keyval == GDK_KEY_Down ||
-            keyval == GDK_KEY_KP_Down ||
-            keyval == GDK_KEY_Left ||
-            keyval == GDK_KEY_KP_Left ||
-            keyval == GDK_KEY_Right ||
-            keyval == GDK_KEY_KP_Right ||
-            keyval == GDK_KEY_Home ||
-            keyval == GDK_KEY_KP_Home ||
-            keyval == GDK_KEY_End ||
-            keyval == GDK_KEY_KP_End ||
-            keyval == GDK_KEY_Page_Up ||
-            keyval == GDK_KEY_KP_Page_Up ||
-            keyval == GDK_KEY_Page_Down ||
-            keyval == GDK_KEY_KP_Page_Down ||
-            ((state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)) != 0))
-                return TRUE;
+	if (keyval == GDK_KEY_Tab ||
+	    keyval == GDK_KEY_KP_Tab ||
+	    keyval == GDK_KEY_Up ||
+	    keyval == GDK_KEY_KP_Up ||
+	    keyval == GDK_KEY_Down ||
+	    keyval == GDK_KEY_KP_Down ||
+	    keyval == GDK_KEY_Left ||
+	    keyval == GDK_KEY_KP_Left ||
+	    keyval == GDK_KEY_Right ||
+	    keyval == GDK_KEY_KP_Right ||
+	    keyval == GDK_KEY_Home ||
+	    keyval == GDK_KEY_KP_Home ||
+	    keyval == GDK_KEY_End ||
+	    keyval == GDK_KEY_KP_End ||
+	    keyval == GDK_KEY_Page_Up ||
+	    keyval == GDK_KEY_KP_Page_Up ||
+	    keyval == GDK_KEY_Page_Down ||
+	    keyval == GDK_KEY_KP_Page_Down ||
+	    ((state & (GDK_CONTROL_MASK | GDK_MOD1_MASK)) != 0))
+		return TRUE;
 
-        return FALSE;
+	return FALSE;
 }
 
 static gboolean
 entry_keypress_handler (GtkWidget *widget, GdkEvent *event, GsShell *shell)
 {
-        guint keyval;
-        GtkWidget *entry;
+	guint keyval;
+	GtkWidget *entry;
 
-        if (!gdk_event_get_keyval (event, &keyval) ||
-            keyval != GDK_KEY_Escape)
-                return GDK_EVENT_PROPAGATE;
+	if (!gdk_event_get_keyval (event, &keyval) ||
+	    keyval != GDK_KEY_Escape)
+		return GDK_EVENT_PROPAGATE;
 
-        entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
-        gtk_entry_set_text (GTK_ENTRY (entry), "");
+	entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
+	gtk_entry_set_text (GTK_ENTRY (entry), "");
 
-        return GDK_EVENT_STOP;
+	return GDK_EVENT_STOP;
 }
 
 static void
 preedit_changed_cb (GtkEntry *entry, GtkWidget *popup, gboolean *preedit_changed)
 {
-        *preedit_changed = TRUE;
+	*preedit_changed = TRUE;
 }
 
 static gboolean
 window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 {
-        GtkWidget *entry;
-        guint keyval;
-        gboolean handled;
-        gboolean preedit_changed;
-        guint preedit_change_id;
-        gboolean res;
-        gchar *old_text, *new_text;
+	GtkWidget *entry;
+	guint keyval;
+	gboolean handled;
+	gboolean preedit_changed;
+	guint preedit_change_id;
+	gboolean res;
+	gchar *old_text, *new_text;
 
-        if (gs_shell_get_mode (shell) != GS_SHELL_MODE_OVERVIEW &&
-            gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
-                return GDK_EVENT_PROPAGATE;
+	if (gs_shell_get_mode (shell) != GS_SHELL_MODE_OVERVIEW &&
+	    gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
+		return GDK_EVENT_PROPAGATE;
 
-        if (!gdk_event_get_keyval (event, &keyval) ||
-            is_keynav_event (event, keyval) ||
-            keyval == GDK_KEY_space ||
-            keyval == GDK_KEY_Menu)
-                return GDK_EVENT_PROPAGATE;
+	if (!gdk_event_get_keyval (event, &keyval) ||
+	    is_keynav_event (event, keyval) ||
+	    keyval == GDK_KEY_space ||
+	    keyval == GDK_KEY_Menu)
+		return GDK_EVENT_PROPAGATE;
 
-        entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
+	entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
 
-        handled = GDK_EVENT_PROPAGATE;
-        preedit_changed = FALSE;
-        preedit_change_id = g_signal_connect (entry, "preedit-changed",
-                                              G_CALLBACK (preedit_changed_cb), &preedit_changed);
+	handled = GDK_EVENT_PROPAGATE;
+	preedit_changed = FALSE;
+	preedit_change_id = g_signal_connect (entry, "preedit-changed",
+					      G_CALLBACK (preedit_changed_cb), &preedit_changed);
 
-        old_text = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
-        res = gtk_widget_event (entry, event);
-        new_text = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
+	old_text = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
+	res = gtk_widget_event (entry, event);
+	new_text = g_strdup (gtk_entry_get_text (GTK_ENTRY (entry)));
 
-        g_signal_handler_disconnect (entry, preedit_change_id);
+	g_signal_handler_disconnect (entry, preedit_change_id);
 
-        if ((res && g_strcmp0 (new_text, old_text) != 0) ||
-            preedit_changed)
-                handled = GDK_EVENT_STOP;
+	if ((res && g_strcmp0 (new_text, old_text) != 0) ||
+	    preedit_changed)
+		handled = GDK_EVENT_STOP;
 
-        g_free (old_text);
-        g_free (new_text);
+	g_free (old_text);
+	g_free (new_text);
 
-        return handled;
+	return handled;
 }
 
 static void
 text_changed_handler (GObject *entry, GParamSpec *pspec, GsShell *shell)
 {
-        const gchar *text;
+	const gchar *text;
 
-        if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
-                return;
+	if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
+		return;
 
-        text = gtk_entry_get_text (GTK_ENTRY (entry));
-        if (text[0] == '\0')
-                gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
+	text = gtk_entry_get_text (GTK_ENTRY (entry));
+	if (text[0] == '\0')
+		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
 }
 
 /**
@@ -376,13 +376,13 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	gtk_icon_theme_append_search_path (gtk_icon_theme_get_default (),
 					   GS_DATA G_DIR_SEPARATOR_S "icons");
 
-        /* fix up the header bar */
+	/* fix up the header bar */
 	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
-        g_object_ref (widget);
-        gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (widget)), widget);
-        gtk_window_set_titlebar (GTK_WINDOW (main_window), widget);
-        g_object_unref (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
+	g_object_ref (widget);
+	gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (widget)), widget);
+	gtk_window_set_titlebar (GTK_WINDOW (main_window), widget);
+	g_object_unref (widget);
 
 	/* fix icon in RTL */
 	if (gtk_widget_get_default_direction () == GTK_TEXT_DIR_RTL)
@@ -415,53 +415,53 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			  G_CALLBACK (gs_shell_overview_button_cb), shell);
 
 	gs_shell_overview_setup (priv->shell_overview,
-                                 shell,
+				 shell,
 				 priv->plugin_loader,
 				 priv->builder,
 				 priv->cancellable);
 	gs_shell_updates_setup (priv->shell_updates,
-                                shell,
+				shell,
 				priv->plugin_loader,
 				priv->builder,
 				priv->cancellable);
 	gs_shell_installed_setup (priv->shell_installed,
-                                  shell,
+				  shell,
 				  priv->plugin_loader,
 				  priv->builder,
 				  priv->cancellable);
 	gs_shell_search_setup (priv->shell_search,
-                               shell,
+			       shell,
 			       priv->plugin_loader,
 			       priv->builder,
 			       priv->cancellable);
 	gs_shell_details_setup (priv->shell_details,
-                                shell,
+				shell,
 				priv->plugin_loader,
 				priv->builder,
 				priv->cancellable);
 	gs_shell_category_setup (priv->shell_category,
-                                 shell,
+				 shell,
 				 priv->plugin_loader,
 				 priv->builder,
 				 priv->cancellable);
 
-        /* set up search */
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-        g_signal_connect (GTK_EDITABLE (widget), "activate",
-                          G_CALLBACK (gs_shell_search_activated_cb), shell);
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-        g_signal_connect (widget, "key-press-event",
-                          G_CALLBACK (window_keypress_handler), shell);
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-        g_signal_connect (widget, "key-press-event",
-                          G_CALLBACK (entry_keypress_handler), shell);
-        g_signal_connect (widget, "notify::text",
-                          G_CALLBACK (text_changed_handler), shell);
+	/* set up search */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	g_signal_connect (GTK_EDITABLE (widget), "activate",
+			  G_CALLBACK (gs_shell_search_activated_cb), shell);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
+	g_signal_connect (widget, "key-press-event",
+			  G_CALLBACK (window_keypress_handler), shell);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	g_signal_connect (widget, "key-press-event",
+			  G_CALLBACK (entry_keypress_handler), shell);
+	g_signal_connect (widget, "notify::text",
+			  G_CALLBACK (text_changed_handler), shell);
 
-        /* load content */
-        g_signal_connect (priv->shell_overview, "refreshed",
-                          G_CALLBACK (initial_overview_load_done), shell);
-        gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
+	/* load content */
+	g_signal_connect (priv->shell_overview, "refreshed",
+			  G_CALLBACK (initial_overview_load_done), shell);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
 
 	return GTK_WINDOW (main_window);
 }
@@ -472,7 +472,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 void
 gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
-        gs_shell_change_mode (shell, mode, NULL, NULL, TRUE);
+	gs_shell_change_mode (shell, mode, NULL, NULL, TRUE);
 }
 
 GsShellMode
@@ -480,21 +480,21 @@ gs_shell_get_mode (GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
 
-        return priv->mode;
+	return priv->mode;
 }
 
 void
 gs_shell_show_app (GsShell *shell, GsApp *app)
 {
-        save_back_entry (shell);
-        gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL, TRUE);
+	save_back_entry (shell);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL, TRUE);
 }
 
 void
 gs_shell_show_category (GsShell *shell, GsCategory *category)
 {
-        save_back_entry (shell);
-        gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category, TRUE);
+	save_back_entry (shell);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category, TRUE);
 }
 
 /**
@@ -507,11 +507,11 @@ gs_shell_class_init (GsShellClass *klass)
 	object_class->finalize = gs_shell_finalize;
 
        signals [SIGNAL_LOADED] =
-                g_signal_new ("loaded",
-                              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-                              G_STRUCT_OFFSET (GsShellClass, loaded),
-                              NULL, NULL, g_cclosure_marshal_VOID__VOID,
-                              G_TYPE_NONE, 0);
+		g_signal_new ("loaded",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsShellClass, loaded),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (GsShellPrivate));
 }

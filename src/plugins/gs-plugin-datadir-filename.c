@@ -24,8 +24,8 @@
 #include <gs-plugin.h>
 
 struct GsPluginPrivate {
-	GMutex                   plugin_mutex;
-	GHashTable		*cache;
+	GMutex		 plugin_mutex;
+	GHashTable	*cache;
 };
 
 /**

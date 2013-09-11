@@ -59,19 +59,19 @@ struct GsAppPrivate
 	gchar			*summary;
 	gchar			*description;
 	gchar			*screenshot;
-        gchar			*url;
-        gchar			*update_version;
-        gchar			*update_details;
-        gchar			*management_plugin;
+	gchar			*url;
+	gchar			*update_version;
+	gchar			*update_details;
+	gchar			*management_plugin;
 	gint			 rating;
 	GsAppKind		 kind;
 	GsAppState		 state;
 	GHashTable		*metadata;
 	GdkPixbuf		*pixbuf;
 	GdkPixbuf		*featured_pixbuf;
-        GPtrArray		*related; /* of GsApp */
-        GPtrArray		*history; /* of GsApp */
-        guint64                  install_date;
+	GPtrArray		*related; /* of GsApp */
+	GPtrArray		*history; /* of GsApp */
+	guint64			 install_date;
 };
 
 enum {
@@ -86,7 +86,7 @@ enum {
 	PROP_RATING,
 	PROP_KIND,
 	PROP_STATE,
-        PROP_INSTALL_DATE,
+	PROP_INSTALL_DATE,
 	PROP_LAST
 };
 
@@ -189,8 +189,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tpixbuf:\t%p\n", priv->pixbuf);
 	if (priv->featured_pixbuf != NULL)
 		g_string_append_printf (str, "\tfeatured-pixbuf:\t%p\n", priv->featured_pixbuf);
-        if (priv->install_date != 0)
-                g_string_append_printf (str, "\tinstall-date:\t%lu\n", priv->install_date);
+	if (priv->install_date != 0)
+		g_string_append_printf (str, "\tinstall-date:\t%lu\n", priv->install_date);
 	if (priv->related->len > 0)
 		g_string_append_printf (str, "\trelated:\t%i\n", priv->related->len);
 	if (priv->history->len > 0)
@@ -488,7 +488,6 @@ gs_app_get_version (GsApp *app)
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	return app->priv->version;
 }
-
 
 /**
  * gs_app_get_pretty_version:
@@ -797,15 +796,15 @@ gs_app_add_history (GsApp *app, GsApp *app2)
 guint64
 gs_app_get_install_date (GsApp *app)
 {
-        g_return_val_if_fail (GS_IS_APP (app), 0);
-        return app->priv->install_date;
+	g_return_val_if_fail (GS_IS_APP (app), 0);
+	return app->priv->install_date;
 }
 
 void
 gs_app_set_install_date (GsApp *app, guint64 install_date)
 {
-        g_return_if_fail (GS_IS_APP (app));
-        app->priv->install_date = install_date;
+	g_return_if_fail (GS_IS_APP (app));
+	app->priv->install_date = install_date;
 }
 
 /**

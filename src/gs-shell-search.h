@@ -55,8 +55,8 @@ GType		 gs_shell_search_get_type	(void);
 GsShellSearch	*gs_shell_search_new		(void);
 void		 gs_shell_search_refresh	(GsShellSearch		*shell_search,
 						 const gchar		*text);
-void 		 gs_shell_search_setup		(GsShellSearch		*shell_search,
-                                                 GsShell                *shell,
+void		 gs_shell_search_setup		(GsShellSearch		*shell_search,
+						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);

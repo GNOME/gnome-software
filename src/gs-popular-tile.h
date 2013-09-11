@@ -41,19 +41,19 @@ typedef struct _GsPopularTilePrivate		GsPopularTilePrivate;
 
 struct _GsPopularTile
 {
-	GtkBin                   parent;
+	GtkBin		   parent;
 	GsPopularTilePrivate	*priv;
 };
 
 struct _GsPopularTileClass
 {
-	GtkBinClass     	 parent_class;
+	GtkBinClass	 parent_class;
 
-	void			(*clicked)      (GsPopularTile	*tile);
+	void			(*clicked)	(GsPopularTile	*tile);
 };
 
 GType		 gs_popular_tile_get_type		(void);
-GtkWidget	*gs_popular_tile_new			(GsApp          *app);
+GtkWidget	*gs_popular_tile_new			(GsApp		*app);
 GsApp		*gs_popular_tile_get_app		(GsPopularTile	*tile);
 void		 gs_popular_tile_set_app		(GsPopularTile	*tile,
 							 GsApp		*app);
@@ -61,6 +61,5 @@ void		 gs_popular_tile_set_app		(GsPopularTile	*tile,
 G_END_DECLS
 
 #endif /* GS_POPULAR_TILE_H */
-
 
 /* vim: set noexpandtab: */

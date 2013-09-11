@@ -36,11 +36,11 @@ G_BEGIN_DECLS
 typedef struct _GsBox		GsBox;
 typedef struct _GsBoxClass	GsBoxClass;
 
-GType		 gs_box_get_type        (void);
+GType		 gs_box_get_type	(void);
 GtkWidget	*gs_box_new		(void);
-void             gs_box_add             (GsBox     *box,
-                                         GtkWidget *child,
-                                         gdouble    relative_size);
+void		 gs_box_add		(GsBox		*box,
+					 GtkWidget	*child,
+					 gdouble	 relative_size);
 
 G_END_DECLS
 

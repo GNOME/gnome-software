@@ -29,10 +29,10 @@
 #include <gs-plugin.h>
 
 struct GsPluginPrivate {
-	PkDesktop		*desktop;
-	gsize                    loaded;
-	GMutex                   plugin_mutex;
-	GHashTable		*cache;
+	PkDesktop	*desktop;
+	gsize		 loaded;
+	GMutex		 plugin_mutex;
+	GHashTable	*cache;
 };
 
 /**

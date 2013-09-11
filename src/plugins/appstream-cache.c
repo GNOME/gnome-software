@@ -130,7 +130,7 @@ appstream_cache_selection_from_string (const gchar *element_name)
 	if (g_strcmp0 (element_name, "icon") == 0)
 		return APPSTREAM_CACHE_SECTION_ICON;
 	if (g_strcmp0 (element_name, "appcategories") == 0)
-		return 	APPSTREAM_CACHE_SECTION_APPCATEGORIES;
+		return APPSTREAM_CACHE_SECTION_APPCATEGORIES;
 	if (g_strcmp0 (element_name, "appcategory") == 0)
 		return APPSTREAM_CACHE_SECTION_APPCATEGORY;
 	return APPSTREAM_CACHE_SECTION_UNKNOWN;
@@ -184,7 +184,7 @@ appstream_cache_icon_kind_from_string (const gchar *kind_str)
 typedef struct {
 	const gchar		*path_icons;
 	AppstreamApp		*item_temp;
-	char                    *lang_temp;
+	char			*lang_temp;
 	AppstreamCache		*cache;
 	AppstreamCacheSection	 section;
 } AppstreamCacheHelper;

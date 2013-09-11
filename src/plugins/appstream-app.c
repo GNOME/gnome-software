@@ -190,7 +190,7 @@ appstream_app_get_icon (AppstreamApp *app)
 /**
  * appstream_app_get_icon_kind:
  */
-AppstreamAppIconKind 
+AppstreamAppIconKind
 appstream_app_get_icon_kind (AppstreamApp *app)
 {
 	return app->icon_kind;
@@ -199,7 +199,7 @@ appstream_app_get_icon_kind (AppstreamApp *app)
 /**
  * appstream_app_has_category:
  */
-gboolean 
+gboolean
 appstream_app_has_category (AppstreamApp *app, const gchar *category)
 {
 	const gchar *tmp;
@@ -216,7 +216,7 @@ appstream_app_has_category (AppstreamApp *app, const gchar *category)
 /**
  * appstream_app_set_id:
  */
-void 
+void
 appstream_app_set_id (AppstreamApp *app,
 		      const gchar *id,
 		      gsize length)
@@ -227,7 +227,7 @@ appstream_app_set_id (AppstreamApp *app,
 /**
  * appstream_app_set_pkgname:
  */
-void 
+void
 appstream_app_set_pkgname (AppstreamApp *app,
 			   const gchar *pkgname,
 			   gsize length)
@@ -238,7 +238,7 @@ appstream_app_set_pkgname (AppstreamApp *app,
 /**
  * appstream_app_set_name:
  */
-void 
+void
 appstream_app_set_name (AppstreamApp *app,
 			const gchar *lang,
 			const gchar *name,
@@ -257,7 +257,7 @@ appstream_app_set_name (AppstreamApp *app,
 /**
  * appstream_app_set_summary:
  */
-void 
+void
 appstream_app_set_summary (AppstreamApp *app,
 			   const gchar *lang,
 			   const gchar *summary,
@@ -276,7 +276,7 @@ appstream_app_set_summary (AppstreamApp *app,
 /**
  * appstream_app_set_url:
  */
-void 
+void
 appstream_app_set_url (AppstreamApp *app,
 		       const gchar *url,
 		       gsize length)
@@ -287,7 +287,7 @@ appstream_app_set_url (AppstreamApp *app,
 /**
  * appstream_app_set_description:
  */
-void 
+void
 appstream_app_set_description (AppstreamApp *app,
 			       const gchar *lang,
 			       const gchar *description,
@@ -306,7 +306,7 @@ appstream_app_set_description (AppstreamApp *app,
 /**
  * appstream_app_set_icon:
  */
-void 
+void
 appstream_app_set_icon (AppstreamApp *app,
 			const gchar *icon,
 			gsize length)
@@ -317,7 +317,7 @@ appstream_app_set_icon (AppstreamApp *app,
 /**
  * appstream_app_add_category:
  */
-void 
+void
 appstream_app_add_category (AppstreamApp *app,
 			    const gchar *category,
 			    gsize length)
@@ -329,7 +329,7 @@ appstream_app_add_category (AppstreamApp *app,
 /**
  * appstream_app_set_icon_kind:
  */
-void 
+void
 appstream_app_set_icon_kind (AppstreamApp *app,
 			     AppstreamAppIconKind icon_kind)
 {

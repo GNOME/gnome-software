@@ -39,7 +39,7 @@ struct GsShellDetailsPrivate
 	GCancellable		*cancellable;
 	gboolean		 cache_valid;
 	GsApp			*app;
-        GsShell                 *shell;
+	GsShell			*shell;
 };
 
 G_DEFINE_TYPE (GsShellDetails, gs_shell_details, G_TYPE_OBJECT)
@@ -64,13 +64,13 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	GsAppState state;
 	GtkWidget *widget;
 
-        if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_DETAILS)
-                return;
+	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_DETAILS)
+		return;
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-        gtk_widget_show (widget);
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-        gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
+	gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+	gtk_widget_show (widget);
 
 	kind = gs_app_get_kind (priv->app);
 	state = gs_app_get_state (priv->app);
@@ -81,13 +81,13 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	case GS_APP_STATE_AVAILABLE:
 		gtk_widget_set_visible (widget, TRUE);
 		gtk_widget_set_sensitive (widget, TRUE);
-                gtk_style_context_add_class (gtk_widget_get_style_context (widget), "suggested-action");
+		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "suggested-action");
 		gtk_button_set_label (GTK_BUTTON (widget), _("Install"));
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (widget, TRUE);
 		gtk_widget_set_sensitive (widget, FALSE);
-                gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "suggested-action");
+		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "suggested-action");
 		gtk_button_set_label (GTK_BUTTON (widget), _("Installing"));
 		break;
 	case GS_APP_STATE_INSTALLED:
@@ -110,13 +110,13 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		case GS_APP_STATE_INSTALLED:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, TRUE);
-                        gtk_style_context_add_class (gtk_widget_get_style_context (widget), "destructive-action");
+			gtk_style_context_add_class (gtk_widget_get_style_context (widget), "destructive-action");
 			gtk_button_set_label (GTK_BUTTON (widget), _("Remove"));
 			break;
 		case GS_APP_STATE_REMOVING:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, FALSE);
-                        gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
+			gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
 			gtk_button_set_label (GTK_BUTTON (widget), _("Removing"));
 			break;
 		case GS_APP_STATE_UPDATABLE:
@@ -131,30 +131,30 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		}
 	}
 
-        /* spinner */
+	/* spinner */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
-        if (kind == GS_APP_KIND_SYSTEM) {
+	if (kind == GS_APP_KIND_SYSTEM) {
 		gtk_widget_set_visible (widget, FALSE);
-                gtk_spinner_stop (GTK_SPINNER (widget));
-        } else {
-                switch (state) {
-                case GS_APP_STATE_INSTALLED:
-                case GS_APP_STATE_AVAILABLE:
+		gtk_spinner_stop (GTK_SPINNER (widget));
+	} else {
+		switch (state) {
+		case GS_APP_STATE_INSTALLED:
+		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_UPDATABLE:
-                        gtk_widget_set_visible (widget, FALSE);
-                        gtk_spinner_stop (GTK_SPINNER (widget));
-                        break;
-                case GS_APP_STATE_INSTALLING:
-                case GS_APP_STATE_REMOVING:
-                        gtk_spinner_start (GTK_SPINNER (widget));
-                        gtk_widget_set_visible (widget, TRUE);
-                        break;
+			gtk_widget_set_visible (widget, FALSE);
+			gtk_spinner_stop (GTK_SPINNER (widget));
+			break;
+		case GS_APP_STATE_INSTALLING:
+		case GS_APP_STATE_REMOVING:
+			gtk_spinner_start (GTK_SPINNER (widget));
+			gtk_widget_set_visible (widget, TRUE);
+			break;
 		default:
 			g_warning ("App unexpectedly in state %s",
 				   gs_app_state_to_string (state));
 			g_assert_not_reached ();
-                }
-        }
+		}
+	}
 }
 
 /**
@@ -243,7 +243,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 GsApp *
 gs_shell_details_get_app (GsShellDetails *shell_details)
 {
-        return shell_details->priv->app;
+	return shell_details->priv->app;
 }
 
 static void
@@ -252,9 +252,9 @@ gs_shell_details_installed_func (GsPluginLoader *plugin_loader, GsApp *app, gpoi
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
 	gs_shell_details_refresh (shell_details);
 
-        if (app) {
-                gs_app_notify_installed (app);
-        }
+	if (app) {
+		gs_app_notify_installed (app);
+	}
 }
 
 static void
@@ -445,7 +445,7 @@ gs_shell_details_list_header_func (GtkListBoxRow *row,
  */
 void
 gs_shell_details_setup (GsShellDetails *shell_details,
-                        GsShell        *shell,
+			GsShell	*shell,
 			GsPluginLoader *plugin_loader,
 			GtkBuilder *builder,
 			GCancellable *cancellable)
@@ -456,7 +456,7 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 
 	g_return_if_fail (GS_IS_SHELL_DETAILS (shell_details));
 
-        priv->shell = shell;
+	priv->shell = shell;
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
@@ -526,8 +526,8 @@ gs_shell_details_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
-        if (priv->app)
-                g_object_unref (priv->app);
+	if (priv->app)
+		g_object_unref (priv->app);
 
 	G_OBJECT_CLASS (gs_shell_details_parent_class)->finalize (object);
 }

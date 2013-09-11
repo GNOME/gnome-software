@@ -24,18 +24,14 @@
 
 #include <gtk/gtk.h>
 
-
 #define GS_APPLICATION_TYPE (gs_application_get_type ())
 #define GS_APPLICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GS_APPLICATION_TYPE, GsApplication))
 
+typedef struct _GsApplication		GsApplication;
+typedef struct _GsApplicationClass	GsApplicationClass;
 
-typedef struct _GsApplication      GsApplication;
-typedef struct _GsApplicationClass GsApplicationClass;
-
-
-GType           gs_application_get_type    (void);
-GsApplication  *gs_application_new         (void);
-
+GType		 gs_application_get_type	(void);
+GsApplication	*gs_application_new		(void);
 
 #endif  /* __GS_APPLICATION_H */
 

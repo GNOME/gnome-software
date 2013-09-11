@@ -43,30 +43,30 @@ struct GsShellSearchPrivate
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	gboolean		 waiting;
-        GsShell                 *shell;
+	GsShell			*shell;
 };
 
 G_DEFINE_TYPE (GsShellSearch, gs_shell_search, G_TYPE_OBJECT)
 
 static void
 gs_shell_search_app_widget_activated_cb (GtkListBox *list_box,
-                                         GtkListBoxRow *row,
+					 GtkListBoxRow *row,
 					 GsShellSearch *shell_search)
 {
 	GsApp *app;
-        GsAppWidget *app_widget;
+	GsAppWidget *app_widget;
 
-        app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+	app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
 	app = gs_app_widget_get_app (app_widget);
-        gs_shell_show_app (shell_search->priv->shell, app);
+	gs_shell_show_app (shell_search->priv->shell, app);
 }
 
 static void
 gs_shell_search_installed_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
 {
-        if (app) {
-                gs_app_notify_installed (app);
-        }
+	if (app) {
+		gs_app_notify_installed (app);
+	}
 }
 
 /**
@@ -165,20 +165,20 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *widget;
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_search"));
-        gs_stop_spinner (GTK_SPINNER (widget));
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_search"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_search"));
+	gs_stop_spinner (GTK_SPINNER (widget));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_search"));
 
-        priv->waiting = FALSE;
+	priv->waiting = FALSE;
 
 	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		g_warning ("failed to get search apps: %s", error->message);
 		g_error_free (error);
-                gtk_stack_set_visible_child_name (GTK_STACK (widget), "no-results");
+		gtk_stack_set_visible_child_name (GTK_STACK (widget), "no-results");
 		goto out;
 	}
-        gtk_stack_set_visible_child_name (GTK_STACK (widget), "results");
+	gtk_stack_set_visible_child_name (GTK_STACK (widget), "results");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		g_debug ("adding search %s", gs_app_get_id (app));
@@ -204,17 +204,17 @@ void
 gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value)
 {
 	GsShellSearchPrivate *priv = shell_search->priv;
-        GtkWidget *widget;
-        GtkSpinner *spinner;
+	GtkWidget *widget;
+	GtkSpinner *spinner;
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-        gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+	gtk_widget_show (widget);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_widget_show (widget);
 
-        if (priv->waiting)
-                return;
+	if (priv->waiting)
+		return;
 
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_search));
@@ -226,10 +226,10 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value)
 				       gs_shell_search_get_search_cb,
 				       shell_search);
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_search"));
-        gtk_stack_set_visible_child_name (GTK_STACK (widget), "spinner");
-        spinner = GTK_SPINNER (gtk_builder_get_object (priv->builder, "spinner_search"));
-        gs_start_spinner (spinner);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_search"));
+	gtk_stack_set_visible_child_name (GTK_STACK (widget), "spinner");
+	spinner = GTK_SPINNER (gtk_builder_get_object (priv->builder, "spinner_search"));
+	gs_start_spinner (spinner);
 	priv->waiting = TRUE;
 }
 
@@ -255,13 +255,13 @@ gs_shell_search_sort_func (GtkListBoxRow *a,
 	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
 	GsApp *a1 = gs_app_widget_get_app (aw1);
 	GsApp *a2 = gs_app_widget_get_app (aw2);
-        guint64 date1 = gs_app_get_install_date (a1);
-        guint64 date2 = gs_app_get_install_date (a2);
+	guint64 date1 = gs_app_get_install_date (a1);
+	guint64 date2 = gs_app_get_install_date (a2);
 
-        if (date1 < date2)
-                return 1;
-        else if (date2 < date1)
-                return -1;
+	if (date1 < date2)
+		return 1;
+	else if (date2 < date1)
+		return -1;
 
 	return g_strcmp0 (gs_app_get_name (a1),
 			  gs_app_get_name (a2));
@@ -356,7 +356,7 @@ gs_shell_search_list_header_func (GtkListBoxRow *row,
  */
 void
 gs_shell_search_setup (GsShellSearch *shell_search,
-                       GsShell *shell,
+		       GsShell *shell,
 			  GsPluginLoader *plugin_loader,
 			  GtkBuilder *builder,
 			  GCancellable *cancellable)
@@ -369,7 +369,7 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);
-        priv->shell = shell;
+	priv->shell = shell;
 
 	/* refilter on search box changing */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));

@@ -223,11 +223,11 @@ out:
 }
 
 static gboolean
-gs_plugin_packagekit_refine_from_desktop (GsPlugin      *plugin,
-					  GsApp         *app,
-					  const char    *filename,
-					  GCancellable  *cancellable,
-					  GError       **error)
+gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
+					  GsApp	 *app,
+					  const gchar *filename,
+					  GCancellable *cancellable,
+					  GError **error)
 {
 	const gchar *to_array[] = { NULL, NULL };
 	gboolean ret = TRUE;

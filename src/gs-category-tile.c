@@ -45,28 +45,28 @@ static guint signals [SIGNAL_LAST] = { 0 };
 GsCategory *
 gs_category_tile_get_category (GsCategoryTile *tile)
 {
-        GsCategoryTilePrivate *priv;
+	GsCategoryTilePrivate *priv;
 
 	g_return_val_if_fail (GS_IS_CATEGORY_TILE (tile), NULL);
 
-        priv = gs_category_tile_get_instance_private (tile);
+	priv = gs_category_tile_get_instance_private (tile);
 	return priv->cat;
 }
 
 void
 gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 {
-        GsCategoryTilePrivate *priv;
+	GsCategoryTilePrivate *priv;
 
 	g_return_if_fail (GS_IS_CATEGORY_TILE (tile));
 	g_return_if_fail (GS_IS_CATEGORY (cat));
 
-        priv = gs_category_tile_get_instance_private (tile);
+	priv = gs_category_tile_get_instance_private (tile);
 
-        g_clear_object (&priv->cat);
+	g_clear_object (&priv->cat);
 	priv->cat = g_object_ref (cat);
 
-        gtk_label_set_label (GTK_LABEL (priv->label), gs_category_get_name (cat));
+	gtk_label_set_label (GTK_LABEL (priv->label), gs_category_get_name (cat));
 }
 
 static void
@@ -75,7 +75,7 @@ gs_category_tile_destroy (GtkWidget *widget)
 	GsCategoryTile *tile = GS_CATEGORY_TILE (widget);
 	GsCategoryTilePrivate *priv;
 
-        priv = gs_category_tile_get_instance_private (tile);
+	priv = gs_category_tile_get_instance_private (tile);
 
 	g_clear_object (&priv->cat);
 
@@ -85,19 +85,19 @@ gs_category_tile_destroy (GtkWidget *widget)
 static void
 button_clicked (GsCategoryTile *tile)
 {
-        g_signal_emit (tile, signals[SIGNAL_CLICKED], 0);
+	g_signal_emit (tile, signals[SIGNAL_CLICKED], 0);
 }
 
 static void
 gs_category_tile_init (GsCategoryTile *tile)
 {
-        GsCategoryTilePrivate *priv;
+	GsCategoryTilePrivate *priv;
 
-        gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
-        gtk_widget_init_template (GTK_WIDGET (tile));
-        priv = gs_category_tile_get_instance_private (tile);
-        g_signal_connect_swapped (priv->button, "clicked",
-                                  G_CALLBACK (button_clicked), tile);
+	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
+	gtk_widget_init_template (GTK_WIDGET (tile));
+	priv = gs_category_tile_get_instance_private (tile);
+	g_signal_connect_swapped (priv->button, "clicked",
+				  G_CALLBACK (button_clicked), tile);
 }
 
 static void
@@ -115,21 +115,21 @@ gs_category_tile_class_init (GsCategoryTileClass *klass)
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
-        gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/category-tile.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/category-tile.ui");
 
-        gtk_widget_class_bind_template_child_private (widget_class, GsCategoryTile, button);
-        gtk_widget_class_bind_template_child_private (widget_class, GsCategoryTile, label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsCategoryTile, button);
+	gtk_widget_class_bind_template_child_private (widget_class, GsCategoryTile, label);
 }
 
 GtkWidget *
 gs_category_tile_new (GsCategory *cat)
 {
-        GsCategoryTile *tile;
+	GsCategoryTile *tile;
 
-        tile = g_object_new (GS_TYPE_CATEGORY_TILE, NULL);
-        gs_category_tile_set_category (tile, cat);
+	tile = g_object_new (GS_TYPE_CATEGORY_TILE, NULL);
+	gs_category_tile_set_category (tile, cat);
 
-        return GTK_WIDGET (tile);
+	return GTK_WIDGET (tile);
 }
 
 /* vim: set noexpandtab: */

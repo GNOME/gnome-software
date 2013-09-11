@@ -31,7 +31,6 @@ UI_FILES =						\
 	gnome-software.ui				\
 	popular-tile.ui
 
-
 bin_PROGRAMS =						\
 	gnome-software
 

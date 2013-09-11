@@ -29,7 +29,7 @@
 #define GS_TYPE_CATEGORY_TILE		(gs_category_tile_get_type())
 #define GS_CATEGORY_TILE(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_CATEGORY_TILE, GsCategoryTile))
 #define GS_CATEGORY_TILE_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_CATEGORY_TILE, GsCategoryTileClass))
-#define GS_IS_CATEGORY_TILE(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_CATEGORY_TILE))
+#define GS_IS_CATEGORY_TILE(obj)	(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_CATEGORY_TILE))
 #define GS_IS_CATEGORY_TILE_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_CATEGORY_TILE))
 #define GS_CATEGORY_TILE_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_CATEGORY_TILE, GsCategoryTileClass))
 
@@ -41,15 +41,15 @@ typedef struct _GsCategoryTilePrivate		GsCategoryTilePrivate;
 
 struct _GsCategoryTile
 {
-	GtkBin                   parent;
+	GtkBin		   parent;
 	GsCategoryTilePrivate	*priv;
 };
 
 struct _GsCategoryTileClass
 {
-	GtkBinClass     	 parent_class;
+	GtkBinClass	 parent_class;
 
-	void			(*clicked)      (GsCategoryTile	*tile);
+	void			(*clicked)	(GsCategoryTile	*tile);
 };
 
 GType		 gs_category_tile_get_type		(void);

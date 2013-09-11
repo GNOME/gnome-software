@@ -54,15 +54,15 @@ typedef struct
 GType		 gs_shell_category_get_type	(void);
 
 GsShellCategory	*gs_shell_category_new		(void);
-void		 gs_shell_category_set_category	(GsShellCategory *shell_category,
-						 GsCategory      *category);
-GsCategory      *gs_shell_category_get_category (GsShellCategory *shell_category);
-void		 gs_shell_category_refresh	(GsShellCategory *shell_category);
-void             gs_shell_category_setup        (GsShellCategory *shell_category,
-                                                 GsShell         *shell,
-                                                 GsPluginLoader  *plugin_loader,
-                                                 GtkBuilder      *builder,
-                                                 GCancellable    *cancellable);
+void		 gs_shell_category_set_category	(GsShellCategory	*shell_category,
+						 GsCategory		*category);
+GsCategory	*gs_shell_category_get_category (GsShellCategory	*shell_category);
+void		 gs_shell_category_refresh	(GsShellCategory	*shell_category);
+void		 gs_shell_category_setup	(GsShellCategory	*shell_category,
+						 GsShell		*shell,
+						 GsPluginLoader		*plugin_loader,
+						 GtkBuilder		*builder,
+						 GCancellable		*cancellable);
 
 #endif /* __GS_SHELL_CATEGORY_H */
 

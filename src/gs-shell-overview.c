@@ -38,15 +38,15 @@ struct GsShellOverviewPrivate
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	gboolean		 cache_valid;
-        GsShell                 *shell;
-        gint                     refresh_count;
+	GsShell			*shell;
+	gint			 refresh_count;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShellOverview, gs_shell_overview, G_TYPE_OBJECT)
 
 enum {
-        SIGNAL_REFRESHED,
-        SIGNAL_LAST
+	SIGNAL_REFRESHED,
+	SIGNAL_LAST
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
@@ -67,7 +67,7 @@ popular_tile_clicked (GsPopularTile *tile, gpointer data)
 	GsApp *app;
 
 	app = gs_popular_tile_get_app (tile);
-        gs_shell_show_app (shell->priv->shell, app);
+	gs_shell_show_app (shell->priv->shell, app);
 }
 
 /**
@@ -101,39 +101,39 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	for (l = list, i = 0; l != NULL && i < 6; l = l->next, i++) {
 		app = GS_APP (l->data);
 		tile = gs_popular_tile_new (app);
-	        g_signal_connect (tile, "clicked",
+		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (popular_tile_clicked), shell);
-                gtk_box_pack_start (GTK_BOX (grid), tile, TRUE, TRUE, 0);
+		gtk_box_pack_start (GTK_BOX (grid), tile, TRUE, TRUE, 0);
 	}
 out:
-        priv->refresh_count--;
-        if (priv->refresh_count == 0)
-                g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
+	priv->refresh_count--;
+	if (priv->refresh_count == 0)
+		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
 }
 
 static void
 feature_tile_clicked (GsFeatureTile *tile, gpointer data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (data);
-        GsApp *app;
+	GsApp *app;
 
-        app = gs_feature_tile_get_app (tile);
-        gs_shell_show_app (shell->priv->shell, app);
+	app = gs_feature_tile_get_app (tile);
+	gs_shell_show_app (shell->priv->shell, app);
 }
 
 static void
 gs_shell_overview_get_featured_cb (GObject *source_object,
-               	 		   GAsyncResult *res,
-	         		   gpointer user_data)
+				   GAsyncResult *res,
+				   gpointer user_data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
 	GsShellOverviewPrivate *priv = shell->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *tile;
 	GtkWidget *box;
-        GList *list;
-        GError *error = NULL;
-        GsApp *app;
+	GList *list;
+	GError *error = NULL;
+	GsApp *app;
 
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -144,30 +144,30 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 
 	/* at the moment, we only care about the first app */
 	app = GS_APP (list->data);
-        box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "feature"));
-        tile = gs_feature_tile_new (app);
+	box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "feature"));
+	tile = gs_feature_tile_new (app);
 	g_signal_connect (tile, "clicked",
 			  G_CALLBACK (feature_tile_clicked), shell);
 
-        gs_container_remove_all (GTK_CONTAINER (box));
-        gtk_container_add (GTK_CONTAINER (box), tile);
+	gs_container_remove_all (GTK_CONTAINER (box));
+	gtk_container_add (GTK_CONTAINER (box), tile);
 
 out:
 	g_list_free (list);
 
-        priv->refresh_count--;
-        if (priv->refresh_count == 0)
-                g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
+	priv->refresh_count--;
+	if (priv->refresh_count == 0)
+		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
 }
 
 static void
 category_tile_clicked (GsCategoryTile *tile, gpointer data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (data);
-        GsCategory *category;
+	GsCategory *category;
 
 	category = gs_category_tile_get_category (tile);
-        gs_shell_show_category (shell->priv->shell, category);
+	gs_shell_show_category (shell->priv->shell, category);
 }
 
 /**
@@ -198,17 +198,17 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
 	for (l = list, i = 0; l; l = l->next, i++) {
 		cat = GS_CATEGORY (l->data);
-                tile = gs_category_tile_new (cat);
-	        g_signal_connect (tile, "clicked",
-			          G_CALLBACK (category_tile_clicked), shell);
+		tile = gs_category_tile_new (cat);
+		g_signal_connect (tile, "clicked",
+				  G_CALLBACK (category_tile_clicked), shell);
 		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
 	}
-        g_list_free_full (list, g_object_unref);
+	g_list_free_full (list, g_object_unref);
 out:
 	priv->cache_valid = TRUE;
-        priv->refresh_count--;
-        if (priv->refresh_count == 0)
-                g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
+	priv->refresh_count--;
+	if (priv->refresh_count == 0)
+		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
 }
 
 /**
@@ -220,26 +220,26 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 	GsShellOverviewPrivate *priv = shell->priv;
 	GtkWidget *widget;
 	GtkWidget *grid;
-        GtkAdjustment *adj;
+	GtkAdjustment *adj;
 
-        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_OVERVIEW) {
-                widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-                gtk_widget_show (widget);
-	        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	        gtk_widget_show (widget);
-	        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-                gtk_entry_set_text (GTK_ENTRY (widget), "");
-        }
+	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_OVERVIEW) {
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+		gtk_widget_show (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+		gtk_widget_show (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+		gtk_entry_set_text (GTK_ENTRY (widget), "");
+	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_overview"));
-        if (scroll_up) {
-                adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
-                gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-        }
+	if (scroll_up) {
+		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
+		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+	}
 
-        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_OVERVIEW) {
-                gs_grab_focus_when_mapped (widget);
-        }
+	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_OVERVIEW) {
+		gs_grab_focus_when_mapped (widget);
+	}
 
 	if (priv->cache_valid)
 		return;
@@ -247,7 +247,7 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
 	gs_container_remove_all (GTK_CONTAINER (grid));
 
-        priv->refresh_count = 3;
+	priv->refresh_count = 3;
 
 	gs_plugin_loader_get_featured_async (priv->plugin_loader,
 					     priv->cancellable,
@@ -270,7 +270,7 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 
 void
 gs_shell_overview_setup (GsShellOverview *shell_overview,
-                         GsShell *shell,
+			 GsShell *shell,
 			 GsPluginLoader *plugin_loader,
 			 GtkBuilder *builder,
 			 GCancellable *cancellable)
@@ -283,8 +283,8 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);
 
-        /* avoid a ref cycle */
-        priv->shell = shell;
+	/* avoid a ref cycle */
+	priv->shell = shell;
 }
 
 static void
@@ -315,12 +315,12 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_shell_overview_finalize;
 
-        signals [SIGNAL_REFRESHED] =
-                g_signal_new ("refreshed",
-                              G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-                              G_STRUCT_OFFSET (GsShellOverviewClass, refreshed),
-                              NULL, NULL, g_cclosure_marshal_VOID__VOID,
-                              G_TYPE_NONE, 0);
+	signals [SIGNAL_REFRESHED] =
+		g_signal_new ("refreshed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsShellOverviewClass, refreshed),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
 }
 
 /**

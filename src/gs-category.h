@@ -29,7 +29,7 @@ G_BEGIN_DECLS
 #define GS_TYPE_CATEGORY		(gs_category_get_type ())
 #define GS_CATEGORY(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_CATEGORY, GsCategory))
 #define GS_CATEGORY_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_CATEGORY, GsCategoryClass))
-#define GS_IS_CATEGORY(o)	 	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_CATEGORY))
+#define GS_IS_CATEGORY(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_CATEGORY))
 #define GS_IS_CATEGORY_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_CATEGORY))
 #define GS_CATEGORY_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_CATEGORY, GsCategoryClass))
 
@@ -48,19 +48,18 @@ typedef struct
 
 GType		 gs_category_get_type		(void);
 
-GsCategory	*gs_category_new		(GsCategory             *parent,
-                                                 const gchar	        *id,
-                                                 const gchar            *name);
-const gchar	*gs_category_get_id		(GsCategory		*category);
-GsCategory      *gs_category_get_parent         (GsCategory             *category);
-const gchar	*gs_category_get_name		(GsCategory		*category);
-void 		 gs_category_set_name		(GsCategory		*category,
-						 const gchar	        *name);
-void		 gs_category_sort_subcategories	(GsCategory		*category);
-GList           *gs_category_get_subcategories  (GsCategory             *category);
-void             gs_category_add_subcategory    (GsCategory             *category,
-                                                 GsCategory             *subcategory);
-
+GsCategory	*gs_category_new		(GsCategory	*parent,
+						 const gchar	*id,
+						 const gchar	*name);
+const gchar	*gs_category_get_id		(GsCategory	*category);
+GsCategory      *gs_category_get_parent		(GsCategory	*category);
+const gchar	*gs_category_get_name		(GsCategory	*category);
+void		 gs_category_set_name		(GsCategory	*category,
+						 const gchar	*name);
+void		 gs_category_sort_subcategories	(GsCategory	*category);
+GList		*gs_category_get_subcategories	(GsCategory	*category);
+void		 gs_category_add_subcategory	(GsCategory	*category,
+						 GsCategory	*subcategory);
 
 G_END_DECLS
 

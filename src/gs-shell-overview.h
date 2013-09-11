@@ -34,7 +34,7 @@ G_BEGIN_DECLS
 #define GS_TYPE_SHELL_OVERVIEW		(gs_shell_overview_get_type ())
 #define GS_SHELL_OVERVIEW(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_SHELL_OVERVIEW, GsShellOverview))
 #define GS_SHELL_OVERVIEW_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_SHELL_OVERVIEW, GsShellOverviewClass))
-#define GS_IS_SHELL_OVERVIEW(o)	 	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_SHELL_OVERVIEW))
+#define GS_IS_SHELL_OVERVIEW(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_SHELL_OVERVIEW))
 #define GS_IS_SHELL_OVERVIEW_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_SHELL_OVERVIEW))
 #define GS_SHELL_OVERVIEW_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_SHELL_OVERVIEW, GsShellOverviewClass))
 
@@ -50,7 +50,7 @@ typedef struct
 {
 	GObjectClass		 parent_class;
 
-        void  (*refreshed)      (GsShellOverview *shell);
+	void	(*refreshed)	(GsShellOverview *shell);
 } GsShellOverviewClass;
 
 GType		 gs_shell_overview_get_type	(void);
@@ -58,9 +58,9 @@ GType		 gs_shell_overview_get_type	(void);
 GsShellOverview	*gs_shell_overview_new		(void);
 void		 gs_shell_overview_invalidate	(GsShellOverview	*shell_overview);
 void		 gs_shell_overview_refresh	(GsShellOverview	*shell_overview,
-                                                 gboolean                scroll_up);
-void 		 gs_shell_overview_setup	(GsShellOverview	*shell_overview,
-                                                 GsShell                *shell,
+						 gboolean		scroll_up);
+void		 gs_shell_overview_setup	(GsShellOverview	*shell_overview,
+						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);

@@ -38,7 +38,7 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*button_box;
 	GtkWidget	*button;
 	GtkWidget	*spinner;
-        gboolean         colorful;
+	gboolean	 colorful;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppWidget, gs_app_widget, GTK_TYPE_BIN)
@@ -82,7 +82,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	g_string_free (str, TRUE);
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
-                             gs_app_get_name (priv->app));
+			     gs_app_get_name (priv->app));
 	if (gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
 		gtk_label_set_label (GTK_LABEL (priv->version_label),
 				     gs_app_get_update_version (priv->app));
@@ -109,8 +109,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		gtk_widget_set_visible (priv->spinner, FALSE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
-                if (priv->colorful)
-        		gtk_style_context_add_class (context, "destructive-action");
+		if (priv->colorful)
+			gtk_style_context_add_class (context, "destructive-action");
 		break;
 	case GS_APP_STATE_UPDATABLE:
 		gtk_widget_set_visible (priv->spinner, FALSE);
@@ -136,7 +136,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		break;
 	}
 	gtk_widget_set_visible (priv->button_box, gtk_widget_get_visible (priv->spinner) ||
-				                  gtk_widget_get_visible (priv->button));
+						  gtk_widget_get_visible (priv->button));
 }
 
 /**
@@ -149,7 +149,6 @@ gs_app_widget_get_app (GsAppWidget *app_widget)
 	return app_widget->priv->app;
 }
 
-
 /**
  * gs_app_widget_set_app:
  **/
@@ -160,8 +159,8 @@ gs_app_widget_set_app (GsAppWidget *app_widget, GsApp *app)
 	g_return_if_fail (GS_IS_APP (app));
 	app_widget->priv->app = g_object_ref (app);
 	g_signal_connect_object (app_widget->priv->app, "state-changed",
-			         G_CALLBACK (gs_app_widget_refresh),
-			         app_widget, G_CONNECT_SWAPPED);
+				 G_CALLBACK (gs_app_widget_refresh),
+				 app_widget, G_CONNECT_SWAPPED);
 	gs_app_widget_refresh (app_widget);
 }
 
@@ -194,16 +193,16 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
-        gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/app-widget.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/app-widget.ui");
 
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, image);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_box);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_label);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, version_label);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, description_label);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button_box);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, spinner);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, image);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, version_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, description_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, spinner);
 }
 
 static void
@@ -220,10 +219,10 @@ gs_app_widget_init (GsAppWidget *app_widget)
 	priv = gs_app_widget_get_instance_private (app_widget);
 	app_widget->priv = priv;
 
-        gtk_widget_set_has_window (GTK_WIDGET (app_widget), FALSE);
-        gtk_widget_init_template (GTK_WIDGET (app_widget));
+	gtk_widget_set_has_window (GTK_WIDGET (app_widget), FALSE);
+	gtk_widget_init_template (GTK_WIDGET (app_widget));
 
-        priv->colorful = TRUE;
+	priv->colorful = TRUE;
 
 	g_signal_connect (priv->button, "clicked",
 			  G_CALLBACK (button_clicked), app_widget);
@@ -240,9 +239,9 @@ gs_app_widget_set_size_groups (GsAppWidget  *app_widget,
 
 void
 gs_app_widget_set_colorful (GsAppWidget *app_widget,
-                            gboolean     colorful)
+			    gboolean     colorful)
 {
-        app_widget->priv->colorful = colorful;
+	app_widget->priv->colorful = colorful;
 }
 
 GtkWidget *

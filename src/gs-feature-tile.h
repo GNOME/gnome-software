@@ -41,19 +41,19 @@ typedef struct _GsFeatureTilePrivate		GsFeatureTilePrivate;
 
 struct _GsFeatureTile
 {
-	GtkBin                   parent;
+	GtkBin		   parent;
 	GsFeatureTilePrivate	*priv;
 };
 
 struct _GsFeatureTileClass
 {
-	GtkBinClass     	 parent_class;
+	GtkBinClass	 parent_class;
 
-	void			(*clicked)      (GsFeatureTile	*tile);
+	void			(*clicked)		(GsFeatureTile	*tile);
 };
 
 GType		 gs_feature_tile_get_type		(void);
-GtkWidget	*gs_feature_tile_new			(GsApp *app);
+GtkWidget	*gs_feature_tile_new			(GsApp		*app);
 GsApp		*gs_feature_tile_get_app		(GsFeatureTile	*tile);
 void		 gs_feature_tile_set_app		(GsFeatureTile	*tile,
 							 GsApp		*app);

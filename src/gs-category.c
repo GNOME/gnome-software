@@ -33,8 +33,8 @@ struct GsCategoryPrivate
 {
 	gchar		*id;
 	gchar		*name;
-        GsCategory      *parent;
-        GList           *subcategories;
+	GsCategory	*parent;
+	GList		*subcategories;
 };
 
 G_DEFINE_TYPE (GsCategory, gs_category, G_TYPE_OBJECT)
@@ -65,21 +65,21 @@ GsCategory *
 gs_category_get_parent (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
-        return category->priv->parent;
+	return category->priv->parent;
 }
 
 GList *
 gs_category_get_subcategories (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
-        return g_list_copy (category->priv->subcategories);
+	return g_list_copy (category->priv->subcategories);
 }
 
 void
 gs_category_add_subcategory (GsCategory *category, GsCategory *subcategory)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
-        category->priv->subcategories = g_list_prepend (category->priv->subcategories, g_object_ref (subcategory));
+	category->priv->subcategories = g_list_prepend (category->priv->subcategories, g_object_ref (subcategory));
 }
 
 /**
@@ -146,7 +146,7 @@ gs_category_finalize (GObject *object)
 
 	g_free (priv->id);
 	g_free (priv->name);
-        g_list_free_full (priv->subcategories, g_object_unref);
+	g_list_free_full (priv->subcategories, g_object_unref);
 
 	G_OBJECT_CLASS (gs_category_parent_class)->finalize (object);
 }
@@ -156,9 +156,9 @@ gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
 {
 	GsCategory *category;
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
-        category->priv->parent = parent;
-        category->priv->id = g_strdup (id);
-        category->priv->name = g_strdup (name);
+	category->priv->parent = parent;
+	category->priv->id = g_strdup (id);
+	category->priv->name = g_strdup (name);
 	return GS_CATEGORY (category);
 }
 

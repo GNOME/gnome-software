@@ -36,10 +36,10 @@ struct GsPluginLoaderPrivate
 	gchar			*location;
 	GsPluginStatus		 status_last;
 
-	GMutex                   pending_apps_mutex;
+	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
 
-	GMutex                   app_cache_mutex;
+	GMutex			 app_cache_mutex;
 	GHashTable		*app_cache;
 };
 

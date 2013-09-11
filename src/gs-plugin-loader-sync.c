@@ -205,12 +205,12 @@ gs_plugin_loader_get_categories (GsPluginLoader *plugin_loader,
 
 static void
 gs_plugin_loader_get_category_apps_finish_sync (GsPluginLoader *plugin_loader,
-					        GAsyncResult *res,
-					        GsPluginLoaderHelper *helper)
+						GAsyncResult *res,
+						GsPluginLoaderHelper *helper)
 {
 	helper->list = gs_plugin_loader_get_category_apps_finish (plugin_loader,
-							          res,
-							          helper->error);
+								  res,
+								  helper->error);
 	g_main_loop_quit (helper->loop);
 }
 

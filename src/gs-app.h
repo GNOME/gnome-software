@@ -30,7 +30,7 @@ G_BEGIN_DECLS
 #define GS_TYPE_APP		(gs_app_get_type ())
 #define GS_APP(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_APP, GsApp))
 #define GS_APP_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_APP, GsAppClass))
-#define GS_IS_APP(o)	 	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_APP))
+#define GS_IS_APP(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_APP))
 #define GS_IS_APP_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_APP))
 #define GS_APP_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_APP, GsAppClass))
 #define GS_APP_ERROR		(gs_app_error_quark ())
@@ -82,7 +82,7 @@ const gchar	*gs_app_kind_to_string		(GsAppKind	 kind);
 const gchar	*gs_app_state_to_string		(GsAppState	 state);
 
 const gchar	*gs_app_get_id			(GsApp		*app);
-void 		 gs_app_set_id			(GsApp		*app,
+void		 gs_app_set_id			(GsApp		*app,
 						 const gchar	*id);
 GsAppKind	 gs_app_get_kind		(GsApp		*app);
 void		 gs_app_set_kind		(GsApp		*app,
@@ -91,13 +91,13 @@ GsAppState	 gs_app_get_state		(GsApp		*app);
 void		 gs_app_set_state		(GsApp		*app,
 						 GsAppState	 state);
 const gchar	*gs_app_get_name		(GsApp		*app);
-void 		 gs_app_set_name		(GsApp		*app,
+void		 gs_app_set_name		(GsApp		*app,
 						 const gchar	*name);
 const gchar	*gs_app_get_source		(GsApp		*app);
-void 		 gs_app_set_source		(GsApp		*app,
+void		 gs_app_set_source		(GsApp		*app,
 						 const gchar	*source);
 const gchar	*gs_app_get_version		(GsApp		*app);
-void 		 gs_app_set_version		(GsApp		*app,
+void		 gs_app_set_version		(GsApp		*app,
 						 const gchar	*version);
 const gchar	*gs_app_get_summary		(GsApp		*app);
 void		 gs_app_set_summary		(GsApp		*app,
@@ -105,8 +105,8 @@ void		 gs_app_set_summary		(GsApp		*app,
 const gchar	*gs_app_get_description		(GsApp		*app);
 void		 gs_app_set_description		(GsApp		*app,
 						 const gchar	*description);
-const gchar	*gs_app_get_url                 (GsApp		*app);
-void		 gs_app_set_url 		(GsApp		*app,
+const gchar	*gs_app_get_url			(GsApp		*app);
+void		 gs_app_set_url			(GsApp		*app,
 						 const gchar	*url);
 const gchar	*gs_app_get_screenshot		(GsApp		*app);
 void		 gs_app_set_screenshot		(GsApp		*app,
@@ -140,9 +140,9 @@ void		 gs_app_add_related		(GsApp		*app,
 GPtrArray	*gs_app_get_history		(GsApp		*app);
 void		 gs_app_add_history		(GsApp		*app,
 						 GsApp		*app2);
-guint64          gs_app_get_install_date        (GsApp          *app);
-void             gs_app_set_install_date        (GsApp          *app,
-                                                 guint64         install_date);
+guint64		 gs_app_get_install_date	(GsApp		*app);
+void		 gs_app_set_install_date	(GsApp		*app,
+						 guint64	 install_date);
 
 G_END_DECLS
 

@@ -31,7 +31,7 @@ int
 main (int argc, char **argv)
 {
 	int status = 0;
-        GsApplication *application;
+	GsApplication *application;
 
 	setlocale (LC_ALL, "");
 
@@ -41,7 +41,7 @@ main (int argc, char **argv)
 
 	application = gs_application_new ();
 	status = g_application_run (G_APPLICATION (application), argc, argv);
-        g_object_unref (application);
+	g_object_unref (application);
 
 	return status;
 }

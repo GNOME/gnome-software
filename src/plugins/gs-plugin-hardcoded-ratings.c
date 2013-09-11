@@ -24,8 +24,8 @@
 #include <gs-plugin.h>
 
 struct GsPluginPrivate {
-	GHashTable		*cache;
-	gsize    		 loaded;
+	GHashTable	*cache;
+	gsize		 loaded;
 };
 
 /**
