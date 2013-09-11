@@ -26,11 +26,9 @@
 
 #include "gs-app-widget.h"
 #include "gs-utils.h"
-#include "ch-markdown.h"
 
 struct _GsAppWidgetPrivate
 {
-	ChMarkdown	*markdown;
 	GsApp		*app;
 	GtkWidget	*image;
 	GtkWidget	*name_box;
@@ -176,7 +174,6 @@ gs_app_widget_destroy (GtkWidget *object)
 	GsAppWidget *app_widget = GS_APP_WIDGET (object);
 	GsAppWidgetPrivate *priv = app_widget->priv;
 
-	g_clear_object (&priv->markdown);
 	g_clear_object (&priv->app);
 
 	GTK_WIDGET_CLASS (gs_app_widget_parent_class)->destroy (object);
@@ -226,7 +223,6 @@ gs_app_widget_init (GsAppWidget *app_widget)
         gtk_widget_set_has_window (GTK_WIDGET (app_widget), FALSE);
         gtk_widget_init_template (GTK_WIDGET (app_widget));
 
-	priv->markdown = ch_markdown_new ();
         priv->colorful = TRUE;
 
 	g_signal_connect (priv->button, "clicked",

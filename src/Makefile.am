@@ -76,8 +76,6 @@ gnome_software_SOURCES =				\
 	gs-plugin-loader.h				\
 	gs-plugin-loader-sync.c				\
 	gs-plugin-loader-sync.h				\
-	ch-markdown.c					\
-	ch-markdown.h					\
 	gs-application.c				\
 	gs-application.h				\
 	gs-main.c
