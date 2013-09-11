@@ -191,8 +191,7 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tfeatured-pixbuf:\t%p\n", priv->featured_pixbuf);
         if (priv->install_date != 0)
                 g_string_append_printf (str, "\tinstall-date: %lu\n", priv->install_date);
-
-	if (priv->related != NULL)
+	if (priv->related->len > 0)
 		g_string_append_printf (str, "\trelated:\t%i\n", priv->related->len);
 	if (priv->history->len > 0)
 		g_string_append_printf (str, "\thistory:\t%i\n", priv->history->len);
