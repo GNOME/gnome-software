@@ -199,6 +199,8 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 							  GS_APP_STATE_INSTALLED :
 							  GS_APP_STATE_AVAILABLE);
 				}
+				if (gs_app_get_version (app) == NULL)
+					gs_app_set_version (app, pk_package_get_version (package));
 				cnt++;
 			}
 		}
