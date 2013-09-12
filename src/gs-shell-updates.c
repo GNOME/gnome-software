@@ -128,7 +128,9 @@ out:
  * gs_shell_updates_refresh:
  **/
 void
-gs_shell_updates_refresh (GsShellUpdates *shell_updates, gboolean scroll_up)
+gs_shell_updates_refresh (GsShellUpdates *shell_updates,
+			  gboolean show_historical,
+			  gboolean scroll_up)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;

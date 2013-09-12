@@ -122,9 +122,13 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_UPDATES);
 	priv->ignore_primary_buttons = FALSE;
 
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+	gtk_widget_set_visible (widget, mode != GS_SHELL_MODE_UPDATED);
+
 	/* switch page */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
-	gtk_notebook_set_current_page (GTK_NOTEBOOK (widget), mode);
+	gtk_notebook_set_current_page (GTK_NOTEBOOK (widget),
+				       mode == GS_SHELL_MODE_UPDATED ? GS_SHELL_MODE_UPDATES : mode);
 
 	/* do action for mode */
 	priv->mode = mode;
@@ -141,7 +145,10 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 		gs_shell_search_refresh (priv->shell_search, text);
 		break;
 	case GS_SHELL_MODE_UPDATES:
-		gs_shell_updates_refresh (priv->shell_updates, scroll_up);
+		gs_shell_updates_refresh (priv->shell_updates, FALSE, scroll_up);
+		break;
+	case GS_SHELL_MODE_UPDATED:
+		gs_shell_updates_refresh (priv->shell_updates, TRUE, scroll_up);
 		break;
 	case GS_SHELL_MODE_DETAILS:
 		gs_shell_details_set_app (priv->shell_details, app);
@@ -222,7 +229,7 @@ initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 
 	g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
 
-	gs_shell_updates_refresh (shell->priv->shell_updates, TRUE);
+	gs_shell_updates_refresh (shell->priv->shell_updates, FALSE, TRUE);
 	gs_shell_installed_refresh (shell->priv->shell_installed, TRUE);
 
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
