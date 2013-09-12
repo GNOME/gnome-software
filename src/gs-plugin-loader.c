@@ -408,6 +408,65 @@ cd_plugin_loader_get_all_state_finish (GsPluginLoaderAsyncState *state,
 /******************************************************************************/
 
 /**
+ * cd_plugin_loader_add_os_update_item:
+ **/
+static GList *
+cd_plugin_loader_add_os_update_item (GList *list)
+{
+	gboolean has_os_update = FALSE;
+	GError *error = NULL;
+	GdkPixbuf *pixbuf = NULL;
+	GList *l;
+	GList *list_new = list;
+	GsApp *app_os;
+	GsApp *app_tmp;
+
+	/* do we have any packages left that are not apps? */
+	for (l = list; l != NULL; l = l->next) {
+		app_tmp = GS_APP (l->data);
+		if (gs_app_get_kind (app_tmp) == GS_APP_KIND_PACKAGE)
+			has_os_update = TRUE;
+	}
+	if (!has_os_update)
+		goto out;
+
+	/* create new meta object */
+	app_os = gs_app_new ("os-update");
+	gs_app_set_kind (app_os, GS_APP_KIND_OS_UPDATE);
+	gs_app_set_state (app_os, GS_APP_STATE_UPDATABLE);
+	gs_app_set_source (app_os, "os-update");
+	gs_app_set_name (app_os, _("OS Updates"));
+	gs_app_set_summary (app_os, _("Includes performance, stability and security improvements for all users."));
+	gs_app_set_description (app_os, _("Includes performance, stability and security improvements for all users."));
+	for (l = list; l != NULL; l = l->next) {
+		app_tmp = GS_APP (l->data);
+		if (gs_app_get_kind (app_tmp) != GS_APP_KIND_PACKAGE)
+			continue;
+		gs_app_add_related (app_os, app_tmp);
+	}
+
+	/* load icon */
+	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+					   "software-update-available-symbolic",
+					   64,
+					   GTK_ICON_LOOKUP_USE_BUILTIN |
+					   GTK_ICON_LOOKUP_FORCE_SIZE,
+					   &error);
+	if (pixbuf == NULL) {
+		g_warning ("Failed to find software-update-available-symbolic: %s",
+			   error->message);
+		g_error_free (error);
+	} else {
+		gs_app_set_pixbuf (app_os, pixbuf);
+	}
+	list_new = g_list_prepend (list, app_os);
+out:
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
+	return list_new;
+}
+
+/**
  * cd_plugin_loader_get_updates_thread_cb:
  **/
 static void
@@ -415,15 +474,9 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 					GObject *object,
 					GCancellable *cancellable)
 {
-	gboolean has_os_update = FALSE;
-	GdkPixbuf *pixbuf = NULL;
 	GError *error = NULL;
-	GList *l;
-	GsApp *app;
-	GsApp *app_tmp;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	GString *str_summary = NULL;
 
 	/* do things that would block */
 	state->list = gs_plugin_loader_run_results (plugin_loader,
@@ -440,68 +493,26 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
 
 	/* coalesce all packages down into one os-update */
-	for (l = state->list; l != NULL; l = l->next) {
-		app_tmp = GS_APP (l->data);
-		if (gs_app_get_kind (app_tmp) == GS_APP_KIND_PACKAGE) {
-			has_os_update = TRUE;
-		}
-	}
+	state->list = cd_plugin_loader_add_os_update_item (state->list);
 
-	/* smush them all together */
-	if (has_os_update) {
-
-		/* create new meta object */
-		app = gs_app_new ("os-update");
-		gs_app_set_kind (app, GS_APP_KIND_OS_UPDATE);
-		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-		gs_app_set_source (app, "os-update");
-		gs_app_set_name (app, _("OS Updates"));
-		gs_app_set_summary (app, _("Includes performance, stability and security improvements for all users."));
-		gs_app_set_description (app, _("Includes performance, stability and security improvements for all users."));
-		for (l = state->list; l != NULL; l = l->next) {
-			app_tmp = GS_APP (l->data);
-			if (gs_app_get_kind (app_tmp) != GS_APP_KIND_PACKAGE)
-				continue;
-			gs_app_add_related (app, app_tmp);
-		}
-
-		/* load icon */
-		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						   "software-update-available-symbolic",
-						   64,
-						   GTK_ICON_LOOKUP_USE_BUILTIN |
-						   GTK_ICON_LOOKUP_FORCE_SIZE,
-						   &error);
-		if (pixbuf == NULL) {
-			g_warning ("Failed to find software-update-available-symbolic: %s",
-				   error->message);
-			g_error_free (error);
-		}
-		gs_app_set_pixbuf (app, pixbuf);
-		gs_plugin_add_app (&state->list, app);
-
-		/* remove any packages that are not proper applications or
-		 * OS updates */
-		state->list = gs_plugin_loader_remove_invalid (state->list);
-		if (state->list == NULL) {
-			g_set_error_literal (&error,
-					     GS_PLUGIN_LOADER_ERROR,
-					     GS_PLUGIN_LOADER_ERROR_FAILED,
-					     "no updates to show after invalid");
-			cd_plugin_loader_get_all_state_finish (state, error);
-			g_error_free (error);
-			goto out;
-		}
+	/* remove any packages that are not proper applications or
+	 * OS updates */
+	state->list = gs_plugin_loader_remove_invalid (state->list);
+	if (state->list == NULL) {
+		g_set_error_literal (&error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_FAILED,
+				     "no updates to show after invalid");
+		cd_plugin_loader_get_all_state_finish (state, error);
+		g_error_free (error);
+		goto out;
 	}
 
 	/* success */
 	state->ret = TRUE;
 	cd_plugin_loader_get_all_state_finish (state, NULL);
 out:
-	if (pixbuf != NULL)
-		g_object_unref (pixbuf);
-	if (str_summary != NULL)
-		g_string_free (str_summary, TRUE);
+	return;
 }
 
 /**
