@@ -25,6 +25,7 @@
 #include <packagekit-glib2/packagekit.h>
 
 #include <gs-plugin.h>
+#include <glib/gi18n.h>
 
 struct GsPluginPrivate {
 	PkClient		*client;
@@ -213,6 +214,7 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 		}
 	}
 out:
+	g_free (package_ids);
 	if (packages != NULL)
 		g_ptr_array_unref (packages);
 	if (error_code != NULL)
@@ -290,6 +292,73 @@ out:
 /**
  * gs_plugin_refine:
  */
+static gboolean
+gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
+					   GList *list,
+					   GCancellable *cancellable,
+					   GError **error)
+{
+	const gchar *package_id;
+	gboolean ret = TRUE;
+	const gchar **package_ids;
+	GList *l;
+	GPtrArray *array = NULL;
+	GsApp *app;
+	guint i = 0;
+	guint size;
+	PkResults *results = NULL;
+	PkUpdateDetail *update_detail;
+
+	size = g_list_length (list);
+	package_ids = g_new0 (const gchar *, size + 1);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
+		package_ids[i++] = package_id;
+	}
+
+	/* get any update details */
+	results = pk_client_get_update_detail (plugin->priv->client,
+					       (gchar **) package_ids,
+					       cancellable,
+					       gs_plugin_packagekit_progress_cb, plugin,
+					       error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+
+	/* set the update details for the update */
+	array = pk_results_get_update_detail_array (results);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
+		for (i = 0; i < array->len; i++) {
+			/* right package? */
+			update_detail = g_ptr_array_index (array, i);
+			if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
+				continue;
+			gs_app_set_update_details (app, pk_update_detail_get_update_text (update_detail));
+			break;
+		}
+		if (gs_app_get_update_details (app) == NULL) {
+			/* TRANSLATORS: this is where update details either are
+			 * no longer available or were never provided in the first place */
+			gs_app_set_update_details (app, _("No update details were provided"));
+		}
+	}
+out:
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	if (results != NULL)
+		g_object_unref (results);
+	g_free (package_ids);
+	return ret;
+}
+
+/**
+ * gs_plugin_refine:
+ */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
 		  GList *list,
@@ -301,6 +370,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *tmp;
 	GList *resolve_all = NULL;
+	GList *updatedetails_all = NULL;
 
 	/* can we resolve in one go? */
 	for (l = list; l != NULL; l = l->next) {
@@ -316,7 +386,6 @@ gs_plugin_refine (GsPlugin *plugin,
 							    resolve_all,
 							    cancellable,
 							    error);
-		g_list_free (resolve_all);
 	}
 
 	/* add any missing ratings data */
@@ -335,6 +404,26 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 	}
+
+	/* any update details missing? */
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
+			continue;
+		if (gs_app_get_update_details (app) != NULL)
+			continue;
+		if (gs_app_get_metadata_item (app, "PackageKit::package-id") == NULL)
+			continue;
+		updatedetails_all = g_list_prepend (updatedetails_all, app);
+	}
+	if (updatedetails_all != NULL) {
+		ret = gs_plugin_packagekit_refine_updatedetails (plugin,
+								 updatedetails_all,
+								 cancellable,
+								 error);
+	}
 out:
+	g_list_free (resolve_all);
+	g_list_free (updatedetails_all);
 	return ret;
 }
