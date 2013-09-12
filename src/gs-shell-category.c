@@ -146,6 +146,7 @@ gs_shell_category_populate_filtered (GsShellCategory *shell)
 
 	gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
 						  priv->category,
+						  GS_PLUGIN_LOADER_FLAGS_NONE,
 						  priv->cancellable,
 						  gs_shell_category_get_apps_cb,
 						  shell);

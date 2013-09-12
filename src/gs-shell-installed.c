@@ -167,6 +167,7 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 		helper->app_widget = g_object_ref (app_widget);
 		gs_plugin_loader_app_remove (priv->plugin_loader,
 					     app,
+					     GS_PLUGIN_LOADER_FLAGS_NONE,
 					     priv->cancellable,
 					     gs_shell_installed_finished_func,
 					     helper);
@@ -317,6 +318,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 
 	/* get popular apps */
 	gs_plugin_loader_get_installed_async (priv->plugin_loader,
+					      GS_PLUGIN_LOADER_FLAGS_NONE,
 					      priv->cancellable,
 					      gs_shell_installed_get_installed_cb,
 					      shell_installed);

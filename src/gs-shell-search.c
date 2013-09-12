@@ -111,6 +111,7 @@ gs_shell_search_app_remove (GsShellSearch *shell_search, GsApp *app)
 		g_debug ("remove %s", gs_app_get_id (app));
 		gs_plugin_loader_app_remove (priv->plugin_loader,
 					     app,
+					     GS_PLUGIN_LOADER_FLAGS_NONE,
 					     priv->cancellable,
 					     gs_shell_search_removed_func,
 					     shell_search);
@@ -128,6 +129,7 @@ gs_shell_search_app_install (GsShellSearch *shell_search, GsApp *app)
 	GsShellSearchPrivate *priv = shell_search->priv;
 	gs_plugin_loader_app_install (priv->plugin_loader,
 				      app,
+				      GS_PLUGIN_LOADER_FLAGS_NONE,
 				      priv->cancellable,
 				      gs_shell_search_installed_func,
 				      shell_search);
@@ -222,6 +224,7 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value)
 	/* search for apps */
 	gs_plugin_loader_search_async (priv->plugin_loader,
 				       value,
+				       GS_PLUGIN_LOADER_FLAGS_NONE,
 				       priv->cancellable,
 				       gs_shell_search_get_search_cb,
 				       shell_search);

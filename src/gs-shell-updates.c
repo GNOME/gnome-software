@@ -164,6 +164,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates, gboolean scroll_up)
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
+					    GS_PLUGIN_LOADER_FLAGS_NONE,
 					    priv->cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
 					    shell_updates);

@@ -47,6 +47,7 @@ gs_plugin_loader_get_installed_finish_sync (GsPluginLoader *plugin_loader,
  **/
 GList *
 gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader,
+				GsPluginLoaderFlags flags,
 				GCancellable *cancellable,
 				GError **error)
 {
@@ -61,6 +62,7 @@ gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader,
 
 	/* run async method */
 	gs_plugin_loader_get_installed_async (plugin_loader,
+					      flags,
 					      cancellable,
 					      (GAsyncReadyCallback) gs_plugin_loader_get_installed_finish_sync,
 					      &helper);
@@ -90,6 +92,7 @@ gs_plugin_loader_get_updates_finish_sync (GsPluginLoader *plugin_loader,
  **/
 GList *
 gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader,
+			      GsPluginLoaderFlags flags,
 			      GCancellable *cancellable,
 			      GError **error)
 {
@@ -104,6 +107,7 @@ gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader,
 
 	/* run async method */
 	gs_plugin_loader_get_updates_async (plugin_loader,
+					    flags,
 					    cancellable,
 					    (GAsyncReadyCallback) gs_plugin_loader_get_updates_finish_sync,
 					    &helper);
@@ -133,6 +137,7 @@ gs_plugin_loader_get_popular_finish_sync (GsPluginLoader *plugin_loader,
  **/
 GList *
 gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
+			      GsPluginLoaderFlags flags,
 			      GCancellable *cancellable,
 			      GError **error)
 {
@@ -147,6 +152,7 @@ gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
 
 	/* run async method */
 	gs_plugin_loader_get_popular_async (plugin_loader,
+					    flags,
 					    cancellable,
 					    (GAsyncReadyCallback) gs_plugin_loader_get_popular_finish_sync,
 					    &helper);
@@ -176,6 +182,7 @@ gs_plugin_loader_get_categories_finish_sync (GsPluginLoader *plugin_loader,
  **/
 GList *
 gs_plugin_loader_get_categories (GsPluginLoader *plugin_loader,
+				 GsPluginLoaderFlags flags,
 				 GCancellable *cancellable,
 				 GError **error)
 {
@@ -190,6 +197,7 @@ gs_plugin_loader_get_categories (GsPluginLoader *plugin_loader,
 
 	/* run async method */
 	gs_plugin_loader_get_categories_async (plugin_loader,
+					       flags,
 					       cancellable,
 					       (GAsyncReadyCallback) gs_plugin_loader_get_categories_finish_sync,
 					       &helper);
@@ -220,6 +228,7 @@ gs_plugin_loader_get_category_apps_finish_sync (GsPluginLoader *plugin_loader,
 GList *
 gs_plugin_loader_get_category_apps (GsPluginLoader *plugin_loader,
 				    GsCategory *category,
+				    GsPluginLoaderFlags flags,
 				    GCancellable *cancellable,
 				    GError **error)
 {
@@ -235,6 +244,7 @@ gs_plugin_loader_get_category_apps (GsPluginLoader *plugin_loader,
 	/* run async method */
 	gs_plugin_loader_get_category_apps_async (plugin_loader,
 						  category,
+						  flags,
 						  cancellable,
 						  (GAsyncReadyCallback) gs_plugin_loader_get_category_apps_finish_sync,
 						  &helper);
