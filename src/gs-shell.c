@@ -462,7 +462,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* load content */
 	g_signal_connect (priv->shell_overview, "refreshed",
 			  G_CALLBACK (initial_overview_load_done), shell);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
 
 	return GTK_WINDOW (main_window);
 }
@@ -473,6 +472,17 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 void
 gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
+	guint matched;
+
+	/* if we're loading a different mode at startup then don't wait for
+	 * the overview page to load before showing content */
+	if (mode != GS_SHELL_MODE_OVERVIEW) {
+		matched = g_signal_handlers_disconnect_by_func (shell->priv->shell_overview,
+								initial_overview_load_done,
+								shell);
+		if (matched > 0)
+			g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
+	}
 	gs_shell_change_mode (shell, mode, NULL, NULL, TRUE);
 }
 
