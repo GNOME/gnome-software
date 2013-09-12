@@ -41,6 +41,9 @@ struct GsShellDetailsPrivate
 	gboolean		 cache_valid;
 	GsApp			*app;
 	GsShell			*shell;
+	GtkSizeGroup		*history_sizegroup_state;
+	GtkSizeGroup		*history_sizegroup_timestamp;
+	GtkSizeGroup		*history_sizegroup_version;
 };
 
 G_DEFINE_TYPE (GsShellDetails, gs_shell_details, G_TYPE_OBJECT)
@@ -396,6 +399,7 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell
 			      "margin-bottom", 6,
 			      "xalign", 0.0,
 			      NULL);
+		gtk_size_group_add_widget (priv->history_sizegroup_state, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
 
 		/* add the timestamp */
@@ -412,8 +416,9 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell
 			      "margin-right", 20,
 			      "margin-top", 6,
 			      "margin-bottom", 6,
-			      "xalign", 0.4,
+			      "xalign", 0.0,
 			      NULL);
+		gtk_size_group_add_widget (priv->history_sizegroup_timestamp, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
 		g_free (date_str);
 		g_date_time_unref (datetime);
@@ -427,6 +432,7 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell
 			      "margin-bottom", 6,
 			      "xalign", 1.0,
 			      NULL);
+		gtk_size_group_add_widget (priv->history_sizegroup_version, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
 
 		gtk_widget_show_all (GTK_WIDGET (box));
@@ -568,6 +574,9 @@ static void
 gs_shell_details_init (GsShellDetails *shell_details)
 {
 	shell_details->priv = GS_SHELL_DETAILS_GET_PRIVATE (shell_details);
+	shell_details->priv->history_sizegroup_state = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	shell_details->priv->history_sizegroup_timestamp = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	shell_details->priv->history_sizegroup_version = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
 /**
