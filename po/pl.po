@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-12 00:21+0200\n"
-"PO-Revision-Date: 2013-09-12 00:22+0200\n"
+"POT-Creation-Date: 2013-09-12 19:25+0200\n"
+"PO-Revision-Date: 2013-09-12 19:28+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -31,7 +31,9 @@ msgstr "_O programie"
 msgid "_Quit"
 msgstr "Za_kończ"
 
+#. TRANSLATORS: this is the main window title
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
+#: ../src/gs-shell.c:117
 msgid "Software"
 msgstr "Oprogramowanie"
 
@@ -55,14 +57,22 @@ msgstr "_Aktualizacje"
 msgid "Restart & Install"
 msgstr "Uruchom ponownie i zainstaluj"
 
-#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:107
-#: ../src/gs-shell-details.c:86
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:109
+#: ../src/gs-shell-details.c:91
 msgid "Install"
 msgstr "Zainstaluj"
 
-#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:112
-#: ../src/gs-shell-details.c:115 ../src/gs-shell-details.c:296
-#: ../src/gs-shell-installed.c:161 ../src/gs-shell-search.c:108
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: button text in the header when an application can be erased
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:116
+#: ../src/gs-shell-details.c:123 ../src/gs-shell-details.c:309
+#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:112
 msgid "Remove"
 msgstr "Usuń"
 
@@ -91,127 +101,167 @@ msgid "Visit website"
 msgstr "Witryna"
 
 #: ../src/gnome-software.ui.h:14
-msgid "View History"
-msgstr "Wyświetl historię"
+msgid "_History"
+msgstr "_Historia"
 
 #: ../src/gnome-software.ui.h:15
-msgid "The Gimp"
-msgstr "GIMP"
-
-#: ../src/gnome-software.ui.h:16
 msgid "Application"
 msgstr "Program"
 
-#: ../src/gnome-software.ui.h:17
+#: ../src/gnome-software.ui.h:16
 msgid "Category"
 msgstr "Kategoria"
 
-#: ../src/gnome-software.ui.h:18
+#: ../src/gnome-software.ui.h:17
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:189
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:488
 msgid "History"
 msgstr "Historia"
 
-#: ../src/gnome-software.ui.h:19
+#: ../src/gnome-software.ui.h:18
 msgid "Done"
 msgstr "Gotowe"
 
-#: ../src/gs-application.c:86
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:87
 msgid "About GNOME Software"
 msgstr "O menedżerze oprogramowania GNOME"
 
-#: ../src/gs-application.c:87
+#. TRANSLATORS: this is the application name
+#: ../src/gs-application.c:89
 msgid "GNOME Software"
 msgstr "Menedżer oprogramowania GNOME"
 
-#: ../src/gs-application.c:89
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:92
 msgid "A nice way to manage the software on your system."
 msgstr "Łatwy sposób na zarządzanie oprogramowaniem na komputerze."
 
-#: ../src/gs-application.c:93
+#: ../src/gs-application.c:96
 msgid "translator-credits"
 msgstr ""
 "Piotr Drąg <piotrdrag@gmail.com>, 2012-2013\n"
 "Aviary.pl <gnomepl@aviary.pl>, 2012-2013"
 
-#: ../src/gs-application.c:209
+#. TRANSLATORS: this is a command line option
+#: ../src/gs-application.c:214
 msgid "Start up mode, either 'updates', 'installed' or 'overview'"
 msgstr ""
 "Tryb startowy, może wynosić \"updates\", \"installed\" lub \"overview\""
 
-#: ../src/gs-application.c:209
+#: ../src/gs-application.c:214
 msgid "MODE"
 msgstr "TRYB"
 
-#: ../src/gs-app-widget.c:119
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be updated. not normally shown
+#: ../src/gs-app-widget.c:125
 msgid "Update"
 msgstr "Zaktualizuj"
 
-#: ../src/gs-app-widget.c:126 ../src/gs-shell-details.c:92
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-app-widget.c:134 ../src/gs-shell-details.c:99
 msgid "Installing"
 msgstr "Instalowanie"
 
-#: ../src/gs-app-widget.c:133 ../src/gs-shell-details.c:121
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-app-widget.c:143 ../src/gs-shell-details.c:130
 msgid "Removing"
 msgstr "Usuwanie"
 
-#: ../src/gs-category.c:119
+#. TRANSLATORS: this is where all applications that don't
+#. * fit in other groups are put
+#: ../src/gs-category.c:121
 msgid "General"
 msgstr "Ogólne"
 
-#: ../src/gs-plugin-loader.c:458
+#. TRANSLATORS: this is a group of updates that are not packages and
+#. * are ot shown in the main list
+#: ../src/gs-plugin-loader.c:441
 msgid "OS Updates"
 msgstr "Aktualizacje systemu"
 
-#: ../src/gs-plugin-loader.c:459 ../src/gs-plugin-loader.c:460
+#. TRANSLATORS: this is a longer description of the os-update item
+#: ../src/gs-plugin-loader.c:443 ../src/gs-plugin-loader.c:444
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
 "Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa dla wszystkich "
 "użytkowników."
 
-#: ../src/gs-shell-details.c:283 ../src/gs-shell-installed.c:148
-#: ../src/gs-shell-search.c:95
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-shell-details.c:294 ../src/gs-shell-installed.c:150
+#: ../src/gs-shell-search.c:97
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Na pewno usunąć program %s?"
 
-#: ../src/gs-shell-details.c:294 ../src/gs-shell-installed.c:159
-#: ../src/gs-shell-search.c:106
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-shell-details.c:306 ../src/gs-shell-installed.c:162
+#: ../src/gs-shell-search.c:109
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
 "Program %s zostanie usunięty. Należy go zainstalować, aby móc używać go "
 "ponownie."
 
-#: ../src/gs-shell-details.c:351
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was removed
+#: ../src/gs-shell-details.c:386
 msgid "Removed"
 msgstr "Usunięte"
 
-#: ../src/gs-shell-details.c:354 ../src/gs-shell-installed.c:399
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/gs-shell-details.c:392 ../src/gs-shell-installed.c:407
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Zainstalowane"
 
-#: ../src/gs-shell-details.c:357
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gs-shell-details.c:397
 msgid "Updated"
 msgstr "Zaktualizowane"
 
-#: ../src/gs-shell-details.c:360
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing that something happened to the
+#. * application but we don't know what
+#: ../src/gs-shell-details.c:403
 msgid "Unknown"
 msgstr "Nieznane"
 
-#: ../src/gs-shell-installed.c:401
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software. The '%d' refers to the number of
+#. * applications either installing or erasing
+#: ../src/gs-shell-installed.c:412
 #, c-format
 msgid "Installed (%d)"
 msgstr "Zainstalowane (%d)"
 
-#: ../src/gs-utils.c:164
+#. TRANSLATORS: window title to suggest that we are showing
+#. * the offline updates that have just been applied
+#: ../src/gs-shell-updates.c:151
+msgid "Recent Software Updates"
+msgstr "Ostatnie aktualizacje oprogramowania"
+
+#. TRANSLATORS: this is the summary of a notification that an application
+#. * has been successfully installed
+#: ../src/gs-utils.c:166
 #, c-format
 msgid "%s is now installed"
 msgstr "Zainstalowano program %s"
 
-#: ../src/gs-utils.c:166
+#. TRANSLATORS: this is button that opens the newly installed application
+#: ../src/gs-utils.c:169
 msgid "Launch"
 msgstr "Uruchom"
 
@@ -779,23 +829,34 @@ msgstr "Wideo"
 msgid "TV"
 msgstr "Telewizja"
 
-#. Add Ons
-#: ../src/plugins/gs-plugin-packagekit.c:590
+#. TRANSLATORS: these are extra things that add to existing programs,
+#. * for instance fonts, codecs or language packs
+#: ../src/plugins/gs-plugin-packagekit.c:510
 msgid "Add-ons"
 msgstr "Dodatki"
 
-#: ../src/plugins/gs-plugin-packagekit.c:593
+#. TRANSLATORS: audio/video decoders
+#: ../src/plugins/gs-plugin-packagekit.c:514
 msgid "Codecs"
 msgstr "Kodeki"
 
-#: ../src/plugins/gs-plugin-packagekit.c:596
+#. TRANSLATORS: fonts of different styles or languages
+#: ../src/plugins/gs-plugin-packagekit.c:518
 msgid "Fonts"
 msgstr "Czcionki"
 
-#: ../src/plugins/gs-plugin-packagekit.c:599
+#. TRANSLATORS: these are ways to enter text
+#: ../src/plugins/gs-plugin-packagekit.c:522
 msgid "Input Sources"
 msgstr "Źródła wprowadzania"
 
-#: ../src/plugins/gs-plugin-packagekit.c:602
+#. TRANSLATORS: additional languages for apps
+#: ../src/plugins/gs-plugin-packagekit.c:526
 msgid "Language Packs"
 msgstr "Pakiety językowe"
+
+#. TRANSLATORS: this is where update details either are
+#. * no longer available or were never provided in the first place
+#: ../src/plugins/gs-plugin-packagekit-refine.c:347
+msgid "No update details were provided"
+msgstr "Nie podano żadnych informacji o aktualizacji"
