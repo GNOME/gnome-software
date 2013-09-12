@@ -324,6 +324,21 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell
 }
 
 /**
+ * gs_shell_details_history_sort_cb:
+ **/
+static gint
+gs_shell_details_history_sort_cb (gconstpointer a, gconstpointer b)
+{
+	gint64 timestamp_a = gs_app_get_install_date (*(GsApp **) a);
+	gint64 timestamp_b = gs_app_get_install_date (*(GsApp **) b);
+	if (timestamp_a < timestamp_b)
+		return 1;
+	if (timestamp_a > timestamp_b)
+		return -1;
+	return 0;
+}
+
+/**
  * gs_shell_details_app_history_button_cb:
  **/
 static void
@@ -344,6 +359,7 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell
 	list_box = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_history"));
 	gs_container_remove_all (GTK_CONTAINER (list_box));
 	history = gs_app_get_history (priv->app);
+	g_ptr_array_sort (history, gs_shell_details_history_sort_cb);
 	for (i = 0; i < history->len; i++) {
 		app = g_ptr_array_index (history, i);
 		box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
