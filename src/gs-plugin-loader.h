@@ -63,6 +63,7 @@ typedef enum
 
 typedef enum {
 	GS_PLUGIN_LOADER_FLAGS_NONE = 0,
+	GS_PLUGIN_LOADER_FLAGS_USE_HISTORY = 1,
 	GS_PLUGIN_LOADER_FLAGS_LAST
 } GsPluginLoaderFlags;
 

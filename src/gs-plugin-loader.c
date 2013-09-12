@@ -475,13 +475,17 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 					GObject *object,
 					GCancellable *cancellable)
 {
+	const gchar *method_name = "gs_plugin_add_updates";
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
 	/* do things that would block */
+	if ((state->flags & GS_PLUGIN_LOADER_FLAGS_USE_HISTORY) > 0)
+		method_name = "gs_plugin_add_updates_historical";
+
 	state->list = gs_plugin_loader_run_results (plugin_loader,
-						    "gs_plugin_add_updates",
+						    method_name,
 						    cancellable,
 						    &error);
 	if (state->list == NULL) {
