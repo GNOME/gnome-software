@@ -145,6 +145,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	GError *error_local = NULL;
 	GList *l;
 	GsApp *app;
+	GsApp *app_dummy;
 	guint i = 0;
 	GVariantIter iter;
 	GVariant *result;
@@ -196,6 +197,17 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 					"@aa{sv}",
 					&value);
 		if (!ret) {
+			/* make up a fake entry as we know this package was at
+			 * least installed at some point in time */
+			if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
+				app_dummy = gs_app_new (gs_app_get_id (app));
+				gs_app_set_install_date (app_dummy, GS_APP_INSTALL_DATE_UNKNOWN);
+				gs_app_set_kind (app_dummy, GS_APP_KIND_PACKAGE);
+				gs_app_set_state (app_dummy, GS_APP_STATE_INSTALLED);
+				gs_app_set_version (app_dummy, gs_app_get_version (app));
+				gs_app_add_history (app, app_dummy);
+				g_object_unref (app_dummy);
+			}
 			g_debug ("no history for %s, setting timestamp nonzero",
 				 gs_app_get_source (app));
 			gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);

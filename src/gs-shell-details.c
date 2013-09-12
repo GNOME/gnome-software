@@ -337,6 +337,7 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell
 	GsApp *app;
 	GtkBox *box;
 	GtkListBox *list_box;
+	guint64 timestamp;
 	guint i;
 
 	/* add each history package to the dialog */
@@ -382,8 +383,13 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
 
 		/* add the timestamp */
-		datetime = g_date_time_new_from_unix_utc (gs_app_get_install_date (app));
-		date_str = g_date_time_format (datetime, "%e %B %Y");
+		timestamp = gs_app_get_install_date (app);
+		datetime = g_date_time_new_from_unix_utc (timestamp);
+		if (timestamp == GS_APP_INSTALL_DATE_UNKNOWN) {
+			date_str = g_strdup ("");
+		} else {
+			date_str = g_date_time_format (datetime, "%e %B %Y");
+		}
 		widget = gtk_label_new (date_str);
 		g_object_set (widget,
 			      "margin-left", 20,
