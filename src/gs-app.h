@@ -73,6 +73,8 @@ typedef enum {
 	GS_APP_STATE_LAST
 } GsAppState;
 
+#define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
+
 GQuark		 gs_app_error_quark		(void);
 GType		 gs_app_get_type		(void);
 

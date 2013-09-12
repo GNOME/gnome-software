@@ -178,7 +178,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			 * trying to call GetPackageHistory */
 			for (l = list; l != NULL; l = l->next) {
 				app = GS_APP (l->data);
-				gs_app_set_install_date (app, 1);
+				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			}
 		} else {
 			ret = FALSE;
@@ -198,7 +198,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 		if (!ret) {
 			g_debug ("no history for %s, setting timestamp nonzero",
 				 gs_app_get_source (app));
-			gs_app_set_install_date (app, 1);
+			gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			continue;
 		}
 
