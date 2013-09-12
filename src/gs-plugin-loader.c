@@ -373,6 +373,7 @@ typedef struct {
 	GList				*list;
 	GSimpleAsyncResult		*res;
 	GsPluginLoader			*plugin_loader;
+	GsPluginLoaderFlags		 flags;
 	gchar				*value;
 	GsCategory			*category;
 } GsPluginLoaderAsyncState;
@@ -557,6 +558,7 @@ gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
 						user_data,
 						gs_plugin_loader_get_updates_async);
 	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
 	if (cancellable != NULL)
 		state->cancellable = g_object_ref (cancellable);
 
@@ -676,6 +678,7 @@ gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
 						user_data,
 						gs_plugin_loader_get_installed_async);
 	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
 	if (cancellable != NULL)
 		state->cancellable = g_object_ref (cancellable);
 
@@ -777,6 +780,7 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 						user_data,
 						gs_plugin_loader_get_popular_async);
 	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
 	if (cancellable != NULL)
 		state->cancellable = g_object_ref (cancellable);
 
@@ -896,6 +900,7 @@ gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
 						user_data,
 						gs_plugin_loader_get_featured_async);
 	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
 	if (cancellable != NULL)
 		state->cancellable = g_object_ref (cancellable);
 
@@ -1059,6 +1064,7 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 						user_data,
 						gs_plugin_loader_search_async);
 	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
 	state->value = g_strdup (value);
 	if (cancellable != NULL)
 		state->cancellable = g_object_ref (cancellable);
@@ -1207,6 +1213,7 @@ gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
 						user_data,
 						gs_plugin_loader_get_categories_async);
 	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
 	if (cancellable != NULL)
 		state->cancellable = g_object_ref (cancellable);
 
@@ -1374,6 +1381,7 @@ gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 						user_data,
 						gs_plugin_loader_get_category_apps_async);
 	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
 	state->category = g_object_ref (category);
 	if (cancellable != NULL)
 		state->cancellable = g_object_ref (cancellable);
