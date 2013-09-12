@@ -113,6 +113,7 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 
 	/* set the window title back to default */
 	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
+	/* TRANSLATORS: this is the main window title */
 	gtk_window_set_title (window, _("Software"));
 
 	/* update main buttons according to mode */

@@ -83,9 +83,12 @@ about_activated (GSimpleAction *action,
 	logo = gtk_icon_theme_load_icon (icon_theme, "gnome-software", 256, 0, NULL);
 
 	gtk_show_about_dialog (parent,
+			       /* TRANSLATORS: this is the title of the about window */
 			       "title", _("About GNOME Software"),
+			       /* TRANSLATORS: this is the application name */
 			       "program-name", _("GNOME Software"),
 			       "authors", authors,
+			       /* TRANSLATORS: well, we seem to think so, anyway */
 			       "comments", _("A nice way to manage the software on your system."),
 			       "copyright", copyright,
 			       "license-type", GTK_LICENSE_GPL_2_0,
@@ -207,6 +210,7 @@ gs_application_command_line (GApplication	     *application,
 	gboolean verbose = FALSE;
 	const GOptionEntry options[] = {
 		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
+		  /* TRANSLATORS: this is a command line option */
 		  _("Start up mode, either 'updates', 'installed' or 'overview'"), _("MODE") },
 		{ "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, NULL, NULL },
 		{ "help", '?', 0, G_OPTION_ARG_NONE, &help, NULL, NULL },

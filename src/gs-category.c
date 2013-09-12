@@ -116,6 +116,8 @@ gs_category_sort_subcategories (GsCategory *category)
 		}
 	}
 	if (!subcat_all) {
+		/* TRANSLATORS: this is where all applications that don't
+		 * fit in other groups are put */
 		all = gs_category_new (category, NULL, _("General"));
 		gs_category_add_subcategory (category, all);
 	}

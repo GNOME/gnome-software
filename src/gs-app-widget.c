@@ -104,11 +104,15 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	case GS_APP_STATE_AVAILABLE:
 		gtk_widget_set_visible (priv->spinner, FALSE);
 		gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * allows the application to be easily installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
 		break;
 	case GS_APP_STATE_INSTALLED:
 		gtk_widget_set_visible (priv->spinner, FALSE);
 		gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * allows the application to be easily removed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
 		if (priv->colorful)
 			gtk_style_context_add_class (context, "destructive-action");
@@ -116,6 +120,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	case GS_APP_STATE_UPDATABLE:
 		gtk_widget_set_visible (priv->spinner, FALSE);
 		gtk_widget_set_visible (priv->button, FALSE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * allows the application to be updated. not normally shown */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
 		break;
 	case GS_APP_STATE_INSTALLING:
@@ -123,6 +129,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		gtk_widget_set_visible (priv->spinner, TRUE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		gtk_widget_set_sensitive (priv->button, FALSE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * shows the status of an application being installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
 		break;
 	case GS_APP_STATE_REMOVING:
@@ -130,6 +138,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		gtk_widget_set_visible (priv->spinner, TRUE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		gtk_widget_set_sensitive (priv->button, FALSE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * shows the status of an application being erased */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Removing"));
 		break;
 	default:

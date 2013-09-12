@@ -145,6 +145,8 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 	markup = g_string_new ("");
 	app = gs_app_widget_get_app (app_widget);
 	g_string_append_printf (markup,
+				/* TRANSLATORS: this is a prompt message, and
+				 * '%s' is an application summary, e.g. 'GNOME Clocks' */
 				_("Are you sure you want to remove %s?"),
 				gs_app_get_name (app));
 	g_string_prepend (markup, "<b>");
@@ -156,8 +158,10 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 					 NULL);
 	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), markup->str);
 	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
+						    /* TRANSLATORS: longer dialog text */
 						    _("%s will be removed, and you will have to install it to use it again."),
 						    gs_app_get_name (app));
+	/* TRANSLATORS: this is button text to remove the application */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (response == GTK_RESPONSE_OK) {
@@ -397,10 +401,16 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	widget = GTK_WIDGET (gtk_builder_get_object (shell_installed->priv->builder,
 						     "label_button_installed"));
 	pending = gs_plugin_loader_get_pending (plugin_loader);
-	if (pending->len == 0)
+	if (pending->len == 0) {
+		/* TRANSLATORS: this is tab button to show the list of
+		 * installed software */
 		label = g_strdup (_("Installed"));
-	else
+	} else {
+		/* TRANSLATORS: this is tab button to show the list of
+		 * installed software. The '%d' refers to the number of
+		 * applications either installing or erasing */
 		label = g_strdup_printf (_("Installed (%d)"), pending->len);
+	}
 	for (i = 0; i < pending->len; i++) {
 		app = GS_APP (g_ptr_array_index (pending, i));
 		if (gs_app_get_state (app) == GS_APP_STATE_INSTALLING) {

@@ -436,7 +436,10 @@ cd_plugin_loader_add_os_update_item (GList *list)
 	gs_app_set_kind (app_os, GS_APP_KIND_OS_UPDATE);
 	gs_app_set_state (app_os, GS_APP_STATE_UPDATABLE);
 	gs_app_set_source (app_os, "os-update");
+	/* TRANSLATORS: this is a group of updates that are not packages and
+	 * are ot shown in the main list */
 	gs_app_set_name (app_os, _("OS Updates"));
+	/* TRANSLATORS: this is a longer description of the os-update item */
 	gs_app_set_summary (app_os, _("Includes performance, stability and security improvements for all users."));
 	gs_app_set_description (app_os, _("Includes performance, stability and security improvements for all users."));
 	for (l = list; l != NULL; l = l->next) {

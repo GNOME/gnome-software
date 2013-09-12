@@ -145,8 +145,11 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 
 	/* set the window title to be more specific */
 	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
-	if (show_historical)
+	if (show_historical) {
+		/* TRANSLATORS: window title to suggest that we are showing
+		 * the offline updates that have just been applied */
 		gtk_window_set_title (window, _("Recent Software Updates"));
+	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
 	if (scroll_up) {

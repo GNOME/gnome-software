@@ -92,6 +92,8 @@ gs_shell_search_app_remove (GsShellSearch *shell_search, GsApp *app)
 	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 	markup = g_string_new ("");
 	g_string_append_printf (markup,
+				/* TRANSLATORS: this is a prompt message, and
+				 * '%s' is an application summary, e.g. 'GNOME Clocks' */
 				_("Are you sure you want to remove %s?"),
 				gs_app_get_name (app));
 	g_string_prepend (markup, "<b>");
@@ -103,8 +105,10 @@ gs_shell_search_app_remove (GsShellSearch *shell_search, GsApp *app)
 					 NULL);
 	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), markup->str);
 	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
+						    /* TRANSLATORS: longer dialog text */
 						    _("%s will be removed, and you will have to install it to use it again."),
 						    gs_app_get_name (app));
+	/* TRANSLATORS: this is button text to remove the application */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (response == GTK_RESPONSE_OK) {
