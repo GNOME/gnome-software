@@ -134,6 +134,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
+	GtkWindow *window;
 	GtkSpinner *spinner;
 	GList *list;
 
@@ -141,6 +142,11 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_show (widget);
 	}
+
+	/* set the window title to be more specific */
+	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
+	if (show_historical)
+		gtk_window_set_title (window, _("Recent Software Updates"));
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_updates"));
 	if (scroll_up) {

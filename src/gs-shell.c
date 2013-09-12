@@ -84,6 +84,7 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 {
 	GsShellPrivate *priv = shell->priv;
 	GtkWidget *widget;
+	GtkWindow *window;
 	const gchar *text;
 
 	if (priv->ignore_primary_buttons)
@@ -109,6 +110,10 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_widget_hide (widget);
+
+	/* set the window title back to default */
+	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
+	gtk_window_set_title (window, _("Software"));
 
 	/* update main buttons according to mode */
 	priv->ignore_primary_buttons = TRUE;
