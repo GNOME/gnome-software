@@ -3,21 +3,21 @@ SUBDIRS =						\
 
 resourcesdir = $(datadir)/gnome-software
 dist_resources_DATA =					\
-	featured-gimp.png				\
+	featured-darktable.png				\
 	featured-firefox.png				\
-	featured-xchat.png				\
-	featured-org.gnome.Weather.Application.png	\
+	featured-gimp.png				\
 	featured-gnome-sudoku.png			\
-	darktable.png				\
-	mypaint.png				\
+	featured-mypaint.png				\
+	featured-weather.png         \
+	featured-weather-bg.png   \
+	featured-xchat.png				\
 	featured.ini					\
 	stars0.png					\
 	stars1.png					\
 	stars2.png					\
 	stars3.png					\
-	stars4.png          \
-	weather.png         \
-	weather-bg.png
+	stars4.png          
+
 
 appdatadir = $(datadir)/appdata
 appdata_files = gnome-software.appdata.xml
