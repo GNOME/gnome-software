@@ -211,7 +211,7 @@ gs_application_command_line (GApplication	     *application,
 	const GOptionEntry options[] = {
 		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
 		  /* TRANSLATORS: this is a command line option */
-		  _("Start up mode, either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
+		  _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
 		{ "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, NULL, NULL },
 		{ "help", '?', 0, G_OPTION_ARG_NONE, &help, NULL, NULL },
 
