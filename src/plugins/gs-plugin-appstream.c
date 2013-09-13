@@ -202,6 +202,56 @@ out:
 }
 
 /**
+ * gs_plugin_refine_item_pixbuf:
+ */
+static void
+gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
+{
+	const gchar *icon;
+	const gchar *icon_dir;
+	gchar *icon_path = NULL;
+	GdkPixbuf *pixbuf = NULL;
+	GError *error = NULL;
+
+	icon = appstream_app_get_icon (item);
+	switch (appstream_app_get_icon_kind (item)) {
+	case APPSTREAM_APP_ICON_KIND_STOCK:
+		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+						   icon,
+						   plugin->pixbuf_size,
+						   GTK_ICON_LOOKUP_USE_BUILTIN |
+						   GTK_ICON_LOOKUP_FORCE_SIZE,
+						   &error);
+		if (pixbuf == NULL) {
+			g_warning ("failed to load stock icon %s", icon);
+			g_error_free (error);
+		}
+		break;
+	case APPSTREAM_APP_ICON_KIND_CACHED:
+		icon_dir = appstream_app_get_userdata (item);
+		icon_path = g_strdup_printf ("%s/%s.png", icon_dir, icon);
+		pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path,
+							   plugin->pixbuf_size,
+							   plugin->pixbuf_size,
+							   &error);
+		if (pixbuf == NULL) {
+			g_warning ("failed to load cached icon %s", icon_path);
+			g_error_free (error);
+		}
+		break;
+	default:
+		break;
+	}
+
+	/* did we load anything */
+	if (pixbuf != NULL) {
+		gs_app_set_pixbuf (app, pixbuf);
+		g_object_unref (pixbuf);
+	}
+	g_free (icon_path);
+}
+
+/**
  * gs_plugin_refine_item:
  */
 static gboolean
@@ -210,10 +260,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		       AppstreamApp *item,
 		       GError **error)
 {
-	const gchar *icon_dir;
 	gboolean ret = TRUE;
-	gchar *icon_path = NULL;
-	GdkPixbuf *pixbuf = NULL;
 
 	g_debug ("AppStream: Refining %s", gs_app_get_id (app));
 
@@ -243,40 +290,13 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_app_set_description (app, appstream_app_get_description (item));
 
 	/* set icon */
-	if (appstream_app_get_icon (item) != NULL && gs_app_get_pixbuf (app) == NULL) {
-		if (appstream_app_get_icon_kind (item) == APPSTREAM_APP_ICON_KIND_STOCK) {
-			pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-							   appstream_app_get_icon (item),
-							   plugin->pixbuf_size,
-							   GTK_ICON_LOOKUP_USE_BUILTIN |
-							   GTK_ICON_LOOKUP_FORCE_SIZE,
-							   error);
-		} else if (appstream_app_get_icon_kind (item) == APPSTREAM_APP_ICON_KIND_CACHED) {
-			icon_dir = appstream_app_get_userdata (item);
-			icon_path = g_strdup_printf ("%s/%s.png",
-						     icon_dir,
-						     appstream_app_get_icon (item));
-			pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path,
-								   plugin->pixbuf_size,
-								   plugin->pixbuf_size,
-								   error);
-		} else {
-			g_assert_not_reached ();
-		}
-		if (pixbuf == NULL) {
-			ret = FALSE;
-			goto out;
-		}
-		gs_app_set_pixbuf (app, pixbuf);
-	}
+	if (appstream_app_get_icon (item) != NULL && gs_app_get_pixbuf (app) == NULL)
+		gs_plugin_refine_item_pixbuf (plugin, app, item);
 
 	/* set package name */
 	if (appstream_app_get_pkgname (item) != NULL && gs_app_get_source (app) == NULL)
 		gs_app_set_source (app, appstream_app_get_pkgname (item));
-out:
-	g_free (icon_path);
-	if (pixbuf != NULL)
-		g_object_unref (pixbuf);
+
 	return ret;
 }
 
