@@ -568,7 +568,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 								C_("Menu subcategory of System", "File Manager")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Filesystem",
-								C_("Menu subcategory of System", "Filesystem")));
+								C_("Menu subcategory of System", "File System")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"FileTools",
 								C_("Menu subcategory of System", "File Tools")));
