@@ -1,7 +1,7 @@
 # Copyright (C) 2010-2012 Richard Hughes <richard@hughsie.com>
 AC_PREREQ(2.63)
 
-AC_INIT([gnome-software],[3.9.3],[http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-software])
+AC_INIT([gnome-software],[3.9.4],[http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-software])
 AC_CONFIG_SRCDIR(src)
 AM_INIT_AUTOMAKE([1.11 no-dist-gzip dist-xz tar-ustar])
 AC_CONFIG_HEADERS([config.h])
