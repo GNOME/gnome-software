@@ -96,7 +96,9 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
-	if (list != NULL && gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES)
+	if (list != NULL &&
+            gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES &&
+            gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATED)
 		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "needs-attention");
 	else
 		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
@@ -138,7 +140,8 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 	GtkSpinner *spinner;
 	GList *list;
 
-	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
+	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES ||
+            gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATED) {
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_show (widget);
 	}

@@ -128,9 +128,6 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_UPDATES);
 	priv->ignore_primary_buttons = FALSE;
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-	gtk_widget_set_visible (widget, mode != GS_SHELL_MODE_UPDATED);
-
 	/* switch page */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
 	gtk_notebook_set_current_page (GTK_NOTEBOOK (widget),
