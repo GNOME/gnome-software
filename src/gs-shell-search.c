@@ -275,64 +275,6 @@ gs_shell_search_sort_func (GtkListBoxRow *a,
 }
 
 /**
- * gs_shell_search_utf8_filter_helper:
- **/
-static gboolean
-gs_shell_search_utf8_filter_helper (const gchar *haystack,
-				       const gchar *needle_utf8)
-{
-	gboolean ret;
-	gchar *haystack_utf8;
-	haystack_utf8 = g_utf8_casefold (haystack, -1);
-	ret = strstr (haystack_utf8, needle_utf8) != NULL;
-	g_free (haystack_utf8);
-	return ret;
-}
-
-/**
- * gs_shell_search_filter_func:
- **/
-static gboolean
-gs_shell_search_filter_func (GtkListBoxRow *row, void *user_data)
-{
-	const gchar *tmp;
-	gboolean ret = TRUE;
-	gchar *needle_utf8 = NULL;
-	GsApp *app;
-	GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	GsShellSearch *shell_search = GS_SHELL_SEARCH (user_data);
-	GsShellSearchPrivate *priv = shell_search->priv;
-	GtkWidget *widget;
-
-	app = gs_app_widget_get_app (app_widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	tmp = gtk_entry_get_text (GTK_ENTRY (widget));
-	if (tmp[0] == '\0')
-		goto out;
-
-	needle_utf8 = g_utf8_casefold (tmp, -1);
-	ret = gs_shell_search_utf8_filter_helper (gs_app_get_name (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-	ret = gs_shell_search_utf8_filter_helper (gs_app_get_summary (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-	ret = gs_shell_search_utf8_filter_helper (gs_app_get_version (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-	ret = gs_shell_search_utf8_filter_helper (gs_app_get_id (app),
-					  needle_utf8);
-	if (ret)
-		goto out;
-out:
-	g_free (needle_utf8);
-	return ret;
-}
-
-/**
  * gs_shell_search_list_header_func
  **/
 static void
@@ -389,9 +331,6 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 			  G_CALLBACK (gs_shell_search_app_widget_activated_cb), shell_search);
 	gtk_list_box_set_header_func (priv->list_box_search,
 				      gs_shell_search_list_header_func,
-				      shell_search, NULL);
-	gtk_list_box_set_filter_func (priv->list_box_search,
-				      gs_shell_search_filter_func,
 				      shell_search, NULL);
 	gtk_list_box_set_sort_func (priv->list_box_search,
 				    gs_shell_search_sort_func,
