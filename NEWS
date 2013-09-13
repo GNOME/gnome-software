@@ -1,3 +1,71 @@
+Version 3.9.3
+~~~~~~~~~~~~~
+Released: 2013-09-13
+
+* Translations:
+ - Update British English translation (Philip Withnall)
+ - Updated Brazilian Portuguese translation (Enrico Nicoletto, Georges Basile Stavracas Neto)
+ - Updated Catalan translation (Jordi Mas)
+ - Updated Czech translation (Marek Černocký)
+ - Updated Finnish translation (Jiri Grönroos)
+ - Updated Galician translations (Fran Diéguez)
+ - Updated German translation (Christian Kirbach)
+ - Updated Hebrew translation (Yaron Shahrabani, Elad Alfassa)
+ - Updated Polish translation (Piotr Drąg)
+ - Updated Slovenian translation (Matej Urbančič)
+ - Updated Spanish translation (Daniel Mustieles)
+
+* New Features:
+ - Add a better icon for 'no results found' (Matthias Clasen)
+ - Add a new application icon (Andreas Nilsson)
+ - Add a packagekit-history plugin that sets history data on applications (Richard Hughes)
+ - Add a plugin to get a list of the processed offline updates (Richard Hughes)
+ - Add featured data based on new mockups (Matthias Clasen)
+ - Add gs_app_to_string() for dumping all properties and metadata on a GsApp (Richard Hughes)
+ - Add Settings and PackageManager as menu spec categories (Richard Hughes)
+ - Add support for translations in AppStream (Giovanni Campagna)
+ - Add the ability to see the history of a package (Richard Hughes)
+ - Parse the keywords in the AppStream metadata (Richard Hughes)
+ - Read data from featured.ini (Matthias Clasen)
+
+* Bugfix:
+ - Add a dummy history item to applications with no history (Richard Hughes)
+ - Add a way to force certain features (Matthias Clasen)
+ - Add gettext context for subcategory names (Richard Hughes)
+ - Better dropshadow theme with active state (Jakub Steiner, Elad Alfassa)
+ - Break out the lots of separate widgets (Matthias Clasen)
+ - Convert a few GsApp metadata items into properties and clarify the differences (Richard Hughes)
+ - Do not decompress icons when first running gnome-software (Richard Hughes)
+ - Do not include the Fedora AppStream data in the upstream tarball (Richard Hughes)
+ - Do not show available packages when installed results are available when searching (Richard Hughes)
+ - Don't override the state if already known (Giovanni Campagna)
+ - Ensure the same app from two different plugins does not show more than once (Richard Hughes)
+ - Fix a typo in a translatable string (Piotr Drąg)
+ - Fix up visiblity handling for header buttons (Matthias Clasen)
+ - Get names and comments for the correct locale in datadir-apps (Richard Hughes)
+ - Ignore ENOENT reading the .desktop filename (Giovanni Campagna)
+ - Improve category tiles and the category pages (Matthias Clasen)
+ - Load all AppStream files from /usr/share/app-info/xmls (Richard Hughes)
+ - Make application details scroll (Matthias Clasen)
+ - Make debug env vars always available (Matthias Clasen)
+ - Make feature style code safe against reloading (Matthias Clasen)
+ - Make "installed badge" more legible (Jakub Steiner)
+ - Make subcategory list scrollable (Matthias Clasen)
+ - Make symbolic icons dim (Matthias Clasen)
+ - Never fail refine() if a single icon failed to load (Richard Hughes)
+ - Notify when an app is installed (Matthias Clasen)
+ - Remove the hardcoded description plugin, it's all in the appdata markup now (Richard Hughes)
+ - Search all datadirs at startup so that local builds can use the system AppStream data (Richard Hughes)
+ - Search the appstream data for name, summary, description and keywords (Richard Hughes)
+ - Set the app version in packagekit-refine if not already set (Richard Hughes)
+ - Show app details from search in window (Matthias Clasen)
+ - Show a warning when new jhbuild users have no sample data (Richard Hughes)
+ - Support AppStream data in /var/cache/app-info/xmls so support too (Richard Hughes)
+ - Support the older gzip content type too (Richard Hughes)
+ - Tweak punctuation for command line documentation (Philip Withnall)
+ - Use 'File System' instead of 'Filesystem' (Philip Withnall)
+ - When loading a specific mode at startup don't wait for the overview to load (Richard Hughes)
+
 Version 3.9.2
 ~~~~~~~~~~~~~
 Released: 2013-09-03
