@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-13 02:25+0000\n"
-"PO-Revision-Date: 2013-09-13 08:03+0200\n"
+"POT-Creation-Date: 2013-09-13 08:39+0000\n"
+"PO-Revision-Date: 2013-09-13 10:48+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -37,19 +37,22 @@ msgstr "Software"
 msgid "Add, remove or update software on this computer"
 msgstr "Přidat, odebrat nebo aktualizovat software v tomto počítači"
 
-#: ../src/gnome-software.ui.h:2
+#. Translators: A label for a button to show all available software.
+#: ../src/gnome-software.ui.h:3
 msgid "_All"
 msgstr "_Vše"
 
-#: ../src/gnome-software.ui.h:3
+#. Translators: A label for a button to show only software which is already installed.
+#: ../src/gnome-software.ui.h:5
 msgid "_Installed"
 msgstr "Na_instalováné"
 
-#: ../src/gnome-software.ui.h:4
+#. Translators: A label for a button to show only updates which are available to install.
+#: ../src/gnome-software.ui.h:7
 msgid "_Updates"
 msgstr "_Aktualizace"
 
-#: ../src/gnome-software.ui.h:5
+#: ../src/gnome-software.ui.h:8
 msgid "Restart & Install"
 msgstr "Restartovat a instalovat"
 
@@ -57,7 +60,7 @@ msgstr "Restartovat a instalovat"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gnome-software.ui.h:6 ../src/gs-app-widget.c:109
+#: ../src/gnome-software.ui.h:9 ../src/gs-app-widget.c:109
 #: ../src/gs-shell-details.c:91
 msgid "Install"
 msgstr "Instalovat"
@@ -66,56 +69,55 @@ msgstr "Instalovat"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:7 ../src/gs-app-widget.c:116
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:116
 #: ../src/gs-shell-details.c:123 ../src/gs-shell-details.c:309
 #: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:112
 msgid "Remove"
 msgstr "Odebrat"
 
-#: ../src/gnome-software.ui.h:8
+#: ../src/gnome-software.ui.h:11
 msgid "Featured"
 msgstr "Důležité"
 
-#: ../src/gnome-software.ui.h:9
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: ../src/gnome-software.ui.h:13
 msgid "Picks"
 msgstr "Doporučené"
 
-#: ../src/gnome-software.ui.h:10
+#: ../src/gnome-software.ui.h:14
 msgid "Categories"
 msgstr "Kategorie"
 
-#: ../src/gnome-software.ui.h:11
+#: ../src/gnome-software.ui.h:15
 msgid "No Application Found"
 msgstr "Žádná aplikace nebyla nalezena"
 
-#: ../src/gnome-software.ui.h:12
+#: ../src/gnome-software.ui.h:16
 msgid "Software is up to date"
 msgstr "Software je aktuální"
 
-#: ../src/gnome-software.ui.h:13
+#: ../src/gnome-software.ui.h:17
 msgid "Visit website"
 msgstr "Navštívit web"
 
-#: ../src/gnome-software.ui.h:14
-#| msgid "History"
+#: ../src/gnome-software.ui.h:18
 msgid "_History"
 msgstr "_Historie"
 
-#: ../src/gnome-software.ui.h:15
+#: ../src/gnome-software.ui.h:19
 msgid "Application"
 msgstr "Aplikace"
 
-#: ../src/gnome-software.ui.h:16
+#: ../src/gnome-software.ui.h:20
 msgid "Category"
 msgstr "Kategorie"
 
-#: ../src/gnome-software.ui.h:17
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:189
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:488
+#: ../src/gnome-software.ui.h:21
 msgid "History"
 msgstr "Historie"
 
-#: ../src/gnome-software.ui.h:18
+#. Translators: Label for a button to close the update dialogue.
+#: ../src/gnome-software.ui.h:23
 msgid "Done"
 msgstr "Hotovo"
 
@@ -140,10 +142,9 @@ msgstr "Marek Černocký <marek@manet.cz>"
 
 #. TRANSLATORS: this is a command line option
 #: ../src/gs-application.c:214
-#| msgid "Start up mode, either 'updates', 'installed' or 'overview'"
-msgid "Start up mode, either 'updates', 'updated', 'installed' or 'overview'"
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
-"Režim spuštění, buď „updates“ (aktualizace), „updates“ (aktualizované), "
+"Režim spuštění: buď „updates“ (aktualizace), „updated“ (aktualizované), "
 "„installed“ (nainstalované) nebo „overview“ (přehled)"
 
 #: ../src/gs-application.c:214
@@ -179,12 +180,12 @@ msgstr "Obecné"
 
 #. TRANSLATORS: this is a group of updates that are not packages and
 #. * are ot shown in the main list
-#: ../src/gs-plugin-loader.c:441
+#: ../src/gs-plugin-loader.c:480
 msgid "OS Updates"
 msgstr "Aktualizace OS"
 
 #. TRANSLATORS: this is a longer description of the os-update item
-#: ../src/gs-plugin-loader.c:443 ../src/gs-plugin-loader.c:444
+#: ../src/gs-plugin-loader.c:482 ../src/gs-plugin-loader.c:483
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
@@ -210,7 +211,6 @@ msgstr ""
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
 #: ../src/gs-shell-details.c:386
-#| msgid "Remove"
 msgid "Removed"
 msgstr "Odebráno"
 
@@ -226,7 +226,6 @@ msgstr "Nainstalováno"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
 #: ../src/gs-shell-details.c:397
-#| msgid "Update"
 msgid "Updated"
 msgstr "Aktualizováno"
 
@@ -248,7 +247,6 @@ msgstr "Nainstalované (%d)"
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
 #: ../src/gs-shell-updates.c:154
-#| msgid "Software is up to date"
 msgid "Recent Software Updates"
 msgstr "Nedávné aktualizace softwaru"
 
@@ -264,567 +262,883 @@ msgstr "Aplikace %s je nyní nainstalována"
 msgid "Launch"
 msgstr "Spustit"
 
-#. Audio
+#. TRANSLATORS: this is the menu spec main category for Audio
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:59
 msgid "Audio"
 msgstr "Zvuk"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:62
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:626
+msgctxt "Menu subcategory of Audio"
 msgid "Editing"
 msgstr "Úpravy"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:66
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:106
+msgctxt "Menu subcategory of Audio"
 msgid "Databases"
 msgstr "Databáze"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:69
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:633
+msgctxt "Menu subcategory of Audio"
 msgid "Disc Burning"
 msgstr "Vypalování disků"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:73
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:339
+msgctxt "Menu subcategory of Audio"
 msgid "Ham Radio"
 msgstr "HAM radio"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:76
+msgctxt "Menu subcategory of Audio"
 msgid "MIDI"
 msgstr "MIDI"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:79
+msgctxt "Menu subcategory of Audio"
 msgid "Mixer"
 msgstr "Mixování"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:82
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:216
+msgctxt "Menu subcategory of Audio"
 msgid "Music"
 msgstr "Hudba"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:85
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:637
+msgctxt "Menu subcategory of Audio"
 msgid "Players"
 msgstr "Přehrávače"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:88
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:641
+msgctxt "Menu subcategory of Audio"
 msgid "Recorders"
 msgstr "Nahrávání"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:91
+msgctxt "Menu subcategory of Audio"
 msgid "Sequencers"
 msgstr "Sekvencery"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:94
+msgctxt "Menu subcategory of Audio"
 msgid "Tuners"
 msgstr "Přijímače"
 
-#. Development
+#. TRANSLATORS: this is the menu spec main category for Development
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:98
 msgid "Development Tools"
 msgstr "Vývojářské nástroje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:102
+msgctxt "Menu subcategory of Development"
 msgid "Building"
 msgstr "Sestavování"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:106
+msgctxt "Menu subcategory of Development"
+msgid "Databases"
+msgstr "Databáze"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:109
+msgctxt "Menu subcategory of Development"
 msgid "Debuggers"
 msgstr "Ladicí programy"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:112
+msgctxt "Menu subcategory of Development"
 msgid "GUI Designers"
 msgstr "Navrhování GUI"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:115
+msgctxt "Menu subcategory of Development"
 msgid "IDE"
 msgstr "IDE"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:118
+msgctxt "Menu subcategory of Development"
 msgid "Profiling"
 msgstr "Profilování"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:121
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:417
+msgctxt "Menu subcategory of Development"
 msgid "Project Management"
 msgstr "Správa projektů"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:124
+msgctxt "Menu subcategory of Development"
 msgid "Revision Control"
 msgstr "Správa verzí"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:127
+msgctxt "Menu subcategory of Development"
 msgid "Translation"
 msgstr "Překlady"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:130
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
+msgctxt "Menu subcategory of Development"
 msgid "Web Development"
 msgstr "Vývoj webů"
 
-#. Education
+#. TRANSLATORS: this is the menu spec main category for Education
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:134
 msgid "Education"
 msgstr "Výuka"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:138
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:437
+msgctxt "Menu subcategory of Education"
 msgid "Art"
 msgstr "Umění"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:142
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:441
+msgctxt "Menu subcategory of Education"
 msgid "Artificial Intelligence"
 msgstr "Umělá inteligence"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:145
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:444
+msgctxt "Menu subcategory of Education"
 msgid "Astronomy"
 msgstr "Astronomie"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:148
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:447
+msgctxt "Menu subcategory of Education"
 msgid "Biology"
-msgstr "Biologie"
+msgstr "Přírodopis"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:151
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:450
+msgctxt "Menu subcategory of Education"
 msgid "Chemistry"
 msgstr "Chemie"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:154
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:453
+msgctxt "Menu subcategory of Education"
 msgid "Computer Science"
-msgstr "Počítačové vědy"
+msgstr "Počítače"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:158
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
+msgctxt "Menu subcategory of Education"
 msgid "Construction"
 msgstr "Stavebnictví"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:162
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:461
+msgctxt "Menu subcategory of Education"
 msgid "Data Visualization"
 msgstr "Vizualizace dat"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:165
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:464
+msgctxt "Menu subcategory of Education"
 msgid "Economy"
 msgstr "Ekonomie"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:168
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:467
+msgctxt "Menu subcategory of Education"
 msgid "Electricity"
 msgstr "Elektrotechnika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:171
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:470
+msgctxt "Menu subcategory of Education"
 msgid "Electronics"
 msgstr "Elektronika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:174
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:473
+msgctxt "Menu subcategory of Education"
 msgid "Engineering"
 msgstr "Strojírenství"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:177
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:476
+msgctxt "Menu subcategory of Education"
 msgid "Geography"
-msgstr "Geografie"
+msgstr "Zeměpis"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:181
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:480
+msgctxt "Menu subcategory of Education"
 msgid "Geology"
 msgstr "Geologie"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:185
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
+msgctxt "Menu subcategory of Education"
 msgid "Geoscience"
-msgstr "Vědy o zemi"
+msgstr "Nauka o Zemi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:189
+msgctxt "Menu subcategory of Education"
+msgid "History"
+msgstr "Dějepis"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:192
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:491
+msgctxt "Menu subcategory of Education"
 msgid "Humanities"
-msgstr "Humanitní vědy"
+msgstr "Humanitní předměty"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:196
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:495
+msgctxt "Menu subcategory of Education"
 msgid "Image Processing"
 msgstr "Zpracování obrazu"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:199
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:499
+msgctxt "Menu subcategory of Education"
 msgid "Languages"
 msgstr "Jazyky"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:203
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:502
+msgctxt "Menu subcategory of Education"
 msgid "Literature"
 msgstr "Literatura"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:206
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:609
+msgctxt "Menu subcategory of Education"
 msgid "Maps"
 msgstr "Mapy"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:210
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
+msgctxt "Menu subcategory of Education"
 msgid "Math"
 msgstr "Matematika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:213
+msgctxt "Menu subcategory of Education"
 msgid "Medical"
 msgstr "Lékařství"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:216
+msgctxt "Menu subcategory of Education"
+msgid "Music"
+msgstr "Hudba"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:219
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:515
+msgctxt "Menu subcategory of Education"
 msgid "Numerical Analysis"
 msgstr "Numerická analýza"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:222
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:518
+msgctxt "Menu subcategory of Education"
 msgid "Parallel Computing"
 msgstr "Paralelní výpočty"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:225
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:521
+msgctxt "Menu subcategory of Education"
 msgid "Physics"
 msgstr "Fyzika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:228
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:524
+msgctxt "Menu subcategory of Education"
 msgid "Robotics"
 msgstr "Robotika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:232
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:612
+msgctxt "Menu subcategory of Education"
 msgid "Spirituality"
-msgstr "Duchovní vědy"
+msgstr "Duchovno"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:235
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:281
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
+msgctxt "Menu subcategory of Education"
 msgid "Sports"
 msgstr "Sporty"
 
-#. Games
+#. TRANSLATORS: this is the menu spec main category for Games
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:240
 msgid "Games"
 msgstr "Hry"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:243
+msgctxt "Menu subcategory of Games"
 msgid "Action"
 msgstr "Akční"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:246
+msgctxt "Menu subcategory of Games"
 msgid "Adventure"
 msgstr "Adventury"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:249
+msgctxt "Menu subcategory of Games"
 msgid "Arcade"
 msgstr "Arkádové"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:252
+msgctxt "Menu subcategory of Games"
 msgid "Blocks"
 msgstr "Blokové"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:255
+msgctxt "Menu subcategory of Games"
 msgid "Board"
 msgstr "Deskové"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:258
+msgctxt "Menu subcategory of Games"
 msgid "Card"
 msgstr "Karetní"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:261
+msgctxt "Menu subcategory of Games"
 msgid "Emulators"
 msgstr "Emulátory"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:264
+msgctxt "Menu subcategory of Games"
 msgid "Kids"
 msgstr "Dětské"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:267
+msgctxt "Menu subcategory of Games"
 msgid "Logic"
 msgstr "Logické"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:270
+msgctxt "Menu subcategory of Games"
 msgid "Role Playing"
 msgstr "Na hrdiny"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:274
+msgctxt "Menu subcategory of Games"
 msgid "Shooter"
 msgstr "Střílečky"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:278
+msgctxt "Menu subcategory of Games"
 msgid "Simulation"
 msgstr "Simulátory"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:281
+msgctxt "Menu subcategory of Games"
+msgid "Sports"
+msgstr "Sportovní"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:284
+msgctxt "Menu subcategory of Games"
 msgid "Strategy"
 msgstr "Strategické"
 
-#. Graphics
+#. TRANSLATORS: this is the menu spec main category for Graphics
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:288
 msgid "Graphics"
 msgstr "Grafika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:291
+msgctxt "Menu subcategory of Graphics"
 msgid "2D Graphics"
 msgstr "Grafika 2D"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:294
+msgctxt "Menu subcategory of Graphics"
 msgid "3D Graphics"
 msgstr "Grafika 3D"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:297
+msgctxt "Menu subcategory of Graphics"
 msgid "OCR"
 msgstr "OCR"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:300
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:410
+msgctxt "Menu subcategory of Graphics"
 msgid "Photography"
 msgstr "Fotografie"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:303
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:420
+msgctxt "Menu subcategory of Graphics"
 msgid "Publishing"
 msgstr "Publikování"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:306
+msgctxt "Menu subcategory of Graphics"
 msgid "Raster Graphics"
 msgstr "Rastrová grafika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:309
+msgctxt "Menu subcategory of Graphics"
 msgid "Scanning"
 msgstr "Skenování"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:312
+msgctxt "Menu subcategory of Graphics"
 msgid "Vector Graphics"
 msgstr "Vektorová grafika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:315
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:426
+msgctxt "Menu subcategory of Graphics"
 msgid "Viewer"
 msgstr "Prohlížeče"
 
-#. Network
+#. TRANSLATORS: this is the menu spec main category for Network
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:319
 msgid "Internet"
 msgstr "Internet"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:322
+msgctxt "Menu subcategory of Network"
 msgid "Chat"
 msgstr "Diskuze"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:326
+msgctxt "Menu subcategory of Network"
 msgid "Dialup"
 msgstr "Vytáčené spojení"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:330
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:397
+msgctxt "Menu subcategory of Network"
 msgid "Email"
 msgstr "Pošta"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:333
+msgctxt "Menu subcategory of Network"
 msgid "Feed"
 msgstr "Kanály"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:336
+msgctxt "Menu subcategory of Network"
 msgid "File Transfer"
 msgstr "Přenos souborů"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:339
+msgctxt "Menu subcategory of Network"
+msgid "Ham Radio"
+msgstr "HAM radio"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:342
+msgctxt "Menu subcategory of Network"
 msgid "Instant Messaging"
 msgstr "Rychlé zprávy"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:345
+msgctxt "Menu subcategory of Network"
 msgid "IRC Clients"
 msgstr "Klienti IRC"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:348
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:577
+msgctxt "Menu subcategory of Network"
 msgid "Monitor"
 msgstr "Sledování"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:351
+msgctxt "Menu subcategory of Network"
 msgid "News"
 msgstr "Diskuzní skupiny"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:354
+msgctxt "Menu subcategory of Network"
 msgid "P2P"
 msgstr "P2P"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:357
+msgctxt "Menu subcategory of Network"
 msgid "Remote Access"
 msgstr "Vzdálený přístup"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:360
+msgctxt "Menu subcategory of Network"
 msgid "Telephony"
 msgstr "Telefonování"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:364
+msgctxt "Menu subcategory of Network"
 msgid "Video Conference"
 msgstr "Videokonference"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:368
+msgctxt "Menu subcategory of Network"
 msgid "Web Browser"
 msgstr "Webové prohlížeče"
 
-#. Office
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
+msgctxt "Menu subcategory of Network"
+msgid "Web Development"
+msgstr "Vývoj webů"
+
+#. TRANSLATORS: this is the menu spec main category for Office
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:377
 msgid "Office"
 msgstr "Kancelář"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:380
+msgctxt "Menu subcategory of Office"
 msgid "Calendar"
 msgstr "Kalendáře"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:384
+msgctxt "Menu subcategory of Office"
 msgid "Chart"
 msgstr "Grafy"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:388
+msgctxt "Menu subcategory of Office"
 msgid "Contact Management"
 msgstr "Správa kontaktů"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:391
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:630
+msgctxt "Menu subcategory of Office"
 msgid "Database"
 msgstr "Databáze"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:394
+msgctxt "Menu subcategory of Office"
 msgid "Dictionary"
 msgstr "Slovníky"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:397
+msgctxt "Menu subcategory of Office"
+msgid "Email"
+msgstr "Pošta"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:400
+msgctxt "Menu subcategory of Office"
 msgid "Finance"
 msgstr "Finance"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:404
+msgctxt "Menu subcategory of Office"
 msgid "Flow Chart"
 msgstr "Diagramy"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:407
+msgctxt "Menu subcategory of Office"
 msgid "PDA"
 msgstr "PDA"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:410
+msgctxt "Menu subcategory of Office"
+msgid "Photography"
+msgstr "Fotografie"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:413
+msgctxt "Menu subcategory of Office"
 msgid "Presentation"
 msgstr "Prezentace"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:417
+msgctxt "Menu subcategory of Office"
+msgid "Project Management"
+msgstr "Správa projektů"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:420
+msgctxt "Menu subcategory of Office"
+msgid "Publishing"
+msgstr "Publikování"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:423
+msgctxt "Menu subcategory of Office"
 msgid "Spreadsheet"
 msgstr "Tabulkové kalkulátory"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:426
+msgctxt "Menu subcategory of Office"
+msgid "Viewer"
+msgstr "Prohlížeče"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:429
+msgctxt "Menu subcategory of Office"
 msgid "Word Processor"
 msgstr "Textové procesory"
 
-#. Science
+#. TRANSLATORS: this is the menu spec main category for Science
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:433
 msgid "Science"
 msgstr "Věda"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:437
+msgctxt "Menu subcategory of Science"
+msgid "Art"
+msgstr "Umění"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:441
+msgctxt "Menu subcategory of Science"
+msgid "Artificial Intelligence"
+msgstr "Umělá inteligence"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:444
+msgctxt "Menu subcategory of Science"
+msgid "Astronomy"
+msgstr "Astronomie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:447
+msgctxt "Menu subcategory of Science"
+msgid "Biology"
+msgstr "Biologie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:450
+msgctxt "Menu subcategory of Science"
+msgid "Chemistry"
+msgstr "Chemie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:453
+msgctxt "Menu subcategory of Science"
+msgid "Computer Science"
+msgstr "Počítačové vědy"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
+msgctxt "Menu subcategory of Science"
+msgid "Construction"
+msgstr "Stavebnictví"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:461
+msgctxt "Menu subcategory of Science"
+msgid "Data Visualization"
+msgstr "Vizualizace dat"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:464
+msgctxt "Menu subcategory of Science"
+msgid "Economy"
+msgstr "Ekonomie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:467
+msgctxt "Menu subcategory of Science"
+msgid "Electricity"
+msgstr "Elektrotechnika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:470
+msgctxt "Menu subcategory of Science"
+msgid "Electronics"
+msgstr "Elektronika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:473
+msgctxt "Menu subcategory of Science"
+msgid "Engineering"
+msgstr "Strojírenství"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:476
+msgctxt "Menu subcategory of Science"
+msgid "Geography"
+msgstr "Geografie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:480
+msgctxt "Menu subcategory of Science"
+msgid "Geology"
+msgstr "Geologie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
+msgctxt "Menu subcategory of Science"
+msgid "Geoscience"
+msgstr "Vědy o Zemi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:488
+msgctxt "Menu subcategory of Science"
+msgid "History"
+msgstr "Historie"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:491
+msgctxt "Menu subcategory of Science"
+msgid "Humanities"
+msgstr "Humanitní vědy"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:495
+msgctxt "Menu subcategory of Science"
+msgid "Image Processing"
+msgstr "Zpracování obrazu"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:499
+msgctxt "Menu subcategory of Science"
+msgid "Languages"
+msgstr "Jazyky"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:502
+msgctxt "Menu subcategory of Science"
+msgid "Literature"
+msgstr "Literatura"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
+msgctxt "Menu subcategory of Science"
+msgid "Maps"
+msgstr "Mapy"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
+msgctxt "Menu subcategory of Science"
+msgid "Math"
+msgstr "Matematika"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
+msgctxt "Menu subcategory of Science"
 msgid "Medical Software"
 msgstr "Lékařský software"
 
-#. Settings
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:515
+msgctxt "Menu subcategory of Science"
+msgid "Numerical Analysis"
+msgstr "Numerická analýza"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:518
+msgctxt "Menu subcategory of Science"
+msgid "Parallel Computing"
+msgstr "Paralelní výpočty"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:521
+msgctxt "Menu subcategory of Science"
+msgid "Physics"
+msgstr "Fyzika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:524
+msgctxt "Menu subcategory of Science"
+msgid "Robotics"
+msgstr "Robotika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
+msgctxt "Menu subcategory of Science"
+msgid "Spirituality"
+msgstr "Duchovní vědy"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
+msgctxt "Menu subcategory of Science"
+msgid "Sports"
+msgstr "Sporty"
+
+#. TRANSLATORS: this is the menu spec main category for Settings
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:536
 msgid "Settings"
 msgstr "Nastavení"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:540
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:590
+msgctxt "Menu subcategory of Settings"
 msgid "Accessibility"
 msgstr "Přístupnost"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:544
+msgctxt "Menu subcategory of Settings"
 msgid "Desktop Settings"
 msgstr "Pracovní plocha"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:547
+msgctxt "Menu subcategory of Settings"
 msgid "Hardware Settings"
 msgstr "Hardware"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:550
+msgctxt "Menu subcategory of Settings"
 msgid "Package Manager"
 msgstr "Správa balíčků"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:554
+msgctxt "Menu subcategory of Settings"
 msgid "Printing"
 msgstr "Tisk"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:558
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:580
+msgctxt "Menu subcategory of Settings"
 msgid "Security"
 msgstr "Zabezpečení"
 
-#. System
+#. TRANSLATORS: this is the menu spec main category for System
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
 msgid "System"
 msgstr "Systém"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
+msgctxt "Menu subcategory of System"
 msgid "Emulator"
 msgstr "Emulátory"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
+msgctxt "Menu subcategory of System"
 msgid "File Manager"
 msgstr "Správa souborů"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
-msgid "Filesystem"
+msgctxt "Menu subcategory of System"
+msgid "File System"
 msgstr "Souborové systémy"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:574
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:605
+msgctxt "Menu subcategory of System"
 msgid "File Tools"
 msgstr "Nástroje pro soubory"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:577
+msgctxt "Menu subcategory of System"
+msgid "Monitor"
+msgstr "Sledování"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:580
+msgctxt "Menu subcategory of System"
+msgid "Security"
+msgstr "Zabezpečení"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:583
+msgctxt "Menu subcategory of System"
 msgid "Terminal Emulator"
 msgstr "Terminálové emulátory"
 
-#. Utility
+#. TRANSLATORS: this is the menu spec main category for Utility
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
 msgid "Utilities"
 msgstr "Nástroje"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:590
+msgctxt "Menu subcategory of Utility"
+msgid "Accessibility"
+msgstr "Přístupnost"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:593
+msgctxt "Menu subcategory of Utility"
 msgid "Archiving"
 msgstr "Archivování"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:596
+msgctxt "Menu subcategory of Utility"
 msgid "Calculator"
 msgstr "Kalkulačky"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:599
+msgctxt "Menu subcategory of Utility"
 msgid "Clock"
 msgstr "Hodiny"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:602
+msgctxt "Menu subcategory of Utility"
 msgid "Compression"
 msgstr "Komprimace"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:605
+msgctxt "Menu subcategory of Utility"
+msgid "File Tools"
+msgstr "Nástroje pro soubory"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:609
+msgctxt "Menu subcategory of Utility"
+msgid "Maps"
+msgstr "Mapy"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:612
+msgctxt "Menu subcategory of Utility"
+msgid "Spirituality"
+msgstr "Duchovno"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:615
+msgctxt "Menu subcategory of Utility"
 msgid "Telephony Tools"
 msgstr "Telefonní nástroje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:619
+msgctxt "Menu subcategory of Utility"
 msgid "Text Editor"
 msgstr "Textové editory"
 
-#. Video
+#. TRANSLATORS: this is the menu spec main category for Video
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:623
 msgid "Video"
 msgstr "Video"
 
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:626
+msgctxt "Menu subcategory of Video"
+msgid "Editing"
+msgstr "Úpravy"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:630
+msgctxt "Menu subcategory of Video"
+msgid "Database"
+msgstr "Databáze"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:633
+msgctxt "Menu subcategory of Video"
+msgid "Disc Burning"
+msgstr "Vypalování disků"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:637
+msgctxt "Menu subcategory of Video"
+msgid "Players"
+msgstr "Přehrávače"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:641
+msgctxt "Menu subcategory of Video"
+msgid "Recorders"
+msgstr "Nahrávání"
+
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:644
+msgctxt "Menu subcategory of Video"
 msgid "TV"
 msgstr "Televize"
 
@@ -859,38 +1173,3 @@ msgstr "Jazykové balíčky"
 #: ../src/plugins/gs-plugin-packagekit-refine.c:347
 msgid "No update details were provided"
 msgstr "K aktualizaci nebyly poskytnuty žádné podrobnosti"
-
-#~ msgid "GNU Image Manipulation Program"
-#~ msgstr "GNU Image Manipulation Program"
-
-#~ msgid "The Gimp"
-#~ msgstr "The Gimp"
-
-#~ msgid ""
-#~ "GIMP (GNU Image Manipulation Program) is a powerful image composition "
-#~ "and\n"
-#~ "editing program, which can be extremely useful for creating logos and "
-#~ "other\n"
-#~ "graphics for webpages. GIMP has many of the tools and filters you would "
-#~ "expect\n"
-#~ "to find in similar commercial offerings, and some interesting extras as "
-#~ "well.\n"
-#~ "GIMP provides a large image manipulation toolbox, including channel "
-#~ "operations\n"
-#~ "and layers, effects, sub-pixel imaging and anti-aliasing, and "
-#~ "conversions, all\n"
-#~ "with multi-level undo.\n"
-#~ msgstr ""
-#~ "GIMP (GNU Image Manipulation Program) je mocný program pro vytváření a "
-#~ "úpravy\n"
-#~ "obrázků, který je zvláště vhodný pro vytváření grafických prvků pro "
-#~ "webové\n"
-#~ "stránky. GIMP má celou řadu nástrojů a filtrů, které běžně najdete u "
-#~ "podobných\n"
-#~ "komerčních produktů a k tomu pár zajímavých věcí navíc. GIMP nabízí "
-#~ "rozsáhlý\n"
-#~ "panel s nástroji pro práci s obrázky, včetně operací s kanály a vrstvami, "
-#~ "efekty,\n"
-#~ "práci se subpixely a vyhlazování a převody formátů. Vše s možností vráti "
-#~ "změny\n"
-#~ "o více kroků zpět.\n"
