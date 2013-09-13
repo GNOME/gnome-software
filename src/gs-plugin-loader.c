@@ -121,6 +121,42 @@ out:
 }
 
 /**
+ * gs_plugin_loader_list_uniq:
+ **/
+static GList *
+gs_plugin_loader_list_uniq (GsPluginLoader *plugin_loader, GList *list)
+{
+	const gchar *id;
+	GHashTable *hash;
+	GList *l;
+	GList *list_new = NULL;
+	GsApp *app;
+	GsApp *found;
+
+	/* create a new list with just the unique items */
+	hash = g_hash_table_new (g_str_hash, g_str_equal);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		id = gs_app_get_id (app);
+		if (id == NULL) {
+			list_new = g_list_prepend (list_new, g_object_ref (app));
+			continue;
+		}
+		found = g_hash_table_lookup (hash, id);
+		if (found == NULL) {
+			list_new = g_list_prepend (list_new, g_object_ref (app));
+			g_hash_table_insert (hash, (gpointer) id, GUINT_TO_POINTER (1));
+			continue;
+		}
+		g_debug ("ignoring duplicate %s", id);
+	}
+
+	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+	g_hash_table_unref (hash);
+	return list_new;
+}
+
+/**
  * gs_plugin_loader_list_dedupe:
  **/
 static void
@@ -236,6 +272,9 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 					   error);
 	if (!ret)
 		goto out;
+
+	/* remove duplicates */
+	list = gs_plugin_loader_list_uniq (plugin_loader, list);
 
 	/* no results */
 	if (list == NULL) {
@@ -496,6 +535,9 @@ cd_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
+
+	/* remove duplicates */
+	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
 
 	/* dedupe applications we already know about */
 	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
@@ -1009,6 +1051,9 @@ cd_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 		goto out;
 	}
 
+	/* remove duplicates */
+	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
+
 	/* success */
 	state->list = gs_plugin_loader_remove_system (state->list);
 	state->list = gs_plugin_loader_remove_invalid (state->list);
@@ -1321,6 +1366,9 @@ cd_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
+
+	/* remove duplicates */
+	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
 
 	/* success */
 	state->list = gs_plugin_loader_remove_system (state->list);
