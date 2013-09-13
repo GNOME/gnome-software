@@ -438,3 +438,43 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 out:
 	return ret;
 }
+
+/**
+ * gs_plugin_add_search:
+ */
+gboolean
+gs_plugin_add_search (GsPlugin *plugin,
+		      const gchar *value,
+		      GList **list,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	AppstreamApp *item;
+	gboolean ret = TRUE;
+	GPtrArray *array;
+	GsApp *app;
+	guint i;
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			goto out;
+	}
+
+	/* search categories for the search term */
+	array = appstream_cache_get_items (plugin->priv->cache);
+	for (i = 0; i < array->len; i++) {
+		item = g_ptr_array_index (array, i);
+		if (appstream_app_search_matches (item, value)) {
+			app = gs_app_new (appstream_app_get_id (item));
+			ret = gs_plugin_refine_item (plugin, app, item, error);
+			if (!ret)
+				goto out;
+			gs_plugin_add_app (list, app);
+		}
+	}
+out:
+	return ret;
+}

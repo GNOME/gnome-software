@@ -86,6 +86,8 @@ gpointer	 appstream_app_get_userdata		(AppstreamApp	*app);
 void		 appstream_app_set_userdata		(AppstreamApp	*app,
 							 gpointer	 userdata,
 							 GDestroyNotify	 userdata_destroy_func);
+gboolean	 appstream_app_search_matches		(AppstreamApp	*app,
+							 const gchar	*search);
 
 G_END_DECLS
 

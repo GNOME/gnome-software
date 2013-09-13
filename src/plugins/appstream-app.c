@@ -21,6 +21,7 @@
 
 #include "config.h"
 
+#define _GNU_SOURCE
 #include <string.h>
 
 #include "appstream-app.h"
@@ -349,4 +350,29 @@ appstream_app_set_icon_kind (AppstreamApp *app,
 			     AppstreamAppIconKind icon_kind)
 {
 	app->icon_kind = icon_kind;
+}
+
+/**
+ * appstream_app_search_matches:
+ */
+gboolean
+appstream_app_search_matches (AppstreamApp *app, const gchar *search)
+{
+	const gchar *tmp;
+	guint i;
+
+	if (search == NULL)
+		return FALSE;
+	if (app->name != NULL && strcasestr (app->name, search) != NULL)
+		return TRUE;
+	if (app->summary != NULL && strcasestr (app->summary, search) != NULL)
+		return TRUE;
+	if (app->description != NULL && strcasestr (app->description, search) != NULL)
+		return TRUE;
+	for (i = 0; i < app->keywords->len; i++) {
+		tmp = g_ptr_array_index (app->keywords, i);
+		if (strcasestr (tmp, search) != NULL)
+			return TRUE;
+	}
+	return FALSE;
 }
