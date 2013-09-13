@@ -76,6 +76,9 @@ void		 appstream_app_set_icon			(AppstreamApp	*app,
 void		 appstream_app_add_category		(AppstreamApp	*app,
 							 const gchar	*category,
 							 gsize		 length);
+void		 appstream_app_add_keyword		(AppstreamApp	*app,
+							 const gchar	*keyword,
+							 gsize		 length);
 void		 appstream_app_set_icon_kind		(AppstreamApp	*app,
 							 AppstreamAppIconKind icon_kind);
 

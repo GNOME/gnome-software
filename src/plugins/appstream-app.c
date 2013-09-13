@@ -39,6 +39,7 @@ struct AppstreamApp
 	gchar			*icon;
 	AppstreamAppIconKind	 icon_kind;
 	GPtrArray		*appcategories;
+	GPtrArray		*keywords;
 	gpointer		 userdata;
 	GDestroyNotify		 userdata_destroy_func;
 };
@@ -82,6 +83,7 @@ appstream_app_free (AppstreamApp *app)
 	g_free (app->summary);
 	g_free (app->description);
 	g_ptr_array_unref (app->appcategories);
+	g_ptr_array_unref (app->keywords);
 	if (app->userdata_destroy_func != NULL)
 		app->userdata_destroy_func (app->userdata);
 	g_slice_free (AppstreamApp, app);
@@ -117,6 +119,7 @@ appstream_app_new (void)
 	AppstreamApp *app;
 	app = g_slice_new0 (AppstreamApp);
 	app->appcategories = g_ptr_array_new_with_free_func (g_free);
+	app->keywords = g_ptr_array_new_with_free_func (g_free);
 	app->name_value = G_MAXUINT;
 	app->summary_value = G_MAXUINT;
 	app->description_value = G_MAXUINT;
@@ -324,6 +327,18 @@ appstream_app_add_category (AppstreamApp *app,
 {
 	g_ptr_array_add (app->appcategories,
 			 g_strndup (category, length));
+}
+
+/**
+ * appstream_app_add_keyword:
+ */
+void
+appstream_app_add_keyword (AppstreamApp *app,
+			   const gchar *keyword,
+			   gsize length)
+{
+	g_ptr_array_add (app->keywords,
+			 g_strndup (keyword, length));
 }
 
 /**

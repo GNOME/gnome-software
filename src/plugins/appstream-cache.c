@@ -40,6 +40,8 @@ typedef enum {
 	APPSTREAM_CACHE_SECTION_ICON,
 	APPSTREAM_CACHE_SECTION_APPCATEGORIES,
 	APPSTREAM_CACHE_SECTION_APPCATEGORY,
+	APPSTREAM_CACHE_SECTION_KEYWORDS,
+	APPSTREAM_CACHE_SECTION_KEYWORD,
 	APPSTREAM_CACHE_SECTION_LAST
 } AppstreamCacheSection;
 
@@ -133,6 +135,10 @@ appstream_cache_selection_from_string (const gchar *element_name)
 		return APPSTREAM_CACHE_SECTION_APPCATEGORIES;
 	if (g_strcmp0 (element_name, "appcategory") == 0)
 		return APPSTREAM_CACHE_SECTION_APPCATEGORY;
+	if (g_strcmp0 (element_name, "keywords") == 0)
+		return APPSTREAM_CACHE_SECTION_KEYWORDS;
+	if (g_strcmp0 (element_name, "keyword") == 0)
+		return APPSTREAM_CACHE_SECTION_KEYWORD;
 	return APPSTREAM_CACHE_SECTION_UNKNOWN;
 }
 
@@ -164,6 +170,10 @@ appstream_cache_selection_to_string (AppstreamCacheSection section)
 		return "appcategories";
 	if (section == APPSTREAM_CACHE_SECTION_APPCATEGORY)
 		return "appcategory";
+	if (section == APPSTREAM_CACHE_SECTION_KEYWORDS)
+		return "keywords";
+	if (section == APPSTREAM_CACHE_SECTION_KEYWORD)
+		return "keyword";
 	return NULL;
 }
 
@@ -210,6 +220,8 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_CACHE_SECTION_APPLICATIONS:
 	case APPSTREAM_CACHE_SECTION_APPCATEGORIES:
 	case APPSTREAM_CACHE_SECTION_APPCATEGORY:
+	case APPSTREAM_CACHE_SECTION_KEYWORDS:
+	case APPSTREAM_CACHE_SECTION_KEYWORD:
 		/* ignore */
 		break;
 	case APPSTREAM_CACHE_SECTION_APPLICATION:
@@ -309,6 +321,7 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	switch (section_new) {
 	case APPSTREAM_CACHE_SECTION_APPLICATIONS:
 	case APPSTREAM_CACHE_SECTION_APPCATEGORY:
+	case APPSTREAM_CACHE_SECTION_KEYWORD:
 		/* ignore */
 		break;
 	case APPSTREAM_CACHE_SECTION_APPLICATION:
@@ -334,6 +347,7 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_CACHE_SECTION_ID:
 	case APPSTREAM_CACHE_SECTION_PKGNAME:
 	case APPSTREAM_CACHE_SECTION_APPCATEGORIES:
+	case APPSTREAM_CACHE_SECTION_KEYWORDS:
 	case APPSTREAM_CACHE_SECTION_URL:
 	case APPSTREAM_CACHE_SECTION_ICON:
 		helper->section = APPSTREAM_CACHE_SECTION_APPLICATION;
@@ -369,6 +383,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 	case APPSTREAM_CACHE_SECTION_APPLICATIONS:
 	case APPSTREAM_CACHE_SECTION_APPLICATION:
 	case APPSTREAM_CACHE_SECTION_APPCATEGORIES:
+	case APPSTREAM_CACHE_SECTION_KEYWORDS:
 		/* ignore */
 		break;
 	case APPSTREAM_CACHE_SECTION_APPCATEGORY:
@@ -380,6 +395,16 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 			return;
 		}
 		appstream_app_add_category (helper->item_temp, text, text_len);
+		break;
+	case APPSTREAM_CACHE_SECTION_KEYWORD:
+		if (helper->item_temp == NULL) {
+			g_set_error_literal (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "item_temp category invalid");
+			return;
+		}
+		appstream_app_add_keyword (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_CACHE_SECTION_ID:
 		if (helper->item_temp == NULL ||
