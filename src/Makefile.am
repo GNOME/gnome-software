@@ -19,7 +19,7 @@ AM_CPPFLAGS =						\
 @INTLTOOL_DESKTOP_RULE@
 desktopdir = $(datadir)/applications
 desktop_in_files =					\
-	gnome-software.desktop.in
+	org.gnome.Software.desktop.in
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
 UI_FILES =						\
