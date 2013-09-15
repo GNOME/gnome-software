@@ -509,7 +509,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 								C_("Menu subcategory of Science", "Math")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"MedicalSoftware",
-								C_("Menu subcategory of Science", "Medical Software")));
+								C_("Menu subcategory of Science", "Medical")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"NumericalAnalysis",
 								C_("Menu subcategory of Science", "Numerical Analysis")));
