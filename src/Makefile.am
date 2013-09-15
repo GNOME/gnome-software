@@ -33,10 +33,25 @@ UI_FILES =						\
 	screenshot-image.ui				\
 	popular-tile.ui
 
+dbusservicedir = $(datadir)/dbus-1/services
+dbusservice_DATA = org.gnome.Software.service
+
+org.gnome.Software.service: Makefile
+	$(AM_V_GEN) (echo '[D-BUS Service]'; 				\
+	 echo 'Name=org.gnome.Software'; 				\
+	 echo 'Exec=${libexecdir}/gnome-software-service') > $@.tmp && 	\
+	 mv $@.tmp $@
+
 bin_PROGRAMS =						\
 	gnome-software
 
+libexec_PROGRAMS =					\
+	gnome-software-service
+
 gnome_software_SOURCES =				\
+	gs-launcher.c
+
+gnome_software_service_SOURCES =			\
 	gs-resources.c					\
 	gs-resources.h					\
 	gs-utils.c					\
@@ -90,6 +105,12 @@ gnome_software_SOURCES =				\
 	gs-main.c
 
 gnome_software_LDADD =					\
+	$(GLIB_LIBS)
+
+gnome_software_CFLAGS =					\
+	$(WARNINGFLAGS_C)
+
+gnome_software_service_LDADD =				\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)					\
 	$(SOUP_LIBS)					\
@@ -97,7 +118,7 @@ gnome_software_LDADD =					\
 	$(NOTIFY_LIBS)					\
 	-lm
 
-gnome_software_CFLAGS =					\
+gnome_software_service_CFLAGS =				\
 	$(WARNINGFLAGS_C)
 
 gs-resources.c: gnome-software.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/gnome-software.gresource.xml)

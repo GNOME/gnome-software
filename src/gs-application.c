@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
+ * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -293,7 +294,7 @@ gs_application_new (void)
 {
 	return g_object_new (GS_APPLICATION_TYPE,
 			     "application-id", "org.gnome.Software",
-			     "flags", G_APPLICATION_HANDLES_COMMAND_LINE,
+			     "flags", G_APPLICATION_HANDLES_COMMAND_LINE | G_APPLICATION_IS_SERVICE,
 			     NULL);
 }
 
