@@ -42,6 +42,17 @@ org.gnome.Software.service: Makefile
 	 echo 'Exec=${libexecdir}/gnome-software-service') > $@.tmp && 	\
 	 mv $@.tmp $@
 
+autostartdir = $(sysconfdir)/xdg/autostart
+autostart_DATA = gnome-software-service.desktop
+
+gnome-software-service.desktop: Makefile
+	$(AM_V_GEN) (echo '[Desktop Entry]';				\
+	 echo "Type=Application";					\
+	 echo "Name=GNOME Software";					\
+	 echo "Exec=${libexecdir}/gnome-software-service";		\
+	 echo "OnlyShowIn=GNOME;") > $@.tmp &&				\
+	 mv $@.tmp $@
+
 bin_PROGRAMS =						\
 	gnome-software
 
