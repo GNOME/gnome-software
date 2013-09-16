@@ -107,9 +107,32 @@ quit_activated (GSimpleAction *action,
 	g_application_quit (G_APPLICATION (app));
 }
 
+static void
+set_mode_activated (GSimpleAction *action,
+		    GVariant      *parameter,
+		    gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	const gchar *mode;
+
+	mode = g_variant_get_string (parameter, NULL);
+	if (g_strcmp0 (mode, "updates") == 0) {
+		gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
+	} else if (g_strcmp0 (mode, "installed") == 0) {
+		gs_shell_set_mode (app->shell, GS_SHELL_MODE_INSTALLED);
+	} else if (g_strcmp0 (mode, "overview") == 0) {
+		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
+	} else if (g_strcmp0 (mode, "updated") == 0) {
+		gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATED);
+	} else {
+		g_warning ("Mode '%s' not recognised", mode);
+	}
+}
+
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
-	{ "quit", quit_activated, NULL, NULL, NULL }
+	{ "quit", quit_activated, NULL, NULL, NULL },
+	{ "set-mode", set_mode_activated, "s", NULL, NULL }
 };
 
 static void
@@ -183,82 +206,6 @@ gs_application_activate (GApplication *application)
 	gs_shell_activate (GS_APPLICATION (application)->shell);
 }
 
-static int
-gs_application_command_line (GApplication	     *application,
-			     GApplicationCommandLine *cmdline)
-{
-	GsApplication *app = GS_APPLICATION (application);
-	GOptionContext *context;
-	gchar *mode = NULL;
-	gboolean help = FALSE;
-	gboolean verbose = FALSE;
-	const GOptionEntry options[] = {
-		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
-		  /* TRANSLATORS: this is a command line option, please don't
-		   * translate the option names between ‘’ */
-		  _("Start up mode: either ‘updates’, ‘updated’, ‘search’, ‘installed’ or ‘overview’"), _("MODE") },
-		{ "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, NULL, NULL },
-		{ "help", '?', 0, G_OPTION_ARG_NONE, &help, NULL, NULL },
-
-		{ NULL}
-	};
-	gchar **args, **argv;
-	gint argc;
-	gint i;
-	GError *error = NULL;
-
-	args = g_application_command_line_get_arguments (cmdline, &argc);
-	/* We have to make an extra copy of the array, since g_option_context_parse()
-	 * assumes that it can remove strings from the array without freeing them.
-	 */
-	argv = g_new (gchar*, argc + 1);
-	for (i = 0; i <= argc; i++)
-		argv[i] = args[i];
-
-	context = g_option_context_new ("");
-	g_option_context_set_help_enabled (context, FALSE);
-	g_option_context_add_main_entries (context, options, NULL);
-	if (!g_option_context_parse (context, &argc, &argv, &error)) {
-		g_application_command_line_printerr (cmdline, "%s\n", error->message);
-		g_error_free (error);
-		g_application_command_line_set_exit_status (cmdline, 1);
-		g_application_quit (application);
-	}
-	else if (help) {
-		gchar *text;
-		text = g_option_context_get_help (context, FALSE, NULL);
-		g_application_command_line_print (cmdline, "%s",  text);
-		g_application_quit (application);
-		g_free (text);
-	}
-	if (verbose)
-		g_setenv ("G_MESSAGES_DEBUG", "all", FALSE);
-	if (mode) {
-		if (g_strcmp0 (mode, "updates") == 0) {
-			gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
-		} else if (g_strcmp0 (mode, "installed") == 0) {
-			gs_shell_set_mode (app->shell, GS_SHELL_MODE_INSTALLED);
-		} else if (g_strcmp0 (mode, "overview") == 0) {
-			gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
-		} else if (g_strcmp0 (mode, "updated") == 0) {
-			gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATED);
-		} else {
-			g_warning ("Mode '%s' not recognised", mode);
-		}
-	} else {
-		/* this is the default */
-		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
-	}
-
-	g_free (search_value);
-	g_free (argv);
-	g_strfreev (args);
-
-	g_option_context_free (context);
-
-	return 0;
-}
-
 static void
 gs_application_finalize (GObject *object)
 {
@@ -277,7 +224,6 @@ gs_application_class_init (GsApplicationClass *class)
 	G_OBJECT_CLASS (class)->finalize = gs_application_finalize;
 	G_APPLICATION_CLASS (class)->startup = gs_application_startup;
 	G_APPLICATION_CLASS (class)->activate = gs_application_activate;
-	G_APPLICATION_CLASS (class)->command_line = gs_application_command_line;
 }
 
 GsApplication *
@@ -285,7 +231,7 @@ gs_application_new (void)
 {
 	return g_object_new (GS_APPLICATION_TYPE,
 			     "application-id", "org.gnome.Software",
-			     "flags", G_APPLICATION_HANDLES_COMMAND_LINE | G_APPLICATION_IS_SERVICE,
+			     "flags", G_APPLICATION_IS_SERVICE,
 			     NULL);
 }
 
