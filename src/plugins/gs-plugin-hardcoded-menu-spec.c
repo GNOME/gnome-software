@@ -24,8 +24,6 @@
 #include <gs-plugin.h>
 #include <glib/gi18n.h>
 
-//#define SHOW_EMPTY_SUB_CATS
-
 /**
  * gs_plugin_get_name:
  */
@@ -60,14 +58,12 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"AudioVideoEditing",
 								C_("Menu subcategory of Audio", "Editing")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Database",
 								C_("Menu subcategory of Audio", "Databases")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DiscBurning",
 								C_("Menu subcategory of Audio", "Disc Burning")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"HamRadio",
 								C_("Menu subcategory of Audio", "Ham Radio")));
@@ -96,11 +92,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* TRANSLATORS: this is the menu spec main category for Development */
 	category = gs_category_new (NULL, "Development", _("Development Tools"));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Building",
 								C_("Menu subcategory of Development", "Building")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Database",
 								C_("Menu subcategory of Development", "Databases")));
@@ -132,11 +126,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* TRANSLATORS: this is the menu spec main category for Education */
 	category = gs_category_new (NULL, "Education", _("Education"));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Art",
 								C_("Menu subcategory of Education", "Art")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ArtificialIntelligence",
 								C_("Menu subcategory of Education", "Artificial Intelligence")));
@@ -152,11 +144,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ComputerScience",
 								C_("Menu subcategory of Education", "Computer Science")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Construction",
 								C_("Menu subcategory of Education", "Construction")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DataVisualization",
 								C_("Menu subcategory of Education", "Data Visualization")));
@@ -175,36 +165,30 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geography",
 								C_("Menu subcategory of Education", "Geography")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geology",
 								C_("Menu subcategory of Education", "Geology")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geoscience",
 								C_("Menu subcategory of Education", "Geoscience")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"History",
 								C_("Menu subcategory of Education", "History")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Humanities",
 								C_("Menu subcategory of Education", "Humanities")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ImageProcessing",
 								C_("Menu subcategory of Education", "Image Processing")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Languages",
 								C_("Menu subcategory of Education", "Languages")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Literature",
 								C_("Menu subcategory of Education", "Literature")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Maps",
 								C_("Menu subcategory of Education", "Maps")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Math",
 								C_("Menu subcategory of Education", "Math")));
@@ -226,14 +210,12 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Robotics",
 								C_("Menu subcategory of Education", "Robotics")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Spirituality",
 								C_("Menu subcategory of Education", "Spirituality")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Sports",
 								C_("Menu subcategory of Education", "Sports")));
-#endif
 	*list = g_list_prepend (*list, category);
 
 	/* TRANSLATORS: this is the menu spec main category for Games */
@@ -268,11 +250,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"RolePlaying",
 								C_("Menu subcategory of Games", "Role Playing")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Shooter",
 								C_("Menu subcategory of Games", "Shooter")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Simulation",
 								C_("Menu subcategory of Games", "Simulation")));
@@ -320,11 +300,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Chat",
 								C_("Menu subcategory of Network", "Chat")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Dialup",
 								C_("Menu subcategory of Network", "Dialup")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Email",
 								C_("Menu subcategory of Network", "Email")));
@@ -358,19 +336,15 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Telephony",
 								C_("Menu subcategory of Network", "Telephony")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"VideoConference",
 								C_("Menu subcategory of Network", "Video Conference")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"WebBrowser",
 								C_("Menu subcategory of Network", "Web Browser")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"WebDevelopment",
 								C_("Menu subcategory of Network", "Web Development")));
-#endif
 	*list = g_list_prepend (*list, category);
 
 	/* TRANSLATORS: this is the menu spec main category for Office */
@@ -378,11 +352,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Calendar",
 								C_("Menu subcategory of Office", "Calendar")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Chart",
 								C_("Menu subcategory of Office", "Chart")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ContactManagement",
 								C_("Menu subcategory of Office", "Contact Management")));
@@ -398,7 +370,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Finance",
 								C_("Menu subcategory of Office", "Finance")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"FlowChart",
 								C_("Menu subcategory of Office", "Flow Chart")));
@@ -411,7 +382,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Presentation",
 								C_("Menu subcategory of Office", "Presentation")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ProjectManagement",
 								C_("Menu subcategory of Office", "Project Management")));
@@ -431,11 +401,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* TRANSLATORS: this is the menu spec main category for Science */
 	category = gs_category_new (NULL, "Science", _("Science"));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Art",
 								C_("Menu subcategory of Science", "Art")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ArtificialIntelligence",
 								C_("Menu subcategory of Science", "Artificial Intelligence")));
@@ -451,11 +419,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ComputerScience",
 								C_("Menu subcategory of Science", "Computer Science")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Construction",
 								C_("Menu subcategory of Science", "Construction")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DataVisualization",
 								C_("Menu subcategory of Science", "Data Visualization")));
@@ -474,33 +440,27 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geography",
 								C_("Menu subcategory of Science", "Geography")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geology",
 								C_("Menu subcategory of Science", "Geology")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Geoscience",
 								C_("Menu subcategory of Science", "Geoscience")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"History",
 								C_("Menu subcategory of Science", "History")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Humanities",
 								C_("Menu subcategory of Science", "Humanities")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"ImageProcessing",
 								C_("Menu subcategory of Science", "Image Processing")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Languages",
 								C_("Menu subcategory of Science", "Languages")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Literature",
 								C_("Menu subcategory of Science", "Literature")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Maps",
 								C_("Menu subcategory of Science", "Maps")));
@@ -522,23 +482,19 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Robotics",
 								C_("Menu subcategory of Science", "Robotics")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Spirituality",
 								C_("Menu subcategory of Science", "Spirituality")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Sports",
 								C_("Menu subcategory of Science", "Sports")));
-#endif
 	*list = g_list_prepend (*list, category);
 
 	/* TRANSLATORS: this is the menu spec main category for Settings */
 	category = gs_category_new (NULL, "Settings", _("Settings"));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Accessibility",
 								C_("Menu subcategory of Settings", "Accessibility")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DesktopSettings",
 								C_("Menu subcategory of Settings", "Desktop Settings")));
@@ -548,11 +504,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"PackageManager",
 								C_("Menu subcategory of Settings", "Package Manager")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Printing",
 								C_("Menu subcategory of Settings", "Printing")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Security",
 								C_("Menu subcategory of Settings", "Security")));
@@ -603,7 +557,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"FileTools",
 								C_("Menu subcategory of Utility", "File Tools")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Maps",
 								C_("Menu subcategory of Utility", "Maps")));
@@ -613,7 +566,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"TelephonyTools",
 								C_("Menu subcategory of Utility", "Telephony Tools")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"TextEditor",
 								C_("Menu subcategory of Utility", "Text Editor")));
@@ -624,25 +576,21 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"AudioVideoEditing",
 								C_("Menu subcategory of Video", "Editing")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Database",
 								C_("Menu subcategory of Video", "Database")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"DiscBurning",
 								C_("Menu subcategory of Video", "Disc Burning")));
-#endif
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Player",
 								C_("Menu subcategory of Video", "Players")));
-#ifdef SHOW_EMPTY_SUB_CATS
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"Recorder",
 								C_("Menu subcategory of Video", "Recorders")));
 	gs_category_add_subcategory (category, gs_category_new (category,
 								"TV",
 								C_("Menu subcategory of Video", "TV")));
-#endif
 	*list = g_list_prepend (*list, category);
 
 	return TRUE;
