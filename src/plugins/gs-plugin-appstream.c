@@ -498,3 +498,68 @@ gs_plugin_add_search (GsPlugin *plugin,
 out:
 	return ret;
 }
+
+/**
+ * gs_plugin_add_categories:
+ */
+gboolean
+gs_plugin_add_categories (GsPlugin *plugin,
+			  GList **list,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	AppstreamApp *item;
+	const gchar *search_id1;
+	const gchar *search_id2 = NULL;
+	gboolean ret = TRUE;
+	GList *l;
+	GList *l2;
+	GList *children;
+	GPtrArray *array;
+	GsCategory *category;
+	GsCategory *parent;
+	guint i;
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			goto out;
+	}
+
+	/* find out how many packages are in each category */
+	for (l = *list; l != NULL; l = l->next) {
+		parent = GS_CATEGORY (l->data);
+		children = gs_category_get_subcategories (parent);
+		for (l2 = children; l2 != NULL; l2 = l2->next) {
+			category = GS_CATEGORY (l2->data);
+			search_id1 = gs_category_get_id (category);
+			search_id2 = gs_category_get_id (parent);
+
+			/* the "General" item has no ID */
+			if (search_id1 == NULL) {
+				search_id1 = search_id2;
+				search_id2 = NULL;
+			}
+
+			/* just look at each app in turn */
+			array = appstream_cache_get_items (plugin->priv->cache);
+			for (i = 0; i < array->len; i++) {
+				item = g_ptr_array_index (array, i);
+				if (appstream_app_get_id (item) == NULL)
+					continue;
+				if (!appstream_app_has_category (item, search_id1))
+					continue;
+				if (search_id2 != NULL && !appstream_app_has_category (item, search_id2))
+					continue;
+
+				/* we have another result */
+				gs_category_increment_size (category);
+				gs_category_increment_size (parent);
+			}
+		}
+	}
+out:
+	return ret;
+}
