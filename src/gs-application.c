@@ -238,11 +238,13 @@ gs_application_command_line (GApplication	     *application,
 		g_application_command_line_printerr (cmdline, "%s\n", error->message);
 		g_error_free (error);
 		g_application_command_line_set_exit_status (cmdline, 1);
+		g_application_quit (application);
 	}
 	else if (help) {
 		gchar *text;
 		text = g_option_context_get_help (context, FALSE, NULL);
 		g_application_command_line_print (cmdline, "%s",  text);
+		g_application_quit (application);
 		g_free (text);
 	}
 	if (verbose)
