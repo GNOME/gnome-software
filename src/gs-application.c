@@ -31,17 +31,19 @@
 
 #include "gs-box.h"
 #include "gs-shell.h"
+#include "gs-update-monitor.h"
 #include "gs-plugin-loader.h"
 
 struct _GsApplication {
 	GtkApplication parent;
 
-	GCancellable	    *cancellable;
-	GtkApplication	  *application;
-	GtkCssProvider	  *provider;
-	GsPluginLoader	  *plugin_loader;
-	gint		     pending_apps;
-	GsShell		 *shell;
+	GCancellable	*cancellable;
+	GtkApplication	*application;
+	GtkCssProvider	*provider;
+	GsPluginLoader	*plugin_loader;
+	gint		 pending_apps;
+	GsShell		*shell;
+	GsUpdateMonitor *monitor;
 };
 
 struct _GsApplicationClass {
@@ -53,6 +55,12 @@ G_DEFINE_TYPE (GsApplication, gs_application, GTK_TYPE_APPLICATION);
 static void
 gs_application_init (GsApplication *application)
 {
+}
+
+static void
+gs_application_monitor_updates (GsApplication *app)
+{
+	app->monitor = gs_update_monitor_new (app);
 }
 
 static void
@@ -229,6 +237,8 @@ gs_application_startup (GApplication *application)
 	g_action_map_add_action_entries (G_ACTION_MAP (application),
 					 actions, G_N_ELEMENTS (actions),
 					 application);
+
+	gs_application_monitor_updates (GS_APPLICATION (application));
 }
 
 static void
@@ -248,6 +258,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->cancellable);
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
+	g_clear_object (&app->monitor);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->finalize (object);
 }
