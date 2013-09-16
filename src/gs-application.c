@@ -210,7 +210,8 @@ gs_application_command_line (GApplication	     *application,
 	gboolean verbose = FALSE;
 	const GOptionEntry options[] = {
 		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
-		  /* TRANSLATORS: this is a command line option */
+		  /* TRANSLATORS: this is a command line option, please don't
+		   * translate the option names between ‘’ */
 		  _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
 		{ "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, NULL, NULL },
 		{ "help", '?', 0, G_OPTION_ARG_NONE, &help, NULL, NULL },
