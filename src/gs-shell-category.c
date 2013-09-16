@@ -29,6 +29,10 @@
 #include "gs-app-tile.h"
 #include "gs-shell-category.h"
 
+/* This is the smallest number of applications that will be shown in a
+ * subcategory. Any smaller than this and the subcategory will be hidden. */
+#define MIN_APPLICATIONS_IN_SUBCATEGORY	4
+
 struct GsShellCategoryPrivate {
 	GsPluginLoader	*plugin_loader;
 	GtkBuilder	*builder;
@@ -208,6 +212,8 @@ gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *catego
 
 	for  (l = list; l; l = l->next) {
 		s = l->data;
+		if (gs_category_get_size (s) < MIN_APPLICATIONS_IN_SUBCATEGORY)
+			continue;
 		row = gtk_label_new (gs_category_get_name (s));
 		g_object_set_data_full (G_OBJECT (row), "category", g_object_ref (s), g_object_unref);
 		g_object_set (row, "xalign", 0.0, "margin", 6, NULL);
