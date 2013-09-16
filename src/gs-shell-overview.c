@@ -196,7 +196,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		goto out;
 	}
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
-	for (l = list, i = 0; l; l = l->next, i++) {
+	for (l = list, i = 0; l; l = l->next) {
 		cat = GS_CATEGORY (l->data);
 		if (gs_category_get_size (cat) == 0)
 			continue;
@@ -204,6 +204,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (category_tile_clicked), shell);
 		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
+		i++;
 	}
 	g_list_free_full (list, g_object_unref);
 out:
