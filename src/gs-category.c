@@ -35,10 +35,38 @@ struct GsCategoryPrivate
 	gchar		*id;
 	gchar		*name;
 	GsCategory	*parent;
+	guint		 size;
 	GList		*subcategories;
 };
 
 G_DEFINE_TYPE (GsCategory, gs_category, G_TYPE_OBJECT)
+
+/**
+ * gs_category_get_size:
+ *
+ * Returns how many applications the category could contain.
+ *
+ * NOTE: This may over-estimate the number if duplicate applications are
+ * filtered or core applications are not shown.
+ **/
+guint
+gs_category_get_size (GsCategory *category)
+{
+	g_return_val_if_fail (GS_IS_CATEGORY (category), 0);
+	return category->priv->size;
+}
+
+/**
+ * gs_category_increment_size:
+ *
+ * Adds one to the size count if an application is available
+ **/
+void
+gs_category_increment_size (GsCategory *category)
+{
+	g_return_if_fail (GS_IS_CATEGORY (category));
+	category->priv->size++;
+}
 
 const gchar *
 gs_category_get_id (GsCategory *category)
@@ -119,6 +147,7 @@ gs_category_sort_subcategories (GsCategory *category)
 		/* TRANSLATORS: this is where all applications that don't
 		 * fit in other groups are put */
 		all = gs_category_new (category, NULL, _("General"));
+		all->priv->size = G_MAXUINT;
 		gs_category_add_subcategory (category, all);
 	}
 
