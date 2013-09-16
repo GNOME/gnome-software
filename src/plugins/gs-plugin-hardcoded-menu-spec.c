@@ -593,5 +593,22 @@ gs_plugin_add_categories (GsPlugin *plugin,
 								C_("Menu subcategory of Video", "TV")));
 	*list = g_list_prepend (*list, category);
 
+	/* TRANSLATORS: this is the main category for Add-ons */
+	category = gs_category_new (NULL, "Addons", _("Add-ons"));
+	gs_category_add_subcategory (category, gs_category_new (category,
+								"Fonts",
+								C_("Menu subcategory of Addons", "Fonts")));
+	gs_category_add_subcategory (category, gs_category_new (category,
+								"Codecs",
+								C_("Menu subcategory of Addons", "Codecs")));
+	gs_category_add_subcategory (category, gs_category_new (category,
+								"InputSources",
+								C_("Menu subcategory of Addons", "Input Sources")));
+	gs_category_add_subcategory (category, gs_category_new (category,
+								"LanguagePacks",
+								C_("Menu subcategory of Addons", "Language Packs")));
+
+	*list = g_list_prepend (*list, category);
+
 	return TRUE;
 }
