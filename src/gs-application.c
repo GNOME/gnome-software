@@ -56,6 +56,70 @@ gs_application_init (GsApplication *application)
 }
 
 static void
+gs_application_initialize_ui (GsApplication *app)
+{
+	static gboolean initialized = FALSE;
+	GtkBuilder *builder;
+	GMenuModel *app_menu;
+	GtkWindow *window;
+	GFile *file;
+	GError *error = NULL;
+	gchar *theme;
+
+	if (initialized)
+		return;
+
+	initialized = TRUE;
+
+	gtk_icon_theme_append_search_path (gtk_icon_theme_get_default (),
+					   DATADIR "/gnome-software/icons/hicolor");
+
+	/* set up the app menu */
+	builder = gtk_builder_new_from_resource ("/org/gnome/software/app-menu.ui");
+	app_menu = G_MENU_MODEL (gtk_builder_get_object (builder, "appmenu"));
+	gtk_application_set_app_menu (GTK_APPLICATION (app), app_menu);
+	g_object_unref (builder);
+
+	/* get CSS */
+	app->provider = gtk_css_provider_new ();
+	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
+						   GTK_STYLE_PROVIDER (app->provider),
+						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	g_object_get (gtk_settings_get_default (), "gtk-theme-name", &theme, NULL);
+	if (g_strcmp0 (theme, "HighContrast") == 0) {
+		file = g_file_new_for_uri ("resource:///org/gnome/software/gtk-style-hc.css");
+	} else {
+		file = g_file_new_for_uri ("resource:///org/gnome/software/gtk-style.css");
+	}
+	gtk_css_provider_load_from_file (app->provider, file, NULL);
+	g_object_unref (file);
+
+	/* setup plugins */
+	app->plugin_loader = gs_plugin_loader_new ();
+	gs_plugin_loader_set_location (app->plugin_loader, NULL);
+	if (!gs_plugin_loader_setup (app->plugin_loader, &error)) {
+		g_warning ("Failed to setup plugins: %s", error->message);
+		exit (1);
+	}
+	gs_plugin_loader_set_enabled (app->plugin_loader,
+				      "packagekit-updates", FALSE);
+
+	/* show the priority of each plugin */
+	gs_plugin_loader_dump_state (app->plugin_loader);
+
+	/* setup UI */
+	app->shell = gs_shell_new ();
+
+	app->cancellable = g_cancellable_new ();
+
+	window = gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
+	gtk_application_add_window (GTK_APPLICATION (app), window);
+
+	g_signal_connect_swapped (app->shell, "loaded",
+				  G_CALLBACK (gtk_window_present), window);
+}
+
+static void
 about_activated (GSimpleAction *action,
 		 GVariant      *parameter,
 		 gpointer       app)
@@ -73,6 +137,8 @@ about_activated (GSimpleAction *action,
 	GdkPixbuf *logo;
 	GList *windows;
 	GtkWindow *parent = NULL;
+
+	gs_application_initialize_ui (app);
 
 	windows = gtk_application_get_windows (GTK_APPLICATION (app));
 	if (windows)
@@ -104,7 +170,14 @@ quit_activated (GSimpleAction *action,
 		GVariant      *parameter,
 		gpointer       app)
 {
-	g_application_quit (G_APPLICATION (app));
+	GList *windows;
+	GtkWidget *window;
+
+	windows = gtk_application_get_windows (GTK_APPLICATION (app));
+	if (windows) {
+		window = windows->data;
+		gtk_widget_hide (window);
+	}
 }
 
 static void
@@ -114,6 +187,15 @@ set_mode_activated (GSimpleAction *action,
 {
 	GsApplication *app = GS_APPLICATION (data);
 	const gchar *mode;
+	GList *windows;
+	GtkWindow *window = NULL;
+
+	gs_application_initialize_ui (app);
+	windows = gtk_application_get_windows (GTK_APPLICATION (app));
+	if (windows) {
+		window = windows->data;
+		gtk_window_present (window);
+	}
 
 	mode = g_variant_get_string (parameter, NULL);
 	if (g_strcmp0 (mode, "updates") == 0) {
@@ -138,66 +220,15 @@ static GActionEntry actions[] = {
 static void
 gs_application_startup (GApplication *application)
 {
-	GsApplication *app = GS_APPLICATION (application);
-	GtkBuilder *builder;
-	GMenuModel *app_menu;
-	GtkWindow *window;
-	GFile *file;
-	GError *error = NULL;
-	gchar *theme;
-
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
 
 	notify_init ("gnome-software");
 
 	g_type_ensure (GS_TYPE_BOX);
 
-	/* set up the app menu */
-	g_action_map_add_action_entries (G_ACTION_MAP (app),
+	g_action_map_add_action_entries (G_ACTION_MAP (application),
 					 actions, G_N_ELEMENTS (actions),
 					 application);
-	builder = gtk_builder_new_from_resource ("/org/gnome/software/app-menu.ui");
-	app_menu = G_MENU_MODEL (gtk_builder_get_object (builder, "appmenu"));
-	gtk_application_set_app_menu (GTK_APPLICATION (app), app_menu);
-	g_object_unref (builder);
-
-	/* get CSS */
-	app->provider = gtk_css_provider_new ();
-	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
-						   GTK_STYLE_PROVIDER (app->provider),
-						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	g_object_get (gtk_settings_get_default (), "gtk-theme-name", &theme, NULL);
-	if (g_strcmp0 (theme, "HighContrast") == 0) {
-		file = g_file_new_for_uri ("resource:///org/gnome/software/gtk-style-hc.css");
-	} else {
-		file = g_file_new_for_uri ("resource:///org/gnome/software/gtk-style.css");
-	}
-	gtk_css_provider_load_from_file (app->provider, file, NULL);
-	g_object_unref (file);
-	g_free (theme);
-
-	/* setup plugins */
-	app->plugin_loader = gs_plugin_loader_new ();
-	gs_plugin_loader_set_location (app->plugin_loader, NULL);
-	if (!gs_plugin_loader_setup (app->plugin_loader, &error)) {
-		g_warning ("Failed to setup plugins: %s", error->message);
-		exit (1);
-	}
-	gs_plugin_loader_set_enabled (app->plugin_loader,
-				      "packagekit-updates", FALSE);
-
-	/* show the priority of each plugin */
-	gs_plugin_loader_dump_state (app->plugin_loader);
-
-	/* setup UI */
-	app->shell = gs_shell_new ();
-
-	app->cancellable = g_cancellable_new ();
-
-	window = gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
-	gtk_application_add_window (GTK_APPLICATION (app), window);
-
-        gtk_window_present (window);
 }
 
 static void
@@ -215,6 +246,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->cancellable);
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
+
 	G_OBJECT_CLASS (gs_application_parent_class)->finalize (object);
 }
 
