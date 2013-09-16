@@ -234,6 +234,8 @@ gs_application_startup (GApplication *application)
 static void
 gs_application_activate (GApplication *application)
 {
+	gs_application_initialize_ui (GS_APPLICATION (application));
+	gs_shell_set_mode (GS_APPLICATION (application)->shell, GS_SHELL_MODE_OVERVIEW);
 	gs_shell_activate (GS_APPLICATION (application)->shell);
 }
 
