@@ -1,0 +1,1241 @@
+# Korean translation for gnome-software.
+# Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-software package.
+# Seong-ho Cho <darkcircle.0426@gmail.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-software master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-09-17 15:45+0000\n"
+"PO-Revision-Date: 2013-09-18 01:12+0900\n"
+"Last-Translator: Seong-ho Cho <darkcircle.0426@gmail.com>\n"
+"Language-Team: Korean <gnome-kr@googlegroups.com>\n"
+"Language: ko\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Poedit 1.5.5\n"
+
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "정보(_A)"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "끝내기(_Q)"
+
+#. TRANSLATORS: this is the main window title
+#: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
+#: ../src/gs-shell.c:117
+msgid "Software"
+msgstr "소프트웨어"
+
+#: ../src/gnome-software.desktop.in.h:2
+msgid "Add, remove or update software on this computer"
+msgstr "이 컴퓨터에 프로그램을 추가, 제거, 업데이트 합니다"
+
+#. Translators: A label for a button to show all available software.
+#: ../src/gnome-software.ui.h:3
+msgid "_All"
+msgstr "모두(_A)"
+
+#. Translators: A label for a button to show only software which is already installed.
+#: ../src/gnome-software.ui.h:5
+msgid "_Installed"
+msgstr "설치함(_I)"
+
+#. Translators: A label for a button to show only updates which are available to install.
+#: ../src/gnome-software.ui.h:7
+msgid "_Updates"
+msgstr "업데이트(_U)"
+
+#: ../src/gnome-software.ui.h:8
+msgid "Restart & Install"
+msgstr "설치 및 재설치"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gnome-software.ui.h:9 ../src/gs-app-widget.c:109
+#: ../src/gs-shell-details.c:91
+msgid "Install"
+msgstr "설치"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: button text in the header when an application can be erased
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:116
+#: ../src/gs-shell-details.c:123 ../src/gs-shell-details.c:309
+#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:112
+msgid "Remove"
+msgstr "제거"
+
+#: ../src/gnome-software.ui.h:11
+msgid "Featured"
+msgstr "추천"
+
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: ../src/gnome-software.ui.h:13
+msgid "Picks"
+msgstr "사용자의 선택"
+
+#: ../src/gnome-software.ui.h:14
+msgid "Categories"
+msgstr "분류"
+
+#: ../src/gnome-software.ui.h:15
+msgid "No Application Found"
+msgstr "프로그램이 없습니다"
+
+#: ../src/gnome-software.ui.h:16
+msgid "Software is up to date"
+msgstr "프로그램이 최신입니다"
+
+#: ../src/gnome-software.ui.h:17
+msgid "Visit website"
+msgstr "웹사이트 방문"
+
+#: ../src/gnome-software.ui.h:18
+msgid "_History"
+msgstr "기록(_H)"
+
+#: ../src/gnome-software.ui.h:19
+msgid "Application"
+msgstr "프로그램"
+
+#: ../src/gnome-software.ui.h:20
+msgid "Category"
+msgstr "분류"
+
+#: ../src/gnome-software.ui.h:21
+msgid "History"
+msgstr "역사"
+
+#. Translators: Label for a button to close the update dialogue.
+#: ../src/gnome-software.ui.h:23
+msgid "Done"
+msgstr "완료"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:87
+msgid "About GNOME Software"
+msgstr "그놈 소프트웨어 정보"
+
+#. TRANSLATORS: this is the application name
+#: ../src/gs-application.c:89
+msgid "GNOME Software"
+msgstr "그놈 소프트웨어"
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:92
+msgid "A nice way to manage the software on your system."
+msgstr "시스템의 프로그램을 관리하는 세련된 수단입니다."
+
+#: ../src/gs-application.c:96
+msgid "translator-credits"
+msgstr "Seong-ho Cho <darkcircle.0426@gmail.com>"
+
+#. TRANSLATORS: this is a command line option, please don't
+#. * translate the option names between ‘’
+#: ../src/gs-application.c:215
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr "시작 모드: 'updates', 'updated', 'installed', 'overview'"
+
+#: ../src/gs-application.c:215
+msgid "MODE"
+msgstr "모드"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be updated. not normally shown
+#: ../src/gs-app-widget.c:125
+msgid "Update"
+msgstr "업데이트"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-app-widget.c:134 ../src/gs-shell-details.c:99
+msgid "Installing"
+msgstr "설치중"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-app-widget.c:143 ../src/gs-shell-details.c:130
+msgid "Removing"
+msgstr "제거중"
+
+#. TRANSLATORS: this is where all applications that don't
+#. * fit in other groups are put
+#: ../src/gs-category.c:149
+msgid "General"
+msgstr "일반"
+
+#. TRANSLATORS: this is a group of updates that are not packages and
+#. * are ot shown in the main list
+#: ../src/gs-plugin-loader.c:480
+msgid "OS Updates"
+msgstr "운영체제 업데이트"
+
+#. TRANSLATORS: this is a longer description of the os-update item
+#: ../src/gs-plugin-loader.c:482 ../src/gs-plugin-loader.c:483
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr "모든 사용자를 위한 성능, 안정성, 보안 개선 요소가 있습니다."
+
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-shell-details.c:294 ../src/gs-shell-installed.c:150
+#: ../src/gs-shell-search.c:97
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "정말로 %s 프로그램을 제거하시겠습니까?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-shell-details.c:306 ../src/gs-shell-installed.c:162
+#: ../src/gs-shell-search.c:109
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr "%s 프로그램을 제거하겠으며, 다시 사용하려면 설치해야 합니다."
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was removed
+#: ../src/gs-shell-details.c:386
+msgid "Removed"
+msgstr "제거함"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/gs-shell-details.c:392 ../src/gs-shell-installed.c:407
+#: ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "설치함"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gs-shell-details.c:397
+msgid "Updated"
+msgstr "업데이트함"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing that something happened to the
+#. * application but we don't know what
+#: ../src/gs-shell-details.c:403
+msgid "Unknown"
+msgstr "알 수 없음"
+
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software. The '%d' refers to the number of
+#. * applications either installing or erasing
+#: ../src/gs-shell-installed.c:412
+#, c-format
+msgid "Installed (%d)"
+msgstr "설치함(%d)"
+
+#. TRANSLATORS: window title to suggest that we are showing
+#. * the offline updates that have just been applied
+#: ../src/gs-shell-updates.c:154
+msgid "Recent Software Updates"
+msgstr "최근 소프트웨어 업데이트"
+
+#. TRANSLATORS: this is the summary of a notification that an application
+#. * has been successfully installed
+#: ../src/gs-utils.c:166
+#, c-format
+msgid "%s is now installed"
+msgstr "%s을(를) 설치했습니다"
+
+#. TRANSLATORS: this is button that opens the newly installed application
+#: ../src/gs-utils.c:169
+msgid "Launch"
+msgstr "실행"
+
+#. TRANSLATORS: this is the menu spec main category for Audio
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:57
+msgid "Audio"
+msgstr "오디오"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:60
+msgctxt "Menu subcategory of Audio"
+msgid "Editing"
+msgstr "편집"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:63
+msgctxt "Menu subcategory of Audio"
+msgid "Databases"
+msgstr "데이터베이스"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:66
+msgctxt "Menu subcategory of Audio"
+msgid "Disc Burning"
+msgstr "디스크 기록"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:69
+msgctxt "Menu subcategory of Audio"
+msgid "Ham Radio"
+msgstr "아마추어 무선통신"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:72
+msgctxt "Menu subcategory of Audio"
+msgid "MIDI"
+msgstr "미디"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:75
+msgctxt "Menu subcategory of Audio"
+msgid "Mixer"
+msgstr "음량 조절기"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:78
+msgctxt "Menu subcategory of Audio"
+msgid "Music"
+msgstr "음악"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:81
+msgctxt "Menu subcategory of Audio"
+msgid "Players"
+msgstr "재생 프로그램"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:84
+msgctxt "Menu subcategory of Audio"
+msgid "Recorders"
+msgstr "녹음 프로그램"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:87
+msgctxt "Menu subcategory of Audio"
+msgid "Sequencers"
+msgstr "시퀀서"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:90
+msgctxt "Menu subcategory of Audio"
+msgid "Tuners"
+msgstr "음량 조절 프로그램"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:94
+msgid "Development Tools"
+msgstr "개발 도구"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:97
+msgctxt "Menu subcategory of Development"
+msgid "Building"
+msgstr "빌드 도구"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:100
+msgctxt "Menu subcategory of Development"
+msgid "Databases"
+msgstr "데이터베이스"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:103
+msgctxt "Menu subcategory of Development"
+msgid "Debuggers"
+msgstr "디버거"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:106
+msgctxt "Menu subcategory of Development"
+msgid "GUI Designers"
+msgstr "GUI 디자이너"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:109
+msgctxt "Menu subcategory of Development"
+msgid "IDE"
+msgstr "통합 개발 도구"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:112
+msgctxt "Menu subcategory of Development"
+msgid "Profiling"
+msgstr "프로파일"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:115
+msgctxt "Menu subcategory of Development"
+msgid "Project Management"
+msgstr "프로젝트 관리"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:118
+msgctxt "Menu subcategory of Development"
+msgid "Revision Control"
+msgstr "리비전 관리"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:121
+msgctxt "Menu subcategory of Development"
+msgid "Translation"
+msgstr "번역"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:124
+msgctxt "Menu subcategory of Development"
+msgid "Web Development"
+msgstr "웹 개발"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:128
+msgid "Education"
+msgstr "교육"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:131
+msgctxt "Menu subcategory of Education"
+msgid "Art"
+msgstr "예술"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:134
+msgctxt "Menu subcategory of Education"
+msgid "Artificial Intelligence"
+msgstr "인공지능"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:137
+msgctxt "Menu subcategory of Education"
+msgid "Astronomy"
+msgstr "천문학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:140
+msgctxt "Menu subcategory of Education"
+msgid "Biology"
+msgstr "생물학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:143
+msgctxt "Menu subcategory of Education"
+msgid "Chemistry"
+msgstr "화학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:146
+msgctxt "Menu subcategory of Education"
+msgid "Computer Science"
+msgstr "컴퓨터 과학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:149
+msgctxt "Menu subcategory of Education"
+msgid "Construction"
+msgstr "건축"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:152
+msgctxt "Menu subcategory of Education"
+msgid "Data Visualization"
+msgstr "데이터 시각화"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:155
+msgctxt "Menu subcategory of Education"
+msgid "Economy"
+msgstr "경제"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:158
+msgctxt "Menu subcategory of Education"
+msgid "Electricity"
+msgstr "전기"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:161
+msgctxt "Menu subcategory of Education"
+msgid "Electronics"
+msgstr "전자"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:164
+msgctxt "Menu subcategory of Education"
+msgid "Engineering"
+msgstr "공학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:167
+msgctxt "Menu subcategory of Education"
+msgid "Geography"
+msgstr "지리"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:170
+msgctxt "Menu subcategory of Education"
+msgid "Geology"
+msgstr "지질학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:173
+msgctxt "Menu subcategory of Education"
+msgid "Geoscience"
+msgstr "지구과학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:176
+msgctxt "Menu subcategory of Education"
+msgid "History"
+msgstr "역사"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:179
+msgctxt "Menu subcategory of Education"
+msgid "Humanities"
+msgstr "인류학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:182
+msgctxt "Menu subcategory of Education"
+msgid "Image Processing"
+msgstr "이미지 처리"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:185
+msgctxt "Menu subcategory of Education"
+msgid "Languages"
+msgstr "언어"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:188
+msgctxt "Menu subcategory of Education"
+msgid "Literature"
+msgstr "문학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:191
+msgctxt "Menu subcategory of Education"
+msgid "Maps"
+msgstr "지도"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:194
+msgctxt "Menu subcategory of Education"
+msgid "Math"
+msgstr "수학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:197
+msgctxt "Menu subcategory of Education"
+msgid "Medical"
+msgstr "의학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:200
+msgctxt "Menu subcategory of Education"
+msgid "Music"
+msgstr "음악"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:203
+msgctxt "Menu subcategory of Education"
+msgid "Numerical Analysis"
+msgstr "수치해석"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:206
+msgctxt "Menu subcategory of Education"
+msgid "Parallel Computing"
+msgstr "병렬 컴퓨팅"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:209
+msgctxt "Menu subcategory of Education"
+msgid "Physics"
+msgstr "물리학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:212
+msgctxt "Menu subcategory of Education"
+msgid "Robotics"
+msgstr "로봇공학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:215
+msgctxt "Menu subcategory of Education"
+msgid "Spirituality"
+msgstr "형이상학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:218
+msgctxt "Menu subcategory of Education"
+msgid "Sports"
+msgstr "스포츠"
+
+#. TRANSLATORS: this is the menu spec main category for Games
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:222
+msgid "Games"
+msgstr "게임"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:225
+msgctxt "Menu subcategory of Games"
+msgid "Action"
+msgstr "액션"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:228
+msgctxt "Menu subcategory of Games"
+msgid "Adventure"
+msgstr "어드벤처"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:231
+msgctxt "Menu subcategory of Games"
+msgid "Arcade"
+msgstr "아케이드"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:234
+msgctxt "Menu subcategory of Games"
+msgid "Blocks"
+msgstr "블록"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:237
+msgctxt "Menu subcategory of Games"
+msgid "Board"
+msgstr "보드"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:240
+msgctxt "Menu subcategory of Games"
+msgid "Card"
+msgstr "카드"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:243
+msgctxt "Menu subcategory of Games"
+msgid "Emulators"
+msgstr "에뮬레이터"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:246
+msgctxt "Menu subcategory of Games"
+msgid "Kids"
+msgstr "어린이"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:249
+msgctxt "Menu subcategory of Games"
+msgid "Logic"
+msgstr "로직"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:252
+msgctxt "Menu subcategory of Games"
+msgid "Role Playing"
+msgstr "롤플레잉"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:255
+msgctxt "Menu subcategory of Games"
+msgid "Shooter"
+msgstr "슈팅"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:258
+msgctxt "Menu subcategory of Games"
+msgid "Simulation"
+msgstr "시뮬레이션"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:261
+msgctxt "Menu subcategory of Games"
+msgid "Sports"
+msgstr "스포츠"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:264
+msgctxt "Menu subcategory of Games"
+msgid "Strategy"
+msgstr "전략"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:268
+msgid "Graphics"
+msgstr "그래픽"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:271
+msgctxt "Menu subcategory of Graphics"
+msgid "2D Graphics"
+msgstr "2D 그래픽"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:274
+msgctxt "Menu subcategory of Graphics"
+msgid "3D Graphics"
+msgstr "3D 그래픽"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:277
+msgctxt "Menu subcategory of Graphics"
+msgid "OCR"
+msgstr "광학 문자 판독"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:280
+msgctxt "Menu subcategory of Graphics"
+msgid "Photography"
+msgstr "사진"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:283
+msgctxt "Menu subcategory of Graphics"
+msgid "Publishing"
+msgstr "출판"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:286
+msgctxt "Menu subcategory of Graphics"
+msgid "Raster Graphics"
+msgstr "래스터 그래픽"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:289
+msgctxt "Menu subcategory of Graphics"
+msgid "Scanning"
+msgstr "스캐닝"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:292
+msgctxt "Menu subcategory of Graphics"
+msgid "Vector Graphics"
+msgstr "벡터 그래픽"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:295
+msgctxt "Menu subcategory of Graphics"
+msgid "Viewer"
+msgstr "뷰어"
+
+#. TRANSLATORS: this is the menu spec main category for Network
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:299
+msgid "Internet"
+msgstr "인터넷"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:302
+msgctxt "Menu subcategory of Network"
+msgid "Chat"
+msgstr "대화"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:305
+msgctxt "Menu subcategory of Network"
+msgid "Dialup"
+msgstr "전화걸기"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:308
+msgctxt "Menu subcategory of Network"
+msgid "Email"
+msgstr "전자 메일"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:311
+msgctxt "Menu subcategory of Network"
+msgid "Feed"
+msgstr "피드"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:314
+msgctxt "Menu subcategory of Network"
+msgid "File Transfer"
+msgstr "파일 전송"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:317
+msgctxt "Menu subcategory of Network"
+msgid "Ham Radio"
+msgstr "아마추어 무선통신 라디오"
+
+# # NOTE: '메신저'로 번역할 것. 엠퍼시 번역 따름. 이의 달지 말것.
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:320
+msgctxt "Menu subcategory of Network"
+msgid "Instant Messaging"
+msgstr "메신저"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:323
+msgctxt "Menu subcategory of Network"
+msgid "IRC Clients"
+msgstr "IRC 클라이언트"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:326
+msgctxt "Menu subcategory of Network"
+msgid "Monitor"
+msgstr "감시 프로그램"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:329
+msgctxt "Menu subcategory of Network"
+msgid "News"
+msgstr "뉴스"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:332
+msgctxt "Menu subcategory of Network"
+msgid "P2P"
+msgstr "P2P"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:335
+msgctxt "Menu subcategory of Network"
+msgid "Remote Access"
+msgstr "원격 접속"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:338
+msgctxt "Menu subcategory of Network"
+msgid "Telephony"
+msgstr "전화"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:341
+msgctxt "Menu subcategory of Network"
+msgid "Video Conference"
+msgstr "화상 회의"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:344
+msgctxt "Menu subcategory of Network"
+msgid "Web Browser"
+msgstr "웹 브라우저"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:347
+msgctxt "Menu subcategory of Network"
+msgid "Web Development"
+msgstr "웹 개발"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:351
+msgid "Office"
+msgstr "사무"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:354
+msgctxt "Menu subcategory of Office"
+msgid "Calendar"
+msgstr "달력"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:357
+msgctxt "Menu subcategory of Office"
+msgid "Chart"
+msgstr "차트"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:360
+msgctxt "Menu subcategory of Office"
+msgid "Contact Management"
+msgstr "연락처 관리자"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:363
+msgctxt "Menu subcategory of Office"
+msgid "Database"
+msgstr "데이터베이스"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:366
+msgctxt "Menu subcategory of Office"
+msgid "Dictionary"
+msgstr "사전"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:369
+msgctxt "Menu subcategory of Office"
+msgid "Email"
+msgstr "전자 메일"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
+msgctxt "Menu subcategory of Office"
+msgid "Finance"
+msgstr "금융"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:375
+msgctxt "Menu subcategory of Office"
+msgid "Flow Chart"
+msgstr "흐름도"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:378
+msgctxt "Menu subcategory of Office"
+msgid "PDA"
+msgstr "개인 휴대 단말기(PDA)"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:381
+msgctxt "Menu subcategory of Office"
+msgid "Photography"
+msgstr "사진"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:384
+msgctxt "Menu subcategory of Office"
+msgid "Presentation"
+msgstr "프리젠테이션"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:387
+msgctxt "Menu subcategory of Office"
+msgid "Project Management"
+msgstr "프로젝트 관리"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:390
+msgctxt "Menu subcategory of Office"
+msgid "Publishing"
+msgstr "출판"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:393
+msgctxt "Menu subcategory of Office"
+msgid "Spreadsheet"
+msgstr "스프레드쉬트"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:396
+msgctxt "Menu subcategory of Office"
+msgid "Viewer"
+msgstr "뷰어"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:399
+msgctxt "Menu subcategory of Office"
+msgid "Word Processor"
+msgstr "워드프로세서"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:403
+msgid "Science"
+msgstr "과학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:406
+msgctxt "Menu subcategory of Science"
+msgid "Art"
+msgstr "예술"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:409
+msgctxt "Menu subcategory of Science"
+msgid "Artificial Intelligence"
+msgstr "인공지능"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:412
+msgctxt "Menu subcategory of Science"
+msgid "Astronomy"
+msgstr "천문학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:415
+msgctxt "Menu subcategory of Science"
+msgid "Biology"
+msgstr "생물학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:418
+msgctxt "Menu subcategory of Science"
+msgid "Chemistry"
+msgstr "화학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:421
+msgctxt "Menu subcategory of Science"
+msgid "Computer Science"
+msgstr "컴퓨터 과학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:424
+msgctxt "Menu subcategory of Science"
+msgid "Construction"
+msgstr "건축"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:427
+msgctxt "Menu subcategory of Science"
+msgid "Data Visualization"
+msgstr "데이터 시각화"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:430
+msgctxt "Menu subcategory of Science"
+msgid "Economy"
+msgstr "경제"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:433
+msgctxt "Menu subcategory of Science"
+msgid "Electricity"
+msgstr "전기"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:436
+msgctxt "Menu subcategory of Science"
+msgid "Electronics"
+msgstr "전자"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:439
+msgctxt "Menu subcategory of Science"
+msgid "Engineering"
+msgstr "공학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:442
+msgctxt "Menu subcategory of Science"
+msgid "Geography"
+msgstr "지리"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:445
+msgctxt "Menu subcategory of Science"
+msgid "Geology"
+msgstr "지질학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:448
+msgctxt "Menu subcategory of Science"
+msgid "Geoscience"
+msgstr "지구과학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:451
+msgctxt "Menu subcategory of Science"
+msgid "History"
+msgstr "역사"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:454
+msgctxt "Menu subcategory of Science"
+msgid "Humanities"
+msgstr "인류학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
+msgctxt "Menu subcategory of Science"
+msgid "Image Processing"
+msgstr "이미지 처리"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:460
+msgctxt "Menu subcategory of Science"
+msgid "Languages"
+msgstr "언어"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:463
+msgctxt "Menu subcategory of Science"
+msgid "Literature"
+msgstr "문학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:466
+msgctxt "Menu subcategory of Science"
+msgid "Maps"
+msgstr "지도"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:469
+msgctxt "Menu subcategory of Science"
+msgid "Math"
+msgstr "수학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:472
+msgctxt "Menu subcategory of Science"
+msgid "Medical"
+msgstr "의학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:475
+msgctxt "Menu subcategory of Science"
+msgid "Numerical Analysis"
+msgstr "수치해석"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:478
+msgctxt "Menu subcategory of Science"
+msgid "Parallel Computing"
+msgstr "병렬 컴퓨팅"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:481
+msgctxt "Menu subcategory of Science"
+msgid "Physics"
+msgstr "물리학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
+msgctxt "Menu subcategory of Science"
+msgid "Robotics"
+msgstr "로봇공학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:487
+msgctxt "Menu subcategory of Science"
+msgid "Spirituality"
+msgstr "형이상학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:490
+msgctxt "Menu subcategory of Science"
+msgid "Sports"
+msgstr "스포츠"
+
+#. TRANSLATORS: this is the menu spec main category for Settings
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:494
+msgid "Settings"
+msgstr "설정"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:497
+msgctxt "Menu subcategory of Settings"
+msgid "Accessibility"
+msgstr "접근성"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:500
+msgctxt "Menu subcategory of Settings"
+msgid "Desktop Settings"
+msgstr "데스크톱 설정"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:503
+msgctxt "Menu subcategory of Settings"
+msgid "Hardware Settings"
+msgstr "하드웨어 설정"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
+msgctxt "Menu subcategory of Settings"
+msgid "Package Manager"
+msgstr "패키지 관리자"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
+msgctxt "Menu subcategory of Settings"
+msgid "Printing"
+msgstr "출력"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
+msgctxt "Menu subcategory of Settings"
+msgid "Security"
+msgstr "보안"
+
+#. TRANSLATORS: this is the menu spec main category for System
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:516
+msgid "System"
+msgstr "시스템"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:519
+msgctxt "Menu subcategory of System"
+msgid "Emulator"
+msgstr "에뮬레이터"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:522
+msgctxt "Menu subcategory of System"
+msgid "File Manager"
+msgstr "파일 관리자"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:525
+msgctxt "Menu subcategory of System"
+msgid "File System"
+msgstr "파일 시스템"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
+msgctxt "Menu subcategory of System"
+msgid "File Tools"
+msgstr "파일 도구"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
+msgctxt "Menu subcategory of System"
+msgid "Monitor"
+msgstr "감시 프로그램"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:534
+msgctxt "Menu subcategory of System"
+msgid "Security"
+msgstr "보안"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:537
+msgctxt "Menu subcategory of System"
+msgid "Terminal Emulator"
+msgstr "터미널 에뮬레이터"
+
+#. TRANSLATORS: this is the menu spec main category for Utility
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:541
+msgid "Utilities"
+msgstr "유틸리티"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:544
+msgctxt "Menu subcategory of Utility"
+msgid "Accessibility"
+msgstr "접근성"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:547
+msgctxt "Menu subcategory of Utility"
+msgid "Archiving"
+msgstr "아카이빙"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:550
+msgctxt "Menu subcategory of Utility"
+msgid "Calculator"
+msgstr "계산기"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:553
+msgctxt "Menu subcategory of Utility"
+msgid "Clock"
+msgstr "시계"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:556
+msgctxt "Menu subcategory of Utility"
+msgid "Compression"
+msgstr "압축 프로그램"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:559
+msgctxt "Menu subcategory of Utility"
+msgid "File Tools"
+msgstr "파일 도구"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
+msgctxt "Menu subcategory of Utility"
+msgid "Maps"
+msgstr "지도"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
+msgctxt "Menu subcategory of Utility"
+msgid "Spirituality"
+msgstr "형이상학"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
+msgctxt "Menu subcategory of Utility"
+msgid "Telephony Tools"
+msgstr "전화 도구"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
+msgctxt "Menu subcategory of Utility"
+msgid "Text Editor"
+msgstr "텍스트 편집기"
+
+#. TRANSLATORS: this is the menu spec main category for Video
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
+msgid "Video"
+msgstr "동영상"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:578
+msgctxt "Menu subcategory of Video"
+msgid "Editing"
+msgstr "편집"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:581
+msgctxt "Menu subcategory of Video"
+msgid "Database"
+msgstr "데이터베이스"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:584
+msgctxt "Menu subcategory of Video"
+msgid "Disc Burning"
+msgstr "디스크 기록"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
+msgctxt "Menu subcategory of Video"
+msgid "Players"
+msgstr "재생 프로그램"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:590
+msgctxt "Menu subcategory of Video"
+msgid "Recorders"
+msgstr "녹음 프로그램"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:593
+msgctxt "Menu subcategory of Video"
+msgid "TV"
+msgstr "텔레비전"
+
+#. TRANSLATORS: this is the main category for Add-ons
+#. TRANSLATORS: these are extra things that add to existing programs,
+#. * for instance fonts, codecs or language packs
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:597
+#: ../src/plugins/gs-plugin-packagekit.c:510
+msgid "Add-ons"
+msgstr "추가 프로그램"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:600
+msgctxt "Menu subcategory of Addons"
+msgid "Fonts"
+msgstr "글꼴"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:603
+msgctxt "Menu subcategory of Addons"
+msgid "Codecs"
+msgstr "코덱"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:606
+msgctxt "Menu subcategory of Addons"
+msgid "Input Sources"
+msgstr "입력기"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:609
+msgctxt "Menu subcategory of Addons"
+msgid "Language Packs"
+msgstr "언어 패키지"
+
+#. TRANSLATORS: audio/video decoders
+#: ../src/plugins/gs-plugin-packagekit.c:514
+msgid "Codecs"
+msgstr "코덱"
+
+#. TRANSLATORS: fonts of different styles or languages
+#: ../src/plugins/gs-plugin-packagekit.c:518
+msgid "Fonts"
+msgstr "글꼴"
+
+#. TRANSLATORS: these are ways to enter text
+#: ../src/plugins/gs-plugin-packagekit.c:522
+msgid "Input Sources"
+msgstr "입력기"
+
+#. TRANSLATORS: additional languages for apps
+#: ../src/plugins/gs-plugin-packagekit.c:526
+msgid "Language Packs"
+msgstr "언어 패키지"
+
+#. TRANSLATORS: this is where update details either are
+#. * no longer available or were never provided in the first place
+#: ../src/plugins/gs-plugin-packagekit-refine.c:347
+msgid "No update details were provided"
+msgstr "업데이트 설명이 없습니다"
+
+#~ msgid "GNU Image Manipulation Program"
+#~ msgstr "GNU 그림 편집 프로그램"
+
+#~ msgid "The Gimp"
+#~ msgstr "김프"
+
+#~ msgid ""
+#~ "GIMP (GNU Image Manipulation Program) is a powerful image composition "
+#~ "and\n"
+#~ "editing program, which can be extremely useful for creating logos and "
+#~ "other\n"
+#~ "graphics for webpages. GIMP has many of the tools and filters you would "
+#~ "expect\n"
+#~ "to find in similar commercial offerings, and some interesting extras as "
+#~ "well.\n"
+#~ "GIMP provides a large image manipulation toolbox, including channel "
+#~ "operations\n"
+#~ "and layers, effects, sub-pixel imaging and anti-aliasing, and "
+#~ "conversions, all\n"
+#~ "with multi-level undo.\n"
+#~ msgstr ""
+#~ "김프(GNU 그림 편집 프로그램)는 웹페이지에 사용할 로고나 그래픽을 만드는"
+#~ "데\n"
+#~ "특히 쓸모있는 강력한 이미지 합성, 편집 프로그램입니다. GIMP는 상업용 프로"
+#~ "그램\n"
+#~ "에서 제공하는 것과 유사한 수많은 도구와 필터가 있으며, 몇가지 추가기능 또"
+#~ "한\n"
+#~ "갖춰져 있습니다. GIMP는 채널 처리, 레이어, 효과, 서브픽셀처리, 안티 애일리"
+#~ "어싱\n"
+#~ "변환, 다단계 실행 취소를 포함하는 대규모 이미지 조작 도구 모음을 제공합니"
+#~ "다.\n"
+
+#~ msgid "Details"
+#~ msgstr "자세히 보기"
+
+#~ msgid "_Done"
+#~ msgstr "완료(_D)"
+
+#~ msgid "Network"
+#~ msgstr "네트워크"
+
+#~ msgid "DataVisualization"
+#~ msgstr "데이터 시각화"
+
+#~ msgid "Medical Software"
+#~ msgstr "의학 소프트웨어"
