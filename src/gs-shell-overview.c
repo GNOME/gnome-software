@@ -282,6 +282,8 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 			 GCancellable *cancellable)
 {
 	GsShellOverviewPrivate *priv = shell_overview->priv;
+	GtkWidget *sw, *widget;
+	GtkAdjustment *adj;
 
 	g_return_if_fail (GS_IS_SHELL_OVERVIEW (shell_overview));
 
@@ -291,6 +293,11 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 
 	/* avoid a ref cycle */
 	priv->shell = shell;
+
+	sw = GTK_WIDGET (gtk_builder_get_object (builder, "scrolledwindow_overview"));
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
+ 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "box3"));
+	gtk_container_set_focus_vadjustment (GTK_CONTAINER (widget), adj);
 }
 
 static void

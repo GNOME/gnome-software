@@ -334,6 +334,7 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 	GsShellCategoryPrivate *priv = shell_category->priv;
 	GtkWidget *widget;
 	GtkWidget *sw;
+	GtkAdjustment *adj;
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
@@ -348,6 +349,11 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 	widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
 	g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
 	g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
+
+	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_category"));
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
+	gtk_container_set_focus_vadjustment (GTK_CONTAINER (widget), adj);
 }
 
 GsShellCategory *
