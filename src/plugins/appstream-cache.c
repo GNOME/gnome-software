@@ -415,14 +415,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 					     "item_temp id invalid");
 			return;
 		}
-		if (text_len < 9) {
-			g_set_error_literal (error,
-					     APPSTREAM_CACHE_ERROR,
-					     APPSTREAM_CACHE_ERROR_FAILED,
-					     "desktop id invalid");
-			return;
-		}
-		appstream_app_set_id (helper->item_temp, text, text_len - 8);
+		appstream_app_set_id (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_CACHE_SECTION_PKGNAME:
 		if (helper->item_temp == NULL ||

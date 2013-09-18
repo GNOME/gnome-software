@@ -225,7 +225,13 @@ appstream_app_set_id (AppstreamApp *app,
 		      const gchar *id,
 		      gsize length)
 {
+	gchar *tmp;
 	app->id = g_strndup (id, length);
+
+	/* trim the extension as we only use the short form here */
+	tmp = g_strrstr (app->id, ".");
+	if (tmp != NULL)
+		*tmp = '\0';
 }
 
 /**
