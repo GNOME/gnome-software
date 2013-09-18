@@ -315,7 +315,7 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 
 	sw = GTK_WIDGET (gtk_builder_get_object (builder, "scrolledwindow_overview"));
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
- 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "box3"));
+ 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "box_overview"));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (widget), adj);
 }
 
