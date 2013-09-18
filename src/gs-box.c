@@ -110,7 +110,10 @@ gs_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 		child = l->data;
 		child_allocation.x = x;
 		child_allocation.y = allocation->y;
-		child_allocation.width = allocation->width * (child->relative_size / box->total);
+		if (l->next == NULL)
+			child_allocation.width = allocation->x + allocation->width - child_allocation.x;
+		else
+			child_allocation.width = allocation->width * (child->relative_size / box->total);
 		child_allocation.height = allocation->height;
 		if (rtl) {
 			child_allocation.x = allocation->x + allocation->width - child_allocation.x - child_allocation.width;
