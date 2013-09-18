@@ -84,9 +84,9 @@ about_activated (GSimpleAction *action,
 
 	gtk_show_about_dialog (parent,
 			       /* TRANSLATORS: this is the title of the about window */
-			       "title", _("About GNOME Software"),
+			       "title", _("About Software"),
 			       /* TRANSLATORS: this is the application name */
-			       "program-name", _("GNOME Software"),
+			       "program-name", _("Software"),
 			       "authors", authors,
 			       /* TRANSLATORS: well, we seem to think so, anyway */
 			       "comments", _("A nice way to manage the software on your system."),
