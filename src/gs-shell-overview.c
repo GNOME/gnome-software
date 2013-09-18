@@ -40,6 +40,7 @@ struct GsShellOverviewPrivate
 	gboolean		 cache_valid;
 	GsShell			*shell;
 	gint			 refresh_count;
+	gboolean		 empty;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShellOverview, gs_shell_overview, G_TYPE_OBJECT)
@@ -75,8 +76,8 @@ popular_tile_clicked (GsPopularTile *tile, gpointer data)
  **/
 static void
 gs_shell_overview_get_popular_cb (GObject *source_object,
-			GAsyncResult *res,
-			gpointer user_data)
+				  GAsyncResult *res,
+				  gpointer user_data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
 	GsShellOverviewPrivate *priv = shell->priv;
@@ -93,6 +94,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		g_warning ("failed to get popular apps: %s", error->message);
+		gtk_widget_hide (GTK_WIDGET (gtk_builder_get_object (priv->builder, "popular_heading")));
 		g_error_free (error);
 		goto out;
 	}
@@ -105,6 +107,9 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 			  G_CALLBACK (popular_tile_clicked), shell);
 		gtk_box_pack_start (GTK_BOX (grid), tile, TRUE, TRUE, 0);
 	}
+
+	priv->empty = FALSE;
+
 out:
 	priv->refresh_count--;
 	if (priv->refresh_count == 0)
@@ -138,19 +143,21 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		g_warning ("failed to get featured apps: %s", error->message);
+		gtk_widget_hide (GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_heading")));
 		g_error_free (error);
 		goto out;
 	}
 
 	/* at the moment, we only care about the first app */
 	app = GS_APP (list->data);
-	box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "feature"));
 	tile = gs_feature_tile_new (app);
 	g_signal_connect (tile, "clicked",
 			  G_CALLBACK (feature_tile_clicked), shell);
 
-	gs_container_remove_all (GTK_CONTAINER (box));
+	box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
 	gtk_container_add (GTK_CONTAINER (box), tile);
+
+	priv->empty = FALSE;
 
 out:
 	g_list_free (list);
@@ -188,6 +195,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GsCategory *cat;
 	GtkWidget *grid;
 	GtkWidget *tile;
+	gboolean has_category = FALSE;
 
 	list = gs_plugin_loader_get_categories_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -205,9 +213,15 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 				  G_CALLBACK (category_tile_clicked), shell);
 		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
 		i++;
+		has_category = TRUE;
 	}
 	g_list_free_full (list, g_object_unref);
 out:
+	if (has_category) {
+		priv->empty = FALSE;
+	} else {
+		gtk_widget_hide (GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_heading")));
+	}
 	priv->cache_valid = TRUE;
 	priv->refresh_count--;
 	if (priv->refresh_count == 0)
@@ -247,9 +261,17 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 	if (priv->cache_valid)
 		return;
 
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
+	gs_container_remove_all (GTK_CONTAINER (grid));
+
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
 	gs_container_remove_all (GTK_CONTAINER (grid));
 
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
+	gs_container_remove_all (GTK_CONTAINER (grid));
+
+
+	priv->empty = TRUE;
 	priv->refresh_count = 3;
 
 	gs_plugin_loader_get_featured_async (priv->plugin_loader,
@@ -263,9 +285,6 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 					    priv->cancellable,
 					    gs_shell_overview_get_popular_cb,
 					    shell);
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
-	gs_container_remove_all (GTK_CONTAINER (grid));
 
 	gs_plugin_loader_get_categories_async (priv->plugin_loader,
 					       GS_PLUGIN_LOADER_FLAGS_NONE,
@@ -319,6 +338,20 @@ gs_shell_overview_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_shell_overview_parent_class)->finalize (object);
 }
 
+static void
+gs_shell_overview_refreshed (GsShellOverview *shell)
+{
+	GsShellOverviewPrivate *priv = shell->priv;
+	GtkWidget *stack;
+
+	stack = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_overview"));
+	if (priv->empty) {
+		gtk_stack_set_visible_child_name (GTK_STACK (stack), "no-results");
+	} else {
+		gtk_stack_set_visible_child_name (GTK_STACK (stack), "overview");
+	}
+}
+
 /**
  * gs_shell_overview_class_init:
  **/
@@ -327,6 +360,7 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_shell_overview_finalize;
+	klass->refreshed = gs_shell_overview_refreshed;
 
 	signals [SIGNAL_REFRESHED] =
 		g_signal_new ("refreshed",

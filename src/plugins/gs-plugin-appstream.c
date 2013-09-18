@@ -20,8 +20,10 @@
  */
 
 #include <config.h>
+#include <glib/gi18n.h>
 
 #include <gs-plugin.h>
+#include <gs-plugin-loader.h>
 
 #include "appstream-app.h"
 #include "appstream-cache.h"
@@ -190,7 +192,11 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	size = appstream_cache_get_size (plugin->priv->cache);
 	if (size == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
-		g_assert_not_reached ();
+                g_set_error (error,
+                             gs_plugin_loader_error_quark (),
+                             GS_PLUGIN_LOADER_ERROR_FAILED,
+                             _("No AppStream data found"));
+		//g_assert_not_reached ();
 		goto out;
 	}
 	g_debug ("Parsed %i entries of XML\t:%.1fms", size,
