@@ -117,8 +117,17 @@ gs_category_add_subcategory (GsCategory *category, GsCategory *subcategory)
 static gint
 gs_category_sort_subcategories_cb (gconstpointer a, gconstpointer b)
 {
-	return g_strcmp0 (gs_category_get_name (GS_CATEGORY (a)),
-			  gs_category_get_name (GS_CATEGORY (b)));
+	GsCategory *ca = GS_CATEGORY (a);
+	GsCategory *cb = GS_CATEGORY (b);
+	const gchar *id_a = gs_category_get_id (ca);
+	const gchar *id_b = gs_category_get_id (cb);
+
+	if (!id_a)
+		return 1;
+	if (!id_b)
+		return -1;
+
+	return g_strcmp0 (gs_category_get_name (ca), gs_category_get_name (cb));
 }
 
 /**
@@ -131,6 +140,7 @@ gs_category_sort_subcategories (GsCategory *category)
 	GList *l;
 	GsCategory *all;
 	GsCategoryPrivate *priv = category->priv;
+	const gchar *id;
 
 	/* nothing here */
 	if (priv->subcategories == NULL)
@@ -138,7 +148,8 @@ gs_category_sort_subcategories (GsCategory *category)
 
 	/* ensure there is a general entry */
 	for (l = priv->subcategories; l != NULL; l = l->next) {
-		if (gs_category_get_id (GS_CATEGORY (l->data)) == NULL) {
+		id = gs_category_get_id (GS_CATEGORY (l->data));
+		if (id == NULL) {
 			subcat_all = TRUE;
 			break;
 		}
