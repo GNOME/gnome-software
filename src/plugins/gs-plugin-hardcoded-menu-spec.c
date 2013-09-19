@@ -39,7 +39,7 @@ gs_plugin_get_name (void)
 gdouble
 gs_plugin_get_priority (GsPlugin *plugin)
 {
-	return 0.0f;
+	return -101.0f;
 }
 
 /**
