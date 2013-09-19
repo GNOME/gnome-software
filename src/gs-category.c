@@ -124,8 +124,13 @@ gs_category_sort_subcategories_cb (gconstpointer a, gconstpointer b)
 
 	if (!id_a)
 		return 1;
+	else if (g_strcmp0 (id_a, "featured") == 0)
+		return -1;
+
 	if (!id_b)
 		return -1;
+	else if (g_strcmp0 (id_b, "featured") == 0)
+		return 1;
 
 	return g_strcmp0 (gs_category_get_name (ca), gs_category_get_name (cb));
 }
