@@ -385,6 +385,8 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 	}
 
 	priv->kind = kind;
+	g_object_notify (G_OBJECT (app), "kind");
+	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
 /**
