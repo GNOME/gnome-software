@@ -109,7 +109,14 @@ gs_plugin_datadir_apps_set_from_cache_item (GsApp *app,
 		gs_app_set_pixbuf (app, cache_item->pixbuf);
 
 	/* mark as an application */
-	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+	switch (gs_app_get_kind (app)) {
+	case GS_APP_KIND_UNKNOWN:
+	case GS_APP_KIND_PACKAGE:
+		gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+		break;
+	default:
+		break;
+	}
 }
 
 /**
