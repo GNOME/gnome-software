@@ -1055,7 +1055,6 @@ cd_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
 
 	/* success */
-	state->list = gs_plugin_loader_remove_system (state->list);
 	state->list = gs_plugin_loader_remove_invalid (state->list);
 	if (state->list == NULL) {
 		g_set_error (&error,

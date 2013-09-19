@@ -94,7 +94,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	if (gs_app_get_pixbuf (priv->app))
 		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image),
 					   gs_app_get_pixbuf (priv->app));
-	gtk_widget_set_visible (priv->button, TRUE);
+	gtk_widget_set_visible (priv->button, FALSE);
 	gtk_widget_set_sensitive (priv->button, TRUE);
 
 	context = gtk_widget_get_style_context (priv->button);
@@ -110,7 +110,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		break;
 	case GS_APP_STATE_INSTALLED:
 		gtk_widget_set_visible (priv->spinner, FALSE);
-		gtk_widget_set_visible (priv->button, TRUE);
+		if (gs_app_get_kind (app_widget->priv->app) != GS_APP_KIND_SYSTEM)
+			gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily removed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
@@ -143,7 +144,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Removing"));
 		break;
 	default:
-		gtk_widget_set_visible (priv->button, FALSE);
 		break;
 	}
 	gtk_widget_set_visible (priv->button_box, gtk_widget_get_visible (priv->spinner) ||
