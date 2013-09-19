@@ -22,7 +22,10 @@
 
 #include <config.h>
 
+#include <glib/gi18n.h>
+
 #include <gs-plugin.h>
+#include <gs-category.h>
 
 /**
  * gs_plugin_get_name:
@@ -112,3 +115,157 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	}
 	return TRUE;
 }
+
+typedef struct {
+  const gchar *category;
+  const gchar *app;
+} Featured;
+
+static Featured featured[] = {
+	{ "Audio", "audacity" },
+	{ "Audio", "ardour2" },
+	{ "Audio", "gnome-banshee" },
+	{ "Audio", "rosegarden" },
+	{ "Audio", "sound-juicer" },
+	{ "Audio", "rhythmbox" },
+	{ "Audio", "brasero" },
+	{ "Game", "doom" }, // id ?
+	{ "Game", "openarena" },
+ 	{ "Game", "xonotic" },
+	{ "Game", "tremulous" },
+	{ "Game", "btanks" },
+	{ "Game", "frozen-bubble" },
+	{ "Game", "quadrapassel" },
+	{ "Game", "sol" },
+	{ "Game", "neverball" },
+	{ "Game", "gnomine" },
+	{ "Game", "wesnoth" },
+	{ "Game", "supertuxkart" }, // id ?
+	{ "Game", "redeclipse" },
+	{ "Office", "evolution" },
+	{ "Office", "geary" },
+	{ "Office", "gnucash" },
+	{ "Office", "abiword" },
+	{ "Office", "libreoffice-calc" },
+	{ "Office", "libreoffice-writer" },
+	{ "Office", "libreoffice-impress" },
+	{ "Office", "gnumeric" },
+	{ "Office", "gramps" },
+	{ "Office", "lyx" },
+	{ "System", "gparted" },
+	{ "System", "gnome-boxes" },
+	{ "System", "virt-manager" },
+	{ "System", "gnome-disks" },
+	{ "Development", "glade" },
+	{ "Development", "anjuta" },
+	{ "Development", "d-feet" },
+	{ "Development", "eclipse" },
+	{ "Development", "gitg" },
+	{ "Development", "monodevelop" },
+	{ "Development", "gedit" },
+	{ "Development", "devhelp" },
+	{ "Graphics", "gimp" },
+	{ "Graphics", "mypaint" },
+	{ "Graphics", "blender" },
+	{ "Graphics", "darktable" },
+	{ "Graphics", "inkscape" },
+	{ "Graphics", "libreoffice-draw" },
+	{ "Graphics", "shotwell" },
+	{ "Graphics", "scribus" },
+	{ "Graphics", "simple-scan" },
+	{ "Graphics", "gnome-font-viewer" },
+	{ "Science", "stellarium" },
+	{ "Science", "octave" },
+	{ "Science", "saoimage" },
+	{ "Utility", "gnome-documents" },
+	{ "Utility", "bijiben" },
+	{ "Utility", "gnome-photos" },
+	{ "Utility", "workrave" },
+	{ "Utility", "gnome-clocks" },
+	{ "Education", "celestia" },
+	{ "Network", "geary" },
+	{ "Network", "mozilla-thunderbird" },
+	{ "Network", "firefox" },
+	{ "Network", "transmission-gtk" },
+	{ "Network", "xchat" },
+	{ "Network", "polari" }, // id ?
+	{ "Network", "vinagre" },
+	{ "Network", "epiphany" },
+	{ "Network", "pidgin" },
+	{ "Network", "chromium" }, // id ?
+	{ "Video", "pitivi" },
+	{ "Video", "vlc" }, // id ?
+	{ "Video", "totem" },
+	{ "Video", "openshot" }, // ?
+	{ "Video", "cheese" },
+};
+
+gboolean
+gs_plugin_add_categories (GsPlugin *plugin,
+                          GList **list,
+                          GCancellable *cancellable,
+                          GError **error)
+{
+	GList *l;
+	GsCategory *parent;
+	GsCategory *cat;
+	const gchar *id;
+	const gchar *last_id;
+	guint i;
+
+	cat = NULL;
+	last_id = NULL;
+	for (i = 0; i < G_N_ELEMENTS (featured); i++) {
+		if (g_strcmp0 (last_id, featured[i].category) != 0) {
+			last_id = featured[i].category;
+			cat = NULL;
+			for (l = *list; l; l = l->next) {
+				parent = l->data;
+				id = gs_category_get_id (parent);
+				if (g_strcmp0 (last_id, id) == 0) {
+					cat = gs_category_new (parent, "featured", _("Featured"));
+					/* always show these, even if small */
+					gs_category_increment_size (cat);
+					gs_category_increment_size (cat);
+					gs_category_increment_size (cat);
+					gs_category_increment_size (cat);
+
+					gs_category_add_subcategory (parent, cat);
+					break;
+				}
+			}
+		}
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_add_category_apps (GsPlugin *plugin,
+			     GsCategory *category,
+			     GList **list,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	GsCategory *parent;
+	const gchar *id;
+	guint i;
+	GsApp *app;
+
+	if (g_strcmp0 (gs_category_get_id (category), "featured") != 0)
+		return TRUE;
+
+	parent = gs_category_get_parent (category);
+	id = gs_category_get_id (parent);
+
+	for (i = 0; i < G_N_ELEMENTS (featured); i++) {
+		if (g_strcmp0 (id, featured[i].category) == 0) {
+			app = gs_app_new (featured[i].app);
+			gs_plugin_add_app (list, app);
+		}
+	}
+
+	return TRUE;
+}
+
+/* vim: set noexpandtab: */
