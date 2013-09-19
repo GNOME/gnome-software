@@ -189,6 +189,11 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	GPtrArray *history;
 	GsShellDetailsPrivate *priv = shell_details->priv;
 
+	/* show some debugging */
+	g_debug ("Show application '%s' from source '%s'",
+		 gs_app_get_id (app),
+		 gs_app_get_source (app));
+
 	/* save app */
 	if (priv->app != NULL)
 		g_object_unref (priv->app);
