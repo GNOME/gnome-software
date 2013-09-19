@@ -324,6 +324,36 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 	}
 }
 
+static gboolean
+key_event (GtkWidget *listbox, GdkEvent *event, GsShellCategory *shell)
+{
+	guint keyval;
+	GtkWidget *sw;
+	GtkWidget *grid;
+	gboolean handled;
+
+	if (!gdk_event_get_keyval (event, &keyval))
+		return FALSE;
+
+	sw = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "scrolledwindow_category"));
+	grid = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "category_detail_grid"));
+	if (keyval == GDK_KEY_Page_Up ||
+	    keyval == GDK_KEY_KP_Page_Up)
+		g_signal_emit_by_name (sw, "scroll-child",
+				       GTK_SCROLL_PAGE_UP, FALSE, &handled);
+	else if (keyval == GDK_KEY_Page_Down ||
+	    	 keyval == GDK_KEY_KP_Page_Down)
+		g_signal_emit_by_name (sw, "scroll-child",
+				       GTK_SCROLL_PAGE_DOWN, FALSE, &handled);
+	else if (keyval == GDK_KEY_Tab ||
+		 keyval == GDK_KEY_KP_Tab)
+		gtk_widget_child_focus (grid, GTK_DIR_TAB_FORWARD);
+	else
+		return FALSE;
+
+	return TRUE;
+}
+
 void
 gs_shell_category_setup (GsShellCategory *shell_category,
 			 GsShell *shell,
@@ -354,6 +384,10 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (widget), adj);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_filter"));
+	g_signal_connect (widget, "key-press-event",
+			  G_CALLBACK (key_event), shell_category);
 }
 
 GsShellCategory *
