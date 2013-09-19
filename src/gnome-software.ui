@@ -702,12 +702,11 @@
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="halign">center</property>
-                    <property name="margin_left">80</property>
-                    <property name="margin_right">80</property>
-                    <property name="margin_top">40</property>
-                    <property name="margin_bottom">40</property>
+                    <property name="margin_top">64</property>
+                    <property name="margin_bottom">64</property>
+                    <property name="margin_left">64</property>
+                    <property name="margin_right">64</property>
                     <property name="hexpand">False</property>
-                    <property name="column_spacing">20</property>
                     <child>
                       <object class="GtkImage" id="application_details_icon">
                         <property name="visible">True</property>
@@ -716,6 +715,7 @@
                         <property name="valign">start</property>
                         <property name="pixel_size">96</property>
                         <property name="icon_name">gimp</property>
+                        <property name="margin_bottom">24</property>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -730,14 +730,14 @@
                         <property name="can_focus">False</property>
                         <property name="halign">start</property>
                         <property name="valign">start</property>
+                        <property name="margin_left">24</property>
+                        <property name="margin_right">24</property>
                         <property name="margin_bottom">10</property>
                         <property name="hexpand">True</property>
                         <property name="xalign">0</property>
-                        <property name="label"/>
-                        <attributes>
-                          <attribute name="weight" value="bold"/>
-                          <attribute name="scale" value="1"/>
-                        </attributes>
+                        <style>
+                          <class name="application-details-title"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -748,14 +748,18 @@
                     </child>
                     <child>
                       <object class="GtkLinkButton" id="application_details_url">
-                        <property name="label" translatable="yes">Visit website</property>
+                        <property name="label" translatable="yes">Visit _Website</property>
+                        <property name="use_underline">True</property>
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
                         <property name="xalign">0</property>
                         <property name="halign">start</property>
                         <property name="relief">none</property>
-                        <property name="uri"> http://www.gimp.org/</property>
+                        <property name="margin_bottom">32</property>
+                        <style>
+                          <class name="text-button"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
@@ -789,8 +793,12 @@
                         <property name="halign">start</property>
                         <property name="valign">start</property>
                         <property name="hexpand">True</property>
-                        <property name="label"/>
-                        <property name="margin_bottom">20</property>
+                        <property name="margin_left">24</property>
+                        <property name="margin_right">24</property>
+                        <property name="margin_bottom">24</property>
+                        <style>
+                          <class name="application-details-summary"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -804,9 +812,12 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="xalign">0</property>
-                        <property name="label"/>
                         <property name="wrap">True</property>
-                        <property name="margin_bottom">20</property>
+                        <property name="max-width-chars">80</property>
+                        <property name="margin_bottom">32</property>
+                        <style>
+                          <class name="application-details-description"/>
+                        </style>
                       </object>
                       <packing>
                         <property name="left_attach">0</property>
