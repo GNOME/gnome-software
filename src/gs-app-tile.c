@@ -33,6 +33,7 @@ struct _GsAppTilePrivate
 	GtkWidget	*image;
 	GtkWidget	*name;
 	GtkWidget	*summary;
+	GtkWidget	*eventbox;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppTile, gs_app_tile, GTK_TYPE_BIN)
@@ -55,6 +56,34 @@ gs_app_tile_get_app (GsAppTile *tile)
 	return priv->app;
 }
 
+static gboolean
+transform_state_func (GBinding *binding,
+                      const GValue *source,
+                      GValue *target,
+                      gpointer user_data)
+{
+        GsAppState state;
+        gboolean installed;
+
+        state = g_value_get_uint (source);
+
+        switch (state) {
+        case GS_APP_STATE_INSTALLED:
+        case GS_APP_STATE_INSTALLING:
+        case GS_APP_STATE_REMOVING:
+        case GS_APP_STATE_UPDATABLE:
+                installed = TRUE;
+                break;
+        case GS_APP_STATE_AVAILABLE:
+        default:
+                installed = FALSE;
+                break;
+        }
+        g_value_set_boolean (target, installed);
+
+        return TRUE;
+}
+
 void
 gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 {
@@ -68,6 +97,12 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 
 	g_clear_object (&priv->app);
 	priv->app = g_object_ref (app);
+
+        g_object_bind_property_full (priv->app, "state",
+                                     priv->eventbox, "visible",
+                                     G_BINDING_SYNC_CREATE,
+                                     transform_state_func,
+                                     NULL, NULL, NULL);
 
 	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image), gs_app_get_pixbuf (app));
 	gtk_label_set_label (GTK_LABEL (priv->name), gs_app_get_name (app));
@@ -128,6 +163,7 @@ gs_app_tile_class_init (GsAppTileClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, image);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, name);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, summary);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, eventbox);
 }
 
 GtkWidget *
