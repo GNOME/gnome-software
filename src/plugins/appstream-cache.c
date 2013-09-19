@@ -42,6 +42,7 @@ typedef enum {
 	APPSTREAM_CACHE_SECTION_APPCATEGORY,
 	APPSTREAM_CACHE_SECTION_KEYWORDS,
 	APPSTREAM_CACHE_SECTION_KEYWORD,
+	APPSTREAM_CACHE_SECTION_PROJECT_GROUP,
 	APPSTREAM_CACHE_SECTION_LAST
 } AppstreamCacheSection;
 
@@ -125,6 +126,8 @@ appstream_cache_selection_from_string (const gchar *element_name)
 		return APPSTREAM_CACHE_SECTION_NAME;
 	if (g_strcmp0 (element_name, "summary") == 0)
 		return APPSTREAM_CACHE_SECTION_SUMMARY;
+	if (g_strcmp0 (element_name, "project_group") == 0)
+		return APPSTREAM_CACHE_SECTION_PROJECT_GROUP;
 	if (g_strcmp0 (element_name, "url") == 0)
 		return APPSTREAM_CACHE_SECTION_URL;
 	if (g_strcmp0 (element_name, "description") == 0)
@@ -160,6 +163,8 @@ appstream_cache_selection_to_string (AppstreamCacheSection section)
 		return "name";
 	if (section == APPSTREAM_CACHE_SECTION_SUMMARY)
 		return "summary";
+	if (section == APPSTREAM_CACHE_SECTION_PROJECT_GROUP)
+		return "project_group";
 	if (section == APPSTREAM_CACHE_SECTION_URL)
 		return "url";
 	if (section == APPSTREAM_CACHE_SECTION_DESCRIPTION)
@@ -260,6 +265,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_CACHE_SECTION_ID:
 	case APPSTREAM_CACHE_SECTION_PKGNAME:
 	case APPSTREAM_CACHE_SECTION_URL:
+	case APPSTREAM_CACHE_SECTION_PROJECT_GROUP:
 		if (helper->item_temp == NULL ||
 		    helper->section != APPSTREAM_CACHE_SECTION_APPLICATION) {
 			g_set_error (error,
@@ -354,6 +360,7 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		break;
 	case APPSTREAM_CACHE_SECTION_NAME:
 	case APPSTREAM_CACHE_SECTION_SUMMARY:
+	case APPSTREAM_CACHE_SECTION_PROJECT_GROUP:
 	case APPSTREAM_CACHE_SECTION_DESCRIPTION:
 		helper->section = APPSTREAM_CACHE_SECTION_APPLICATION;
 		g_free (helper->lang_temp);
@@ -447,6 +454,16 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 			return;
 		}
 		appstream_app_set_summary (helper->item_temp, helper->lang_temp, text, text_len);
+		break;
+	case APPSTREAM_CACHE_SECTION_PROJECT_GROUP:
+		if (helper->item_temp == NULL) {
+			g_set_error_literal (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "item_temp project_group invalid");
+			return;
+		}
+		appstream_app_set_project_group (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_CACHE_SECTION_URL:
 		if (helper->item_temp == NULL ||

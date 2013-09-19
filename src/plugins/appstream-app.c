@@ -37,6 +37,7 @@ struct AppstreamApp
 	gchar			*description;
 	guint			 description_value;
 	gchar			*url;
+	gchar			*project_group;
 	gchar			*icon;
 	AppstreamAppIconKind	 icon_kind;
 	GPtrArray		*appcategories;
@@ -79,6 +80,7 @@ appstream_app_free (AppstreamApp *app)
 	g_free (app->id);
 	g_free (app->pkgname);
 	g_free (app->url);
+	g_free (app->project_group);
 	g_free (app->icon);
 	g_free (app->name);
 	g_free (app->summary);
@@ -171,6 +173,15 @@ const gchar *
 appstream_app_get_url (AppstreamApp *app)
 {
 	return app->url;
+}
+
+/**
+ * appstream_app_get_project_group:
+ */
+const gchar *
+appstream_app_get_project_group (AppstreamApp *app)
+{
+	return app->project_group;
 }
 
 /**
@@ -292,6 +303,17 @@ appstream_app_set_url (AppstreamApp *app,
 		       gsize length)
 {
 	app->url = g_strndup (url, length);
+}
+
+/**
+ * appstream_app_set_project_group:
+ */
+void
+appstream_app_set_project_group (AppstreamApp *app,
+				 const gchar *project_group,
+				 gsize length)
+{
+	app->project_group = g_strndup (project_group, length);
 }
 
 /**
