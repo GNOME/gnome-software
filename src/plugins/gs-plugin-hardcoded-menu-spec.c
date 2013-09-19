@@ -490,28 +490,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 								C_("Menu subcategory of Science", "Sports")));
 	*list = g_list_prepend (*list, category);
 
-	/* TRANSLATORS: this is the menu spec main category for Settings */
-	category = gs_category_new (NULL, "Settings", _("Settings"));
-	gs_category_add_subcategory (category, gs_category_new (category,
-								"Accessibility",
-								C_("Menu subcategory of Settings", "Accessibility")));
-	gs_category_add_subcategory (category, gs_category_new (category,
-								"DesktopSettings",
-								C_("Menu subcategory of Settings", "Desktop Settings")));
-	gs_category_add_subcategory (category, gs_category_new (category,
-								"HardwareSettings",
-								C_("Menu subcategory of Settings", "Hardware Settings")));
-	gs_category_add_subcategory (category, gs_category_new (category,
-								"PackageManager",
-								C_("Menu subcategory of Settings", "Package Manager")));
-	gs_category_add_subcategory (category, gs_category_new (category,
-								"Printing",
-								C_("Menu subcategory of Settings", "Printing")));
-	gs_category_add_subcategory (category, gs_category_new (category,
-								"Security",
-								C_("Menu subcategory of Settings", "Security")));
-	*list = g_list_prepend (*list, category);
-
 	/* TRANSLATORS: this is the menu spec main category for System */
 	category = gs_category_new (NULL, "System", _("System"));
 	gs_category_add_subcategory (category, gs_category_new (category,
