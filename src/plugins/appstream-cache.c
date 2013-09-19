@@ -52,6 +52,7 @@ struct AppstreamCachePrivate
 	GPtrArray		*icon_path_array;
 	GHashTable		*hash_id;	/* of AppstreamApp{id} */
 	GHashTable		*hash_pkgname;	/* of AppstreamApp{pkgname} */
+	gchar			**compatible_projects;
 };
 
 G_DEFINE_TYPE (AppstreamCache, appstream_cache, G_TYPE_OBJECT)
@@ -308,6 +309,67 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	helper->section = section_new;
 }
 
+
+
+/**
+ * appstream_cache_app_is_compatible:
+ */
+static gboolean
+appstream_cache_app_is_compatible (AppstreamCache *cache, AppstreamApp *app)
+{
+	AppstreamCachePrivate *priv = cache->priv;
+	const gchar *tmp;
+	guint i;
+
+	/* app has no aligned project */
+	tmp = appstream_app_get_project_group (app);
+	if (tmp == NULL)
+		return TRUE;
+
+	/* search for any compatible projects */
+	for (i = 0; priv->compatible_projects[i] != NULL; i++) {
+		if (g_strcmp0 (tmp,  priv->compatible_projects[i]) == 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * appstream_cache_add_item:
+ */
+static void
+appstream_cache_add_item (AppstreamCacheHelper *helper)
+{
+	AppstreamApp *item;
+	AppstreamCachePrivate *priv = helper->cache->priv;
+	const gchar *id;
+
+	/* is app compatible with this running desktop */
+	id = appstream_app_get_id (helper->item_temp);
+	if (!appstream_cache_app_is_compatible (helper->cache, helper->item_temp)) {
+		g_debug ("not compatible with the current desktop: %s", id);
+		appstream_app_free (helper->item_temp);
+		return;
+	}
+
+	/* have we recorded this before? */
+	item = g_hash_table_lookup (priv->hash_id, id);
+	if (item != NULL) {
+		g_warning ("duplicate AppStream entry: %s", id);
+		appstream_app_free (helper->item_temp);
+		return;
+	}
+
+	/* success, add to array */
+	g_ptr_array_add (priv->array, helper->item_temp);
+	g_hash_table_insert (priv->hash_id,
+			     (gpointer) appstream_app_get_id (helper->item_temp),
+			     helper->item_temp);
+	g_hash_table_insert (priv->hash_pkgname,
+			     (gpointer) appstream_app_get_pkgname (helper->item_temp),
+			     helper->item_temp);
+}
+
 /**
  * appstream_cache_end_element_cb:
  */
@@ -317,11 +379,8 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 				gpointer user_data,
 				GError **error)
 {
-	const gchar *id;
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
-	AppstreamCachePrivate *priv = helper->cache->priv;
 	AppstreamCacheSection section_new;
-	AppstreamApp *item;
 
 	section_new = appstream_cache_selection_from_string (element_name);
 	switch (section_new) {
@@ -331,22 +390,8 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		/* ignore */
 		break;
 	case APPSTREAM_CACHE_SECTION_APPLICATION:
-
-		/* have we recorded this before? */
-		id = appstream_app_get_id (helper->item_temp);
-		item = g_hash_table_lookup (priv->hash_id, id);
-		if (item != NULL) {
-			g_warning ("duplicate AppStream entry: %s", id);
-			appstream_app_free (helper->item_temp);
-		} else {
-			g_ptr_array_add (priv->array, helper->item_temp);
-			g_hash_table_insert (priv->hash_id,
-					     (gpointer) appstream_app_get_id (helper->item_temp),
-					     helper->item_temp);
-			g_hash_table_insert (priv->hash_pkgname,
-					     (gpointer) appstream_app_get_pkgname (helper->item_temp),
-					     helper->item_temp);
-		}
+		/* perhaps add application */
+		appstream_cache_add_item (helper);
 		helper->item_temp = NULL;
 		helper->section = APPSTREAM_CACHE_SECTION_APPLICATIONS;
 		break;
@@ -621,6 +666,8 @@ static void
 appstream_cache_init (AppstreamCache *cache)
 {
 	AppstreamCachePrivate *priv;
+	const gchar *tmp;
+
 	priv = cache->priv = APPSTREAM_CACHE_GET_PRIVATE (cache);
 	priv->array = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_app_free);
 	priv->icon_path_array = g_ptr_array_new_with_free_func (g_free);
@@ -632,6 +679,12 @@ appstream_cache_init (AppstreamCache *cache)
 						    g_str_equal,
 						    NULL,
 						    NULL);
+
+	/* by default we only show project-less apps or compatible projects */
+	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
+	if (tmp == NULL)
+		tmp = "GNOME";
+	priv->compatible_projects = g_strsplit (tmp, ",", -1);
 }
 
 /**
@@ -643,6 +696,7 @@ appstream_cache_finalize (GObject *object)
 	AppstreamCache *cache = APPSTREAM_CACHE (object);
 	AppstreamCachePrivate *priv = cache->priv;
 
+	g_strfreev (priv->compatible_projects);
 	g_ptr_array_unref (priv->array);
 	g_ptr_array_unref (priv->icon_path_array);
 	g_hash_table_unref (priv->hash_id);
