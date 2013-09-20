@@ -61,6 +61,8 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 {
         GsAppTilePrivate *priv;
         AtkObject *accessible;
+	gchar *name;
+	gboolean installed;
 
         priv = gs_app_tile_get_instance_private (tile);
         accessible = gtk_widget_get_accessible (priv->button);
@@ -70,24 +72,25 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
         case GS_APP_STATE_INSTALLING:
         case GS_APP_STATE_REMOVING:
         case GS_APP_STATE_UPDATABLE:
-                gtk_widget_show (priv->eventbox);
-                if (GTK_IS_ACCESSIBLE (accessible)) {
-                        gchar *name;
-                        name = g_strdup_printf ("%s (%s)",
-                                                gs_app_get_name (app),
-                                                _("Installed"));
-                        atk_object_set_name (accessible, name);
-                        g_free (name);
-                }
+		installed = TRUE;
+		name = g_strdup_printf ("%s (%s)",
+					gs_app_get_name (app),
+					_("Installed"));
                 break;
         case GS_APP_STATE_AVAILABLE:
         default:
-                gtk_widget_hide (priv->eventbox);
-                if (GTK_IS_ACCESSIBLE (accessible)) {
-                        atk_object_set_name (accessible, gs_app_get_name (app));
-                }
+		installed = FALSE;
+		name = g_strdup (gs_app_get_name (app));
                 break;
         }
+
+	gtk_widget_set_visible (priv->eventbox, installed);
+
+	if (GTK_IS_ACCESSIBLE (accessible)) {
+		atk_object_set_name (accessible, name);
+		atk_object_set_description (accessible, gs_app_get_summary (app));
+	}
+	g_free (name);
 }
 
 void

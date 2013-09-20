@@ -56,6 +56,38 @@ gs_feature_tile_get_app (GsFeatureTile *tile)
 	return priv->app;
 }
 
+static void
+app_state_changed (GsApp *app, GParamSpec *pspec, GsFeatureTile *tile)
+{
+        GsFeatureTilePrivate *priv;
+        AtkObject *accessible;
+        gchar *name;
+
+        priv = gs_feature_tile_get_instance_private (tile);
+        accessible = gtk_widget_get_accessible (priv->button);
+
+        switch (gs_app_get_state (app)) {
+        case GS_APP_STATE_INSTALLED:
+        case GS_APP_STATE_INSTALLING:
+        case GS_APP_STATE_REMOVING:
+        case GS_APP_STATE_UPDATABLE:
+                name = g_strdup_printf ("%s (%s)",
+                                        gs_app_get_name (app),
+                                        _("Installed"));
+                break;
+        case GS_APP_STATE_AVAILABLE:
+        default:
+                name = g_strdup (gs_app_get_name (app));
+                break;
+        }
+
+        if (GTK_IS_ACCESSIBLE (accessible)) {
+                atk_object_set_name (accessible, name);
+                atk_object_set_description (accessible, gs_app_get_summary (app));
+        }
+        g_free (name);
+}
+
 void
 gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 {
@@ -69,6 +101,10 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 
 	g_clear_object (&priv->app);
 	priv->app = g_object_ref (app);
+
+        g_signal_connect (priv->app, "notify::state",
+                          G_CALLBACK (app_state_changed), tile);
+        app_state_changed (priv->app, NULL, tile);
 
 	gtk_label_set_label (GTK_LABEL (priv->title), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (priv->subtitle), gs_app_get_summary (app));
