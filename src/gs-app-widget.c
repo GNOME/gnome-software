@@ -146,8 +146,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	default:
 		break;
 	}
-	gtk_widget_set_visible (priv->button_box, gtk_widget_get_visible (priv->spinner) ||
-						  gtk_widget_get_visible (priv->button));
 }
 
 /**
