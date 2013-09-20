@@ -1,30 +1,4 @@
 
-
-GtkViewport {
-    background-color: transparent;
-}
-
-
-GtkIconView {
-    background-color: transparent;
-}
-
-GtkEventBox.gradient_box_software {
-	/* TODO: Borders are broken for GtkEventBox
-	border-style: solid;
-	border-color: 204a87;
-	border-width: 5px 0px 5px 0px;
-	*/
-
-	background-image:
-		-gtk-gradient (
-			linear,
-			left top,
-			left bottom,
-			from (#214b88),
-			to (#3465a4));
-}
-
 .installed-overlay-box {
 	font-size: 80%;
 	background-color: @theme_selected_bg_color;
@@ -37,7 +11,6 @@ GtkEventBox.gradient_box_software {
 
 .index-title-alignment-software {
 	font-weight: bold;
-	color: #555753;
 	font-size: 14px;
 }
 
@@ -71,7 +44,6 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
 
 .application-details-title {
 	font-weight: bold;
-	color: #555753;
 	font-size: 14px;
 }
 
