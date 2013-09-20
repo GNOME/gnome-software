@@ -291,60 +291,6 @@ out:
 }
 
 /**
- * gs_plugin_add_updates:
- */
-gboolean
-gs_plugin_add_updates (GsPlugin *plugin,
-		       GList **list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	gboolean ret = TRUE;
-	GPtrArray *array = NULL;
-	GsApp *app;
-	guint i;
-	PkBitfield filter;
-	PkPackage *pkg;
-	PkResults *results = NULL;
-
-	/* update UI as this might take some time */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-
-	/* do sync call */
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_ARCH,
-					 PK_FILTER_ENUM_DOWNLOADED,
-					 -1);
-	results = pk_client_get_updates (PK_CLIENT (plugin->priv->task),
-					 filter,
-					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
-					 error);
-	if (results == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-
-	/* add results */
-	array = pk_results_get_package_array (results);
-	for (i = 0; i < array->len; i++) {
-		pkg = g_ptr_array_index (array, i);
-		app = gs_app_new (NULL);
-		gs_app_set_source (app, pk_package_get_name (pkg));
-		gs_app_set_update_version (app, pk_package_get_version (pkg));
-		gs_app_set_management_plugin (app, "PackageKit");
-		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
-		gs_plugin_add_app (list, app);
-	}
-out:
-	if (results != NULL)
-		g_object_unref (results);
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	return ret;
-}
-
-/**
  * gs_plugin_app_install:
  */
 gboolean
