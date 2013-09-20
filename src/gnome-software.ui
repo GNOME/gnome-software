@@ -306,6 +306,9 @@
                                 <property name="margin-left">24</property>
                                 <property name="margin-right">24</property>
                                 <property name="label" translatable="yes">Featured</property>
+                                <accessibility>
+                                  <relation target="bin_featured" type="label-for"/>
+                                </accessibility>
                                 <style>
                                   <class name="index-title-alignment-software"/>
                                 </style>
@@ -322,6 +325,9 @@
                                 <property name="halign">fill</property>
                                 <property name="margin_left">12</property>
                                 <property name="margin_right">12</property>
+                                <accessibility>
+                                  <relation target="featured_heading" type="labelled-by"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -339,6 +345,9 @@
                                 <property name="margin-bottom">12</property>
                                 <property name="margin-left">24</property>
                                 <property name="margin-right">24</property>
+                                <accessibility>
+                                  <relation target="box_popular" type="label-for"/>
+                                </accessibility>
                                 <style>
                                   <class name="index-title-alignment-software"/>
                                 </style>
@@ -358,6 +367,9 @@
                                 <property name="spacing">12</property>
                                 <property name="homogeneous">True</property>
                                 <property name="valign">start</property>
+                                <accessibility>
+                                  <relation target="popular_heading" type="labelled-by"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
@@ -375,6 +387,9 @@
                                 <property name="margin-bottom">12</property>
                                 <property name="margin-left">24</property>
                                 <property name="margin-right">24</property>
+                                <accessibility>
+                                  <relation target="grid_categories" type="label-for"/>
+                                </accessibility>
                                 <style>
                                   <class name="index-title-alignment-software"/>
                                 </style>
@@ -396,6 +411,9 @@
                                 <property name="column_spacing">12</property>
                                 <property name="row_homogeneous">True</property>
                                 <property name="column_homogeneous">True</property>
+                                <accessibility>
+                                  <relation target="category_heading" type="labelled-by"/>
+                                </accessibility>
                               </object>
                               <packing>
                                 <property name="expand">False</property>
