@@ -55,32 +55,38 @@ gs_popular_tile_get_app (GsPopularTile *tile)
 	return priv->app;
 }
 
-static gboolean
-transform_state_func (GBinding *binding,
-		      const GValue *source,
-		      GValue *target,
-		      gpointer user_data)
+static void
+app_state_changed (GsApp *app, GParamSpec *pspec, GsPopularTile *tile)
 {
-	GsAppState state;
-	gboolean installed;
+	GsPopularTilePrivate *priv;
+	AtkObject *accessible;
 
-	state = g_value_get_uint (source);
+	priv = gs_popular_tile_get_instance_private (tile);
+	accessible = gtk_widget_get_accessible (priv->button);
 
-	switch (state) {
+	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLED:
 	case GS_APP_STATE_INSTALLING:
 	case GS_APP_STATE_REMOVING:
 	case GS_APP_STATE_UPDATABLE:
-		installed = TRUE;
+		gtk_widget_show (priv->eventbox);
+		if (GTK_IS_ACCESSIBLE (accessible)) {
+			gchar *name;
+			name = g_strdup_printf ("%s (%s)",
+						gs_app_get_name (app),
+						_("Installed"));
+			atk_object_set_name (accessible, name);
+			g_free (name);
+		}
 		break;
 	case GS_APP_STATE_AVAILABLE:
 	default:
-		installed = FALSE;
+		gtk_widget_hide (priv->eventbox);
+		if (GTK_IS_ACCESSIBLE (accessible)) {
+			atk_object_set_name (accessible, gs_app_get_name (app));
+		}
 		break;
 	}
-	g_value_set_boolean (target, installed);
-
-	return TRUE;
 }
 
 void
@@ -96,11 +102,9 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 	g_clear_object (&priv->app);
 	priv->app = g_object_ref (app);
 
-	g_object_bind_property_full (priv->app, "state",
-				     priv->eventbox, "visible",
-				     G_BINDING_SYNC_CREATE,
-				     transform_state_func,
-				     NULL, NULL, NULL);
+	g_signal_connect (priv->app, "notify::state",
+		 	  G_CALLBACK (app_state_changed), tile);
+	app_state_changed (priv->app, NULL, tile);
 
 	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image), gs_app_get_pixbuf (priv->app));
 
