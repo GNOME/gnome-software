@@ -96,6 +96,22 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
+	if (list != NULL) {
+		gchar *text;
+		/* TRANSLATORS: A label for a button to show only updates
+ 		 * which are available to install. The '%d' refers to the
+ 		 * number of available updates
+ 		 */
+		text = g_strdup_printf (_("_Updates (%d)"), g_list_length (list));
+		gtk_button_set_label (GTK_BUTTON (widget), text);
+		g_free (text);
+	} else {
+		/* TRANSLATORS: A label for a button to show only updates
+ 		 * which are available to install.
+ 		 */
+		gtk_button_set_label (GTK_BUTTON (widget), _("_Updates"));
+	}
+
 	if (list != NULL &&
             gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES &&
             gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATED)
