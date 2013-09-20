@@ -365,6 +365,35 @@ text_changed_handler (GObject *entry, GParamSpec *pspec, GsShell *shell)
 		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
 }
 
+static gboolean
+window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	GdkKeymap *keymap;
+	GdkModifierType state;
+	gboolean is_rtl;
+	GtkWidget *button;
+
+	button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+	if (!gtk_widget_is_visible (button) || !gtk_widget_is_sensitive (button))
+	    	return GDK_EVENT_PROPAGATE;
+
+	state = event->state;
+	keymap = gdk_keymap_get_default ();
+	gdk_keymap_add_virtual_modifiers (keymap, &state);
+	state = state & gtk_accelerator_get_default_mod_mask ();
+	is_rtl = gtk_widget_get_direction (button) == GTK_TEXT_DIR_RTL;
+
+	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
+	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
+	    event->keyval == GDK_KEY_Back) {
+		gtk_widget_activate (button);
+		return GDK_EVENT_STOP;
+	}
+
+	return GDK_EVENT_PROPAGATE;
+}
+
 /**
  * gs_shell_setup:
  */
@@ -389,6 +418,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	/* fix up the header bar */
 	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
+
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
 	g_object_ref (widget);
 	gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (widget)), widget);
@@ -401,6 +431,10 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "back_image"));
 		gtk_image_set_from_icon_name (GTK_IMAGE (widget), "go-previous-rtl-symbolic", GTK_ICON_SIZE_MENU);
 	}
+
+	/* global keynav */
+	g_signal_connect_after (main_window, "key_press_event",
+				G_CALLBACK (window_key_press_event), shell);
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
