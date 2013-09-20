@@ -57,17 +57,11 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="label" translatable="yes" comments="Translators: A label for a button to show all available software.">_All</property>
                         <style>
                           <class name="toolbar-primary-buttons-software"/>
                         </style>
-                        <child>
-                          <object class="GtkLabel" id="label_button_all">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="label" translatable="yes" comments="Translators: A label for a button to show all available software.">_All</property>
-                          </object>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -80,17 +74,11 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="label" translatable="yes" comments="Translators: A label for a button to show only software which is already installed.">_Installed</property>
                         <style>
                           <class name="toolbar-primary-buttons-software"/>
                         </style>
-                        <child>
-                          <object class="GtkLabel" id="label_button_installed">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="label" translatable="yes" comments="Translators: A label for a button to show only software which is already installed.">_Installed</property>
-                          </object>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -103,17 +91,11 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
+                        <property name="use_underline">True</property>
+                        <property name="label" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install.">_Updates</property>
                         <style>
                           <class name="toolbar-primary-buttons-software"/>
                         </style>
-                        <child>
-                          <object class="GtkLabel" id="label_button_updates">
-                            <property name="visible">True</property>
-                            <property name="can_focus">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="label" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install.">_Updates</property>
-                          </object>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
