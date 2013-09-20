@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-19 19:56+0200\n"
-"PO-Revision-Date: 2013-09-19 19:57+0200\n"
+"POT-Creation-Date: 2013-09-20 18:14+0200\n"
+"PO-Revision-Date: 2013-09-20 18:15+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -30,6 +30,15 @@ msgstr "_O programie"
 #: ../src/app-menu.ui.h:2
 msgid "_Quit"
 msgstr "Za_kończ"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/app-tile.ui.h:1 ../src/gs-shell-details.c:397
+#: ../src/gs-shell-installed.c:407 ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "Zainstalowane"
 
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
@@ -107,8 +116,8 @@ msgid "Software is up to date"
 msgstr "Oprogramowanie jest aktualne"
 
 #: ../src/gnome-software.ui.h:18
-msgid "Visit website"
-msgstr "Witryna"
+msgid "Visit _Website"
+msgstr "_Witryna"
 
 #: ../src/gnome-software.ui.h:19
 msgid "_History"
@@ -149,12 +158,12 @@ msgstr ""
 
 #. TRANSLATORS: this is a command line option, please don't
 #. * translate the option names between ‘’
-#: ../src/gs-application.c:215
+#: ../src/gs-application.c:216
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Tryb startowy: \"updates\", \"updated\", \"installed\" lub \"overview\""
 
-#: ../src/gs-application.c:215
+#: ../src/gs-application.c:216
 msgid "MODE"
 msgstr "TRYB"
 
@@ -221,15 +230,6 @@ msgstr ""
 #: ../src/gs-shell-details.c:391
 msgid "Removed"
 msgstr "Usunięte"
-
-#. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing the application was installed
-#. TRANSLATORS: this is tab button to show the list of
-#. * installed software
-#: ../src/gs-shell-details.c:397 ../src/gs-shell-installed.c:407
-#: ../src/popular-tile.ui.h:1
-msgid "Installed"
-msgstr "Zainstalowane"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
@@ -1124,7 +1124,7 @@ msgstr "Telewizja"
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
-#: ../src/plugins/gs-plugin-packagekit.c:510
+#: ../src/plugins/gs-plugin-packagekit.c:424
 msgid "Add-ons"
 msgstr "Dodatki"
 
@@ -1149,27 +1149,27 @@ msgid "Language Packs"
 msgstr "Pakiety językowe"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:514
+#: ../src/plugins/gs-plugin-packagekit.c:428
 msgid "Codecs"
 msgstr "Kodeki"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:518
+#: ../src/plugins/gs-plugin-packagekit.c:432
 msgid "Fonts"
 msgstr "Czcionki"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:522
+#: ../src/plugins/gs-plugin-packagekit.c:436
 msgid "Input Sources"
 msgstr "Źródła wprowadzania"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:526
+#: ../src/plugins/gs-plugin-packagekit.c:440
 msgid "Language Packs"
 msgstr "Pakiety językowe"
 
 #. TRANSLATORS: this is where update details either are
 #. * no longer available or were never provided in the first place
-#: ../src/plugins/gs-plugin-packagekit-refine.c:347
+#: ../src/plugins/gs-plugin-packagekit-refine.c:315
 msgid "No update details were provided"
 msgstr "Nie podano żadnych informacji o aktualizacji"
