@@ -39,6 +39,7 @@ static void	gs_shell_finalize	(GObject	*object);
 
 typedef struct {
 	GsShellMode	 mode;
+	GtkWidget	*focus;
 	GsApp		*app;
 	GsCategory	*category;
 } BackEntry;
@@ -183,6 +184,7 @@ save_back_entry (GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
 	BackEntry *entry;
+	GtkWidget *window;
 
 	entry = g_new0 (BackEntry, 1);
 	entry->mode = priv->mode;
@@ -195,6 +197,9 @@ save_back_entry (GsShell *shell)
 		entry->app = gs_shell_details_get_app (priv->shell_details);
 		g_object_ref (entry->app);
 	}
+
+	window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
+	entry->focus = gtk_window_get_focus (GTK_WINDOW (window));
 
 	priv->back_entry_stack = g_slist_prepend (priv->back_entry_stack, entry);
 }
@@ -221,6 +226,10 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 	priv->back_entry_stack = g_slist_remove (priv->back_entry_stack, entry);
 
 	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category, FALSE);
+
+	if (entry->focus) {
+		gtk_widget_grab_focus (entry->focus);
+	}
 
 	free_back_entry (entry);
 }
