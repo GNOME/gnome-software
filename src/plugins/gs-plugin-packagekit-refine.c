@@ -27,6 +27,8 @@
 #include <gs-plugin.h>
 #include <glib/gi18n.h>
 
+#include "packagekit-common.h"
+
 struct GsPluginPrivate {
 	PkClient		*client;
 };
@@ -80,7 +82,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
 				  gpointer user_data)
 {
-	GsPluginStatus plugin_status = GS_PLUGIN_STATUS_UNKNOWN;
+	GsPluginStatus plugin_status;
 	PkStatusEnum status;
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 
@@ -89,41 +91,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 	g_object_get (progress,
 		      "status", &status,
 		      NULL);
-
-	/* set label */
-	switch (status) {
-	case PK_STATUS_ENUM_SETUP:
-	case PK_STATUS_ENUM_FINISHED:
-	case PK_STATUS_ENUM_UNKNOWN:
-		break;
-	case PK_STATUS_ENUM_WAIT:
-	case PK_STATUS_ENUM_WAITING_FOR_LOCK:
-	case PK_STATUS_ENUM_WAITING_FOR_AUTH:
-		plugin_status = GS_PLUGIN_STATUS_WAITING;
-		break;
-	case PK_STATUS_ENUM_LOADING_CACHE:
-	case PK_STATUS_ENUM_TEST_COMMIT:
-		plugin_status = GS_PLUGIN_STATUS_SETUP;
-		break;
-	case PK_STATUS_ENUM_DOWNLOAD:
-	case PK_STATUS_ENUM_DOWNLOAD_REPOSITORY:
-	case PK_STATUS_ENUM_DOWNLOAD_PACKAGELIST:
-	case PK_STATUS_ENUM_DOWNLOAD_FILELIST:
-	case PK_STATUS_ENUM_DOWNLOAD_CHANGELOG:
-	case PK_STATUS_ENUM_DOWNLOAD_GROUP:
-	case PK_STATUS_ENUM_DOWNLOAD_UPDATEINFO:
-		plugin_status = GS_PLUGIN_STATUS_DOWNLOADING;
-		break;
-	case PK_STATUS_ENUM_QUERY:
-	case PK_STATUS_ENUM_INFO:
-	case PK_STATUS_ENUM_DEP_RESOLVE:
-		plugin_status = GS_PLUGIN_STATUS_QUERYING;
-		break;
-	default:
-		g_warning ("no mapping for %s",
-			   pk_status_enum_to_string (status));
-		break;
-	}
+	plugin_status = packagekit_status_enum_to_plugin_status (status);
 	if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
 		gs_plugin_status_update (plugin, NULL, plugin_status);
 }

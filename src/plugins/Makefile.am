@@ -100,12 +100,18 @@ libgs_plugin_local_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
 libgs_plugin_local_ratings_la_LDFLAGS = -module -avoid-version
 libgs_plugin_local_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
-libgs_plugin_packagekit_la_SOURCES = gs-plugin-packagekit.c
+libgs_plugin_packagekit_la_SOURCES =			\
+	gs-plugin-packagekit.c				\
+	packagekit-common.c				\
+	packagekit-common.h
 libgs_plugin_packagekit_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
-libgs_plugin_packagekit_refine_la_SOURCES = gs-plugin-packagekit-refine.c
+libgs_plugin_packagekit_refine_la_SOURCES =		\
+	gs-plugin-packagekit-refine.c			\
+	packagekit-common.c				\
+	packagekit-common.h
 libgs_plugin_packagekit_refine_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_refine_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_refine_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
