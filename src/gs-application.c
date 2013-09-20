@@ -122,6 +122,7 @@ gs_application_startup (GApplication *application)
 	GtkWindow *window;
 	GFile *file;
 	GError *error = NULL;
+	gchar *theme;
 
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
 
@@ -146,9 +147,15 @@ gs_application_startup (GApplication *application)
 	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
 						   GTK_STYLE_PROVIDER (app->provider),
 						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	file = g_file_new_for_uri ("resource:///org/gnome/software/gtk-style.css");
+	g_object_get (gtk_settings_get_default (), "gtk-theme-name", &theme, NULL);
+	if (g_strcmp0 (theme, "HighContrast") == 0) {
+		file = g_file_new_for_uri ("resource:///org/gnome/software/gtk-style-hc.css");
+	} else {
+		file = g_file_new_for_uri ("resource:///org/gnome/software/gtk-style.css");
+	}
 	gtk_css_provider_load_from_file (app->provider, file, NULL);
 	g_object_unref (file);
+	g_free (theme);
 
 	/* setup pk */
 	app->task = pk_task_new ();

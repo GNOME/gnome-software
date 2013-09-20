@@ -1,0 +1,22 @@
+.installed-overlay-box {
+	font-size: 80%;
+	background-color: @theme_button_active_bg;
+	border-radius: 4px;
+	color: @theme_base_color;
+}
+
+.installed-overlay-label { }
+
+@keyframes throbbing {
+        0% { background-image: linear-gradient(to bottom, transparent, transparent); }
+}
+
+.needs-attention {
+        background-image: linear-gradient(to bottom, @theme_button_active_bg, @theme_button_active_bg);
+        animation: throbbing linear 1s infinite alternate;
+}
+
+.application-details-title {
+	font-weight: bold;
+	font-size: 14px;
+}

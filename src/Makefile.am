@@ -128,6 +128,7 @@ EXTRA_DIST =						\
 	gnome-software.gresource.xml			\
 	gnome-software.xml				\
 	gtk-style.css					\
+	gtk-style-hc.css					\
 	shadow.png					\
 	shadow-active.png				\
 	$(desktop_in_files)				\
