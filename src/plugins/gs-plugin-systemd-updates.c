@@ -76,7 +76,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	/* add them to the new array */
 	package_ids = g_strsplit (data, "\n", -1);
 	for (i = 0; package_ids[i] != NULL; i++) {
-		g_warning ("%s", package_ids[i]);
 		app = gs_app_new (NULL);
 		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_set_metadata (app,
