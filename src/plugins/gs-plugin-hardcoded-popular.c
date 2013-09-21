@@ -224,17 +224,13 @@ gs_plugin_add_categories (GsPlugin *plugin,
 				id = gs_category_get_id (parent);
 				if (g_strcmp0 (last_id, id) == 0) {
 					cat = gs_category_new (parent, "featured", _("Featured"));
-					/* always show these, even if small */
-					gs_category_increment_size (cat);
-					gs_category_increment_size (cat);
-					gs_category_increment_size (cat);
-					gs_category_increment_size (cat);
-
 					gs_category_add_subcategory (parent, cat);
 					break;
 				}
 			}
 		}
+		if (cat)
+			gs_category_increment_size (cat);
 	}
 
 	return TRUE;
