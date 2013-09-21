@@ -33,6 +33,16 @@
 #include "gs-shell-updates.h"
 #include "gs-shell-category.h"
 
+static const gchar *page_name[] = {
+	"overview",
+	"installed",
+	"search",
+	"updates",
+	"details",
+	"category",
+	"updates"
+};
+
 static void	gs_shell_finalize	(GObject	*object);
 
 #define GS_SHELL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL, GsShellPrivate))
@@ -130,9 +140,8 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 	priv->ignore_primary_buttons = FALSE;
 
 	/* switch page */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "notebook_main"));
-	gtk_notebook_set_current_page (GTK_NOTEBOOK (widget),
-				       mode == GS_SHELL_MODE_UPDATED ? GS_SHELL_MODE_UPDATES : mode);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_main"));
+	gtk_stack_set_visible_child_name (GTK_STACK (widget), page_name[mode]);
 
 	/* do action for mode */
 	priv->mode = mode;
