@@ -483,10 +483,19 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 static void
 scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 {
-	if (gtk_widget_get_mapped (GTK_WIDGET (sb)))
+        GtkWidget *frame;
+
+        frame = gtk_bin_get_child (GTK_BIN (gtk_bin_get_child (GTK_BIN (swin))));
+
+	if (gtk_widget_get_mapped (GTK_WIDGET (sb))) {
 		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_IN);
-	else
+		if (GTK_IS_FRAME (frame))
+			gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
+	} else {
+		if (GTK_IS_FRAME (frame))
+			gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
 		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
+	}
 }
 
 static void
@@ -553,6 +562,11 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			  G_CALLBACK (gs_shell_updates_button_back_cb),
 			  shell_updates);
 	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update_details"));
+	widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
+	g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
+	g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
+
+	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
 	widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
 	g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
 	g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
