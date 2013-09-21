@@ -29,10 +29,6 @@
 #include "gs-app-tile.h"
 #include "gs-shell-category.h"
 
-/* This is the smallest number of applications that will be shown in a
- * subcategory. Any smaller than this and the subcategory will be hidden. */
-#define MIN_APPLICATIONS_IN_SUBCATEGORY	4
-
 struct GsShellCategoryPrivate {
 	GsPluginLoader	*plugin_loader;
 	GtkBuilder	*builder;
@@ -127,6 +123,8 @@ gs_shell_category_populate_filtered (GsShellCategory *shell)
 	GsShellCategoryPrivate *priv = shell->priv;
 	GtkWidget *grid;
 	GsCategory *parent;
+	GtkWidget *tile;
+	guint i;
 
 	g_cancellable_cancel (priv->cancellable);
 	g_cancellable_reset (priv->cancellable);
@@ -144,6 +142,11 @@ gs_shell_category_populate_filtered (GsShellCategory *shell)
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
 	gtk_grid_remove_column (GTK_GRID (grid), 1);
 	gtk_grid_remove_column (GTK_GRID (grid), 0);
+
+	for (i = 0; i < MIN (30, gs_category_get_size (priv->category)); i++) {
+		tile = gs_app_tile_new (NULL);
+		gtk_grid_attach (GTK_GRID (grid), tile, (i % 2), i / 2, 1, 1);
+	}
 
 	gtk_grid_attach (GTK_GRID (grid), priv->col0_placeholder, 0, 0, 1, 1);
 	gtk_grid_attach (GTK_GRID (grid), priv->col1_placeholder, 1, 0, 1, 1);
@@ -212,7 +215,7 @@ gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *catego
 
 	for  (l = list; l; l = l->next) {
 		s = l->data;
-		if (gs_category_get_size (s) < MIN_APPLICATIONS_IN_SUBCATEGORY)
+		if (gs_category_get_size (s) < 1)
 			continue;
 		row = gtk_label_new (gs_category_get_name (s));
 		g_object_set_data_full (G_OBJECT (row), "category", g_object_ref (s), g_object_unref);
