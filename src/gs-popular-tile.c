@@ -98,11 +98,13 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 	GsPopularTilePrivate *priv;
 
 	g_return_if_fail (GS_IS_POPULAR_TILE (tile));
-	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
 	priv = gs_popular_tile_get_instance_private (tile);
 
 	g_clear_object (&priv->app);
+	if (!app)
+		return;
 	priv->app = g_object_ref (app);
 
 	g_signal_connect (priv->app, "notify::state",
@@ -130,7 +132,10 @@ gs_popular_tile_destroy (GtkWidget *widget)
 static void
 button_clicked (GsPopularTile *tile)
 {
-	g_signal_emit (tile, signals[SIGNAL_CLICKED], 0);
+	GsPopularTilePrivate *priv;
+	priv = gs_popular_tile_get_instance_private (tile);
+	if (priv->app)
+		g_signal_emit (tile, signals[SIGNAL_CLICKED], 0);
 }
 
 static void

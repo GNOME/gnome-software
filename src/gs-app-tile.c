@@ -100,11 +100,16 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 	const gchar *summary;
 
 	g_return_if_fail (GS_IS_APP_TILE (tile));
-	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
 	priv = gs_app_tile_get_instance_private (tile);
 
+	gtk_image_clear (GTK_IMAGE (priv->image));
+	gtk_image_set_pixel_size (GTK_IMAGE (priv->image), 64);
+
 	g_clear_object (&priv->app);
+	if (!app)
+		return;
 	priv->app = g_object_ref (app);
 
         g_signal_connect (priv->app, "notify::state",
@@ -134,7 +139,11 @@ gs_app_tile_destroy (GtkWidget *widget)
 static void
 button_clicked (GsAppTile *tile)
 {
-	g_signal_emit (tile, signals[SIGNAL_CLICKED], 0);
+	GsAppTilePrivate *priv;
+
+	priv = gs_app_tile_get_instance_private (tile);
+	if (priv->app)
+		g_signal_emit (tile, signals[SIGNAL_CLICKED], 0);
 }
 
 static void
