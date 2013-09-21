@@ -7,17 +7,18 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-19 01:13+0200\n"
-"PO-Revision-Date: 2013-09-19 01:13+0200\n"
-"Last-Translator: Gabor Kelemen <kelemeng at gnome dot hu>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-09-21 00:54+0000\n"
+"PO-Revision-Date: 2013-09-21 19:38+0200\n"
+"Last-Translator: Balázs Úr <urbalazs at gmail dot com>\n"
 "Language-Team: Hungarian <gnome-hu-list@gnome.org>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 1.2\n"
 
 #: ../src/app-menu.ui.h:1
 msgid "_About"
@@ -27,10 +28,17 @@ msgstr "_Névjegy"
 msgid "_Quit"
 msgstr "_Kilépés"
 
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#: ../src/app-tile.ui.h:1 ../src/gs-shell-details.c:397
+#: ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "Telepítve"
+
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
-#: ../src/gs-application.c:89 ../src/gs-shell.c:117
+#: ../src/gs-application.c:89 ../src/gs-shell.c:128
 msgid "Software"
 msgstr "Szoftverek"
 
@@ -38,22 +46,31 @@ msgstr "Szoftverek"
 msgid "Add, remove or update software on this computer"
 msgstr "Szoftver hozzáadása, eltávolítása vagy frissítése ezen a számítógépen"
 
+#: ../src/gnome-software.ui.h:2
+msgid "Go back"
+msgstr "Vissza"
+
 #. Translators: A label for a button to show all available software.
-#: ../src/gnome-software.ui.h:3
+#: ../src/gnome-software.ui.h:4
 msgid "_All"
 msgstr "Öss_zes"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: ../src/gnome-software.ui.h:5
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:407
 msgid "_Installed"
 msgstr "_Telepítve"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: ../src/gnome-software.ui.h:7
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install.
+#.
+#: ../src/gnome-software.ui.h:8 ../src/gs-shell-updates.c:112
 msgid "_Updates"
 msgstr "_Frissítések"
 
-#: ../src/gnome-software.ui.h:8
+#: ../src/gnome-software.ui.h:9
 msgid "Restart & Install"
 msgstr "Újraindítás és telepítés"
 
@@ -61,7 +78,7 @@ msgstr "Újraindítás és telepítés"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gnome-software.ui.h:9 ../src/gs-app-widget.c:109
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:109
 #: ../src/gs-shell-details.c:91
 msgid "Install"
 msgstr "Telepítés"
@@ -70,59 +87,53 @@ msgstr "Telepítés"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:116
-#: ../src/gs-shell-details.c:123 ../src/gs-shell-details.c:309
-#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:112
+#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:117
+#: ../src/gs-shell-details.c:123 ../src/gs-shell-details.c:314
+#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:113
 msgid "Remove"
 msgstr "Eltávolítás"
 
-#: ../src/gnome-software.ui.h:11
+#: ../src/gnome-software.ui.h:12
+#: ../src/plugins/gs-plugin-hardcoded-popular.c:226
 msgid "Featured"
 msgstr "Kiemelt"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: ../src/gnome-software.ui.h:13
+#: ../src/gnome-software.ui.h:14
 msgid "Picks"
 msgstr "Ajánlottak"
 
-#: ../src/gnome-software.ui.h:14
+#: ../src/gnome-software.ui.h:15
 msgid "Categories"
 msgstr "Kategóriák"
 
-#: ../src/gnome-software.ui.h:15
+#: ../src/gnome-software.ui.h:16
 msgid "No Application Data Found"
 msgstr "Nem találhatók alkalmazásadatok"
 
-#: ../src/gnome-software.ui.h:16
+#: ../src/gnome-software.ui.h:17
 msgid "No Application Found"
 msgstr "Nem található alkalmazás"
 
-#: ../src/gnome-software.ui.h:17
+#: ../src/gnome-software.ui.h:18
 msgid "Software is up to date"
 msgstr "A szoftverek naprakészek"
 
-#: ../src/gnome-software.ui.h:18
-msgid "Visit website"
-msgstr "Honlap felkeresése"
-
 #: ../src/gnome-software.ui.h:19
+#| msgid "Visit website"
+msgid "Visit _Website"
+msgstr "_Honlap felkeresése"
+
+#: ../src/gnome-software.ui.h:20
 msgid "_History"
 msgstr "_Előzmények"
 
-#: ../src/gnome-software.ui.h:20
-msgid "Application"
-msgstr "Alkalmazás"
-
 #: ../src/gnome-software.ui.h:21
-msgid "Category"
-msgstr "Kategória"
-
-#: ../src/gnome-software.ui.h:22
 msgid "History"
 msgstr "Előzmények"
 
 #. Translators: Label for a button to close the update dialogue.
-#: ../src/gnome-software.ui.h:24
+#: ../src/gnome-software.ui.h:23
 msgid "Done"
 msgstr "Kész"
 
@@ -144,18 +155,18 @@ msgstr ""
 
 #. TRANSLATORS: this is a command line option, please don't
 #. * translate the option names between ‘’
-#: ../src/gs-application.c:215
+#: ../src/gs-application.c:223
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Indítási mód: az „updates”, „updated”, „installed” vagy „overwiew” egyike"
 
-#: ../src/gs-application.c:215
+#: ../src/gs-application.c:223
 msgid "MODE"
 msgstr "MÓD"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be updated. not normally shown
-#: ../src/gs-app-widget.c:125
+#: ../src/gs-app-widget.c:126
 msgid "Update"
 msgstr "Frissítés"
 
@@ -163,22 +174,22 @@ msgstr "Frissítés"
 #. * shows the status of an application being installed
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-app-widget.c:134 ../src/gs-shell-details.c:99
+#: ../src/gs-app-widget.c:135 ../src/gs-shell-details.c:99
 msgid "Installing"
 msgstr "Telepítés"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-app-widget.c:143 ../src/gs-shell-details.c:130
+#: ../src/gs-app-widget.c:144 ../src/gs-shell-details.c:130
 msgid "Removing"
 msgstr "Eltávolítás"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:149
-msgid "General"
-msgstr "Általános"
+#: ../src/gs-category.c:165
+msgid "Other"
+msgstr "Egyéb"
 
 #. TRANSLATORS: this is a group of updates that are not packages and
 #. * are ot shown in the main list
@@ -196,44 +207,35 @@ msgstr ""
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:294 ../src/gs-shell-installed.c:150
-#: ../src/gs-shell-search.c:97
+#: ../src/gs-shell-details.c:299 ../src/gs-shell-installed.c:150
+#: ../src/gs-shell-search.c:98
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Biztos, hogy el akarja távolítani a következőt: „%s”?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:306 ../src/gs-shell-installed.c:162
-#: ../src/gs-shell-search.c:109
+#: ../src/gs-shell-details.c:311 ../src/gs-shell-installed.c:162
+#: ../src/gs-shell-search.c:110
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s eltávolításra kerül, és telepíteni kell a jövőbeli használatához."
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:386
+#: ../src/gs-shell-details.c:391
 msgid "Removed"
 msgstr "Eltávolítva"
 
 #. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing the application was installed
-#. TRANSLATORS: this is tab button to show the list of
-#. * installed software
-#: ../src/gs-shell-details.c:392 ../src/gs-shell-installed.c:407
-#: ../src/popular-tile.ui.h:1
-msgid "Installed"
-msgstr "Telepítve"
-
-#. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gs-shell-details.c:397
+#: ../src/gs-shell-details.c:402
 msgid "Updated"
 msgstr "Frissítve"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-shell-details.c:403
+#: ../src/gs-shell-details.c:408
 msgid "Unknown"
 msgstr "Ismeretlen"
 
@@ -242,12 +244,23 @@ msgstr "Ismeretlen"
 #. * applications either installing or erasing
 #: ../src/gs-shell-installed.c:412
 #, c-format
-msgid "Installed (%d)"
-msgstr "Telepítve (%d)"
+#| msgid "Installed (%d)"
+msgid "_Installed (%d)"
+msgstr "_Telepítve (%d)"
+
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install. The '%d' refers to the
+#. * number of available updates
+#.
+#: ../src/gs-shell-updates.c:105
+#, c-format
+#| msgid "_Updates"
+msgid "_Updates (%d)"
+msgstr "_Frissítések (%d)"
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:154
+#: ../src/gs-shell-updates.c:170
 msgid "Recent Software Updates"
 msgstr "Legutóbbi szoftverfrissítések"
 
@@ -262,6 +275,12 @@ msgstr "%s telepítve lett"
 #: ../src/gs-utils.c:169
 msgid "Launch"
 msgstr "Indítás"
+
+#: ../src/plugins/gs-plugin-appstream.c:198
+#, c-format
+#| msgid "No Application Data Found"
+msgid "No AppStream data found"
+msgstr "Nem találhatók alkalmazásadatok"
 
 #. TRANSLATORS: this is the menu spec main category for Audio
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:57
@@ -978,167 +997,132 @@ msgctxt "Menu subcategory of Science"
 msgid "Sports"
 msgstr "Sport"
 
-#. TRANSLATORS: this is the menu spec main category for Settings
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:494
-msgid "Settings"
-msgstr "Beállítások"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:497
-msgctxt "Menu subcategory of Settings"
-msgid "Accessibility"
-msgstr "Akadálymentesítés"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:500
-msgctxt "Menu subcategory of Settings"
-msgid "Desktop Settings"
-msgstr "Asztal beállításai"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:503
-msgctxt "Menu subcategory of Settings"
-msgid "Hardware Settings"
-msgstr "Hardverbeállítások"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
-msgctxt "Menu subcategory of Settings"
-msgid "Package Manager"
-msgstr "Csomagkezelő"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
-msgctxt "Menu subcategory of Settings"
-msgid "Printing"
-msgstr "Nyomtatás"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
-msgctxt "Menu subcategory of Settings"
-msgid "Security"
-msgstr "Biztonság"
-
 #. TRANSLATORS: this is the menu spec main category for System
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:516
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:494
 msgid "System"
 msgstr "Rendszer"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:519
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:497
 msgctxt "Menu subcategory of System"
 msgid "Emulator"
 msgstr "Emulátor"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:522
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:500
 msgctxt "Menu subcategory of System"
 msgid "File Manager"
 msgstr "Fájlkezelő"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:525
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:503
 msgctxt "Menu subcategory of System"
 msgid "File System"
 msgstr "Fájlrendszer"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
 msgctxt "Menu subcategory of System"
 msgid "File Tools"
 msgstr "Fájleszközök"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
 msgctxt "Menu subcategory of System"
 msgid "Monitor"
 msgstr "Megfigyelés"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:534
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
 msgctxt "Menu subcategory of System"
 msgid "Security"
 msgstr "Biztonság"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:537
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:515
 msgctxt "Menu subcategory of System"
 msgid "Terminal Emulator"
 msgstr "Terminálemulátor"
 
 #. TRANSLATORS: this is the menu spec main category for Utility
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:541
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:519
 msgid "Utilities"
 msgstr "Segédprogramok"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:544
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:522
 msgctxt "Menu subcategory of Utility"
 msgid "Accessibility"
 msgstr "Akadálymentesítés"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:547
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:525
 msgctxt "Menu subcategory of Utility"
 msgid "Archiving"
 msgstr "Archiválás"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:550
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
 msgctxt "Menu subcategory of Utility"
 msgid "Calculator"
 msgstr "Számológép"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:553
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
 msgctxt "Menu subcategory of Utility"
 msgid "Clock"
 msgstr "Óra"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:556
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:534
 msgctxt "Menu subcategory of Utility"
 msgid "Compression"
 msgstr "Tömörítés"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:559
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:537
 msgctxt "Menu subcategory of Utility"
 msgid "File Tools"
 msgstr "Fájleszközök"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:540
 msgctxt "Menu subcategory of Utility"
 msgid "Maps"
 msgstr "Térképek"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:543
 msgctxt "Menu subcategory of Utility"
 msgid "Spirituality"
 msgstr "Spiritualitás"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:546
 msgctxt "Menu subcategory of Utility"
 msgid "Telephony Tools"
 msgstr "Telefoneszközök"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:549
 msgctxt "Menu subcategory of Utility"
 msgid "Text Editor"
 msgstr "Szövegszerkesztő"
 
 #. TRANSLATORS: this is the menu spec main category for Video
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:553
 msgid "Video"
 msgstr "Videó"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:578
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:556
 msgctxt "Menu subcategory of Video"
 msgid "Editing"
 msgstr "Szerkesztés"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:581
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:559
 msgctxt "Menu subcategory of Video"
 msgid "Database"
 msgstr "Adatbázis"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:584
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
 msgctxt "Menu subcategory of Video"
 msgid "Disc Burning"
 msgstr "Lemezírás"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
 msgctxt "Menu subcategory of Video"
 msgid "Players"
 msgstr "Lejátszók"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:590
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
 msgctxt "Menu subcategory of Video"
 msgid "Recorders"
 msgstr "Felvevők"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:593
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
 msgctxt "Menu subcategory of Video"
 msgid "TV"
 msgstr "TV"
@@ -1146,56 +1130,92 @@ msgstr "TV"
 #. TRANSLATORS: this is the main category for Add-ons
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:597
-#: ../src/plugins/gs-plugin-packagekit.c:510
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
+#: ../src/plugins/gs-plugin-packagekit.c:424
 msgid "Add-ons"
 msgstr "Kiegészítők"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:600
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:578
 msgctxt "Menu subcategory of Addons"
 msgid "Fonts"
 msgstr "Betűkészletek"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:603
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:581
 msgctxt "Menu subcategory of Addons"
 msgid "Codecs"
 msgstr "Kodekek"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:606
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:584
 msgctxt "Menu subcategory of Addons"
 msgid "Input Sources"
 msgstr "Beviteli források"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:609
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
 msgctxt "Menu subcategory of Addons"
 msgid "Language Packs"
 msgstr "Nyelvi csomagok"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:514
+#: ../src/plugins/gs-plugin-packagekit.c:428
 msgid "Codecs"
 msgstr "Kodekek"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:518
+#: ../src/plugins/gs-plugin-packagekit.c:432
 msgid "Fonts"
 msgstr "Betűkészletek"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:522
+#: ../src/plugins/gs-plugin-packagekit.c:436
 msgid "Input Sources"
 msgstr "Beviteli források"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:526
+#: ../src/plugins/gs-plugin-packagekit.c:440
 msgid "Language Packs"
 msgstr "Nyelvi csomagok"
 
 #. TRANSLATORS: this is where update details either are
 #. * no longer available or were never provided in the first place
-#: ../src/plugins/gs-plugin-packagekit-refine.c:347
+#: ../src/plugins/gs-plugin-packagekit-refine.c:315
 msgid "No update details were provided"
 msgstr "Nem lettek megadva a frissítés részletei"
+
+#~ msgid "Application"
+#~ msgstr "Alkalmazás"
+
+#~ msgid "Category"
+#~ msgstr "Kategória"
+
+#~ msgid "General"
+#~ msgstr "Általános"
+
+#~ msgid "Settings"
+#~ msgstr "Beállítások"
+
+#~ msgctxt "Menu subcategory of Settings"
+#~ msgid "Accessibility"
+#~ msgstr "Akadálymentesítés"
+
+#~ msgctxt "Menu subcategory of Settings"
+#~ msgid "Desktop Settings"
+#~ msgstr "Asztal beállításai"
+
+#~ msgctxt "Menu subcategory of Settings"
+#~ msgid "Hardware Settings"
+#~ msgstr "Hardverbeállítások"
+
+#~ msgctxt "Menu subcategory of Settings"
+#~ msgid "Package Manager"
+#~ msgstr "Csomagkezelő"
+
+#~ msgctxt "Menu subcategory of Settings"
+#~ msgid "Printing"
+#~ msgstr "Nyomtatás"
+
+#~ msgctxt "Menu subcategory of Settings"
+#~ msgid "Security"
+#~ msgstr "Biztonság"
 
 #~| msgid "Software"
 #~ msgid "GNOME Software"
