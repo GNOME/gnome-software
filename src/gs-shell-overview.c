@@ -92,14 +92,16 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
+	gtk_widget_set_visible (GTK_WIDGET (gtk_builder_get_object (priv->builder, "popular_heading")), list != NULL);
 	if (list == NULL) {
 		g_warning ("failed to get popular apps: %s", error->message);
-		gtk_widget_hide (GTK_WIDGET (gtk_builder_get_object (priv->builder, "popular_heading")));
 		g_error_free (error);
 		goto out;
 	}
 
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
+	gs_container_remove_all (GTK_CONTAINER (grid));
+
 	for (l = list, i = 0; l != NULL && i < 6; l = l->next, i++) {
 		app = GS_APP (l->data);
 		tile = gs_popular_tile_new (app);
@@ -141,12 +143,15 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GsApp *app;
 
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
+	gtk_widget_set_visible (GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_heading")), list != NULL);
 	if (list == NULL) {
 		g_warning ("failed to get featured apps: %s", error->message);
-		gtk_widget_hide (GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_heading")));
 		g_error_free (error);
 		goto out;
 	}
+
+	box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
+	gs_container_remove_all (GTK_CONTAINER (box));
 
 	/* at the moment, we only care about the first app */
 	app = GS_APP (list->data);
@@ -154,7 +159,6 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	g_signal_connect (tile, "clicked",
 			  G_CALLBACK (feature_tile_clicked), shell);
 
-	box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
 	gtk_container_add (GTK_CONTAINER (box), tile);
 
 	priv->empty = FALSE;
@@ -204,6 +208,8 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		goto out;
 	}
 	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
+	gs_container_remove_all (GTK_CONTAINER (grid));
+
 	for (l = list, i = 0; l; l = l->next) {
 		cat = GS_CATEGORY (l->data);
 		if (gs_category_get_size (cat) == 0)
@@ -219,9 +225,9 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 out:
 	if (has_category) {
 		priv->empty = FALSE;
-	} else {
-		gtk_widget_hide (GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_heading")));
 	}
+	gtk_widget_set_visible (GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_heading")), has_category);
+
 	priv->cache_valid = TRUE;
 	priv->refresh_count--;
 	if (priv->refresh_count == 0)
@@ -236,7 +242,6 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 {
 	GsShellOverviewPrivate *priv = shell->priv;
 	GtkWidget *widget;
-	GtkWidget *grid;
 	GtkAdjustment *adj;
 
 	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_OVERVIEW) {
@@ -260,16 +265,6 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 
 	if (priv->cache_valid)
 		return;
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
-	gs_container_remove_all (GTK_CONTAINER (grid));
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
-	gs_container_remove_all (GTK_CONTAINER (grid));
-
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
-	gs_container_remove_all (GTK_CONTAINER (grid));
-
 
 	priv->empty = TRUE;
 	priv->refresh_count = 3;
@@ -303,6 +298,8 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 	GsShellOverviewPrivate *priv = shell_overview->priv;
 	GtkWidget *sw, *widget;
 	GtkAdjustment *adj;
+	GtkWidget *grid, *tile;
+	gint i;
 
 	g_return_if_fail (GS_IS_SHELL_OVERVIEW (shell_overview));
 
@@ -317,6 +314,16 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
  	widget = GTK_WIDGET (gtk_builder_get_object (builder, "box_overview"));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (widget), adj);
+
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
+	tile = gs_feature_tile_new (NULL);
+	gtk_container_add (GTK_CONTAINER (grid), tile);
+
+	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
+	for (i = 0; i < 6; i++) {
+		tile = gs_popular_tile_new (NULL);
+		gtk_box_pack_start (GTK_BOX (grid), tile, TRUE, TRUE, 0);
+	}
 }
 
 static void
