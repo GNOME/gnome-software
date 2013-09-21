@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2013-09-20 18:14+0200\n"
-"PO-Revision-Date: 2013-09-20 18:15+0200\n"
+"POT-Creation-Date: 2013-09-21 19:21+0200\n"
+"PO-Revision-Date: 2013-09-21 19:22+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -33,17 +33,16 @@ msgstr "Za_kończ"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#. TRANSLATORS: this is tab button to show the list of
-#. * installed software
-#: ../src/app-tile.ui.h:1 ../src/gs-shell-details.c:397
-#: ../src/gs-shell-installed.c:407 ../src/popular-tile.ui.h:1
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:76
+#: ../src/gs-popular-tile.c:77 ../src/gs-shell-details.c:397
+#: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Zainstalowane"
 
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
-#: ../src/gs-application.c:89 ../src/gs-shell.c:117
+#: ../src/gs-application.c:89 ../src/gs-shell.c:128
 msgid "Software"
 msgstr "Oprogramowanie"
 
@@ -51,22 +50,31 @@ msgstr "Oprogramowanie"
 msgid "Add, remove or update software on this computer"
 msgstr "Dodawanie, usuwanie i aktualizowanie oprogramowania na komputerze"
 
+#: ../src/gnome-software.ui.h:2
+msgid "Go back"
+msgstr "Wstecz"
+
 #. Translators: A label for a button to show all available software.
-#: ../src/gnome-software.ui.h:3
+#: ../src/gnome-software.ui.h:4
 msgid "_All"
 msgstr "_Wszystkie"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: ../src/gnome-software.ui.h:5
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:407
 msgid "_Installed"
 msgstr "_Zainstalowane"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: ../src/gnome-software.ui.h:7
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install.
+#.
+#: ../src/gnome-software.ui.h:8 ../src/gs-shell-updates.c:112
 msgid "_Updates"
 msgstr "_Aktualizacje"
 
-#: ../src/gnome-software.ui.h:8
+#: ../src/gnome-software.ui.h:9
 msgid "Restart & Install"
 msgstr "Uruchom ponownie i zainstaluj"
 
@@ -74,7 +82,7 @@ msgstr "Uruchom ponownie i zainstaluj"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gnome-software.ui.h:9 ../src/gs-app-widget.c:109
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:109
 #: ../src/gs-shell-details.c:91
 msgid "Install"
 msgstr "Zainstaluj"
@@ -83,60 +91,52 @@ msgstr "Zainstaluj"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:117
+#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:117
 #: ../src/gs-shell-details.c:123 ../src/gs-shell-details.c:314
-#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:112
+#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:113
 msgid "Remove"
 msgstr "Usuń"
 
-#: ../src/gnome-software.ui.h:11
+#: ../src/gnome-software.ui.h:12
 #: ../src/plugins/gs-plugin-hardcoded-popular.c:226
 msgid "Featured"
 msgstr "Polecane"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: ../src/gnome-software.ui.h:13
+#: ../src/gnome-software.ui.h:14
 msgid "Picks"
 msgstr "Nasz wybór"
 
-#: ../src/gnome-software.ui.h:14
+#: ../src/gnome-software.ui.h:15
 msgid "Categories"
 msgstr "Kategorie"
 
-#: ../src/gnome-software.ui.h:15
+#: ../src/gnome-software.ui.h:16
 msgid "No Application Data Found"
 msgstr "Nie odnaleziono danych programu"
 
-#: ../src/gnome-software.ui.h:16
+#: ../src/gnome-software.ui.h:17
 msgid "No Application Found"
 msgstr "Nie odnaleziono żadnego programu"
 
-#: ../src/gnome-software.ui.h:17
+#: ../src/gnome-software.ui.h:18
 msgid "Software is up to date"
 msgstr "Oprogramowanie jest aktualne"
 
-#: ../src/gnome-software.ui.h:18
+#: ../src/gnome-software.ui.h:19
 msgid "Visit _Website"
 msgstr "_Witryna"
 
-#: ../src/gnome-software.ui.h:19
+#: ../src/gnome-software.ui.h:20
 msgid "_History"
 msgstr "_Historia"
 
-#: ../src/gnome-software.ui.h:20
-msgid "Application"
-msgstr "Program"
-
 #: ../src/gnome-software.ui.h:21
-msgid "Category"
-msgstr "Kategoria"
-
-#: ../src/gnome-software.ui.h:22
 msgid "History"
 msgstr "Historia"
 
 #. Translators: Label for a button to close the update dialogue.
-#: ../src/gnome-software.ui.h:24
+#: ../src/gnome-software.ui.h:23
 msgid "Done"
 msgstr "Gotowe"
 
@@ -158,12 +158,12 @@ msgstr ""
 
 #. TRANSLATORS: this is a command line option, please don't
 #. * translate the option names between ‘’
-#: ../src/gs-application.c:216
+#: ../src/gs-application.c:222
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Tryb startowy: \"updates\", \"updated\", \"installed\" lub \"overview\""
 
-#: ../src/gs-application.c:216
+#: ../src/gs-application.c:222
 msgid "MODE"
 msgstr "TRYB"
 
@@ -211,14 +211,14 @@ msgstr ""
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
 #: ../src/gs-shell-details.c:299 ../src/gs-shell-installed.c:150
-#: ../src/gs-shell-search.c:97
+#: ../src/gs-shell-search.c:98
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Na pewno usunąć program %s?"
 
 #. TRANSLATORS: longer dialog text
 #: ../src/gs-shell-details.c:311 ../src/gs-shell-installed.c:162
-#: ../src/gs-shell-search.c:109
+#: ../src/gs-shell-search.c:110
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -249,12 +249,21 @@ msgstr "Nieznane"
 #. * applications either installing or erasing
 #: ../src/gs-shell-installed.c:412
 #, c-format
-msgid "Installed (%d)"
-msgstr "Zainstalowane (%d)"
+msgid "_Installed (%d)"
+msgstr "Za_instalowane (%d)"
+
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install. The '%d' refers to the
+#. * number of available updates
+#.
+#: ../src/gs-shell-updates.c:105
+#, c-format
+msgid "_Updates (%d)"
+msgstr "_Aktualizacje (%d)"
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:154
+#: ../src/gs-shell-updates.c:170
 msgid "Recent Software Updates"
 msgstr "Ostatnie aktualizacje oprogramowania"
 
