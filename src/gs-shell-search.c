@@ -44,6 +44,7 @@ struct GsShellSearchPrivate
 	GtkSizeGroup		*sizegroup_name;
 	gboolean		 waiting;
 	GsShell			*shell;
+	gchar			*value;
 };
 
 G_DEFINE_TYPE (GsShellSearch, gs_shell_search, G_TYPE_OBJECT)
@@ -207,7 +208,7 @@ out: ;
  * gs_shell_search_refresh:
  **/
 void
-gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value)
+gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboolean scroll_up)
 {
 	GsShellSearchPrivate *priv = shell_search->priv;
 	GtkWidget *widget;
@@ -221,6 +222,19 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value)
 
 	if (priv->waiting)
 		return;
+
+        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_search"));
+        if (scroll_up) {
+                GtkAdjustment *adj;
+                adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
+                gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+        }
+
+	if (g_strcmp0 (value, priv->value) == 0)
+		return;
+
+	g_free (priv->value);
+	priv->value = g_strdup (value);
 
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_search));
@@ -372,6 +386,7 @@ gs_shell_search_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
+	g_free (priv->value);
 
 	G_OBJECT_CLASS (gs_shell_search_parent_class)->finalize (object);
 }

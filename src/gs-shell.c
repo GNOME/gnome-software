@@ -146,7 +146,7 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 	case GS_SHELL_MODE_SEARCH:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		text = gtk_entry_get_text (GTK_ENTRY (widget));
-		gs_shell_search_refresh (priv->shell_search, text);
+		gs_shell_search_refresh (priv->shell_search, text, scroll_up);
 		break;
 	case GS_SHELL_MODE_UPDATES:
 		gs_shell_updates_refresh (priv->shell_updates, FALSE, scroll_up);
@@ -258,7 +258,7 @@ gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
 		return;
 
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
-		gs_shell_search_refresh (priv->shell_search, text);
+		gs_shell_search_refresh (priv->shell_search, text, TRUE);
 	} else {
 		gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 	}
