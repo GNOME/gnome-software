@@ -242,7 +242,17 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 							   &error);
 		if (pixbuf == NULL) {
 			g_warning ("failed to load cached icon %s", icon_path);
-			g_error_free (error);
+			g_clear_error (&error);
+			/* Maybe the icon exists as .svg */
+			icon_path = g_strdup_printf ("%s/%s.svg", icon_dir, icon);
+		        pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path,
+								   plugin->pixbuf_size,
+								   plugin->pixbuf_size,
+								   &error);
+			if (pixbuf == NULL) {
+				g_warning ("failed to load cached icon %s", icon_path);
+				g_error_free (error);
+			}
 		}
 		break;
 	default:
