@@ -159,7 +159,7 @@ gs_category_sort_subcategories (GsCategory *category)
 			break;
 		}
 	}
-	if (!subcat_all) {
+	if (!subcat_all && g_strcmp0 (category->priv->id, "Addons") != 0) {
 		/* TRANSLATORS: this is where all applications that don't
 		 * fit in other groups are put */
 		all = gs_category_new (category, NULL, _("Other"));
