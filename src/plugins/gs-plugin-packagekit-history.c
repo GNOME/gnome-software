@@ -113,7 +113,15 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 		gs_app_set_state (history, GS_APP_STATE_UPDATABLE);
 		break;
 	default:
+		ret = FALSE;
 		break;
+	}
+
+	/* we have nothing useful to show for this item */
+	if (!ret) {
+		g_debug ("ignoring history kind: %s",
+			 pk_info_enum_to_string (info_enum));
+		goto out;
 	}
 
 	/* set the history time and date */
@@ -128,10 +136,11 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 
 	/* add the package to the main application */
 	gs_app_add_history (app, history);
-	g_object_unref (history);
 
 	/* use the last event as approximation of the package timestamp */
 	gs_app_set_install_date (app, timestamp);
+out:
+	g_object_unref (history);
 }
 
 static gboolean
