@@ -1,3 +1,63 @@
+Version 3.10.0
+~~~~~~~~~~~~~~
+Released: 2013-09-24
+
+* Note:
+ - This is a technical preview for GNOME 3.10 -- lots of functionality is
+   missing and many bugs remain unsquashed, but the application is basically
+   functional at this stage.
+
+* Translations:
+ - Added Italian translation (Gianvito Cavasoli)
+ - Added Japanese translation (Jiro Matsuzawa)
+ - Added Korean translation (Seong-ho Cho)
+ - Added uk translation (Daniel Korostil)
+ - Updated Brazilian Portuguese translation (Rafael Ferreira)
+ - Updated Czech translation (Marek Černocký)
+ - Updated Danish translation (Kris Thomsen)
+ - Updated Finnish translation (Timo Jyrinki)
+ - Updated Galician translations (Fran Diéguez)
+ - Updated German translation (Eduard Gotwig)
+ - Updated Hungarian translation (Balázs Úr)
+ - Updated Hungarian translation (Gabor Kelemen)
+ - Updated Polish translation (Piotr Drąg)
+ - Updated Slovenian translation (Martin Srebotnjak)
+ - Updated Spanish translation (Daniel Mustieles)
+
+* New Features:
+ - Add a plugin to query the PackageKit prepared-update file directly (Richard Hughes)
+ - Add hardcoded 'featured' subcategories (Matthias Clasen)
+ - Add installed overlay to app tiles (Matthias Clasen)
+ - Do not load incompatible projects when parsing AppStream data (Richard Hughes)
+
+* Bugfix:
+ - Actually enforce squareness of popular tiles (Matthias Clasen)
+ - Add accessible relations in the overview page (Matthias Clasen)
+ - Add global shortcuts for the back button (Matthias Clasen)
+ - Add missing summary element to the AppStream data (Matthias Klumpp)
+ - Avoid undue jumping in the overview page (Matthias Clasen)
+ - Deal gracefully with missing AppData (Matthias Clasen)
+ - Do not clear the offline-update trigger if rebooting succeeded (Richard Hughes)
+ - Do not manually hide categories that have no results (Richard Hughes)
+ - Do not show empty categories in the overview screen (Richard Hughes)
+ - Don't explode when using metadata with 'type=font' (Richard Hughes)
+ - Don't start the application if the command line arguments were wrong (Richard Hughes)
+ - Fallback to .svg icon if .png is not found (Dominique Leuenberger)
+ - Fix up about dialog (Matthias Clasen)
+ - Give tiles a meaningful empty state (Matthias Clasen)
+ - Improve appearance of the update details list (Matthias Clasen)
+ - Improve keynav in category view (Matthias Clasen)
+ - Look sharp in HighContrast too (Matthias Clasen)
+ - Make feature strings wrap (Matthias Clasen)
+ - Make the size of featured categories accurate (Matthias Clasen)
+ - Never show 'Unknown' in the package history listbox (Richard Hughes)
+ - Never show the 'Settings' category (Richard Hughes)
+ - Padding tweaks in the overview (Matthias Clasen)
+ - Rename General to Other and sort it to the end (Matthias Clasen)
+ - Show the window right away (Matthias Clasen)
+ - Support AppStream metadata formats where the icon extension is not specified (Richard Hughes)
+ - Translate the AppData file (Richard Hughes)
+
 Version 3.9.3
 ~~~~~~~~~~~~~
 Released: 2013-09-13
