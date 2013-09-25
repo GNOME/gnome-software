@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-21 00:54+0000\n"
+"POT-Creation-Date: 2013-09-25 07:00+0000\n"
 "PO-Revision-Date: 2013-09-24 18:25+0200\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
@@ -18,6 +18,55 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
 "X-Generator: Gtranslator 2.91.6\n"
+
+#: ../data/gnome-software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "Správa aplikací pro GNOME"
+
+#: ../data/gnome-software.appdata.xml.in.h:2
+msgid ""
+"GNOME Software lets you install, remove and update applications and system "
+"extensions. It also allows you to update your system using an offline update."
+msgstr ""
+"Software GNOME vám umožní instalovat, odebírat a aktualizovat aplikace a "
+"systémová rozšíření. Rovněž vám umožní aktualizovat váš systém pomocí "
+"off-line aktualizací."
+
+#: ../data/gnome-software.appdata.xml.in.h:3
+msgid "Goals:"
+msgstr "Cíle:"
+
+#: ../data/gnome-software.appdata.xml.in.h:4
+msgid "View installed applications"
+msgstr "Zobrazovat nainstalované aplikace"
+
+#: ../data/gnome-software.appdata.xml.in.h:5
+msgid "Remove installed applications"
+msgstr "Odebírat nainstalované aplikace"
+
+#: ../data/gnome-software.appdata.xml.in.h:6
+msgid "View available application updates"
+msgstr "Zobrazovat aktualizace aplikací"
+
+#: ../data/gnome-software.appdata.xml.in.h:7
+msgid "Install available updates"
+msgstr "Instalovat dostupné aktualizace"
+
+#: ../data/gnome-software.appdata.xml.in.h:8
+msgid "Find new applications"
+msgstr "Hledat nové aplikace"
+
+#: ../data/gnome-software.appdata.xml.in.h:9
+msgid "Install new applications"
+msgstr "Instalovat nové aplikace"
+
+#: ../data/gnome-software.appdata.xml.in.h:10
+msgid "Find an application to handle a specific type of file"
+msgstr "Hledat aplikace pro práci s konkrétním typem souboru"
+
+#: ../data/gnome-software.appdata.xml.in.h:11
+msgid "Installed apps and updates should be available when offline"
+msgstr "Instalace aplikací a aktualizace by měly být dostupné i bez připojení"
 
 #: ../src/app-menu.ui.h:1
 msgid "_About"
@@ -29,7 +78,8 @@ msgstr "U_končit"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#: ../src/app-tile.ui.h:1 ../src/gs-shell-details.c:397
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:76
+#: ../src/gs-popular-tile.c:77 ../src/gs-shell-details.c:397
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Nainstalováno"
@@ -47,7 +97,7 @@ msgstr "Přidat, odebrat nebo aktualizovat software v tomto počítači"
 
 #: ../src/gnome-software.ui.h:2
 msgid "Go back"
-msgstr ""
+msgstr "Přejít zpět"
 
 #. Translators: A label for a button to show all available software.
 #: ../src/gnome-software.ui.h:4
@@ -107,7 +157,6 @@ msgid "Categories"
 msgstr "Kategorie"
 
 #: ../src/gnome-software.ui.h:16
-#| msgid "No Application Found"
 msgid "No Application Data Found"
 msgstr "O aplikaci nebyly nalezeny žádné informace"
 
@@ -120,7 +169,6 @@ msgid "Software is up to date"
 msgstr "Software je aktuální"
 
 #: ../src/gnome-software.ui.h:19
-#| msgid "Visit website"
 msgid "Visit _Website"
 msgstr "Navštívit _web"
 
@@ -139,7 +187,6 @@ msgstr "Hotovo"
 
 #. TRANSLATORS: this is the title of the about window
 #: ../src/gs-application.c:87
-#| msgid "About GNOME Software"
 msgid "About Software"
 msgstr "O aplikaci Software"
 
@@ -154,13 +201,13 @@ msgstr "Marek Černocký <marek@manet.cz>"
 
 #. TRANSLATORS: this is a command line option, please don't
 #. * translate the option names between ‘’
-#: ../src/gs-application.c:223
+#: ../src/gs-application.c:222
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Režim spuštění: buď „updates“ (aktualizace), „updated“ (aktualizované), "
 "„installed“ (nainstalované) nebo „overview“ (přehled)"
 
-#: ../src/gs-application.c:223
+#: ../src/gs-application.c:222
 msgid "MODE"
 msgstr "REŽIM"
 
@@ -245,7 +292,6 @@ msgstr "Neznámý"
 #. * applications either installing or erasing
 #: ../src/gs-shell-installed.c:412
 #, c-format
-#| msgid "Installed (%d)"
 msgid "_Installed (%d)"
 msgstr "Na_instalované (%d)"
 
@@ -255,7 +301,6 @@ msgstr "Na_instalované (%d)"
 #.
 #: ../src/gs-shell-updates.c:105
 #, c-format
-#| msgid "_Updates"
 msgid "_Updates (%d)"
 msgstr "_Aktualizace (%d)"
 
@@ -278,10 +323,9 @@ msgid "Launch"
 msgstr "Spustit"
 
 #: ../src/plugins/gs-plugin-appstream.c:198
-#, fuzzy, c-format
-#| msgid "No Application Found"
+#, c-format
 msgid "No AppStream data found"
-msgstr "Žádná aplikace nebyla nalezena"
+msgstr "Nebyla nalezena žádná data AppStream"
 
 #. TRANSLATORS: this is the menu spec main category for Audio
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:57
@@ -1181,42 +1225,3 @@ msgstr "Jazykové balíčky"
 #: ../src/plugins/gs-plugin-packagekit-refine.c:315
 msgid "No update details were provided"
 msgstr "K aktualizaci nebyly poskytnuty žádné podrobnosti"
-
-#~ msgid "Application"
-#~ msgstr "Aplikace"
-
-#~ msgid "Category"
-#~ msgstr "Kategorie"
-
-#~ msgid "GNOME Software"
-#~ msgstr "Software GNOME"
-
-#~ msgid "General"
-#~ msgstr "Obecné"
-
-#~ msgid "Settings"
-#~ msgstr "Nastavení"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Accessibility"
-#~ msgstr "Přístupnost"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Desktop Settings"
-#~ msgstr "Pracovní plocha"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Hardware Settings"
-#~ msgstr "Hardware"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Package Manager"
-#~ msgstr "Správa balíčků"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Printing"
-#~ msgstr "Tisk"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Security"
-#~ msgstr "Zabezpečení"
