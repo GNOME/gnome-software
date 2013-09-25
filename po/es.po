@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-21 00:54+0000\n"
-"PO-Revision-Date: 2013-09-23 14:38+0200\n"
+"POT-Creation-Date: 2013-09-24 23:50+0000\n"
+"PO-Revision-Date: 2013-09-25 17:00+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -18,6 +18,39 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
 "X-Generator: Gtranslator 2.91.5\n"
+
+#: ../data/gnome-software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "Gestor de aplicaciones para GNOME"
+
+#: ../data/gnome-software.appdata.xml.in.h:2
+msgid ""
+"GNOME Software lets you install, remove and update applications and system "
+"extensions. It also allows you to update your system using an offline update."
+msgstr ""
+"GNOME software le permite instalar, quitar y actualizar aplicaciones y "
+"extensiones del sistema. También le permite actualizar su sistema usando "
+"actualizaciones en modo desconectado."
+
+#: ../data/gnome-software.appdata.xml.in.h:3
+msgid "Goals:"
+msgstr "Objetivos:"
+
+#: ../data/gnome-software.appdata.xml.in.h:4
+msgid ""
+"<li>View installed applications</li> <li>Remove installed applications</li> "
+"<li>View available application updates</li> <li>Install available updates</"
+"li> <li>Find new applications</li> <li>Install new applications</li> "
+"<li>Find an application to handle a specific type of file</li> <li>Installed "
+"apps and updates should be available when offline</li>"
+msgstr ""
+"<li>Ver las aplicaciones instaladas</li> <li>Quitar aplicaciones instaladas</"
+"li> <li>Ver actualizaciones disponibles para las aplicaciones</li> "
+"<li>Instalar las actualizaciones disponibles</li> <li>Buscar aplicaciones "
+"nuevas</li> <li>Instalar aplicaciones nuevas</li> <li>Buscar una aplicación "
+"para manejar un tipo de archivo específico</li> <li>Las aplicaciones y las "
+"actualizaciones instaladas deben estar disponibles cuando esté desconectado</"
+"li>"
 
 #: ../src/app-menu.ui.h:1
 msgid "_About"
@@ -29,7 +62,8 @@ msgstr "_Salir"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#: ../src/app-tile.ui.h:1 ../src/gs-shell-details.c:397
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:76
+#: ../src/gs-popular-tile.c:77 ../src/gs-shell-details.c:397
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalado"
@@ -107,7 +141,6 @@ msgid "Categories"
 msgstr "Categorías"
 
 #: ../src/gnome-software.ui.h:16
-#| msgid "No Application Found"
 msgid "No Application Data Found"
 msgstr "No se han encontrado datos sobre las aplicaciones"
 
@@ -120,7 +153,6 @@ msgid "Software is up to date"
 msgstr "El software está actualizado"
 
 #: ../src/gnome-software.ui.h:19
-#| msgid "Visit website"
 msgid "Visit _Website"
 msgstr "Visitar la página _web"
 
@@ -139,7 +171,6 @@ msgstr "Hecho"
 
 #. TRANSLATORS: this is the title of the about window
 #: ../src/gs-application.c:87
-#| msgid "About GNOME Software"
 msgid "About Software"
 msgstr "Acerca de Software"
 
@@ -154,12 +185,12 @@ msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013"
 
 #. TRANSLATORS: this is a command line option, please don't
 #. * translate the option names between ‘’
-#: ../src/gs-application.c:223
+#: ../src/gs-application.c:222
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Modo de inicio, puede ser «actualizaciones», «instalados» o «vista general»"
 
-#: ../src/gs-application.c:223
+#: ../src/gs-application.c:222
 msgid "MODE"
 msgstr "MODO"
 
@@ -243,7 +274,6 @@ msgstr "Desconocido"
 #. * applications either installing or erasing
 #: ../src/gs-shell-installed.c:412
 #, c-format
-#| msgid "Installed (%d)"
 msgid "_Installed (%d)"
 msgstr "_Instalado (%d)"
 
@@ -253,7 +283,6 @@ msgstr "_Instalado (%d)"
 #.
 #: ../src/gs-shell-updates.c:105
 #, c-format
-#| msgid "_Updates"
 msgid "_Updates (%d)"
 msgstr "_Actualizaciones (%d)"
 
@@ -277,7 +306,6 @@ msgstr "Lanzar"
 
 #: ../src/plugins/gs-plugin-appstream.c:198
 #, c-format
-#| msgid "No Application Found"
 msgid "No AppStream data found"
 msgstr "No se han encontrado datos de AppStream"
 
