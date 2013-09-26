@@ -130,7 +130,7 @@ gs_plugin_loader_func (void)
 	g_assert_cmpstr (gs_app_get_id (app), ==, "gedit");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Edit text files");
 
-	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+	gs_plugin_list_free (list);
 
 	/* get updates */
 	_status_changed_cnt = 0;
@@ -150,7 +150,7 @@ gs_plugin_loader_func (void)
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Boxes");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Do not segfault when using newer versons of libvirt.");
 	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_NORMAL);
-	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+	gs_plugin_list_free (list);
 
 	/* test packagekit */
 	gs_plugin_loader_set_enabled (loader, "dummy", FALSE);
@@ -178,14 +178,14 @@ gs_plugin_loader_func (void)
 	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
 	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_SYSTEM);
 	g_assert (gs_app_get_pixbuf (app) != NULL);
-	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+	gs_plugin_list_free (list);
 
 	/* do this again, which should be much faster */
 	list = gs_plugin_loader_get_installed (loader, GS_PLUGIN_LOADER_FLAGS_NONE, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (g_list_length (list), >, 50);
-	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+	gs_plugin_list_free (list);
 
 	/* set a rating */
 	gs_plugin_loader_set_enabled (loader, "packagekit", FALSE);
@@ -299,10 +299,11 @@ gs_plugin_loader_empty_func (void)
 			}
 			g_list_free_full (apps, (GDestroyNotify) g_object_unref);
 		}
+		g_list_free (subcats);
 	}
 	g_assert_cmpint (empty_subcats_cnt, ==, 0);
 
-	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+	gs_plugin_list_free (list);
 	g_object_unref (loader);
 }
 

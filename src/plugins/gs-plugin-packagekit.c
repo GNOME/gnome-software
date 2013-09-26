@@ -182,6 +182,7 @@ gs_plugin_packagekit_add_installed_results (GsPlugin *plugin,
 		}
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 		gs_plugin_add_app (list, app);
+		g_object_unref (app);
 	}
 out:
 	if (installed != NULL)

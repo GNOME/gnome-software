@@ -1039,6 +1039,7 @@ gs_app_finalize (GObject *object)
 
 	g_free (priv->id);
 	g_free (priv->name);
+	g_free (priv->url);
 	g_free (priv->source);
 	g_free (priv->version);
 	g_free (priv->summary);

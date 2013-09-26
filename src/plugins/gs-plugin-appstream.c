@@ -602,6 +602,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 				gs_category_increment_size (parent);
 			}
 		}
+		g_list_free (children);
 	}
 out:
 	return ret;

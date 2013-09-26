@@ -382,6 +382,9 @@ gs_shell_search_finalize (GObject *object)
 	GsShellSearch *shell_search = GS_SHELL_SEARCH (object);
 	GsShellSearchPrivate *priv = shell_search->priv;
 
+	g_object_unref (priv->sizegroup_image);
+	g_object_unref (priv->sizegroup_name);
+
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);

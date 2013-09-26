@@ -150,7 +150,7 @@ gs_plugin_loader_list_uniq (GsPluginLoader *plugin_loader, GList *list)
 		g_debug ("ignoring duplicate %s", id);
 	}
 
-	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+	gs_plugin_list_free (list);
 	g_hash_table_unref (hash);
 	return list_new;
 }
@@ -285,7 +285,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	}
 out:
 	if (!ret) {
-		g_list_free_full (list, (GDestroyNotify) g_object_unref);
+		gs_plugin_list_free (list);
 		list = NULL;
 	}
 	return list;
@@ -426,9 +426,11 @@ gs_plugin_loader_get_all_state_finish (GsPluginLoaderAsyncState *state,
 				       const GError *error)
 {
 	if (state->ret) {
+		GList *list;
+		list = g_list_copy_deep (state->list, (GCopyFunc) g_object_ref, NULL);
 		g_simple_async_result_set_op_res_gpointer (state->res,
-							   g_list_copy (state->list),
-							   (GDestroyNotify) g_list_free);
+							   list,
+							   (GDestroyNotify) gs_plugin_list_free);
 	} else {
 		g_simple_async_result_set_from_error (state->res, error);
 	}
@@ -438,7 +440,7 @@ gs_plugin_loader_get_all_state_finish (GsPluginLoaderAsyncState *state,
 		g_object_unref (state->cancellable);
 
 	g_free (state->value);
-	g_list_free (state->list);
+	gs_plugin_list_free (state->list);
 	g_object_unref (state->res);
 	g_object_unref (state->plugin_loader);
 	g_slice_free (GsPluginLoaderAsyncState, state);
@@ -622,6 +624,8 @@ gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_get_updates_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): A list of applications
  **/
 GList *
 gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
@@ -742,6 +746,8 @@ gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_get_installed_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): A list of applications
  **/
 GList *
 gs_plugin_loader_get_installed_finish (GsPluginLoader *plugin_loader,
@@ -844,6 +850,8 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_get_popular_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): A list of applications
  **/
 GList *
 gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
@@ -964,6 +972,8 @@ gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_get_featured_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): A list of applications
  **/
 GList *
 gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
@@ -1131,6 +1141,8 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_search_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): A list of applications
  **/
 GList *
 gs_plugin_loader_search_finish (GsPluginLoader *plugin_loader,
@@ -1149,7 +1161,7 @@ gs_plugin_loader_search_finish (GsPluginLoader *plugin_loader,
 		return NULL;
 
 	/* grab detail */
-	return g_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
+	return gs_plugin_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
 }
 
 /******************************************************************************/
@@ -1279,6 +1291,8 @@ gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_get_categories_finish:
+ *
+ * Return value: (element-type GsCategory) (transfer full): A list of applications
  **/
 GList *
 gs_plugin_loader_get_categories_finish (GsPluginLoader *plugin_loader,
@@ -1451,6 +1465,8 @@ gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 
 /**
  * gs_plugin_loader_get_category_apps_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): A list of applications
  **/
 GList *
 gs_plugin_loader_get_category_apps_finish (GsPluginLoader *plugin_loader,
@@ -1469,7 +1485,7 @@ gs_plugin_loader_get_category_apps_finish (GsPluginLoader *plugin_loader,
 		return NULL;
 
 	/* grab detail */
-	return g_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
+	return gs_plugin_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
 }
 
 /******************************************************************************/
@@ -1748,7 +1764,7 @@ gs_plugin_loader_app_refine (GsPluginLoader *plugin_loader,
 					   error);
 	if (!ret)
 		goto out;
-	g_list_free (list);
+	gs_plugin_list_free (list);
 out:
 	return ret;
 }

@@ -81,7 +81,7 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 	const gchar *id;
 	gchar *path_tmp = NULL;
 	gboolean ret;
-	gchar *path = NULL;
+	gchar *path;
 	const char * const *datadirs;
 	int i;
 
@@ -109,7 +109,7 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 		path = g_strdup_printf ("%s/applications/%s.desktop",
 					datadirs[i], gs_app_get_id (app));
 		if (g_file_test (path, G_FILE_TEST_EXISTS)) {
-			path_tmp = g_strdup (path);
+			path_tmp = path;
 			g_mutex_lock (&plugin->priv->plugin_mutex);
 			g_hash_table_insert (plugin->priv->cache,
 					     g_strdup (id),
@@ -117,6 +117,7 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 			g_mutex_unlock (&plugin->priv->plugin_mutex);
 			break;
 		}
+		g_free (path);
 	}
 
 	if (path_tmp == NULL) {
@@ -128,7 +129,6 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 		g_mutex_unlock (&plugin->priv->plugin_mutex);
 	}
 out:
-	g_free (path);
 	return path_tmp;
 }
 

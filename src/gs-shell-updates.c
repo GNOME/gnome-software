@@ -139,7 +139,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 
 out:
 	if (list != NULL)
-		g_list_free_full (list, (GDestroyNotify) g_object_unref);
+		gs_plugin_list_free (list);
 }
 
 /**
