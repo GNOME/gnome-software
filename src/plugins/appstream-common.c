@@ -57,6 +57,14 @@ appstream_tag_from_string (const gchar *element_name)
 		return APPSTREAM_TAG_KEYWORDS;
 	if (g_strcmp0 (element_name, "keyword") == 0)
 		return APPSTREAM_TAG_KEYWORD;
+	if (g_strcmp0 (element_name, "licence") == 0)
+		return APPSTREAM_TAG_LICENCE;
+	if (g_strcmp0 (element_name, "screenshots") == 0)
+		return APPSTREAM_TAG_SCREENSHOTS;
+	if (g_strcmp0 (element_name, "screenshot") == 0)
+		return APPSTREAM_TAG_SCREENSHOT;
+	if (g_strcmp0 (element_name, "updatecontact") == 0)
+		return APPSTREAM_TAG_UPDATECONTACT;
 	return APPSTREAM_TAG_UNKNOWN;
 }
 
@@ -94,5 +102,13 @@ appstream_tag_to_string (AppstreamTag tag)
 		return "keywords";
 	if (tag == APPSTREAM_TAG_KEYWORD)
 		return "keyword";
+	if (tag == APPSTREAM_TAG_LICENCE)
+		return "licence";
+	if (tag == APPSTREAM_TAG_SCREENSHOTS)
+		return "screenshots";
+	if (tag == APPSTREAM_TAG_SCREENSHOT)
+		return "screenshot";
+	if (tag == APPSTREAM_TAG_UPDATECONTACT)
+		return "updatecontact";
 	return NULL;
 }
