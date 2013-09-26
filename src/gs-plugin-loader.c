@@ -106,6 +106,22 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 			gs_app_set_state (new_app, GS_APP_STATE_UPDATABLE);
 		}
 
+		/* save any properties we already know */
+		if (gs_app_get_source (app) != NULL)
+			gs_app_set_source (new_app, gs_app_get_source (app));
+		if (gs_app_get_name (app) != NULL)
+			gs_app_set_name (new_app, gs_app_get_name (app));
+		if (gs_app_get_summary (app) != NULL)
+			gs_app_set_summary (new_app, gs_app_get_summary (app));
+		if (gs_app_get_description (app) != NULL)
+			gs_app_set_description (new_app, gs_app_get_description (app));
+		if (gs_app_get_update_details (app) != NULL)
+			gs_app_set_update_details (new_app, gs_app_get_update_details (app));
+		if (gs_app_get_update_version (app) != NULL)
+			gs_app_set_update_version (new_app, gs_app_get_update_version (app));
+		if (gs_app_get_pixbuf (app) != NULL)
+			gs_app_set_pixbuf (new_app, gs_app_get_pixbuf (app));
+
 		/* this looks a little odd to unref the method parameter,
 		 * but it allows us to do:
 		 * app = gs_plugin_loader_dedupe (cache, app);
