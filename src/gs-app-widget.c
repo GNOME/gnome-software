@@ -40,6 +40,7 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*button;
 	GtkWidget	*spinner;
 	gboolean	 colorful;
+	gboolean	 show_update;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppWidget, gs_app_widget, GTK_TYPE_BIN)
@@ -66,7 +67,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		return;
 
 	/* get the main body text */
-	if (gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE)
+	if (priv->show_update &&
+	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE)
 		tmp = gs_app_get_update_details (priv->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_description (priv->app);
@@ -84,7 +86,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
 			     gs_app_get_name (priv->app));
-	if (gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
+	if (priv->show_update &&
+	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
 		gtk_label_set_label (GTK_LABEL (priv->version_label),
 				     gs_app_get_update_version (priv->app));
 	} else {
@@ -121,9 +124,13 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	case GS_APP_STATE_UPDATABLE:
 		gtk_widget_set_visible (priv->spinner, FALSE);
 		gtk_widget_set_visible (priv->button, FALSE);
-		/* TRANSLATORS: this is a button next to the search results that
-		 * allows the application to be updated. not normally shown */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
+		if (priv->show_update) {
+			/* TRANSLATORS: this is a button next to the search results that
+			 * allows the application to be updated. not normally shown */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
+		} else {
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
+		}
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_spinner_start (GTK_SPINNER (priv->spinner));
@@ -251,6 +258,17 @@ gs_app_widget_set_colorful (GsAppWidget *app_widget,
 			    gboolean     colorful)
 {
 	app_widget->priv->colorful = colorful;
+}
+
+/**
+ * gs_app_widget_set_show_update:
+ *
+ * Only really useful for the update panel to call
+ **/
+void
+gs_app_widget_set_show_update (GsAppWidget *app_widget, gboolean show_update)
+{
+	app_widget->priv->show_update = show_update;
 }
 
 GtkWidget *
