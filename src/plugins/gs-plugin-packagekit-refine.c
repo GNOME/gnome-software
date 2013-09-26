@@ -189,7 +189,6 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 			g_warning ("Failed to find any package for %s, %s",
 				   gs_app_get_id (app), pkgname);
 		} else if (number_installed == 1 && number_available >= 1) {
-			g_warning ("setting updatable: %s", gs_app_get_id (app));
 			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 			gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		}
