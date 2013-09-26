@@ -96,7 +96,15 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 	/* already exists */
 	new_app = g_hash_table_lookup (priv->app_cache, gs_app_get_id (app));
 	if (new_app != NULL) {
-		/* already exists */
+		/* an [updatable] installable package is more information than
+		 * just the fact that something is installed */
+		if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE &&
+		    gs_app_get_state (new_app) == GS_APP_STATE_INSTALLED) {
+			/* we have to do the little dance to appease the
+			 * angry gnome controlling the state-machine */
+			gs_app_set_state (new_app, GS_APP_STATE_UNKNOWN);
+			gs_app_set_state (new_app, GS_APP_STATE_UPDATABLE);
+		}
 
 		/* this looks a little odd to unref the method parameter,
 		 * but it allows us to do:
