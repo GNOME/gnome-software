@@ -180,6 +180,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	const gchar *function_name = "gs_plugin_refine";
 	GsPluginRefineFunc plugin_func = NULL;
 	guint i;
+	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -198,10 +199,11 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		if (!ret)
 			goto out;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		g_debug ("%s(%s) took %.0fms",
-			 plugin->name,
-			 function_name,
-			 g_timer_elapsed (plugin->timer, NULL) * 1000);
+		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
+		if (elapsed_ms > 1) {
+			g_debug ("%s(%s) took %.0fms",
+				 plugin->name, function_name, elapsed_ms);
+		}
 	}
 
 	/* success */
@@ -224,6 +226,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	GsPlugin *plugin;
 	GsPluginResultsFunc plugin_func = NULL;
 	guint i;
+	gdouble elapsed_ms;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (function_name != NULL, NULL);
@@ -255,10 +258,11 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			goto out;
 
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		g_debug ("%s(%s) took %.0fms",
-			 plugin->name,
-			 function_name,
-			 g_timer_elapsed (plugin->timer, NULL) * 1000);
+		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
+		if (elapsed_ms > 1) {
+			g_debug ("%s(%s) took %.0fms",
+				 plugin->name, function_name, elapsed_ms);
+		}
 	}
 
 	/* dedupe applications we already know about */
@@ -1013,6 +1017,7 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
+	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -1040,10 +1045,11 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		g_debug ("%s(%s) took %.0fms",
-			 plugin->name,
-			 function_name,
-			 g_timer_elapsed (plugin->timer, NULL) * 1000);
+		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
+		if (elapsed_ms > 1) {
+			g_debug ("%s(%s) took %.0fms",
+				 plugin->name, function_name, elapsed_ms);
+		}
 	}
 
 	/* dedupe applications we already know about */
@@ -1193,6 +1199,7 @@ gs_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 	GsPluginResultsFunc plugin_func = NULL;
 	GList *l;
 	guint i;
+	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -1220,10 +1227,11 @@ gs_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		g_debug ("%s(%s) took %.0fms",
-			 plugin->name,
-			 function_name,
-			 g_timer_elapsed (plugin->timer, NULL) * 1000);
+		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
+		if (elapsed_ms > 1) {
+			g_debug ("%s(%s) took %.0fms",
+				 plugin->name, function_name, elapsed_ms);
+		}
 	}
 
 	/* sort by name */
@@ -1332,6 +1340,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 	GsPlugin *plugin;
 	GsPluginCategoryFunc plugin_func = NULL;
 	guint i;
+	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -1359,10 +1368,11 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		g_debug ("%s(%s) took %.0fms",
-			 plugin->name,
-			 function_name,
-			 g_timer_elapsed (plugin->timer, NULL) * 1000);
+		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
+		if (elapsed_ms > 1) {
+			g_debug ("%s(%s) took %.0fms",
+				 plugin->name, function_name, elapsed_ms);
+		}
 	}
 
 	/* dedupe applications we already know about */
@@ -1507,6 +1517,7 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 	GsPluginActionFunc plugin_func = NULL;
 	GsPlugin *plugin;
 	guint i;
+	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -1541,10 +1552,11 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			}
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		g_debug ("%s(%s) took %.0fms",
-			 plugin->name,
-			 function_name,
-			 g_timer_elapsed (plugin->timer, NULL) * 1000);
+		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
+		if (elapsed_ms > 1) {
+			g_debug ("%s(%s) took %.0fms",
+				 plugin->name, function_name, elapsed_ms);
+		}
 		anything_ran = TRUE;
 	}
 
