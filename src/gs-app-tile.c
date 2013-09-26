@@ -59,24 +59,38 @@ gs_app_tile_get_app (GsAppTile *tile)
 static void
 app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 {
-        GsAppTilePrivate *priv;
-        AtkObject *accessible;
-	gchar *name;
+	AtkObject *accessible;
+	GsAppTilePrivate *priv;
+	GtkWidget *label;
 	gboolean installed;
+	gchar *name;
 
         priv = gs_app_tile_get_instance_private (tile);
         accessible = gtk_widget_get_accessible (priv->button);
 
+	label = gtk_bin_get_child (GTK_BIN (priv->eventbox));
         switch (gs_app_get_state (app)) {
         case GS_APP_STATE_INSTALLED:
         case GS_APP_STATE_INSTALLING:
         case GS_APP_STATE_REMOVING:
-        case GS_APP_STATE_UPDATABLE:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (app),
 					_("Installed"));
-                break;
+		/* TRANSLATORS: this is the small blue label on the tile
+		 * that tells the user the application is installed */
+		gtk_label_set_label (GTK_LABEL (label), _("Installed"));
+		break;
+	case GS_APP_STATE_UPDATABLE:
+		installed = TRUE;
+		name = g_strdup_printf ("%s (%s)",
+					gs_app_get_name (app),
+					_("Updates"));
+		/* TRANSLATORS: this is the small blue label on the tile
+		 * that tells the user there is an update for the installed
+		 * application available */
+		gtk_label_set_label (GTK_LABEL (label), _("Updates"));
+		break;
         case GS_APP_STATE_AVAILABLE:
         default:
 		installed = FALSE;

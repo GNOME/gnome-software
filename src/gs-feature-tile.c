@@ -70,10 +70,14 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsFeatureTile *tile)
         case GS_APP_STATE_INSTALLED:
         case GS_APP_STATE_INSTALLING:
         case GS_APP_STATE_REMOVING:
-        case GS_APP_STATE_UPDATABLE:
                 name = g_strdup_printf ("%s (%s)",
                                         gs_app_get_name (app),
                                         _("Installed"));
+                break;
+        case GS_APP_STATE_UPDATABLE:
+                name = g_strdup_printf ("%s (%s)",
+                                        gs_app_get_name (app),
+                                        _("Updates"));
                 break;
         case GS_APP_STATE_AVAILABLE:
         default:
