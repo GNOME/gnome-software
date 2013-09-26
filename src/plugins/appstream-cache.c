@@ -22,29 +22,11 @@
 #include "config.h"
 
 #include "appstream-cache.h"
+#include "appstream-common.h"
 
 static void	appstream_cache_finalize	(GObject	*object);
 
 #define APPSTREAM_CACHE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), APPSTREAM_TYPE_CACHE, AppstreamCachePrivate))
-
-typedef enum {
-	APPSTREAM_CACHE_SECTION_UNKNOWN,
-	APPSTREAM_CACHE_SECTION_APPLICATIONS,
-	APPSTREAM_CACHE_SECTION_APPLICATION,
-	APPSTREAM_CACHE_SECTION_ID,
-	APPSTREAM_CACHE_SECTION_PKGNAME,
-	APPSTREAM_CACHE_SECTION_NAME,
-	APPSTREAM_CACHE_SECTION_SUMMARY,
-	APPSTREAM_CACHE_SECTION_DESCRIPTION,
-	APPSTREAM_CACHE_SECTION_URL,
-	APPSTREAM_CACHE_SECTION_ICON,
-	APPSTREAM_CACHE_SECTION_APPCATEGORIES,
-	APPSTREAM_CACHE_SECTION_APPCATEGORY,
-	APPSTREAM_CACHE_SECTION_KEYWORDS,
-	APPSTREAM_CACHE_SECTION_KEYWORD,
-	APPSTREAM_CACHE_SECTION_PROJECT_GROUP,
-	APPSTREAM_CACHE_SECTION_LAST
-} AppstreamCacheSection;
 
 struct AppstreamCachePrivate
 {
@@ -110,80 +92,6 @@ appstream_cache_get_item_by_pkgname (AppstreamCache *cache, const gchar *pkgname
 }
 
 /**
- * appstream_cache_selection_from_string:
- */
-static AppstreamCacheSection
-appstream_cache_selection_from_string (const gchar *element_name)
-{
-	if (g_strcmp0 (element_name, "applications") == 0)
-		return APPSTREAM_CACHE_SECTION_APPLICATIONS;
-	if (g_strcmp0 (element_name, "application") == 0)
-		return APPSTREAM_CACHE_SECTION_APPLICATION;
-	if (g_strcmp0 (element_name, "id") == 0)
-		return APPSTREAM_CACHE_SECTION_ID;
-	if (g_strcmp0 (element_name, "pkgname") == 0)
-		return APPSTREAM_CACHE_SECTION_PKGNAME;
-	if (g_strcmp0 (element_name, "name") == 0)
-		return APPSTREAM_CACHE_SECTION_NAME;
-	if (g_strcmp0 (element_name, "summary") == 0)
-		return APPSTREAM_CACHE_SECTION_SUMMARY;
-	if (g_strcmp0 (element_name, "project_group") == 0)
-		return APPSTREAM_CACHE_SECTION_PROJECT_GROUP;
-	if (g_strcmp0 (element_name, "url") == 0)
-		return APPSTREAM_CACHE_SECTION_URL;
-	if (g_strcmp0 (element_name, "description") == 0)
-		return APPSTREAM_CACHE_SECTION_DESCRIPTION;
-	if (g_strcmp0 (element_name, "icon") == 0)
-		return APPSTREAM_CACHE_SECTION_ICON;
-	if (g_strcmp0 (element_name, "appcategories") == 0)
-		return APPSTREAM_CACHE_SECTION_APPCATEGORIES;
-	if (g_strcmp0 (element_name, "appcategory") == 0)
-		return APPSTREAM_CACHE_SECTION_APPCATEGORY;
-	if (g_strcmp0 (element_name, "keywords") == 0)
-		return APPSTREAM_CACHE_SECTION_KEYWORDS;
-	if (g_strcmp0 (element_name, "keyword") == 0)
-		return APPSTREAM_CACHE_SECTION_KEYWORD;
-	return APPSTREAM_CACHE_SECTION_UNKNOWN;
-}
-
-/**
- * appstream_cache_selection_to_string:
- */
-static const gchar *
-appstream_cache_selection_to_string (AppstreamCacheSection section)
-{
-	if (section == APPSTREAM_CACHE_SECTION_APPLICATIONS)
-		return "applications";
-	if (section == APPSTREAM_CACHE_SECTION_APPLICATION)
-		return "application";
-	if (section == APPSTREAM_CACHE_SECTION_ID)
-		return "id";
-	if (section == APPSTREAM_CACHE_SECTION_PKGNAME)
-		return "pkgname";
-	if (section == APPSTREAM_CACHE_SECTION_NAME)
-		return "name";
-	if (section == APPSTREAM_CACHE_SECTION_SUMMARY)
-		return "summary";
-	if (section == APPSTREAM_CACHE_SECTION_PROJECT_GROUP)
-		return "project_group";
-	if (section == APPSTREAM_CACHE_SECTION_URL)
-		return "url";
-	if (section == APPSTREAM_CACHE_SECTION_DESCRIPTION)
-		return "description";
-	if (section == APPSTREAM_CACHE_SECTION_ICON)
-		return "icon";
-	if (section == APPSTREAM_CACHE_SECTION_APPCATEGORIES)
-		return "appcategories";
-	if (section == APPSTREAM_CACHE_SECTION_APPCATEGORY)
-		return "appcategory";
-	if (section == APPSTREAM_CACHE_SECTION_KEYWORDS)
-		return "keywords";
-	if (section == APPSTREAM_CACHE_SECTION_KEYWORD)
-		return "keyword";
-	return NULL;
-}
-
-/**
  * appstream_cache_icon_kind_from_string:
  */
 static AppstreamAppIconKind
@@ -202,7 +110,7 @@ typedef struct {
 	AppstreamApp		*item_temp;
 	char			*lang_temp;
 	AppstreamCache		*cache;
-	AppstreamCacheSection	 section;
+	AppstreamTag		 tag;
 } AppstreamCacheHelper;
 
 /**
@@ -217,28 +125,28 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 				  GError **error)
 {
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
-	AppstreamCacheSection section_new;
+	AppstreamTag section_new;
 	guint i;
 
 	/* process tag start */
-	section_new = appstream_cache_selection_from_string (element_name);
+	section_new = appstream_tag_from_string (element_name);
 	switch (section_new) {
-	case APPSTREAM_CACHE_SECTION_APPLICATIONS:
-	case APPSTREAM_CACHE_SECTION_APPCATEGORIES:
-	case APPSTREAM_CACHE_SECTION_APPCATEGORY:
-	case APPSTREAM_CACHE_SECTION_KEYWORDS:
-	case APPSTREAM_CACHE_SECTION_KEYWORD:
+	case APPSTREAM_TAG_APPLICATIONS:
+	case APPSTREAM_TAG_APPCATEGORIES:
+	case APPSTREAM_TAG_APPCATEGORY:
+	case APPSTREAM_TAG_KEYWORDS:
+	case APPSTREAM_TAG_KEYWORD:
 		/* ignore */
 		break;
-	case APPSTREAM_CACHE_SECTION_APPLICATION:
+	case APPSTREAM_TAG_APPLICATION:
 		if (helper->item_temp != NULL ||
-		    helper->section != APPSTREAM_CACHE_SECTION_APPLICATIONS) {
+		    helper->tag != APPSTREAM_TAG_APPLICATIONS) {
 			g_set_error (error,
 				     APPSTREAM_CACHE_ERROR,
 				     APPSTREAM_CACHE_ERROR_FAILED,
-				     "XML start %s invalid, section %s",
+				     "XML start %s invalid, tag %s",
 				     element_name,
-				     appstream_cache_selection_to_string (helper->section));
+				     appstream_tag_to_string (helper->tag));
 			return;
 		}
 		helper->item_temp = appstream_app_new ();
@@ -247,7 +155,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 					    NULL);
 		break;
 
-	case APPSTREAM_CACHE_SECTION_ICON:
+	case APPSTREAM_TAG_ICON:
 		/* get the icon kind */
 		for (i = 0; attribute_names[i] != NULL; i++) {
 			if (g_strcmp0 (attribute_names[i], "type") == 0) {
@@ -263,33 +171,33 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 					     "icon type not set");
 		}
 		break;
-	case APPSTREAM_CACHE_SECTION_ID:
-	case APPSTREAM_CACHE_SECTION_PKGNAME:
-	case APPSTREAM_CACHE_SECTION_URL:
-	case APPSTREAM_CACHE_SECTION_PROJECT_GROUP:
+	case APPSTREAM_TAG_ID:
+	case APPSTREAM_TAG_PKGNAME:
+	case APPSTREAM_TAG_URL:
+	case APPSTREAM_TAG_PROJECT_GROUP:
 		if (helper->item_temp == NULL ||
-		    helper->section != APPSTREAM_CACHE_SECTION_APPLICATION) {
+		    helper->tag != APPSTREAM_TAG_APPLICATION) {
 			g_set_error (error,
 				     APPSTREAM_CACHE_ERROR,
 				     APPSTREAM_CACHE_ERROR_FAILED,
-				     "XML start %s invalid, section %s",
+				     "XML start %s invalid, tag %s",
 				     element_name,
-				     appstream_cache_selection_to_string (helper->section));
+				     appstream_tag_to_string (helper->tag));
 			return;
 		}
 		break;
 
-	case APPSTREAM_CACHE_SECTION_NAME:
-	case APPSTREAM_CACHE_SECTION_SUMMARY:
-	case APPSTREAM_CACHE_SECTION_DESCRIPTION:
+	case APPSTREAM_TAG_NAME:
+	case APPSTREAM_TAG_SUMMARY:
+	case APPSTREAM_TAG_DESCRIPTION:
 		if (helper->item_temp == NULL ||
-		    helper->section != APPSTREAM_CACHE_SECTION_APPLICATION) {
+		    helper->tag != APPSTREAM_TAG_APPLICATION) {
 			g_set_error (error,
 				     APPSTREAM_CACHE_ERROR,
 				     APPSTREAM_CACHE_ERROR_FAILED,
-				     "XML start %s invalid, section %s",
+				     "XML start %s invalid, tag %s",
 				     element_name,
-				     appstream_cache_selection_to_string (helper->section));
+				     appstream_tag_to_string (helper->tag));
 			return;
 		}
 		if (!g_markup_collect_attributes (element_name, attribute_names, attribute_values, error,
@@ -306,10 +214,8 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	}
 
 	/* save */
-	helper->section = section_new;
+	helper->tag = section_new;
 }
-
-
 
 /**
  * appstream_cache_app_is_compatible:
@@ -380,40 +286,40 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 				GError **error)
 {
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
-	AppstreamCacheSection section_new;
+	AppstreamTag section_new;
 
-	section_new = appstream_cache_selection_from_string (element_name);
+	section_new = appstream_tag_from_string (element_name);
 	switch (section_new) {
-	case APPSTREAM_CACHE_SECTION_APPLICATIONS:
-	case APPSTREAM_CACHE_SECTION_APPCATEGORY:
-	case APPSTREAM_CACHE_SECTION_KEYWORD:
+	case APPSTREAM_TAG_APPLICATIONS:
+	case APPSTREAM_TAG_APPCATEGORY:
+	case APPSTREAM_TAG_KEYWORD:
 		/* ignore */
 		break;
-	case APPSTREAM_CACHE_SECTION_APPLICATION:
+	case APPSTREAM_TAG_APPLICATION:
 		/* perhaps add application */
 		appstream_cache_add_item (helper);
 		helper->item_temp = NULL;
-		helper->section = APPSTREAM_CACHE_SECTION_APPLICATIONS;
+		helper->tag = APPSTREAM_TAG_APPLICATIONS;
 		break;
-	case APPSTREAM_CACHE_SECTION_ID:
-	case APPSTREAM_CACHE_SECTION_PKGNAME:
-	case APPSTREAM_CACHE_SECTION_APPCATEGORIES:
-	case APPSTREAM_CACHE_SECTION_KEYWORDS:
-	case APPSTREAM_CACHE_SECTION_URL:
-	case APPSTREAM_CACHE_SECTION_ICON:
-		helper->section = APPSTREAM_CACHE_SECTION_APPLICATION;
+	case APPSTREAM_TAG_ID:
+	case APPSTREAM_TAG_PKGNAME:
+	case APPSTREAM_TAG_APPCATEGORIES:
+	case APPSTREAM_TAG_KEYWORDS:
+	case APPSTREAM_TAG_URL:
+	case APPSTREAM_TAG_ICON:
+		helper->tag = APPSTREAM_TAG_APPLICATION;
 		break;
-	case APPSTREAM_CACHE_SECTION_NAME:
-	case APPSTREAM_CACHE_SECTION_SUMMARY:
-	case APPSTREAM_CACHE_SECTION_PROJECT_GROUP:
-	case APPSTREAM_CACHE_SECTION_DESCRIPTION:
-		helper->section = APPSTREAM_CACHE_SECTION_APPLICATION;
+	case APPSTREAM_TAG_NAME:
+	case APPSTREAM_TAG_SUMMARY:
+	case APPSTREAM_TAG_PROJECT_GROUP:
+	case APPSTREAM_TAG_DESCRIPTION:
+		helper->tag = APPSTREAM_TAG_APPLICATION;
 		g_free (helper->lang_temp);
 		helper->lang_temp = NULL;
 		break;
 	default:
 		/* ignore unknown entries */
-		helper->section = APPSTREAM_CACHE_SECTION_APPLICATION;
+		helper->tag = APPSTREAM_TAG_APPLICATION;
 		break;
 	}
 }
@@ -430,15 +336,15 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 {
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
 
-	switch (helper->section) {
-	case APPSTREAM_CACHE_SECTION_UNKNOWN:
-	case APPSTREAM_CACHE_SECTION_APPLICATIONS:
-	case APPSTREAM_CACHE_SECTION_APPLICATION:
-	case APPSTREAM_CACHE_SECTION_APPCATEGORIES:
-	case APPSTREAM_CACHE_SECTION_KEYWORDS:
+	switch (helper->tag) {
+	case APPSTREAM_TAG_UNKNOWN:
+	case APPSTREAM_TAG_APPLICATIONS:
+	case APPSTREAM_TAG_APPLICATION:
+	case APPSTREAM_TAG_APPCATEGORIES:
+	case APPSTREAM_TAG_KEYWORDS:
 		/* ignore */
 		break;
-	case APPSTREAM_CACHE_SECTION_APPCATEGORY:
+	case APPSTREAM_TAG_APPCATEGORY:
 		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
@@ -448,7 +354,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		}
 		appstream_app_add_category (helper->item_temp, text, text_len);
 		break;
-	case APPSTREAM_CACHE_SECTION_KEYWORD:
+	case APPSTREAM_TAG_KEYWORD:
 		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
@@ -458,7 +364,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		}
 		appstream_app_add_keyword (helper->item_temp, text, text_len);
 		break;
-	case APPSTREAM_CACHE_SECTION_ID:
+	case APPSTREAM_TAG_ID:
 		if (helper->item_temp == NULL ||
 		    appstream_app_get_id (helper->item_temp) != NULL) {
 			g_set_error_literal (error,
@@ -469,7 +375,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		}
 		appstream_app_set_id (helper->item_temp, text, text_len);
 		break;
-	case APPSTREAM_CACHE_SECTION_PKGNAME:
+	case APPSTREAM_TAG_PKGNAME:
 		if (helper->item_temp == NULL ||
 		    appstream_app_get_pkgname (helper->item_temp) != NULL) {
 			g_set_error_literal (error,
@@ -480,7 +386,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		}
 		appstream_app_set_pkgname (helper->item_temp, text, text_len);
 		break;
-	case APPSTREAM_CACHE_SECTION_NAME:
+	case APPSTREAM_TAG_NAME:
 		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
@@ -490,7 +396,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		}
 		appstream_app_set_name (helper->item_temp, helper->lang_temp, text, text_len);
 		break;
-	case APPSTREAM_CACHE_SECTION_SUMMARY:
+	case APPSTREAM_TAG_SUMMARY:
 		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
@@ -500,7 +406,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		}
 		appstream_app_set_summary (helper->item_temp, helper->lang_temp, text, text_len);
 		break;
-	case APPSTREAM_CACHE_SECTION_PROJECT_GROUP:
+	case APPSTREAM_TAG_PROJECT_GROUP:
 		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
@@ -510,7 +416,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		}
 		appstream_app_set_project_group (helper->item_temp, text, text_len);
 		break;
-	case APPSTREAM_CACHE_SECTION_URL:
+	case APPSTREAM_TAG_URL:
 		if (helper->item_temp == NULL ||
 		    appstream_app_get_url (helper->item_temp) != NULL) {
 			g_set_error_literal (error,
@@ -521,7 +427,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		}
 		appstream_app_set_url (helper->item_temp, text, text_len);
 		break;
-	case APPSTREAM_CACHE_SECTION_DESCRIPTION:
+	case APPSTREAM_TAG_DESCRIPTION:
 		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
@@ -531,7 +437,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		}
 		appstream_app_set_description (helper->item_temp, helper->lang_temp, text, text_len);
 		break;
-	case APPSTREAM_CACHE_SECTION_ICON:
+	case APPSTREAM_TAG_ICON:
 		if (helper->item_temp == NULL ||
 		    appstream_app_get_icon (helper->item_temp) != NULL) {
 			g_set_error_literal (error,
