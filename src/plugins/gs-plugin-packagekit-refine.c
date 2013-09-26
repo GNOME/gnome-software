@@ -109,7 +109,8 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 	GPtrArray *array = NULL;
 	GPtrArray *packages = NULL;
 	GsApp *app;
-	guint cnt = 0;
+	guint number_installed = 0;
+	guint number_available = 0;
 	guint i = 0;
 	guint size;
 	PkError *error_code = NULL;
@@ -156,7 +157,8 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 		pkgname = gs_app_get_source (app);
 
 		/* find any packages that match the package name */
-		cnt = 0;
+		number_installed = 0;
+		number_available = 0;
 		for (i = 0; i < packages->len; i++) {
 			package = g_ptr_array_index (packages, i);
 			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
@@ -168,17 +170,28 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 							  GS_APP_STATE_INSTALLED :
 							  GS_APP_STATE_AVAILABLE);
 				}
+				switch (pk_package_get_info (package)) {
+				case GS_APP_STATE_INSTALLED:
+					number_installed++;
+					break;
+				case GS_APP_STATE_AVAILABLE:
+					number_available++;
+					break;
+				default:
+					/* should we expect anything else? */
+					break;
+				}
 				if (gs_app_get_version (app) == NULL)
 					gs_app_set_version (app, pk_package_get_version (package));
-				cnt++;
 			}
 		}
-		if (cnt == 0) {
+		if (number_installed == 0 && number_available == 0) {
 			g_warning ("Failed to find any package for %s, %s",
 				   gs_app_get_id (app), pkgname);
-		} else if (cnt > 1) {
-			g_warning ("found duplicate packages for %s, %s, [%d]",
-				   gs_app_get_id (app), pkgname, cnt);
+		} else if (number_installed == 1 && number_available >= 1) {
+			g_warning ("setting updatable: %s", gs_app_get_id (app));
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+			gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		}
 	}
 out:
