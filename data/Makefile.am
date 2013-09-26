@@ -18,7 +18,7 @@ dist_resources_DATA =					\
 	stars3.png					\
 	stars4.png          
 
-@INTLTOOL_XML_NOMERGE_RULE@
+@INTLTOOL_XML_RULE@
 appdatadir = $(datadir)/appdata
 dist_appdata_DATA = $(appdata_in_files:.xml.in=.xml)
 appdata_in_files = gnome-software.appdata.xml.in
