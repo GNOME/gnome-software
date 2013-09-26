@@ -130,7 +130,6 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		g_debug ("adding update %s, kind %d state %d", gs_app_get_id (app), gs_app_get_kind (app), gs_app_get_state (app));
 		widget = gs_app_widget_new ();
 		gs_app_widget_set_show_update (GS_APP_WIDGET (widget), TRUE);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
