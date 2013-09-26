@@ -131,6 +131,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		widget = gs_app_widget_new ();
+		gs_app_widget_set_show_update (GS_APP_WIDGET (widget), TRUE);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
 		gtk_widget_show (widget);
