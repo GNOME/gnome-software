@@ -754,8 +754,6 @@ void
 gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_debug ("setting %s to %s for %s",
-		 key, value, gs_app_get_id (app));
 	g_hash_table_insert (app->priv->metadata,
 			     g_strdup (key),
 			     g_strdup (value));

@@ -212,8 +212,6 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	basename_tmp = basename;
 	if (g_str_has_prefix (basename_tmp, "fedora-"))
 		basename_tmp += 7;
-	g_debug ("setting new id for %s to %s",
-		 gs_app_get_id (app), basename_tmp);
 	cache_item->id = g_strdup (basename_tmp);
 
 	/* add to cache */

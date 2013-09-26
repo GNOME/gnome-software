@@ -188,7 +188,6 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	gtk_stack_set_visible_child_name (GTK_STACK (widget), "results");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		g_debug ("adding search %s", gs_app_get_id (app));
 		widget = gs_app_widget_new ();
 		g_signal_connect (widget, "button-clicked",
 				  G_CALLBACK (gs_shell_search_app_widget_clicked_cb),
