@@ -198,7 +198,6 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 	GsShellInstalledPrivate *priv = shell->priv;
 	GtkWidget *widget;
 
-	g_debug ("adding to installed list: %s", gs_app_get_id (app));
 	widget = gs_app_widget_new ();
 	gs_app_widget_set_colorful (GS_APP_WIDGET (widget), FALSE);
 	g_signal_connect (widget, "button-clicked",

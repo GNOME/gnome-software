@@ -217,8 +217,6 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 				gs_app_add_history (app, app_dummy);
 				g_object_unref (app_dummy);
 			}
-			g_debug ("no history for %s, setting timestamp nonzero",
-				 gs_app_get_source (app));
 			gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			continue;
 		}

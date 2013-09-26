@@ -102,7 +102,6 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 		 * but it allows us to do:
 		 * app = gs_plugin_loader_dedupe (cache, app);
 		 */
-		g_debug ("deduped %s", gs_app_get_id (app));
 		g_object_unref (app);
 		g_object_ref (new_app);
 		goto out;

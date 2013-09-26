@@ -180,30 +180,23 @@ gs_plugin_destroy (GsPlugin *plugin)
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GError **error)
 {
-	gboolean ret = TRUE;
-	GTimer *timer = NULL;
+	gboolean ret;
 	guint size;
 
 	/* Parse the XML */
-	timer = g_timer_new ();
 	ret = gs_plugin_parse_xml (plugin, error);
 	if (!ret)
 		goto out;
 	size = appstream_cache_get_size (plugin->priv->cache);
 	if (size == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
-                g_set_error (error,
-                             gs_plugin_loader_error_quark (),
-                             GS_PLUGIN_LOADER_ERROR_FAILED,
-                             _("No AppStream data found"));
-		//g_assert_not_reached ();
+		g_set_error (error,
+			     GS_PLUGIN_LOADER_ERROR,
+			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     _("No AppStream data found"));
 		goto out;
 	}
-	g_debug ("Parsed %i entries of XML\t:%.1fms", size,
-		 g_timer_elapsed (timer, NULL) * 1000);
 out:
-	if (timer != NULL)
-		g_timer_destroy (timer);
 	return ret;
 }
 
@@ -316,8 +309,6 @@ gs_plugin_refine_item (GsPlugin *plugin,
 {
 	gboolean ret = TRUE;
 
-	g_debug ("AppStream: Refining %s", gs_app_get_id (app));
-
 	/* is an app */
 	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN ||
 	    gs_app_get_kind (app) == GS_APP_KIND_PACKAGE)
@@ -371,10 +362,8 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	if (id == NULL)
 		goto out;
 	item = appstream_cache_get_item_by_id (plugin->priv->cache, id);
-	if (item == NULL) {
-		g_debug ("no AppStream match for [id] %s", id);
+	if (item == NULL)
 		goto out;
-	}
 
 	/* set new properties */
 	ret = gs_plugin_refine_item (plugin, app, item, error);
