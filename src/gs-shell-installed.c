@@ -243,7 +243,8 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 		app = GS_APP (l->data);
 		gs_shell_installed_add_app (shell_installed, app);
 	}
-out: ;
+out:
+	gs_plugin_list_free (list);
 }
 
 static void
@@ -486,6 +487,9 @@ gs_shell_installed_finalize (GObject *object)
 {
 	GsShellInstalled *shell_installed = GS_SHELL_INSTALLED (object);
 	GsShellInstalledPrivate *priv = shell_installed->priv;
+
+	g_object_unref (priv->sizegroup_image);
+	g_object_unref (priv->sizegroup_name);
 
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);

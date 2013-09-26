@@ -113,6 +113,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	priv->empty = FALSE;
 
 out:
+	gs_plugin_list_free (list);
 	priv->refresh_count--;
 	if (priv->refresh_count == 0)
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
@@ -164,8 +165,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	priv->empty = FALSE;
 
 out:
-	g_list_free (list);
-
+	gs_plugin_list_free (list);
 	priv->refresh_count--;
 	if (priv->refresh_count == 0)
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
@@ -221,8 +221,8 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		i++;
 		has_category = TRUE;
 	}
-	g_list_free_full (list, g_object_unref);
 out:
+	gs_plugin_list_free (list);
 	if (has_category) {
 		priv->empty = FALSE;
 	}

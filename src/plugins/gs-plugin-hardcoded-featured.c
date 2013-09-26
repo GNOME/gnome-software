@@ -50,34 +50,24 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-	gboolean ret = TRUE;
-	gchar *path;
-	GsApp *app;
-	guint i;
 	GDateTime *date;
-	gchar **apps;
-	gsize n_apps;
-	GError *local_error = NULL;
 	GKeyFile *kf;
+	GsApp *app;
+	const gchar *group = NULL;
+	gboolean ret = TRUE;
+	gchar **apps = NULL;
+	gchar *path;
 	gchar *s;
-	const gchar *group;
-
-	apps = NULL;
+	gsize n_apps;
+	guint i;
 
 	path = g_build_filename (DATADIR, "gnome-software", "featured.ini", NULL);
 	kf = g_key_file_new ();
-	if (!g_key_file_load_from_file (kf, path, 0, &local_error)) {
-		g_warning ("Failed to read %s: %s", path, local_error->message);
-		ret = FALSE;
+	ret = g_key_file_load_from_file (kf, path, 0, error);
+	if (!ret)
 		goto out;
-	}
-	g_free (path);
 
-	apps = g_key_file_get_groups (kf, &n_apps)
-;
-
-	group = NULL;
-
+	apps = g_key_file_get_groups (kf, &n_apps);
 	if (g_getenv ("GNOME_SOFTWARE_FEATURED")) {
 		const gchar *featured;
 		featured = g_getenv ("GNOME_SOFTWARE_FEATURED");
@@ -103,24 +93,26 @@ gs_plugin_add_featured (GsPlugin *plugin,
 
 	app = gs_app_new (group);
 	s = g_key_file_get_string (kf, group, "background", NULL);
-	if (s) {
+	if (s != NULL) {
 		gs_app_set_metadata (app, "Featured::background", s);
 		g_free (s);
 	}
 	s = g_key_file_get_string (kf, group, "stroke", NULL);
-	if (s) {
+	if (s != NULL) {
 		gs_app_set_metadata (app, "Featured::stroke-color", s);
 		g_free (s);
 	}
 	s = g_key_file_get_string (kf, group, "text", NULL);
-	if (s) {
+	if (s != NULL) {
 		gs_app_set_metadata (app, "Featured::text-color", s);
 		g_free (s);
 	}
 	gs_plugin_add_app (list, app);
-
+	g_object_unref (app);
 out:
+	if (kf != NULL)
+		g_key_file_unref (kf);
+	g_free (path);
 	g_strfreev (apps);
-
 	return ret;
 }

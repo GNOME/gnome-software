@@ -104,6 +104,8 @@ void		 gs_plugin_initialize			(GsPlugin	*plugin);
 void		 gs_plugin_destroy			(GsPlugin	*plugin);
 void		 gs_plugin_add_app			(GList		**list,
 							 GsApp		*app);
+void		 gs_plugin_list_free			(GList		*list);
+GList		*gs_plugin_list_copy			(GList		*list);
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);

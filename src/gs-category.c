@@ -97,6 +97,11 @@ gs_category_get_parent (GsCategory *category)
 	return category->priv->parent;
 }
 
+/**
+ * gs_category_get_subcategories:
+ *
+ * Return value: (element-type GsApp) (transfer container): A list of subcategories
+ **/
 GList *
 gs_category_get_subcategories (GsCategory *category)
 {
@@ -104,11 +109,16 @@ gs_category_get_subcategories (GsCategory *category)
 	return g_list_copy (category->priv->subcategories);
 }
 
+/**
+ * gs_category_add_subcategory:
+ *
+ * DANGER WILL ROBINSON! @subcategory is not ref'd
+ **/
 void
 gs_category_add_subcategory (GsCategory *category, GsCategory *subcategory)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
-	category->priv->subcategories = g_list_prepend (category->priv->subcategories, g_object_ref (subcategory));
+	category->priv->subcategories = g_list_prepend (category->priv->subcategories, subcategory);
 }
 
 /**

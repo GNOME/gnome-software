@@ -50,7 +50,25 @@ gs_plugin_status_to_string (GsPluginStatus status)
 void
 gs_plugin_add_app (GList **list, GsApp *app)
 {
-	*list = g_list_prepend (*list, app);
+	*list = g_list_prepend (*list, g_object_ref (app));
+}
+
+/**
+ * gs_plugin_list_free:
+ **/
+void
+gs_plugin_list_free (GList *list)
+{
+	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+}
+
+/**
+ * gs_plugin_list_copy:
+ **/
+GList *
+gs_plugin_list_copy (GList *list)
+{
+	return g_list_copy_deep (list, (GCopyFunc) g_object_ref, NULL);
 }
 
 typedef struct {

@@ -605,6 +605,10 @@ gs_shell_details_finalize (GObject *object)
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (object);
 	GsShellDetailsPrivate *priv = shell_details->priv;
 
+	g_object_unref (priv->history_sizegroup_state);
+	g_object_unref (priv->history_sizegroup_timestamp);
+	g_object_unref (priv->history_sizegroup_version);
+
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);

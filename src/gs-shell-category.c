@@ -113,7 +113,7 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 		gtk_grid_attach (GTK_GRID (grid), priv->col1_placeholder, 1, 0, 1, 1);
 
 out:
-	g_list_free (list);
+	gs_plugin_list_free (list);
 
 }
 

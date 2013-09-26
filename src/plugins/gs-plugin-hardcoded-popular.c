@@ -92,6 +92,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		for (i = 0; popular[i]; i++) {
 			app = gs_app_new (popular[i]);
 			gs_plugin_add_app (list, app);
+			g_object_unref (app);
 		}
 
 		g_strfreev (popular);
