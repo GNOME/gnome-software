@@ -41,6 +41,7 @@ struct GsPluginLoaderPrivate
 
 	GMutex			 app_cache_mutex;
 	GHashTable		*app_cache;
+	gchar			**compatible_projects;
 };
 
 G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
@@ -430,6 +431,54 @@ gs_plugin_loader_remove_system (GList *list)
 		l = list = g_list_delete_link (list, l);
 	}
 	return list;
+}
+
+
+/**
+ * gs_plugin_loader_get_app_is_compatible:
+ */
+static gboolean
+gs_plugin_loader_get_app_is_compatible (GsPluginLoader *plugin_loader, GsApp *app)
+{
+	GsPluginLoaderPrivate *priv = plugin_loader->priv;
+	const gchar *tmp;
+	guint i;
+
+	/* search for any compatible projects */
+	tmp = gs_app_get_project_group (app);
+	if (tmp == NULL)
+		return TRUE;
+	for (i = 0; priv->compatible_projects[i] != NULL; i++) {
+		if (g_strcmp0 (tmp,  priv->compatible_projects[i]) == 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * gs_plugin_loader_remove_incompat:
+ **/
+static GList *
+gs_plugin_loader_remove_incompat (GsPluginLoader *plugin_loader, GList *list)
+{
+	GList *l;
+	GList *new = NULL;
+	GsApp *app;
+	gboolean compat;
+
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		compat = gs_plugin_loader_get_app_is_compatible (plugin_loader, app);
+		if (compat) {
+			gs_plugin_add_app (&new, app);
+		} else {
+			g_debug ("removing incompatible %s from project group %s",
+				 gs_app_get_id (app),
+				 gs_app_get_project_group (app));
+		}
+	}
+	gs_plugin_list_free (list);
+	return new;
 }
 
 /******************************************************************************/
@@ -1095,6 +1144,9 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	/* remove duplicates */
 	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
 
+	/* remove incompatible projects */
+	state->list = gs_plugin_loader_remove_incompat (plugin_loader, state->list);
+
 	/* success */
 	state->list = gs_plugin_loader_remove_invalid (state->list);
 	if (state->list == NULL) {
@@ -1417,6 +1469,9 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 
 	/* remove duplicates */
 	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
+
+	/* remove incompatible projects */
+	state->list = gs_plugin_loader_remove_incompat (plugin_loader, state->list);
 
 	/* success */
 	state->list = gs_plugin_loader_remove_system (state->list);
@@ -2084,6 +2139,8 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 static void
 gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
+	const gchar *tmp;
+
 	plugin_loader->priv = GS_PLUGIN_LOADER_GET_PRIVATE (plugin_loader);
 	plugin_loader->priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
 	plugin_loader->priv->status_last = GS_PLUGIN_STATUS_LAST;
@@ -2095,6 +2152,12 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 	g_mutex_init (&plugin_loader->priv->pending_apps_mutex);
 	g_mutex_init (&plugin_loader->priv->app_cache_mutex);
+
+	/* by default we only show project-less apps or compatible projects */
+	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
+	if (tmp == NULL)
+		tmp = "GNOME";
+	plugin_loader->priv->compatible_projects = g_strsplit (tmp, ",", -1);
 }
 
 /**
@@ -2116,6 +2179,7 @@ gs_plugin_loader_finalize (GObject *object)
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
 
+	g_strfreev (plugin_loader->priv->compatible_projects);
 	g_hash_table_unref (plugin_loader->priv->app_cache);
 	g_ptr_array_unref (plugin_loader->priv->pending_apps);
 	g_ptr_array_unref (plugin_loader->priv->plugins);

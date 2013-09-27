@@ -34,7 +34,6 @@ struct AppstreamCachePrivate
 	GPtrArray		*icon_path_array;
 	GHashTable		*hash_id;	/* of AppstreamApp{id} */
 	GHashTable		*hash_pkgname;	/* of AppstreamApp{pkgname} */
-	gchar			**compatible_projects;
 };
 
 G_DEFINE_TYPE (AppstreamCache, appstream_cache, G_TYPE_OBJECT)
@@ -218,29 +217,6 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 }
 
 /**
- * appstream_cache_app_is_compatible:
- */
-static gboolean
-appstream_cache_app_is_compatible (AppstreamCache *cache, AppstreamApp *app)
-{
-	AppstreamCachePrivate *priv = cache->priv;
-	const gchar *tmp;
-	guint i;
-
-	/* app has no aligned project */
-	tmp = appstream_app_get_project_group (app);
-	if (tmp == NULL)
-		return TRUE;
-
-	/* search for any compatible projects */
-	for (i = 0; priv->compatible_projects[i] != NULL; i++) {
-		if (g_strcmp0 (tmp,  priv->compatible_projects[i]) == 0)
-			return TRUE;
-	}
-	return FALSE;
-}
-
-/**
  * appstream_cache_add_item:
  */
 static void
@@ -250,15 +226,8 @@ appstream_cache_add_item (AppstreamCacheHelper *helper)
 	AppstreamCachePrivate *priv = helper->cache->priv;
 	const gchar *id;
 
-	/* is app compatible with this running desktop */
-	id = appstream_app_get_id (helper->item_temp);
-	if (!appstream_cache_app_is_compatible (helper->cache, helper->item_temp)) {
-		g_debug ("not compatible with the current desktop: %s", id);
-		appstream_app_free (helper->item_temp);
-		return;
-	}
-
 	/* have we recorded this before? */
+	id = appstream_app_get_id (helper->item_temp);
 	item = g_hash_table_lookup (priv->hash_id, id);
 	if (item != NULL) {
 		g_warning ("duplicate AppStream entry: %s", id);
@@ -572,7 +541,6 @@ static void
 appstream_cache_init (AppstreamCache *cache)
 {
 	AppstreamCachePrivate *priv;
-	const gchar *tmp;
 
 	priv = cache->priv = APPSTREAM_CACHE_GET_PRIVATE (cache);
 	priv->array = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_app_free);
@@ -585,12 +553,6 @@ appstream_cache_init (AppstreamCache *cache)
 						    g_str_equal,
 						    NULL,
 						    NULL);
-
-	/* by default we only show project-less apps or compatible projects */
-	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
-	if (tmp == NULL)
-		tmp = "GNOME";
-	priv->compatible_projects = g_strsplit (tmp, ",", -1);
 }
 
 /**
@@ -602,7 +564,6 @@ appstream_cache_finalize (GObject *object)
 	AppstreamCache *cache = APPSTREAM_CACHE (object);
 	AppstreamCachePrivate *priv = cache->priv;
 
-	g_strfreev (priv->compatible_projects);
 	g_ptr_array_unref (priv->array);
 	g_ptr_array_unref (priv->icon_path_array);
 	g_hash_table_unref (priv->hash_id);
