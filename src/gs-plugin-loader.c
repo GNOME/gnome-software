@@ -109,6 +109,8 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 		/* save any properties we already know */
 		if (gs_app_get_source (app) != NULL)
 			gs_app_set_source (new_app, gs_app_get_source (app));
+		if (gs_app_get_project_group (app) != NULL)
+			gs_app_set_project_group (new_app, gs_app_get_project_group (app));
 		if (gs_app_get_name (app) != NULL)
 			gs_app_set_name (new_app, gs_app_get_name (app));
 		if (gs_app_get_summary (app) != NULL)

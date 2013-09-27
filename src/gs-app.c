@@ -56,6 +56,7 @@ struct GsAppPrivate
 	gchar			*id;
 	gchar			*name;
 	gchar			*source;
+	gchar			*project_group;
 	gchar			*version;
 	gchar			*summary;
 	gchar			*description;
@@ -442,6 +443,29 @@ gs_app_set_source (GsApp *app, const gchar *source)
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->priv->source);
 	app->priv->source = g_strdup (source);
+}
+
+/**
+ * gs_app_get_project_group:
+ */
+const gchar *
+gs_app_get_project_group (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->project_group;
+}
+
+/**
+ * gs_app_set_project_group:
+ * @app:	A #GsApp instance
+ * @project_group:	The non-localized project group, e.g. "GNOME" or "KDE"
+ */
+void
+gs_app_set_project_group (GsApp *app, const gchar *project_group)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->project_group);
+	app->priv->project_group = g_strdup (project_group);
 }
 
 /**
@@ -1046,6 +1070,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->url);
 	g_free (priv->source);
+	g_free (priv->project_group);
 	g_free (priv->version);
 	g_free (priv->summary);
 	g_free (priv->description);

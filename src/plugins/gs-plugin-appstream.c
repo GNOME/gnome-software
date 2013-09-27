@@ -338,6 +338,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (appstream_app_get_icon (item) != NULL && gs_app_get_pixbuf (app) == NULL)
 		gs_plugin_refine_item_pixbuf (plugin, app, item);
 
+	/* set project group */
+	if (appstream_app_get_project_group (item) != NULL &&
+	    gs_app_get_project_group (app) == NULL)
+		gs_app_set_project_group (app, appstream_app_get_project_group (item));
+
 	/* set package name */
 	if (appstream_app_get_pkgname (item) != NULL && gs_app_get_source (app) == NULL)
 		gs_app_set_source (app, appstream_app_get_pkgname (item));
