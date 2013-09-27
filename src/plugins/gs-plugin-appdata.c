@@ -91,6 +91,8 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	if (dir == NULL)
 		goto out;
 	while ((tmp = g_dir_read_name (dir)) != NULL) {
+		if (g_strcmp0 (tmp, "schema") == 0)
+			continue;
 		if (!g_str_has_suffix (tmp, ".appdata.xml")) {
 			g_warning ("AppData: not a data file: %s/%s",
 				   plugin->priv->cachedir, tmp);
