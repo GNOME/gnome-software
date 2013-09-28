@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-19 22:01+0000\n"
-"PO-Revision-Date: 2013-09-20 21:59+0100\n"
+"POT-Creation-Date: 2013-09-24 23:50+0000\n"
+"PO-Revision-Date: 2013-09-26 23:49+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -22,6 +22,37 @@ msgstr ""
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Generator: Poedit 1.5.7\n"
 
+#: ../data/gnome-software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "Upravljalnik programov za GNOME"
+
+#: ../data/gnome-software.appdata.xml.in.h:2
+msgid ""
+"GNOME Software lets you install, remove and update applications and system "
+"extensions. It also allows you to update your system using an offline update."
+msgstr ""
+"Programska oprema GNOME omogoča nameščanje, odstranjevanje in "
+"posodabljanje programov in razširitev sistema. Obenem omogoča tudi "
+"posodabljanje vašega sistema s posodobitvami brez povezave."
+
+#: ../data/gnome-software.appdata.xml.in.h:3
+msgid "Goals:"
+msgstr "Cilji:"
+
+#: ../data/gnome-software.appdata.xml.in.h:4
+msgid ""
+"<li>View installed applications</li> <li>Remove installed applications</li> "
+"<li>View available application updates</li> <li>Install available updates</"
+"li> <li>Find new applications</li> <li>Install new applications</li> "
+"<li>Find an application to handle a specific type of file</li> <li>Installed "
+"apps and updates should be available when offline</li>"
+msgstr ""
+"<li>Pokaži nameščene programe</li> <li>Odstrani nameščene programe</li> "
+"<li>Pokaži razpoložljive posodobitve programov</li> <li>Namesti "
+"posodobitve</li> <li>Najdi nove programe</li> <li>Namesti nove "
+"programe</li> <li>Najdi program, ki deluje z določeno vrsto datotek</li> "
+"<li>Nameščeni programi in posodobitve naj bodo na voljo ob nepovezanosti</li>"
+
 #: ../src/app-menu.ui.h:1
 msgid "_About"
 msgstr "_O programu"
@@ -30,10 +61,18 @@ msgstr "_O programu"
 msgid "_Quit"
 msgstr "_Končaj"
 
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:76
+#: ../src/gs-popular-tile.c:77 ../src/gs-shell-details.c:397
+#: ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "Nameščeno"
+
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
-#: ../src/gs-application.c:89 ../src/gs-shell.c:117
+#: ../src/gs-application.c:89 ../src/gs-shell.c:128
 msgid "Software"
 msgstr "Programska oprema"
 
@@ -41,22 +80,31 @@ msgstr "Programska oprema"
 msgid "Add, remove or update software on this computer"
 msgstr "Dodajanje, odstranjevanje in posodabljanje programske opreme."
 
+#: ../src/gnome-software.ui.h:2
+msgid "Go back"
+msgstr "Pojdi nazaj"
+
 #. Translators: A label for a button to show all available software.
-#: ../src/gnome-software.ui.h:3
+#: ../src/gnome-software.ui.h:4
 msgid "_All"
 msgstr "_Vse"
 
 #. Translators: A label for a button to show only software which is already installed.
-#: ../src/gnome-software.ui.h:5
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:407
 msgid "_Installed"
 msgstr "_Nameščeno"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#: ../src/gnome-software.ui.h:7
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install.
+#.
+#: ../src/gnome-software.ui.h:8 ../src/gs-shell-updates.c:112
 msgid "_Updates"
 msgstr "_Posodobitve"
 
-#: ../src/gnome-software.ui.h:8
+#: ../src/gnome-software.ui.h:9
 msgid "Restart & Install"
 msgstr "Namestitev in ponovni zagon"
 
@@ -64,7 +112,7 @@ msgstr "Namestitev in ponovni zagon"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gnome-software.ui.h:9 ../src/gs-app-widget.c:109
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:109
 #: ../src/gs-shell-details.c:91
 msgid "Install"
 msgstr "Namesti"
@@ -73,68 +121,57 @@ msgstr "Namesti"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:117
+#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:117
 #: ../src/gs-shell-details.c:123 ../src/gs-shell-details.c:314
-#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:112
+#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:113
 msgid "Remove"
 msgstr "Odstrani"
 
-#: ../src/gnome-software.ui.h:11
+#: ../src/gnome-software.ui.h:12
 #: ../src/plugins/gs-plugin-hardcoded-popular.c:226
 msgid "Featured"
 msgstr "Novosti v ospredju"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: ../src/gnome-software.ui.h:13
+#: ../src/gnome-software.ui.h:14
 msgid "Picks"
 msgstr "Izbor osebja"
 
-#: ../src/gnome-software.ui.h:14
+#: ../src/gnome-software.ui.h:15
 msgid "Categories"
 msgstr "Kategorije"
 
-#: ../src/gnome-software.ui.h:15
-#| msgid "No Application Found"
+#: ../src/gnome-software.ui.h:16
 msgid "No Application Data Found"
 msgstr "Podatkov o programu ni mogoče najti"
 
-#: ../src/gnome-software.ui.h:16
+#: ../src/gnome-software.ui.h:17
 msgid "No Application Found"
 msgstr "Ni najdenih programov"
 
-#: ../src/gnome-software.ui.h:17
+#: ../src/gnome-software.ui.h:18
 msgid "Software is up to date"
 msgstr "Programska oprema je posodobljena"
 
-#: ../src/gnome-software.ui.h:18
-#| msgid "Visit website"
+#: ../src/gnome-software.ui.h:19
 msgid "Visit _Website"
 msgstr "Obišči sp_letišče"
 
-#: ../src/gnome-software.ui.h:19
+#: ../src/gnome-software.ui.h:20
 msgid "_History"
 msgstr "_Zgodovina"
 
-#: ../src/gnome-software.ui.h:20
-msgid "Application"
-msgstr "Program"
-
 #: ../src/gnome-software.ui.h:21
-msgid "Category"
-msgstr "Kategorija"
-
-#: ../src/gnome-software.ui.h:22
 msgid "History"
 msgstr "Zgodovina"
 
 #. Translators: Label for a button to close the update dialogue.
-#: ../src/gnome-software.ui.h:24
+#: ../src/gnome-software.ui.h:23
 msgid "Done"
 msgstr "Končano"
 
 #. TRANSLATORS: this is the title of the about window
 #: ../src/gs-application.c:87
-#| msgid "About GNOME Software"
 msgid "About Software"
 msgstr "O programu Programska oprema"
 
@@ -149,14 +186,13 @@ msgstr "Matej Urbančič"
 
 #. TRANSLATORS: this is a command line option, please don't
 #. * translate the option names between ‘’
-#: ../src/gs-application.c:215
-#, fuzzy
+#: ../src/gs-application.c:222
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Začetni zagon je lahko prikaz 'posodobitev', 'posodobljenih', 'nameščenih' "
-"ali 'novih paketov'."
+"ali 'pregleda'."
 
-#: ../src/gs-application.c:215
+#: ../src/gs-application.c:222
 msgid "MODE"
 msgstr "NAČIN"
 
@@ -203,14 +239,14 @@ msgstr ""
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
 #: ../src/gs-shell-details.c:299 ../src/gs-shell-installed.c:150
-#: ../src/gs-shell-search.c:97
+#: ../src/gs-shell-search.c:98
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Ali ste prepričani, da želite odstraniti %s?"
 
 #. TRANSLATORS: longer dialog text
 #: ../src/gs-shell-details.c:311 ../src/gs-shell-installed.c:162
-#: ../src/gs-shell-search.c:109
+#: ../src/gs-shell-search.c:110
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -221,15 +257,6 @@ msgstr ""
 #: ../src/gs-shell-details.c:391
 msgid "Removed"
 msgstr "Odstranjeno"
-
-#. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing the application was installed
-#. TRANSLATORS: this is tab button to show the list of
-#. * installed software
-#: ../src/gs-shell-details.c:397 ../src/gs-shell-installed.c:407
-#: ../src/popular-tile.ui.h:1
-msgid "Installed"
-msgstr "Nameščeno"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
@@ -249,12 +276,23 @@ msgstr "Neznano"
 #. * applications either installing or erasing
 #: ../src/gs-shell-installed.c:412
 #, c-format
-msgid "Installed (%d)"
-msgstr "Nameščeno (%d)"
+#| msgid "Installed (%d)"
+msgid "_Installed (%d)"
+msgstr "_Nameščeno (%d)"
+
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install. The '%d' refers to the
+#. * number of available updates
+#.
+#: ../src/gs-shell-updates.c:105
+#, c-format
+#| msgid "_Updates"
+msgid "_Updates (%d)"
+msgstr "_Posodobitve (%d)"
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:154
+#: ../src/gs-shell-updates.c:170
 msgid "Recent Software Updates"
 msgstr "Nedavne posodobitve programske opreme"
 
@@ -271,7 +309,7 @@ msgid "Launch"
 msgstr "Zaženi"
 
 #: ../src/plugins/gs-plugin-appstream.c:198
-#, fuzzy, c-format
+#, c-format
 #| msgid "No Application Found"
 msgid "No AppStream data found"
 msgstr "Ni najdenih podatkov AppStream"
@@ -282,19 +320,16 @@ msgid "Audio"
 msgstr "Zvok"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:60
-#| msgid "Editing"
 msgctxt "Menu subcategory of Audio"
 msgid "Editing"
 msgstr "Montaža"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:63
-#| msgid "Databases"
 msgctxt "Menu subcategory of Audio"
 msgid "Databases"
 msgstr "Podatkovne zbirke"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:66
-#| msgid "Disc Burning"
 msgctxt "Menu subcategory of Audio"
 msgid "Disc Burning"
 msgstr "Zapisovanje diska"
@@ -302,10 +337,9 @@ msgstr "Zapisovanje diska"
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:69
 msgctxt "Menu subcategory of Audio"
 msgid "Ham Radio"
-msgstr ""
+msgstr "Radioamaterstvo"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:72
-#| msgid "MIDI"
 msgctxt "Menu subcategory of Audio"
 msgid "MIDI"
 msgstr "MIDI"
@@ -316,32 +350,27 @@ msgid "Mixer"
 msgstr "Mešanje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:78
-#| msgid "Music"
 msgctxt "Menu subcategory of Audio"
 msgid "Music"
 msgstr "Glasba"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:81
-#| msgid "Players"
 msgctxt "Menu subcategory of Audio"
 msgid "Players"
 msgstr "Predvajalniki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:84
-#| msgid "Recorders"
 msgctxt "Menu subcategory of Audio"
 msgid "Recorders"
 msgstr "Snemalniki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:87
-#, fuzzy
 #| msgid "Sequencers"
 msgctxt "Menu subcategory of Audio"
 msgid "Sequencers"
 msgstr "Zaporejevalniki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:90
-#, fuzzy
 #| msgid "Tuners"
 msgctxt "Menu subcategory of Audio"
 msgid "Tuners"
@@ -353,19 +382,16 @@ msgid "Development Tools"
 msgstr "Razvojna orodja"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:97
-#| msgid "Building"
 msgctxt "Menu subcategory of Development"
 msgid "Building"
 msgstr "Izgradnja"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:100
-#| msgid "Databases"
 msgctxt "Menu subcategory of Development"
 msgid "Databases"
 msgstr "Podatkovne zbirke"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:103
-#| msgid "Debuggers"
 msgctxt "Menu subcategory of Development"
 msgid "Debuggers"
 msgstr "Razhroščevalniki"
@@ -376,13 +402,11 @@ msgid "GUI Designers"
 msgstr "Oblikovalniki grafičnega uporabniškega vmesnika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:109
-#, fuzzy
 msgctxt "Menu subcategory of Development"
 msgid "IDE"
 msgstr "Integrirana razvijalna okolja"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:112
-#| msgid "Profiling"
 msgctxt "Menu subcategory of Development"
 msgid "Profiling"
 msgstr "Profiliranje"
@@ -393,13 +417,11 @@ msgid "Project Management"
 msgstr "Upravljanje projektov"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:118
-#, fuzzy
 msgctxt "Menu subcategory of Development"
 msgid "Revision Control"
 msgstr "Nadzor različic"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:121
-#| msgid "Translation"
 msgctxt "Menu subcategory of Development"
 msgid "Translation"
 msgstr "Prevajanje"
@@ -415,182 +437,152 @@ msgid "Education"
 msgstr "Izobraževanje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:131
-#, fuzzy
 #| msgid "Art"
 msgctxt "Menu subcategory of Education"
 msgid "Art"
 msgstr "Umetnost"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:134
-#| msgid "Artificial Intelligence"
 msgctxt "Menu subcategory of Education"
 msgid "Artificial Intelligence"
 msgstr "Umetna inteligenca"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:137
-#| msgid "Astronomy"
 msgctxt "Menu subcategory of Education"
 msgid "Astronomy"
 msgstr "Astronomija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:140
-#| msgid "Biology"
 msgctxt "Menu subcategory of Education"
 msgid "Biology"
 msgstr "Biologija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:143
-#| msgid "Chemistry"
 msgctxt "Menu subcategory of Education"
 msgid "Chemistry"
 msgstr "Kemija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:146
-#| msgid "Computer Science"
 msgctxt "Menu subcategory of Education"
 msgid "Computer Science"
 msgstr "Računalniške znanosti"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:149
-#| msgid "Construction"
 msgctxt "Menu subcategory of Education"
 msgid "Construction"
 msgstr "Gradnja"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:152
-#, fuzzy
 msgctxt "Menu subcategory of Education"
 msgid "Data Visualization"
 msgstr "Predočenje podatkov"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:155
-#| msgid "Economy"
 msgctxt "Menu subcategory of Education"
 msgid "Economy"
 msgstr "Ekonomija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:158
-#| msgid "Electricity"
 msgctxt "Menu subcategory of Education"
 msgid "Electricity"
 msgstr "Elektrika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:161
-#| msgid "Electronics"
 msgctxt "Menu subcategory of Education"
 msgid "Electronics"
 msgstr "Elektronika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:164
-#| msgid "Engineering"
 msgctxt "Menu subcategory of Education"
 msgid "Engineering"
 msgstr "Inženirstvo"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:167
-#| msgid "Geography"
 msgctxt "Menu subcategory of Education"
 msgid "Geography"
 msgstr "Geografija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:170
-#| msgid "Geology"
 msgctxt "Menu subcategory of Education"
 msgid "Geology"
 msgstr "Geologija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:173
-#| msgid "Geoscience"
 msgctxt "Menu subcategory of Education"
 msgid "Geoscience"
 msgstr "Geoznanost"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:176
-#| msgid "History"
 msgctxt "Menu subcategory of Education"
 msgid "History"
 msgstr "Zgodovina"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:179
-#| msgid "Humanities"
 msgctxt "Menu subcategory of Education"
 msgid "Humanities"
 msgstr "Humanistika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:182
-#| msgid "Image Processing"
 msgctxt "Menu subcategory of Education"
 msgid "Image Processing"
 msgstr "Obdelava slik"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:185
-#| msgid "Languages"
 msgctxt "Menu subcategory of Education"
 msgid "Languages"
 msgstr "Jeziki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:188
-#| msgid "Literature"
 msgctxt "Menu subcategory of Education"
 msgid "Literature"
 msgstr "Literatura"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:191
-#| msgid "Maps"
 msgctxt "Menu subcategory of Education"
 msgid "Maps"
 msgstr "Zemljevidi"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:194
-#| msgid "Math"
 msgctxt "Menu subcategory of Education"
 msgid "Math"
 msgstr "Matematika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:197
-#| msgid "Medical"
 msgctxt "Menu subcategory of Education"
 msgid "Medical"
 msgstr "Zdravstvo"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:200
-#| msgid "Music"
 msgctxt "Menu subcategory of Education"
 msgid "Music"
 msgstr "Glasba"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:203
-#| msgid "Numerical Analysis"
 msgctxt "Menu subcategory of Education"
 msgid "Numerical Analysis"
 msgstr "Številska analiza"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:206
-#, fuzzy
 msgctxt "Menu subcategory of Education"
 msgid "Parallel Computing"
 msgstr "Vzporedno računanje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:209
-#| msgid "Physics"
 msgctxt "Menu subcategory of Education"
 msgid "Physics"
 msgstr "Fizika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:212
-#| msgid "Robotics"
 msgctxt "Menu subcategory of Education"
 msgid "Robotics"
 msgstr "Robotika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:215
-#| msgid "Spirituality"
 msgctxt "Menu subcategory of Education"
 msgid "Spirituality"
 msgstr "Duhovnost in vera"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:218
-#| msgid "Sports"
 msgctxt "Menu subcategory of Education"
 msgid "Sports"
 msgstr "Šport"
@@ -601,85 +593,71 @@ msgid "Games"
 msgstr "Igre"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:225
-#| msgid "Action"
 msgctxt "Menu subcategory of Games"
 msgid "Action"
 msgstr "Akcijske igre"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:228
-#| msgid "Adventure"
 msgctxt "Menu subcategory of Games"
 msgid "Adventure"
 msgstr "Pustolovščine"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:231
-#| msgid "Arcade"
 msgctxt "Menu subcategory of Games"
 msgid "Arcade"
 msgstr "Arkadne igre"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:234
-#| msgid "Blocks"
 msgctxt "Menu subcategory of Games"
 msgid "Blocks"
 msgstr "Bloki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:237
-#| msgid "Board"
 msgctxt "Menu subcategory of Games"
 msgid "Board"
 msgstr "Tabla"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:240
-#| msgid "Card"
 msgctxt "Menu subcategory of Games"
 msgid "Card"
 msgstr "Karte"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:243
-#| msgid "Emulators"
 msgctxt "Menu subcategory of Games"
 msgid "Emulators"
 msgstr "Posnemovalniki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:246
-#| msgid "Kids"
 msgctxt "Menu subcategory of Games"
 msgid "Kids"
 msgstr "Za otroke"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:249
-#| msgid "Logic"
 msgctxt "Menu subcategory of Games"
 msgid "Logic"
 msgstr "Logika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:252
-#| msgid "Role Playing"
 msgctxt "Menu subcategory of Games"
 msgid "Role Playing"
 msgstr "Igra vlog"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:255
-#| msgid "Shooter"
 msgctxt "Menu subcategory of Games"
 msgid "Shooter"
 msgstr "Strelske igre"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:258
-#| msgid "Simulation"
 msgctxt "Menu subcategory of Games"
 msgid "Simulation"
 msgstr "Simulacija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:261
-#| msgid "Sports"
 msgctxt "Menu subcategory of Games"
 msgid "Sports"
 msgstr "Šport"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:264
-#| msgid "Strategy"
 msgctxt "Menu subcategory of Games"
 msgid "Strategy"
 msgstr "Strateške igre"
@@ -690,57 +668,48 @@ msgid "Graphics"
 msgstr "Grafika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:271
-#| msgid "2D Graphics"
 msgctxt "Menu subcategory of Graphics"
 msgid "2D Graphics"
 msgstr "2D-grafika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:274
-#| msgid "3D Graphics"
 msgctxt "Menu subcategory of Graphics"
 msgid "3D Graphics"
 msgstr "3D-grafika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:277
-#, fuzzy
 #| msgid "OCR"
 msgctxt "Menu subcategory of Graphics"
 msgid "OCR"
 msgstr "Optično prepoznavanje znakov"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:280
-#| msgid "Photography"
 msgctxt "Menu subcategory of Graphics"
 msgid "Photography"
 msgstr "Fotografija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:283
-#| msgid "Publishing"
 msgctxt "Menu subcategory of Graphics"
 msgid "Publishing"
 msgstr "Založništvo"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:286
-#| msgid "Raster Graphics"
 msgctxt "Menu subcategory of Graphics"
 msgid "Raster Graphics"
 msgstr "Rastrska grafika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:289
-#, fuzzy
 #| msgid "Scanning"
 msgctxt "Menu subcategory of Graphics"
 msgid "Scanning"
 msgstr "Optično branje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:292
-#| msgid "Vector Graphics"
 msgctxt "Menu subcategory of Graphics"
 msgid "Vector Graphics"
 msgstr "Vektorska grafika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:295
-#| msgid "Viewer"
 msgctxt "Menu subcategory of Graphics"
 msgid "Viewer"
 msgstr "Pregledovalnik"
@@ -751,31 +720,26 @@ msgid "Internet"
 msgstr "Splet"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:302
-#| msgid "Chat"
 msgctxt "Menu subcategory of Network"
 msgid "Chat"
 msgstr "Klepet"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:305
-#| msgid "Dialup"
 msgctxt "Menu subcategory of Network"
 msgid "Dialup"
 msgstr "Klicanje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:308
-#| msgid "Email"
 msgctxt "Menu subcategory of Network"
 msgid "Email"
 msgstr "Elektronska pošta"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:311
-#| msgid "Feed"
 msgctxt "Menu subcategory of Network"
 msgid "Feed"
 msgstr "Vir"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:314
-#| msgid "File Transfer"
 msgctxt "Menu subcategory of Network"
 msgid "File Transfer"
 msgstr "Prenos datotek"
@@ -783,60 +747,51 @@ msgstr "Prenos datotek"
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:317
 msgctxt "Menu subcategory of Network"
 msgid "Ham Radio"
-msgstr ""
+msgstr "Radioamaterstvo"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:320
-#| msgid "Instant Messaging"
 msgctxt "Menu subcategory of Network"
 msgid "Instant Messaging"
 msgstr "Hipno sporočanje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:323
-#| msgid "IRC Clients"
 msgctxt "Menu subcategory of Network"
 msgid "IRC Clients"
 msgstr "Odjemalci IRC"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:326
-#, fuzzy
 #| msgid "Monitor"
 msgctxt "Menu subcategory of Network"
 msgid "Monitor"
-msgstr "Zaslon"
+msgstr "Nadzor"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:329
-#| msgid "News"
 msgctxt "Menu subcategory of Network"
 msgid "News"
 msgstr "Novice"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:332
-#, fuzzy
 #| msgid "P2P"
 msgctxt "Menu subcategory of Network"
 msgid "P2P"
 msgstr "P2P"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:335
-#| msgid "Remote Access"
 msgctxt "Menu subcategory of Network"
 msgid "Remote Access"
 msgstr "Oddaljeni dostop"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:338
-#| msgid "Telephony"
 msgctxt "Menu subcategory of Network"
 msgid "Telephony"
 msgstr "Telefonija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:341
-#| msgid "Video Conference"
 msgctxt "Menu subcategory of Network"
 msgid "Video Conference"
 msgstr "Video konference"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:344
-#| msgid "Web Browser"
 msgctxt "Menu subcategory of Network"
 msgid "Web Browser"
 msgstr "Spletni brskalnik"
@@ -852,7 +807,6 @@ msgid "Office"
 msgstr "Pisarna"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:354
-#| msgid "Calendar"
 msgctxt "Menu subcategory of Office"
 msgid "Calendar"
 msgstr "Koledar"
@@ -863,31 +817,26 @@ msgid "Chart"
 msgstr "Grafikon"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:360
-#| msgid "Contact Management"
 msgctxt "Menu subcategory of Office"
 msgid "Contact Management"
 msgstr "Upravljanje s stiki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:363
-#| msgid "Database"
 msgctxt "Menu subcategory of Office"
 msgid "Database"
 msgstr "Podatkovna zbirka"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:366
-#| msgid "Dictionary"
 msgctxt "Menu subcategory of Office"
 msgid "Dictionary"
 msgstr "Slovar"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:369
-#| msgid "Email"
 msgctxt "Menu subcategory of Office"
 msgid "Email"
 msgstr "Elektronska pošta"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
-#| msgid "Finance"
 msgctxt "Menu subcategory of Office"
 msgid "Finance"
 msgstr "Finance"
@@ -898,19 +847,16 @@ msgid "Flow Chart"
 msgstr "Diagram poteka"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:378
-#| msgid "PDA"
 msgctxt "Menu subcategory of Office"
 msgid "PDA"
 msgstr "Dlančnik"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:381
-#| msgid "Photography"
 msgctxt "Menu subcategory of Office"
 msgid "Photography"
 msgstr "Fotografija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:384
-#| msgid "Presentation"
 msgctxt "Menu subcategory of Office"
 msgid "Presentation"
 msgstr "Predstavitev"
@@ -921,25 +867,21 @@ msgid "Project Management"
 msgstr "Upravljanje projektov"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:390
-#| msgid "Publishing"
 msgctxt "Menu subcategory of Office"
 msgid "Publishing"
 msgstr "Založništvo"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:393
-#| msgid "Spreadsheet"
 msgctxt "Menu subcategory of Office"
 msgid "Spreadsheet"
 msgstr "Preglednica"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:396
-#| msgid "Viewer"
 msgctxt "Menu subcategory of Office"
 msgid "Viewer"
 msgstr "Pregledovalnik"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:399
-#| msgid "Word Processor"
 msgctxt "Menu subcategory of Office"
 msgid "Word Processor"
 msgstr "Urejanje besedila"
@@ -950,44 +892,37 @@ msgid "Science"
 msgstr "Znanost"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:406
-#, fuzzy
 #| msgid "Art"
 msgctxt "Menu subcategory of Science"
 msgid "Art"
 msgstr "Umetnost"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:409
-#| msgid "Artificial Intelligence"
 msgctxt "Menu subcategory of Science"
 msgid "Artificial Intelligence"
 msgstr "Umetna inteligenca"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:412
-#| msgid "Astronomy"
 msgctxt "Menu subcategory of Science"
 msgid "Astronomy"
 msgstr "Astronomija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:415
-#| msgid "Biology"
 msgctxt "Menu subcategory of Science"
 msgid "Biology"
 msgstr "Biologija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:418
-#| msgid "Chemistry"
 msgctxt "Menu subcategory of Science"
 msgid "Chemistry"
 msgstr "Kemija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:421
-#| msgid "Computer Science"
 msgctxt "Menu subcategory of Science"
 msgid "Computer Science"
 msgstr "Računalniške znanosti"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:424
-#| msgid "Construction"
 msgctxt "Menu subcategory of Science"
 msgid "Construction"
 msgstr "Gradnja"
@@ -998,127 +933,106 @@ msgid "Data Visualization"
 msgstr "Predočenje podatkov"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:430
-#| msgid "Economy"
 msgctxt "Menu subcategory of Science"
 msgid "Economy"
 msgstr "Ekonomija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:433
-#| msgid "Electricity"
 msgctxt "Menu subcategory of Science"
 msgid "Electricity"
 msgstr "Elektrika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:436
-#| msgid "Electronics"
 msgctxt "Menu subcategory of Science"
 msgid "Electronics"
 msgstr "Elektronika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:439
-#| msgid "Engineering"
 msgctxt "Menu subcategory of Science"
 msgid "Engineering"
 msgstr "Inženirstvo"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:442
-#| msgid "Geography"
 msgctxt "Menu subcategory of Science"
 msgid "Geography"
 msgstr "Geografija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:445
-#| msgid "Geology"
 msgctxt "Menu subcategory of Science"
 msgid "Geology"
 msgstr "Geologija"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:448
-#| msgid "Geoscience"
 msgctxt "Menu subcategory of Science"
 msgid "Geoscience"
 msgstr "Geoznanost"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:451
-#| msgid "History"
 msgctxt "Menu subcategory of Science"
 msgid "History"
 msgstr "Zgodovina"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:454
-#| msgid "Humanities"
 msgctxt "Menu subcategory of Science"
 msgid "Humanities"
 msgstr "Humanistika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
-#| msgid "Image Processing"
 msgctxt "Menu subcategory of Science"
 msgid "Image Processing"
 msgstr "Obdelava slik"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:460
-#| msgid "Languages"
 msgctxt "Menu subcategory of Science"
 msgid "Languages"
 msgstr "Jeziki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:463
-#| msgid "Literature"
 msgctxt "Menu subcategory of Science"
 msgid "Literature"
 msgstr "Literatura"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:466
-#| msgid "Maps"
 msgctxt "Menu subcategory of Science"
 msgid "Maps"
 msgstr "Zemljevidi"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:469
-#| msgid "Math"
 msgctxt "Menu subcategory of Science"
 msgid "Math"
 msgstr "Matematika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:472
-#| msgid "Medical"
 msgctxt "Menu subcategory of Science"
 msgid "Medical"
 msgstr "Zdravstvo"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:475
-#| msgid "Numerical Analysis"
 msgctxt "Menu subcategory of Science"
 msgid "Numerical Analysis"
 msgstr "Številska analiza"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:478
-#, fuzzy
 msgctxt "Menu subcategory of Science"
 msgid "Parallel Computing"
 msgstr "Vzporedno računanje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:481
-#| msgid "Physics"
 msgctxt "Menu subcategory of Science"
 msgid "Physics"
 msgstr "Fizika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
-#| msgid "Robotics"
 msgctxt "Menu subcategory of Science"
 msgid "Robotics"
 msgstr "Robotika"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:487
-#| msgid "Spirituality"
 msgctxt "Menu subcategory of Science"
 msgid "Spirituality"
 msgstr "Duhovnost in vera"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:490
-#| msgid "Sports"
 msgctxt "Menu subcategory of Science"
 msgid "Sports"
 msgstr "Šport"
@@ -1129,43 +1043,36 @@ msgid "System"
 msgstr "Sistem"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:497
-#| msgid "Emulator"
 msgctxt "Menu subcategory of System"
 msgid "Emulator"
 msgstr "Posnemovalnik"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:500
-#| msgid "File Manager"
 msgctxt "Menu subcategory of System"
 msgid "File Manager"
 msgstr "Upravljalnik datotek"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:503
-#| msgid "Filesystem"
 msgctxt "Menu subcategory of System"
 msgid "File System"
 msgstr "Datotečni sistem"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
-#| msgid "File Tools"
 msgctxt "Menu subcategory of System"
 msgid "File Tools"
 msgstr "Datotečna orodja"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
-#| msgid "Monitor"
 msgctxt "Menu subcategory of System"
 msgid "Monitor"
 msgstr "Zaslon"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
-#| msgid "Security"
 msgctxt "Menu subcategory of System"
 msgid "Security"
 msgstr "Varnost"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:515
-#| msgid "Terminal Emulator"
 msgctxt "Menu subcategory of System"
 msgid "Terminal Emulator"
 msgstr "Posnemovalnik terminala"
@@ -1176,61 +1083,51 @@ msgid "Utilities"
 msgstr "Pripomočki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:522
-#| msgid "Accessibility"
 msgctxt "Menu subcategory of Utility"
 msgid "Accessibility"
 msgstr "Dostopnost"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:525
-#| msgid "Archiving"
 msgctxt "Menu subcategory of Utility"
 msgid "Archiving"
 msgstr "Arhiviranje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
-#| msgid "Calculator"
 msgctxt "Menu subcategory of Utility"
 msgid "Calculator"
 msgstr "Računalo"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
-#| msgid "Clock"
 msgctxt "Menu subcategory of Utility"
 msgid "Clock"
 msgstr "Ura"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:534
-#| msgid "Compression"
 msgctxt "Menu subcategory of Utility"
 msgid "Compression"
 msgstr "Stiskanje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:537
-#| msgid "File Tools"
 msgctxt "Menu subcategory of Utility"
 msgid "File Tools"
 msgstr "Datotečna orodja"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:540
-#| msgid "Maps"
 msgctxt "Menu subcategory of Utility"
 msgid "Maps"
 msgstr "Zemljevidi"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:543
-#| msgid "Spirituality"
 msgctxt "Menu subcategory of Utility"
 msgid "Spirituality"
 msgstr "Duhovnost in vera"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:546
-#| msgid "Telephony Tools"
 msgctxt "Menu subcategory of Utility"
 msgid "Telephony Tools"
 msgstr "Orodja za telefoniranje"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:549
-#| msgid "Text Editor"
 msgctxt "Menu subcategory of Utility"
 msgid "Text Editor"
 msgstr "Urejevalnik besedil"
@@ -1241,37 +1138,31 @@ msgid "Video"
 msgstr "Video"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:556
-#| msgid "Editing"
 msgctxt "Menu subcategory of Video"
 msgid "Editing"
 msgstr "Montaža"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:559
-#| msgid "Database"
 msgctxt "Menu subcategory of Video"
 msgid "Database"
 msgstr "Podatkovna zbirka"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
-#| msgid "Disc Burning"
 msgctxt "Menu subcategory of Video"
 msgid "Disc Burning"
 msgstr "Zapisovanje diska"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
-#| msgid "Players"
 msgctxt "Menu subcategory of Video"
 msgid "Players"
 msgstr "Predvajalniki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
-#| msgid "Recorders"
 msgctxt "Menu subcategory of Video"
 msgid "Recorders"
 msgstr "Snemalniki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
-#| msgid "TV"
 msgctxt "Menu subcategory of Video"
 msgid "TV"
 msgstr "TV"
@@ -1280,56 +1171,52 @@ msgstr "TV"
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
-#: ../src/plugins/gs-plugin-packagekit.c:510
+#: ../src/plugins/gs-plugin-packagekit.c:424
 msgid "Add-ons"
 msgstr "Dodatki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:578
-#| msgid "Fonts"
 msgctxt "Menu subcategory of Addons"
 msgid "Fonts"
 msgstr "Pisave"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:581
-#| msgid "Codecs"
 msgctxt "Menu subcategory of Addons"
 msgid "Codecs"
 msgstr "Kodeki"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:584
-#| msgid "Input Sources"
 msgctxt "Menu subcategory of Addons"
 msgid "Input Sources"
 msgstr "Vhodni viri"
 
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
-#| msgid "Language Packs"
 msgctxt "Menu subcategory of Addons"
 msgid "Language Packs"
 msgstr "Jezikovni paketi"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:514
+#: ../src/plugins/gs-plugin-packagekit.c:428
 msgid "Codecs"
 msgstr "Kodeki"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:518
+#: ../src/plugins/gs-plugin-packagekit.c:432
 msgid "Fonts"
 msgstr "Pisave"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:522
+#: ../src/plugins/gs-plugin-packagekit.c:436
 msgid "Input Sources"
 msgstr "Vhodni viri"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:526
+#: ../src/plugins/gs-plugin-packagekit.c:440
 msgid "Language Packs"
 msgstr "Jezikovni paketi"
 
 #. TRANSLATORS: this is where update details either are
 #. * no longer available or were never provided in the first place
-#: ../src/plugins/gs-plugin-packagekit-refine.c:347
+#: ../src/plugins/gs-plugin-packagekit-refine.c:315
 msgid "No update details were provided"
 msgstr "Ni ponujenih podrobnosti za posodobitev"
