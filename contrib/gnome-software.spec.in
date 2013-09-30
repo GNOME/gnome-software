@@ -44,8 +44,8 @@ make %{?_smp_mflags}
 %__cp %{SOURCE1} %{buildroot}%{_datadir}/app-info/xmls
 
 # decompress and install AppStream icons
-%__mkdir_p %{buildroot}%{_datadir}/app-info/icons
-cd %{buildroot}%{_datadir}/app-info/icons
+%__mkdir_p %{buildroot}%{_datadir}/app-info/icons/fedora-20
+cd %{buildroot}%{_datadir}/app-info/icons/fedora-20
 %__tar xvzf %{SOURCE2}
 cd -
 
@@ -76,7 +76,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/gnome-software/*.png
 %{_datadir}/appdata/*.appdata.xml
 %{_datadir}/app-info/xmls/*.gz
-%{_datadir}/app-info/icons/*.png
+%{_datadir}/app-info/icons/fedora-20/*.png
 %{_mandir}/man1/gnome-software.1.gz
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/gnome-software/featured.ini
