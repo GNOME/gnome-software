@@ -31,6 +31,7 @@ struct GsPluginPrivate {
 
 typedef struct {
 	gchar		*id;
+	gchar		*pkgname;
 	gchar		*name;
 	gchar		*summary;
 	GdkPixbuf	*pixbuf;
@@ -103,6 +104,8 @@ gs_plugin_datadir_apps_set_from_cache_item (GsApp *app,
 	gs_app_set_id (app, cache_item->id);
 	if (cache_item->name != NULL)
 		gs_app_set_name (app, cache_item->name);
+	if (cache_item->pkgname != NULL)
+		gs_app_set_source (app, cache_item->pkgname);
 	if (cache_item->summary != NULL)
 		gs_app_set_summary (app, cache_item->summary);
 	if (cache_item->pixbuf != NULL)
@@ -133,6 +136,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	gchar *basename = NULL;
 	gchar *comment = NULL;
 	gchar *name = NULL;
+	gchar *pkgname = NULL;
 	gchar *icon = NULL;
 	gchar *dot;
 	GKeyFile *key_file = NULL;
@@ -204,6 +208,14 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	if (pixbuf != NULL)
 		cache_item->pixbuf = g_object_ref (pixbuf);
 
+	/* set pkgname if set (only Ubuntu) */
+	pkgname = g_key_file_get_string (key_file,
+					 G_KEY_FILE_DESKTOP_GROUP,
+					 "X-AppInstall-Package",
+					 NULL);
+	if (pkgname != NULL && pkgname[0] != '\0')
+		cache_item->pkgname = g_strdup (pkgname);
+
 	/* set new id */
 	basename = g_path_get_basename (desktop_file);
 	dot = strrchr (basename, '.');
@@ -227,6 +239,7 @@ out:
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
 	g_free (basename);
+	g_free (pkgname);
 	g_free (icon);
 	g_free (name);
 	g_free (comment);
