@@ -1,0 +1,1234 @@
+# Chinese (Taiwan) translation for gnome-software.
+# Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-software package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-software master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-09-27 10:37+0000\n"
+"PO-Revision-Date: 2013-09-28 01:10+0800\n"
+"Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
+"Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
+"Language: zh_TW\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.4\n"
+
+#: ../data/gnome-software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "GNOME 的應用程式管理員"
+
+#: ../data/gnome-software.appdata.xml.in.h:2
+msgid ""
+"GNOME Software lets you install, remove and update applications and system "
+"extensions. It also allows you to update your system using an offline update."
+msgstr ""
+"GNOME Software 讓您安裝、移除、更新應用程式與系統擴充套件。它也可讓您試用離線"
+"更新方式來更新系統。"
+
+#: ../data/gnome-software.appdata.xml.in.h:3
+msgid "Software has the following goals:"
+msgstr "軟體有下列目標："
+
+#: ../data/gnome-software.appdata.xml.in.h:4
+msgid "View installed applications"
+msgstr "檢視安裝的應用程式"
+
+#: ../data/gnome-software.appdata.xml.in.h:5
+msgid "Remove installed applications"
+msgstr "移除安裝的應用程式"
+
+#: ../data/gnome-software.appdata.xml.in.h:6
+msgid "View available application updates"
+msgstr "檢視可用的應用程式更新"
+
+#: ../data/gnome-software.appdata.xml.in.h:7
+msgid "Install available updates"
+msgstr "安裝可用的更新"
+
+#: ../data/gnome-software.appdata.xml.in.h:8
+msgid "Find new applications"
+msgstr "尋找新的應用程式"
+
+#: ../data/gnome-software.appdata.xml.in.h:9
+msgid "Install new applications"
+msgstr "安裝新的應用程式"
+
+#: ../data/gnome-software.appdata.xml.in.h:10
+msgid "Find an application to handle a specific type of file"
+msgstr "尋找應用程式以處理特定類型的檔案"
+
+#: ../data/gnome-software.appdata.xml.in.h:11
+msgid "Installed apps and updates should be available when offline"
+msgstr "已安裝的程式與更新應該可在離線時使用"
+
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "關於(_A)"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "退出(_Q)"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is installed
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:79 ../src/gs-app-tile.c:82
+#: ../src/gs-feature-tile.c:75 ../src/gs-popular-tile.c:78
+#: ../src/gs-popular-tile.c:81 ../src/gs-shell-details.c:397
+#: ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "已安裝"
+
+#. TRANSLATORS: this is the application name
+#. TRANSLATORS: this is the main window title
+#: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
+#: ../src/gs-application.c:89 ../src/gs-shell.c:128
+msgid "Software"
+msgstr "軟體"
+
+#: ../src/gnome-software.desktop.in.h:2
+msgid "Add, remove or update software on this computer"
+msgstr "在這臺電腦上加入、移除，或更新軟體"
+
+#: ../src/gnome-software.ui.h:2
+msgid "Go back"
+msgstr "返回"
+
+#. Translators: A label for a button to show all available software.
+#: ../src/gnome-software.ui.h:4
+msgid "_All"
+msgstr "全部(_A)"
+
+#. Translators: A label for a button to show only software which is already installed.
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:407
+msgid "_Installed"
+msgstr "已安裝(_I)"
+
+#. Translators: A label for a button to show only updates which are available to install.
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install.
+#.
+#: ../src/gnome-software.ui.h:8 ../src/gs-shell-updates.c:112
+msgid "_Updates"
+msgstr "更新(_U)"
+
+#: ../src/gnome-software.ui.h:9
+msgid "Restart & Install"
+msgstr "重新啟動並安裝"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:112
+#: ../src/gs-shell-details.c:91
+msgid "Install"
+msgstr "安裝"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: button text in the header when an application can be erased
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:120
+#: ../src/gs-app-widget.c:132 ../src/gs-shell-details.c:123
+#: ../src/gs-shell-details.c:314 ../src/gs-shell-installed.c:165
+#: ../src/gs-shell-search.c:113
+msgid "Remove"
+msgstr "移除"
+
+#: ../src/gnome-software.ui.h:12
+#: ../src/plugins/gs-plugin-hardcoded-popular.c:227
+msgid "Featured"
+msgstr "特色"
+
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: ../src/gnome-software.ui.h:14
+msgid "Picks"
+msgstr "精選"
+
+#: ../src/gnome-software.ui.h:15
+msgid "Categories"
+msgstr "類別"
+
+#: ../src/gnome-software.ui.h:16
+msgid "No Application Data Found"
+msgstr "找不到應用程式資料"
+
+#: ../src/gnome-software.ui.h:17
+msgid "No Application Found"
+msgstr "找不到應用程式"
+
+#: ../src/gnome-software.ui.h:18
+msgid "Software is up to date"
+msgstr "軟體處於最新狀態"
+
+#: ../src/gnome-software.ui.h:19
+msgid "Visit _Website"
+msgstr "檢視網站(_W)"
+
+#: ../src/gnome-software.ui.h:20
+msgid "_History"
+msgstr "歷史(_H)"
+
+#: ../src/gnome-software.ui.h:21
+msgid "History"
+msgstr "歷史"
+
+#. Translators: Label for a button to close the update dialogue.
+#: ../src/gnome-software.ui.h:23
+msgid "Done"
+msgstr "完成"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:87
+msgid "About Software"
+msgstr "關於 Software"
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:92
+msgid "A nice way to manage the software on your system."
+msgstr "管理系統中軟體的絕佳方式。"
+
+#: ../src/gs-application.c:96
+msgid "translator-credits"
+msgstr "Cheng-Chia Tseng <pswo10680@gmail.com>, 2013."
+
+#. TRANSLATORS: this is a command line option, please don't
+#. * translate the option names between ‘’
+#: ../src/gs-application.c:223
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr ""
+"初始啟動模式：可以是 ‘updates’(更新)、‘updated’(已更新)、‘installed’(已安裝) "
+"或 ‘overview’(概覽)"
+
+#: ../src/gs-application.c:223
+msgid "MODE"
+msgstr "模式"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user there is an update for the installed
+#. * application available
+#: ../src/gs-app-tile.c:88 ../src/gs-app-tile.c:92 ../src/gs-feature-tile.c:80
+#: ../src/gs-popular-tile.c:87 ../src/gs-popular-tile.c:91
+msgid "Updates"
+msgstr "更新"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be updated. not normally shown
+#: ../src/gs-app-widget.c:130
+msgid "Update"
+msgstr "更新"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-app-widget.c:142 ../src/gs-shell-details.c:99
+msgid "Installing"
+msgstr "安裝中"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-app-widget.c:151 ../src/gs-shell-details.c:130
+msgid "Removing"
+msgstr "移除中"
+
+#. TRANSLATORS: this is where all applications that don't
+#. * fit in other groups are put
+#: ../src/gs-category.c:175
+msgid "Other"
+msgstr "其他"
+
+#. TRANSLATORS: this is a group of updates that are not packages and
+#. * are ot shown in the main list
+#: ../src/gs-plugin-loader.c:560
+msgid "OS Updates"
+msgstr "作業系統更新"
+
+#. TRANSLATORS: this is a longer description of the os-update item
+#: ../src/gs-plugin-loader.c:562 ../src/gs-plugin-loader.c:563
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr "包括所有使用者都能受益的效能、穩定性、安全性改善。"
+
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-shell-details.c:299 ../src/gs-shell-installed.c:150
+#: ../src/gs-shell-search.c:98
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "您確定要移除 %s？"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-shell-details.c:311 ../src/gs-shell-installed.c:162
+#: ../src/gs-shell-search.c:110
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr "%s 將被移除，將來若您想使用時則須再次安裝。"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was removed
+#: ../src/gs-shell-details.c:391
+msgid "Removed"
+msgstr "已移除"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gs-shell-details.c:402
+msgid "Updated"
+msgstr "已更新"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing that something happened to the
+#. * application but we don't know what
+#: ../src/gs-shell-details.c:408
+msgid "Unknown"
+msgstr "未知"
+
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software. The '%d' refers to the number of
+#. * applications either installing or erasing
+#: ../src/gs-shell-installed.c:412
+#, c-format
+msgid "_Installed (%d)"
+msgstr "已安裝 (%d)(_I)"
+
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install. The '%d' refers to the
+#. * number of available updates
+#.
+#: ../src/gs-shell-updates.c:105
+#, c-format
+msgid "_Updates (%d)"
+msgstr "更新 (%d)(_U)"
+
+#. TRANSLATORS: window title to suggest that we are showing
+#. * the offline updates that have just been applied
+#: ../src/gs-shell-updates.c:170
+msgid "Recent Software Updates"
+msgstr "最近軟體更新"
+
+#. TRANSLATORS: this is the summary of a notification that an application
+#. * has been successfully installed
+#: ../src/gs-utils.c:166
+#, c-format
+msgid "%s is now installed"
+msgstr "%s 現已安裝"
+
+#. TRANSLATORS: this is button that opens the newly installed application
+#: ../src/gs-utils.c:169
+msgid "Launch"
+msgstr "啟動"
+
+#: ../src/plugins/gs-plugin-appstream.c:196
+#, c-format
+msgid "No AppStream data found"
+msgstr "找不到 AppStream 資料"
+
+#. TRANSLATORS: this is the menu spec main category for Audio
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:57
+msgid "Audio"
+msgstr "音訊"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:60
+msgctxt "Menu subcategory of Audio"
+msgid "Editing"
+msgstr "編輯"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:63
+msgctxt "Menu subcategory of Audio"
+msgid "Databases"
+msgstr "資料庫"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:66
+msgctxt "Menu subcategory of Audio"
+msgid "Disc Burning"
+msgstr "光碟燒錄"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:69
+msgctxt "Menu subcategory of Audio"
+msgid "Ham Radio"
+msgstr "自製無線電"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:72
+msgctxt "Menu subcategory of Audio"
+msgid "MIDI"
+msgstr "MIDI"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:75
+msgctxt "Menu subcategory of Audio"
+msgid "Mixer"
+msgstr "混音器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:78
+msgctxt "Menu subcategory of Audio"
+msgid "Music"
+msgstr "音樂"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:81
+msgctxt "Menu subcategory of Audio"
+msgid "Players"
+msgstr "播放器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:84
+msgctxt "Menu subcategory of Audio"
+msgid "Recorders"
+msgstr "錄製器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:87
+msgctxt "Menu subcategory of Audio"
+msgid "Sequencers"
+msgstr "序段編輯器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:90
+msgctxt "Menu subcategory of Audio"
+msgid "Tuners"
+msgstr "調音器"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:94
+msgid "Development Tools"
+msgstr "開發工具"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:97
+msgctxt "Menu subcategory of Development"
+msgid "Building"
+msgstr "建置"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:100
+msgctxt "Menu subcategory of Development"
+msgid "Databases"
+msgstr "資料庫"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:103
+msgctxt "Menu subcategory of Development"
+msgid "Debuggers"
+msgstr "除錯器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:106
+msgctxt "Menu subcategory of Development"
+msgid "GUI Designers"
+msgstr "GUI 設計工具"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:109
+msgctxt "Menu subcategory of Development"
+msgid "IDE"
+msgstr "IDE"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:112
+msgctxt "Menu subcategory of Development"
+msgid "Profiling"
+msgstr "效能評測"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:115
+msgctxt "Menu subcategory of Development"
+msgid "Project Management"
+msgstr "專案管理"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:118
+msgctxt "Menu subcategory of Development"
+msgid "Revision Control"
+msgstr "修訂控制"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:121
+msgctxt "Menu subcategory of Development"
+msgid "Translation"
+msgstr "翻譯"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:124
+msgctxt "Menu subcategory of Development"
+msgid "Web Development"
+msgstr "網頁開發"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:128
+msgid "Education"
+msgstr "教育"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:131
+msgctxt "Menu subcategory of Education"
+msgid "Art"
+msgstr "藝術"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:134
+msgctxt "Menu subcategory of Education"
+msgid "Artificial Intelligence"
+msgstr "人工智慧"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:137
+msgctxt "Menu subcategory of Education"
+msgid "Astronomy"
+msgstr "天文"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:140
+msgctxt "Menu subcategory of Education"
+msgid "Biology"
+msgstr "生物"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:143
+msgctxt "Menu subcategory of Education"
+msgid "Chemistry"
+msgstr "化學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:146
+msgctxt "Menu subcategory of Education"
+msgid "Computer Science"
+msgstr "電腦科學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:149
+msgctxt "Menu subcategory of Education"
+msgid "Construction"
+msgstr "建築"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:152
+msgctxt "Menu subcategory of Education"
+msgid "Data Visualization"
+msgstr "資料示現"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:155
+msgctxt "Menu subcategory of Education"
+msgid "Economy"
+msgstr "經濟"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:158
+msgctxt "Menu subcategory of Education"
+msgid "Electricity"
+msgstr "電學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:161
+msgctxt "Menu subcategory of Education"
+msgid "Electronics"
+msgstr "電子學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:164
+msgctxt "Menu subcategory of Education"
+msgid "Engineering"
+msgstr "工程"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:167
+msgctxt "Menu subcategory of Education"
+msgid "Geography"
+msgstr "地理"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:170
+msgctxt "Menu subcategory of Education"
+msgid "Geology"
+msgstr "地質"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:173
+msgctxt "Menu subcategory of Education"
+msgid "Geoscience"
+msgstr "地球科學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:176
+msgctxt "Menu subcategory of Education"
+msgid "History"
+msgstr "歷史"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:179
+msgctxt "Menu subcategory of Education"
+msgid "Humanities"
+msgstr "人文"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:182
+msgctxt "Menu subcategory of Education"
+msgid "Image Processing"
+msgstr "影像處理"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:185
+msgctxt "Menu subcategory of Education"
+msgid "Languages"
+msgstr "語言"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:188
+msgctxt "Menu subcategory of Education"
+msgid "Literature"
+msgstr "文學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:191
+msgctxt "Menu subcategory of Education"
+msgid "Maps"
+msgstr "地圖"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:194
+msgctxt "Menu subcategory of Education"
+msgid "Math"
+msgstr "數學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:197
+msgctxt "Menu subcategory of Education"
+msgid "Medical"
+msgstr "醫學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:200
+msgctxt "Menu subcategory of Education"
+msgid "Music"
+msgstr "音樂"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:203
+msgctxt "Menu subcategory of Education"
+msgid "Numerical Analysis"
+msgstr "數值分析"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:206
+msgctxt "Menu subcategory of Education"
+msgid "Parallel Computing"
+msgstr "平行計算"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:209
+msgctxt "Menu subcategory of Education"
+msgid "Physics"
+msgstr "物理"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:212
+msgctxt "Menu subcategory of Education"
+msgid "Robotics"
+msgstr "機器人學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:215
+msgctxt "Menu subcategory of Education"
+msgid "Spirituality"
+msgstr "靈性"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:218
+msgctxt "Menu subcategory of Education"
+msgid "Sports"
+msgstr "運動"
+
+#. TRANSLATORS: this is the menu spec main category for Games
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:222
+msgid "Games"
+msgstr "遊戲"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:225
+msgctxt "Menu subcategory of Games"
+msgid "Action"
+msgstr "動作"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:228
+msgctxt "Menu subcategory of Games"
+msgid "Adventure"
+msgstr "冒險"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:231
+msgctxt "Menu subcategory of Games"
+msgid "Arcade"
+msgstr "機臺"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:234
+msgctxt "Menu subcategory of Games"
+msgid "Blocks"
+msgstr "方塊"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:237
+msgctxt "Menu subcategory of Games"
+msgid "Board"
+msgstr "棋盤"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:240
+msgctxt "Menu subcategory of Games"
+msgid "Card"
+msgstr "紙牌"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:243
+msgctxt "Menu subcategory of Games"
+msgid "Emulators"
+msgstr "模擬器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:246
+msgctxt "Menu subcategory of Games"
+msgid "Kids"
+msgstr "孩童"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:249
+msgctxt "Menu subcategory of Games"
+msgid "Logic"
+msgstr "邏輯"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:252
+msgctxt "Menu subcategory of Games"
+msgid "Role Playing"
+msgstr "角色扮演"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:255
+msgctxt "Menu subcategory of Games"
+msgid "Shooter"
+msgstr "射擊"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:258
+msgctxt "Menu subcategory of Games"
+msgid "Simulation"
+msgstr "模擬"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:261
+msgctxt "Menu subcategory of Games"
+msgid "Sports"
+msgstr "運動"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:264
+msgctxt "Menu subcategory of Games"
+msgid "Strategy"
+msgstr "策略"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:268
+msgid "Graphics"
+msgstr "美工繪圖"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:271
+msgctxt "Menu subcategory of Graphics"
+msgid "2D Graphics"
+msgstr "2D 圖形"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:274
+msgctxt "Menu subcategory of Graphics"
+msgid "3D Graphics"
+msgstr "3D 圖形"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:277
+msgctxt "Menu subcategory of Graphics"
+msgid "OCR"
+msgstr "OCR"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:280
+msgctxt "Menu subcategory of Graphics"
+msgid "Photography"
+msgstr "攝影"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:283
+msgctxt "Menu subcategory of Graphics"
+msgid "Publishing"
+msgstr "出版"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:286
+msgctxt "Menu subcategory of Graphics"
+msgid "Raster Graphics"
+msgstr "光柵圖形"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:289
+msgctxt "Menu subcategory of Graphics"
+msgid "Scanning"
+msgstr "掃描"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:292
+msgctxt "Menu subcategory of Graphics"
+msgid "Vector Graphics"
+msgstr "向量圖形"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:295
+msgctxt "Menu subcategory of Graphics"
+msgid "Viewer"
+msgstr "檢視器"
+
+#. TRANSLATORS: this is the menu spec main category for Network
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:299
+msgid "Internet"
+msgstr "網際網路"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:302
+msgctxt "Menu subcategory of Network"
+msgid "Chat"
+msgstr "聊天"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:305
+msgctxt "Menu subcategory of Network"
+msgid "Dialup"
+msgstr "撥接"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:308
+msgctxt "Menu subcategory of Network"
+msgid "Email"
+msgstr "電子郵件"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:311
+msgctxt "Menu subcategory of Network"
+msgid "Feed"
+msgstr "消息來源"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:314
+msgctxt "Menu subcategory of Network"
+msgid "File Transfer"
+msgstr "傳輸傳輸"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:317
+msgctxt "Menu subcategory of Network"
+msgid "Ham Radio"
+msgstr "自製無線電"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:320
+msgctxt "Menu subcategory of Network"
+msgid "Instant Messaging"
+msgstr "即時通訊"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:323
+msgctxt "Menu subcategory of Network"
+msgid "IRC Clients"
+msgstr "IRC 客戶端"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:326
+msgctxt "Menu subcategory of Network"
+msgid "Monitor"
+msgstr "監控"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:329
+msgctxt "Menu subcategory of Network"
+msgid "News"
+msgstr "新聞"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:332
+msgctxt "Menu subcategory of Network"
+msgid "P2P"
+msgstr "P2P"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:335
+msgctxt "Menu subcategory of Network"
+msgid "Remote Access"
+msgstr "存取遠端"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:338
+msgctxt "Menu subcategory of Network"
+msgid "Telephony"
+msgstr "電話學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:341
+msgctxt "Menu subcategory of Network"
+msgid "Video Conference"
+msgstr "視訊會議"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:344
+msgctxt "Menu subcategory of Network"
+msgid "Web Browser"
+msgstr "網頁瀏覽器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:347
+msgctxt "Menu subcategory of Network"
+msgid "Web Development"
+msgstr "網頁開發"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:351
+msgid "Office"
+msgstr "辦公"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:354
+msgctxt "Menu subcategory of Office"
+msgid "Calendar"
+msgstr "行事曆"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:357
+msgctxt "Menu subcategory of Office"
+msgid "Chart"
+msgstr "圖表"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:360
+msgctxt "Menu subcategory of Office"
+msgid "Contact Management"
+msgstr "聯絡人管理"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:363
+msgctxt "Menu subcategory of Office"
+msgid "Database"
+msgstr "資料庫"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:366
+msgctxt "Menu subcategory of Office"
+msgid "Dictionary"
+msgstr "字典"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:369
+msgctxt "Menu subcategory of Office"
+msgid "Email"
+msgstr "電子郵件"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
+msgctxt "Menu subcategory of Office"
+msgid "Finance"
+msgstr "財經"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:375
+msgctxt "Menu subcategory of Office"
+msgid "Flow Chart"
+msgstr "流程圖"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:378
+msgctxt "Menu subcategory of Office"
+msgid "PDA"
+msgstr "PDA"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:381
+msgctxt "Menu subcategory of Office"
+msgid "Photography"
+msgstr "攝影"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:384
+msgctxt "Menu subcategory of Office"
+msgid "Presentation"
+msgstr "簡報"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:387
+msgctxt "Menu subcategory of Office"
+msgid "Project Management"
+msgstr "專案管理"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:390
+msgctxt "Menu subcategory of Office"
+msgid "Publishing"
+msgstr "出版"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:393
+msgctxt "Menu subcategory of Office"
+msgid "Spreadsheet"
+msgstr "試算表"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:396
+msgctxt "Menu subcategory of Office"
+msgid "Viewer"
+msgstr "檢視器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:399
+msgctxt "Menu subcategory of Office"
+msgid "Word Processor"
+msgstr "文書處理器"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:403
+msgid "Science"
+msgstr "科學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:406
+msgctxt "Menu subcategory of Science"
+msgid "Art"
+msgstr "藝術"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:409
+msgctxt "Menu subcategory of Science"
+msgid "Artificial Intelligence"
+msgstr "人工智慧"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:412
+msgctxt "Menu subcategory of Science"
+msgid "Astronomy"
+msgstr "天文"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:415
+msgctxt "Menu subcategory of Science"
+msgid "Biology"
+msgstr "生物"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:418
+msgctxt "Menu subcategory of Science"
+msgid "Chemistry"
+msgstr "化學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:421
+msgctxt "Menu subcategory of Science"
+msgid "Computer Science"
+msgstr "電腦科學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:424
+msgctxt "Menu subcategory of Science"
+msgid "Construction"
+msgstr "建築"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:427
+msgctxt "Menu subcategory of Science"
+msgid "Data Visualization"
+msgstr "資料示現"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:430
+msgctxt "Menu subcategory of Science"
+msgid "Economy"
+msgstr "經濟"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:433
+msgctxt "Menu subcategory of Science"
+msgid "Electricity"
+msgstr "電學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:436
+msgctxt "Menu subcategory of Science"
+msgid "Electronics"
+msgstr "電子學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:439
+msgctxt "Menu subcategory of Science"
+msgid "Engineering"
+msgstr "工程"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:442
+msgctxt "Menu subcategory of Science"
+msgid "Geography"
+msgstr "地理"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:445
+msgctxt "Menu subcategory of Science"
+msgid "Geology"
+msgstr "地質學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:448
+msgctxt "Menu subcategory of Science"
+msgid "Geoscience"
+msgstr "地球科學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:451
+msgctxt "Menu subcategory of Science"
+msgid "History"
+msgstr "歷史"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:454
+msgctxt "Menu subcategory of Science"
+msgid "Humanities"
+msgstr "人文"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
+msgctxt "Menu subcategory of Science"
+msgid "Image Processing"
+msgstr "影像處理"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:460
+msgctxt "Menu subcategory of Science"
+msgid "Languages"
+msgstr "語言"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:463
+msgctxt "Menu subcategory of Science"
+msgid "Literature"
+msgstr "文學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:466
+msgctxt "Menu subcategory of Science"
+msgid "Maps"
+msgstr "地圖"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:469
+msgctxt "Menu subcategory of Science"
+msgid "Math"
+msgstr "數學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:472
+msgctxt "Menu subcategory of Science"
+msgid "Medical"
+msgstr "醫學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:475
+msgctxt "Menu subcategory of Science"
+msgid "Numerical Analysis"
+msgstr "數值分析"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:478
+msgctxt "Menu subcategory of Science"
+msgid "Parallel Computing"
+msgstr "平行計算"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:481
+msgctxt "Menu subcategory of Science"
+msgid "Physics"
+msgstr "物理"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
+msgctxt "Menu subcategory of Science"
+msgid "Robotics"
+msgstr "機器人學"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:487
+msgctxt "Menu subcategory of Science"
+msgid "Spirituality"
+msgstr "靈性"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:490
+msgctxt "Menu subcategory of Science"
+msgid "Sports"
+msgstr "運動"
+
+#. TRANSLATORS: this is the menu spec main category for System
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:494
+msgid "System"
+msgstr "系統"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:497
+msgctxt "Menu subcategory of System"
+msgid "Emulator"
+msgstr "模擬器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:500
+msgctxt "Menu subcategory of System"
+msgid "File Manager"
+msgstr "檔案管理器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:503
+msgctxt "Menu subcategory of System"
+msgid "File System"
+msgstr "檔案系統"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
+msgctxt "Menu subcategory of System"
+msgid "File Tools"
+msgstr "檔案工具"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
+msgctxt "Menu subcategory of System"
+msgid "Monitor"
+msgstr "監控"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
+msgctxt "Menu subcategory of System"
+msgid "Security"
+msgstr "安全"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:515
+msgctxt "Menu subcategory of System"
+msgid "Terminal Emulator"
+msgstr "終端機模擬器"
+
+#. TRANSLATORS: this is the menu spec main category for Utility
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:519
+msgid "Utilities"
+msgstr "公用程式"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:522
+msgctxt "Menu subcategory of Utility"
+msgid "Accessibility"
+msgstr "無障礙輔助"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:525
+msgctxt "Menu subcategory of Utility"
+msgid "Archiving"
+msgstr "檔案封存"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
+msgctxt "Menu subcategory of Utility"
+msgid "Calculator"
+msgstr "計算機"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
+msgctxt "Menu subcategory of Utility"
+msgid "Clock"
+msgstr "時鐘"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:534
+msgctxt "Menu subcategory of Utility"
+msgid "Compression"
+msgstr "壓縮"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:537
+msgctxt "Menu subcategory of Utility"
+msgid "File Tools"
+msgstr "檔案工具"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:540
+msgctxt "Menu subcategory of Utility"
+msgid "Maps"
+msgstr "地圖"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:543
+msgctxt "Menu subcategory of Utility"
+msgid "Spirituality"
+msgstr "靈性"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:546
+msgctxt "Menu subcategory of Utility"
+msgid "Telephony Tools"
+msgstr "電話工具"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:549
+msgctxt "Menu subcategory of Utility"
+msgid "Text Editor"
+msgstr "文字編輯器"
+
+#. TRANSLATORS: this is the menu spec main category for Video
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:553
+msgid "Video"
+msgstr "視訊"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:556
+msgctxt "Menu subcategory of Video"
+msgid "Editing"
+msgstr "編輯"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:559
+msgctxt "Menu subcategory of Video"
+msgid "Database"
+msgstr "資料庫"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
+msgctxt "Menu subcategory of Video"
+msgid "Disc Burning"
+msgstr "光碟燒錄"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
+msgctxt "Menu subcategory of Video"
+msgid "Players"
+msgstr "播放器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
+msgctxt "Menu subcategory of Video"
+msgid "Recorders"
+msgstr "錄製器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
+msgctxt "Menu subcategory of Video"
+msgid "TV"
+msgstr "電視"
+
+#. TRANSLATORS: this is the main category for Add-ons
+#. TRANSLATORS: these are extra things that add to existing programs,
+#. * for instance fonts, codecs or language packs
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
+#: ../src/plugins/gs-plugin-packagekit.c:425
+msgid "Add-ons"
+msgstr "附加元件"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:578
+msgctxt "Menu subcategory of Addons"
+msgid "Fonts"
+msgstr "字型"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:581
+msgctxt "Menu subcategory of Addons"
+msgid "Codecs"
+msgstr "編解碼器"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:584
+msgctxt "Menu subcategory of Addons"
+msgid "Input Sources"
+msgstr "輸入來源"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
+msgctxt "Menu subcategory of Addons"
+msgid "Language Packs"
+msgstr "語言包"
+
+#. TRANSLATORS: audio/video decoders
+#: ../src/plugins/gs-plugin-packagekit.c:429
+msgid "Codecs"
+msgstr "編解碼器"
+
+#. TRANSLATORS: fonts of different styles or languages
+#: ../src/plugins/gs-plugin-packagekit.c:433
+msgid "Fonts"
+msgstr "字型"
+
+#. TRANSLATORS: these are ways to enter text
+#: ../src/plugins/gs-plugin-packagekit.c:437
+msgid "Input Sources"
+msgstr "輸入來源"
+
+#. TRANSLATORS: additional languages for apps
+#: ../src/plugins/gs-plugin-packagekit.c:441
+msgid "Language Packs"
+msgstr "語言包"
+
+#. TRANSLATORS: this is where update details either are
+#. * no longer available or were never provided in the first place
+#: ../src/plugins/gs-plugin-packagekit-refine.c:327
+msgid "No update details were provided"
+msgstr "未提供更新的詳細資訊"
