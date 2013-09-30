@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-25 07:00+0000\n"
-"PO-Revision-Date: 2013-09-25 16:58+0200\n"
+"POT-Creation-Date: 2013-09-29 22:24+0000\n"
+"PO-Revision-Date: 2013-09-30 11:53+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -33,8 +33,8 @@ msgstr ""
 "actualizaciones en modo desconectado."
 
 #: ../data/gnome-software.appdata.xml.in.h:3
-msgid "Goals:"
-msgstr "Objetivos:"
+msgid "Software has the following goals:"
+msgstr "Software tiene los siguientes objetivos"
 
 #: ../data/gnome-software.appdata.xml.in.h:4
 msgid "View installed applications"
@@ -53,7 +53,6 @@ msgid "Install available updates"
 msgstr "Instalar las actualizaciones disponibles"
 
 #: ../data/gnome-software.appdata.xml.in.h:8
-#| msgid "Application"
 msgid "Find new applications"
 msgstr "Buscar aplicaciones nuevas"
 
@@ -79,10 +78,13 @@ msgstr "_Acerca de"
 msgid "_Quit"
 msgstr "_Salir"
 
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is installed
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:76
-#: ../src/gs-popular-tile.c:77 ../src/gs-shell-details.c:397
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:79 ../src/gs-app-tile.c:82
+#: ../src/gs-feature-tile.c:75 ../src/gs-popular-tile.c:78
+#: ../src/gs-popular-tile.c:81 ../src/gs-shell-details.c:397
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalado"
@@ -130,7 +132,7 @@ msgstr "Reiniciar e instalar"
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:109
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:112
 #: ../src/gs-shell-details.c:91
 msgid "Install"
 msgstr "Instalar"
@@ -139,14 +141,15 @@ msgstr "Instalar"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:117
-#: ../src/gs-shell-details.c:123 ../src/gs-shell-details.c:314
-#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:113
+#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:120
+#: ../src/gs-app-widget.c:132 ../src/gs-shell-details.c:123
+#: ../src/gs-shell-details.c:314 ../src/gs-shell-installed.c:165
+#: ../src/gs-shell-search.c:113
 msgid "Remove"
 msgstr "Eliminar"
 
 #: ../src/gnome-software.ui.h:12
-#: ../src/plugins/gs-plugin-hardcoded-popular.c:226
+#: ../src/plugins/gs-plugin-hardcoded-popular.c:227
 msgid "Featured"
 msgstr "Destacado"
 
@@ -204,18 +207,27 @@ msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013"
 
 #. TRANSLATORS: this is a command line option, please don't
 #. * translate the option names between ‘’
-#: ../src/gs-application.c:222
+#: ../src/gs-application.c:223
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Modo de inicio, puede ser «actualizaciones», «instalados» o «vista general»"
 
-#: ../src/gs-application.c:222
+#: ../src/gs-application.c:223
 msgid "MODE"
 msgstr "MODO"
 
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user there is an update for the installed
+#. * application available
+#: ../src/gs-app-tile.c:88 ../src/gs-app-tile.c:92 ../src/gs-feature-tile.c:80
+#: ../src/gs-popular-tile.c:87 ../src/gs-popular-tile.c:91
+#| msgid "_Updates"
+msgid "Updates"
+msgstr "Actualizaciones"
+
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be updated. not normally shown
-#: ../src/gs-app-widget.c:126
+#: ../src/gs-app-widget.c:130
 msgid "Update"
 msgstr "Actualizar"
 
@@ -223,31 +235,31 @@ msgstr "Actualizar"
 #. * shows the status of an application being installed
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-app-widget.c:135 ../src/gs-shell-details.c:99
+#: ../src/gs-app-widget.c:142 ../src/gs-shell-details.c:99
 msgid "Installing"
 msgstr "Instalando"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-app-widget.c:144 ../src/gs-shell-details.c:130
+#: ../src/gs-app-widget.c:151 ../src/gs-shell-details.c:130
 msgid "Removing"
 msgstr "Quitando"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:165
+#: ../src/gs-category.c:175
 msgid "Other"
 msgstr "Otros"
 
 #. TRANSLATORS: this is a group of updates that are not packages and
 #. * are ot shown in the main list
-#: ../src/gs-plugin-loader.c:480
+#: ../src/gs-plugin-loader.c:560
 msgid "OS Updates"
 msgstr "Actualizaciones del SO"
 
 #. TRANSLATORS: this is a longer description of the os-update item
-#: ../src/gs-plugin-loader.c:482 ../src/gs-plugin-loader.c:483
+#: ../src/gs-plugin-loader.c:562 ../src/gs-plugin-loader.c:563
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
@@ -323,7 +335,7 @@ msgstr "%s no está instalado"
 msgid "Launch"
 msgstr "Lanzar"
 
-#: ../src/plugins/gs-plugin-appstream.c:198
+#: ../src/plugins/gs-plugin-appstream.c:196
 #, c-format
 msgid "No AppStream data found"
 msgstr "No se han encontrado datos de AppStream"
@@ -1177,7 +1189,7 @@ msgstr "TV"
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
-#: ../src/plugins/gs-plugin-packagekit.c:424
+#: ../src/plugins/gs-plugin-packagekit.c:425
 msgid "Add-ons"
 msgstr "Complementos"
 
@@ -1202,30 +1214,33 @@ msgid "Language Packs"
 msgstr "Paquetes de idiomas"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:428
+#: ../src/plugins/gs-plugin-packagekit.c:429
 msgid "Codecs"
 msgstr "Codificadores"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:432
+#: ../src/plugins/gs-plugin-packagekit.c:433
 msgid "Fonts"
 msgstr "Tipografías"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:436
+#: ../src/plugins/gs-plugin-packagekit.c:437
 msgid "Input Sources"
 msgstr "Fuentes de entrada"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:440
+#: ../src/plugins/gs-plugin-packagekit.c:441
 msgid "Language Packs"
 msgstr "Paquetes de idiomas"
 
 #. TRANSLATORS: this is where update details either are
 #. * no longer available or were never provided in the first place
-#: ../src/plugins/gs-plugin-packagekit-refine.c:315
+#: ../src/plugins/gs-plugin-packagekit-refine.c:327
 msgid "No update details were provided"
 msgstr "No se han proporcionado detalles sobre la actualización"
+
+#~ msgid "Goals:"
+#~ msgstr "Objetivos:"
 
 #~ msgid "Category"
 #~ msgstr "Categoría"
