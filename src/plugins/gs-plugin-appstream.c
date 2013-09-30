@@ -44,6 +44,25 @@ gs_plugin_get_name (void)
 }
 
 /**
+ * gs_plugin_appstream_icons_are_new_layout:
+ */
+static gboolean
+gs_plugin_appstream_icons_are_new_layout (const gchar *dirname)
+{
+	GDir *dir;
+	const gchar *tmp;
+	gboolean ret;
+
+	/* simply test if the first item is a file and if not, the icons are
+	 * in the new /var/cache/app-info/icons/${repo}/gimp.png layout */
+	dir = g_dir_open (dirname, 0, NULL);
+	tmp = g_dir_read_name (dir);
+	ret = g_strstr_len (tmp, -1, ".") == NULL;
+	g_dir_close (dir);
+	return ret;
+}
+
+/**
  * gs_plugin_parse_xml_file:
  */
 static gboolean
@@ -53,24 +72,57 @@ gs_plugin_parse_xml_file (GsPlugin *plugin,
 			  const gchar *path_icons,
 			  GError **error)
 {
-	gboolean ret;
-	gchar *path;
-	GFile *file;
+	GFile *file = NULL;
+	gboolean ret = FALSE;
+	gchar *path_icons_full = NULL;
+	gchar *path_xml = NULL;
+	gchar *repo_id;
+	gchar *tmp;
+
+	/* the first component of the file (e.g. "fedora-20.xml.gz)
+	 * is used for the icon directory as we might want to clean up
+	 * the icons manually if they are installed in /var/cache */
+	repo_id = g_strdup (filename);
+	tmp = g_strstr_len (repo_id, -1, ".xml");
+	if (tmp == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "AppStream metadata name %s/%s not valid, "
+			     "expected .xml[.*]",
+			     parent_dir, filename);
+		goto out;
+	}
+	tmp[0] = '\0';
+
+	/* support both old and new layouts */
+	if (gs_plugin_appstream_icons_are_new_layout (path_icons)) {
+		path_icons_full = g_build_filename (path_icons,
+						    repo_id,
+						    NULL);
+	} else {
+		path_icons_full = g_strdup (path_icons);
+	}
 
 	/* load this specific file */
-	path  = g_build_filename (parent_dir, filename, NULL);
-	g_debug ("Loading AppStream XML %s with icon path %s", path, path_icons);
-	file = g_file_new_for_path (path);
+	path_xml  = g_build_filename (parent_dir, filename, NULL);
+	g_debug ("Loading AppStream XML %s with icon path %s",
+		 path_xml,
+		 path_icons_full);
+	file = g_file_new_for_path (path_xml);
 	ret = appstream_cache_parse_file (plugin->priv->cache,
 					  file,
-					  path_icons,
+					  path_icons_full,
 					  NULL,
 					  error);
 	if (!ret)
 		goto out;
 out:
-	g_free (path);
-	g_object_unref (file);
+	g_free (path_icons_full);
+	g_free (path_xml);
+	g_free (repo_id);
+	if (file != NULL)
+		g_object_unref (file);
 	return ret;
 }
 
