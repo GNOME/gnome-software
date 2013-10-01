@@ -116,6 +116,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	} else {
 		switch (state) {
 		case GS_APP_STATE_INSTALLED:
+		case GS_APP_STATE_UPDATABLE:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, TRUE);
 			gtk_style_context_add_class (gtk_widget_get_style_context (widget), "destructive-action");
@@ -129,7 +130,6 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 			/* TRANSLATORS: button text in the header when an application can be installed */
 			gtk_button_set_label (GTK_BUTTON (widget), _("Removing"));
 			break;
-		case GS_APP_STATE_UPDATABLE:
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_INSTALLING:
 			gtk_widget_set_visible (widget, FALSE);
