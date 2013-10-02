@@ -128,9 +128,6 @@ gs_application_startup (GApplication *application)
 
 	g_type_ensure (GS_TYPE_BOX);
 
-	gtk_icon_theme_append_search_path (gtk_icon_theme_get_default (),
-					   DATADIR "/gnome-software/icons/hicolor");
-
 	/* set up the app menu */
 	g_action_map_add_action_entries (G_ACTION_MAP (app),
 					 actions, G_N_ELEMENTS (actions),
