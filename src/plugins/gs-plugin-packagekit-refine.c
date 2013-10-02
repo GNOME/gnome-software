@@ -91,6 +91,16 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 	g_object_get (progress,
 		      "status", &status,
 		      NULL);
+
+	/* profile */
+	if (status == PK_STATUS_ENUM_SETUP) {
+		gs_profile_start_full (plugin->profile,
+				       "packagekit-refine::transaction");
+	} else if (status == PK_STATUS_ENUM_FINISHED) {
+		gs_profile_stop_full (plugin->profile,
+				      "packagekit-refine::transaction");
+	}
+
 	plugin_status = packagekit_status_enum_to_plugin_status (status);
 	if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
 		gs_plugin_status_update (plugin, NULL, plugin_status);
