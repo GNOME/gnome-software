@@ -353,6 +353,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GList *updatedetails_all = NULL;
 
 	/* can we resolve in one go? */
+	gs_profile_start_full (plugin->profile, "packagekit-refine[name->id]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_metadata_item (app, "PackageKit::package-id") != NULL)
@@ -367,8 +368,10 @@ gs_plugin_refine (GsPlugin *plugin,
 							    cancellable,
 							    error);
 	}
+	gs_profile_stop_full (plugin->profile, "packagekit-refine[name->id]");
 
 	/* add any missing ratings data */
+	gs_profile_start_full (plugin->profile, "packagekit-refine[desktop-filename->id]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_metadata_item (app, "PackageKit::package-id") != NULL)
@@ -384,8 +387,10 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 	}
+	gs_profile_stop_full (plugin->profile, "packagekit-refine[desktop-filename->id]");
 
 	/* any update details missing? */
+	gs_profile_start_full (plugin->profile, "packagekit-refine[id->update-details]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
@@ -402,6 +407,7 @@ gs_plugin_refine (GsPlugin *plugin,
 								 cancellable,
 								 error);
 	}
+	gs_profile_stop_full (plugin->profile, "packagekit-refine[id->update-details]");
 out:
 	g_list_free (resolve_all);
 	g_list_free (updatedetails_all);

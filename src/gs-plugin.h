@@ -29,6 +29,7 @@
 
 #include "gs-app.h"
 #include "gs-category.h"
+#include "gs-profile.h"
 
 G_BEGIN_DECLS
 
@@ -57,9 +58,9 @@ struct GsPlugin {
 	gchar			*name;
 	GsPluginPrivate		*priv;
 	guint			 pixbuf_size;
-	GTimer			*timer;
 	GsPluginStatusUpdate	 status_update_fn;
 	gpointer		 status_update_user_data;
+	GsProfile		*profile;
 };
 
 typedef enum {

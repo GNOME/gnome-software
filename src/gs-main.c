@@ -27,12 +27,14 @@
 #include <locale.h>
 
 #include "gs-application.h"
+#include "gs-profile.h"
 
 int
 main (int argc, char **argv)
 {
 	int status = 0;
 	GsApplication *application;
+	GsProfile *profile;
 
 	setlocale (LC_ALL, "");
 
@@ -40,9 +42,14 @@ main (int argc, char **argv)
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 
+	profile = gs_profile_new ();
+	gs_profile_start (profile, "GsMain");
 	application = gs_application_new ();
 	status = g_application_run (G_APPLICATION (application), argc, argv);
 	g_object_unref (application);
+	gs_profile_stop (profile, "GsMain");
+	gs_profile_dump (profile);
+	g_object_unref (profile);
 
 	return status;
 }

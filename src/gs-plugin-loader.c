@@ -25,6 +25,7 @@
 
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
+#include "gs-profile.h"
 
 static void	gs_plugin_loader_finalize	(GObject	*object);
 
@@ -35,6 +36,7 @@ struct GsPluginLoaderPrivate
 	GPtrArray		*plugins;
 	gchar			*location;
 	GsPluginStatus		 status_last;
+	GsProfile		*profile;
 
 	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
@@ -198,16 +200,17 @@ gs_plugin_loader_list_dedupe (GsPluginLoader *plugin_loader, GList *list)
  **/
 static gboolean
 gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
+			     const gchar *function_name_parent,
 			     GList *list,
 			     GCancellable *cancellable,
 			     GError **error)
 {
 	gboolean ret = TRUE;
+	gchar *profile_id;
 	GsPlugin *plugin;
 	const gchar *function_name = "gs_plugin_refine";
 	GsPluginRefineFunc plugin_func = NULL;
 	guint i;
-	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -219,18 +222,17 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		g_debug ("run %s on %s", function_name,
-			 g_module_name (plugin->module));
-		g_timer_start (plugin->timer);
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s;%s)",
+					      plugin->name,
+					      function_name_parent,
+					      function_name);
+		gs_profile_start (plugin_loader->priv->profile, profile_id);
 		ret = plugin_func (plugin, list, cancellable, error);
 		if (!ret)
 			goto out;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
-		if (elapsed_ms > 1) {
-			g_debug ("%s(%s) took %.0fms",
-				 plugin->name, function_name, elapsed_ms);
-		}
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
 	}
 
 	/* success */
@@ -249,16 +251,22 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			      GError **error)
 {
 	gboolean ret = TRUE;
+	gchar *profile_id_parent;
+	gchar *profile_id;
 	GList *list = NULL;
 	GsPlugin *plugin;
 	GsPluginResultsFunc plugin_func = NULL;
 	guint i;
-	gdouble elapsed_ms;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (function_name != NULL, NULL);
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), NULL);
+
+	/* profile */
+	profile_id_parent = g_strdup_printf ("GsPlugin::*(%s)",
+					     function_name);
+	gs_profile_start (plugin_loader->priv->profile, profile_id_parent);
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -275,21 +283,16 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		g_debug ("run %s on %s", function_name,
-			 g_module_name (plugin->module));
-		g_timer_start (plugin->timer);
-
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+					      plugin->name, function_name);
+		gs_profile_start (plugin_loader->priv->profile, profile_id);
 		g_assert (error == NULL || *error == NULL);
 		ret = plugin_func (plugin, &list, cancellable, error);
 		if (!ret)
 			goto out;
-
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
-		if (elapsed_ms > 1) {
-			g_debug ("%s(%s) took %.0fms",
-				 plugin->name, function_name, elapsed_ms);
-		}
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
 	}
 
 	/* dedupe applications we already know about */
@@ -297,6 +300,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   function_name,
 					   list,
 					   cancellable,
 					   error);
@@ -305,6 +309,9 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 
 	/* remove duplicates */
 	list = gs_plugin_loader_list_uniq (plugin_loader, list);
+
+	/* profile */
+	gs_profile_stop (plugin_loader->priv->profile, profile_id_parent);
 
 	/* no results */
 	if (list == NULL) {
@@ -315,6 +322,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		goto out;
 	}
 out:
+	g_free (profile_id_parent);
 	if (!ret) {
 		gs_plugin_list_free (list);
 		list = NULL;
@@ -1086,13 +1094,13 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 {
 	const gchar *function_name = "gs_plugin_add_search";
 	gboolean ret = TRUE;
+	gchar *profile_id;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
-	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -1110,9 +1118,9 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		g_debug ("run %s on %s", function_name,
-			 g_module_name (plugin->module));
-		g_timer_start (plugin->timer);
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+					      plugin->name, function_name);
+		gs_profile_start (plugin_loader->priv->profile, profile_id);
 		ret = plugin_func (plugin, state->value, &state->list, cancellable, &error);
 		if (!ret) {
 			gs_plugin_loader_get_all_state_finish (state, error);
@@ -1120,11 +1128,8 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
-		if (elapsed_ms > 1) {
-			g_debug ("%s(%s) took %.0fms",
-				 plugin->name, function_name, elapsed_ms);
-		}
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
 	}
 
 	/* dedupe applications we already know about */
@@ -1132,6 +1137,7 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   function_name,
 					   state->list,
 					   cancellable,
 					   &error);
@@ -1270,6 +1276,7 @@ gs_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 {
 	const gchar *function_name = "gs_plugin_add_categories";
 	gboolean ret = TRUE;
+	gchar *profile_id;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
@@ -1277,7 +1284,6 @@ gs_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 	GsPluginResultsFunc plugin_func = NULL;
 	GList *l;
 	guint i;
-	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -1295,9 +1301,9 @@ gs_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		g_debug ("run %s on %s", function_name,
-			 g_module_name (plugin->module));
-		g_timer_start (plugin->timer);
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+					      plugin->name, function_name);
+		gs_profile_start (plugin_loader->priv->profile, profile_id);
 		ret = plugin_func (plugin, &state->list, cancellable, &error);
 		if (!ret) {
 			gs_plugin_loader_get_all_state_finish (state, error);
@@ -1305,11 +1311,8 @@ gs_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
-		if (elapsed_ms > 1) {
-			g_debug ("%s(%s) took %.0fms",
-				 plugin->name, function_name, elapsed_ms);
-		}
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
 	}
 
 	/* sort by name */
@@ -1412,13 +1415,13 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 {
 	const gchar *function_name = "gs_plugin_add_category_apps";
 	gboolean ret = TRUE;
+	gchar *profile_id;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginCategoryFunc plugin_func = NULL;
 	guint i;
-	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -1436,9 +1439,9 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		g_debug ("run %s on %s", function_name,
-			 g_module_name (plugin->module));
-		g_timer_start (plugin->timer);
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+					      plugin->name, function_name);
+		gs_profile_start (plugin_loader->priv->profile, profile_id);
 		ret = plugin_func (plugin, state->category, &state->list, cancellable, &error);
 		if (!ret) {
 			gs_plugin_loader_get_all_state_finish (state, error);
@@ -1446,11 +1449,8 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
-		if (elapsed_ms > 1) {
-			g_debug ("%s(%s) took %.0fms",
-				 plugin->name, function_name, elapsed_ms);
-		}
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
 	}
 
 	/* dedupe applications we already know about */
@@ -1458,6 +1458,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   function_name,
 					   state->list,
 					   cancellable,
 					   &error);
@@ -1594,11 +1595,11 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 	gboolean exists;
 	gboolean ret = FALSE;
 	gboolean anything_ran = FALSE;
+	gchar *profile_id;
 	GError *error_local = NULL;
 	GsPluginActionFunc plugin_func = NULL;
 	GsPlugin *plugin;
 	guint i;
-	gdouble elapsed_ms;
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -1615,9 +1616,9 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 					  (gpointer *) &plugin_func);
 		if (!exists)
 			continue;
-		g_debug ("run %s on %s", function_name,
-			 g_module_name (plugin->module));
-		g_timer_start (plugin->timer);
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+					      plugin->name, function_name);
+		gs_profile_start (plugin_loader->priv->profile, profile_id);
 		ret = plugin_func (plugin, app, cancellable, &error_local);
 		if (!ret) {
 			if (g_error_matches (error_local,
@@ -1633,11 +1634,8 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			}
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		elapsed_ms = g_timer_elapsed (plugin->timer, NULL) * 1000;
-		if (elapsed_ms > 1) {
-			g_debug ("%s(%s) took %.0fms",
-				 plugin->name, function_name, elapsed_ms);
-		}
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
 		anything_ran = TRUE;
 	}
 
@@ -1852,6 +1850,7 @@ gs_plugin_loader_app_refine (GsPluginLoader *plugin_loader,
 
 	gs_plugin_add_app (&list, app);
 	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   NULL,
 					   list,
 					   cancellable,
 					   error);
@@ -1869,6 +1868,7 @@ static void
 gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 {
 	gboolean ret;
+	gchar *profile_id;
 	GsPluginFunc plugin_func = NULL;
 	GsPlugin *plugin;
 	guint i;
@@ -1882,9 +1882,12 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 		if (!ret)
 			continue;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		g_debug ("run %s on %s", function_name,
-			 g_module_name (plugin->module));
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+					      plugin->name, function_name);
+		gs_profile_start (plugin_loader->priv->profile, profile_id);
 		plugin_func (plugin);
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
 	}
 }
 
@@ -1983,9 +1986,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->pixbuf_size = 64;
 	plugin->priority = plugin_prio (plugin);
 	plugin->name = g_strdup (plugin_name ());
-	plugin->timer = g_timer_new ();
 	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
 	plugin->status_update_user_data = plugin_loader;
+	plugin->profile = g_object_ref (plugin_loader->priv->profile);
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
 
 	/* add to array */
@@ -2101,8 +2104,8 @@ gs_plugin_loader_plugin_free (GsPlugin *plugin)
 {
 	g_free (plugin->priv);
 	g_free (plugin->name);
+	g_object_unref (plugin->profile);
 	g_module_close (plugin->module);
-	g_timer_destroy (plugin->timer);
 	g_slice_free (GsPlugin, plugin);
 }
 
@@ -2145,6 +2148,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	plugin_loader->priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
 	plugin_loader->priv->status_last = GS_PLUGIN_STATUS_LAST;
 	plugin_loader->priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	plugin_loader->priv->profile = gs_profile_new ();
 	plugin_loader->priv->app_cache = g_hash_table_new_full (g_str_hash,
 								 g_str_equal,
 								 NULL,
@@ -2152,6 +2156,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 	g_mutex_init (&plugin_loader->priv->pending_apps_mutex);
 	g_mutex_init (&plugin_loader->priv->app_cache_mutex);
+
+	/* application start */
+	gs_profile_start (plugin_loader->priv->profile, "GsPluginLoader");
 
 	/* by default we only show project-less apps or compatible projects */
 	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
@@ -2176,9 +2183,13 @@ gs_plugin_loader_finalize (GObject *object)
 
 	g_return_if_fail (plugin_loader->priv != NULL);
 
+	/* application stop */
+	gs_profile_stop (plugin_loader->priv->profile, "GsPluginLoader");
+
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
 
+	g_object_unref (plugin_loader->priv->profile);
 	g_strfreev (plugin_loader->priv->compatible_projects);
 	g_hash_table_unref (plugin_loader->priv->app_cache);
 	g_ptr_array_unref (plugin_loader->priv->pending_apps);
