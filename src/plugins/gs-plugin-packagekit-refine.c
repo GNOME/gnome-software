@@ -51,9 +51,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->client = pk_client_new ();
-	g_object_set (plugin->priv->client,
-		      "background", FALSE,
-		      NULL);
+	pk_client_set_background (plugin->priv->client, FALSE);
+	pk_client_set_interactive (plugin->priv->client, FALSE);
+	pk_client_set_cache_age (plugin->priv->client, G_MAXUINT);
 }
 
 /**
