@@ -26,7 +26,6 @@
 #include <stdlib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <packagekit-glib2/packagekit.h>
 #include <libnotify/notify.h>
 
 #include "gs-box.h"
@@ -38,7 +37,6 @@ struct _GsApplication {
 
 	GCancellable	    *cancellable;
 	GtkApplication	  *application;
-	PkTask		  *task;
 	GtkCssProvider	  *provider;
 	GsPluginLoader	  *plugin_loader;
 	gint		     pending_apps;
@@ -156,10 +154,6 @@ gs_application_startup (GApplication *application)
 	gtk_css_provider_load_from_file (app->provider, file, NULL);
 	g_object_unref (file);
 	g_free (theme);
-
-	/* setup pk */
-	app->task = pk_task_new ();
-	g_object_set (app->task, "background", FALSE, NULL);
 
 	/* setup plugins */
 	app->plugin_loader = gs_plugin_loader_new ();
@@ -287,7 +281,6 @@ gs_application_finalize (GObject *object)
 	GsApplication *app = GS_APPLICATION (object);
 
 	g_clear_object (&app->plugin_loader);
-	g_clear_object (&app->task);
 	g_clear_object (&app->cancellable);
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
