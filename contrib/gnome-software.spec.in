@@ -50,6 +50,10 @@ cd %{buildroot}%{_datadir}/app-info/icons/fedora-20
 %__tar xvzf %{SOURCE2}
 cd -
 
+# make the software center load faster
+desktop-file-edit %{buildroot}%{_datadir}/applications/*.desktop \
+    --set-key=X-AppInstall-Package --set-value=%{name}
+
 %find_lang %name --with-gnome
 
 %check
