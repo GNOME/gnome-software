@@ -2044,6 +2044,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	g_return_val_if_fail (plugin_loader->priv->location != NULL, FALSE);
 
 	/* search in the plugin directory for plugins */
+	gs_profile_start (plugin_loader->priv->profile, "GsPlugin::setup");
 	dir = g_dir_open (plugin_loader->priv->location, 0, error);
 	if (dir == NULL) {
 		ret = FALSE;
@@ -2072,6 +2073,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_initialize");
 out:
+	gs_profile_stop (plugin_loader->priv->profile, "GsPlugin::setup");
 	if (dir != NULL)
 		g_dir_close (dir);
 	return ret;
