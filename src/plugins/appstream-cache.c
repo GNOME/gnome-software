@@ -123,8 +123,10 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 				  gpointer user_data,
 				  GError **error)
 {
+	AppstreamAppIconKind icon_kind;
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
 	AppstreamTag section_new;
+	const gchar *tmp = NULL;
 	guint i;
 
 	/* process tag start */
@@ -158,16 +160,26 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 		/* get the icon kind */
 		for (i = 0; attribute_names[i] != NULL; i++) {
 			if (g_strcmp0 (attribute_names[i], "type") == 0) {
-				appstream_app_set_icon_kind (helper->item_temp,
-							     appstream_cache_icon_kind_from_string (attribute_values[i]));
+				tmp = attribute_values[i];
 				break;
 			}
 		}
-		if (appstream_app_get_icon_kind (helper->item_temp) == APPSTREAM_APP_ICON_KIND_UNKNOWN) {
+		if (tmp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
 					     APPSTREAM_CACHE_ERROR_FAILED,
 					     "icon type not set");
+		} else {
+			icon_kind = appstream_cache_icon_kind_from_string (tmp);
+			if (icon_kind == APPSTREAM_APP_ICON_KIND_UNKNOWN) {
+				g_set_error (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "icon type '%s' not supported", tmp);
+			} else {
+				appstream_app_set_icon_kind (helper->item_temp,
+							     icon_kind);
+			}
 		}
 		break;
 	case APPSTREAM_TAG_ID:
