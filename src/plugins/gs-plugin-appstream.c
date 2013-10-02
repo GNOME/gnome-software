@@ -72,6 +72,7 @@ gs_plugin_parse_xml_file (GsPlugin *plugin,
 			  const gchar *path_icons,
 			  GError **error)
 {
+	GError *error_local = NULL;
 	GFile *file = NULL;
 	gboolean ret = FALSE;
 	gchar *path_icons_full = NULL;
@@ -114,9 +115,19 @@ gs_plugin_parse_xml_file (GsPlugin *plugin,
 					  file,
 					  path_icons_full,
 					  NULL,
-					  error);
-	if (!ret)
+					  &error_local);
+	if (!ret) {
+		if (g_error_matches (error_local,
+				     APPSTREAM_CACHE_ERROR,
+				     APPSTREAM_CACHE_ERROR_FAILED)) {
+			ret = TRUE;
+			g_warning ("AppStream XML invalid: %s", error_local->message);
+			g_error_free (error_local);
+		} else {
+			g_propagate_error (error, error_local);
+		}
 		goto out;
+	}
 out:
 	g_free (path_icons_full);
 	g_free (path_xml);
