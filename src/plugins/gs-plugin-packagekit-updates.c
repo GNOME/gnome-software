@@ -51,9 +51,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->task = pk_task_new ();
-	g_object_set (plugin->priv->task,
-		      "background", FALSE,
-		      NULL);
+	pk_client_set_background (PK_CLIENT (plugin->priv->task), FALSE);
+	pk_client_set_interactive (PK_CLIENT (plugin->priv->task), FALSE);
+	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), G_MAXUINT);
 }
 
 /**
