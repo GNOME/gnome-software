@@ -65,6 +65,8 @@ appstream_tag_from_string (const gchar *element_name)
 		return APPSTREAM_TAG_SCREENSHOT;
 	if (g_strcmp0 (element_name, "updatecontact") == 0)
 		return APPSTREAM_TAG_UPDATECONTACT;
+	if (g_strcmp0 (element_name, "image") == 0)
+		return APPSTREAM_TAG_IMAGE;
 	return APPSTREAM_TAG_UNKNOWN;
 }
 
@@ -110,5 +112,7 @@ appstream_tag_to_string (AppstreamTag tag)
 		return "screenshot";
 	if (tag == APPSTREAM_TAG_UPDATECONTACT)
 		return "updatecontact";
+	if (tag == APPSTREAM_TAG_IMAGE)
+		return "image";
 	return NULL;
 }
