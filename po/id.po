@@ -1,0 +1,1207 @@
+# Indonesian translation for gnome-software.
+# Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-software package.
+# Andika Triwidada <andika@gmail.com>, 2013.
+#
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-software gnome-3-10\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2013-10-01 11:06+0000\n"
+"PO-Revision-Date: 2013-10-04 12:43+0700\n"
+"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
+"Language-Team: Indonesian <gnome@i15n.org>\n"
+"Language: id\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"X-Generator: Poedit 1.5.7\n"
+
+#: ../data/gnome-software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "Manajer aplikasi bagi GNOME"
+
+#: ../data/gnome-software.appdata.xml.in.h:2
+msgid ""
+"GNOME Software lets you install, remove and update applications and system "
+"extensions. It also allows you to update your system using an offline update."
+msgstr ""
+"Perangkat Lunak GNOME memungkinkan Anda memasang, membongkar, dan "
+"memutakhirkan aplikasi dan ekstensi sistem. Itu juga memungkinkan Anda "
+"memutakhirkan sistem Anda memakai pemutakhiran luring."
+
+#: ../data/gnome-software.appdata.xml.in.h:3
+msgid "Goals:"
+msgstr "Sasaran:"
+
+#: ../data/gnome-software.appdata.xml.in.h:4
+msgid ""
+"<li>View installed applications</li> <li>Remove installed applications</li> "
+"<li>View available application updates</li> <li>Install available updates</"
+"li> <li>Find new applications</li> <li>Install new applications</li> "
+"<li>Find an application to handle a specific type of file</li> <li>Installed "
+"apps and updates should be available when offline</li>"
+msgstr ""
+"<li>Menilik aplikasi yang terpasang</li> <li>Menghapus aplikasi yang "
+"terpasang</li> <li>Meniliki pemutakhiran aplikasi yang tersedia</li> "
+"<li>Memasang pemutakhiran yang tersedia</li> <li>Mencari aplikasi baru</li> "
+"<li>Memasang aplikasi baru</li> <li>Menemukan aplikasi yang menangani berkas "
+"dengan tipe tertentu</li> <li>Aplikasi dan pemutakhiran yang terpasang mesti "
+"tersedia ketika luring</li>"
+
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "Tent_ang"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "_Keluar"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:76
+#: ../src/gs-popular-tile.c:77 ../src/gs-shell-details.c:397
+#: ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "Terpasang"
+
+#. TRANSLATORS: this is the application name
+#. TRANSLATORS: this is the main window title
+#: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
+#: ../src/gs-application.c:89 ../src/gs-shell.c:128
+msgid "Software"
+msgstr "Perangkat Lunak"
+
+#: ../src/gnome-software.desktop.in.h:2
+msgid "Add, remove or update software on this computer"
+msgstr "Tambah, hapus, atau mutakhirkan perangkat lunak pada komputer ini"
+
+#: ../src/gnome-software.ui.h:2
+msgid "Go back"
+msgstr "Kembali"
+
+#. Translators: A label for a button to show all available software.
+#: ../src/gnome-software.ui.h:4
+msgid "_All"
+msgstr "Semu_a"
+
+#. Translators: A label for a button to show only software which is already installed.
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:407
+msgid "_Installed"
+msgstr "Ter_pasang"
+
+#. Translators: A label for a button to show only updates which are available to install.
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install.
+#.
+#: ../src/gnome-software.ui.h:8 ../src/gs-shell-updates.c:112
+msgid "_Updates"
+msgstr "Pem_utakhiran"
+
+#: ../src/gnome-software.ui.h:9
+msgid "Restart & Install"
+msgstr "Start Ulang & Pasang"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:109
+#: ../src/gs-shell-details.c:91
+msgid "Install"
+msgstr "Pasang"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: button text in the header when an application can be erased
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:117
+#: ../src/gs-shell-details.c:123 ../src/gs-shell-details.c:314
+#: ../src/gs-shell-installed.c:165 ../src/gs-shell-search.c:113
+msgid "Remove"
+msgstr "Hapus"
+
+#: ../src/gnome-software.ui.h:12
+#: ../src/plugins/gs-plugin-hardcoded-popular.c:226
+msgid "Featured"
+msgstr ""
+
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: ../src/gnome-software.ui.h:14
+msgid "Picks"
+msgstr "Pilihan"
+
+#: ../src/gnome-software.ui.h:15
+msgid "Categories"
+msgstr "Kategori"
+
+#: ../src/gnome-software.ui.h:16
+msgid "No Application Data Found"
+msgstr "Tak Ada Data Aplikasi Yang Ditemukan"
+
+#: ../src/gnome-software.ui.h:17
+msgid "No Application Found"
+msgstr "Tak Ada Aplikasi Yang Ditemukan"
+
+#: ../src/gnome-software.ui.h:18
+msgid "Software is up to date"
+msgstr "Perangkat lunak mutakhir"
+
+#: ../src/gnome-software.ui.h:19
+msgid "Visit _Website"
+msgstr "Kunjungi Halaman _Web"
+
+#: ../src/gnome-software.ui.h:20
+msgid "_History"
+msgstr "_Riwayat"
+
+#: ../src/gnome-software.ui.h:21
+msgid "History"
+msgstr "Riwayat"
+
+#. Translators: Label for a button to close the update dialogue.
+#: ../src/gnome-software.ui.h:23
+msgid "Done"
+msgstr "Selesai"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:87
+msgid "About Software"
+msgstr "Tentang Perangkat Lunak"
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:92
+msgid "A nice way to manage the software on your system."
+msgstr ""
+"Suatu cara yang manis untuk mengelola perangkat lunak pada sistem Anda."
+
+#: ../src/gs-application.c:96
+msgid "translator-credits"
+msgstr "Andika Triwidada <andika@gmail.com>, 2013."
+
+#. TRANSLATORS: this is a command line option, please don't
+#. * translate the option names between ‘’
+#: ../src/gs-application.c:222
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr ""
+"Mode awal mula: bisa ‘updates’, ‘updated’, ‘installed’, atau ‘overview’"
+
+#: ../src/gs-application.c:222
+msgid "MODE"
+msgstr "MODE"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be updated. not normally shown
+#: ../src/gs-app-widget.c:126
+msgid "Update"
+msgstr "Mutakhirkan"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-app-widget.c:135 ../src/gs-shell-details.c:99
+msgid "Installing"
+msgstr "Memasang"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-app-widget.c:144 ../src/gs-shell-details.c:130
+msgid "Removing"
+msgstr "Menghapus"
+
+#. TRANSLATORS: this is where all applications that don't
+#. * fit in other groups are put
+#: ../src/gs-category.c:165
+msgid "Other"
+msgstr "Lainnya"
+
+#. TRANSLATORS: this is a group of updates that are not packages and
+#. * are ot shown in the main list
+#: ../src/gs-plugin-loader.c:480
+msgid "OS Updates"
+msgstr "Pemutakhiran OS"
+
+#. TRANSLATORS: this is a longer description of the os-update item
+#: ../src/gs-plugin-loader.c:482 ../src/gs-plugin-loader.c:483
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr ""
+"Memuat perbaikan kinerja, stabilitas, dan keamanan bagi semua pengguna."
+
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-shell-details.c:299 ../src/gs-shell-installed.c:150
+#: ../src/gs-shell-search.c:98
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Apakah Anda yakin ingin menghapus %s?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-shell-details.c:311 ../src/gs-shell-installed.c:162
+#: ../src/gs-shell-search.c:110
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr "%s akan dihapus, dan Anda perlu memasangnya untuk memakainya lagi."
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was removed
+#: ../src/gs-shell-details.c:391
+msgid "Removed"
+msgstr "Dihapus"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gs-shell-details.c:402
+msgid "Updated"
+msgstr "Dimutakhirkan"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing that something happened to the
+#. * application but we don't know what
+#: ../src/gs-shell-details.c:408
+msgid "Unknown"
+msgstr "Tak diketahui"
+
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software. The '%d' refers to the number of
+#. * applications either installing or erasing
+#: ../src/gs-shell-installed.c:412
+#, c-format
+msgid "_Installed (%d)"
+msgstr "Ter_pasang (%d)"
+
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install. The '%d' refers to the
+#. * number of available updates
+#.
+#: ../src/gs-shell-updates.c:105
+#, c-format
+msgid "_Updates (%d)"
+msgstr "Pem_utakhiran (%d)"
+
+#. TRANSLATORS: window title to suggest that we are showing
+#. * the offline updates that have just been applied
+#: ../src/gs-shell-updates.c:169
+msgid "Recent Software Updates"
+msgstr "Pemutakhiran Perangkat Lunak Baru-baru Ini"
+
+#. TRANSLATORS: this is the summary of a notification that an application
+#. * has been successfully installed
+#: ../src/gs-utils.c:166
+#, c-format
+msgid "%s is now installed"
+msgstr "%s kini telah terpasang"
+
+#. TRANSLATORS: this is button that opens the newly installed application
+#: ../src/gs-utils.c:169
+msgid "Launch"
+msgstr "Luncurkan"
+
+#: ../src/plugins/gs-plugin-appstream.c:250
+#, c-format
+msgid "No AppStream data found"
+msgstr "Tak ada data AppStream yang ditemukan"
+
+#. TRANSLATORS: this is the menu spec main category for Audio
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:57
+msgid "Audio"
+msgstr "Audio"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:60
+msgctxt "Menu subcategory of Audio"
+msgid "Editing"
+msgstr "Penyuntingan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:63
+msgctxt "Menu subcategory of Audio"
+msgid "Databases"
+msgstr "Basis Data"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:66
+msgctxt "Menu subcategory of Audio"
+msgid "Disc Burning"
+msgstr "Membakar Cakram"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:69
+msgctxt "Menu subcategory of Audio"
+msgid "Ham Radio"
+msgstr "Radio Amatir"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:72
+msgctxt "Menu subcategory of Audio"
+msgid "MIDI"
+msgstr "MIDI"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:75
+msgctxt "Menu subcategory of Audio"
+msgid "Mixer"
+msgstr "Mixer"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:78
+msgctxt "Menu subcategory of Audio"
+msgid "Music"
+msgstr "Musik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:81
+msgctxt "Menu subcategory of Audio"
+msgid "Players"
+msgstr "Pemutar"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:84
+msgctxt "Menu subcategory of Audio"
+msgid "Recorders"
+msgstr "Perekam"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:87
+msgctxt "Menu subcategory of Audio"
+msgid "Sequencers"
+msgstr "Sequencer"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:90
+msgctxt "Menu subcategory of Audio"
+msgid "Tuners"
+msgstr "Radio"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:94
+msgid "Development Tools"
+msgstr "Alat Pengembangan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:97
+msgctxt "Menu subcategory of Development"
+msgid "Building"
+msgstr "Membangun"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:100
+msgctxt "Menu subcategory of Development"
+msgid "Databases"
+msgstr "Basis Data"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:103
+msgctxt "Menu subcategory of Development"
+msgid "Debuggers"
+msgstr "Pengawakutu"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:106
+msgctxt "Menu subcategory of Development"
+msgid "GUI Designers"
+msgstr "Perancang GUI"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:109
+msgctxt "Menu subcategory of Development"
+msgid "IDE"
+msgstr "IDE"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:112
+msgctxt "Menu subcategory of Development"
+msgid "Profiling"
+msgstr "Memprofil"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:115
+msgctxt "Menu subcategory of Development"
+msgid "Project Management"
+msgstr "Manajemen Projek"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:118
+msgctxt "Menu subcategory of Development"
+msgid "Revision Control"
+msgstr "Kendali Revisi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:121
+msgctxt "Menu subcategory of Development"
+msgid "Translation"
+msgstr "Penerjemahan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:124
+msgctxt "Menu subcategory of Development"
+msgid "Web Development"
+msgstr "Pengembangan Web"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:128
+msgid "Education"
+msgstr "Pendidikan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:131
+msgctxt "Menu subcategory of Education"
+msgid "Art"
+msgstr "Seni"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:134
+msgctxt "Menu subcategory of Education"
+msgid "Artificial Intelligence"
+msgstr "Kecerdasan Buatan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:137
+msgctxt "Menu subcategory of Education"
+msgid "Astronomy"
+msgstr "Astronomi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:140
+msgctxt "Menu subcategory of Education"
+msgid "Biology"
+msgstr "Biologi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:143
+msgctxt "Menu subcategory of Education"
+msgid "Chemistry"
+msgstr "Kimia"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:146
+msgctxt "Menu subcategory of Education"
+msgid "Computer Science"
+msgstr "Ilmu Komputer"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:149
+msgctxt "Menu subcategory of Education"
+msgid "Construction"
+msgstr "Konstruksi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:152
+msgctxt "Menu subcategory of Education"
+msgid "Data Visualization"
+msgstr "Visualisasi Data"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:155
+msgctxt "Menu subcategory of Education"
+msgid "Economy"
+msgstr "Ekonomi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:158
+msgctxt "Menu subcategory of Education"
+msgid "Electricity"
+msgstr "Kelistrikan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:161
+msgctxt "Menu subcategory of Education"
+msgid "Electronics"
+msgstr "Elektronika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:164
+msgctxt "Menu subcategory of Education"
+msgid "Engineering"
+msgstr "Rekayasa"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:167
+msgctxt "Menu subcategory of Education"
+msgid "Geography"
+msgstr "Geografi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:170
+msgctxt "Menu subcategory of Education"
+msgid "Geology"
+msgstr "Geologi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:173
+msgctxt "Menu subcategory of Education"
+msgid "Geoscience"
+msgstr "Ilmu Kebumian"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:176
+msgctxt "Menu subcategory of Education"
+msgid "History"
+msgstr "Sejarah"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:179
+msgctxt "Menu subcategory of Education"
+msgid "Humanities"
+msgstr "Humaniora"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:182
+msgctxt "Menu subcategory of Education"
+msgid "Image Processing"
+msgstr "Pengolahan Citra"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:185
+msgctxt "Menu subcategory of Education"
+msgid "Languages"
+msgstr "Bahasa"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:188
+msgctxt "Menu subcategory of Education"
+msgid "Literature"
+msgstr "Literatur"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:191
+msgctxt "Menu subcategory of Education"
+msgid "Maps"
+msgstr "Peta"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:194
+msgctxt "Menu subcategory of Education"
+msgid "Math"
+msgstr "Matematika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:197
+msgctxt "Menu subcategory of Education"
+msgid "Medical"
+msgstr "Kedokteran"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:200
+msgctxt "Menu subcategory of Education"
+msgid "Music"
+msgstr "Musik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:203
+msgctxt "Menu subcategory of Education"
+msgid "Numerical Analysis"
+msgstr "Analisis Numerik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:206
+msgctxt "Menu subcategory of Education"
+msgid "Parallel Computing"
+msgstr "Komputasi Paralel"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:209
+msgctxt "Menu subcategory of Education"
+msgid "Physics"
+msgstr "Fisika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:212
+msgctxt "Menu subcategory of Education"
+msgid "Robotics"
+msgstr "Robotika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:215
+msgctxt "Menu subcategory of Education"
+msgid "Spirituality"
+msgstr "Spiritualitas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:218
+msgctxt "Menu subcategory of Education"
+msgid "Sports"
+msgstr "Olah Raga"
+
+#. TRANSLATORS: this is the menu spec main category for Games
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:222
+msgid "Games"
+msgstr "Permainan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:225
+msgctxt "Menu subcategory of Games"
+msgid "Action"
+msgstr "Aksi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:228
+msgctxt "Menu subcategory of Games"
+msgid "Adventure"
+msgstr "Petualangan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:231
+msgctxt "Menu subcategory of Games"
+msgid "Arcade"
+msgstr "Arcade"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:234
+msgctxt "Menu subcategory of Games"
+msgid "Blocks"
+msgstr "Blok"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:237
+msgctxt "Menu subcategory of Games"
+msgid "Board"
+msgstr "Papan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:240
+msgctxt "Menu subcategory of Games"
+msgid "Card"
+msgstr "Kartu"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:243
+msgctxt "Menu subcategory of Games"
+msgid "Emulators"
+msgstr "Emulator"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:246
+msgctxt "Menu subcategory of Games"
+msgid "Kids"
+msgstr "Anak-anak"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:249
+msgctxt "Menu subcategory of Games"
+msgid "Logic"
+msgstr "Logika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:252
+msgctxt "Menu subcategory of Games"
+msgid "Role Playing"
+msgstr "Memainkan Peran"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:255
+msgctxt "Menu subcategory of Games"
+msgid "Shooter"
+msgstr "Menembak"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:258
+msgctxt "Menu subcategory of Games"
+msgid "Simulation"
+msgstr "Simulasi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:261
+msgctxt "Menu subcategory of Games"
+msgid "Sports"
+msgstr "Olah Raga"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:264
+msgctxt "Menu subcategory of Games"
+msgid "Strategy"
+msgstr "Strategi"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:268
+msgid "Graphics"
+msgstr "Grafis"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:271
+msgctxt "Menu subcategory of Graphics"
+msgid "2D Graphics"
+msgstr "Grafik 2D"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:274
+msgctxt "Menu subcategory of Graphics"
+msgid "3D Graphics"
+msgstr "Grafik 3D"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:277
+msgctxt "Menu subcategory of Graphics"
+msgid "OCR"
+msgstr "OCR"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:280
+msgctxt "Menu subcategory of Graphics"
+msgid "Photography"
+msgstr "Fotografi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:283
+msgctxt "Menu subcategory of Graphics"
+msgid "Publishing"
+msgstr "Penerbitan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:286
+msgctxt "Menu subcategory of Graphics"
+msgid "Raster Graphics"
+msgstr "Grafik Raster"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:289
+msgctxt "Menu subcategory of Graphics"
+msgid "Scanning"
+msgstr "Pemindaian"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:292
+msgctxt "Menu subcategory of Graphics"
+msgid "Vector Graphics"
+msgstr "Grafik Vektor"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:295
+msgctxt "Menu subcategory of Graphics"
+msgid "Viewer"
+msgstr "Penilik"
+
+#. TRANSLATORS: this is the menu spec main category for Network
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:299
+msgid "Internet"
+msgstr "Internet"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:302
+msgctxt "Menu subcategory of Network"
+msgid "Chat"
+msgstr "Mengobrol"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:305
+msgctxt "Menu subcategory of Network"
+msgid "Dialup"
+msgstr "Dialup"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:308
+msgctxt "Menu subcategory of Network"
+msgid "Email"
+msgstr "Surel"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:311
+msgctxt "Menu subcategory of Network"
+msgid "Feed"
+msgstr "Asupan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:314
+msgctxt "Menu subcategory of Network"
+msgid "File Transfer"
+msgstr "Transfer Berkas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:317
+msgctxt "Menu subcategory of Network"
+msgid "Ham Radio"
+msgstr "Radio Amatir"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:320
+msgctxt "Menu subcategory of Network"
+msgid "Instant Messaging"
+msgstr "Perpesanan Instan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:323
+msgctxt "Menu subcategory of Network"
+msgid "IRC Clients"
+msgstr "Klien IRC"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:326
+msgctxt "Menu subcategory of Network"
+msgid "Monitor"
+msgstr "Pemantau"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:329
+msgctxt "Menu subcategory of Network"
+msgid "News"
+msgstr "Berita"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:332
+msgctxt "Menu subcategory of Network"
+msgid "P2P"
+msgstr "P2P"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:335
+msgctxt "Menu subcategory of Network"
+msgid "Remote Access"
+msgstr "Akses Jarak Jauh"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:338
+msgctxt "Menu subcategory of Network"
+msgid "Telephony"
+msgstr "Telefoni"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:341
+msgctxt "Menu subcategory of Network"
+msgid "Video Conference"
+msgstr "Konferensi Video"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:344
+msgctxt "Menu subcategory of Network"
+msgid "Web Browser"
+msgstr "Peramban Web"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:347
+msgctxt "Menu subcategory of Network"
+msgid "Web Development"
+msgstr "Pengembangan Web"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:351
+msgid "Office"
+msgstr "Perkantoran"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:354
+msgctxt "Menu subcategory of Office"
+msgid "Calendar"
+msgstr "Kalender"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:357
+msgctxt "Menu subcategory of Office"
+msgid "Chart"
+msgstr "Diagram"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:360
+msgctxt "Menu subcategory of Office"
+msgid "Contact Management"
+msgstr "Manajemen Kontak"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:363
+msgctxt "Menu subcategory of Office"
+msgid "Database"
+msgstr "Basis Data"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:366
+msgctxt "Menu subcategory of Office"
+msgid "Dictionary"
+msgstr "Kamus"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:369
+msgctxt "Menu subcategory of Office"
+msgid "Email"
+msgstr "Surel"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
+msgctxt "Menu subcategory of Office"
+msgid "Finance"
+msgstr "Keuangan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:375
+msgctxt "Menu subcategory of Office"
+msgid "Flow Chart"
+msgstr "Diagram Alir"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:378
+msgctxt "Menu subcategory of Office"
+msgid "PDA"
+msgstr "PDA"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:381
+msgctxt "Menu subcategory of Office"
+msgid "Photography"
+msgstr "Fotografi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:384
+msgctxt "Menu subcategory of Office"
+msgid "Presentation"
+msgstr "Presentasi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:387
+msgctxt "Menu subcategory of Office"
+msgid "Project Management"
+msgstr "Manajemen Projek"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:390
+msgctxt "Menu subcategory of Office"
+msgid "Publishing"
+msgstr "Penerbitan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:393
+msgctxt "Menu subcategory of Office"
+msgid "Spreadsheet"
+msgstr "Lembar Kerja"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:396
+msgctxt "Menu subcategory of Office"
+msgid "Viewer"
+msgstr "Penilik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:399
+msgctxt "Menu subcategory of Office"
+msgid "Word Processor"
+msgstr "Pengolah Kata"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:403
+msgid "Science"
+msgstr "Sains"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:406
+msgctxt "Menu subcategory of Science"
+msgid "Art"
+msgstr "Seni"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:409
+msgctxt "Menu subcategory of Science"
+msgid "Artificial Intelligence"
+msgstr "Kecerdasan Buatan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:412
+msgctxt "Menu subcategory of Science"
+msgid "Astronomy"
+msgstr "Astronomi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:415
+msgctxt "Menu subcategory of Science"
+msgid "Biology"
+msgstr "Biologi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:418
+msgctxt "Menu subcategory of Science"
+msgid "Chemistry"
+msgstr "Kimia"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:421
+msgctxt "Menu subcategory of Science"
+msgid "Computer Science"
+msgstr "Ilmu Komputer"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:424
+msgctxt "Menu subcategory of Science"
+msgid "Construction"
+msgstr "Konstruksi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:427
+msgctxt "Menu subcategory of Science"
+msgid "Data Visualization"
+msgstr "Visualisasi Data"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:430
+msgctxt "Menu subcategory of Science"
+msgid "Economy"
+msgstr "Ekonomi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:433
+msgctxt "Menu subcategory of Science"
+msgid "Electricity"
+msgstr "Kelistrikan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:436
+msgctxt "Menu subcategory of Science"
+msgid "Electronics"
+msgstr "Elektronika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:439
+msgctxt "Menu subcategory of Science"
+msgid "Engineering"
+msgstr "Rekayasa"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:442
+msgctxt "Menu subcategory of Science"
+msgid "Geography"
+msgstr "Geografi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:445
+msgctxt "Menu subcategory of Science"
+msgid "Geology"
+msgstr "Geologi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:448
+msgctxt "Menu subcategory of Science"
+msgid "Geoscience"
+msgstr "Ilmu Kebumian"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:451
+msgctxt "Menu subcategory of Science"
+msgid "History"
+msgstr "Sejarah"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:454
+msgctxt "Menu subcategory of Science"
+msgid "Humanities"
+msgstr "Humaniora"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
+msgctxt "Menu subcategory of Science"
+msgid "Image Processing"
+msgstr "Pengolahan Citra"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:460
+msgctxt "Menu subcategory of Science"
+msgid "Languages"
+msgstr "Bahasa"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:463
+msgctxt "Menu subcategory of Science"
+msgid "Literature"
+msgstr "Literatur"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:466
+msgctxt "Menu subcategory of Science"
+msgid "Maps"
+msgstr "Peta"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:469
+msgctxt "Menu subcategory of Science"
+msgid "Math"
+msgstr "Matematika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:472
+msgctxt "Menu subcategory of Science"
+msgid "Medical"
+msgstr "Kedokteran"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:475
+msgctxt "Menu subcategory of Science"
+msgid "Numerical Analysis"
+msgstr "Analisis Numerik"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:478
+msgctxt "Menu subcategory of Science"
+msgid "Parallel Computing"
+msgstr "Komputasi Paralel"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:481
+msgctxt "Menu subcategory of Science"
+msgid "Physics"
+msgstr "Fisika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
+msgctxt "Menu subcategory of Science"
+msgid "Robotics"
+msgstr "Robotika"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:487
+msgctxt "Menu subcategory of Science"
+msgid "Spirituality"
+msgstr "Spiritualitas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:490
+msgctxt "Menu subcategory of Science"
+msgid "Sports"
+msgstr "Olah Raga"
+
+#. TRANSLATORS: this is the menu spec main category for System
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:494
+msgid "System"
+msgstr "Sistem"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:497
+msgctxt "Menu subcategory of System"
+msgid "Emulator"
+msgstr "Emulator"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:500
+msgctxt "Menu subcategory of System"
+msgid "File Manager"
+msgstr "Manajer Berkas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:503
+msgctxt "Menu subcategory of System"
+msgid "File System"
+msgstr "Sistem Berkas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
+msgctxt "Menu subcategory of System"
+msgid "File Tools"
+msgstr "Alat Berkas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
+msgctxt "Menu subcategory of System"
+msgid "Monitor"
+msgstr "Pemantau"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
+msgctxt "Menu subcategory of System"
+msgid "Security"
+msgstr "Keamanan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:515
+msgctxt "Menu subcategory of System"
+msgid "Terminal Emulator"
+msgstr "Emulator Terminal"
+
+#. TRANSLATORS: this is the menu spec main category for Utility
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:519
+msgid "Utilities"
+msgstr "Utilitas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:522
+msgctxt "Menu subcategory of Utility"
+msgid "Accessibility"
+msgstr "Aksesibilitas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:525
+msgctxt "Menu subcategory of Utility"
+msgid "Archiving"
+msgstr "Pengarsipan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
+msgctxt "Menu subcategory of Utility"
+msgid "Calculator"
+msgstr "Kalkulator"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
+msgctxt "Menu subcategory of Utility"
+msgid "Clock"
+msgstr "Jam"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:534
+msgctxt "Menu subcategory of Utility"
+msgid "Compression"
+msgstr "Kompresi"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:537
+msgctxt "Menu subcategory of Utility"
+msgid "File Tools"
+msgstr "Alat Berkas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:540
+msgctxt "Menu subcategory of Utility"
+msgid "Maps"
+msgstr "Peta"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:543
+msgctxt "Menu subcategory of Utility"
+msgid "Spirituality"
+msgstr "Spiritualitas"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:546
+msgctxt "Menu subcategory of Utility"
+msgid "Telephony Tools"
+msgstr "Alat Telefoni"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:549
+msgctxt "Menu subcategory of Utility"
+msgid "Text Editor"
+msgstr "Penyunting Teks"
+
+#. TRANSLATORS: this is the menu spec main category for Video
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:553
+msgid "Video"
+msgstr "Basis Data"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:556
+msgctxt "Menu subcategory of Video"
+msgid "Editing"
+msgstr "Penyuntingan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:559
+msgctxt "Menu subcategory of Video"
+msgid "Database"
+msgstr "Basis Data"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
+msgctxt "Menu subcategory of Video"
+msgid "Disc Burning"
+msgstr "Membakar Cakram"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
+msgctxt "Menu subcategory of Video"
+msgid "Players"
+msgstr "Pemutar"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
+msgctxt "Menu subcategory of Video"
+msgid "Recorders"
+msgstr "Perekam"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
+msgctxt "Menu subcategory of Video"
+msgid "TV"
+msgstr "TV"
+
+#. TRANSLATORS: this is the main category for Add-ons
+#. TRANSLATORS: these are extra things that add to existing programs,
+#. * for instance fonts, codecs or language packs
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
+#: ../src/plugins/gs-plugin-packagekit.c:424
+msgid "Add-ons"
+msgstr "Tambahan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:578
+msgctxt "Menu subcategory of Addons"
+msgid "Fonts"
+msgstr "Fonta"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:581
+msgctxt "Menu subcategory of Addons"
+msgid "Codecs"
+msgstr "Kodek"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:584
+msgctxt "Menu subcategory of Addons"
+msgid "Input Sources"
+msgstr "Sumber Masukan"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
+msgctxt "Menu subcategory of Addons"
+msgid "Language Packs"
+msgstr "Paket Bahasa"
+
+#. TRANSLATORS: audio/video decoders
+#: ../src/plugins/gs-plugin-packagekit.c:428
+msgid "Codecs"
+msgstr "Kodek"
+
+#. TRANSLATORS: fonts of different styles or languages
+#: ../src/plugins/gs-plugin-packagekit.c:432
+msgid "Fonts"
+msgstr "Fonta"
+
+#. TRANSLATORS: these are ways to enter text
+#: ../src/plugins/gs-plugin-packagekit.c:436
+msgid "Input Sources"
+msgstr "Sumber Masukan"
+
+#. TRANSLATORS: additional languages for apps
+#: ../src/plugins/gs-plugin-packagekit.c:440
+msgid "Language Packs"
+msgstr "Paket Bahasa"
+
+#. TRANSLATORS: this is where update details either are
+#. * no longer available or were never provided in the first place
+#: ../src/plugins/gs-plugin-packagekit-refine.c:315
+msgid "No update details were provided"
+msgstr "Rincian pemutakhiran tak tersedia"
