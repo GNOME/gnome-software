@@ -59,6 +59,8 @@ gnome_software_SOURCES =				\
 	gs-plugin.h					\
 	gs-profile.c					\
 	gs-profile.h					\
+	gs-screenshot.c					\
+	gs-screenshot.h					\
 	gs-shell.c					\
 	gs-shell.h					\
 	gs-shell-details.c				\

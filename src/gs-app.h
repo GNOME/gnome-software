@@ -25,6 +25,8 @@
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 
+#include "gs-screenshot.h"
+
 G_BEGIN_DECLS
 
 #define GS_TYPE_APP		(gs_app_get_type ())
@@ -113,9 +115,9 @@ void		 gs_app_set_description		(GsApp		*app,
 const gchar	*gs_app_get_url			(GsApp		*app);
 void		 gs_app_set_url			(GsApp		*app,
 						 const gchar	*url);
-const gchar	*gs_app_get_screenshot		(GsApp		*app);
-void		 gs_app_set_screenshot		(GsApp		*app,
-						 const gchar	*screenshot);
+GPtrArray	*gs_app_get_screenshots		(GsApp		*app);
+void		 gs_app_add_screenshot		(GsApp		*app,
+						 GsScreenshot	*screenshot);
 const gchar	*gs_app_get_update_version	(GsApp		*app);
 void		 gs_app_set_update_version	(GsApp		*app,
 						 const gchar	*update_version);

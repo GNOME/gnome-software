@@ -60,7 +60,7 @@ struct GsAppPrivate
 	gchar			*version;
 	gchar			*summary;
 	gchar			*description;
-	gchar			*screenshot;
+	GPtrArray		*screenshots;
 	gchar			*url;
 	gchar			*update_version;
 	gchar			*update_details;
@@ -84,7 +84,6 @@ enum {
 	PROP_SUMMARY,
 	PROP_DESCRIPTION,
 	PROP_URL,
-	PROP_SCREENSHOT,
 	PROP_RATING,
 	PROP_KIND,
 	PROP_STATE,
@@ -160,11 +159,13 @@ gs_app_state_to_string (GsAppState state)
 gchar *
 gs_app_to_string (GsApp *app)
 {
-	const gchar *tmp;
 	GList *keys;
 	GList *l;
-	GsAppPrivate *priv = app->priv;
 	GString *str;
+	GsAppPrivate *priv = app->priv;
+	GsScreenshot *ss;
+	const gchar *tmp;
+	guint i;
 
 	str = g_string_new ("GsApp:\n");
 	g_string_append_printf (str, "\tkind:\t%s\n",
@@ -181,8 +182,11 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tsummary:\t%s\n", priv->summary);
 	if (priv->description != NULL)
 		g_string_append_printf (str, "\tdescription:\t%lu\n", strlen (priv->description));
-	if (priv->screenshot != NULL)
-		g_string_append_printf (str, "\tscreenshot:\t%s\n", priv->screenshot);
+	for (i = 0; i < priv->screenshots->len; i++) {
+		ss = g_ptr_array_index (priv->screenshots, i);
+		g_string_append_printf (str, "\tscreenshot-%02i:\t%s\n",
+					i, gs_screenshot_get_url (ss, G_MAXUINT, G_MAXUINT));
+	}
 	if (priv->url != NULL)
 		g_string_append_printf (str, "\turl:\t%s\n", priv->url);
 	if (priv->rating != -1)
@@ -655,24 +659,23 @@ gs_app_set_url (GsApp *app, const gchar *url)
 }
 
 /**
- * gs_app_get_screenshot:
+ * gs_app_add_screenshot:
  */
-const gchar *
-gs_app_get_screenshot (GsApp *app)
+void
+gs_app_add_screenshot (GsApp *app, GsScreenshot *screenshot)
 {
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->priv->screenshot;
+	g_return_if_fail (GS_IS_APP (app));
+	g_ptr_array_add (app->priv->screenshots, g_object_ref (screenshot));
 }
 
 /**
- * gs_app_set_screenshot:
+ * gs_app_get_screenshots:
  */
-void
-gs_app_set_screenshot (GsApp *app, const gchar *screenshot)
+GPtrArray *
+gs_app_get_screenshots (GsApp *app)
 {
-	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->priv->screenshot);
-	app->priv->screenshot = g_strdup (screenshot);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->screenshots;
 }
 
 /**
@@ -865,9 +868,6 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_URL:
 		g_value_set_string (value, priv->url);
 		break;
-	case PROP_SCREENSHOT:
-		g_value_set_string (value, priv->screenshot);
-		break;
 	case PROP_RATING:
 		g_value_set_uint (value, priv->rating);
 		break;
@@ -912,9 +912,6 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_URL:
 		gs_app_set_url (app, g_value_get_string (value));
-		break;
-	case PROP_SCREENSHOT:
-		gs_app_set_screenshot (app, g_value_get_string (value));
 		break;
 	case PROP_RATING:
 		gs_app_set_rating (app, g_value_get_int (value));
@@ -990,14 +987,6 @@ gs_app_class_init (GsAppClass *klass)
 	g_object_class_install_property (object_class, PROP_URL, pspec);
 
 	/**
-	 * GsApp:screenshot:
-	 */
-	pspec = g_param_spec_string ("screenshot", NULL, NULL,
-				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_SCREENSHOT, pspec);
-
-	/**
 	 * GsApp:rating:
 	 */
 	pspec = g_param_spec_int ("rating", NULL, NULL,
@@ -1050,6 +1039,7 @@ gs_app_init (GsApp *app)
 	app->priv->rating = -1;
 	app->priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	app->priv->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->metadata = g_hash_table_new_full (g_str_hash,
 						     g_str_equal,
 						     g_free,
@@ -1074,7 +1064,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->version);
 	g_free (priv->summary);
 	g_free (priv->description);
-	g_free (priv->screenshot);
+	g_ptr_array_unref (priv->screenshots);
 	g_free (priv->update_version);
 	g_free (priv->update_details);
 	g_free (priv->management_plugin);

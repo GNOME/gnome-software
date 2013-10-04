@@ -364,6 +364,56 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 }
 
 /**
+ * gs_plugin_refine_add_screenshots:
+ */
+static void
+gs_plugin_refine_add_screenshots (GsApp *app, AppstreamApp *item)
+{
+	AppstreamImage *im;
+	AppstreamScreenshot *ss;
+	AppstreamScreenshotKind ss_kind;
+	GPtrArray *images_as;
+	GPtrArray *screenshots_as;
+	GsScreenshot *screenshot;
+	guint i;
+	guint j;
+
+	/* do we have any to add */
+	screenshots_as = appstream_app_get_screenshots (item);
+	if (screenshots_as->len == 0)
+		return;
+
+	/* does the app already have some */
+	if (gs_app_get_screenshots(app)->len > 0)
+		return;
+
+	/* add any we know */
+	for (i = 0; i < screenshots_as->len; i++) {
+		ss = g_ptr_array_index (screenshots_as, i);
+		images_as = appstream_screenshot_get_images (ss);
+		if (images_as->len == 0)
+			continue;
+		ss_kind = appstream_screenshot_get_kind (ss);
+		if (ss_kind == APPSTREAM_SCREENSHOT_KIND_UNKNOWN)
+			continue;
+
+		/* create a new application screenshot and add each image */
+		screenshot = gs_screenshot_new ();
+		gs_screenshot_set_is_default (screenshot,
+					      ss_kind == APPSTREAM_SCREENSHOT_KIND_DEFAULT);
+		for (j = 0; j < images_as->len; j++) {
+			im = g_ptr_array_index (images_as, j);
+			gs_screenshot_add_image	(screenshot,
+						 appstream_image_get_url (im),
+						 appstream_image_get_width (im),
+						 appstream_image_get_height (im));
+		}
+		gs_app_add_screenshot (app, screenshot);
+		g_object_unref (screenshot);
+	}
+}
+
+/**
  * gs_plugin_refine_item:
  */
 static gboolean
@@ -411,6 +461,9 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* set package name */
 	if (appstream_app_get_pkgname (item) != NULL && gs_app_get_source (app) == NULL)
 		gs_app_set_source (app, appstream_app_get_pkgname (item));
+
+	/* set screenshots */
+	gs_plugin_refine_add_screenshots (app, item);
 
 	return ret;
 }
