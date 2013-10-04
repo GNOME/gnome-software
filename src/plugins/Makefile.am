@@ -17,13 +17,6 @@ AM_CPPFLAGS =						\
 	-DTESTDATADIR=\""$(top_srcdir)/data/tests"\"	\
 	-I$(top_srcdir)/src
 
-resourcesdir = $(datadir)/gnome-software
-dist_resources_DATA =					\
-	data/cheese.png					\
-	data/gedit.png					\
-	data/gimp.png					\
-	data/transmission-gtk.png
-
 plugindir = $(libdir)/gs-plugins
 plugin_LTLIBRARIES =					\
 	libgs_plugin_appdata.la				\
@@ -39,7 +32,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_hardcoded-popular.la		\
 	libgs_plugin_hardcoded-menu-spec.la		\
 	libgs_plugin_hardcoded-ratings.la		\
-	libgs_plugin_hardcoded-screenshots.la		\
 	libgs_plugin_local-ratings.la			\
 	libgs_plugin_systemd-updates.la			\
 	libgs_plugin_packagekit-refine.la		\
@@ -106,11 +98,6 @@ libgs_plugin_hardcoded_ratings_la_SOURCES = gs-plugin-hardcoded-ratings.c
 libgs_plugin_hardcoded_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
 libgs_plugin_hardcoded_ratings_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
-
-libgs_plugin_hardcoded_screenshots_la_SOURCES = gs-plugin-hardcoded-screenshots.c
-libgs_plugin_hardcoded_screenshots_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
-libgs_plugin_hardcoded_screenshots_la_LDFLAGS = -module -avoid-version
-libgs_plugin_hardcoded_screenshots_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_local_ratings_la_SOURCES = gs-plugin-local-ratings.c
 libgs_plugin_local_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
