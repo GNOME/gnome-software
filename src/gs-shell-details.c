@@ -183,6 +183,7 @@ void
 gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 {
 	const gchar *tmp;
+	gchar *app_dump;
 	GdkPixbuf *pixbuf;
 	GtkWidget *widget;
 	GtkWidget *widget2;
@@ -190,9 +191,9 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	GsShellDetailsPrivate *priv = shell_details->priv;
 
 	/* show some debugging */
-	g_debug ("Show application '%s' from source '%s'",
-		 gs_app_get_id (app),
-		 gs_app_get_source (app));
+	app_dump = gs_app_to_string (app);
+	g_debug ("%s", app_dump);
+	g_free (app_dump);
 
 	/* save app */
 	if (priv->app != NULL)
