@@ -30,6 +30,18 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
         animation: throbbing linear 1s infinite alternate;
 }
 
+.button.screenshot-image {
+        padding: 0;
+        border-radius: 0;
+        border-width: 0px;
+        border-image: none;
+        -GtkWidget-focus-padding: 0;
+        outline-style: dashed;
+        outline-offset: 2px;
+        background-image: none;
+        background-color: rgba(0,0,0,0.5);
+}
+
 .view.tile {
         border-radius: 0;
         border-width: 3px;

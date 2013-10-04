@@ -4,6 +4,7 @@ SUBDIRS =						\
 AM_CPPFLAGS =						\
 	$(GLIB_CFLAGS)					\
 	$(GTK_CFLAGS)					\
+	$(SOUP_CFLAGS)					\
 	$(PACKAGEKIT_CFLAGS)				\
 	$(NOTIFY_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
@@ -29,6 +30,7 @@ UI_FILES =						\
 	feature-tile.ui					\
 	gnome-software.ui				\
 	gnome-software.ui				\
+	screenshot-image.ui				\
 	popular-tile.ui
 
 bin_PROGRAMS =						\
@@ -59,6 +61,8 @@ gnome_software_SOURCES =				\
 	gs-plugin.h					\
 	gs-profile.c					\
 	gs-profile.h					\
+	gs-screenshot-image.c				\
+	gs-screenshot-image.h				\
 	gs-screenshot.c					\
 	gs-screenshot.h					\
 	gs-shell.c					\
@@ -86,6 +90,7 @@ gnome_software_SOURCES =				\
 gnome_software_LDADD =					\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)					\
+	$(SOUP_LIBS)					\
 	$(PACKAGEKIT_LIBS)				\
 	$(NOTIFY_LIBS)					\
 	-lm
