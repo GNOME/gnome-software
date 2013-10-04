@@ -62,6 +62,8 @@ libgs_plugin_appstream_la_SOURCES =			\
 	gs-plugin-appstream.c				\
 	appstream-app.c					\
 	appstream-app.h					\
+	appstream-image.c				\
+	appstream-image.h				\
 	appstream-common.c				\
 	appstream-common.h				\
 	appstream-cache.c				\
