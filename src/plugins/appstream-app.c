@@ -44,6 +44,7 @@ struct AppstreamApp
 	GPtrArray		*keywords;
 	gpointer		 userdata;
 	GDestroyNotify		 userdata_destroy_func;
+	GPtrArray		*screenshots; /* of AppstreamScreenshot */
 };
 
 /**
@@ -87,6 +88,7 @@ appstream_app_free (AppstreamApp *app)
 	g_free (app->description);
 	g_ptr_array_unref (app->appcategories);
 	g_ptr_array_unref (app->keywords);
+	g_ptr_array_unref (app->screenshots);
 	if (app->userdata_destroy_func != NULL)
 		app->userdata_destroy_func (app->userdata);
 	g_slice_free (AppstreamApp, app);
@@ -123,6 +125,7 @@ appstream_app_new (void)
 	app = g_slice_new0 (AppstreamApp);
 	app->appcategories = g_ptr_array_new_with_free_func (g_free);
 	app->keywords = g_ptr_array_new_with_free_func (g_free);
+	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_screenshot_free);
 	app->name_value = G_MAXUINT;
 	app->summary_value = G_MAXUINT;
 	app->description_value = G_MAXUINT;
@@ -378,6 +381,24 @@ appstream_app_set_icon_kind (AppstreamApp *app,
 			     AppstreamAppIconKind icon_kind)
 {
 	app->icon_kind = icon_kind;
+}
+
+/**
+ * appstream_app_add_screenshot:
+ */
+void
+appstream_app_add_screenshot (AppstreamApp *app, AppstreamScreenshot *screenshot)
+{
+	g_ptr_array_add (app->screenshots, screenshot);
+}
+
+/**
+ * appstream_app_get_screenshots:
+ */
+GPtrArray *
+appstream_app_get_screenshots (AppstreamApp *app)
+{
+	return app->screenshots;
 }
 
 /**

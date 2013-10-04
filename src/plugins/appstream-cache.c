@@ -21,8 +21,12 @@
 
 #include "config.h"
 
+#include <stdlib.h>
+
 #include "appstream-cache.h"
 #include "appstream-common.h"
+#include "appstream-image.h"
+#include "appstream-screenshot.h"
 
 static void	appstream_cache_finalize	(GObject	*object);
 
@@ -110,6 +114,8 @@ typedef struct {
 	char			*lang_temp;
 	AppstreamCache		*cache;
 	AppstreamTag		 tag;
+	AppstreamImage		*image;
+	AppstreamScreenshot	*screenshot;
 } AppstreamCacheHelper;
 
 /**
@@ -127,7 +133,9 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
 	AppstreamTag section_new;
 	const gchar *tmp = NULL;
+	guint height = 0;
 	guint i;
+	guint width = 0;
 
 	/* process tag start */
 	section_new = appstream_tag_from_string (element_name);
@@ -138,6 +146,66 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_KEYWORDS:
 	case APPSTREAM_TAG_KEYWORD:
 		/* ignore */
+		break;
+	case APPSTREAM_TAG_SCREENSHOT:
+		if (helper->item_temp == NULL ||
+		    helper->tag != APPSTREAM_TAG_SCREENSHOTS) {
+			g_set_error (error,
+				     APPSTREAM_CACHE_ERROR,
+				     APPSTREAM_CACHE_ERROR_FAILED,
+				     "XML start %s invalid, tag %s",
+				     element_name,
+				     appstream_tag_to_string (helper->tag));
+			return;
+		}
+
+		/* get the screenshot kind */
+		for (i = 0; attribute_names[i] != NULL; i++) {
+			if (g_strcmp0 (attribute_names[i], "type") == 0) {
+				tmp = attribute_values[i];
+				break;
+			}
+		}
+
+		/* create screenshot */
+		helper->screenshot = appstream_screenshot_new ();
+		if (tmp != NULL) {
+			AppstreamScreenshotKind kind;
+			kind = appstream_screenshot_kind_from_string (tmp);
+			appstream_screenshot_set_kind (helper->screenshot, kind);
+		}
+		break;
+	case APPSTREAM_TAG_IMAGE:
+		if (helper->item_temp == NULL ||
+		    helper->tag != APPSTREAM_TAG_SCREENSHOT) {
+			g_set_error (error,
+				     APPSTREAM_CACHE_ERROR,
+				     APPSTREAM_CACHE_ERROR_FAILED,
+				     "XML start %s invalid, tag %s",
+				     element_name,
+				     appstream_tag_to_string (helper->tag));
+			return;
+		}
+
+		/* get the image attributes */
+		for (i = 0; attribute_names[i] != NULL; i++) {
+			if (g_strcmp0 (attribute_names[i], "type") == 0)
+				tmp = attribute_values[i];
+			else if (g_strcmp0 (attribute_names[i], "width") == 0)
+				width = atoi (attribute_values[i]);
+			else if (g_strcmp0 (attribute_names[i], "height") == 0)
+				height = atoi (attribute_values[i]);
+		}
+
+		/* create image */
+		helper->image = appstream_image_new ();
+		appstream_image_set_width (helper->image, width);
+		appstream_image_set_height (helper->image, height);
+		if (tmp != NULL) {
+			AppstreamImageKind kind;
+			kind = appstream_image_kind_from_string (tmp);
+			appstream_image_set_kind (helper->image, kind);
+		}
 		break;
 	case APPSTREAM_TAG_APPLICATION:
 		if (helper->item_temp != NULL ||
@@ -281,6 +349,18 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		appstream_cache_add_item (helper);
 		helper->item_temp = NULL;
 		helper->tag = APPSTREAM_TAG_APPLICATIONS;
+		break;
+	case APPSTREAM_TAG_IMAGE:
+		appstream_screenshot_add_image (helper->screenshot,
+						helper->image);
+		helper->image = NULL;
+		helper->tag = APPSTREAM_TAG_SCREENSHOT;
+		break;
+	case APPSTREAM_TAG_SCREENSHOT:
+		appstream_app_add_screenshot (helper->item_temp,
+					      helper->screenshot);
+		helper->screenshot = NULL;
+		helper->tag = APPSTREAM_TAG_SCREENSHOTS;
 		break;
 	case APPSTREAM_TAG_ID:
 	case APPSTREAM_TAG_PKGNAME:
@@ -428,6 +508,16 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 			return;
 		}
 		appstream_app_set_icon (helper->item_temp, text, text_len);
+		break;
+	case APPSTREAM_TAG_IMAGE:
+		if (helper->image == NULL) {
+			g_set_error_literal (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "image not started");
+			return;
+		}
+		appstream_image_set_url (helper->image, text, text_len);
 		break;
 	default:
 		/* ignore unknown entries */
