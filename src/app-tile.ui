@@ -17,6 +17,15 @@
             <property name="halign">fill</property>
             <property name="valign">fill</property>
             <child type="overlay">
+              <object class="GtkImage" id="waiting">
+                <property name="visible">True</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="pixel-size">16</property>
+                <property name="icon-name">content-loading-symbolic</property>
+              </object>
+            </child>
+            <child type="overlay">
               <object class="GtkEventBox" id="eventbox">
                 <property name="no_show_all">True</property>
                 <property name="visible_window">True</property>

@@ -11,57 +11,73 @@
           <class name="featured-tile"/>
         </style>
         <child>
-          <object class="GsBox" id="box">
+          <object class="GtkOverlay" id="overlay">
             <property name="visible">True</property>
-            <property name="hexpand">True</property>
-            <child>
-              <object class="GtkEventBox" id="image">
+            <property name="halign">fill</property>
+            <property name="valign">fill</property>
+            <child type="overlay">
+              <object class="GtkImage" id="waiting">
                 <property name="visible">True</property>
-                <property name="can_focus">False</property>
-                <property name="visible_window">True</property>
-                <property name="height_request">240</property>
-                <style>
-                  <class name="featured-image"/>
-                </style>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="pixel-size">16</property>
+                <property name="icon-name">content-loading-symbolic</property>
               </object>
-              <packing>
-                <property name="relative_size">1.0</property>
-              </packing>
             </child>
             <child>
-              <object class="GtkBox" id="box2">
+              <object class="GsBox" id="box">
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
-                <property name="margin">40</property>
+                <property name="hexpand">True</property>
                 <child>
-                  <object class="GtkLabel" id="title">
+                  <object class="GtkEventBox" id="image">
                     <property name="visible">True</property>
-                    <property name="xalign">0</property>
-                    <property name="halign">start</property>
-                    <property name="valign">end</property>
-                    <property name="wrap">True</property>
-                    <attributes>
-                      <attribute name="scale" value="2.5"/>
-                      <attribute name="weight" value="700"/>
-                    </attributes>
+                    <property name="can_focus">False</property>
+                    <property name="visible_window">True</property>
+                    <property name="height_request">240</property>
+                    <style>
+                      <class name="featured-image"/>
+                    </style>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
+                    <property name="relative_size">1.0</property>
                   </packing>
                 </child>
                 <child>
-                  <object class="GtkLabel" id="subtitle">
+                  <object class="GtkBox" id="box2">
                     <property name="visible">True</property>
-                    <property name="wrap">True</property>
-                    <property name="xalign">0</property>
-                    <property name="halign">start</property>
-                    <property name="valign">start</property>
+                    <property name="orientation">vertical</property>
+                    <property name="margin">40</property>
+                    <child>
+                      <object class="GtkLabel" id="title">
+                        <property name="visible">True</property>
+                        <property name="xalign">0</property>
+                        <property name="halign">start</property>
+                        <property name="valign">end</property>
+                        <property name="wrap">True</property>
+                        <attributes>
+                          <attribute name="scale" value="2.5"/>
+                          <attribute name="weight" value="700"/>
+                        </attributes>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="subtitle">
+                        <property name="visible">True</property>
+                        <property name="wrap">True</property>
+                        <property name="xalign">0</property>
+                        <property name="halign">start</property>
+                        <property name="valign">start</property>
+                      </object>
+                    </child>
                   </object>
+                  <packing>
+                    <property name="relative_size">1.0</property>
+                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="relative_size">1.0</property>
-              </packing>
             </child>
           </object>
         </child>

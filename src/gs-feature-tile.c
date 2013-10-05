@@ -33,6 +33,7 @@ struct _GsFeatureTilePrivate
 	GtkWidget	*image;
 	GtkWidget	*title;
 	GtkWidget	*subtitle;
+	GtkWidget	*waiting;
 	GtkCssProvider  *provider;
 };
 
@@ -104,6 +105,8 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 		return;
 
 	priv->app = g_object_ref (app);
+
+	gtk_widget_hide (priv->waiting);
 
         g_signal_connect (priv->app, "notify::state",
                           G_CALLBACK (app_state_changed), tile);
@@ -202,6 +205,7 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, image);
 	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, subtitle);
+	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, waiting);
 }
 
 GtkWidget *

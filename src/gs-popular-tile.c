@@ -33,6 +33,7 @@ struct _GsPopularTilePrivate
 	GtkWidget	*label;
 	GtkWidget	*image;
 	GtkWidget	*eventbox;
+	GtkWidget	*waiting;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPopularTile, gs_popular_tile, GTK_TYPE_BIN)
@@ -107,6 +108,8 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 		return;
 	priv->app = g_object_ref (app);
 
+        gtk_widget_hide (priv->waiting);
+
 	g_signal_connect (priv->app, "notify::state",
 		 	  G_CALLBACK (app_state_changed), tile);
 	app_state_changed (priv->app, NULL, tile);
@@ -171,6 +174,7 @@ gs_popular_tile_class_init (GsPopularTileClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, image);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, eventbox);
+	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, waiting);
 }
 
 GtkWidget *
