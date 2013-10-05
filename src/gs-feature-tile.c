@@ -124,10 +124,16 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 		"  outline-style: dashed;\n"
 		"  outline-offset: 2px;\n"
 		"  background: %s;\n"
+		"}\n"
+		".button.featured-tile:hover {\n"
+		"  background: linear-gradient(to bottom,\n"
+                "                              alpha(#fff,0.16),\n"
+		"                              alpha(#aaa,0.16)), %s;\n"
 		"}\n",
 		gs_app_get_metadata_item (app, "Featured::stroke-color"),
 		gs_app_get_metadata_item (app, "Featured::text-color"),
 		gs_app_get_metadata_item (app, "Featured::text-color"),
+		gs_app_get_metadata_item (app, "Featured::background"),
 		gs_app_get_metadata_item (app, "Featured::background"));
 
 	gtk_css_provider_load_from_data (priv->provider, data, -1, NULL);
