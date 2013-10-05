@@ -34,6 +34,7 @@ struct _GsAppTilePrivate
 	GtkWidget	*name;
 	GtkWidget	*summary;
 	GtkWidget	*eventbox;
+	GtkWidget	*waiting;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppTile, gs_app_tile, GTK_TYPE_BIN)
@@ -126,6 +127,8 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 		return;
 	priv->app = g_object_ref (app);
 
+	gtk_widget_hide (priv->waiting);
+
         g_signal_connect (priv->app, "notify::state",
                           G_CALLBACK (app_state_changed), tile);
         app_state_changed (priv->app, NULL, tile);
@@ -194,6 +197,7 @@ gs_app_tile_class_init (GsAppTileClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, name);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, summary);
         gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, eventbox);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, waiting);
 }
 
 GtkWidget *
