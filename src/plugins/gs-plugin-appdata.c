@@ -133,6 +133,7 @@ typedef struct {
 	GsApp			*app;
 	GString			*string;
 	AppStreamDescriptionTag	 description_tag;
+	gchar			*lang;
 } AppstreamCacheHelper;
 
 /**
@@ -140,11 +141,16 @@ typedef struct {
  */
 static void
 appstream_description_build (GString *string,
+			     const gchar *lang,
 			     AppStreamDescriptionTag tag,
 			     const gchar *text)
 {
 	/* we are not interested */
 	if (string == NULL)
+		return;
+
+	/* ignore anything that's not C */
+	if (g_strcmp0 (lang, "C") != 0)
 		return;
 
 	/* format markup in the same way as the distro pre-processor */
@@ -190,21 +196,42 @@ appdata_parse_start_element_cb (GMarkupParseContext *context,
 				GError **error)
 {
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
+	const gchar *lang_tmp = NULL;
+	guint i;
 
 	/* description markup */
 	if (helper->tag == APPSTREAM_TAG_DESCRIPTION) {
+
+		/* save xml:lang if different to existing */
+		for (i = 0; attribute_names[i] != NULL; i++) {
+			if (g_strcmp0 (attribute_names[i], "xml:lang") == 0) {
+				lang_tmp = attribute_values[i];
+				break;
+			}
+		}
+		if (lang_tmp == NULL)
+			lang_tmp = "C";
+		if (g_strcmp0 (lang_tmp, helper->lang) != 0) {
+			g_free (helper->lang);
+			helper->lang = g_strdup (lang_tmp);
+		}
+
+		/* build string */
 		if (g_strcmp0 (element_name, "p") == 0) {
 			appstream_description_build (helper->string,
+						     helper->lang,
 						     APPSTREAM_DESCRIPTION_TAG_P_START,
 						     NULL);
 			helper->description_tag = APPSTREAM_DESCRIPTION_TAG_P_CONTENT;
 		} else if (g_strcmp0 (element_name, "ul") == 0) {
 			appstream_description_build (helper->string,
+						     helper->lang,
 						     APPSTREAM_DESCRIPTION_TAG_UL_START,
 						     NULL);
 			helper->description_tag = APPSTREAM_DESCRIPTION_TAG_UL_CONTENT;
 		} else if (g_strcmp0 (element_name, "li") == 0) {
 			appstream_description_build (helper->string,
+						     helper->lang,
 						     APPSTREAM_DESCRIPTION_TAG_LI_START,
 						     NULL);
 			helper->description_tag = APPSTREAM_DESCRIPTION_TAG_LI_CONTENT;
@@ -221,6 +248,7 @@ appdata_parse_start_element_cb (GMarkupParseContext *context,
 		if (gs_app_get_description (helper->app) == NULL)
 			helper->string = g_string_new ("");
 		appstream_description_build (helper->string,
+					     helper->lang,
 					     APPSTREAM_DESCRIPTION_TAG_START,
 					     NULL);
 		break;
@@ -246,18 +274,22 @@ appdata_parse_end_element_cb (GMarkupParseContext *context,
 	if (helper->tag == APPSTREAM_TAG_DESCRIPTION) {
 		if (g_strcmp0 (element_name, "p") == 0) {
 			appstream_description_build (helper->string,
+						     helper->lang,
 						     APPSTREAM_DESCRIPTION_TAG_P_END,
 						     NULL);
 		} else if (g_strcmp0 (element_name, "ul") == 0) {
 			appstream_description_build (helper->string,
+						     helper->lang,
 						     APPSTREAM_DESCRIPTION_TAG_UL_END,
 						     NULL);
 		} else if (g_strcmp0 (element_name, "li") == 0) {
 			appstream_description_build (helper->string,
+						     helper->lang,
 						     APPSTREAM_DESCRIPTION_TAG_LI_END,
 						     NULL);
 		} else if (g_strcmp0 (element_name, "description") == 0) {
 			appstream_description_build (helper->string,
+						     helper->lang,
 						     APPSTREAM_DESCRIPTION_TAG_END,
 						     NULL);
 			if (helper->string != NULL) {
@@ -342,6 +374,7 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		if (tmp == NULL)
 			break;
 		appstream_description_build (helper->string,
+					     helper->lang,
 					     helper->description_tag,
 					     tmp);
 		break;
@@ -428,6 +461,7 @@ gs_plugin_refine_by_local_appdata (GsApp *app,
 out:
 	if (ctx != NULL)
 		g_markup_parse_context_free (ctx);
+	g_free (helper->lang);
 	g_free (helper);
 	g_free (data);
 	return ret;
