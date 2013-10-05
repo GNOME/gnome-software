@@ -263,7 +263,7 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 		gs_grab_focus_when_mapped (widget);
 	}
 
-	if (priv->cache_valid)
+	if (priv->cache_valid || priv->refresh_count > 0)
 		return;
 
 	priv->empty = TRUE;
