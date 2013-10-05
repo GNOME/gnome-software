@@ -21,10 +21,8 @@
 
 #include "config.h"
 
-#define _GNU_SOURCE
-#include <string.h>
-
 #include "appstream-app.h"
+#include "appstream-common.h"
 
 struct AppstreamApp
 {
@@ -46,31 +44,6 @@ struct AppstreamApp
 	GDestroyNotify		 userdata_destroy_func;
 	GPtrArray		*screenshots; /* of AppstreamScreenshot */
 };
-
-/**
- * appstream_app_get_locale_value:
- *
- * Returns a metric on how good a match the locale is, with 0 being an
- * exact match and higher numbers meaning further away from perfect.
- */
-static guint
-appstream_app_get_locale_value (const gchar *lang)
-{
-	const gchar * const *locales;
-	guint i;
-
-	/* shortcut as C will always match */
-	if (lang == NULL || strcmp (lang, "C") == 0)
-		return G_MAXUINT - 1;
-
-	locales = g_get_language_names ();
-	for (i = 0; locales[i] != NULL; i++) {
-		if (g_ascii_strcasecmp (locales[i], lang) == 0)
-			return i;
-	}
-
-	return G_MAXUINT;
-}
 
 /**
  * appstream_app_free:
@@ -270,7 +243,7 @@ appstream_app_set_name (AppstreamApp *app,
 {
 	guint new_value;
 
-	new_value = appstream_app_get_locale_value (lang);
+	new_value = appstream_get_locale_value (lang);
 	if (new_value < app->name_value) {
 		g_free (app->name);
 		app->name = g_strndup (name, length);
@@ -289,7 +262,7 @@ appstream_app_set_summary (AppstreamApp *app,
 {
 	guint new_value;
 
-	new_value = appstream_app_get_locale_value (lang);
+	new_value = appstream_get_locale_value (lang);
 	if (new_value < app->summary_value) {
 		g_free (app->summary);
 		app->summary = g_strndup (summary, length);
@@ -330,7 +303,7 @@ appstream_app_set_description (AppstreamApp *app,
 {
 	guint new_value;
 
-	new_value = appstream_app_get_locale_value (lang);
+	new_value = appstream_get_locale_value (lang);
 	if (new_value < app->description_value) {
 		g_free (app->description);
 		app->description = g_strndup (description, length);

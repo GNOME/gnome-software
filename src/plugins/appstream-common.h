@@ -52,6 +52,7 @@ typedef enum {
 
 AppstreamTag	 appstream_tag_from_string	(const gchar	*element_name);
 const gchar	*appstream_tag_to_string	(AppstreamTag	 tag);
+guint		 appstream_get_locale_value	(const gchar	*lang);
 
 G_END_DECLS
 

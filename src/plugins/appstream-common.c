@@ -21,6 +21,9 @@
 
 #include "config.h"
 
+#define _GNU_SOURCE
+#include <string.h>
+
 #include "appstream-common.h"
 
 /**
@@ -115,4 +118,29 @@ appstream_tag_to_string (AppstreamTag tag)
 	if (tag == APPSTREAM_TAG_IMAGE)
 		return "image";
 	return NULL;
+}
+
+/**
+ * appstream_get_locale_value:
+ *
+ * Returns a metric on how good a match the locale is, with 0 being an
+ * exact match and higher numbers meaning further away from perfect.
+ */
+guint
+appstream_get_locale_value (const gchar *lang)
+{
+	const gchar * const *locales;
+	guint i;
+
+	/* shortcut as C will always match */
+	if (lang == NULL || strcmp (lang, "C") == 0)
+		return G_MAXUINT - 1;
+
+	locales = g_get_language_names ();
+	for (i = 0; locales[i] != NULL; i++) {
+		if (g_ascii_strcasecmp (locales[i], lang) == 0)
+			return i;
+	}
+
+	return G_MAXUINT;
 }
