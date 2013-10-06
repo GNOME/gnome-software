@@ -40,6 +40,7 @@ struct _GsScreenshotImagePrivate
 	SoupSession	*session;
 	gchar		*cachedir;
 	gchar		*filename;
+	guint		 spinner_id;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
@@ -84,6 +85,12 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 	GsScreenshotImagePrivate *priv;
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
+	/* cancel the spinner timeout */
+	if (priv->spinner_id != 0) {
+		g_source_remove (priv->spinner_id);
+		priv->spinner_id = 0;
+	}
+
 	gtk_widget_set_visible (priv->image, FALSE);
 	gtk_widget_set_visible (priv->spinner, FALSE);
 	gtk_widget_set_visible (priv->box_error, TRUE);
@@ -98,6 +105,12 @@ gs_screenshot_show_image (GsScreenshotImage *ssimg)
 {
 	GsScreenshotImagePrivate *priv;
 	priv = gs_screenshot_image_get_instance_private (ssimg);
+
+	/* cancel the spinner timeout */
+	if (priv->spinner_id != 0) {
+		g_source_remove (priv->spinner_id);
+		priv->spinner_id = 0;
+	}
 
 	/* stop loading */
 	gtk_spinner_stop (GTK_SPINNER (priv->spinner));
@@ -158,6 +171,20 @@ gs_screenshot_image_set_cachedir (GsScreenshotImage *ssimg, const gchar *cachedi
 }
 
 /**
+ * gs_screenshot_image_show_spinner:
+ **/
+static gboolean
+gs_screenshot_image_show_spinner (gpointer user_data)
+{
+	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
+	GsScreenshotImagePrivate *priv;
+	priv = gs_screenshot_image_get_instance_private (ssimg);
+	gtk_spinner_start (GTK_SPINNER (priv->spinner));
+	gtk_widget_set_visible (priv->spinner, TRUE);
+	return FALSE;
+}
+
+/**
  * gs_screenshot_image_set_screenshot:
  **/
 void
@@ -182,6 +209,7 @@ gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 	priv->screenshot = g_object_ref (screenshot);
 	gtk_widget_set_size_request (priv->box, width, height);
+	gtk_widget_set_visible (priv->image, FALSE);
 
 	/* test if size specific cachdir exists */
 	url = gs_screenshot_get_url (screenshot, width, height);
@@ -232,7 +260,9 @@ gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 	/* send async */
 	soup_session_queue_message (priv->session, msg,
 				    gs_screenshot_image_complete_cb, ssimg);
-	gtk_spinner_start (GTK_SPINNER (priv->spinner));
+	if (priv->spinner_id != 0)
+		g_source_remove (priv->spinner_id);
+	priv->spinner_id = g_timeout_add (250, gs_screenshot_image_show_spinner, ssimg);
 out:
 	g_free (basename);
 	g_free (sizedir);
@@ -251,6 +281,12 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 	GsScreenshotImagePrivate *priv;
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
+
+	/* cancel the spinner timeout */
+	if (priv->spinner_id != 0) {
+		g_source_remove (priv->spinner_id);
+		priv->spinner_id = 0;
+	}
 
 	g_clear_object (&priv->screenshot);
 	g_free (priv->cachedir);
