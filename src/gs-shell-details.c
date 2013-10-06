@@ -28,6 +28,7 @@
 #include "gs-utils.h"
 
 #include "gs-shell-details.h"
+#include "gs-screenshot-image.h"
 
 static void	gs_shell_details_finalize	(GObject	*object);
 
@@ -177,18 +178,49 @@ gs_shell_details_app_state_changed_cb (GsApp *app, GsShellDetails *shell_details
 }
 
 /**
+ * gs_shell_details_screenshot_clicked_cb:
+ **/
+static void
+gs_shell_details_screenshot_clicked_cb (GsScreenshotImage *ssthumb,
+					GsShellDetails *shell_details)
+{
+	GList *children;
+	GsScreenshot *ss;
+	GsScreenshotImage *ssmain;
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	GtkWidget *widget;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+						     "box_details_screenshot_main"));
+	children = gtk_container_get_children (GTK_CONTAINER (widget));
+	ssmain = GS_SCREENSHOT_IMAGE (children->data);
+	ss = gs_screenshot_image_get_screenshot (ssthumb);
+	g_debug ("Button pressed, show %s",
+		 gs_screenshot_get_url (ss, G_MAXUINT, G_MAXUINT));
+	gs_screenshot_image_set_screenshot (ssmain,
+					    ss,
+					    GS_SCREENSHOT_SIZE_LARGE_WIDTH,
+					    GS_SCREENSHOT_SIZE_LARGE_HEIGHT);
+	g_list_free (children);
+}
+
+/**
  * gs_shell_details_set_app:
  **/
 void
 gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 {
+	GPtrArray *history;
+	GPtrArray *screenshots;
+	GdkPixbuf *pixbuf;
+	GsScreenshot *ss;
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	GtkWidget *ssimg;
+	GtkWidget *widget2;
+	GtkWidget *widget;
 	const gchar *tmp;
 	gchar *app_dump;
-	GdkPixbuf *pixbuf;
-	GtkWidget *widget;
-	GtkWidget *widget2;
-	GPtrArray *history;
-	GsShellDetailsPrivate *priv = shell_details->priv;
+	guint i;
 
 	/* show some debugging */
 	app_dump = gs_app_to_string (app);
@@ -249,6 +281,67 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	} else {
 		gtk_widget_set_visible (widget, FALSE);
 	}
+
+	/* set screenshots */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_details_screenshot_main"));
+	gs_container_remove_all (GTK_CONTAINER (widget));
+	screenshots = gs_app_get_screenshots (app);
+	if (screenshots->len > 0) {
+		ss = g_ptr_array_index (screenshots, 0);
+		ssimg = gs_screenshot_image_new ();
+		gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg), g_get_user_cache_dir ());
+		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg),
+						    ss,
+						    GS_SCREENSHOT_SIZE_LARGE_WIDTH,
+						    GS_SCREENSHOT_SIZE_LARGE_HEIGHT);
+		gtk_box_pack_start (GTK_BOX (widget), ssimg, FALSE, FALSE, 0);
+		gtk_widget_set_visible (ssimg, TRUE);
+	}
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_details_screenshot_thumbnails"));
+	gs_container_remove_all (GTK_CONTAINER (widget));
+	if (screenshots->len > 1) {
+		for (i = 0; i < screenshots->len; i++) {
+			ss = g_ptr_array_index (screenshots, i);
+			ssimg = gs_screenshot_image_new ();
+			g_signal_connect (ssimg, "clicked",
+					  G_CALLBACK (gs_shell_details_screenshot_clicked_cb),
+					  shell_details);
+			gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg), g_get_user_cache_dir ());
+			gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg),
+							    ss,
+							    GS_SCREENSHOT_SIZE_SMALL_WIDTH,
+							    GS_SCREENSHOT_SIZE_SMALL_HEIGHT);
+			gtk_box_pack_start (GTK_BOX (widget), ssimg, FALSE, FALSE, 0);
+			gtk_widget_set_visible (ssimg, TRUE);
+		}
+	}
+
+	/* set the project group */
+	tmp = gs_app_get_project_group (app);
+	if (tmp == NULL) {
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_developer_title"));
+		gtk_widget_set_visible (widget, FALSE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_developer_value"));
+		gtk_widget_set_visible (widget, FALSE);
+	} else {
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_developer_title"));
+		gtk_widget_set_visible (widget, TRUE);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_developer_value"));
+		gtk_label_set_label (GTK_LABEL (widget), tmp);
+		gtk_widget_set_visible (widget, TRUE);
+	}
+
+	/* set version */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_version_value"));
+	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_version (app));
+
+	/* FIXME: This isn't ready yet */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_details_title"));
+	gtk_widget_set_visible (widget, FALSE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_details_details"));
+	gtk_widget_set_visible (widget, FALSE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_support_title"));
+	gtk_widget_set_visible (widget, FALSE);
 
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (app);

@@ -50,6 +50,11 @@ GType		 gs_screenshot_get_type		(void);
 
 GsScreenshot	*gs_screenshot_new		(void);
 
+#define GS_SCREENSHOT_SIZE_SMALL_WIDTH		112
+#define GS_SCREENSHOT_SIZE_SMALL_HEIGHT		63
+#define GS_SCREENSHOT_SIZE_LARGE_WIDTH		624
+#define GS_SCREENSHOT_SIZE_LARGE_HEIGHT		351
+
 gboolean	 gs_screenshot_get_is_default	(GsScreenshot		*screenshot);
 void		 gs_screenshot_set_is_default	(GsScreenshot		*screenshot,
 						 gboolean		 is_default);
