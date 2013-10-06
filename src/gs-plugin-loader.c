@@ -1708,6 +1708,35 @@ emit_pending_apps_idle (gpointer loader)
 	return G_SOURCE_REMOVE;
 }
 
+typedef struct {
+	GsApp *app;
+	GsAppState state;
+} AppStateData;
+
+static gboolean
+set_state_idle_cb (gpointer data)
+{
+	AppStateData *app_data = data;
+
+	gs_app_set_state (app_data->app, app_data->state);
+	g_object_unref (app_data->app);
+	g_free (app_data);
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_app_set_state_in_idle (GsApp *app, GsAppState state)
+{
+	AppStateData *app_data;
+
+	app_data = g_new (AppStateData, 1);
+	app_data->app = g_object_ref (app);
+	app_data->state = state;
+
+	g_idle_add (set_state_idle_cb, app_data);
+}
+
 /**
  * gs_plugin_loader_thread_func:
  **/
@@ -1719,7 +1748,7 @@ gs_plugin_loader_thread_func (gpointer user_data)
 	GError *error = NULL;
 
 	/* add to list */
-	gs_app_set_state (helper->app, helper->state_progress);
+	gs_app_set_state_in_idle (helper->app, helper->state_progress);
 	g_mutex_lock (&helper->plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_add (helper->plugin_loader->priv->pending_apps, helper->app);
 	g_mutex_unlock (&helper->plugin_loader->priv->pending_apps_mutex);
@@ -1732,11 +1761,11 @@ gs_plugin_loader_thread_func (gpointer user_data)
 					   helper->cancellable,
 					   &error);
 	if (!ret) {
-		gs_app_set_state (helper->app, helper->state_failure);
+		gs_app_set_state_in_idle (helper->app, helper->state_failure);
 		g_warning ("failed to complete %s: %s", helper->function_name, error->message);
 		g_error_free (error);
 	} else {
-		gs_app_set_state (helper->app, helper->state_success);
+		gs_app_set_state_in_idle (helper->app, helper->state_success);
 	}
 
 	/* remove from list */
