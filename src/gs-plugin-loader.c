@@ -1615,7 +1615,7 @@ gs_plugin_loader_thread_func (gpointer user_data)
 	/* add to list */
 	gs_app_set_state (helper->app, helper->state_progress);
 	g_mutex_lock (&helper->plugin_loader->priv->pending_apps_mutex);
-	g_ptr_array_add (helper->plugin_loader->priv->pending_apps, helper->app);
+	g_ptr_array_add (helper->plugin_loader->priv->pending_apps, g_object_ref (helper->app));
 	g_mutex_unlock (&helper->plugin_loader->priv->pending_apps_mutex);
 	g_idle_add (emit_pending_apps_idle, g_object_ref (helper->plugin_loader));
 
