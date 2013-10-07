@@ -20,7 +20,7 @@ dist_resources_DATA =					\
 
 @INTLTOOL_XML_RULE@
 appdatadir = $(datadir)/appdata
-dist_appdata_DATA = $(appdata_in_files:.xml.in=.xml)
+appdata_DATA = $(appdata_in_files:.xml.in=.xml)
 appdata_in_files = gnome-software.appdata.xml.in
 
 install-sample-data:
@@ -40,7 +40,7 @@ EXTRA_DIST =						\
 	featured.ini.in
 
 CLEANFILES =						\
-	gnome-software.appdata.xml
+	$(appdata_DATA)
 
 MAINTAINERCLEANFILES =					\
 	*~						\
