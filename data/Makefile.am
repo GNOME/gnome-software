@@ -1,4 +1,5 @@
 SUBDIRS =						\
+	appdata						\
 	icons
 
 resourcesdir = $(datadir)/gnome-software
@@ -18,11 +19,6 @@ dist_resources_DATA =					\
 	stars3.png					\
 	stars4.png          
 
-@INTLTOOL_XML_RULE@
-appdatadir = $(datadir)/appdata
-appdata_DATA = $(appdata_in_files:.xml.in=.xml)
-appdata_in_files = gnome-software.appdata.xml.in
-
 install-sample-data:
 	wget -O fedora-20.xml.gz http://people.freedesktop.org/~hughsient/temp/fedora-20.xml.gz; \
 	mkdir -p $(DESTDIR)$(datadir)/app-info/xmls; \
@@ -36,11 +32,7 @@ install-sample-data:
 	cd -
 
 EXTRA_DIST =						\
-	$(appdata_in_files)				\
 	featured.ini.in
-
-CLEANFILES =						\
-	$(appdata_DATA)
 
 MAINTAINERCLEANFILES =					\
 	*~						\
