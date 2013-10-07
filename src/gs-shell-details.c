@@ -263,6 +263,8 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	} else {
 		gtk_widget_set_visible (widget, FALSE);
 	}
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_description_header"));
+	gtk_widget_set_visible (widget, tmp != NULL);
 
 	pixbuf = gs_app_get_pixbuf (app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
