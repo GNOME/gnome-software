@@ -207,7 +207,10 @@ gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 	g_return_if_fail (height != 0);
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
-	priv->screenshot = g_object_ref (screenshot);
+        g_object_ref (screenshot);
+	if (priv->screenshot)
+		g_object_unref (priv->screenshot);
+	priv->screenshot = screenshot;
 	gtk_widget_set_size_request (priv->box, width, height);
 	gtk_widget_set_visible (priv->image, FALSE);
 
