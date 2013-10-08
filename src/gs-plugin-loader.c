@@ -209,6 +209,9 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			 g_timer_elapsed (plugin->timer, NULL) * 1000);
 	}
 
+	/* dedupe applications we already know about */
+	gs_plugin_loader_list_dedupe (plugin_loader, list);
+
 	/* success */
 	ret = TRUE;
 out:
