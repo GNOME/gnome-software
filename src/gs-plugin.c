@@ -50,6 +50,8 @@ gs_plugin_status_to_string (GsPluginStatus status)
 void
 gs_plugin_add_app (GList **list, GsApp *app)
 {
+	g_return_if_fail (list != NULL);
+	g_return_if_fail (GS_IS_APP (app));
 	*list = g_list_prepend (*list, g_object_ref (app));
 }
 
@@ -103,7 +105,6 @@ void
 gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 {
 	GsPluginStatusHelper *helper;
-	//return;
 	helper = g_slice_new0 (GsPluginStatusHelper);
 	helper->plugin = plugin;
 	helper->status = status;

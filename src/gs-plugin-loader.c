@@ -138,7 +138,7 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 
 	/* insert new entry */
 	g_hash_table_insert (priv->app_cache,
-			     (gpointer) gs_app_get_id (app),
+			     g_strdup (gs_app_get_id (app)),
 			     g_object_ref (app));
 
 	/* no ref */
@@ -2181,9 +2181,9 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	plugin_loader->priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	plugin_loader->priv->profile = gs_profile_new ();
 	plugin_loader->priv->app_cache = g_hash_table_new_full (g_str_hash,
-								 g_str_equal,
-								 NULL,
-								 (GFreeFunc) g_object_unref);
+								g_str_equal,
+								g_free,
+								(GFreeFunc) g_object_unref);
 
 	g_mutex_init (&plugin_loader->priv->pending_apps_mutex);
 	g_mutex_init (&plugin_loader->priv->app_cache_mutex);
