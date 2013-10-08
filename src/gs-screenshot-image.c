@@ -31,16 +31,18 @@
 struct _GsScreenshotImagePrivate
 {
 	GsScreenshot	*screenshot;
-	GtkWidget	*box;
+	GtkWidget	*stack;
 	GtkWidget	*box_error;
 	GtkWidget	*button;
-	GtkWidget	*image;
+	GtkWidget	*image1;
+	GtkWidget	*image2;
 	GtkWidget	*label_error;
 	GtkWidget	*spinner;
 	SoupSession	*session;
 	gchar		*cachedir;
 	gchar		*filename;
 	guint		 spinner_id;
+        const gchar     *current_image;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
@@ -93,11 +95,9 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 		priv->spinner_id = 0;
 	}
 
-	gtk_widget_set_visible (priv->image, FALSE);
-	gtk_widget_set_visible (priv->spinner, FALSE);
-	gtk_widget_set_visible (priv->box_error, TRUE);
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "error");
 	gtk_label_set_label (GTK_LABEL (priv->label_error), message);
-	gtk_widget_get_size_request (priv->box, &width, &height);
+	gtk_widget_get_size_request (priv->stack, &width, &height);
 	if (width < 200)
 		gtk_widget_hide (priv->label_error);
 	else
@@ -121,11 +121,17 @@ gs_screenshot_show_image (GsScreenshotImage *ssimg)
 
 	/* stop loading */
 	gtk_spinner_stop (GTK_SPINNER (priv->spinner));
-	gtk_widget_set_visible (priv->spinner, FALSE);
 
 	/* show icon */
-	gtk_image_set_from_file (GTK_IMAGE (priv->image), priv->filename);
-	gtk_widget_set_visible (priv->image, TRUE);
+	if (g_strcmp0 (priv->current_image, "image1") == 0) {
+		gtk_image_set_from_file (GTK_IMAGE (priv->image2), priv->filename);
+		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image2");
+		priv->current_image = "image2";
+	} else {
+		gtk_image_set_from_file (GTK_IMAGE (priv->image1), priv->filename);
+		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image1");
+		priv->current_image = "image1";
+	}
 }
 
 /**
@@ -187,7 +193,7 @@ gs_screenshot_image_show_spinner (gpointer user_data)
 	GsScreenshotImagePrivate *priv;
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 	gtk_spinner_start (GTK_SPINNER (priv->spinner));
-	gtk_widget_set_visible (priv->spinner, TRUE);
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "spinner");
 	return FALSE;
 }
 
@@ -218,8 +224,7 @@ gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 	if (priv->screenshot)
 		g_object_unref (priv->screenshot);
 	priv->screenshot = screenshot;
-	gtk_widget_set_size_request (priv->box, width, height);
-	gtk_widget_set_visible (priv->image, FALSE);
+	gtk_widget_set_size_request (priv->stack, width, height);
 
 	/* test if size specific cachdir exists */
 	url = gs_screenshot_get_url (screenshot, width, height);
@@ -365,10 +370,11 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class,
 						     "/org/gnome/software/screenshot-image.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, stack);
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, spinner);
-	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, image);
+	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, image1);
+	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, image2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, box_error);
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, label_error);
 }
