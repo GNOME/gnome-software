@@ -83,6 +83,8 @@ static void
 gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 {
 	GsScreenshotImagePrivate *priv;
+	gint width, height;
+
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
 	/* cancel the spinner timeout */
@@ -95,6 +97,11 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 	gtk_widget_set_visible (priv->spinner, FALSE);
 	gtk_widget_set_visible (priv->box_error, TRUE);
 	gtk_label_set_label (GTK_LABEL (priv->label_error), message);
+	gtk_widget_get_size_request (priv->box, &width, &height);
+	if (width < 200)
+		gtk_widget_hide (priv->label_error);
+	else
+		gtk_widget_show (priv->label_error);
 }
 
 /**

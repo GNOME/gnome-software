@@ -41,10 +41,11 @@
               <object class="GtkBox" id="box_error">
                 <property name="visible">False</property>
                 <property name="orientation">vertical</property>
+                <property name="spacing">4</property>
                 <child>
                   <object class="GtkImage" id="image_error">
                     <property name="visible">True</property>
-                    <property name="stock">gtk-dialog-error</property>
+                    <property name="icon-name">dialog-error-symbolic</property>
                   </object>
                   <packing>
                     <property name="expand">False</property>
@@ -55,7 +56,9 @@
                 <child>
                   <object class="GtkLabel" id="label_error">
                     <property name="visible">True</property>
-                    <property name="label">label</property>
+                    <style>
+                      <class name="error-label"/>
+                    </style>
                   </object>
                   <packing>
                     <property name="expand">False</property>
