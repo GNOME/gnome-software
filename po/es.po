@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-10-07 13:48+0000\n"
-"PO-Revision-Date: 2013-10-07 16:22+0200\n"
+"POT-Creation-Date: 2013-10-08 03:55+0000\n"
+"PO-Revision-Date: 2013-10-08 10:43+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -32,10 +32,6 @@ msgstr ""
 "sistema y quitar aplicaciones instaladas."
 
 #: ../data/appdata/gnome-software.appdata.xml.in.h:3
-#| msgid ""
-#| "GNOME Software lets you install, remove and update applications and "
-#| "system extensions. It also allows you to update your system using an "
-#| "offline update."
 msgid ""
 "GNOME Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
@@ -62,7 +58,7 @@ msgstr "_Salir"
 #. * where we are showing the application was installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:493
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:505
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalado"
@@ -121,7 +117,7 @@ msgstr "Instalar"
 #. TRANSLATORS: this is button text to remove the application
 #: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:120
 #: ../src/gs-app-widget.c:132 ../src/gs-shell-details.c:125
-#: ../src/gs-shell-details.c:410 ../src/gs-shell-installed.c:165
+#: ../src/gs-shell-details.c:422 ../src/gs-shell-installed.c:165
 #: ../src/gs-shell-search.c:113
 msgid "Remove"
 msgstr "Eliminar"
@@ -153,66 +149,58 @@ msgid "Software is up to date"
 msgstr "El software está actualizado"
 
 #: ../src/gnome-software.ui.h:19
-msgid "Shotwell"
-msgstr "Shotwell"
-
-#: ../src/gnome-software.ui.h:20
-#| msgid "Application manager for GNOME"
-msgid "Open source photo management for GNOME"
-msgstr "Aplicación libre de gestión de fotos para GNOME"
-
-#: ../src/gnome-software.ui.h:21
 msgid "Description"
 msgstr "Descripción"
 
-#: ../src/gnome-software.ui.h:22
-#| msgid "Description"
-msgid "Long description"
-msgstr "Descripción larga"
-
-#: ../src/gnome-software.ui.h:23
+#: ../src/gnome-software.ui.h:20
 msgid "Details"
 msgstr "Detalles"
 
-#: ../src/gnome-software.ui.h:24
+#: ../src/gnome-software.ui.h:21
 msgid "Version"
 msgstr "Versión"
 
-#: ../src/gnome-software.ui.h:25
-#| msgid "Science"
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gnome-software.ui.h:22 ../src/gs-shell-details.c:510
+msgid "Updated"
+msgstr "Actualizado"
+
+#: ../src/gnome-software.ui.h:23
+msgid "Category"
+msgstr "Categoría"
+
+#: ../src/gnome-software.ui.h:24
 msgid "Licence"
 msgstr "Licencia"
 
-#: ../src/gnome-software.ui.h:26
+#: ../src/gnome-software.ui.h:25
 msgid "Size"
 msgstr "Tamaño"
 
-#: ../src/gnome-software.ui.h:27
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Web Development"
+#: ../src/gnome-software.ui.h:26
 msgid "Developer"
 msgstr "Desarrollador"
 
-#: ../src/gnome-software.ui.h:28
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Sports"
+#: ../src/gnome-software.ui.h:27
 msgid "Support"
 msgstr "Soporte"
 
-#: ../src/gnome-software.ui.h:29
-msgid "Visit _Website"
-msgstr "Visitar la página _web"
+#: ../src/gnome-software.ui.h:28
+#| msgid "Visit _Website"
+msgid "_Website"
+msgstr "Página _web"
 
-#: ../src/gnome-software.ui.h:30
+#: ../src/gnome-software.ui.h:29
 msgid "_History"
 msgstr "_Histórico"
 
-#: ../src/gnome-software.ui.h:31
+#: ../src/gnome-software.ui.h:30
 msgid "History"
 msgstr "Histórico"
 
 #. Translators: Label for a button to close the update dialogue.
-#: ../src/gnome-software.ui.h:33
+#: ../src/gnome-software.ui.h:32
 msgid "Done"
 msgstr "Hecho"
 
@@ -292,43 +280,48 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:138
+#: ../src/gs-screenshot-image.c:143
 msgid "Screenshot not found"
 msgstr "Captura de pantalla no encontrada"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:219
+#: ../src/gs-screenshot-image.c:226
 msgid "Screenshot size not found"
 msgstr "Tamaño de la captura de pantalla no encontrado"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:233
+#: ../src/gs-screenshot-image.c:240
 msgid "Could not create cache"
 msgstr "No se pudo crear la caché"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:250
+#: ../src/gs-screenshot-image.c:257
 msgid "Screenshot not valid"
 msgstr "Captura de pantalla no válida"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:256
+#: ../src/gs-screenshot-image.c:263
 msgid "Screenshot not available"
 msgstr "Captura de pantalla no disponible"
 
+#: ../src/gs-screenshot-image.c:336
+#| msgid "Screenshot not found"
+msgid "Screenshot"
+msgstr "Captura de pantalla"
+
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:395 ../src/gs-shell-installed.c:150
+#: ../src/gs-shell-details.c:407 ../src/gs-shell-installed.c:150
 #: ../src/gs-shell-search.c:98
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "¿Está seguro de querer quitar %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:407 ../src/gs-shell-installed.c:162
+#: ../src/gs-shell-details.c:419 ../src/gs-shell-installed.c:162
 #: ../src/gs-shell-search.c:110
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -336,20 +329,14 @@ msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo.
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:487
+#: ../src/gs-shell-details.c:499
 msgid "Removed"
 msgstr "Eliminado"
 
 #. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing the application was updated
-#: ../src/gs-shell-details.c:498
-msgid "Updated"
-msgstr "Actualizado"
-
-#. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-shell-details.c:504
+#: ../src/gs-shell-details.c:516
 msgid "Unknown"
 msgstr "Desconocido"
 
@@ -1292,6 +1279,17 @@ msgstr "Paquetes de idiomas"
 msgid "No update details were provided"
 msgstr "No se han proporcionado detalles sobre la actualización"
 
+#~ msgid "Shotwell"
+#~ msgstr "Shotwell"
+
+#~| msgid "Application manager for GNOME"
+#~ msgid "Open source photo management for GNOME"
+#~ msgstr "Aplicación libre de gestión de fotos para GNOME"
+
+#~| msgid "Description"
+#~ msgid "Long description"
+#~ msgstr "Descripción larga"
+
 #~ msgid "Software has the following goals:"
 #~ msgstr "Software tiene los siguientes objetivos"
 
@@ -1323,9 +1321,6 @@ msgstr "No se han proporcionado detalles sobre la actualización"
 
 #~ msgid "Goals:"
 #~ msgstr "Objetivos:"
-
-#~ msgid "Category"
-#~ msgstr "Categoría"
 
 #~ msgid "GNOME Software"
 #~ msgstr "Software de GNOME"
