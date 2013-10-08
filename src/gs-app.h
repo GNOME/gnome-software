@@ -104,6 +104,7 @@ const gchar	*gs_app_get_project_group	(GsApp		*app);
 void		 gs_app_set_project_group	(GsApp		*app,
 						 const gchar	*source);
 const gchar	*gs_app_get_version		(GsApp		*app);
+const gchar	*gs_app_get_version_ui		(GsApp		*app);
 void		 gs_app_set_version		(GsApp		*app,
 						 const gchar	*version);
 const gchar	*gs_app_get_summary		(GsApp		*app);
@@ -119,6 +120,7 @@ GPtrArray	*gs_app_get_screenshots		(GsApp		*app);
 void		 gs_app_add_screenshot		(GsApp		*app,
 						 GsScreenshot	*screenshot);
 const gchar	*gs_app_get_update_version	(GsApp		*app);
+const gchar	*gs_app_get_update_version_ui	(GsApp		*app);
 void		 gs_app_set_update_version	(GsApp		*app,
 						 const gchar	*update_version);
 const gchar	*gs_app_get_update_details	(GsApp		*app);

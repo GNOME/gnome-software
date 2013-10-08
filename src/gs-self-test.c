@@ -39,6 +39,15 @@ gs_app_func (void)
 
 	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-software");
 
+	/* check we clean up the version, but not at the expense of having
+	 * the same string as the update version */
+	gs_app_set_version (app, "2.8.6-3.fc20");
+	gs_app_set_update_version (app, "2.8.6-4.fc20");
+	g_assert_cmpstr (gs_app_get_version (app), ==, "2.8.6-3.fc20");
+	g_assert_cmpstr (gs_app_get_update_version (app), ==, "2.8.6-4.fc20");
+	g_assert_cmpstr (gs_app_get_version_ui (app), ==, "2.8.6-3");
+	g_assert_cmpstr (gs_app_get_update_version_ui (app), ==, "2.8.6-4");
+
 	g_object_unref (app);
 }
 

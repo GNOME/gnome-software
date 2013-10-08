@@ -58,11 +58,13 @@ struct GsAppPrivate
 	gchar			*source;
 	gchar			*project_group;
 	gchar			*version;
+	gchar			*version_ui;
 	gchar			*summary;
 	gchar			*description;
 	GPtrArray		*screenshots;
 	gchar			*url;
 	gchar			*update_version;
+	gchar			*update_version_ui;
 	gchar			*update_details;
 	gchar			*management_plugin;
 	gint			 rating;
@@ -178,6 +180,12 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tname:\t%s\n", priv->name);
 	if (priv->version != NULL)
 		g_string_append_printf (str, "\tversion:\t%s\n", priv->version);
+	if (priv->version_ui != NULL)
+		g_string_append_printf (str, "\tversion-ui:\t%s\n", priv->version_ui);
+	if (priv->update_version != NULL)
+		g_string_append_printf (str, "\tupdate-version:\t%s\n", priv->update_version);
+	if (priv->update_version_ui != NULL)
+		g_string_append_printf (str, "\tupdate-version-ui:\t%s\n", priv->update_version_ui);
 	if (priv->summary != NULL)
 		g_string_append_printf (str, "\tsummary:\t%s\n", priv->summary);
 	if (priv->description != NULL)
@@ -515,23 +523,20 @@ gs_app_set_featured_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 	app->priv->featured_pixbuf = g_object_ref (pixbuf);
 }
 
-/**
- * gs_app_get_version:
- */
-const gchar *
-gs_app_get_version (GsApp *app)
-{
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->priv->version;
-}
+typedef enum {
+	GS_APP_VERSION_FIXUP_RELEASE		= 1,
+	GS_APP_VERSION_FIXUP_DISTRO_SUFFIX	= 2,
+	GS_APP_VERSION_FIXUP_GIT_SUFFIX		= 4,
+	GS_APP_VERSION_FIXUP_LAST,
+} GsAppVersionFixup;
 
 /**
- * gs_app_get_pretty_version:
+ * gs_app_get_ui_version:
  *
  * convert 1:1.6.2-7.fc17 into "Version 1.6.2"
  **/
 static gchar *
-gs_app_get_pretty_version (const gchar *version)
+gs_app_get_ui_version (const gchar *version, guint64 flags)
 {
 	guint i;
 	gchar *new = NULL;
@@ -553,24 +558,103 @@ gs_app_get_pretty_version (const gchar *version)
 
 	/* then remove any distro suffix */
 	new = g_strdup (version);
-	f = g_strstr_len (new, -1, ".fc");
-	if (f != NULL)
-		*f= '\0';
+	if ((flags & GS_APP_VERSION_FIXUP_DISTRO_SUFFIX) > 0) {
+		f = g_strstr_len (new, -1, ".fc");
+		if (f != NULL)
+			*f= '\0';
+	}
 
 	/* then remove any release */
-	f = g_strrstr_len (new, -1, "-");
-	if (f != NULL)
-		*f= '\0';
+	if ((flags & GS_APP_VERSION_FIXUP_RELEASE) > 0) {
+		f = g_strrstr_len (new, -1, "-");
+		if (f != NULL)
+			*f= '\0';
+	}
 
 	/* then remove any git suffix */
-	f = g_strrstr_len (new, -1, ".2012");
-	if (f != NULL)
-		*f= '\0';
-	f = g_strrstr_len (new, -1, ".2013");
-	if (f != NULL)
-		*f= '\0';
+	if ((flags & GS_APP_VERSION_FIXUP_GIT_SUFFIX) > 0) {
+		f = g_strrstr_len (new, -1, ".2012");
+		if (f != NULL)
+			*f= '\0';
+		f = g_strrstr_len (new, -1, ".2013");
+		if (f != NULL)
+			*f= '\0';
+	}
 out:
 	return new;
+}
+
+/**
+ * gs_app_ui_versions_invalidate:
+ */
+static void
+gs_app_ui_versions_invalidate (GsApp *app)
+{
+	GsAppPrivate *priv = app->priv;
+	g_free (priv->version_ui);
+	g_free (priv->update_version_ui);
+	priv->version_ui = NULL;
+	priv->update_version_ui = NULL;
+}
+
+/**
+ * gs_app_ui_versions_populate:
+ */
+static void
+gs_app_ui_versions_populate (GsApp *app)
+{
+	GsAppPrivate *priv = app->priv;
+	guint i;
+	guint64 flags[] = { GS_APP_VERSION_FIXUP_RELEASE |
+			    GS_APP_VERSION_FIXUP_DISTRO_SUFFIX |
+			    GS_APP_VERSION_FIXUP_GIT_SUFFIX,
+			    GS_APP_VERSION_FIXUP_DISTRO_SUFFIX |
+			    GS_APP_VERSION_FIXUP_GIT_SUFFIX,
+			    GS_APP_VERSION_FIXUP_DISTRO_SUFFIX,
+			    0 };
+
+	/* try each set of bitfields in order */
+	for (i = 0; flags[i] != 0; i++) {
+		priv->version_ui = gs_app_get_ui_version (priv->version, flags[i]);
+		priv->update_version_ui = gs_app_get_ui_version (priv->update_version, flags[i]);
+		if (g_strcmp0 (priv->version_ui, priv->update_version_ui) != 0) {
+			g_object_notify (G_OBJECT (app), "version");
+			g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
+			return;
+		}
+		gs_app_ui_versions_invalidate (app);
+	}
+
+	/* we tried, but failed */
+	priv->version_ui = g_strdup (priv->version);
+	priv->update_version_ui = g_strdup (priv->update_version);
+}
+
+/**
+ * gs_app_get_version:
+ */
+const gchar *
+gs_app_get_version (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->version;
+}
+
+/**
+ * gs_app_get_version_ui:
+ */
+const gchar *
+gs_app_get_version_ui (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	/* work out the two version numbers */
+	if (app->priv->version != NULL &&
+	    app->priv->version_ui == NULL) {
+		gs_app_ui_versions_populate (app);
+	}
+
+	return app->priv->version_ui;
 }
 
 /**
@@ -586,7 +670,10 @@ gs_app_set_version (GsApp *app, const gchar *version)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->priv->version);
-	app->priv->version = gs_app_get_pretty_version (version);
+	app->priv->version = g_strdup (version);
+	gs_app_ui_versions_invalidate (app);
+	g_object_notify (G_OBJECT (app), "version");
+	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
 /**
@@ -689,6 +776,23 @@ gs_app_get_update_version (GsApp *app)
 }
 
 /**
+ * gs_app_get_update_version_ui:
+ */
+const gchar *
+gs_app_get_update_version_ui (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	/* work out the two version numbers */
+	if (app->priv->update_version != NULL &&
+	    app->priv->update_version_ui == NULL) {
+		gs_app_ui_versions_populate (app);
+	}
+
+	return app->priv->update_version_ui;
+}
+
+/**
  * gs_app_set_update_version:
  */
 void
@@ -696,7 +800,10 @@ gs_app_set_update_version (GsApp *app, const gchar *update_version)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->priv->update_version);
-	app->priv->update_version = gs_app_get_pretty_version (update_version);
+	app->priv->update_version = g_strdup (update_version);
+	gs_app_ui_versions_invalidate (app);
+	g_object_notify (G_OBJECT (app), "version");
+	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
 /**
@@ -1062,10 +1169,12 @@ gs_app_finalize (GObject *object)
 	g_free (priv->source);
 	g_free (priv->project_group);
 	g_free (priv->version);
+	g_free (priv->version_ui);
 	g_free (priv->summary);
 	g_free (priv->description);
 	g_ptr_array_unref (priv->screenshots);
 	g_free (priv->update_version);
+	g_free (priv->update_version_ui);
 	g_free (priv->update_details);
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
