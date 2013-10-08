@@ -399,27 +399,13 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 }
 
 /**
- * gs_plugin_loader_remove_system:
+ * gs_plugin_loader_app_is_non_system:
  **/
-static GList *
-gs_plugin_loader_remove_system (GList *list)
+static gboolean
+gs_plugin_loader_app_is_non_system (GsApp *app, gpointer user_data)
 {
-	GList *l;
-	GsApp *app;
-
-	for (l = list; l != NULL;) {
-		app = GS_APP (l->data);
-		if (gs_app_get_kind (app) != GS_APP_KIND_SYSTEM) {
-			l = l->next;
-			continue;
-		}
-		g_debug ("removing package %s", gs_app_get_id (app));
-		g_object_unref (app);
-		l = list = g_list_delete_link (list, l);
-	}
-	return list;
+	return gs_app_get_kind (app) != GS_APP_KIND_SYSTEM;
 }
-
 
 /**
  * gs_plugin_loader_get_app_is_compatible:
@@ -739,7 +725,7 @@ gs_plugin_loader_get_installed_thread_cb (GSimpleAsyncResult *res,
 	}
 
 	/* filter package list */
-	state->list = gs_plugin_loader_remove_system (state->list);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_system, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
@@ -1460,7 +1446,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 	state->list = gs_plugin_loader_remove_incompat (plugin_loader, state->list);
 
 	/* filter package list */
-	state->list = gs_plugin_loader_remove_system (state->list);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_system, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	if (state->list == NULL) {
 		g_set_error (&error,
