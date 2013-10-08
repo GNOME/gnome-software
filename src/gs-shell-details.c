@@ -166,6 +166,9 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 			g_assert_not_reached ();
 		}
 	}
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_details"));
+	gs_grab_focus_when_mapped (widget);
 }
 
 /**
@@ -621,6 +624,7 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	GtkWidget *widget;
 	GtkListBox *list_box;
 	GtkWidget *sw;
+	GtkAdjustment *adj;
 
 	g_return_if_fail (GS_IS_SHELL_DETAILS (shell_details));
 
@@ -664,6 +668,12 @@ gs_shell_details_setup (GsShellDetails *shell_details,
         widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
         g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
         g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
+
+	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_details"));
+        adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
+        widget = GTK_WIDGET (gtk_builder_get_object (builder, "box_details"));
+        gtk_container_set_focus_vadjustment (GTK_CONTAINER (widget), adj);
+
 }
 
 /**
