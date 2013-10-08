@@ -342,8 +342,6 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	gtk_widget_set_visible (widget, FALSE);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_details_details"));
 	gtk_widget_set_visible (widget, FALSE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_support_title"));
-	gtk_widget_set_visible (widget, FALSE);
 
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (app);
