@@ -167,12 +167,12 @@ gs_plugin_loader_list_uniq (GsPluginLoader *plugin_loader, GList *list)
 		app = GS_APP (l->data);
 		id = gs_app_get_id (app);
 		if (id == NULL) {
-			list_new = g_list_prepend (list_new, g_object_ref (app));
+			gs_plugin_add_app (&list_new, app);
 			continue;
 		}
 		found = g_hash_table_lookup (hash, id);
 		if (found == NULL) {
-			list_new = g_list_prepend (list_new, g_object_ref (app));
+			gs_plugin_add_app (&list_new, app);
 			g_hash_table_insert (hash, (gpointer) id, GUINT_TO_POINTER (1));
 			continue;
 		}
