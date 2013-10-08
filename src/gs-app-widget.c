@@ -111,6 +111,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		 * allows the application to be easily installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
 		break;
+	case GS_APP_STATE_UPDATABLE:
 	case GS_APP_STATE_INSTALLED:
 		gtk_widget_set_visible (priv->spinner, FALSE);
 		if (gs_app_get_kind (app_widget->priv->app) != GS_APP_KIND_SYSTEM)
@@ -120,17 +121,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
 		if (priv->colorful)
 			gtk_style_context_add_class (context, "destructive-action");
-		break;
-	case GS_APP_STATE_UPDATABLE:
-		gtk_widget_set_visible (priv->spinner, FALSE);
-		gtk_widget_set_visible (priv->button, FALSE);
-		if (priv->show_update) {
-			/* TRANSLATORS: this is a button next to the search results that
-			 * allows the application to be updated. not normally shown */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
-		} else {
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
-		}
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_spinner_start (GTK_SPINNER (priv->spinner));
