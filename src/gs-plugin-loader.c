@@ -205,6 +205,9 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		g_free (profile_id);
 	}
 
+	/* dedupe applications we already know about */
+	gs_plugin_loader_list_dedupe (plugin_loader, list);
+
 	/* success */
 	ret = TRUE;
 out:
