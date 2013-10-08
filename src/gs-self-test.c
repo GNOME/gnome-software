@@ -75,6 +75,17 @@ gs_plugin_func (void)
 	gs_plugin_list_filter (&list_remove, gs_plugin_list_filter_cb, NULL);
 	g_assert_cmpint (g_list_length (list_remove), ==, 1);
 	g_assert_cmpstr (gs_app_get_id (GS_APP (list_remove->data)), ==, "b");
+
+	/* test removing duplicates */
+	app = gs_app_new ("b");
+	gs_plugin_add_app (&list_remove, app);
+	g_object_unref (app);
+	app = gs_app_new ("b");
+	gs_plugin_add_app (&list_remove, app);
+	g_object_unref (app);
+	gs_plugin_list_filter_duplicates (&list_remove);
+	g_assert_cmpint (g_list_length (list_remove), ==, 1);
+	g_assert_cmpstr (gs_app_get_id (GS_APP (list_remove->data)), ==, "b");
 	gs_plugin_list_free (list_remove);
 }
 

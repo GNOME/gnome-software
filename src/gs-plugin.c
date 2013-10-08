@@ -94,6 +94,46 @@ gs_plugin_list_filter (GList **list, GsPluginListFilter func, gpointer user_data
 /**
  * gs_plugin_list_copy:
  **/
+void
+gs_plugin_list_filter_duplicates (GList **list)
+{
+	GHashTable *hash;
+	GList *l;
+	GList *new = NULL;
+	GsApp *app;
+	GsApp *found;
+	const gchar *id;
+
+	g_return_if_fail (list != NULL);
+
+	/* create a new list with just the unique items */
+	hash = g_hash_table_new (g_str_hash, g_str_equal);
+	for (l = *list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		id = gs_app_get_id (app);
+		if (id == NULL) {
+			gs_plugin_add_app (&new, app);
+			continue;
+		}
+		found = g_hash_table_lookup (hash, id);
+		if (found == NULL) {
+			gs_plugin_add_app (&new, app);
+			g_hash_table_insert (hash, (gpointer) id,
+					     GUINT_TO_POINTER (1));
+			continue;
+		}
+		g_debug ("ignoring duplicate %s", id);
+	}
+	g_hash_table_unref (hash);
+
+	/* replace the list */
+	gs_plugin_list_free (*list);
+	*list = new;
+}
+
+/**
+ * gs_plugin_list_copy:
+ **/
 GList *
 gs_plugin_list_copy (GList *list)
 {

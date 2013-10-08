@@ -149,42 +149,6 @@ out:
 }
 
 /**
- * gs_plugin_loader_list_uniq:
- **/
-static GList *
-gs_plugin_loader_list_uniq (GsPluginLoader *plugin_loader, GList *list)
-{
-	const gchar *id;
-	GHashTable *hash;
-	GList *l;
-	GList *list_new = NULL;
-	GsApp *app;
-	GsApp *found;
-
-	/* create a new list with just the unique items */
-	hash = g_hash_table_new (g_str_hash, g_str_equal);
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		id = gs_app_get_id (app);
-		if (id == NULL) {
-			gs_plugin_add_app (&list_new, app);
-			continue;
-		}
-		found = g_hash_table_lookup (hash, id);
-		if (found == NULL) {
-			gs_plugin_add_app (&list_new, app);
-			g_hash_table_insert (hash, (gpointer) id, GUINT_TO_POINTER (1));
-			continue;
-		}
-		g_debug ("ignoring duplicate %s", id);
-	}
-
-	gs_plugin_list_free (list);
-	g_hash_table_unref (hash);
-	return list_new;
-}
-
-/**
  * gs_plugin_loader_list_dedupe:
  **/
 static void
@@ -307,8 +271,8 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	if (!ret)
 		goto out;
 
-	/* remove duplicates */
-	list = gs_plugin_loader_list_uniq (plugin_loader, list);
+	/* filter package list */
+	gs_plugin_list_filter_duplicates (&list);
 
 	/* profile */
 	gs_profile_stop (plugin_loader->priv->profile, profile_id_parent);
@@ -566,8 +530,8 @@ gs_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 		goto out;
 	}
 
-	/* remove duplicates */
-	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
+	/* filter package list */
+	gs_plugin_list_filter_duplicates (&state->list);
 
 	/* dedupe applications we already know about */
 	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
@@ -1095,10 +1059,8 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 		goto out;
 	}
 
-	/* remove duplicates */
-	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
-
 	/* filter package list */
+	gs_plugin_list_filter_duplicates (&state->list);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (state->list == NULL) {
@@ -1414,10 +1376,8 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 		goto out;
 	}
 
-	/* remove duplicates */
-	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
-
 	/* filter package list */
+	gs_plugin_list_filter_duplicates (&state->list);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_system, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
