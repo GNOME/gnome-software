@@ -88,6 +88,9 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 	GsApp *new_app;
 	GsPluginLoaderPrivate *priv = plugin_loader->priv;
 
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
 	g_mutex_lock (&plugin_loader->priv->app_cache_mutex);
 
 	/* not yet set */

@@ -497,6 +497,7 @@ void
 gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GDK_IS_PIXBUF (pixbuf));
 	if (app->priv->pixbuf != NULL)
 		g_object_unref (app->priv->pixbuf);
 	app->priv->pixbuf = g_object_ref (pixbuf);
