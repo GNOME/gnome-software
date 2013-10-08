@@ -21,6 +21,9 @@
 
 #include "config.h"
 
+#define _GNU_SOURCE
+#include <string.h>
+
 #include "appstream-app.h"
 #include "appstream-common.h"
 
