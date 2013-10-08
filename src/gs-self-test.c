@@ -142,6 +142,9 @@ gs_plugin_loader_dedupe_func (void)
 	app2 = gs_plugin_loader_dedupe (loader, app2);
 	g_assert_cmpstr (gs_app_get_id (app2), ==, "app1");
 	g_assert_cmpstr (gs_app_get_description (app2), ==, "description");
+	app2 = gs_plugin_loader_dedupe (loader, app2);
+	g_assert_cmpstr (gs_app_get_id (app2), ==, "app1");
+	g_assert_cmpstr (gs_app_get_description (app2), ==, "description");
 
 	g_object_unref (app1);
 	g_object_unref (app2);

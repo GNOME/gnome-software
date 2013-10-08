@@ -101,51 +101,54 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 
 	/* already exists */
 	new_app = g_hash_table_lookup (priv->app_cache, gs_app_get_id (app));
-	if (new_app != NULL) {
-		/* an [updatable] installable package is more information than
-		 * just the fact that something is installed */
-		if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE &&
-		    gs_app_get_state (new_app) == GS_APP_STATE_INSTALLED) {
-			/* we have to do the little dance to appease the
-			 * angry gnome controlling the state-machine */
-			gs_app_set_state (new_app, GS_APP_STATE_UNKNOWN);
-			gs_app_set_state (new_app, GS_APP_STATE_UPDATABLE);
-		}
-
-		/* save any properties we already know */
-		if (gs_app_get_source (app) != NULL)
-			gs_app_set_source (new_app, gs_app_get_source (app));
-		if (gs_app_get_project_group (app) != NULL)
-			gs_app_set_project_group (new_app, gs_app_get_project_group (app));
-		if (gs_app_get_name (app) != NULL)
-			gs_app_set_name (new_app, gs_app_get_name (app));
-		if (gs_app_get_summary (app) != NULL)
-			gs_app_set_summary (new_app, gs_app_get_summary (app));
-		if (gs_app_get_description (app) != NULL)
-			gs_app_set_description (new_app, gs_app_get_description (app));
-		if (gs_app_get_update_details (app) != NULL)
-			gs_app_set_update_details (new_app, gs_app_get_update_details (app));
-		if (gs_app_get_update_version (app) != NULL)
-			gs_app_set_update_version (new_app, gs_app_get_update_version (app));
-		if (gs_app_get_pixbuf (app) != NULL)
-			gs_app_set_pixbuf (new_app, gs_app_get_pixbuf (app));
-
-		/* this looks a little odd to unref the method parameter,
-		 * but it allows us to do:
-		 * app = gs_plugin_loader_dedupe (cache, app);
-		 */
-		g_object_unref (app);
-		g_object_ref (new_app);
+	if (new_app == app) {
+		new_app = app;
 		goto out;
 	}
 
 	/* insert new entry */
-	g_hash_table_insert (priv->app_cache,
-			     g_strdup (gs_app_get_id (app)),
-			     g_object_ref (app));
+	if (new_app == NULL) {
+		new_app = app;
+		g_hash_table_insert (priv->app_cache,
+				     g_strdup (gs_app_get_id (app)),
+				     g_object_ref (app));
+		goto out;
+	}
 
-	/* no ref */
-	new_app = app;
+	/* an [updatable] installable package is more information than
+	 * just the fact that something is installed */
+	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE &&
+	    gs_app_get_state (new_app) == GS_APP_STATE_INSTALLED) {
+		/* we have to do the little dance to appease the
+		 * angry gnome controlling the state-machine */
+		gs_app_set_state (new_app, GS_APP_STATE_UNKNOWN);
+		gs_app_set_state (new_app, GS_APP_STATE_UPDATABLE);
+	}
+
+	/* save any properties we already know */
+	if (gs_app_get_source (app) != NULL)
+		gs_app_set_source (new_app, gs_app_get_source (app));
+	if (gs_app_get_project_group (app) != NULL)
+		gs_app_set_project_group (new_app, gs_app_get_project_group (app));
+	if (gs_app_get_name (app) != NULL)
+		gs_app_set_name (new_app, gs_app_get_name (app));
+	if (gs_app_get_summary (app) != NULL)
+		gs_app_set_summary (new_app, gs_app_get_summary (app));
+	if (gs_app_get_description (app) != NULL)
+		gs_app_set_description (new_app, gs_app_get_description (app));
+	if (gs_app_get_update_details (app) != NULL)
+		gs_app_set_update_details (new_app, gs_app_get_update_details (app));
+	if (gs_app_get_update_version (app) != NULL)
+		gs_app_set_update_version (new_app, gs_app_get_update_version (app));
+	if (gs_app_get_pixbuf (app) != NULL)
+		gs_app_set_pixbuf (new_app, gs_app_get_pixbuf (app));
+
+	/* this looks a little odd to unref the method parameter,
+	 * but it allows us to do:
+	 * app = gs_plugin_loader_dedupe (cache, app);
+	 */
+	g_object_unref (app);
+	g_object_ref (new_app);
 out:
 	g_mutex_unlock (&plugin_loader->priv->app_cache_mutex);
 	return new_app;
