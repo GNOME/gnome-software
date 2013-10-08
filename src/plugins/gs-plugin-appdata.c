@@ -464,7 +464,8 @@ gs_plugin_refine_by_local_appdata (GsApp *app,
 out:
 	if (ctx != NULL)
 		g_markup_parse_context_free (ctx);
-	g_free (helper->lang);
+	if (helper != NULL)
+		g_free (helper->lang);
 	g_free (helper);
 	g_free (data);
 	return ret;
