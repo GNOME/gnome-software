@@ -294,6 +294,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	if (screenshots->len > 0) {
 		ss = g_ptr_array_index (screenshots, 0);
 		ssimg = gs_screenshot_image_new ();
+		gtk_widget_set_can_focus (gtk_bin_get_child (GTK_BIN (ssimg)), FALSE);
 		gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg), g_get_user_cache_dir ());
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg),
 						    ss,
