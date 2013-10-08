@@ -411,8 +411,9 @@ gs_plugin_loader_app_is_non_system (GsApp *app, gpointer user_data)
  * gs_plugin_loader_get_app_is_compatible:
  */
 static gboolean
-gs_plugin_loader_get_app_is_compatible (GsPluginLoader *plugin_loader, GsApp *app)
+gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 	GsPluginLoaderPrivate *priv = plugin_loader->priv;
 	const gchar *tmp;
 	guint i;
@@ -425,33 +426,9 @@ gs_plugin_loader_get_app_is_compatible (GsPluginLoader *plugin_loader, GsApp *ap
 		if (g_strcmp0 (tmp,  priv->compatible_projects[i]) == 0)
 			return TRUE;
 	}
+	g_debug ("removing incompatible %s from project group %s",
+		 gs_app_get_id (app), gs_app_get_project_group (app));
 	return FALSE;
-}
-
-/**
- * gs_plugin_loader_remove_incompat:
- **/
-static GList *
-gs_plugin_loader_remove_incompat (GsPluginLoader *plugin_loader, GList *list)
-{
-	GList *l;
-	GList *new = NULL;
-	GsApp *app;
-	gboolean compat;
-
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		compat = gs_plugin_loader_get_app_is_compatible (plugin_loader, app);
-		if (compat) {
-			gs_plugin_add_app (&new, app);
-		} else {
-			g_debug ("removing incompatible %s from project group %s",
-				 gs_app_get_id (app),
-				 gs_app_get_project_group (app));
-		}
-	}
-	gs_plugin_list_free (list);
-	return new;
 }
 
 /******************************************************************************/
@@ -1121,11 +1098,9 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	/* remove duplicates */
 	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
 
-	/* remove incompatible projects */
-	state->list = gs_plugin_loader_remove_incompat (plugin_loader, state->list);
-
 	/* filter package list */
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (state->list == NULL) {
 		g_set_error (&error,
 			     GS_PLUGIN_LOADER_ERROR,
@@ -1442,12 +1417,10 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 	/* remove duplicates */
 	state->list = gs_plugin_loader_list_uniq (plugin_loader, state->list);
 
-	/* remove incompatible projects */
-	state->list = gs_plugin_loader_remove_incompat (plugin_loader, state->list);
-
 	/* filter package list */
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_system, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (state->list == NULL) {
 		g_set_error (&error,
 			     GS_PLUGIN_LOADER_ERROR,
