@@ -228,6 +228,9 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
                 adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
                 gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
         }
+        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_SEARCH) {
+                gs_grab_focus_when_mapped (widget);
+        }
 
 	if (g_strcmp0 (value, priv->value) == 0)
 		return;
