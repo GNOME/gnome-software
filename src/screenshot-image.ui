@@ -3,86 +3,81 @@
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsScreenshotImage" parent="GtkBin">
     <property name="visible">True</property>
+    <style>
+      <class name="screenshot-image"/>
+    </style>
     <child>
-      <object class="GtkButton" id="button">
+      <object class="GtkStack" id="stack">
         <property name="visible">True</property>
-        <style>
-          <class name="screenshot-image"/>
-        </style>
+        <property name="can_focus">False</property>
+        <property name="transition-type">crossfade</property>
         <child>
-          <object class="GtkStack" id="stack">
+          <object class="GtkImage" id="image1">
             <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="transition-type">crossfade</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+          </object>
+          <packing>
+            <property name="name">image1</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkImage" id="image2">
+            <property name="visible">True</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+          </object>
+          <packing>
+            <property name="name">image2</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkSpinner" id="spinner">
+            <property name="visible">True</property>
+            <property name="width_request">16</property>
+            <property name="height_request">16</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+          </object>
+          <packing>
+            <property name="name">spinner</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box_error">
+            <property name="visible">True</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">4</property>
             <child>
-              <object class="GtkImage" id="image1">
+              <object class="GtkImage" id="image_error">
                 <property name="visible">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
+                <property name="icon-name">dialog-error-symbolic</property>
               </object>
               <packing>
-                <property name="name">image1</property>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
               </packing>
             </child>
             <child>
-              <object class="GtkImage" id="image2">
+              <object class="GtkLabel" id="label_error">
                 <property name="visible">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
+                <style>
+                  <class name="error-label"/>
+                </style>
               </object>
               <packing>
-                <property name="name">image2</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinner" id="spinner">
-                <property name="visible">True</property>
-                <property name="width_request">16</property>
-                <property name="height_request">16</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-              </object>
-              <packing>
-                <property name="name">spinner</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkBox" id="box_error">
-                <property name="visible">True</property>
-                <property name="halign">center</property>
-                <property name="valign">center</property>
-                <property name="orientation">vertical</property>
-                <property name="spacing">4</property>
-                <child>
-                  <object class="GtkImage" id="image_error">
-                    <property name="visible">True</property>
-                    <property name="icon-name">dialog-error-symbolic</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">0</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label_error">
-                    <property name="visible">True</property>
-                    <style>
-                      <class name="error-label"/>
-                    </style>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                    <property name="position">1</property>
-                  </packing>
-                </child>
-              </object>
-              <packing>
-                <property name="name">error</property>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
               </packing>
             </child>
           </object>
+          <packing>
+            <property name="name">error</property>
+          </packing>
         </child>
       </object>
     </child>

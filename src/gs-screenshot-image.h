@@ -49,7 +49,6 @@ struct _GsScreenshotImage
 struct _GsScreenshotImageClass
 {
 	GtkBinClass	 parent_class;
-	void		(*clicked)			(GsScreenshotImage	*ssimg);
 };
 
 GType		 gs_screenshot_image_get_type		(void);

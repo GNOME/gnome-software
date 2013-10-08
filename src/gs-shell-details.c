@@ -180,31 +180,33 @@ gs_shell_details_app_state_changed_cb (GsApp *app, GsShellDetails *shell_details
 	gs_shell_details_refresh (shell_details);
 }
 
-/**
- * gs_shell_details_screenshot_clicked_cb:
- **/
 static void
-gs_shell_details_screenshot_clicked_cb (GsScreenshotImage *ssthumb,
-					GsShellDetails *shell_details)
+gs_shell_details_screenshot_selected_cb (GtkListBox *list,
+					 GtkListBoxRow *row,
+					 GsShellDetails *shell_details)
 {
-	GList *children;
-	GsScreenshot *ss;
-	GsScreenshotImage *ssmain;
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget;
+	GsScreenshotImage *ssmain;
+	GsScreenshotImage *ssthumb;
+	GsScreenshot *ss;
+	GList *children;
+
+	if (row == NULL)
+		return;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
 						     "box_details_screenshot_main"));
 	children = gtk_container_get_children (GTK_CONTAINER (widget));
 	ssmain = GS_SCREENSHOT_IMAGE (children->data);
+	g_list_free (children);
+
+	ssthumb = GS_SCREENSHOT_IMAGE (gtk_bin_get_child (GTK_BIN (row)));
 	ss = gs_screenshot_image_get_screenshot (ssthumb);
-	g_debug ("Button pressed, show %s",
-		 gs_screenshot_get_url (ss, G_MAXUINT, G_MAXUINT));
 	gs_screenshot_image_set_screenshot (ssmain,
 					    ss,
 					    GS_SCREENSHOT_SIZE_LARGE_WIDTH,
 					    GS_SCREENSHOT_SIZE_LARGE_HEIGHT);
-	g_list_free (children);
 }
 
 /**
@@ -306,20 +308,28 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_details_screenshot_thumbnails"));
 	gs_container_remove_all (GTK_CONTAINER (widget));
 	if (screenshots->len > 1) {
+		GtkWidget *list;
+		list = gtk_list_box_new ();
+		gtk_style_context_add_class (gtk_widget_get_style_context (list), "image-list");
+		gtk_widget_show (list);
+		gtk_box_pack_start (GTK_BOX (widget), list, FALSE, FALSE, 0);
 		for (i = 0; i < screenshots->len; i++) {
 			ss = g_ptr_array_index (screenshots, i);
 			ssimg = gs_screenshot_image_new ();
-			g_signal_connect (ssimg, "clicked",
-					  G_CALLBACK (gs_shell_details_screenshot_clicked_cb),
-					  shell_details);
 			gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg), g_get_user_cache_dir ());
 			gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg),
 							    ss,
 							    GS_SCREENSHOT_SIZE_SMALL_WIDTH,
 							    GS_SCREENSHOT_SIZE_SMALL_HEIGHT);
-			gtk_box_pack_start (GTK_BOX (widget), ssimg, FALSE, FALSE, 0);
+			gtk_list_box_insert (GTK_LIST_BOX (list), ssimg, -1);
 			gtk_widget_set_visible (ssimg, TRUE);
 		}
+
+		gtk_list_box_set_selection_mode (GTK_LIST_BOX (list), GTK_SELECTION_BROWSE);
+		gtk_list_box_select_row (GTK_LIST_BOX (list),
+					 gtk_list_box_get_row_at_index (GTK_LIST_BOX (list), 0));
+		g_signal_connect (list, "row-selected", 
+				  G_CALLBACK (gs_shell_details_screenshot_selected_cb), shell_details);
 	}
 
 	/* set the project group */

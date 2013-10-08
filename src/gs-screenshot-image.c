@@ -33,7 +33,6 @@ struct _GsScreenshotImagePrivate
 	GsScreenshot	*screenshot;
 	GtkWidget	*stack;
 	GtkWidget	*box_error;
-	GtkWidget	*button;
 	GtkWidget	*image1;
 	GtkWidget	*image2;
 	GtkWidget	*label_error;
@@ -46,13 +45,6 @@ struct _GsScreenshotImagePrivate
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
-
-enum {
-	SIGNAL_CLICKED,
-	SIGNAL_LAST
-};
-
-static guint signals [SIGNAL_LAST] = { 0 };
 
 /**
  * gs_screenshot_image_get_screenshot:
@@ -314,27 +306,17 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 }
 
 /**
- * button_clicked:
- **/
-static void
-button_clicked (GsScreenshotImage *ssimg)
-{
-	g_signal_emit (ssimg, signals[SIGNAL_CLICKED], 0);
-}
-
-/**
  * gs_screenshot_image_init:
  **/
 static void
 gs_screenshot_image_init (GsScreenshotImage *ssimg)
 {
 	GsScreenshotImagePrivate *priv;
+	AtkObject *accessible;
 
 	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
 	priv = gs_screenshot_image_get_instance_private (ssimg);
-	g_signal_connect_swapped (priv->button, "clicked",
-				  G_CALLBACK (button_clicked), ssimg);
 
 	/* setup networking */
 	priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
@@ -347,6 +329,32 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 	}
 	soup_session_add_feature_by_type (priv->session,
 					  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
+
+	accessible = gtk_widget_get_accessible (GTK_WIDGET (ssimg));
+	if (accessible != 0) {
+		atk_object_set_role (accessible, ATK_ROLE_IMAGE);
+		atk_object_set_name (accessible, _("Screenshot"));
+	}
+}
+
+static gboolean
+gs_screenshot_image_draw (GtkWidget *widget,
+			  cairo_t   *cr)
+{
+  GtkStyleContext *context;
+
+  context = gtk_widget_get_style_context (widget);
+
+  gtk_render_background (context, cr,
+                         0, 0,
+                         gtk_widget_get_allocated_width (widget),
+                         gtk_widget_get_allocated_height (widget));
+  gtk_render_frame (context, cr,
+                    0, 0,
+                    gtk_widget_get_allocated_width (widget),
+                    gtk_widget_get_allocated_height (widget));
+
+  return GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->draw (widget, cr);
 }
 
 /**
@@ -355,23 +363,15 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 static void
 gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	widget_class->destroy = gs_screenshot_image_destroy;
-
-	signals [SIGNAL_CLICKED] =
-		g_signal_new ("clicked",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsScreenshotImageClass, clicked),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE, 0);
+	widget_class->draw = gs_screenshot_image_draw;
 
 	gtk_widget_class_set_template_from_resource (widget_class,
 						     "/org/gnome/software/screenshot-image.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, stack);
-	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, image1);
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, image2);
