@@ -51,6 +51,9 @@ typedef void (*GsPluginStatusUpdate)	(GsPlugin	*plugin,
 					 GsPluginStatus	 status,
 					 gpointer	 user_data);
 
+typedef gboolean (*GsPluginListFilter)	(GsApp		*app,
+					 gpointer	 user_data);
+
 struct GsPlugin {
 	GModule			*module;
 	gdouble			 priority;	/* largest number gets run first */
@@ -107,6 +110,10 @@ void		 gs_plugin_add_app			(GList		**list,
 							 GsApp		*app);
 void		 gs_plugin_list_free			(GList		*list);
 GList		*gs_plugin_list_copy			(GList		*list);
+void		 gs_plugin_list_filter			(GList		**list,
+							 GsPluginListFilter func,
+							 gpointer	 user_data);
+
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);

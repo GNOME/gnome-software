@@ -26,8 +26,57 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-plugin.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
+
+static gboolean
+gs_plugin_list_filter_cb (GsApp *app, gpointer user_data)
+{
+	if (g_strcmp0 (gs_app_get_id (app), "a") == 0)
+		return FALSE;
+	if (g_strcmp0 (gs_app_get_id (app), "c") == 0)
+		return FALSE;
+	return TRUE;
+}
+
+static void
+gs_plugin_func (void)
+{
+	GList *list = NULL;
+	GList *list_dup;
+	GList *list_remove = NULL;
+	GsApp *app;
+
+	/* add a couple of duplicate IDs */
+	app = gs_app_new ("a");
+	gs_plugin_add_app (&list, app);
+	g_object_unref (app);
+
+	/* test refcounting */
+	g_assert_cmpstr (gs_app_get_id (GS_APP (list->data)), ==, "a");
+	list_dup = gs_plugin_list_copy (list);
+	gs_plugin_list_free (list);
+	g_assert_cmpint (g_list_length (list_dup), ==, 1);
+	g_assert_cmpstr (gs_app_get_id (GS_APP (list_dup->data)), ==, "a");
+	gs_plugin_list_free (list_dup);
+
+	/* test removing obects */
+	app = gs_app_new ("a");
+	gs_plugin_add_app (&list_remove, app);
+	g_object_unref (app);
+	app = gs_app_new ("b");
+	gs_plugin_add_app (&list_remove, app);
+	g_object_unref (app);
+	app = gs_app_new ("c");
+	gs_plugin_add_app (&list_remove, app);
+	g_object_unref (app);
+	g_assert_cmpint (g_list_length (list_remove), ==, 3);
+	gs_plugin_list_filter (&list_remove, gs_plugin_list_filter_cb, NULL);
+	g_assert_cmpint (g_list_length (list_remove), ==, 1);
+	g_assert_cmpstr (gs_app_get_id (GS_APP (list_remove->data)), ==, "b");
+	gs_plugin_list_free (list_remove);
+}
 
 static void
 gs_app_func (void)
@@ -326,6 +375,7 @@ main (int argc, char **argv)
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
 
 	/* tests go here */
+	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	if (g_getenv ("HAS_APPSTREAM") != NULL)
 		g_test_add_func ("/gnome-software/plugin-loader{empty}", gs_plugin_loader_empty_func);

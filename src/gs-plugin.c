@@ -65,6 +65,33 @@ gs_plugin_list_free (GList *list)
 }
 
 /**
+ * gs_plugin_list_filter:
+ *
+ * If func() returns TRUE for the GsApp, then the app is kept.
+ **/
+void
+gs_plugin_list_filter (GList **list, GsPluginListFilter func, gpointer user_data)
+{
+	GList *l;
+	GList *new = NULL;
+	GsApp *app;
+
+	g_return_if_fail (list != NULL);
+	g_return_if_fail (func != NULL);
+
+	/* see if any of the apps need filtering */
+	for (l = *list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		if (func (app, user_data))
+			gs_plugin_add_app (&new, app);
+	}
+
+	/* replace the list */
+	gs_plugin_list_free (*list);
+	*list = new;
+}
+
+/**
  * gs_plugin_list_copy:
  **/
 GList *
