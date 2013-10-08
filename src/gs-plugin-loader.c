@@ -356,7 +356,7 @@ gs_plugin_loader_get_app_str (GsApp *app)
  * gs_plugin_loader_app_is_valid:
  **/
 static gboolean
-gs_plugin_loader_app_is_valid (GsApp *app)
+gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 {
 	/* don't show unknown state */
 	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
@@ -396,27 +396,6 @@ gs_plugin_loader_app_is_valid (GsApp *app)
 		return FALSE;
 	}
 	return TRUE;
-}
-
-/**
- * gs_plugin_loader_remove_invalid:
- **/
-static GList *
-gs_plugin_loader_remove_invalid (GList *list)
-{
-	GList *l;
-	GsApp *app;
-
-	for (l = list; l != NULL;) {
-		app = GS_APP (l->data);
-		if (gs_plugin_loader_app_is_valid (app)) {
-			l = l->next;
-			continue;
-		}
-		g_object_unref (app);
-		l = list = g_list_delete_link (list, l);
-	}
-	return list;
 }
 
 /**
@@ -635,7 +614,7 @@ gs_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 
 	/* remove any packages that are not proper applications or
 	 * OS updates */
-	state->list = gs_plugin_loader_remove_invalid (state->list);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
@@ -758,8 +737,10 @@ gs_plugin_loader_get_installed_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
+
+	/* filter package list */
 	state->list = gs_plugin_loader_remove_system (state->list);
-	state->list = gs_plugin_loader_remove_invalid (state->list);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
@@ -880,7 +861,9 @@ gs_plugin_loader_get_popular_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
-	state->list = gs_plugin_loader_remove_invalid (state->list);
+
+	/* filter package list */
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
@@ -984,7 +967,9 @@ gs_plugin_loader_get_featured_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
-	state->list = gs_plugin_loader_remove_invalid (state->list);
+
+	/* filter package list */
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
@@ -1153,8 +1138,8 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	/* remove incompatible projects */
 	state->list = gs_plugin_loader_remove_incompat (plugin_loader, state->list);
 
-	/* success */
-	state->list = gs_plugin_loader_remove_invalid (state->list);
+	/* filter package list */
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	if (state->list == NULL) {
 		g_set_error (&error,
 			     GS_PLUGIN_LOADER_ERROR,
@@ -1474,9 +1459,9 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 	/* remove incompatible projects */
 	state->list = gs_plugin_loader_remove_incompat (plugin_loader, state->list);
 
-	/* success */
+	/* filter package list */
 	state->list = gs_plugin_loader_remove_system (state->list);
-	state->list = gs_plugin_loader_remove_invalid (state->list);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	if (state->list == NULL) {
 		g_set_error (&error,
 			     GS_PLUGIN_LOADER_ERROR,
