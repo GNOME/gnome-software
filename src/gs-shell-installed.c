@@ -183,13 +183,6 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 static void
 app_state_changed (GsApp *app, GtkWidget *widget)
 {
-	GtkWidget *row, *list;
-
-	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE) {
-		row = gtk_widget_get_parent (widget);
-		list = gtk_widget_get_parent (row);
-		remove_row (GTK_LIST_BOX (list), widget);
-	}
 }
 
 static void
