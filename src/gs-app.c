@@ -65,6 +65,7 @@ struct GsAppPrivate
 	GPtrArray		*categories;
 	gchar			*url;
 	gchar			*licence;
+	gchar			*menu_path;
 	gchar			*update_version;
 	gchar			*update_version_ui;
 	gchar			*update_details;
@@ -202,6 +203,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\turl:\t%s\n", priv->url);
 	if (priv->licence != NULL)
 		g_string_append_printf (str, "\tlicence:\t%s\n", priv->licence);
+	if (priv->menu_path != NULL)
+		g_string_append_printf (str, "\tmenu-path:\t%s\n", priv->menu_path);
 	if (priv->rating != -1)
 		g_string_append_printf (str, "\trating:\t%i\n", priv->rating);
 	if (priv->pixbuf != NULL)
@@ -773,6 +776,27 @@ gs_app_set_licence (GsApp *app, const gchar *licence)
 }
 
 /**
+ * gs_app_get_menu_path:
+ */
+const gchar *
+gs_app_get_menu_path (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->menu_path;
+}
+
+/**
+ * gs_app_set_menu_path:
+ */
+void
+gs_app_set_menu_path (GsApp *app, const gchar *menu_path)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->menu_path);
+	app->priv->menu_path = g_strdup (menu_path);
+}
+
+/**
  * gs_app_add_screenshot:
  */
 void
@@ -1261,6 +1285,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->url);
 	g_free (priv->licence);
+	g_free (priv->menu_path);
 	g_free (priv->source);
 	g_free (priv->project_group);
 	g_free (priv->version);
