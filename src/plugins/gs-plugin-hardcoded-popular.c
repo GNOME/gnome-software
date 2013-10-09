@@ -226,6 +226,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 				if (g_strcmp0 (last_id, id) == 0) {
 					cat = gs_category_new (parent, "featured", _("Featured"));
 					gs_category_add_subcategory (parent, cat);
+					g_object_unref (cat);
 					break;
 				}
 			}

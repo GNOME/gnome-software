@@ -111,14 +111,13 @@ gs_category_get_subcategories (GsCategory *category)
 
 /**
  * gs_category_add_subcategory:
- *
- * DANGER WILL ROBINSON! @subcategory is not ref'd
  **/
 void
 gs_category_add_subcategory (GsCategory *category, GsCategory *subcategory)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
-	category->priv->subcategories = g_list_prepend (category->priv->subcategories, subcategory);
+	category->priv->subcategories = g_list_prepend (category->priv->subcategories,
+							g_object_ref (subcategory));
 }
 
 /**
@@ -175,6 +174,7 @@ gs_category_sort_subcategories (GsCategory *category)
 		all = gs_category_new (category, NULL, _("Other"));
 		all->priv->size = G_MAXUINT;
 		gs_category_add_subcategory (category, all);
+		g_object_unref (all);
 	}
 
 	/* actually sort the data */
