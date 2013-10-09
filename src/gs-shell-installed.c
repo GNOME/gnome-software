@@ -32,8 +32,8 @@
 #include "gs-app-widget.h"
 
 static void	gs_shell_installed_finalize	(GObject	*object);
-static void     remove_row		      (GtkListBox *list_box,
-						 GtkWidget *child);
+static void	gs_shell_installed_remove_row	(GtkListBox	*list_box,
+						 GtkWidget	*child);
 
 #define GS_SHELL_INSTALLED_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_INSTALLED, GsShellInstalledPrivate))
 
@@ -91,7 +91,7 @@ row_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer data)
 }
 
 static void
-remove_row (GtkListBox *list_box, GtkWidget *child)
+gs_shell_installed_remove_row (GtkListBox *list_box, GtkWidget *child)
 {
 	GtkWidget *row, *revealer;
 
@@ -118,8 +118,8 @@ gs_shell_installed_finished_func (GsPluginLoader *plugin_loader, GsApp *app, gpo
 
 	/* remove from the list */
 	if (app != NULL) {
-		remove_row (GTK_LIST_BOX (priv->list_box_installed),
-			    GTK_WIDGET (helper->app_widget));
+		gs_shell_installed_remove_row (GTK_LIST_BOX (priv->list_box_installed),
+					       GTK_WIDGET (helper->app_widget));
 	}
 	g_object_unref (helper->app_widget);
 	g_object_unref (helper->shell_installed);
@@ -181,15 +181,9 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 }
 
 static void
-app_state_changed (GsApp *app, GtkWidget *widget)
+gs_shell_installed_app_state_changed_cb (GsApp *app, GsShellInstalled *shell)
 {
-	GtkWidget *row, *list;
-
-	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE) {
-		row = gtk_widget_get_parent (widget);
-		list = gtk_widget_get_parent (row);
-		remove_row (GTK_LIST_BOX (list), widget);
-	}
+	gtk_list_box_invalidate_sort (shell->priv->list_box_installed);
 }
 
 static void
@@ -203,7 +197,7 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 	g_signal_connect (widget, "button-clicked",
 			  G_CALLBACK (gs_shell_installed_app_remove_cb), shell);
 	g_signal_connect_object (app, "state-changed",
-				 G_CALLBACK (app_state_changed), widget, 0);
+				 G_CALLBACK (gs_shell_installed_app_state_changed_cb), shell, 0);
 	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 	gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
 	gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
@@ -253,33 +247,6 @@ out:
 	gs_plugin_list_free (list);
 }
 
-static void
-reset_date (GtkWidget *row, gpointer data)
-{
-	GtkWidget *child;
-	GsApp *app;
-
-	child = gtk_bin_get_child (GTK_BIN (row));
-	app = gs_app_widget_get_app (GS_APP_WIDGET (child));
-
-	if (gs_app_get_state (app) == GS_APP_STATE_REMOVING) {
-		/* sort removing apps above installed apps,
-		 * below installing apps
-		 */
-		gs_app_set_install_date (app, G_MAXUINT - 2);
-		gtk_list_box_row_changed (GTK_LIST_BOX_ROW (row));
-	}
-}
-
-static void
-resort_list (GsShellInstalled *shell)
-{
-	GsShellInstalledPrivate *priv = shell->priv;
-
-	gtk_container_foreach (GTK_CONTAINER (priv->list_box_installed),
-			       reset_date, NULL);
-}
-
 /**
  * gs_shell_installed_refresh:
  **/
@@ -295,7 +262,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 		gtk_widget_show (widget);
 	}
 
-	resort_list (shell_installed);
+	gtk_list_box_invalidate_sort (priv->list_box_installed);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_install"));
 	if (scroll_up) {
@@ -337,6 +304,60 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 
 /**
  * gs_shell_installed_sort_func:
+ *
+ * Get a sort key to achive this:
+ *
+ * 1. state:installing applications
+ * 2. state:removing applications
+ * 3. kind:normal applications
+ * 4. kind:system applications
+ *
+ * Within each of these groups, they are sorted by the install date and then
+ * by name.
+ **/
+static gchar *
+gs_shell_installed_get_app_sort_key (GsApp *app)
+{
+	GString *key;
+
+	/* sort installed, removing, other */
+	key = g_string_sized_new (64);
+	switch (gs_app_get_state (app)) {
+	case GS_APP_STATE_INSTALLING:
+		g_string_append (key, "1:");
+		break;
+	case GS_APP_STATE_REMOVING:
+		g_string_append (key, "2:");
+		break;
+	default:
+		g_string_append (key, "3:");
+		break;
+	}
+
+	/* sort normal, system, other */
+	switch (gs_app_get_kind (app)) {
+	case GS_APP_KIND_NORMAL:
+		g_string_append (key, "1:");
+		break;
+	case GS_APP_KIND_SYSTEM:
+		g_string_append (key, "2:");
+		break;
+	default:
+		g_string_append (key, "3:");
+		break;
+	}
+
+	/* sort by install date */
+	g_string_append_printf (key, "%09" G_GUINT64_FORMAT ":",
+				G_MAXUINT64 - gs_app_get_install_date (app));
+
+	/* finally, sort by short name */
+	g_string_append (key, gs_app_get_name (app));
+	return g_string_free (key, FALSE);
+}
+
+/**
+ * gs_shell_installed_sort_func:
  **/
 static gint
 gs_shell_installed_sort_func (GtkListBoxRow *a,
@@ -347,16 +368,17 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
 	GsApp *a1 = gs_app_widget_get_app (aw1);
 	GsApp *a2 = gs_app_widget_get_app (aw2);
-	guint64 date1 = gs_app_get_install_date (a1);
-	guint64 date2 = gs_app_get_install_date (a2);
+	gchar *key1 = gs_shell_installed_get_app_sort_key (a1);
+	gchar *key2 = gs_shell_installed_get_app_sort_key (a2);
+	gint retval;
 
-	if (date1 < date2)
-		return 1;
-	else if (date2 < date1)
-		return -1;
+	/* compare the keys according to the algorithm above */
+	retval = g_strcmp0 (key1, key2);
 
-	return g_strcmp0 (gs_app_get_name (a1),
-			  gs_app_get_name (a2));
+	g_free (key1);
+	g_free (key2);
+
+	return retval;
 }
 
 /**
