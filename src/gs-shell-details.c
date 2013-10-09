@@ -342,8 +342,15 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	if (tmp == NULL) {
 		/* TRANSLATORS: this is where the licence is not known */
 		gtk_label_set_label (GTK_LABEL (widget), _("Unknown"));
+		gtk_widget_set_tooltip_text (widget, NULL);
+	} else if (strlen (tmp) > 20) {
+		/* TRANSLATORS: this is where the licence is insanely
+		 * complicated and the full string is put into the tooltip */
+		gtk_label_set_label (GTK_LABEL (widget), _("Complicated!"));
+		gtk_widget_set_tooltip_text (widget, tmp);
 	} else {
 		gtk_label_set_label (GTK_LABEL (widget), tmp);
+		gtk_widget_set_tooltip_text (widget, NULL);
 	}
 
 	/* set version */
