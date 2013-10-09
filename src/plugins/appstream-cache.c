@@ -253,6 +253,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_ID:
 	case APPSTREAM_TAG_PKGNAME:
 	case APPSTREAM_TAG_URL:
+	case APPSTREAM_TAG_LICENCE:
 	case APPSTREAM_TAG_PROJECT_GROUP:
 		if (helper->item_temp == NULL ||
 		    helper->tag != APPSTREAM_TAG_APPLICATION) {
@@ -367,6 +368,7 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_APPCATEGORIES:
 	case APPSTREAM_TAG_KEYWORDS:
 	case APPSTREAM_TAG_URL:
+	case APPSTREAM_TAG_LICENCE:
 	case APPSTREAM_TAG_ICON:
 		helper->tag = APPSTREAM_TAG_APPLICATION;
 		break;
@@ -487,6 +489,17 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 			return;
 		}
 		appstream_app_set_url (helper->item_temp, text, text_len);
+		break;
+	case APPSTREAM_TAG_LICENCE:
+		if (helper->item_temp == NULL ||
+		    appstream_app_get_licence (helper->item_temp) != NULL) {
+			g_set_error_literal (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "item_temp licence invalid");
+			return;
+		}
+		appstream_app_set_licence (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_TAG_DESCRIPTION:
 		if (helper->item_temp == NULL) {

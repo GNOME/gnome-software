@@ -116,6 +116,9 @@ void		 gs_app_set_description		(GsApp		*app,
 const gchar	*gs_app_get_url			(GsApp		*app);
 void		 gs_app_set_url			(GsApp		*app,
 						 const gchar	*url);
+const gchar	*gs_app_get_licence		(GsApp		*app);
+void		 gs_app_set_licence		(GsApp		*app,
+						 const gchar	*licence);
 GPtrArray	*gs_app_get_screenshots		(GsApp		*app);
 void		 gs_app_add_screenshot		(GsApp		*app,
 						 GsScreenshot	*screenshot);

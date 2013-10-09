@@ -348,6 +348,17 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 		gtk_widget_set_visible (widget, TRUE);
 	}
 
+	/* set the licence */
+	tmp = gs_app_get_licence (app);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+						     "label_details_licence_value"));
+	if (tmp == NULL) {
+		/* TRANSLATORS: this is where the licence is not known */
+		gtk_label_set_label (GTK_LABEL (widget), _("Unknown"));
+	} else {
+		gtk_label_set_label (GTK_LABEL (widget), tmp);
+	}
+
 	/* set version */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_version_value"));
 	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_version (app));

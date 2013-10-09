@@ -46,6 +46,7 @@ const gchar	*appstream_app_get_name			(AppstreamApp	*app);
 const gchar	*appstream_app_get_summary		(AppstreamApp	*app);
 const gchar	*appstream_app_get_project_group	(AppstreamApp	*app);
 const gchar	*appstream_app_get_url			(AppstreamApp	*app);
+const gchar	*appstream_app_get_licence		(AppstreamApp	*app);
 const gchar	*appstream_app_get_description		(AppstreamApp	*app);
 const gchar	*appstream_app_get_icon			(AppstreamApp	*app);
 gboolean	 appstream_app_has_category		(AppstreamApp	*app,
@@ -68,6 +69,9 @@ void		 appstream_app_set_summary		(AppstreamApp	*app,
 							 gsize		 length);
 void		 appstream_app_set_url			(AppstreamApp	*app,
 							 const gchar	*summary,
+							 gsize		 length);
+void		 appstream_app_set_licence		(AppstreamApp	*app,
+							 const gchar	*licence,
 							 gsize		 length);
 void		 appstream_app_set_project_group	(AppstreamApp	*app,
 							 const gchar	*project_group,

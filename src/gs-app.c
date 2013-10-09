@@ -63,6 +63,7 @@ struct GsAppPrivate
 	gchar			*description;
 	GPtrArray		*screenshots;
 	gchar			*url;
+	gchar			*licence;
 	gchar			*update_version;
 	gchar			*update_version_ui;
 	gchar			*update_details;
@@ -197,6 +198,8 @@ gs_app_to_string (GsApp *app)
 	}
 	if (priv->url != NULL)
 		g_string_append_printf (str, "\turl:\t%s\n", priv->url);
+	if (priv->licence != NULL)
+		g_string_append_printf (str, "\tlicence:\t%s\n", priv->licence);
 	if (priv->rating != -1)
 		g_string_append_printf (str, "\trating:\t%i\n", priv->rating);
 	if (priv->pixbuf != NULL)
@@ -747,6 +750,27 @@ gs_app_set_url (GsApp *app, const gchar *url)
 }
 
 /**
+ * gs_app_get_licence:
+ */
+const gchar *
+gs_app_get_licence (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->licence;
+}
+
+/**
+ * gs_app_set_licence:
+ */
+void
+gs_app_set_licence (GsApp *app, const gchar *licence)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->licence);
+	app->priv->licence = g_strdup (licence);
+}
+
+/**
  * gs_app_add_screenshot:
  */
 void
@@ -1167,6 +1191,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->id);
 	g_free (priv->name);
 	g_free (priv->url);
+	g_free (priv->licence);
 	g_free (priv->source);
 	g_free (priv->project_group);
 	g_free (priv->version);

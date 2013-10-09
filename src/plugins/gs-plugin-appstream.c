@@ -445,6 +445,10 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (appstream_app_get_url (item) != NULL && gs_app_get_url (app) == NULL)
 		gs_app_set_url (app, appstream_app_get_url (item));
 
+	/* set licence */
+	if (appstream_app_get_licence (item) != NULL && gs_app_get_licence (app) == NULL)
+		gs_app_set_licence (app, appstream_app_get_licence (item));
+
 	/* set description */
 	if (appstream_app_get_description (item) != NULL && gs_app_get_description (app) == NULL)
 		gs_app_set_description (app, appstream_app_get_description (item));
