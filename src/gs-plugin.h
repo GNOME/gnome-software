@@ -72,6 +72,12 @@ typedef enum {
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;
 
+typedef enum {
+	GS_PLUGIN_REFINE_FLAGS_DEFAULT			= 0,
+	GS_PLUGIN_REFINE_FLAGS_USE_HISTORY		= 1,
+	GS_PLUGIN_REFINE_FLAGS_LAST
+} GsPluginRefineFlags;
+
 /* helpers */
 #define	GS_PLUGIN_ERROR					1
 #define	GS_PLUGIN_GET_PRIVATE(x)			g_new0 (x,1)
@@ -100,6 +106,7 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 							 GError		**error);
 typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
 							 GList		*list,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
@@ -156,6 +163,7 @@ gboolean	 gs_plugin_add_featured			(GsPlugin	*plugin,
 							 GError		**error);
 gboolean	 gs_plugin_refine			(GsPlugin	*plugin,
 							 GList		*list,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,

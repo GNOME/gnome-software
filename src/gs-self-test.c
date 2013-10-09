@@ -189,7 +189,7 @@ gs_plugin_loader_func (void)
 	ret = gs_plugin_loader_set_enabled (loader, "notgoingtoexist", TRUE);
 	g_assert (!ret);
 
-	list = gs_plugin_loader_get_popular (loader, GS_PLUGIN_LOADER_FLAGS_NONE, NULL, &error);
+	list = gs_plugin_loader_get_popular (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (_status_changed_cnt, ==, 1);
@@ -206,7 +206,7 @@ gs_plugin_loader_func (void)
 
 	/* get updates */
 	_status_changed_cnt = 0;
-	list = gs_plugin_loader_get_updates (loader, GS_PLUGIN_LOADER_FLAGS_NONE, NULL, &error);
+	list = gs_plugin_loader_get_updates (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (_status_changed_cnt, >=, 1);
@@ -233,7 +233,7 @@ gs_plugin_loader_func (void)
 	ret = gs_plugin_loader_set_enabled (loader, "datadir-apps", TRUE);
 	g_assert (ret);
 
-	list = gs_plugin_loader_get_installed (loader, GS_PLUGIN_LOADER_FLAGS_NONE, NULL, &error);
+	list = gs_plugin_loader_get_installed (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (g_list_length (list), >, 50);
@@ -253,7 +253,7 @@ gs_plugin_loader_func (void)
 	gs_plugin_list_free (list);
 
 	/* do this again, which should be much faster */
-	list = gs_plugin_loader_get_installed (loader, GS_PLUGIN_LOADER_FLAGS_NONE, NULL, &error);
+	list = gs_plugin_loader_get_installed (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (g_list_length (list), >, 50);
@@ -271,7 +271,7 @@ gs_plugin_loader_func (void)
 	gs_app_set_rating (app, 35);
 	ret = gs_plugin_loader_app_set_rating (loader,
 					       app,
-					       GS_PLUGIN_LOADER_FLAGS_NONE,
+					       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					       NULL,
 					       &error);
 	g_assert_no_error (error);
@@ -281,7 +281,7 @@ gs_plugin_loader_func (void)
 	gs_app_set_rating (app, -1);
 	ret = gs_plugin_loader_app_refine (loader,
 					   app,
-					   GS_PLUGIN_LOADER_FLAGS_NONE,
+					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
@@ -322,7 +322,7 @@ gs_plugin_loader_empty_func (void)
 	g_assert (ret);
 
 	/* get the list of categories */
-	list = gs_plugin_loader_get_categories (loader, GS_PLUGIN_LOADER_FLAGS_NONE, NULL, &error);
+	list = gs_plugin_loader_get_categories (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 
@@ -342,7 +342,7 @@ gs_plugin_loader_empty_func (void)
 			/* find subcaegories that have no applications */
 			apps = gs_plugin_loader_get_category_apps (loader,
 								   sub,
-								   GS_PLUGIN_LOADER_FLAGS_NONE,
+								   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 								   NULL,
 								   &error);
 			if (apps == NULL) {

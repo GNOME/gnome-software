@@ -437,7 +437,7 @@ gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *shell_
 		g_debug ("remove %s", gs_app_get_id (priv->app));
 		gs_plugin_loader_app_remove (priv->plugin_loader,
 					     priv->app,
-					     GS_PLUGIN_LOADER_FLAGS_NONE,
+					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					     priv->cancellable,
 					     gs_shell_details_removed_func,
 					     shell_details);
@@ -455,7 +455,7 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	gs_plugin_loader_app_install (priv->plugin_loader,
 				      priv->app,
-				      GS_PLUGIN_LOADER_FLAGS_NONE,
+				      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 				      priv->cancellable,
 				      gs_shell_details_installed_func,
 				      shell_details);

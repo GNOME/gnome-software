@@ -270,19 +270,19 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 	priv->refresh_count = 3;
 
 	gs_plugin_loader_get_featured_async (priv->plugin_loader,
-					     GS_PLUGIN_LOADER_FLAGS_NONE,
+					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					     priv->cancellable,
 					     gs_shell_overview_get_featured_cb,
 					     shell);
 
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
-					    GS_PLUGIN_LOADER_FLAGS_NONE,
+					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					    priv->cancellable,
 					    gs_shell_overview_get_popular_cb,
 					    shell);
 
 	gs_plugin_loader_get_categories_async (priv->plugin_loader,
-					       GS_PLUGIN_LOADER_FLAGS_NONE,
+					       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					       priv->cancellable,
 					       gs_shell_overview_get_categories_cb,
 					       shell);

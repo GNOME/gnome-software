@@ -29,24 +29,24 @@
 G_BEGIN_DECLS
 
 GList		*gs_plugin_loader_get_installed		(GsPluginLoader	*plugin_loader,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 GList		*gs_plugin_loader_get_updates		(GsPluginLoader	*plugin_loader,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 GList		*gs_plugin_loader_get_popular		(GsPluginLoader	*plugin_loader,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 GList		*gs_plugin_loader_get_categories	(GsPluginLoader	*plugin_loader,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 GList		*gs_plugin_loader_get_category_apps	(GsPluginLoader	*plugin_loader,
 							 GsCategory	*category,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

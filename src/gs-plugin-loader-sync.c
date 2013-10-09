@@ -47,7 +47,7 @@ gs_plugin_loader_get_installed_finish_sync (GsPluginLoader *plugin_loader,
  **/
 GList *
 gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader,
-				GsPluginLoaderFlags flags,
+				GsPluginRefineFlags flags,
 				GCancellable *cancellable,
 				GError **error)
 {
@@ -92,7 +92,7 @@ gs_plugin_loader_get_updates_finish_sync (GsPluginLoader *plugin_loader,
  **/
 GList *
 gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader,
-			      GsPluginLoaderFlags flags,
+			      GsPluginRefineFlags flags,
 			      GCancellable *cancellable,
 			      GError **error)
 {
@@ -137,7 +137,7 @@ gs_plugin_loader_get_popular_finish_sync (GsPluginLoader *plugin_loader,
  **/
 GList *
 gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
-			      GsPluginLoaderFlags flags,
+			      GsPluginRefineFlags flags,
 			      GCancellable *cancellable,
 			      GError **error)
 {
@@ -182,7 +182,7 @@ gs_plugin_loader_get_categories_finish_sync (GsPluginLoader *plugin_loader,
  **/
 GList *
 gs_plugin_loader_get_categories (GsPluginLoader *plugin_loader,
-				 GsPluginLoaderFlags flags,
+				 GsPluginRefineFlags flags,
 				 GCancellable *cancellable,
 				 GError **error)
 {
@@ -228,7 +228,7 @@ gs_plugin_loader_get_category_apps_finish_sync (GsPluginLoader *plugin_loader,
 GList *
 gs_plugin_loader_get_category_apps (GsPluginLoader *plugin_loader,
 				    GsCategory *category,
-				    GsPluginLoaderFlags flags,
+				    GsPluginRefineFlags flags,
 				    GCancellable *cancellable,
 				    GError **error)
 {

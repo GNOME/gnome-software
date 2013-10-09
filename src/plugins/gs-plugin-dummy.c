@@ -167,6 +167,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
 		  GList *list,
+		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
 {

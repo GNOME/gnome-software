@@ -138,6 +138,7 @@ out:
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
 		  GList *list,
+		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
 {

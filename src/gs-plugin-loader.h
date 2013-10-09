@@ -61,12 +61,6 @@ typedef enum
 	GS_PLUGIN_LOADER_ERROR_LAST
 } GsPluginLoaderError;
 
-typedef enum {
-	GS_PLUGIN_LOADER_FLAGS_NONE = 0,
-	GS_PLUGIN_LOADER_FLAGS_USE_HISTORY = 1,
-	GS_PLUGIN_LOADER_FLAGS_LAST
-} GsPluginLoaderFlags;
-
 typedef void	 (*GsPluginLoaderFinishedFunc)		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 gpointer	 user_data);
@@ -76,7 +70,7 @@ GType		 gs_plugin_loader_get_type		(void);
 
 GsPluginLoader	*gs_plugin_loader_new			(void);
 void		 gs_plugin_loader_get_installed_async	(GsPluginLoader	*plugin_loader,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -84,7 +78,7 @@ GList		*gs_plugin_loader_get_installed_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
 void		 gs_plugin_loader_get_updates_async	(GsPluginLoader	*plugin_loader,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -92,7 +86,7 @@ GList		*gs_plugin_loader_get_updates_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
 void		 gs_plugin_loader_get_popular_async	(GsPluginLoader	*plugin_loader,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -100,7 +94,7 @@ GList		*gs_plugin_loader_get_popular_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
 void		 gs_plugin_loader_get_featured_async	(GsPluginLoader	*plugin_loader,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -108,7 +102,7 @@ GList		*gs_plugin_loader_get_featured_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
 void		 gs_plugin_loader_get_categories_async	(GsPluginLoader	*plugin_loader,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -117,7 +111,7 @@ GList		*gs_plugin_loader_get_categories_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_get_category_apps_async (GsPluginLoader	*plugin_loader,
 							 GsCategory	*category,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -126,7 +120,7 @@ GList		*gs_plugin_loader_get_category_apps_finish (GsPluginLoader	*plugin_loader
 							 GError		**error);
 void		 gs_plugin_loader_search_async		(GsPluginLoader	*plugin_loader,
 							 const gchar	*value,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
@@ -143,24 +137,24 @@ void		 gs_plugin_loader_set_location		(GsPluginLoader	*plugin_loader,
 							 const gchar	*location);
 gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 void		 gs_plugin_loader_app_install		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GsPluginLoaderFinishedFunc func,
 							 gpointer	 user_data);
 void		 gs_plugin_loader_app_remove		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GsPluginLoaderFinishedFunc func,
 							 gpointer	 user_data);
 gboolean	 gs_plugin_loader_app_set_rating	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GsPluginLoaderFlags flags,
+							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 GsAppState	 gs_plugin_loader_get_state_for_app	(GsPluginLoader	*plugin_loader,

@@ -704,6 +704,7 @@ gs_plugin_hardcoded_ratings_setup (GsPlugin *plugin, GError **error)
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
 		  GList *list,
+		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
 {

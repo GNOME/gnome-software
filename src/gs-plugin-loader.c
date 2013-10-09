@@ -172,6 +172,7 @@ static gboolean
 gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     const gchar *function_name_parent,
 			     GList *list,
+			     GsPluginRefineFlags flags,
 			     GCancellable *cancellable,
 			     GError **error)
 {
@@ -197,7 +198,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 					      function_name_parent,
 					      function_name);
 		gs_profile_start (plugin_loader->priv->profile, profile_id);
-		ret = plugin_func (plugin, list, cancellable, error);
+		ret = plugin_func (plugin, list, flags, cancellable, error);
 		if (!ret)
 			goto out;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
@@ -275,6 +276,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   list,
+					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					   cancellable,
 					   error);
 	if (!ret)
@@ -413,7 +415,7 @@ typedef struct {
 	GList				*list;
 	GSimpleAsyncResult		*res;
 	GsPluginLoader			*plugin_loader;
-	GsPluginLoaderFlags		 flags;
+	GsPluginRefineFlags		 flags;
 	gchar				*value;
 	GsCategory			*category;
 } GsPluginLoaderAsyncState;
@@ -526,7 +528,7 @@ gs_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
 	/* do things that would block */
-	if ((state->flags & GS_PLUGIN_LOADER_FLAGS_USE_HISTORY) > 0)
+	if ((state->flags & GS_PLUGIN_REFINE_FLAGS_USE_HISTORY) > 0)
 		method_name = "gs_plugin_add_updates_historical";
 
 	state->list = gs_plugin_loader_run_results (plugin_loader,
@@ -592,7 +594,7 @@ out:
  **/
 void
 gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
-				    GsPluginLoaderFlags flags,
+				    GsPluginRefineFlags flags,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -715,7 +717,7 @@ out:
  **/
 void
 gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
-				      GsPluginLoaderFlags flags,
+				      GsPluginRefineFlags flags,
 				      GCancellable *cancellable,
 				      GAsyncReadyCallback callback,
 				      gpointer user_data)
@@ -821,7 +823,7 @@ out:
  **/
 void
 gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
-				    GsPluginLoaderFlags flags,
+				    GsPluginRefineFlags flags,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -945,7 +947,7 @@ out:
  **/
 void
 gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
-				     GsPluginLoaderFlags flags,
+				     GsPluginRefineFlags flags,
 				     GCancellable *cancellable,
 				     GAsyncReadyCallback callback,
 				     gpointer user_data)
@@ -1059,6 +1061,7 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   state->list,
+					   state->flags,
 					   cancellable,
 					   &error);
 	if (!ret) {
@@ -1112,7 +1115,7 @@ out:
 void
 gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 			       const gchar *value,
-			       GsPluginLoaderFlags flags,
+			       GsPluginRefineFlags flags,
 			       GCancellable *cancellable,
 			       GAsyncReadyCallback callback,
 			       gpointer user_data)
@@ -1262,7 +1265,7 @@ out:
  **/
 void
 gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
-				       GsPluginLoaderFlags flags,
+				       GsPluginRefineFlags flags,
 				       GCancellable *cancellable,
 				       GAsyncReadyCallback callback,
 				       gpointer user_data)
@@ -1376,6 +1379,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   state->list,
+					   state->flags,
 					   cancellable,
 					   &error);
 	if (!ret) {
@@ -1434,7 +1438,7 @@ out:
 void
 gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 					  GsCategory *category,
-					  GsPluginLoaderFlags flags,
+					  GsPluginRefineFlags flags,
 					  GCancellable *cancellable,
 					  GAsyncReadyCallback callback,
 					  gpointer user_data)
@@ -1707,7 +1711,7 @@ gs_plugin_loader_thread_func (gpointer user_data)
 void
 gs_plugin_loader_app_install (GsPluginLoader *plugin_loader,
 			      GsApp *app,
-			      GsPluginLoaderFlags flags,
+			      GsPluginRefineFlags flags,
 			      GCancellable *cancellable,
 			      GsPluginLoaderFinishedFunc func,
 			      gpointer user_data)
@@ -1735,7 +1739,7 @@ gs_plugin_loader_app_install (GsPluginLoader *plugin_loader,
 void
 gs_plugin_loader_app_remove (GsPluginLoader *plugin_loader,
 			     GsApp *app,
-			     GsPluginLoaderFlags flags,
+			     GsPluginRefineFlags flags,
 			     GCancellable *cancellable,
 			     GsPluginLoaderFinishedFunc func,
 			     gpointer user_data)
@@ -1763,7 +1767,7 @@ gs_plugin_loader_app_remove (GsPluginLoader *plugin_loader,
 gboolean
 gs_plugin_loader_app_set_rating (GsPluginLoader *plugin_loader,
 				 GsApp *app,
-				 GsPluginLoaderFlags flags,
+				 GsPluginRefineFlags flags,
 				 GCancellable *cancellable,
 				 GError **error)
 {
@@ -1782,7 +1786,7 @@ gs_plugin_loader_app_set_rating (GsPluginLoader *plugin_loader,
 gboolean
 gs_plugin_loader_app_refine (GsPluginLoader *plugin_loader,
 			     GsApp *app,
-			     GsPluginLoaderFlags flags,
+			     GsPluginRefineFlags flags,
 			     GCancellable *cancellable,
 			     GError **error)
 {
@@ -1793,6 +1797,7 @@ gs_plugin_loader_app_refine (GsPluginLoader *plugin_loader,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   NULL,
 					   list,
+					   flags,
 					   cancellable,
 					   error);
 	if (!ret)

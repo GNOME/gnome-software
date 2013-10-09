@@ -194,7 +194,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
-					    show_historical ? GS_PLUGIN_LOADER_FLAGS_USE_HISTORY : GS_PLUGIN_LOADER_FLAGS_NONE,
+					    show_historical ? GS_PLUGIN_REFINE_FLAGS_USE_HISTORY : GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					    priv->cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
 					    shell_updates);
