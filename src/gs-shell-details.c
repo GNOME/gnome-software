@@ -211,10 +211,10 @@ gs_shell_details_screenshot_selected_cb (GtkListBox *list,
 }
 
 /**
- * gs_shell_details_set_app:
+ * gs_shell_details_refresh_all:
  **/
-void
-gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
+static void
+gs_shell_details_refresh_all (GsShellDetails *shell_details)
 {
 	GPtrArray *history;
 	GPtrArray *screenshots;
@@ -225,24 +225,10 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	GtkWidget *widget2;
 	GtkWidget *widget;
 	const gchar *tmp;
-	gchar *app_dump;
 	guint i;
 
-	/* show some debugging */
-	app_dump = gs_app_to_string (app);
-	g_debug ("%s", app_dump);
-	g_free (app_dump);
-
-	/* save app */
-	if (priv->app != NULL)
-		g_object_unref (priv->app);
-	priv->app = g_object_ref (app);
-	g_signal_connect (priv->app, "state-changed",
-			  G_CALLBACK (gs_shell_details_app_state_changed_cb),
-			  shell_details);
-
 	/* change widgets */
-	tmp = gs_app_get_name (app);
+	tmp = gs_app_get_name (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_title"));
 	widget2 = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	if (tmp != NULL && tmp[0] != '\0') {
@@ -253,7 +239,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 		gtk_widget_set_visible (widget, FALSE);
 		gtk_label_set_label (GTK_LABEL (widget2), "");
 	}
-	tmp = gs_app_get_summary (app);
+	tmp = gs_app_get_summary (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_summary"));
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_label_set_label (GTK_LABEL (widget), tmp);
@@ -261,7 +247,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	} else {
 		gtk_widget_set_visible (widget, FALSE);
 	}
-	tmp = gs_app_get_description (app);
+	tmp = gs_app_get_description (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_description"));
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_label_set_label (GTK_LABEL (widget), tmp);
@@ -272,7 +258,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_description_header"));
 	gtk_widget_set_visible (widget, tmp != NULL);
 
-	pixbuf = gs_app_get_pixbuf (app);
+	pixbuf = gs_app_get_pixbuf (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
 	if (pixbuf != NULL) {
 		gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
@@ -281,7 +267,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 		gtk_widget_set_visible (widget, FALSE);
 	}
 
-	tmp = gs_app_get_url (app);
+	tmp = gs_app_get_url (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_url"));
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), tmp);
@@ -293,7 +279,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	/* set screenshots */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_details_screenshot_main"));
 	gs_container_remove_all (GTK_CONTAINER (widget));
-	screenshots = gs_app_get_screenshots (app);
+	screenshots = gs_app_get_screenshots (priv->app);
 	if (screenshots->len > 0) {
 		ss = g_ptr_array_index (screenshots, 0);
 		ssimg = gs_screenshot_image_new (priv->session);
@@ -334,7 +320,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	}
 
 	/* set the project group */
-	tmp = gs_app_get_project_group (app);
+	tmp = gs_app_get_project_group (priv->app);
 	if (tmp == NULL) {
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_developer_title"));
 		gtk_widget_set_visible (widget, FALSE);
@@ -349,7 +335,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	}
 
 	/* set the licence */
-	tmp = gs_app_get_licence (app);
+	tmp = gs_app_get_licence (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
 						     "label_details_licence_value"));
 	if (tmp == NULL) {
@@ -361,7 +347,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 
 	/* set version */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_version_value"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_version (app));
+	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_version (priv->app));
 
 	/* FIXME: This isn't ready yet */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_details_title"));
@@ -370,9 +356,70 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	gtk_widget_set_visible (widget, FALSE);
 
 	/* make history button insensitive if there is none */
-	history = gs_app_get_history (app);
+	history = gs_app_get_history (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
 	gtk_widget_set_sensitive (widget, history->len > 0);
+}
+
+/**
+ * gs_shell_details_app_refine_cb:
+ **/
+static void
+gs_shell_details_app_refine_cb (GObject *source,
+				GAsyncResult *res,
+				gpointer user_data)
+{
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	gboolean ret;
+
+	ret = gs_plugin_loader_app_refine_finish (plugin_loader,
+						  res,
+						  &error);
+	if (!ret) {
+		g_warning ("failed to refine %s: %s",
+			   gs_app_get_id (priv->app),
+			   error->message);
+		g_error_free (error);
+		return;
+	}
+	gs_shell_details_refresh_all (shell_details);
+}
+
+/**
+ * gs_shell_details_set_app:
+ **/
+void
+gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	gchar *app_dump;
+
+	/* show some debugging */
+	app_dump = gs_app_to_string (app);
+	g_debug ("%s", app_dump);
+	g_free (app_dump);
+
+	/* get extra details about the app */
+	gs_plugin_loader_app_refine_async (priv->plugin_loader, app,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
+					   priv->cancellable,
+					   gs_shell_details_app_refine_cb,
+					   shell_details);
+
+	/* save app */
+	if (priv->app != NULL)
+		g_object_unref (priv->app);
+	priv->app = g_object_ref (app);
+	g_signal_connect (priv->app, "state-changed",
+			  G_CALLBACK (gs_shell_details_app_state_changed_cb),
+			  shell_details);
+
+	/* change widgets */
+	gs_shell_details_refresh_all (shell_details);
 }
 
 GsApp *
