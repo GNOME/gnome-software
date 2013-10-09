@@ -293,6 +293,45 @@ gs_plugin_loader_func (void)
 }
 
 static void
+gs_plugin_loader_refine_func (void)
+{
+	GError *error = NULL;
+	GsApp *app;
+	GsPluginLoader *loader;
+	gboolean ret;
+
+	/* load the plugins */
+	loader = gs_plugin_loader_new ();
+	gs_plugin_loader_set_location (loader, "./plugins/.libs");
+	ret = gs_plugin_loader_setup (loader, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	ret = gs_plugin_loader_set_enabled (loader, "packagekit-refine", TRUE);
+	g_assert (ret);
+
+	/* get the extra bits */
+	app = gs_app_new ("gimp");
+	gs_app_set_source (app, "gimp");
+	ret = gs_plugin_loader_app_refine (loader, app,
+					   GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	g_assert_cmpstr (gs_app_get_licence (app), ==, "GPLv3+ and GPLv3");
+	g_assert_cmpstr (gs_app_get_description (app), !=, NULL);
+	g_assert_cmpstr (gs_app_get_url (app), ==, "http://www.gimp.org/");
+
+	g_object_unref (app);
+	g_object_unref (loader);
+}
+
+static void
 gs_plugin_loader_empty_func (void)
 {
 	gboolean ret;
@@ -384,11 +423,13 @@ main (int argc, char **argv)
 {
 	gtk_init (&argc, &argv);
 	g_test_init (&argc, &argv, NULL);
+	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
 
 	/* tests go here */
+	g_test_add_func ("/gnome-software/plugin-loader{refine}", gs_plugin_loader_refine_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	if (g_getenv ("HAS_APPSTREAM") != NULL)

@@ -280,7 +280,7 @@ out:
 }
 
 /**
- * gs_plugin_refine:
+ * gs_plugin_packagekit_refine_updatedetails:
  */
 static gboolean
 gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
@@ -343,6 +343,139 @@ out:
 	if (results != NULL)
 		g_object_unref (results);
 	g_free (package_ids);
+	return ret;
+}
+
+/**
+ * gs_plugin_packagekit_refine_details:
+ */
+static gboolean
+gs_plugin_packagekit_refine_details (GsPlugin *plugin,
+				     GList *list,
+				     GCancellable *cancellable,
+				     GError **error)
+{
+	GList *l;
+	GPtrArray *array = NULL;
+	GsApp *app;
+	PkDetails *details;
+	PkResults *results = NULL;
+	const gchar **package_ids;
+	const gchar *package_id;
+	gboolean ret = TRUE;
+	guint i = 0;
+	guint size;
+#if !PK_CHECK_VERSION(0,8,12)
+	gboolean matches;
+	gchar *tmp;
+#endif
+
+	size = g_list_length (list);
+	package_ids = g_new0 (const gchar *, size + 1);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
+		package_ids[i++] = package_id;
+	}
+
+	/* get any details */
+	results = pk_client_get_details (plugin->priv->client,
+					 (gchar **) package_ids,
+					 cancellable,
+					 gs_plugin_packagekit_progress_cb, plugin,
+					 error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+
+	/* set the update details for the update */
+	array = pk_results_get_details_array (results);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
+		for (i = 0; i < array->len; i++) {
+			/* right package? */
+			details = g_ptr_array_index (array, i);
+#if PK_CHECK_VERSION(0,8,12)
+			if (g_strcmp0 (package_id, pk_details_get_package_id (details)) != 0)
+				continue;
+			if (gs_app_get_licence (app) == NULL)
+				gs_app_set_licence (app, pk_details_get_license (details));
+			if (gs_app_get_url (app) == NULL)
+				gs_app_set_url (app, pk_details_get_url (details));
+			if (gs_app_get_description (app) == NULL)
+				gs_app_set_description (app, pk_details_get_description (details));
+#else
+			g_object_get (details, "package-id", &tmp, NULL);
+			matches = g_strcmp0 (package_id, tmp) != 0;
+			g_free (tmp);
+			if (matches)
+				continue;
+			if (gs_app_get_licence (app) == NULL) {
+				g_object_get (details, "license", &tmp, NULL);
+				gs_app_set_licence (app, tmp);
+				g_free (tmp);
+			}
+			if (gs_app_get_url (app) == NULL) {
+				g_object_get (details, "url", &tmp, NULL);
+				gs_app_set_licence (app, tmp);
+				g_free (tmp);
+			}
+			if (gs_app_get_description (app) == NULL) {
+				g_object_get (details, "description", &tmp, NULL);
+				gs_app_set_description (app, tmp);
+				g_free (tmp);
+			}
+#endif
+			break;
+		}
+	}
+out:
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	if (results != NULL)
+		g_object_unref (results);
+	g_free (package_ids);
+	return ret;
+}
+
+/**
+ * gs_plugin_refine_require_details:
+ */
+static gboolean
+gs_plugin_refine_require_details (GsPlugin *plugin,
+				  GList *list,
+				  GCancellable *cancellable,
+				  GError **error)
+{
+	GList *l;
+	GList *list_tmp = NULL;
+	GsApp *app;
+	gboolean ret = TRUE;
+
+	gs_profile_start_full (plugin->profile, "packagekit-refine[source->licence]");
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		if (gs_app_get_licence (app) != NULL &&
+		    gs_app_get_url (app) != NULL &&
+		    gs_app_get_description (app) != NULL)
+			continue;
+		if (gs_app_get_metadata_item (app, "PackageKit::package-id") == NULL)
+			continue;
+		list_tmp = g_list_prepend (list_tmp, app);
+	}
+	if (list_tmp == NULL)
+		goto out;
+	ret = gs_plugin_packagekit_refine_details (plugin,
+						   list_tmp,
+						   cancellable,
+						   error);
+	if (!ret)
+		goto out;
+out:
+	gs_profile_stop_full (plugin->profile, "packagekit-refine[source->licence]");
+	g_list_free (list_tmp);
 	return ret;
 }
 
@@ -419,6 +552,18 @@ gs_plugin_refine (GsPlugin *plugin,
 								 error);
 	}
 	gs_profile_stop_full (plugin->profile, "packagekit-refine[id->update-details]");
+
+	/* any important details missing? */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0 ||
+	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0 ||
+	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) > 0) {
+		ret = gs_plugin_refine_require_details (plugin,
+							list,
+							cancellable,
+							error);
+		if (!ret)
+			goto out;
+	}
 out:
 	g_list_free (resolve_all);
 	g_list_free (updatedetails_all);
