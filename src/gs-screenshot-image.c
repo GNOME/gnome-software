@@ -40,7 +40,9 @@ struct _GsScreenshotImagePrivate
 	gchar		*cachedir;
 	gchar		*filename;
 	guint		 spinner_id;
-        const gchar     *current_image;
+	const gchar	*current_image;
+	guint		 width;
+	guint		 height;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
@@ -129,7 +131,9 @@ gs_screenshot_show_image (GsScreenshotImage *ssimg)
  * gs_screenshot_image_complete_cb:
  **/
 static void
-gs_screenshot_image_complete_cb (SoupSession *session, SoupMessage *msg, gpointer user_data)
+gs_screenshot_image_complete_cb (SoupSession *session,
+				 SoupMessage *msg,
+				 gpointer user_data)
 {
 	GsScreenshotImagePrivate *priv;
 	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
@@ -193,8 +197,47 @@ gs_screenshot_image_show_spinner (gpointer user_data)
  **/
 void
 gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
-				    GsScreenshot *screenshot,
-				    guint width, guint height)
+				    GsScreenshot *screenshot)
+{
+	GsScreenshotImagePrivate *priv;
+
+	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
+	g_return_if_fail (GS_IS_SCREENSHOT (screenshot));
+
+	priv = gs_screenshot_image_get_instance_private (ssimg);
+
+	if (priv->screenshot == screenshot)
+		return;
+	if (priv->screenshot)
+		g_object_unref (priv->screenshot);
+	priv->screenshot = g_object_ref (screenshot);
+}
+
+/**
+ * gs_screenshot_image_set_size:
+ **/
+void
+gs_screenshot_image_set_size (GsScreenshotImage *ssimg,
+			      guint width, guint height)
+{
+	GsScreenshotImagePrivate *priv;
+
+	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
+	g_return_if_fail (width != 0);
+	g_return_if_fail (height != 0);
+
+	priv = gs_screenshot_image_get_instance_private (ssimg);
+	priv->width = width;
+	priv->height = height;
+	gtk_widget_set_size_request (priv->stack, width, height);
+}
+
+/**
+ * gs_screenshot_image_load_async:
+ **/
+void
+gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
+				GCancellable *cancellable)
 {
 	GsScreenshotImagePrivate *priv;
 	SoupMessage *msg = NULL;
@@ -206,19 +249,17 @@ gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 	gint rc;
 
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
-	g_return_if_fail (GS_IS_SCREENSHOT (screenshot));
-	g_return_if_fail (width != 0);
-	g_return_if_fail (height != 0);
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
-        g_object_ref (screenshot);
-	if (priv->screenshot)
-		g_object_unref (priv->screenshot);
-	priv->screenshot = screenshot;
-	gtk_widget_set_size_request (priv->stack, width, height);
+
+	g_return_if_fail (GS_IS_SCREENSHOT (priv->screenshot));
+	g_return_if_fail (priv->width != 0);
+	g_return_if_fail (priv->height != 0);
 
 	/* test if size specific cachdir exists */
-	url = gs_screenshot_get_url (screenshot, width, height);
+	url = gs_screenshot_get_url (priv->screenshot,
+				     priv->width,
+				     priv->height);
 	if (url == NULL) {
 		/* TRANSLATORS: this is when we request a screenshot size that
 		 * the generator did not create or the parser did not add */
@@ -226,7 +267,7 @@ gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 		goto out;
 	}
 	basename = g_path_get_basename (url);
-	sizedir = g_strdup_printf ("%ux%u", width, height);
+	sizedir = g_strdup_printf ("%ux%u", priv->width, priv->height);
 	cachedir = g_build_filename (priv->cachedir,
 				     "gnome-software",
 				     "screenshots",
@@ -265,7 +306,8 @@ gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 
 	/* send async */
 	soup_session_queue_message (priv->session, msg,
-				    gs_screenshot_image_complete_cb, ssimg);
+				    gs_screenshot_image_complete_cb,
+				    ssimg);
 	if (priv->spinner_id != 0)
 		g_source_remove (priv->spinner_id);
 	priv->spinner_id = g_timeout_add (250, gs_screenshot_image_show_spinner, ssimg);

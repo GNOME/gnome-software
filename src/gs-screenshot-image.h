@@ -57,12 +57,15 @@ GtkWidget	*gs_screenshot_image_new		(SoupSession		*session);
 
 GsScreenshot	*gs_screenshot_image_get_screenshot	(GsScreenshotImage	*ssimg);
 void		 gs_screenshot_image_set_screenshot	(GsScreenshotImage	*ssimg,
-							 GsScreenshot		*screenshot,
-							 guint			 width,
-							 guint			 height);
+							 GsScreenshot		*screenshot);
 const gchar	*gs_screenshot_image_get_cachedir	(GsScreenshotImage	*ssimg);
 void		 gs_screenshot_image_set_cachedir	(GsScreenshotImage	*ssimg,
 							 const gchar		*cachedir);
+void		 gs_screenshot_image_set_size		(GsScreenshotImage	*ssimg,
+							 guint			 width,
+							 guint			 height);
+void		 gs_screenshot_image_load_async		(GsScreenshotImage	*ssimg,
+							 GCancellable		*cancellable);
 
 G_END_DECLS
 
