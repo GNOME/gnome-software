@@ -368,6 +368,20 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		g_free (size);
 	}
 
+	/* set the updated date */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_updated_value"));
+	if (gs_app_get_install_date (priv->app) == GS_APP_INSTALL_DATE_UNKNOWN) {
+		/* TRANSLATORS: this is where the licence is not known */
+		gtk_label_set_label (GTK_LABEL (widget), _("Never"));
+	} else {
+		GDateTime *dt;
+		dt = g_date_time_new_from_unix_utc (gs_app_get_install_date (priv->app));
+		size = g_date_time_format (dt, "%x");
+		g_date_time_unref (dt);
+		gtk_label_set_label (GTK_LABEL (widget), size);
+		g_free (size);
+	}
+
 	/* FIXME: This isn't ready yet */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_details_title"));
 	gtk_widget_set_visible (widget, FALSE);
