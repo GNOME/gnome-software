@@ -24,6 +24,7 @@
 #define GS_SCREENSHOT_IMAGE_H
 
 #include <gtk/gtk.h>
+#include <libsoup/soup.h>
 
 #include "gs-screenshot.h"
 
@@ -52,7 +53,7 @@ struct _GsScreenshotImageClass
 };
 
 GType		 gs_screenshot_image_get_type		(void);
-GtkWidget	*gs_screenshot_image_new		(void);
+GtkWidget	*gs_screenshot_image_new		(SoupSession		*session);
 
 GsScreenshot	*gs_screenshot_image_get_screenshot	(GsScreenshotImage	*ssimg);
 void		 gs_screenshot_image_set_screenshot	(GsScreenshotImage	*ssimg,

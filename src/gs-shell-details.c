@@ -45,6 +45,7 @@ struct GsShellDetailsPrivate
 	GtkSizeGroup		*history_sizegroup_state;
 	GtkSizeGroup		*history_sizegroup_timestamp;
 	GtkSizeGroup		*history_sizegroup_version;
+	SoupSession		*session;
 };
 
 G_DEFINE_TYPE (GsShellDetails, gs_shell_details, G_TYPE_OBJECT)
@@ -295,7 +296,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	screenshots = gs_app_get_screenshots (app);
 	if (screenshots->len > 0) {
 		ss = g_ptr_array_index (screenshots, 0);
-		ssimg = gs_screenshot_image_new ();
+		ssimg = gs_screenshot_image_new (priv->session);
 		gtk_widget_set_can_focus (gtk_bin_get_child (GTK_BIN (ssimg)), FALSE);
 		gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg), g_get_user_cache_dir ());
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg),
@@ -315,7 +316,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 		gtk_box_pack_start (GTK_BOX (widget), list, FALSE, FALSE, 0);
 		for (i = 0; i < screenshots->len; i++) {
 			ss = g_ptr_array_index (screenshots, i);
-			ssimg = gs_screenshot_image_new ();
+			ssimg = gs_screenshot_image_new (priv->session);
 			gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg), g_get_user_cache_dir ());
 			gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg),
 							    ss,
@@ -705,10 +706,24 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 static void
 gs_shell_details_init (GsShellDetails *shell_details)
 {
+	GsShellDetailsPrivate *priv;
+
 	shell_details->priv = GS_SHELL_DETAILS_GET_PRIVATE (shell_details);
-	shell_details->priv->history_sizegroup_state = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	shell_details->priv->history_sizegroup_timestamp = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	shell_details->priv->history_sizegroup_version = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	priv = shell_details->priv;
+
+	priv->history_sizegroup_state = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	priv->history_sizegroup_timestamp = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	priv->history_sizegroup_version = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+	/* setup networking */
+	priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
+							    "gnome-software",
+							    SOUP_SESSION_TIMEOUT, 5000,
+							    NULL);
+	if (priv->session != NULL) {
+		soup_session_add_feature_by_type (priv->session,
+						  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
+	}
 }
 
 /**
@@ -727,8 +742,10 @@ gs_shell_details_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
-	if (priv->app)
+	if (priv->app != NULL)
 		g_object_unref (priv->app);
+	if (priv->session != NULL)
+		g_object_unref (priv->session);
 
 	G_OBJECT_CLASS (gs_shell_details_parent_class)->finalize (object);
 }

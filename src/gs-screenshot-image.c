@@ -24,7 +24,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libsoup/soup.h>
 
 #include "gs-screenshot-image.h"
 
@@ -311,24 +310,12 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 static void
 gs_screenshot_image_init (GsScreenshotImage *ssimg)
 {
-	GsScreenshotImagePrivate *priv;
 	AtkObject *accessible;
+
+	ssimg->priv = gs_screenshot_image_get_instance_private (ssimg);
 
 	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-
-	/* setup networking */
-	priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
-							    "gnome-software",
-							    SOUP_SESSION_TIMEOUT, 5000,
-							    NULL);
-	if (priv->session == NULL) {
-		g_warning ("Failed to setup networking");
-		return;
-	}
-	soup_session_add_feature_by_type (priv->session,
-					  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (ssimg));
 	if (accessible != 0) {
@@ -337,24 +324,25 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 	}
 }
 
+/**
+ * gs_screenshot_image_draw:
+ **/
 static gboolean
-gs_screenshot_image_draw (GtkWidget *widget,
-			  cairo_t   *cr)
+gs_screenshot_image_draw (GtkWidget *widget, cairo_t *cr)
 {
-  GtkStyleContext *context;
+	GtkStyleContext *context;
 
-  context = gtk_widget_get_style_context (widget);
+	context = gtk_widget_get_style_context (widget);
+	gtk_render_background (context, cr,
+			       0, 0,
+			       gtk_widget_get_allocated_width (widget),
+			       gtk_widget_get_allocated_height (widget));
+	gtk_render_frame (context, cr,
+			  0, 0,
+			  gtk_widget_get_allocated_width (widget),
+			  gtk_widget_get_allocated_height (widget));
 
-  gtk_render_background (context, cr,
-                         0, 0,
-                         gtk_widget_get_allocated_width (widget),
-                         gtk_widget_get_allocated_height (widget));
-  gtk_render_frame (context, cr,
-                    0, 0,
-                    gtk_widget_get_allocated_width (widget),
-                    gtk_widget_get_allocated_height (widget));
-
-  return GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->draw (widget, cr);
+	return GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->draw (widget, cr);
 }
 
 /**
@@ -383,10 +371,11 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
  * gs_screenshot_image_new:
  **/
 GtkWidget *
-gs_screenshot_image_new (void)
+gs_screenshot_image_new (SoupSession *session)
 {
 	GsScreenshotImage *ssimg;
 	ssimg = g_object_new (GS_TYPE_SCREENSHOT_IMAGE, NULL);
+	ssimg->priv->session = g_object_ref (session);
 	return GTK_WIDGET (ssimg);
 }
 
