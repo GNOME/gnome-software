@@ -25,6 +25,7 @@
 #include <packagekit-glib2/packagekit.h>
 
 #include <gs-plugin.h>
+#include <gs-utils.h>
 #include <glib/gi18n.h>
 
 #include "packagekit-common.h"
@@ -347,6 +348,19 @@ out:
 }
 
 /**
+ * gs_pk_format_desc:
+ */
+static gchar *
+gs_pk_format_desc (const gchar *text)
+{
+	GString *str;
+	str = g_string_new (text);
+	gs_string_replace (str, "\n", " ");
+	gs_string_replace (str, ".  ", ".\n\n");
+	return g_string_free (str, FALSE);
+}
+
+/**
  * gs_plugin_packagekit_refine_details:
  */
 static gboolean
@@ -363,6 +377,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	const gchar **package_ids;
 	const gchar *package_id;
 	gboolean ret = TRUE;
+	gchar *desc;
 	guint i = 0;
 	guint size;
 #if !PK_CHECK_VERSION(0,8,12)
@@ -404,8 +419,12 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				gs_app_set_licence (app, pk_details_get_license (details));
 			if (gs_app_get_url (app) == NULL)
 				gs_app_set_url (app, pk_details_get_url (details));
-			if (gs_app_get_description (app) == NULL)
-				gs_app_set_description (app, pk_details_get_description (details));
+			if (gs_app_get_description (app) == NULL &&
+			    g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") != NULL) {
+				desc = gs_pk_format_desc (pk_details_get_description (details));
+				gs_app_set_description (app, desc);
+				g_free (desc);
+			}
 #else
 			g_object_get (details, "package-id", &tmp, NULL);
 			matches = g_strcmp0 (package_id, tmp) != 0;
@@ -422,10 +441,13 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				gs_app_set_licence (app, tmp);
 				g_free (tmp);
 			}
-			if (gs_app_get_description (app) == NULL) {
+			if (gs_app_get_description (app) == NULL &&
+			    g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") != NULL) {
 				g_object_get (details, "description", &tmp, NULL);
-				gs_app_set_description (app, tmp);
+				desc = gs_pk_format_desc (tmp)
 				g_free (tmp);
+				gs_app_set_description (app, desc);
+				g_free (desc);
 			}
 #endif
 			break;
@@ -459,7 +481,8 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_licence (app) != NULL &&
 		    gs_app_get_url (app) != NULL &&
-		    gs_app_get_description (app) != NULL)
+		    (gs_app_get_description (app) != NULL ||
+		     g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") == NULL))
 			continue;
 		if (gs_app_get_metadata_item (app, "PackageKit::package-id") == NULL)
 			continue;
