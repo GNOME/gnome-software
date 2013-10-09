@@ -49,6 +49,11 @@ GList		*gs_plugin_loader_get_category_apps	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
+							 GsApp		*app,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 G_END_DECLS
 

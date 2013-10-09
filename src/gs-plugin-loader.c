@@ -418,6 +418,7 @@ typedef struct {
 	GsPluginRefineFlags		 flags;
 	gchar				*value;
 	GsCategory			*category;
+	GsApp				*app;
 } GsPluginLoaderAsyncState;
 
 /******************************************************************************/
@@ -1499,6 +1500,133 @@ gs_plugin_loader_get_category_apps_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 /**
+ * gs_plugin_loader_app_refine_state_finish:
+ **/
+static void
+gs_plugin_loader_app_refine_state_finish (GsPluginLoaderAsyncState *state,
+				       const GError *error)
+{
+	if (state->ret) {
+		g_simple_async_result_set_op_res_gboolean (state->res, TRUE);
+	} else {
+		g_simple_async_result_set_from_error (state->res, error);
+	}
+
+	/* deallocate */
+	if (state->cancellable != NULL)
+		g_object_unref (state->cancellable);
+
+	g_free (state->value);
+	gs_plugin_list_free (state->list);
+	g_object_unref (state->app);
+	g_object_unref (state->res);
+	g_object_unref (state->plugin_loader);
+	g_slice_free (GsPluginLoaderAsyncState, state);
+}
+
+/**
+ * gs_plugin_loader_app_refine_thread_cb:
+ **/
+static void
+gs_plugin_loader_app_refine_thread_cb (GSimpleAsyncResult *res,
+				       GObject *object,
+				       GCancellable *cancellable)
+{
+	GError *error = NULL;
+	GList *list = NULL;
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+
+	gs_plugin_add_app (&list, state->app);
+	state->ret = gs_plugin_loader_run_refine (plugin_loader,
+						  NULL,
+						  list,
+						  state->flags,
+						  cancellable,
+						  &error);
+	if (!state->ret) {
+		gs_plugin_loader_app_refine_state_finish (state, error);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* success */
+	gs_plugin_loader_app_refine_state_finish (state, NULL);
+out:
+	gs_plugin_list_free (list);
+}
+
+/**
+ * gs_plugin_loader_app_refine_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_refine()
+ * function.
+ **/
+void
+gs_plugin_loader_app_refine_async (GsPluginLoader *plugin_loader,
+			           GsApp *app,
+			           GsPluginRefineFlags flags,
+			           GCancellable *cancellable,
+			           GAsyncReadyCallback callback,
+			           gpointer user_data)
+{
+	GCancellable *tmp;
+	GsPluginLoaderAsyncState *state;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->res = g_simple_async_result_new (G_OBJECT (plugin_loader),
+						callback,
+						user_data,
+						gs_plugin_loader_app_refine_async);
+	state->plugin_loader = g_object_ref (plugin_loader);
+	state->app = g_object_ref (app);
+	state->flags = flags;
+	if (cancellable != NULL)
+		state->cancellable = g_object_ref (cancellable);
+
+	/* run in a thread */
+	tmp = g_cancellable_new ();
+	g_object_set_data (G_OBJECT (tmp), "state", state);
+	g_simple_async_result_run_in_thread (G_SIMPLE_ASYNC_RESULT (state->res),
+					     gs_plugin_loader_app_refine_thread_cb,
+					     0,
+					     (GCancellable *) tmp);
+	g_object_unref (tmp);
+}
+
+/**
+ * gs_plugin_loader_app_refine_finish:
+ *
+ * Return value: success
+ **/
+gboolean
+gs_plugin_loader_app_refine_finish (GsPluginLoader *plugin_loader,
+				    GAsyncResult *res,
+				    GError **error)
+{
+	GSimpleAsyncResult *simple;
+
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	/* failed */
+	simple = G_SIMPLE_ASYNC_RESULT (res);
+	if (g_simple_async_result_propagate_error (simple, error))
+		return FALSE;
+
+	/* grab detail */
+	return g_simple_async_result_get_op_res_gboolean (simple);
+}
+
+/******************************************************************************/
+
+/**
  * gs_plugin_loader_run_action:
  **/
 static gboolean
@@ -1776,35 +1904,6 @@ gs_plugin_loader_app_set_rating (GsPluginLoader *plugin_loader,
 					    "gs_plugin_app_set_rating",
 					    cancellable,
 					    error);
-}
-
-/**
- * gs_plugin_loader_app_refine:
- *
- * ...really just for make check use.
- **/
-gboolean
-gs_plugin_loader_app_refine (GsPluginLoader *plugin_loader,
-			     GsApp *app,
-			     GsPluginRefineFlags flags,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	gboolean ret;
-	GList *list = NULL;
-
-	gs_plugin_add_app (&list, app);
-	ret = gs_plugin_loader_run_refine (plugin_loader,
-					   NULL,
-					   list,
-					   flags,
-					   cancellable,
-					   error);
-	if (!ret)
-		goto out;
-	gs_plugin_list_free (list);
-out:
-	return ret;
 }
 
 /**

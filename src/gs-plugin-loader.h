@@ -135,10 +135,14 @@ gboolean	 gs_plugin_loader_set_enabled		(GsPluginLoader	*plugin_loader,
 							 gboolean	 enabled);
 void		 gs_plugin_loader_set_location		(GsPluginLoader	*plugin_loader,
 							 const gchar	*location);
-gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
+void		 gs_plugin_loader_app_refine_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+gboolean	 gs_plugin_loader_app_refine_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
 							 GError		**error);
 void		 gs_plugin_loader_app_install		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
