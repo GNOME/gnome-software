@@ -99,6 +99,7 @@ void		 appstream_app_set_userdata		(AppstreamApp	*app,
 void		 appstream_app_add_screenshot		(AppstreamApp	*app,
 							 AppstreamScreenshot *screenshot);
 GPtrArray	*appstream_app_get_screenshots		(AppstreamApp	*app);
+GPtrArray	*appstream_app_get_categories		(AppstreamApp	*app);
 gboolean	 appstream_app_search_matches		(AppstreamApp	*app,
 							 const gchar	*search);
 

@@ -62,6 +62,7 @@ struct GsAppPrivate
 	gchar			*summary;
 	gchar			*description;
 	GPtrArray		*screenshots;
+	GPtrArray		*categories;
 	gchar			*url;
 	gchar			*licence;
 	gchar			*update_version;
@@ -994,6 +995,53 @@ gs_app_set_install_date (GsApp *app, guint64 install_date)
 }
 
 /**
+ * gs_app_get_categories:
+ */
+GPtrArray *
+gs_app_get_categories (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->categories;
+}
+
+/**
+ * gs_app_has_category:
+ */
+gboolean
+gs_app_has_category (GsApp *app, const gchar *category)
+{
+	const gchar *tmp;
+	guint i;
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
+	/* nothing set */
+	if (app->priv->categories == NULL)
+		return FALSE;
+
+	/* find the category */
+	for (i = 0; i < app->priv->categories->len; i++) {
+		tmp = g_ptr_array_index (app->priv->categories, i);
+		if (g_strcmp0 (tmp, category) == 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * gs_app_set_categories:
+ */
+void
+gs_app_set_categories (GsApp *app, GPtrArray *categories)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (categories != NULL);
+	if (app->priv->categories != NULL)
+		g_ptr_array_unref (app->priv->categories);
+	app->priv->categories = g_ptr_array_ref (categories);
+}
+
+/**
  * gs_app_get_property:
  */
 static void
@@ -1231,6 +1279,8 @@ gs_app_finalize (GObject *object)
 		g_object_unref (priv->pixbuf);
 	if (priv->featured_pixbuf != NULL)
 		g_object_unref (priv->featured_pixbuf);
+	if (priv->categories != NULL)
+		g_ptr_array_unref (priv->categories);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }

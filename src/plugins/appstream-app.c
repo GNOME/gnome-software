@@ -42,7 +42,7 @@ struct AppstreamApp
 	gchar			*project_group;
 	gchar			*icon;
 	AppstreamAppIconKind	 icon_kind;
-	GPtrArray		*appcategories;
+	GPtrArray		*appcategories; /* of gchar* */
 	GPtrArray		*keywords;
 	gpointer		 userdata;
 	GDestroyNotify		 userdata_destroy_func;
@@ -397,6 +397,15 @@ GPtrArray *
 appstream_app_get_screenshots (AppstreamApp *app)
 {
 	return app->screenshots;
+}
+
+/**
+ * appstream_app_get_categories:
+ */
+GPtrArray *
+appstream_app_get_categories (AppstreamApp *app)
+{
+	return app->appcategories;
 }
 
 /**

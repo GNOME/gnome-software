@@ -158,6 +158,11 @@ void		 gs_app_add_history		(GsApp		*app,
 guint64		 gs_app_get_install_date	(GsApp		*app);
 void		 gs_app_set_install_date	(GsApp		*app,
 						 guint64	 install_date);
+GPtrArray	*gs_app_get_categories		(GsApp		*app);
+void		 gs_app_set_categories		(GsApp		*app,
+						 GPtrArray	*categories);
+gboolean	 gs_app_has_category		(GsApp		*app,
+						 const gchar	*category);
 
 G_END_DECLS
 

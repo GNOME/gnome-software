@@ -457,6 +457,10 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (appstream_app_get_icon (item) != NULL && gs_app_get_pixbuf (app) == NULL)
 		gs_plugin_refine_item_pixbuf (plugin, app, item);
 
+	/* set categories */
+	if (appstream_app_get_categories (item) != NULL && gs_app_get_categories (app) == NULL)
+		gs_app_set_categories (app, appstream_app_get_categories (item));
+
 	/* set project group */
 	if (appstream_app_get_project_group (item) != NULL &&
 	    gs_app_get_project_group (app) == NULL)
