@@ -381,8 +381,9 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	guint i = 0;
 	guint size;
 #if !PK_CHECK_VERSION(0,8,12)
-	gboolean matches;
 	gchar *tmp;
+	guint64 size_tmp;
+	gboolean matches;
 #endif
 
 	size = g_list_length (list);
@@ -419,6 +420,8 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				gs_app_set_licence (app, pk_details_get_license (details));
 			if (gs_app_get_url (app) == NULL)
 				gs_app_set_url (app, pk_details_get_url (details));
+			if (gs_app_get_size (app) == 0)
+				gs_app_set_size (app, pk_details_get_size (details));
 			if (gs_app_get_description (app) == NULL &&
 			    g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") != NULL) {
 				desc = gs_pk_format_desc (pk_details_get_description (details));
@@ -440,6 +443,10 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				g_object_get (details, "url", &tmp, NULL);
 				gs_app_set_licence (app, tmp);
 				g_free (tmp);
+			}
+			if (gs_app_get_size (app) == 0) {
+				g_object_get (details, "size", &size_tmp, NULL);
+				gs_app_set_size (app, size_tmp);
 			}
 			if (gs_app_get_description (app) == NULL &&
 			    g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") != NULL) {
@@ -481,6 +488,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_licence (app) != NULL &&
 		    gs_app_get_url (app) != NULL &&
+		    gs_app_get_size (app) != 0 &&
 		    (gs_app_get_description (app) != NULL ||
 		     g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") == NULL))
 			continue;
@@ -579,6 +587,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* any important details missing? */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0 ||
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0 ||
+	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 ||
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) > 0) {
 		ret = gs_plugin_refine_require_details (plugin,
 							list,

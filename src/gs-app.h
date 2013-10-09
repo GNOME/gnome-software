@@ -146,6 +146,9 @@ void		 gs_app_set_metadata		(GsApp		*app,
 gint		 gs_app_get_rating		(GsApp		*app);
 void		 gs_app_set_rating		(GsApp		*app,
 						 gint		 rating);
+guint64		 gs_app_get_size		(GsApp		*app);
+void		 gs_app_set_size		(GsApp		*app,
+						 guint64	 size);
 GPtrArray	*gs_app_get_related		(GsApp		*app);
 void		 gs_app_add_related		(GsApp		*app,
 						 GsApp		*app2);

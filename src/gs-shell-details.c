@@ -225,6 +225,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	GtkWidget *widget2;
 	GtkWidget *widget;
 	const gchar *tmp;
+	gchar *size;
 	guint i;
 
 	/* change widgets */
@@ -349,6 +350,17 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_version_value"));
 	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_version (priv->app));
 
+	/* set the size */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_size_value"));
+	if (gs_app_get_size (priv->app) == 0) {
+		/* TRANSLATORS: this is where the licence is not known */
+		gtk_label_set_label (GTK_LABEL (widget), _("Calculating…"));
+	} else {
+		size = g_format_size (gs_app_get_size (priv->app));
+		gtk_label_set_label (GTK_LABEL (widget), size);
+		g_free (size);
+	}
+
 	/* FIXME: This isn't ready yet */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_details_title"));
 	gtk_widget_set_visible (widget, FALSE);
@@ -405,6 +417,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	/* get extra details about the app */
 	gs_plugin_loader_app_refine_async (priv->plugin_loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
 					   priv->cancellable,
 					   gs_shell_details_app_refine_cb,

@@ -69,6 +69,7 @@ struct GsAppPrivate
 	gchar			*update_details;
 	gchar			*management_plugin;
 	gint			 rating;
+	guint64			 size;
 	GsAppKind		 kind;
 	GsAppState		 state;
 	GHashTable		*metadata;
@@ -894,6 +895,26 @@ gs_app_set_rating (GsApp *app, gint rating)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->priv->rating = rating;
+}
+
+/**
+ * gs_app_get_size:
+ */
+guint64
+gs_app_get_size (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), G_MAXUINT64);
+	return app->priv->size;
+}
+
+/**
+ * gs_app_set_size:
+ */
+void
+gs_app_set_size (GsApp *app, guint64 size)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	app->priv->size = size;
 }
 
 /**
