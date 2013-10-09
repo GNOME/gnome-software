@@ -414,6 +414,15 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 			gs_app_set_url (helper->app, tmp);
 		}
 		break;
+	case APPSTREAM_TAG_PROJECT_GROUP:
+		if (gs_app_get_project_group (helper->app) == NULL) {
+			tmp = appdata_xml_unmunge (text, text_len);
+			if (tmp == NULL)
+				break;
+			g_debug ("AppData: Setting project-group: %s", tmp);
+			gs_app_set_project_group (helper->app, tmp);
+		}
+		break;
 	default:
 		tmp = appdata_xml_unmunge (text, text_len);
 		if (tmp == NULL)
