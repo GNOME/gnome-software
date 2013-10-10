@@ -269,11 +269,11 @@ gs_plugin_loader_func (void)
 	/* create a dummy value */
 	app = gs_app_new ("self-test");
 	gs_app_set_rating (app, 35);
-	ret = gs_plugin_loader_app_set_rating (loader,
-					       app,
-					       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					       NULL,
-					       &error);
+	ret = gs_plugin_loader_app_action (loader,
+					   app,
+					   GS_PLUGIN_LOADER_ACTION_SET_RATING,
+					   NULL,
+					   &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 

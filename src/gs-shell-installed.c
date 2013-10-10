@@ -108,19 +108,35 @@ gs_shell_installed_remove_row (GtkListBox *list_box, GtkWidget *child)
 }
 
 /**
- * gs_shell_installed_finished_func:
+ * gs_shell_installed_app_removed_cb:
  **/
 static void
-gs_shell_installed_finished_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
+gs_shell_installed_app_removed_cb (GObject *source,
+				   GAsyncResult *res,
+				   gpointer user_data)
 {
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellInstalledHelper *helper = (GsShellInstalledHelper *) user_data;
 	GsShellInstalledPrivate *priv = helper->shell_installed->priv;
+	GsApp *app;
+	gboolean ret;
 
-	/* remove from the list */
-	if (app != NULL) {
+	ret = gs_plugin_loader_app_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (!ret) {
+		app = gs_app_widget_get_app (helper->app_widget);
+		g_warning ("failed to remove %s: %s",
+			   gs_app_get_id (app),
+			   error->message);
+		g_error_free (error);
+	} else {
+		/* remove from the list */
 		gs_shell_installed_remove_row (GTK_LIST_BOX (priv->list_box_installed),
 					       GTK_WIDGET (helper->app_widget));
 	}
+
 	g_object_unref (helper->app_widget);
 	g_object_unref (helper->shell_installed);
 	g_free (helper);
@@ -169,12 +185,12 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 		helper = g_new0 (GsShellInstalledHelper, 1);
 		helper->shell_installed = g_object_ref (shell_installed);
 		helper->app_widget = g_object_ref (app_widget);
-		gs_plugin_loader_app_remove (priv->plugin_loader,
-					     app,
-					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					     priv->cancellable,
-					     gs_shell_installed_finished_func,
-					     helper);
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+						   app,
+						   GS_PLUGIN_LOADER_ACTION_REMOVE,
+						   priv->cancellable,
+						   gs_shell_installed_app_removed_cb,
+						   helper);
 	}
 	g_string_free (markup, TRUE);
 	gtk_widget_destroy (dialog);

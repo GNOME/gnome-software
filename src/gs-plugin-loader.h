@@ -61,6 +61,13 @@ typedef enum
 	GS_PLUGIN_LOADER_ERROR_LAST
 } GsPluginLoaderError;
 
+typedef enum {
+	GS_PLUGIN_LOADER_ACTION_INSTALL,
+	GS_PLUGIN_LOADER_ACTION_REMOVE,
+	GS_PLUGIN_LOADER_ACTION_SET_RATING,
+	GS_PLUGIN_LOADER_ACTION_LAST
+} GsPluginLoaderAction;
+
 typedef void	 (*GsPluginLoaderFinishedFunc)		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 gpointer	 user_data);
@@ -144,22 +151,14 @@ void		 gs_plugin_loader_app_refine_async	(GsPluginLoader	*plugin_loader,
 gboolean	 gs_plugin_loader_app_refine_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
-void		 gs_plugin_loader_app_install		(GsPluginLoader	*plugin_loader,
+void		 gs_plugin_loader_app_action_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
-							 GsPluginRefineFlags flags,
+							 GsPluginLoaderAction a,
 							 GCancellable	*cancellable,
-							 GsPluginLoaderFinishedFunc func,
+							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
-void		 gs_plugin_loader_app_remove		(GsPluginLoader	*plugin_loader,
-							 GsApp		*app,
-							 GsPluginRefineFlags flags,
-							 GCancellable	*cancellable,
-							 GsPluginLoaderFinishedFunc func,
-							 gpointer	 user_data);
-gboolean	 gs_plugin_loader_app_set_rating	(GsPluginLoader	*plugin_loader,
-							 GsApp		*app,
-							 GsPluginRefineFlags flags,
-							 GCancellable	*cancellable,
+gboolean	 gs_plugin_loader_app_action_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
 							 GError		**error);
 GsAppState	 gs_plugin_loader_get_state_for_app	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app);

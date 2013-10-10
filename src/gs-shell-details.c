@@ -556,21 +556,57 @@ gs_shell_details_get_app (GsShellDetails *shell_details)
 	return shell_details->priv->app;
 }
 
+/**
+ * gs_shell_details_app_installed_cb:
+ **/
 static void
-gs_shell_details_installed_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
+gs_shell_details_app_installed_cb (GObject *source,
+				   GAsyncResult *res,
+				   gpointer user_data)
 {
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
-	gs_shell_details_refresh (shell_details);
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	gboolean ret;
 
-	if (app) {
-		gs_app_notify_installed (app);
+	ret = gs_plugin_loader_app_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (!ret) {
+		g_warning ("failed to install %s: %s",
+			   gs_app_get_id (priv->app),
+			   error->message);
+		g_error_free (error);
+		return;
 	}
+	gs_app_notify_installed (priv->app);
 }
 
+/**
+ * gs_shell_details_app_removed_cb:
+ **/
 static void
-gs_shell_details_removed_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
+gs_shell_details_app_removed_cb (GObject *source,
+				 GAsyncResult *res,
+				 gpointer user_data)
 {
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	gboolean ret;
+
+	ret = gs_plugin_loader_app_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (!ret) {
+		g_warning ("failed to remove %s: %s",
+			   gs_app_get_id (priv->app),
+			   error->message);
+		g_error_free (error);
+		return;
+	}
 	gs_shell_details_refresh (shell_details);
 }
 
@@ -610,12 +646,12 @@ gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *shell_
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (response == GTK_RESPONSE_OK) {
 		g_debug ("remove %s", gs_app_get_id (priv->app));
-		gs_plugin_loader_app_remove (priv->plugin_loader,
-					     priv->app,
-					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					     priv->cancellable,
-					     gs_shell_details_removed_func,
-					     shell_details);
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+						   priv->app,
+						   GS_PLUGIN_LOADER_ACTION_REMOVE,
+						   priv->cancellable,
+						   gs_shell_details_app_removed_cb,
+						   shell_details);
 	}
 	g_string_free (markup, TRUE);
 	gtk_widget_destroy (dialog);
@@ -628,12 +664,12 @@ static void
 gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	gs_plugin_loader_app_install (priv->plugin_loader,
-				      priv->app,
-				      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-				      priv->cancellable,
-				      gs_shell_details_installed_func,
-				      shell_details);
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+					   priv->app,
+					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   priv->cancellable,
+					   gs_shell_details_app_installed_cb,
+					   shell_details);
 }
 
 /**

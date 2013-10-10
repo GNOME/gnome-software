@@ -62,20 +62,57 @@ gs_shell_search_app_widget_activated_cb (GtkListBox *list_box,
 	gs_shell_show_app (shell_search->priv->shell, app);
 }
 
+typedef struct {
+	GsApp			*app;
+	GsShellSearch		*shell_search;
+} GsShellSearchHelper;
+
 static void
-gs_shell_search_installed_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
+gs_shell_search_app_installed_cb (GObject *source,
+				  GAsyncResult *res,
+				  gpointer user_data)
 {
-	if (app) {
-		gs_app_notify_installed (app);
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsShellSearchHelper *helper = (GsShellSearchHelper *) user_data;
+	gboolean ret;
+
+	ret = gs_plugin_loader_app_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (!ret) {
+		g_warning ("failed to install %s: %s",
+			   gs_app_get_id (helper->app),
+			   error->message);
+		g_error_free (error);
+	} else {
+		gs_app_notify_installed (helper->app);
 	}
+	g_object_unref (helper->app);
+	g_object_unref (helper->shell_search);
+	g_free (helper);
 }
 
 /**
  * gs_shell_search_finished_func:
  **/
 static void
-gs_shell_search_removed_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
+gs_shell_search_app_removed_cb (GObject *source,
+				GAsyncResult *res,
+				gpointer user_data)
 {
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	gboolean ret;
+
+	ret = gs_plugin_loader_app_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (!ret) {
+		g_warning ("failed to remove: %s",
+			   error->message);
+		g_error_free (error);
+	}
 }
 
 /**
@@ -114,12 +151,12 @@ gs_shell_search_app_remove (GsShellSearch *shell_search, GsApp *app)
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (response == GTK_RESPONSE_OK) {
 		g_debug ("remove %s", gs_app_get_id (app));
-		gs_plugin_loader_app_remove (priv->plugin_loader,
-					     app,
-					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					     priv->cancellable,
-					     gs_shell_search_removed_func,
-					     shell_search);
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+						   app,
+						   GS_PLUGIN_LOADER_ACTION_REMOVE,
+						   priv->cancellable,
+						   gs_shell_search_app_removed_cb,
+						   shell_search);
 	}
 	g_string_free (markup, TRUE);
 	gtk_widget_destroy (dialog);
@@ -132,12 +169,16 @@ static void
 gs_shell_search_app_install (GsShellSearch *shell_search, GsApp *app)
 {
 	GsShellSearchPrivate *priv = shell_search->priv;
-	gs_plugin_loader_app_install (priv->plugin_loader,
-				      app,
-				      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-				      priv->cancellable,
-				      gs_shell_search_installed_func,
-				      shell_search);
+	GsShellSearchHelper *helper;
+	helper = g_new0 (GsShellSearchHelper, 1);
+	helper->app = g_object_ref (app);
+	helper->shell_search = g_object_ref (shell_search);
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+					   app,
+					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   priv->cancellable,
+					   gs_shell_search_app_installed_cb,
+					   helper);
 }
 
 /**
