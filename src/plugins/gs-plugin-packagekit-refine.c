@@ -478,7 +478,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 			if (gs_app_get_description (app) == NULL &&
 			    g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") != NULL) {
 				g_object_get (details, "description", &tmp, NULL);
-				desc = gs_pk_format_desc (tmp)
+				desc = gs_pk_format_desc (tmp);
 				g_free (tmp);
 				gs_app_set_description (app, desc);
 				g_free (desc);
