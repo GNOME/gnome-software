@@ -297,6 +297,50 @@ gs_shell_details_website_cb (GtkWidget *widget, GsShellDetails *shell_details)
 }
 
 /**
+ * gs_shell_details_set_description:
+ **/
+static void
+gs_shell_details_set_description (GsShellDetails *shell_details, const gchar *tmp)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	GtkStyleContext *style_context;
+	GtkWidget *para;
+	GtkWidget *widget;
+	gchar **split = NULL;
+	guint i;
+
+	/* does the description exist? */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+						     "box_details_description"));
+	gtk_widget_set_visible (widget, tmp != NULL);
+	if (tmp == NULL)
+		goto out;
+
+	/* add each paragraph as a new GtkLabel which lets us get the 24px
+	 * paragraph spacing */
+	gs_container_remove_all (GTK_CONTAINER (widget));
+	split = g_strsplit (tmp, "\n\n", -1);
+	for (i = 0; split[i] != NULL; i++) {
+		para = gtk_label_new (split[i]);
+		gtk_label_set_line_wrap (GTK_LABEL (para), TRUE);
+		gtk_label_set_max_width_chars (GTK_LABEL (para), 80);
+		gtk_widget_set_visible (para, TRUE);
+		g_object_set (para,
+			      "xalign", 0.0,
+			      NULL);
+
+		/* add style class for theming */
+		style_context = gtk_widget_get_style_context (para);
+		gtk_style_context_add_class (style_context,
+					     "application-details-description");
+
+		gtk_box_pack_start (GTK_BOX (widget), para, FALSE, FALSE, 0);
+	}
+out:
+	g_strfreev (split);
+}
+
+/**
  * gs_shell_details_refresh_all:
  **/
 static void
@@ -330,15 +374,12 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	} else {
 		gtk_widget_set_visible (widget, FALSE);
 	}
+
+	/* set the description */
 	tmp = gs_app_get_description (priv->app);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_description"));
-	if (tmp != NULL && tmp[0] != '\0') {
-		gtk_label_set_label (GTK_LABEL (widget), tmp);
-		gtk_widget_set_visible (widget, TRUE);
-	} else {
-		gtk_widget_set_visible (widget, FALSE);
-	}
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_description_header"));
+	gs_shell_details_set_description (shell_details, tmp);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+						     "application_details_description_header"));
 	gtk_widget_set_visible (widget, tmp != NULL);
 
 	pixbuf = gs_app_get_pixbuf (priv->app);
