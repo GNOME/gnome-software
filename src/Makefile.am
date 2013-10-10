@@ -127,9 +127,11 @@ gs_self_test_SOURCES =						\
 	gs-plugin.c						\
 	gs-profile.c						\
 	gs-screenshot.c						\
+	gs-utils.c						\
 	gs-self-test.c
 
 gs_self_test_LDADD =						\
+	$(NOTIFY_LIBS)						\
 	$(GLIB_LIBS)						\
 	$(GTK_LIBS)
 

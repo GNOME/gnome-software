@@ -311,6 +311,7 @@ gs_plugin_loader_refine_func (void)
 	g_assert (ret);
 
 	/* get the extra bits */
+	g_setenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS", "1", TRUE);
 	app = gs_app_new ("gimp");
 	gs_app_set_source (app, "gimp");
 	ret = gs_plugin_loader_app_refine (loader, app,
