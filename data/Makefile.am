@@ -13,11 +13,8 @@ dist_resources_DATA =					\
 	featured-weather-bg.png   \
 	featured-xchat.png				\
 	featured.ini					\
-	stars0.png					\
-	stars1.png					\
-	stars2.png					\
-	stars3.png					\
-	stars4.png          
+	gs-star-dim.png					\
+	gs-star.png
 
 install-sample-data:
 	wget -O fedora-20.xml.gz http://people.freedesktop.org/~hughsient/temp/fedora-20.xml.gz; \

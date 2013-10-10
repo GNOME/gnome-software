@@ -29,7 +29,7 @@ UI_FILES =						\
 	category-tile.ui				\
 	feature-tile.ui					\
 	gnome-software.ui				\
-	gnome-software.ui				\
+	gs-star-widget.ui				\
 	screenshot-image.ui				\
 	popular-tile.ui
 
@@ -47,6 +47,8 @@ gnome_software_SOURCES =				\
 	gs-category.h					\
 	gs-app-widget.c					\
 	gs-app-widget.h					\
+	gs-star-widget.c				\
+	gs-star-widget.h				\
 	gs-popular-tile.c				\
 	gs-popular-tile.h				\
 	gs-feature-tile.c				\

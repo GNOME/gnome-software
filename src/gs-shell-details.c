@@ -29,6 +29,7 @@
 
 #include "gs-shell-details.h"
 #include "gs-screenshot-image.h"
+#include "gs-star-widget.h"
 
 static void	gs_shell_details_finalize	(GObject	*object);
 
@@ -45,6 +46,7 @@ struct GsShellDetailsPrivate
 	GtkSizeGroup		*history_sizegroup_state;
 	GtkSizeGroup		*history_sizegroup_timestamp;
 	GtkSizeGroup		*history_sizegroup_version;
+	GtkWidget		*star;
 	SoupSession		*session;
 };
 
@@ -473,6 +475,10 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		gtk_label_set_label (GTK_LABEL (widget), tmp);
 	}
 
+	/* set the rating */
+	gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
+				   gs_app_get_rating (priv->app));
+
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
@@ -803,6 +809,25 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 }
 
 /**
+ * gs_shell_details_rating_changed_cb:
+ **/
+static void
+gs_shell_details_rating_changed_cb (GsStarWidget *star,
+				    guint rating,
+				    GsShellDetails *shell_details)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+
+	g_debug ("%s rating changed from %i%% to %i%%",
+		 gs_app_get_id (priv->app),
+		 gs_app_get_rating (priv->app),
+		 rating);
+
+	/* FIXME: call into the plugins to set the new value */
+	gs_app_set_rating (priv->app, rating);
+}
+
+/**
  * gs_shell_details_setup:
  */
 void
@@ -825,6 +850,16 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);
+
+	/* set up star ratings */
+	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+						 "box_details_header"));
+	priv->star = gs_star_widget_new ();
+	g_signal_connect (priv->star, "rating-changed",
+			  G_CALLBACK (gs_shell_details_rating_changed_cb),
+			  shell_details);
+	gtk_widget_set_visible (priv->star, TRUE);
+	gtk_box_pack_start (GTK_BOX (sw), priv->star, FALSE, FALSE, 0);
 
 	/* setup history */
 	list_box = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_history"));
