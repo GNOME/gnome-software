@@ -915,12 +915,10 @@
                   <object class="GtkGrid" id="grid_details_details">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
-                    <property name="halign">fill</property>
+                    <property name="halign">center</property>
                     <property name="row_spacing">6</property>
                     <property name="column_spacing">12</property>
                     <property name="row-homogeneous">True</property>
-                    <property name="column-homogeneous">True</property>
-
                     <child>
                       <object class="GtkLabel" id="label_details_version_title">
                         <property name="visible">True</property>
@@ -1021,6 +1019,7 @@
                         <property name="can_focus">False</property>
                         <property name="xalign">1</property>
                         <property name="label" translatable="yes">Licence</property>
+                        <property name="margin_left">42</property>
                         <style>
                           <class name="dim-label"/>
                         </style>
@@ -1053,6 +1052,7 @@
                         <property name="can_focus">False</property>
                         <property name="xalign">1</property>
                         <property name="label" translatable="yes">Size</property>
+                        <property name="margin_left">42</property>
                         <style>
                           <class name="dim-label"/>
                         </style>
@@ -1084,6 +1084,7 @@
                         <property name="can_focus">False</property>
                         <property name="xalign">1</property>
                         <property name="label" translatable="yes">Developer</property>
+                        <property name="margin_left">42</property>
                         <style>
                           <class name="dim-label"/>
                         </style>
