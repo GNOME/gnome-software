@@ -402,11 +402,17 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		g_free (size);
 	}
 
-	/* FIXME: This isn't ready yet */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_details_title"));
-	gtk_widget_set_visible (widget, FALSE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_details_details"));
-	gtk_widget_set_visible (widget, FALSE);
+	/* set the category */
+	tmp = gs_app_get_menu_path (priv->app);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+						     "label_details_category_value"));
+	if (tmp == NULL || tmp[0] == '\0') {
+		/* TRANSLATORS: this is the application isn't in any
+		 * defined menu category */
+		gtk_label_set_label (GTK_LABEL (widget), _("None"));
+	} else {
+		gtk_label_set_label (GTK_LABEL (widget), tmp);
+	}
 
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (priv->app);
