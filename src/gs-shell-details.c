@@ -845,6 +845,31 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 }
 
 /**
+ * gs_shell_details_app_set_ratings_cb:
+ **/
+static void
+gs_shell_details_app_set_ratings_cb (GObject *source,
+				GAsyncResult *res,
+				gpointer user_data)
+{
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	gboolean ret;
+
+	ret = gs_plugin_loader_app_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (!ret) {
+		g_warning ("failed to set rating %s: %s",
+			   gs_app_get_id (priv->app),
+			   error->message);
+		g_error_free (error);
+	}
+}
+
+/**
  * gs_shell_details_rating_changed_cb:
  **/
 static void
@@ -859,8 +884,13 @@ gs_shell_details_rating_changed_cb (GsStarWidget *star,
 		 gs_app_get_rating (priv->app),
 		 rating);
 
-	/* FIXME: call into the plugins to set the new value */
+	/* call into the plugins to set the new value */
 	gs_app_set_rating (priv->app, rating);
+	gs_plugin_loader_app_action_async (priv->plugin_loader, priv->app,
+					   GS_PLUGIN_LOADER_ACTION_SET_RATING,
+					   priv->cancellable,
+					   gs_shell_details_app_set_ratings_cb,
+					   shell_details);
 }
 
 /**
