@@ -79,7 +79,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 gdouble
 gs_plugin_get_priority (GsPlugin *plugin)
 {
-	return -99.0f;
+	return -100.0f;
 }
 
 /**
