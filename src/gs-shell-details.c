@@ -278,6 +278,25 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 }
 
 /**
+ * gs_shell_details_website_cb:
+ **/
+static void
+gs_shell_details_website_cb (GtkWidget *widget, GsShellDetails *shell_details)
+{
+	GError *error = NULL;
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	const gchar *url;
+	gboolean ret;
+
+	url = gs_app_get_url (priv->app);
+	ret = gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error);
+	if (!ret) {
+		g_warning ("spawn of '%s' failed", url);
+		g_error_free (error);
+	}
+}
+
+/**
  * gs_shell_details_refresh_all:
  **/
 static void
@@ -332,9 +351,8 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	}
 
 	tmp = gs_app_get_url (priv->app);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_url"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_details_website"));
 	if (tmp != NULL && tmp[0] != '\0') {
-		gtk_link_button_set_uri (GTK_LINK_BUTTON (widget), tmp);
 		gtk_widget_set_visible (widget, TRUE);
 	} else {
 		gtk_widget_set_visible (widget, FALSE);
@@ -786,6 +804,10 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_details_app_history_button_cb),
+			  shell_details);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_details_website"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_details_website_cb),
 			  shell_details);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history_close"));
 	g_signal_connect (widget, "clicked",
