@@ -164,7 +164,8 @@ gs_application_startup (GApplication *application)
 	gs_plugin_loader_set_enabled (app->plugin_loader, "hardcoded-popular", TRUE);
 	gs_plugin_loader_set_enabled (app->plugin_loader, "hardcoded-ratings", TRUE);
 	gs_plugin_loader_set_enabled (app->plugin_loader, "hardcoded-screenshots", TRUE);
-	gs_plugin_loader_set_enabled (app->plugin_loader, "hardcoded-menu-spec", TRUE);
+	gs_plugin_loader_set_enabled (app->plugin_loader, "menu-spec-categories", TRUE);
+	gs_plugin_loader_set_enabled (app->plugin_loader, "menu-spec-refine", TRUE);
 	gs_plugin_loader_set_enabled (app->plugin_loader, "local-ratings", TRUE);
 	gs_plugin_loader_set_enabled (app->plugin_loader, "packagekit", TRUE);
 	gs_plugin_loader_set_enabled (app->plugin_loader, "systemd-updates", TRUE);
