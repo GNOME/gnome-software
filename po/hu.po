@@ -9,16 +9,48 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-21 00:54+0000\n"
-"PO-Revision-Date: 2013-09-21 19:38+0200\n"
-"Last-Translator: Balázs Úr <urbalazs at gmail dot com>\n"
-"Language-Team: Hungarian <gnome-hu-list@gnome.org>\n"
+"POT-Creation-Date: 2013-09-24 23:50+0000\n"
+"PO-Revision-Date: 2013-10-10 15:09+0200\n"
+"Last-Translator: Gabor Kelemen <kelemeng at gnome dot hu>\n"
+"Language-Team: Hungarian <openscope at googlegroups dot com>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.2\n"
+"X-Generator: Lokalize 1.5\n"
+
+#: ../data/gnome-software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "Alkalmazáskezelő a GNOME-hoz"
+
+#: ../data/gnome-software.appdata.xml.in.h:2
+msgid ""
+"GNOME Software lets you install, remove and update applications and system "
+"extensions. It also allows you to update your system using an offline update."
+msgstr ""
+"A GNOME szoftverek lehetővé teszi alkalmazások és rendszerkiterjesztések "
+"telepítését, eltávolítását és frissítését. Lehetővé teszi a rendszer "
+"frissítését kapcsolat nélküli frissítés használatával is."
+
+#: ../data/gnome-software.appdata.xml.in.h:3
+msgid "Goals:"
+msgstr "Célok:"
+
+#: ../data/gnome-software.appdata.xml.in.h:4
+msgid ""
+"<li>View installed applications</li> <li>Remove installed applications</li> "
+"<li>View available application updates</li> <li>Install available updates</"
+"li> <li>Find new applications</li> <li>Install new applications</li> "
+"<li>Find an application to handle a specific type of file</li> <li>Installed "
+"apps and updates should be available when offline</li>"
+msgstr ""
+"<li>Telepített alkalmazások megjelenítése</li> <li>Telepített alkalmazások "
+"eltávolítása</li> <li>Elérhető alkalmazásfrissítések megjelenítése</li> <li>"
+"Elérhető frissítések telepítése</li> <li>Új alkalmazások keresése</li> <li>Új "
+"alkalmazások telepítése</li> <li>Adott fájltípus kezelésére képes alkalmazás "
+"keresése</li> <li>A telepített appok és frissítések kapcsolat nélküli módban "
+"is elérhetők kell legyenek</li>"
 
 #: ../src/app-menu.ui.h:1
 msgid "_About"
@@ -30,7 +62,8 @@ msgstr "_Kilépés"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#: ../src/app-tile.ui.h:1 ../src/gs-shell-details.c:397
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:76
+#: ../src/gs-popular-tile.c:77 ../src/gs-shell-details.c:397
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Telepítve"
@@ -120,7 +153,6 @@ msgid "Software is up to date"
 msgstr "A szoftverek naprakészek"
 
 #: ../src/gnome-software.ui.h:19
-#| msgid "Visit website"
 msgid "Visit _Website"
 msgstr "_Honlap felkeresése"
 
@@ -155,12 +187,12 @@ msgstr ""
 
 #. TRANSLATORS: this is a command line option, please don't
 #. * translate the option names between ‘’
-#: ../src/gs-application.c:223
+#: ../src/gs-application.c:222
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Indítási mód: az „updates”, „updated”, „installed” vagy „overwiew” egyike"
 
-#: ../src/gs-application.c:223
+#: ../src/gs-application.c:222
 msgid "MODE"
 msgstr "MÓD"
 
@@ -244,7 +276,6 @@ msgstr "Ismeretlen"
 #. * applications either installing or erasing
 #: ../src/gs-shell-installed.c:412
 #, c-format
-#| msgid "Installed (%d)"
 msgid "_Installed (%d)"
 msgstr "_Telepítve (%d)"
 
@@ -254,7 +285,6 @@ msgstr "_Telepítve (%d)"
 #.
 #: ../src/gs-shell-updates.c:105
 #, c-format
-#| msgid "_Updates"
 msgid "_Updates (%d)"
 msgstr "_Frissítések (%d)"
 
@@ -278,7 +308,6 @@ msgstr "Indítás"
 
 #: ../src/plugins/gs-plugin-appstream.c:198
 #, c-format
-#| msgid "No Application Data Found"
 msgid "No AppStream data found"
 msgstr "Nem találhatók alkalmazásadatok"
 
