@@ -361,6 +361,31 @@ gs_pk_format_desc (const gchar *text)
 }
 
 /**
+ * gs_pk_compare_ids:
+ *
+ * Do not compare the repo. Some backends do not append the origin.
+ */
+static gboolean
+gs_pk_compare_ids (const gchar *package_id1, const gchar *package_id2)
+{
+	gchar **split1;
+	gchar **split2;
+	gboolean ret;
+
+	split1 = pk_package_id_split (package_id1);
+	split2 = pk_package_id_split (package_id2);
+	ret = (g_strcmp0 (split1[PK_PACKAGE_ID_NAME],
+			  split2[PK_PACKAGE_ID_NAME]) == 0 &&
+	       g_strcmp0 (split1[PK_PACKAGE_ID_VERSION],
+			  split2[PK_PACKAGE_ID_VERSION]) == 0 &&
+	       g_strcmp0 (split1[PK_PACKAGE_ID_ARCH],
+			  split2[PK_PACKAGE_ID_ARCH]) == 0);
+	g_strfreev (split1);
+	g_strfreev (split2);
+	return ret;
+}
+
+/**
  * gs_plugin_packagekit_refine_details:
  */
 static gboolean
@@ -414,8 +439,10 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 			/* right package? */
 			details = g_ptr_array_index (array, i);
 #if PK_CHECK_VERSION(0,8,12)
-			if (g_strcmp0 (package_id, pk_details_get_package_id (details)) != 0)
+			if (!gs_pk_compare_ids (package_id,
+						pk_details_get_package_id (details)) != 0) {
 				continue;
+			}
 			if (gs_app_get_licence (app) == NULL)
 				gs_app_set_licence (app, pk_details_get_license (details));
 			if (gs_app_get_url (app) == NULL)
@@ -430,9 +457,9 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 			}
 #else
 			g_object_get (details, "package-id", &tmp, NULL);
-			matches = g_strcmp0 (package_id, tmp) != 0;
+			matches = gs_pk_compare_ids (package_id, tmp);
 			g_free (tmp);
-			if (matches)
+			if (!matches)
 				continue;
 			if (gs_app_get_licence (app) == NULL) {
 				g_object_get (details, "license", &tmp, NULL);
