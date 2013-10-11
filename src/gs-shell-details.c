@@ -229,8 +229,12 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 						     "box_details_screenshot_main"));
 	gs_container_remove_all (GTK_CONTAINER (widget));
 	screenshots = gs_app_get_screenshots (priv->app);
-	if (screenshots->len == 0)
+	if (screenshots->len == 0) {
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+							     "box_details_screenshot_thumbnails"));
+		gs_container_remove_all (GTK_CONTAINER (widget));
 		return;
+	}
 
 	/* set the default image */
 	ss = g_ptr_array_index (screenshots, 0);
