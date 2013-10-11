@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-09-26 18:17+0000\n"
-"PO-Revision-Date: 2013-09-25 10:44-0300\n"
+"POT-Creation-Date: 2013-10-10 16:32+0000\n"
+"PO-Revision-Date: 2013-10-08 15:25-0300\n"
 "Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -20,58 +20,32 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
-"X-Generator: Poedit 1.5.7\n"
+"X-Generator: Poedit 1.5.4\n"
 
-#: ../data/gnome-software.appdata.xml.in.h:1
+#: ../data/appdata/gnome-software.appdata.xml.in.h:1
 msgid "Application manager for GNOME"
 msgstr "Gerenciador de aplicativos para o GNOME"
 
-#: ../data/gnome-software.appdata.xml.in.h:2
+#: ../data/appdata/gnome-software.appdata.xml.in.h:2
 msgid ""
-"GNOME Software lets you install, remove and update applications and system "
-"extensions. It also allows you to update your system using an offline update."
+"Software allows you to find and install new applications and system "
+"extensions and remove existing installed applications."
 msgstr ""
-"O GNOME Softwares permite que você instale, remova e atualize aplicativos e "
-"extensões do sistema. Também permite que você atualize seu sistema usando "
-"uma atualização sem estar conectado a internet."
+"O aplicativo Software permite que você encontre e instale novos aplicativos "
+"e extensões do sistema, além de remover aplicativos já instalados."
 
-#: ../data/gnome-software.appdata.xml.in.h:3
-msgid "Software has the following goals:"
-msgstr "O Softwares tem os seguintes objetivos:"
-
-#: ../data/gnome-software.appdata.xml.in.h:4
-msgid "View installed applications"
-msgstr "Ver aplicativos instalados"
-
-#: ../data/gnome-software.appdata.xml.in.h:5
-msgid "Remove installed applications"
-msgstr "Remover aplicativos instalados"
-
-#: ../data/gnome-software.appdata.xml.in.h:6
-msgid "View available application updates"
-msgstr "Ver atualizações disponíveis de aplicativos"
-
-#: ../data/gnome-software.appdata.xml.in.h:7
-msgid "Install available updates"
-msgstr "Instalar as atualizações disponíveis"
-
-#: ../data/gnome-software.appdata.xml.in.h:8
-msgid "Find new applications"
-msgstr "Localizar novos aplicativos"
-
-#: ../data/gnome-software.appdata.xml.in.h:9
-msgid "Install new applications"
-msgstr "Instalar novos aplicativos"
-
-#: ../data/gnome-software.appdata.xml.in.h:10
-msgid "Find an application to handle a specific type of file"
-msgstr "Encontrar um aplicativo para manipular tipos específicos de arquivos"
-
-#: ../data/gnome-software.appdata.xml.in.h:11
-msgid "Installed apps and updates should be available when offline"
+#: ../data/appdata/gnome-software.appdata.xml.in.h:3
+msgid ""
+"GNOME Software showcases featured and popular applications with useful "
+"descriptions and multiple screenshots per application. Applications can be "
+"found either through browsing the list of categories or by searching. It "
+"also allows you to update your system using an offline update."
 msgstr ""
-"Atualizações e aplicativos instalados devem estar disponíveis quando "
-"desconectado da Internet"
+"O GNOME Softwares mostra aplicativos populares em destaque com descrições "
+"úteis e múltiplas capturas de tela per aplicativo. Aplicativos podem ser "
+"encontradas tanto navegando a lista de categorias quanto pesquisando. Ele "
+"também permite que você atualize seu sistema usando uma atualização sem "
+"estar conectado a internet."
 
 #: ../src/app-menu.ui.h:1
 msgid "_About"
@@ -85,9 +59,9 @@ msgstr "_Sair"
 #. * that tells the user the application is installed
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:79 ../src/gs-app-tile.c:82
-#: ../src/gs-feature-tile.c:75 ../src/gs-popular-tile.c:78
-#: ../src/gs-popular-tile.c:81 ../src/gs-shell-details.c:397
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
+#: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:728
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalado"
@@ -95,7 +69,7 @@ msgstr "Instalado"
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
-#: ../src/gs-application.c:89 ../src/gs-shell.c:128
+#: ../src/gs-application.c:87 ../src/gs-shell.c:128
 msgid "Software"
 msgstr "Softwares"
 
@@ -115,7 +89,7 @@ msgstr "_Todos"
 #. Translators: A label for a button to show only software which is already installed.
 #. TRANSLATORS: this is tab button to show the list of
 #. * installed software
-#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:407
+#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:445
 msgid "_Installed"
 msgstr "_Instalados"
 
@@ -136,7 +110,7 @@ msgstr "Reiniciar & instalar"
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
 #: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:112
-#: ../src/gs-shell-details.c:91
+#: ../src/gs-shell-details.c:95
 msgid "Install"
 msgstr "Instalar"
 
@@ -144,10 +118,9 @@ msgstr "Instalar"
 #. * allows the application to be easily removed
 #. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:120
-#: ../src/gs-app-widget.c:132 ../src/gs-shell-details.c:123
-#: ../src/gs-shell-details.c:314 ../src/gs-shell-installed.c:165
-#: ../src/gs-shell-search.c:113
+#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:121
+#: ../src/gs-shell-details.c:128 ../src/gs-shell-details.c:645
+#: ../src/gs-shell-installed.c:181 ../src/gs-shell-search.c:150
 msgid "Remove"
 msgstr "Remover"
 
@@ -178,33 +151,71 @@ msgid "Software is up to date"
 msgstr "O software está atualizado"
 
 #: ../src/gnome-software.ui.h:19
-msgid "Visit _Website"
-msgstr "Visitar site da _web"
+msgid "Description"
+msgstr "Descrição"
 
 #: ../src/gnome-software.ui.h:20
+msgid "Details"
+msgstr "Detalhes"
+
+#: ../src/gnome-software.ui.h:21
+msgid "Version"
+msgstr "Versão"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gnome-software.ui.h:22 ../src/gs-shell-details.c:733
+msgid "Updated"
+msgstr "Atualizado"
+
+#: ../src/gnome-software.ui.h:23
+msgid "Category"
+msgstr "Categoria"
+
+#: ../src/gnome-software.ui.h:24
+msgid "Licence"
+msgstr "Licença"
+
+#: ../src/gnome-software.ui.h:25
+msgid "Size"
+msgstr "Tamanho"
+
+#: ../src/gnome-software.ui.h:26
+msgid "Developer"
+msgstr "Desenvolvimento"
+
+#: ../src/gnome-software.ui.h:27
+msgid "Support"
+msgstr "Suporte"
+
+#: ../src/gnome-software.ui.h:28
+msgid "_Website"
+msgstr "Site da _web"
+
+#: ../src/gnome-software.ui.h:29
 msgid "_History"
 msgstr "_Histórico"
 
-#: ../src/gnome-software.ui.h:21
+#: ../src/gnome-software.ui.h:30
 msgid "History"
 msgstr "Histórico"
 
 #. Translators: Label for a button to close the update dialogue.
-#: ../src/gnome-software.ui.h:23
+#: ../src/gnome-software.ui.h:32
 msgid "Done"
 msgstr "Concluído"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:87
+#: ../src/gs-application.c:85
 msgid "About Software"
 msgstr "Sobre Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:92
+#: ../src/gs-application.c:90
 msgid "A nice way to manage the software on your system."
 msgstr "Um modo agradável de gerenciar softwares no seu sistema."
 
-#: ../src/gs-application.c:96
+#: ../src/gs-application.c:94
 msgid "translator-credits"
 msgstr ""
 "Rafael Ferreira <rafael.f.f1@gmail.com>, 2013.\n"
@@ -213,103 +224,147 @@ msgstr ""
 
 #. TRANSLATORS: this is a command line option, please don't
 #. * translate the option names between ‘’
-#: ../src/gs-application.c:223
+#: ../src/gs-application.c:215
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Modo de inicialização, podendo ser 'atualizações', 'instalados' ou 'visão "
 "geral'"
 
-#: ../src/gs-application.c:223
+#: ../src/gs-application.c:215
 msgid "MODE"
 msgstr "MODO"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:88 ../src/gs-app-tile.c:92 ../src/gs-feature-tile.c:80
-#: ../src/gs-popular-tile.c:87 ../src/gs-popular-tile.c:91
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:93 ../src/gs-feature-tile.c:81
+#: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
 msgid "Updates"
 msgstr "Atualizações"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be updated. not normally shown
-#: ../src/gs-app-widget.c:130
-msgid "Update"
-msgstr "Atualizar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-app-widget.c:142 ../src/gs-shell-details.c:99
+#: ../src/gs-app-widget.c:132 ../src/gs-shell-details.c:103
 msgid "Installing"
 msgstr "Instalando"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-app-widget.c:151 ../src/gs-shell-details.c:130
+#: ../src/gs-app-widget.c:141 ../src/gs-shell-details.c:135
 msgid "Removing"
 msgstr "Removendo"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:175
+#: ../src/gs-category.c:174
 msgid "Other"
 msgstr "Outros"
 
 #. TRANSLATORS: this is a group of updates that are not packages and
 #. * are ot shown in the main list
-#: ../src/gs-plugin-loader.c:509
+#: ../src/gs-plugin-loader.c:594
 msgid "OS Updates"
 msgstr "Atualizações do SO"
 
 #. TRANSLATORS: this is a longer description of the os-update item
-#: ../src/gs-plugin-loader.c:511 ../src/gs-plugin-loader.c:512
+#: ../src/gs-plugin-loader.c:596 ../src/gs-plugin-loader.c:597
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
 "Inclui melhorias de desempenho, estabilidade e segurança para todos os "
 "usuários."
 
+#. TRANSLATORS: this is when we try to download a screenshot and
+#. * we get back 404
+#: ../src/gs-screenshot-image.c:146
+msgid "Screenshot not found"
+msgstr "A captura de tela não foi localizada"
+
+#. TRANSLATORS: this is when we request a screenshot size that
+#. * the generator did not create or the parser did not add
+#: ../src/gs-screenshot-image.c:266
+msgid "Screenshot size not found"
+msgstr "O tamanho da captura de tela não foi localizada"
+
+#. TRANSLATORS: this is when we try create the cache directory
+#. * but we were out of space or permission was denied
+#: ../src/gs-screenshot-image.c:280
+msgid "Could not create cache"
+msgstr "Não foi possível criar o cache"
+
+#. TRANSLATORS: this is when we try to download a screenshot
+#. * that was not a valid URL
+#: ../src/gs-screenshot-image.c:297
+msgid "Screenshot not valid"
+msgstr "A captura de tela não é válida"
+
+#. TRANSLATORS: this is when networking is not available
+#: ../src/gs-screenshot-image.c:303
+msgid "Screenshot not available"
+msgstr "A captura de tela não está disponível"
+
+#: ../src/gs-screenshot-image.c:365
+msgid "Screenshot"
+msgstr "Captura de tela"
+
+#. TRANSLATORS: this is where the licence is not known
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing that something happened to the
+#. * application but we don't know what
+#: ../src/gs-shell-details.c:425 ../src/gs-shell-details.c:739
+msgid "Unknown"
+msgstr "Desconhecido"
+
+#. TRANSLATORS: this is where the licence is insanely
+#. * complicated and the full string is put into the tooltip
+#: ../src/gs-shell-details.c:430
+msgid "Complicated!"
+msgstr "Complicado!"
+
+#. TRANSLATORS: this is where the licence is not known
+#: ../src/gs-shell-details.c:445
+msgid "Calculating…"
+msgstr "Calculadora…"
+
+#. TRANSLATORS: this is where the licence is not known
+#: ../src/gs-shell-details.c:456
+msgid "Never"
+msgstr "Nunca"
+
+#. TRANSLATORS: this is the application isn't in any
+#. * defined menu category
+#: ../src/gs-shell-details.c:473
+msgid "None"
+msgstr "Nenhuma"
+
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:299 ../src/gs-shell-installed.c:150
-#: ../src/gs-shell-search.c:98
+#: ../src/gs-shell-details.c:630 ../src/gs-shell-installed.c:166
+#: ../src/gs-shell-search.c:135
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Você tem certeza de que deseja remover %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:311 ../src/gs-shell-installed.c:162
-#: ../src/gs-shell-search.c:110
+#: ../src/gs-shell-details.c:642 ../src/gs-shell-installed.c:178
+#: ../src/gs-shell-search.c:147
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s será removido e para usá-lo novamente, você precisará instalá-lo."
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:391
+#: ../src/gs-shell-details.c:722
 msgid "Removed"
 msgstr "Removido"
-
-#. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing the application was updated
-#: ../src/gs-shell-details.c:402
-msgid "Updated"
-msgstr "Atualizado"
-
-#. TRANSLATORS: this is the status in the history UI,
-#. * where we are showing that something happened to the
-#. * application but we don't know what
-#: ../src/gs-shell-details.c:408
-msgid "Unknown"
-msgstr "Desconhecido"
 
 #. TRANSLATORS: this is tab button to show the list of
 #. * installed software. The '%d' refers to the number of
 #. * applications either installing or erasing
-#: ../src/gs-shell-installed.c:412
+#: ../src/gs-shell-installed.c:450
 #, c-format
 msgid "_Installed (%d)"
 msgstr "_Instalados (%d)"
@@ -342,917 +397,947 @@ msgid "Launch"
 msgstr "Executar"
 
 # http://www.freedesktop.org/wiki/Distributions/AppStream/
-#: ../src/plugins/gs-plugin-appstream.c:196
+#: ../src/plugins/gs-plugin-appstream.c:260
 #, c-format
 msgid "No AppStream data found"
 msgstr "Nenhum dado de appstream encontrado"
 
-#. TRANSLATORS: this is the menu spec main category for Audio
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:57
-msgid "Audio"
-msgstr "Áudio"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:60
-msgctxt "Menu subcategory of Audio"
-msgid "Editing"
-msgstr "Edição"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:63
-msgctxt "Menu subcategory of Audio"
-msgid "Databases"
-msgstr "Bancos de dados"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:66
-msgctxt "Menu subcategory of Audio"
-msgid "Disc Burning"
-msgstr "Gravação de disco"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:69
-msgctxt "Menu subcategory of Audio"
-msgid "Ham Radio"
-msgstr "Radioamador"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:72
-msgctxt "Menu subcategory of Audio"
-msgid "MIDI"
-msgstr "MIDI"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:75
-msgctxt "Menu subcategory of Audio"
-msgid "Mixer"
-msgstr "Mixador"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:78
-msgctxt "Menu subcategory of Audio"
-msgid "Music"
-msgstr "Música"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:81
-msgctxt "Menu subcategory of Audio"
-msgid "Players"
-msgstr "Reprodutores"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:84
-msgctxt "Menu subcategory of Audio"
-msgid "Recorders"
-msgstr "Gravadores"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:87
-msgctxt "Menu subcategory of Audio"
-msgid "Sequencers"
-msgstr "Sequenciadores"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:90
-msgctxt "Menu subcategory of Audio"
-msgid "Tuners"
-msgstr "Sintonizadores"
-
-#. TRANSLATORS: this is the menu spec main category for Development
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:94
-msgid "Development Tools"
-msgstr "Ferramentas de desenvolvimento"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:97
-msgctxt "Menu subcategory of Development"
-msgid "Building"
-msgstr "Compilação"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:100
-msgctxt "Menu subcategory of Development"
-msgid "Databases"
-msgstr "Bancos de dados"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:103
-msgctxt "Menu subcategory of Development"
-msgid "Debuggers"
-msgstr "Depuradores"
-
-# "Construtor de interface gráfica" é usado para "GUI designer" na tradução do Glade --Enrico
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:106
-msgctxt "Menu subcategory of Development"
-msgid "GUI Designers"
-msgstr "Construtores de interface gráfica"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:109
-msgctxt "Menu subcategory of Development"
-msgid "IDE"
-msgstr "Ambiente integrado de desenvolvimento"
-
-# Perfilagem significa "Ação ou resultado de traçar o perfil, de aferir o desempenho de qualquer conjunto organizado de informações (perfilagem de produção/de usuários)" Read more: http://aulete.uol.com.br/perfilagem#ixzz2dsTU1uuv --Enrico
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:112
-msgctxt "Menu subcategory of Development"
-msgid "Profiling"
-msgstr "Perfilagem"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:115
-msgctxt "Menu subcategory of Development"
-msgid "Project Management"
-msgstr "Gerenciamento de projetos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:118
-msgctxt "Menu subcategory of Development"
-msgid "Revision Control"
-msgstr "Controle de revisão"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:121
-msgctxt "Menu subcategory of Development"
-msgid "Translation"
-msgstr "Tradução"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:124
-msgctxt "Menu subcategory of Development"
-msgid "Web Development"
-msgstr "Desenvolvimento web"
-
-#. TRANSLATORS: this is the menu spec main category for Education
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:128
-msgid "Education"
-msgstr "Educação"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:131
-msgctxt "Menu subcategory of Education"
-msgid "Art"
-msgstr "Artes"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:134
-msgctxt "Menu subcategory of Education"
-msgid "Artificial Intelligence"
-msgstr "Inteligência artificial"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:137
-msgctxt "Menu subcategory of Education"
-msgid "Astronomy"
-msgstr "Astronomia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:140
-msgctxt "Menu subcategory of Education"
-msgid "Biology"
-msgstr "Biologia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:143
-msgctxt "Menu subcategory of Education"
-msgid "Chemistry"
-msgstr "Química"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:146
-msgctxt "Menu subcategory of Education"
-msgid "Computer Science"
-msgstr "Ciência da computação"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:149
-msgctxt "Menu subcategory of Education"
-msgid "Construction"
-msgstr "Construção"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:152
-msgctxt "Menu subcategory of Education"
-msgid "Data Visualization"
-msgstr "Visualização de dados"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:155
-msgctxt "Menu subcategory of Education"
-msgid "Economy"
-msgstr "Economia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:158
-msgctxt "Menu subcategory of Education"
-msgid "Electricity"
-msgstr "Eletricidade"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:161
-msgctxt "Menu subcategory of Education"
-msgid "Electronics"
-msgstr "Eletrônica"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:164
-msgctxt "Menu subcategory of Education"
-msgid "Engineering"
-msgstr "Engenharia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:167
-msgctxt "Menu subcategory of Education"
-msgid "Geography"
-msgstr "Geografia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:170
-msgctxt "Menu subcategory of Education"
-msgid "Geology"
-msgstr "Geologia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:173
-msgctxt "Menu subcategory of Education"
-msgid "Geoscience"
-msgstr "Geociência"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:176
-msgctxt "Menu subcategory of Education"
-msgid "History"
-msgstr "História"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:179
-msgctxt "Menu subcategory of Education"
-msgid "Humanities"
-msgstr "Humanidades"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:182
-msgctxt "Menu subcategory of Education"
-msgid "Image Processing"
-msgstr "Processamento de imagens"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:185
-msgctxt "Menu subcategory of Education"
-msgid "Languages"
-msgstr "Idiomas"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:188
-msgctxt "Menu subcategory of Education"
-msgid "Literature"
-msgstr "Literatura"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:191
-msgctxt "Menu subcategory of Education"
-msgid "Maps"
-msgstr "Mapas"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:194
-msgctxt "Menu subcategory of Education"
-msgid "Math"
-msgstr "Matemática"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:197
-msgctxt "Menu subcategory of Education"
-msgid "Medical"
-msgstr "Medicina"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:200
-msgctxt "Menu subcategory of Education"
-msgid "Music"
-msgstr "Música"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:203
-msgctxt "Menu subcategory of Education"
-msgid "Numerical Analysis"
-msgstr "Análises numéricas"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:206
-msgctxt "Menu subcategory of Education"
-msgid "Parallel Computing"
-msgstr "Computação paralela"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:209
-msgctxt "Menu subcategory of Education"
-msgid "Physics"
-msgstr "Física"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:212
-msgctxt "Menu subcategory of Education"
-msgid "Robotics"
-msgstr "Robótica"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:215
-msgctxt "Menu subcategory of Education"
-msgid "Spirituality"
-msgstr "Espiritualidade"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:218
-msgctxt "Menu subcategory of Education"
-msgid "Sports"
-msgstr "Esportes"
-
-#. TRANSLATORS: this is the menu spec main category for Games
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:222
-msgid "Games"
-msgstr "Jogos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:225
-msgctxt "Menu subcategory of Games"
-msgid "Action"
-msgstr "Ação"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:228
-msgctxt "Menu subcategory of Games"
-msgid "Adventure"
-msgstr "Aventura"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:231
-msgctxt "Menu subcategory of Games"
-msgid "Arcade"
-msgstr "Arcade"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:234
-msgctxt "Menu subcategory of Games"
-msgid "Blocks"
-msgstr "Blocos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:237
-msgctxt "Menu subcategory of Games"
-msgid "Board"
-msgstr "Tabuleiro"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:240
-msgctxt "Menu subcategory of Games"
-msgid "Card"
-msgstr "Cartas"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:243
-msgctxt "Menu subcategory of Games"
-msgid "Emulators"
-msgstr "Emuladores"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:246
-msgctxt "Menu subcategory of Games"
-msgid "Kids"
-msgstr "Infantil"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:249
-msgctxt "Menu subcategory of Games"
-msgid "Logic"
-msgstr "Lógica"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:252
-msgctxt "Menu subcategory of Games"
-msgid "Role Playing"
-msgstr "RPG"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:255
-msgctxt "Menu subcategory of Games"
-msgid "Shooter"
-msgstr "Tiro"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:258
-msgctxt "Menu subcategory of Games"
-msgid "Simulation"
-msgstr "Simulação"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:261
-msgctxt "Menu subcategory of Games"
-msgid "Sports"
-msgstr "Esportes"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:264
-msgctxt "Menu subcategory of Games"
-msgid "Strategy"
-msgstr "Estratégia"
-
-#. TRANSLATORS: this is the menu spec main category for Graphics
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:268
-msgid "Graphics"
-msgstr "Gráficos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:271
-msgctxt "Menu subcategory of Graphics"
-msgid "2D Graphics"
-msgstr "Gráficos em 2D"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:274
-msgctxt "Menu subcategory of Graphics"
-msgid "3D Graphics"
-msgstr "Gráficos em 3D"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:277
-msgctxt "Menu subcategory of Graphics"
-msgid "OCR"
-msgstr "OCR"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:280
-msgctxt "Menu subcategory of Graphics"
-msgid "Photography"
-msgstr "Fotografia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:283
-msgctxt "Menu subcategory of Graphics"
-msgid "Publishing"
-msgstr "Publicação"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:286
-msgctxt "Menu subcategory of Graphics"
-msgid "Raster Graphics"
-msgstr "Gráfico de varredura (raster)"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:289
-msgctxt "Menu subcategory of Graphics"
-msgid "Scanning"
-msgstr "Varredura"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:292
-msgctxt "Menu subcategory of Graphics"
-msgid "Vector Graphics"
-msgstr "Gráficos vetoriais"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:295
-msgctxt "Menu subcategory of Graphics"
-msgid "Viewer"
-msgstr "Visualizador"
-
-#. TRANSLATORS: this is the menu spec main category for Network
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:299
-msgid "Internet"
-msgstr "Internet"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:302
-msgctxt "Menu subcategory of Network"
-msgid "Chat"
-msgstr "Bate-papo"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:305
-msgctxt "Menu subcategory of Network"
-msgid "Dialup"
-msgstr "Discagem"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:308
-msgctxt "Menu subcategory of Network"
-msgid "Email"
-msgstr "E-mail"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:311
-msgctxt "Menu subcategory of Network"
-msgid "Feed"
-msgstr "Fontes de notícias"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:314
-msgctxt "Menu subcategory of Network"
-msgid "File Transfer"
-msgstr "Transferência de arquivos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:317
-msgctxt "Menu subcategory of Network"
-msgid "Ham Radio"
-msgstr "Radioamador"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:320
-msgctxt "Menu subcategory of Network"
-msgid "Instant Messaging"
-msgstr "Mensageiro instantâneo"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:323
-msgctxt "Menu subcategory of Network"
-msgid "IRC Clients"
-msgstr "Clientes de IRC"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:326
-msgctxt "Menu subcategory of Network"
-msgid "Monitor"
-msgstr "Monitoração"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:329
-msgctxt "Menu subcategory of Network"
-msgid "News"
-msgstr "Notícias"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:332
-msgctxt "Menu subcategory of Network"
-msgid "P2P"
-msgstr "P2P"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:335
-msgctxt "Menu subcategory of Network"
-msgid "Remote Access"
-msgstr "Acesso remoto"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:338
-msgctxt "Menu subcategory of Network"
-msgid "Telephony"
-msgstr "Telefonia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:341
-msgctxt "Menu subcategory of Network"
-msgid "Video Conference"
-msgstr "Videoconferência"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:344
-msgctxt "Menu subcategory of Network"
-msgid "Web Browser"
-msgstr "Navegador web"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:347
-msgctxt "Menu subcategory of Network"
-msgid "Web Development"
-msgstr "Desenvolvimento web"
-
-#. TRANSLATORS: this is the menu spec main category for Office
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:351
-msgid "Office"
-msgstr "Escritório"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:354
-msgctxt "Menu subcategory of Office"
-msgid "Calendar"
-msgstr "Agenda"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:357
-msgctxt "Menu subcategory of Office"
-msgid "Chart"
-msgstr "Gráfico"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:360
-msgctxt "Menu subcategory of Office"
-msgid "Contact Management"
-msgstr "Gerenciamento de contatos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:363
-msgctxt "Menu subcategory of Office"
-msgid "Database"
-msgstr "Banco de dados"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:366
-msgctxt "Menu subcategory of Office"
-msgid "Dictionary"
-msgstr "Dicionário"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:369
-msgctxt "Menu subcategory of Office"
-msgid "Email"
-msgstr "E-mail"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
-msgctxt "Menu subcategory of Office"
-msgid "Finance"
-msgstr "Finanças"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:375
-msgctxt "Menu subcategory of Office"
-msgid "Flow Chart"
-msgstr "Fluxograma"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:378
-msgctxt "Menu subcategory of Office"
-msgid "PDA"
-msgstr "PDA"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:381
-msgctxt "Menu subcategory of Office"
-msgid "Photography"
-msgstr "Fotografia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:384
-msgctxt "Menu subcategory of Office"
-msgid "Presentation"
-msgstr "Apresentação"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:387
-msgctxt "Menu subcategory of Office"
-msgid "Project Management"
-msgstr "Gerenciamento de projetos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:390
-msgctxt "Menu subcategory of Office"
-msgid "Publishing"
-msgstr "Publicação"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:393
-msgctxt "Menu subcategory of Office"
-msgid "Spreadsheet"
-msgstr "Planilha"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:396
-msgctxt "Menu subcategory of Office"
-msgid "Viewer"
-msgstr "Visualizador"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:399
-msgctxt "Menu subcategory of Office"
-msgid "Word Processor"
-msgstr "Processador de textos"
-
-#. TRANSLATORS: this is the menu spec main category for Science
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:403
-msgid "Science"
-msgstr "Ciência"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:406
-msgctxt "Menu subcategory of Science"
-msgid "Art"
-msgstr "Artes"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:409
-msgctxt "Menu subcategory of Science"
-msgid "Artificial Intelligence"
-msgstr "Inteligência artificial"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:412
-msgctxt "Menu subcategory of Science"
-msgid "Astronomy"
-msgstr "Astronomia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:415
-msgctxt "Menu subcategory of Science"
-msgid "Biology"
-msgstr "Biologia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:418
-msgctxt "Menu subcategory of Science"
-msgid "Chemistry"
-msgstr "Química"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:421
-msgctxt "Menu subcategory of Science"
-msgid "Computer Science"
-msgstr "Ciência da computação"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:424
-msgctxt "Menu subcategory of Science"
-msgid "Construction"
-msgstr "Construção"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:427
-msgctxt "Menu subcategory of Science"
-msgid "Data Visualization"
-msgstr "Visualização de dados"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:430
-msgctxt "Menu subcategory of Science"
-msgid "Economy"
-msgstr "Economia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:433
-msgctxt "Menu subcategory of Science"
-msgid "Electricity"
-msgstr "Eletricidade"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:436
-msgctxt "Menu subcategory of Science"
-msgid "Electronics"
-msgstr "Eletrônica"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:439
-msgctxt "Menu subcategory of Science"
-msgid "Engineering"
-msgstr "Engenharia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:442
-msgctxt "Menu subcategory of Science"
-msgid "Geography"
-msgstr "Geografia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:445
-msgctxt "Menu subcategory of Science"
-msgid "Geology"
-msgstr "Geologia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:448
-msgctxt "Menu subcategory of Science"
-msgid "Geoscience"
-msgstr "Geociência"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:451
-msgctxt "Menu subcategory of Science"
-msgid "History"
-msgstr "História"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:454
-msgctxt "Menu subcategory of Science"
-msgid "Humanities"
-msgstr "Humanidades"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
-msgctxt "Menu subcategory of Science"
-msgid "Image Processing"
-msgstr "Processamento de imagens"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:460
-msgctxt "Menu subcategory of Science"
-msgid "Languages"
-msgstr "Idiomas"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:463
-msgctxt "Menu subcategory of Science"
-msgid "Literature"
-msgstr "Literatura"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:466
-msgctxt "Menu subcategory of Science"
-msgid "Maps"
-msgstr "Mapas"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:469
-msgctxt "Menu subcategory of Science"
-msgid "Math"
-msgstr "Matemática"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:472
-msgctxt "Menu subcategory of Science"
-msgid "Medical"
-msgstr "Medicina"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:475
-msgctxt "Menu subcategory of Science"
-msgid "Numerical Analysis"
-msgstr "Análise numérica"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:478
-msgctxt "Menu subcategory of Science"
-msgid "Parallel Computing"
-msgstr "Computação paralela"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:481
-msgctxt "Menu subcategory of Science"
-msgid "Physics"
-msgstr "Física"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
-msgctxt "Menu subcategory of Science"
-msgid "Robotics"
-msgstr "Robótica"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:487
-msgctxt "Menu subcategory of Science"
-msgid "Spirituality"
-msgstr "Espiritualidade"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:490
-msgctxt "Menu subcategory of Science"
-msgid "Sports"
-msgstr "Esportes"
-
-#. TRANSLATORS: this is the menu spec main category for System
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:494
-msgid "System"
-msgstr "Sistema"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:497
-msgctxt "Menu subcategory of System"
-msgid "Emulator"
-msgstr "Emulador"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:500
-msgctxt "Menu subcategory of System"
-msgid "File Manager"
-msgstr "Gerenciador de arquivos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:503
-msgctxt "Menu subcategory of System"
-msgid "File System"
-msgstr "Sistema de arquivos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
-msgctxt "Menu subcategory of System"
-msgid "File Tools"
-msgstr "Ferramentas de arquivos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
-msgctxt "Menu subcategory of System"
-msgid "Monitor"
-msgstr "Monitoração"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
-msgctxt "Menu subcategory of System"
-msgid "Security"
-msgstr "Segurança"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:515
-msgctxt "Menu subcategory of System"
-msgid "Terminal Emulator"
-msgstr "Emulador de terminal"
-
-#. TRANSLATORS: this is the menu spec main category for Utility
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:519
-msgid "Utilities"
-msgstr "Utilitários"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:522
-msgctxt "Menu subcategory of Utility"
-msgid "Accessibility"
-msgstr "Acessibilidade"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:525
-msgctxt "Menu subcategory of Utility"
-msgid "Archiving"
-msgstr "Arquivamento"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
-msgctxt "Menu subcategory of Utility"
-msgid "Calculator"
-msgstr "Calculadora"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
-msgctxt "Menu subcategory of Utility"
-msgid "Clock"
-msgstr "Relógio"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:534
-msgctxt "Menu subcategory of Utility"
-msgid "Compression"
-msgstr "Compressão"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:537
-msgctxt "Menu subcategory of Utility"
-msgid "File Tools"
-msgstr "Ferramentas de arquivos"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:540
-msgctxt "Menu subcategory of Utility"
-msgid "Maps"
-msgstr "Mapas"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:543
-msgctxt "Menu subcategory of Utility"
-msgid "Spirituality"
-msgstr "Espiritualidade"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:546
-msgctxt "Menu subcategory of Utility"
-msgid "Telephony Tools"
-msgstr "Ferramentas de telefonia"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:549
-msgctxt "Menu subcategory of Utility"
-msgid "Text Editor"
-msgstr "Editor de texto"
-
-#. TRANSLATORS: this is the menu spec main category for Video
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:553
-msgid "Video"
-msgstr "Vídeo"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:556
-msgctxt "Menu subcategory of Video"
-msgid "Editing"
-msgstr "Edição"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:559
-msgctxt "Menu subcategory of Video"
-msgid "Database"
-msgstr "Banco de dados"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
-msgctxt "Menu subcategory of Video"
-msgid "Disc Burning"
-msgstr "Gravação de disco"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
-msgctxt "Menu subcategory of Video"
-msgid "Players"
-msgstr "Reprodutores"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
-msgctxt "Menu subcategory of Video"
-msgid "Recorders"
-msgstr "Gravadores"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
-msgctxt "Menu subcategory of Video"
-msgid "TV"
-msgstr "TV"
-
-#. TRANSLATORS: this is the main category for Add-ons
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
-#: ../src/plugins/gs-plugin-packagekit.c:425
+#. TRANSLATORS: this is the main category for Add-ons
+#: ../src/plugins/gs-plugin-packagekit.c:435
+#: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Complementos"
 
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:578
-msgctxt "Menu subcategory of Addons"
-msgid "Fonts"
-msgstr "Fontes"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:581
-msgctxt "Menu subcategory of Addons"
-msgid "Codecs"
-msgstr "Codecs"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:584
-msgctxt "Menu subcategory of Addons"
-msgid "Input Sources"
-msgstr "Fontes de entrada"
-
-#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
-msgctxt "Menu subcategory of Addons"
-msgid "Language Packs"
-msgstr "Pacotes de idiomas"
-
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:429
+#: ../src/plugins/gs-plugin-packagekit.c:439
 msgid "Codecs"
 msgstr "Codecs"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:433
+#: ../src/plugins/gs-plugin-packagekit.c:443
 msgid "Fonts"
 msgstr "Fontes"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:437
+#: ../src/plugins/gs-plugin-packagekit.c:447
 msgid "Input Sources"
 msgstr "Fontes de entrada"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:441
+#: ../src/plugins/gs-plugin-packagekit.c:451
 msgid "Language Packs"
 msgstr "Pacotes de idiomas"
 
 #. TRANSLATORS: this is where update details either are
 #. * no longer available or were never provided in the first place
-#: ../src/plugins/gs-plugin-packagekit-refine.c:327
+#: ../src/plugins/gs-plugin-packagekit-refine.c:338
 msgid "No update details were provided"
 msgstr "Nenhum detalhe de atualização foi fornecido"
 
+#. TRANSLATORS: this is the menu spec main category for Audio
+#: ../src/plugins/menu-spec-common.c:30
+msgid "Audio"
+msgstr "Áudio"
+
+#: ../src/plugins/menu-spec-common.c:31
+msgctxt "Menu subcategory of Audio"
+msgid "Editing"
+msgstr "Edição"
+
+#: ../src/plugins/menu-spec-common.c:32
+msgctxt "Menu subcategory of Audio"
+msgid "Databases"
+msgstr "Bancos de dados"
+
+#: ../src/plugins/menu-spec-common.c:33
+msgctxt "Menu subcategory of Audio"
+msgid "Disc Burning"
+msgstr "Gravação de disco"
+
+#: ../src/plugins/menu-spec-common.c:34
+msgctxt "Menu subcategory of Audio"
+msgid "Ham Radio"
+msgstr "Radioamador"
+
+#: ../src/plugins/menu-spec-common.c:35
+msgctxt "Menu subcategory of Audio"
+msgid "MIDI"
+msgstr "MIDI"
+
+#: ../src/plugins/menu-spec-common.c:36
+msgctxt "Menu subcategory of Audio"
+msgid "Mixer"
+msgstr "Mixador"
+
+#: ../src/plugins/menu-spec-common.c:37
+msgctxt "Menu subcategory of Audio"
+msgid "Music"
+msgstr "Música"
+
+#: ../src/plugins/menu-spec-common.c:38
+msgctxt "Menu subcategory of Audio"
+msgid "Players"
+msgstr "Reprodutores"
+
+#: ../src/plugins/menu-spec-common.c:39
+msgctxt "Menu subcategory of Audio"
+msgid "Recorders"
+msgstr "Gravadores"
+
+#: ../src/plugins/menu-spec-common.c:40
+msgctxt "Menu subcategory of Audio"
+msgid "Sequencers"
+msgstr "Sequenciadores"
+
+#: ../src/plugins/menu-spec-common.c:41
+msgctxt "Menu subcategory of Audio"
+msgid "Tuners"
+msgstr "Sintonizadores"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/menu-spec-common.c:43
+msgid "Development Tools"
+msgstr "Ferramentas de desenvolvimento"
+
+#: ../src/plugins/menu-spec-common.c:44
+msgctxt "Menu subcategory of Development"
+msgid "Building"
+msgstr "Compilação"
+
+#: ../src/plugins/menu-spec-common.c:45
+msgctxt "Menu subcategory of Development"
+msgid "Databases"
+msgstr "Bancos de dados"
+
+#: ../src/plugins/menu-spec-common.c:46
+msgctxt "Menu subcategory of Development"
+msgid "Debuggers"
+msgstr "Depuradores"
+
+# "Construtor de interface gráfica" é usado para "GUI designer" na tradução do Glade --Enrico
+#: ../src/plugins/menu-spec-common.c:47
+msgctxt "Menu subcategory of Development"
+msgid "GUI Designers"
+msgstr "Construtores de interface gráfica"
+
+#: ../src/plugins/menu-spec-common.c:48
+msgctxt "Menu subcategory of Development"
+msgid "IDE"
+msgstr "Ambiente integrado de desenvolvimento"
+
+# Perfilagem significa "Ação ou resultado de traçar o perfil, de aferir o desempenho de qualquer conjunto organizado de informações (perfilagem de produção/de usuários)" Read more: http://aulete.uol.com.br/perfilagem#ixzz2dsTU1uuv --Enrico
+#: ../src/plugins/menu-spec-common.c:49
+msgctxt "Menu subcategory of Development"
+msgid "Profiling"
+msgstr "Perfilagem"
+
+#: ../src/plugins/menu-spec-common.c:50
+msgctxt "Menu subcategory of Development"
+msgid "Project Management"
+msgstr "Gerenciamento de projetos"
+
+#: ../src/plugins/menu-spec-common.c:51
+msgctxt "Menu subcategory of Development"
+msgid "Revision Control"
+msgstr "Controle de revisão"
+
+#: ../src/plugins/menu-spec-common.c:52
+msgctxt "Menu subcategory of Development"
+msgid "Translation"
+msgstr "Tradução"
+
+#: ../src/plugins/menu-spec-common.c:53
+msgctxt "Menu subcategory of Development"
+msgid "Web Development"
+msgstr "Desenvolvimento web"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/menu-spec-common.c:55
+msgid "Education"
+msgstr "Educação"
+
+#: ../src/plugins/menu-spec-common.c:56
+msgctxt "Menu subcategory of Education"
+msgid "Art"
+msgstr "Artes"
+
+#: ../src/plugins/menu-spec-common.c:57
+msgctxt "Menu subcategory of Education"
+msgid "Artificial Intelligence"
+msgstr "Inteligência artificial"
+
+#: ../src/plugins/menu-spec-common.c:58
+msgctxt "Menu subcategory of Education"
+msgid "Astronomy"
+msgstr "Astronomia"
+
+#: ../src/plugins/menu-spec-common.c:59
+msgctxt "Menu subcategory of Education"
+msgid "Biology"
+msgstr "Biologia"
+
+#: ../src/plugins/menu-spec-common.c:60
+msgctxt "Menu subcategory of Education"
+msgid "Chemistry"
+msgstr "Química"
+
+#: ../src/plugins/menu-spec-common.c:61
+msgctxt "Menu subcategory of Education"
+msgid "Computer Science"
+msgstr "Ciência da computação"
+
+#: ../src/plugins/menu-spec-common.c:62
+msgctxt "Menu subcategory of Education"
+msgid "Construction"
+msgstr "Construção"
+
+#: ../src/plugins/menu-spec-common.c:63
+msgctxt "Menu subcategory of Education"
+msgid "Data Visualization"
+msgstr "Visualização de dados"
+
+#: ../src/plugins/menu-spec-common.c:64
+msgctxt "Menu subcategory of Education"
+msgid "Economy"
+msgstr "Economia"
+
+#: ../src/plugins/menu-spec-common.c:65
+msgctxt "Menu subcategory of Education"
+msgid "Electricity"
+msgstr "Eletricidade"
+
+#: ../src/plugins/menu-spec-common.c:66
+msgctxt "Menu subcategory of Education"
+msgid "Electronics"
+msgstr "Eletrônica"
+
+#: ../src/plugins/menu-spec-common.c:67
+msgctxt "Menu subcategory of Education"
+msgid "Engineering"
+msgstr "Engenharia"
+
+#: ../src/plugins/menu-spec-common.c:68
+msgctxt "Menu subcategory of Education"
+msgid "Geography"
+msgstr "Geografia"
+
+#: ../src/plugins/menu-spec-common.c:69
+msgctxt "Menu subcategory of Education"
+msgid "Geology"
+msgstr "Geologia"
+
+#: ../src/plugins/menu-spec-common.c:70
+msgctxt "Menu subcategory of Education"
+msgid "Geoscience"
+msgstr "Geociência"
+
+#: ../src/plugins/menu-spec-common.c:71
+msgctxt "Menu subcategory of Education"
+msgid "History"
+msgstr "História"
+
+#: ../src/plugins/menu-spec-common.c:72
+msgctxt "Menu subcategory of Education"
+msgid "Humanities"
+msgstr "Humanidades"
+
+#: ../src/plugins/menu-spec-common.c:73
+msgctxt "Menu subcategory of Education"
+msgid "Image Processing"
+msgstr "Processamento de imagens"
+
+#: ../src/plugins/menu-spec-common.c:74
+msgctxt "Menu subcategory of Education"
+msgid "Languages"
+msgstr "Idiomas"
+
+#: ../src/plugins/menu-spec-common.c:75
+msgctxt "Menu subcategory of Education"
+msgid "Literature"
+msgstr "Literatura"
+
+#: ../src/plugins/menu-spec-common.c:76
+msgctxt "Menu subcategory of Education"
+msgid "Maps"
+msgstr "Mapas"
+
+#: ../src/plugins/menu-spec-common.c:77
+msgctxt "Menu subcategory of Education"
+msgid "Math"
+msgstr "Matemática"
+
+#: ../src/plugins/menu-spec-common.c:78
+msgctxt "Menu subcategory of Education"
+msgid "Medical"
+msgstr "Medicina"
+
+#: ../src/plugins/menu-spec-common.c:79
+msgctxt "Menu subcategory of Education"
+msgid "Music"
+msgstr "Música"
+
+#: ../src/plugins/menu-spec-common.c:80
+msgctxt "Menu subcategory of Education"
+msgid "Numerical Analysis"
+msgstr "Análises numéricas"
+
+#: ../src/plugins/menu-spec-common.c:81
+msgctxt "Menu subcategory of Education"
+msgid "Parallel Computing"
+msgstr "Computação paralela"
+
+#: ../src/plugins/menu-spec-common.c:82
+msgctxt "Menu subcategory of Education"
+msgid "Physics"
+msgstr "Física"
+
+#: ../src/plugins/menu-spec-common.c:83
+msgctxt "Menu subcategory of Education"
+msgid "Robotics"
+msgstr "Robótica"
+
+#: ../src/plugins/menu-spec-common.c:84
+msgctxt "Menu subcategory of Education"
+msgid "Spirituality"
+msgstr "Espiritualidade"
+
+#: ../src/plugins/menu-spec-common.c:85
+msgctxt "Menu subcategory of Education"
+msgid "Sports"
+msgstr "Esportes"
+
+#. TRANSLATORS: this is the menu spec main category for Games
+#: ../src/plugins/menu-spec-common.c:87
+msgid "Games"
+msgstr "Jogos"
+
+#: ../src/plugins/menu-spec-common.c:88
+msgctxt "Menu subcategory of Games"
+msgid "Action"
+msgstr "Ação"
+
+#: ../src/plugins/menu-spec-common.c:89
+msgctxt "Menu subcategory of Games"
+msgid "Adventure"
+msgstr "Aventura"
+
+#: ../src/plugins/menu-spec-common.c:90
+msgctxt "Menu subcategory of Games"
+msgid "Arcade"
+msgstr "Arcade"
+
+#: ../src/plugins/menu-spec-common.c:91
+msgctxt "Menu subcategory of Games"
+msgid "Blocks"
+msgstr "Blocos"
+
+#: ../src/plugins/menu-spec-common.c:92
+msgctxt "Menu subcategory of Games"
+msgid "Board"
+msgstr "Tabuleiro"
+
+#: ../src/plugins/menu-spec-common.c:93
+msgctxt "Menu subcategory of Games"
+msgid "Card"
+msgstr "Cartas"
+
+#: ../src/plugins/menu-spec-common.c:94
+msgctxt "Menu subcategory of Games"
+msgid "Emulators"
+msgstr "Emuladores"
+
+#: ../src/plugins/menu-spec-common.c:95
+msgctxt "Menu subcategory of Games"
+msgid "Kids"
+msgstr "Infantil"
+
+#: ../src/plugins/menu-spec-common.c:96
+msgctxt "Menu subcategory of Games"
+msgid "Logic"
+msgstr "Lógica"
+
+#: ../src/plugins/menu-spec-common.c:97
+msgctxt "Menu subcategory of Games"
+msgid "Role Playing"
+msgstr "RPG"
+
+#: ../src/plugins/menu-spec-common.c:98
+msgctxt "Menu subcategory of Games"
+msgid "Shooter"
+msgstr "Tiro"
+
+#: ../src/plugins/menu-spec-common.c:99
+msgctxt "Menu subcategory of Games"
+msgid "Simulation"
+msgstr "Simulação"
+
+#: ../src/plugins/menu-spec-common.c:100
+msgctxt "Menu subcategory of Games"
+msgid "Sports"
+msgstr "Esportes"
+
+#: ../src/plugins/menu-spec-common.c:101
+msgctxt "Menu subcategory of Games"
+msgid "Strategy"
+msgstr "Estratégia"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/menu-spec-common.c:103
+msgid "Graphics"
+msgstr "Gráficos"
+
+#: ../src/plugins/menu-spec-common.c:104
+msgctxt "Menu subcategory of Graphics"
+msgid "2D Graphics"
+msgstr "Gráficos em 2D"
+
+#: ../src/plugins/menu-spec-common.c:105
+msgctxt "Menu subcategory of Graphics"
+msgid "3D Graphics"
+msgstr "Gráficos em 3D"
+
+#: ../src/plugins/menu-spec-common.c:106
+msgctxt "Menu subcategory of Graphics"
+msgid "OCR"
+msgstr "OCR"
+
+#: ../src/plugins/menu-spec-common.c:107
+msgctxt "Menu subcategory of Graphics"
+msgid "Photography"
+msgstr "Fotografia"
+
+#: ../src/plugins/menu-spec-common.c:108
+msgctxt "Menu subcategory of Graphics"
+msgid "Publishing"
+msgstr "Publicação"
+
+#: ../src/plugins/menu-spec-common.c:109
+msgctxt "Menu subcategory of Graphics"
+msgid "Raster Graphics"
+msgstr "Gráfico de varredura (raster)"
+
+#: ../src/plugins/menu-spec-common.c:110
+msgctxt "Menu subcategory of Graphics"
+msgid "Scanning"
+msgstr "Varredura"
+
+#: ../src/plugins/menu-spec-common.c:111
+msgctxt "Menu subcategory of Graphics"
+msgid "Vector Graphics"
+msgstr "Gráficos vetoriais"
+
+#: ../src/plugins/menu-spec-common.c:112
+msgctxt "Menu subcategory of Graphics"
+msgid "Viewer"
+msgstr "Visualizador"
+
+#. TRANSLATORS: this is the menu spec main category for Network
+#: ../src/plugins/menu-spec-common.c:114
+msgid "Internet"
+msgstr "Internet"
+
+#: ../src/plugins/menu-spec-common.c:115
+msgctxt "Menu subcategory of Network"
+msgid "Chat"
+msgstr "Bate-papo"
+
+#: ../src/plugins/menu-spec-common.c:116
+msgctxt "Menu subcategory of Network"
+msgid "Dialup"
+msgstr "Discagem"
+
+#: ../src/plugins/menu-spec-common.c:117
+msgctxt "Menu subcategory of Network"
+msgid "Email"
+msgstr "E-mail"
+
+#: ../src/plugins/menu-spec-common.c:118
+msgctxt "Menu subcategory of Network"
+msgid "Feed"
+msgstr "Fontes de notícias"
+
+#: ../src/plugins/menu-spec-common.c:119
+msgctxt "Menu subcategory of Network"
+msgid "File Transfer"
+msgstr "Transferência de arquivos"
+
+#: ../src/plugins/menu-spec-common.c:120
+msgctxt "Menu subcategory of Network"
+msgid "Ham Radio"
+msgstr "Radioamador"
+
+#: ../src/plugins/menu-spec-common.c:121
+msgctxt "Menu subcategory of Network"
+msgid "Instant Messaging"
+msgstr "Mensageiro instantâneo"
+
+#: ../src/plugins/menu-spec-common.c:122
+msgctxt "Menu subcategory of Network"
+msgid "IRC Clients"
+msgstr "Clientes de IRC"
+
+#: ../src/plugins/menu-spec-common.c:123
+msgctxt "Menu subcategory of Network"
+msgid "Monitor"
+msgstr "Monitoração"
+
+#: ../src/plugins/menu-spec-common.c:124
+msgctxt "Menu subcategory of Network"
+msgid "News"
+msgstr "Notícias"
+
+#: ../src/plugins/menu-spec-common.c:125
+msgctxt "Menu subcategory of Network"
+msgid "P2P"
+msgstr "P2P"
+
+#: ../src/plugins/menu-spec-common.c:126
+msgctxt "Menu subcategory of Network"
+msgid "Remote Access"
+msgstr "Acesso remoto"
+
+#: ../src/plugins/menu-spec-common.c:127
+msgctxt "Menu subcategory of Network"
+msgid "Telephony"
+msgstr "Telefonia"
+
+#: ../src/plugins/menu-spec-common.c:128
+msgctxt "Menu subcategory of Network"
+msgid "Video Conference"
+msgstr "Videoconferência"
+
+#: ../src/plugins/menu-spec-common.c:129
+msgctxt "Menu subcategory of Network"
+msgid "Web Browser"
+msgstr "Navegador web"
+
+#: ../src/plugins/menu-spec-common.c:130
+msgctxt "Menu subcategory of Network"
+msgid "Web Development"
+msgstr "Desenvolvimento web"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/menu-spec-common.c:132
+msgid "Office"
+msgstr "Escritório"
+
+#: ../src/plugins/menu-spec-common.c:133
+msgctxt "Menu subcategory of Office"
+msgid "Calendar"
+msgstr "Agenda"
+
+#: ../src/plugins/menu-spec-common.c:134
+msgctxt "Menu subcategory of Office"
+msgid "Chart"
+msgstr "Gráfico"
+
+#: ../src/plugins/menu-spec-common.c:135
+msgctxt "Menu subcategory of Office"
+msgid "Contact Management"
+msgstr "Gerenciamento de contatos"
+
+#: ../src/plugins/menu-spec-common.c:136
+msgctxt "Menu subcategory of Office"
+msgid "Database"
+msgstr "Banco de dados"
+
+#: ../src/plugins/menu-spec-common.c:137
+msgctxt "Menu subcategory of Office"
+msgid "Dictionary"
+msgstr "Dicionário"
+
+#: ../src/plugins/menu-spec-common.c:138
+msgctxt "Menu subcategory of Office"
+msgid "Email"
+msgstr "E-mail"
+
+#: ../src/plugins/menu-spec-common.c:139
+msgctxt "Menu subcategory of Office"
+msgid "Finance"
+msgstr "Finanças"
+
+#: ../src/plugins/menu-spec-common.c:140
+msgctxt "Menu subcategory of Office"
+msgid "Flow Chart"
+msgstr "Fluxograma"
+
+#: ../src/plugins/menu-spec-common.c:141
+msgctxt "Menu subcategory of Office"
+msgid "PDA"
+msgstr "PDA"
+
+#: ../src/plugins/menu-spec-common.c:142
+msgctxt "Menu subcategory of Office"
+msgid "Photography"
+msgstr "Fotografia"
+
+#: ../src/plugins/menu-spec-common.c:143
+msgctxt "Menu subcategory of Office"
+msgid "Presentation"
+msgstr "Apresentação"
+
+#: ../src/plugins/menu-spec-common.c:144
+msgctxt "Menu subcategory of Office"
+msgid "Project Management"
+msgstr "Gerenciamento de projetos"
+
+#: ../src/plugins/menu-spec-common.c:145
+msgctxt "Menu subcategory of Office"
+msgid "Publishing"
+msgstr "Publicação"
+
+#: ../src/plugins/menu-spec-common.c:146
+msgctxt "Menu subcategory of Office"
+msgid "Spreadsheet"
+msgstr "Planilha"
+
+#: ../src/plugins/menu-spec-common.c:147
+msgctxt "Menu subcategory of Office"
+msgid "Viewer"
+msgstr "Visualizador"
+
+#: ../src/plugins/menu-spec-common.c:148
+msgctxt "Menu subcategory of Office"
+msgid "Word Processor"
+msgstr "Processador de textos"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/menu-spec-common.c:150
+msgid "Science"
+msgstr "Ciência"
+
+#: ../src/plugins/menu-spec-common.c:151
+msgctxt "Menu subcategory of Science"
+msgid "Art"
+msgstr "Artes"
+
+#: ../src/plugins/menu-spec-common.c:152
+msgctxt "Menu subcategory of Science"
+msgid "Artificial Intelligence"
+msgstr "Inteligência artificial"
+
+#: ../src/plugins/menu-spec-common.c:153
+msgctxt "Menu subcategory of Science"
+msgid "Astronomy"
+msgstr "Astronomia"
+
+#: ../src/plugins/menu-spec-common.c:154
+msgctxt "Menu subcategory of Science"
+msgid "Biology"
+msgstr "Biologia"
+
+#: ../src/plugins/menu-spec-common.c:155
+msgctxt "Menu subcategory of Science"
+msgid "Chemistry"
+msgstr "Química"
+
+#: ../src/plugins/menu-spec-common.c:156
+msgctxt "Menu subcategory of Science"
+msgid "Computer Science"
+msgstr "Ciência da computação"
+
+#: ../src/plugins/menu-spec-common.c:157
+msgctxt "Menu subcategory of Science"
+msgid "Construction"
+msgstr "Construção"
+
+#: ../src/plugins/menu-spec-common.c:158
+msgctxt "Menu subcategory of Science"
+msgid "Data Visualization"
+msgstr "Visualização de dados"
+
+#: ../src/plugins/menu-spec-common.c:159
+msgctxt "Menu subcategory of Science"
+msgid "Economy"
+msgstr "Economia"
+
+#: ../src/plugins/menu-spec-common.c:160
+msgctxt "Menu subcategory of Science"
+msgid "Electricity"
+msgstr "Eletricidade"
+
+#: ../src/plugins/menu-spec-common.c:161
+msgctxt "Menu subcategory of Science"
+msgid "Electronics"
+msgstr "Eletrônica"
+
+#: ../src/plugins/menu-spec-common.c:162
+msgctxt "Menu subcategory of Science"
+msgid "Engineering"
+msgstr "Engenharia"
+
+#: ../src/plugins/menu-spec-common.c:163
+msgctxt "Menu subcategory of Science"
+msgid "Geography"
+msgstr "Geografia"
+
+#: ../src/plugins/menu-spec-common.c:164
+msgctxt "Menu subcategory of Science"
+msgid "Geology"
+msgstr "Geologia"
+
+#: ../src/plugins/menu-spec-common.c:165
+msgctxt "Menu subcategory of Science"
+msgid "Geoscience"
+msgstr "Geociência"
+
+#: ../src/plugins/menu-spec-common.c:166
+msgctxt "Menu subcategory of Science"
+msgid "History"
+msgstr "História"
+
+#: ../src/plugins/menu-spec-common.c:167
+msgctxt "Menu subcategory of Science"
+msgid "Humanities"
+msgstr "Humanidades"
+
+#: ../src/plugins/menu-spec-common.c:168
+msgctxt "Menu subcategory of Science"
+msgid "Image Processing"
+msgstr "Processamento de imagens"
+
+#: ../src/plugins/menu-spec-common.c:169
+msgctxt "Menu subcategory of Science"
+msgid "Languages"
+msgstr "Idiomas"
+
+#: ../src/plugins/menu-spec-common.c:170
+msgctxt "Menu subcategory of Science"
+msgid "Literature"
+msgstr "Literatura"
+
+#: ../src/plugins/menu-spec-common.c:171
+msgctxt "Menu subcategory of Science"
+msgid "Maps"
+msgstr "Mapas"
+
+#: ../src/plugins/menu-spec-common.c:172
+msgctxt "Menu subcategory of Science"
+msgid "Math"
+msgstr "Matemática"
+
+#: ../src/plugins/menu-spec-common.c:173
+msgctxt "Menu subcategory of Science"
+msgid "Medical"
+msgstr "Medicina"
+
+#: ../src/plugins/menu-spec-common.c:174
+msgctxt "Menu subcategory of Science"
+msgid "Numerical Analysis"
+msgstr "Análise numérica"
+
+#: ../src/plugins/menu-spec-common.c:175
+msgctxt "Menu subcategory of Science"
+msgid "Parallel Computing"
+msgstr "Computação paralela"
+
+#: ../src/plugins/menu-spec-common.c:176
+msgctxt "Menu subcategory of Science"
+msgid "Physics"
+msgstr "Física"
+
+#: ../src/plugins/menu-spec-common.c:177
+msgctxt "Menu subcategory of Science"
+msgid "Robotics"
+msgstr "Robótica"
+
+#: ../src/plugins/menu-spec-common.c:178
+msgctxt "Menu subcategory of Science"
+msgid "Spirituality"
+msgstr "Espiritualidade"
+
+#: ../src/plugins/menu-spec-common.c:179
+msgctxt "Menu subcategory of Science"
+msgid "Sports"
+msgstr "Esportes"
+
+#. TRANSLATORS: this is the menu spec main category for System
+#: ../src/plugins/menu-spec-common.c:181
+msgid "System"
+msgstr "Sistema"
+
+#: ../src/plugins/menu-spec-common.c:182
+msgctxt "Menu subcategory of System"
+msgid "Emulator"
+msgstr "Emulador"
+
+#: ../src/plugins/menu-spec-common.c:183
+msgctxt "Menu subcategory of System"
+msgid "File Manager"
+msgstr "Gerenciador de arquivos"
+
+#: ../src/plugins/menu-spec-common.c:184
+msgctxt "Menu subcategory of System"
+msgid "File System"
+msgstr "Sistema de arquivos"
+
+#: ../src/plugins/menu-spec-common.c:185
+msgctxt "Menu subcategory of System"
+msgid "File Tools"
+msgstr "Ferramentas de arquivos"
+
+#: ../src/plugins/menu-spec-common.c:186
+msgctxt "Menu subcategory of System"
+msgid "Monitor"
+msgstr "Monitoração"
+
+#: ../src/plugins/menu-spec-common.c:187
+msgctxt "Menu subcategory of System"
+msgid "Security"
+msgstr "Segurança"
+
+#: ../src/plugins/menu-spec-common.c:188
+msgctxt "Menu subcategory of System"
+msgid "Terminal Emulator"
+msgstr "Emulador de terminal"
+
+#. TRANSLATORS: this is the menu spec main category for Utility
+#: ../src/plugins/menu-spec-common.c:190
+msgid "Utilities"
+msgstr "Utilitários"
+
+#: ../src/plugins/menu-spec-common.c:191
+msgctxt "Menu subcategory of Utility"
+msgid "Accessibility"
+msgstr "Acessibilidade"
+
+#: ../src/plugins/menu-spec-common.c:192
+msgctxt "Menu subcategory of Utility"
+msgid "Archiving"
+msgstr "Arquivamento"
+
+#: ../src/plugins/menu-spec-common.c:193
+msgctxt "Menu subcategory of Utility"
+msgid "Calculator"
+msgstr "Calculadora"
+
+#: ../src/plugins/menu-spec-common.c:194
+msgctxt "Menu subcategory of Utility"
+msgid "Clock"
+msgstr "Relógio"
+
+#: ../src/plugins/menu-spec-common.c:195
+msgctxt "Menu subcategory of Utility"
+msgid "Compression"
+msgstr "Compressão"
+
+#: ../src/plugins/menu-spec-common.c:196
+msgctxt "Menu subcategory of Utility"
+msgid "File Tools"
+msgstr "Ferramentas de arquivos"
+
+#: ../src/plugins/menu-spec-common.c:197
+msgctxt "Menu subcategory of Utility"
+msgid "Maps"
+msgstr "Mapas"
+
+#: ../src/plugins/menu-spec-common.c:198
+msgctxt "Menu subcategory of Utility"
+msgid "Spirituality"
+msgstr "Espiritualidade"
+
+#: ../src/plugins/menu-spec-common.c:199
+msgctxt "Menu subcategory of Utility"
+msgid "Telephony Tools"
+msgstr "Ferramentas de telefonia"
+
+#: ../src/plugins/menu-spec-common.c:200
+msgctxt "Menu subcategory of Utility"
+msgid "Text Editor"
+msgstr "Editor de texto"
+
+#. TRANSLATORS: this is the menu spec main category for Video
+#: ../src/plugins/menu-spec-common.c:202
+msgid "Video"
+msgstr "Vídeo"
+
+#: ../src/plugins/menu-spec-common.c:203
+msgctxt "Menu subcategory of Video"
+msgid "Editing"
+msgstr "Edição"
+
+#: ../src/plugins/menu-spec-common.c:204
+msgctxt "Menu subcategory of Video"
+msgid "Database"
+msgstr "Banco de dados"
+
+#: ../src/plugins/menu-spec-common.c:205
+msgctxt "Menu subcategory of Video"
+msgid "Disc Burning"
+msgstr "Gravação de disco"
+
+#: ../src/plugins/menu-spec-common.c:206
+msgctxt "Menu subcategory of Video"
+msgid "Players"
+msgstr "Reprodutores"
+
+#: ../src/plugins/menu-spec-common.c:207
+msgctxt "Menu subcategory of Video"
+msgid "Recorders"
+msgstr "Gravadores"
+
+#: ../src/plugins/menu-spec-common.c:208
+msgctxt "Menu subcategory of Video"
+msgid "TV"
+msgstr "TV"
+
+#: ../src/plugins/menu-spec-common.c:211
+msgctxt "Menu subcategory of Addons"
+msgid "Fonts"
+msgstr "Fontes"
+
+#: ../src/plugins/menu-spec-common.c:212
+msgctxt "Menu subcategory of Addons"
+msgid "Codecs"
+msgstr "Codecs"
+
+#: ../src/plugins/menu-spec-common.c:213
+msgctxt "Menu subcategory of Addons"
+msgid "Input Sources"
+msgstr "Fontes de entrada"
+
+#: ../src/plugins/menu-spec-common.c:214
+msgctxt "Menu subcategory of Addons"
+msgid "Language Packs"
+msgstr "Pacotes de idiomas"
+
+#~ msgid "Software has the following goals:"
+#~ msgstr "O Softwares tem os seguintes objetivos:"
+
+#~ msgid "View installed applications"
+#~ msgstr "Ver aplicativos instalados"
+
+#~ msgid "Remove installed applications"
+#~ msgstr "Remover aplicativos instalados"
+
+#~ msgid "View available application updates"
+#~ msgstr "Ver atualizações disponíveis de aplicativos"
+
+#~ msgid "Install available updates"
+#~ msgstr "Instalar as atualizações disponíveis"
+
+#~ msgid "Find new applications"
+#~ msgstr "Localizar novos aplicativos"
+
+#~ msgid "Install new applications"
+#~ msgstr "Instalar novos aplicativos"
+
+#~ msgid "Find an application to handle a specific type of file"
+#~ msgstr ""
+#~ "Encontrar um aplicativo para manipular tipos específicos de arquivos"
+
+#~ msgid "Installed apps and updates should be available when offline"
+#~ msgstr ""
+#~ "Atualizações e aplicativos instalados devem estar disponíveis quando "
+#~ "desconectado da Internet"
+
+#~ msgid "Update"
+#~ msgstr "Atualizar"
+
 #~ msgid "Goals:"
 #~ msgstr "Objetivos:"
-
-#~ msgid "Category"
-#~ msgstr "Categoria"
 
 #~ msgid "GNOME Software"
 #~ msgstr "Software do GNOME"
@@ -1277,54 +1362,3 @@ msgstr "Nenhum detalhe de atualização foi fornecido"
 
 #~ msgid "Printing"
 #~ msgstr "Impressão"
-
-#~| msgid "History"
-#~ msgid "View History"
-#~ msgstr "Ver histórico"
-
-#~ msgid "The Gimp"
-#~ msgstr "O Gimp"
-
-#~ msgid "GNU Image Manipulation Program"
-#~ msgstr "Programa de manipulação de imagem do GNU"
-
-#~ msgid ""
-#~ "GIMP (GNU Image Manipulation Program) is a powerful image composition "
-#~ "and\n"
-#~ "editing program, which can be extremely useful for creating logos and "
-#~ "other\n"
-#~ "graphics for webpages. GIMP has many of the tools and filters you would "
-#~ "expect\n"
-#~ "to find in similar commercial offerings, and some interesting extras as "
-#~ "well.\n"
-#~ "GIMP provides a large image manipulation toolbox, including channel "
-#~ "operations\n"
-#~ "and layers, effects, sub-pixel imaging and anti-aliasing, and "
-#~ "conversions, all\n"
-#~ "with multi-level undo.\n"
-#~ msgstr ""
-#~ "O GIMP (programa de manipulação de imagem do GNU) é um poderoso programa "
-#~ "de composição e\n"
-#~ "edição de imagem, que pode ser extremamente útil para a criação de "
-#~ "logotipos e outras\n"
-#~ "artes gráficas para páginas da web. O GIMP possui muitas das ferramentas "
-#~ "e filtros que você espera\n"
-#~ "encontrar em ofertas comerciais similares, bem como alguns acréscimos "
-#~ "interessantes.\n"
-#~ "O GIMP oferece uma grande barra de ferramentas para manipulação de "
-#~ "imagens, incluindo operações em canais\n"
-#~ "e camadas, efeitos, imagem sub-pixel, suavização de imagem e conversões, "
-#~ "tudo\n"
-#~ "com restauração de vários níveis.\n"
-
-#~ msgid "Network"
-#~ msgstr "Rede"
-
-#~ msgid "DataVisualization"
-#~ msgstr "Visualização de dados"
-
-#~ msgid "Details"
-#~ msgstr "Detalhes"
-
-#~ msgid "_Done"
-#~ msgstr "_Concluído"
