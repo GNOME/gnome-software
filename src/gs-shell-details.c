@@ -930,6 +930,7 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 			  G_CALLBACK (gs_shell_details_rating_changed_cb),
 			  shell_details);
 	gtk_widget_set_visible (priv->star, TRUE);
+	gtk_widget_set_valign (priv->star, GTK_ALIGN_START);
 	gtk_box_pack_start (GTK_BOX (sw), priv->star, FALSE, FALSE, 0);
 
 	/* setup history */
