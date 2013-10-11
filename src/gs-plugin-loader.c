@@ -2056,7 +2056,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 
 	/* print what we know */
 	plugin = g_slice_new0 (GsPlugin);
-	plugin->enabled = FALSE;
+	plugin->enabled = TRUE;
 	plugin->module = module;
 	plugin->pixbuf_size = 64;
 	plugin->priority = plugin_prio (plugin);

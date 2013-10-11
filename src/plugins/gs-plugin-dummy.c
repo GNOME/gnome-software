@@ -42,6 +42,11 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
+	if (g_getenv ("GNOME_SOFTWARE_SELF_TEST") == NULL) {
+		g_debug ("disabling '%s' as not in self test", plugin->name);
+		gs_plugin_set_enabled (plugin, FALSE);
+	}
+
 	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->dummy = 999;

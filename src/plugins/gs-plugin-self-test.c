@@ -42,6 +42,18 @@ gs_plugin_get_priority (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_initialize:
+ */
+void
+gs_plugin_initialize (GsPlugin *plugin)
+{
+	if (g_getenv ("GNOME_SOFTWARE_SELF_TEST") == NULL) {
+		g_debug ("disabling '%s' as not in self test", plugin->name);
+		gs_plugin_set_enabled (plugin, FALSE);
+	}
+}
+
+/**
  * gs_plugin_refine:
  */
 gboolean

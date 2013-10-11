@@ -45,6 +45,15 @@ gs_plugin_status_to_string (GsPluginStatus status)
 }
 
 /**
+ * gs_plugin_set_enabled:
+ **/
+void
+gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
+{
+	plugin->enabled = enabled;
+}
+
+/**
  * gs_plugin_add_app:
  **/
 void
