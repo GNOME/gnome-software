@@ -6,6 +6,7 @@ AM_CPPFLAGS =						\
 	$(GTK_CFLAGS)					\
 	$(SQLITE_CFLAGS)				\
 	$(PACKAGEKIT_CFLAGS)				\
+	$(SOUP_CFLAGS)					\
 	$(SQLITE_CFLAGS)				\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
@@ -36,6 +37,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_menu-spec-refine.la		\
 	libgs_plugin_hardcoded-ratings.la		\
 	libgs_plugin_local-ratings.la			\
+	libgs_plugin_fedora_tagger.la			\
 	libgs_plugin_systemd-updates.la			\
 	libgs_plugin_packagekit-refine.la		\
 	libgs_plugin_packagekit-updates.la		\
@@ -47,6 +49,11 @@ libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
 libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+
+libgs_plugin_fedora_tagger_la_SOURCES = gs-plugin-fedora-tagger.c
+libgs_plugin_fedora_tagger_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS)
+libgs_plugin_fedora_tagger_la_LDFLAGS = -module -avoid-version
+libgs_plugin_fedora_tagger_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_self_test_la_SOURCES = gs-plugin-self-test.c
 libgs_plugin_self_test_la_LIBADD = $(GS_PLUGIN_LIBS)
