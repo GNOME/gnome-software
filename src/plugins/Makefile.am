@@ -35,7 +35,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_hardcoded-popular.la		\
 	libgs_plugin_menu-spec-categories.la		\
 	libgs_plugin_menu-spec-refine.la		\
-	libgs_plugin_hardcoded-ratings.la		\
 	libgs_plugin_local-ratings.la			\
 	libgs_plugin_fedora_tagger.la			\
 	libgs_plugin_systemd-updates.la			\
@@ -51,7 +50,7 @@ libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_fedora_tagger_la_SOURCES = gs-plugin-fedora-tagger.c
-libgs_plugin_fedora_tagger_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS)
+libgs_plugin_fedora_tagger_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)
 libgs_plugin_fedora_tagger_la_LDFLAGS = -module -avoid-version
 libgs_plugin_fedora_tagger_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
@@ -114,11 +113,6 @@ libgs_plugin_hardcoded_featured_la_SOURCES = gs-plugin-hardcoded-featured.c
 libgs_plugin_hardcoded_featured_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_featured_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_featured_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
-
-libgs_plugin_hardcoded_ratings_la_SOURCES = gs-plugin-hardcoded-ratings.c
-libgs_plugin_hardcoded_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
-libgs_plugin_hardcoded_ratings_la_LDFLAGS = -module -avoid-version
-libgs_plugin_hardcoded_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_local_ratings_la_SOURCES = gs-plugin-local-ratings.c
 libgs_plugin_local_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)

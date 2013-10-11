@@ -24,9 +24,11 @@
 #include <glib/gi18n.h>
 #include <gio/gdesktopappinfo.h>
 #include <libnotify/notify.h>
+#include <errno.h>
 
 #include "gs-app.h"
 #include "gs-utils.h"
+#include "gs-plugin.h"
 
 #define SPINNER_DELAY 500
 
@@ -209,6 +211,29 @@ gs_string_replace (GString *string, const gchar *search, const gchar *replace)
 	} while (TRUE);
 out:
 	return count;
+}
+
+/**
+ * gs_mkdir_parent:
+ **/
+gboolean
+gs_mkdir_parent (const gchar *path, GError **error)
+{
+	gboolean ret = TRUE;
+	gchar *parent;
+
+	parent = g_path_get_dirname (path);
+	if (g_mkdir_with_parents (parent, 0755) == -1) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to create '%s': %s",
+			     parent, g_strerror (errno));
+	}
+
+	g_free (parent);
+	return ret;
 }
 
 /* vim: set noexpandtab: */

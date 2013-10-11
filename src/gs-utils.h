@@ -38,6 +38,8 @@ void	 gs_app_notify_installed	(GsApp		*app);
 guint	 gs_string_replace		(GString	*string,
 					 const gchar	*search,
 					 const gchar	*replace);
+gboolean gs_mkdir_parent		(const gchar	*path,
+					 GError		**error);
 
 G_END_DECLS
 

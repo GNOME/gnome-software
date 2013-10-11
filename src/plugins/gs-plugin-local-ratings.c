@@ -21,11 +21,11 @@
 
 #include <config.h>
 
-#include <errno.h>
 #include <sqlite3.h>
 #include <stdlib.h>
 
 #include <gs-plugin.h>
+#include <gs-utils.h>
 
 struct GsPluginPrivate {
 	gsize                    loaded;
@@ -40,21 +40,6 @@ const gchar *
 gs_plugin_get_name (void)
 {
 	return "local-ratings";
-}
-
-/**
- * gs_plugin_local_ratings_ensure_file_directory:
- **/
-static void
-gs_plugin_local_ratings_ensure_file_directory (const gchar *path)
-{
-	gchar *parent;
-
-	parent = g_path_get_dirname (path);
-	if (g_mkdir_with_parents (parent, 0755) == -1)
-		g_warning ("%s", g_strerror (errno));
-
-	g_free (parent);
 }
 
 /**
@@ -105,7 +90,9 @@ gs_plugin_local_ratings_load_db (GsPlugin *plugin,
 	gint rc;
 
 	g_debug ("trying to open database '%s'", plugin->priv->db_path);
-	gs_plugin_local_ratings_ensure_file_directory (plugin->priv->db_path);
+	ret = gs_mkdir_parent (plugin->priv->db_path, error);
+	if (!ret)
+		goto out;
 	rc = sqlite3_open (plugin->priv->db_path, &plugin->priv->db);
 	if (rc != SQLITE_OK) {
 		ret = FALSE;
