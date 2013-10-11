@@ -569,6 +569,8 @@ gs_plugin_refine (GsPlugin *plugin,
 							    resolve_all,
 							    cancellable,
 							    error);
+		if (!ret)
+			goto out;
 	}
 	gs_profile_stop_full (plugin->profile, "packagekit-refine[name->id]");
 
@@ -608,6 +610,8 @@ gs_plugin_refine (GsPlugin *plugin,
 								 updatedetails_all,
 								 cancellable,
 								 error);
+		if (!ret)
+			goto out;
 	}
 	gs_profile_stop_full (plugin->profile, "packagekit-refine[id->update-details]");
 
