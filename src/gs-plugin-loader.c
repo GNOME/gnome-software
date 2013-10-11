@@ -95,6 +95,10 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 
 	/* already exists */
 	new_app = g_hash_table_lookup (priv->app_cache, gs_app_get_id (app));
+	if (new_app == app) {
+		new_app = app;
+		goto out;
+	}
 	if (new_app != NULL) {
 		/* already exists */
 
