@@ -80,16 +80,21 @@ gs_plugin_destroy (GsPlugin *plugin)
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GError **error)
 {
-	gboolean ret = TRUE;
 	GDir *dir;
+	GError *error_local = NULL;
 	const gchar *tmp;
+	gboolean ret = TRUE;
 	gchar *ext_tmp;
 	gchar *id;
 
 	/* find all the files installed */
-	dir = g_dir_open (plugin->priv->cachedir, 0, error);
-	if (dir == NULL)
+	dir = g_dir_open (plugin->priv->cachedir, 0, &error_local);
+	if (dir == NULL) {
+		g_debug ("Could not open AppData directory: %s",
+			 error_local->message);
+		g_error_free (error_local);
 		goto out;
+	}
 	while ((tmp = g_dir_read_name (dir)) != NULL) {
 		if (g_strcmp0 (tmp, "schema") == 0)
 			continue;

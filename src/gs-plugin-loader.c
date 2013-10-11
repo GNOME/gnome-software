@@ -201,6 +201,12 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, list, flags, cancellable, error);
 		if (!ret)
 			goto out;
+		if (error != NULL && *error != NULL) {
+			ret = FALSE;
+			g_warning ("%s set %s but did not return FALSE!",
+				   plugin->name, (*error)->message);
+			goto out;
+		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		gs_profile_stop (plugin_loader->priv->profile, profile_id);
 		g_free (profile_id);
