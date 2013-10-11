@@ -309,27 +309,76 @@ gs_shell_search_filter_text_changed_cb (GtkEntry *entry,
 }
 
 /**
+ * gs_shell_installed_sort_func:
+ *
+ * Get a sort key to achive this:
+ *
+ * 1. Application rating
+ * 2. Length of the long description
+ * 3. Number of screenshots
+ * 4. Install date
+ * 5. Name
+ **/
+static gchar *
+gs_shell_search_get_app_sort_key (GsApp *app)
+{
+	GPtrArray *ss;
+	GString *key;
+	const gchar *desc;
+	gint rating;
+
+	/* sort installed, removing, other */
+	key = g_string_sized_new (64);
+
+	/* artificially cut the rating of applications with no description */
+	desc = gs_app_get_description (app);
+	g_string_append_printf (key, "%c:", desc != NULL ? '2' : '1');
+
+	/* sort by rating */
+	rating = gs_app_get_rating (app);
+	g_string_append_printf (key, "%03i:", rating > 0 ? rating : 0);
+
+	/* sort by length of description */
+	g_string_append_printf (key, "%03" G_GSIZE_FORMAT ":",
+				desc != NULL ? strlen (desc) : 0);
+
+	/* sort by number of screenshots */
+	ss = gs_app_get_screenshots (app);
+	g_string_append_printf (key, "%02i:", ss->len);
+
+	/* sort by install date */
+	g_string_append_printf (key, "%09" G_GUINT64_FORMAT ":",
+				G_MAXUINT64 - gs_app_get_install_date (app));
+
+	/* finally, sort by short name */
+	g_string_append (key, gs_app_get_name (app));
+
+	return g_string_free (key, FALSE);
+}
+
+/**
  * gs_shell_search_sort_func:
  **/
 static gint
 gs_shell_search_sort_func (GtkListBoxRow *a,
-			      GtkListBoxRow *b,
-			      gpointer user_data)
+			   GtkListBoxRow *b,
+			   gpointer user_data)
 {
 	GsAppWidget *aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (a)));
 	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
 	GsApp *a1 = gs_app_widget_get_app (aw1);
 	GsApp *a2 = gs_app_widget_get_app (aw2);
-	guint64 date1 = gs_app_get_install_date (a1);
-	guint64 date2 = gs_app_get_install_date (a2);
+	gchar *key1 = gs_shell_search_get_app_sort_key (a1);
+	gchar *key2 = gs_shell_search_get_app_sort_key (a2);
+	gint retval;
 
-	if (date1 < date2)
-		return 1;
-	else if (date2 < date1)
-		return -1;
+	/* compare the keys according to the algorithm above */
+	retval = g_strcmp0 (key2, key1);
 
-	return g_strcmp0 (gs_app_get_name (a1),
-			  gs_app_get_name (a2));
+	g_free (key1);
+	g_free (key2);
+
+	return retval;
 }
 
 /**
