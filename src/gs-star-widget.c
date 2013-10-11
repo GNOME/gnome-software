@@ -33,10 +33,12 @@ struct _GsStarWidgetPrivate
 	GtkWidget	*button2;
 	GtkWidget	*button3;
 	GtkWidget	*button4;
+	GtkWidget	*button5;
 	GtkWidget	*image1;
 	GtkWidget	*image2;
 	GtkWidget	*image3;
 	GtkWidget	*image4;
+	GtkWidget	*image5;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsStarWidget, gs_star_widget, GTK_TYPE_BIN)
@@ -48,7 +50,7 @@ enum {
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
-static const gint rate_to_star[] = {1, 30, 70, 100, -1};
+static const gint rate_to_star[] = {1, 25, 50, 75, 100, -1};
 
 /**
  * gs_star_widget_get_rating:
@@ -83,6 +85,8 @@ gs_star_widget_refresh (GsStarWidget *star)
 				 priv->rating >= rate_to_star[2] ? img : img_dim);
 	gtk_image_set_from_file (GTK_IMAGE (priv->image4),
 				 priv->rating >= rate_to_star[3] ? img : img_dim);
+	gtk_image_set_from_file (GTK_IMAGE (priv->image5),
+				 priv->rating >= rate_to_star[4] ? img : img_dim);
 }
 
 /**
@@ -145,6 +149,8 @@ gs_star_widget_init (GsStarWidget *star)
 			  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
 	g_signal_connect (priv->button4, "clicked",
 			  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
+	g_signal_connect (priv->button5, "clicked",
+			  G_CALLBACK (gs_star_widget_button_clicked_cb), star);
 
 	/* assign the values */
 	g_object_set_data (G_OBJECT (priv->button1),
@@ -159,6 +165,9 @@ gs_star_widget_init (GsStarWidget *star)
 	g_object_set_data (G_OBJECT (priv->button4),
 			   "GsStarWidget::value",
 			   GINT_TO_POINTER (rate_to_star[3]));
+	g_object_set_data (G_OBJECT (priv->button5),
+			   "GsStarWidget::value",
+			   GINT_TO_POINTER (rate_to_star[4]));
 }
 
 /**
@@ -185,10 +194,12 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button3);
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button4);
+	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button5);
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image1);
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image3);
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image4);
+	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image5);
 }
 
 /**
