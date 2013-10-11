@@ -74,12 +74,6 @@ gs_star_widget_refresh (GsStarWidget *star)
 
 	priv = gs_star_widget_get_instance_private (star);
 
-	/* not set yet */
-	gtk_widget_set_sensitive (priv->button1, priv->rating != -1);
-	gtk_widget_set_sensitive (priv->button2, priv->rating != -1);
-	gtk_widget_set_sensitive (priv->button3, priv->rating != -1);
-	gtk_widget_set_sensitive (priv->button4, priv->rating != -1);
-
 	/* set the dim states correctly */
 	gtk_image_set_from_file (GTK_IMAGE (priv->image1),
 				 priv->rating >= rate_to_star[0] ? img : img_dim);

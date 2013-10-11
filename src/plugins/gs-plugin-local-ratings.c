@@ -212,6 +212,10 @@ gs_plugin_refine (GsPlugin *plugin,
 	GList *l;
 	GsApp *app;
 
+	/* nothing to do here */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) == 0)
+		goto out;
+
 	/* already loaded */
 	if (g_once_init_enter (&plugin->priv->loaded)) {
 		ret = gs_plugin_local_ratings_load_db (plugin, error);

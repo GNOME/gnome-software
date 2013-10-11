@@ -530,6 +530,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	gs_plugin_loader_app_refine_async (priv->plugin_loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
 					   priv->cancellable,
 					   gs_shell_details_app_refine_cb,
