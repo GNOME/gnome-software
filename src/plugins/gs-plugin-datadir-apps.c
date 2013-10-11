@@ -162,17 +162,14 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	if (!ret)
 		goto out;
 
-	/* create a new cache entry */
-	cache_item = g_slice_new0 (GsPluginDataDirAppsCacheItem);
-
 	/* get desktop name */
 	name = g_key_file_get_locale_string (key_file,
 					     G_KEY_FILE_DESKTOP_GROUP,
 					     G_KEY_FILE_DESKTOP_KEY_NAME,
 					     NULL,
 					     NULL);
-	if (name != NULL && name[0] != '\0')
-		cache_item->name = g_strdup (name);
+	if (name == NULL || name[0] == '\0')
+		goto out;
 
 	/* get desktop summary */
 	comment = g_key_file_get_locale_string (key_file,
@@ -180,33 +177,39 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 						G_KEY_FILE_DESKTOP_KEY_COMMENT,
 						NULL,
 						NULL);
-	if (comment != NULL && comment[0] != '\0')
-		cache_item->summary = g_strdup (comment);
+	if (comment == NULL || comment[0] == '\0')
+		goto out;
 
 	/* get desktop icon */
 	icon = g_key_file_get_string (key_file,
 				      G_KEY_FILE_DESKTOP_GROUP,
 				      G_KEY_FILE_DESKTOP_KEY_ICON,
 				      NULL);
+	if (icon == NULL)
+		goto out;
 
 	/* set pixbuf */
-	if (icon != NULL) {
-		if (icon[0] == '/') {
-			pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
-								   plugin->pixbuf_size,
-								   plugin->pixbuf_size,
-								   NULL);
-		} else {
-			pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-							   icon,
+	if (icon[0] == '/') {
+		pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
 							   plugin->pixbuf_size,
-							   GTK_ICON_LOOKUP_USE_BUILTIN |
-							   GTK_ICON_LOOKUP_FORCE_SIZE,
+							   plugin->pixbuf_size,
 							   NULL);
-		}
+	} else {
+		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+						   icon,
+						   plugin->pixbuf_size,
+						   GTK_ICON_LOOKUP_USE_BUILTIN |
+						   GTK_ICON_LOOKUP_FORCE_SIZE,
+						   NULL);
 	}
-	if (pixbuf != NULL)
-		cache_item->pixbuf = g_object_ref (pixbuf);
+	if (pixbuf == NULL)
+		goto out;
+
+	/* create a new cache entry */
+	cache_item = g_slice_new0 (GsPluginDataDirAppsCacheItem);
+	cache_item->name = g_strdup (name);
+	cache_item->summary = g_strdup (comment);
+	cache_item->pixbuf = g_object_ref (pixbuf);
 
 	/* set pkgname if set (only Ubuntu) */
 	pkgname = g_key_file_get_string (key_file,
