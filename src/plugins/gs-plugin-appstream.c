@@ -28,6 +28,8 @@
 #include "appstream-app.h"
 #include "appstream-cache.h"
 
+#define	GS_PLUGIN_APPSTREAM_MAX_SCREENSHOTS	5
+
 struct GsPluginPrivate {
 	AppstreamCache		*cache;
 	gchar			*cachedir;
@@ -388,7 +390,8 @@ gs_plugin_refine_add_screenshots (GsApp *app, AppstreamApp *item)
 		return;
 
 	/* add any we know */
-	for (i = 0; i < screenshots_as->len; i++) {
+	for (i = 0; i < screenshots_as->len &&
+		    i < GS_PLUGIN_APPSTREAM_MAX_SCREENSHOTS; i++) {
 		ss = g_ptr_array_index (screenshots_as, i);
 		images_as = appstream_screenshot_get_images (ss);
 		if (images_as->len == 0)
