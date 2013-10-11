@@ -1,14 +1,15 @@
-# Serbian translation for gnome-software.
+# Serbian translation of gnome-software
+# Courtesy of Prevod.org team (http://prevod.org/) -- 2012.
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
-# This file is distributed under the same license as the gnome-software package.
+# This file is distributed under the same license as the gnome-software package. 
 # Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013.
 msgid ""
 msgstr ""
-"Project-Id-Version: gnome-software master\n"
+"Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-04-09 15:56+0000\n"
-"PO-Revision-Date: 2013-05-15 12:06+0200\n"
+"POT-Creation-Date: 2013-10-10 16:32+0000\n"
+"PO-Revision-Date: 2013-10-11 10:25+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
 "Language: sr\n"
@@ -19,130 +20,1281 @@ msgstr ""
 "n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 "X-Project-Style: gnome\n"
 
+#: ../data/appdata/gnome-software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "Гномов управник програма"
+
+#: ../data/appdata/gnome-software.appdata.xml.in.h:2
+msgid ""
+"Software allows you to find and install new applications and system "
+"extensions and remove existing installed applications."
+msgstr ""
+"Програмко вам дозвољава да пронађете и инсталирате нове програме и системска "
+"проширења и да уклоните постојеће инсталиране програме."
+
+#: ../data/appdata/gnome-software.appdata.xml.in.h:3
+msgid ""
+"GNOME Software showcases featured and popular applications with useful "
+"descriptions and multiple screenshots per application. Applications can be "
+"found either through browsing the list of categories or by searching. It "
+"also allows you to update your system using an offline update."
+msgstr ""
+"Гномов Програмко приказује издвојене и популарне програме са корисним "
+"описима и неколико снимака екрана по програму. Програми могу бити пронађени "
+"прегледањем списка категорија или претрагом. Такође вам омогућава да "
+"доградите ваш систем користећи ван мрежно освежење."
+
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "_О програму"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "_Изађи"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is installed
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
+#: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:728
+#: ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "Инсталиран"
+
+#. TRANSLATORS: this is the application name
+#. TRANSLATORS: this is the main window title
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
+#: ../src/gs-application.c:87 ../src/gs-shell.c:128
 msgid "Software"
-msgstr "Програми"
+msgstr "Програм"
 
 #: ../src/gnome-software.desktop.in.h:2
 msgid "Add, remove or update software on this computer"
 msgstr "Додајте, уклоните или доградите програме на овом рачунару"
 
 #: ../src/gnome-software.ui.h:2
-msgid "New"
-msgstr "Нови"
+msgid "Go back"
+msgstr "Идите назад"
 
-#: ../src/gnome-software.ui.h:3
-msgid "Installed"
-msgstr "Инсталирани"
-
+#. Translators: A label for a button to show all available software.
 #: ../src/gnome-software.ui.h:4
-msgid "Updates"
-msgstr "Доградње"
+msgid "_All"
+msgstr "_Сви"
 
-#: ../src/gnome-software.ui.h:5
-msgid "Overview"
-msgstr "Преглед"
+#. Translators: A label for a button to show only software which is already installed.
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:445
+msgid "_Installed"
+msgstr "_Инсталирани"
 
-#: ../src/gnome-software.ui.h:6
-msgid "Reviews"
-msgstr "Критике"
+#. Translators: A label for a button to show only updates which are available to install.
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install.
+#.
+#: ../src/gnome-software.ui.h:8 ../src/gs-shell-updates.c:112
+msgid "_Updates"
+msgstr "_Освежења"
 
-#: ../src/gnome-software.ui.h:7
-msgid "Related"
-msgstr "Повезани"
+#: ../src/gnome-software.ui.h:9
+msgid "Restart & Install"
+msgstr "Поново покрени и инсталирај"
 
-#: ../src/gnome-software.ui.h:8 ../src/gs-app-widget.c:99
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:112
+#: ../src/gs-shell-details.c:95
 msgid "Install"
 msgstr "Инсталирај"
 
-#: ../src/gnome-software.ui.h:9
-msgid "Update All"
-msgstr "Догради све"
-
-#: ../src/gnome-software.ui.h:10
-msgid "Featured"
-msgstr "Издвојени"
-
-#: ../src/gnome-software.ui.h:11
-msgid "Popular"
-msgstr "Популарни"
-
-#: ../src/gnome-software.ui.h:12
-msgid "Categories"
-msgstr "Категорије"
-
-#: ../src/gnome-software.ui.h:13
-msgid "Description"
-msgstr "Опис"
-
-#: ../src/gnome-software.ui.h:14
-msgid ""
-"Shotwell is a digital photo organiser that runs on Linux. It is the default "
-"photo manager in Ubuntu and Fedora."
-msgstr ""
-"Фото бунар је организатор дигиталних фотографија који ради на Линуксу. "
-"Основни је управник фотографија на Убунтуу и Федори."
-
-#: ../src/gs-app-widget.c:105
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: button text in the header when an application can be erased
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:121
+#: ../src/gs-shell-details.c:128 ../src/gs-shell-details.c:645
+#: ../src/gs-shell-installed.c:181 ../src/gs-shell-search.c:150
 msgid "Remove"
 msgstr "Уклони"
 
-#: ../src/gs-app-widget.c:111
-msgid "Update"
-msgstr "Догради"
+#: ../src/gnome-software.ui.h:12
+#: ../src/plugins/gs-plugin-hardcoded-popular.c:227
+msgid "Featured"
+msgstr "Издвојени"
 
-#. 'More' Expander
-#: ../src/gs-app-widget.c:438
-msgid "More  ▾"
-msgstr "Још  ▾"
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: ../src/gnome-software.ui.h:14
+msgid "Picks"
+msgstr "Изабрани"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:185
-msgid "Waiting for package manager..."
-msgstr "Чекам на управника пакета..."
+#: ../src/gnome-software.ui.h:15
+msgid "Categories"
+msgstr "Категорије"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:189
-msgid "Loading list of packages..."
-msgstr "Учитавам списак пакета..."
+#: ../src/gnome-software.ui.h:16
+msgid "No Application Data Found"
+msgstr "Нисам пронашао податке програма"
 
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:199 ../src/gs-main.c:260
-msgid "Downloading..."
-msgstr "Преузимам..."
+#: ../src/gnome-software.ui.h:17
+msgid "No Application Found"
+msgstr "Нисам пронашао програме"
 
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:204 ../src/gs-main.c:264
-msgid "Querying..."
-msgstr "Пропитујем..."
+#: ../src/gnome-software.ui.h:18
+msgid "Software is up to date"
+msgstr "Програми су освежени"
 
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:252
-msgid "Waiting..."
-msgstr "Чекам..."
+#: ../src/gnome-software.ui.h:19
+msgid "Description"
+msgstr "Опис"
 
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:256
-msgid "Setting up..."
-msgstr "Подешавам..."
+#: ../src/gnome-software.ui.h:20
+msgid "Details"
+msgstr "Појединости"
 
-#. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:435
-msgid "Requires restart"
-msgstr "Захтева поновно покретање"
+#: ../src/gnome-software.ui.h:21
+msgid "Version"
+msgstr "Издање"
 
-#: ../src/gs-main.c:803
-msgid ""
-"The author of this software has not included a 'Description' in the desktop "
-"file..."
-msgstr "Стваралац овог софтвера није укључио „Опис“ у датотеку радне површи..."
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gnome-software.ui.h:22 ../src/gs-shell-details.c:733
+msgid "Updated"
+msgstr "Освежен"
 
-#: ../src/gs-plugin-loader.c:306
-msgid "Includes performance, stability and security improvements for all users"
-msgstr "Укључује побољшања одлика, стабилности и безбедности за све кориснике"
+#: ../src/gnome-software.ui.h:23
+msgid "Category"
+msgstr "Категорија"
 
-#: ../src/gs-plugin-loader.c:338
+#: ../src/gnome-software.ui.h:24
+msgid "Licence"
+msgstr "Дозвола"
+
+#: ../src/gnome-software.ui.h:25
+msgid "Size"
+msgstr "Величина"
+
+#: ../src/gnome-software.ui.h:26
+msgid "Developer"
+msgstr "Програмер"
+
+#: ../src/gnome-software.ui.h:27
+msgid "Support"
+msgstr "Подршка"
+
+#: ../src/gnome-software.ui.h:28
+msgid "_Website"
+msgstr "_Веб страница"
+
+#: ../src/gnome-software.ui.h:29
+msgid "_History"
+msgstr "_Историјат"
+
+#: ../src/gnome-software.ui.h:30
+msgid "History"
+msgstr "Историјат"
+
+#. Translators: Label for a button to close the update dialogue.
+#: ../src/gnome-software.ui.h:32
+msgid "Done"
+msgstr "Готово"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:85
+msgid "About Software"
+msgstr "О Програмку"
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:90
+msgid "A nice way to manage the software on your system."
+msgstr "Прикладан начин за управљање програмима на вашем систему"
+
+#: ../src/gs-application.c:94
+msgid "translator-credits"
+msgstr ""
+"  Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
+"\n"
+"http://prevod.org — превод на српски језик."
+
+#. TRANSLATORS: this is a command line option, please don't
+#. * translate the option names between ‘’
+#: ../src/gs-application.c:215
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr ""
+"Режим покретања: „updates“ (освежења), „updated“ (освежен), „installed“ "
+"(инсталира) или „overview“ (преглед)"
+
+#: ../src/gs-application.c:215
+msgid "MODE"
+msgstr "РЕЖИМ"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user there is an update for the installed
+#. * application available
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:93 ../src/gs-feature-tile.c:81
+#: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
+msgid "Updates"
+msgstr "Освежења"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-app-widget.c:132 ../src/gs-shell-details.c:103
+msgid "Installing"
+msgstr "Инсталирам"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-app-widget.c:141 ../src/gs-shell-details.c:135
+msgid "Removing"
+msgstr "Уклањам"
+
+#. TRANSLATORS: this is where all applications that don't
+#. * fit in other groups are put
+#: ../src/gs-category.c:174
+msgid "Other"
+msgstr "Друго"
+
+#. TRANSLATORS: this is a group of updates that are not packages and
+#. * are ot shown in the main list
+#: ../src/gs-plugin-loader.c:594
 msgid "OS Updates"
 msgstr "Доградње ОС-а"
+
+#. TRANSLATORS: this is a longer description of the os-update item
+#: ../src/gs-plugin-loader.c:596 ../src/gs-plugin-loader.c:597
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr "Укључује побољшања одлика, стабилности и безбедности за све кориснике."
+
+#. TRANSLATORS: this is when we try to download a screenshot and
+#. * we get back 404
+#: ../src/gs-screenshot-image.c:146
+msgid "Screenshot not found"
+msgstr "Нисам пронашао снимак екрана"
+
+#. TRANSLATORS: this is when we request a screenshot size that
+#. * the generator did not create or the parser did not add
+#: ../src/gs-screenshot-image.c:266
+msgid "Screenshot size not found"
+msgstr "Нисам пронашао величину снимка екрана"
+
+#. TRANSLATORS: this is when we try create the cache directory
+#. * but we were out of space or permission was denied
+#: ../src/gs-screenshot-image.c:280
+msgid "Could not create cache"
+msgstr "Не могу да направим оставу"
+
+#. TRANSLATORS: this is when we try to download a screenshot
+#. * that was not a valid URL
+#: ../src/gs-screenshot-image.c:297
+msgid "Screenshot not valid"
+msgstr "Снимак екрана није исправан"
+
+#. TRANSLATORS: this is when networking is not available
+#: ../src/gs-screenshot-image.c:303
+msgid "Screenshot not available"
+msgstr "Снимак екрана није доступан"
+
+#: ../src/gs-screenshot-image.c:365
+msgid "Screenshot"
+msgstr "Снимак екрана"
+
+#. TRANSLATORS: this is where the licence is not known
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing that something happened to the
+#. * application but we don't know what
+#: ../src/gs-shell-details.c:425 ../src/gs-shell-details.c:739
+msgid "Unknown"
+msgstr "Непознато"
+
+# #-#-#-#-#  evolution.po (evolution)  #-#-#-#-#
+# timezone.
+#. TRANSLATORS: this is where the licence is insanely
+#. * complicated and the full string is put into the tooltip
+#: ../src/gs-shell-details.c:430
+msgid "Complicated!"
+msgstr "Замршено!"
+
+#. TRANSLATORS: this is where the licence is not known
+#: ../src/gs-shell-details.c:445
+msgid "Calculating…"
+msgstr "Израчунавам…"
+
+#. TRANSLATORS: this is where the licence is not known
+#: ../src/gs-shell-details.c:456
+msgid "Never"
+msgstr "Никада"
+
+#. TRANSLATORS: this is the application isn't in any
+#. * defined menu category
+#: ../src/gs-shell-details.c:473
+msgid "None"
+msgstr "Ништа"
+
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-shell-details.c:630 ../src/gs-shell-installed.c:166
+#: ../src/gs-shell-search.c:135
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Да ли сте сигурни да желите да уклоните „%s“?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-shell-details.c:642 ../src/gs-shell-installed.c:178
+#: ../src/gs-shell-search.c:147
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr ""
+"Биће уклоњен „%s“, и мораћете да га инсталирате да бисте га поново "
+"користили."
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was removed
+#: ../src/gs-shell-details.c:722
+msgid "Removed"
+msgstr "Уклоњен"
+
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software. The '%d' refers to the number of
+#. * applications either installing or erasing
+#: ../src/gs-shell-installed.c:450
+#, c-format
+msgid "_Installed (%d)"
+msgstr "_Инсталираних (%d)"
+
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install. The '%d' refers to the
+#. * number of available updates
+#.
+#: ../src/gs-shell-updates.c:105
+#, c-format
+msgid "_Updates (%d)"
+msgstr "_Освежења (%d)"
+
+#. TRANSLATORS: window title to suggest that we are showing
+#. * the offline updates that have just been applied
+#: ../src/gs-shell-updates.c:170
+msgid "Recent Software Updates"
+msgstr "Скорашња освежења софтвера"
+
+#. TRANSLATORS: this is the summary of a notification that an application
+#. * has been successfully installed
+#: ../src/gs-utils.c:166
+#, c-format
+msgid "%s is now installed"
+msgstr "„%s“ је сада инсталиран"
+
+#. TRANSLATORS: this is button that opens the newly installed application
+#: ../src/gs-utils.c:169
+msgid "Launch"
+msgstr "Покрени"
+
+#: ../src/plugins/gs-plugin-appstream.c:260
+#, c-format
+msgid "No AppStream data found"
+msgstr "Нисам пронашао податке тока програма"
+
+#. TRANSLATORS: these are extra things that add to existing programs,
+#. * for instance fonts, codecs or language packs
+#. TRANSLATORS: this is the main category for Add-ons
+#: ../src/plugins/gs-plugin-packagekit.c:435
+#: ../src/plugins/menu-spec-common.c:210
+msgid "Add-ons"
+msgstr "Додаци"
+
+#. TRANSLATORS: audio/video decoders
+#: ../src/plugins/gs-plugin-packagekit.c:439
+msgid "Codecs"
+msgstr "Kодеци"
+
+#. TRANSLATORS: fonts of different styles or languages
+#: ../src/plugins/gs-plugin-packagekit.c:443
+msgid "Fonts"
+msgstr "Словни ликови"
+
+#. TRANSLATORS: these are ways to enter text
+#: ../src/plugins/gs-plugin-packagekit.c:447
+msgid "Input Sources"
+msgstr "Извори улаза"
+
+#. TRANSLATORS: additional languages for apps
+#: ../src/plugins/gs-plugin-packagekit.c:451
+msgid "Language Packs"
+msgstr "Пакети језика"
+
+#. TRANSLATORS: this is where update details either are
+#. * no longer available or were never provided in the first place
+#: ../src/plugins/gs-plugin-packagekit-refine.c:338
+msgid "No update details were provided"
+msgstr "Нису достављене појединости освежења"
+
+#. TRANSLATORS: this is the menu spec main category for Audio
+#: ../src/plugins/menu-spec-common.c:30
+msgid "Audio"
+msgstr "Звук"
+
+#: ../src/plugins/menu-spec-common.c:31
+msgctxt "Menu subcategory of Audio"
+msgid "Editing"
+msgstr "Уређивање"
+
+#: ../src/plugins/menu-spec-common.c:32
+msgctxt "Menu subcategory of Audio"
+msgid "Databases"
+msgstr "Базе података"
+
+#: ../src/plugins/menu-spec-common.c:33
+msgctxt "Menu subcategory of Audio"
+msgid "Disc Burning"
+msgstr "Нарезивање диска"
+
+#: ../src/plugins/menu-spec-common.c:34
+msgctxt "Menu subcategory of Audio"
+msgid "Ham Radio"
+msgstr "Хам радио"
+
+#: ../src/plugins/menu-spec-common.c:35
+msgctxt "Menu subcategory of Audio"
+msgid "MIDI"
+msgstr "МИДИ"
+
+#: ../src/plugins/menu-spec-common.c:36
+msgctxt "Menu subcategory of Audio"
+msgid "Mixer"
+msgstr "Мешач"
+
+#: ../src/plugins/menu-spec-common.c:37
+msgctxt "Menu subcategory of Audio"
+msgid "Music"
+msgstr "Музика"
+
+#: ../src/plugins/menu-spec-common.c:38
+msgctxt "Menu subcategory of Audio"
+msgid "Players"
+msgstr "Пуштачи"
+
+#: ../src/plugins/menu-spec-common.c:39
+msgctxt "Menu subcategory of Audio"
+msgid "Recorders"
+msgstr "Снимачи"
+
+#: ../src/plugins/menu-spec-common.c:40
+msgctxt "Menu subcategory of Audio"
+msgid "Sequencers"
+msgstr "Секвенцери"
+
+#: ../src/plugins/menu-spec-common.c:41
+msgctxt "Menu subcategory of Audio"
+msgid "Tuners"
+msgstr "Тјунери"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/menu-spec-common.c:43
+msgid "Development Tools"
+msgstr "Развојни алати"
+
+#: ../src/plugins/menu-spec-common.c:44
+msgctxt "Menu subcategory of Development"
+msgid "Building"
+msgstr "Изградња"
+
+#: ../src/plugins/menu-spec-common.c:45
+msgctxt "Menu subcategory of Development"
+msgid "Databases"
+msgstr "Базе података"
+
+#: ../src/plugins/menu-spec-common.c:46
+msgctxt "Menu subcategory of Development"
+msgid "Debuggers"
+msgstr "Исправљачи грешака"
+
+#: ../src/plugins/menu-spec-common.c:47
+msgctxt "Menu subcategory of Development"
+msgid "GUI Designers"
+msgstr "Израда сучеља"
+
+#: ../src/plugins/menu-spec-common.c:48
+msgctxt "Menu subcategory of Development"
+msgid "IDE"
+msgstr "ИРО"
+
+#: ../src/plugins/menu-spec-common.c:49
+msgctxt "Menu subcategory of Development"
+msgid "Profiling"
+msgstr "Профилисање"
+
+#: ../src/plugins/menu-spec-common.c:50
+msgctxt "Menu subcategory of Development"
+msgid "Project Management"
+msgstr "Управљање пројектима"
+
+#: ../src/plugins/menu-spec-common.c:51
+msgctxt "Menu subcategory of Development"
+msgid "Revision Control"
+msgstr "Управљање прегледима"
+
+#: ../src/plugins/menu-spec-common.c:52
+msgctxt "Menu subcategory of Development"
+msgid "Translation"
+msgstr "Превођење"
+
+#: ../src/plugins/menu-spec-common.c:53
+msgctxt "Menu subcategory of Development"
+msgid "Web Development"
+msgstr "Развој веба"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/menu-spec-common.c:55
+msgid "Education"
+msgstr "Образовање"
+
+#: ../src/plugins/menu-spec-common.c:56
+msgctxt "Menu subcategory of Education"
+msgid "Art"
+msgstr "Уметност"
+
+#: ../src/plugins/menu-spec-common.c:57
+msgctxt "Menu subcategory of Education"
+msgid "Artificial Intelligence"
+msgstr "Вештачка интелигенција"
+
+#: ../src/plugins/menu-spec-common.c:58
+msgctxt "Menu subcategory of Education"
+msgid "Astronomy"
+msgstr "Астрономија"
+
+#: ../src/plugins/menu-spec-common.c:59
+msgctxt "Menu subcategory of Education"
+msgid "Biology"
+msgstr "Биологија"
+
+#: ../src/plugins/menu-spec-common.c:60
+msgctxt "Menu subcategory of Education"
+msgid "Chemistry"
+msgstr "Хемија"
+
+#: ../src/plugins/menu-spec-common.c:61
+msgctxt "Menu subcategory of Education"
+msgid "Computer Science"
+msgstr "Рачунарство"
+
+#: ../src/plugins/menu-spec-common.c:62
+msgctxt "Menu subcategory of Education"
+msgid "Construction"
+msgstr "Изградња"
+
+#: ../src/plugins/menu-spec-common.c:63
+msgctxt "Menu subcategory of Education"
+msgid "Data Visualization"
+msgstr "Приказивање података"
+
+#: ../src/plugins/menu-spec-common.c:64
+msgctxt "Menu subcategory of Education"
+msgid "Economy"
+msgstr "Економија"
+
+#: ../src/plugins/menu-spec-common.c:65
+msgctxt "Menu subcategory of Education"
+msgid "Electricity"
+msgstr "Електрицитет"
+
+#: ../src/plugins/menu-spec-common.c:66
+msgctxt "Menu subcategory of Education"
+msgid "Electronics"
+msgstr "Електроника"
+
+#: ../src/plugins/menu-spec-common.c:67
+msgctxt "Menu subcategory of Education"
+msgid "Engineering"
+msgstr "Инжењерство"
+
+#: ../src/plugins/menu-spec-common.c:68
+msgctxt "Menu subcategory of Education"
+msgid "Geography"
+msgstr "Географија"
+
+#: ../src/plugins/menu-spec-common.c:69
+msgctxt "Menu subcategory of Education"
+msgid "Geology"
+msgstr "Геологија"
+
+#: ../src/plugins/menu-spec-common.c:70
+msgctxt "Menu subcategory of Education"
+msgid "Geoscience"
+msgstr "Геонаука"
+
+#: ../src/plugins/menu-spec-common.c:71
+msgctxt "Menu subcategory of Education"
+msgid "History"
+msgstr "Историја"
+
+#: ../src/plugins/menu-spec-common.c:72
+msgctxt "Menu subcategory of Education"
+msgid "Humanities"
+msgstr "Хуманост"
+
+#: ../src/plugins/menu-spec-common.c:73
+msgctxt "Menu subcategory of Education"
+msgid "Image Processing"
+msgstr "Обрада слика"
+
+#: ../src/plugins/menu-spec-common.c:74
+msgctxt "Menu subcategory of Education"
+msgid "Languages"
+msgstr "Језици"
+
+#: ../src/plugins/menu-spec-common.c:75
+msgctxt "Menu subcategory of Education"
+msgid "Literature"
+msgstr "Литература"
+
+#: ../src/plugins/menu-spec-common.c:76
+msgctxt "Menu subcategory of Education"
+msgid "Maps"
+msgstr "Карте"
+
+#: ../src/plugins/menu-spec-common.c:77
+msgctxt "Menu subcategory of Education"
+msgid "Math"
+msgstr "Математика"
+
+#: ../src/plugins/menu-spec-common.c:78
+msgctxt "Menu subcategory of Education"
+msgid "Medical"
+msgstr "Медицина"
+
+#: ../src/plugins/menu-spec-common.c:79
+msgctxt "Menu subcategory of Education"
+msgid "Music"
+msgstr "Музика"
+
+#: ../src/plugins/menu-spec-common.c:80
+msgctxt "Menu subcategory of Education"
+msgid "Numerical Analysis"
+msgstr "Анализа бројева"
+
+#: ../src/plugins/menu-spec-common.c:81
+msgctxt "Menu subcategory of Education"
+msgid "Parallel Computing"
+msgstr "Паралелно рачунарство"
+
+#: ../src/plugins/menu-spec-common.c:82
+msgctxt "Menu subcategory of Education"
+msgid "Physics"
+msgstr "Физика"
+
+#: ../src/plugins/menu-spec-common.c:83
+msgctxt "Menu subcategory of Education"
+msgid "Robotics"
+msgstr "Роботика"
+
+#: ../src/plugins/menu-spec-common.c:84
+msgctxt "Menu subcategory of Education"
+msgid "Spirituality"
+msgstr "Духовност"
+
+#: ../src/plugins/menu-spec-common.c:85
+msgctxt "Menu subcategory of Education"
+msgid "Sports"
+msgstr "Спортови"
+
+#. TRANSLATORS: this is the menu spec main category for Games
+#: ../src/plugins/menu-spec-common.c:87
+msgid "Games"
+msgstr "Игре"
+
+#: ../src/plugins/menu-spec-common.c:88
+msgctxt "Menu subcategory of Games"
+msgid "Action"
+msgstr "Акција"
+
+#: ../src/plugins/menu-spec-common.c:89
+msgctxt "Menu subcategory of Games"
+msgid "Adventure"
+msgstr "Авантура"
+
+#: ../src/plugins/menu-spec-common.c:90
+msgctxt "Menu subcategory of Games"
+msgid "Arcade"
+msgstr "Аркадне"
+
+#: ../src/plugins/menu-spec-common.c:91
+msgctxt "Menu subcategory of Games"
+msgid "Blocks"
+msgstr "Блокови"
+
+#: ../src/plugins/menu-spec-common.c:92
+msgctxt "Menu subcategory of Games"
+msgid "Board"
+msgstr "Табла"
+
+#: ../src/plugins/menu-spec-common.c:93
+msgctxt "Menu subcategory of Games"
+msgid "Card"
+msgstr "Карте"
+
+#: ../src/plugins/menu-spec-common.c:94
+msgctxt "Menu subcategory of Games"
+msgid "Emulators"
+msgstr "Опонашавачи"
+
+#: ../src/plugins/menu-spec-common.c:95
+msgctxt "Menu subcategory of Games"
+msgid "Kids"
+msgstr "Деца"
+
+#: ../src/plugins/menu-spec-common.c:96
+msgctxt "Menu subcategory of Games"
+msgid "Logic"
+msgstr "Логика"
+
+#: ../src/plugins/menu-spec-common.c:97
+msgctxt "Menu subcategory of Games"
+msgid "Role Playing"
+msgstr "Играње улоге"
+
+#: ../src/plugins/menu-spec-common.c:98
+msgctxt "Menu subcategory of Games"
+msgid "Shooter"
+msgstr "Пуцачине"
+
+#: ../src/plugins/menu-spec-common.c:99
+msgctxt "Menu subcategory of Games"
+msgid "Simulation"
+msgstr "Опонашање"
+
+#: ../src/plugins/menu-spec-common.c:100
+msgctxt "Menu subcategory of Games"
+msgid "Sports"
+msgstr "Спортови"
+
+#: ../src/plugins/menu-spec-common.c:101
+msgctxt "Menu subcategory of Games"
+msgid "Strategy"
+msgstr "Стратегија"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/menu-spec-common.c:103
+msgid "Graphics"
+msgstr "Графика"
+
+#: ../src/plugins/menu-spec-common.c:104
+msgctxt "Menu subcategory of Graphics"
+msgid "2D Graphics"
+msgstr "2Д графика"
+
+#: ../src/plugins/menu-spec-common.c:105
+msgctxt "Menu subcategory of Graphics"
+msgid "3D Graphics"
+msgstr "3Д графика"
+
+#: ../src/plugins/menu-spec-common.c:106
+msgctxt "Menu subcategory of Graphics"
+msgid "OCR"
+msgstr "ОЦР"
+
+#: ../src/plugins/menu-spec-common.c:107
+msgctxt "Menu subcategory of Graphics"
+msgid "Photography"
+msgstr "Фотографија"
+
+#: ../src/plugins/menu-spec-common.c:108
+msgctxt "Menu subcategory of Graphics"
+msgid "Publishing"
+msgstr "Издаваштво"
+
+#: ../src/plugins/menu-spec-common.c:109
+msgctxt "Menu subcategory of Graphics"
+msgid "Raster Graphics"
+msgstr "Растер графика"
+
+#: ../src/plugins/menu-spec-common.c:110
+msgctxt "Menu subcategory of Graphics"
+msgid "Scanning"
+msgstr "Скенирање"
+
+#: ../src/plugins/menu-spec-common.c:111
+msgctxt "Menu subcategory of Graphics"
+msgid "Vector Graphics"
+msgstr "Векторска графика"
+
+#: ../src/plugins/menu-spec-common.c:112
+msgctxt "Menu subcategory of Graphics"
+msgid "Viewer"
+msgstr "Прегледачи"
+
+#. TRANSLATORS: this is the menu spec main category for Network
+#: ../src/plugins/menu-spec-common.c:114
+msgid "Internet"
+msgstr "Интернет"
+
+#: ../src/plugins/menu-spec-common.c:115
+msgctxt "Menu subcategory of Network"
+msgid "Chat"
+msgstr "Ћаскање"
+
+#: ../src/plugins/menu-spec-common.c:116
+msgctxt "Menu subcategory of Network"
+msgid "Dialup"
+msgstr "Позивање"
+
+#: ../src/plugins/menu-spec-common.c:117
+msgctxt "Menu subcategory of Network"
+msgid "Email"
+msgstr "Ел. пошта"
+
+#: ../src/plugins/menu-spec-common.c:118
+msgctxt "Menu subcategory of Network"
+msgid "Feed"
+msgstr "Довод"
+
+#: ../src/plugins/menu-spec-common.c:119
+msgctxt "Menu subcategory of Network"
+msgid "File Transfer"
+msgstr "Пренос датотека"
+
+#: ../src/plugins/menu-spec-common.c:120
+msgctxt "Menu subcategory of Network"
+msgid "Ham Radio"
+msgstr "Хам радио"
+
+#: ../src/plugins/menu-spec-common.c:121
+msgctxt "Menu subcategory of Network"
+msgid "Instant Messaging"
+msgstr "Брзе поруке"
+
+#: ../src/plugins/menu-spec-common.c:122
+msgctxt "Menu subcategory of Network"
+msgid "IRC Clients"
+msgstr "Програми за ИРЦ"
+
+#: ../src/plugins/menu-spec-common.c:123
+msgctxt "Menu subcategory of Network"
+msgid "Monitor"
+msgstr "Надгледање"
+
+#: ../src/plugins/menu-spec-common.c:124
+msgctxt "Menu subcategory of Network"
+msgid "News"
+msgstr "Вести"
+
+#: ../src/plugins/menu-spec-common.c:125
+msgctxt "Menu subcategory of Network"
+msgid "P2P"
+msgstr "П2П"
+
+#: ../src/plugins/menu-spec-common.c:126
+msgctxt "Menu subcategory of Network"
+msgid "Remote Access"
+msgstr "Удаљени приступ"
+
+#: ../src/plugins/menu-spec-common.c:127
+msgctxt "Menu subcategory of Network"
+msgid "Telephony"
+msgstr "Телефонија"
+
+#: ../src/plugins/menu-spec-common.c:128
+msgctxt "Menu subcategory of Network"
+msgid "Video Conference"
+msgstr "Видео конференције"
+
+#: ../src/plugins/menu-spec-common.c:129
+msgctxt "Menu subcategory of Network"
+msgid "Web Browser"
+msgstr "Веб прегледник"
+
+#: ../src/plugins/menu-spec-common.c:130
+msgctxt "Menu subcategory of Network"
+msgid "Web Development"
+msgstr "Развој веба"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/menu-spec-common.c:132
+msgid "Office"
+msgstr "Канцеларија"
+
+#: ../src/plugins/menu-spec-common.c:133
+msgctxt "Menu subcategory of Office"
+msgid "Calendar"
+msgstr "Календар"
+
+#: ../src/plugins/menu-spec-common.c:134
+msgctxt "Menu subcategory of Office"
+msgid "Chart"
+msgstr "Графикон"
+
+#: ../src/plugins/menu-spec-common.c:135
+msgctxt "Menu subcategory of Office"
+msgid "Contact Management"
+msgstr "Управљање контактима"
+
+#: ../src/plugins/menu-spec-common.c:136
+msgctxt "Menu subcategory of Office"
+msgid "Database"
+msgstr "База података"
+
+#: ../src/plugins/menu-spec-common.c:137
+msgctxt "Menu subcategory of Office"
+msgid "Dictionary"
+msgstr "Речник"
+
+#: ../src/plugins/menu-spec-common.c:138
+msgctxt "Menu subcategory of Office"
+msgid "Email"
+msgstr "Ел. пошта"
+
+#: ../src/plugins/menu-spec-common.c:139
+msgctxt "Menu subcategory of Office"
+msgid "Finance"
+msgstr "Финансије"
+
+#: ../src/plugins/menu-spec-common.c:140
+msgctxt "Menu subcategory of Office"
+msgid "Flow Chart"
+msgstr "Дијаграм тока"
+
+#: ../src/plugins/menu-spec-common.c:141
+msgctxt "Menu subcategory of Office"
+msgid "PDA"
+msgstr "ЛДП"
+
+#: ../src/plugins/menu-spec-common.c:142
+msgctxt "Menu subcategory of Office"
+msgid "Photography"
+msgstr "Фотографија"
+
+#: ../src/plugins/menu-spec-common.c:143
+msgctxt "Menu subcategory of Office"
+msgid "Presentation"
+msgstr "Излагање"
+
+#: ../src/plugins/menu-spec-common.c:144
+msgctxt "Menu subcategory of Office"
+msgid "Project Management"
+msgstr "Управљање пројектима"
+
+#: ../src/plugins/menu-spec-common.c:145
+msgctxt "Menu subcategory of Office"
+msgid "Publishing"
+msgstr "Издаваштво"
+
+#: ../src/plugins/menu-spec-common.c:146
+msgctxt "Menu subcategory of Office"
+msgid "Spreadsheet"
+msgstr "Табеле"
+
+#: ../src/plugins/menu-spec-common.c:147
+msgctxt "Menu subcategory of Office"
+msgid "Viewer"
+msgstr "Прегледач"
+
+#: ../src/plugins/menu-spec-common.c:148
+msgctxt "Menu subcategory of Office"
+msgid "Word Processor"
+msgstr "Обрађивање текста"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/menu-spec-common.c:150
+msgid "Science"
+msgstr "Наука"
+
+#: ../src/plugins/menu-spec-common.c:151
+msgctxt "Menu subcategory of Science"
+msgid "Art"
+msgstr "Уметност"
+
+#: ../src/plugins/menu-spec-common.c:152
+msgctxt "Menu subcategory of Science"
+msgid "Artificial Intelligence"
+msgstr "Вештачка интелигенција"
+
+#: ../src/plugins/menu-spec-common.c:153
+msgctxt "Menu subcategory of Science"
+msgid "Astronomy"
+msgstr "Астрономија"
+
+#: ../src/plugins/menu-spec-common.c:154
+msgctxt "Menu subcategory of Science"
+msgid "Biology"
+msgstr "Биологија"
+
+#: ../src/plugins/menu-spec-common.c:155
+msgctxt "Menu subcategory of Science"
+msgid "Chemistry"
+msgstr "Хемија"
+
+#: ../src/plugins/menu-spec-common.c:156
+msgctxt "Menu subcategory of Science"
+msgid "Computer Science"
+msgstr "Рачунарство"
+
+#: ../src/plugins/menu-spec-common.c:157
+msgctxt "Menu subcategory of Science"
+msgid "Construction"
+msgstr "Изградња"
+
+#: ../src/plugins/menu-spec-common.c:158
+msgctxt "Menu subcategory of Science"
+msgid "Data Visualization"
+msgstr "Приказивање података"
+
+#: ../src/plugins/menu-spec-common.c:159
+msgctxt "Menu subcategory of Science"
+msgid "Economy"
+msgstr "Економија"
+
+#: ../src/plugins/menu-spec-common.c:160
+msgctxt "Menu subcategory of Science"
+msgid "Electricity"
+msgstr "Електрицитет"
+
+#: ../src/plugins/menu-spec-common.c:161
+msgctxt "Menu subcategory of Science"
+msgid "Electronics"
+msgstr "Електроника"
+
+#: ../src/plugins/menu-spec-common.c:162
+msgctxt "Menu subcategory of Science"
+msgid "Engineering"
+msgstr "Инжењерство"
+
+#: ../src/plugins/menu-spec-common.c:163
+msgctxt "Menu subcategory of Science"
+msgid "Geography"
+msgstr "Географија"
+
+#: ../src/plugins/menu-spec-common.c:164
+msgctxt "Menu subcategory of Science"
+msgid "Geology"
+msgstr "Геологија"
+
+#: ../src/plugins/menu-spec-common.c:165
+msgctxt "Menu subcategory of Science"
+msgid "Geoscience"
+msgstr "Геонаука"
+
+#: ../src/plugins/menu-spec-common.c:166
+msgctxt "Menu subcategory of Science"
+msgid "History"
+msgstr "Историја"
+
+#: ../src/plugins/menu-spec-common.c:167
+msgctxt "Menu subcategory of Science"
+msgid "Humanities"
+msgstr "Хуманост"
+
+#: ../src/plugins/menu-spec-common.c:168
+msgctxt "Menu subcategory of Science"
+msgid "Image Processing"
+msgstr "Обрада слика"
+
+#: ../src/plugins/menu-spec-common.c:169
+msgctxt "Menu subcategory of Science"
+msgid "Languages"
+msgstr "Језици"
+
+#: ../src/plugins/menu-spec-common.c:170
+msgctxt "Menu subcategory of Science"
+msgid "Literature"
+msgstr "Литература"
+
+#: ../src/plugins/menu-spec-common.c:171
+msgctxt "Menu subcategory of Science"
+msgid "Maps"
+msgstr "Карте"
+
+#: ../src/plugins/menu-spec-common.c:172
+msgctxt "Menu subcategory of Science"
+msgid "Math"
+msgstr "Математика"
+
+#: ../src/plugins/menu-spec-common.c:173
+msgctxt "Menu subcategory of Science"
+msgid "Medical"
+msgstr "Медицина"
+
+#: ../src/plugins/menu-spec-common.c:174
+msgctxt "Menu subcategory of Science"
+msgid "Numerical Analysis"
+msgstr "Анализа бројева"
+
+#: ../src/plugins/menu-spec-common.c:175
+msgctxt "Menu subcategory of Science"
+msgid "Parallel Computing"
+msgstr "Паралелно рачунарство"
+
+#: ../src/plugins/menu-spec-common.c:176
+msgctxt "Menu subcategory of Science"
+msgid "Physics"
+msgstr "Физика"
+
+#: ../src/plugins/menu-spec-common.c:177
+msgctxt "Menu subcategory of Science"
+msgid "Robotics"
+msgstr "Роботика"
+
+#: ../src/plugins/menu-spec-common.c:178
+msgctxt "Menu subcategory of Science"
+msgid "Spirituality"
+msgstr "Духовност"
+
+#: ../src/plugins/menu-spec-common.c:179
+msgctxt "Menu subcategory of Science"
+msgid "Sports"
+msgstr "Спортови"
+
+#. TRANSLATORS: this is the menu spec main category for System
+#: ../src/plugins/menu-spec-common.c:181
+msgid "System"
+msgstr "Систем"
+
+#: ../src/plugins/menu-spec-common.c:182
+msgctxt "Menu subcategory of System"
+msgid "Emulator"
+msgstr "Опонашавач"
+
+#: ../src/plugins/menu-spec-common.c:183
+msgctxt "Menu subcategory of System"
+msgid "File Manager"
+msgstr "Управник датотека"
+
+#: ../src/plugins/menu-spec-common.c:184
+msgctxt "Menu subcategory of System"
+msgid "File System"
+msgstr "Систем датотека"
+
+#: ../src/plugins/menu-spec-common.c:185
+msgctxt "Menu subcategory of System"
+msgid "File Tools"
+msgstr "Алатке за датотеке"
+
+#: ../src/plugins/menu-spec-common.c:186
+msgctxt "Menu subcategory of System"
+msgid "Monitor"
+msgstr "Праћење"
+
+#: ../src/plugins/menu-spec-common.c:187
+msgctxt "Menu subcategory of System"
+msgid "Security"
+msgstr "Безбедност"
+
+#: ../src/plugins/menu-spec-common.c:188
+msgctxt "Menu subcategory of System"
+msgid "Terminal Emulator"
+msgstr "Емулатор терминала"
+
+#. TRANSLATORS: this is the menu spec main category for Utility
+#: ../src/plugins/menu-spec-common.c:190
+msgid "Utilities"
+msgstr "Алатке"
+
+#: ../src/plugins/menu-spec-common.c:191
+msgctxt "Menu subcategory of Utility"
+msgid "Accessibility"
+msgstr "Приступачност"
+
+#: ../src/plugins/menu-spec-common.c:192
+msgctxt "Menu subcategory of Utility"
+msgid "Archiving"
+msgstr "Архивирање"
+
+#: ../src/plugins/menu-spec-common.c:193
+msgctxt "Menu subcategory of Utility"
+msgid "Calculator"
+msgstr "Калкулатор"
+
+#: ../src/plugins/menu-spec-common.c:194
+msgctxt "Menu subcategory of Utility"
+msgid "Clock"
+msgstr "Часовник"
+
+#: ../src/plugins/menu-spec-common.c:195
+msgctxt "Menu subcategory of Utility"
+msgid "Compression"
+msgstr "Паковање"
+
+#: ../src/plugins/menu-spec-common.c:196
+msgctxt "Menu subcategory of Utility"
+msgid "File Tools"
+msgstr "Алатке за датотеке"
+
+#: ../src/plugins/menu-spec-common.c:197
+msgctxt "Menu subcategory of Utility"
+msgid "Maps"
+msgstr "Карте"
+
+#: ../src/plugins/menu-spec-common.c:198
+msgctxt "Menu subcategory of Utility"
+msgid "Spirituality"
+msgstr "Духовност"
+
+#: ../src/plugins/menu-spec-common.c:199
+msgctxt "Menu subcategory of Utility"
+msgid "Telephony Tools"
+msgstr "Алати за телефонију"
+
+#: ../src/plugins/menu-spec-common.c:200
+msgctxt "Menu subcategory of Utility"
+msgid "Text Editor"
+msgstr "Уређивач текста"
+
+#. TRANSLATORS: this is the menu spec main category for Video
+#: ../src/plugins/menu-spec-common.c:202
+msgid "Video"
+msgstr "Видео"
+
+#: ../src/plugins/menu-spec-common.c:203
+msgctxt "Menu subcategory of Video"
+msgid "Editing"
+msgstr "Уређивање"
+
+#: ../src/plugins/menu-spec-common.c:204
+msgctxt "Menu subcategory of Video"
+msgid "Database"
+msgstr "База података"
+
+#: ../src/plugins/menu-spec-common.c:205
+msgctxt "Menu subcategory of Video"
+msgid "Disc Burning"
+msgstr "Нарезивање диска"
+
+#: ../src/plugins/menu-spec-common.c:206
+msgctxt "Menu subcategory of Video"
+msgid "Players"
+msgstr "Пуштачи"
+
+#: ../src/plugins/menu-spec-common.c:207
+msgctxt "Menu subcategory of Video"
+msgid "Recorders"
+msgstr "Снимачи"
+
+#: ../src/plugins/menu-spec-common.c:208
+msgctxt "Menu subcategory of Video"
+msgid "TV"
+msgstr "ТВ"
+
+#: ../src/plugins/menu-spec-common.c:211
+msgctxt "Menu subcategory of Addons"
+msgid "Fonts"
+msgstr "Словни ликови"
+
+#: ../src/plugins/menu-spec-common.c:212
+msgctxt "Menu subcategory of Addons"
+msgid "Codecs"
+msgstr "Kодеци"
+
+#: ../src/plugins/menu-spec-common.c:213
+msgctxt "Menu subcategory of Addons"
+msgid "Input Sources"
+msgstr "Извори улаза"
+
+#: ../src/plugins/menu-spec-common.c:214
+msgctxt "Menu subcategory of Addons"
+msgid "Language Packs"
+msgstr "Пакети језика"
