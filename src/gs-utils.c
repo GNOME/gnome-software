@@ -194,7 +194,7 @@ gs_string_replace (GString *string, const gchar *search, const gchar *replace)
 		if (search_len > replace_len) {
 			g_string_erase (string,
 					tmp - string->str,
--				      search_len - replace_len);
+					search_len - replace_len);
 		}
 		if (search_len < replace_len) {
 			g_string_insert_len (string,
