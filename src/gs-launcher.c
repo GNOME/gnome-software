@@ -48,12 +48,15 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
 {
         GOptionContext *context;
         gchar *mode = NULL;
+	gchar *search = NULL;
         gboolean version = FALSE;
 	gint argc;
         const GOptionEntry options[] = {
                 { "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
                   /* TRANSLATORS: this is a command line option */
                   _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
+		{ "search", '\0', 0, G_OPTION_ARG_STRING, &search,
+		  _("Search for applications"), _("SEARCH") },
                 { "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
 
                 { NULL}
@@ -88,6 +91,10 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"set-mode",
 						g_variant_new_string (mode));
+	} else if (search != NULL) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"search",
+						g_variant_new_string (search));
 	} else {
 		g_application_activate (app);
 	}
