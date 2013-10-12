@@ -79,6 +79,9 @@ void		 gs_shell_show_category		(GsShell	*shell,
 						 GsCategory	*category);
 void		 gs_shell_show_search		(GsShell	*shell,
 						 const gchar	*search);
+void		 gs_shell_show_search_result	(GsShell	*shell,
+						 const gchar	*id,
+						 const gchar    *search);
 GtkWindow	*gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);

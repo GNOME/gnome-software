@@ -591,6 +591,65 @@ gs_shell_show_search (GsShell *shell, const gchar *search)
 	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 }
 
+typedef struct {
+	GsShell *shell;
+	GsApp *app;
+} RefineData;
+
+static void
+refine_cb (GObject *source,
+	   GAsyncResult *res,
+	   gpointer data)
+{
+	RefineData *refine = data;
+	GsShellPrivate *priv = refine->shell->priv;
+	GError *error = NULL;
+
+        if (!gs_plugin_loader_app_refine_finish (priv->plugin_loader,
+                                                 res,
+                                                 &error)) {
+                g_warning ("%s", error->message);
+                g_error_free (error);
+		goto out;
+        }
+
+        refine->app = gs_plugin_loader_dedupe (priv->plugin_loader, refine->app);
+        gs_shell_show_app (refine->shell, refine->app);
+
+out:
+        g_object_unref (refine->app);
+	g_free (refine);
+}
+
+void
+gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *search)
+{
+	GsShellPrivate *priv = shell->priv;
+	GtkWidget *widget;
+	RefineData *refine;
+
+	if (search != NULL && search[0] != '\0') {
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+		gtk_entry_set_text (GTK_ENTRY (widget), search);
+		gs_shell_search_refresh (priv->shell_search, search, TRUE);
+
+		gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
+	}
+
+	refine = g_new0 (RefineData, 1);
+	refine->shell = shell;
+	refine->app = gs_app_new (id);
+	gs_plugin_loader_app_refine_async (priv->plugin_loader,
+					   refine->app,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
+					   priv->cancellable,
+					   refine_cb,
+					   refine);
+}
+
+
 /**
  * gs_shell_class_init:
  **/
