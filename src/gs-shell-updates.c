@@ -504,6 +504,32 @@ dialog_update_hide_cb (GtkWidget *dialog, GsShellUpdates *shell_updates)
 	g_clear_object (&shell_updates->priv->app);
 }
 
+/**
+ * gs_shell_updates_sort_func:
+ **/
+static gint
+gs_shell_updates_sort_func (GtkListBoxRow *a,
+			    GtkListBoxRow *b,
+			    gpointer user_data)
+{
+	GsAppWidget *aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (a)));
+	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
+	GsApp *a1 = gs_app_widget_get_app (aw1);
+	GsApp *a2 = gs_app_widget_get_app (aw2);
+	guint64 date1 = gs_app_get_install_date (a1);
+	guint64 date2 = gs_app_get_install_date (a2);
+	if (gs_app_get_kind (a1) == GS_APP_KIND_OS_UPDATE)
+		return -1;
+	if (gs_app_get_kind (a2) == GS_APP_KIND_OS_UPDATE)
+		return 1;
+	if (date1 < date2)
+		return 1;
+	else if (date2 < date1)
+		return -1;
+	return g_strcmp0 (gs_app_get_name (a1),
+			  gs_app_get_name (a2));
+}
+
 void
 gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			GsShell *shell,
@@ -534,6 +560,9 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 				      gs_shell_updates_list_header_func,
 				      shell_updates,
 				      NULL);
+	gtk_list_box_set_sort_func (priv->list_box_updates,
+				    gs_shell_updates_sort_func,
+				    shell_updates, NULL);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "list_box_update"));
 	g_signal_connect (GTK_LIST_BOX (widget), "row-activated",
