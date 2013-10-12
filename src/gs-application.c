@@ -219,10 +219,32 @@ set_mode_activated (GSimpleAction *action,
 	}
 }
 
+static void
+search_activated (GSimpleAction *action,
+		  GVariant      *parameter,
+		  gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	const gchar *search;
+	GList *windows;
+	GtkWindow *window = NULL;
+
+	gs_application_initialize_ui (app);
+	windows = gtk_application_get_windows (GTK_APPLICATION (app));
+	if (windows) {
+		window = windows->data;
+		gtk_window_present (window);
+	}
+
+	search = g_variant_get_string (parameter, NULL);
+	gs_shell_show_search (app->shell, search);
+}
+
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
-	{ "set-mode", set_mode_activated, "s", NULL, NULL }
+	{ "set-mode", set_mode_activated, "s", NULL, NULL },
+	{ "search", search_activated, "s", NULL, NULL }
 };
 
 static void
