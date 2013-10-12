@@ -580,6 +580,17 @@ gs_shell_show_category (GsShell *shell, GsCategory *category)
 	gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category, TRUE);
 }
 
+void
+gs_shell_show_search (GsShell *shell, const gchar *search)
+{
+	GsShellPrivate *priv = shell->priv;
+	GtkWidget *widget;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	gtk_entry_set_text (GTK_ENTRY (widget), search);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
+}
+
 /**
  * gs_shell_class_init:
  **/
