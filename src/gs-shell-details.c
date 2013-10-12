@@ -71,6 +71,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	GsAppKind kind;
 	GsAppState state;
 	GtkWidget *widget;
+	GtkAdjustment *adj;
 
 	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_DETAILS)
 		return;
@@ -174,6 +175,9 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_details"));
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
+	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+
 	gs_grab_focus_when_mapped (widget);
 }
 
