@@ -27,7 +27,8 @@
 #include <gs-plugin.h>
 
 struct GsPluginPrivate {
-	GDBusProxy		*proxy;
+	gsize			 loaded;
+	GDBusConnection		*connection;
 };
 
 /**
@@ -45,23 +46,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	GError *error = NULL;
-
-	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SYSTEM,
-							     G_DBUS_PROXY_FLAGS_DO_NOT_LOAD_PROPERTIES |
-							     G_DBUS_PROXY_FLAGS_DO_NOT_CONNECT_SIGNALS,
-							     NULL,
-							     "org.freedesktop.PackageKit",
-							     "/org/freedesktop/PackageKit",
-							     "org.freedesktop.PackageKit",
-							     NULL,
-							     &error);
-	if (plugin->priv->proxy == NULL) {
-		g_warning ("Failed to create proxy for PackageKit: %s", error->message);
-		g_error_free (error);
-	}
 }
 
 /**
@@ -79,7 +64,8 @@ gs_plugin_get_priority (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_object_unref (plugin->priv->proxy);
+	if (plugin->priv->connection != NULL)
+		g_object_unref (plugin->priv->connection);
 }
 
 /**
@@ -143,13 +129,28 @@ out:
 	g_object_unref (history);
 }
 
+/**
+ * gs_plugin_load:
+ */
+static gboolean
+gs_plugin_load (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	gboolean ret = TRUE;
+	plugin->priv->connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
+						   cancellable,
+						   error);
+	if (plugin->priv->connection == NULL)
+		ret = FALSE;
+	return ret;
+}
+
 static gboolean
 gs_plugin_packagekit_refine (GsPlugin *plugin,
 			     GList *list,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	const gchar **package_names;
+	const gchar **package_names = NULL;
 	gboolean ret = TRUE;
 	GError *error_local = NULL;
 	GList *l;
@@ -161,6 +162,14 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	GVariant *tuple = NULL;
 	GVariant *value;
 
+	/* already loaded */
+	if (g_once_init_enter (&plugin->priv->loaded)) {
+		ret = gs_plugin_load (plugin, cancellable, error);
+		g_once_init_leave (&plugin->priv->loaded, TRUE);
+		if (!ret)
+			goto out;
+	}
+
 	/* get an array of package names */
 	package_names = g_new0 (const gchar *, g_list_length (list) + 1);
 	for (l = list; l != NULL; l = l->next) {
@@ -169,13 +178,17 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	}
 
 	g_debug ("getting history for %i packages", g_list_length (list));
-	result = g_dbus_proxy_call_sync (plugin->priv->proxy,
-					 "GetPackageHistory",
-					 g_variant_new ("(^asu)", package_names, 0),
-					 G_DBUS_CALL_FLAGS_NONE,
-					 200, /* 200ms should be more than enough... */
-					 cancellable,
-					 &error_local);
+	result = g_dbus_connection_call_sync (plugin->priv->connection,
+					      "org.freedesktop.PackageKit",
+					      "/org/freedesktop/PackageKit",
+					      "org.freedesktop.PackageKit",
+					      "GetPackageHistory",
+					      g_variant_new ("(^asu)", package_names, 0),
+					      NULL,
+					      G_DBUS_CALL_FLAGS_NONE,
+					      200, /* 200ms should be more than enough... */
+					      cancellable,
+					      &error_local);
 	if (result == NULL) {
 		if (g_error_matches (error_local,
 				     G_DBUS_ERROR,
