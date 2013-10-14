@@ -166,7 +166,7 @@ gs_app_notify_installed (GsApp *app)
 	/* TRANSLATORS: this is the summary of a notification that an application
 	 * has been successfully installed */
 	summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
-	n = notify_notification_new (summary, NULL, "system-software-install");
+	n = notify_notification_new (summary, NULL, "gnome-software");
 	/* TRANSLATORS: this is button that opens the newly installed application */
 	notify_notification_add_action (n, "launch", _("Launch"),
 					launch_app, g_object_ref (app), g_object_unref);
