@@ -32,7 +32,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_hardcoded-kind.la			\
 	libgs_plugin_hardcoded-popular.la		\
 	libgs_plugin_hardcoded-menu-spec.la		\
-	libgs_plugin_hardcoded-ratings.la		\
 	libgs_plugin_local-ratings.la			\
 	libgs_plugin_systemd-updates.la			\
 	libgs_plugin_packagekit-refine.la		\
@@ -80,11 +79,6 @@ libgs_plugin_hardcoded_featured_la_SOURCES = gs-plugin-hardcoded-featured.c
 libgs_plugin_hardcoded_featured_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_featured_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_featured_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
-
-libgs_plugin_hardcoded_ratings_la_SOURCES = gs-plugin-hardcoded-ratings.c
-libgs_plugin_hardcoded_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
-libgs_plugin_hardcoded_ratings_la_LDFLAGS = -module -avoid-version
-libgs_plugin_hardcoded_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_local_ratings_la_SOURCES = gs-plugin-local-ratings.c
 libgs_plugin_local_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
