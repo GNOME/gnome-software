@@ -91,7 +91,11 @@ gs_shell_activate (GsShell *shell)
 }
 
 static void
-gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *category, gboolean scroll_up)
+gs_shell_change_mode (GsShell *shell,
+		      GsShellMode mode,
+		      GsApp *app,
+		      gpointer data,
+		      gboolean scroll_up)
 {
 	GsShellPrivate *priv = shell->priv;
 	GtkWidget *widget;
@@ -168,7 +172,8 @@ gs_shell_change_mode (GsShell *shell, GsShellMode mode, GsApp *app, GsCategory *
 		gs_shell_details_refresh (priv->shell_details);
 		break;
 	case GS_SHELL_MODE_CATEGORY:
-		gs_shell_category_set_category (priv->shell_category, category);
+		gs_shell_category_set_category (priv->shell_category,
+						GS_CATEGORY (data));
 		gs_shell_category_refresh (priv->shell_category);
 		break;
 	default:
@@ -548,6 +553,18 @@ gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 			g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 	}
 	gs_shell_change_mode (shell, mode, NULL, NULL, TRUE);
+}
+
+/**
+ * gs_shell_set_search_value:
+ **/
+void
+gs_shell_set_search_value (GsShell *shell, const gchar *search_value)
+{
+	GsShellPrivate *priv = shell->priv;
+	GtkWidget *widget;
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	gtk_entry_set_text (GTK_ENTRY (widget), search_value);
 }
 
 GsShellMode

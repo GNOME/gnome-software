@@ -189,13 +189,18 @@ gs_application_command_line (GApplication	     *application,
 	GsApplication *app = GS_APPLICATION (application);
 	GOptionContext *context;
 	gchar *mode = NULL;
+	gchar *search_value = NULL;
 	gboolean help = FALSE;
 	gboolean verbose = FALSE;
 	const GOptionEntry options[] = {
 		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
 		  /* TRANSLATORS: this is a command line option, please don't
 		   * translate the option names between ‘’ */
-		  _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
+		  _("Start up mode: either ‘updates’, ‘updated’, ‘search’, ‘installed’ or ‘overview’"), _("MODE") },
+		{ "search-value", '\0', 0, G_OPTION_ARG_STRING, &search_value,
+		  /* TRANSLATORS: this is a command line option, please don't
+		   * translate the option names between ‘’ */
+		  _("The search term to use when starting the UI"), _("SEARCH") },
 		{ "verbose", 'v', 0, G_OPTION_ARG_NONE, &verbose, NULL, NULL },
 		{ "help", '?', 0, G_OPTION_ARG_NONE, &help, NULL, NULL },
 
@@ -241,6 +246,10 @@ gs_application_command_line (GApplication	     *application,
 			gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
 		} else if (g_strcmp0 (mode, "updated") == 0) {
 			gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATED);
+		} else if (g_strcmp0 (mode, "search") == 0) {
+			if (search_value != NULL)
+				gs_shell_set_search_value (app->shell, search_value);
+			gs_shell_set_mode (app->shell, GS_SHELL_MODE_SEARCH);
 		} else {
 			g_warning ("Mode '%s' not recognised", mode);
 		}
@@ -249,6 +258,7 @@ gs_application_command_line (GApplication	     *application,
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
 	}
 
+	g_free (search_value);
 	g_free (argv);
 	g_strfreev (args);
 
