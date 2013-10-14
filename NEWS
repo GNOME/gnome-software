@@ -1,3 +1,51 @@
+Version 3.10.1
+~~~~~~~~~~~~~~
+Released: 2013-10-14
+
+* Notes:
+ - If you're looking for star ratings, application details or the screenshot
+   features then prepare to be dissapointed. These are debuting in GNOME 3.12!
+ - This release only contains bugfixes from the 3.10.0 release and does not add
+   new strings or new invasive features.
+
+* Translations:
+ - Added Indonesian translation (Andika Triwidada)
+ - Added Latvian translation (Rūdolfs Mazurs)
+ - Updated Brazilian Portuguese translation (Rafael Ferreira)
+ - Updated Czech translation (Marek Černocký)
+ - Updated Hungarian translation (Gabor Kelemen)
+ - Updated Italian translation (Gianvito Cavasoli)
+ - Updated Polish translation (Piotr Drąg)
+ - Updated Slovenian translation (Martin Srebotnjak)
+ - Updated Spanish translation (Daniel Mustieles)
+ - Updated Traditional Chinese translation (Cheng-Chia Tseng)
+
+* New Features:
+ - Add a loading icon to empty tiles (Matthias Clasen)
+ - Mark IBus frameworks installed by default as system apps (Richard Hughes)
+ - Remove the hardcoded ratings plugin (Richard Hughes)
+ - Remove the hardcoded screenshot plugin (Richard Hughes)
+ - Support the 'X-AppInstall-Package' extension in desktop files (Richard Hughes)
+ - Support per-repo icon directories (Richard Hughes)
+ - Use the new 16:9 screenshots (Richard Hughes)
+
+* Bugfix:
+ - Add back hover state to feature tile (Matthias Clasen)
+ - Always dedupe after refining results (Richard Hughes)
+ - Always show 'Remove' for installed updatable applications (Richard Hughes)
+ - Avoid reloading the overview more than once (Matthias Clasen)
+ - Do not abort if the AppStream XML is invalid (Richard Hughes)
+ - Do not install plugins just used in 'make check' (Richard Hughes)
+ - Do not remove the application widget twice when it changes state (Richard Hughes)
+ - Do not show local applications without icons, names or comments (Richard Hughes)
+ - Do not use the application state to modify how widgets are drawn (Richard Hughes)
+ - Don't emit notify::state from a thread (Matthias Clasen)
+ - Fix a critical error in gs_string_replace() (Richard Hughes)
+ - Fix a few small memory leaks (Richard Hughes)
+ - Fix a refcounting error that could cause a crash (Matthias Clasen)
+ - Mark strings in the AppData file as translatable (Piotr Drąg)
+ - Prevent memory corruption when doing dedupe() more than once (Richard Hughes)
+
 Version 3.10.0
 ~~~~~~~~~~~~~~
 Released: 2013-09-24
