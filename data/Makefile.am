@@ -11,12 +11,7 @@ dist_resources_DATA =					\
 	featured-weather.png         \
 	featured-weather-bg.png   \
 	featured-xchat.png				\
-	featured.ini					\
-	stars0.png					\
-	stars1.png					\
-	stars2.png					\
-	stars3.png					\
-	stars4.png          
+	featured.ini
 
 @INTLTOOL_XML_NOMERGE_RULE@
 appdatadir = $(datadir)/appdata
