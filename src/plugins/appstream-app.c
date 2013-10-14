@@ -44,6 +44,7 @@ struct AppstreamApp
 	AppstreamAppIconKind	 icon_kind;
 	GPtrArray		*appcategories; /* of gchar* */
 	GPtrArray		*keywords;
+	GPtrArray		*desktop_core;
 	gpointer		 userdata;
 	GDestroyNotify		 userdata_destroy_func;
 	GPtrArray		*screenshots; /* of AppstreamScreenshot */
@@ -66,6 +67,7 @@ appstream_app_free (AppstreamApp *app)
 	g_free (app->description);
 	g_ptr_array_unref (app->appcategories);
 	g_ptr_array_unref (app->keywords);
+	g_ptr_array_unref (app->desktop_core);
 	g_ptr_array_unref (app->screenshots);
 	if (app->userdata_destroy_func != NULL)
 		app->userdata_destroy_func (app->userdata);
@@ -103,6 +105,7 @@ appstream_app_new (void)
 	app = g_slice_new0 (AppstreamApp);
 	app->appcategories = g_ptr_array_new_with_free_func (g_free);
 	app->keywords = g_ptr_array_new_with_free_func (g_free);
+	app->desktop_core = g_ptr_array_new_with_free_func (g_free);
 	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_screenshot_free);
 	app->name_value = G_MAXUINT;
 	app->summary_value = G_MAXUINT;
@@ -216,6 +219,34 @@ appstream_app_has_category (AppstreamApp *app, const gchar *category)
 			return TRUE;
 	}
 	return FALSE;
+}
+
+/**
+ * appstream_app_get_desktop_core:
+ */
+gboolean
+appstream_app_get_desktop_core (AppstreamApp *app, const gchar *desktop)
+{
+	const gchar *tmp;
+	guint i;
+
+	for (i = 0; i < app->desktop_core->len; i++) {
+		tmp = g_ptr_array_index (app->desktop_core, i);
+		if (g_strcmp0 (tmp, desktop) == 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * appstream_app_add_desktop_core:
+ */
+void
+appstream_app_add_desktop_core (AppstreamApp *app,
+				const gchar *desktop,
+				gsize length)
+{
+	g_ptr_array_add (app->desktop_core, g_strndup (desktop, length));
 }
 
 /**

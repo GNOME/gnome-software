@@ -471,6 +471,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	    gs_app_get_project_group (app) == NULL)
 		gs_app_set_project_group (app, appstream_app_get_project_group (item));
 
+	/* this is a core application for the desktop and cannot be removed */
+	if (appstream_app_get_desktop_core (item, "GNOME") &&
+	    gs_app_get_kind (app) == GS_APP_KIND_NORMAL)
+		gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
+
 	/* set package name */
 	if (appstream_app_get_pkgname (item) != NULL && gs_app_get_source (app) == NULL)
 		gs_app_set_source (app, appstream_app_get_pkgname (item));

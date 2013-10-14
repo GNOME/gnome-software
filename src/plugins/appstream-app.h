@@ -51,6 +51,8 @@ const gchar	*appstream_app_get_description		(AppstreamApp	*app);
 const gchar	*appstream_app_get_icon			(AppstreamApp	*app);
 gboolean	 appstream_app_has_category		(AppstreamApp	*app,
 							 const gchar	*category);
+gboolean	 appstream_app_get_desktop_core		(AppstreamApp	*app,
+							 const gchar	*desktop);
 AppstreamAppIconKind	appstream_app_get_icon_kind	(AppstreamApp	*app);
 
 void		 appstream_app_set_id			(AppstreamApp	*app,
@@ -88,6 +90,9 @@ void		 appstream_app_add_category		(AppstreamApp	*app,
 							 gsize		 length);
 void		 appstream_app_add_keyword		(AppstreamApp	*app,
 							 const gchar	*keyword,
+							 gsize		 length);
+void		 appstream_app_add_desktop_core		(AppstreamApp	*app,
+							 const gchar	*desktop,
 							 gsize		 length);
 void		 appstream_app_set_icon_kind		(AppstreamApp	*app,
 							 AppstreamAppIconKind icon_kind);

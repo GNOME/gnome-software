@@ -143,6 +143,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_APPLICATIONS:
 	case APPSTREAM_TAG_APPCATEGORIES:
 	case APPSTREAM_TAG_APPCATEGORY:
+	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
 	case APPSTREAM_TAG_KEYWORDS:
 	case APPSTREAM_TAG_KEYWORD:
 		/* ignore */
@@ -366,6 +367,7 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_ID:
 	case APPSTREAM_TAG_PKGNAME:
 	case APPSTREAM_TAG_APPCATEGORIES:
+	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
 	case APPSTREAM_TAG_KEYWORDS:
 	case APPSTREAM_TAG_URL:
 	case APPSTREAM_TAG_LICENCE:
@@ -426,6 +428,16 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 			return;
 		}
 		appstream_app_add_keyword (helper->item_temp, text, text_len);
+		break;
+	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
+		if (helper->item_temp == NULL) {
+			g_set_error_literal (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "item_temp category invalid");
+			return;
+		}
+		appstream_app_add_desktop_core (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_TAG_ID:
 		if (helper->item_temp == NULL ||
