@@ -55,7 +55,6 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	guint i;
 	const gchar *apps[] = {
-		/* core apps */
 		"baobab",
 		"eog",
 		"epiphany",
@@ -88,11 +87,6 @@ gs_plugin_refine (GsPlugin *plugin,
 		"totem",
 		"vino",
 		"yelp",
-		/* input methods */
-		"hangul",
-		"kkc",
-		"libpinyin",
-		"m17n",
 		NULL };
 
 	/* just mark each one as core */
