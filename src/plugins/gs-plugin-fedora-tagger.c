@@ -87,16 +87,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 			 plugin->name, GS_PLUGIN_FEDORA_TAGGER_OS_RELEASE_FN);
 		goto out;
 	}
-
-	/* setup networking */
-	plugin->priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
-								    "gnome-software",
-								    SOUP_SESSION_TIMEOUT, 5000,
-								    NULL);
-	if (plugin->priv->session != NULL) {
-		soup_session_add_feature_by_type (plugin->priv->session,
-						  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
-	}
 out:
 	g_free (data);
 }
@@ -174,6 +164,39 @@ gs_plugin_parse_json (const gchar *data, gsize data_len, const gchar *key)
 	return value;
 }
 
+
+/**
+ * gs_plugin_setup_networking:
+ */
+static gboolean
+gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
+{
+	gboolean ret = TRUE;
+
+	/* already set up */
+	if (plugin->priv->session != NULL)
+		goto out;
+
+	/* set up a session */
+	plugin->priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
+								    "gnome-software",
+								    SOUP_SESSION_TIMEOUT, 5000,
+								    NULL);
+	if (plugin->priv->session == NULL) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "%s: failed to setup networking",
+			     plugin->name);
+		goto out;
+	}
+	soup_session_add_feature_by_type (plugin->priv->session,
+					  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
+out:
+	return ret;
+}
+
 /**
  * gs_plugin_app_set_rating:
  */
@@ -185,6 +208,7 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 {
 	SoupMessage *msg = NULL;
 	const gchar *pkgname;
+	gboolean ret;
 	gchar *data = NULL;
 	gchar *error_msg = NULL;
 	gchar *uri = NULL;
@@ -196,6 +220,11 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 		g_warning ("no pkgname for %s", gs_app_get_id (app));
 		goto out;
 	}
+
+	/* ensure networking is set up */
+	ret = gs_plugin_setup_networking (plugin, error);
+	if (!ret)
+		goto out;
 
 	/* create the PUT data */
 	uri = g_strdup_printf ("%s/api/v1/rating/%s/",
@@ -228,7 +257,7 @@ out:
 	g_free (uri);
 	if (msg != NULL)
 		g_object_unref (msg);
-	return TRUE;
+	return ret;
 }
 
 /**
@@ -330,6 +359,11 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	uri = g_strdup_printf ("%s/api/v1/rating/dump/",
 			       GS_PLUGIN_FEDORA_TAGGER_SERVER);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
+
+	/* ensure networking is set up */
+	ret = gs_plugin_setup_networking (plugin, error);
+	if (!ret)
+		goto out;
 
 	/* set sync request */
 	status_code = soup_session_send_message (plugin->priv->session, msg);
