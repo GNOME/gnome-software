@@ -335,8 +335,11 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	status_code = soup_session_send_message (plugin->priv->session, msg);
 	if (status_code != SOUP_STATUS_OK) {
 		ret = FALSE;
-		g_debug ("Failed to set rating on fedora-tagger: %s",
-			 soup_status_get_phrase (status_code));
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to set rating on fedora-tagger: %s",
+			     soup_status_get_phrase (status_code));
 		goto out;
 	}
 
