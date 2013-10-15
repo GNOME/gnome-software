@@ -166,6 +166,68 @@ gs_plugin_loader_list_dedupe (GsPluginLoader *plugin_loader, GList *list)
 }
 
 /**
+ * gs_plugin_loader_run_refine_plugin:
+ **/
+static gboolean
+gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
+				    GsPlugin *plugin,
+				    const gchar *function_name_parent,
+				    GList *list,
+				    GsPluginRefineFlags flags,
+				    GCancellable *cancellable,
+				    GError **error)
+{
+	GsPluginRefineFunc plugin_func = NULL;
+	const gchar *function_name = "gs_plugin_refine";
+	gboolean exists;
+	gboolean ret = TRUE;
+	gchar *profile_id = NULL;
+
+	/* load the symbol */
+	exists = g_module_symbol (plugin->module,
+				  function_name,
+				  (gpointer *) &plugin_func);
+	if (!exists)
+		goto out;
+
+	/* profile the plugin runtime */
+	profile_id = g_strdup_printf ("GsPlugin::%s(%s;%s)",
+				      plugin->name,
+				      function_name_parent,
+				      function_name);
+	gs_profile_start (plugin_loader->priv->profile, profile_id);
+	ret = plugin_func (plugin, list, flags, cancellable, error);
+	if (!ret) {
+		/* check the plugin is well behaved and sets error
+		 * if returning FALSE */
+		if (error != NULL && *error == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "%s[%s] returned FALSE and set no error",
+				     plugin->name, function_name);
+		}
+		goto out;
+	}
+
+	/* check the plugin is well behaved and returns FALSE
+	 * if returning an error */
+	if (error != NULL && *error != NULL) {
+		ret = FALSE;
+		g_warning ("%s set %s but did not return FALSE!",
+			   plugin->name, (*error)->message);
+		goto out;
+	}
+out:
+	if (profile_id != NULL) {
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+	}
+	g_free (profile_id);
+	return ret;
+}
+
+/**
  * gs_plugin_loader_run_refine:
  **/
 static gboolean
@@ -176,11 +238,8 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	gboolean ret = TRUE;
-	gchar *profile_id;
 	GsPlugin *plugin;
-	const gchar *function_name = "gs_plugin_refine";
-	GsPluginRefineFunc plugin_func = NULL;
+	gboolean ret = TRUE;
 	guint i;
 
 	/* run each plugin */
@@ -188,35 +247,19 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
-		ret = g_module_symbol (plugin->module,
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
-			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s;%s)",
-					      plugin->name,
-					      function_name_parent,
-					      function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
-		ret = plugin_func (plugin, list, flags, cancellable, error);
+		ret = gs_plugin_loader_run_refine_plugin (plugin_loader,
+							  plugin,
+							  function_name_parent,
+							  list,
+							  flags,
+							  cancellable,
+							  error);
 		if (!ret)
 			goto out;
-		if (error != NULL && *error != NULL) {
-			ret = FALSE;
-			g_warning ("%s set %s but did not return FALSE!",
-				   plugin->name, (*error)->message);
-			goto out;
-		}
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
-		g_free (profile_id);
 	}
 
 	/* dedupe applications we already know about */
 	gs_plugin_loader_list_dedupe (plugin_loader, list);
-
-	/* success */
-	ret = TRUE;
 out:
 	return ret;
 }
