@@ -759,6 +759,8 @@ gs_plugin_add_categories (GsPlugin *plugin,
 				item = g_ptr_array_index (array, i);
 				if (appstream_app_get_id (item) == NULL)
 					continue;
+				if (appstream_app_get_priority (item) < 0)
+					continue;
 				if (!appstream_app_has_category (item, search_id1))
 					continue;
 				if (search_id2 != NULL && !appstream_app_has_category (item, search_id2))

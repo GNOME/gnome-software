@@ -197,8 +197,11 @@ gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
 			}
 		}
 		if (number_installed == 0 && number_available == 0) {
-			g_warning ("Failed to find any package for %s, %s",
-				   gs_app_get_id (app), pkgname);
+			g_debug ("Failed to find any package for %s, "
+				 "marking %s unavailable.",
+				 pkgname, gs_app_get_id (app));
+			gs_app_set_kind (app, GS_APP_KIND_UNKNOWN);
+			gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
 		} else if (number_installed == 1 && number_available >= 1) {
 			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
 			gs_app_set_state (app, GS_APP_STATE_UPDATABLE);

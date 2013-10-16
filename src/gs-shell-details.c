@@ -105,6 +105,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	case GS_APP_STATE_INSTALLED:
 	case GS_APP_STATE_REMOVING:
 	case GS_APP_STATE_UPDATABLE:
+	case GS_APP_STATE_UNAVAILABLE:
 		gtk_widget_set_visible (widget, FALSE);
 		break;
 	default:
@@ -136,6 +137,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 			break;
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_INSTALLING:
+		case GS_APP_STATE_UNAVAILABLE:
 			gtk_widget_set_visible (widget, FALSE);
 			break;
 		default:
@@ -155,6 +157,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		case GS_APP_STATE_INSTALLED:
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_UPDATABLE:
+		case GS_APP_STATE_UNAVAILABLE:
 			gtk_widget_set_visible (widget, FALSE);
 			gtk_spinner_stop (GTK_SPINNER (widget));
 			break;

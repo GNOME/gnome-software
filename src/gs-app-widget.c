@@ -70,12 +70,25 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	if (priv->show_update &&
 	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE)
 		tmp = gs_app_get_update_details (priv->app);
+	if (gs_app_get_kind (priv->app) == GS_APP_KIND_MISSING)
+		tmp = gs_app_get_summary_missing (priv->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_description (priv->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_summary (priv->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_name (priv->app);
+
+	/* only show the name box if the application is found */
+	switch (gs_app_get_kind (priv->app)) {
+	case GS_APP_KIND_MISSING:
+		gtk_widget_set_visible (priv->name_box, FALSE);
+		gtk_widget_set_margin_right (priv->description_label, 250);
+		break;
+	default:
+		gtk_widget_set_visible (priv->name_box, TRUE);
+		gtk_widget_set_margin_right (priv->description_label, 0);
+	}
 
 	/* join the lines*/
 	str = g_string_new (tmp);
@@ -104,6 +117,13 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	gtk_style_context_remove_class (context, "destructive-action");
 
 	switch (gs_app_get_state (app_widget->priv->app)) {
+	case GS_APP_STATE_UNAVAILABLE:
+		gtk_widget_set_visible (priv->spinner, FALSE);
+		gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * allows the application to be easily installed */
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
+		break;
 	case GS_APP_STATE_AVAILABLE:
 		gtk_widget_set_visible (priv->spinner, FALSE);
 		gtk_widget_set_visible (priv->button, TRUE);

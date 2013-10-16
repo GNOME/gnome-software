@@ -137,6 +137,8 @@ gs_app_kind_to_string (GsAppKind kind)
 		return "package";
 	if (kind == GS_APP_KIND_OS_UPDATE)
 		return "os-update";
+	if (kind == GS_APP_KIND_MISSING)
+		return "missing";
 	return NULL;
 }
 
@@ -158,6 +160,8 @@ gs_app_state_to_string (GsAppState state)
 		return "removing";
 	if (state == GS_APP_STATE_UPDATABLE)
 		return "updatable";
+	if (state == GS_APP_STATE_UNAVAILABLE)
+		return "unavailable";
 	return NULL;
 }
 
@@ -298,6 +302,7 @@ gs_app_get_state (GsApp *app)
  * UPDATABLE --> REMOVING   --> AVAILABLE
  * INSTALLED --> REMOVING   --> AVAILABLE
  * AVAILABLE --> INSTALLING --> INSTALLED
+ * UNKNOWN   --> UNAVAILABLE
  */
 void
 gs_app_set_state (GsApp *app, GsAppState state)
@@ -315,7 +320,8 @@ gs_app_set_state (GsApp *app, GsAppState state)
 		/* unknown has to go into one of the stable states */
 		if (state == GS_APP_STATE_INSTALLED ||
 		    state == GS_APP_STATE_AVAILABLE ||
-		    state == GS_APP_STATE_UPDATABLE)
+		    state == GS_APP_STATE_UPDATABLE ||
+		    state == GS_APP_STATE_UNAVAILABLE)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_STATE_INSTALLED:
@@ -409,16 +415,19 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 	case GS_APP_KIND_PACKAGE:
 		/* package can become either normal or a system application */
 		if (kind == GS_APP_KIND_NORMAL ||
-		    kind == GS_APP_KIND_SYSTEM)
+		    kind == GS_APP_KIND_SYSTEM ||
+		    kind == GS_APP_KIND_UNKNOWN)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_KIND_NORMAL:
 		/* normal can only be promoted to system */
-		if (kind == GS_APP_KIND_SYSTEM)
+		if (kind == GS_APP_KIND_SYSTEM ||
+		    kind == GS_APP_KIND_UNKNOWN)
 			state_change_ok = TRUE;
 		break;
 	case GS_APP_KIND_SYSTEM:
 	case GS_APP_KIND_OS_UPDATE:
+	case GS_APP_KIND_MISSING:
 		/* this can never change state */
 		break;
 	default:

@@ -182,6 +182,24 @@ gs_shell_search_app_install (GsShellSearch *shell_search, GsApp *app)
 }
 
 /**
+ * gs_shell_search_show_missing_url:
+ **/
+static void
+gs_shell_search_show_missing_url (GsApp *app)
+{
+	GError *error = NULL;
+	const gchar *url;
+	gboolean ret;
+
+	url = gs_app_get_url (app, GS_APP_URL_KIND_MISSING);
+	ret = gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error);
+	if (!ret) {
+		g_warning ("spawn of '%s' failed", url);
+		g_error_free (error);
+	}
+}
+
+/**
  * gs_shell_search_app_widget_clicked_cb:
  **/
 static void
@@ -194,6 +212,8 @@ gs_shell_search_app_widget_clicked_cb (GsAppWidget *app_widget,
 		gs_shell_search_app_install (shell_search, app);
 	else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
 		gs_shell_search_app_remove (shell_search, app);
+	else if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE)
+		gs_shell_search_show_missing_url (app);
 }
 
 /**
@@ -329,6 +349,16 @@ gs_shell_search_get_app_sort_key (GsApp *app)
 
 	/* sort installed, removing, other */
 	key = g_string_sized_new (64);
+
+	/* sort missing codecs before applications */
+	switch (gs_app_get_kind (app)) {
+	case GS_APP_KIND_MISSING:
+		g_string_append (key, "9:");
+		break;
+	default:
+		g_string_append (key, "1:");
+		break;
+	}
 
 	/* artificially cut the rating of applications with no description */
 	desc = gs_app_get_description (app);

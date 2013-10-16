@@ -62,6 +62,7 @@ typedef enum {
 	GS_APP_KIND_SYSTEM,	/* can be updated, but not installed or removed */
 	GS_APP_KIND_PACKAGE,	/* can be updated, but not installed or removed */
 	GS_APP_KIND_OS_UPDATE,	/* can be updated, but not installed or removed */
+	GS_APP_KIND_MISSING,	/* you can't do anything to this */
 	GS_APP_KIND_LAST
 } GsAppKind;
 
@@ -72,6 +73,7 @@ typedef enum {
 	GS_APP_STATE_INSTALLING,
 	GS_APP_STATE_REMOVING,
 	GS_APP_STATE_UPDATABLE,
+	GS_APP_STATE_UNAVAILABLE,	/* we found a reference to this */
 	GS_APP_STATE_LAST
 } GsAppState;
 
@@ -89,6 +91,7 @@ typedef enum {
 #define	GS_APP_SIZE_MISSING			1
 
 #define	GS_APP_URL_KIND_HOMEPAGE		"homepage"
+#define	GS_APP_URL_KIND_MISSING			"missing"
 
 GQuark		 gs_app_error_quark		(void);
 GType		 gs_app_get_type		(void);

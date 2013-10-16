@@ -389,6 +389,14 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 		return FALSE;
 	}
 
+	/* don't show unconverted unavailables */
+	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN &&
+		gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
+		g_debug ("app invalid as unconverted unavailable %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
+
 	/* don't show unknown kind */
 	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN) {
 		g_debug ("app invalid as kind unknown %s",
@@ -1165,6 +1173,57 @@ gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 /**
+ * gs_plugin_loader_convert_unavailable_app:
+ **/
+static void
+gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
+{
+	GString *tmp;
+
+	tmp = g_string_new ("");
+	/* TRANSLATORS: this is when we know about an application or
+	 * addon, but it can't be listed for some reason */
+	g_string_append_printf (tmp, _("No addon codecs are available "
+				"for the %s format."), search);
+	g_string_append (tmp, "\n");
+	g_string_append_printf (tmp, _("Information about %s, as well as options "
+				"for how to get a codec that can play this format "
+				"can be found on the website."), search);
+	gs_app_set_summary_missing (app, tmp->str);
+	gs_app_set_kind (app, GS_APP_KIND_MISSING);
+	gs_app_set_size (app, GS_APP_SIZE_MISSING);
+	gs_app_set_icon_name (app, "dialog-question-symbolic", NULL);
+	g_string_free (tmp, TRUE);
+}
+
+/**
+ * gs_plugin_loader_convert_unavailable:
+ **/
+static void
+gs_plugin_loader_convert_unavailable (GList *list, const gchar *search)
+{
+	GList *l;
+	GsApp *app;
+
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		if (gs_app_get_kind (app) != GS_APP_KIND_UNKNOWN &&
+		    gs_app_get_kind (app) != GS_APP_KIND_MISSING)
+			continue;
+		if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE)
+			continue;
+		if (gs_app_get_id_kind (app) != GS_APP_ID_KIND_CODEC)
+			continue;
+		if (gs_app_get_url (app, GS_APP_URL_KIND_MISSING) == NULL)
+			continue;
+
+		/* only convert the first unavailable codec */
+		gs_plugin_loader_convert_unavailable_app (app, search);
+		break;
+	}
+}
+
+/**
  * gs_plugin_loader_search_thread_cb:
  **/
 static void
@@ -1227,6 +1286,9 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
+
+	/* convert any unavailables */
+	gs_plugin_loader_convert_unavailable (state->list, state->value);
 
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
