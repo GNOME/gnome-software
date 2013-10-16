@@ -85,6 +85,8 @@ typedef enum {
 } GsAppIdKind;
 
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
+#define	GS_APP_SIZE_UNKNOWN			0
+#define	GS_APP_SIZE_MISSING			1
 
 GQuark		 gs_app_error_quark		(void);
 GType		 gs_app_get_type		(void);

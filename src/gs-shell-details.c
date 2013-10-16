@@ -452,9 +452,12 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 	/* set the size */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_size_value"));
-	if (gs_app_get_size (priv->app) == 0) {
-		/* TRANSLATORS: this is where the licence is not known */
+	if (gs_app_get_size (priv->app) == GS_APP_SIZE_UNKNOWN) {
+		/* TRANSLATORS: this is where the size is being worked out */
 		gtk_label_set_label (GTK_LABEL (widget), _("Calculating…"));
+	} else if (gs_app_get_size (priv->app) == GS_APP_SIZE_MISSING) {
+		/* TRANSLATORS: this is where the size is not known */
+		gtk_label_set_label (GTK_LABEL (widget), _("Unknown"));
 	} else {
 		size = g_format_size (gs_app_get_size (priv->app));
 		gtk_label_set_label (GTK_LABEL (widget), size);
