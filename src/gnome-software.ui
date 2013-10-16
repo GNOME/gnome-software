@@ -929,10 +929,13 @@
                     <child>
                       <object class="GtkLabel" id="label_details_version_value">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
                         <property name="xalign">0</property>
                         <property name="label">0.12.3</property>
                         <property name="selectable">True</property>
+                        <accessibility>
+                          <relation target="label_details_version_title" type="labelled-by"/>
+                        </accessibility>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -961,10 +964,13 @@
                     <child>
                       <object class="GtkLabel" id="label_details_updated_value">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
                         <property name="xalign">0</property>
                         <property name="label">May 12, 2012</property>
                         <property name="selectable">True</property>
+                        <accessibility>
+                          <relation target="label_details_updated_title" type="labelled-by"/>
+                        </accessibility>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -993,11 +999,14 @@
                     <child>
                       <object class="GtkLabel" id="label_details_category_value">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
                         <property name="xalign">0</property>
                         <property name="label">Photos &amp; Video</property>
                         <property name="ellipsize">end</property>
                         <property name="selectable">True</property>
+                        <accessibility>
+                          <relation target="label_details_category_title" type="labelled-by"/>
+                        </accessibility>
                       </object>
                       <packing>
                         <property name="left_attach">1</property>
@@ -1027,11 +1036,14 @@
                     <child>
                       <object class="GtkLabel" id="label_details_licence_value">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
                         <property name="xalign">0</property>
                         <property name="label">GPL</property>
                         <property name="ellipsize">end</property>
                         <property name="selectable">True</property>
+                        <accessibility>
+                          <relation target="label_details_licence_title" type="labelled-by"/>
+                        </accessibility>
                       </object>
                       <packing>
                         <property name="left_attach">3</property>
@@ -1061,10 +1073,13 @@
                     <child>
                       <object class="GtkLabel" id="label_details_size_value">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
                         <property name="xalign">0</property>
                         <property name="label">30 MB</property>
                         <property name="selectable">True</property>
+                        <accessibility>
+                          <relation target="label_details_size_title" type="labelled-by"/>
+                        </accessibility>
                       </object>
                       <packing>
                         <property name="left_attach">3</property>
@@ -1094,11 +1109,14 @@
                     <child>
                       <object class="GtkLabel" id="label_details_developer_value">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
+                        <property name="can_focus">True</property>
                         <property name="xalign">0</property>
                         <property name="label">Yorba</property>
                         <property name="ellipsize">end</property>
                         <property name="selectable">True</property>
+                        <accessibility>
+                          <relation target="label_details_developer_title" type="labelled-by"/>
+                        </accessibility>
                       </object>
                       <packing>
                         <property name="left_attach">3</property>
