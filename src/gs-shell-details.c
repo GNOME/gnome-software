@@ -332,6 +332,7 @@ gs_shell_details_set_description (GsShellDetails *shell_details, const gchar *tm
 		gtk_label_set_max_width_chars (GTK_LABEL (para), 80);
 		gtk_label_set_selectable (GTK_LABEL (para), TRUE);
 		gtk_widget_set_visible (para, TRUE);
+		gtk_widget_set_can_focus (para, FALSE);
 		g_object_set (para,
 			      "xalign", 0.0,
 			      NULL);
