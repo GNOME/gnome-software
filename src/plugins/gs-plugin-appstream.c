@@ -53,14 +53,18 @@ gs_plugin_appstream_icons_are_new_layout (const gchar *dirname)
 {
 	GDir *dir;
 	const gchar *tmp;
-	gboolean ret;
+	gboolean ret = TRUE;
 
 	/* simply test if the first item is a file and if not, the icons are
 	 * in the new /var/cache/app-info/icons/${repo}/gimp.png layout */
 	dir = g_dir_open (dirname, 0, NULL);
+	if (dir == NULL)
+		goto out;
 	tmp = g_dir_read_name (dir);
 	ret = g_strstr_len (tmp, -1, ".") == NULL;
-	g_dir_close (dir);
+out:
+	if (dir != NULL)
+		g_dir_close (dir);
 	return ret;
 }
 
