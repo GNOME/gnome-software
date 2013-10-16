@@ -110,6 +110,9 @@ void		 gs_app_set_version		(GsApp		*app,
 const gchar	*gs_app_get_summary		(GsApp		*app);
 void		 gs_app_set_summary		(GsApp		*app,
 						 const gchar	*summary);
+const gchar	*gs_app_get_summary_missing	(GsApp		*app);
+void		 gs_app_set_summary_missing	(GsApp		*app,
+						 const gchar	*missing);
 const gchar	*gs_app_get_description		(GsApp		*app);
 void		 gs_app_set_description		(GsApp		*app,
 						 const gchar	*description);

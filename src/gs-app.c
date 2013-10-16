@@ -60,6 +60,7 @@ struct GsAppPrivate
 	gchar			*version;
 	gchar			*version_ui;
 	gchar			*summary;
+	gchar			*summary_missing;
 	gchar			*description;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
@@ -203,6 +204,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\turl:\t%s\n", priv->url);
 	if (priv->licence != NULL)
 		g_string_append_printf (str, "\tlicence:\t%s\n", priv->licence);
+	if (priv->summary_missing != NULL)
+		g_string_append_printf (str, "\tsummary-missing:\t%s\n", priv->summary_missing);
 	if (priv->menu_path != NULL)
 		g_string_append_printf (str, "\tmenu-path:\t%s\n", priv->menu_path);
 	if (priv->rating != -1)
@@ -776,6 +779,27 @@ gs_app_set_licence (GsApp *app, const gchar *licence)
 }
 
 /**
+ * gs_app_get_summary_missing:
+ */
+const gchar *
+gs_app_get_summary_missing (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->summary_missing;
+}
+
+/**
+ * gs_app_set_summary_missing:
+ */
+void
+gs_app_set_summary_missing (GsApp *app, const gchar *summary_missing)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->summary_missing);
+	app->priv->summary_missing = g_strdup (summary_missing);
+}
+
+/**
  * gs_app_get_menu_path:
  */
 const gchar *
@@ -1291,6 +1315,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->version);
 	g_free (priv->version_ui);
 	g_free (priv->summary);
+	g_free (priv->summary_missing);
 	g_free (priv->description);
 	g_ptr_array_unref (priv->screenshots);
 	g_free (priv->update_version);
