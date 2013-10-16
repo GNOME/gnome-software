@@ -119,6 +119,23 @@ typedef struct {
 } AppstreamCacheHelper;
 
 /**
+ * appstream_cache_app_id_kind_from_string:
+ */
+static AppstreamAppIdKind
+appstream_cache_app_id_kind_from_string (const gchar *id_kind)
+{
+	if (g_strcmp0 (id_kind, "desktop") == 0)
+		return APPSTREAM_APP_ID_KIND_DESKTOP;
+	if (g_strcmp0 (id_kind, "inputmethod") == 0)
+		return APPSTREAM_APP_ID_KIND_INPUT_METHOD;
+	if (g_strcmp0 (id_kind, "font") == 0)
+		return APPSTREAM_APP_ID_KIND_FONT;
+	if (g_strcmp0 (id_kind, "codec") == 0)
+		return APPSTREAM_APP_ID_KIND_CODEC;
+	return APPSTREAM_APP_ID_KIND_UNKNOWN;
+}
+
+/**
  * appstream_cache_start_element_cb:
  */
 static void
@@ -148,6 +165,36 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_KEYWORD:
 		/* ignore */
 		break;
+	case APPSTREAM_TAG_ID:
+		if (helper->item_temp == NULL ||
+		    helper->tag != APPSTREAM_TAG_APPLICATION) {
+			g_set_error (error,
+				     APPSTREAM_CACHE_ERROR,
+				     APPSTREAM_CACHE_ERROR_FAILED,
+				     "XML start %s invalid, tag %s",
+				     element_name,
+				     appstream_tag_to_string (helper->tag));
+			return;
+		}
+
+		/* get the id kind */
+		for (i = 0; attribute_names[i] != NULL; i++) {
+			if (g_strcmp0 (attribute_names[i], "type") == 0) {
+				tmp = attribute_values[i];
+				break;
+			}
+		}
+		if (tmp != NULL) {
+			AppstreamAppIdKind id_kind;
+			id_kind = appstream_cache_app_id_kind_from_string (tmp);
+			appstream_app_set_id_kind (helper->item_temp, id_kind);
+		} else {
+			g_warning ("no type in <id>, assuming 'desktop'");
+			appstream_app_set_id_kind (helper->item_temp,
+						   APPSTREAM_APP_ID_KIND_DESKTOP);
+		}
+		break;
+
 	case APPSTREAM_TAG_SCREENSHOT:
 		if (helper->item_temp == NULL ||
 		    helper->tag != APPSTREAM_TAG_SCREENSHOTS) {
@@ -251,7 +298,6 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			}
 		}
 		break;
-	case APPSTREAM_TAG_ID:
 	case APPSTREAM_TAG_PKGNAME:
 	case APPSTREAM_TAG_URL:
 	case APPSTREAM_TAG_LICENCE:
@@ -305,6 +351,7 @@ static void
 appstream_cache_add_item (AppstreamCacheHelper *helper)
 {
 	AppstreamApp *item;
+	AppstreamAppIdKind id_kind;
 	AppstreamCachePrivate *priv = helper->cache->priv;
 	const gchar *id;
 
@@ -313,6 +360,14 @@ appstream_cache_add_item (AppstreamCacheHelper *helper)
 	item = g_hash_table_lookup (priv->hash_id, id);
 	if (item != NULL) {
 		g_warning ("duplicate AppStream entry: %s", id);
+		appstream_app_free (helper->item_temp);
+		return;
+	}
+
+	/* this is a type we don't know how to handle */
+	id_kind = appstream_app_get_id_kind (helper->item_temp);
+	if (id_kind == APPSTREAM_APP_ID_KIND_UNKNOWN) {
+		g_debug ("No idea how to handle AppStream entry: %s", id);
 		appstream_app_free (helper->item_temp);
 		return;
 	}

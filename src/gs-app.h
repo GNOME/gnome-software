@@ -75,6 +75,15 @@ typedef enum {
 	GS_APP_STATE_LAST
 } GsAppState;
 
+typedef enum {
+	GS_APP_ID_KIND_UNKNOWN,
+	GS_APP_ID_KIND_DESKTOP,
+	GS_APP_ID_KIND_INPUT_METHOD,
+	GS_APP_ID_KIND_FONT,
+	GS_APP_ID_KIND_CODEC,
+	GS_APP_ID_KIND_LAST
+} GsAppIdKind;
+
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
 
 GQuark		 gs_app_error_quark		(void);
@@ -83,6 +92,7 @@ GType		 gs_app_get_type		(void);
 GsApp		*gs_app_new			(const gchar	*id);
 gchar		*gs_app_to_string		(GsApp		*app);
 const gchar	*gs_app_kind_to_string		(GsAppKind	 kind);
+const gchar	*gs_app_id_kind_to_string	(GsAppIdKind	 id_kind);
 const gchar	*gs_app_state_to_string		(GsAppState	 state);
 
 const gchar	*gs_app_get_id			(GsApp		*app);
@@ -91,6 +101,9 @@ void		 gs_app_set_id			(GsApp		*app,
 GsAppKind	 gs_app_get_kind		(GsApp		*app);
 void		 gs_app_set_kind		(GsApp		*app,
 						 GsAppKind	 kind);
+GsAppIdKind	 gs_app_get_id_kind		(GsApp		*app);
+void		 gs_app_set_id_kind		(GsApp		*app,
+						 GsAppIdKind	 id_kind);
 GsAppState	 gs_app_get_state		(GsApp		*app);
 void		 gs_app_set_state		(GsApp		*app,
 						 GsAppState	 state);

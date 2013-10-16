@@ -42,6 +42,7 @@ struct AppstreamApp
 	gchar			*project_group;
 	gchar			*icon;
 	AppstreamAppIconKind	 icon_kind;
+	AppstreamAppIdKind	 id_kind;
 	GPtrArray		*appcategories; /* of gchar* */
 	GPtrArray		*keywords;
 	GPtrArray		*desktop_core;
@@ -111,6 +112,7 @@ appstream_app_new (void)
 	app->summary_value = G_MAXUINT;
 	app->description_value = G_MAXUINT;
 	app->icon_kind = APPSTREAM_APP_ICON_KIND_UNKNOWN;
+	app->id_kind = APPSTREAM_APP_ID_KIND_UNKNOWN;
 	return app;
 }
 
@@ -202,6 +204,15 @@ AppstreamAppIconKind
 appstream_app_get_icon_kind (AppstreamApp *app)
 {
 	return app->icon_kind;
+}
+
+/**
+ * appstream_app_get_id_kind:
+ */
+AppstreamAppIdKind
+appstream_app_get_id_kind (AppstreamApp *app)
+{
+	return app->id_kind;
 }
 
 /**
@@ -410,6 +421,15 @@ appstream_app_set_icon_kind (AppstreamApp *app,
 			     AppstreamAppIconKind icon_kind)
 {
 	app->icon_kind = icon_kind;
+}
+
+/**
+ * appstream_app_set_id_kind:
+ */
+void
+appstream_app_set_id_kind (AppstreamApp *app, AppstreamAppIdKind id_kind)
+{
+	app->id_kind = id_kind;
 }
 
 /**

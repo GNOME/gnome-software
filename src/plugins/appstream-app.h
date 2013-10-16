@@ -35,6 +35,15 @@ typedef enum {
 	APPSTREAM_APP_ICON_KIND_LAST
 } AppstreamAppIconKind;
 
+typedef enum {
+	APPSTREAM_APP_ID_KIND_UNKNOWN,
+	APPSTREAM_APP_ID_KIND_DESKTOP,
+	APPSTREAM_APP_ID_KIND_INPUT_METHOD,
+	APPSTREAM_APP_ID_KIND_FONT,
+	APPSTREAM_APP_ID_KIND_CODEC,
+	APPSTREAM_APP_ID_KIND_LAST
+} AppstreamAppIdKind;
+
 typedef struct	AppstreamApp	AppstreamApp;
 
 void		 appstream_app_free			(AppstreamApp	*app);
@@ -54,6 +63,7 @@ gboolean	 appstream_app_has_category		(AppstreamApp	*app,
 gboolean	 appstream_app_get_desktop_core		(AppstreamApp	*app,
 							 const gchar	*desktop);
 AppstreamAppIconKind	appstream_app_get_icon_kind	(AppstreamApp	*app);
+AppstreamAppIdKind	appstream_app_get_id_kind	(AppstreamApp	*app);
 
 void		 appstream_app_set_id			(AppstreamApp	*app,
 							 const gchar	*id,
@@ -96,6 +106,8 @@ void		 appstream_app_add_desktop_core		(AppstreamApp	*app,
 							 gsize		 length);
 void		 appstream_app_set_icon_kind		(AppstreamApp	*app,
 							 AppstreamAppIconKind icon_kind);
+void		 appstream_app_set_id_kind		(AppstreamApp	*app,
+							 AppstreamAppIdKind id_kind);
 
 gpointer	 appstream_app_get_userdata		(AppstreamApp	*app);
 void		 appstream_app_set_userdata		(AppstreamApp	*app,

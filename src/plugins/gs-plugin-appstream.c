@@ -480,6 +480,10 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	    gs_app_get_kind (app) == GS_APP_KIND_NORMAL)
 		gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
 
+	/* set id kind */
+	if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_UNKNOWN)
+		gs_app_set_id_kind (app, appstream_app_get_id_kind (item));
+
 	/* set package name */
 	if (appstream_app_get_pkgname (item) != NULL && gs_app_get_source (app) == NULL)
 		gs_app_set_source (app, appstream_app_get_pkgname (item));
