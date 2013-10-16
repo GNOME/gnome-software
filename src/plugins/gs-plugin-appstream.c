@@ -460,7 +460,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		keys = g_hash_table_get_keys (urls);
 		for (l = keys; l != NULL; l = l->next) {
 			gs_app_set_url (app,
-					keys->data,
+					l->data,
 					g_hash_table_lookup (urls, l->data));
 		}
 		g_list_free (keys);
