@@ -442,7 +442,13 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 	/* set version */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_version_value"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_version (priv->app));
+	tmp = gs_app_get_version (priv->app);
+	if (tmp != NULL){
+		gtk_label_set_label (GTK_LABEL (widget), tmp);
+	} else {
+		/* TRANSLATORS: this is where the version is not known */
+		gtk_label_set_label (GTK_LABEL (widget), _("Unknown"));
+	}
 
 	/* set the size */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_size_value"));
