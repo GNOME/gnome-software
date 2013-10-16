@@ -154,6 +154,9 @@ void		 gs_app_set_management_plugin	(GsApp		*app,
 GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
 void		 gs_app_set_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);
+gboolean	 gs_app_set_icon_name		(GsApp		*app,
+						 const gchar	*icon_name,
+						 GError		**error);
 GdkPixbuf	*gs_app_get_featured_pixbuf	(GsApp		*app);
 void		 gs_app_set_featured_pixbuf	(GsApp		*app,
 						 GdkPixbuf	*pixbuf);

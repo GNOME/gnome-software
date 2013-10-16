@@ -44,6 +44,7 @@
 #include "config.h"
 
 #include <string.h>
+#include <gtk/gtk.h>
 
 #include "gs-app.h"
 
@@ -541,6 +542,36 @@ gs_app_get_pixbuf (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	return app->priv->pixbuf;
+}
+
+/**
+ * gs_app_set_icon_name:
+ */
+gboolean
+gs_app_set_icon_name (GsApp *app, const gchar *icon_name, GError **error)
+{
+	GdkPixbuf *pixbuf;
+	gboolean ret = TRUE;
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	g_return_val_if_fail (icon_name != NULL, FALSE);
+
+	/* just load from the theme */
+	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+					   icon_name,
+					   64,
+					   GTK_ICON_LOOKUP_USE_BUILTIN |
+					   GTK_ICON_LOOKUP_FORCE_SIZE,
+					   error);
+	if (pixbuf == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+	gs_app_set_pixbuf (app, pixbuf);
+out:
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
+	return ret;
 }
 
 /**
