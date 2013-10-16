@@ -31,6 +31,7 @@ struct AppstreamApp
 {
 	gchar			*id;
 	gchar			*pkgname;
+	gint			 priority;
 	gchar			*name;
 	guint			 name_value;
 	gchar			*summary;
@@ -114,6 +115,7 @@ appstream_app_new (void)
 	app->description_value = G_MAXUINT;
 	app->icon_kind = APPSTREAM_APP_ICON_KIND_UNKNOWN;
 	app->id_kind = APPSTREAM_APP_ID_KIND_UNKNOWN;
+	app->priority = 0;
 	return app;
 }
 
@@ -133,6 +135,15 @@ const gchar *
 appstream_app_get_pkgname (AppstreamApp *app)
 {
 	return app->pkgname;
+}
+
+/**
+ * appstream_app_get_priority:
+ */
+gint
+appstream_app_get_priority (AppstreamApp *app)
+{
+	return app->priority;
 }
 
 /**
@@ -287,6 +298,15 @@ appstream_app_set_pkgname (AppstreamApp *app,
 			   gsize length)
 {
 	app->pkgname = g_strndup (pkgname, length);
+}
+
+/**
+ * appstream_app_set_priority:
+ */
+void
+appstream_app_set_priority (AppstreamApp *app, gint priority)
+{
+	app->priority = priority;
 }
 
 /**

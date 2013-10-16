@@ -72,6 +72,8 @@ appstream_tag_from_string (const gchar *element_name)
 		return APPSTREAM_TAG_IMAGE;
 	if (g_strcmp0 (element_name, "compulsory_for_desktop") == 0)
 		return APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP;
+	if (g_strcmp0 (element_name, "priority") == 0)
+		return APPSTREAM_TAG_PRIORITY;
 	return APPSTREAM_TAG_UNKNOWN;
 }
 
@@ -121,6 +123,8 @@ appstream_tag_to_string (AppstreamTag tag)
 		return "image";
 	if (tag == APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP)
 		return "compulsory_for_desktop";
+	if (tag == APPSTREAM_TAG_PRIORITY)
+		return "priority";
 	return NULL;
 }
 

@@ -117,6 +117,7 @@ typedef struct {
 	AppstreamTag		 tag;
 	AppstreamImage		*image;
 	AppstreamScreenshot	*screenshot;
+	gint			 priority;
 } AppstreamCacheHelper;
 
 /**
@@ -164,6 +165,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
 	case APPSTREAM_TAG_KEYWORDS:
 	case APPSTREAM_TAG_KEYWORD:
+	case APPSTREAM_TAG_PRIORITY:
 		/* ignore */
 		break;
 	case APPSTREAM_TAG_ID:
@@ -268,6 +270,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			return;
 		}
 		helper->item_temp = appstream_app_new ();
+		appstream_app_set_priority (helper->item_temp, helper->priority);
 		appstream_app_set_userdata (helper->item_temp,
 					    (gpointer) helper->path_icons,
 					    NULL);
@@ -381,9 +384,20 @@ appstream_cache_add_item (AppstreamCacheHelper *helper)
 	id = appstream_app_get_id (helper->item_temp);
 	item = g_hash_table_lookup (priv->hash_id, id);
 	if (item != NULL) {
-		g_warning ("duplicate AppStream entry: %s", id);
-		appstream_app_free (helper->item_temp);
-		return;
+
+		/* the previously stored app is higher priority */
+		if (appstream_app_get_priority (item) >
+		    appstream_app_get_priority (helper->item_temp)) {
+			g_debug ("ignoring duplicate AppStream entry: %s", id);
+			appstream_app_free (helper->item_temp);
+			return;
+		}
+
+		/* this new item has a higher priority than the one we've
+		 * previously stored */
+		g_debug ("replacing duplicate AppStream entry: %s", id);
+		g_hash_table_remove (priv->hash_id, id);
+		g_ptr_array_remove (priv->array, item);
 	}
 
 	/* this is a type we don't know how to handle */
@@ -462,6 +476,9 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		g_free (helper->lang_temp);
 		helper->lang_temp = NULL;
 		break;
+	case APPSTREAM_TAG_PRIORITY:
+		helper->tag = APPSTREAM_TAG_APPLICATIONS;
+		break;
 	default:
 		/* ignore unknown entries */
 		helper->tag = APPSTREAM_TAG_APPLICATION;
@@ -488,6 +505,16 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_APPCATEGORIES:
 	case APPSTREAM_TAG_KEYWORDS:
 		/* ignore */
+		break;
+	case APPSTREAM_TAG_PRIORITY:
+		if (helper->item_temp != NULL) {
+			g_set_error_literal (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "item_temp priority invalid");
+			return;
+		}
+		helper->priority = atoi (text);
 		break;
 	case APPSTREAM_TAG_APPCATEGORY:
 		if (helper->item_temp == NULL) {
