@@ -445,8 +445,11 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 			}
 			if (gs_app_get_licence (app) == NULL)
 				gs_app_set_licence (app, pk_details_get_license (details));
-			if (gs_app_get_url (app) == NULL)
-				gs_app_set_url (app, pk_details_get_url (details));
+			if (gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
+				gs_app_set_url (app,
+						GS_APP_URL_KIND_HOMEPAGE,
+						pk_details_get_url (details));
+			}
 			if (gs_app_get_size (app) == 0)
 				gs_app_set_size (app, pk_details_get_size (details));
 			if (gs_app_get_description (app) == NULL &&
@@ -466,9 +469,9 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				gs_app_set_licence (app, tmp);
 				g_free (tmp);
 			}
-			if (gs_app_get_url (app) == NULL) {
+			if (gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
 				g_object_get (details, "url", &tmp, NULL);
-				gs_app_set_licence (app, tmp);
+				gs_app_set_url (app, GS_APP_URL_KIND_HOMEPAGE, tmp);
 				g_free (tmp);
 			}
 			if (gs_app_get_size (app) == 0) {
@@ -514,7 +517,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_licence (app) != NULL &&
-		    gs_app_get_url (app) != NULL &&
+		    gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) != NULL &&
 		    gs_app_get_size (app) != 0 &&
 		    (gs_app_get_description (app) != NULL ||
 		     g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") == NULL))

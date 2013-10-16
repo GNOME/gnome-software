@@ -65,7 +65,7 @@ struct GsAppPrivate
 	gchar			*description;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
-	gchar			*url;
+	GHashTable		*urls;
 	gchar			*licence;
 	gchar			*menu_path;
 	gchar			*update_version;
@@ -92,7 +92,6 @@ enum {
 	PROP_VERSION,
 	PROP_SUMMARY,
 	PROP_DESCRIPTION,
-	PROP_URL,
 	PROP_RATING,
 	PROP_KIND,
 	PROP_STATE,
@@ -223,8 +222,9 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tscreenshot-%02i:\t%s\n",
 					i, gs_screenshot_get_url (ss, G_MAXUINT, G_MAXUINT));
 	}
-	if (priv->url != NULL)
-		g_string_append_printf (str, "\turl:\t%s\n", priv->url);
+	tmp = g_hash_table_lookup (priv->urls, GS_APP_URL_KIND_HOMEPAGE);
+	if (tmp != NULL)
+		g_string_append_printf (str, "\turl{homepage}:\t%s\n", tmp);
 	if (priv->licence != NULL)
 		g_string_append_printf (str, "\tlicence:\t%s\n", priv->licence);
 	if (priv->summary_missing != NULL)
@@ -811,10 +811,10 @@ gs_app_set_description (GsApp *app, const gchar *description)
  * gs_app_get_url:
  */
 const gchar *
-gs_app_get_url (GsApp *app)
+gs_app_get_url (GsApp *app, const gchar *kind)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->priv->url;
+	return g_hash_table_lookup (app->priv->urls, kind);
 }
 
 /**
@@ -823,11 +823,12 @@ gs_app_get_url (GsApp *app)
  * @summary:	The home page URL, e.g. "http://www.foo.com/gcalctool/"
  */
 void
-gs_app_set_url (GsApp *app, const gchar *url)
+gs_app_set_url (GsApp *app, const gchar *kind, const gchar *url)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->priv->url);
-	app->priv->url = g_strdup (url);
+	g_hash_table_insert (app->priv->urls,
+			     g_strdup (kind),
+			     g_strdup (url));
 }
 
 /**
@@ -1187,9 +1188,6 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_DESCRIPTION:
 		g_value_set_string (value, priv->description);
 		break;
-	case PROP_URL:
-		g_value_set_string (value, priv->url);
-		break;
 	case PROP_RATING:
 		g_value_set_uint (value, priv->rating);
 		break;
@@ -1231,9 +1229,6 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_DESCRIPTION:
 		gs_app_set_description (app, g_value_get_string (value));
-		break;
-	case PROP_URL:
-		gs_app_set_url (app, g_value_get_string (value));
 		break;
 	case PROP_RATING:
 		gs_app_set_rating (app, g_value_get_int (value));
@@ -1303,11 +1298,6 @@ gs_app_class_init (GsAppClass *klass)
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_DESCRIPTION, pspec);
 
-	pspec = g_param_spec_string ("url", NULL, NULL,
-				     NULL,
-				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_URL, pspec);
-
 	/**
 	 * GsApp:rating:
 	 */
@@ -1366,6 +1356,10 @@ gs_app_init (GsApp *app)
 						     g_str_equal,
 						     g_free,
 						     g_free);
+	app->priv->urls = g_hash_table_new_full (g_str_hash,
+						 g_str_equal,
+						 g_free,
+						 g_free);
 }
 
 /**
@@ -1380,7 +1374,7 @@ gs_app_finalize (GObject *object)
 
 	g_free (priv->id);
 	g_free (priv->name);
-	g_free (priv->url);
+	g_hash_table_unref (priv->urls);
 	g_free (priv->licence);
 	g_free (priv->menu_path);
 	g_free (priv->source);

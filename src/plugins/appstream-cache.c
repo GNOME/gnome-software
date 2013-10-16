@@ -111,7 +111,8 @@ appstream_cache_icon_kind_from_string (const gchar *kind_str)
 typedef struct {
 	const gchar		*path_icons;
 	AppstreamApp		*item_temp;
-	char			*lang_temp;
+	gchar			*lang_temp;
+	gchar			*url_type_temp;
 	AppstreamCache		*cache;
 	AppstreamTag		 tag;
 	AppstreamImage		*image;
@@ -298,8 +299,29 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			}
 		}
 		break;
-	case APPSTREAM_TAG_PKGNAME:
 	case APPSTREAM_TAG_URL:
+		if (helper->item_temp == NULL ||
+		    helper->tag != APPSTREAM_TAG_APPLICATION) {
+			g_set_error (error,
+				     APPSTREAM_CACHE_ERROR,
+				     APPSTREAM_CACHE_ERROR_FAILED,
+				     "XML start %s invalid, tag %s",
+				     element_name,
+				     appstream_tag_to_string (helper->tag));
+			return;
+		}
+
+		/* get the url kind */
+		for (i = 0; attribute_names[i] != NULL; i++) {
+			if (g_strcmp0 (attribute_names[i], "type") == 0) {
+				helper->url_type_temp = g_strdup (attribute_values[i]);
+				break;
+			}
+		}
+		if (helper->url_type_temp == NULL)
+			helper->url_type_temp = g_strdup ("homepage");
+		break;
+	case APPSTREAM_TAG_PKGNAME:
 	case APPSTREAM_TAG_LICENCE:
 	case APPSTREAM_TAG_PROJECT_GROUP:
 		if (helper->item_temp == NULL ||
@@ -424,9 +446,12 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_APPCATEGORIES:
 	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
 	case APPSTREAM_TAG_KEYWORDS:
-	case APPSTREAM_TAG_URL:
 	case APPSTREAM_TAG_LICENCE:
 	case APPSTREAM_TAG_ICON:
+		helper->tag = APPSTREAM_TAG_APPLICATION;
+		break;
+	case APPSTREAM_TAG_URL:
+		g_free (helper->url_type_temp);
 		helper->tag = APPSTREAM_TAG_APPLICATION;
 		break;
 	case APPSTREAM_TAG_NAME:
@@ -548,14 +573,16 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		break;
 	case APPSTREAM_TAG_URL:
 		if (helper->item_temp == NULL ||
-		    appstream_app_get_url (helper->item_temp) != NULL) {
+		    helper->url_type_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
 					     APPSTREAM_CACHE_ERROR_FAILED,
 					     "item_temp url invalid");
 			return;
 		}
-		appstream_app_set_url (helper->item_temp, text, text_len);
+		appstream_app_add_url (helper->item_temp,
+				       helper->url_type_temp,
+				       text, text_len);
 		break;
 	case APPSTREAM_TAG_LICENCE:
 		if (helper->item_temp == NULL ||

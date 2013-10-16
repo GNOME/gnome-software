@@ -37,7 +37,7 @@ struct AppstreamApp
 	guint			 summary_value;
 	gchar			*description;
 	guint			 description_value;
-	gchar			*url;
+	GHashTable		*urls;
 	gchar			*licence;
 	gchar			*project_group;
 	gchar			*icon;
@@ -59,7 +59,7 @@ appstream_app_free (AppstreamApp *app)
 {
 	g_free (app->id);
 	g_free (app->pkgname);
-	g_free (app->url);
+	g_hash_table_unref (app->urls);
 	g_free (app->licence);
 	g_free (app->project_group);
 	g_free (app->icon);
@@ -108,6 +108,7 @@ appstream_app_new (void)
 	app->keywords = g_ptr_array_new_with_free_func (g_free);
 	app->desktop_core = g_ptr_array_new_with_free_func (g_free);
 	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_screenshot_free);
+	app->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	app->name_value = G_MAXUINT;
 	app->summary_value = G_MAXUINT;
 	app->description_value = G_MAXUINT;
@@ -153,12 +154,12 @@ appstream_app_get_summary (AppstreamApp *app)
 }
 
 /**
- * appstream_app_get_url:
+ * appstream_app_get_urls:
  */
-const gchar *
-appstream_app_get_url (AppstreamApp *app)
+GHashTable *
+appstream_app_get_urls (AppstreamApp *app)
 {
-	return app->url;
+	return app->urls;
 }
 
 /**
@@ -327,14 +328,17 @@ appstream_app_set_summary (AppstreamApp *app,
 }
 
 /**
- * appstream_app_set_url:
+ * appstream_app_add_url:
  */
 void
-appstream_app_set_url (AppstreamApp *app,
+appstream_app_add_url (AppstreamApp *app,
+		       const gchar *kind,
 		       const gchar *url,
 		       gsize length)
 {
-	app->url = g_strndup (url, length);
+	g_hash_table_insert (app->urls,
+			     g_strdup (kind),
+			     g_strndup (url, length));
 }
 
 /**

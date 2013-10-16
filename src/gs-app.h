@@ -88,6 +88,8 @@ typedef enum {
 #define	GS_APP_SIZE_UNKNOWN			0
 #define	GS_APP_SIZE_MISSING			1
 
+#define	GS_APP_URL_KIND_HOMEPAGE		"homepage"
+
 GQuark		 gs_app_error_quark		(void);
 GType		 gs_app_get_type		(void);
 
@@ -131,8 +133,10 @@ void		 gs_app_set_summary_missing	(GsApp		*app,
 const gchar	*gs_app_get_description		(GsApp		*app);
 void		 gs_app_set_description		(GsApp		*app,
 						 const gchar	*description);
-const gchar	*gs_app_get_url			(GsApp		*app);
+const gchar	*gs_app_get_url			(GsApp		*app,
+						 const gchar	*kind);
 void		 gs_app_set_url			(GsApp		*app,
+						 const gchar	*kind,
 						 const gchar	*url);
 const gchar	*gs_app_get_licence		(GsApp		*app);
 void		 gs_app_set_licence		(GsApp		*app,

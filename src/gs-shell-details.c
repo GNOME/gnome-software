@@ -294,7 +294,7 @@ gs_shell_details_website_cb (GtkWidget *widget, GsShellDetails *shell_details)
 	const gchar *url;
 	gboolean ret;
 
-	url = gs_app_get_url (priv->app);
+	url = gs_app_get_url (priv->app, GS_APP_URL_KIND_HOMEPAGE);
 	ret = gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error);
 	if (!ret) {
 		g_warning ("spawn of '%s' failed", url);
@@ -399,7 +399,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		gtk_widget_set_visible (widget, FALSE);
 	}
 
-	tmp = gs_app_get_url (priv->app);
+	tmp = gs_app_get_url (priv->app, GS_APP_URL_KIND_HOMEPAGE);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_details_website"));
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_widget_set_visible (widget, TRUE);

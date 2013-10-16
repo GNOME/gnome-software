@@ -411,12 +411,12 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		}
 		break;
 	case APPSTREAM_TAG_URL:
-		if (gs_app_get_url (helper->app) == NULL) {
+		if (gs_app_get_url (helper->app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
 			tmp = appdata_xml_unmunge (text, text_len);
 			if (tmp == NULL)
 				break;
 			g_debug ("AppData: Setting URL: %s", tmp);
-			gs_app_set_url (helper->app, tmp);
+			gs_app_set_url (helper->app, GS_APP_URL_KIND_HOMEPAGE, tmp);
 		}
 		break;
 	case APPSTREAM_TAG_PROJECT_GROUP:

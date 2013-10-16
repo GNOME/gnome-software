@@ -54,7 +54,7 @@ const gchar	*appstream_app_get_pkgname		(AppstreamApp	*app);
 const gchar	*appstream_app_get_name			(AppstreamApp	*app);
 const gchar	*appstream_app_get_summary		(AppstreamApp	*app);
 const gchar	*appstream_app_get_project_group	(AppstreamApp	*app);
-const gchar	*appstream_app_get_url			(AppstreamApp	*app);
+GHashTable	*appstream_app_get_urls			(AppstreamApp	*app);
 const gchar	*appstream_app_get_licence		(AppstreamApp	*app);
 const gchar	*appstream_app_get_description		(AppstreamApp	*app);
 const gchar	*appstream_app_get_icon			(AppstreamApp	*app);
@@ -79,7 +79,8 @@ void		 appstream_app_set_summary		(AppstreamApp	*app,
 							 const gchar    *lang,
 							 const gchar	*summary,
 							 gsize		 length);
-void		 appstream_app_set_url			(AppstreamApp	*app,
+void		 appstream_app_add_url			(AppstreamApp	*app,
+							 const gchar	*kind,
 							 const gchar	*summary,
 							 gsize		 length);
 void		 appstream_app_set_licence		(AppstreamApp	*app,

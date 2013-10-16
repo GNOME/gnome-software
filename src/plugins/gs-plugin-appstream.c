@@ -431,6 +431,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		       AppstreamApp *item,
 		       GError **error)
 {
+	GHashTable *urls;
 	gboolean ret = TRUE;
 
 	/* is an app */
@@ -450,9 +451,20 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (appstream_app_get_summary (item) != NULL && gs_app_get_summary (app) == NULL)
 		gs_app_set_summary (app, appstream_app_get_summary (item));
 
-	/* set url */
-	if (appstream_app_get_url (item) != NULL && gs_app_get_url (app) == NULL)
-		gs_app_set_url (app, appstream_app_get_url (item));
+	/* add urls */
+	urls = appstream_app_get_urls (item);
+	if (g_hash_table_size (urls) > 0 &&
+	    gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
+		GList *keys;
+		GList *l;
+		keys = g_hash_table_get_keys (urls);
+		for (l = keys; l != NULL; l = l->next) {
+			gs_app_set_url (app,
+					keys->data,
+					g_hash_table_lookup (urls, l->data));
+		}
+		g_list_free (keys);
+	}
 
 	/* set licence */
 	if (appstream_app_get_licence (item) != NULL && gs_app_get_licence (app) == NULL)
