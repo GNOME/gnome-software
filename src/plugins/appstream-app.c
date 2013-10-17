@@ -46,6 +46,7 @@ struct AppstreamApp
 	AppstreamAppIdKind	 id_kind;
 	GPtrArray		*appcategories; /* of gchar* */
 	GPtrArray		*keywords;
+	GPtrArray		*mimetypes;
 	GPtrArray		*desktop_core;
 	gpointer		 userdata;
 	GDestroyNotify		 userdata_destroy_func;
@@ -69,6 +70,7 @@ appstream_app_free (AppstreamApp *app)
 	g_free (app->description);
 	g_ptr_array_unref (app->appcategories);
 	g_ptr_array_unref (app->keywords);
+	g_ptr_array_unref (app->mimetypes);
 	g_ptr_array_unref (app->desktop_core);
 	g_ptr_array_unref (app->screenshots);
 	if (app->userdata_destroy_func != NULL)
@@ -107,6 +109,7 @@ appstream_app_new (void)
 	app = g_slice_new0 (AppstreamApp);
 	app->appcategories = g_ptr_array_new_with_free_func (g_free);
 	app->keywords = g_ptr_array_new_with_free_func (g_free);
+	app->mimetypes = g_ptr_array_new_with_free_func (g_free);
 	app->desktop_core = g_ptr_array_new_with_free_func (g_free);
 	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_screenshot_free);
 	app->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
@@ -447,6 +450,18 @@ appstream_app_add_keyword (AppstreamApp *app,
 }
 
 /**
+ * appstream_app_add_mimetype:
+ */
+void
+appstream_app_add_mimetype (AppstreamApp *app,
+			    const gchar *mimetype,
+			    gsize length)
+{
+	g_ptr_array_add (app->mimetypes,
+			 g_strndup (mimetype, length));
+}
+
+/**
  * appstream_app_set_icon_kind:
  */
 void
@@ -511,6 +526,11 @@ appstream_app_search_matches (AppstreamApp *app, const gchar *search)
 		return TRUE;
 	for (i = 0; i < app->keywords->len; i++) {
 		tmp = g_ptr_array_index (app->keywords, i);
+		if (strcasestr (tmp, search) != NULL)
+			return TRUE;
+	}
+	for (i = 0; i < app->mimetypes->len; i++) {
+		tmp = g_ptr_array_index (app->mimetypes, i);
 		if (strcasestr (tmp, search) != NULL)
 			return TRUE;
 	}

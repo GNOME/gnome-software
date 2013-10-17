@@ -60,6 +60,10 @@ appstream_tag_from_string (const gchar *element_name)
 		return APPSTREAM_TAG_KEYWORDS;
 	if (g_strcmp0 (element_name, "keyword") == 0)
 		return APPSTREAM_TAG_KEYWORD;
+	if (g_strcmp0 (element_name, "mimetypes") == 0)
+		return APPSTREAM_TAG_MIMETYPES;
+	if (g_strcmp0 (element_name, "mimetype") == 0)
+		return APPSTREAM_TAG_MIMETYPE;
 	if (g_strcmp0 (element_name, "licence") == 0)
 		return APPSTREAM_TAG_LICENCE;
 	if (g_strcmp0 (element_name, "screenshots") == 0)
@@ -111,6 +115,10 @@ appstream_tag_to_string (AppstreamTag tag)
 		return "keywords";
 	if (tag == APPSTREAM_TAG_KEYWORD)
 		return "keyword";
+	if (tag == APPSTREAM_TAG_MIMETYPES)
+		return "mimetypes";
+	if (tag == APPSTREAM_TAG_MIMETYPE)
+		return "mimetype";
 	if (tag == APPSTREAM_TAG_LICENCE)
 		return "licence";
 	if (tag == APPSTREAM_TAG_SCREENSHOTS)

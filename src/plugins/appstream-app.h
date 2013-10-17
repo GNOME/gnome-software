@@ -106,6 +106,9 @@ void		 appstream_app_add_category		(AppstreamApp	*app,
 void		 appstream_app_add_keyword		(AppstreamApp	*app,
 							 const gchar	*keyword,
 							 gsize		 length);
+void		 appstream_app_add_mimetype		(AppstreamApp	*app,
+							 const gchar	*mimetype,
+							 gsize		 length);
 void		 appstream_app_add_desktop_core		(AppstreamApp	*app,
 							 const gchar	*desktop,
 							 gsize		 length);
