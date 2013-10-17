@@ -130,6 +130,10 @@ gs_shell_installed_app_removed_cb (GObject *source,
 		g_warning ("failed to remove %s: %s",
 			   gs_app_get_id (app),
 			   error->message);
+		gs_app_notify_failed_modal (priv->builder,
+					    app,
+					    GS_PLUGIN_LOADER_ACTION_REMOVE,
+					    error);
 		g_error_free (error);
 	} else {
 		/* remove from the list */

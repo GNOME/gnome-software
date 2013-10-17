@@ -84,6 +84,10 @@ gs_shell_search_app_installed_cb (GObject *source,
 		g_warning ("failed to install %s: %s",
 			   gs_app_get_id (helper->app),
 			   error->message);
+		gs_app_notify_failed_modal (helper->shell_search->priv->builder,
+					    helper->app,
+					    GS_PLUGIN_LOADER_ACTION_INSTALL,
+					    error);
 		g_error_free (error);
 	} else {
 		gs_app_notify_installed (helper->app);
@@ -103,6 +107,7 @@ gs_shell_search_app_removed_cb (GObject *source,
 {
 	GError *error = NULL;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsShellSearchHelper *helper = (GsShellSearchHelper *) user_data;
 	gboolean ret;
 
 	ret = gs_plugin_loader_app_action_finish (plugin_loader,
@@ -111,8 +116,15 @@ gs_shell_search_app_removed_cb (GObject *source,
 	if (!ret) {
 		g_warning ("failed to remove: %s",
 			   error->message);
+		gs_app_notify_failed_modal (helper->shell_search->priv->builder,
+					    helper->app,
+					    GS_PLUGIN_LOADER_ACTION_REMOVE,
+					    error);
 		g_error_free (error);
 	}
+	g_object_unref (helper->app);
+	g_object_unref (helper->shell_search);
+	g_free (helper);
 }
 
 /**
@@ -150,13 +162,17 @@ gs_shell_search_app_remove (GsShellSearch *shell_search, GsApp *app)
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (response == GTK_RESPONSE_OK) {
+		GsShellSearchHelper *helper;
 		g_debug ("remove %s", gs_app_get_id (app));
+		helper = g_new0 (GsShellSearchHelper, 1);
+		helper->app = g_object_ref (app);
+		helper->shell_search = g_object_ref (shell_search);
 		gs_plugin_loader_app_action_async (priv->plugin_loader,
 						   app,
 						   GS_PLUGIN_LOADER_ACTION_REMOVE,
 						   priv->cancellable,
 						   gs_shell_search_app_removed_cb,
-						   shell_search);
+						   helper);
 	}
 	g_string_free (markup, TRUE);
 	gtk_widget_destroy (dialog);

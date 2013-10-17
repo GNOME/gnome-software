@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
@@ -34,6 +35,10 @@ void	 gs_container_remove_all	(GtkContainer	*container);
 void	 gs_grab_focus_when_mapped	(GtkWidget	*widget);
 
 void	 gs_app_notify_installed	(GsApp		*app);
+void	 gs_app_notify_failed_modal	(GtkBuilder	*builder,
+					 GsApp		*app,
+					 GsPluginLoaderAction action,
+					 const GError	*error);
 
 guint	 gs_string_replace		(GString	*string,
 					 const gchar	*search,

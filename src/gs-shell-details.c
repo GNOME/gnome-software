@@ -600,9 +600,14 @@ gs_shell_details_app_installed_cb (GObject *source,
 		g_warning ("failed to install %s: %s",
 			   gs_app_get_id (helper->app),
 			   error->message);
+		gs_app_notify_failed_modal (helper->shell_details->priv->builder,
+					    helper->app,
+					    GS_PLUGIN_LOADER_ACTION_INSTALL,
+					    error);
 		g_error_free (error);
 		return;
 	}
+
 	gs_app_notify_installed (helper->app);
 	g_object_unref (helper->shell_details);
 	g_object_unref (helper->app);
@@ -629,9 +634,14 @@ gs_shell_details_app_removed_cb (GObject *source,
 		g_warning ("failed to remove %s: %s",
 			   gs_app_get_id (helper->app),
 			   error->message);
+		gs_app_notify_failed_modal (helper->shell_details->priv->builder,
+					    helper->app,
+					    GS_PLUGIN_LOADER_ACTION_REMOVE,
+					    error);
 		g_error_free (error);
 		return;
 	}
+
 	gs_shell_details_refresh (helper->shell_details);
 	g_object_unref (helper->shell_details);
 	g_object_unref (helper->app);
