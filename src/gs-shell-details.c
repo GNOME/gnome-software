@@ -494,8 +494,16 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	}
 
 	/* set the rating */
-	gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
-				   gs_app_get_rating (priv->app));
+	switch (gs_app_get_id_kind (priv->app)) {
+	case GS_APP_ID_KIND_WEBAPP:
+		gtk_widget_set_visible (priv->star, FALSE);
+		break;
+	default:
+		gtk_widget_set_visible (priv->star, TRUE);
+		gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
+					   gs_app_get_rating (priv->app));
+		break;
+	}
 
 	/* make history button insensitive if there is none */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
