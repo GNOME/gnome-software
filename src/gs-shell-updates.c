@@ -357,6 +357,11 @@ gs_shell_updates_list_header_func (GtkListBoxRow *row,
 				   GtkListBoxRow *before,
 				   gpointer user_data)
 {
+	GsAppIdKind id_kind_after;
+	GsAppIdKind id_kind_before;
+	GsAppWidget *aw1;
+	GsAppWidget *aw2;
+	GtkStyleContext *context;
 	GtkWidget *header;
 
 	/* first entry */
@@ -370,8 +375,26 @@ gs_shell_updates_list_header_func (GtkListBoxRow *row,
 	if (header != NULL)
 		return;
 
-	/* set new */
-	header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	/* calculate the transition between different ID kinds */
+	aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (before)));
+	aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+	id_kind_before = gs_app_get_id_kind (gs_app_widget_get_app (aw1));
+	id_kind_after = gs_app_get_id_kind (gs_app_widget_get_app (aw2));
+
+	/* desktop -> addons */
+	if (id_kind_before == GS_APP_ID_KIND_DESKTOP &&
+	    id_kind_after != GS_APP_ID_KIND_DESKTOP) {
+		/* TRANSLATORS: This is the header dividing the normal
+		 * applications and the addons */
+		header = gtk_label_new (_("Add-ons"));
+		g_object_set (header,
+			      "xalign", 0.0,
+			      NULL);
+		context = gtk_widget_get_style_context (header);
+		gtk_style_context_add_class (context, "header-label");
+	} else {
+		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	}
 	gtk_list_box_row_set_header (row, header);
 }
 
@@ -504,6 +527,46 @@ dialog_update_hide_cb (GtkWidget *dialog, GsShellUpdates *shell_updates)
 	g_clear_object (&shell_updates->priv->app);
 }
 
+
+/**
+ * gs_shell_installed_sort_func:
+ **/
+static gchar *
+gs_shell_updates_get_app_sort_key (GsApp *app)
+{
+	GString *key;
+
+	key = g_string_sized_new (64);
+
+	/* sort by kind */
+	switch (gs_app_get_kind (app)) {
+	case GS_APP_KIND_OS_UPDATE:
+		g_string_append (key, "1:");
+		break;
+	default:
+		g_string_append (key, "2:");
+		break;
+	}
+
+	/* sort desktop files, then addons */
+	switch (gs_app_get_id_kind (app)) {
+	case GS_APP_ID_KIND_DESKTOP:
+		g_string_append (key, "1:");
+		break;
+	default:
+		g_string_append (key, "2:");
+		break;
+	}
+
+	/* sort by install date */
+	g_string_append_printf (key, "%09" G_GUINT64_FORMAT ":",
+				G_MAXUINT64 - gs_app_get_install_date (app));
+
+	/* finally, sort by short name */
+	g_string_append (key, gs_app_get_name (app));
+	return g_string_free (key, FALSE);
+}
+
 /**
  * gs_shell_updates_sort_func:
  **/
@@ -516,18 +579,17 @@ gs_shell_updates_sort_func (GtkListBoxRow *a,
 	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
 	GsApp *a1 = gs_app_widget_get_app (aw1);
 	GsApp *a2 = gs_app_widget_get_app (aw2);
-	guint64 date1 = gs_app_get_install_date (a1);
-	guint64 date2 = gs_app_get_install_date (a2);
-	if (gs_app_get_kind (a1) == GS_APP_KIND_OS_UPDATE)
-		return -1;
-	if (gs_app_get_kind (a2) == GS_APP_KIND_OS_UPDATE)
-		return 1;
-	if (date1 < date2)
-		return 1;
-	else if (date2 < date1)
-		return -1;
-	return g_strcmp0 (gs_app_get_name (a1),
-			  gs_app_get_name (a2));
+	gchar *key1 = gs_shell_updates_get_app_sort_key (a1);
+	gchar *key2 = gs_shell_updates_get_app_sort_key (a2);
+	gint retval;
+
+	/* compare the keys according to the algorithm above */
+	retval = g_strcmp0 (key1, key2);
+
+	g_free (key1);
+	g_free (key2);
+
+	return retval;
 }
 
 void
