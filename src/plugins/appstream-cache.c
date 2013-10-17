@@ -381,6 +381,7 @@ appstream_cache_add_item (AppstreamCacheHelper *helper)
 	AppstreamAppIdKind id_kind;
 	AppstreamCachePrivate *priv = helper->cache->priv;
 	const gchar *id;
+	const gchar *pkgname;
 
 	/* have we recorded this before? */
 	id = appstream_app_get_id (helper->item_temp);
@@ -415,9 +416,12 @@ appstream_cache_add_item (AppstreamCacheHelper *helper)
 	g_hash_table_insert (priv->hash_id,
 			     (gpointer) appstream_app_get_id (helper->item_temp),
 			     helper->item_temp);
-	g_hash_table_insert (priv->hash_pkgname,
-			     (gpointer) appstream_app_get_pkgname (helper->item_temp),
-			     helper->item_temp);
+	pkgname = appstream_app_get_pkgname (helper->item_temp);
+	if (pkgname != NULL) {
+		g_hash_table_insert (priv->hash_pkgname,
+				     (gpointer) pkgname,
+				     helper->item_temp);
+	}
 }
 
 /**
