@@ -284,12 +284,11 @@ out:
  *
  * Basically, we have to stick on the extension and stat() each file in turn.
  */
-static GdkPixbuf *
+static gchar *
 gs_plugin_refine_search_pixbuf (GsPlugin *plugin,
 				const gchar *icon_dir,
 				const gchar *icon)
 {
-	GdkPixbuf *pixbuf = NULL;
 	const gchar *exensions[] = { "png", "svg", "gif", "ico", "xcf", NULL };
 	gchar *icon_path;
 	guint i;
@@ -300,15 +299,13 @@ gs_plugin_refine_search_pixbuf (GsPlugin *plugin,
 					     icon_dir,
 					     icon,
 					     exensions[i]);
-		pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path,
-							   plugin->pixbuf_size,
-							   plugin->pixbuf_size,
-							   NULL);
+		if (g_file_test (icon_path, G_FILE_TEST_EXISTS))
+			goto out;
 		g_free (icon_path);
-		if (pixbuf != NULL)
-			break;
+		icon_path = NULL;
 	}
-	return pixbuf;
+out:
+	return icon_path;
 }
 
 /**
@@ -317,24 +314,21 @@ gs_plugin_refine_search_pixbuf (GsPlugin *plugin,
 static void
 gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 {
+	GError *error = NULL;
 	const gchar *icon;
 	const gchar *icon_dir;
+	gboolean ret;
 	gchar *icon_path = NULL;
-	GdkPixbuf *pixbuf = NULL;
-	GError *error = NULL;
 
 	icon = appstream_app_get_icon (item);
 	switch (appstream_app_get_icon_kind (item)) {
 	case APPSTREAM_APP_ICON_KIND_STOCK:
-		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						   icon,
-						   plugin->pixbuf_size,
-						   GTK_ICON_LOOKUP_USE_BUILTIN |
-						   GTK_ICON_LOOKUP_FORCE_SIZE,
-						   &error);
-		if (pixbuf == NULL) {
-			g_warning ("failed to load stock icon %s", icon);
+		ret = gs_app_set_icon (app, icon, &error);
+		if (!ret) {
+			g_warning ("failed to load stock icon %s: %s",
+				   icon, error->message);
 			g_error_free (error);
+			goto out;
 		}
 		break;
 	case APPSTREAM_APP_ICON_KIND_CACHED:
@@ -342,30 +336,30 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 		/* we assume <icon type="local">gnome-chess.png</icon> */
 		icon_dir = appstream_app_get_userdata (item);
 		icon_path = g_build_filename (icon_dir, icon, NULL);
-		pixbuf = gdk_pixbuf_new_from_file_at_size (icon_path,
-							   plugin->pixbuf_size,
-							   plugin->pixbuf_size,
-							   &error);
-		if (pixbuf == NULL) {
+		ret = gs_app_set_icon (app, icon_path, &error);
+		if (!ret) {
 			g_warning ("falling back to searching for %s", icon_path);
 			g_error_free (error);
+			g_free (icon_path);
 
 			/* we are not going to be doing this forever,
 			 * SO FIX YOUR APPSTREAM METADATA */
-			pixbuf = gs_plugin_refine_search_pixbuf (plugin, icon_dir, icon);
-			if (pixbuf == NULL)
-				g_warning ("failed to load cached icon %s", icon_path);
+			icon_path = gs_plugin_refine_search_pixbuf (plugin, icon_dir, icon);
+			if (icon_path == NULL) {
+				g_warning ("failed to load cached icon %s", icon);
+				goto out;
+			}
+			ret = gs_app_set_icon (app, icon_path, &error);
+			g_warning ("failed to load cached icon %s: %s",
+				   icon, error->message);
+			g_error_free (error);
+			goto out;
 		}
 		break;
 	default:
 		break;
 	}
-
-	/* did we load anything */
-	if (pixbuf != NULL) {
-		gs_app_set_pixbuf (app, pixbuf);
-		g_object_unref (pixbuf);
-	}
+out:
 	g_free (icon_path);
 }
 

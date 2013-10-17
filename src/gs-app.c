@@ -56,6 +56,7 @@ struct GsAppPrivate
 {
 	gchar			*id;
 	gchar			*name;
+	gchar			*icon;
 	gchar			*source;
 	gchar			*project_group;
 	gchar			*version;
@@ -210,6 +211,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tid:\t%s\n", priv->id);
 	if (priv->name != NULL)
 		g_string_append_printf (str, "\tname:\t%s\n", priv->name);
+	if (priv->icon != NULL)
+		g_string_append_printf (str, "\ticon:\t%s\n", priv->icon);
 	if (priv->version != NULL)
 		g_string_append_printf (str, "\tversion:\t%s\n", priv->version);
 	if (priv->version_ui != NULL)
@@ -555,35 +558,54 @@ gs_app_get_pixbuf (GsApp *app)
 }
 
 /**
- * gs_app_set_icon_name:
+ * gs_app_get_icon:
+ */
+const gchar *
+gs_app_get_icon (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->icon;
+}
+
+/**
+ * gs_app_set_icon:
  */
 gboolean
-gs_app_set_icon_name (GsApp *app, const gchar *icon_name, GError **error)
+gs_app_set_icon (GsApp *app, const gchar *icon, GError **error)
 {
-	GdkPixbuf *pixbuf;
+	GdkPixbuf *pixbuf = NULL;
 	gboolean ret = TRUE;
 
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	g_return_val_if_fail (icon_name != NULL, FALSE);
+	g_return_val_if_fail (icon != NULL, FALSE);
+
+	/* save icon */
+	g_free (app->priv->icon);
+	app->priv->icon = g_strdup (icon);
 
 	/* either load from the theme or from a file */
-	if (icon_name[0] == '/') {
-		pixbuf = gdk_pixbuf_new_from_file_at_size (icon_name,
+	if (icon[0] == '/') {
+		pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
 							   64, 64,
 							   error);
-	} else {
+		if (pixbuf == NULL) {
+			ret = FALSE;
+			goto out;
+		}
+		gs_app_set_pixbuf (app, pixbuf);
+	} else if (g_strstr_len (icon, -1, ".") == NULL) {
 		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						   icon_name,
+						   icon,
 						   64,
 						   GTK_ICON_LOOKUP_USE_BUILTIN |
 						   GTK_ICON_LOOKUP_FORCE_SIZE,
 						   error);
+		if (pixbuf == NULL) {
+			ret = FALSE;
+			goto out;
+		}
+		gs_app_set_pixbuf (app, pixbuf);
 	}
-	if (pixbuf == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-	gs_app_set_pixbuf (app, pixbuf);
 out:
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
@@ -1414,6 +1436,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->id);
 	g_free (priv->name);
 	g_hash_table_unref (priv->urls);
+	g_free (priv->icon);
 	g_free (priv->licence);
 	g_free (priv->menu_path);
 	g_free (priv->source);
