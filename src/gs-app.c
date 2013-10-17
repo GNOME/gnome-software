@@ -65,6 +65,7 @@ struct GsAppPrivate
 	gchar			*description;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
+	GPtrArray		*keywords;
 	GHashTable		*urls;
 	gchar			*licence;
 	gchar			*menu_path;
@@ -1173,6 +1174,29 @@ gs_app_set_categories (GsApp *app, GPtrArray *categories)
 }
 
 /**
+ * gs_app_get_keywords:
+ */
+GPtrArray *
+gs_app_get_keywords (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->keywords;
+}
+
+/**
+ * gs_app_set_keywords:
+ */
+void
+gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (keywords != NULL);
+	if (app->priv->keywords != NULL)
+		g_ptr_array_unref (app->priv->keywords);
+	app->priv->keywords = g_ptr_array_ref (keywords);
+}
+
+/**
  * gs_app_get_property:
  */
 static void
@@ -1407,6 +1431,8 @@ gs_app_finalize (GObject *object)
 		g_object_unref (priv->featured_pixbuf);
 	if (priv->categories != NULL)
 		g_ptr_array_unref (priv->categories);
+	if (priv->keywords != NULL)
+		g_ptr_array_unref (priv->keywords);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }

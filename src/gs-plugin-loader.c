@@ -1175,10 +1175,23 @@ gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_convert_unavailable_app:
  **/
-static void
+static gboolean
 gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 {
+	GPtrArray *keywords;
 	GString *tmp;
+	const gchar *keyword;
+	guint i;
+
+	/* is the search string one of the codec keywords */
+	keywords = gs_app_get_keywords (app);
+	for (i = 0; i < keywords->len; i++) {
+		keyword = g_ptr_array_index (keywords, i);
+		if (g_ascii_strcasecmp (search, keyword) == 0) {
+			search = keyword;
+			break;
+		}
+	}
 
 	tmp = g_string_new ("");
 	/* TRANSLATORS: this is when we know about an application or
@@ -1194,6 +1207,7 @@ gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 	gs_app_set_size (app, GS_APP_SIZE_MISSING);
 	gs_app_set_icon_name (app, "dialog-question-symbolic", NULL);
 	g_string_free (tmp, TRUE);
+	return TRUE;
 }
 
 /**
@@ -1204,6 +1218,7 @@ gs_plugin_loader_convert_unavailable (GList *list, const gchar *search)
 {
 	GList *l;
 	GsApp *app;
+	gboolean ret;
 
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
@@ -1218,8 +1233,9 @@ gs_plugin_loader_convert_unavailable (GList *list, const gchar *search)
 			continue;
 
 		/* only convert the first unavailable codec */
-		gs_plugin_loader_convert_unavailable_app (app, search);
-		break;
+		ret = gs_plugin_loader_convert_unavailable_app (app, search);
+		if (ret)
+			break;
 	}
 }
 

@@ -174,6 +174,15 @@ appstream_app_get_urls (AppstreamApp *app)
 }
 
 /**
+ * appstream_app_get_keywords:
+ */
+GPtrArray *
+appstream_app_get_keywords (AppstreamApp *app)
+{
+	return app->keywords;
+}
+
+/**
  * appstream_app_get_licence:
  */
 const gchar *

@@ -56,6 +56,7 @@ const gchar	*appstream_app_get_name			(AppstreamApp	*app);
 const gchar	*appstream_app_get_summary		(AppstreamApp	*app);
 const gchar	*appstream_app_get_project_group	(AppstreamApp	*app);
 GHashTable	*appstream_app_get_urls			(AppstreamApp	*app);
+GPtrArray	*appstream_app_get_keywords		(AppstreamApp	*app);
 const gchar	*appstream_app_get_licence		(AppstreamApp	*app);
 const gchar	*appstream_app_get_description		(AppstreamApp	*app);
 const gchar	*appstream_app_get_icon			(AppstreamApp	*app);

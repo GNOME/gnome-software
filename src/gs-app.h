@@ -194,6 +194,9 @@ void		 gs_app_set_categories		(GsApp		*app,
 						 GPtrArray	*categories);
 gboolean	 gs_app_has_category		(GsApp		*app,
 						 const gchar	*category);
+GPtrArray	*gs_app_get_keywords		(GsApp		*app);
+void		 gs_app_set_keywords		(GsApp		*app,
+						 GPtrArray	*keywords);
 
 G_END_DECLS
 

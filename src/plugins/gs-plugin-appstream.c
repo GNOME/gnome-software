@@ -470,6 +470,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (appstream_app_get_licence (item) != NULL && gs_app_get_licence (app) == NULL)
 		gs_app_set_licence (app, appstream_app_get_licence (item));
 
+	/* set keywords */
+	if (appstream_app_get_keywords (item) != NULL &&
+	    gs_app_get_keywords (app) == NULL)
+		gs_app_set_keywords (app, appstream_app_get_keywords (item));
+
 	/* set description */
 	if (appstream_app_get_description (item) != NULL && gs_app_get_description (app) == NULL)
 		gs_app_set_description (app, appstream_app_get_description (item));
