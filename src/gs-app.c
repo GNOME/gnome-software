@@ -566,13 +566,19 @@ gs_app_set_icon_name (GsApp *app, const gchar *icon_name, GError **error)
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	g_return_val_if_fail (icon_name != NULL, FALSE);
 
-	/* just load from the theme */
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   icon_name,
-					   64,
-					   GTK_ICON_LOOKUP_USE_BUILTIN |
-					   GTK_ICON_LOOKUP_FORCE_SIZE,
-					   error);
+	/* either load from the theme or from a file */
+	if (icon_name[0] == '/') {
+		pixbuf = gdk_pixbuf_new_from_file_at_size (icon_name,
+							   64, 64,
+							   error);
+	} else {
+		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+						   icon_name,
+						   64,
+						   GTK_ICON_LOOKUP_USE_BUILTIN |
+						   GTK_ICON_LOOKUP_FORCE_SIZE,
+						   error);
+	}
 	if (pixbuf == NULL) {
 		ret = FALSE;
 		goto out;
