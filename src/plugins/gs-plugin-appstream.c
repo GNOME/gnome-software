@@ -328,6 +328,7 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 
 	icon = appstream_app_get_icon (item);
 	switch (appstream_app_get_icon_kind (item)) {
+	case APPSTREAM_APP_ICON_KIND_REMOTE:
 	case APPSTREAM_APP_ICON_KIND_STOCK:
 		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 						   icon,
