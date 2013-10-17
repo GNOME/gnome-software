@@ -566,6 +566,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_metadata_item (app, "PackageKit::package-id") != NULL)
 			continue;
+		if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_WEBAPP)
+			continue;
 		tmp = gs_app_get_source (app);
 		if (tmp != NULL)
 			resolve_all = g_list_prepend (resolve_all, app);

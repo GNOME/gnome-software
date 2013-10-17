@@ -183,6 +183,8 @@ gs_app_id_kind_to_string (GsAppIdKind id_kind)
 		return "font";
 	if (id_kind == GS_APP_ID_KIND_CODEC)
 		return "codec";
+	if (id_kind == GS_APP_ID_KIND_WEBAPP)
+		return "webapp";
 	return NULL;
 }
 
