@@ -336,8 +336,9 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 {
 	GString *key;
 
-	/* sort installed, removing, other */
 	key = g_string_sized_new (64);
+
+	/* sort installed, removing, other */
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLING:
 		g_string_append (key, "1:");
@@ -347,6 +348,16 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 		break;
 	default:
 		g_string_append (key, "3:");
+		break;
+	}
+
+	/* sort desktop files, then addons */
+	switch (gs_app_get_id_kind (app)) {
+	case GS_APP_ID_KIND_DESKTOP:
+		g_string_append (key, "1:");
+		break;
+	default:
+		g_string_append (key, "2:");
 		break;
 	}
 
@@ -405,6 +416,11 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 				     GtkListBoxRow *before,
 				     gpointer user_data)
 {
+	GsAppIdKind id_kind_after;
+	GsAppIdKind id_kind_before;
+	GsAppWidget *aw1;
+	GsAppWidget *aw2;
+	GtkStyleContext *context;
 	GtkWidget *header;
 
 	/* first entry */
@@ -418,8 +434,26 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 	if (header != NULL)
 		return;
 
-	/* set new */
-	header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	/* calculate the transition between different ID kinds */
+	aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (before)));
+	aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+	id_kind_before = gs_app_get_id_kind (gs_app_widget_get_app (aw1));
+	id_kind_after = gs_app_get_id_kind (gs_app_widget_get_app (aw2));
+
+	/* desktop -> addons */
+	if (id_kind_before == GS_APP_ID_KIND_DESKTOP &&
+	    id_kind_after != GS_APP_ID_KIND_DESKTOP) {
+		/* TRANSLATORS: This is the header dividing the normal
+		 * applications and the addons */
+		header = gtk_label_new (_("Add-ons"));
+		g_object_set (header,
+			      "xalign", 0.0,
+			      NULL);
+		context = gtk_widget_get_style_context (header);
+		gtk_style_context_add_class (context, "header-label");
+	} else {
+		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	}
 	gtk_list_box_row_set_header (row, header);
 }
 
