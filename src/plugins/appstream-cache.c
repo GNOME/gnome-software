@@ -102,6 +102,8 @@ appstream_cache_icon_kind_from_string (const gchar *kind_str)
 {
 	if (g_strcmp0 (kind_str, "stock") == 0)
 		return APPSTREAM_APP_ICON_KIND_STOCK;
+	if (g_strcmp0 (kind_str, "remote") == 0)
+		return APPSTREAM_APP_ICON_KIND_REMOTE;
 	if (g_strcmp0 (kind_str, "local") == 0 ||
 	    g_strcmp0 (kind_str, "cached") == 0)
 		return APPSTREAM_APP_ICON_KIND_CACHED;
