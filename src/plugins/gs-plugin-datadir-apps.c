@@ -285,6 +285,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		}
 
 		/* we know it's installed as we read the desktop file */
+		gs_app_set_id_kind (app, GS_APP_ID_KIND_DESKTOP);
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	}
