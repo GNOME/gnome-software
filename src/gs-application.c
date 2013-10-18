@@ -48,6 +48,7 @@ struct _GsApplication {
 	GsShell		*shell;
 	GsUpdateMonitor *update_monitor;
 	GsShellSearchProvider *search_provider;
+	GNetworkMonitor *network_monitor;
 };
 
 struct _GsApplicationClass {
@@ -66,6 +67,27 @@ static void
 gs_application_monitor_updates (GsApplication *app)
 {
 	app->update_monitor = gs_update_monitor_new (app);
+}
+
+static void
+network_changed_cb (GNetworkMonitor *monitor,
+		    gboolean available,
+		    GsApplication *app)
+{
+	g_debug ("*** Network status change: %s", available ? "online" : "offline");
+}
+
+static void
+gs_application_monitor_network (GsApplication *app)
+{
+	app->network_monitor = g_network_monitor_get_default ();
+
+	g_signal_connect (app->network_monitor, "network-changed",
+			  G_CALLBACK (network_changed_cb), app);
+
+	network_changed_cb (app->network_monitor,
+			    g_network_monitor_get_network_available (app->network_monitor),
+			    app);
 }
 
 static void
@@ -337,6 +359,7 @@ gs_application_startup (GApplication *application)
 
 	gs_application_monitor_updates (GS_APPLICATION (application));
 	gs_application_provide_search (GS_APPLICATION (application));
+	gs_application_monitor_network (GS_APPLICATION (application));
 }
 
 static void
@@ -359,6 +382,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->update_monitor);
 	g_clear_object (&app->profile);
 	g_clear_object (&app->search_provider);
+	g_clear_object (&app->network_monitor);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->finalize (object);
 }
