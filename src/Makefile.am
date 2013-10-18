@@ -214,6 +214,8 @@ MAINTAINERCLEANFILES =					\
 	Makefile.in
 
 DISTCLEANFILES =					\
-	gnome-software.desktop
+	gnome-software-service.desktop			\
+	org.gnome.Software.desktop			\
+	org.gnome.Software.service
 
 -include $(top_srcdir)/git.mk
