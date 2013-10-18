@@ -34,6 +34,8 @@
 #include "gs-update-monitor.h"
 #include "gs-plugin-loader.h"
 #include "gs-profile.h"
+#include "gs-shell-search-provider.h"
+
 
 struct _GsApplication {
 	GtkApplication	 parent;
@@ -45,6 +47,7 @@ struct _GsApplication {
 	gint		 pending_apps;
 	GsShell		*shell;
 	GsUpdateMonitor *monitor;
+	GsShellSearchProvider *search_provider;
 };
 
 struct _GsApplicationClass {
@@ -66,6 +69,40 @@ gs_application_monitor_updates (GsApplication *app)
 }
 
 static void
+gs_application_initialize_plugins (GsApplication *app)
+{
+	static gboolean initialized = FALSE;
+	GError *error = NULL;
+
+	if (initialized)
+		return;
+
+	initialized = TRUE;
+
+	app->plugin_loader = gs_plugin_loader_new ();
+	gs_plugin_loader_set_location (app->plugin_loader, NULL);
+	if (!gs_plugin_loader_setup (app->plugin_loader, &error)) {
+		g_warning ("Failed to setup plugins: %s", error->message);
+		exit (1);
+	}
+	gs_plugin_loader_set_enabled (app->plugin_loader,
+				      "packagekit-updates", FALSE);
+
+	/* show the priority of each plugin */
+	gs_plugin_loader_dump_state (app->plugin_loader);
+
+}
+
+static void
+gs_application_provide_search (GsApplication *app)
+{
+	gs_application_initialize_plugins (app);
+	app->search_provider = gs_shell_search_provider_new ();
+	gs_shell_search_provider_setup (app->search_provider,
+					app->plugin_loader);
+}
+
+static void
 gs_application_initialize_ui (GsApplication *app)
 {
 	static gboolean initialized = FALSE;
@@ -73,7 +110,6 @@ gs_application_initialize_ui (GsApplication *app)
 	GMenuModel *app_menu;
 	GtkWindow *window;
 	GFile *file;
-	GError *error = NULL;
 	gchar *theme;
 
 	if (initialized)
@@ -104,18 +140,7 @@ gs_application_initialize_ui (GsApplication *app)
 	gtk_css_provider_load_from_file (app->provider, file, NULL);
 	g_object_unref (file);
 
-	/* setup plugins */
-	app->plugin_loader = gs_plugin_loader_new ();
-	gs_plugin_loader_set_location (app->plugin_loader, NULL);
-	if (!gs_plugin_loader_setup (app->plugin_loader, &error)) {
-		g_warning ("Failed to setup plugins: %s", error->message);
-		exit (1);
-	}
-	gs_plugin_loader_set_enabled (app->plugin_loader,
-				      "packagekit-updates", FALSE);
-
-	/* show the priority of each plugin */
-	gs_plugin_loader_dump_state (app->plugin_loader);
+	gs_application_initialize_plugins (app);
 
 	/* setup UI */
 	app->shell = gs_shell_new ();
@@ -311,6 +336,7 @@ gs_application_startup (GApplication *application)
 					 application);
 
 	gs_application_monitor_updates (GS_APPLICATION (application));
+	gs_application_provide_search (GS_APPLICATION (application));
 }
 
 static void
@@ -332,6 +358,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->provider);
 	g_clear_object (&app->monitor);
 	g_clear_object (&app->profile);
+	g_clear_object (&app->search_provider);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->finalize (object);
 }

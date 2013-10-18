@@ -36,6 +36,9 @@ UI_FILES =						\
 dbusservicedir = $(datadir)/dbus-1/services
 dbusservice_DATA = org.gnome.Software.service
 
+searchproviderdir = $(datadir)/gnome-shell/search-providers
+searchprovider_DATA = gnome-software-search-provider.ini
+
 org.gnome.Software.service: Makefile
 	$(AM_V_GEN) (echo '[D-BUS Service]'; 				\
 	 echo 'Name=org.gnome.Software'; 				\
@@ -113,6 +116,10 @@ gnome_software_service_SOURCES =			\
 	gs-plugin-loader.h				\
 	gs-plugin-loader-sync.c				\
 	gs-plugin-loader-sync.h				\
+	gs-shell-search-provider-generated.c		\
+	gs-shell-search-provider-generated.h		\
+	gs-shell-search-provider.c			\
+	gs-shell-search-provider.h			\
 	gs-application.c				\
 	gs-application.h				\
 	gs-main.c
@@ -134,6 +141,13 @@ gnome_software_service_LDADD =				\
 gnome_software_service_CFLAGS =				\
 	$(WARNINGFLAGS_C)
 
+gs-shell-search-provider-generated.h gs-shell-search-provider-generated.c: Makefile.am $(srcdir)/shell-search-provider-dbus-interfaces.xml
+	$(AM_V_GEN) gdbus-codegen \
+	 	--interface-prefix org.gnome. \
+		--c-namespace Gs \
+		--generate-c-code gs-shell-search-provider-generated \
+		$(srcdir)/shell-search-provider-dbus-interfaces.xml
+
 gs-resources.c: gnome-software.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --generate-dependencies $(srcdir)/gnome-software.gresource.xml)
 	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --target=$@ --generate-source --c-name gs $(srcdir)/gnome-software.gresource.xml
 
@@ -141,6 +155,8 @@ gs-resources.h: gnome-software.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) -
 	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --target=$@ --generate-header --c-name gs $(srcdir)/gnome-software.gresource.xml
 
 BUILT_SOURCES =						\
+	gs-shell-search-provider-generated.c		\
+	gs-shell-search-provider-generated.h		\
 	gs-resources.c					\
 	gs-resources.h
 
@@ -174,10 +190,11 @@ gs_self_test_CFLAGS = $(WARNINGFLAGS_C)
 TESTS = gs-self-test
 
 EXTRA_DIST =						\
+	shell-search-provider-dbus-interfaces.xml	\
 	gnome-software.gresource.xml			\
 	gnome-software.xml				\
 	gtk-style.css					\
-	gtk-style-hc.css					\
+	gtk-style-hc.css				\
 	shadow.png					\
 	shadow-active.png				\
 	$(desktop_in_files)				\
