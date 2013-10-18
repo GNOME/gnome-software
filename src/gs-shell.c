@@ -555,18 +555,6 @@ gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 	gs_shell_change_mode (shell, mode, NULL, NULL, TRUE);
 }
 
-/**
- * gs_shell_set_search_value:
- **/
-void
-gs_shell_set_search_value (GsShell *shell, const gchar *search_value)
-{
-	GsShellPrivate *priv = shell->priv;
-	GtkWidget *widget;
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_entry_set_text (GTK_ENTRY (widget), search_value);
-}
-
 GsShellMode
 gs_shell_get_mode (GsShell *shell)
 {
