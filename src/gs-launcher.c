@@ -46,31 +46,33 @@ gs_launcher_init (GsLauncher *launcher)
 static gboolean
 gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
 {
-        GOptionContext *context;
-        gchar *mode = NULL;
+	GOptionContext *context;
+	gchar *mode = NULL;
 	gchar *search = NULL;
 	gchar *id = NULL;
-        gboolean version = FALSE;
+	gboolean version = FALSE;
+	gboolean profile = FALSE;
 	gint argc;
-        const GOptionEntry options[] = {
-                { "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
-                  /* TRANSLATORS: this is a command line option */
-                  _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
+	const GOptionEntry options[] = {
+		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
+		  /* TRANSLATORS: this is a command line option */
+		  _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
 		{ "search", '\0', 0, G_OPTION_ARG_STRING, &search,
 		  _("Search for applications"), _("SEARCH") },
 		{ "details", '\0', 0, G_OPTION_ARG_STRING, &id,
 		  _("Show application details"), _("ID") },
-                { "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
-
-                { NULL}
-        };
+		{ "profile", 0, 0, G_OPTION_ARG_NONE, &profile,
+		  _("Show profiling information for the service"), NULL },
+		{ "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
+		{ NULL}
+	};
 	GError *error = NULL;
 
-        context = g_option_context_new ("");
-        g_option_context_add_main_entries (context, options, NULL);
+	context = g_option_context_new ("");
+	g_option_context_add_main_entries (context, options, NULL);
 
 	argc = g_strv_length (*args);
-        if (!g_option_context_parse (context, &argc, args, &error)) {
+	if (!g_option_context_parse (context, &argc, args, &error)) {
 		g_printerr ("%s\n", error->message);
 		g_error_free (error);
 		*status = 1;
@@ -102,6 +104,10 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details",
 						g_variant_new ("(ss)", id, ""));
+	} else if (profile) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"profile",
+						NULL);
 	} else {
 		g_application_activate (app);
 	}

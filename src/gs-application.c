@@ -33,10 +33,11 @@
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
 #include "gs-plugin-loader.h"
+#include "gs-profile.h"
 
 struct _GsApplication {
-	GtkApplication parent;
-
+	GtkApplication	 parent;
+	GsProfile	*profile;
 	GCancellable	*cancellable;
 	GtkApplication	*application;
 	GtkCssProvider	*provider;
@@ -55,6 +56,7 @@ G_DEFINE_TYPE (GsApplication, gs_application, GTK_TYPE_APPLICATION);
 static void
 gs_application_init (GsApplication *application)
 {
+	application->profile = gs_profile_new ();
 }
 
 static void
@@ -174,6 +176,15 @@ about_activated (GSimpleAction *action,
 }
 
 static void
+profile_activated (GSimpleAction *action,
+		   GVariant      *parameter,
+		   gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	gs_profile_dump (app->profile);
+}
+
+static void
 quit_activated (GSimpleAction *action,
 		GVariant      *parameter,
 		gpointer       app)
@@ -265,6 +276,7 @@ details_activated (GSimpleAction *action,
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
+	{ "profile", profile_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL }
@@ -304,6 +316,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
 	g_clear_object (&app->monitor);
+	g_clear_object (&app->profile);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->finalize (object);
 }
