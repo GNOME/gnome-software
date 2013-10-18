@@ -198,17 +198,19 @@ gs_app_notify_failed_modal (GtkBuilder *builder,
 {
 	GtkWidget *dialog;
 	GtkWindow *window;
+	gchar *title;
 	gchar *msg;
 
+	title = _("Sorry, this did not work");
 	switch (action) {
 	case GS_PLUGIN_LOADER_ACTION_INSTALL:
 		/* TRANSLATORS: this is when the install fails */
-		msg = g_strdup_printf (_("%s failed to be installed"),
+		msg = g_strdup_printf (_("Installation of %s failed."),
 				       gs_app_get_name (app));
 		break;
 	case GS_PLUGIN_LOADER_ACTION_REMOVE:
 		/* TRANSLATORS: this is when the remove fails */
-		msg = g_strdup_printf (_("%s failed to be removed"),
+		msg = g_strdup_printf (_("Removal of %s failed."),
 				       gs_app_get_name (app));
 		break;
 	default:
@@ -221,9 +223,9 @@ gs_app_notify_failed_modal (GtkBuilder *builder,
 					 GTK_DIALOG_DESTROY_WITH_PARENT,
 					 GTK_MESSAGE_ERROR,
 					 GTK_BUTTONS_CLOSE,
-					 "%s", msg);
+					 "%s", title);
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-						  "%s", error->message);
+						  "%s", msg);
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gs_app_notify_failed_modal_response_cb), NULL);
 	gtk_window_present (GTK_WINDOW (dialog));
