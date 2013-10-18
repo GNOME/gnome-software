@@ -63,6 +63,7 @@ packagekit_status_enum_to_plugin_status (PkStatusEnum status)
 	case PK_STATUS_ENUM_REMOVE:
 		plugin_status = GS_PLUGIN_STATUS_REMOVING;
 		break;
+	case PK_STATUS_ENUM_REQUEST:
 	case PK_STATUS_ENUM_QUERY:
 	case PK_STATUS_ENUM_INFO:
 	case PK_STATUS_ENUM_DEP_RESOLVE:
