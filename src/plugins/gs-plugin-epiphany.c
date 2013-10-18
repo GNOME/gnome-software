@@ -543,20 +543,22 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, gs_app_get_name (app), -1);
 	gs_app_set_metadata (app, "Epiphany::hash", hash);
 
-	/* download icon */
+	/* download icon if it does not exist */
 	filename_icon = g_strdup_printf ("%s/epiphany/app-%s-%s/app-icon.png",
 					 g_get_user_config_dir (),
 					 gs_app_get_id (app),
 					 hash);
-	ret = gs_mkdir_parent (filename_icon, error);
-	if (!ret)
-		goto out;
-	ret = gs_plugin_epiphany_download (plugin,
-					   gs_app_get_icon (app),
-					   filename_icon,
-					   error);
-	if (!ret)
-		goto out;
+	if (!g_file_test (filename_icon, G_FILE_TEST_EXISTS)) {
+		ret = gs_mkdir_parent (filename_icon, error);
+		if (!ret)
+			goto out;
+		ret = gs_plugin_epiphany_download (plugin,
+						   gs_app_get_icon (app),
+						   filename_icon,
+						   error);
+		if (!ret)
+			goto out;
+	}
 
 	/* set local icon name */
 	ret = gs_app_set_icon (app, filename_icon, error);
