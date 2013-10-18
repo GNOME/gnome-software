@@ -444,6 +444,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* fix up the header bar */
 	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
 
+	g_signal_connect (main_window, "delete-event",
+			  G_CALLBACK (gtk_widget_hide_on_delete), NULL);
+
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
 	g_object_ref (widget);
 	gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (widget)), widget);
