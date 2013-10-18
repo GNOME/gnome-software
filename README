@@ -13,3 +13,19 @@ For GNOME 3.10:
  * Search for available applications
  * May not have screenshots, ratings and other metadata for the installation part
  * The only metadata we absolutely want to have is icons
+
+
+gnome-software is split into a service, gnome-software-service, and
+a launcher, gnome-software. Normally, the service is autostarted at
+login to monitor available updates, and the laucher will simply call 
+into the service and cause it to open a window.
+
+During development, you can kill the currently running instance of
+the service, and lauch your version manually:
+
+  killall gnome-software-service
+  ./src/gnome-software-service
+
+To open a window, you can run the launcher in another terminal, e.g.:
+
+  gnome-software --search fox
