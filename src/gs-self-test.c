@@ -298,6 +298,7 @@ gs_plugin_loader_refine_func (void)
 	GError *error = NULL;
 	GsApp *app;
 	GsPluginLoader *loader;
+	const gchar *url;
 	gboolean ret;
 
 	/* load the plugins */
@@ -326,7 +327,8 @@ gs_plugin_loader_refine_func (void)
 
 	g_assert_cmpstr (gs_app_get_licence (app), ==, "GPLv3+ and GPLv3");
 	g_assert_cmpstr (gs_app_get_description (app), !=, NULL);
-	g_assert_cmpstr (gs_app_get_url (app), ==, "http://www.gimp.org/");
+	url = gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE);
+	g_assert_cmpstr (url, ==, "http://www.gimp.org/");
 
 	g_object_unref (app);
 	g_object_unref (loader);
