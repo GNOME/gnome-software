@@ -252,6 +252,20 @@ search_activated (GSimpleAction *action,
 }
 
 static void
+set_debug_level_activated (GSimpleAction *action,
+			   GVariant      *parameter,
+			   gpointer       data)
+{
+	if (g_variant_get_int32 (parameter) > 0) {
+		g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+		g_debug ("enabled debugging");
+	} else {
+		g_debug ("enabled disabled");
+		g_setenv ("G_MESSAGES_DEBUG", "", TRUE);
+	}
+}
+
+static void
 details_activated (GSimpleAction *action,
 		   GVariant      *parameter,
 		   gpointer       data)
@@ -279,6 +293,7 @@ static GActionEntry actions[] = {
 	{ "profile", profile_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
+	{ "set-debug-level", set_debug_level_activated, "i", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL }
 };
 

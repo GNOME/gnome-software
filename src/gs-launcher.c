@@ -50,8 +50,10 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
 	gchar *mode = NULL;
 	gchar *search = NULL;
 	gchar *id = NULL;
+	gboolean activate_ui = TRUE;
 	gboolean version = FALSE;
 	gboolean profile = FALSE;
+	gint debug_level = -1;
 	gint argc;
 	const GOptionEntry options[] = {
 		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
@@ -61,6 +63,8 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
 		  _("Search for applications"), _("SEARCH") },
 		{ "details", '\0', 0, G_OPTION_ARG_STRING, &id,
 		  _("Show application details"), _("ID") },
+		{ "set-debug-level", '\0', 0, G_OPTION_ARG_INT, &debug_level,
+		  _("Set the specified debugging level"), _("ID") },
 		{ "profile", 0, 0, G_OPTION_ARG_NONE, &profile,
 		  _("Show profiling information for the service"), NULL },
 		{ "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
@@ -92,6 +96,19 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
 		goto out;
 	}
 
+	if (profile) {
+		activate_ui = FALSE;
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"profile",
+						NULL);
+	}
+	if (debug_level >= 0) {
+		activate_ui = FALSE;
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"set-debug-level",
+						g_variant_new_int32 (debug_level));
+	}
+
 	if (mode != NULL) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"set-mode",
@@ -104,11 +121,7 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details",
 						g_variant_new ("(ss)", id, ""));
-	} else if (profile) {
-		g_action_group_activate_action (G_ACTION_GROUP (app),
-						"profile",
-						NULL);
-	} else {
+	} else if (activate_ui) {
 		g_application_activate (app);
 	}
 
