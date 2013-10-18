@@ -41,6 +41,10 @@ gs_plugin_status_to_string (GsPluginStatus status)
 		return "downloading";
 	if (status == GS_PLUGIN_STATUS_QUERYING)
 		return "querying";
+	if (status == GS_PLUGIN_STATUS_INSTALLING)
+		return "installing";
+	if (status == GS_PLUGIN_STATUS_REMOVING)
+		return "removing";
 	return "unknown";
 }
 
