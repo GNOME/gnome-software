@@ -59,7 +59,7 @@ desktop-file-edit %{buildroot}%{_datadir}/applications/*.desktop \
 %find_lang %name --with-gnome
 
 %check
-desktop-file-validate %{buildroot}%{_datadir}/applications/gnome-software.desktop
+desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 
 %post
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
@@ -78,7 +78,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %files -f %{name}.lang
 %doc AUTHORS COPYING NEWS README
 %{_bindir}/gnome-software
-%{_datadir}/applications/gnome-software.desktop
+%{_datadir}/applications/*.desktop
 %dir %{_datadir}/gnome-software
 %{_datadir}/gnome-software/*.png
 %{_datadir}/appdata/*.appdata.xml
@@ -89,6 +89,9 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/gnome-software/featured.ini
 %dir %{_libdir}/gs-plugins
 %{_libdir}/gs-plugins/*.so
+%{_sysconfdir}/xdg/autostart/gnome-software-service.desktop
+%{_libexecdir}/gnome-software-service
+%{_datadir}/dbus-1/services/org.gnome.Software.service
 
 %changelog
 * #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#
