@@ -49,6 +49,7 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
         GOptionContext *context;
         gchar *mode = NULL;
 	gchar *search = NULL;
+	gchar *id = NULL;
         gboolean version = FALSE;
 	gint argc;
         const GOptionEntry options[] = {
@@ -57,6 +58,8 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
                   _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
 		{ "search", '\0', 0, G_OPTION_ARG_STRING, &search,
 		  _("Search for applications"), _("SEARCH") },
+		{ "details", '\0', 0, G_OPTION_ARG_STRING, &id,
+		  _("Show application details"), _("ID") },
                 { "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
 
                 { NULL}
@@ -95,6 +98,10 @@ gs_launcher_local_command_line (GApplication *app, gchar ***args, gint *status)
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"search",
 						g_variant_new_string (search));
+	} else if (id != NULL) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"details",
+						g_variant_new ("(ss)", id, ""));
 	} else {
 		g_application_activate (app);
 	}
