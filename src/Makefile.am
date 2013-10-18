@@ -198,6 +198,7 @@ EXTRA_DIST =						\
 	shadow.png					\
 	shadow-active.png				\
 	$(desktop_in_files)				\
+	$(searchprovider_DATA)				\
 	$(UI_FILES)
 
 man_MANS =
