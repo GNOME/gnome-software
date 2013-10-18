@@ -46,7 +46,7 @@ struct _GsApplication {
 	GsPluginLoader	*plugin_loader;
 	gint		 pending_apps;
 	GsShell		*shell;
-	GsUpdateMonitor *monitor;
+	GsUpdateMonitor *update_monitor;
 	GsShellSearchProvider *search_provider;
 };
 
@@ -65,7 +65,7 @@ gs_application_init (GsApplication *application)
 static void
 gs_application_monitor_updates (GsApplication *app)
 {
-	app->monitor = gs_update_monitor_new (app);
+	app->update_monitor = gs_update_monitor_new (app);
 }
 
 static void
@@ -356,7 +356,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->cancellable);
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
-	g_clear_object (&app->monitor);
+	g_clear_object (&app->update_monitor);
 	g_clear_object (&app->profile);
 	g_clear_object (&app->search_provider);
 
