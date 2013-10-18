@@ -487,6 +487,9 @@ out:
 static gboolean
 gs_plugin_epiphany_download (GsPlugin *plugin, const gchar *uri, const gchar *filename, GError **error)
 {
+	GInputStream *stream = NULL;
+	GdkPixbuf *pixbuf = NULL;
+	GdkPixbuf *pixbuf_new = NULL;
 	SoupMessage *msg = NULL;
 	gboolean ret = TRUE;
 	guint status_code;
@@ -511,14 +514,35 @@ gs_plugin_epiphany_download (GsPlugin *plugin, const gchar *uri, const gchar *fi
 		goto out;
 	}
 
-	/* process the tab-delimited data */
-	ret = g_file_set_contents (filename,
-				   msg->response_body->data,
-				   msg->response_body->length,
-				   error);
+	/* we're assuming this is a 64x64 png file, resize if not */
+	stream = g_memory_input_stream_new_from_data (msg->response_body->data,
+						      msg->response_body->length,
+						      NULL);
+	pixbuf = gdk_pixbuf_new_from_stream (stream, NULL, error);
+	if (pixbuf == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+	if (gdk_pixbuf_get_height (pixbuf) == 64 &&
+	    gdk_pixbuf_get_width (pixbuf) == 64) {
+		pixbuf_new = g_object_ref (pixbuf);
+	} else {
+		pixbuf_new = gdk_pixbuf_scale_simple (pixbuf, 64, 64,
+						      GDK_INTERP_BILINEAR);
+	}
+
+	/* write file */
+	ret = gdk_pixbuf_save (pixbuf_new, filename, "png", error, NULL);
 	if (!ret)
 		goto out;
+
 out:
+	if (stream != NULL)
+		g_object_unref (stream);
+	if (pixbuf_new != NULL)
+		g_object_unref (pixbuf_new);
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
 	if (msg != NULL)
 		g_object_unref (msg);
 	return ret;
