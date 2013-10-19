@@ -599,6 +599,9 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	if (!ret)
 		goto out;
 	gs_app_set_metadata (app, "Epiphany::desktop-filename", path);
+
+	/* we now know about this */
+	gs_plugin_add_app (&plugin->priv->list, app);
 out:
 	g_free (hash);
 	g_free (path);
