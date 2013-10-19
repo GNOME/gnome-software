@@ -32,6 +32,11 @@ G_BEGIN_DECLS
 
 GsPluginStatus 	packagekit_status_enum_to_plugin_status	(PkStatusEnum	 status);
 
+gboolean	gs_plugin_packagekit_add_results	(GsPlugin	*plugin,
+							 GList		**list,
+							 PkResults	*results,
+							 GError		**error);
+
 G_END_DECLS
 
 #endif /* __APPSTREAM_CACHE_H */
