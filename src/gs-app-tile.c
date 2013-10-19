@@ -92,6 +92,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 		 * application available */
 		gtk_label_set_label (GTK_LABEL (label), _("Updates"));
 		break;
+        case GS_APP_STATE_QUEUED:
         case GS_APP_STATE_AVAILABLE:
         default:
 		installed = FALSE;
@@ -122,6 +123,9 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 	gtk_image_clear (GTK_IMAGE (priv->image));
 	gtk_image_set_pixel_size (GTK_IMAGE (priv->image), 64);
 
+	if (priv->app)
+		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, tile);
+
 	g_clear_object (&priv->app);
 	if (!app)
 		return;
@@ -148,6 +152,8 @@ gs_app_tile_destroy (GtkWidget *widget)
 
 	priv = gs_app_tile_get_instance_private (tile);
 
+	if (priv->app)
+		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, tile);
 	g_clear_object (&priv->app);
 
 	GTK_WIDGET_CLASS (gs_app_tile_parent_class)->destroy (widget);

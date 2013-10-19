@@ -31,6 +31,9 @@
 #include "gs-utils.h"
 #include "gs-app-widget.h"
 
+#define INSTALL_DATE_QUEUED     (G_MAXUINT - 1)
+#define INSTALL_DATE_INSTALLING (G_MAXUINT - 2)
+
 static void	gs_shell_installed_finalize	(GObject	*object);
 static void	gs_shell_installed_remove_row	(GtkListBox	*list_box,
 						 GtkWidget	*child);
@@ -51,6 +54,9 @@ struct GsShellInstalledPrivate
 };
 
 G_DEFINE_TYPE (GsShellInstalled, gs_shell_installed, G_TYPE_OBJECT)
+
+static void gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
+							GsShellInstalled *shell_installed);
 
 /**
  * gs_shell_installed_invalidate:
@@ -137,6 +143,8 @@ gs_shell_installed_app_removed_cb (GObject *source,
 		g_error_free (error);
 	} else {
 		/* remove from the list */
+		app = gs_app_widget_get_app (helper->app_widget);
+		g_debug ("removed %s", gs_app_get_id (app));
 		gs_shell_installed_remove_row (GTK_LIST_BOX (priv->list_box_installed),
 					       GTK_WIDGET (helper->app_widget));
 	}
@@ -183,9 +191,12 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 						    gs_app_get_name (app));
 	/* TRANSLATORS: this is button text to remove the application */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
+	if (gs_app_get_state (app) == GS_APP_STATE_QUEUED)
+		response = GTK_RESPONSE_OK; /* pending install */
+	else
+		response = gtk_dialog_run (GTK_DIALOG (dialog));
 	if (response == GTK_RESPONSE_OK) {
-		g_debug ("remove %s", gs_app_get_id (app));
+		g_debug ("removing %s", gs_app_get_id (app));
 		helper = g_new0 (GsShellInstalledHelper, 1);
 		helper->shell_installed = g_object_ref (shell_installed);
 		helper->app_widget = g_object_ref (app_widget);
@@ -265,6 +276,7 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	}
 out:
 	gs_plugin_list_free (list);
+	gs_shell_installed_pending_apps_changed_cb (plugin_loader, shell_installed);
 }
 
 /**
@@ -489,12 +501,20 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	}
 	for (i = 0; i < pending->len; i++) {
 		app = GS_APP (g_ptr_array_index (pending, i));
-		if (gs_app_get_state (app) == GS_APP_STATE_INSTALLING) {
-			/* sort installing apps above removing and
-			 * installed apps
-			 */
-			gs_app_set_install_date (app, G_MAXUINT - 1);
-			gs_shell_installed_add_app (shell_installed, app);
+		/* Sort installing apps above removing and
+		 * installed apps. Be careful not to add
+		 * pending apps more than once.
+		 */
+		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED) {
+			if (gs_app_get_install_date (app) != INSTALL_DATE_QUEUED) {
+				gs_app_set_install_date (app, INSTALL_DATE_QUEUED);
+				gs_shell_installed_add_app (shell_installed, app);
+			}
+		} else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLING) {
+			if (gs_app_get_install_date (app) != INSTALL_DATE_INSTALLING) {
+				gs_app_set_install_date (app, INSTALL_DATE_INSTALLING);
+				gs_shell_installed_add_app (shell_installed, app);
+			}
 		}
 	}
 

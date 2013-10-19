@@ -39,6 +39,7 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*button_box;
 	GtkWidget	*button;
 	GtkWidget	*spinner;
+	GtkWidget	*label;
 	gboolean	 colorful;
 	gboolean	 show_update;
 };
@@ -112,20 +113,30 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 					   gs_app_get_pixbuf (priv->app));
 	gtk_widget_set_visible (priv->button, FALSE);
 	gtk_widget_set_sensitive (priv->button, TRUE);
+	gtk_widget_set_visible (priv->spinner, FALSE);
+	gtk_widget_set_visible (priv->label, FALSE);
 
 	context = gtk_widget_get_style_context (priv->button);
 	gtk_style_context_remove_class (context, "destructive-action");
 
 	switch (gs_app_get_state (app_widget->priv->app)) {
 	case GS_APP_STATE_UNAVAILABLE:
-		gtk_widget_set_visible (priv->spinner, FALSE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
 		break;
+	case GS_APP_STATE_QUEUED:
+		gtk_widget_set_visible (priv->label, TRUE);
+		gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * allows to cancel a queued install of the application */
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Cancel"));
+		/* TRANSLATORS: this is a label that describes an application
+		 * that has been queued for installation */
+		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending"));
+		break;
 	case GS_APP_STATE_AVAILABLE:
-		gtk_widget_set_visible (priv->spinner, FALSE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily installed */
@@ -133,7 +144,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		break;
 	case GS_APP_STATE_UPDATABLE:
 	case GS_APP_STATE_INSTALLED:
-		gtk_widget_set_visible (priv->spinner, FALSE);
 		if (gs_app_get_kind (app_widget->priv->app) != GS_APP_KIND_SYSTEM)
 			gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
@@ -229,6 +239,7 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, spinner);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, label);
 }
 
 static void

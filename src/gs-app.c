@@ -156,6 +156,8 @@ gs_app_state_to_string (GsAppState state)
 		return "installed";
 	if (state == GS_APP_STATE_AVAILABLE)
 		return "available";
+	if (state == GS_APP_STATE_QUEUED)
+		return "queued";
 	if (state == GS_APP_STATE_INSTALLING)
 		return "installing";
 	if (state == GS_APP_STATE_REMOVING)
@@ -308,6 +310,7 @@ gs_app_get_state (GsApp *app)
  * UPDATABLE --> REMOVING   --> AVAILABLE
  * INSTALLED --> REMOVING   --> AVAILABLE
  * AVAILABLE --> INSTALLING --> INSTALLED
+ * AVAILABLE <--> QUEUED --> INSTALLING --> INSTALLED
  * UNKNOWN   --> UNAVAILABLE
  */
 void
@@ -325,6 +328,7 @@ gs_app_set_state (GsApp *app, GsAppState state)
 	case GS_APP_STATE_UNKNOWN:
 		/* unknown has to go into one of the stable states */
 		if (state == GS_APP_STATE_INSTALLED ||
+		    state == GS_APP_STATE_QUEUED ||
 		    state == GS_APP_STATE_AVAILABLE ||
 		    state == GS_APP_STATE_UPDATABLE ||
 		    state == GS_APP_STATE_UNAVAILABLE)
@@ -336,9 +340,16 @@ gs_app_set_state (GsApp *app, GsAppState state)
 		    state == GS_APP_STATE_REMOVING)
 			state_change_ok = TRUE;
 		break;
+	case GS_APP_STATE_QUEUED:
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_INSTALLING ||
+		    state == GS_APP_STATE_AVAILABLE)
+			state_change_ok = TRUE;
+		break;
 	case GS_APP_STATE_AVAILABLE:
 		/* available has to go into an action state */
 		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_QUEUED ||
 		    state == GS_APP_STATE_INSTALLING)
 			state_change_ok = TRUE;
 		break;
@@ -378,6 +389,11 @@ gs_app_set_state (GsApp *app, GsAppState state)
 	}
 
 	priv->state = state;
+
+	if (state == GS_APP_STATE_UNKNOWN ||
+            state == GS_APP_STATE_AVAILABLE)
+		app->priv->install_date = 0;
+
 	g_object_notify (G_OBJECT (app), "state");
 	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }

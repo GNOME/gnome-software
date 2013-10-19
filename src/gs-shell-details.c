@@ -84,6 +84,18 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	kind = gs_app_get_kind (priv->app);
 	state = gs_app_get_state (priv->app);
 
+	/* label */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_label"));
+	switch (state) {
+	case GS_APP_STATE_QUEUED:
+		gtk_widget_set_visible (widget, TRUE);
+		gtk_label_set_label (GTK_LABEL (widget), _("Pending"));
+		break;
+	default:
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	}
+
 	/* install button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
 	switch (state) {
@@ -94,6 +106,9 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		/* TRANSLATORS: button text in the header when an application
 		 * can be installed */
 		gtk_button_set_label (GTK_BUTTON (widget), _("Install"));
+		break;
+	case GS_APP_STATE_QUEUED:
+		gtk_widget_set_visible (widget, FALSE);
 		break;
 	case GS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (widget, TRUE);
@@ -136,6 +151,12 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 			/* TRANSLATORS: button text in the header when an application can be installed */
 			gtk_button_set_label (GTK_BUTTON (widget), _("Removing"));
 			break;
+		case GS_APP_STATE_QUEUED:
+			gtk_widget_set_visible (widget, TRUE);
+			gtk_widget_set_sensitive (widget, TRUE);
+			gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
+			gtk_button_set_label (GTK_BUTTON (widget), _("Cancel"));
+			break;
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_INSTALLING:
 		case GS_APP_STATE_UNAVAILABLE:
@@ -157,6 +178,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		switch (state) {
 		case GS_APP_STATE_INSTALLED:
 		case GS_APP_STATE_AVAILABLE:
+		case GS_APP_STATE_QUEUED:
 		case GS_APP_STATE_UPDATABLE:
 		case GS_APP_STATE_UNAVAILABLE:
 			gtk_widget_set_visible (widget, FALSE);
@@ -628,7 +650,8 @@ gs_shell_details_app_installed_cb (GObject *source,
 		return;
 	}
 
-	gs_app_notify_installed (helper->app);
+	if (gs_app_get_state (helper->app) != GS_APP_STATE_QUEUED)
+		gs_app_notify_installed (helper->app);
 	g_object_unref (helper->shell_details);
 	g_object_unref (helper->app);
 	g_free (helper);
@@ -702,7 +725,10 @@ gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *shell_
 						    gs_app_get_name (priv->app));
 	/* TRANSLATORS: this is button text to remove the application */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
+	if (gs_app_get_state (priv->app) == GS_APP_STATE_INSTALLED)
+		response = gtk_dialog_run (GTK_DIALOG (dialog));
+	else
+		response = GTK_RESPONSE_OK; /* pending install */
 	if (response == GTK_RESPONSE_OK) {
 		g_debug ("remove %s", gs_app_get_id (priv->app));
 		helper = g_new0 (GsShellDetailsHelper, 1);
