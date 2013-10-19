@@ -56,6 +56,28 @@ gnome-software-service.desktop: Makefile
 	 echo "OnlyShowIn=GNOME;") > $@.tmp &&				\
 	 mv $@.tmp $@
 
+noinst_PROGRAMS =					\
+	gnome-software-cmd
+
+gnome_software_cmd_SOURCES =				\
+	gs-app.c					\
+	gs-cmd.c					\
+	gs-utils.c					\
+	gs-plugin-loader.c				\
+	gs-plugin-loader-sync.c				\
+	gs-screenshot.c					\
+	gs-category.c					\
+	gs-plugin.c					\
+	gs-profile.c
+
+gnome_software_cmd_LDADD =				\
+	$(GLIB_LIBS)					\
+	$(GTK_LIBS)					\
+	$(NOTIFY_LIBS)
+
+gnome_software_cmd_CFLAGS =				\
+	$(WARNINGFLAGS_C)
+
 bin_PROGRAMS =						\
 	gnome-software
 
