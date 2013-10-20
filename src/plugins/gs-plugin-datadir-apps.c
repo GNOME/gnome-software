@@ -250,6 +250,41 @@ out:
 }
 
 /**
+ * gs_plugin_refine_app:
+ */
+static gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	const gchar *fn;
+	gboolean ret = TRUE;
+	gchar *profile_id = NULL;
+
+	/* already set */
+	fn = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
+	if (fn == NULL)
+		goto out;
+	profile_id = g_strdup_printf ("GsPlugin::datadir-apps(refine:%s)",
+				      gs_app_get_id (app));
+	gs_profile_start (plugin->profile, profile_id);
+	ret = gs_plugin_datadir_apps_extract_desktop_data (plugin, app, fn, error);
+	if (!ret)
+		goto out;
+	gs_profile_stop (plugin->profile, profile_id);
+
+	/* we know it's installed as we read the desktop file */
+	gs_app_set_id_kind (app, GS_APP_ID_KIND_DESKTOP);
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+out:
+	g_free (profile_id);
+	return ret;
+}
+
+/**
  * gs_plugin_refine:
  */
 gboolean
@@ -259,21 +294,18 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	const gchar *tmp;
-	gboolean ret = TRUE;
-	GList *l;
 	GError *error_local = NULL;
+	GList *l;
 	GsApp *app;
+	gboolean ret;
 
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
-		if (tmp == NULL)
-			continue;
-		ret = gs_plugin_datadir_apps_extract_desktop_data (plugin,
-								   app,
-								   tmp,
-								   &error_local);
+		ret = gs_plugin_refine_app (plugin,
+					    app,
+					    flags,
+					    cancellable,
+					    &error_local);
 		if (!ret) {
 			if (!g_error_matches (error_local, G_FILE_ERROR, G_FILE_ERROR_NOENT)) {
 				g_warning ("failed to extract desktop data for %s: %s",
@@ -283,11 +315,6 @@ gs_plugin_refine (GsPlugin *plugin,
 			g_clear_error (&error_local);
 			continue;
 		}
-
-		/* we know it's installed as we read the desktop file */
-		gs_app_set_id_kind (app, GS_APP_ID_KIND_DESKTOP);
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 	}
 
 	/* success */

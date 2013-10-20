@@ -143,7 +143,7 @@ gs_profile_stop (GsProfile *profile, const gchar *id)
 
 	/* debug */
 	elapsed_ms = (item->time_stop - item->time_start) / 1000;
-	if (elapsed_ms > 1)
+	if (elapsed_ms > 5)
 		g_debug ("%s took %.0fms", id, elapsed_ms);
 
 	/* update */
@@ -224,7 +224,7 @@ gs_profile_dump (GsProfile *profile)
 	for (i = 0; i < profile->priv->archived->len; i++) {
 		item = g_ptr_array_index (profile->priv->archived, i);
 		time_ms = (item->time_stop - item->time_start) / 1000;
-		if (time_ms < 2)
+		if (time_ms < 5)
 			continue;
 
 		/* print a timechart of what we've done */
