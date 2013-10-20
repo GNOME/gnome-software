@@ -104,8 +104,14 @@ main (int argc, char **argv)
 						GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 						NULL,
 						&error);
+	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
+		list = gs_plugin_loader_get_updates (plugin_loader,
+						     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						     NULL,
+						     &error);
 	} else {
-		g_warning ("Did not recognise option, use 'installed', or 'search'");
+		g_warning ("Did not recognise option, use 'installed', "
+			   "'updates', or 'search'");
 	}
 
 	if (show_results)
