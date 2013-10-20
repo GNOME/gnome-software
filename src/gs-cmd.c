@@ -30,7 +30,7 @@
 #include "gs-plugin-loader-sync.h"
 
 static void
-show_results (GList *list)
+gs_cmd_show_results (GList *list)
 {
 	GList *l;
 	GsApp *app;
@@ -49,10 +49,17 @@ main (int argc, char **argv)
 {
 	GError *error = NULL;
 	GList *list = NULL;
+	GOptionContext *context;
 	GsPluginLoader *plugin_loader;
 	GsProfile *profile;
 	gboolean ret;
+	gboolean show_results = FALSE;
 	int status = 0;
+	const GOptionEntry options[] = {
+		{ "show-results", '\0', 0, G_OPTION_ARG_NONE, &show_results,
+		  "Show the results for the action", NULL },
+		{ NULL}
+	};
 
 	setlocale (LC_ALL, "");
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
@@ -62,6 +69,13 @@ main (int argc, char **argv)
 	textdomain (GETTEXT_PACKAGE);
 
 	gtk_init (&argc, &argv);
+
+	context = g_option_context_new (NULL);
+	g_option_context_set_summary (context, "GNOME Software Test Program");
+	g_option_context_add_main_entries (context, options, NULL);
+	g_option_context_add_group (context, gtk_get_option_group (TRUE));
+	g_option_context_parse (context, &argc, &argv, NULL);
+	g_option_context_free (context);
 
 	profile = gs_profile_new ();
 	gs_profile_start (profile, "GsCmd");
@@ -94,7 +108,8 @@ main (int argc, char **argv)
 		g_warning ("Did not recognise option, use 'installed', or 'search'");
 	}
 
-	show_results (list);
+	if (show_results)
+		gs_cmd_show_results (list);
 	gs_profile_stop (profile, "GsCmd");
 	gs_profile_dump (profile);
 out:
