@@ -66,6 +66,7 @@ struct GsPlugin {
 	GsPluginStatusUpdate	 status_update_fn;
 	gpointer		 status_update_user_data;
 	GsProfile		*profile;
+	GHashTable		*icon_cache;
 };
 
 typedef enum {

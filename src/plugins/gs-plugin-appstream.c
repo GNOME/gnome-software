@@ -249,22 +249,36 @@ gs_plugin_destroy (GsPlugin *plugin)
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GError **error)
 {
+	AppstreamApp *app;
+	GPtrArray *items;
 	gboolean ret;
-	guint size;
+	guint i;
 
 	/* Parse the XML */
 	gs_profile_start (plugin->profile, "appstream::startup");
 	ret = gs_plugin_parse_xml (plugin, error);
 	if (!ret)
 		goto out;
-	size = appstream_cache_get_size (plugin->priv->cache);
-	if (size == 0) {
+	items = appstream_cache_get_items (plugin->priv->cache);
+	if (items->len == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
 		g_set_error (error,
 			     GS_PLUGIN_LOADER_ERROR,
 			     GS_PLUGIN_LOADER_ERROR_FAILED,
 			     _("No AppStream data found"));
 		goto out;
+	}
+
+	/* add icons to the icon name cache */
+	for (i = 0; i < items->len; i++) {
+		app = g_ptr_array_index (items, i);
+		if (appstream_app_get_icon_kind (app) != APPSTREAM_APP_ICON_KIND_CACHED)
+			continue;
+		g_hash_table_insert (plugin->icon_cache,
+				     g_strdup (appstream_app_get_id (app)),
+				     g_build_filename (appstream_app_get_userdata (app),
+						       appstream_app_get_icon (app),
+						       NULL));
 	}
 out:
 	gs_profile_stop (plugin->profile, "appstream::startup");

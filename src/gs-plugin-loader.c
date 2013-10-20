@@ -43,6 +43,7 @@ struct GsPluginLoaderPrivate
 
 	GMutex			 app_cache_mutex;
 	GHashTable		*app_cache;
+	GHashTable		*icon_cache;
 	gchar			**compatible_projects;
 
 	GList			*queued_installs;
@@ -2327,6 +2328,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
 	plugin->status_update_user_data = plugin_loader;
 	plugin->profile = g_object_ref (plugin_loader->priv->profile);
+	plugin->icon_cache = g_hash_table_ref (plugin_loader->priv->icon_cache);
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
 
 	/* add to array */
@@ -2448,6 +2450,7 @@ gs_plugin_loader_plugin_free (GsPlugin *plugin)
 	g_free (plugin->priv);
 	g_free (plugin->name);
 	g_object_unref (plugin->profile);
+	g_hash_table_unref (plugin->icon_cache);
 	g_module_close (plugin->module);
 	g_slice_free (GsPlugin, plugin);
 }
@@ -2496,6 +2499,10 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 								g_str_equal,
 								g_free,
 								(GFreeFunc) g_object_unref);
+	plugin_loader->priv->icon_cache = g_hash_table_new_full (g_str_hash,
+								 g_str_equal,
+								 g_free,
+								 g_free);
 
 	g_mutex_init (&plugin_loader->priv->pending_apps_mutex);
 	g_mutex_init (&plugin_loader->priv->app_cache_mutex);
@@ -2535,6 +2542,7 @@ gs_plugin_loader_finalize (GObject *object)
 	g_object_unref (plugin_loader->priv->profile);
 	g_strfreev (plugin_loader->priv->compatible_projects);
 	g_hash_table_unref (plugin_loader->priv->app_cache);
+	g_hash_table_unref (plugin_loader->priv->icon_cache);
 	g_ptr_array_unref (plugin_loader->priv->pending_apps);
 	g_ptr_array_unref (plugin_loader->priv->plugins);
 	g_free (plugin_loader->priv->location);

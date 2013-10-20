@@ -132,6 +132,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 					     GError **error)
 {
 	const gchar *basename_tmp = NULL;
+	const gchar *icon_tmp = NULL;
 	gboolean ret = TRUE;
 	gchar *basename = NULL;
 	gchar *comment = NULL;
@@ -162,6 +163,15 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	if (!ret)
 		goto out;
 
+	/* set new id */
+	basename = g_path_get_basename (desktop_file);
+	dot = strrchr (basename, '.');
+	if (dot)
+		*dot = '\0';
+	basename_tmp = basename;
+	if (g_str_has_prefix (basename_tmp, "fedora-"))
+		basename_tmp += 7;
+
 	/* get desktop name */
 	name = g_key_file_get_locale_string (key_file,
 					     G_KEY_FILE_DESKTOP_GROUP,
@@ -180,33 +190,37 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	if (comment == NULL || comment[0] == '\0')
 		goto out;
 
-	/* get desktop icon */
-	icon = g_key_file_get_string (key_file,
-				      G_KEY_FILE_DESKTOP_GROUP,
-				      G_KEY_FILE_DESKTOP_KEY_ICON,
-				      NULL);
-	if (icon == NULL)
-		goto out;
-
-	/* set pixbuf */
-	if (icon[0] == '/') {
-		pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
-							   plugin->pixbuf_size,
-							   plugin->pixbuf_size,
-							   NULL);
+	/* do we have an icon in the cache? */
+	icon_tmp = g_hash_table_lookup (plugin->icon_cache, basename_tmp);
+	if (icon_tmp != NULL) {
+		pixbuf = gdk_pixbuf_new_from_file (icon_tmp, NULL);
 	} else {
-		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						   icon,
-						   plugin->pixbuf_size,
-						   GTK_ICON_LOOKUP_USE_BUILTIN |
-						   GTK_ICON_LOOKUP_FORCE_SIZE,
-						   NULL);
+		icon = g_key_file_get_string (key_file,
+					      G_KEY_FILE_DESKTOP_GROUP,
+					      G_KEY_FILE_DESKTOP_KEY_ICON,
+					      NULL);
+		if (icon == NULL)
+			goto out;
+		if (icon[0] == '/') {
+			pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
+								   plugin->pixbuf_size,
+								   plugin->pixbuf_size,
+								   NULL);
+		} else {
+			pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+							   icon,
+							   plugin->pixbuf_size,
+							   GTK_ICON_LOOKUP_USE_BUILTIN |
+							   GTK_ICON_LOOKUP_FORCE_SIZE,
+							   NULL);
+		}
+		if (pixbuf == NULL)
+			goto out;
 	}
-	if (pixbuf == NULL)
-		goto out;
 
 	/* create a new cache entry */
 	cache_item = g_slice_new0 (GsPluginDataDirAppsCacheItem);
+	cache_item->id = g_strdup (basename_tmp);
 	cache_item->name = g_strdup (name);
 	cache_item->summary = g_strdup (comment);
 	cache_item->pixbuf = g_object_ref (pixbuf);
@@ -218,16 +232,6 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 					 NULL);
 	if (pkgname != NULL && pkgname[0] != '\0')
 		cache_item->pkgname = g_strdup (pkgname);
-
-	/* set new id */
-	basename = g_path_get_basename (desktop_file);
-	dot = strrchr (basename, '.');
-	if (dot)
-		*dot = '\0';
-	basename_tmp = basename;
-	if (g_str_has_prefix (basename_tmp, "fedora-"))
-		basename_tmp += 7;
-	cache_item->id = g_strdup (basename_tmp);
 
 	/* add to cache */
 	gs_plugin_datadir_apps_set_from_cache_item (app, cache_item);
