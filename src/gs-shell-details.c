@@ -384,7 +384,7 @@ static void
 gs_shell_details_refresh_all (GsShellDetails *shell_details)
 {
 	GPtrArray *history;
-	GdkPixbuf *pixbuf;
+	GdkPixbuf *pixbuf = NULL;
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget2;
 	GtkWidget *widget;
@@ -419,7 +419,12 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 						     "application_details_description_header"));
 	gtk_widget_set_visible (widget, tmp != NULL);
 
-	pixbuf = gs_app_get_pixbuf (priv->app);
+	/* set the icon */
+	tmp = gs_app_get_metadata_item (priv->app, "DataDir::desktop-icon");
+	if (tmp != NULL)
+		pixbuf = gs_pixbuf_load (tmp, 96, NULL);
+	if (pixbuf == NULL)
+		pixbuf = gs_app_get_pixbuf (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
 	if (pixbuf != NULL) {
 		gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);

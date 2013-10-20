@@ -23,6 +23,7 @@
 
 #include <string.h>
 #include <gs-plugin.h>
+#include <gs-utils.h>
 
 struct GsPluginPrivate {
 	GMutex		 plugin_mutex;
@@ -34,6 +35,7 @@ typedef struct {
 	gchar		*pkgname;
 	gchar		*name;
 	gchar		*summary;
+	gchar		*icon_name;
 	GdkPixbuf	*pixbuf;
 } GsPluginDataDirAppsCacheItem;
 
@@ -55,6 +57,7 @@ gs_plugin_datadir_apps_cache_item_free (GsPluginDataDirAppsCacheItem *cache_item
 	g_free (cache_item->id);
 	g_free (cache_item->name);
 	g_free (cache_item->summary);
+	g_free (cache_item->icon_name);
 	if (cache_item->pixbuf != NULL)
 		g_object_unref (cache_item->pixbuf);
 	g_slice_free (GsPluginDataDirAppsCacheItem, cache_item);
@@ -102,6 +105,7 @@ gs_plugin_datadir_apps_set_from_cache_item (GsApp *app,
 					    GsPluginDataDirAppsCacheItem *cache_item)
 {
 	gs_app_set_id (app, cache_item->id);
+	gs_app_set_metadata (app, "DataDir::desktop-icon", cache_item->icon_name);
 	if (cache_item->name != NULL)
 		gs_app_set_name (app, cache_item->name);
 	if (cache_item->pkgname != NULL)
@@ -190,30 +194,20 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	if (comment == NULL || comment[0] == '\0')
 		goto out;
 
+	/* get desktop icon */
+	icon = g_key_file_get_string (key_file,
+				      G_KEY_FILE_DESKTOP_GROUP,
+				      G_KEY_FILE_DESKTOP_KEY_ICON,
+				      NULL);
+	if (icon == NULL)
+		goto out;
+
 	/* do we have an icon in the cache? */
 	icon_tmp = g_hash_table_lookup (plugin->icon_cache, basename_tmp);
 	if (icon_tmp != NULL) {
 		pixbuf = gdk_pixbuf_new_from_file (icon_tmp, NULL);
 	} else {
-		icon = g_key_file_get_string (key_file,
-					      G_KEY_FILE_DESKTOP_GROUP,
-					      G_KEY_FILE_DESKTOP_KEY_ICON,
-					      NULL);
-		if (icon == NULL)
-			goto out;
-		if (icon[0] == '/') {
-			pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
-								   plugin->pixbuf_size,
-								   plugin->pixbuf_size,
-								   NULL);
-		} else {
-			pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-							   icon,
-							   plugin->pixbuf_size,
-							   GTK_ICON_LOOKUP_USE_BUILTIN |
-							   GTK_ICON_LOOKUP_FORCE_SIZE,
-							   NULL);
-		}
+		pixbuf = gs_pixbuf_load (icon, plugin->pixbuf_size, NULL);
 		if (pixbuf == NULL)
 			goto out;
 	}
@@ -223,6 +217,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 	cache_item->id = g_strdup (basename_tmp);
 	cache_item->name = g_strdup (name);
 	cache_item->summary = g_strdup (comment);
+	cache_item->icon_name = g_strdup (icon);
 	cache_item->pixbuf = g_object_ref (pixbuf);
 
 	/* set pkgname if set (only Ubuntu) */

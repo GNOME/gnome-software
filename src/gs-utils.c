@@ -291,4 +291,28 @@ gs_mkdir_parent (const gchar *path, GError **error)
 	return ret;
 }
 
+/**
+ * gs_pixbuf_load:
+ **/
+GdkPixbuf *
+gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
+{
+	GdkPixbuf *pixbuf = NULL;
+
+	if (icon_name[0] == '/') {
+		pixbuf = gdk_pixbuf_new_from_file_at_size (icon_name,
+							   icon_size,
+							   icon_size,
+							   error);
+	} else if (g_strstr_len (icon_name, -1, ".") == NULL) {
+		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+						   icon_name,
+						   icon_size,
+						   GTK_ICON_LOOKUP_USE_BUILTIN |
+						   GTK_ICON_LOOKUP_FORCE_SIZE,
+						   error);
+	}
+	return pixbuf;
+}
+
 /* vim: set noexpandtab: */

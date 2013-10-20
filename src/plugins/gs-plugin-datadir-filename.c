@@ -58,7 +58,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 gdouble
 gs_plugin_get_priority (GsPlugin *plugin)
 {
-	return 1.1f;
+	return 0.9f;
 }
 
 /**

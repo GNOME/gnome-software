@@ -47,6 +47,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-utils.h"
 
 static void	gs_app_finalize	(GObject	*object);
 
@@ -602,28 +603,12 @@ gs_app_set_icon (GsApp *app, const gchar *icon, GError **error)
 	app->priv->icon = g_strdup (icon);
 
 	/* either load from the theme or from a file */
-	if (icon[0] == '/') {
-		pixbuf = gdk_pixbuf_new_from_file_at_size (icon,
-							   64, 64,
-							   error);
-		if (pixbuf == NULL) {
-			ret = FALSE;
-			goto out;
-		}
-		gs_app_set_pixbuf (app, pixbuf);
-	} else if (g_strstr_len (icon, -1, ".") == NULL) {
-		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						   icon,
-						   64,
-						   GTK_ICON_LOOKUP_USE_BUILTIN |
-						   GTK_ICON_LOOKUP_FORCE_SIZE,
-						   error);
-		if (pixbuf == NULL) {
-			ret = FALSE;
-			goto out;
-		}
-		gs_app_set_pixbuf (app, pixbuf);
+	pixbuf = gs_pixbuf_load (icon, 64, error);
+	if (pixbuf == NULL) {
+		ret = FALSE;
+		goto out;
 	}
+	gs_app_set_pixbuf (app, pixbuf);
 out:
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
