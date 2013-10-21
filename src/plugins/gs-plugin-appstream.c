@@ -198,6 +198,13 @@ gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
 		if (!ret)
 			goto out;
 	}
+	path_xml = g_build_filename (g_get_user_data_dir (), "app-info", "xmls", NULL);
+	path_icons = g_build_filename (g_get_user_data_dir (), "app-info", "icons", NULL);
+	ret = gs_plugin_parse_xml_dir (plugin, path_xml, path_icons, error);
+	g_free (path_xml);
+	g_free (path_icons);
+	if (!ret)
+		goto out;
 	path_xml = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL);
 	path_icons = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "icons", NULL);
 	ret = gs_plugin_parse_xml_dir (plugin, path_xml, path_icons, error);
