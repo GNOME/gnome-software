@@ -338,6 +338,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* is this a web app */
 	filename = gs_app_get_metadata_item (app, "Epiphany::desktop-filename");
 	if (filename != NULL) {
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		ret = gs_plugin_app_set_enabled (filename, TRUE, error);
 		if (!ret)
 			goto out;
@@ -362,6 +363,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	/* is this a web app */
 	filename = gs_app_get_metadata_item (app, "Epiphany::desktop-filename");
 	if (filename != NULL) {
+		gs_app_set_state (app, GS_APP_STATE_REMOVING);
 		ret = gs_plugin_app_set_enabled (filename, FALSE, error);
 		if (!ret)
 			goto out;
