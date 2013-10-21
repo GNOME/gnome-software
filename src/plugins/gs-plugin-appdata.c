@@ -24,6 +24,7 @@
 #include <gs-plugin.h>
 
 #include "appstream-common.h"
+#include "appstream-markup.h"
 
 struct GsPluginPrivate {
 	gchar			*cachedir;
@@ -118,87 +119,11 @@ out:
 	return ret;
 }
 
-typedef enum {
-	APPSTREAM_DESCRIPTION_TAG_START,
-	APPSTREAM_DESCRIPTION_TAG_END,
-	APPSTREAM_DESCRIPTION_TAG_P_START,
-	APPSTREAM_DESCRIPTION_TAG_P_CONTENT,
-	APPSTREAM_DESCRIPTION_TAG_P_END,
-	APPSTREAM_DESCRIPTION_TAG_UL_START,
-	APPSTREAM_DESCRIPTION_TAG_UL_CONTENT,
-	APPSTREAM_DESCRIPTION_TAG_UL_END,
-	APPSTREAM_DESCRIPTION_TAG_LI_START,
-	APPSTREAM_DESCRIPTION_TAG_LI_CONTENT,
-	APPSTREAM_DESCRIPTION_TAG_LI_END,
-	APPSTREAM_DESCRIPTION_TAG_LAST
-} AppStreamDescriptionTag;
-
 typedef struct {
 	AppstreamTag		 tag;
 	GsApp			*app;
-	GString			*string;
-	AppStreamDescriptionTag	 description_tag;
-	gchar			*lang;
-	guint			 locale_value;
+	AppstreamMarkup		*markup;
 } AppstreamCacheHelper;
-
-/**
- * appstream_description_build:
- */
-static void
-appstream_description_build (AppstreamCacheHelper *helper,
-			     AppStreamDescriptionTag tag,
-			     const gchar *text)
-{
-	guint locale_value;
-
-	/* we are not interested */
-	if (helper->string == NULL)
-		return;
-
-	/* is this worse than the locale we're already showing */
-	locale_value = appstream_get_locale_value (helper->lang);
-	if (locale_value > helper->locale_value)
-		return;
-
-	/* is this better than the previous locale */
-	if (locale_value < helper->locale_value) {
-		g_debug ("Dumping existing string for locale %s!", helper->lang);
-		g_string_set_size (helper->string, 0);
-		helper->locale_value = locale_value;
-	}
-
-
-	/* format markup in the same way as the distro pre-processor */
-	switch (tag) {
-	case APPSTREAM_DESCRIPTION_TAG_START:
-	case APPSTREAM_DESCRIPTION_TAG_P_END:
-	case APPSTREAM_DESCRIPTION_TAG_UL_START:
-	case APPSTREAM_DESCRIPTION_TAG_UL_CONTENT:
-	case APPSTREAM_DESCRIPTION_TAG_UL_END:
-	case APPSTREAM_DESCRIPTION_TAG_LI_START:
-	case APPSTREAM_DESCRIPTION_TAG_LI_END:
-		/* ignore */
-		break;
-	case APPSTREAM_DESCRIPTION_TAG_END:
-		/* remove trailing newline */
-		g_string_truncate (helper->string, helper->string->len - 1);
-		break;
-		break;
-	case APPSTREAM_DESCRIPTION_TAG_P_CONTENT:
-		g_string_append_printf (helper->string, "%s\n", text);
-		break;
-	case APPSTREAM_DESCRIPTION_TAG_LI_CONTENT:
-		g_string_append_printf (helper->string, " • %s\n", text);
-		break;
-	case APPSTREAM_DESCRIPTION_TAG_P_START:
-		if (helper->string->len > 0)
-			g_string_append (helper->string, "\n");
-		break;
-	default:
-		break;
-	}
-}
 
 /**
  * appdata_parse_start_element_cb:
@@ -212,42 +137,26 @@ appdata_parse_start_element_cb (GMarkupParseContext *context,
 				GError **error)
 {
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
-	const gchar *lang_tmp = NULL;
 	guint i;
 
 	/* description markup */
 	if (helper->tag == APPSTREAM_TAG_DESCRIPTION) {
-
-		/* save xml:lang if different to existing */
 		for (i = 0; attribute_names[i] != NULL; i++) {
 			if (g_strcmp0 (attribute_names[i], "xml:lang") == 0) {
-				lang_tmp = attribute_values[i];
+				appstream_markup_set_lang (helper->markup,
+							   attribute_values[i]);
 				break;
 			}
 		}
-		if (lang_tmp == NULL)
-			lang_tmp = "C";
-		if (g_strcmp0 (lang_tmp, helper->lang) != 0) {
-			g_free (helper->lang);
-			helper->lang = g_strdup (lang_tmp);
-		}
-
-		/* build string */
 		if (g_strcmp0 (element_name, "p") == 0) {
-			appstream_description_build (helper,
-						     APPSTREAM_DESCRIPTION_TAG_P_START,
-						     NULL);
-			helper->description_tag = APPSTREAM_DESCRIPTION_TAG_P_CONTENT;
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_P_START);
 		} else if (g_strcmp0 (element_name, "ul") == 0) {
-			appstream_description_build (helper,
-						     APPSTREAM_DESCRIPTION_TAG_UL_START,
-						     NULL);
-			helper->description_tag = APPSTREAM_DESCRIPTION_TAG_UL_CONTENT;
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_UL_START);
 		} else if (g_strcmp0 (element_name, "li") == 0) {
-			appstream_description_build (helper,
-						     APPSTREAM_DESCRIPTION_TAG_LI_START,
-						     NULL);
-			helper->description_tag = APPSTREAM_DESCRIPTION_TAG_LI_CONTENT;
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_LI_START);
 		}
 		return;
 	}
@@ -255,14 +164,12 @@ appdata_parse_start_element_cb (GMarkupParseContext *context,
 	helper->tag = appstream_tag_from_string (element_name);
 	switch (helper->tag) {
 	case APPSTREAM_TAG_DESCRIPTION:
-		helper->string = NULL;
 		/* only process the description if it's not already been set;
 		 * doing all this string munging is moderately expensive */
-		if (gs_app_get_description (helper->app) == NULL)
-			helper->string = g_string_new ("");
-		appstream_description_build (helper,
-					     APPSTREAM_DESCRIPTION_TAG_START,
-					     NULL);
+		appstream_markup_set_enabled (helper->markup,
+					      gs_app_get_description (helper->app) == NULL);
+		appstream_markup_set_mode (helper->markup,
+					   APPSTREAM_MARKUP_MODE_START);
 		break;
 	case APPSTREAM_TAG_UNKNOWN:
 		g_warning ("AppData: tag %s unknown", element_name);
@@ -282,31 +189,24 @@ appdata_parse_end_element_cb (GMarkupParseContext *context,
 			      gpointer user_data,
 			      GError **error)
 {
+	const gchar *tmp;
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
 	if (helper->tag == APPSTREAM_TAG_DESCRIPTION) {
 		if (g_strcmp0 (element_name, "p") == 0) {
-			appstream_description_build (helper,
-						     APPSTREAM_DESCRIPTION_TAG_P_END,
-						     NULL);
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_P_END);
 		} else if (g_strcmp0 (element_name, "ul") == 0) {
-			appstream_description_build (helper,
-						     APPSTREAM_DESCRIPTION_TAG_UL_END,
-						     NULL);
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_UL_END);
 		} else if (g_strcmp0 (element_name, "li") == 0) {
-			appstream_description_build (helper,
-						     APPSTREAM_DESCRIPTION_TAG_LI_END,
-						     NULL);
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_LI_END);
 		} else if (g_strcmp0 (element_name, "description") == 0) {
-			appstream_description_build (helper,
-						     APPSTREAM_DESCRIPTION_TAG_END,
-						     NULL);
-			if (helper->string != NULL) {
-				g_debug ("AppData: Setting description: %s",
-					 helper->string->str);
-				gs_app_set_description (helper->app,
-							helper->string->str);
-				g_string_free (helper->string, TRUE);
-			}
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_END);
+			tmp = appstream_markup_get_text (helper->markup);
+			if (tmp != NULL)
+				gs_app_set_description (helper->app, tmp);
 			helper->tag = APPSTREAM_TAG_APPLICATION;
 		}
 	} else {
@@ -341,12 +241,7 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		/* ignore */
 		break;
 	case APPSTREAM_TAG_DESCRIPTION:
-		tmp = appstream_xml_unmunge (text, text_len);
-		if (tmp == NULL)
-			break;
-		appstream_description_build (helper,
-					     helper->description_tag,
-					     tmp);
+		appstream_markup_add_content (helper->markup, text, text_len);
 		break;
 	case APPSTREAM_TAG_SCREENSHOT:
 		/* FIXME: actually add to API */
@@ -430,7 +325,7 @@ gs_plugin_refine_by_local_appdata (GsApp *app,
 	/* parse file */
 	helper = g_new0 (AppstreamCacheHelper, 1);
 	helper->app = app;
-	helper->locale_value = G_MAXUINT;
+	helper->markup = appstream_markup_new ();
 	ctx = g_markup_parse_context_new (&parser,
 					  G_MARKUP_PREFIX_ERROR_POSITION,
 					  helper,
@@ -442,7 +337,7 @@ out:
 	if (ctx != NULL)
 		g_markup_parse_context_free (ctx);
 	if (helper != NULL)
-		g_free (helper->lang);
+		appstream_markup_free (helper->markup);
 	g_free (helper);
 	g_free (data);
 	return ret;

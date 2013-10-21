@@ -85,6 +85,8 @@ libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 libgs_plugin_appdata_la_SOURCES =			\
 	appstream-common.c				\
 	appstream-common.h				\
+	appstream-markup.c				\
+	appstream-markup.h				\
 	gs-plugin-appdata.c
 libgs_plugin_appdata_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_appdata_la_LDFLAGS = -module -avoid-version
