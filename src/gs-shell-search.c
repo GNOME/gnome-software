@@ -322,6 +322,7 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 	gs_plugin_loader_search_async (priv->plugin_loader,
 				       value,
 				       GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 				       priv->cancellable,
 				       gs_shell_search_get_search_cb,

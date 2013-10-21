@@ -108,10 +108,10 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 }
 
 static gboolean
-gs_plugin_packagekit_refine_packages (GsPlugin *plugin,
-				      GList *list,
-				      GCancellable *cancellable,
-				      GError **error)
+gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
+				       GList *list,
+				       GCancellable *cancellable,
+				       GError **error)
 {
 	const gchar *pkgname;
 	gboolean ret = TRUE;
@@ -544,6 +544,19 @@ out:
 }
 
 /**
+ * gs_plugin_refine_requires_version:
+ */
+static gboolean
+gs_plugin_refine_requires_version (GsApp *app, GsPluginRefineFlags flags)
+{
+	const gchar *tmp;
+	tmp = gs_app_get_version (app);
+	if (tmp != NULL)
+		return FALSE;
+	return (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) > 0;
+}
+
+/**
  * gs_plugin_refine:
  */
 gboolean
@@ -569,14 +582,18 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_WEBAPP)
 			continue;
 		tmp = gs_app_get_source (app);
-		if (tmp != NULL)
+		if (tmp == NULL)
+			continue;
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
+		    gs_plugin_refine_requires_version (app, flags)) {
 			resolve_all = g_list_prepend (resolve_all, app);
+		}
 	}
 	if (resolve_all != NULL) {
-		ret = gs_plugin_packagekit_refine_packages (plugin,
-							    resolve_all,
-							    cancellable,
-							    error);
+		ret = gs_plugin_packagekit_resolve_packages (plugin,
+							     resolve_all,
+							     cancellable,
+							     error);
 		if (!ret)
 			goto out;
 	}
