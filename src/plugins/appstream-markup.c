@@ -73,7 +73,6 @@ appstream_markup_process_locale (AppstreamMarkup *markup)
 
 	/* is this better than the previous locale */
 	if (locale_value < markup->locale_value) {
-		g_debug ("Dumping existing string for locale %s!", markup->lang);
 		g_string_set_size (markup->string, 0);
 		markup->locale_value = locale_value;
 	}

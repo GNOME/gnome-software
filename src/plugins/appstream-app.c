@@ -37,7 +37,6 @@ struct AppstreamApp
 	gchar			*summary;
 	guint			 summary_value;
 	gchar			*description;
-	guint			 description_value;
 	GHashTable		*urls;
 	gchar			*licence;
 	gchar			*project_group;
@@ -115,7 +114,6 @@ appstream_app_new (void)
 	app->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	app->name_value = G_MAXUINT;
 	app->summary_value = G_MAXUINT;
-	app->description_value = G_MAXUINT;
 	app->icon_kind = APPSTREAM_APP_ICON_KIND_UNKNOWN;
 	app->id_kind = APPSTREAM_APP_ID_KIND_UNKNOWN;
 	app->priority = 0;
@@ -400,18 +398,13 @@ appstream_app_set_project_group (AppstreamApp *app,
  */
 void
 appstream_app_set_description (AppstreamApp *app,
-			       const gchar *lang,
 			       const gchar *description,
-			       gsize length)
+			       gssize length)
 {
-	guint new_value;
-
-	new_value = appstream_get_locale_value (lang);
-	if (new_value < app->description_value) {
-		g_free (app->description);
+	if (length < 0)
+		app->description = g_strdup (description);
+	else
 		app->description = g_strndup (description, length);
-		app->description_value = new_value;
-	}
 }
 
 /**

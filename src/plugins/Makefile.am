@@ -76,6 +76,8 @@ libgs_plugin_appstream_la_SOURCES =			\
 	appstream-screenshot.h				\
 	appstream-common.c				\
 	appstream-common.h				\
+	appstream-markup.c				\
+	appstream-markup.h				\
 	appstream-cache.c				\
 	appstream-cache.h
 libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS)

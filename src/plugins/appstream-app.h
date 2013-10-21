@@ -96,9 +96,8 @@ void		 appstream_app_set_project_group	(AppstreamApp	*app,
 							 const gchar	*project_group,
 							 gsize		 length);
 void		 appstream_app_set_description		(AppstreamApp	*app,
-							 const gchar    *lang,
 							 const gchar	*description,
-							 gsize		 length);
+							 gssize		 length);
 void		 appstream_app_set_icon			(AppstreamApp	*app,
 							 const gchar	*icon,
 							 gsize		 length);

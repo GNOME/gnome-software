@@ -26,6 +26,7 @@
 #include "appstream-cache.h"
 #include "appstream-common.h"
 #include "appstream-image.h"
+#include "appstream-markup.h"
 #include "appstream-screenshot.h"
 
 static void	appstream_cache_finalize	(GObject	*object);
@@ -120,6 +121,7 @@ typedef struct {
 	AppstreamImage		*image;
 	AppstreamScreenshot	*screenshot;
 	gint			 priority;
+	AppstreamMarkup		*markup;
 } AppstreamCacheHelper;
 
 /**
@@ -159,6 +161,28 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	guint height = 0;
 	guint i;
 	guint width = 0;
+
+	/* description markup */
+	if (helper->tag == APPSTREAM_TAG_DESCRIPTION) {
+		for (i = 0; attribute_names[i] != NULL; i++) {
+			if (g_strcmp0 (attribute_names[i], "xml:lang") == 0) {
+				appstream_markup_set_lang (helper->markup,
+							   attribute_values[i]);
+				break;
+			}
+		}
+		if (g_strcmp0 (element_name, "p") == 0) {
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_P_START);
+		} else if (g_strcmp0 (element_name, "ul") == 0) {
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_UL_START);
+		} else if (g_strcmp0 (element_name, "li") == 0) {
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_LI_START);
+		}
+		return;
+	}
 
 	/* process tag start */
 	section_new = appstream_tag_from_string (element_name);
@@ -347,7 +371,6 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 
 	case APPSTREAM_TAG_NAME:
 	case APPSTREAM_TAG_SUMMARY:
-	case APPSTREAM_TAG_DESCRIPTION:
 		if (helper->item_temp == NULL ||
 		    helper->tag != APPSTREAM_TAG_APPLICATION) {
 			g_set_error (error,
@@ -365,6 +388,11 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			return;
 		if (!helper->lang_temp)
 			helper->lang_temp = g_strdup ("C");
+		break;
+	case APPSTREAM_TAG_DESCRIPTION:
+		appstream_markup_set_enabled (helper->markup, TRUE);
+		appstream_markup_set_mode (helper->markup,
+					   APPSTREAM_MARKUP_MODE_START);
 		break;
 	default:
 		/* ignore unknown entries */
@@ -439,6 +467,28 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 {
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
 	AppstreamTag section_new;
+	const gchar *tmp;
+
+	if (helper->tag == APPSTREAM_TAG_DESCRIPTION) {
+		if (g_strcmp0 (element_name, "p") == 0) {
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_P_END);
+		} else if (g_strcmp0 (element_name, "ul") == 0) {
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_UL_END);
+		} else if (g_strcmp0 (element_name, "li") == 0) {
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_LI_END);
+		} else if (g_strcmp0 (element_name, "description") == 0) {
+			appstream_markup_set_mode (helper->markup,
+						   APPSTREAM_MARKUP_MODE_END);
+			tmp = appstream_markup_get_text (helper->markup);
+			if (tmp != NULL)
+				appstream_app_set_description (helper->item_temp, tmp, -1);
+			helper->tag = APPSTREAM_TAG_APPLICATION;
+		}
+		return;
+	}
 
 	section_new = appstream_tag_from_string (element_name);
 	switch (section_new) {
@@ -483,7 +533,6 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_NAME:
 	case APPSTREAM_TAG_SUMMARY:
 	case APPSTREAM_TAG_PROJECT_GROUP:
-	case APPSTREAM_TAG_DESCRIPTION:
 		helper->tag = APPSTREAM_TAG_APPLICATION;
 		g_free (helper->lang_temp);
 		helper->lang_temp = NULL;
@@ -646,14 +695,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		appstream_app_set_licence (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_TAG_DESCRIPTION:
-		if (helper->item_temp == NULL) {
-			g_set_error_literal (error,
-					     APPSTREAM_CACHE_ERROR,
-					     APPSTREAM_CACHE_ERROR_FAILED,
-					     "item_temp description invalid");
-			return;
-		}
-		appstream_app_set_description (helper->item_temp, helper->lang_temp, text, text_len);
+		appstream_markup_add_content (helper->markup, text, text_len);
 		break;
 	case APPSTREAM_TAG_ICON:
 		if (helper->item_temp == NULL ||
@@ -752,6 +794,7 @@ appstream_cache_parse_file (AppstreamCache *cache,
 
 	helper = g_new0 (AppstreamCacheHelper, 1);
 	helper->cache = cache;
+	helper->markup = appstream_markup_new ();
 	helper->path_icons = icon_path_tmp;
 	ctx = g_markup_parse_context_new (&parser,
 					  G_MARKUP_PREFIX_ERROR_POSITION,
@@ -766,8 +809,10 @@ appstream_cache_parse_file (AppstreamCache *cache,
 	if (len < 0)
 		ret = FALSE;
 out:
-	if (helper != NULL && helper->item_temp != NULL)
+	if (helper != NULL && helper->item_temp != NULL) {
+		appstream_markup_free (helper->markup);
 		appstream_app_free (helper->item_temp);
+	}
 	if (info != NULL)
 		g_object_unref (info);
 	g_free (helper);
