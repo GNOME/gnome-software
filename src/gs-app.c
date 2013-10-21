@@ -229,7 +229,7 @@ gs_app_to_string (GsApp *app)
 	if (priv->summary != NULL)
 		g_string_append_printf (str, "\tsummary:\t%s\n", priv->summary);
 	if (priv->description != NULL)
-		g_string_append_printf (str, "\tdescription:\t%lu\n", strlen (priv->description));
+		g_string_append_printf (str, "\tdescription:\t%s\n", priv->description);
 	for (i = 0; i < priv->screenshots->len; i++) {
 		ss = g_ptr_array_index (priv->screenshots, i);
 		g_string_append_printf (str, "\tscreenshot-%02i:\t%s\n",

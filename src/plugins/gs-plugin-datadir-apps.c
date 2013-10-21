@@ -272,13 +272,14 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	ret = gs_plugin_datadir_apps_extract_desktop_data (plugin, app, fn, error);
 	if (!ret)
 		goto out;
-	gs_profile_stop (plugin->profile, profile_id);
 
 	/* we know it's installed as we read the desktop file */
 	gs_app_set_id_kind (app, GS_APP_ID_KIND_DESKTOP);
 	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 out:
+	if (profile_id != NULL)
+		gs_profile_stop (plugin->profile, profile_id);
 	g_free (profile_id);
 	return ret;
 }
