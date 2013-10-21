@@ -155,6 +155,8 @@ gs_plugin_refine (GsPlugin *plugin,
 
 		tmp = gs_plugin_datadir_filename_find (plugin, app);
 		if (tmp != NULL) {
+			if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+				gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 			gs_app_set_metadata (app,
 					     "DataDir::desktop-filename",
 					     tmp);

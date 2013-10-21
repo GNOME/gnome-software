@@ -62,14 +62,12 @@ gs_plugin_refine (GsPlugin *plugin,
 		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
 		if (tmp == NULL)
 			continue;
-		if (!g_str_has_prefix (tmp, "/usr")) {
-			/* FIXME: If the user tries to remove this, we don't
-			 * have a way of removing jhbuilt packages other than
-			 * from deleting the .desktop file */
-			g_debug ("Desktop file not in /usr, assuming installed");
+		if (!g_file_test (tmp, G_FILE_TEST_EXISTS))
+			continue;
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN)
 			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
-		}
 	}
 	return TRUE;
 }
