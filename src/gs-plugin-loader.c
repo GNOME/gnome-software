@@ -195,10 +195,16 @@ gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 		goto out;
 
 	/* profile the plugin runtime */
-	profile_id = g_strdup_printf ("GsPlugin::%s(%s;%s)",
-				      plugin->name,
-				      function_name_parent,
-				      function_name);
+	if (function_name_parent == NULL) {
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+					      plugin->name,
+					      function_name);
+	} else {
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s;%s)",
+					      plugin->name,
+					      function_name_parent,
+					      function_name);
+	}
 	gs_profile_start (plugin_loader->priv->profile, profile_id);
 	ret = plugin_func (plugin, list, flags, cancellable, error);
 	if (!ret) {
