@@ -315,43 +315,6 @@ appdata_parse_end_element_cb (GMarkupParseContext *context,
 }
 
 /**
- * appdata_xml_unmunge:
- */
-static gchar *
-appdata_xml_unmunge (const gchar *text, guint text_length)
-{
-	GString *str;
-	guint i;
-	gboolean ignore_whitespace = TRUE;
-
-	/* ignore repeated whitespace */
-	str = g_string_sized_new (text_length);
-	for (i = 0; i < text_length; i++) {
-		if (text[i] == ' ') {
-			if (!ignore_whitespace)
-				g_string_append_c (str, ' ');
-			ignore_whitespace = TRUE;
-		} else if (text[i] == '\n') {
-			continue;
-		} else {
-			g_string_append_c (str, text[i]);
-			ignore_whitespace = FALSE;
-		}
-	}
-
-	/* nothing left */
-	if (str->len == 0) {
-		g_string_free (str, TRUE);
-		return NULL;
-	}
-
-	/* remove trailing space */
-	if (str->str[str->len - 1] == ' ')
-		g_string_truncate (str, str->len - 1);
-	return g_string_free (str, FALSE);
-}
-
-/**
  * appdata_parse_text_cb:
  */
 static void
@@ -378,7 +341,7 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		/* ignore */
 		break;
 	case APPSTREAM_TAG_DESCRIPTION:
-		tmp = appdata_xml_unmunge (text, text_len);
+		tmp = appstream_xml_unmunge (text, text_len);
 		if (tmp == NULL)
 			break;
 		appstream_description_build (helper,
@@ -387,13 +350,13 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		break;
 	case APPSTREAM_TAG_SCREENSHOT:
 		/* FIXME: actually add to API */
-		//tmp = appdata_xml_unmunge (text, text_len);
+		//tmp = appstream_xml_unmunge (text, text_len);
 		//gs_app_add_screenshot (helper->app, tmp);
 		break;
 	case APPSTREAM_TAG_NAME:
 		// FIXME: does not get best language
 		if (gs_app_get_name (helper->app) == NULL) {
-			tmp = appdata_xml_unmunge (text, text_len);
+			tmp = appstream_xml_unmunge (text, text_len);
 			if (tmp == NULL)
 				break;
 			g_debug ("AppData: Setting name: %s", tmp);
@@ -403,7 +366,7 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_SUMMARY:
 		// FIXME: does not get best language
 		if (gs_app_get_summary (helper->app) == NULL) {
-			tmp = appdata_xml_unmunge (text, text_len);
+			tmp = appstream_xml_unmunge (text, text_len);
 			if (tmp == NULL)
 				break;
 			g_debug ("AppData: Setting summary: %s", tmp);
@@ -412,7 +375,7 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		break;
 	case APPSTREAM_TAG_URL:
 		if (gs_app_get_url (helper->app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
-			tmp = appdata_xml_unmunge (text, text_len);
+			tmp = appstream_xml_unmunge (text, text_len);
 			if (tmp == NULL)
 				break;
 			g_debug ("AppData: Setting URL: %s", tmp);
@@ -421,7 +384,7 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		break;
 	case APPSTREAM_TAG_PROJECT_GROUP:
 		if (gs_app_get_project_group (helper->app) == NULL) {
-			tmp = appdata_xml_unmunge (text, text_len);
+			tmp = appstream_xml_unmunge (text, text_len);
 			if (tmp == NULL)
 				break;
 			g_debug ("AppData: Setting project-group: %s", tmp);
@@ -429,7 +392,7 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		}
 		break;
 	default:
-		tmp = appdata_xml_unmunge (text, text_len);
+		tmp = appstream_xml_unmunge (text, text_len);
 		if (tmp == NULL)
 			break;
 		g_warning ("AppData: unknown data '%s' is '%s'",

@@ -160,3 +160,89 @@ appstream_get_locale_value (const gchar *lang)
 
 	return G_MAXUINT;
 }
+
+/**
+ * appstream_string_replace:
+ */
+static guint
+appstream_string_replace (GString *string,
+			  const gchar *search,
+			  const gchar *replace)
+{
+	gchar *tmp;
+	guint count = 0;
+	guint replace_len = strlen (replace);
+	guint search_len = strlen (search);
+
+	do {
+		tmp = g_strstr_len (string->str, -1, search);
+		if (tmp == NULL)
+			goto out;
+
+		/* reallocate the string if required */
+		if (search_len > replace_len) {
+			g_string_erase (string,
+					tmp - string->str,
+					search_len - replace_len);
+		}
+		if (search_len < replace_len) {
+			g_string_insert_len (string,
+					    tmp - string->str,
+					    search,
+					    replace_len - search_len);
+		}
+
+		/* just memcmp in the new string */
+		memcpy (tmp, replace, replace_len);
+		count++;
+	} while (TRUE);
+out:
+	return count;
+}
+
+/**
+ * appstream_xml_unmunge:
+ */
+gchar *
+appstream_xml_unmunge (const gchar *text, gssize text_length)
+{
+	GString *str;
+	gboolean ignore_whitespace = TRUE;
+	guint i;
+
+	/* unknown length */
+	if (text_length == -1)
+		text_length = strlen (text);
+
+	/* ignore repeated whitespace */
+	str = g_string_sized_new (text_length);
+	for (i = 0; i < text_length; i++) {
+		if (text[i] == ' ' || text[i] == '\n') {
+			if (!ignore_whitespace)
+				g_string_append_c (str, ' ');
+			ignore_whitespace = TRUE;
+		} else {
+			g_string_append_c (str, text[i]);
+			ignore_whitespace = FALSE;
+		}
+	}
+
+	/* nothing left */
+	if (str->len == 0) {
+		g_string_free (str, TRUE);
+		return NULL;
+	}
+
+	/* remove trailing space */
+	if (str->str[str->len - 1] == ' ')
+		g_string_truncate (str, str->len - 1);
+
+	/* remove escape chars */
+	appstream_string_replace (str, "&amp;", "&");
+	appstream_string_replace (str, "&lt;", "<");
+	appstream_string_replace (str, "&gt;", ">");
+	appstream_string_replace (str, "&#34;", "\"");
+	appstream_string_replace (str, "&#39;", "'");
+
+	return g_string_free (str, FALSE);
+}
