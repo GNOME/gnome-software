@@ -27,6 +27,8 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gs-plugin-loader-sync.h"
+
 #include "gs-shell-search-provider-generated.h"
 #include "gs-shell-search-provider.h"
 
@@ -195,23 +197,29 @@ handle_get_result_metas (GsShellSearchProvider2        *skeleton,
 	GdkPixbuf *pixbuf;
 	gint i;
 	GVariantBuilder builder;
+	GError *error = NULL;
 
 	g_debug ("****** GetResultMetas");
 
 	for (i = 0; results[i]; i++) {
-		GsApp *app, *new_app;
+		GsApp *app;
 
 		if (g_hash_table_lookup (self->metas_cache, results[i]))
 			continue;
 
-		app = gs_app_new (results[i]);
-		new_app = gs_plugin_loader_dedupe (self->plugin_loader, app);
-		if (new_app == app) {
-			g_warning ("didn't find app %s in loader list", results[i]);
-			g_object_unref (app);
+		/* find the application with this ID */
+		app = gs_plugin_loader_get_app_by_id (self->plugin_loader,
+						      results[i],
+						      GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+						      GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
+						      NULL,
+						      &error);
+		if (app == NULL) {
+			g_warning ("failed to refine %s: %s",
+				   results[i], error->message);
+			g_clear_error (&error);
 			continue;
 		}
-		app = new_app;
 
 		g_variant_builder_init (&meta, G_VARIANT_TYPE ("a{sv}"));
 		g_variant_builder_add (&meta, "{sv}", "id", g_variant_new_string (gs_app_get_id (app)));
@@ -221,6 +229,7 @@ handle_get_result_metas (GsShellSearchProvider2        *skeleton,
 		g_variant_builder_add (&meta, "{sv}", "description", g_variant_new_string (gs_app_get_summary (app)));
 		meta_variant = g_variant_builder_end (&meta);
 		g_hash_table_insert (self->metas_cache, g_strdup (gs_app_get_id (app)), g_variant_ref_sink (meta_variant));
+		g_object_unref (app);
 
 	}
 

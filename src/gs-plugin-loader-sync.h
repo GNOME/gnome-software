@@ -64,6 +64,11 @@ gboolean	 gs_plugin_loader_app_action		(GsPluginLoader	*plugin_loader,
 							 GsPluginLoaderAction action,
 							 GCancellable	*cancellable,
 							 GError		**error);
+GsApp		*gs_plugin_loader_get_app_by_id		(GsPluginLoader	*plugin_loader,
+							 const gchar	*id,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 G_END_DECLS
 
