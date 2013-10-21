@@ -166,8 +166,9 @@ GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
 void		 gs_app_set_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);
 const gchar	*gs_app_get_icon		(GsApp		*app);
-gboolean	 gs_app_set_icon		(GsApp		*app,
-						 const gchar	*icon,
+void		 gs_app_set_icon		(GsApp		*app,
+						 const gchar	*icon);
+gboolean	 gs_app_load_icon		(GsApp		*app,
 						 GError		**error);
 GdkPixbuf	*gs_app_get_featured_pixbuf	(GsApp		*app);
 void		 gs_app_set_featured_pixbuf	(GsApp		*app,

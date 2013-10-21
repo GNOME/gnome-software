@@ -589,21 +589,31 @@ gs_app_get_icon (GsApp *app)
 /**
  * gs_app_set_icon:
  */
+void
+gs_app_set_icon (GsApp *app, const gchar *icon)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (icon != NULL);
+
+	/* save icon */
+	g_free (app->priv->icon);
+	app->priv->icon = g_strdup (icon);
+}
+
+/**
+ * gs_app_load_icon:
+ */
 gboolean
-gs_app_set_icon (GsApp *app, const gchar *icon, GError **error)
+gs_app_load_icon (GsApp *app, GError **error)
 {
 	GdkPixbuf *pixbuf = NULL;
 	gboolean ret = TRUE;
 
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	g_return_val_if_fail (icon != NULL, FALSE);
-
-	/* save icon */
-	g_free (app->priv->icon);
-	app->priv->icon = g_strdup (icon);
+	g_return_val_if_fail (app->priv->icon != NULL, FALSE);
 
 	/* either load from the theme or from a file */
-	pixbuf = gs_pixbuf_load (icon, 64, error);
+	pixbuf = gs_pixbuf_load (app->priv->icon, 64, error);
 	if (pixbuf == NULL) {
 		ret = FALSE;
 		goto out;

@@ -164,7 +164,8 @@ gs_plugin_add_installed_file (GsPlugin *plugin,
 	gs_app_set_kind (*app, GS_APP_KIND_NORMAL);
 	gs_app_set_id_kind (*app, GS_APP_ID_KIND_WEBAPP);
 	gs_app_set_metadata (*app, "Epiphany::desktop-filename", path);
-	ret = gs_app_set_icon (*app, icon, error);
+	gs_app_set_icon (*app, icon);
+	ret = gs_app_load_icon (*app, error);
 	if (!ret)
 		goto out;
 out:
@@ -585,7 +586,8 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	}
 
 	/* set local icon name */
-	ret = gs_app_set_icon (app, filename_icon, error);
+	gs_app_set_icon (app, filename_icon);
+	ret = gs_app_load_icon (app, error);
 	if (!ret)
 		goto out;
 

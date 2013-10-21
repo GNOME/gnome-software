@@ -1212,7 +1212,8 @@ gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 	gs_app_set_summary_missing (app, tmp->str);
 	gs_app_set_kind (app, GS_APP_KIND_MISSING);
 	gs_app_set_size (app, GS_APP_SIZE_MISSING);
-	gs_app_set_icon (app, "dialog-question-symbolic", NULL);
+	gs_app_set_icon (app, "dialog-question-symbolic");
+	gs_app_load_icon (app, NULL);
 	g_string_free (tmp, TRUE);
 	return TRUE;
 }

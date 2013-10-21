@@ -311,6 +311,11 @@ gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
 						   GTK_ICON_LOOKUP_USE_BUILTIN |
 						   GTK_ICON_LOOKUP_FORCE_SIZE,
 						   error);
+	} else {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to load icon %s", icon_name);
 	}
 	return pixbuf;
 }

@@ -337,8 +337,11 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 	icon = appstream_app_get_icon (item);
 	switch (appstream_app_get_icon_kind (item)) {
 	case APPSTREAM_APP_ICON_KIND_REMOTE:
+		gs_app_set_icon (app, icon);
+		break;
 	case APPSTREAM_APP_ICON_KIND_STOCK:
-		ret = gs_app_set_icon (app, icon, &error);
+		gs_app_set_icon (app, icon);
+		ret = gs_app_load_icon (app, &error);
 		if (!ret) {
 			g_warning ("failed to load stock icon %s: %s",
 				   icon, error->message);
@@ -351,7 +354,8 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 		/* we assume <icon type="local">gnome-chess.png</icon> */
 		icon_dir = appstream_app_get_userdata (item);
 		icon_path = g_build_filename (icon_dir, icon, NULL);
-		ret = gs_app_set_icon (app, icon_path, &error);
+		gs_app_set_icon (app, icon_path);
+		ret = gs_app_load_icon (app, &error);
 		if (!ret) {
 			g_warning ("falling back to searching for %s", icon_path);
 			g_error_free (error);
@@ -364,7 +368,8 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 				g_warning ("failed to load cached icon %s", icon);
 				goto out;
 			}
-			ret = gs_app_set_icon (app, icon_path, &error);
+			gs_app_set_icon (app, icon_path);
+			ret = gs_app_load_icon (app, &error);
 			g_warning ("failed to load cached icon %s: %s",
 				   icon, error->message);
 			g_error_free (error);
