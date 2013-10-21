@@ -24,7 +24,6 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
-#include <libnotify/notify.h>
 
 #include "gs-update-monitor.h"
 
@@ -45,22 +44,6 @@ struct _GsUpdateMonitorClass {
 
 G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
 
-static void
-offline_update_action_cb (NotifyNotification *notification,
-			  gchar              *action,
-			  gpointer            user_data)
-{
-	GsUpdateMonitor *monitor = user_data;
-
-	notify_notification_close (notification, NULL);
-
-	if (g_strcmp0 (action, "view") == 0) {
-		g_action_group_activate_action (G_ACTION_GROUP (monitor->application),
-						"set-mode",
-						g_variant_new_string ("updates"));
-	}
-}
-
 static gboolean
 reenable_offline_update (gpointer data)
 {
@@ -72,19 +55,11 @@ reenable_offline_update (gpointer data)
 }
 
 static void
-on_notification_closed (NotifyNotification *notification, gpointer data)
-{
-	g_object_unref (notification);
-}
-
-static void
 notify_offline_update_available (GsUpdateMonitor *monitor)
 {
-	NotifyNotification *notification;
+	GNotification *n;
 	const gchar *title;
 	const gchar *body;
-	gboolean ret;
-	GError *error = NULL;
 
 	if (!g_file_query_exists (monitor->offline_update_file, NULL))
 		return;
@@ -97,30 +72,15 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	/* don't notify more often than every 5 minutes */
 	g_timeout_add_seconds (300, reenable_offline_update, monitor);
 
-	title = _("Software Updates available");
+	title = _("Software Updates Available");
 	body = _("Important OS and application updates are ready to be installed");
-	notification = notify_notification_new (title, body,
-						GSD_UPDATES_ICON_NORMAL);
-	notify_notification_set_hint_string (notification, "desktop-entry", "gnome-software");
-	notify_notification_set_timeout (notification, NOTIFY_EXPIRES_NEVER);
-	notify_notification_set_urgency (notification, NOTIFY_URGENCY_NORMAL);
-	notify_notification_add_action (notification, "ignore",
-					/* TRANSLATORS: don't install updates now */
-					_("Not Now"),
-					offline_update_action_cb,
-					monitor, NULL);
-	notify_notification_add_action (notification, "view",
-               				/* TRANSLATORS: view available updates */
-					_("View"),
-					offline_update_action_cb,
-					monitor, NULL);
-	g_signal_connect (notification, "closed",
-			  G_CALLBACK (on_notification_closed), NULL);
-	ret = notify_notification_show (notification, &error);
-	if (!ret) {
-		g_warning ("error: %s", error->message);
-		g_error_free (error);
-	}
+	n = g_notification_new (title);
+	g_notification_set_body (n, body);
+	g_notification_add_button_with_target (n, _("View"), "app.set-mode", "s", "updates");
+	g_notification_add_button (n, _("Not Now"), "app.nop");
+	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
+	g_application_send_notification (g_application_get_default (), "updates-available", n);
+	g_object_unref (n);
 }
 
 static void

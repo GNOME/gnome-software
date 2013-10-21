@@ -27,7 +27,7 @@
 #include <stdlib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <libnotify/notify.h>
+#include <gio/gdesktopappinfo.h>
 
 #include "gs-box.h"
 #include "gs-shell.h"
@@ -335,6 +335,40 @@ details_activated (GSimpleAction *action,
 	gs_shell_show_search_result (app->shell, id, search);
 }
 
+static void
+launch_activated (GSimpleAction *action,
+		  GVariant      *parameter,
+		  gpointer       data)
+{
+	const gchar *id;
+	gchar *desktop_id;
+	GdkDisplay *display;
+	GAppInfo *appinfo;
+	GAppLaunchContext *context;
+	GError *error = NULL;
+
+	id = g_variant_get_string (parameter, NULL);
+	display = gdk_display_get_default ();
+	desktop_id = g_strconcat (id, ".desktop", NULL);
+	appinfo = G_APP_INFO (g_desktop_app_info_new (desktop_id));
+	if (!appinfo) {
+		g_warning ("no such desktop file: %s", desktop_id);
+		goto out;
+	}
+
+	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
+	if (!g_app_info_launch (appinfo, NULL, context, &error)) {
+		g_warning ("launching %s failed: %s", id, error->message);
+		g_error_free (error);
+	}
+
+	g_object_unref (appinfo);
+	g_object_unref (context);
+
+out:
+	g_free (desktop_id);
+}
+
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
@@ -342,15 +376,15 @@ static GActionEntry actions[] = {
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "set-debug-level", set_debug_level_activated, "i", NULL, NULL },
-	{ "details", details_activated, "(ss)", NULL, NULL }
+	{ "details", details_activated, "(ss)", NULL, NULL },
+	{ "launch", launch_activated, "s", NULL, NULL },
+	{ "nop", NULL, NULL, NULL }
 };
 
 static void
 gs_application_startup (GApplication *application)
 {
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
-
-	notify_init ("gnome-software");
 
 	g_type_ensure (GS_TYPE_BOX);
 
