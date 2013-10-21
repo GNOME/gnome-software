@@ -560,6 +560,7 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	gchar *path = NULL;
 	gchar *filename_icon = NULL;
 	gchar *hash;
+	GError *error_local = NULL;
 
 	/* this is not yet installed */
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
@@ -580,9 +581,17 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 		ret = gs_plugin_epiphany_download (plugin,
 						   gs_app_get_icon (app),
 						   filename_icon,
-						   error);
-		if (!ret)
+						   &error_local);
+		if (!ret) {
+			/* this isn't a fatal error */
+			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+			gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
+			g_debug ("Failed to download %s: %s",
+				 gs_app_get_icon (app), error_local->message);
+			g_error_free (error_local);
+			ret = TRUE;
 			goto out;
+		}
 	}
 
 	/* set local icon name */

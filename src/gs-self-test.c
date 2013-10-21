@@ -24,11 +24,13 @@
 #include <glib.h>
 #include <glib-object.h>
 #include <gtk/gtk.h>
+#include <glib/gstdio.h>
 
 #include "gs-app.h"
 #include "gs-plugin.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
+#include "gs-utils.h"
 
 static gboolean
 gs_plugin_list_filter_cb (GsApp *app, gpointer user_data)
@@ -421,6 +423,61 @@ gs_plugin_loader_empty_func (void)
 	g_object_unref (loader);
 }
 
+static void
+gs_plugin_loader_webapps_func (void)
+{
+	GsPluginLoader *loader;
+	GsApp *app;
+	gchar *path;
+	gboolean ret;
+	GError *error = NULL;
+
+	/* load the plugins */
+	loader = gs_plugin_loader_new ();
+	gs_plugin_loader_set_location (loader, "./plugins/.libs");
+	ret = gs_plugin_loader_setup (loader, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* save shitty file */
+	path = g_build_filename (g_get_user_data_dir (),
+				 "app-info",
+				 "xmls",
+				 "test.xml",
+				 NULL);
+	ret = gs_mkdir_parent (path, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	ret = g_file_set_contents (path,
+				   "<?xml version=\"1.0\"?>\n"
+				   "<applications version=\"0.1\">\n"
+				   "  <application>\n"
+				   "    <id type=\"webapp\">epiphany-test.desktop</id>\n"
+				   "    <name>test</name>\n"
+				   "    <icon type=\"remote\">http://www.test.com/test.png</icon>\n"
+				   "  </application>\n"
+				   "</applications>\n",
+				   -1,
+				   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* load a webapp with a failing icon */
+	app = gs_app_new ("epiphany-test");
+	ret = gs_plugin_loader_app_refine (loader, app,
+					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UNAVAILABLE);
+
+	g_unlink (path);
+	g_free (path);
+	g_object_unref (app);
+	g_object_unref (loader);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -440,6 +497,7 @@ main (int argc, char **argv)
 		g_test_add_func ("/gnome-software/plugin-loader{empty}", gs_plugin_loader_empty_func);
 	g_test_add_func ("/gnome-software/plugin-loader{dedupe}", gs_plugin_loader_dedupe_func);
 	if(0)g_test_add_func ("/gnome-software/plugin-loader", gs_plugin_loader_func);
+	if(0)g_test_add_func ("/gnome-software/plugin-loader{webapps}", gs_plugin_loader_webapps_func);
 
 	return g_test_run ();
 }
