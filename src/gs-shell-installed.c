@@ -322,6 +322,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 	/* get popular apps */
 	gs_plugin_loader_get_installed_async (priv->plugin_loader,
 					      GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION,
 					      priv->cancellable,
 					      gs_shell_installed_get_installed_cb,

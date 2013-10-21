@@ -268,6 +268,9 @@ gs_plugin_refine (GsPlugin *plugin,
 	GList *packages = NULL;
 	GsApp *app;
 
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) == 0)
+		goto out;
+
 	/* add any missing history data */
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
