@@ -200,11 +200,18 @@ out:
 	return count;
 }
 
+typedef enum {
+	APPSTREAM_XML_UNMUNGE_FLAGS_DEFAULT,
+	APPSTREAM_XML_UNMUNGE_FLAGS_KEEP_NEWLINES,
+	APPSTREAM_XML_UNMUNGE_FLAGS_LAST
+} AppstreamXmlUnmungeFlags;
+
 /**
- * appstream_xml_unmunge:
+ * appstream_xml_unmunge_full:
  */
-gchar *
-appstream_xml_unmunge (const gchar *text, gssize text_length)
+static gchar *
+appstream_xml_unmunge_full (const gchar *text, gssize text_length,
+			    AppstreamXmlUnmungeFlags flags)
 {
 	GString *str;
 	gboolean ignore_whitespace = TRUE;
@@ -217,7 +224,8 @@ appstream_xml_unmunge (const gchar *text, gssize text_length)
 	/* ignore repeated whitespace */
 	str = g_string_sized_new (text_length);
 	for (i = 0; i < text_length; i++) {
-		if (text[i] == ' ' || text[i] == '\n') {
+		if (text[i] == ' ' ||
+		    (text[i] == '\n' && (flags != APPSTREAM_XML_UNMUNGE_FLAGS_KEEP_NEWLINES))) {
 			if (!ignore_whitespace)
 				g_string_append_c (str, ' ');
 			ignore_whitespace = TRUE;
@@ -245,4 +253,24 @@ appstream_xml_unmunge (const gchar *text, gssize text_length)
 	appstream_string_replace (str, "&#39;", "'");
 
 	return g_string_free (str, FALSE);
+}
+
+/**
+ * appstream_xml_unmunge:
+ */
+gchar *
+appstream_xml_unmunge (const gchar *text, gssize text_length)
+{
+	return appstream_xml_unmunge_full (text, text_length,
+					   APPSTREAM_XML_UNMUNGE_FLAGS_DEFAULT);
+}
+
+/**
+ * appstream_xml_unmunge_safe:
+ */
+gchar *
+appstream_xml_unmunge_safe (const gchar *text, gssize text_length)
+{
+	return appstream_xml_unmunge_full (text, text_length,
+					   APPSTREAM_XML_UNMUNGE_FLAGS_KEEP_NEWLINES);
 }

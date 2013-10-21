@@ -122,6 +122,23 @@ appstream_markup_set_mode (AppstreamMarkup *markup, AppstreamMarkupMode mode)
 }
 
 /**
+ * appstream_text_is_whitespace:
+ */
+static gboolean
+appstream_text_is_whitespace (const gchar *text)
+{
+	gboolean ret = TRUE;
+	guint i;
+	for (i = 0; text[i] != '\0'; i++) {
+		if (!g_ascii_isspace (text[i])) {
+			ret = FALSE;
+			break;
+		}
+	}
+	return ret;
+}
+
+/**
  * appstream_markup_add_content:
  */
 void
@@ -141,10 +158,11 @@ appstream_markup_add_content (AppstreamMarkup *markup,
 	switch (markup->mode) {
 	case APPSTREAM_MARKUP_MODE_START:
 		/* this is for pre-formatted text */
-		tmp = appstream_xml_unmunge (text, length);
+		tmp = appstream_xml_unmunge_safe (text, length);
 		if (tmp == NULL)
 			break;
-		g_string_append_printf (markup->string, "%s", tmp);
+		if (!appstream_text_is_whitespace (tmp))
+			g_string_append (markup->string, tmp);
 		break;
 	case APPSTREAM_MARKUP_MODE_P_CONTENT:
 		tmp = appstream_xml_unmunge (text, length);

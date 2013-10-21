@@ -60,10 +60,10 @@ appstream_markup_plain_func (void)
 	appstream_markup_set_enabled (markup, TRUE);
 	appstream_markup_set_lang (markup, NULL);
 	appstream_markup_set_mode (markup, APPSTREAM_MARKUP_MODE_START);
-	appstream_markup_add_content (markup, "This is preformatted", -1);
+	appstream_markup_add_content (markup, "This is preformatted\n\nOne", -1);
 	appstream_markup_set_mode (markup, APPSTREAM_MARKUP_MODE_END);
 	tmp = appstream_markup_get_text (markup);
-	g_assert_cmpstr (tmp, ==, "This is preformatted");
+	g_assert_cmpstr (tmp, ==, "This is preformatted\n\nOne");
 
 	appstream_markup_free (markup);
 }
@@ -78,6 +78,7 @@ appstream_markup_tags_func (void)
 	appstream_markup_set_enabled (markup, TRUE);
 	appstream_markup_set_lang (markup, NULL);
 	appstream_markup_set_mode (markup, APPSTREAM_MARKUP_MODE_START);
+	appstream_markup_add_content (markup, "    ", -1);
 
 	appstream_markup_set_mode (markup, APPSTREAM_MARKUP_MODE_P_START);
 	appstream_markup_add_content (markup, "Para1", -1);

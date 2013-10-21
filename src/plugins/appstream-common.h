@@ -59,6 +59,8 @@ const gchar	*appstream_tag_to_string	(AppstreamTag	 tag);
 guint		 appstream_get_locale_value	(const gchar	*lang);
 gchar		*appstream_xml_unmunge		(const gchar	*text,
 						 gssize		 text_length);
+gchar		*appstream_xml_unmunge_safe	(const gchar	*text,
+						 gssize		 text_length);
 
 G_END_DECLS
 
