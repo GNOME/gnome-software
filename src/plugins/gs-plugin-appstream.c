@@ -610,11 +610,15 @@ gs_plugin_refine (GsPlugin *plugin,
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		ret = gs_plugin_refine_from_id (plugin, app, error);
-		if (!ret)
+		if (!ret) {
+			gs_profile_stop_full (plugin->profile, "appstream::refine");
 			goto out;
+		}
 		ret = gs_plugin_refine_from_pkgname (plugin, app, error);
-		if (!ret)
+		if (!ret) {
+			gs_profile_stop_full (plugin->profile, "appstream::refine");
 			goto out;
+		}
 	}
 	gs_profile_stop_full (plugin->profile, "appstream::refine");
 
