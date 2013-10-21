@@ -599,9 +599,11 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 	gs_profile_stop_full (plugin->profile, "packagekit-refine[name->id]");
 
-	/* add any missing ratings data */
+	/* set the package-id for an installed desktop file */
 	gs_profile_start_full (plugin->profile, "packagekit-refine[desktop-filename->id]");
 	for (l = list; l != NULL; l = l->next) {
+		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
+			continue;
 		app = GS_APP (l->data);
 		if (gs_app_get_metadata_item (app, "PackageKit::package-id") != NULL)
 			continue;

@@ -597,7 +597,8 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY|
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
 					   priv->cancellable,
 					   gs_shell_details_app_refine_cb,
