@@ -2007,54 +2007,76 @@ gs_plugin_loader_app_action_thread_cb (GSimpleAsyncResult *res,
 	gs_plugin_loader_app_action_state_finish (state, NULL);
 }
 
-static void
-load_install_queue (GsPluginLoader *plugin_loader)
+static gboolean
+load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 {
-	static gboolean loaded = FALSE;
+	GList *list = NULL;
+	GsApp *app;
+	gboolean ret = TRUE;
+	gchar **names = NULL;
+	gchar *contents = NULL;
 	gchar *file;
-	gchar *contents;
+	guint i;
 
-	if (loaded)
-		return;
+	/* load from file */
+	file = g_build_filename (g_get_user_data_dir (),
+				 "gnome-software",
+				 "install-queue",
+				 NULL);
+	if (!g_file_test (file, G_FILE_TEST_EXISTS))
+		goto out;
+	g_debug ("loading install queue from %s", file);
+	ret = g_file_get_contents (file, &contents, NULL, error);
+	if (!ret)
+		goto out;
 
-	loaded = TRUE;
-
-	file = g_build_filename (g_get_user_data_dir (), "gnome-software", "install-queue", NULL);
-	g_debug ("loading install queue from %s\n", file);
-	if (g_file_get_contents (file, &contents, NULL, NULL)) {
-		gint i;
-		gchar **names;
-		names = g_strsplit (contents, "\n", 0);
-
-		for (i = 0; names[i]; i++) {
-			GsApp *app;
-			if (strlen (names[i]) == 0)
-				continue;
-			app = gs_app_new (names[i]);
-			gs_app_set_state (app, GS_APP_STATE_QUEUED);
-			g_hash_table_insert (plugin_loader->priv->app_cache,
-					     g_strdup (gs_app_get_id (app)),
-					     g_object_ref (app));
-		
-			g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
-			g_ptr_array_add (plugin_loader->priv->pending_apps, app);
-			g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
-			gs_plugin_loader_app_refine_async (plugin_loader, app, 0, NULL, NULL, NULL);
-		}
-		g_free (contents);
-		g_strfreev (names);
+	/* add each app-id */
+	names = g_strsplit (contents, "\n", 0);
+	for (i = 0; names[i]; i++) {
+		if (strlen (names[i]) == 0)
+			continue;
+		app = gs_app_new (names[i]);
+		gs_app_set_state (app, GS_APP_STATE_QUEUED);
+		g_hash_table_insert (plugin_loader->priv->app_cache,
+				     g_strdup (gs_app_get_id (app)),
+				     g_object_ref (app));
+		g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
+		g_ptr_array_add (plugin_loader->priv->pending_apps,
+				 g_object_ref (app));
+		g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+		g_debug ("adding pending app %s", gs_app_get_id (app));
+		gs_plugin_add_app (&list, app);
+		g_object_unref (app);
 	}
 
+	/* refine */
+	if (list != NULL) {
+		ret = gs_plugin_loader_run_refine (plugin_loader,
+						   NULL,
+						   list,
+						   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						   NULL, //FIXME?
+						   error);
+		if (!ret)
+			goto out;
+	}
+out:
+	gs_plugin_list_free (list);
+	g_free (contents);
+	g_strfreev (names);
 	g_free (file);
+	return ret;
 }
 
 static void
 save_install_queue (GsPluginLoader *plugin_loader)
 {
-	GString *s;
+	GError *error = NULL;
 	GPtrArray *pending_apps;
-	gint i;
+	GString *s;
+	gboolean ret;
 	gchar *file;
+	gint i;
 
 	s = g_string_new ("");
 	pending_apps = plugin_loader->priv->pending_apps;
@@ -2069,9 +2091,18 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	}
 	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
 
-	file = g_build_filename (g_get_user_data_dir (), "gnome-software", "install-queue", NULL);
-	g_debug ("saving install queue to %s\n", file);
-	g_file_set_contents (file, s->str, s->len, NULL);
+	/* save file */
+	file = g_build_filename (g_get_user_data_dir (),
+				 "gnome-software",
+				 "install-queue",
+				 NULL);
+	g_debug ("saving install queue to %s", file);
+	ret = g_file_set_contents (file, s->str, s->len, &error);
+	if (!ret) {
+		g_warning ("failed to save install queue: %s", error->message);
+		g_error_free (error);
+	}
+
 	g_free (file);
 	g_string_free (s, TRUE);
 }
@@ -2475,7 +2506,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_initialize");
 
 	/* now we can load the install-queue */
-	load_install_queue (plugin_loader);
+	ret = load_install_queue (plugin_loader, error);
+	if (!ret)
+		goto out;
 out:
 	gs_profile_stop (plugin_loader->priv->profile, "GsPlugin::setup");
 	if (dir != NULL)
