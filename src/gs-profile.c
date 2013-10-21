@@ -92,6 +92,7 @@ gs_profile_start (GsProfile *profile, const gchar *id)
 	/* already started */
 	item = gs_profile_item_find (profile->priv->current, id);
 	if (item != NULL) {
+		gs_profile_dump (profile);
 		g_warning ("Already a started task for %s", id);
 		goto out;
 	}

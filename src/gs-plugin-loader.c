@@ -275,6 +275,46 @@ out:
 }
 
 /**
+ * gs_plugin_loader_run_results_plugin:
+ **/
+static gboolean
+gs_plugin_loader_run_results_plugin (GsPluginLoader *plugin_loader,
+				     GsPlugin *plugin,
+				     const gchar *function_name,
+				     GList **list,
+				     GCancellable *cancellable,
+				     GError **error)
+{
+	GsPluginResultsFunc plugin_func = NULL;
+	gboolean exists;
+	gboolean ret = TRUE;
+	gchar *profile_id = NULL;
+
+	/* get symbol */
+	exists = g_module_symbol (plugin->module,
+				  function_name,
+				  (gpointer *) &plugin_func);
+	if (!exists)
+		goto out;
+
+	/* run function */
+	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+				      plugin->name, function_name);
+	gs_profile_start (plugin_loader->priv->profile, profile_id);
+	g_assert (error == NULL || *error == NULL);
+	ret = plugin_func (plugin, list, cancellable, error);
+	if (!ret)
+		goto out;
+out:
+	if (profile_id != NULL) {
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+	}
+	g_free (profile_id);
+	return ret;
+}
+
+/**
  * gs_plugin_loader_run_results:
  **/
 static GList *
@@ -285,10 +325,8 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 {
 	gboolean ret = TRUE;
 	gchar *profile_id_parent;
-	gchar *profile_id;
 	GList *list = NULL;
 	GsPlugin *plugin;
-	GsPluginResultsFunc plugin_func = NULL;
 	guint i;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
@@ -311,21 +349,14 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			ret = FALSE;
 			goto out;
 		}
-		ret = g_module_symbol (plugin->module,
-				       function_name,
-				       (gpointer *) &plugin_func);
-		if (!ret)
-			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
-		g_assert (error == NULL || *error == NULL);
-		ret = plugin_func (plugin, &list, cancellable, error);
+		ret = gs_plugin_loader_run_results_plugin (plugin_loader,
+							   plugin,
+							   function_name,
+							   &list,
+							   cancellable,
+							   error);
 		if (!ret)
 			goto out;
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
-		g_free (profile_id);
 	}
 
 	/* dedupe applications we already know about */
@@ -344,9 +375,6 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&list);
 
-	/* profile */
-	gs_profile_stop (plugin_loader->priv->profile, profile_id_parent);
-
 	/* no results */
 	if (list == NULL) {
 		g_set_error (error,
@@ -356,6 +384,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		goto out;
 	}
 out:
+	gs_profile_stop (plugin_loader->priv->profile, profile_id_parent);
 	g_free (profile_id_parent);
 	if (!ret) {
 		gs_plugin_list_free (list);
@@ -475,6 +504,55 @@ gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 
 
 /**
+ * gs_plugin_loader_run_action_plugin:
+ **/
+static gboolean
+gs_plugin_loader_run_action_plugin (GsPluginLoader *plugin_loader,
+				    GsPlugin *plugin,
+				    GsApp *app,
+				    const gchar *function_name,
+				    GCancellable *cancellable,
+				    GError **error)
+{
+	GError *error_local = NULL;
+	GsPluginActionFunc plugin_func = NULL;
+	gboolean exists;
+	gboolean ret = TRUE;
+	gchar *profile_id = NULL;
+
+	exists = g_module_symbol (plugin->module,
+				  function_name,
+				  (gpointer *) &plugin_func);
+	if (!exists)
+		goto out;
+	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+				      plugin->name, function_name);
+	gs_profile_start (plugin_loader->priv->profile, profile_id);
+	ret = plugin_func (plugin, app, cancellable, &error_local);
+	if (!ret) {
+		if (g_error_matches (error_local,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
+			ret = TRUE;
+			g_debug ("not supported for plugin %s: %s",
+				 plugin->name,
+				 error_local->message);
+			g_clear_error (&error_local);
+		} else {
+			g_propagate_error (error, error_local);
+			goto out;
+		}
+	}
+out:
+	if (profile_id != NULL) {
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+	}
+	g_free (profile_id);
+	return ret;
+}
+
+/**
  * gs_plugin_loader_run_action:
  **/
 static gboolean
@@ -484,12 +562,8 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	gboolean exists;
-	gboolean ret = FALSE;
+	gboolean ret = TRUE;
 	gboolean anything_ran = FALSE;
-	gchar *profile_id;
-	GError *error_local = NULL;
-	GsPluginActionFunc plugin_func = NULL;
 	GsPlugin *plugin;
 	guint i;
 
@@ -503,31 +577,14 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			ret = FALSE;
 			goto out;
 		}
-		exists = g_module_symbol (plugin->module,
-					  function_name,
-					  (gpointer *) &plugin_func);
-		if (!exists)
-			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
-		ret = plugin_func (plugin, app, cancellable, &error_local);
-		if (!ret) {
-			if (g_error_matches (error_local,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
-				g_debug ("not supported for plugin %s: %s",
-					 plugin->name,
-					 error_local->message);
-				g_clear_error (&error_local);
-			} else {
-				g_propagate_error (error, error_local);
-				goto out;
-			}
-		}
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
-		g_free (profile_id);
+		ret = gs_plugin_loader_run_action_plugin (plugin_loader,
+							  plugin,
+							  app,
+							  function_name,
+							  cancellable,
+							  error);
+		if (!ret)
+			goto out;
 		anything_ran = TRUE;
 	}
 
@@ -541,9 +598,6 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			     function_name);
 		goto out;
 	}
-
-	/* success */
-	ret = TRUE;
 out:
 	return ret;
 }
@@ -2227,11 +2281,11 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 					      plugin->name, function_name);
 		gs_profile_start (plugin_loader->priv->profile, profile_id);
 		plugin_func (plugin);
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		gs_profile_stop (plugin_loader->priv->profile, profile_id);
 		g_free (profile_id);
 	}
