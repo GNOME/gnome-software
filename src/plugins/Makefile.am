@@ -195,4 +195,20 @@ libgs_plugin_datadir_filename_local_la_LIBADD = $(GS_PLUGIN_LIBS) $(GTK_LIBS)
 libgs_plugin_datadir_filename_local_la_LDFLAGS = -module -avoid-version
 libgs_plugin_datadir_filename_local_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
+check_PROGRAMS =					\
+	gs-self-test
+
+gs_self_test_SOURCES =					\
+	appstream-common.c				\
+	appstream-markup.c				\
+	gs-self-test.c
+
+gs_self_test_LDADD =					\
+	$(GLIB_LIBS)					\
+	$(GTK_LIBS)
+
+gs_self_test_CFLAGS = $(WARNINGFLAGS_C)
+
+TESTS = gs-self-test
+
 -include $(top_srcdir)/git.mk
