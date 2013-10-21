@@ -2108,8 +2108,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 }
 
 static void
-add_app_to_install_queue (GsPluginLoader *plugin_loader,
-		          GsApp *app)
+add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
 	/* FIXME: persist this */
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
@@ -2122,8 +2121,7 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader,
 }
 
 static gboolean
-remove_app_from_install_queue (GsPluginLoader *plugin_loader,
-			       GsApp *app)
+remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
 	gboolean ret;
 
@@ -2660,43 +2658,69 @@ gs_plugin_loader_new (void)
 	return GS_PLUGIN_LOADER (plugin_loader);
 }
 
+/**
+ * gs_plugin_loader_app_installed_cb:
+ **/
+static void
+gs_plugin_loader_app_installed_cb (GObject *source,
+				   GAsyncResult *res,
+				   gpointer user_data)
+{
+	GError *error = NULL;
+	GsApp *app = GS_APP (user_data);
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	gboolean ret;
+
+	ret = gs_plugin_loader_app_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (!ret) {
+		remove_app_from_install_queue (plugin_loader, app);
+		g_warning ("failed to install %s: %s",
+			   gs_app_get_id (app),
+			   error->message);
+		g_error_free (error);
+	}
+	g_object_unref (app);
+}
+
+/**
+ * gs_plugin_loader_set_network_status:
+ **/
 void
 gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 				     gboolean online)
 {
+	GList *l;
+	GList *queue = NULL;
+	GsApp *app;
+	guint i;
+
 	if (plugin_loader->priv->online == online)
 		return;
 
 	plugin_loader->priv->online = online;
 
-	if (online) {
-		GPtrArray *pending_apps;
-		gint i;
-		GsApp *app;
-		GList *queue, *l;
+	if (!online)
+		return;
 
-		queue = NULL;
-		pending_apps = plugin_loader->priv->pending_apps;
-		g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
-		for (i = pending_apps->len - 1; i >= 0; i--) {
-			app = g_ptr_array_index (pending_apps, i);
-			if (gs_app_get_state (app) == GS_APP_STATE_QUEUED) {
-				queue = g_list_prepend (queue, g_object_ref (app));
-				g_ptr_array_remove_index_fast (pending_apps, i);
-			}
-		}		
-		g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
-		for (l = queue; l; l = l->next) {
-			app = l->data;
-			gs_plugin_loader_app_action_async (plugin_loader,
-							   app,
-							   GS_PLUGIN_LOADER_ACTION_INSTALL,
-							   NULL,
-							   NULL,
-							   NULL);		
-		}
-		g_list_free_full (queue, g_object_unref);
+	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
+	for (i = 0; i < plugin_loader->priv->pending_apps->len; i++) {
+		app = g_ptr_array_index (plugin_loader->priv->pending_apps, i);
+		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED)
+			gs_plugin_add_app (&queue, app);
 	}
+	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+	for (l = queue; l; l = l->next) {
+		app = l->data;
+		gs_plugin_loader_app_action_async (plugin_loader,
+						   app,
+						   GS_PLUGIN_LOADER_ACTION_INSTALL,
+						   NULL,
+						   gs_plugin_loader_app_installed_cb,
+						   g_object_ref (app));
+	}
+	g_list_free_full (queue, g_object_unref);
 }
 
 /* vim: set noexpandtab: */
