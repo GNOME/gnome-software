@@ -50,6 +50,7 @@ main (int argc, char **argv)
 	GError *error = NULL;
 	GList *list = NULL;
 	GOptionContext *context;
+	GsApp *app = NULL;
 	GsPluginLoader *plugin_loader;
 	GsProfile *profile;
 	gboolean ret;
@@ -104,6 +105,13 @@ main (int argc, char **argv)
 						GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 						NULL,
 						&error);
+	} else if (argc == 3 && g_strcmp0 (argv[1], "refine") == 0) {
+		app = gs_app_new (argv[2]);
+		ret = gs_plugin_loader_app_refine (plugin_loader,
+						   app,
+						   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						   NULL,
+						   &error);
 	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
 		list = gs_plugin_loader_get_updates (plugin_loader,
 						     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
@@ -118,6 +126,11 @@ main (int argc, char **argv)
 		g_warning ("Did not recognise option, use 'installed', "
 			   "'updates', 'popular', or 'search'");
 	}
+	if (error != NULL) {
+		g_warning ("Failed: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
 
 	if (show_results)
 		gs_cmd_show_results (list);
@@ -125,6 +138,8 @@ main (int argc, char **argv)
 	gs_profile_dump (profile);
 out:
 	gs_plugin_list_free (list);
+	if (app != NULL)
+		g_object_unref (app);
 	g_object_unref (plugin_loader);
 	g_object_unref (profile);
 	return status;
