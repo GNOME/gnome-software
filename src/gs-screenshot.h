@@ -23,6 +23,7 @@
 #define __GS_SCREENSHOT_H
 
 #include <glib-object.h>
+#include <gtk/gtk.h>
 
 G_BEGIN_DECLS
 
@@ -64,7 +65,8 @@ void		 gs_screenshot_add_image	(GsScreenshot		*screenshot,
 						 guint			 height);
 const gchar	*gs_screenshot_get_url		(GsScreenshot		*screenshot,
 						 guint			 width,
-						 guint			 height);
+						 guint			 height,
+						 GtkRequisition		*provided);
 
 G_END_DECLS
 

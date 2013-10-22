@@ -114,8 +114,8 @@ gs_screenshot_add_image (GsScreenshot *screenshot,
 	/* check if already exists */
 	item = gs_screenshot_get_item (screenshot, width, height);
 	if (item != NULL) {
-		g_warning ("replaced URL %s with %s for %ux%u",
-			   item->url, url, width, height);
+		g_debug ("replaced URL %s with %s for %ux%u",
+			 item->url, url, width, height);
 		g_free (item->url);
 		item->url = g_strdup (url);
 	} else {
@@ -131,7 +131,10 @@ gs_screenshot_add_image (GsScreenshot *screenshot,
  * gs_screenshot_get_url:
  **/
 const gchar *
-gs_screenshot_get_url (GsScreenshot *screenshot, guint width, guint height)
+gs_screenshot_get_url (GsScreenshot *screenshot,
+		       guint width,
+		       guint height,
+		       GtkRequisition *provided)
 {
 	GsScreenshotItem *item;
 
@@ -142,6 +145,11 @@ gs_screenshot_get_url (GsScreenshot *screenshot, guint width, guint height)
 	item = gs_screenshot_get_item (screenshot, width, height);
 	if (item == NULL)
 		return NULL;
+
+	if (provided != NULL) {
+		provided->width = item->width;
+		provided->height = item->height;
+	}
 
 	return item->url;
 }

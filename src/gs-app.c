@@ -233,7 +233,10 @@ gs_app_to_string (GsApp *app)
 	for (i = 0; i < priv->screenshots->len; i++) {
 		ss = g_ptr_array_index (priv->screenshots, i);
 		g_string_append_printf (str, "\tscreenshot-%02i:\t%s\n",
-					i, gs_screenshot_get_url (ss, G_MAXUINT, G_MAXUINT));
+					i, gs_screenshot_get_url (ss,
+								  G_MAXUINT,
+								  G_MAXUINT,
+								  NULL));
 	}
 	tmp = g_hash_table_lookup (priv->urls, GS_APP_URL_KIND_HOMEPAGE);
 	if (tmp != NULL)

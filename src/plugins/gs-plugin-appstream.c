@@ -431,8 +431,6 @@ gs_plugin_refine_add_screenshots (GsApp *app, AppstreamApp *item)
 					      ss_kind == APPSTREAM_SCREENSHOT_KIND_DEFAULT);
 		for (j = 0; j < images_as->len; j++) {
 			im = g_ptr_array_index (images_as, j);
-			if (appstream_image_get_kind (im) == APPSTREAM_IMAGE_KIND_SOURCE)
-				continue;
 			gs_screenshot_add_image	(screenshot,
 						 appstream_image_get_url (im),
 						 appstream_image_get_width (im),

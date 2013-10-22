@@ -245,6 +245,7 @@ gs_shell_details_screenshot_selected_cb (GtkListBox *list,
 static void
 gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 {
+	const gchar *tmp;
 	GPtrArray *screenshots;
 	GsScreenshot *ss;
 	GsShellDetailsPrivate *priv = shell_details->priv;
@@ -252,6 +253,7 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 	GtkWidget *ssimg;
 	GtkWidget *widget;
 	guint i;
+	GtkRequisition provided;
 
 	/* set screenshots */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
@@ -272,9 +274,24 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 	gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg),
 					  g_get_user_cache_dir ());
 	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
-	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-				      GS_SCREENSHOT_SIZE_LARGE_WIDTH,
-				      GS_SCREENSHOT_SIZE_LARGE_HEIGHT);
+
+	/* do we have a screenshot of the right size? */
+	tmp = gs_screenshot_get_url (ss,
+				     GS_SCREENSHOT_SIZE_LARGE_WIDTH,
+				     GS_SCREENSHOT_SIZE_LARGE_HEIGHT,
+				     &provided);
+	if (tmp != NULL) {
+		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
+					      GS_SCREENSHOT_SIZE_LARGE_WIDTH,
+					      GS_SCREENSHOT_SIZE_LARGE_HEIGHT);
+	} else {
+		/* use any size provided */
+		gs_screenshot_get_url (ss, G_MAXUINT, G_MAXUINT, &provided);
+		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
+					      provided.width,
+					      provided.height);
+	}
+
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 	gtk_box_pack_start (GTK_BOX (widget), ssimg, FALSE, FALSE, 0);
 	gtk_widget_set_visible (ssimg, TRUE);

@@ -259,7 +259,8 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* test if size specific cachdir exists */
 	url = gs_screenshot_get_url (priv->screenshot,
 				     priv->width,
-				     priv->height);
+				     priv->height,
+				     NULL);
 	if (url == NULL) {
 		/* TRANSLATORS: this is when we request a screenshot size that
 		 * the generator did not create or the parser did not add */
