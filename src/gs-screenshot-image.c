@@ -290,7 +290,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* download file */
-	g_debug ("downloading %s to %s\n", url, priv->filename);
+	g_debug ("downloading %s to %s", url, priv->filename);
 	base_uri = soup_uri_new (url);
 	if (base_uri == NULL) {
 		/* TRANSLATORS: this is when we try to download a screenshot
