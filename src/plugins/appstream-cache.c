@@ -630,12 +630,17 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 		appstream_app_set_id (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_TAG_PKGNAME:
-		if (helper->item_temp == NULL ||
-		    appstream_app_get_pkgname (helper->item_temp) != NULL) {
+		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
 					     APPSTREAM_CACHE_ERROR_FAILED,
 					     "item_temp pkgname invalid");
+			return;
+		}
+		if (appstream_app_get_pkgname (helper->item_temp) != NULL) {
+			g_debug ("multiple pkgname's for %s, ignoring %s",
+				 appstream_app_get_id (helper->item_temp),
+				 text);
 			return;
 		}
 		appstream_app_set_pkgname (helper->item_temp, text, text_len);
