@@ -197,7 +197,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
 	if (show_historical)
-		refine_flags &= GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
+		refine_flags |= GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
 					    refine_flags,
 					    priv->cancellable,
