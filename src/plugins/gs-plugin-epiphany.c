@@ -642,7 +642,6 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_id_kind (app) != GS_APP_ID_KIND_WEBAPP)
 			continue;
-		gs_app_set_source (app, "");
 		gs_app_set_size (app, 4096);
 		tmp = gs_app_get_metadata_item (app, "Epiphany::desktop-filename");
 		if (tmp != NULL)

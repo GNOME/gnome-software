@@ -451,11 +451,6 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show apps that do not have the required details */
-	if (gs_app_get_source (app) == NULL) {
-		g_debug ("app invalid as no source %s",
-			 gs_plugin_loader_get_app_str (app));
-		return FALSE;
-	}
 	if (gs_app_get_name (app) == NULL) {
 		g_debug ("app invalid as no name %s",
 			 gs_plugin_loader_get_app_str (app));
@@ -711,7 +706,6 @@ gs_plugin_loader_add_os_update_item (GList *list)
 	app_os = gs_app_new ("os-update");
 	gs_app_set_kind (app_os, GS_APP_KIND_OS_UPDATE);
 	gs_app_set_state (app_os, GS_APP_STATE_UPDATABLE);
-	gs_app_set_source (app_os, "os-update");
 	/* TRANSLATORS: this is a group of updates that are not packages and
 	 * are ot shown in the main list */
 	gs_app_set_name (app_os, _("OS Updates"));
