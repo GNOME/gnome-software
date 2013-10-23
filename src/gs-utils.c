@@ -62,6 +62,7 @@ start_spinning (gpointer data)
 	gtk_widget_set_opacity (spinner, 0);
 	gtk_spinner_start (GTK_SPINNER (spinner));
 	id = g_timeout_add (100, fade_in, spinner);
+	g_source_set_name_by_id (id, "[gnome-software] fade_in");
 	g_object_set_data_full (G_OBJECT (spinner), "fade-timeout",
 				GUINT_TO_POINTER (id), remove_source);
 
@@ -81,7 +82,7 @@ gs_start_spinner (GtkSpinner *spinner)
 
 	gtk_widget_set_opacity (GTK_WIDGET (spinner), 0);
 	id = g_timeout_add (SPINNER_DELAY, start_spinning, spinner);
-
+	g_source_set_name_by_id (id, "[gnome-software] start_spinning");
 	g_object_set_data_full (G_OBJECT (spinner), "start-timeout",
 				GUINT_TO_POINTER (id), remove_source);
 }

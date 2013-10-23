@@ -57,6 +57,7 @@ reenable_offline_update (gpointer data)
 static void
 notify_offline_update_available (GsUpdateMonitor *monitor)
 {
+	guint id;
 	GNotification *n;
 	const gchar *title;
 	const gchar *body;
@@ -70,7 +71,8 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	monitor->offline_update_notified = TRUE;
 
 	/* don't notify more often than every 5 minutes */
-	g_timeout_add_seconds (300, reenable_offline_update, monitor);
+	id = g_timeout_add_seconds (300, reenable_offline_update, monitor);
+	g_source_set_name_by_id (id, "[gnome-software] reenable_offline_update");
 
 	title = _("Software Updates Available");
 	body = _("Important OS and application updates are ready to be installed");
@@ -106,15 +108,18 @@ initial_offline_update_check (gpointer data)
 static void
 gs_update_monitor_init (GsUpdateMonitor *monitor)
 {
+	guint id;
+
 	monitor->offline_update_file = g_file_new_for_path ("/var/lib/PackageKit/prepared-update");
 	monitor->offline_update_monitor = g_file_monitor_file (monitor->offline_update_file, 0, NULL, NULL);
 
 	g_signal_connect (monitor->offline_update_monitor, "changed",
 			  G_CALLBACK (offline_update_cb), monitor);
 
-	g_timeout_add_seconds (300,
-			       initial_offline_update_check,
-			       monitor);
+	id = g_timeout_add_seconds (300,
+				    initial_offline_update_check,
+				    monitor);
+	g_source_set_name_by_id (id, "[gnome-software] initial_offline_update_check");
 }
 
 static void

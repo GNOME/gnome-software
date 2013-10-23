@@ -312,6 +312,8 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	if (priv->spinner_id != 0)
 		g_source_remove (priv->spinner_id);
 	priv->spinner_id = g_timeout_add (250, gs_screenshot_image_show_spinner, ssimg);
+	g_source_set_name_by_id (priv->spinner_id,
+				 "[gnome-software] gs_screenshot_image_show_spinner");
 out:
 	g_free (basename);
 	g_free (sizedir);

@@ -623,12 +623,14 @@ static void
 gs_app_set_state_in_idle (GsApp *app, GsAppState state)
 {
 	AppStateData *app_data;
+	guint id;
 
 	app_data = g_new (AppStateData, 1);
 	app_data->app = g_object_ref (app);
 	app_data->state = state;
 
-	g_idle_add (set_state_idle_cb, app_data);
+	id = g_idle_add (set_state_idle_cb, app_data);
+	g_source_set_name_by_id (id, "[gnome-software] set_state_idle_cb");
 }
 
 /******************************************************************************/
@@ -1973,6 +1975,7 @@ gs_plugin_loader_app_action_thread_cb (GSimpleAsyncResult *res,
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	guint id;
 
 	/* add to list */
 	if (state->state_progress != GS_APP_STATE_UNKNOWN)
@@ -1980,7 +1983,8 @@ gs_plugin_loader_app_action_thread_cb (GSimpleAsyncResult *res,
 	g_mutex_lock (&state->plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_add (state->plugin_loader->priv->pending_apps, g_object_ref (state->app));
 	g_mutex_unlock (&state->plugin_loader->priv->pending_apps_mutex);
-	g_idle_add (emit_pending_apps_idle, g_object_ref (state->plugin_loader));
+	id = g_idle_add (emit_pending_apps_idle, g_object_ref (state->plugin_loader));
+	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 
 	/* perform action */
 	state->ret = gs_plugin_loader_run_action (plugin_loader,
@@ -1999,7 +2003,8 @@ gs_plugin_loader_app_action_thread_cb (GSimpleAsyncResult *res,
 	g_mutex_lock (&state->plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_remove (state->plugin_loader->priv->pending_apps, state->app);
 	g_mutex_unlock (&state->plugin_loader->priv->pending_apps_mutex);
-	g_idle_add (emit_pending_apps_idle, g_object_ref (state->plugin_loader));
+	id = g_idle_add (emit_pending_apps_idle, g_object_ref (state->plugin_loader));
+	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 
 	/* success */
 	if (state->state_success != GS_APP_STATE_UNKNOWN)
@@ -2110,13 +2115,16 @@ save_install_queue (GsPluginLoader *plugin_loader)
 static void
 add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
+	guint id;
+
 	/* FIXME: persist this */
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_add (plugin_loader->priv->pending_apps, g_object_ref (app));
 	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
 
 	gs_app_set_state (app, GS_APP_STATE_QUEUED);
-	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
+	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
+	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 	save_install_queue (plugin_loader);
 }
 
@@ -2124,6 +2132,7 @@ static gboolean
 remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
 	gboolean ret;
+	guint id;
 
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
 	ret = g_ptr_array_remove (plugin_loader->priv->pending_apps, app);
@@ -2131,7 +2140,8 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 
 	if (ret) {
 		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-		g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
+		id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
+		g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 		save_install_queue (plugin_loader);
 	}
 
