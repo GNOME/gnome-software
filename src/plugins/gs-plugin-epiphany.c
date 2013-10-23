@@ -163,7 +163,7 @@ gs_plugin_add_installed_file (GsPlugin *plugin,
 					     GS_APP_STATE_INSTALLED);
 	gs_app_set_kind (*app, GS_APP_KIND_NORMAL);
 	gs_app_set_id_kind (*app, GS_APP_ID_KIND_WEBAPP);
-	gs_app_set_metadata (*app, "Epiphany::desktop-filename", path);
+	gs_app_add_source_id (*app, path);
 	gs_app_set_icon (*app, icon);
 	ret = gs_app_load_icon (*app, error);
 	if (!ret)
@@ -209,6 +209,7 @@ gs_plugin_epiphany_load_db (GsPlugin *plugin, GError **error)
 		if (!ret)
 			goto out;
 		if (app != NULL) {
+			gs_app_set_management_plugin (app, "Epiphany");
 			gs_plugin_add_app (&plugin->priv->list, app);
 			g_clear_object (&app);
 		}
@@ -335,15 +336,17 @@ gs_plugin_app_install (GsPlugin *plugin,
 	const gchar *filename;
 	gboolean ret = TRUE;
 
-	/* is this a web app */
-	filename = gs_app_get_metadata_item (app, "Epiphany::desktop-filename");
-	if (filename != NULL) {
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
-		ret = gs_plugin_app_set_enabled (filename, TRUE, error);
-		if (!ret)
-			goto out;
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-	}
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "Epiphany") != 0)
+		goto out;
+	filename = gs_app_get_source_id_default (app);
+	if (filename == NULL)
+		goto out;
+	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+	ret = gs_plugin_app_set_enabled (filename, TRUE, error);
+	if (!ret)
+		goto out;
+	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 out:
 	return ret;
 }
@@ -360,15 +363,18 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	const gchar *filename;
 	gboolean ret = TRUE;
 
-	/* is this a web app */
-	filename = gs_app_get_metadata_item (app, "Epiphany::desktop-filename");
-	if (filename != NULL) {
-		gs_app_set_state (app, GS_APP_STATE_REMOVING);
-		ret = gs_plugin_app_set_enabled (filename, FALSE, error);
-		if (!ret)
-			goto out;
-		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
-	}
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "Epiphany") != 0)
+		goto out;
+
+	filename = gs_app_get_source_id_default (app);
+	if (filename == NULL)
+		goto out;
+	gs_app_set_state (app, GS_APP_STATE_REMOVING);
+	ret = gs_plugin_app_set_enabled (filename, FALSE, error);
+	if (!ret)
+		goto out;
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 out:
 	return ret;
 }
@@ -611,10 +617,11 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	ret = gs_plugin_write_file (app, path, error);
 	if (!ret)
 		goto out;
-	gs_app_set_metadata (app, "Epiphany::desktop-filename", path);
+	gs_app_add_source_id (app, path);
 
 	/* we now know about this */
 	gs_plugin_add_app (&plugin->priv->list, app);
+	gs_app_set_management_plugin (app, "Epiphany");
 out:
 	g_free (hash);
 	g_free (path);
@@ -643,7 +650,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (gs_app_get_id_kind (app) != GS_APP_ID_KIND_WEBAPP)
 			continue;
 		gs_app_set_size (app, 4096);
-		tmp = gs_app_get_metadata_item (app, "Epiphany::desktop-filename");
+		tmp = gs_app_get_source_id_default (app);
 		if (tmp != NULL)
 			continue;
 		ret = gs_plugin_refine_app (plugin, app, error);

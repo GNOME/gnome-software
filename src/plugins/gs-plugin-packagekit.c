@@ -158,25 +158,49 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	const gchar *package_id;
-	const gchar *to_array[] = { NULL, NULL };
-	gboolean ret = TRUE;
 	GPtrArray *array = NULL;
+	GPtrArray *source_ids;
 	PkError *error_code = NULL;
 	PkResults *results = NULL;
+	const gchar *package_id;
+	gboolean ret = TRUE;
+	gchar **package_ids = NULL;
+	guint i;
+	guint cnt = 0;
 
-	package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
-	if (package_id == NULL) {
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+		goto out;
+
+	/* get the list of available package ids to install */
+	source_ids = gs_app_get_source_ids (app);
+	if (source_ids->len == 0) {
 		ret = FALSE;
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "installing not supported");
+				     "installing not available");
 		goto out;
 	}
-	to_array[0] = package_id;
+	package_ids = g_new0 (gchar *, source_ids->len + 1);
+	for (i = 0; i < source_ids->len; i++) {
+		package_id = g_ptr_array_index (source_ids, i);
+		if (g_strstr_len (package_id, -1, ";installed") != NULL)
+			continue;
+		package_ids[cnt++] = g_strdup (package_id);
+	}
+	if (cnt == 0) {
+		ret = FALSE;
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no packages to install");
+		goto out;
+	}
+
+	/* do the action */
 	results = pk_task_install_packages_sync (plugin->priv->task,
-						 (gchar **) to_array,
+						 package_ids,
 						 cancellable,
 						 gs_plugin_packagekit_progress_cb, plugin,
 						 error);
@@ -198,6 +222,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		goto out;
 	}
 out:
+	g_strfreev (package_ids);
 	if (error_code != NULL)
 		g_object_unref (error_code);
 	if (array != NULL)
@@ -217,24 +242,48 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GError **error)
 {
 	const gchar *package_id;
-	const gchar *to_array[] = { NULL, NULL };
+	gchar **package_ids = NULL;
 	gboolean ret = TRUE;
 	GPtrArray *array = NULL;
 	PkError *error_code = NULL;
 	PkResults *results = NULL;
+	GPtrArray *source_ids;
+	guint i;
+	guint cnt = 0;
 
-	package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
-	if (package_id == NULL) {
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+		goto out;
+
+	/* get the list of available package ids to install */
+	source_ids = gs_app_get_source_ids (app);
+	if (source_ids->len == 0) {
 		ret = FALSE;
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "removing not supported");
+				     "removing not available");
 		goto out;
 	}
-	to_array[0] = package_id;
+	package_ids = g_new0 (gchar *, source_ids->len + 1);
+	for (i = 0; i < source_ids->len; i++) {
+		package_id = g_ptr_array_index (source_ids, i);
+		if (g_strstr_len (package_id, -1, ";installed") == NULL)
+			continue;
+		package_ids[cnt++] = g_strdup (package_id);
+	}
+	if (cnt == 0) {
+		ret = FALSE;
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "no packages to remove");
+		goto out;
+	}
+
+	/* do the action */
 	results = pk_task_remove_packages_sync (plugin->priv->task,
-						(gchar **) to_array,
+						package_ids,
 						TRUE, FALSE,
 						cancellable,
 						gs_plugin_packagekit_progress_cb, plugin,
@@ -257,6 +306,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		goto out;
 	}
 out:
+	g_strfreev (package_ids);
 	if (error_code != NULL)
 		g_object_unref (error_code);
 	if (array != NULL)

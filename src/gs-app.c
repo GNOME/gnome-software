@@ -59,6 +59,7 @@ struct GsAppPrivate
 	gchar			*name;
 	gchar			*icon;
 	GPtrArray		*sources;
+	GPtrArray		*source_ids;
 	gchar			*project_group;
 	gchar			*version;
 	gchar			*version_ui;
@@ -241,6 +242,10 @@ gs_app_to_string (GsApp *app)
 	for (i = 0; i < priv->sources->len; i++) {
 		tmp = g_ptr_array_index (priv->sources, i);
 		g_string_append_printf (str, "\tsource-%02i:\t%s\n", i, tmp);
+	}
+	for (i = 0; i < priv->source_ids->len; i++) {
+		tmp = g_ptr_array_index (priv->source_ids, i);
+		g_string_append_printf (str, "\tsource-id-%02i:\t%s\n", i, tmp);
 	}
 	tmp = g_hash_table_lookup (priv->urls, GS_APP_URL_KIND_HOMEPAGE);
 	if (tmp != NULL)
@@ -530,6 +535,8 @@ const gchar *
 gs_app_get_source_default (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	if (app->priv->sources->len == 0)
+		return NULL;
 	return g_ptr_array_index (app->priv->sources, 0);
 }
 
@@ -539,6 +546,7 @@ gs_app_get_source_default (GsApp *app)
 void
 gs_app_set_source_default (GsApp *app, const gchar *source)
 {
+	g_ptr_array_set_size (app->priv->sources, 0);
 	g_ptr_array_add (app->priv->sources, g_strdup (source));
 }
 
@@ -568,6 +576,63 @@ gs_app_set_sources (GsApp *app, GPtrArray *sources)
 	if (app->priv->sources != NULL)
 		g_ptr_array_unref (app->priv->sources);
 	app->priv->sources = g_ptr_array_ref (sources);
+}
+
+/**
+ * gs_app_get_source_id_default:
+ */
+const gchar *
+gs_app_get_source_id_default (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	if (app->priv->source_ids->len == 0)
+		return NULL;
+	return g_ptr_array_index (app->priv->source_ids, 0);
+}
+
+/**
+ * gs_app_get_source_ids:
+ */
+GPtrArray *
+gs_app_get_source_ids (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->source_ids;
+}
+
+/**
+ * gs_app_set_source_ids:
+ * @app:	A #GsApp instance
+ * @source_id:	The source-id, e.g. ["gnome-calculator;0.134;fedora"]
+ * 		or ["/home/hughsie/.local/share/applications/0ad.desktop"]
+ *
+ * This ID is used internally to the controlling plugin.
+ */
+void
+gs_app_set_source_ids (GsApp *app, GPtrArray *source_ids)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	if (app->priv->source_ids != NULL)
+		g_ptr_array_unref (app->priv->source_ids);
+	app->priv->source_ids = g_ptr_array_ref (source_ids);
+}
+
+/**
+ * gs_app_add_source_id:
+ */
+void
+gs_app_add_source_id (GsApp *app, const gchar *source_id)
+{
+	const gchar *tmp;
+	guint i;
+
+	/* only add if not already present */
+	for (i = 0; i < app->priv->source_ids->len; i++) {
+		tmp = g_ptr_array_index (app->priv->source_ids, i);
+		if (g_strcmp0 (tmp, source_id) == 0)
+			return;
+	}
+	g_ptr_array_add (app->priv->source_ids, g_strdup (source_id));
 }
 
 /**
@@ -1451,6 +1516,7 @@ gs_app_init (GsApp *app)
 	app->priv = GS_APP_GET_PRIVATE (app);
 	app->priv->rating = -1;
 	app->priv->sources = g_ptr_array_new_with_free_func (g_free);
+	app->priv->source_ids = g_ptr_array_new_with_free_func (g_free);
 	app->priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
@@ -1481,6 +1547,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->licence);
 	g_free (priv->menu_path);
 	g_ptr_array_unref (priv->sources);
+	g_ptr_array_unref (priv->source_ids);
 	g_free (priv->project_group);
 	g_free (priv->version);
 	g_free (priv->version_ui);

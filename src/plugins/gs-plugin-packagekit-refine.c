@@ -132,9 +132,7 @@ gs_plugin_packagekit_resolve_packages_app (GPtrArray *packages,
 			package = g_ptr_array_index (packages, i);
 			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
 				gs_app_set_management_plugin (app, "PackageKit");
-				//FIXME: this isn't going to work
-				gs_app_set_metadata (app, "PackageKit::package-id",
-						     pk_package_get_id (package));
+				gs_app_add_source_id (app, pk_package_get_id (package));
 				switch (pk_package_get_info (package)) {
 				case GS_APP_STATE_INSTALLED:
 					number_installed++;
@@ -297,7 +295,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	packages = pk_results_get_package_array (results);
 	if (packages->len == 1) {
 		package = g_ptr_array_index (packages, 0);
-		gs_app_set_metadata (app, "PackageKit::package-id", pk_package_get_id (package));
+		gs_app_add_source_id (app, pk_package_get_id (package));
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
 		gs_app_set_management_plugin (app, "PackageKit");
 	} else {
@@ -340,7 +338,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	package_ids = g_new0 (const gchar *, size + 1);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
+		package_id = gs_app_get_source_id_default (app);
 		package_ids[i++] = package_id;
 	}
 
@@ -359,7 +357,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	array = pk_results_get_update_detail_array (results);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
+		package_id = gs_app_get_source_id_default (app);
 		for (i = 0; i < array->len; i++) {
 			/* right package? */
 			update_detail = g_ptr_array_index (array, i);
@@ -451,7 +449,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	package_ids = g_new0 (const gchar *, size + 1);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
+		package_id = gs_app_get_source_id_default (app);
 		package_ids[i++] = package_id;
 	}
 
@@ -470,7 +468,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	array = pk_results_get_details_array (results);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		package_id = gs_app_get_metadata_item (app, "PackageKit::package-id");
+		package_id = gs_app_get_source_id_default (app);
 		for (i = 0; i < array->len; i++) {
 			/* right package? */
 			details = g_ptr_array_index (array, i);
@@ -558,7 +556,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 		    (gs_app_get_description (app) != NULL ||
 		     g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") == NULL))
 			continue;
-		if (gs_app_get_metadata_item (app, "PackageKit::package-id") == NULL)
+		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
 		list_tmp = g_list_prepend (list_tmp, app);
 	}
@@ -611,7 +609,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	gs_profile_start_full (plugin->profile, "packagekit-refine[name->id]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_metadata_item (app, "PackageKit::package-id") != NULL)
+		if (gs_app_get_source_id_default (app) != NULL)
 			continue;
 		if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_WEBAPP)
 			continue;
@@ -639,7 +637,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 			continue;
 		app = GS_APP (l->data);
-		if (gs_app_get_metadata_item (app, "PackageKit::package-id") != NULL)
+		if (gs_app_get_source_id_default (app) != NULL)
 			continue;
 		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
 		if (tmp == NULL)
@@ -662,7 +660,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 		if (gs_app_get_update_details (app) != NULL)
 			continue;
-		if (gs_app_get_metadata_item (app, "PackageKit::package-id") == NULL)
+		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
 		updatedetails_all = g_list_prepend (updatedetails_all, app);
 	}

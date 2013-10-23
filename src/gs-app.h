@@ -125,6 +125,12 @@ void		 gs_app_set_source_default	(GsApp		*app,
 GPtrArray	*gs_app_get_sources		(GsApp		*app);
 void		 gs_app_set_sources		(GsApp		*app,
 						 GPtrArray	*sources);
+const gchar	*gs_app_get_source_id_default	(GsApp		*app);
+void		 gs_app_add_source_id		(GsApp		*app,
+						 const gchar	*source_id);
+GPtrArray	*gs_app_get_source_ids		(GsApp		*app);
+void		 gs_app_set_source_ids		(GsApp		*app,
+						 GPtrArray	*source_ids);
 const gchar	*gs_app_get_project_group	(GsApp		*app);
 void		 gs_app_set_project_group	(GsApp		*app,
 						 const gchar	*source);

@@ -144,9 +144,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 		package = g_ptr_array_index (array_filtered, i);
 
 		app = gs_app_new (NULL);
-		gs_app_set_metadata (app,
-				     "PackageKit::package-id",
-				     pk_package_get_id (package));
+		gs_app_add_source_id (app, pk_package_get_id (package));
 		gs_app_set_metadata (app,
 				     "PackageKit::package-summary",
 				     pk_package_get_summary (package));

@@ -411,8 +411,8 @@ gs_plugin_loader_get_app_str (GsApp *app)
 	if (id != NULL)
 		return id;
 
-	/* lastly try the package id */
-	id = gs_app_get_metadata_item (app, "PackageKit::package-id");
+	/* lastly try the source id */
+	id = gs_app_get_source_id_default (app);
 	if (id != NULL)
 		return id;
 

@@ -78,9 +78,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	for (i = 0; package_ids[i] != NULL; i++) {
 		app = gs_app_new (NULL);
 		gs_app_set_management_plugin (app, "PackageKit");
-		gs_app_set_metadata (app,
-				     "PackageKit::package-id",
-				     package_ids[i]);
+		gs_app_add_source_id (app, package_ids[i]);
 		split = pk_package_id_split (package_ids[i]);
 		gs_app_set_source_default (app, split[PK_PACKAGE_ID_NAME]);
 		gs_app_set_update_version (app, split[PK_PACKAGE_ID_VERSION]);
