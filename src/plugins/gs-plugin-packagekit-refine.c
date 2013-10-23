@@ -107,6 +107,79 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		gs_plugin_status_update (plugin, NULL, plugin_status);
 }
 
+/**
+ * gs_plugin_packagekit_resolve_packages_app:
+ **/
+static void
+gs_plugin_packagekit_resolve_packages_app (GPtrArray *packages,
+					   GsApp *app)
+{
+	GPtrArray *sources;
+	PkPackage *package;
+	const gchar *pkgname;
+	gchar *tmp;
+	guint i, j;
+	guint number_available = 0;
+	guint number_installed = 0;
+
+	/* find any packages that match the package name */
+	number_installed = 0;
+	number_available = 0;
+	sources = gs_app_get_sources (app);
+	for (j = 0; j < sources->len; j++) {
+		pkgname = g_ptr_array_index (sources, j);
+		for (i = 0; i < packages->len; i++) {
+			package = g_ptr_array_index (packages, i);
+			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
+				gs_app_set_management_plugin (app, "PackageKit");
+				//FIXME: this isn't going to work
+				gs_app_set_metadata (app, "PackageKit::package-id",
+						     pk_package_get_id (package));
+				switch (pk_package_get_info (package)) {
+				case GS_APP_STATE_INSTALLED:
+					number_installed++;
+					break;
+				case GS_APP_STATE_AVAILABLE:
+					number_available++;
+					break;
+				default:
+					/* should we expect anything else? */
+					break;
+				}
+				if (gs_app_get_version (app) == NULL)
+					gs_app_set_version (app,
+						pk_package_get_version (package));
+			}
+		}
+	}
+
+	/* if *all* the source packages for the app are installed then the
+	 * application is considered completely installed */
+	if (number_installed == sources->len && number_available == 0) {
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	} else if (number_installed + number_available == sources->len) {
+		/* if all the source packages are installed and all the rest
+		 * of the packages are available then the app is available */
+		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	} else if (number_installed + number_available > sources->len) {
+		/* we have more packages returned than source packages */
+		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+	} else if (number_installed + number_available < sources->len) {
+		/* we have less packages returned than source packages */
+		tmp = gs_app_to_string (app);
+		g_debug ("Failed to find all packages for:\n%s", tmp);
+		g_free (tmp);
+		gs_app_set_kind (app, GS_APP_KIND_UNKNOWN);
+		gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
+	}
+}
+
+/**
+ * gs_plugin_packagekit_resolve_packages:
+ **/
 static gboolean
 gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				       GList *list,
@@ -120,13 +193,10 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	GPtrArray *sources;
 	GsApp *app;
 	PkError *error_code = NULL;
-	PkPackage *package;
 	PkResults *results = NULL;
 	const gchar *pkgname;
 	gboolean ret = TRUE;
-	guint i = 0;
-	guint number_available = 0;
-	guint number_installed = 0;
+	guint i;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (l = list; l != NULL; l = l->next) {
@@ -168,50 +238,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	packages = pk_results_get_package_array (results);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		// FIXME: This needs some unit tests to ensure that we only mark
-		//        the application as installed if it has all the packages
-		//        listed as sources.
-		pkgname = gs_app_get_source_default (app);
-
-		/* find any packages that match the package name */
-		number_installed = 0;
-		number_available = 0;
-		for (i = 0; i < packages->len; i++) {
-			package = g_ptr_array_index (packages, i);
-			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
-				gs_app_set_management_plugin (app, "PackageKit");
-				gs_app_set_metadata (app, "PackageKit::package-id", pk_package_get_id (package));
-				if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
-					gs_app_set_state (app,
-							  pk_package_get_info (package) == PK_INFO_ENUM_INSTALLED ?
-							  GS_APP_STATE_INSTALLED :
-							  GS_APP_STATE_AVAILABLE);
-				}
-				switch (pk_package_get_info (package)) {
-				case GS_APP_STATE_INSTALLED:
-					number_installed++;
-					break;
-				case GS_APP_STATE_AVAILABLE:
-					number_available++;
-					break;
-				default:
-					/* should we expect anything else? */
-					break;
-				}
-				if (gs_app_get_version (app) == NULL)
-					gs_app_set_version (app, pk_package_get_version (package));
-			}
-		}
-		if (number_installed == 0 && number_available == 0) {
-			g_debug ("Failed to find any package for %s, "
-				 "marking %s unavailable.",
-				 pkgname, gs_app_get_id (app));
-			gs_app_set_kind (app, GS_APP_KIND_UNKNOWN);
-			gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
-		} else if (number_installed == 1 && number_available >= 1) {
-			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-			gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
-		}
+		gs_plugin_packagekit_resolve_packages_app (packages, app);
 	}
 out:
 	g_ptr_array_unref (package_ids);
