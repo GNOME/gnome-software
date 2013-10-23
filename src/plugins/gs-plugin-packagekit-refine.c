@@ -420,50 +420,24 @@ gs_pk_compare_ids (const gchar *package_id1, const gchar *package_id2)
 }
 
 /**
- * gs_plugin_packagekit_refine_details:
+ * gs_plugin_packagekit_refine_details_app:
  */
-static gboolean
-gs_plugin_packagekit_refine_details (GsPlugin *plugin,
-				     GList *list,
-				     GCancellable *cancellable,
-				     GError **error)
+static void
+gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
+					 GPtrArray *array,
+					 GsApp *app)
 {
-	GList *l;
-	GPtrArray *array = NULL;
-	GsApp *app;
+	GPtrArray *source_ids;
 	PkDetails *details;
-	PkResults *results = NULL;
-	const gchar **package_ids;
 	const gchar *package_id;
-	gboolean ret = TRUE;
 	gchar *desc;
-	guint i = 0;
-	guint size;
+	guint i;
+	guint j;
+	guint64 size = 0;
 
-	size = g_list_length (list);
-	package_ids = g_new0 (const gchar *, size + 1);
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		package_id = gs_app_get_source_id_default (app);
-		package_ids[i++] = package_id;
-	}
-
-	/* get any details */
-	results = pk_client_get_details (plugin->priv->client,
-					 (gchar **) package_ids,
-					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
-					 error);
-	if (results == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-
-	/* set the update details for the update */
-	array = pk_results_get_details_array (results);
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		package_id = gs_app_get_source_id_default (app);
+	source_ids = gs_app_get_source_ids (app);
+	for (j = 0; j < source_ids->len; j++) {
+		package_id = g_ptr_array_index (source_ids, j);
 		for (i = 0; i < array->len; i++) {
 			/* right package? */
 			details = g_ptr_array_index (array, i);
@@ -478,8 +452,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 						GS_APP_URL_KIND_HOMEPAGE,
 						pk_details_get_url (details));
 			}
-			if (gs_app_get_size (app) == 0)
-				gs_app_set_size (app, pk_details_get_size (details));
+			size += pk_details_get_size (details);
 			if (gs_app_get_description (app) == NULL &&
 			    g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") != NULL) {
 				desc = gs_pk_format_desc (pk_details_get_description (details));
@@ -489,12 +462,65 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 			break;
 		}
 	}
+
+	/* the size is the size of all sources */
+	if (size > 0 && gs_app_get_size (app) == 0)
+		gs_app_set_size (app, size);
+}
+
+/**
+ * gs_plugin_packagekit_refine_details:
+ */
+static gboolean
+gs_plugin_packagekit_refine_details (GsPlugin *plugin,
+				     GList *list,
+				     GCancellable *cancellable,
+				     GError **error)
+{
+	GList *l;
+	GPtrArray *array = NULL;
+	GPtrArray *package_ids;
+	GPtrArray *source_ids;
+	GsApp *app;
+	PkResults *results = NULL;
+	const gchar *package_id;
+	gboolean ret = TRUE;
+	guint i;
+
+	package_ids = g_ptr_array_new_with_free_func (g_free);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		source_ids = gs_app_get_source_ids (app);
+		for (i = 0; i < source_ids->len; i++) {
+			package_id = g_ptr_array_index (source_ids, i);
+			g_ptr_array_add (package_ids, g_strdup (package_id));
+		}
+	}
+	g_ptr_array_add (package_ids, NULL);
+
+	/* get any details */
+	results = pk_client_get_details (plugin->priv->client,
+					 (gchar **) package_ids->pdata,
+					 cancellable,
+					 gs_plugin_packagekit_progress_cb, plugin,
+					 error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+
+	/* set the update details for the update */
+	array = pk_results_get_details_array (results);
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		gs_plugin_packagekit_refine_details_app (plugin, array, app);
+	}
 out:
 	if (array != NULL)
 		g_ptr_array_unref (array);
 	if (results != NULL)
 		g_object_unref (results);
-	g_free (package_ids);
+	g_ptr_array_unref (package_ids);
 	return ret;
 }
 
