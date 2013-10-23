@@ -439,11 +439,6 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	gchar *desc;
 	guint i = 0;
 	guint size;
-#if !PK_CHECK_VERSION(0,8,12)
-	gchar *tmp;
-	guint64 size_tmp;
-	gboolean matches;
-#endif
 
 	size = g_list_length (list);
 	package_ids = g_new0 (const gchar *, size + 1);
@@ -472,7 +467,6 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 		for (i = 0; i < array->len; i++) {
 			/* right package? */
 			details = g_ptr_array_index (array, i);
-#if PK_CHECK_VERSION(0,8,12)
 			if (!gs_pk_compare_ids (package_id,
 						pk_details_get_package_id (details)) != 0) {
 				continue;
@@ -492,35 +486,6 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				gs_app_set_description (app, desc);
 				g_free (desc);
 			}
-#else
-			g_object_get (details, "package-id", &tmp, NULL);
-			matches = gs_pk_compare_ids (package_id, tmp);
-			g_free (tmp);
-			if (!matches)
-				continue;
-			if (gs_app_get_licence (app) == NULL) {
-				g_object_get (details, "license", &tmp, NULL);
-				gs_app_set_licence (app, tmp);
-				g_free (tmp);
-			}
-			if (gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
-				g_object_get (details, "url", &tmp, NULL);
-				gs_app_set_url (app, GS_APP_URL_KIND_HOMEPAGE, tmp);
-				g_free (tmp);
-			}
-			if (gs_app_get_size (app) == 0) {
-				g_object_get (details, "size", &size_tmp, NULL);
-				gs_app_set_size (app, size_tmp);
-			}
-			if (gs_app_get_description (app) == NULL &&
-			    g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") != NULL) {
-				g_object_get (details, "description", &tmp, NULL);
-				desc = gs_pk_format_desc (tmp);
-				g_free (tmp);
-				gs_app_set_description (app, desc);
-				g_free (desc);
-			}
-#endif
 			break;
 		}
 	}
