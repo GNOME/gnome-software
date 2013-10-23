@@ -30,7 +30,7 @@
 struct AppstreamApp
 {
 	gchar			*id;
-	gchar			*pkgname;
+	GPtrArray		*pkgnames;
 	gint			 priority;
 	gchar			*name;
 	guint			 name_value;
@@ -59,7 +59,7 @@ void
 appstream_app_free (AppstreamApp *app)
 {
 	g_free (app->id);
-	g_free (app->pkgname);
+	g_ptr_array_unref (app->pkgnames);
 	g_hash_table_unref (app->urls);
 	g_free (app->licence);
 	g_free (app->project_group);
@@ -109,6 +109,7 @@ appstream_app_new (void)
 	app->appcategories = g_ptr_array_new_with_free_func (g_free);
 	app->keywords = g_ptr_array_new_with_free_func (g_free);
 	app->mimetypes = g_ptr_array_new_with_free_func (g_free);
+	app->pkgnames = g_ptr_array_new_with_free_func (g_free);
 	app->desktop_core = g_ptr_array_new_with_free_func (g_free);
 	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_screenshot_free);
 	app->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
@@ -130,12 +131,12 @@ appstream_app_get_id (AppstreamApp *app)
 }
 
 /**
- * appstream_app_get_pkgname:
+ * appstream_app_get_pkgnames:
  */
-const gchar *
-appstream_app_get_pkgname (AppstreamApp *app)
+GPtrArray *
+appstream_app_get_pkgnames (AppstreamApp *app)
 {
-	return app->pkgname;
+	return app->pkgnames;
 }
 
 /**
@@ -300,14 +301,14 @@ appstream_app_set_id (AppstreamApp *app,
 }
 
 /**
- * appstream_app_set_pkgname:
+ * appstream_app_add_pkgname:
  */
 void
-appstream_app_set_pkgname (AppstreamApp *app,
+appstream_app_add_pkgname (AppstreamApp *app,
 			   const gchar *pkgname,
 			   gsize length)
 {
-	app->pkgname = g_strndup (pkgname, length);
+	g_ptr_array_add (app->pkgnames, g_strndup (pkgname, length));
 }
 
 /**

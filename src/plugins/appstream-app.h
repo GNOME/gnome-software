@@ -52,7 +52,7 @@ void		 appstream_app_free			(AppstreamApp	*app);
 AppstreamApp	*appstream_app_new			(void);
 
 const gchar	*appstream_app_get_id			(AppstreamApp	*app);
-const gchar	*appstream_app_get_pkgname		(AppstreamApp	*app);
+GPtrArray	*appstream_app_get_pkgnames		(AppstreamApp	*app);
 gint		 appstream_app_get_priority		(AppstreamApp	*app);
 const gchar	*appstream_app_get_name			(AppstreamApp	*app);
 const gchar	*appstream_app_get_summary		(AppstreamApp	*app);
@@ -72,7 +72,7 @@ AppstreamAppIdKind	appstream_app_get_id_kind	(AppstreamApp	*app);
 void		 appstream_app_set_id			(AppstreamApp	*app,
 							 const gchar	*id,
 							 gsize		 length);
-void		 appstream_app_set_pkgname		(AppstreamApp	*app,
+void		 appstream_app_add_pkgname		(AppstreamApp	*app,
 							 const gchar	*pkgname,
 							 gsize		 length);
 void		 appstream_app_set_priority		(AppstreamApp	*app,

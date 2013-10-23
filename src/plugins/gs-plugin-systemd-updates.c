@@ -82,7 +82,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 				     "PackageKit::package-id",
 				     package_ids[i]);
 		split = pk_package_id_split (package_ids[i]);
-		gs_app_set_source (app, split[PK_PACKAGE_ID_NAME]);
+		gs_app_set_source_default (app, split[PK_PACKAGE_ID_NAME]);
 		gs_app_set_update_version (app, split[PK_PACKAGE_ID_VERSION]);
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);

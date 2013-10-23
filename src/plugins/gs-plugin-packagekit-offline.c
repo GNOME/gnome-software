@@ -101,7 +101,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	for (i = 0; package_ids[i] != NULL; i++) {
 		app = gs_app_new (NULL);
 		split = g_strsplit (package_ids[i], ";", 4);
-		gs_app_set_source (app, split[0]);
+		gs_app_set_source_default (app, split[0]);
 		gs_app_set_update_version (app, split[1]);
 		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_set_metadata (app, "PackageKit::package-id", package_ids[i]);

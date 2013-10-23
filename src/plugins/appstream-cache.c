@@ -412,8 +412,10 @@ appstream_cache_add_item (AppstreamCacheHelper *helper)
 	AppstreamApp *item;
 	AppstreamAppIdKind id_kind;
 	AppstreamCachePrivate *priv = helper->cache->priv;
+	GPtrArray *pkgnames;
 	const gchar *id;
 	const gchar *pkgname;
+	guint i;
 
 	/* have we recorded this before? */
 	id = appstream_app_get_id (helper->item_temp);
@@ -448,8 +450,9 @@ appstream_cache_add_item (AppstreamCacheHelper *helper)
 	g_hash_table_insert (priv->hash_id,
 			     (gpointer) appstream_app_get_id (helper->item_temp),
 			     helper->item_temp);
-	pkgname = appstream_app_get_pkgname (helper->item_temp);
-	if (pkgname != NULL) {
+	pkgnames = appstream_app_get_pkgnames (helper->item_temp);
+	for (i = 0; i < pkgnames->len; i++) {
+		pkgname = g_ptr_array_index (pkgnames, i);
 		g_hash_table_insert (priv->hash_pkgname,
 				     (gpointer) pkgname,
 				     helper->item_temp);
@@ -637,13 +640,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 					     "item_temp pkgname invalid");
 			return;
 		}
-		if (appstream_app_get_pkgname (helper->item_temp) != NULL) {
-			g_debug ("multiple pkgname's for %s, ignoring %s",
-				 appstream_app_get_id (helper->item_temp),
-				 text);
-			return;
-		}
-		appstream_app_set_pkgname (helper->item_temp, text, text_len);
+		appstream_app_add_pkgname (helper->item_temp, text, text_len);
 		break;
 	case APPSTREAM_TAG_NAME:
 		if (helper->item_temp == NULL) {

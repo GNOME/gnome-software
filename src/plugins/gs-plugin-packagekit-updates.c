@@ -145,7 +145,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	for (i = 0; i < array->len; i++) {
 		pkg = g_ptr_array_index (array, i);
 		app = gs_app_new (NULL);
-		gs_app_set_source (app, pk_package_get_name (pkg));
+		gs_app_set_source_default (app, pk_package_get_name (pkg));
 		gs_app_set_update_version (app, pk_package_get_version (pkg));
 		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);

@@ -198,41 +198,25 @@ out:
 }
 
 /**
- * gs_plugin_app_set_rating:
+ * gs_plugin_app_set_rating_pkg:
  */
-gboolean
-gs_plugin_app_set_rating (GsPlugin *plugin,
-			  GsApp *app,
-			  GCancellable *cancellable,
-			  GError **error)
+static gboolean
+gs_plugin_app_set_rating_pkg (GsPlugin *plugin,
+			      const gchar *pkgname,
+			      gint rating,
+			      GError **error)
 {
 	SoupMessage *msg = NULL;
-	const gchar *pkgname;
-	gboolean ret;
 	gchar *data = NULL;
 	gchar *error_msg = NULL;
 	gchar *uri = NULL;
 	guint status_code;
 
-	/* get the package name */
-	pkgname = gs_app_get_source (app);
-	if (pkgname == NULL) {
-		g_warning ("no pkgname for %s", gs_app_get_id (app));
-		goto out;
-	}
-
-	/* ensure networking is set up */
-	ret = gs_plugin_setup_networking (plugin, error);
-	if (!ret)
-		goto out;
-
 	/* create the PUT data */
 	uri = g_strdup_printf ("%s/api/v1/rating/%s/",
 			       GS_PLUGIN_FEDORA_TAGGER_SERVER,
 			       pkgname);
-	data = g_strdup_printf ("pkgname=%s&rating=%i",
-				pkgname,
-				gs_app_get_rating (app));
+	data = g_strdup_printf ("pkgname=%s&rating=%i", pkgname, rating);
 	msg = soup_message_new (SOUP_METHOD_PUT, uri);
 	soup_message_set_request (msg, SOUP_FORM_MIME_TYPE_URLENCODED,
 				  SOUP_MEMORY_COPY, data, strlen (data));
@@ -251,12 +235,52 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 	} else {
 		g_debug ("Got response: %s", msg->response_body->data);
 	}
-out:
+
 	g_free (error_msg);
 	g_free (data);
 	g_free (uri);
 	if (msg != NULL)
 		g_object_unref (msg);
+	return TRUE;
+}
+
+/**
+ * gs_plugin_app_set_rating:
+ */
+gboolean
+gs_plugin_app_set_rating (GsPlugin *plugin,
+			  GsApp *app,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	GPtrArray *sources;
+	const gchar *pkgname;
+	gboolean ret = TRUE;
+	guint i;
+
+	/* get the package name */
+	sources = gs_app_get_sources (app);
+	if (sources->len == 0) {
+		g_warning ("no pkgname for %s", gs_app_get_id (app));
+		goto out;
+	}
+
+	/* ensure networking is set up */
+	ret = gs_plugin_setup_networking (plugin, error);
+	if (!ret)
+		goto out;
+
+	/* set rating for each package */
+	for (i = 0; i < sources->len; i++) {
+		pkgname = g_ptr_array_index (sources, i);
+		ret = gs_plugin_app_set_rating_pkg (plugin,
+						    pkgname,
+						    gs_app_get_rating (app),
+						    error);
+		if (!ret)
+			goto out;
+	}
+out:
 	return ret;
 }
 
@@ -528,9 +552,12 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GError **error)
 {
 	GList *l;
+	GPtrArray *sources;
 	GsApp *app;
+	const gchar *pkgname;
 	gboolean ret = TRUE;
 	gint rating;
+	guint i;
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) == 0)
@@ -549,13 +576,15 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_rating (app) != -1)
 			continue;
-		if (gs_app_get_source (app) == NULL)
-			continue;
-		rating = gs_plugin_resolve_app (plugin, gs_app_get_source (app));
-		if (rating != -1) {
-			g_debug ("fedora-tagger setting rating on %s to %i",
-				 gs_app_get_source (app), rating);
-			gs_app_set_rating (app, rating);
+		sources = gs_app_get_sources (app);
+		for (i = 0; i < sources->len; i++) {
+			pkgname = g_ptr_array_index (sources, i);
+			rating = gs_plugin_resolve_app (plugin, pkgname);
+			if (rating != -1) {
+				g_debug ("fedora-tagger setting rating on %s to %i",
+					 pkgname, rating);
+				gs_app_set_rating (app, rating);
+			}
 		}
 	}
 out:

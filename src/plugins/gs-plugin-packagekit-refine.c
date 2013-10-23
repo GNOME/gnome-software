@@ -113,33 +113,36 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				       GCancellable *cancellable,
 				       GError **error)
 {
-	const gchar *pkgname;
-	gboolean ret = TRUE;
-	const gchar **package_ids;
 	GList *l;
 	GPtrArray *array = NULL;
+	GPtrArray *package_ids;
 	GPtrArray *packages = NULL;
+	GPtrArray *sources;
 	GsApp *app;
-	guint number_installed = 0;
-	guint number_available = 0;
-	guint i = 0;
-	guint size;
 	PkError *error_code = NULL;
 	PkPackage *package;
 	PkResults *results = NULL;
+	const gchar *pkgname;
+	gboolean ret = TRUE;
+	guint i = 0;
+	guint number_available = 0;
+	guint number_installed = 0;
 
-	size = g_list_length (list);
-	package_ids = g_new0 (const gchar *, size + 1);
+	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		pkgname = gs_app_get_source (app);
-		package_ids[i++] = pkgname;
+		sources = gs_app_get_sources (app);
+		for (i = 0; i < sources->len; i++) {
+			pkgname = g_ptr_array_index (sources, i);
+			g_ptr_array_add (package_ids, g_strdup (pkgname));
+		}
 	}
+	g_ptr_array_add (package_ids, NULL);
 
 	/* resolve them all at once */
 	results = pk_client_resolve (plugin->priv->client,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
-				     (gchar **) package_ids,
+				     (gchar **) package_ids->pdata,
 				     cancellable,
 				     gs_plugin_packagekit_progress_cb, plugin,
 				     error);
@@ -165,7 +168,10 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	packages = pk_results_get_package_array (results);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		pkgname = gs_app_get_source (app);
+		// FIXME: This needs some unit tests to ensure that we only mark
+		//        the application as installed if it has all the packages
+		//        listed as sources.
+		pkgname = gs_app_get_source_default (app);
 
 		/* find any packages that match the package name */
 		number_installed = 0;
@@ -208,7 +214,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 		}
 	}
 out:
-	g_free (package_ids);
+	g_ptr_array_unref (package_ids);
 	if (packages != NULL)
 		g_ptr_array_unref (packages);
 	if (error_code != NULL)
@@ -566,12 +572,13 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	gboolean ret = TRUE;
 	GList *l;
-	GsApp *app;
-	const gchar *tmp;
 	GList *resolve_all = NULL;
 	GList *updatedetails_all = NULL;
+	GPtrArray *sources;
+	GsApp *app;
+	const gchar *tmp;
+	gboolean ret = TRUE;
 
 	/* can we resolve in one go? */
 	gs_profile_start_full (plugin->profile, "packagekit-refine[name->id]");
@@ -581,8 +588,8 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 		if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_WEBAPP)
 			continue;
-		tmp = gs_app_get_source (app);
-		if (tmp == NULL)
+		sources = gs_app_get_sources (app);
+		if (sources->len == 0)
 			continue;
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
 		    gs_plugin_refine_requires_version (app, flags)) {

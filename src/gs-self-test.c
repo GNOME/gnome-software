@@ -316,7 +316,7 @@ gs_plugin_loader_refine_func (void)
 	/* get the extra bits */
 	g_setenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS", "1", TRUE);
 	app = gs_app_new ("gimp");
-	gs_app_set_source (app, "gimp");
+	gs_app_set_source_default (app, "gimp");
 	ret = gs_plugin_loader_app_refine (loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
@@ -404,7 +404,7 @@ gs_plugin_loader_empty_func (void)
 						g_print ("Cat: %s\tSubCat: %s\tPkgName: %s\tAppId: %s\n",
 							 gs_category_get_id (category),
 							 gs_category_get_id (sub),
-							 gs_app_get_source (GS_APP (g->data)),
+							 gs_app_get_source_default (GS_APP (g->data)),
 							 gs_app_get_id (GS_APP (g->data)));
 					}
 				}

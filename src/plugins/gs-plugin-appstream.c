@@ -451,6 +451,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		       GError **error)
 {
 	GHashTable *urls;
+	GPtrArray *tmp;
 	gboolean ret = TRUE;
 
 	/* is an app */
@@ -520,9 +521,10 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_UNKNOWN)
 		gs_app_set_id_kind (app, appstream_app_get_id_kind (item));
 
-	/* set package name */
-	if (appstream_app_get_pkgname (item) != NULL && gs_app_get_source (app) == NULL)
-		gs_app_set_source (app, appstream_app_get_pkgname (item));
+	/* set package names */
+	tmp = appstream_app_get_pkgnames (item);
+	if (tmp->len > 0 && gs_app_get_sources(app)->len == 0)
+		gs_app_set_sources (app, tmp);
 
 	/* set screenshots */
 	gs_plugin_refine_add_screenshots (app, item);
@@ -566,19 +568,25 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 			       GsApp *app,
 			       GError **error)
 {
+	AppstreamApp *item = NULL;
+	GPtrArray *sources;
 	const gchar *pkgname;
 	gboolean ret = TRUE;
-	AppstreamApp *item;
+	guint i;
 
 	/* find anything that matches the ID */
-	pkgname = gs_app_get_source (app);
-	if (pkgname == NULL)
-		goto out;
-	item = appstream_cache_get_item_by_pkgname (plugin->priv->cache, pkgname);
-	if (item == NULL) {
-		g_debug ("no AppStream match for {pkgname} %s", pkgname);
-		goto out;
+	sources = gs_app_get_sources (app);
+	for (i = 0; i < sources->len && item == NULL; i++) {
+		pkgname = g_ptr_array_index (sources, i);
+		item = appstream_cache_get_item_by_pkgname (plugin->priv->cache,
+							    pkgname);
+		if (item == NULL)
+			g_debug ("no AppStream match for {pkgname} %s", pkgname);
 	}
+
+	/* nothing found */
+	if (item == NULL)
+		goto out;
 
 	/* set new properties */
 	ret = gs_plugin_refine_item (plugin, app, item, error);

@@ -58,7 +58,7 @@ struct GsAppPrivate
 	gchar			*id;
 	gchar			*name;
 	gchar			*icon;
-	gchar			*source;
+	GPtrArray		*sources;
 	gchar			*project_group;
 	gchar			*version;
 	gchar			*version_ui;
@@ -237,6 +237,10 @@ gs_app_to_string (GsApp *app)
 								  G_MAXUINT,
 								  G_MAXUINT,
 								  NULL));
+	}
+	for (i = 0; i < priv->sources->len; i++) {
+		tmp = g_ptr_array_index (priv->sources, i);
+		g_string_append_printf (str, "\tsource-%02i:\t%s\n", i, tmp);
 	}
 	tmp = g_hash_table_lookup (priv->urls, GS_APP_URL_KIND_HOMEPAGE);
 	if (tmp != NULL)
@@ -520,30 +524,50 @@ gs_app_set_name (GsApp *app, const gchar *name)
 }
 
 /**
- * gs_app_get_source:
+ * gs_app_get_source_default:
  */
 const gchar *
-gs_app_get_source (GsApp *app)
+gs_app_get_source_default (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->priv->source;
+	return g_ptr_array_index (app->priv->sources, 0);
 }
 
 /**
- * gs_app_set_source:
+ * gs_app_set_source_default:
+ */
+void
+gs_app_set_source_default (GsApp *app, const gchar *source)
+{
+	g_ptr_array_add (app->priv->sources, g_strdup (source));
+}
+
+/**
+ * gs_app_get_sources:
+ */
+GPtrArray *
+gs_app_get_sources (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->sources;
+}
+
+/**
+ * gs_app_set_sources:
  * @app:	A #GsApp instance
- * @source:	The non-localized short name, e.g. "gnome-calculator"
+ * @source:	The non-localized short names, e.g. ["gnome-calculator"]
  *
  * This name is used for the update page if the application is collected into
- * the 'OS Updates' group. It is typically the package name, although this
+ * the 'OS Updates' group. It is typically the package names, although this
  * should not be relied upon.
  */
 void
-gs_app_set_source (GsApp *app, const gchar *source)
+gs_app_set_sources (GsApp *app, GPtrArray *sources)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->priv->source);
-	app->priv->source = g_strdup (source);
+	if (app->priv->sources != NULL)
+		g_ptr_array_unref (app->priv->sources);
+	app->priv->sources = g_ptr_array_ref (sources);
 }
 
 /**
@@ -1426,6 +1450,7 @@ gs_app_init (GsApp *app)
 {
 	app->priv = GS_APP_GET_PRIVATE (app);
 	app->priv->rating = -1;
+	app->priv->sources = g_ptr_array_new_with_free_func (g_free);
 	app->priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
@@ -1455,7 +1480,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->icon);
 	g_free (priv->licence);
 	g_free (priv->menu_path);
-	g_free (priv->source);
+	g_ptr_array_unref (priv->sources);
 	g_free (priv->project_group);
 	g_free (priv->version);
 	g_free (priv->version_ui);

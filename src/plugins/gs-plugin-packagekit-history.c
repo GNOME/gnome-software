@@ -176,7 +176,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	package_names = g_new0 (const gchar *, g_list_length (list) + 1);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		package_names[i++] = gs_app_get_source (app);
+		package_names[i++] = gs_app_get_source_default (app);
 	}
 
 	g_debug ("getting history for %i packages", g_list_length (list));
@@ -227,7 +227,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		ret = g_variant_lookup (tuple,
-					gs_app_get_source (app),
+					gs_app_get_source_default (app),
 					"@aa{sv}",
 					&value);
 		if (!ret) {
@@ -279,6 +279,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GList *l;
 	GList *packages = NULL;
 	GsApp *app;
+	GPtrArray *sources;
 
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) == 0)
 		goto out;
@@ -286,7 +287,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* add any missing history data */
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_source (app) == NULL)
+		sources = gs_app_get_sources (app);
+		if (sources->len == 0)
 			continue;
 		if (gs_app_get_install_date (app) != 0)
 			continue;

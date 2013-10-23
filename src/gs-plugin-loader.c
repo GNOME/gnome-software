@@ -130,8 +130,8 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 	}
 
 	/* save any properties we already know */
-	if (gs_app_get_source (app) != NULL)
-		gs_app_set_source (new_app, gs_app_get_source (app));
+	if (gs_app_get_sources(app)->len > 0)
+		gs_app_set_sources (new_app, gs_app_get_sources (app));
 	if (gs_app_get_project_group (app) != NULL)
 		gs_app_set_project_group (new_app, gs_app_get_project_group (app));
 	if (gs_app_get_name (app) != NULL)
@@ -406,7 +406,12 @@ gs_plugin_loader_get_app_str (GsApp *app)
 	if (id != NULL)
 		return id;
 
-	/* first try the actual id */
+	/* then try the source */
+	id = gs_app_get_source_default (app);
+	if (id != NULL)
+		return id;
+
+	/* lastly try the package id */
 	id = gs_app_get_metadata_item (app, "PackageKit::package-id");
 	if (id != NULL)
 		return id;

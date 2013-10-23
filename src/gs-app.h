@@ -119,9 +119,12 @@ void		 gs_app_set_state		(GsApp		*app,
 const gchar	*gs_app_get_name		(GsApp		*app);
 void		 gs_app_set_name		(GsApp		*app,
 						 const gchar	*name);
-const gchar	*gs_app_get_source		(GsApp		*app);
-void		 gs_app_set_source		(GsApp		*app,
+const gchar	*gs_app_get_source_default	(GsApp		*app);
+void		 gs_app_set_source_default	(GsApp		*app,
 						 const gchar	*source);
+GPtrArray	*gs_app_get_sources		(GsApp		*app);
+void		 gs_app_set_sources		(GsApp		*app,
+						 GPtrArray	*sources);
 const gchar	*gs_app_get_project_group	(GsApp		*app);
 void		 gs_app_set_project_group	(GsApp		*app,
 						 const gchar	*source);

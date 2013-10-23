@@ -109,7 +109,7 @@ gs_plugin_datadir_apps_set_from_cache_item (GsApp *app,
 	if (cache_item->name != NULL)
 		gs_app_set_name (app, cache_item->name);
 	if (cache_item->pkgname != NULL)
-		gs_app_set_source (app, cache_item->pkgname);
+		gs_app_set_source_default (app, cache_item->pkgname);
 	if (cache_item->summary != NULL)
 		gs_app_set_summary (app, cache_item->summary);
 	if (cache_item->pixbuf != NULL)
