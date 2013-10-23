@@ -26,6 +26,8 @@
 
 #include <gs-plugin.h>
 
+#define GS_PLUGIN_PACKAGEKIT_HISTORY_TIMEOUT	5000 /* ms */
+
 struct GsPluginPrivate {
 	GDBusProxy		*proxy;
 };
@@ -173,7 +175,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 					 "GetPackageHistory",
 					 g_variant_new ("(^asu)", package_names, 0),
 					 G_DBUS_CALL_FLAGS_NONE,
-					 200, /* 200ms should be more than enough... */
+					 GS_PLUGIN_PACKAGEKIT_HISTORY_TIMEOUT,
 					 cancellable,
 					 &error_local);
 	if (result == NULL) {
@@ -186,6 +188,16 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 
 			/* just set this to something non-zero so we don't keep
 			 * trying to call GetPackageHistory */
+			for (l = list; l != NULL; l = l->next) {
+				app = GS_APP (l->data);
+				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
+			}
+		} else if (g_error_matches (error_local,
+					    G_IO_ERROR,
+					    G_IO_ERROR_TIMED_OUT)) {
+			g_debug ("No history as PackageKit took too long: %s",
+				 error_local->message);
+			g_error_free (error_local);
 			for (l = list; l != NULL; l = l->next) {
 				app = GS_APP (l->data);
 				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
