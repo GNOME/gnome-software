@@ -29,6 +29,9 @@
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
 
+/**
+ * gs_cmd_show_results:
+ **/
 static void
 gs_cmd_show_results (GList *list)
 {
@@ -44,6 +47,63 @@ gs_cmd_show_results (GList *list)
 	}
 }
 
+/**
+ * gs_cmd_refine_flag_from_string:
+ **/
+static GsPluginRefineFlags
+gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
+{
+	if (g_strcmp0 (flag, "licence") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE;
+	if (g_strcmp0 (flag, "url") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL;
+	if (g_strcmp0 (flag, "description") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION;
+	if (g_strcmp0 (flag, "size") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE;
+	if (g_strcmp0 (flag, "rating") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING;
+	if (g_strcmp0 (flag, "version") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
+	if (g_strcmp0 (flag, "history") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY;
+	if (g_strcmp0 (flag, "setup-action") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION;
+	g_set_error (error,
+		     GS_PLUGIN_ERROR,
+		     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+		     "GsPluginRefineFlag '%s' not recognised", flag);
+	return 0;
+}
+
+/**
+ * gs_cmd_parse_refine_flags:
+ **/
+static guint64
+gs_cmd_parse_refine_flags (const gchar *extra, GError **error)
+{
+	GsPluginRefineFlags tmp;
+	gchar **split = NULL;
+	guint i;
+	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
+
+	if (extra == NULL)
+		goto out;
+
+	split = g_strsplit (extra, ",", -1);
+	for (i = 0; split[i] != NULL; i++) {
+		tmp = gs_cmd_refine_flag_from_string (split[i], error);
+		if (tmp == 0) {
+			refine_flags = G_MAXUINT64;
+			goto out;
+		}
+		refine_flags |= tmp;
+	}
+out:
+	g_strfreev (split);
+	return refine_flags;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -51,14 +111,18 @@ main (int argc, char **argv)
 	GList *list = NULL;
 	GOptionContext *context;
 	GsApp *app = NULL;
-	GsPluginLoader *plugin_loader;
-	GsProfile *profile;
+	GsPluginLoader *plugin_loader = NULL;
+	GsProfile *profile = NULL;
 	gboolean ret;
 	gboolean show_results = FALSE;
+	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
+	gchar *refine_flags_str = NULL;
 	int status = 0;
 	const GOptionEntry options[] = {
 		{ "show-results", '\0', 0, G_OPTION_ARG_NONE, &show_results,
 		  "Show the results for the action", NULL },
+		{ "refine-flags", '\0', 0, G_OPTION_ARG_STRING, &refine_flags_str,
+		  "Set any refine flags required for the action", NULL },
 		{ NULL}
 	};
 
@@ -75,8 +139,20 @@ main (int argc, char **argv)
 	g_option_context_set_summary (context, "GNOME Software Test Program");
 	g_option_context_add_main_entries (context, options, NULL);
 	g_option_context_add_group (context, gtk_get_option_group (TRUE));
-	g_option_context_parse (context, &argc, &argv, NULL);
-	g_option_context_free (context);
+	ret = g_option_context_parse (context, &argc, &argv, &error);
+	if (!ret) {
+		g_print ("Failed to parse options: %s\n", error->message);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* parse any refine flags */
+	refine_flags = gs_cmd_parse_refine_flags (refine_flags_str, &error);
+	if (refine_flags == G_MAXUINT64) {
+		g_print ("Flag unknown: %s\n", error->message);
+		g_error_free (error);
+		goto out;
+	}
 
 	profile = gs_profile_new ();
 	gs_profile_start (profile, "GsCmd");
@@ -86,40 +162,39 @@ main (int argc, char **argv)
 	gs_plugin_loader_set_location (plugin_loader, "./plugins/.libs");
 	ret = gs_plugin_loader_setup (plugin_loader, &error);
 	if (!ret) {
-		g_warning ("Failed to setup plugins: %s", error->message);
+		g_print ("Failed to setup plugins: %s\n", error->message);
 		g_error_free (error);
 		goto out;
 	}
-//	gs_plugin_loader_set_enabled (plugin_loader, "xxx", TRUE);
 	gs_plugin_loader_dump_state (plugin_loader);
 
 	/* do action */
 	if (argc == 2 && g_strcmp0 (argv[1], "installed") == 0) {
 		list = gs_plugin_loader_get_installed (plugin_loader,
-						       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						       refine_flags,
 						       NULL,
 						       &error);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "search") == 0) {
 		list = gs_plugin_loader_search (plugin_loader,
 						argv[2],
-						GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						refine_flags,
 						NULL,
 						&error);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "refine") == 0) {
 		app = gs_app_new (argv[2]);
 		ret = gs_plugin_loader_app_refine (plugin_loader,
 						   app,
-						   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						   refine_flags,
 						   NULL,
 						   &error);
 	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
 		list = gs_plugin_loader_get_updates (plugin_loader,
-						     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						     refine_flags,
 						     NULL,
 						     &error);
 	} else if (argc == 2 && g_strcmp0 (argv[1], "popular") == 0) {
 		list = gs_plugin_loader_get_popular (plugin_loader,
-						     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						     refine_flags,
 						     NULL,
 						     &error);
 	} else {
@@ -137,11 +212,15 @@ main (int argc, char **argv)
 	gs_profile_stop (profile, "GsCmd");
 	gs_profile_dump (profile);
 out:
+	g_option_context_free (context);
+	g_free (refine_flags_str);
 	gs_plugin_list_free (list);
 	if (app != NULL)
 		g_object_unref (app);
-	g_object_unref (plugin_loader);
-	g_object_unref (profile);
+	if (plugin_loader != NULL)
+		g_object_unref (plugin_loader);
+	if (profile != NULL)
+		g_object_unref (profile);
 	return status;
 }
 
