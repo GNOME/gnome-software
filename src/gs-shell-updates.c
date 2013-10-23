@@ -155,6 +155,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 	GtkWindow *window;
 	GtkSpinner *spinner;
 	GList *list;
+	guint64 refine_flags;
 
 	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES ||
             gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATED) {
@@ -193,10 +194,12 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 
+	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
+	if (show_historical)
+		refine_flags &= GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
-					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-					    show_historical ?
-					    GS_PLUGIN_REFINE_FLAGS_USE_HISTORY : GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					    refine_flags,
 					    priv->cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
 					    shell_updates);
