@@ -391,6 +391,8 @@ appstream_app_search_matches (AppstreamApp *app, const gchar *search)
 
 	if (search == NULL)
 		return FALSE;
+	if (app->id != NULL && strcasestr (app->id, search) != NULL)
+		return TRUE;
 	if (app->name != NULL && strcasestr (app->name, search) != NULL)
 		return TRUE;
 	if (app->summary != NULL && strcasestr (app->summary, search) != NULL)
