@@ -205,6 +205,7 @@ typedef struct {
 	char			*lang_temp;
 	AppstreamCache		*cache;
 	AppstreamCacheSection	 section;
+	AppstreamCacheSection	 section_last_known;
 } AppstreamCacheHelper;
 
 /**
@@ -304,6 +305,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 		break;
 	default:
 		/* ignore unknown entries */
+		helper->section_last_known = helper->section;
 		break;
 	}
 
@@ -419,7 +421,7 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		break;
 	default:
 		/* ignore unknown entries */
-		helper->section = APPSTREAM_CACHE_SECTION_APPLICATION;
+		helper->section = helper->section_last_known;
 		break;
 	}
 }
