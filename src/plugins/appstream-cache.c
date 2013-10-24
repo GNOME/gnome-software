@@ -118,6 +118,7 @@ typedef struct {
 	gchar			*url_type_temp;
 	AppstreamCache		*cache;
 	AppstreamTag		 tag;
+	AppstreamTag		 tag_last_known;
 	AppstreamImage		*image;
 	AppstreamScreenshot	*screenshot;
 	gint			 priority;
@@ -396,6 +397,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 		break;
 	default:
 		/* ignore unknown entries */
+		helper->tag_last_known = helper->tag;
 		break;
 	}
 
@@ -545,7 +547,7 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		break;
 	default:
 		/* ignore unknown entries */
-		helper->tag = APPSTREAM_TAG_APPLICATION;
+		helper->tag = helper->tag_last_known;
 		break;
 	}
 }
