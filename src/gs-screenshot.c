@@ -34,6 +34,7 @@ struct GsScreenshotPrivate
 {
 	GPtrArray		*array;
 	gboolean		 is_default;
+	gchar			*caption;
 };
 
 typedef struct {
@@ -155,6 +156,27 @@ gs_screenshot_get_url (GsScreenshot *screenshot,
 }
 
 /**
+ * gs_screenshot_get_caption:
+ **/
+const gchar *
+gs_screenshot_get_caption (GsScreenshot *screenshot)
+{
+	g_return_val_if_fail (GS_IS_SCREENSHOT (screenshot), NULL);
+	return screenshot->priv->caption;
+}
+
+/**
+ * gs_screenshot_set_caption:
+ **/
+void
+gs_screenshot_set_caption (GsScreenshot *screenshot, const gchar *caption)
+{
+	g_return_if_fail (GS_IS_SCREENSHOT (screenshot));
+	g_free (screenshot->priv->caption);
+	screenshot->priv->caption = g_strdup (caption);
+}
+
+/**
  * gs_screenshot_class_init:
  **/
 static void
@@ -184,6 +206,7 @@ gs_screenshot_finalize (GObject *object)
 	GsScreenshot *screenshot = GS_SCREENSHOT (object);
 	GsScreenshotPrivate *priv = screenshot->priv;
 
+	g_free (priv->caption);
 	g_ptr_array_unref (priv->array);
 
 	G_OBJECT_CLASS (gs_screenshot_parent_class)->finalize (object);

@@ -47,6 +47,11 @@ void			 appstream_screenshot_set_kind	(AppstreamScreenshot	*screenshot,
 							 AppstreamScreenshotKind kind);
 void			 appstream_screenshot_add_image	(AppstreamScreenshot	*screenshot,
 							 AppstreamImage		*image);
+const gchar		*appstream_screenshot_get_caption (AppstreamScreenshot	*app);
+void			 appstream_screenshot_set_caption (AppstreamScreenshot	*app,
+							 const gchar    *lang,
+							 const gchar	*caption,
+							 gsize		 length);
 
 AppstreamScreenshotKind	 appstream_screenshot_kind_from_string (const gchar	*kind);
 

@@ -429,6 +429,8 @@ gs_plugin_refine_add_screenshots (GsApp *app, AppstreamApp *item)
 		screenshot = gs_screenshot_new ();
 		gs_screenshot_set_is_default (screenshot,
 					      ss_kind == APPSTREAM_SCREENSHOT_KIND_DEFAULT);
+		gs_screenshot_set_caption (screenshot,
+					   appstream_screenshot_get_caption (ss));
 		for (j = 0; j < images_as->len; j++) {
 			im = g_ptr_array_index (images_as, j);
 			gs_screenshot_add_image	(screenshot,

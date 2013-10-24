@@ -233,11 +233,13 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tdescription:\t%s\n", priv->description);
 	for (i = 0; i < priv->screenshots->len; i++) {
 		ss = g_ptr_array_index (priv->screenshots, i);
-		g_string_append_printf (str, "\tscreenshot-%02i:\t%s\n",
+		tmp = gs_screenshot_get_caption (ss);
+		g_string_append_printf (str, "\tscreenshot-%02i:\t%s [%s]\n",
 					i, gs_screenshot_get_url (ss,
 								  G_MAXUINT,
 								  G_MAXUINT,
-								  NULL));
+								  NULL),
+					tmp != NULL ? tmp : "<none>");
 	}
 	for (i = 0; i < priv->sources->len; i++) {
 		tmp = g_ptr_array_index (priv->sources, i);

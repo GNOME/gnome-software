@@ -21,12 +21,15 @@
 
 #include "config.h"
 
+#include "appstream-common.h"
 #include "appstream-screenshot.h"
 
 struct AppstreamScreenshot
 {
 	AppstreamScreenshotKind	 kind;
 	GPtrArray		*array;
+	gchar			*caption;
+	guint			 caption_value;
 };
 
 /**
@@ -37,6 +40,7 @@ appstream_screenshot_new (void)
 {
 	AppstreamScreenshot *screenshot;
 	screenshot = g_slice_new0 (AppstreamScreenshot);
+	screenshot->caption_value = G_MAXUINT;
 	screenshot->kind = APPSTREAM_SCREENSHOT_KIND_NORMAL;
 	screenshot->array = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_image_free);
 	return screenshot;
@@ -48,6 +52,7 @@ appstream_screenshot_new (void)
 void
 appstream_screenshot_free (AppstreamScreenshot *screenshot)
 {
+	g_free (screenshot->caption);
 	g_ptr_array_unref (screenshot->array);
 	g_slice_free (AppstreamScreenshot, screenshot);
 }
@@ -88,6 +93,34 @@ appstream_screenshot_add_image (AppstreamScreenshot *screenshot,
 				AppstreamImage *image)
 {
 	g_ptr_array_add (screenshot->array, image);
+}
+
+/**
+ * appstream_screenshot_get_caption:
+ */
+const gchar *
+appstream_screenshot_get_caption (AppstreamScreenshot *app)
+{
+	return app->caption;
+}
+
+/**
+ * appstream_screenshot_set_caption:
+ */
+void
+appstream_screenshot_set_caption (AppstreamScreenshot *app,
+				  const gchar *lang,
+				  const gchar *caption,
+				  gsize length)
+{
+	guint new_value;
+
+	new_value = appstream_get_locale_value (lang);
+	if (new_value < app->caption_value) {
+		g_free (app->caption);
+		app->caption = g_strndup (caption, length);
+		app->caption_value = new_value;
+	}
 }
 
 /**

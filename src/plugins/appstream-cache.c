@@ -257,6 +257,30 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			appstream_screenshot_set_kind (helper->screenshot, kind);
 		}
 		break;
+	case APPSTREAM_TAG_CAPTION:
+		if (helper->screenshot == NULL ||
+		    helper->tag != APPSTREAM_TAG_SCREENSHOT) {
+			g_set_error (error,
+				     APPSTREAM_CACHE_ERROR,
+				     APPSTREAM_CACHE_ERROR_FAILED,
+				     "XML start %s invalid, tag %s",
+				     element_name,
+				     appstream_tag_to_string (helper->tag));
+			return;
+		}
+
+		/* get lang */
+		if (!g_markup_collect_attributes (element_name,
+						  attribute_names,
+						  attribute_values,
+						  error,
+						  G_MARKUP_COLLECT_STRDUP | G_MARKUP_COLLECT_OPTIONAL,
+						  "xml:lang", &helper->lang_temp,
+						  G_MARKUP_COLLECT_INVALID))
+			return;
+		if (!helper->lang_temp)
+			helper->lang_temp = g_strdup ("C");
+
 	case APPSTREAM_TAG_IMAGE:
 		if (helper->item_temp == NULL ||
 		    helper->tag != APPSTREAM_TAG_SCREENSHOT) {
@@ -531,6 +555,9 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_ICON:
 		helper->tag = APPSTREAM_TAG_APPLICATION;
 		break;
+	case APPSTREAM_TAG_CAPTION:
+		helper->tag = APPSTREAM_TAG_SCREENSHOT;
+		break;
 	case APPSTREAM_TAG_URL:
 		g_free (helper->url_type_temp);
 		helper->tag = APPSTREAM_TAG_APPLICATION;
@@ -721,6 +748,19 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 			return;
 		}
 		appstream_image_set_url (helper->image, text, text_len);
+		break;
+	case APPSTREAM_TAG_CAPTION:
+		if (helper->screenshot == NULL) {
+			g_set_error_literal (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "screesnhot not started");
+			return;
+		}
+		appstream_screenshot_set_caption (helper->screenshot,
+						  helper->lang_temp,
+						  text,
+						  text_len);
 		break;
 	default:
 		/* ignore unknown entries */

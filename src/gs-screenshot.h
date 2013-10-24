@@ -59,6 +59,9 @@ GsScreenshot	*gs_screenshot_new		(void);
 gboolean	 gs_screenshot_get_is_default	(GsScreenshot		*screenshot);
 void		 gs_screenshot_set_is_default	(GsScreenshot		*screenshot,
 						 gboolean		 is_default);
+const gchar	*gs_screenshot_get_caption	(GsScreenshot		*screenshot);
+void		 gs_screenshot_set_caption	(GsScreenshot		*screenshot,
+						 const gchar		*caption);
 void		 gs_screenshot_add_image	(GsScreenshot		*screenshot,
 						 const gchar		*url,
 						 guint			 width,
