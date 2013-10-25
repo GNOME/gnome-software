@@ -30,10 +30,10 @@
 #include "gs-plugin-loader-sync.h"
 
 /**
- * gs_cmd_show_results:
+ * gs_cmd_show_results_apps:
  **/
 static void
-gs_cmd_show_results (GList *list)
+gs_cmd_show_results_apps (GList *list)
 {
 	GList *l;
 	GsApp *app;
@@ -43,6 +43,56 @@ gs_cmd_show_results (GList *list)
 		app = GS_APP (l->data);
 		tmp = gs_app_to_string (app);
 		g_print ("%s\n", tmp);
+		g_free (tmp);
+	}
+}
+
+/**
+ * gs_cmd_pad_spaces:
+ **/
+static gchar *
+gs_cmd_pad_spaces (const gchar *text, guint length)
+{
+	guint i;
+	GString *str;
+	str = g_string_sized_new (length + 1);
+	g_string_append (str, text);
+	for (i = strlen(text); i < length; i++)
+		g_string_append_c (str, ' ');
+	return g_string_free (str, FALSE);
+}
+
+/**
+ * gs_cmd_show_results_categories:
+ **/
+static void
+gs_cmd_show_results_categories (GList *list)
+{
+	GList *l;
+	GList *subcats;
+	GsCategory *cat;
+	GsCategory *parent;
+	gchar *id;
+	gchar *tmp;
+
+	for (l = list; l != NULL; l = l->next) {
+		cat = GS_CATEGORY (l->data);
+		parent = gs_category_get_parent (cat);
+		if (parent != NULL){
+			id = g_strdup_printf ("%s/%s",
+					      gs_category_get_id (parent),
+					      gs_category_get_id (cat));
+			tmp = gs_cmd_pad_spaces (id, 32);
+			g_print ("%s : %s\n",
+				 tmp, gs_category_get_name (cat));
+			g_free (id);
+		} else {
+			tmp = gs_cmd_pad_spaces (gs_category_get_id (cat), 32);
+			g_print ("%s : %s\n",
+				 tmp, gs_category_get_name (cat));
+			subcats = gs_category_get_subcategories (cat);
+			gs_cmd_show_results_categories (subcats);
+		}
 		g_free (tmp);
 	}
 }
@@ -109,14 +159,18 @@ main (int argc, char **argv)
 {
 	GError *error = NULL;
 	GList *list = NULL;
+	GList *categories = NULL;
 	GOptionContext *context;
 	GsApp *app = NULL;
+	GsCategory *parent = NULL;
+	GsCategory *category = NULL;
 	GsPluginLoader *plugin_loader = NULL;
 	GsProfile *profile = NULL;
 	gboolean ret;
 	gboolean show_results = FALSE;
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	gchar *refine_flags_str = NULL;
+	gchar **split = NULL;
 	int status = 0;
 	const GOptionEntry options[] = {
 		{ "show-results", '\0', 0, G_OPTION_ARG_NONE, &show_results,
@@ -197,9 +251,29 @@ main (int argc, char **argv)
 						     refine_flags,
 						     NULL,
 						     &error);
+	} else if (argc == 2 && g_strcmp0 (argv[1], "get-categories") == 0) {
+		categories = gs_plugin_loader_get_categories (plugin_loader,
+							      refine_flags,
+							      NULL,
+							      &error);
+	} else if (argc == 3 && g_strcmp0 (argv[1], "get-category-apps") == 0) {
+		split = g_strsplit (argv[2], "/", 2);
+		if (g_strv_length (split) == 1) {
+			category = gs_category_new (NULL, split[0], NULL);
+		} else {
+			parent = gs_category_new (NULL, split[0], NULL);
+			category = gs_category_new (parent, split[1], NULL);
+			g_object_unref (parent);
+		}
+		list = gs_plugin_loader_get_category_apps (plugin_loader,
+							   category,
+							   refine_flags,
+							   NULL,
+							   &error);
 	} else {
 		g_warning ("Did not recognise option, use 'installed', "
-			   "'updates', 'popular', or 'search'");
+			   "'updates', 'popular', 'get-categories', "
+			   "'get-category-apps', or 'search'");
 	}
 	if (error != NULL) {
 		g_warning ("Failed: %s", error->message);
@@ -207,16 +281,21 @@ main (int argc, char **argv)
 		goto out;
 	}
 
-	if (show_results)
-		gs_cmd_show_results (list);
+	if (show_results) {
+		gs_cmd_show_results_apps (list);
+		gs_cmd_show_results_categories (categories);
+	}
 	gs_profile_stop (profile, "GsCmd");
 	gs_profile_dump (profile);
 out:
 	g_option_context_free (context);
 	g_free (refine_flags_str);
+	g_strfreev (split);
 	gs_plugin_list_free (list);
 	if (app != NULL)
 		g_object_unref (app);
+	if (category != NULL)
+		g_object_unref (category);
 	if (plugin_loader != NULL)
 		g_object_unref (plugin_loader);
 	if (profile != NULL)
