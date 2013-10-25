@@ -355,6 +355,21 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 }
 
 /**
+ * gs_shell_updates_is_addon_id_kind
+ **/
+static gboolean
+gs_shell_updates_is_addon_id_kind (GsApp *app)
+{
+	GsAppIdKind id_kind;
+	id_kind = gs_app_get_id_kind (app);
+	if (id_kind == GS_APP_ID_KIND_DESKTOP)
+		return FALSE;
+	if (id_kind == GS_APP_ID_KIND_WEBAPP)
+		return FALSE;
+	return TRUE;
+}
+
+/**
  * gs_shell_updates_list_header_func
  **/
 static void
@@ -362,33 +377,22 @@ gs_shell_updates_list_header_func (GtkListBoxRow *row,
 				   GtkListBoxRow *before,
 				   gpointer user_data)
 {
-	GsAppIdKind id_kind_after;
-	GsAppIdKind id_kind_before;
 	GsAppWidget *aw1;
 	GsAppWidget *aw2;
 	GtkStyleContext *context;
 	GtkWidget *header;
 
 	/* first entry */
+	gtk_list_box_row_set_header (row, NULL);
 	header = gtk_list_box_row_get_header (row);
-	if (before == NULL) {
-		gtk_list_box_row_set_header (row, NULL);
+	if (before == NULL)
 		return;
-	}
-
-	/* already set */
-	if (header != NULL)
-		return;
-
-	/* calculate the transition between different ID kinds */
-	aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (before)));
-	aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	id_kind_before = gs_app_get_id_kind (gs_app_widget_get_app (aw1));
-	id_kind_after = gs_app_get_id_kind (gs_app_widget_get_app (aw2));
 
 	/* desktop -> addons */
-	if (id_kind_before == GS_APP_ID_KIND_DESKTOP &&
-	    id_kind_after != GS_APP_ID_KIND_DESKTOP) {
+	aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (before)));
+	aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+	if (!gs_shell_updates_is_addon_id_kind (gs_app_widget_get_app (aw1)) &&
+	    gs_shell_updates_is_addon_id_kind (gs_app_widget_get_app (aw2))) {
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the addons */
 		header = gtk_label_new (_("Add-ons"));
