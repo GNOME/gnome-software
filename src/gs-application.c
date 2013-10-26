@@ -35,6 +35,7 @@
 #include "gs-plugin-loader.h"
 #include "gs-profile.h"
 #include "gs-shell-search-provider.h"
+#include "gs-offline-updates.h"
 
 
 struct _GsApplication {
@@ -369,6 +370,22 @@ out:
 	g_free (desktop_id);
 }
 
+static void
+clear_offline_updates (GSimpleAction *action,
+		       GVariant      *parameter,
+		       gpointer       data)
+{
+	gs_offline_updates_clear_status ();
+}
+
+static void
+show_offline_updates_error (GSimpleAction *action,
+			    GVariant      *parameter,
+			    gpointer       data)
+{
+	gs_offline_updates_show_error ();
+}
+
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
@@ -378,6 +395,8 @@ static GActionEntry actions[] = {
 	{ "set-debug-level", set_debug_level_activated, "i", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
+        { "clear-offline-updates", clear_offline_updates, NULL, NULL, NULL },
+        { "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
 

@@ -134,6 +134,8 @@ gnome_software_service_SOURCES =			\
 	gs-shell-search.h				\
 	gs-update-monitor.c				\
 	gs-update-monitor.h				\
+	gs-offline-updates.c				\
+	gs-offline-updates.h				\
 	gs-plugin-loader.c				\
 	gs-plugin-loader.h				\
 	gs-plugin-loader-sync.c				\
@@ -161,6 +163,7 @@ gnome_software_service_LDADD =				\
 	-lm
 
 gnome_software_service_CFLAGS =				\
+	-DLIBEXECDIR=\"$(libexecdir)\"			\
 	$(WARNINGFLAGS_C)
 
 gs-shell-search-provider-generated.h gs-shell-search-provider-generated.c: Makefile.am $(srcdir)/shell-search-provider-dbus-interfaces.xml

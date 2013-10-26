@@ -26,8 +26,14 @@
 #include <glib/gi18n.h>
 
 #include "gs-update-monitor.h"
+#include "gs-utils.h"
+#include "gs-offline-updates.h"
 
-#define GSD_UPDATES_ICON_NORMAL "software-update-available-symbolic"
+#define GS_UPDATES_CHECK_OFFLINE_TIMEOUT    30 /* seconds */
+#define GS_REENABLE_OFFLINE_UPDATE_TIMEOUT 300 /* seconds */
+
+#define GS_UPDATES_ICON_NORMAL "software-update-available-symbolic"
+#define GS_UPDATES_ICON_URGENT "software-update-urgent-symbolic"
 
 struct _GsUpdateMonitor {
 	GObject		 parent;
@@ -36,6 +42,8 @@ struct _GsUpdateMonitor {
 	GFile 		*offline_update_file;
 	GFileMonitor 	*offline_update_monitor;
 	gboolean	 offline_update_notified;
+
+	guint		 check_offline_update_id;
 };
 
 struct _GsUpdateMonitorClass {
@@ -71,7 +79,7 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	monitor->offline_update_notified = TRUE;
 
 	/* don't notify more often than every 5 minutes */
-	id = g_timeout_add_seconds (300, reenable_offline_update, monitor);
+	id = g_timeout_add_seconds (GS_REENABLE_OFFLINE_UPDATE_TIMEOUT, reenable_offline_update, monitor);
 	g_source_set_name_by_id (id, "[gnome-software] reenable_offline_update");
 
 	title = _("Software Updates Available");
@@ -105,6 +113,58 @@ initial_offline_update_check (gpointer data)
         return G_SOURCE_REMOVE;
 }
 
+static gboolean
+check_offline_update_cb (gpointer user_data)
+{
+	GsUpdateMonitor *monitor = user_data;
+	const gchar *message;
+	const gchar *title;
+	gboolean success;
+	guint num_packages = 1;
+	GNotification *notification;
+	GIcon *icon;
+
+	if (!gs_offline_updates_get_status (&success, &num_packages, NULL, NULL))
+		goto out;
+
+	if (success) {
+		title = ngettext ("Software Update Installed",
+				  "Software Updates Installed",
+				  num_packages);
+                /* TRANSLATORS: message when we've done offline updates */
+		message = ngettext ("An important OS update has been installed.",
+				    "Important OS updates have been installed.",
+				    num_packages);
+
+                gs_offline_updates_clear_status ();
+
+        } else {
+
+		title = _("Software Updates Failed");
+		/* TRANSLATORS: message when we offline updates have failed */
+		message = _("An important OS update failed to be installed.");
+	}
+
+	notification = g_notification_new (title);
+	g_notification_set_body (notification, message);
+	icon = g_themed_icon_new (GS_UPDATES_ICON_URGENT);
+	g_notification_set_icon (notification, icon);
+	g_object_unref (icon);
+	if (success)
+		g_notification_add_button_with_target (notification, _("Review"), "app.set-mode", "s", "updated");
+	else
+		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
+	g_notification_add_button (notification, _("OK"), "app.clear-offline-updates");
+
+	g_application_send_notification (g_application_get_default (), "offline-updates", notification);
+	g_object_unref (notification);
+
+out:
+        monitor->check_offline_update_id = 0;
+
+        return G_SOURCE_REMOVE;
+}
+
 static void
 gs_update_monitor_init (GsUpdateMonitor *monitor)
 {
@@ -116,10 +176,17 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	g_signal_connect (monitor->offline_update_monitor, "changed",
 			  G_CALLBACK (offline_update_cb), monitor);
 
-	id = g_timeout_add_seconds (300,
+	id = g_timeout_add_seconds (GS_REENABLE_OFFLINE_UPDATE_TIMEOUT,
 				    initial_offline_update_check,
 				    monitor);
 	g_source_set_name_by_id (id, "[gnome-software] initial_offline_update_check");
+
+	monitor->check_offline_update_id = 
+		g_timeout_add_seconds (GS_UPDATES_CHECK_OFFLINE_TIMEOUT,
+                                       check_offline_update_cb,
+                                       monitor);
+	g_source_set_name_by_id (monitor->check_offline_update_id,
+				 "[gnpome-software] check_offline_update_cb");
 }
 
 static void
@@ -127,6 +194,10 @@ gs_update_monitor_finalize (GObject *object)
 {
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (object);
 
+	if (monitor->check_offline_update_id != 0) {
+		g_source_remove (monitor->check_offline_update_id);
+		monitor->check_offline_update_id = 0;
+	}
 	g_clear_object (&monitor->offline_update_file);
 	g_clear_object (&monitor->offline_update_monitor);
 	g_application_release (G_APPLICATION (monitor->application));

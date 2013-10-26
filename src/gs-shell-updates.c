@@ -26,6 +26,7 @@
 #include "gs-shell.h"
 #include "gs-shell-updates.h"
 #include "gs-utils.h"
+#include "gs-offline-updates.h"
 #include "gs-app.h"
 #include "gs-app-widget.h"
 
@@ -451,65 +452,11 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-reboot_failed (GObject      *source,
-	       GAsyncResult *res,
-	       gpointer      data)
-{
-	GVariant *ret;
-	const gchar *command;
-	GError *error = NULL;
-
-	ret = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
-	if (ret) {
-		g_variant_unref (ret);
-		return;
-	}
-
-	if (error) {
-		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s\n", error->message);
-		g_error_free (error);
-		return;
-	}
-
-	command = "pkexec /usr/libexec/pk-trigger-offline-update --cancel";
-	g_debug ("calling '%s'", command);
-	if (!g_spawn_command_line_sync (command, NULL, NULL, NULL, &error)) {
-		g_warning ("Failed to call '%s': %s\n", command, error->message);
-		g_error_free (error);
-	}
-}
-
-static void
 gs_shell_updates_button_update_all_cb (GtkButton      *button,
 				       GsShellUpdates *updates)
 {
-	GDBusConnection *bus;
-	const gchar *command;
-	GError *error = NULL;
-
-	command = "pkexec /usr/libexec/pk-trigger-offline-update";
-	g_debug ("calling '%s'", command);
-	if (!g_spawn_command_line_sync (command, NULL, NULL, NULL, &error)) {
-		g_warning ("Failed to call '%s': %s\n", command, error->message);
-		g_error_free (error);
-		return;
-	}
-
-	g_debug ("calling org.gnome.SessionManager.Reboot");
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-	g_dbus_connection_call (bus,
-				"org.gnome.SessionManager",
-				"/org/gnome/SessionManager",
-				"org.gnome.SessionManager",
-				"Reboot",
-				NULL,
-				NULL,
-				G_DBUS_CALL_FLAGS_NONE,
-				G_MAXINT,
-				NULL,
-				reboot_failed,
-				NULL);
-	g_object_unref (bus);
+	gs_offline_updates_trigger ();
+	gs_reboot (gs_offline_updates_cancel);
 }
 
 static void

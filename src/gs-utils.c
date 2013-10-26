@@ -280,4 +280,49 @@ gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
 	return pixbuf;
 }
 
+static void
+reboot_done (GObject *source, GAsyncResult *res, gpointer data)
+{
+	GCallback reboot_failed = data;
+	GVariant *ret;
+	GError *error = NULL;
+
+	ret = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
+	if (ret) {
+		g_variant_unref (ret);
+		return;
+	}
+
+	if (error) {
+		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s\n", error->message);
+		g_error_free (error);
+		return;
+	}
+
+	reboot_failed ();
+}
+
+void
+gs_reboot (GCallback reboot_failed)
+{
+	GDBusConnection *bus;
+
+	g_debug ("calling org.gnome.SessionManager.Reboot");
+
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	g_dbus_connection_call (bus,
+				"org.gnome.SessionManager",
+				"/org/gnome/SessionManager",
+				"org.gnome.SessionManager",
+				"Reboot",
+				NULL,
+				NULL,
+				G_DBUS_CALL_FLAGS_NONE,
+				G_MAXINT,
+				NULL,
+				reboot_done,
+				reboot_failed);
+	g_object_unref (bus);
+}
+
 /* vim: set noexpandtab: */
