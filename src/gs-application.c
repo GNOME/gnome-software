@@ -82,7 +82,7 @@ network_changed_cb (GNetworkMonitor *monitor,
 static void
 gs_application_monitor_network (GsApplication *app)
 {
-	app->network_monitor = g_network_monitor_get_default ();
+	app->network_monitor = g_object_ref (g_network_monitor_get_default ());
 
 	g_signal_connect (app->network_monitor, "network-changed",
 			  G_CALLBACK (network_changed_cb), app);
