@@ -25,6 +25,7 @@
 #include <packagekit-glib2/packagekit.h>
 
 #include "gs-offline-updates.h"
+#include "gs-utils.h"
 
 static void
 child_exit_cb (GPid pid, gint status, gpointer user_data)
@@ -61,6 +62,7 @@ gs_offline_updates_trigger (void)
 	gboolean ret;
 	GError *error = NULL;
 	const gchar *argv[3];
+	GDateTime *now;
 
 	argv[0] = "pkexec";
 	argv[1] = LIBEXECDIR "/pk-trigger-offline-update";
@@ -76,6 +78,10 @@ gs_offline_updates_trigger (void)
 			   error->message);
 		g_error_free (error);
 	}
+
+	now = g_date_time_new_now_local ();
+	gs_save_timestamp_to_file ("install-timestamp", now);
+	g_date_time_unref (now);
 }
 
 void

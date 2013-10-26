@@ -340,4 +340,58 @@ gs_reboot (GCallback reboot_failed)
 	g_object_unref (bus);
 }
 
+GDateTime *
+gs_read_timestamp_from_file (const gchar *name)
+{
+	gchar *file;
+	gchar *contents;
+	GDateTime *result;
+
+	result = NULL;
+	file = g_build_filename (g_get_user_data_dir (),
+                                 "gnome-software", name, NULL);
+	if (g_file_get_contents (file, &contents, NULL, NULL)) {
+		gint64 timestamp;
+		gchar *endptr = NULL;
+
+		timestamp = g_ascii_strtoll (contents, &endptr, 0);
+		if (endptr) {
+			g_warning ("Could not read %s timestamp: %s", name, contents);
+		} else {
+			result = g_date_time_new_from_unix_local (timestamp);
+		}
+		g_free (contents);
+	}
+	g_free (file);
+
+	return result;
+}
+
+gboolean
+gs_save_timestamp_to_file (const gchar *name,
+			   GDateTime   *date)
+{
+	gchar *file;
+	gchar *contents;
+	gint64 timestamp;
+	gboolean result;
+	GError *error = NULL;
+
+	result = TRUE;
+	timestamp = g_date_time_to_unix (date);
+	contents = g_strdup_printf ("%" G_GINT64_FORMAT, timestamp);
+	file = g_build_filename (g_get_user_data_dir (),
+				 "gnome-software", name, NULL);
+	if (!g_file_set_contents (file, contents, -1, &error)) {
+		g_warning ("Could not save %s timestamp: %s",
+			   name, error->message);
+		g_error_free (error);
+		result = FALSE;
+	}
+	g_free (contents);
+	g_free (file);
+
+	return result;
+}
+
 /* vim: set noexpandtab: */
