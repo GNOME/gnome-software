@@ -118,6 +118,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		 * is in the process of being installed */
 		gtk_button_set_label (GTK_BUTTON (widget), _("Installing"));
 		break;
+	case GS_APP_STATE_UNKNOWN:
 	case GS_APP_STATE_INSTALLED:
 	case GS_APP_STATE_REMOVING:
 	case GS_APP_STATE_UPDATABLE:
@@ -160,6 +161,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_INSTALLING:
 		case GS_APP_STATE_UNAVAILABLE:
+		case GS_APP_STATE_UNKNOWN:
 			gtk_widget_set_visible (widget, FALSE);
 			break;
 		default:
@@ -176,6 +178,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		gtk_spinner_stop (GTK_SPINNER (widget));
 	} else {
 		switch (state) {
+		case GS_APP_STATE_UNKNOWN:
 		case GS_APP_STATE_INSTALLED:
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_QUEUED:
