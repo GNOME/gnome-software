@@ -105,6 +105,7 @@ const gchar	*gs_app_id_kind_to_string	(GsAppIdKind	 id_kind);
 const gchar	*gs_app_state_to_string		(GsAppState	 state);
 
 const gchar	*gs_app_get_id			(GsApp		*app);
+const gchar	*gs_app_get_id_full		(GsApp		*app);
 void		 gs_app_set_id			(GsApp		*app,
 						 const gchar	*id);
 GsAppKind	 gs_app_get_kind		(GsApp		*app);

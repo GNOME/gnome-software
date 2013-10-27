@@ -135,10 +135,11 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 					     const gchar *desktop_file,
 					     GError **error)
 {
-	const gchar *basename_tmp = NULL;
+	const gchar *app_id_full_noprefix;
 	const gchar *icon_tmp = NULL;
 	gboolean ret = TRUE;
-	gchar *basename = NULL;
+	gchar *app_id_full = NULL;
+	gchar *app_id = NULL;
 	gchar *comment = NULL;
 	gchar *name = NULL;
 	gchar *pkgname = NULL;
@@ -168,13 +169,14 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 		goto out;
 
 	/* set new id */
-	basename = g_path_get_basename (desktop_file);
-	dot = strrchr (basename, '.');
+	app_id_full = g_path_get_basename (desktop_file);
+	app_id_full_noprefix = app_id_full;
+	if (g_str_has_prefix (app_id_full_noprefix, "fedora-"))
+		app_id_full_noprefix += 7;
+	app_id = g_strdup (app_id_full_noprefix);
+	dot = strrchr (app_id, '.');
 	if (dot)
 		*dot = '\0';
-	basename_tmp = basename;
-	if (g_str_has_prefix (basename_tmp, "fedora-"))
-		basename_tmp += 7;
 
 	/* get desktop name */
 	name = g_key_file_get_locale_string (key_file,
@@ -203,7 +205,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 		goto out;
 
 	/* do we have an icon in the cache? */
-	icon_tmp = g_hash_table_lookup (plugin->icon_cache, basename_tmp);
+	icon_tmp = g_hash_table_lookup (plugin->icon_cache, app_id);
 	if (icon_tmp != NULL) {
 		pixbuf = gdk_pixbuf_new_from_file (icon_tmp, NULL);
 	} else {
@@ -214,7 +216,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 
 	/* create a new cache entry */
 	cache_item = g_slice_new0 (GsPluginDataDirAppsCacheItem);
-	cache_item->id = g_strdup (basename_tmp);
+	cache_item->id = g_strdup (app_id_full_noprefix);
 	cache_item->name = g_strdup (name);
 	cache_item->summary = g_strdup (comment);
 	cache_item->icon_name = g_strdup (icon);
@@ -240,7 +242,8 @@ out:
 		g_key_file_unref (key_file);
 	if (pixbuf != NULL)
 		g_object_unref (pixbuf);
-	g_free (basename);
+	g_free (app_id);
+	g_free (app_id_full);
 	g_free (pkgname);
 	g_free (icon);
 	g_free (name);

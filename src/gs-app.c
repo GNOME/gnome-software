@@ -56,6 +56,7 @@ static void	gs_app_finalize	(GObject	*object);
 struct GsAppPrivate
 {
 	gchar			*id;
+	gchar			*id_full;
 	gchar			*name;
 	gchar			*icon;
 	GPtrArray		*sources;
@@ -295,14 +296,37 @@ gs_app_get_id (GsApp *app)
 }
 
 /**
+ * gs_app_get_id_full:
+ **/
+const gchar *
+gs_app_get_id_full (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->id_full;
+}
+
+/**
  * gs_app_set_id:
  */
 void
 gs_app_set_id (GsApp *app, const gchar *id)
 {
+	gchar *tmp;
+
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* save this unmolested */
+	g_free (app->priv->id_full);
+	app->priv->id_full = g_strdup (id);
+
+	/* save the short form by default */
 	g_free (app->priv->id);
 	app->priv->id = g_strdup (id);
+	if (app->priv->id != NULL) {
+		tmp = g_strrstr (app->priv->id, ".");
+		if (tmp != NULL)
+			*tmp = '\0';
+	}
 }
 
 /**
@@ -1547,6 +1571,7 @@ gs_app_finalize (GObject *object)
 	GsAppPrivate *priv = app->priv;
 
 	g_free (priv->id);
+	g_free (priv->id_full);
 	g_free (priv->name);
 	g_hash_table_unref (priv->urls);
 	g_free (priv->icon);

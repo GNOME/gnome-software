@@ -89,7 +89,7 @@ gs_plugin_desktopdb_set_metadata (GsPlugin *plugin,
 				  const gchar *pkg_name)
 {
 	gchar *desktop_file;
-	gchar *id = NULL, *dot;
+	gchar *id = NULL;
 	GError *error = NULL;
 	GPtrArray *files = NULL;
 
@@ -130,10 +130,6 @@ gs_plugin_desktopdb_set_metadata (GsPlugin *plugin,
 	/* also set the ID if it's missing */
 	if (gs_app_get_id (app) == NULL) {
 		id = g_path_get_basename (desktop_file);
-		dot = strrchr (id, '.');
-		if (dot)
-			*dot = '\0';
-
 		gs_app_set_id (app, id);
 	}
 

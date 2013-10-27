@@ -708,7 +708,7 @@ gs_plugin_loader_add_os_update_item (GList *list)
 		goto out;
 
 	/* create new meta object */
-	app_os = gs_app_new ("os-update");
+	app_os = gs_app_new ("os-update.virtual");
 	gs_app_set_kind (app_os, GS_APP_KIND_OS_UPDATE);
 	gs_app_set_state (app_os, GS_APP_STATE_UPDATABLE);
 	/* TRANSLATORS: this is a group of updates that are not packages and

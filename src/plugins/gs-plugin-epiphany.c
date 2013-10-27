@@ -93,12 +93,10 @@ gs_plugin_add_installed_file (GsPlugin *plugin,
 	GKeyFile *kf;
 	gboolean no_display;
 	gboolean ret;
-	gchar *app_id = NULL;
 	gchar *comment = NULL;
 	gchar *icon = NULL;
 	gchar *name = NULL;
 	gchar *path;
-	gchar *tmp;
 
 	/* load keyfile */
 	path = g_build_filename (g_get_user_data_dir (),
@@ -150,11 +148,7 @@ gs_plugin_add_installed_file (GsPlugin *plugin,
 	}
 
 	/* create application */
-	app_id = g_strdup (filename);
-	tmp = g_strrstr (app_id, ".");
-	if (tmp != NULL)
-		*tmp = '\0';
-	*app = gs_app_new (app_id);
+	*app = gs_app_new (filename);
 	gs_app_set_name (*app, name);
 	gs_app_set_summary (*app, comment);
 	/* TRANSLATORS: this is the licence of the web-app */
@@ -170,7 +164,6 @@ gs_plugin_add_installed_file (GsPlugin *plugin,
 		goto out;
 out:
 	g_key_file_free (kf);
-	g_free (app_id);
 	g_free (path);
 	g_free (icon);
 	g_free (name);
