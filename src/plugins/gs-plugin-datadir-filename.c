@@ -81,6 +81,7 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 	const gchar *id;
 	gchar *path_tmp = NULL;
 	gboolean ret;
+	gchar *filename;
 	gchar *path;
 	const char * const *datadirs;
 	int i;
@@ -106,8 +107,12 @@ gs_plugin_datadir_filename_find (GsPlugin *plugin,
 	/* find if the file exists */
 	datadirs = g_get_system_data_dirs ();
 	for (i = 0; datadirs[i]; i++) {
-		path = g_strdup_printf ("%s/applications/%s.desktop",
-					datadirs[i], gs_app_get_id (app));
+		filename = g_strdup_printf ("%s.desktop", gs_app_get_id (app));
+		path = g_build_filename (datadirs[i],
+					 "applications",
+					 filename,
+					 NULL);
+		g_free (filename);
 		if (g_file_test (path, G_FILE_TEST_EXISTS)) {
 			path_tmp = path;
 			g_mutex_lock (&plugin->priv->plugin_mutex);
