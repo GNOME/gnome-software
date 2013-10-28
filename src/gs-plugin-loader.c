@@ -2442,6 +2442,8 @@ out:
 void
 gs_plugin_loader_set_location (GsPluginLoader *plugin_loader, const gchar *location)
 {
+	gchar *filename;
+
 	g_free (plugin_loader->priv->location);
 
 	/* something non-default specified */
@@ -2451,7 +2453,9 @@ gs_plugin_loader_set_location (GsPluginLoader *plugin_loader, const gchar *locat
 	}
 
 	/* use the default, but this requires a 'make install' */
-	plugin_loader->priv->location = g_build_filename (LIBDIR, "gs-plugins", NULL);
+	filename = g_strdup_printf ("gs-plugins-%s", GS_PLUGIN_API_VERSION);
+	plugin_loader->priv->location = g_build_filename (LIBDIR, filename, NULL);
+	g_free (filename);
 }
 
 /**

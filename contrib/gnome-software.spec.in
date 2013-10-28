@@ -87,8 +87,8 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_mandir}/man1/gnome-software.1.gz
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/gnome-software/featured.ini
-%dir %{_libdir}/gs-plugins
-%{_libdir}/gs-plugins/*.so
+%dir %{_libdir}/gs-plugins-2
+%{_libdir}/gs-plugins-2/*.so
 %{_sysconfdir}/xdg/autostart/gnome-software-service.desktop
 %{_libexecdir}/gnome-software-service
 %{_datadir}/dbus-1/services/org.gnome.Software.service

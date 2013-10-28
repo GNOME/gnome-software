@@ -22,7 +22,7 @@ noinst_LTLIBRARIES =					\
 	libgs_plugin_dummy.la				\
 	libgs_plugin_self_test.la
 
-plugindir = $(libdir)/gs-plugins
+plugindir = $(libdir)/gs-plugins-${GS_PLUGIN_API_VERSION}
 plugin_LTLIBRARIES =					\
 	libgs_plugin_appdata.la				\
 	libgs_plugin_appstream.la			\
