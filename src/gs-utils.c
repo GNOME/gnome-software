@@ -263,7 +263,15 @@ gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
 {
 	GdkPixbuf *pixbuf = NULL;
 
-	if (icon_name[0] == '/') {
+	g_return_val_if_fail (icon_name != NULL, NULL);
+	g_return_val_if_fail (icon_size > 0, NULL);
+
+	if (icon_name[0] == '\0') {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "Icon name not specified");
+	} else if (icon_name[0] == '/') {
 		pixbuf = gdk_pixbuf_new_from_file_at_size (icon_name,
 							   icon_size,
 							   icon_size,
@@ -279,7 +287,7 @@ gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to load icon %s", icon_name);
+			     "Failed to load icon '%s'", icon_name);
 	}
 	return pixbuf;
 }
