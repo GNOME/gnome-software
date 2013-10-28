@@ -436,6 +436,7 @@ out:
 static void
 gs_shell_details_refresh_all (GsShellDetails *shell_details)
 {
+	GError *error = NULL;
 	GPtrArray *history;
 	GdkPixbuf *pixbuf = NULL;
 	GsShellDetailsPrivate *priv = shell_details->priv;
@@ -474,8 +475,14 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 	/* set the icon */
 	tmp = gs_app_get_metadata_item (priv->app, "DataDir::desktop-icon");
-	if (tmp != NULL)
-		pixbuf = gs_pixbuf_load (tmp, 96, NULL);
+	if (tmp != NULL) {
+		pixbuf = gs_pixbuf_load (tmp, 96, &error);
+		if (pixbuf == NULL) {
+			g_warning ("Failed to load desktop icon: %s",
+				   error->message);
+			g_clear_error (&error);
+		}
+	}
 	if (pixbuf == NULL)
 		pixbuf = gs_app_get_pixbuf (priv->app);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
