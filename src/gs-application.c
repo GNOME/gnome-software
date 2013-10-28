@@ -341,20 +341,18 @@ launch_activated (GSimpleAction *action,
 		  GVariant      *parameter,
 		  gpointer       data)
 {
-	const gchar *id;
-	gchar *desktop_id;
+	const gchar *desktop_id;
 	GdkDisplay *display;
 	GAppInfo *appinfo;
 	GAppLaunchContext *context;
 	GError *error = NULL;
 
-	id = g_variant_get_string (parameter, NULL);
+	desktop_id = g_variant_get_string (parameter, NULL);
 	display = gdk_display_get_default ();
-	desktop_id = g_strconcat (id, ".desktop", NULL);
 	appinfo = G_APP_INFO (g_desktop_app_info_new (desktop_id));
-	if (!appinfo) {
+	if (appinfo == NULL) {
 		g_warning ("no such desktop file: %s", desktop_id);
-		goto out;
+		return;
 	}
 
 	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
@@ -365,9 +363,6 @@ launch_activated (GSimpleAction *action,
 
 	g_object_unref (appinfo);
 	g_object_unref (context);
-
-out:
-	g_free (desktop_id);
 }
 
 static void
