@@ -189,6 +189,7 @@ gs_screenshot_image_show_spinner (gpointer user_data)
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 	gtk_spinner_start (GTK_SPINNER (priv->spinner));
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "spinner");
+	priv->spinner_id = 0;
 	return FALSE;
 }
 
