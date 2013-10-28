@@ -228,12 +228,16 @@ main (int argc, char **argv)
 						       refine_flags,
 						       NULL,
 						       &error);
+		if (list == NULL)
+			ret = FALSE;
 	} else if (argc == 3 && g_strcmp0 (argv[1], "search") == 0) {
 		list = gs_plugin_loader_search (plugin_loader,
 						argv[2],
 						refine_flags,
 						NULL,
 						&error);
+		if (list == NULL)
+			ret = FALSE;
 	} else if (argc == 3 && g_strcmp0 (argv[1], "refine") == 0) {
 		app = gs_app_new (argv[2]);
 		ret = gs_plugin_loader_app_refine (plugin_loader,
@@ -246,6 +250,8 @@ main (int argc, char **argv)
 						     refine_flags,
 						     NULL,
 						     &error);
+		if (list == NULL)
+			ret = FALSE;
 	} else if (argc == 2 && g_strcmp0 (argv[1], "popular") == 0) {
 		list = gs_plugin_loader_get_popular (plugin_loader,
 						     refine_flags,
@@ -270,13 +276,19 @@ main (int argc, char **argv)
 							   refine_flags,
 							   NULL,
 							   &error);
+		if (list == NULL)
+			ret = FALSE;
 	} else {
-		g_warning ("Did not recognise option, use 'installed', "
-			   "'updates', 'popular', 'get-categories', "
-			   "'get-category-apps', or 'search'");
+		ret = FALSE;
+		g_set_error_literal (&error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "Did not recognise option, use 'installed', "
+				     "'updates', 'popular', 'get-categories', "
+				     "'get-category-apps', or 'search'");
 	}
-	if (error != NULL) {
-		g_warning ("Failed: %s", error->message);
+	if (!ret) {
+		g_print ("Failed: %s\n", error->message);
 		g_error_free (error);
 		goto out;
 	}
