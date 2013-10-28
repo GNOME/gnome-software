@@ -264,6 +264,9 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 	/* treat screenshots differently */
 	if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_FONT) {
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+							     "box_details_screenshot_thumbnails"));
+		gs_container_remove_all (GTK_CONTAINER (widget));
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
 							     "box_details_screenshot_main"));
 		gs_container_remove_all (GTK_CONTAINER (widget));
 		screenshots = gs_app_get_screenshots (priv->app);
