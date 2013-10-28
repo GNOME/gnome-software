@@ -357,7 +357,7 @@ launch_activated (GSimpleAction *action,
 
 	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
 	if (!g_app_info_launch (appinfo, NULL, context, &error)) {
-		g_warning ("launching %s failed: %s", id, error->message);
+		g_warning ("launching %s failed: %s", desktop_id, error->message);
 		g_error_free (error);
 	}
 
