@@ -421,7 +421,8 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 		break;
 	default:
 		/* ignore unknown entries */
-		helper->tag_last_known = helper->tag;
+		if (helper->tag != APPSTREAM_TAG_UNKNOWN)
+			helper->tag_last_known = helper->tag;
 		break;
 	}
 
