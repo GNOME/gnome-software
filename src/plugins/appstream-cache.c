@@ -305,7 +305,8 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 		break;
 	default:
 		/* ignore unknown entries */
-		helper->section_last_known = helper->section;
+		if (helper->section != APPSTREAM_CACHE_SECTION_UNKNOWN)
+			helper->section_last_known = helper->section;
 		break;
 	}
 
