@@ -160,7 +160,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	GsApp *app_dummy;
 	guint i = 0;
 	GVariantIter iter;
-	GVariant *result;
+	GVariant *result = NULL;
 	GVariant *tuple = NULL;
 	GVariant *value;
 
