@@ -119,6 +119,9 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 		goto out;
 	}
 
+	/* wait for all the properties to be set */
+	g_object_freeze_notify (G_OBJECT (new_app));
+
 	/* an [updatable] installable package is more information than
 	 * just the fact that something is installed */
 	if (gs_app_get_state (app) == GS_APP_STATE_UPDATABLE &&
@@ -146,6 +149,9 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 		gs_app_set_update_version (new_app, gs_app_get_update_version (app));
 	if (gs_app_get_pixbuf (app) != NULL)
 		gs_app_set_pixbuf (new_app, gs_app_get_pixbuf (app));
+
+	/* now emit all the changed signals */
+	g_object_thaw_notify (G_OBJECT (new_app));
 
 	/* this looks a little odd to unref the method parameter,
 	 * but it allows us to do:
@@ -248,9 +254,14 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	GList *l;
 	GsPlugin *plugin;
 	gboolean ret = TRUE;
 	guint i;
+
+	/* freeze all apps */
+	for (l = list; l != NULL; l = l->next)
+		g_object_freeze_notify (G_OBJECT (l->data));
 
 	/* run each plugin */
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
@@ -267,6 +278,10 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		if (!ret)
 			goto out;
 	}
+
+	/* now emit all the changed signals */
+	for (l = list; l != NULL; l = l->next)
+		g_object_thaw_notify (G_OBJECT (l->data));
 
 	/* dedupe applications we already know about */
 	gs_plugin_loader_list_dedupe (plugin_loader, list);

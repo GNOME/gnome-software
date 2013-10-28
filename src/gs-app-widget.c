@@ -187,6 +187,17 @@ gs_app_widget_get_app (GsAppWidget *app_widget)
 }
 
 /**
+ * gs_app_widget_notify_props_changed_cb:
+ **/
+static void
+gs_app_widget_notify_props_changed_cb (GsApp *app,
+				       GParamSpec *pspec,
+				       GsAppWidget *app_widget)
+{
+	gs_app_widget_refresh (app_widget);
+}
+
+/**
  * gs_app_widget_set_app:
  **/
 void
@@ -195,9 +206,9 @@ gs_app_widget_set_app (GsAppWidget *app_widget, GsApp *app)
 	g_return_if_fail (GS_IS_APP_WIDGET (app_widget));
 	g_return_if_fail (GS_IS_APP (app));
 	app_widget->priv->app = g_object_ref (app);
-	g_signal_connect_object (app_widget->priv->app, "state-changed",
-				 G_CALLBACK (gs_app_widget_refresh),
-				 app_widget, G_CONNECT_SWAPPED);
+	g_signal_connect_object (app_widget->priv->app, "notify::state",
+				 G_CALLBACK (gs_app_widget_notify_props_changed_cb),
+				 app_widget, 0);
 	gs_app_widget_refresh (app_widget);
 }
 

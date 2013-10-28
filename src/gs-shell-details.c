@@ -207,10 +207,12 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 }
 
 /**
- * gs_shell_details_app_state_changed_cb:
+ * gs_shell_details_notify_state_changed_cb:
  **/
 static void
-gs_shell_details_app_state_changed_cb (GsApp *app, GsShellDetails *shell_details)
+gs_shell_details_notify_state_changed_cb (GsApp *app,
+					  GParamSpec *pspec,
+					  GsShellDetails *shell_details)
 {
 	gs_shell_details_refresh (shell_details);
 }
@@ -668,9 +670,15 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	if (priv->app != NULL)
 		g_object_unref (priv->app);
 	priv->app = g_object_ref (app);
-	g_signal_connect (priv->app, "state-changed",
-			  G_CALLBACK (gs_shell_details_app_state_changed_cb),
-			  shell_details);
+	g_signal_connect_object (priv->app, "notify::state",
+				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 shell_details, 0);
+	g_signal_connect_object (priv->app, "notify::size",
+				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 shell_details, 0);
+	g_signal_connect_object (priv->app, "notify::licence",
+				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 shell_details, 0);
 
 	/* set screenshots */
 	gs_shell_details_refresh_screenshots (shell_details);

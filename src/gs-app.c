@@ -106,13 +106,6 @@ enum {
 
 G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
 
-enum {
-	SIGNAL_STATE_CHANGED,
-	SIGNAL_LAST
-};
-
-static guint signals [SIGNAL_LAST] = { 0 };
-
 /**
  * gs_app_error_quark:
  * Return value: Our personal error quark.
@@ -438,7 +431,6 @@ gs_app_set_state (GsApp *app, GsAppState state)
 		app->priv->install_date = 0;
 
 	g_object_notify (G_OBJECT (app), "state");
-	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
 /**
@@ -512,7 +504,6 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 
 	priv->kind = kind;
 	g_object_notify (G_OBJECT (app), "kind");
-	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
 /**
@@ -877,7 +868,6 @@ gs_app_ui_versions_populate (GsApp *app)
 		priv->update_version_ui = gs_app_get_ui_version (priv->update_version, flags[i]);
 		if (g_strcmp0 (priv->version_ui, priv->update_version_ui) != 0) {
 			g_object_notify (G_OBJECT (app), "version");
-			g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 			return;
 		}
 		gs_app_ui_versions_invalidate (app);
@@ -931,7 +921,6 @@ gs_app_set_version (GsApp *app, const gchar *version)
 	app->priv->version = g_strdup (version);
 	gs_app_ui_versions_invalidate (app);
 	g_object_notify (G_OBJECT (app), "version");
-	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
 /**
@@ -1125,7 +1114,6 @@ gs_app_set_update_version (GsApp *app, const gchar *update_version)
 	app->priv->update_version = g_strdup (update_version);
 	gs_app_ui_versions_invalidate (app);
 	g_object_notify (G_OBJECT (app), "version");
-	g_signal_emit (app, signals[SIGNAL_STATE_CHANGED], 0);
 }
 
 /**
@@ -1526,13 +1514,6 @@ gs_app_class_init (GsAppClass *klass)
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_INSTALL_DATE, pspec);
-
-	signals [SIGNAL_STATE_CHANGED] =
-		g_signal_new ("state-changed",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsAppClass, state_changed),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE, 0);
 
 	g_type_class_add_private (klass, sizeof (GsAppPrivate));
 }

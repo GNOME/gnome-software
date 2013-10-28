@@ -48,7 +48,6 @@ typedef struct
 typedef struct
 {
 	GObjectClass		 parent_class;
-	void			(*state_changed)	(GsApp		*app);
 } GsAppClass;
 
 typedef enum {

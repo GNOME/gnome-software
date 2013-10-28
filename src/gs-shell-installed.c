@@ -211,8 +211,13 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 	gtk_widget_destroy (dialog);
 }
 
+/**
+ * gs_shell_installed_notify_state_changed_cb:
+ **/
 static void
-gs_shell_installed_app_state_changed_cb (GsApp *app, GsShellInstalled *shell)
+gs_shell_installed_notify_state_changed_cb (GsApp *app,
+					    GParamSpec *pspec,
+					    GsShellInstalled *shell)
 {
 	gtk_list_box_invalidate_sort (shell->priv->list_box_installed);
 }
@@ -227,8 +232,9 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 	gs_app_widget_set_colorful (GS_APP_WIDGET (widget), FALSE);
 	g_signal_connect (widget, "button-clicked",
 			  G_CALLBACK (gs_shell_installed_app_remove_cb), shell);
-	g_signal_connect_object (app, "state-changed",
-				 G_CALLBACK (gs_shell_installed_app_state_changed_cb), shell, 0);
+	g_signal_connect_object (app, "notify::state",
+				 G_CALLBACK (gs_shell_installed_notify_state_changed_cb),
+				 shell, 0);
 	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 	gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
 	gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
