@@ -143,6 +143,9 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GError *error = NULL;
 	GsApp *app;
 
+	box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
+	gs_container_remove_all (GTK_CONTAINER (box));
+
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
 	gtk_widget_set_visible (GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_heading")), list != NULL);
 	if (list == NULL) {
@@ -150,9 +153,6 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 		g_error_free (error);
 		goto out;
 	}
-
-	box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
-	gs_container_remove_all (GTK_CONTAINER (box));
 
 	/* at the moment, we only care about the first app */
 	app = GS_APP (list->data);
