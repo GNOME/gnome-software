@@ -402,7 +402,7 @@ gs_plugin_loader_get_app_str (GsApp *app)
 	const gchar *id;
 
 	/* first try the actual id */
-	id = gs_app_get_id (app);
+	id = gs_app_get_id_full (app);
 	if (id != NULL)
 		return id;
 

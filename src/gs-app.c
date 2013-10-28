@@ -214,8 +214,8 @@ gs_app_to_string (GsApp *app)
 				gs_app_id_kind_to_string (priv->id_kind));
 	g_string_append_printf (str, "\tstate:\t%s\n",
 				gs_app_state_to_string (priv->state));
-	if (priv->id != NULL)
-		g_string_append_printf (str, "\tid:\t%s\n", priv->id);
+	if (priv->id_full != NULL)
+		g_string_append_printf (str, "\tid:\t%s\n", priv->id_full);
 	if (priv->name != NULL)
 		g_string_append_printf (str, "\tname:\t%s\n", priv->name);
 	if (priv->icon != NULL)

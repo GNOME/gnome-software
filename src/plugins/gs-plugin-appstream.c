@@ -547,7 +547,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	AppstreamApp *item;
 
 	/* find anything that matches the ID */
-	id = gs_app_get_id (app);
+	id = gs_app_get_id_full (app);
 	if (id == NULL)
 		goto out;
 	item = appstream_cache_get_item_by_id (plugin->priv->cache, id);
