@@ -385,7 +385,6 @@ gs_shell_updates_list_header_func (GtkListBoxRow *row,
 
 	/* first entry */
 	gtk_list_box_row_set_header (row, NULL);
-	header = gtk_list_box_row_get_header (row);
 	if (before == NULL)
 		return;
 
