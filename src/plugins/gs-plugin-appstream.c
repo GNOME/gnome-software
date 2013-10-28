@@ -377,9 +377,11 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 			}
 			gs_app_set_icon (app, icon_path);
 			ret = gs_app_load_icon (app, &error);
-			g_warning ("failed to load cached icon %s: %s",
-				   icon, error->message);
-			g_error_free (error);
+			if (!ret) {
+				g_warning ("failed to load cached icon %s: %s",
+					   icon, error->message);
+				g_error_free (error);
+			}
 			goto out;
 		}
 		break;
