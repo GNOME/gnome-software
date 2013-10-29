@@ -409,6 +409,12 @@ gs_app_set_state (GsApp *app, GsAppState state)
 		    state == GS_APP_STATE_REMOVING)
 			state_change_ok = TRUE;
 		break;
+	case GS_APP_STATE_UNAVAILABLE:
+		/* updatable has to go into an action state */
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_AVAILABLE)
+			state_change_ok = TRUE;
+		break;
 	default:
 		g_warning ("state %s unhandled",
 			   gs_app_state_to_string (priv->state));
