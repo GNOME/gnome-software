@@ -10,6 +10,8 @@ URL:       https://wiki.gnome.org/Apps/Software
 Source0:   http://download.gnome.org/sources/gnome-software/3.9/%{name}-%{version}.tar.xz
 Source1:   http://people.freedesktop.org/~hughsient/temp/fedora-20.xml.gz
 Source2:   http://people.freedesktop.org/~hughsient/temp/fedora-20-icons.tar.gz
+Source3:   http://people.freedesktop.org/~hughsient/temp/fedora-20-codecs.xml
+Source4:   https://raw.github.com/hughsie/fedora-appstream/master/appstream-extra/web-apps.xml
 
 Requires:  gnome-icon-theme
 Requires:  gnome-icon-theme-symbolic >= 3.10.1
@@ -25,6 +27,9 @@ BuildRequires: libnotify-devel
 BuildRequires: PackageKit-glib-devel >= 0.8.10
 BuildRequires: libsoup-devel
 
+# this is not a library version
+%define gs_plugin_version               2
+
 %description
 gnome-software is an application that makes it easy to add, remove
 and update software in the GNOME desktop.
@@ -39,12 +44,14 @@ make %{?_smp_mflags}
 %install
 %make_install
 
-%__rm %{buildroot}%{_libdir}/gs-plugins/*.a
-%__rm %{buildroot}%{_libdir}/gs-plugins/*.la
+%__rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.a
+%__rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.la
 
 # install AppStream data for Fedora
 %__mkdir_p %{buildroot}%{_datadir}/app-info/xmls
 %__cp %{SOURCE1} %{buildroot}%{_datadir}/app-info/xmls
+%__cp %{SOURCE3} %{buildroot}%{_datadir}/app-info/xmls
+%__cp %{SOURCE4} %{buildroot}%{_datadir}/app-info/xmls
 
 # decompress and install AppStream icons
 %__mkdir_p %{buildroot}%{_datadir}/app-info/icons/fedora-20
@@ -82,13 +89,13 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %dir %{_datadir}/gnome-software
 %{_datadir}/gnome-software/*.png
 %{_datadir}/appdata/*.appdata.xml
-%{_datadir}/app-info/xmls/*.gz
+%{_datadir}/app-info/xmls/*
 %{_datadir}/app-info/icons/fedora-20/*.png
 %{_mandir}/man1/gnome-software.1.gz
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/gnome-software/featured.ini
-%dir %{_libdir}/gs-plugins-2
-%{_libdir}/gs-plugins-2/*.so
+%dir %{_libdir}/gs-plugins-%{gs_plugin_version}
+%{_libdir}/gs-plugins-%{gs_plugin_version}/*.so
 %{_sysconfdir}/xdg/autostart/gnome-software-service.desktop
 %{_libexecdir}/gnome-software-service
 %{_datadir}/dbus-1/services/org.gnome.Software.service
