@@ -20,11 +20,17 @@
  */
 
 #include <config.h>
+#include <gio/gio.h>
 
 #define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
 #include <packagekit-glib2/packagekit.h>
 
 #include <gs-plugin.h>
+
+struct GsPluginPrivate {
+	GFileMonitor		*monitor;
+	gsize			 done_init;
+};
 
 /**
  * gs_plugin_get_name:
@@ -47,6 +53,64 @@ gs_plugin_get_priority (GsPlugin *plugin)
 #define PK_PREPARED_UPDATE_FN	"/var/lib/PackageKit/prepared-update"
 
 /**
+ * gs_plugin_initialize:
+ */
+void
+gs_plugin_initialize (GsPlugin *plugin)
+{
+	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+}
+
+/**
+ * gs_plugin_destroy:
+ */
+void
+gs_plugin_destroy (GsPlugin *plugin)
+{
+	if (plugin->priv->monitor != NULL)
+		g_object_unref (plugin->priv->monitor);
+}
+
+/**
+ * gs_plugin_systemd_updates_changed_cb:
+ */
+static void
+gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
+				      GFile *file, GFile *other_file,
+				      GFileMonitorEvent event_type,
+				      gpointer user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+	gs_plugin_updates_changed (plugin);
+}
+
+/**
+ * gs_plugin_startup:
+ */
+static gboolean
+gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	GFile *file;
+	gboolean ret = TRUE;
+
+	file = g_file_new_for_path (PK_PREPARED_UPDATE_FN);
+	plugin->priv->monitor = g_file_monitor_file (file,
+						     G_FILE_MONITOR_NONE,
+						     cancellable,
+						     error);
+	if (plugin->priv->monitor == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+	g_signal_connect (plugin->priv->monitor, "changed",
+			  G_CALLBACK (gs_plugin_systemd_updates_changed_cb),
+			  plugin);
+out:
+	g_object_unref (file);
+	return ret;
+}
+
+/**
  * gs_plugin_add_updates:
  */
 gboolean
@@ -61,6 +125,14 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gchar **split;
 	gchar *data = NULL;
 	guint i;
+
+	/* watch the file in case it comes or goes */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, cancellable, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			goto out;
+	}
 
 	/* does the file exist ? */
 	if (!g_file_test (PK_PREPARED_UPDATE_FN, G_FILE_TEST_EXISTS)) {

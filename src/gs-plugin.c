@@ -196,4 +196,26 @@ gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 	g_source_set_name_by_id (id, "[gnome-software] gs_plugin_status_update_cb");
 }
 
+/**
+ * gs_plugin_updates_changed_cb:
+ **/
+static gboolean
+gs_plugin_updates_changed_cb (gpointer user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+	plugin->updates_changed_fn (plugin, plugin->updates_changed_user_data);
+	return FALSE;
+}
+
+/**
+ * gs_plugin_updates_changed:
+ **/
+void
+gs_plugin_updates_changed (GsPlugin *plugin)
+{
+	guint id;
+	id = g_idle_add (gs_plugin_updates_changed_cb, plugin);
+	g_source_set_name_by_id (id, "[gnome-software] gs_plugin_updates_changed_cb");
+}
+
 /* vim: set noexpandtab: */

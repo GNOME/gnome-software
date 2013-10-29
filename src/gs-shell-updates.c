@@ -441,6 +441,17 @@ gs_shell_updates_button_back_cb (GtkWidget *widget, GsShellUpdates *shell_update
 }
 
 /**
+ * gs_shell_updates_changed_cb:
+ */
+static void
+gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
+			     GsShellUpdates *shell_updates)
+{
+	gs_shell_updates_invalidate (shell_updates);
+	gs_shell_updates_refresh (shell_updates, FALSE, TRUE);
+}
+
+/**
  * gs_shell_updates_pending_apps_changed_cb:
  */
 static void
@@ -565,6 +576,9 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (priv->plugin_loader, "pending-apps-changed",
 			  G_CALLBACK (gs_shell_updates_pending_apps_changed_cb),
+			  shell_updates);
+	g_signal_connect (priv->plugin_loader, "updates-changed",
+			  G_CALLBACK (gs_shell_updates_changed_cb),
 			  shell_updates);
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);

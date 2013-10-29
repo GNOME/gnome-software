@@ -55,6 +55,7 @@ G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 enum {
 	SIGNAL_STATUS_CHANGED,
 	SIGNAL_PENDING_APPS_CHANGED,
+	SIGNAL_UPDATES_CHANGED,
 	SIGNAL_LAST
 };
 
@@ -2393,6 +2394,17 @@ gs_plugin_loader_status_update_cb (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_loader_updates_changed_cb:
+ */
+static void
+gs_plugin_loader_updates_changed_cb (GsPlugin *plugin, gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+	g_debug ("updates-changed");
+	g_signal_emit (plugin_loader, signals[SIGNAL_UPDATES_CHANGED], 0);
+}
+
+/**
  * gs_plugin_loader_open_plugin:
  */
 static GsPlugin *
@@ -2441,6 +2453,8 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->name = g_strdup (plugin_name ());
 	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
 	plugin->status_update_user_data = plugin_loader;
+	plugin->updates_changed_fn = gs_plugin_loader_updates_changed_cb;
+	plugin->updates_changed_user_data = plugin_loader;
 	plugin->profile = g_object_ref (plugin_loader->priv->profile);
 	plugin->icon_cache = g_hash_table_ref (plugin_loader->priv->icon_cache);
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
@@ -2596,6 +2610,12 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 		g_signal_new ("pending-apps-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (GsPluginLoaderClass, pending_apps_changed),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
+	signals [SIGNAL_UPDATES_CHANGED] =
+		g_signal_new ("updates-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginLoaderClass, updates_changed),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
