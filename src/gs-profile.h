@@ -53,10 +53,6 @@ void		 gs_profile_start		(GsProfile	*profile,
 						 const gchar	*id);
 void		 gs_profile_stop		(GsProfile	*profile,
 						 const gchar	*id);
-void		 gs_profile_start_full		(GsProfile	*profile,
-						 const gchar	*id);
-void		 gs_profile_stop_full		(GsProfile	*profile,
-						 const gchar	*id);
 void		 gs_profile_dump		(GsProfile	*profile);
 
 G_END_DECLS

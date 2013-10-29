@@ -212,7 +212,7 @@ gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 					      function_name_parent,
 					      function_name);
 	}
-	gs_profile_start_full (plugin_loader->priv->profile, profile_id);
+	gs_profile_start (plugin_loader->priv->profile, profile_id);
 	ret = plugin_func (plugin, list, flags, cancellable, error);
 	if (!ret) {
 		/* check the plugin is well behaved and sets error
@@ -237,7 +237,7 @@ gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 	}
 out:
 	if (profile_id != NULL) {
-		gs_profile_stop_full (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 	g_free (profile_id);

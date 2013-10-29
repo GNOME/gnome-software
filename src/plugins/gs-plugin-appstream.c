@@ -623,21 +623,21 @@ gs_plugin_refine (GsPlugin *plugin,
 			goto out;
 	}
 
-	gs_profile_start_full (plugin->profile, "appstream::refine");
+	gs_profile_start (plugin->profile, "appstream::refine");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		ret = gs_plugin_refine_from_id (plugin, app, error);
 		if (!ret) {
-			gs_profile_stop_full (plugin->profile, "appstream::refine");
+			gs_profile_stop (plugin->profile, "appstream::refine");
 			goto out;
 		}
 		ret = gs_plugin_refine_from_pkgname (plugin, app, error);
 		if (!ret) {
-			gs_profile_stop_full (plugin->profile, "appstream::refine");
+			gs_profile_stop (plugin->profile, "appstream::refine");
 			goto out;
 		}
 	}
-	gs_profile_stop_full (plugin->profile, "appstream::refine");
+	gs_profile_stop (plugin->profile, "appstream::refine");
 
 	/* sucess */
 	ret = TRUE;
@@ -673,7 +673,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	}
 
 	/* get the two search terms */
-	gs_profile_start_full (plugin->profile, "appstream::add-category-apps");
+	gs_profile_start (plugin->profile, "appstream::add-category-apps");
 	search_id1 = gs_category_get_id (category);
 	parent = gs_category_get_parent (category);
 	if (parent != NULL)
@@ -703,7 +703,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			goto out;
 		gs_plugin_add_app (list, app);
 	}
-	gs_profile_stop_full (plugin->profile, "appstream::add-category-apps");
+	gs_profile_stop (plugin->profile, "appstream::add-category-apps");
 out:
 	return ret;
 }
@@ -778,7 +778,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	}
 
 	/* find out how many packages are in each category */
-	gs_profile_start_full (plugin->profile, "appstream::add-categories");
+	gs_profile_start (plugin->profile, "appstream::add-categories");
 	for (l = *list; l != NULL; l = l->next) {
 		parent = GS_CATEGORY (l->data);
 		children = gs_category_get_subcategories (parent);
@@ -813,7 +813,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		}
 		g_list_free (children);
 	}
-	gs_profile_stop_full (plugin->profile, "appstream::add-categories");
+	gs_profile_stop (plugin->profile, "appstream::add-categories");
 out:
 	return ret;
 }

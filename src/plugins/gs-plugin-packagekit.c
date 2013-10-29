@@ -94,11 +94,11 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	/* profile */
 	if (status == PK_STATUS_ENUM_SETUP) {
-		gs_profile_start_full (plugin->profile,
-				       "packagekit-refine::transaction");
+		gs_profile_start (plugin->profile,
+				  "packagekit-refine::transaction");
 	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		gs_profile_stop_full (plugin->profile,
-				      "packagekit-refine::transaction");
+		gs_profile_stop (plugin->profile,
+				 "packagekit-refine::transaction");
 	}
 
 	plugin_status = packagekit_status_enum_to_plugin_status (status);

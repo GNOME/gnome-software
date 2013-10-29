@@ -95,11 +95,11 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	/* profile */
 	if (status == PK_STATUS_ENUM_SETUP) {
-		gs_profile_start_full (plugin->profile,
-				       "packagekit-refine::transaction");
+		gs_profile_start (plugin->profile,
+				  "packagekit-refine::transaction");
 	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		gs_profile_stop_full (plugin->profile,
-				      "packagekit-refine::transaction");
+		gs_profile_stop (plugin->profile,
+				 "packagekit-refine::transaction");
 	}
 
 	plugin_status = packagekit_status_enum_to_plugin_status (status);
@@ -539,7 +539,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	GsApp *app;
 	gboolean ret = TRUE;
 
-	gs_profile_start_full (plugin->profile, "packagekit-refine[source->licence]");
+	gs_profile_start (plugin->profile, "packagekit-refine[source->licence]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_licence (app) != NULL &&
@@ -561,7 +561,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	if (!ret)
 		goto out;
 out:
-	gs_profile_stop_full (plugin->profile, "packagekit-refine[source->licence]");
+	gs_profile_stop (plugin->profile, "packagekit-refine[source->licence]");
 	g_list_free (list_tmp);
 	return ret;
 }
@@ -598,7 +598,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	gboolean ret = TRUE;
 
 	/* can we resolve in one go? */
-	gs_profile_start_full (plugin->profile, "packagekit-refine[name->id]");
+	gs_profile_start (plugin->profile, "packagekit-refine[name->id]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_source_id_default (app) != NULL)
@@ -621,10 +621,10 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 	}
-	gs_profile_stop_full (plugin->profile, "packagekit-refine[name->id]");
+	gs_profile_stop (plugin->profile, "packagekit-refine[name->id]");
 
 	/* set the package-id for an installed desktop file */
-	gs_profile_start_full (plugin->profile, "packagekit-refine[desktop-filename->id]");
+	gs_profile_start (plugin->profile, "packagekit-refine[desktop-filename->id]");
 	for (l = list; l != NULL; l = l->next) {
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 			continue;
@@ -642,10 +642,10 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 	}
-	gs_profile_stop_full (plugin->profile, "packagekit-refine[desktop-filename->id]");
+	gs_profile_stop (plugin->profile, "packagekit-refine[desktop-filename->id]");
 
 	/* any update details missing? */
-	gs_profile_start_full (plugin->profile, "packagekit-refine[id->update-details]");
+	gs_profile_start (plugin->profile, "packagekit-refine[id->update-details]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
@@ -664,7 +664,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 	}
-	gs_profile_stop_full (plugin->profile, "packagekit-refine[id->update-details]");
+	gs_profile_stop (plugin->profile, "packagekit-refine[id->update-details]");
 
 	/* any important details missing? */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0 ||

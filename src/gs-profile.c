@@ -34,6 +34,7 @@ struct GsProfilePrivate
 	GPtrArray	*current;
 	GPtrArray	*archived;
 	GMutex		 mutex;
+	GThread		*unthreaded;
 };
 
 typedef struct {
@@ -81,42 +82,41 @@ gs_profile_item_find (GPtrArray *array, const gchar *id)
 void
 gs_profile_start (GsProfile *profile, const gchar *id)
 {
+	GThread *self;
 	GsProfileItem *item;
+	gchar *id_thr;
 
 	g_return_if_fail (GS_IS_PROFILE (profile));
 	g_return_if_fail (id != NULL);
+
+	/* only use the thread ID when not using the main thread */
+	self = g_thread_self ();
+	if (self != profile->priv->unthreaded) {
+		id_thr = g_strdup_printf ("%p~%s", self, id);
+	} else {
+		id_thr = g_strdup (id);
+	}
 
 	/* lock */
 	g_mutex_lock (&profile->priv->mutex);
 
 	/* already started */
-	item = gs_profile_item_find (profile->priv->current, id);
+	item = gs_profile_item_find (profile->priv->current, id_thr);
 	if (item != NULL) {
 		gs_profile_dump (profile);
-		g_warning ("Already a started task for %s", id);
+		g_warning ("Already a started task for %s", id_thr);
 		goto out;
 	}
 
 	/* add new item */
 	item = g_new0 (GsProfileItem, 1);
-	item->id = g_strdup (id);
+	item->id = g_strdup (id_thr);
 	item->time_start = g_get_real_time ();
 	g_ptr_array_add (profile->priv->current, item);
-	g_debug ("run %s", id);
+	g_debug ("run %s", id_thr);
 out:
 	/* unlock */
 	g_mutex_unlock (&profile->priv->mutex);
-}
-
-/**
- * gs_profile_start_full:
- **/
-void
-gs_profile_start_full (GsProfile *profile, const gchar *id)
-{
-	gchar *id_thr;
-	id_thr = g_strdup_printf ("%p~%s", g_thread_self (), id);
-	gs_profile_start (profile, id_thr);
 	g_free (id_thr);
 }
 
@@ -126,26 +126,36 @@ gs_profile_start_full (GsProfile *profile, const gchar *id)
 void
 gs_profile_stop (GsProfile *profile, const gchar *id)
 {
+	GThread *self;
 	GsProfileItem *item;
+	gchar *id_thr;
 	gdouble elapsed_ms;
 
 	g_return_if_fail (GS_IS_PROFILE (profile));
 	g_return_if_fail (id != NULL);
 
+	/* only use the thread ID when not using the main thread */
+	self = g_thread_self ();
+	if (self != profile->priv->unthreaded) {
+		id_thr = g_strdup_printf ("%p~%s", self, id);
+	} else {
+		id_thr = g_strdup (id);
+	}
+
 	/* lock */
 	g_mutex_lock (&profile->priv->mutex);
 
 	/* already started */
-	item = gs_profile_item_find (profile->priv->current, id);
+	item = gs_profile_item_find (profile->priv->current, id_thr);
 	if (item == NULL) {
-		g_warning ("Not already a started task for %s", id);
+		g_warning ("Not already a started task for %s", id_thr);
 		goto out;
 	}
 
 	/* debug */
 	elapsed_ms = (item->time_stop - item->time_start) / 1000;
 	if (elapsed_ms > 5)
-		g_debug ("%s took %.0fms", id, elapsed_ms);
+		g_debug ("%s took %.0fms", id_thr, elapsed_ms);
 
 	/* update */
 	item->time_stop = g_get_real_time ();
@@ -156,17 +166,6 @@ gs_profile_stop (GsProfile *profile, const gchar *id)
 out:
 	/* unlock */
 	g_mutex_unlock (&profile->priv->mutex);
-}
-
-/**
- * gs_profile_stop_full:
- **/
-void
-gs_profile_stop_full (GsProfile *profile, const gchar *id)
-{
-	gchar *id_thr;
-	id_thr = g_strdup_printf ("%p~%s", g_thread_self (), id);
-	gs_profile_stop (profile, id_thr);
 	g_free (id_thr);
 }
 
@@ -275,6 +274,7 @@ gs_profile_init (GsProfile *profile)
 {
 	profile->priv = GS_PROFILE_GET_PRIVATE (profile);
 	profile->priv->current = g_ptr_array_new ();
+	profile->priv->unthreaded = g_thread_self ();
 	profile->priv->archived = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_profile_item_free);
 	g_mutex_init (&profile->priv->mutex);
 }
