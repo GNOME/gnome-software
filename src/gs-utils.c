@@ -41,9 +41,10 @@ fade_in (gpointer data)
 	opacity = opacity + 0.1;
 	gtk_widget_set_opacity (spinner, opacity);
 
-	if (opacity >= 1.0)
+	if (opacity >= 1.0) {
+		g_object_steal_data (G_OBJECT (spinner), "fade-timeout");
 		return G_SOURCE_REMOVE;
-
+	}
 	return G_SOURCE_CONTINUE;
 }
 
@@ -66,6 +67,8 @@ start_spinning (gpointer data)
 	g_object_set_data_full (G_OBJECT (spinner), "fade-timeout",
 				GUINT_TO_POINTER (id), remove_source);
 
+	/* don't try to remove this source in the future */
+	g_object_steal_data (G_OBJECT (spinner), "start-timeout");
 	return G_SOURCE_REMOVE;
 }
 
