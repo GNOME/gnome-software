@@ -257,7 +257,14 @@ gs_shell_search_get_search_cb (GObject *source_object,
 
 	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		g_warning ("failed to get search apps: %s", error->message);
+		if (g_error_matches (error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
+			g_debug ("no search results to show");
+		} else {
+			g_warning ("failed to get search apps: %s",
+				   error->message);
+		}
 		g_error_free (error);
 		gtk_stack_set_visible_child_name (GTK_STACK (widget), "no-results");
 		goto out;

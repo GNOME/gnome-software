@@ -59,6 +59,7 @@ typedef struct
 typedef enum
 {
 	GS_PLUGIN_LOADER_ERROR_FAILED,
+	GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 	GS_PLUGIN_LOADER_ERROR_LAST
 } GsPluginLoaderError;
 

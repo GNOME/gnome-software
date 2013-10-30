@@ -125,7 +125,13 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		gtk_widget_set_visible (widget, list != NULL);
 	}
 	if (list == NULL) {
-		g_warning ("failed to get updates: %s", error->message);
+		if (g_error_matches (error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
+			g_debug ("no updates to show");
+		} else {
+			g_warning ("failed to get updates: %s", error->message);
+		}
 		g_error_free (error);
 		goto out;
 	}

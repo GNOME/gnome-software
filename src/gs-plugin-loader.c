@@ -395,7 +395,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	if (list == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 			     "no results to show");
 		goto out;
 	}
@@ -803,7 +803,7 @@ gs_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_FAILED,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 				     "no updates to show after invalid");
 		gs_plugin_loader_get_all_state_finish (state, error);
 		g_error_free (error);
@@ -930,7 +930,7 @@ gs_plugin_loader_get_installed_thread_cb (GSimpleAsyncResult *res,
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_FAILED,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 				     "no installed applications to show after invalid");
 		gs_plugin_loader_get_all_state_finish (state, error);
 		g_error_free (error);
@@ -1054,7 +1054,7 @@ gs_plugin_loader_get_popular_thread_cb (GSimpleAsyncResult *res,
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_FAILED,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 				     "no popular apps to show");
 		gs_plugin_loader_get_all_state_finish (state, error);
 		g_error_free (error);
@@ -1160,7 +1160,7 @@ gs_plugin_loader_get_featured_thread_cb (GSimpleAsyncResult *res,
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_FAILED,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 				     "no featured apps to show");
 		gs_plugin_loader_get_all_state_finish (state, error);
 		g_error_free (error);
@@ -1398,7 +1398,7 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	if (state->list == NULL) {
 		g_set_error (&error,
 			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 			     "no search results to show");
 		gs_plugin_loader_get_all_state_finish (state, error);
 		g_error_free (error);
@@ -1564,7 +1564,7 @@ gs_plugin_loader_get_categories_thread_cb (GSimpleAsyncResult *res,
 	if (state->list == NULL) {
 		g_set_error (&error,
 			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 			     "no categories to show");
 		gs_plugin_loader_get_all_state_finish (state, error);
 		g_error_free (error);
@@ -1717,7 +1717,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 	if (state->list == NULL) {
 		g_set_error (&error,
 			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 			     "no get_category_apps results to show");
 		gs_plugin_loader_get_all_state_finish (state, error);
 		g_error_free (error);
