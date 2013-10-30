@@ -183,12 +183,16 @@ main (int argc, char **argv)
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	gchar *refine_flags_str = NULL;
 	gchar **split = NULL;
+	gint i;
+	gint repeat = 1;
 	int status = 0;
 	const GOptionEntry options[] = {
 		{ "show-results", '\0', 0, G_OPTION_ARG_NONE, &show_results,
 		  "Show the results for the action", NULL },
 		{ "refine-flags", '\0', 0, G_OPTION_ARG_STRING, &refine_flags_str,
 		  "Set any refine flags required for the action", NULL },
+		{ "repeat", '\0', 0, G_OPTION_ARG_INT, &repeat,
+		  "Repeat the action this number of times", NULL },
 		{ NULL}
 	};
 
@@ -236,44 +240,82 @@ main (int argc, char **argv)
 
 	/* do action */
 	if (argc == 2 && g_strcmp0 (argv[1], "installed") == 0) {
-		list = gs_plugin_loader_get_installed (plugin_loader,
-						       refine_flags,
-						       NULL,
-						       &error);
-		if (list == NULL)
-			ret = FALSE;
+		for (i = 0; i < repeat; i++) {
+			if (list != NULL)
+				gs_plugin_list_free (list);
+			list = gs_plugin_loader_get_installed (plugin_loader,
+							       refine_flags,
+							       NULL,
+							       &error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "search") == 0) {
-		list = gs_plugin_loader_search (plugin_loader,
-						argv[2],
-						refine_flags,
-						NULL,
-						&error);
-		if (list == NULL)
-			ret = FALSE;
+		for (i = 0; i < repeat; i++) {
+			if (list != NULL)
+				gs_plugin_list_free (list);
+			list = gs_plugin_loader_search (plugin_loader,
+							argv[2],
+							refine_flags,
+							NULL,
+							&error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "refine") == 0) {
 		app = gs_app_new (argv[2]);
-		ret = gs_plugin_loader_app_refine (plugin_loader,
-						   app,
-						   refine_flags,
-						   NULL,
-						   &error);
+		for (i = 0; i < repeat; i++) {
+			ret = gs_plugin_loader_app_refine (plugin_loader,
+							   app,
+							   refine_flags,
+							   NULL,
+							   &error);
+			if (!ret)
+				break;
+		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
-		list = gs_plugin_loader_get_updates (plugin_loader,
-						     refine_flags,
-						     NULL,
-						     &error);
-		if (list == NULL)
-			ret = FALSE;
+		for (i = 0; i < repeat; i++) {
+			if (list != NULL)
+				gs_plugin_list_free (list);
+			list = gs_plugin_loader_get_updates (plugin_loader,
+							     refine_flags,
+							     NULL,
+							     &error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "popular") == 0) {
-		list = gs_plugin_loader_get_popular (plugin_loader,
-						     refine_flags,
-						     NULL,
-						     &error);
+		for (i = 0; i < repeat; i++) {
+			if (list != NULL)
+				gs_plugin_list_free (list);
+			list = gs_plugin_loader_get_popular (plugin_loader,
+							     refine_flags,
+							     NULL,
+							     &error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "get-categories") == 0) {
-		categories = gs_plugin_loader_get_categories (plugin_loader,
-							      refine_flags,
-							      NULL,
-							      &error);
+		for (i = 0; i < repeat; i++) {
+			if (list != NULL)
+				gs_plugin_list_free (list);
+			categories = gs_plugin_loader_get_categories (plugin_loader,
+								      refine_flags,
+								      NULL,
+								      &error);
+			if (categories == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "get-category-apps") == 0) {
 		split = g_strsplit (argv[2], "/", 2);
 		if (g_strv_length (split) == 1) {
@@ -283,13 +325,19 @@ main (int argc, char **argv)
 			category = gs_category_new (parent, split[1], NULL);
 			g_object_unref (parent);
 		}
-		list = gs_plugin_loader_get_category_apps (plugin_loader,
-							   category,
-							   refine_flags,
-							   NULL,
-							   &error);
-		if (list == NULL)
-			ret = FALSE;
+		for (i = 0; i < repeat; i++) {
+			if (list != NULL)
+				gs_plugin_list_free (list);
+			list = gs_plugin_loader_get_category_apps (plugin_loader,
+								   category,
+								   refine_flags,
+								   NULL,
+								   &error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else {
 		ret = FALSE;
 		g_set_error_literal (&error,
