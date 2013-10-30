@@ -247,11 +247,42 @@ out:
 }
 
 /**
+ * gs_plugin_epiphany_match_app_value:
+ */
+static gboolean
+gs_plugin_epiphany_match_app_value (GsApp *app, const gchar *value)
+{
+	if (strcasestr (gs_app_get_name (app), value) != NULL)
+		return TRUE;
+	if (strcasestr (gs_app_get_summary (app), value) != NULL)
+		return TRUE;
+	return FALSE;
+}
+
+/**
+ * gs_plugin_epiphany_match_app:
+ */
+static gboolean
+gs_plugin_epiphany_match_app (GsApp *app, gchar **values)
+{
+	gboolean matches = FALSE;
+	guint i;
+
+	/* does the GsApp match *all* search keywords */
+	for (i = 0; values[i] != NULL; i++) {
+		matches = gs_plugin_epiphany_match_app_value (app, values[i]);
+		if (!matches)
+			break;
+	}
+	return matches;
+}
+
+/**
  * gs_plugin_add_search:
  */
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
-		      const gchar *value,
+		      gchar **values,
 		      GList **list,
 		      GCancellable *cancellable,
 		      GError **error)
@@ -271,8 +302,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	/* add any matching apps */
 	for (l = plugin->priv->list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (strcasestr (gs_app_get_name (app), value) != NULL ||
-		    strcasestr (gs_app_get_summary (app), value) != NULL)
+		if (gs_plugin_epiphany_match_app (app, values))
 			gs_plugin_add_app (list, app);
 	}
 out:

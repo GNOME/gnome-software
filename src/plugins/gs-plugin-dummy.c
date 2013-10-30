@@ -75,7 +75,7 @@ gs_plugin_destroy (GsPlugin *plugin)
  */
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
-		      const gchar *value,
+		      gchar **values,
 		      GList **list,
 		      GCancellable *cancellable,
 		      GError **error)

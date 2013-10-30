@@ -115,12 +115,11 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
  */
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
-		      const gchar *value,
+		      gchar **values,
 		      GList **list,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	const gchar *values[2] = { NULL, NULL };
 	gboolean ret = TRUE;
 	PkBitfield filter;
 	PkResults *results;
@@ -134,10 +133,9 @@ gs_plugin_add_search (GsPlugin *plugin,
 					 PK_FILTER_ENUM_APPLICATION,
 					 PK_FILTER_ENUM_NOT_COLLECTIONS,
 					 -1);
-	values[0] = value;
 	results = pk_client_search_details (plugin->priv->client,
 					    filter,
-					    (gchar **) values,
+					    values,
 					    cancellable,
 					    gs_plugin_packagekit_progress_cb, plugin,
 					    error);

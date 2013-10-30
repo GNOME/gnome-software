@@ -1340,9 +1340,11 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
+	gchar **values;
 	guint i;
 
 	/* run each plugin */
+	values = g_str_tokenize_and_fold (state->value, NULL, NULL);
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
 		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
 		if (!plugin->enabled)
@@ -1361,7 +1363,7 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 					      plugin->name, function_name);
 		gs_profile_start (plugin_loader->priv->profile, profile_id);
-		ret = plugin_func (plugin, state->value, &state->list, cancellable, &error);
+		ret = plugin_func (plugin, values, &state->list, cancellable, &error);
 		if (!ret) {
 			gs_plugin_loader_get_all_state_finish (state, error);
 			g_error_free (error);
@@ -1409,7 +1411,7 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	state->ret = TRUE;
 	gs_plugin_loader_get_all_state_finish (state, NULL);
 out:
-	return;
+	g_strfreev (values);
 }
 
 /**

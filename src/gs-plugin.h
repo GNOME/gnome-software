@@ -102,7 +102,7 @@ typedef const gchar	*(*GsPluginGetNameFunc)		(void);
 typedef gdouble		 (*GsPluginGetPriorityFunc)	(GsPlugin	*plugin);
 typedef void		 (*GsPluginFunc)		(GsPlugin	*plugin);
 typedef gboolean	 (*GsPluginSearchFunc)		(GsPlugin	*plugin,
-							 const gchar	*value,
+							 gchar		**value,
 							 GList		**list,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -145,7 +145,7 @@ void		 gs_plugin_status_update		(GsPlugin	*plugin,
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
 gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
-							 const gchar	*value,
+							 gchar		**values,
 							 GList		**list,
 							 GCancellable	*cancellable,
 							 GError		**error);
