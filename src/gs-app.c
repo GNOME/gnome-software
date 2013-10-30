@@ -574,12 +574,11 @@ gs_app_get_source_default (GsApp *app)
 }
 
 /**
- * gs_app_set_source_default:
+ * gs_app_add_source:
  */
 void
-gs_app_set_source_default (GsApp *app, const gchar *source)
+gs_app_add_source (GsApp *app, const gchar *source)
 {
-	g_ptr_array_set_size (app->priv->sources, 0);
 	g_ptr_array_add (app->priv->sources, g_strdup (source));
 }
 
