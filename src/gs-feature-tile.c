@@ -97,6 +97,7 @@ void
 gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 {
 	GsFeatureTilePrivate *priv;
+	const gchar *tmp;
 	gchar *data;
 
 	g_return_if_fail (GS_IS_FEATURE_TILE (tile));
@@ -118,6 +119,16 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 
 	gtk_label_set_label (GTK_LABEL (priv->title), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (priv->subtitle), gs_app_get_summary (app));
+
+	/* check the app has the featured data */
+	tmp = gs_app_get_metadata_item (app, "Featured::text-color");
+	if (tmp == NULL) {
+		data = gs_app_to_string (app);
+		g_warning ("%s has no featured data: %s",
+			   gs_app_get_id (app), data);
+		goto out;
+	}
+
 	data = g_strdup_printf (
 		".button.featured-tile {\n"
 		"  padding: 0;\n"
@@ -142,8 +153,8 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 		gs_app_get_metadata_item (app, "Featured::text-color"),
 		gs_app_get_metadata_item (app, "Featured::background"),
 		gs_app_get_metadata_item (app, "Featured::background"));
-
 	gtk_css_provider_load_from_data (priv->provider, data, -1, NULL);
+out:
 	g_free (data);
 }
 
