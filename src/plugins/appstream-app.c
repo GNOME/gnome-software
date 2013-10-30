@@ -50,7 +50,24 @@ struct AppstreamApp
 	gpointer		 userdata;
 	GDestroyNotify		 userdata_destroy_func;
 	GPtrArray		*screenshots; /* of AppstreamScreenshot */
+	gboolean		 token_cache_valid;
+	GPtrArray		*token_cache;
 };
+
+typedef struct {
+	gchar	**values;
+	guint	  priority;
+} AppstreamAppTokenItem;
+
+/**
+ * appstream_app_token_item_free:
+ */
+static void
+appstream_app_token_item_free (AppstreamAppTokenItem *token_item)
+{
+	g_strfreev (token_item->values);
+	g_slice_free (AppstreamAppTokenItem, token_item);
+}
 
 /**
  * appstream_app_free:
@@ -72,6 +89,7 @@ appstream_app_free (AppstreamApp *app)
 	g_ptr_array_unref (app->mimetypes);
 	g_ptr_array_unref (app->desktop_core);
 	g_ptr_array_unref (app->screenshots);
+	g_ptr_array_unref (app->token_cache);
 	if (app->userdata_destroy_func != NULL)
 		app->userdata_destroy_func (app->userdata);
 	g_slice_free (AppstreamApp, app);
@@ -112,6 +130,7 @@ appstream_app_new (void)
 	app->pkgnames = g_ptr_array_new_with_free_func (g_free);
 	app->desktop_core = g_ptr_array_new_with_free_func (g_free);
 	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_screenshot_free);
+	app->token_cache = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_app_token_item_free);
 	app->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	app->name_value = G_MAXUINT;
 	app->summary_value = G_MAXUINT;
@@ -496,33 +515,73 @@ appstream_app_get_categories (AppstreamApp *app)
 }
 
 /**
- * appstream_app_search_matches:
+ * appstream_app_add_tokens:
  */
-gboolean
-appstream_app_search_matches (AppstreamApp *app, const gchar *search)
+static void
+appstream_app_add_tokens (AppstreamApp *app,
+			  const gchar *value,
+			  guint priority)
+{
+	AppstreamAppTokenItem *token_item;
+
+	/* sanity check */
+	if (value == NULL)
+		return;
+
+	token_item = g_slice_new (AppstreamAppTokenItem);
+	token_item->values = g_str_tokenize_and_fold (value, NULL, NULL);
+	token_item->priority = priority;
+	g_ptr_array_add (app->token_cache, token_item);
+}
+
+/**
+ * appstream_app_create_token_cache:
+ */
+static void
+appstream_app_create_token_cache (AppstreamApp *app)
 {
 	const gchar *tmp;
 	guint i;
 
-	if (search == NULL)
-		return FALSE;
-	if (app->id != NULL && strcasestr (app->id, search) != NULL)
-		return TRUE;
-	if (app->name != NULL && strcasestr (app->name, search) != NULL)
-		return TRUE;
-	if (app->summary != NULL && strcasestr (app->summary, search) != NULL)
-		return TRUE;
-	if (app->description != NULL && strcasestr (app->description, search) != NULL)
-		return TRUE;
+	appstream_app_add_tokens (app, app->id, 100);
+	appstream_app_add_tokens (app, app->name, 80);
+	appstream_app_add_tokens (app, app->summary, 60);
 	for (i = 0; i < app->keywords->len; i++) {
 		tmp = g_ptr_array_index (app->keywords, i);
-		if (strcasestr (tmp, search) != NULL)
-			return TRUE;
+		appstream_app_add_tokens (app, tmp, 40);
 	}
+	appstream_app_add_tokens (app, app->description, 20);
 	for (i = 0; i < app->mimetypes->len; i++) {
 		tmp = g_ptr_array_index (app->mimetypes, i);
-		if (strcasestr (tmp, search) != NULL)
-			return TRUE;
+		appstream_app_add_tokens (app, tmp, 1);
 	}
-	return FALSE;
+	app->token_cache_valid = TRUE;
+}
+
+/**
+ * appstream_app_search_matches:
+ */
+guint
+appstream_app_search_matches (AppstreamApp *app, const gchar *search)
+{
+	AppstreamAppTokenItem *token_item;
+	guint i, j;
+
+	/* nothing to do */
+	if (search == NULL)
+		return FALSE;
+
+	/* ensure the token cache is created */
+	if (!app->token_cache_valid)
+		appstream_app_create_token_cache (app);
+
+	/* find the search term */
+	for (i = 0; i < app->token_cache->len; i++) {
+		token_item = g_ptr_array_index (app->token_cache, i);
+		for (j = 0; token_item->values[j] != NULL; j++) {
+			if (g_str_has_prefix (token_item->values[j], search))
+				return token_item->priority;
+		}
+	}
+	return 0;
 }

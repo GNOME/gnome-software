@@ -126,7 +126,7 @@ void		 appstream_app_add_screenshot		(AppstreamApp	*app,
 							 AppstreamScreenshot *screenshot);
 GPtrArray	*appstream_app_get_screenshots		(AppstreamApp	*app);
 GPtrArray	*appstream_app_get_categories		(AppstreamApp	*app);
-gboolean	 appstream_app_search_matches		(AppstreamApp	*app,
+guint		 appstream_app_search_matches		(AppstreamApp	*app,
 							 const gchar	*search);
 
 G_END_DECLS

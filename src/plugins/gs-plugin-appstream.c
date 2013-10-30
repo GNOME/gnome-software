@@ -714,16 +714,16 @@ out:
 static gboolean
 gs_plugin_appstream_match_item (AppstreamApp *item, gchar **values)
 {
-	gboolean matches = FALSE;
+	guint matches = 0;
 	guint i;
 
 	/* does the GsApp match *all* search keywords */
 	for (i = 0; values[i] != NULL; i++) {
 		matches = appstream_app_search_matches (item, values[i]);
-		if (!matches)
+		if (matches == 0)
 			break;
 	}
-	return matches;
+	return matches != 0;
 }
 
 /**
