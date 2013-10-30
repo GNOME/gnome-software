@@ -203,8 +203,10 @@ gs_app_to_string (GsApp *app)
 	str = g_string_new ("GsApp:\n");
 	g_string_append_printf (str, "\tkind:\t%s\n",
 				gs_app_kind_to_string (priv->kind));
-	g_string_append_printf (str, "\tid-kind:\t%s\n",
-				gs_app_id_kind_to_string (priv->id_kind));
+	if (priv->id_kind != GS_APP_ID_KIND_UNKNOWN) {
+		g_string_append_printf (str, "\tid-kind:\t%s\n",
+					gs_app_id_kind_to_string (priv->id_kind));
+	}
 	g_string_append_printf (str, "\tstate:\t%s\n",
 				gs_app_state_to_string (priv->state));
 	if (priv->id_full != NULL)
@@ -221,6 +223,10 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tupdate-version:\t%s\n", priv->update_version);
 	if (priv->update_version_ui != NULL)
 		g_string_append_printf (str, "\tupdate-version-ui:\t%s\n", priv->update_version_ui);
+	if (priv->update_details != NULL) {
+		g_string_append_printf (str, "\tupdate-details:\t%s\n",
+					priv->update_details);
+	}
 	if (priv->summary != NULL)
 		g_string_append_printf (str, "\tsummary:\t%s\n", priv->summary);
 	if (priv->description != NULL)
@@ -250,7 +256,7 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tlicence:\t%s\n", priv->licence);
 	if (priv->summary_missing != NULL)
 		g_string_append_printf (str, "\tsummary-missing:\t%s\n", priv->summary_missing);
-	if (priv->menu_path != NULL)
+	if (priv->menu_path != NULL && priv->menu_path[0] != '\0')
 		g_string_append_printf (str, "\tmenu-path:\t%s\n", priv->menu_path);
 	if (priv->rating != -1)
 		g_string_append_printf (str, "\trating:\t%i\n", priv->rating);

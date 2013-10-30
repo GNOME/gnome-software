@@ -36,14 +36,24 @@ static void
 gs_cmd_show_results_apps (GList *list)
 {
 	GList *l;
+	GPtrArray *related;
 	GsApp *app;
+	GsApp *app_rel;
 	gchar *tmp;
+	guint i;
 
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		tmp = gs_app_to_string (app);
 		g_print ("%s\n", tmp);
 		g_free (tmp);
+		related = gs_app_get_related (app);
+		for (i = 0; i < related->len; i++) {
+			app_rel = GS_APP (g_ptr_array_index (related, i));
+			tmp = gs_app_to_string (app_rel);
+			g_print ("\t%s\n", tmp);
+			g_free (tmp);
+		}
 	}
 }
 
