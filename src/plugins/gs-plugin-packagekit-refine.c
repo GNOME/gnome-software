@@ -580,6 +580,33 @@ gs_plugin_refine_requires_version (GsApp *app, GsPluginRefineFlags flags)
 }
 
 /**
+ * gs_plugin_refine_requires_package_id:
+ */
+static gboolean
+gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
+{
+	const gchar *tmp;
+	tmp = gs_app_get_source_id_default (app);
+	if (tmp != NULL)
+		return FALSE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) > 0)
+		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0)
+		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0)
+		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0)
+		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) > 0)
+		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) > 0)
+		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) > 0)
+		return TRUE;
+	return FALSE;
+}
+
+/**
  * gs_plugin_refine:
  */
 gboolean
@@ -609,6 +636,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (sources->len == 0)
 			continue;
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
+		    gs_plugin_refine_requires_package_id (app, flags) ||
 		    gs_plugin_refine_requires_version (app, flags)) {
 			resolve_all = g_list_prepend (resolve_all, app);
 		}
