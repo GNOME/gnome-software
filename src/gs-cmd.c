@@ -129,6 +129,8 @@ gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY;
 	if (g_strcmp0 (flag, "setup-action") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION;
+	if (g_strcmp0 (flag, "update-details") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS;
 	g_set_error (error,
 		     GS_PLUGIN_ERROR,
 		     GS_PLUGIN_ERROR_NOT_SUPPORTED,

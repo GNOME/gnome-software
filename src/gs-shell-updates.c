@@ -202,6 +202,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
 	if (show_historical)
 		refine_flags |= GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;

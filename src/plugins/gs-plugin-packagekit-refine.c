@@ -580,6 +580,19 @@ gs_plugin_refine_requires_version (GsApp *app, GsPluginRefineFlags flags)
 }
 
 /**
+ * gs_plugin_refine_requires_update_details:
+ */
+static gboolean
+gs_plugin_refine_requires_update_details (GsApp *app, GsPluginRefineFlags flags)
+{
+	const gchar *tmp;
+	tmp = gs_app_get_update_details (app);
+	if (tmp != NULL)
+		return FALSE;
+	return (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) > 0;
+}
+
+/**
  * gs_plugin_refine_requires_package_id:
  */
 static gboolean
@@ -678,11 +691,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
 			continue;
-		if (gs_app_get_update_details (app) != NULL)
-			continue;
-		if (gs_app_get_source_id_default (app) == NULL)
-			continue;
-		updatedetails_all = g_list_prepend (updatedetails_all, app);
+		if (gs_plugin_refine_requires_update_details (app, flags))
+			updatedetails_all = g_list_prepend (updatedetails_all, app);
 	}
 	if (updatedetails_all != NULL) {
 		ret = gs_plugin_packagekit_refine_updatedetails (plugin,

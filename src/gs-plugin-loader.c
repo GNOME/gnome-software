@@ -336,6 +336,7 @@ out:
 static GList *
 gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			      const gchar *function_name,
+			      GsPluginRefineFlags flags,
 			      GCancellable *cancellable,
 			      GError **error)
 {
@@ -382,7 +383,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
 					   list,
-					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					   flags,
 					   cancellable,
 					   error);
 	if (!ret)
@@ -780,6 +781,7 @@ gs_plugin_loader_get_updates_thread_cb (GSimpleAsyncResult *res,
 
 	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    method_name,
+						    state->flags,
 						    cancellable,
 						    &error);
 	if (state->list == NULL) {
@@ -915,6 +917,7 @@ gs_plugin_loader_get_installed_thread_cb (GSimpleAsyncResult *res,
 	/* do things that would block */
 	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    "gs_plugin_add_installed",
+						    state->flags,
 						    cancellable,
 						    &error);
 	state->list = g_list_concat (state->list, g_list_copy_deep (plugin_loader->priv->queued_installs, (GCopyFunc)g_object_ref, NULL));
@@ -1041,6 +1044,7 @@ gs_plugin_loader_get_popular_thread_cb (GSimpleAsyncResult *res,
 	/* do things that would block */
 	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    "gs_plugin_add_popular",
+						    state->flags,
 						    cancellable,
 						    &error);
 	if (state->list == NULL) {
@@ -1147,6 +1151,7 @@ gs_plugin_loader_get_featured_thread_cb (GSimpleAsyncResult *res,
 	/* do things that would block */
 	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    "gs_plugin_add_featured",
+						    state->flags,
 						    cancellable,
 						    &error);
 	if (state->list == NULL) {
