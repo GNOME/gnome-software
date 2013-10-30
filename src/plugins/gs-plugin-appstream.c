@@ -751,6 +751,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	}
 
 	/* search categories for the search term */
+	gs_profile_start (plugin->profile, "appstream::search");
 	array = appstream_cache_get_items (plugin->priv->cache);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
@@ -762,6 +763,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 			gs_plugin_add_app (list, app);
 		}
 	}
+	gs_profile_stop (plugin->profile, "appstream::search");
 out:
 	return ret;
 }
