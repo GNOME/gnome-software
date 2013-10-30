@@ -87,6 +87,7 @@ typedef enum {
 	GS_APP_ID_KIND_LAST
 } GsAppIdKind;
 
+#define	GS_APP_INSTALL_DATE_UNSET		0
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
 #define	GS_APP_SIZE_UNKNOWN			0
 #define	GS_APP_SIZE_MISSING			1

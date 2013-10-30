@@ -449,6 +449,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	GtkWidget *widget;
 	const gchar *tmp;
 	gchar *size;
+	guint64 updated;
 
 	/* change widgets */
 	tmp = gs_app_get_name (priv->app);
@@ -565,12 +566,14 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 	/* set the updated date */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_details_updated_value"));
-	if (gs_app_get_install_date (priv->app) == GS_APP_INSTALL_DATE_UNKNOWN) {
-		/* TRANSLATORS: this is where the licence is not known */
+	updated = gs_app_get_install_date (priv->app);
+	if (updated == GS_APP_INSTALL_DATE_UNKNOWN ||
+	    updated == GS_APP_INSTALL_DATE_UNSET) {
+		/* TRANSLATORS: this is where the updated date is not known */
 		gtk_label_set_label (GTK_LABEL (widget), _("Never"));
 	} else {
 		GDateTime *dt;
-		dt = g_date_time_new_from_unix_utc (gs_app_get_install_date (priv->app));
+		dt = g_date_time_new_from_unix_utc (updated);
 		size = g_date_time_format (dt, "%x");
 		g_date_time_unref (dt);
 		gtk_label_set_label (GTK_LABEL (widget), size);
