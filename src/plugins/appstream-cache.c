@@ -497,6 +497,7 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 {
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
 	AppstreamTag section_new;
+	const gchar *lang;
 	const gchar *tmp;
 
 	if (helper->tag == APPSTREAM_TAG_DESCRIPTION) {
@@ -513,8 +514,11 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 			appstream_markup_set_mode (helper->markup,
 						   APPSTREAM_MARKUP_MODE_END);
 			tmp = appstream_markup_get_text (helper->markup);
-			if (tmp != NULL)
-				appstream_app_set_description (helper->item_temp, tmp, -1);
+			if (tmp != NULL) {
+				lang = appstream_markup_get_lang (helper->markup);
+				appstream_app_set_description (helper->item_temp,
+							       lang, tmp, -1);
+			}
 			helper->tag = APPSTREAM_TAG_APPLICATION;
 		}
 		return;

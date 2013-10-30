@@ -54,6 +54,7 @@ void		 appstream_markup_set_lang	(AppstreamMarkup	*markup,
 void		 appstream_markup_add_content	(AppstreamMarkup	*markup,
 						 const gchar		*text,
 						 gssize			 length);
+const gchar	*appstream_markup_get_lang	(AppstreamMarkup	*markup);
 const gchar	*appstream_markup_get_text	(AppstreamMarkup	*markup);
 
 G_END_DECLS

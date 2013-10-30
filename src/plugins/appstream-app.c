@@ -33,10 +33,13 @@ struct AppstreamApp
 	GPtrArray		*pkgnames;
 	gint			 priority;
 	gchar			*name;
+	gchar			*name_lang;
 	guint			 name_value;
 	gchar			*summary;
+	gchar			*summary_lang;
 	guint			 summary_value;
 	gchar			*description;
+	gchar			*description_lang;
 	GHashTable		*urls;
 	gchar			*licence;
 	gchar			*project_group;
@@ -55,8 +58,9 @@ struct AppstreamApp
 };
 
 typedef struct {
-	gchar	**values;
-	guint	  priority;
+	gchar	**values_ascii;
+	gchar	**values_utf8;
+	guint	  score;
 } AppstreamAppTokenItem;
 
 /**
@@ -65,7 +69,8 @@ typedef struct {
 static void
 appstream_app_token_item_free (AppstreamAppTokenItem *token_item)
 {
-	g_strfreev (token_item->values);
+	g_strfreev (token_item->values_ascii);
+	g_strfreev (token_item->values_utf8);
 	g_slice_free (AppstreamAppTokenItem, token_item);
 }
 
@@ -82,8 +87,11 @@ appstream_app_free (AppstreamApp *app)
 	g_free (app->project_group);
 	g_free (app->icon);
 	g_free (app->name);
+	g_free (app->name_lang);
 	g_free (app->summary);
+	g_free (app->summary_lang);
 	g_free (app->description);
+	g_free (app->description_lang);
 	g_ptr_array_unref (app->appcategories);
 	g_ptr_array_unref (app->keywords);
 	g_ptr_array_unref (app->mimetypes);
@@ -347,7 +355,9 @@ appstream_app_set_name (AppstreamApp *app,
 	new_value = appstream_get_locale_value (lang);
 	if (new_value < app->name_value) {
 		g_free (app->name);
+		g_free (app->name_lang);
 		app->name = g_strndup (name, length);
+		app->name_lang = g_strdup (lang);
 		app->name_value = new_value;
 	}
 }
@@ -366,7 +376,9 @@ appstream_app_set_summary (AppstreamApp *app,
 	new_value = appstream_get_locale_value (lang);
 	if (new_value < app->summary_value) {
 		g_free (app->summary);
+		g_free (app->summary_lang);
 		app->summary = g_strndup (summary, length);
+		app->summary_lang = g_strdup (lang);
 		app->summary_value = new_value;
 	}
 }
@@ -412,9 +424,11 @@ appstream_app_set_project_group (AppstreamApp *app,
  */
 void
 appstream_app_set_description (AppstreamApp *app,
+			       const gchar *lang,
 			       const gchar *description,
 			       gssize length)
 {
+	app->description_lang = g_strdup (lang);
 	if (length < 0)
 		app->description = g_strdup (description);
 	else
@@ -520,7 +534,8 @@ appstream_app_get_categories (AppstreamApp *app)
 static void
 appstream_app_add_tokens (AppstreamApp *app,
 			  const gchar *value,
-			  guint priority)
+			  const gchar *lang,
+			  guint score)
 {
 	AppstreamAppTokenItem *token_item;
 
@@ -529,8 +544,10 @@ appstream_app_add_tokens (AppstreamApp *app,
 		return;
 
 	token_item = g_slice_new (AppstreamAppTokenItem);
-	token_item->values = g_str_tokenize_and_fold (value, NULL, NULL);
-	token_item->priority = priority;
+	token_item->values_utf8 = g_str_tokenize_and_fold (value,
+							   lang,
+							   &token_item->values_ascii);
+	token_item->score = score;
 	g_ptr_array_add (app->token_cache, token_item);
 }
 
@@ -543,17 +560,17 @@ appstream_app_create_token_cache (AppstreamApp *app)
 	const gchar *tmp;
 	guint i;
 
-	appstream_app_add_tokens (app, app->id, 100);
-	appstream_app_add_tokens (app, app->name, 80);
-	appstream_app_add_tokens (app, app->summary, 60);
+	appstream_app_add_tokens (app, app->id, NULL, 100);
+	appstream_app_add_tokens (app, app->name, app->name_lang, 80);
+	appstream_app_add_tokens (app, app->summary, app->summary_lang, 60);
 	for (i = 0; i < app->keywords->len; i++) {
 		tmp = g_ptr_array_index (app->keywords, i);
-		appstream_app_add_tokens (app, tmp, 40);
+		appstream_app_add_tokens (app, tmp, "C", 40);
 	}
-	appstream_app_add_tokens (app, app->description, 20);
+	appstream_app_add_tokens (app, app->description, app->description_lang, 20);
 	for (i = 0; i < app->mimetypes->len; i++) {
 		tmp = g_ptr_array_index (app->mimetypes, i);
-		appstream_app_add_tokens (app, tmp, 1);
+		appstream_app_add_tokens (app, tmp, "C", 1);
 	}
 	app->token_cache_valid = TRUE;
 }
@@ -578,9 +595,13 @@ appstream_app_search_matches (AppstreamApp *app, const gchar *search)
 	/* find the search term */
 	for (i = 0; i < app->token_cache->len; i++) {
 		token_item = g_ptr_array_index (app->token_cache, i);
-		for (j = 0; token_item->values[j] != NULL; j++) {
-			if (g_str_has_prefix (token_item->values[j], search))
-				return token_item->priority;
+		for (j = 0; token_item->values_utf8[j] != NULL; j++) {
+			if (g_str_has_prefix (token_item->values_utf8[j], search))
+				return token_item->score;
+		}
+		for (j = 0; token_item->values_ascii[j] != NULL; j++) {
+			if (g_str_has_prefix (token_item->values_utf8[j], search))
+				return token_item->score / 2;
 		}
 	}
 	return 0;

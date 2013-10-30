@@ -210,6 +210,15 @@ appstream_markup_get_text (AppstreamMarkup *markup)
 }
 
 /**
+ * appstream_markup_get_lang:
+ */
+const gchar *
+appstream_markup_get_lang (AppstreamMarkup *markup)
+{
+	return markup->lang;
+}
+
+/**
  * appstream_markup_set_enabled:
  */
 void
