@@ -53,7 +53,7 @@ struct AppstreamApp
 	gpointer		 userdata;
 	GDestroyNotify		 userdata_destroy_func;
 	GPtrArray		*screenshots; /* of AppstreamScreenshot */
-	gboolean		 token_cache_valid;
+	gsize			 token_cache_valid;
 	GPtrArray		*token_cache;
 };
 
@@ -572,7 +572,6 @@ appstream_app_create_token_cache (AppstreamApp *app)
 		tmp = g_ptr_array_index (app->mimetypes, i);
 		appstream_app_add_tokens (app, tmp, "C", 1);
 	}
-	app->token_cache_valid = TRUE;
 }
 
 /**
@@ -586,11 +585,13 @@ appstream_app_search_matches (AppstreamApp *app, const gchar *search)
 
 	/* nothing to do */
 	if (search == NULL)
-		return FALSE;
+		return 0;
 
 	/* ensure the token cache is created */
-	if (!app->token_cache_valid)
+	if (g_once_init_enter (&app->token_cache_valid)) {
 		appstream_app_create_token_cache (app);
+		g_once_init_leave (&app->token_cache_valid, TRUE);
+	}
 
 	/* find the search term */
 	for (i = 0; i < app->token_cache->len; i++) {
