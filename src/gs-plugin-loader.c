@@ -678,7 +678,6 @@ gs_plugin_loader_get_installed_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
-	state->list = gs_plugin_loader_remove_system (state->list);
 	state->list = gs_plugin_loader_remove_invalid (state->list);
 	if (state->list == NULL) {
 		g_set_error_literal (&error,

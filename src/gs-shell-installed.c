@@ -343,6 +343,13 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 	guint64 date1 = gs_app_get_install_date (a1);
 	guint64 date2 = gs_app_get_install_date (a2);
 
+	if (gs_app_get_kind (a1) == GS_APP_KIND_SYSTEM &&
+	    gs_app_get_kind (a2) != GS_APP_KIND_SYSTEM)
+		return 1;
+	if (gs_app_get_kind (a1) != GS_APP_KIND_SYSTEM &&
+	    gs_app_get_kind (a2) == GS_APP_KIND_SYSTEM)
+		return -1;
+
 	if (date1 < date2)
 		return 1;
 	else if (date2 < date1)
