@@ -359,6 +359,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 	const gchar *filename;
 	gboolean ret = TRUE;
 
+	/* already loaded */
+	if (g_once_init_enter (&plugin->priv->loaded)) {
+		ret = gs_plugin_epiphany_load_db (plugin, error);
+		g_once_init_leave (&plugin->priv->loaded, TRUE);
+		if (!ret)
+			goto out;
+	}
+
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "Epiphany") != 0)
 		goto out;
@@ -386,6 +394,14 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	const gchar *filename;
 	gboolean ret = TRUE;
 
+	/* already loaded */
+	if (g_once_init_enter (&plugin->priv->loaded)) {
+		ret = gs_plugin_epiphany_load_db (plugin, error);
+		g_once_init_leave (&plugin->priv->loaded, TRUE);
+		if (!ret)
+			goto out;
+	}
+
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "Epiphany") != 0)
 		goto out;
@@ -410,6 +426,7 @@ gs_plugin_write_file (GsApp *app, const gchar *filename, GError **error)
 {
 	GKeyFile *kf;
 	const gchar *url;
+	gboolean enabled;
 	gboolean ret;
 	gchar *data;
 	gchar *exec;
@@ -447,10 +464,19 @@ gs_plugin_write_file (GsApp *app, const gchar *filename, GError **error)
 				G_KEY_FILE_DESKTOP_GROUP,
 				G_KEY_FILE_DESKTOP_KEY_TERMINAL,
 				FALSE);
+	switch (gs_app_get_state (app)) {
+	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_INSTALLED:
+		enabled = TRUE;
+		break;
+	default:
+		enabled = FALSE;
+		break;
+	}
 	g_key_file_set_boolean (kf,
 				G_KEY_FILE_DESKTOP_GROUP,
 				G_KEY_FILE_DESKTOP_KEY_NO_DISPLAY,
-				gs_app_get_state (app) == GS_APP_STATE_INSTALLED ? FALSE : TRUE);
+				!enabled);
 	g_key_file_set_string (kf,
 			       G_KEY_FILE_DESKTOP_GROUP,
 			       G_KEY_FILE_DESKTOP_KEY_TYPE,
@@ -667,6 +693,14 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *tmp;
 	gboolean ret = TRUE;
+
+	/* already loaded */
+	if (g_once_init_enter (&plugin->priv->loaded)) {
+		ret = gs_plugin_epiphany_load_db (plugin, error);
+		g_once_init_leave (&plugin->priv->loaded, TRUE);
+		if (!ret)
+			goto out;
+	}
 
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
