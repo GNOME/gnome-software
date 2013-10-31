@@ -560,7 +560,7 @@ appstream_app_create_token_cache (AppstreamApp *app)
 	const gchar *tmp;
 	guint i;
 
-	appstream_app_add_tokens (app, app->id, NULL, 100);
+	appstream_app_add_tokens (app, app->id, "C", 100);
 	appstream_app_add_tokens (app, app->name, app->name_lang, 80);
 	appstream_app_add_tokens (app, app->summary, app->summary_lang, 60);
 	for (i = 0; i < app->keywords->len; i++) {
