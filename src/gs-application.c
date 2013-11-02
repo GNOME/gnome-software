@@ -32,6 +32,7 @@
 #include "gs-box.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
+#include "gs-proxy-settings.h"
 #include "gs-plugin-loader.h"
 #include "gs-profile.h"
 #include "gs-shell-search-provider.h"
@@ -48,6 +49,7 @@ struct _GsApplication {
 	gint		 pending_apps;
 	GsShell		*shell;
 	GsUpdateMonitor *update_monitor;
+	GsProxySettings *proxy_settings;
 	GsShellSearchProvider *search_provider;
 	GNetworkMonitor *network_monitor;
 };
@@ -406,6 +408,7 @@ gs_application_startup (GApplication *application)
 					 actions, G_N_ELEMENTS (actions),
 					 application);
 
+	GS_APPLICATION (application)->proxy_settings = gs_proxy_settings_new ();
 	gs_application_monitor_updates (GS_APPLICATION (application));
 	gs_application_provide_search (GS_APPLICATION (application));
 	gs_application_monitor_network (GS_APPLICATION (application));
@@ -429,6 +432,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
 	g_clear_object (&app->update_monitor);
+	g_clear_object (&app->proxy_settings);
 	g_clear_object (&app->profile);
 	g_clear_object (&app->search_provider);
 	g_clear_object (&app->network_monitor);

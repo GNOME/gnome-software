@@ -134,6 +134,8 @@ gnome_software_service_SOURCES =			\
 	gs-shell-search.h				\
 	gs-update-monitor.c				\
 	gs-update-monitor.h				\
+	gs-proxy-settings.c				\
+	gs-proxy-settings.h				\
 	gs-offline-updates.c				\
 	gs-offline-updates.h				\
 	gs-plugin-loader.c				\
