@@ -28,6 +28,7 @@
 #include "gs-app-widget.h"
 #include "gs-markdown.h"
 #include "gs-utils.h"
+#include "gs-folders.h"
 
 struct _GsAppWidgetPrivate
 {
@@ -36,6 +37,7 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*name_box;
 	GtkWidget	*name_label;
 	GtkWidget	*version_label;
+	GtkWidget	*folder_label;
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
 	GtkWidget	*button;
@@ -110,6 +112,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	GsAppWidgetPrivate *priv = app_widget->priv;
 	GtkStyleContext *context;
 	GString *str = NULL;
+	GsFolders *folders;
+	const gchar *folder;
 
 	if (app_widget->priv->app == NULL)
 		return;
@@ -142,6 +146,16 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		gtk_label_set_label (GTK_LABEL (priv->version_label),
 				     gs_app_get_version_ui (priv->app));
 	}
+
+	folders = gs_folders_get ();
+	folder = gs_folders_get_app_folder (folders, gs_app_get_id (priv->app));
+	if (folder)
+		folder = gs_folders_get_folder_name (folders, folder);
+	gtk_label_set_label (GTK_LABEL (priv->folder_label), folder);
+	gtk_widget_set_visible (priv->folder_label, folder != NULL);
+
+	g_object_unref (folders);
+
 	if (gs_app_get_pixbuf (priv->app))
 		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image),
 					   gs_app_get_pixbuf (priv->app));
@@ -281,6 +295,7 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, version_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, folder_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, description_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button);
