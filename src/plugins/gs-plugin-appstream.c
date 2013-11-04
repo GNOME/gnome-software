@@ -328,6 +328,7 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	items = appstream_cache_get_items (plugin->priv->cache);
 	if (items->len == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
+		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_LOADER_ERROR,
 			     GS_PLUGIN_LOADER_ERROR_FAILED,
