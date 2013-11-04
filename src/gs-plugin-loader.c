@@ -490,6 +490,17 @@ gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 	return FALSE;
 }
 
+/**
+ * gs_plugin_loader_get_app_has_appdata:
+ */
+static gboolean
+gs_plugin_loader_get_app_has_appdata (GsApp *app, gpointer user_data)
+{
+	if (gs_app_get_description (app) != NULL)
+		return TRUE;
+	g_debug ("removing app with no AppData %s", gs_app_get_id (app));
+	return FALSE;
+}
 
 /**
  * gs_plugin_loader_run_action_plugin:
@@ -1373,6 +1384,11 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	gs_plugin_list_filter_duplicates (&state->list);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+	if (g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
+		gs_plugin_list_filter (&state->list,
+				       gs_plugin_loader_get_app_has_appdata,
+				       plugin_loader);
+	}
 	if (state->list == NULL) {
 		g_set_error (&error,
 			     GS_PLUGIN_LOADER_ERROR,
