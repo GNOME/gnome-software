@@ -16,6 +16,9 @@ dist_resources_DATA =					\
 	gs-star-dim.png					\
 	gs-star.png
 
+@GSETTINGS_RULES@
+gsettings_SCHEMAS = org.gnome.software.gschema.xml
+
 install-sample-data:
 	wget -O fedora-20.xml.gz http://people.freedesktop.org/~hughsient/temp/fedora-20.xml.gz; \
 	mkdir -p $(DESTDIR)$(datadir)/app-info/xmls; \
@@ -29,6 +32,7 @@ install-sample-data:
 	cd -
 
 EXTRA_DIST =						\
+	$(gsettings_SCHEMAS)				\
 	featured.ini.in
 
 MAINTAINERCLEANFILES =					\

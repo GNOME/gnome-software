@@ -44,6 +44,8 @@ struct GsPluginLoaderPrivate
 	GMutex			 app_cache_mutex;
 	GHashTable		*app_cache;
 	GHashTable		*icon_cache;
+	GSettings		*settings;
+
 	gchar			**compatible_projects;
 
 	GList			*queued_installs;
@@ -2636,12 +2638,15 @@ static void
 gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
 	const gchar *tmp;
+	gchar **projects;
+	guint i;
 
 	plugin_loader->priv = GS_PLUGIN_LOADER_GET_PRIVATE (plugin_loader);
 	plugin_loader->priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
 	plugin_loader->priv->status_last = GS_PLUGIN_STATUS_LAST;
 	plugin_loader->priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	plugin_loader->priv->profile = gs_profile_new ();
+	plugin_loader->priv->settings = g_settings_new ("org.gnome.software");
 	plugin_loader->priv->app_cache = g_hash_table_new_full (g_str_hash,
 								g_str_equal,
 								g_free,
@@ -2659,9 +2664,15 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 	/* by default we only show project-less apps or compatible projects */
 	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
-	if (tmp == NULL)
-		tmp = "GNOME";
-	plugin_loader->priv->compatible_projects = g_strsplit (tmp, ",", -1);
+	if (tmp == NULL) {
+		projects = g_settings_get_strv (plugin_loader->priv->settings,
+						"compatible-projects");
+	} else {
+		projects = g_strsplit (tmp, ",", -1);
+	}
+	for (i = 0; projects[i] != NULL; i++)
+		g_debug ("compatible-project: %s", projects[i]);
+	plugin_loader->priv->compatible_projects = projects;
 }
 
 /**
@@ -2686,6 +2697,7 @@ gs_plugin_loader_finalize (GObject *object)
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
 
+	g_object_unref (plugin_loader->priv->settings);
 	g_object_unref (plugin_loader->priv->profile);
 	g_strfreev (plugin_loader->priv->compatible_projects);
 	g_hash_table_unref (plugin_loader->priv->app_cache);
