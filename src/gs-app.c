@@ -285,6 +285,66 @@ gs_app_to_string (GsApp *app)
 }
 
 /**
+ * gs_app_subsume:
+ *
+ * Imports all the useful data from @other into @app.
+ **/
+void
+gs_app_subsume (GsApp *app, GsApp *other)
+{
+	GList *keys;
+	GList *l;
+	GsAppPrivate *priv = app->priv;
+	GsAppPrivate *priv2 = other->priv;
+	const gchar *tmp;
+
+	/* wait for all the properties to be set */
+	g_object_freeze_notify (G_OBJECT (app));
+
+	/* an [updatable] installable package is more information than
+	 * just the fact that something is installed */
+	if (priv2->state == GS_APP_STATE_UPDATABLE &&
+	    priv->state == GS_APP_STATE_INSTALLED) {
+		/* we have to do the little dance to appease the
+		 * angry gnome controlling the state-machine */
+		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+	}
+
+	/* save any properties we already know */
+	if (priv2->sources->len > 0)
+		gs_app_set_sources (app, priv2->sources);
+	if (priv2->project_group != NULL)
+		gs_app_set_project_group (app, priv2->project_group);
+	if (priv2->name != NULL)
+		gs_app_set_name (app, priv2->name);
+	if (priv2->summary != NULL)
+		gs_app_set_summary (app, priv2->summary);
+	if (priv2->description != NULL)
+		gs_app_set_description (app, priv2->description);
+	if (priv2->update_details != NULL)
+		gs_app_set_update_details (app, priv2->update_details);
+	if (priv2->update_version != NULL)
+		gs_app_set_update_version (app, priv2->update_version);
+	if (priv2->pixbuf != NULL)
+		gs_app_set_pixbuf (app, priv2->pixbuf);
+
+	/* also metadata */
+	keys = g_hash_table_get_keys (priv2->metadata);
+	for (l = keys; l != NULL; l = l->next) {
+		tmp = g_hash_table_lookup (priv->metadata, l->data);
+		if (tmp != NULL)
+			continue;
+		tmp = g_hash_table_lookup (priv2->metadata, l->data);
+		gs_app_set_metadata (other, l->data, tmp);
+	}
+	g_list_free (keys);
+
+	/* now emit all the changed signals */
+	g_object_thaw_notify (G_OBJECT (app));
+}
+
+/**
  * gs_app_get_id:
  **/
 const gchar *
