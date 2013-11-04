@@ -60,6 +60,7 @@ G_DEFINE_TYPE (GsShellInstalled, gs_shell_installed, G_TYPE_OBJECT)
 
 static void gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 							GsShellInstalled *shell_installed);
+static void set_selection_mode (GsShellInstalled *shell_installed, gboolean selection_mode);
 
 /**
  * gs_shell_installed_invalidate:
@@ -310,6 +311,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 	GtkSpinner *spinner;
 
 	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_INSTALLED) {
+		set_selection_mode (shell_installed, FALSE);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_show (widget);
 
@@ -560,7 +562,7 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-selection_mode_cb (GtkButton *button, GsShellInstalled *shell_installed)
+set_selection_mode (GsShellInstalled *shell_installed, gboolean selection_mode)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 	GList *children, *l;
@@ -570,7 +572,10 @@ selection_mode_cb (GtkButton *button, GsShellInstalled *shell_installed)
 	GtkWidget *widget;
 	GtkStyleContext *context;
 	
-	priv->selection_mode = !priv->selection_mode;
+	if (priv->selection_mode == selection_mode)
+		return;
+
+	priv->selection_mode = selection_mode;
 
 	header = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
 	context = gtk_widget_get_style_context (header);
@@ -610,6 +615,14 @@ selection_mode_cb (GtkButton *button, GsShellInstalled *shell_installed)
 	g_list_free (children);
 
 	gtk_revealer_set_reveal_child (priv->bottom_bar, priv->selection_mode);
+}
+
+static void
+selection_mode_cb (GtkButton *button, GsShellInstalled *shell_installed)
+{
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+
+	set_selection_mode (shell_installed, !priv->selection_mode);
 }
 
 static GList *
