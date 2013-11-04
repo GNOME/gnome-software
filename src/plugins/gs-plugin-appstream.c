@@ -76,6 +76,7 @@ gs_plugin_parse_xml_file (GsPlugin *plugin,
 			  const gchar *parent_dir,
 			  const gchar *filename,
 			  const gchar *path_icons,
+			  GCancellable *cancellable,
 			  GError **error)
 {
 	GError *error_local = NULL;
@@ -165,7 +166,12 @@ gs_plugin_parse_xml_dir (GsPlugin *plugin,
 		goto out;
 	}
 	while ((tmp = g_dir_read_name (dir)) != NULL) {
-		ret = gs_plugin_parse_xml_file (plugin, path_xml, tmp, path_icons, error);
+		ret = gs_plugin_parse_xml_file (plugin,
+						path_xml,
+						tmp,
+						path_icons,
+						cancellable,
+						error);
 		if (!ret)
 			goto out;
 	}
@@ -179,7 +185,7 @@ out:
  * gs_plugin_parse_xml:
  */
 static gboolean
-gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
+gs_plugin_parse_xml (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	const gchar * const * data_dirs;
 	gboolean ret;
@@ -192,7 +198,11 @@ gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
 	for (i = 0; data_dirs[i] != NULL; i++) {
 		path_xml = g_build_filename (data_dirs[i], "app-info", "xmls", NULL);
 		path_icons = g_build_filename (data_dirs[i], "app-info", "icons", NULL);
-		ret = gs_plugin_parse_xml_dir (plugin, path_xml, path_icons, error);
+		ret = gs_plugin_parse_xml_dir (plugin,
+					       path_xml,
+					       path_icons,
+					       cancellable,
+					       error);
 		g_free (path_xml);
 		g_free (path_icons);
 		if (!ret)
@@ -200,14 +210,22 @@ gs_plugin_parse_xml (GsPlugin *plugin, GError **error)
 	}
 	path_xml = g_build_filename (g_get_user_data_dir (), "app-info", "xmls", NULL);
 	path_icons = g_build_filename (g_get_user_data_dir (), "app-info", "icons", NULL);
-	ret = gs_plugin_parse_xml_dir (plugin, path_xml, path_icons, error);
+	ret = gs_plugin_parse_xml_dir (plugin,
+				       path_xml,
+				       path_icons,
+				       cancellable,
+				       error);
 	g_free (path_xml);
 	g_free (path_icons);
 	if (!ret)
 		goto out;
 	path_xml = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL);
 	path_icons = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "icons", NULL);
-	ret = gs_plugin_parse_xml_dir (plugin, path_xml, path_icons, error);
+	ret = gs_plugin_parse_xml_dir (plugin,
+				       path_xml,
+				       path_icons,
+				       cancellable,
+				       error);
 	g_free (path_xml);
 	g_free (path_icons);
 	if (!ret)
@@ -254,7 +272,7 @@ gs_plugin_destroy (GsPlugin *plugin)
  * gs_plugin_startup:
  */
 static gboolean
-gs_plugin_startup (GsPlugin *plugin, GError **error)
+gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	AppstreamApp *app;
 	GPtrArray *items;
@@ -263,7 +281,7 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 
 	/* Parse the XML */
 	gs_profile_start (plugin->profile, "appstream::startup");
-	ret = gs_plugin_parse_xml (plugin, error);
+	ret = gs_plugin_parse_xml (plugin, cancellable, error);
 	if (!ret)
 		goto out;
 	items = appstream_cache_get_items (plugin->priv->cache);
@@ -616,9 +634,8 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
+		ret = gs_plugin_startup (plugin, cancellable, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
-
 		if (!ret)
 			goto out;
 	}
@@ -666,7 +683,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
+		ret = gs_plugin_startup (plugin, cancellable, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
 			goto out;
@@ -744,7 +761,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
+		ret = gs_plugin_startup (plugin, cancellable, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
 			goto out;
@@ -791,7 +808,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
+		ret = gs_plugin_startup (plugin, cancellable, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
 			goto out;
