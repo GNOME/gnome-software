@@ -32,6 +32,7 @@
 
 struct GsPluginPrivate {
 	AppstreamCache		*cache;
+	GPtrArray		*file_monitors;
 	gchar			*cachedir;
 	gsize			 done_init;
 };
@@ -145,17 +146,49 @@ out:
 }
 
 /**
+ * gs_plugin_appstream_cache_changed_cb:
+ */
+static void
+gs_plugin_appstream_cache_changed_cb (GFileMonitor *monitor,
+				      GFile *file, GFile *other_file,
+				      GFileMonitorEvent event_type,
+				      GsPlugin *plugin)
+{
+	gchar *path;
+	path = g_file_get_path (file);
+	g_debug ("AppStream metadata %s changed, reloading cache", path);
+	plugin->priv->done_init = FALSE;
+	g_free (path);
+}
+
+/**
  * gs_plugin_parse_xml_dir:
  */
 static gboolean
 gs_plugin_parse_xml_dir (GsPlugin *plugin,
 			 const gchar *path_xml,
 			 const gchar *path_icons,
+			 GCancellable *cancellable,
 			 GError **error)
 {
+	GDir *dir = NULL;
+	GFile *file_xml = NULL;
+	GFileMonitor *monitor = NULL;
 	const gchar *tmp;
 	gboolean ret = TRUE;
-	GDir *dir = NULL;
+
+	/* watch the directory for changes */
+	file_xml = g_file_new_for_path (path_xml);
+	monitor = g_file_monitor_directory (file_xml,
+					    G_FILE_MONITOR_NONE,
+					    cancellable,
+					    error);
+	if (monitor == NULL)
+		goto out;
+	g_signal_connect (monitor, "changed",
+			  G_CALLBACK (gs_plugin_appstream_cache_changed_cb),
+			  plugin);
+	g_ptr_array_add (plugin->priv->file_monitors, g_object_ref (monitor));
 
 	/* search all files */
 	if (!g_file_test (path_xml, G_FILE_TEST_EXISTS))
@@ -176,6 +209,10 @@ gs_plugin_parse_xml_dir (GsPlugin *plugin,
 			goto out;
 	}
 out:
+	if (file_xml != NULL)
+		g_object_unref (file_xml);
+	if (monitor != NULL)
+		g_object_unref (monitor);
 	if (dir != NULL)
 		g_dir_close (dir);
 	return ret;
@@ -240,8 +277,8 @@ out:
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	plugin->priv->file_monitors = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	plugin->priv->cache = appstream_cache_new ();
 	plugin->priv->cachedir = g_build_filename (DATADIR,
 						   "app-info",
@@ -266,6 +303,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_free (plugin->priv->cachedir);
 	g_object_unref (plugin->priv->cache);
+	g_ptr_array_unref (plugin->priv->file_monitors);
 }
 
 /**
@@ -278,6 +316,9 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GPtrArray *items;
 	gboolean ret;
 	guint i;
+
+	/* clear all existing file monitors */
+	g_ptr_array_set_size (plugin->priv->file_monitors, 0);
 
 	/* Parse the XML */
 	gs_profile_start (plugin->profile, "appstream::startup");
