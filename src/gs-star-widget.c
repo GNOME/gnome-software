@@ -71,22 +71,22 @@ static void
 gs_star_widget_refresh (GsStarWidget *star)
 {
 	GsStarWidgetPrivate *priv;
-	const gchar *img = DATADIR "/gnome-software/gs-star.png";
-	const gchar *img_dim = DATADIR "/gnome-software/gs-star-dim.png";
+	const gchar *img = "/org/gnome/software/gs-star.png";
+	const gchar *img_dim = "/org/gnome/software/gs-star-dim.png";
 
 	priv = gs_star_widget_get_instance_private (star);
 
 	/* set the dim states correctly */
-	gtk_image_set_from_file (GTK_IMAGE (priv->image1),
-				 priv->rating >= rate_to_star[0] ? img : img_dim);
-	gtk_image_set_from_file (GTK_IMAGE (priv->image2),
-				 priv->rating >= rate_to_star[1] ? img : img_dim);
-	gtk_image_set_from_file (GTK_IMAGE (priv->image3),
-				 priv->rating >= rate_to_star[2] ? img : img_dim);
-	gtk_image_set_from_file (GTK_IMAGE (priv->image4),
-				 priv->rating >= rate_to_star[3] ? img : img_dim);
-	gtk_image_set_from_file (GTK_IMAGE (priv->image5),
-				 priv->rating >= rate_to_star[4] ? img : img_dim);
+	gtk_image_set_from_resource (GTK_IMAGE (priv->image1),
+				     priv->rating >= rate_to_star[0] ? img : img_dim);
+	gtk_image_set_from_resource (GTK_IMAGE (priv->image2),
+				     priv->rating >= rate_to_star[1] ? img : img_dim);
+	gtk_image_set_from_resource (GTK_IMAGE (priv->image3),
+				     priv->rating >= rate_to_star[2] ? img : img_dim);
+	gtk_image_set_from_resource (GTK_IMAGE (priv->image4),
+				     priv->rating >= rate_to_star[3] ? img : img_dim);
+	gtk_image_set_from_resource (GTK_IMAGE (priv->image5),
+				     priv->rating >= rate_to_star[4] ? img : img_dim);
 }
 
 /**

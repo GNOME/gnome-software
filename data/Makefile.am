@@ -9,12 +9,10 @@ dist_resources_DATA =					\
 	featured-gimp.png				\
 	featured-gnome-sudoku.png			\
 	featured-mypaint.png				\
-	featured-weather.png         \
-	featured-weather-bg.png   \
+	featured-weather.png				\
+	featured-weather-bg.png				\
 	featured-xchat.png				\
-	featured.ini					\
-	gs-star-dim.png					\
-	gs-star.png
+	featured.ini
 
 @GSETTINGS_RULES@
 gsettings_SCHEMAS = org.gnome.software.gschema.xml
