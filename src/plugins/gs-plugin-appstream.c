@@ -425,7 +425,7 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 		ret = gs_app_load_icon (app, &error);
 		if (!ret) {
 			g_warning ("falling back to searching for %s", icon_path);
-			g_error_free (error);
+			g_clear_error (&error);
 			g_free (icon_path);
 
 			/* we are not going to be doing this forever,
