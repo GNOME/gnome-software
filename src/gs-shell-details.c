@@ -260,6 +260,7 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 	GtkWidget *widget;
 	guint i;
 	GtkRequisition provided;
+	guint width, height;
 
 	/* treat screenshots differently */
 	if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_FONT) {
@@ -316,21 +317,25 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 					  g_get_user_cache_dir ());
 	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 
+	/* use a slightly larger screenshot if it's the only screenshot */
+	if (screenshots->len == 1) {
+		width = GS_SCREENSHOT_SIZE_LARGE2_WIDTH;
+		height = GS_SCREENSHOT_SIZE_LARGE2_HEIGHT;
+	} else {
+		width = GS_SCREENSHOT_SIZE_LARGE_WIDTH;
+		height = GS_SCREENSHOT_SIZE_LARGE_HEIGHT;
+	}
+
 	/* do we have a screenshot of the right size? */
-	tmp = gs_screenshot_get_url (ss,
-				     GS_SCREENSHOT_SIZE_LARGE_WIDTH,
-				     GS_SCREENSHOT_SIZE_LARGE_HEIGHT,
-				     &provided);
+	tmp = gs_screenshot_get_url (ss, width, height, &provided);
 	if (tmp != NULL) {
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      GS_SCREENSHOT_SIZE_LARGE_WIDTH,
-					      GS_SCREENSHOT_SIZE_LARGE_HEIGHT);
+					      width, height);
 	} else {
 		/* use any size provided */
 		gs_screenshot_get_url (ss, G_MAXUINT, G_MAXUINT, &provided);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      provided.width,
-					      provided.height);
+					      provided.width, provided.height);
 	}
 
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);

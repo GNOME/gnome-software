@@ -55,6 +55,8 @@ GsScreenshot	*gs_screenshot_new		(void);
 #define GS_SCREENSHOT_SIZE_SMALL_HEIGHT		63
 #define GS_SCREENSHOT_SIZE_LARGE_WIDTH		624
 #define GS_SCREENSHOT_SIZE_LARGE_HEIGHT		351
+#define GS_SCREENSHOT_SIZE_LARGE2_WIDTH		752
+#define GS_SCREENSHOT_SIZE_LARGE2_HEIGHT	423
 
 gboolean	 gs_screenshot_get_is_default	(GsScreenshot		*screenshot);
 void		 gs_screenshot_set_is_default	(GsScreenshot		*screenshot,
