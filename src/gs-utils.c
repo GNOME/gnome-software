@@ -174,6 +174,53 @@ gs_app_notify_installed (GsApp *app)
 	g_free (summary);
 }
 
+/**
+ * gs_app_notify_failed_modal_response_cb:
+ **/
+static void
+gs_app_notify_failed_modal_response_cb (GtkDialog *dialog,
+					gint response_id,
+					gpointer user_data)
+{
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+}
+
+/**
+ * gs_app_notify_failed_modal:
+ **/
+void
+gs_app_notify_failed_modal (GtkBuilder *builder,
+			    GsApp *app,
+			    gboolean is_install,
+			    const GError *error)
+{
+	GtkWidget *dialog;
+	GtkWindow *window;
+	const gchar *title;
+	const gchar *tmp;
+	gchar *msg;
+
+	title = "Sorry, this did not work";
+	tmp = app != NULL ? gs_app_get_name (app) : "the application";
+	if (is_install) {
+		msg = g_strdup_printf ("Installation of %s failed.", tmp);
+	} else {
+		msg = g_strdup_printf ("Removal of %s failed.", tmp);
+	}
+	window = GTK_WINDOW (gtk_builder_get_object (builder, "window_software"));
+	dialog = gtk_message_dialog_new (window,
+					 GTK_DIALOG_MODAL |
+					 GTK_DIALOG_DESTROY_WITH_PARENT,
+					 GTK_MESSAGE_ERROR,
+					 GTK_BUTTONS_CLOSE,
+					 "%s", title);
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+						  "%s", msg);
+	g_signal_connect (dialog, "response",
+			  G_CALLBACK (gs_app_notify_failed_modal_response_cb), NULL);
+	gtk_window_present (GTK_WINDOW (dialog));
+}
+
 guint
 gs_string_replace (GString *string, const gchar *search, const gchar *replace)
 {

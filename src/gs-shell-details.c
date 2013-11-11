@@ -269,6 +269,9 @@ gs_shell_details_installed_func (GsPluginLoader *plugin_loader, GsApp *app, gpoi
 
 	if (app) {
 		gs_app_notify_installed (app);
+	} else {
+		gs_app_notify_failed_modal (shell_details->priv->builder,
+					    app, TRUE, NULL);
 	}
 }
 
@@ -277,6 +280,11 @@ gs_shell_details_removed_func (GsPluginLoader *plugin_loader, GsApp *app, gpoint
 {
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
 	gs_shell_details_refresh (shell_details);
+
+	if (app == NULL) {
+		gs_app_notify_failed_modal (shell_details->priv->builder,
+					    app, FALSE, NULL);
+	}
 }
 
 /**

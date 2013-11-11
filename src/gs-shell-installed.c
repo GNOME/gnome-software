@@ -120,7 +120,12 @@ gs_shell_installed_finished_func (GsPluginLoader *plugin_loader, GsApp *app, gpo
 	if (app != NULL) {
 		remove_row (GTK_LIST_BOX (priv->list_box_installed),
 			    GTK_WIDGET (helper->app_widget));
+	} else {
+		gs_app_notify_failed_modal (priv->builder,
+					    gs_app_widget_get_app (helper->app_widget),
+					    FALSE, NULL);
 	}
+
 	g_object_unref (helper->app_widget);
 	g_object_unref (helper->shell_installed);
 	g_free (helper);

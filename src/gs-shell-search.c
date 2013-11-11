@@ -65,8 +65,12 @@ gs_shell_search_app_widget_activated_cb (GtkListBox *list_box,
 static void
 gs_shell_search_installed_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
 {
+	GsShellSearch *shell_search = GS_SHELL_SEARCH (user_data);
 	if (app) {
 		gs_app_notify_installed (app);
+	} else {
+		gs_app_notify_failed_modal (shell_search->priv->builder,
+					    app, TRUE, NULL);
 	}
 }
 
@@ -76,6 +80,11 @@ gs_shell_search_installed_func (GsPluginLoader *plugin_loader, GsApp *app, gpoin
 static void
 gs_shell_search_removed_func (GsPluginLoader *plugin_loader, GsApp *app, gpointer user_data)
 {
+	GsShellSearch *shell_search = GS_SHELL_SEARCH (user_data);
+	if (app == NULL) {
+		gs_app_notify_failed_modal (shell_search->priv->builder,
+					    app, FALSE, NULL);
+	}
 }
 
 /**
