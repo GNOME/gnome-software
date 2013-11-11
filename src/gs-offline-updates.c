@@ -63,6 +63,7 @@ gs_offline_updates_trigger (void)
 	GError *error = NULL;
 	const gchar *argv[3];
 	GDateTime *now;
+	GSettings *settings;
 
 	argv[0] = "pkexec";
 	argv[1] = LIBEXECDIR "/pk-trigger-offline-update";
@@ -80,8 +81,11 @@ gs_offline_updates_trigger (void)
 	}
 
 	now = g_date_time_new_now_local ();
-	gs_save_timestamp_to_file ("install-timestamp", now);
+	settings = g_settings_new ("org.gnome.software");
+	g_settings_set (settings, "install-timestamp", "x",
+			g_date_time_to_unix (now));
 	g_date_time_unref (now);
+	g_object_unref (settings);
 }
 
 void

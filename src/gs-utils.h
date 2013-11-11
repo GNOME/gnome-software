@@ -49,9 +49,6 @@ GdkPixbuf *gs_pixbuf_load		(const gchar	*icon_name,
 					 guint		 icon_size,
 					 GError		**error);
 void     gs_reboot                      (GCallback	  reboot_failed);
-GDateTime *gs_read_timestamp_from_file	(const gchar	*name);
-gboolean   gs_save_timestamp_to_file	(const gchar	*name,
-					 GDateTime	*date);
 
 G_END_DECLS
 

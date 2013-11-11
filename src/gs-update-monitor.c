@@ -46,6 +46,7 @@ struct _GsUpdateMonitor {
 	gchar		**pending_downloads;
 	PkTask		*task;
 	PkControl	*control;
+	GSettings	*settings;
 
 	GFile 		*offline_update_file;
 	GFileMonitor 	*offline_update_monitor;
@@ -203,10 +204,17 @@ no_updates_for_a_week (GsUpdateMonitor *monitor)
 	GDateTime *last_update;
 	GDateTime *now;
 	GTimeSpan d;
+	gint64 tmp;
 
-	last_update = gs_read_timestamp_from_file ("install-timestamp");
-	if (!last_update)
+	g_settings_get (monitor->settings, "install-timestamp", "x", &tmp);
+	if (tmp == 0)
 		return TRUE;
+
+	last_update = g_date_time_new_from_unix_local (tmp);
+	if (last_update == NULL) {
+		g_warning ("failed to set timestamp %" G_GINT64_FORMAT, tmp);
+		return TRUE;
+	}
 
 	now = g_date_time_new_now_local ();
 	d = g_date_time_difference (now, last_update);
@@ -443,7 +451,8 @@ check_hourly_cb (gpointer data)
 	g_debug ("Daily update check due");
 
 	monitor->check_timestamp = g_date_time_new_now_local ();
-	gs_save_timestamp_to_file ("check-timestamp", monitor->check_timestamp);
+	g_settings_set (monitor->settings, "check-timestamp", "x",
+			g_date_time_to_unix (monitor->check_timestamp));
 
 	monitor->refresh_cache_due = TRUE;
 	monitor->get_updates_due = TRUE;
@@ -481,12 +490,16 @@ notify_network_state_cb (PkControl *control,
 static void
 gs_update_monitor_init (GsUpdateMonitor *monitor)
 {
+	gint64 tmp;
+
 	monitor->check_offline_update_id = 
 		g_timeout_add_seconds (15, check_offline_update_cb, monitor);
 	g_source_set_name_by_id (monitor->check_offline_update_id,
 				 "[gnome-software] check_offline_update_cb");
 
-	monitor->check_timestamp = gs_read_timestamp_from_file ("check-timestamp");
+	monitor->settings = g_settings_new ("org.gnome.software");
+	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
+	monitor->check_timestamp = g_date_time_new_from_unix_local (tmp);
 
 	monitor->check_hourly_id =
 		g_timeout_add_seconds (3600, check_hourly_cb, monitor);
@@ -534,6 +547,7 @@ gs_update_monitor_finalize (GObject *object)
 	g_clear_object (&monitor->control);
 	g_clear_object (&monitor->offline_update_file);
 	g_clear_object (&monitor->offline_update_monitor);
+	g_clear_object (&monitor->settings);
 	g_application_release (monitor->application);
 
 	G_OBJECT_CLASS (gs_update_monitor_parent_class)->finalize (object);
