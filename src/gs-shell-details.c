@@ -250,7 +250,6 @@ gs_shell_details_screenshot_selected_cb (GtkListBox *list,
 static void
 gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 {
-	const gchar *tmp;
 	GPtrArray *screenshots;
 	GsScreenshot *ss;
 	GsShellDetailsPrivate *priv = shell_details->priv;
@@ -260,7 +259,6 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 	GtkWidget *widget;
 	guint i;
 	GtkRequisition provided;
-	guint width, height;
 
 	/* treat screenshots differently */
 	if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_FONT) {
@@ -319,24 +317,18 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 
 	/* use a slightly larger screenshot if it's the only screenshot */
 	if (screenshots->len == 1) {
-		width = GS_SCREENSHOT_SIZE_LARGE2_WIDTH;
-		height = GS_SCREENSHOT_SIZE_LARGE2_HEIGHT;
+		gs_screenshot_get_url (ss,
+				       GS_SCREENSHOT_SIZE_MAIN_ONLY_WIDTH,
+				       GS_SCREENSHOT_SIZE_MAIN_ONLY_HEIGHT,
+				       &provided);
 	} else {
-		width = GS_SCREENSHOT_SIZE_LARGE_WIDTH;
-		height = GS_SCREENSHOT_SIZE_LARGE_HEIGHT;
+		gs_screenshot_get_url (ss,
+				       GS_SCREENSHOT_SIZE_MAIN_WIDTH,
+				       GS_SCREENSHOT_SIZE_MAIN_HEIGHT,
+				       &provided);
 	}
-
-	/* do we have a screenshot of the right size? */
-	tmp = gs_screenshot_get_url (ss, width, height, &provided);
-	if (tmp != NULL) {
-		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      width, height);
-	} else {
-		/* use any size provided */
-		gs_screenshot_get_url (ss, G_MAXUINT, G_MAXUINT, &provided);
-		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      provided.width, provided.height);
-	}
+	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
+				      provided.width, provided.height);
 
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 	gtk_box_pack_start (GTK_BOX (widget), ssimg, FALSE, FALSE, 0);
@@ -360,8 +352,8 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 						  g_get_user_cache_dir ());
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      GS_SCREENSHOT_SIZE_SMALL_WIDTH,
-					      GS_SCREENSHOT_SIZE_SMALL_HEIGHT);
+					      GS_SCREENSHOT_SIZE_THUMBNAIL_WIDTH,
+					      GS_SCREENSHOT_SIZE_THUMBNAIL_HEIGHT);
 		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 		gtk_list_box_insert (GTK_LIST_BOX (list), ssimg, -1);
 		gtk_widget_set_visible (ssimg, TRUE);

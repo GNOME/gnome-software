@@ -76,10 +76,10 @@ gs_screenshot_set_is_default (GsScreenshot *screenshot, gboolean is_default)
 }
 
 /**
- * gs_screenshot_get_item:
+ * gs_screenshot_get_item_exact:
  **/
 static GsScreenshotItem *
-gs_screenshot_get_item (GsScreenshot *screenshot, guint width, guint height)
+gs_screenshot_get_item_exact (GsScreenshot *screenshot, guint width, guint height)
 {
 	GsScreenshotItem *item;
 	guint i;
@@ -88,8 +88,7 @@ gs_screenshot_get_item (GsScreenshot *screenshot, guint width, guint height)
 
 	for (i = 0; i < screenshot->priv->array->len; i++) {
 		item = g_ptr_array_index (screenshot->priv->array, i);
-		if ((item->width == width || width == G_MAXUINT) &&
-		    (item->height == height || height == G_MAXUINT))
+		if (item->width == width && item->height == height)
 			return item;
 	}
 
@@ -113,7 +112,7 @@ gs_screenshot_add_image (GsScreenshot *screenshot,
 	g_return_if_fail (height > 0);
 
 	/* check if already exists */
-	item = gs_screenshot_get_item (screenshot, width, height);
+	item = gs_screenshot_get_item_exact (screenshot, width, height);
 	if (item != NULL) {
 		g_debug ("replaced URL %s with %s for %ux%u",
 			 item->url, url, width, height);
@@ -130,6 +129,9 @@ gs_screenshot_add_image (GsScreenshot *screenshot,
 
 /**
  * gs_screenshot_get_url:
+ *
+ * Gets the URL with the closest size to @width and @height.
+ *
  **/
 const gchar *
 gs_screenshot_get_url (GsScreenshot *screenshot,
@@ -137,13 +139,27 @@ gs_screenshot_get_url (GsScreenshot *screenshot,
 		       guint height,
 		       GtkRequisition *provided)
 {
-	GsScreenshotItem *item;
+	GsScreenshotItem *item_tmp;
+	GsScreenshotItem *item = NULL;
+	guint best_size = G_MAXUINT;
+	guint i;
+	guint tmp;
 
 	g_return_val_if_fail (GS_IS_SCREENSHOT (screenshot), NULL);
 	g_return_val_if_fail (width > 0, NULL);
 	g_return_val_if_fail (height > 0, NULL);
 
-	item = gs_screenshot_get_item (screenshot, width, height);
+	/* find the image with the closest size */
+	for (i = 0; i < screenshot->priv->array->len; i++) {
+		item_tmp = g_ptr_array_index (screenshot->priv->array, i);
+		tmp = ABS ((gint64) (width * height) -
+			   (gint64) (item_tmp->width * item_tmp->height));
+		if (tmp < best_size) {
+			best_size = tmp;
+			item = item_tmp;
+		}
+	}
+
 	if (item == NULL)
 		return NULL;
 
