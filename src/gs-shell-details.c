@@ -24,6 +24,7 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
+#include <gio/gdesktopappinfo.h>
 
 #include "gs-utils.h"
 
@@ -601,6 +602,18 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		break;
 	}
 
+	/* only show launch button when the application is installed */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_details_launch"));
+	switch (gs_app_get_state (priv->app)) {
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+		gtk_widget_set_visible (widget, TRUE);
+		break;
+	default:
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	}
+
 	/* make history button insensitive if there is none */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
 	switch (gs_app_get_id_kind (priv->app)) {
@@ -856,6 +869,35 @@ gs_shell_details_history_sort_cb (gconstpointer a, gconstpointer b)
 	if (timestamp_a > timestamp_b)
 		return -1;
 	return 0;
+}
+
+/**
+ * gs_shell_details_app_launch_button_cb:
+ **/
+static void
+gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
+{
+	GAppInfo *appinfo;
+	GAppLaunchContext *context;
+	GError *error = NULL;
+	GdkDisplay *display;
+	const gchar *desktop_id;
+
+	desktop_id = gs_app_get_id_full (shell_details->priv->app);
+	display = gdk_display_get_default ();
+	appinfo = G_APP_INFO (g_desktop_app_info_new (desktop_id));
+	if (appinfo == NULL) {
+		g_warning ("no such desktop file: %s", desktop_id);
+		return;
+	}
+	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
+	if (!g_app_info_launch (appinfo, NULL, context, &error)) {
+		g_warning ("launching %s failed: %s", desktop_id, error->message);
+		g_error_free (error);
+	}
+
+	g_object_unref (appinfo);
+	g_object_unref (context);
 }
 
 /**
@@ -1118,6 +1160,10 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_details_app_history_button_cb),
+			  shell_details);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_details_launch"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_details_app_launch_button_cb),
 			  shell_details);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_details_website"));
 	g_signal_connect (widget, "clicked",

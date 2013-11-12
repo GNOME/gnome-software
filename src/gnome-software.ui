@@ -1195,6 +1195,23 @@
                                 <property name="position">1</property>
                               </packing>
                             </child>
+                            <child>
+                              <object class="GtkButton" id="button_details_launch">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="use_underline">True</property>
+                                <property name="label" translatable="yes" comments="Translators: A label for a button to execute the selected application.">_Launch</property>
+                                <style>
+                                  <class name="suggested-action"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
                           </object>
                           <packing>
                             <property name="expand">False</property>
@@ -1605,6 +1622,7 @@
     <widgets>
       <widget name="button_details_website"/>
       <widget name="button_history"/>
+      <widget name="button_details_launch"/>
     </widgets>
   </object>
 </interface>
