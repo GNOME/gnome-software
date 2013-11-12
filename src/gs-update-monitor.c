@@ -90,6 +90,9 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	if (monitor->offline_update_notified)
 		return;
 
+	if (gs_application_has_active_window (GS_APPLICATION (monitor->application)))
+		return;
+
 	monitor->offline_update_notified = TRUE;
 
 	/* don't notify more often than once every hour */
