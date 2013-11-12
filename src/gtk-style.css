@@ -30,9 +30,12 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
         animation: throbbing linear 1s infinite alternate;
 }
 
-.screenshot-image {
+.screenshot-image, .scrthumb {
         background-image: none;
+        background-color: shade(@theme_bg_color, 0.9);
 }
+  .screenshot-image { border-radius: 5px; }
+  .scrthumb { border-radius: 3px; }
 
 .view.tile {
         border-radius: 0;
