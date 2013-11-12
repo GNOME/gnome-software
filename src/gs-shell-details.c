@@ -474,9 +474,6 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	/* set the description */
 	tmp = gs_app_get_description (priv->app);
 	gs_shell_details_set_description (shell_details, tmp);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
-						     "application_details_description_header"));
-	gtk_widget_set_visible (widget, tmp != NULL);
 
 	/* set the icon */
 	tmp = gs_app_get_metadata_item (priv->app, "DataDir::desktop-icon");
