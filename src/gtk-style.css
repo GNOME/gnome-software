@@ -22,14 +22,32 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
 }
 
 @keyframes throbbing {
-        0% { background-image: linear-gradient(to bottom, transparent, transparent); }
+        0% {         background-image: linear-gradient(to bottom, 
+                                        transparent 80%, 
+                                        alpha(@theme_selected_bg_color, .2) 95%, 
+                                        shade(@theme_selected_bg_color, 1.1)),
+                                       linear-gradient(to bottom, 
+                                        @button_gradient_color_a, 
+                                        @button_gradient_color_b 40%,
+                                        @button_gradient_color_c);
+        }
 }
 
 .needs-attention {
-        background-image: linear-gradient(to bottom, @theme_selected_bg_color, @theme_selected_bg_color);
-        animation: throbbing linear 1s infinite alternate;
+        background-image: linear-gradient(to bottom, 
+                                        @button_gradient_color_a, 
+                                        @button_gradient_color_b 40%,
+                                        @button_gradient_color_c);
+        animation: throbbing linear 3s infinite alternate;
 }
 
+  .needs-attention:hover {
+        background-image: linear-gradient(to bottom,
+				      @button_hover_gradient_color_a,
+                                      @button_hover_gradient_color_b
+                                      );
+  }
+  
 .screenshot-image, .scrthumb {
         background-image: none;
         background-color: shade(@theme_bg_color, 0.9);
