@@ -355,9 +355,10 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
 					      GS_SCREENSHOT_SIZE_THUMBNAIL_WIDTH,
 					      GS_SCREENSHOT_SIZE_THUMBNAIL_HEIGHT);
+		gtk_style_context_add_class (gtk_widget_get_style_context (ssimg),
+					     "screenshot-image-thumb");
 		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 		gtk_list_box_insert (GTK_LIST_BOX (list), ssimg, -1);
-		gtk_style_context_add_class (gtk_widget_get_style_context (list), "scrthumb");
 		gtk_widget_set_visible (ssimg, TRUE);
 	}
 
