@@ -29,6 +29,7 @@
 #include "gs-offline-updates.h"
 #include "gs-app.h"
 #include "gs-app-widget.h"
+#include "gs-markdown.h"
 
 static void	gs_shell_updates_finalize	(GObject	*object);
 
@@ -227,9 +228,11 @@ static void
 gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsApp *app)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
-	gchar *tmp;
 	GsAppKind kind;
+	GsMarkdown *markdown;
 	GtkWidget *widget;
+	gchar *tmp;
+	gchar *update_desc;
 
 	/* set window title */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
@@ -244,6 +247,20 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 		g_free (tmp);
 	}
 
+	/* get the update description */
+	if (gs_app_get_update_details (app) == NULL) {
+		/* TRANSLATORS: this is where the packager did not write a
+		 * description for the update */
+		update_desc = g_strdup ("No update description");
+	} else {
+		markdown = gs_markdown_new ();
+		gs_markdown_set_smart_quoting (markdown, TRUE);
+		gs_markdown_set_autocode (markdown, TRUE);
+		gs_markdown_set_output_kind (markdown, GS_MARKDOWN_OUTPUT_PANGO);
+		update_desc = gs_markdown_parse (markdown, gs_app_get_update_details (app));
+		g_object_unref (markdown);
+	}
+
 	/* set update header */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
 	gtk_widget_set_visible (widget, kind == GS_APP_KIND_NORMAL || kind == GS_APP_KIND_SYSTEM);
@@ -252,13 +269,14 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
 	gtk_widget_set_visible (widget, kind == GS_APP_KIND_OS_UPDATE);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_update_details (app));
+	gtk_label_set_markup (GTK_LABEL (widget), update_desc);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_update_icon"));
 	gtk_image_set_from_pixbuf (GTK_IMAGE (widget), gs_app_get_pixbuf (app));
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_name"));
 	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_name (app));
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_summary"));
 	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_summary (app));
+	g_free (update_desc);
 }
 
 static void

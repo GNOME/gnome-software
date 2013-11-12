@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-widget.h"
+#include "gs-markdown.h"
 #include "gs-utils.h"
 
 struct _GsAppWidgetPrivate
@@ -63,14 +64,26 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	GtkStyleContext *context;
 	const gchar *tmp = NULL;
 	GString *str = NULL;
+	gchar *update_desc = NULL;
 
 	if (app_widget->priv->app == NULL)
 		return;
 
 	/* get the main body text */
 	if (priv->show_update &&
-	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE)
+	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
 		tmp = gs_app_get_update_details (priv->app);
+		if (tmp != NULL) {
+			GsMarkdown *markdown;
+			markdown = gs_markdown_new ();
+			gs_markdown_set_smart_quoting (markdown, TRUE);
+			gs_markdown_set_autocode (markdown, TRUE);
+			gs_markdown_set_output_kind (markdown, GS_MARKDOWN_OUTPUT_PANGO);
+			update_desc = gs_markdown_parse (markdown, tmp);
+			tmp = update_desc;
+			g_object_unref (markdown);
+		}
+	}
 	if (gs_app_get_kind (priv->app) == GS_APP_KIND_MISSING)
 		tmp = gs_app_get_summary_missing (priv->app);
 	if (tmp == NULL)
@@ -95,7 +108,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	str = g_string_new (tmp);
 	gs_string_replace (str, "\n", " ");
 
-	gtk_label_set_label (GTK_LABEL (priv->description_label), str->str);
+	gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
 	g_string_free (str, TRUE);
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
@@ -174,6 +187,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	default:
 		break;
 	}
+	g_free (update_desc);
 }
 
 /**

@@ -120,6 +120,8 @@ gnome_software_service_SOURCES =			\
 	gs-screenshot.h					\
 	gs-shell.c					\
 	gs-shell.h					\
+	gs-markdown.c					\
+	gs-markdown.h					\
 	gs-shell-details.c				\
 	gs-shell-details.h				\
 	gs-shell-category.c				\
@@ -199,6 +201,7 @@ check_PROGRAMS =						\
 gs_self_test_SOURCES =						\
 	gs-app.c						\
 	gs-category.c						\
+	gs-markdown.c						\
 	gs-plugin-loader-sync.c					\
 	gs-plugin-loader.c					\
 	gs-plugin.c						\
