@@ -32,6 +32,7 @@ struct _GsProxySettings {
 	GObject		 parent;
 
 	PkControl	*control;
+	GCancellable	*cancellable;
 	GSettings	*settings;
 	GSettings	*settings_http;
 	GSettings	*settings_ftp;
@@ -154,7 +155,7 @@ reload_proxy_settings (GsProxySettings *proxy_settings)
 	pk_control_set_proxy_async (proxy_settings->control,
 				    proxy_http,
 				    proxy_ftp,
-				    NULL,
+				    proxy_settings->cancellable,
 				    set_proxy_cb,
 				    proxy_settings);
 	g_free (proxy_http);
@@ -164,6 +165,7 @@ reload_proxy_settings (GsProxySettings *proxy_settings)
 static void
 gs_proxy_settings_init (GsProxySettings *proxy_settings)
 {
+	proxy_settings->cancellable = g_cancellable_new ();
 	proxy_settings->control = pk_control_new ();
 	proxy_settings->settings = g_settings_new ("org.gnome.system.proxy");
 	g_signal_connect_swapped (proxy_settings->settings, "changed",
@@ -182,6 +184,9 @@ gs_proxy_settings_finalize (GObject *object)
 {
 	GsProxySettings *proxy_settings = GS_PROXY_SETTINGS (object);
 
+	g_cancellable_cancel (proxy_settings->cancellable);
+
+	g_clear_object (&proxy_settings->cancellable);
 	g_clear_object (&proxy_settings->control);
 	g_clear_object (&proxy_settings->settings);
 	g_clear_object (&proxy_settings->settings_http);
