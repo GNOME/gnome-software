@@ -357,6 +357,7 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 					      GS_SCREENSHOT_SIZE_THUMBNAIL_HEIGHT);
 		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 		gtk_list_box_insert (GTK_LIST_BOX (list), ssimg, -1);
+		gtk_style_context_add_class (gtk_widget_get_style_context (list), "scrthumb");
 		gtk_widget_set_visible (ssimg, TRUE);
 	}
 
