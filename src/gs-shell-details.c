@@ -745,7 +745,9 @@ gs_shell_details_app_installed_cb (GObject *source,
 		return;
 	}
 
-	if (gs_app_get_state (helper->app) != GS_APP_STATE_QUEUED)
+	/* only show this if the window is not active */
+	if (gs_app_get_state (helper->app) != GS_APP_STATE_QUEUED &&
+	    !gs_shell_is_active (helper->shell_details->priv->shell))
 		gs_app_notify_installed (helper->app);
 	gs_shell_details_refresh_all (helper->shell_details);
 	g_object_unref (helper->shell_details);

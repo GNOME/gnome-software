@@ -90,7 +90,9 @@ gs_shell_search_app_installed_cb (GObject *source,
 					    error);
 		g_error_free (error);
 	} else {
-		gs_app_notify_installed (helper->app);
+		/* only show this if the window is not active */
+		if (!gs_shell_is_active (helper->shell_search->priv->shell))
+			gs_app_notify_installed (helper->app);
 	}
 	g_object_unref (helper->app);
 	g_object_unref (helper->shell_search);

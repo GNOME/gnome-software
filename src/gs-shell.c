@@ -80,6 +80,18 @@ enum {
 static guint signals [SIGNAL_LAST] = { 0 };
 
 /**
+ * gs_shell_is_active:
+ **/
+gboolean
+gs_shell_is_active (GsShell *shell)
+{
+	GtkWindow *window;
+	window = GTK_WINDOW (gtk_builder_get_object (shell->priv->builder,
+						     "window_software"));
+	return gtk_window_is_active (window);
+}
+
+/**
  * gs_shell_activate:
  **/
 void

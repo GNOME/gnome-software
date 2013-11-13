@@ -86,7 +86,7 @@ GtkWindow	*gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);
 void		 gs_shell_invalidate		(GsShell	*shell);
-gboolean	 gs_shell_is_cache_valid	(GsShell	*shell);
+gboolean	 gs_shell_is_active		(GsShell	*shell);
 
 G_END_DECLS
 
