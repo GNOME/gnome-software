@@ -2,6 +2,11 @@
 <!-- Generated with glade 3.15.2 on Thu Aug 15 17:13:59 2013 -->
 <interface>
   <!-- interface-requires gtk+ 3.10 -->
+  <object class="GtkImage" id="button_select_image">
+    <property name="visible">True</property>
+    <property name="icon_name">object-select-symbolic</property>
+    <property name="icon_size">0</property>
+  </object>
   <object class="GtkApplicationWindow" id="window_software">
     <property name="can_focus">False</property>
     <property name="default-width">1200</property>
@@ -177,6 +182,15 @@
                 <style>
                   <class name="destructive-action"/>
                 </style>
+              </object>
+              <packing>
+                <property name="pack_type">end</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkToggleButton" id="button_select">
+                <property name="image">button_select_image</property>
+                <property name="can_focus">True</property>
               </object>
               <packing>
                 <property name="pack_type">end</property>

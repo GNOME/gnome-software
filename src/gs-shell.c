@@ -113,9 +113,13 @@ gs_shell_change_mode (GsShell *shell,
 	GtkWidget *widget;
 	GtkWindow *window;
 	const gchar *text;
+	GtkStyleContext *context;
 
 	if (priv->ignore_primary_buttons)
 		return;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
+	gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (widget), TRUE);
 
 	/* hide all mode specific header widgets here, they will be shown in the
 	 * refresh functions
@@ -131,15 +135,21 @@ gs_shell_change_mode (GsShell *shell,
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
 	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
+	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_menu_button"));
+	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_widget_hide (widget);
 
+	context = gtk_widget_get_style_context (GTK_WIDGET (gtk_builder_get_object (priv->builder, "header")));
+	gtk_style_context_remove_class (context, "selection-mode");
 	/* set the window title back to default */
 	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 	/* TRANSLATORS: this is the main window title */

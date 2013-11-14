@@ -51,6 +51,7 @@ struct GsShellInstalledPrivate
 	gboolean		 cache_valid;
 	gboolean		 waiting;
 	GsShell			*shell;
+	gboolean 		 selection_mode;
 };
 
 G_DEFINE_TYPE (GsShellInstalled, gs_shell_installed, G_TYPE_OBJECT)
@@ -73,11 +74,18 @@ gs_shell_installed_app_widget_activated_cb (GtkListBox *list_box,
 					    GsShellInstalled *shell_installed)
 {
 	GsAppWidget *app_widget;
-	GsApp *app;
 
 	app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	app = gs_app_widget_get_app (app_widget);
-	gs_shell_show_app (shell_installed->priv->shell, app);
+
+	if (shell_installed->priv->selection_mode) {
+		gboolean selected;
+		selected = gs_app_widget_get_selected (app_widget);
+		gs_app_widget_set_selected (app_widget, !selected);
+	} else {
+		GsApp *app;
+		app = gs_app_widget_get_app (app_widget);
+		gs_shell_show_app (shell_installed->priv->shell, app);
+	}
 }
 
 typedef struct {
@@ -240,6 +248,10 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 	gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
 				       priv->sizegroup_image,
 				       priv->sizegroup_name);
+
+	gs_app_widget_set_selectable (GS_APP_WIDGET (widget),
+				      priv->selection_mode);
+
 	gtk_widget_show (widget);
 }
 
@@ -297,6 +309,9 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 
 	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_INSTALLED) {
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+		gtk_widget_show (widget);
+
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
 		gtk_widget_show (widget);
 	}
 
@@ -542,6 +557,26 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	g_ptr_array_unref (pending);
 }
 
+static void
+selection_mode_cb (GtkToggleButton *button, GsShellInstalled *shell_installed)
+{
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+	GList *children, *l;
+	GtkWidget *row;
+	GtkWidget *app_widget;
+	
+	priv->selection_mode = gtk_toggle_button_get_active (button);
+
+	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_installed));
+	for (l = children; l; l = l->next) {
+		row = l->data;
+		app_widget = gtk_bin_get_child (GTK_BIN (row));
+		gs_app_widget_set_selectable (GS_APP_WIDGET (app_widget),
+					      priv->selection_mode);
+	}
+	g_list_free (children);
+}
+
 /**
  * gs_shell_installed_setup:
  */
@@ -553,6 +588,7 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 			  GCancellable *cancellable)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
+	GtkWidget *widget;
 
 	g_return_if_fail (GS_IS_SHELL_INSTALLED (shell_installed));
 
@@ -575,6 +611,10 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 	gtk_list_box_set_sort_func (priv->list_box_installed,
 				    gs_shell_installed_sort_func,
 				    shell_installed, NULL);
+	
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
+	g_signal_connect (widget, "toggled",
+			  G_CALLBACK (selection_mode_cb), shell_installed);
 }
 
 /**
