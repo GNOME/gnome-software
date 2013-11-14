@@ -108,7 +108,7 @@ out:
 /**
  * gs_app_widget_refresh:
  **/
-static void
+void
 gs_app_widget_refresh (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv = app_widget->priv;
