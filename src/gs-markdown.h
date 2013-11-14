@@ -59,6 +59,8 @@ void		 gs_markdown_set_escape			(GsMarkdown		*self,
 							 gboolean		 escape);
 void		 gs_markdown_set_autocode		(GsMarkdown		*self,
 							 gboolean		 autocode);
+void		 gs_markdown_set_autolinkify		(GsMarkdown		*self,
+							 gboolean		 autolinkify);
 gchar		*gs_markdown_parse			(GsMarkdown		*self,
 							 const gchar		*text);
 

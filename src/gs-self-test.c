@@ -170,6 +170,16 @@ gs_markdown_func (void)
 	g_assert_cmpstr (text, ==, markdown_expected);
 	g_free (text);
 
+	/* markdown (URLs) */
+	markdown = "this is the http://www.hughsie.com/ coolest site";
+	markdown_expected =
+		   "this is the "
+		   "<a href=\"http://www.hughsie.com/\">http://www.hughsie.com/</a>"
+		   " coolest site";
+	text = gs_markdown_parse (md, markdown);
+	g_assert_cmpstr (text, ==, markdown_expected);
+	g_free (text);
+
 	/* markdown (free text) */
 	gs_markdown_set_escape (md, FALSE);
 	text = gs_markdown_parse (md, "This isn't a present");

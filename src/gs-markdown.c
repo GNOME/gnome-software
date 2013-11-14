@@ -82,6 +82,7 @@ typedef struct {
 	gboolean		 smart_quoting;
 	gboolean		 escape;
 	gboolean		 autocode;
+	gboolean		 autolinkify;
 	GString			*pending;
 	GString			*processed;
 } GsMarkdownPrivate;
@@ -509,14 +510,6 @@ gs_markdown_word_is_code (const gchar *text)
 	if (g_str_has_prefix (text, "#"))
 		return TRUE;
 
-	/* uri's */
-	if (g_str_has_prefix (text, "http://"))
-		return TRUE;
-	if (g_str_has_prefix (text, "https://"))
-		return TRUE;
-	if (g_str_has_prefix (text, "ftp://"))
-		return TRUE;
-
 	/* patch files */
 	if (g_strrstr (text, ".patch") != NULL)
 		return TRUE;
@@ -578,6 +571,59 @@ out:
 }
 
 /**
+ * gs_markdown_word_is_url:
+ **/
+static gboolean
+gs_markdown_word_is_url (const gchar *text)
+{
+	if (g_str_has_prefix (text, "http://"))
+		return TRUE;
+	if (g_str_has_prefix (text, "https://"))
+		return TRUE;
+	if (g_str_has_prefix (text, "ftp://"))
+		return TRUE;
+	return FALSE;
+}
+
+/**
+ * gs_markdown_word_auto_format_urls:
+ **/
+static gchar *
+gs_markdown_word_auto_format_urls (const gchar *text)
+{
+	guint i;
+	gchar *temp;
+	gchar **words;
+	gboolean ret = FALSE;
+
+	/* split sentence up with space */
+	words = g_strsplit (text, " ", -1);
+
+	/* search each word */
+	for (i=0; words[i] != NULL; i++) {
+		if (gs_markdown_word_is_url (words[i])) {
+			temp = g_strdup_printf ("<a href=\"%s\">%s</a>",
+						words[i], words[i]);
+			g_free (words[i]);
+			words[i] = temp;
+			ret = TRUE;
+		}
+	}
+
+	/* no replacements, so just return a copy */
+	if (!ret) {
+		temp = g_strdup (text);
+		goto out;
+	}
+
+	/* join the array back into a string */
+	temp = g_strjoinv (" ", words);
+out:
+	g_strfreev (words);
+	return temp;
+}
+
+/**
  * gs_markdown_flush_pending:
  **/
 static void
@@ -600,6 +646,7 @@ gs_markdown_flush_pending (GsMarkdown *self)
 	if (!priv->escape && priv->output == GS_MARKDOWN_OUTPUT_PANGO) {
 		g_strdelimit (copy, "<", '(');
 		g_strdelimit (copy, ">", ')');
+		g_strdelimit (copy, "&", '+');
 	}
 
 	/* check words for code */
@@ -614,6 +661,16 @@ gs_markdown_flush_pending (GsMarkdown *self)
 	/* escape */
 	if (priv->escape) {
 		temp = g_markup_escape_text (copy, -1);
+		g_free (copy);
+		copy = temp;
+	}
+
+	/* check words for URLS */
+	if (priv->autolinkify && //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	    priv->output == GS_MARKDOWN_OUTPUT_PANGO &&
+	    (priv->mode == GS_MARKDOWN_MODE_PARA ||
+	     priv->mode == GS_MARKDOWN_MODE_BULLETT)) {
+		temp = gs_markdown_word_auto_format_urls (copy);
 		g_free (copy);
 		copy = temp;
 	}
@@ -774,6 +831,7 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		priv->tags.bullet_end = "";
 		priv->tags.rule = "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n";
 		priv->escape = TRUE;
+		priv->autolinkify = TRUE;
 		break;
 	case GS_MARKDOWN_OUTPUT_HTML:
 		/* XHTML */
@@ -791,6 +849,7 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		priv->tags.bullet_end = "</li>";
 		priv->tags.rule = "<hr>";
 		priv->escape = TRUE;
+		priv->autolinkify = TRUE;
 		break;
 	case GS_MARKDOWN_OUTPUT_TEXT:
 		/* plain text */
@@ -808,6 +867,7 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		priv->tags.bullet_end = "";
 		priv->tags.rule = " ----- \n";
 		priv->escape = FALSE;
+		priv->autolinkify = FALSE;
 		break;
 	default:
 		g_warning ("unknown output enum");
@@ -857,6 +917,17 @@ gs_markdown_set_autocode (GsMarkdown *self, gboolean autocode)
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
 	g_return_if_fail (GS_IS_MARKDOWN (self));
 	priv->autocode = autocode;
+}
+
+/**
+ * gs_markdown_set_autolinkify:
+ **/
+void
+gs_markdown_set_autolinkify (GsMarkdown *self, gboolean autolinkify)
+{
+	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
+	g_return_if_fail (GS_IS_MARKDOWN (self));
+	priv->autolinkify = autolinkify;
 }
 
 /**

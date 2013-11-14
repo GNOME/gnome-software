@@ -75,7 +75,8 @@ gs_app_widget_get_description (GsAppWidget *app_widget)
 		if (tmp != NULL) {
 			markdown = gs_markdown_new ();
 			gs_markdown_set_smart_quoting (markdown, TRUE);
-			gs_markdown_set_autocode (markdown, TRUE);
+			gs_markdown_set_autocode (markdown, FALSE);
+			gs_markdown_set_autolinkify (markdown, FALSE);
 			gs_markdown_set_output_kind (markdown,
 						     GS_MARKDOWN_OUTPUT_PANGO);
 			escaped = gs_markdown_parse (markdown, tmp);
