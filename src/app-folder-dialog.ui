@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.10 -->
+  <template class="GsAppFolderDialog" parent="GtkWindow">
+    <property name="title" translatable="yes">Application Folders</property>
+    <property name="type-hint">dialog</property>
+    <property name="modal">True</property>
+    <property name="resizable">False</property>
+    <child type="titlebar">
+      <object class="GtkHeaderBar" id="header">
+        <property name="visible">True</property>
+        <child type="title">
+          <object class="GtkLabel" id="title_label">
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Application Folders</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </child>
+        <child>
+          <object class="GtkButton" id="cancel_button">
+            <property name="visible">True</property>
+            <property name="use_underline">True</property>
+            <property name="label" translatable="True">_Cancel</property>
+          </object>
+          <packing>
+            <property name="pack_type">start</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="done_button">
+            <property name="visible">True</property>
+            <property name="use_underline">True</property>
+            <property name="label" translatable="True">_Done</property>
+            <property name="receives_default">True</property>
+            <style>
+              <class name="suggested-action"/>
+            </style>
+          </object>
+          <packing>
+            <property name="pack_type">end</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+    <child>
+      <object class="GtkBox" id="content">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="margin">12</property>
+        <property name="spacing">12</property>
+        <child>
+          <object class="GtkLabel" id="description_label">
+            <property name="visible">True</property>
+            <property name="wrap">True</property>
+            <property name="width_chars">50</property>
+            <property name="max_width_chars">55</property>
+          </object>
+          <packing>
+            <property name="fill">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkListBox" id="app_folder_list">
+            <property name="visible">True</property>
+          </object>
+          <packing>
+            <property name="fill">True</property>
+            <property name="expand">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkButton" id="new_folder_button">
+            <property name="visible">True</property>
+            <property name="use_underline">True</property>
+            <property name="label" translatable="yes">_New Folder</property>
+          </object>
+          <packing>
+            <property name="fill">True</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>

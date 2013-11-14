@@ -23,6 +23,7 @@ desktop_in_files =					\
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
 UI_FILES =						\
+	app-folder-dialog.ui				\
 	app-menu.ui					\
 	app-tile.ui					\
 	app-widget.ui					\
@@ -108,6 +109,8 @@ gnome_software_service_SOURCES =			\
 	gs-category-tile.h				\
 	gs-app-tile.c					\
 	gs-app-tile.h					\
+	gs-app-folder-dialog.c				\
+	gs-app-folder-dialog.h				\
 	gs-box.h					\
 	gs-box.c					\
 	gs-plugin.c					\
