@@ -43,8 +43,10 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*button;
 	GtkWidget	*spinner;
 	GtkWidget	*label;
+	GtkWidget	*checkbox;
 	gboolean	 colorful;
 	gboolean	 show_update;
+	gboolean	 selectable;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppWidget, gs_app_widget, GTK_TYPE_BIN)
@@ -222,6 +224,15 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	default:
 		break;
 	}
+
+	if (priv->selectable) {
+		if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_DESKTOP ||
+		    gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_WEBAPP)
+			gtk_widget_set_visible (priv->checkbox, TRUE);
+		gtk_widget_set_sensitive (priv->button, FALSE);
+	} else {
+		gtk_widget_set_visible (priv->checkbox, FALSE);
+	}
 }
 
 /**
@@ -301,6 +312,7 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, checkbox);
 }
 
 static void
@@ -351,6 +363,30 @@ void
 gs_app_widget_set_show_update (GsAppWidget *app_widget, gboolean show_update)
 {
 	app_widget->priv->show_update = show_update;
+}
+
+void
+gs_app_widget_set_selectable (GsAppWidget *app_widget, gboolean selectable)
+{
+	app_widget->priv->selectable = selectable;
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (app_widget->priv->checkbox), FALSE);
+	gs_app_widget_refresh (app_widget);
+}
+
+void
+gs_app_widget_set_selected (GsAppWidget *app_widget, gboolean selected)
+{
+	if (app_widget->priv->selectable)
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (app_widget->priv->checkbox), selected);
+}
+
+gboolean
+gs_app_widget_get_selected (GsAppWidget *app_widget)
+{
+	if (app_widget->priv->selectable)
+		return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_widget->priv->checkbox));
+	else
+		return FALSE;
 }
 
 GtkWidget *

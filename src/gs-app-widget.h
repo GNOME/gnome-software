@@ -59,6 +59,11 @@ void		 gs_app_widget_set_colorful		(GsAppWidget	*app_widget,
 							 gboolean	 colorful);
 void		 gs_app_widget_set_show_update		(GsAppWidget	*app_widget,
 							 gboolean	 show_update);
+void		 gs_app_widget_set_selectable 		(GsAppWidget    *app_widget,
+							 gboolean        selectable);
+void		 gs_app_widget_set_selected		(GsAppWidget    *app_widget,
+							 gboolean        selected);
+gboolean	 gs_app_widget_get_selected		(GsAppWidget	*app_widget);
 GsApp		*gs_app_widget_get_app			(GsAppWidget	*app_widget);
 void		 gs_app_widget_set_app			(GsAppWidget	*app_widget,
 							 GsApp		*app);

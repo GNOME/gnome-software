@@ -10,6 +10,15 @@
         <property name="orientation">horizontal</property>
         <property name="spacing">3</property>
         <child>
+          <object class="GtkCheckButton" id="checkbox">
+            <property name="margin-right">9</property>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">False</property>
+          </packing>
+        </child>
+        <child>
           <object class="GtkImage" id="image">
             <property name="visible">True</property>
             <property name="pixel_size">64</property>
