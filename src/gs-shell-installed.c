@@ -30,6 +30,7 @@
 #include "gs-app.h"
 #include "gs-utils.h"
 #include "gs-app-widget.h"
+#include "gs-app-folder-dialog.h"
 
 #define INSTALL_DATE_QUEUED     (G_MAXUINT - 1)
 #define INSTALL_DATE_INSTALLING (G_MAXUINT - 2)
@@ -46,6 +47,7 @@ struct GsShellInstalledPrivate
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GtkListBox		*list_box_installed;
+	GtkRevealer 		*bottom_bar;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	gboolean		 cache_valid;
@@ -558,14 +560,45 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-selection_mode_cb (GtkToggleButton *button, GsShellInstalled *shell_installed)
+selection_mode_cb (GtkButton *button, GsShellInstalled *shell_installed)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 	GList *children, *l;
 	GtkWidget *row;
 	GtkWidget *app_widget;
+	GtkWidget *header;
+	GtkWidget *widget;
+	GtkStyleContext *context;
 	
-	priv->selection_mode = gtk_toggle_button_get_active (button);
+	priv->selection_mode = !priv->selection_mode;
+
+	header = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
+	context = gtk_widget_get_style_context (header);
+	if (priv->selection_mode) {
+		gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header), FALSE);
+		gtk_style_context_add_class (context, "selection-mode");
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
+		gtk_button_set_image (GTK_BUTTON (widget), NULL);
+		gtk_button_set_label (GTK_BUTTON (widget), _("Cancel"));
+		gtk_widget_show (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_menu_button"));
+		gtk_widget_show (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_label"));
+		gtk_label_set_label (GTK_LABEL (widget), _("Click on items to select them"));
+	} else {
+		gtk_header_bar_set_show_close_button (GTK_HEADER_BAR (header), TRUE);
+		gtk_style_context_remove_class (context, "selection-mode");
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
+		gtk_button_set_image (GTK_BUTTON (widget), gtk_image_new_from_icon_name ("object-select-symbolic", GTK_ICON_SIZE_MENU));
+		gtk_button_set_label (GTK_BUTTON (widget), NULL);
+		gtk_widget_show (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+		gtk_widget_show (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_menu_button"));
+		gtk_widget_hide (widget);
+	}
 
 	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_installed));
 	for (l = children; l; l = l->next) {
@@ -573,6 +606,72 @@ selection_mode_cb (GtkToggleButton *button, GsShellInstalled *shell_installed)
 		app_widget = gtk_bin_get_child (GTK_BIN (row));
 		gs_app_widget_set_selectable (GS_APP_WIDGET (app_widget),
 					      priv->selection_mode);
+	}
+	g_list_free (children);
+
+	gtk_revealer_set_reveal_child (priv->bottom_bar, priv->selection_mode);
+}
+
+static GList *
+get_selected_apps (GsShellInstalled *shell_installed)
+{
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+	GList *children, *l, *list;
+
+	list = NULL;
+	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_installed));
+	for (l = children; l; l = l->next) {
+		GtkListBoxRow *row = l->data;
+		GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+		if (gs_app_widget_get_selected (app_widget)) {
+			list = g_list_prepend (list, gs_app_widget_get_app (app_widget));	
+		}
+	}
+	g_list_free (children);
+
+	return list;
+}
+
+static void
+show_folder_dialog (GtkButton *button, GsShellInstalled *shell_installed)
+{
+	GtkWidget *toplevel;
+	GtkWidget *dialog;
+	GList *apps;
+
+	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (button));
+	apps = get_selected_apps (shell_installed);
+	dialog = gs_app_folder_dialog_new (GTK_WINDOW (toplevel), apps);
+	g_list_free (apps);
+	gtk_window_present (GTK_WINDOW (dialog));
+}
+
+static void
+select_all_cb (GtkMenuItem *item, GsShellInstalled *shell_installed)
+{
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+	GList *children, *l;
+
+	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_installed));
+	for (l = children; l; l = l->next) {
+		GtkListBoxRow *row = l->data;
+		GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+		gs_app_widget_set_selected (app_widget, TRUE);
+	}
+	g_list_free (children);
+}
+
+static void
+select_none_cb (GtkMenuItem *item, GsShellInstalled *shell_installed)
+{
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+	GList *children, *l;
+
+	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_installed));
+	for (l = children; l; l = l->next) {
+		GtkListBoxRow *row = l->data;
+		GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+		gs_app_widget_set_selected (app_widget, FALSE);
 	}
 	g_list_free (children);
 }
@@ -611,10 +710,27 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 	gtk_list_box_set_sort_func (priv->list_box_installed,
 				    gs_shell_installed_sort_func,
 				    shell_installed, NULL);
+
+	priv->bottom_bar = GTK_REVEALER (gtk_builder_get_object (priv->builder, "bottom_install"));
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_install"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (show_folder_dialog), shell_installed);
 	
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
-	g_signal_connect (widget, "toggled",
+	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (selection_mode_cb), shell_installed);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
+	gtk_button_set_image (GTK_BUTTON (widget), gtk_image_new_from_icon_name ("object-select-symbolic", GTK_ICON_SIZE_MENU));
+	gtk_button_set_label (GTK_BUTTON (widget), NULL);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "select_all_menuitem"));
+	g_signal_connect (widget, "activate",
+			  G_CALLBACK (select_all_cb), shell_installed);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "select_none_menuitem"));
+	g_signal_connect (widget, "activate",
+			  G_CALLBACK (select_none_cb), shell_installed);
 }
 
 /**
