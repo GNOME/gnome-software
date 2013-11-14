@@ -253,10 +253,9 @@ gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsAp
 		 * description for the update */
 		update_desc = g_strdup ("No update description");
 	} else {
-		markdown = gs_markdown_new ();
-		gs_markdown_set_smart_quoting (markdown, TRUE);
+		markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
+		gs_markdown_set_smart_quoting (markdown, FALSE);
 		gs_markdown_set_autocode (markdown, TRUE);
-		gs_markdown_set_output_kind (markdown, GS_MARKDOWN_OUTPUT_PANGO);
 		update_desc = gs_markdown_parse (markdown, gs_app_get_update_details (app));
 		g_object_unref (markdown);
 	}

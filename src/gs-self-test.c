@@ -42,10 +42,8 @@ gs_markdown_func (void)
 	const gchar *markdown_expected;
 
 	/* get GsMarkdown object */
-	md = gs_markdown_new ();
+	md = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 	g_assert (md);
-
-	gs_markdown_set_output_kind (md, GS_MARKDOWN_OUTPUT_PANGO);
 
 	markdown = "OEMs\n"
 		   "====\n"

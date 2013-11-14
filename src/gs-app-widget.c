@@ -73,12 +73,10 @@ gs_app_widget_get_description (GsAppWidget *app_widget)
 	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
 		tmp = gs_app_get_update_details (priv->app);
 		if (tmp != NULL) {
-			markdown = gs_markdown_new ();
-			gs_markdown_set_smart_quoting (markdown, TRUE);
+			markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
+			gs_markdown_set_smart_quoting (markdown, FALSE);
 			gs_markdown_set_autocode (markdown, FALSE);
 			gs_markdown_set_autolinkify (markdown, FALSE);
-			gs_markdown_set_output_kind (markdown,
-						     GS_MARKDOWN_OUTPUT_PANGO);
 			escaped = gs_markdown_parse (markdown, tmp);
 			str = g_string_new (escaped);
 			goto out;
@@ -130,6 +128,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	/* join the lines*/
 	str = gs_app_widget_get_description (app_widget);
 	gs_string_replace (str, "\n", " ");
+	g_debug ("setting description: %s", str->str);
 	gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
 	g_string_free (str, TRUE);
 

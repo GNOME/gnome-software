@@ -666,7 +666,7 @@ gs_markdown_flush_pending (GsMarkdown *self)
 	}
 
 	/* check words for URLS */
-	if (priv->autolinkify && //xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx
+	if (priv->autolinkify &&
 	    priv->output == GS_MARKDOWN_OUTPUT_PANGO &&
 	    (priv->mode == GS_MARKDOWN_MODE_PARA ||
 	     priv->mode == GS_MARKDOWN_MODE_BULLETT)) {
@@ -806,7 +806,7 @@ out:
 /**
  * gs_markdown_set_output_kind:
  **/
-void
+static void
 gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 {
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
@@ -944,7 +944,6 @@ gs_markdown_parse (GsMarkdown *self, const gchar *markdown)
 	guint len;
 
 	g_return_val_if_fail (GS_IS_MARKDOWN (self), NULL);
-	g_return_val_if_fail (priv->output != GS_MARKDOWN_OUTPUT_UNKNOWN, NULL);
 
 	g_debug ("input='%s'", markdown);
 
@@ -1008,7 +1007,6 @@ gs_markdown_init (GsMarkdown *self)
 {
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
 	priv->mode = GS_MARKDOWN_MODE_UNKNOWN;
-	priv->output = GS_MARKDOWN_OUTPUT_UNKNOWN;
 	priv->pending = g_string_new ("");
 	priv->processed = g_string_new ("");
 	priv->max_lines = -1;
@@ -1018,9 +1016,10 @@ gs_markdown_init (GsMarkdown *self)
 }
 
 GsMarkdown *
-gs_markdown_new (void)
+gs_markdown_new (GsMarkdownOutputKind output)
 {
 	GsMarkdown *self;
 	self = g_object_new (GS_TYPE_MARKDOWN, NULL);
+	gs_markdown_set_output_kind (self, output);
 	return GS_MARKDOWN (self);
 }

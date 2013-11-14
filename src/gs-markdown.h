@@ -40,7 +40,6 @@ struct _GsMarkdownClass {
 };
 
 typedef enum {
-	GS_MARKDOWN_OUTPUT_UNKNOWN,
 	GS_MARKDOWN_OUTPUT_TEXT,
 	GS_MARKDOWN_OUTPUT_PANGO,
 	GS_MARKDOWN_OUTPUT_HTML,
@@ -48,9 +47,7 @@ typedef enum {
 } GsMarkdownOutputKind;
 
 GType		 gs_markdown_get_type			(void);
-GsMarkdown	*gs_markdown_new			(void);
-void		 gs_markdown_set_output_kind		(GsMarkdown		*self,
-							 GsMarkdownOutputKind	 output);
+GsMarkdown	*gs_markdown_new			(GsMarkdownOutputKind	 output);
 void		 gs_markdown_set_max_lines		(GsMarkdown		*self,
 							 gint			 max_lines);
 void		 gs_markdown_set_smart_quoting		(GsMarkdown		*self,
