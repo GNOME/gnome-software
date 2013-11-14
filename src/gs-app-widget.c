@@ -55,35 +55,36 @@ enum {
 static guint signals [SIGNAL_LAST] = { 0 };
 
 /**
- * gs_app_widget_refresh:
+ * gs_app_widget_get_description:
+ *
+ * Return value: PangoMarkup
  **/
-static void
-gs_app_widget_refresh (GsAppWidget *app_widget)
+static GString *
+gs_app_widget_get_description (GsAppWidget *app_widget)
 {
-	GsAppWidgetPrivate *priv = app_widget->priv;
-	GtkStyleContext *context;
-	const gchar *tmp = NULL;
 	GString *str = NULL;
-	gchar *update_desc = NULL;
+	GsAppWidgetPrivate *priv = app_widget->priv;
+	GsMarkdown *markdown = NULL;
+	const gchar *tmp = NULL;
+	gchar *escaped = NULL;
 
-	if (app_widget->priv->app == NULL)
-		return;
-
-	/* get the main body text */
+	/* convert the markdown update description into PangoMarkup */
 	if (priv->show_update &&
 	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
 		tmp = gs_app_get_update_details (priv->app);
 		if (tmp != NULL) {
-			GsMarkdown *markdown;
 			markdown = gs_markdown_new ();
 			gs_markdown_set_smart_quoting (markdown, TRUE);
 			gs_markdown_set_autocode (markdown, TRUE);
-			gs_markdown_set_output_kind (markdown, GS_MARKDOWN_OUTPUT_PANGO);
-			update_desc = gs_markdown_parse (markdown, tmp);
-			tmp = update_desc;
-			g_object_unref (markdown);
+			gs_markdown_set_output_kind (markdown,
+						     GS_MARKDOWN_OUTPUT_PANGO);
+			escaped = gs_markdown_parse (markdown, tmp);
+			str = g_string_new (escaped);
+			goto out;
 		}
 	}
+
+	/* try all these things in order */
 	if (gs_app_get_kind (priv->app) == GS_APP_KIND_MISSING)
 		tmp = gs_app_get_summary_missing (priv->app);
 	if (tmp == NULL)
@@ -92,6 +93,27 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		tmp = gs_app_get_summary (priv->app);
 	if (tmp == NULL)
 		tmp = gs_app_get_name (priv->app);
+	escaped = g_markup_escape_text (tmp, -1);
+	str = g_string_new (escaped);
+out:
+	if (markdown != NULL)
+		g_object_unref (markdown);
+	g_free (escaped);
+	return str;
+}
+
+/**
+ * gs_app_widget_refresh:
+ **/
+static void
+gs_app_widget_refresh (GsAppWidget *app_widget)
+{
+	GsAppWidgetPrivate *priv = app_widget->priv;
+	GtkStyleContext *context;
+	GString *str = NULL;
+
+	if (app_widget->priv->app == NULL)
+		return;
 
 	/* only show the name box if the application is found */
 	switch (gs_app_get_kind (priv->app)) {
@@ -105,9 +127,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	}
 
 	/* join the lines*/
-	str = g_string_new (tmp);
+	str = gs_app_widget_get_description (app_widget);
 	gs_string_replace (str, "\n", " ");
-
 	gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
 	g_string_free (str, TRUE);
 
@@ -187,7 +208,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	default:
 		break;
 	}
-	g_free (update_desc);
 }
 
 /**
