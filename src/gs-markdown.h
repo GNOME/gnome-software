@@ -49,15 +49,15 @@ typedef enum {
 
 GType		 gs_markdown_get_type			(void);
 GsMarkdown	*gs_markdown_new			(void);
-gboolean	 gs_markdown_set_output_kind		(GsMarkdown		*self,
+void		 gs_markdown_set_output_kind		(GsMarkdown		*self,
 							 GsMarkdownOutputKind	 output);
-gboolean	 gs_markdown_set_max_lines		(GsMarkdown		*self,
+void		 gs_markdown_set_max_lines		(GsMarkdown		*self,
 							 gint			 max_lines);
-gboolean	 gs_markdown_set_smart_quoting		(GsMarkdown		*self,
+void		 gs_markdown_set_smart_quoting		(GsMarkdown		*self,
 							 gboolean		 smart_quoting);
-gboolean	 gs_markdown_set_escape			(GsMarkdown		*self,
+void		 gs_markdown_set_escape			(GsMarkdown		*self,
 							 gboolean		 escape);
-gboolean	 gs_markdown_set_autocode		(GsMarkdown		*self,
+void		 gs_markdown_set_autocode		(GsMarkdown		*self,
 							 gboolean		 autocode);
 gchar		*gs_markdown_parse			(GsMarkdown		*self,
 							 const gchar		*text);

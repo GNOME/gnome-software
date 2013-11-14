@@ -749,16 +749,17 @@ out:
 /**
  * gs_markdown_set_output_kind:
  **/
-gboolean
+void
 gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 {
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
-	gboolean ret = TRUE;
 
-	g_return_val_if_fail (GS_IS_MARKDOWN (self), FALSE);
+	g_return_if_fail (GS_IS_MARKDOWN (self));
 
-	/* PangoMarkup */
-	if (output == GS_MARKDOWN_OUTPUT_PANGO) {
+	priv->output = output;
+	switch (output) {
+	case GS_MARKDOWN_OUTPUT_PANGO:
+		/* PangoMarkup */
 		priv->tags.em_start = "<i>";
 		priv->tags.em_end = "</i>";
 		priv->tags.strong_start = "<b>";
@@ -772,9 +773,10 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		priv->tags.bullet_start = "• ";
 		priv->tags.bullet_end = "";
 		priv->tags.rule = "⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯\n";
-
-	/* XHTML */
-	} else if (output == GS_MARKDOWN_OUTPUT_HTML) {
+		priv->escape = TRUE;
+		break;
+	case GS_MARKDOWN_OUTPUT_HTML:
+		/* XHTML */
 		priv->tags.em_start = "<em>";
 		priv->tags.em_end = "<em>";
 		priv->tags.strong_start = "<strong>";
@@ -788,9 +790,10 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		priv->tags.bullet_start = "<li>";
 		priv->tags.bullet_end = "</li>";
 		priv->tags.rule = "<hr>";
-
-	/* plain text */
-	} else if (output == GS_MARKDOWN_OUTPUT_TEXT) {
+		priv->escape = TRUE;
+		break;
+	case GS_MARKDOWN_OUTPUT_TEXT:
+		/* plain text */
 		priv->tags.em_start = "";
 		priv->tags.em_end = "";
 		priv->tags.strong_start = "";
@@ -804,65 +807,56 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 		priv->tags.bullet_start = "* ";
 		priv->tags.bullet_end = "";
 		priv->tags.rule = " ----- \n";
-
-	/* unknown */
-	} else {
+		priv->escape = FALSE;
+		break;
+	default:
 		g_warning ("unknown output enum");
-		ret = FALSE;
+		break;
 	}
-
-	/* save if valid */
-	if (ret)
-		priv->output = output;
-	return ret;
 }
 
 /**
  * gs_markdown_set_max_lines:
  **/
-gboolean
+void
 gs_markdown_set_max_lines (GsMarkdown *self, gint max_lines)
 {
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_MARKDOWN (self), FALSE);
+	g_return_if_fail (GS_IS_MARKDOWN (self));
 	priv->max_lines = max_lines;
-	return TRUE;
 }
 
 /**
  * gs_markdown_set_smart_quoting:
  **/
-gboolean
+void
 gs_markdown_set_smart_quoting (GsMarkdown *self, gboolean smart_quoting)
 {
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_MARKDOWN (self), FALSE);
+	g_return_if_fail (GS_IS_MARKDOWN (self));
 	priv->smart_quoting = smart_quoting;
-	return TRUE;
 }
 
 /**
  * gs_markdown_set_escape:
  **/
-gboolean
+void
 gs_markdown_set_escape (GsMarkdown *self, gboolean escape)
 {
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_MARKDOWN (self), FALSE);
+	g_return_if_fail (GS_IS_MARKDOWN (self));
 	priv->escape = escape;
-	return TRUE;
 }
 
 /**
  * gs_markdown_set_autocode:
  **/
-gboolean
+void
 gs_markdown_set_autocode (GsMarkdown *self, gboolean autocode)
 {
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
-	g_return_val_if_fail (GS_IS_MARKDOWN (self), FALSE);
+	g_return_if_fail (GS_IS_MARKDOWN (self));
 	priv->autocode = autocode;
-	return TRUE;
 }
 
 /**
