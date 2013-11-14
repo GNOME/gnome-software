@@ -238,6 +238,7 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_LICENCE:
 	case APPSTREAM_TAG_SCREENSHOTS:
 	case APPSTREAM_TAG_UPDATECONTACT:
+	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
 		/* ignore */
 		break;
 	case APPSTREAM_TAG_DESCRIPTION:
