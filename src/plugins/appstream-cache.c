@@ -325,6 +325,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 				     appstream_tag_to_string (helper->tag));
 			return;
 		}
+		appstream_markup_reset (helper->markup);
 		helper->item_temp = appstream_app_new ();
 		appstream_app_set_priority (helper->item_temp, helper->priority);
 		appstream_app_set_userdata (helper->item_temp,

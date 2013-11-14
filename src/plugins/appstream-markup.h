@@ -45,6 +45,7 @@ typedef struct	AppstreamMarkup	AppstreamMarkup;
 
 AppstreamMarkup	*appstream_markup_new		(void);
 void		 appstream_markup_free		(AppstreamMarkup	*markup);
+void		 appstream_markup_reset		(AppstreamMarkup	*markup);
 void		 appstream_markup_set_enabled	(AppstreamMarkup	*markup,
 						 gboolean		 enabled);
 void		 appstream_markup_set_mode	(AppstreamMarkup	*markup,

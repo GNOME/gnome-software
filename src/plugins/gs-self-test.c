@@ -59,9 +59,16 @@ appstream_markup_plain_func (void)
 	markup = appstream_markup_new ();
 	appstream_markup_set_enabled (markup, TRUE);
 	appstream_markup_set_lang (markup, NULL);
+
 	appstream_markup_set_mode (markup, APPSTREAM_MARKUP_MODE_START);
 	appstream_markup_add_content (markup, "This is preformatted\n\nOne", -1);
 	appstream_markup_set_mode (markup, APPSTREAM_MARKUP_MODE_END);
+
+	appstream_markup_set_mode (markup, APPSTREAM_MARKUP_MODE_START);
+	appstream_markup_set_lang (markup, "xx_XX");
+	appstream_markup_add_content (markup, "This is dave\n\nOne", -1);
+	appstream_markup_set_mode (markup, APPSTREAM_MARKUP_MODE_END);
+
 	tmp = appstream_markup_get_text (markup);
 	g_assert_cmpstr (tmp, ==, "This is preformatted\n\nOne");
 

@@ -31,6 +31,7 @@ struct AppstreamMarkup
 	gboolean		 enabled;
 	gchar			*lang;
 	guint			 locale_value;
+	gboolean		 preformatted;
 };
 
 /**
@@ -42,6 +43,17 @@ appstream_markup_free (AppstreamMarkup *markup)
 	g_free (markup->lang);
 	g_string_free (markup->string, TRUE);
 	g_slice_free (AppstreamMarkup, markup);
+}
+
+/**
+ * appstream_markup_reset:
+ */
+void
+appstream_markup_reset (AppstreamMarkup *markup)
+{
+	markup->preformatted = FALSE;
+	markup->locale_value = G_MAXUINT;
+	g_string_truncate (markup->string, 0);
 }
 
 /**
@@ -103,8 +115,8 @@ appstream_markup_set_mode (AppstreamMarkup *markup, AppstreamMarkupMode mode)
 		markup->mode = APPSTREAM_MARKUP_MODE_LI_CONTENT;
 		break;
 	case APPSTREAM_MARKUP_MODE_START:
-		markup->locale_value = G_MAXUINT;
-		g_string_truncate (markup->string, 0);
+		if (!markup->preformatted)
+			appstream_markup_reset (markup);
 		markup->mode = mode;
 		break;
 	case APPSTREAM_MARKUP_MODE_END:
@@ -161,8 +173,10 @@ appstream_markup_add_content (AppstreamMarkup *markup,
 		tmp = appstream_xml_unmunge_safe (text, length);
 		if (tmp == NULL)
 			break;
-		if (!appstream_text_is_whitespace (tmp))
+		if (!appstream_text_is_whitespace (tmp)) {
 			g_string_append (markup->string, tmp);
+			markup->preformatted = TRUE;
+		}
 		break;
 	case APPSTREAM_MARKUP_MODE_P_CONTENT:
 		tmp = appstream_xml_unmunge (text, length);
