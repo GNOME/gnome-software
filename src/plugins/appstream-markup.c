@@ -37,11 +37,11 @@ struct AppstreamMarkup
  * appstream_markup_free:
  */
 void
-appstream_markup_free (AppstreamMarkup *app)
+appstream_markup_free (AppstreamMarkup *markup)
 {
-	g_free (app->lang);
-	g_string_free (app->string, TRUE);
-	g_slice_free (AppstreamMarkup, app);
+	g_free (markup->lang);
+	g_string_free (markup->string, TRUE);
+	g_slice_free (AppstreamMarkup, markup);
 }
 
 /**
