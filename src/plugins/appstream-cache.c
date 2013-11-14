@@ -159,6 +159,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
 	AppstreamTag section_new;
 	const gchar *tmp = NULL;
+	gboolean set_lang = FALSE;
 	guint height = 0;
 	guint i;
 	guint width = 0;
@@ -415,6 +416,16 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			helper->lang_temp = g_strdup ("C");
 		break;
 	case APPSTREAM_TAG_DESCRIPTION:
+		for (i = 0; attribute_names[i] != NULL; i++) {
+			if (g_strcmp0 (attribute_names[i], "xml:lang") == 0) {
+				appstream_markup_set_lang (helper->markup,
+							   attribute_values[i]);
+				set_lang = TRUE;
+				break;
+			}
+		}
+		if (!set_lang)
+			appstream_markup_set_lang (helper->markup, "C");
 		appstream_markup_set_enabled (helper->markup, TRUE);
 		appstream_markup_set_mode (helper->markup,
 					   APPSTREAM_MARKUP_MODE_START);
