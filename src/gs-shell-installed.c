@@ -315,8 +315,10 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_show (widget);
 
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
-		gtk_widget_show (widget);
+		if (g_getenv ("TEST_FOLDERS")) {
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
+			gtk_widget_show (widget);
+		}
 	}
 
 	gtk_list_box_invalidate_sort (priv->list_box_installed);
