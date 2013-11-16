@@ -527,17 +527,14 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	GsApp *app;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (shell_installed->priv->builder,
-						     "button_installed"));
+						     "button_installed_counter"));
 	pending = gs_plugin_loader_get_pending (plugin_loader);
 	if (pending->len == 0) {
-		/* TRANSLATORS: this is tab button to show the list of
-		 * installed software */
-		label = g_strdup (_("_Installed"));
+		//gtk_widget_hide (widget);
+		label = g_strdup ("0");
 	} else {
-		/* TRANSLATORS: this is tab button to show the list of
-		 * installed software. The '%d' refers to the number of
-		 * applications either installing or erasing */
-		label = g_strdup_printf (_("_Installed (%d)"), pending->len);
+		gtk_widget_show (widget);
+		label = g_strdup_printf ("%d", pending->len);
 	}
 	for (i = 0; i < pending->len; i++) {
 		app = GS_APP (g_ptr_array_index (pending, i));
@@ -558,7 +555,7 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 		}
 	}
 
-	gtk_button_set_label (GTK_BUTTON (widget), label);
+	gtk_label_set_label (GTK_LABEL (widget), label);
 	g_free (label);
 	g_ptr_array_unref (pending);
 }

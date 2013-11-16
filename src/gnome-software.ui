@@ -94,8 +94,42 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_underline">True</property>
-                        <property name="label" translatable="yes" comments="Translators: A label for a button to show only software which is already installed.">_Installed</property>
+                        <child>
+                          <object class="GtkBox" id="button_installed_box">
+                            <property name="visible">True</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="halign">fill</property>
+                            <property name="spacing">6</property>
+                            <child>
+                              <object class="GtkLabel" id="button_installed_label">
+                                <property name="visible">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="halign">center</property>
+                                <property name="label" translatable="yes" comments="Translators: A label for a button to show only software which is already installed.">_Installed</property>
+                                <property name="mnemonic_widget">button_installed</property>
+                                <style>
+                                  <class name="text-button"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="button_installed_counter">
+                                <property name="width-chars">2</property>
+                                <style>
+                                  <class name="counter-label"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
                         <style>
                           <class name="toolbar-primary-buttons-software"/>
                         </style>
@@ -111,8 +145,42 @@
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="receives_default">True</property>
-                        <property name="use_underline">True</property>
-                        <property name="label" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install.">_Updates</property>
+                        <child>
+                          <object class="GtkBox" id="button_updates_box">
+                            <property name="visible">True</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="halign">fill</property>
+                            <property name="spacing">6</property>
+                            <child>
+                              <object class="GtkLabel" id="button_updates_label">
+                                <property name="visible">True</property>
+                                <property name="use_underline">True</property>
+                                <property name="halign">center</property>
+                                <property name="label" translatable="yes" comments="Translators: A label for a button to show only updates which are available to install.">_Updates</property>
+                                <property name="mnemonic_widget">button_updates</property>
+                                <style>
+                                  <class name="text-button"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">True</property>
+                                <property name="fill">True</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="button_updates_counter">
+                                <property name="width-chars">2</property>
+                                <style>
+                                  <class name="counter-label"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
                         <style>
                           <class name="toolbar-primary-buttons-software"/>
                         </style>

@@ -110,3 +110,11 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
 	border-width: 0px;
 	padding: 0;
 }
+
+.counter-label {
+    color: @theme_selected_fg_color;
+    background-color: mix(@theme_selected_bg_color, @theme_selected_fg_color, 0.3);
+    font-size: smaller;
+    border-radius: 4px;
+    padding: 0px 4px;
+}

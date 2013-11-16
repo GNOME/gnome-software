@@ -97,21 +97,17 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		gtk_stack_set_visible_child_name (GTK_STACK (widget), "view");
 	}
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates_counter"));
 	if (list != NULL) {
 		gchar *text;
-		/* TRANSLATORS: A label for a button to show only updates
- 		 * which are available to install. The '%d' refers to the
- 		 * number of available updates
- 		 */
-		text = g_strdup_printf (_("_Updates (%d)"), g_list_length (list));
-		gtk_button_set_label (GTK_BUTTON (widget), text);
+		text = g_strdup_printf ("%d", g_list_length (list));
+		gtk_label_set_label (GTK_LABEL (widget), text);
 		g_free (text);
+		gtk_widget_show (widget);
 	} else {
-		/* TRANSLATORS: A label for a button to show only updates
- 		 * which are available to install.
- 		 */
-		gtk_button_set_label (GTK_BUTTON (widget), _("_Updates"));
+		gtk_label_set_label (GTK_LABEL (widget), "0");
+		//gtk_widget_hide (widget);
+		gtk_widget_show (widget);
 	}
 
 	if (list != NULL &&
