@@ -601,6 +601,10 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		break;
 	}
 
+	/* only mark the stars as sensitive if the application is installed */
+	gtk_widget_set_sensitive (priv->star,
+				  gs_app_get_state (priv->app) == GS_APP_STATE_INSTALLED);
+
 	/* only show launch button when the application is installed */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_details_launch"));
 	switch (gs_app_get_state (priv->app)) {
