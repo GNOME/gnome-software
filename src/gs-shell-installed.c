@@ -493,15 +493,9 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 	GtkStyleContext *context;
 	GtkWidget *header;
 
-	/* first entry */
-	header = gtk_list_box_row_get_header (row);
-	if (before == NULL) {
-		gtk_list_box_row_set_header (row, NULL);
-		return;
-	}
-
-	/* already set */
-	if (header != NULL)
+	/* reset */
+	gtk_list_box_row_set_header (row, NULL);
+	if (before == NULL)
 		return;
 
 	/* desktop -> addons */
