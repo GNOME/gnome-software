@@ -365,7 +365,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 }
 
 /**
- * gs_shell_installed_sort_func:
+ * gs_shell_installed_get_app_sort_key:
  *
  * Get a sort key to achive this:
  *
@@ -438,20 +438,30 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 			      GtkListBoxRow *b,
 			      gpointer user_data)
 {
-	GsAppWidget *aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (a)));
-	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
-	GsApp *a1 = gs_app_widget_get_app (aw1);
-	GsApp *a2 = gs_app_widget_get_app (aw2);
-	gchar *key1 = gs_shell_installed_get_app_sort_key (a1);
-	gchar *key2 = gs_shell_installed_get_app_sort_key (a2);
-	gint retval;
+	GsApp *a1, *a2;
+	GsAppWidget *aw1, *aw2;
+	gchar *key1 = NULL;
+	gchar *key2 = NULL;
+	gint retval = 0;
+
+	/* check valid */
+	if (!GTK_IS_BIN(a) || !GTK_IS_BIN(b)) {
+		g_warning ("GtkListBoxRow not valid");
+		goto out;
+	}
+
+	aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (a)));
+	aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
+	a1 = gs_app_widget_get_app (aw1);
+	a2 = gs_app_widget_get_app (aw2);
+	key1 = gs_shell_installed_get_app_sort_key (a1);
+	key2 = gs_shell_installed_get_app_sort_key (a2);
 
 	/* compare the keys according to the algorithm above */
 	retval = g_strcmp0 (key1, key2);
-
+out:
 	g_free (key1);
 	g_free (key2);
-
 	return retval;
 }
 
