@@ -54,8 +54,8 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GError **error)
 {
 	gboolean ret = TRUE;
-	gboolean success;
 	gchar **package_ids = NULL;
+	gchar *error_details = NULL;
 	gchar *packages = NULL;
 	gchar **split;
 	GKeyFile *key_file = NULL;
@@ -76,12 +76,23 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		goto out;
 
 	/* only return results if successful */
-	success = g_key_file_get_boolean (key_file,
-					  PK_OFFLINE_UPDATE_RESULTS_GROUP,
-					  "Success",
-					  NULL);
-	if (!success)
+	ret = g_key_file_get_boolean (key_file,
+				      PK_OFFLINE_UPDATE_RESULTS_GROUP,
+				      "Success",
+				      NULL);
+	if (!ret) {
+		error_details = g_key_file_get_string (key_file,
+						       PK_OFFLINE_UPDATE_RESULTS_GROUP,
+						       "ErrorDetails",
+						       error);
+		if (error_details == NULL)
+			goto out;
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     error_details);
 		goto out;
+	}
 
 	/* get list of package-ids */
 	packages = g_key_file_get_string (key_file,
@@ -111,6 +122,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		g_strfreev (split);
 	}
 out:
+	g_free (error_details);
 	g_free (packages);
 	g_strfreev (package_ids);
 	if (key_file != NULL)
