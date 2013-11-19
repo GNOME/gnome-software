@@ -76,7 +76,7 @@ gs_app_widget_get_description (GsAppWidget *app_widget)
 	if (priv->show_update &&
 	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
 		tmp = gs_app_get_update_details (priv->app);
-		if (tmp != NULL) {
+		if (tmp != NULL && tmp[0] != '\0') {
 			markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 			gs_markdown_set_smart_quoting (markdown, FALSE);
 			gs_markdown_set_autocode (markdown, FALSE);
@@ -90,11 +90,11 @@ gs_app_widget_get_description (GsAppWidget *app_widget)
 	/* try all these things in order */
 	if (gs_app_get_kind (priv->app) == GS_APP_KIND_MISSING)
 		tmp = gs_app_get_summary_missing (priv->app);
-	if (tmp == NULL)
+	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_description (priv->app);
-	if (tmp == NULL)
+	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_summary (priv->app);
-	if (tmp == NULL)
+	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_name (priv->app);
 	escaped = g_markup_escape_text (tmp, -1);
 	str = g_string_new (escaped);
