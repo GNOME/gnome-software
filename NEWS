@@ -1,3 +1,44 @@
+Version 3.11.2
+~~~~~~~~~~~~~~
+Released: 2013-11-19
+
+* Translations:
+ - Updated Brazilian Portuguese translation (Enrico Nicoletto)
+ - Updated Chinese simplified translation (Wylmer Wang)
+ - Updated Finnish translation (Jiri Grönroos)
+
+* New Features:
+ - Add a 'Launch' button to the application details page (Richard Hughes)
+ - Add a dialog to edit app folders (Matthias Clasen)
+ - Add a selection mode to the installed list (Matthias Clasen)
+ - Download updates in the background (Matthias Clasen)
+ - Make links clickable in the ChangeLog descriptions (Richard Hughes)
+ - Use proxy settings (Matthias Clasen)
+
+* Bugfix:
+ - Be a lot more subtle for the updates indicator (Jakub Steiner)
+ - Do not assert when the app goes from 'unavailable' to 'available' (Richard Hughes)
+ - Do not require exactly correct size screenshots (Richard Hughes)
+ - Do not show a warning when there were no search results found (Richard Hughes)
+ - Don't crash when there is no AppStream data (Colin Walters)
+ - Don't notify for available updates if we have a window active (Richard Hughes)
+ - Don't show a modified date in 1970 for webapps (Richard Hughes)
+ - Extract the correct language for preformatted AppStream (Richard Hughes)
+ - Move the install and check timeouts to GSettings schema (Richard Hughes)
+ - Never show two 'Addon' headers in the installed panel (Richard Hughes)
+ - Only mark the stars as sensitive if the application is installed (Richard Hughes)
+ - Parse the update descriptions as markdown (Richard Hughes)
+ - Perform an 'AND' search when using keywords, not an 'OR' search (Richard Hughes)
+ - Refresh the updates panel if the update state changes (Richard Hughes)
+ - Reload the cache if AppStream files are changed (Richard Hughes)
+ - Resolve the package when GetDetails() or GetUpdateDetail() is needed (Richard Hughes)
+ - Set a minimum width for application details pages (Richard Hughes)
+ - Show the featured application with the correct background (Richard Hughes)
+ - Use GSettings for the compatible desktops (Richard Hughes)
+ - Use a darker backdrop for screenshots (Jakub Steiner)
+ - Use a larger screenshot size when there is only one screenshot to show (Richard Hughes)
+ - Use the new UTF-8 safe searching functionality in GLib (Richard Hughes)
+
 Version 3.11.1
 ~~~~~~~~~~~~~~
 Released: 2013-10-28
