@@ -89,14 +89,6 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_updates"));
-	if (list == NULL) {
-		gtk_stack_set_visible_child_name (GTK_STACK (widget), "uptodate");
-	}
-	else {
-		gtk_stack_set_visible_child_name (GTK_STACK (widget), "view");
-	}
-
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates_counter"));
 	if (list != NULL) {
 		gchar *text;
@@ -125,11 +117,24 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 				     GS_PLUGIN_LOADER_ERROR,
 				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
 			g_debug ("no updates to show");
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+								     "stack_updates"));
+			gtk_stack_set_visible_child_name (GTK_STACK (widget), "uptodate");
 		} else {
 			g_warning ("failed to get updates: %s", error->message);
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+								     "stack_updates"));
+			gtk_stack_set_visible_child_name (GTK_STACK (widget), "failed");
+			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+								     "label_updates_failed"));
+			gtk_label_set_label (GTK_LABEL (widget), error->message);
 		}
 		g_error_free (error);
 		goto out;
+	} else {
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+							     "stack_updates"));
+		gtk_stack_set_visible_child_name (GTK_STACK (widget), "view");
 	}
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
