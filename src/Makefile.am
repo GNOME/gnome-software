@@ -228,6 +228,8 @@ EXTRA_DIST =						\
 	shell-search-provider-dbus-interfaces.xml	\
 	gnome-software.gresource.xml			\
 	gnome-software.xml				\
+	gs-star-dim.png					\
+	gs-star.png					\
 	gtk-style.css					\
 	gtk-style-hc.css				\
 	shadow.png					\
