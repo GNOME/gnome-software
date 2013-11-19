@@ -26,6 +26,7 @@ MAINTAINERCLEANFILES =					\
 	missing						\
 	mkinstalldirs					\
 	omf.make					\
+	test-driver					\
 	xmldocs.make
 
 EXTRA_DIST =						\
