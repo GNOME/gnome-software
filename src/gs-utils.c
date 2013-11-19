@@ -144,17 +144,6 @@ gs_app_notify_installed (GsApp *app)
 }
 
 /**
- * gs_app_notify_failed_modal_response_cb:
- **/
-static void
-gs_app_notify_failed_modal_response_cb (GtkDialog *dialog,
-					gint response_id,
-					gpointer user_data)
-{
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-}
-
-/**
  * gs_app_notify_failed_modal:
  **/
 void
@@ -194,7 +183,7 @@ gs_app_notify_failed_modal (GtkBuilder *builder,
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
 						  "%s", msg);
 	g_signal_connect (dialog, "response",
-			  G_CALLBACK (gs_app_notify_failed_modal_response_cb), NULL);
+			  G_CALLBACK (gtk_widget_destroy), NULL);
 	gtk_window_present (GTK_WINDOW (dialog));
 }
 
