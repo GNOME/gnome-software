@@ -154,7 +154,7 @@ gnome_software_service_SOURCES =			\
 	gs-application.c				\
 	gs-application.h				\
 	gs-folders.c					\
-	gs-folders.h					\		
+	gs-folders.h					\
 	gs-main.c
 
 gnome_software_LDADD =					\
