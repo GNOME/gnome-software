@@ -291,8 +291,10 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		tmp = appstream_xml_unmunge (text, text_len);
 		if (tmp == NULL)
 			break;
-		g_warning ("AppData: unknown data '%s' is '%s'",
-			   appstream_tag_to_string (helper->tag), tmp);
+		if (helper->tag != APPSTREAM_TAG_UNKNOWN) {
+			g_warning ("AppData: unknown data '%s' is '%s'",
+				   appstream_tag_to_string (helper->tag), tmp);
+		}
 		break;
 	}
 	g_free (tmp);
