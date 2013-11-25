@@ -63,6 +63,40 @@ gs_shell_updates_invalidate (GsShellUpdates *shell_updates)
 	shell_updates->priv->cache_valid = FALSE;
 }
 
+static void
+child_exit_cb (GPid pid, gint status, gpointer user_data)
+{
+	g_spawn_close_pid (pid);
+}
+
+static void
+clear_offline_updates_message (void)
+{
+	gboolean ret;
+	GError *error = NULL;
+	const gchar *argv[3];
+	GPid pid;
+
+	argv[0] = "pkexec";
+	argv[1] = LIBEXECDIR "/pk-clear-offline-update";
+	argv[2] = NULL;
+	ret = g_spawn_async (NULL,
+			     (gchar **) argv,
+			     NULL,
+			     G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
+			     NULL,
+			     NULL,
+			     &pid,
+			     &error);
+	if (!ret) {
+		g_warning ("Failure clearing offline update message: %s",
+			   error->message);
+		g_error_free (error);
+		return;
+	}
+	g_child_watch_add (pid, child_exit_cb, NULL);
+}
+
 /**
  * gs_shell_updates_get_updates_cb:
  **/
@@ -137,6 +171,8 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		gtk_widget_show (widget);
 	}
 
+	/* clear the offline update success file */
+	clear_offline_updates_message ();
 out:
 	if (list != NULL)
 		gs_plugin_list_free (list);
