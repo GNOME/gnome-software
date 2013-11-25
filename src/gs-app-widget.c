@@ -70,11 +70,11 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	if (priv->show_update &&
 	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE)
 		tmp = gs_app_get_update_details (priv->app);
-	if (tmp == NULL)
+	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_description (priv->app);
-	if (tmp == NULL)
+	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_summary (priv->app);
-	if (tmp == NULL)
+	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_name (priv->app);
 
 	/* join the lines*/
