@@ -128,8 +128,8 @@ done_editing (GtkEntry *entry, GsAppFolderDialog *dialog)
 
 	label = gtk_label_new (folder);
 	gtk_widget_show (label);
-	gtk_widget_set_margin_left (label, 10);
-	gtk_widget_set_margin_right (label, 10);
+	gtk_widget_set_margin_start (label, 10);
+	gtk_widget_set_margin_end (label, 10);
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
 
@@ -151,8 +151,8 @@ new_folder_cb (GsAppFolderDialog *dialog)
 
 	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	entry = gtk_entry_new ();
-	gtk_widget_set_margin_left (entry, 10);
-	gtk_widget_set_margin_right (entry, 10);
+	gtk_widget_set_margin_start (entry, 10);
+	gtk_widget_set_margin_end (entry, 10);
 	gtk_widget_set_halign (entry, GTK_ALIGN_START);
 	gtk_box_pack_start (GTK_BOX (box), entry, TRUE, TRUE, 0);
 
@@ -244,8 +244,8 @@ create_row (GsAppFolderDialog *dialog, const gchar *folder)
 
 	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	label = gtk_label_new (gs_folders_get_folder_name (priv->folders, folder));
-	gtk_widget_set_margin_left (label, 10);
-	gtk_widget_set_margin_right (label, 10);
+	gtk_widget_set_margin_start (label, 10);
+	gtk_widget_set_margin_end (label, 10);
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
 	gtk_box_pack_start (GTK_BOX (box), label, TRUE, TRUE, 0);
@@ -264,8 +264,8 @@ create_row (GsAppFolderDialog *dialog, const gchar *folder)
 	}
 	if (s->len > 0) {
 		label = gtk_label_new (s->str);
-		gtk_widget_set_margin_left (label, 10);
-		gtk_widget_set_margin_right (label, 10);
+		gtk_widget_set_margin_start (label, 10);
+		gtk_widget_set_margin_end (label, 10);
 		gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
 		gtk_label_set_max_width_chars (GTK_LABEL (label), 30);
 		gtk_widget_set_halign (label, GTK_ALIGN_END);

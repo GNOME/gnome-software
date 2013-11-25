@@ -124,11 +124,11 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	switch (gs_app_get_kind (priv->app)) {
 	case GS_APP_KIND_MISSING:
 		gtk_widget_set_visible (priv->name_box, FALSE);
-		gtk_widget_set_margin_right (priv->description_label, 250);
+		gtk_widget_set_margin_end (priv->description_label, 250);
 		break;
 	default:
 		gtk_widget_set_visible (priv->name_box, TRUE);
-		gtk_widget_set_margin_right (priv->description_label, 0);
+		gtk_widget_set_margin_end (priv->description_label, 0);
 	}
 
 	/* join the lines*/
