@@ -416,8 +416,10 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 			/* sort installing apps above removing and
 			 * installed apps
 			 */
-			gs_app_set_install_date (app, G_MAXUINT - 1);
-			gs_shell_installed_add_app (shell_installed, app);
+			if (gs_app_get_install_date (app) != G_MAXUINT - 1) {
+				gs_app_set_install_date (app, G_MAXUINT - 1);
+				gs_shell_installed_add_app (shell_installed, app);
+			}
 		}
 	}
 
