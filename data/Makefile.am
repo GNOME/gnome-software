@@ -4,11 +4,13 @@ SUBDIRS =						\
 
 resourcesdir = $(datadir)/gnome-software
 dist_resources_DATA =					\
-	featured-darktable.png				\
+  featured-blender.png  \
+  featured-chess.png  \
 	featured-firefox.png				\
 	featured-gimp.png				\
 	featured-gnome-sudoku.png			\
 	featured-mypaint.png				\
+	featured-transmission.png \
 	featured-weather.png				\
 	featured-weather-bg.png				\
 	featured-xchat.png				\

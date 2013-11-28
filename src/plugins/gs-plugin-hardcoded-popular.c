@@ -143,6 +143,7 @@ static Featured featured[] = {
 	{ "Game", "wesnoth.desktop" },
 	{ "Game", "supertuxkart.desktop" }, // id ?
 	{ "Game", "redeclipse.desktop" },
+	{ "Game", "glchess.desktop" },
 	{ "Office", "evolution.desktop" },
 	{ "Office", "geary.desktop" },
 	{ "Office", "gnucash.desktop" },
