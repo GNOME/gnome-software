@@ -163,7 +163,7 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	/* got image, so show */
 	gs_screenshot_show_image (ssimg);
 out:
-	return;
+	g_object_unref (ssimg);
 }
 
 /**
@@ -309,7 +309,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* send async */
 	soup_session_queue_message (priv->session, msg,
 				    gs_screenshot_image_complete_cb,
-				    ssimg);
+				    g_object_ref (ssimg));
 	if (priv->spinner_id != 0)
 		g_source_remove (priv->spinner_id);
 	priv->spinner_id = g_timeout_add (250, gs_screenshot_image_show_spinner, ssimg);
