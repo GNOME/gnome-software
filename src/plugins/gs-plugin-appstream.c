@@ -858,31 +858,26 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* find out how many packages are in each category */
 	gs_profile_start (plugin->profile, "appstream::add-categories");
+	array = appstream_cache_get_items (plugin->priv->cache);
 	for (l = *list; l != NULL; l = l->next) {
 		parent = GS_CATEGORY (l->data);
+		search_id2 = gs_category_get_id (parent);
 		children = gs_category_get_subcategories (parent);
 		for (l2 = children; l2 != NULL; l2 = l2->next) {
 			category = GS_CATEGORY (l2->data);
-			search_id1 = gs_category_get_id (category);
-			search_id2 = gs_category_get_id (parent);
-
-			/* the "General" item has no ID */
-			if (search_id1 == NULL) {
-				search_id1 = search_id2;
-				search_id2 = NULL;
-			}
 
 			/* just look at each app in turn */
-			array = appstream_cache_get_items (plugin->priv->cache);
 			for (i = 0; i < array->len; i++) {
 				item = g_ptr_array_index (array, i);
 				if (appstream_app_get_id (item) == NULL)
 					continue;
 				if (appstream_app_get_priority (item) < 0)
 					continue;
-				if (!appstream_app_has_category (item, search_id1))
+				if (!appstream_app_has_category (item, search_id2))
 					continue;
-				if (search_id2 != NULL && !appstream_app_has_category (item, search_id2))
+				search_id1 = gs_category_get_id (category);
+				if (search_id1 != NULL &&
+				    !appstream_app_has_category (item, search_id1))
 					continue;
 
 				/* we have another result */
