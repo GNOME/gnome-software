@@ -493,7 +493,7 @@ appstream_cache_add_item (AppstreamCacheHelper *helper)
 	for (i = 0; i < pkgnames->len; i++) {
 		pkgname = g_ptr_array_index (pkgnames, i);
 		g_hash_table_insert (priv->hash_pkgname,
-				     (gpointer) pkgname,
+				     g_strdup (pkgname),
 				     helper->item_temp);
 	}
 }
@@ -916,7 +916,7 @@ appstream_cache_init (AppstreamCache *cache)
 					       NULL);
 	priv->hash_pkgname = g_hash_table_new_full (g_str_hash,
 						    g_str_equal,
-						    NULL,
+						    g_free,
 						    NULL);
 }
 
