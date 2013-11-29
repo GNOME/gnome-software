@@ -65,28 +65,48 @@ gs_star_widget_get_rating (GsStarWidget *star)
 }
 
 /**
+ * gs_star_widget_set_image_rating:
+ **/
+static void
+gs_star_widget_set_image_rating (GtkImage *image,
+				 gint value, gint lower, gint higher)
+{
+	GtkStyleContext *context;
+	const gchar *icon_name = "semi-starred-symbolic";
+	if (value <= lower)
+		icon_name = "non-starred-symbolic";
+	if (value >= higher)
+		icon_name = "starred-symbolic";
+
+	context = gtk_widget_get_style_context (GTK_WIDGET (image));
+	gtk_style_context_add_class (context, "star");
+	gtk_image_set_from_icon_name (image, icon_name, GTK_ICON_SIZE_MENU);
+}
+
+/**
  * gs_star_widget_refresh:
  **/
 static void
 gs_star_widget_refresh (GsStarWidget *star)
 {
 	GsStarWidgetPrivate *priv;
-	const gchar *img = "/org/gnome/software/gs-star.png";
-	const gchar *img_dim = "/org/gnome/software/gs-star-dim.png";
-
 	priv = gs_star_widget_get_instance_private (star);
 
-	/* set the dim states correctly */
-	gtk_image_set_from_resource (GTK_IMAGE (priv->image1),
-				     priv->rating >= rate_to_star[0] ? img : img_dim);
-	gtk_image_set_from_resource (GTK_IMAGE (priv->image2),
-				     priv->rating >= rate_to_star[1] ? img : img_dim);
-	gtk_image_set_from_resource (GTK_IMAGE (priv->image3),
-				     priv->rating >= rate_to_star[2] ? img : img_dim);
-	gtk_image_set_from_resource (GTK_IMAGE (priv->image4),
-				     priv->rating >= rate_to_star[3] ? img : img_dim);
-	gtk_image_set_from_resource (GTK_IMAGE (priv->image5),
-				     priv->rating >= rate_to_star[4] ? img : img_dim);
+	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image1),
+					 priv->rating,
+					 0, rate_to_star[0]);
+	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image2),
+					 priv->rating,
+					 rate_to_star[0], rate_to_star[1]);
+	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image3),
+					 priv->rating,
+					 rate_to_star[1], rate_to_star[2]);
+	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image4),
+					 priv->rating,
+					 rate_to_star[2], rate_to_star[3]);
+	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image5),
+					 priv->rating,
+					 rate_to_star[3], rate_to_star[4]);
 }
 
 /**
