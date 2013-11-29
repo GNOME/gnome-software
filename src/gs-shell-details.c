@@ -597,6 +597,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	default:
 		gtk_widget_set_visible (priv->star, TRUE);
 		gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
+					   gs_app_get_rating_kind (priv->app),
 					   gs_app_get_rating (priv->app));
 		break;
 	}
@@ -1109,6 +1110,7 @@ gs_shell_details_rating_changed_cb (GsStarWidget *star,
 
 	/* call into the plugins to set the new value */
 	gs_app_set_rating (priv->app, rating);
+	gs_app_set_rating_kind (priv->app, GS_APP_RATING_KIND_USER);
 	gs_plugin_loader_app_action_async (priv->plugin_loader, priv->app,
 					   GS_PLUGIN_LOADER_ACTION_SET_RATING,
 					   priv->cancellable,

@@ -28,6 +28,7 @@
 
 struct _GsStarWidgetPrivate
 {
+	GsAppRatingKind	 rating_kind;
 	gint		 rating;
 	GtkWidget	*button1;
 	GtkWidget	*button2;
@@ -68,18 +69,25 @@ gs_star_widget_get_rating (GsStarWidget *star)
  * gs_star_widget_set_image_rating:
  **/
 static void
-gs_star_widget_set_image_rating (GtkImage *image,
+gs_star_widget_set_image_rating (GtkImage *image, GsAppRatingKind rating_kind,
 				 gint value, gint lower, gint higher)
 {
 	GtkStyleContext *context;
 	const gchar *icon_name = "semi-starred-symbolic";
+
 	if (value <= lower)
 		icon_name = "non-starred-symbolic";
 	if (value >= higher)
 		icon_name = "starred-symbolic";
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (image));
-	gtk_style_context_add_class (context, "star");
+	if (rating_kind == GS_APP_RATING_KIND_USER) {
+		gtk_style_context_add_class (context, "star-user");
+		gtk_style_context_remove_class (context, "star");
+	} else {
+		gtk_style_context_add_class (context, "star");
+		gtk_style_context_remove_class (context, "star-user");
+	}
 	gtk_image_set_from_icon_name (image, icon_name, GTK_ICON_SIZE_MENU);
 }
 
@@ -93,18 +101,23 @@ gs_star_widget_refresh (GsStarWidget *star)
 	priv = gs_star_widget_get_instance_private (star);
 
 	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image1),
+					 priv->rating_kind,
 					 priv->rating,
 					 0, rate_to_star[0]);
 	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image2),
+					 priv->rating_kind,
 					 priv->rating,
 					 rate_to_star[0], rate_to_star[1]);
 	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image3),
+					 priv->rating_kind,
 					 priv->rating,
 					 rate_to_star[1], rate_to_star[2]);
 	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image4),
+					 priv->rating_kind,
 					 priv->rating,
 					 rate_to_star[2], rate_to_star[3]);
 	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image5),
+					 priv->rating_kind,
 					 priv->rating,
 					 rate_to_star[3], rate_to_star[4]);
 }
@@ -113,12 +126,15 @@ gs_star_widget_refresh (GsStarWidget *star)
  * gs_star_widget_set_rating:
  **/
 void
-gs_star_widget_set_rating (GsStarWidget *star, gint rating)
+gs_star_widget_set_rating (GsStarWidget *star,
+			   GsAppRatingKind rating_kind,
+			   gint rating)
 {
 	GsStarWidgetPrivate *priv;
 	g_return_if_fail (GS_IS_STAR_WIDGET (star));
 	priv = gs_star_widget_get_instance_private (star);
 	priv->rating = rating;
+	priv->rating_kind = rating_kind;
 	gs_star_widget_refresh (star);
 }
 

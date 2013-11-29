@@ -78,6 +78,7 @@ struct GsAppPrivate
 	gchar			*update_details;
 	gchar			*management_plugin;
 	gint			 rating;
+	GsAppRatingKind		 rating_kind;
 	guint64			 size;
 	GsAppKind		 kind;
 	GsAppIdKind		 id_kind;
@@ -260,6 +261,10 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tmenu-path:\t%s\n", priv->menu_path);
 	if (priv->rating != -1)
 		g_string_append_printf (str, "\trating:\t%i\n", priv->rating);
+	if (priv->rating_kind != GS_APP_RATING_KIND_UNKNOWN)
+		g_string_append_printf (str, "\trating-kind:\t%s\n",
+					priv->rating_kind == GS_APP_RATING_KIND_USER ?
+						"user" : "system");
 	if (priv->pixbuf != NULL)
 		g_string_append_printf (str, "\tpixbuf:\t%p\n", priv->pixbuf);
 	if (priv->featured_pixbuf != NULL)
@@ -1253,6 +1258,26 @@ gs_app_set_rating (GsApp *app, gint rating)
 }
 
 /**
+ * gs_app_get_rating_kind:
+ */
+GsAppRatingKind
+gs_app_get_rating_kind (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), -1);
+	return app->priv->rating_kind;
+}
+
+/**
+ * gs_app_set_rating_kind:
+ */
+void
+gs_app_set_rating_kind (GsApp *app, GsAppRatingKind rating_kind)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	app->priv->rating_kind = rating_kind;
+}
+
+/**
  * gs_app_get_size:
  */
 guint64
@@ -1597,6 +1622,7 @@ gs_app_init (GsApp *app)
 {
 	app->priv = GS_APP_GET_PRIVATE (app);
 	app->priv->rating = -1;
+	app->priv->rating_kind = GS_APP_RATING_KIND_UNKNOWN;
 	app->priv->sources = g_ptr_array_new_with_free_func (g_free);
 	app->priv->source_ids = g_ptr_array_new_with_free_func (g_free);
 	app->priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);

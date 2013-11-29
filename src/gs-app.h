@@ -87,6 +87,13 @@ typedef enum {
 	GS_APP_ID_KIND_LAST
 } GsAppIdKind;
 
+typedef enum {
+	GS_APP_RATING_KIND_UNKNOWN,
+	GS_APP_RATING_KIND_USER,
+	GS_APP_RATING_KIND_SYSTEM,
+	GS_APP_RATING_KIND_LAST
+} GsAppRatingKind;
+
 #define	GS_APP_INSTALL_DATE_UNSET		0
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
 #define	GS_APP_SIZE_UNKNOWN			0
@@ -194,6 +201,9 @@ void		 gs_app_set_metadata		(GsApp		*app,
 gint		 gs_app_get_rating		(GsApp		*app);
 void		 gs_app_set_rating		(GsApp		*app,
 						 gint		 rating);
+GsAppRatingKind	 gs_app_get_rating_kind		(GsApp		*app);
+void		 gs_app_set_rating_kind		(GsApp		*app,
+						 GsAppRatingKind rating_kind);
 guint64		 gs_app_get_size		(GsApp		*app);
 void		 gs_app_set_size		(GsApp		*app,
 						 guint64	 size);

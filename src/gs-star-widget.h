@@ -24,6 +24,8 @@
 
 #include <gtk/gtk.h>
 
+#include "gs-app.h"
+
 #define GS_TYPE_STAR_WIDGET		(gs_star_widget_get_type())
 #define GS_STAR_WIDGET(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_STAR_WIDGET, GsStarWidget))
 #define GS_STAR_WIDGET_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_STAR_WIDGET, GsStarWidgetClass))
@@ -54,6 +56,7 @@ GType		 gs_star_widget_get_type		(void);
 GtkWidget	*gs_star_widget_new			(void);
 gint		 gs_star_widget_get_rating		(GsStarWidget	*star);
 void		 gs_star_widget_set_rating		(GsStarWidget	*star,
+							 GsAppRatingKind rating_kind,
 							 gint		 rating);
 
 G_END_DECLS
