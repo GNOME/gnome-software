@@ -149,14 +149,11 @@ check_offline_update_cb (gpointer user_data)
 		title = ngettext ("Software Update Installed",
 				  "Software Updates Installed",
 				  num_packages);
-                /* TRANSLATORS: message when we've done offline updates */
+		/* TRANSLATORS: message when we've done offline updates */
 		message = ngettext ("An important OS update has been installed.",
 				    "Important OS updates have been installed.",
 				    num_packages);
-
-                gs_offline_updates_clear_status ();
-
-        } else {
+	} else {
 
 		title = _("Software Updates Failed");
 		/* TRANSLATORS: message when we offline updates have failed */
