@@ -90,7 +90,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	switch (state) {
 	case GS_APP_STATE_QUEUED:
 		gtk_widget_set_visible (widget, TRUE);
-		gtk_label_set_label (GTK_LABEL (widget), _("Pending"));
+		gtk_label_set_label (GTK_LABEL (widget), _("_Pending"));
 		break;
 	default:
 		gtk_widget_set_visible (widget, FALSE);
@@ -106,7 +106,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "suggested-action");
 		/* TRANSLATORS: button text in the header when an application
 		 * can be installed */
-		gtk_button_set_label (GTK_BUTTON (widget), _("Install"));
+		gtk_button_set_label (GTK_BUTTON (widget), _("_Install"));
 		break;
 	case GS_APP_STATE_QUEUED:
 		gtk_widget_set_visible (widget, FALSE);
@@ -117,7 +117,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "suggested-action");
 		/* TRANSLATORS: button text in the header when an application
 		 * is in the process of being installed */
-		gtk_button_set_label (GTK_BUTTON (widget), _("Installing"));
+		gtk_button_set_label (GTK_BUTTON (widget), _("_Installing"));
 		break;
 	case GS_APP_STATE_UNKNOWN:
 	case GS_APP_STATE_INSTALLED:
@@ -144,20 +144,20 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 			gtk_widget_set_sensitive (widget, TRUE);
 			gtk_style_context_add_class (gtk_widget_get_style_context (widget), "destructive-action");
 			/* TRANSLATORS: button text in the header when an application can be erased */
-			gtk_button_set_label (GTK_BUTTON (widget), _("Remove"));
+			gtk_button_set_label (GTK_BUTTON (widget), _("_Remove"));
 			break;
 		case GS_APP_STATE_REMOVING:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, FALSE);
 			gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
 			/* TRANSLATORS: button text in the header when an application can be installed */
-			gtk_button_set_label (GTK_BUTTON (widget), _("Removing"));
+			gtk_button_set_label (GTK_BUTTON (widget), _("_Removing"));
 			break;
 		case GS_APP_STATE_QUEUED:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, TRUE);
 			gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
-			gtk_button_set_label (GTK_BUTTON (widget), _("Cancel"));
+			gtk_button_set_label (GTK_BUTTON (widget), _("_Cancel"));
 			break;
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_INSTALLING:
