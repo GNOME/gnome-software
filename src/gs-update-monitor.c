@@ -165,7 +165,7 @@ check_offline_update_cb (gpointer user_data)
 
 	notification = g_notification_new (title);
 	g_notification_set_body (notification, message);
-	icon = g_themed_icon_new ("software-update-urgent-symbolic");
+	icon = g_themed_icon_new ("gnome-software-symbolic");
 	g_notification_set_icon (notification, icon);
 	g_object_unref (icon);
 	if (success)
