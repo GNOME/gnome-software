@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-11-26 08:23+0000\n"
-"PO-Revision-Date: 2013-12-07 23:28+0100\n"
+"POT-Creation-Date: 2013-12-09 16:52+0000\n"
+"PO-Revision-Date: 2013-12-10 11:42+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -47,7 +47,7 @@ msgstr ""
 msgid "Application Folders"
 msgstr "Složky aplikací"
 
-#: ../src/app-folder-dialog.ui.h:2
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-shell-details.c:160
 msgid "_Cancel"
 msgstr "_Zrušit"
 
@@ -73,7 +73,7 @@ msgstr "U_končit"
 #. * where we are showing the application was installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:951
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:952
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Nainstalováno"
@@ -122,25 +122,21 @@ msgstr "Restartovat a instalovat"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#. TRANSLATORS: button text in the header when an application
-#. * can be installed
 #: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:193
-#: ../src/gs-shell-details.c:109
 msgid "Install"
 msgstr "Instalovat"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
-#. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
 #: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:202
-#: ../src/gs-shell-details.c:147 ../src/gs-shell-details.c:829
-#: ../src/gs-shell-installed.c:204 ../src/gs-shell-search.c:164
+#: ../src/gs-shell-details.c:830 ../src/gs-shell-installed.c:204
+#: ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Odebrat"
 
 #: ../src/gnome-software.ui.h:14
-#: ../src/plugins/gs-plugin-hardcoded-popular.c:227
+#: ../src/plugins/gs-plugin-hardcoded-popular.c:228
 msgid "Featured"
 msgstr "Důležité"
 
@@ -192,7 +188,7 @@ msgstr "Verze"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gnome-software.ui.h:28 ../src/gs-shell-details.c:956
+#: ../src/gnome-software.ui.h:28 ../src/gs-shell-details.c:957
 msgid "Updated"
 msgstr "Aktualizováno"
 
@@ -293,29 +289,25 @@ msgstr "Navštívit webové stránky"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-widget.c:184 ../src/gs-shell-details.c:160
-#: ../src/gs-shell-installed.c:590
+#: ../src/gs-app-widget.c:184 ../src/gs-shell-installed.c:590
 msgid "Cancel"
 msgstr "Zrušit"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:187 ../src/gs-shell-details.c:93
+#: ../src/gs-app-widget.c:187
 msgid "Pending"
 msgstr "Čeká na zpracování"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#. TRANSLATORS: button text in the header when an application
-#. * is in the process of being installed
-#: ../src/gs-app-widget.c:213 ../src/gs-shell-details.c:120
+#: ../src/gs-app-widget.c:213
 msgid "Installing"
 msgstr "Instaluje se"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-app-widget.c:222 ../src/gs-shell-details.c:154
+#: ../src/gs-app-widget.c:222
 msgid "Removing"
 msgstr "Odebírá se"
 
@@ -489,6 +481,37 @@ msgstr "Snímek není k dispozici"
 msgid "Screenshot"
 msgstr "Snímek"
 
+#: ../src/gs-shell-details.c:93
+#| msgid "Pending"
+msgid "_Pending"
+msgstr "Čeká na z_pracování"
+
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gs-shell-details.c:109
+#| msgid "Install"
+msgid "_Install"
+msgstr "_Instalovat"
+
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-shell-details.c:120
+#| msgid "Installing"
+msgid "_Installing"
+msgstr "_Instaluje se"
+
+#. TRANSLATORS: button text in the header when an application can be erased
+#: ../src/gs-shell-details.c:147
+#| msgid "Remove"
+msgid "_Remove"
+msgstr "Odeb_rat"
+
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-shell-details.c:154
+#| msgid "Removing"
+msgid "_Removing"
+msgstr "Odebí_rá se"
+
 #. TRANSLATORS: this is where the licence is not known
 #. TRANSLATORS: this is where the version is not known
 #. TRANSLATORS: this is where the size is not known
@@ -496,7 +519,7 @@ msgstr "Snímek"
 #. * where we are showing that something happened to the
 #. * application but we don't know what
 #: ../src/gs-shell-details.c:528 ../src/gs-shell-details.c:547
-#: ../src/gs-shell-details.c:557 ../src/gs-shell-details.c:962
+#: ../src/gs-shell-details.c:557 ../src/gs-shell-details.c:963
 msgid "Unknown"
 msgstr "Neznámá"
 
@@ -524,14 +547,14 @@ msgstr "Žádná"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:814 ../src/gs-shell-installed.c:189
+#: ../src/gs-shell-details.c:815 ../src/gs-shell-installed.c:189
 #: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Opravdu chcete odebrat %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:826 ../src/gs-shell-installed.c:201
+#: ../src/gs-shell-details.c:827 ../src/gs-shell-installed.c:201
 #: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -541,7 +564,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:945
+#: ../src/gs-shell-details.c:946
 msgid "Removed"
 msgstr "Odebráno"
 
@@ -597,24 +620,24 @@ msgstr[0] "Důležitá aktualizace OS byla nainstalována."
 msgstr[1] "Důležité aktualizace OS byly nainstalovány."
 msgstr[2] "Důležité aktualizace OS byly nainstalovány."
 
-#: ../src/gs-update-monitor.c:161
+#: ../src/gs-update-monitor.c:158
 msgid "Software Updates Failed"
 msgstr "Aktualizace softwaru selhaly"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:163
+#: ../src/gs-update-monitor.c:160
 msgid "An important OS update failed to be installed."
 msgstr "Selhala instalace důležité aktualizace OS."
 
-#: ../src/gs-update-monitor.c:172
+#: ../src/gs-update-monitor.c:169
 msgid "Review"
 msgstr "Souhrn"
 
-#: ../src/gs-update-monitor.c:174
+#: ../src/gs-update-monitor.c:171
 msgid "Show Details"
 msgstr "Zobrazit podrobnosti"
 
-#: ../src/gs-update-monitor.c:175
+#: ../src/gs-update-monitor.c:172
 msgid "OK"
 msgstr "Budiž"
 
