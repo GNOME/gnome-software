@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-11-24 21:27+0000\n"
-"PO-Revision-Date: 2013-11-25 16:50+0100\n"
+"POT-Creation-Date: 2013-12-09 16:52+0000\n"
+"PO-Revision-Date: 2013-12-10 12:50+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n!=1);\n"
-"X-Generator: Gtranslator 2.91.6\n"
+"X-Generator: Gtranslator 2.91.5\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "Application manager for GNOME"
@@ -48,8 +48,7 @@ msgstr ""
 msgid "Application Folders"
 msgstr "Carpetas de aplicaciones"
 
-#: ../src/app-folder-dialog.ui.h:2
-#| msgid "Cancel"
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-shell-details.c:160
 msgid "_Cancel"
 msgstr "_Cancelar"
 
@@ -75,7 +74,7 @@ msgstr "_Salir"
 #. * where we are showing the application was installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:951
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:952
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalado"
@@ -124,25 +123,21 @@ msgstr "Reiniciar e instalar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#. TRANSLATORS: button text in the header when an application
-#. * can be installed
 #: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:193
-#: ../src/gs-shell-details.c:109
 msgid "Install"
 msgstr "Instalar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
-#. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
 #: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:202
-#: ../src/gs-shell-details.c:147 ../src/gs-shell-details.c:829
-#: ../src/gs-shell-installed.c:204 ../src/gs-shell-search.c:164
+#: ../src/gs-shell-details.c:830 ../src/gs-shell-installed.c:204
+#: ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Eliminar"
 
 #: ../src/gnome-software.ui.h:14
-#: ../src/plugins/gs-plugin-hardcoded-popular.c:227
+#: ../src/plugins/gs-plugin-hardcoded-popular.c:228
 msgid "Featured"
 msgstr "Destacado"
 
@@ -194,7 +189,7 @@ msgstr "Versión"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gnome-software.ui.h:28 ../src/gs-shell-details.c:956
+#: ../src/gnome-software.ui.h:28 ../src/gs-shell-details.c:957
 msgid "Updated"
 msgstr "Actualizado"
 
@@ -296,29 +291,25 @@ msgstr "Visitar la página web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-widget.c:184 ../src/gs-shell-details.c:160
-#: ../src/gs-shell-installed.c:590
+#: ../src/gs-app-widget.c:184 ../src/gs-shell-installed.c:590
 msgid "Cancel"
 msgstr "Cancelar"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:187 ../src/gs-shell-details.c:93
+#: ../src/gs-app-widget.c:187
 msgid "Pending"
 msgstr "Pendiente"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#. TRANSLATORS: button text in the header when an application
-#. * is in the process of being installed
-#: ../src/gs-app-widget.c:213 ../src/gs-shell-details.c:120
+#: ../src/gs-app-widget.c:213
 msgid "Installing"
 msgstr "Instalando"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-app-widget.c:222 ../src/gs-shell-details.c:154
+#: ../src/gs-app-widget.c:222
 msgid "Removing"
 msgstr "Quitando"
 
@@ -493,6 +484,37 @@ msgstr "Captura de pantalla no disponible"
 msgid "Screenshot"
 msgstr "Captura de pantalla"
 
+#: ../src/gs-shell-details.c:93
+#| msgid "Pending"
+msgid "_Pending"
+msgstr "_Pendiente"
+
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gs-shell-details.c:109
+#| msgid "Install"
+msgid "_Install"
+msgstr "_Instalar"
+
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-shell-details.c:120
+#| msgid "Installing"
+msgid "_Installing"
+msgstr "_Instalando"
+
+#. TRANSLATORS: button text in the header when an application can be erased
+#: ../src/gs-shell-details.c:147
+#| msgid "Remove"
+msgid "_Remove"
+msgstr "_Quitar"
+
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-shell-details.c:154
+#| msgid "Removing"
+msgid "_Removing"
+msgstr "_Quitando"
+
 #. TRANSLATORS: this is where the licence is not known
 #. TRANSLATORS: this is where the version is not known
 #. TRANSLATORS: this is where the size is not known
@@ -500,7 +522,7 @@ msgstr "Captura de pantalla"
 #. * where we are showing that something happened to the
 #. * application but we don't know what
 #: ../src/gs-shell-details.c:528 ../src/gs-shell-details.c:547
-#: ../src/gs-shell-details.c:557 ../src/gs-shell-details.c:962
+#: ../src/gs-shell-details.c:557 ../src/gs-shell-details.c:963
 msgid "Unknown"
 msgstr "Desconocido"
 
@@ -528,14 +550,14 @@ msgstr "Ninguna"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:814 ../src/gs-shell-installed.c:189
+#: ../src/gs-shell-details.c:815 ../src/gs-shell-installed.c:189
 #: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "¿Está seguro de querer quitar %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:826 ../src/gs-shell-installed.c:201
+#: ../src/gs-shell-details.c:827 ../src/gs-shell-installed.c:201
 #: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -543,7 +565,7 @@ msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo.
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:945
+#: ../src/gs-shell-details.c:946
 msgid "Removed"
 msgstr "Eliminado"
 
@@ -599,24 +621,24 @@ msgid_plural "Important OS updates have been installed."
 msgstr[0] "Se ha instalado una actualización del sistema operativo importante."
 msgstr[1] "Se han instalado actualizaciones del sistema operativo importantes."
 
-#: ../src/gs-update-monitor.c:161
+#: ../src/gs-update-monitor.c:158
 msgid "Software Updates Failed"
 msgstr "Falló la actualización de software"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:163
+#: ../src/gs-update-monitor.c:160
 msgid "An important OS update failed to be installed."
 msgstr "Falló al instalar una actualización importante del sistema operativo."
 
-#: ../src/gs-update-monitor.c:172
+#: ../src/gs-update-monitor.c:169
 msgid "Review"
 msgstr "Revisión"
 
-#: ../src/gs-update-monitor.c:174
+#: ../src/gs-update-monitor.c:171
 msgid "Show Details"
 msgstr "Mostrar detalles"
 
-#: ../src/gs-update-monitor.c:175
+#: ../src/gs-update-monitor.c:172
 msgid "OK"
 msgstr "Aceptar"
 
