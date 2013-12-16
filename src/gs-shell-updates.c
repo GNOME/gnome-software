@@ -90,7 +90,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates_counter"));
-	if (list != NULL) {
+	if (list != NULL && g_list_length (list) > 0) {
 		gchar *text;
 		text = g_strdup_printf ("%d", g_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
