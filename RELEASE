@@ -2,7 +2,7 @@ GNOME Software Release Notes
 
 1. Write NEWS entries for gnome-software in the same format as usual.
 
-Version 3.11.3
+Version 3.11.4
 ~~~~~~~~~~~~~~
 Released: 2013-xx-xx
 
@@ -10,12 +10,12 @@ Released: 2013-xx-xx
 * New Features:
 * Bugfix:
 
-git shortlog GNOME_SOFTWARE_3_11_2.. | grep -i -v trivial | grep -v Merge | uniq > NEWS.new
+git shortlog GNOME_SOFTWARE_3_11_3.. | grep -i -v trivial | grep -v Merge | uniq > NEWS.new
 
 3. Commit changes in gnome-software git:
 
-git commit -a -m "Release version 3.11.3"
-git tag -s GNOME_SOFTWARE_3_11_3 -m "==== Version 3.11.3 ===="
+git commit -a -m "Release version 3.11.4"
+git tag -s GNOME_SOFTWARE_3_11_4 -m "==== Version 3.11.4 ===="
 <enter password>
 git push --tags
 git push
