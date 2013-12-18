@@ -35,9 +35,10 @@ struct _GsAppFolderDialogPrivate
 	GtkWidget	 *header;
 	GtkWidget	 *cancel_button;
 	GtkWidget 	 *done_button;
-	GtkWidget	 *description_label;
 	GtkWidget	 *app_folder_list;
-	GtkWidget	 *new_folder_button;
+	GtkWidget	 *none_selected;
+	GtkSizeGroup     *rows;
+	GtkListBoxRow	 *new_folder_button;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppFolderDialog, gs_app_folder_dialog, GTK_TYPE_WINDOW)
@@ -54,6 +55,7 @@ gs_app_folder_dialog_destroy (GtkWidget *widget)
 	priv->apps = NULL;
 
 	g_clear_object (&priv->folders);
+	g_clear_object (&priv->rows);
 
 	GTK_WIDGET_CLASS (gs_app_folder_dialog_parent_class)->destroy (widget);
 }
@@ -70,9 +72,20 @@ apply_changes (GsAppFolderDialog *dialog)
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
 	GtkListBoxRow *row;
 	const gchar *folder;
-	GList *l;
+	GList *children, *l;
 	
-	row = gtk_list_box_get_selected_row (GTK_LIST_BOX (priv->app_folder_list));
+	children = gtk_container_get_children (GTK_CONTAINER (priv->app_folder_list));
+	row = NULL;
+	for (l = children; l; l = l->next) {
+		GtkWidget *child;
+		child = gtk_bin_get_child (GTK_BIN (l->data));
+		if (GTK_IS_TOGGLE_BUTTON (child) &&
+		    gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (child))) {
+			row = l->data;
+			break;
+		}
+	}
+
 	if (row == NULL)
 		folder = NULL;
 	else
@@ -106,6 +119,8 @@ delete_row (GtkWidget *child, GsAppFolderDialog *dialog)
 	gs_folders_remove_folder (priv->folders, folder);
 
 	gtk_container_remove (GTK_CONTAINER (priv->app_folder_list), row);
+
+	gtk_widget_show (GTK_WIDGET (priv->new_folder_button));
 }
 
 static void
@@ -128,49 +143,55 @@ done_editing (GtkEntry *entry, GsAppFolderDialog *dialog)
 
 	label = gtk_label_new (folder);
 	gtk_widget_show (label);
-	gtk_widget_set_margin_start (label, 10);
-	gtk_widget_set_margin_end (label, 10);
-	gtk_widget_set_halign (label, GTK_ALIGN_START);
 	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-
-	gtk_box_pack_start (GTK_BOX (parent), label, TRUE, TRUE, 0);
-	gtk_box_reorder_child (GTK_BOX (parent), label, 0);
+	gtk_container_add (GTK_CONTAINER (parent), label);
+	g_object_set (parent, "margin", 10, NULL);
 
 	g_object_set_data_full (G_OBJECT (row), "folder", folder, g_free);
 	gs_folders_add_folder (priv->folders, folder);
+
+	gtk_widget_show (GTK_WIDGET (priv->new_folder_button));
+}
+
+static gboolean
+entry_key_press (GtkWidget *entry, GdkEventKey *event, GsAppFolderDialog *dialog)
+{
+	if (event->keyval == GDK_KEY_Escape) {
+		delete_row (GTK_WIDGET (entry), dialog);
+		return TRUE;
+	}
+
+	return FALSE;
 }
 
 static void
 new_folder_cb (GsAppFolderDialog *dialog)
 {
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
-	GtkWidget *row;
-	GtkWidget *box;
-	GtkWidget *entry;
-	GtkWidget *button;
+	GtkWidget *row, *button, *entry;
 
-	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
+        button = gtk_radio_button_new (gtk_radio_button_get_group (GTK_RADIO_BUTTON (priv->none_selected)));
+	gtk_widget_set_margin_start (button, 10);
+	gtk_widget_set_margin_end (button, 10);
+	gtk_widget_set_halign (button, GTK_ALIGN_FILL);
+	gtk_widget_set_valign (button, GTK_ALIGN_FILL);
+
 	entry = gtk_entry_new ();
-	gtk_widget_set_margin_start (entry, 10);
-	gtk_widget_set_margin_end (entry, 10);
-	gtk_widget_set_halign (entry, GTK_ALIGN_START);
-	gtk_box_pack_start (GTK_BOX (box), entry, TRUE, TRUE, 0);
+	gtk_container_add (GTK_CONTAINER (button), entry);
 
-	button = gtk_button_new_from_icon_name ("edit-delete-symbolic", GTK_ICON_SIZE_MENU);
-	gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-	gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
-	
 	row = gtk_list_box_row_new ();
-	gtk_container_add (GTK_CONTAINER (row), box);
+	gtk_container_add (GTK_CONTAINER (row), button);
 
-	g_signal_connect (button, "clicked",
-			  G_CALLBACK (delete_row), dialog);
+	g_signal_connect (entry, "key-press-event",
+			  G_CALLBACK (entry_key_press), dialog);
 	g_signal_connect (entry, "activate",
 			  G_CALLBACK (done_editing), dialog);
 
 	gtk_widget_show_all (row);
+	gtk_list_box_insert (GTK_LIST_BOX (priv->app_folder_list), row, gtk_list_box_row_get_index (priv->new_folder_button));
+	gtk_size_group_add_widget (priv->rows, row);
 
-	gtk_list_box_insert (GTK_LIST_BOX (priv->app_folder_list), row, -1);
+	gtk_widget_hide (GTK_WIDGET (priv->new_folder_button));
 
 	gtk_widget_grab_focus (entry);
 }
@@ -200,15 +221,14 @@ gs_app_folder_dialog_init (GsAppFolderDialog *dialog)
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
 
 	priv->folders = gs_folders_get ();
-
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	g_signal_connect_swapped (priv->cancel_button, "clicked",
 				  G_CALLBACK (cancel_cb), dialog);
 	g_signal_connect_swapped (priv->done_button, "clicked",
 				  G_CALLBACK (done_cb), dialog);
-	g_signal_connect_swapped (priv->new_folder_button, "clicked",
-				  G_CALLBACK (new_folder_cb), dialog);
+ 	priv->none_selected = gtk_radio_button_new (NULL);
+	priv->rows = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->app_folder_list),
 				      update_header_func, NULL, NULL);
@@ -226,9 +246,7 @@ gs_app_folder_dialog_class_init (GsAppFolderDialogClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, header);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, cancel_button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, done_button);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, description_label);
         gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, app_folder_list);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, new_folder_button);
 }
 
 static GtkWidget *
@@ -236,59 +254,32 @@ create_row (GsAppFolderDialog *dialog, const gchar *folder)
 {
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
 	GtkWidget *row;
-	GtkWidget *box;
-	GtkWidget *label;
 	GtkWidget *button;
-	GString *s;
-	GList *l;
 
-	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
-	label = gtk_label_new (gs_folders_get_folder_name (priv->folders, folder));
-	gtk_widget_set_margin_start (label, 10);
-	gtk_widget_set_margin_end (label, 10);
-	gtk_widget_set_halign (label, GTK_ALIGN_START);
-	gtk_misc_set_alignment (GTK_MISC (label), 0.0, 0.5);
-	gtk_box_pack_start (GTK_BOX (box), label, TRUE, TRUE, 0);
+        button = gtk_radio_button_new_with_label (gtk_radio_button_get_group (GTK_RADIO_BUTTON (priv->none_selected)), gs_folders_get_folder_name (priv->folders, folder));
 
-	s = g_string_new ("");
-	for (l = priv->apps; l; l = l->next) {
-		GsApp *app = l->data;
-		const gchar *app_folder;
+	g_object_set (button, "margin", 10, NULL);
+	gtk_widget_set_halign (button, GTK_ALIGN_FILL);
+	gtk_widget_set_valign (button, GTK_ALIGN_FILL);
 
-		app_folder = gs_folders_get_app_folder (priv->folders, gs_app_get_id (app));
-		if (g_strcmp0 (folder, app_folder) == 0) {
-			if (s->len > 0)
-				g_string_append (s, ", ");
-			g_string_append (s, gs_app_get_name (app));
-		}
-	}
-	if (s->len > 0) {
-		label = gtk_label_new (s->str);
-		gtk_widget_set_margin_start (label, 10);
-		gtk_widget_set_margin_end (label, 10);
-		gtk_label_set_ellipsize (GTK_LABEL (label), PANGO_ELLIPSIZE_END);
-		gtk_label_set_max_width_chars (GTK_LABEL (label), 30);
-		gtk_widget_set_halign (label, GTK_ALIGN_END);
-		gtk_misc_set_alignment (GTK_MISC (label), 1.0, 0.5);
-		gtk_box_pack_start (GTK_BOX (box), label, FALSE, TRUE, 0);
-	}
-	g_string_free (s, TRUE);
-
-	button = gtk_button_new_from_icon_name ("edit-delete-symbolic", GTK_ICON_SIZE_MENU);
-	gtk_button_set_relief (GTK_BUTTON (button), GTK_RELIEF_NONE);
-	gtk_box_pack_start (GTK_BOX (box), button, FALSE, FALSE, 0);
-	
 	row = gtk_list_box_row_new ();
-	gtk_container_add (GTK_CONTAINER (row), box);
+	gtk_container_add (GTK_CONTAINER (row), button);
 
 	gtk_widget_show_all (row);
 
 	g_object_set_data_full (G_OBJECT (row), "folder", g_strdup (folder), g_free);
 
-	g_signal_connect (button, "clicked",
-			  G_CALLBACK (delete_row), dialog);
+	gtk_size_group_add_widget (priv->rows, row);
 
 	return row;	
+}
+
+static void
+set_apps (GsAppFolderDialog *dialog, GList *apps)
+{
+       GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
+
+       priv->apps = g_list_copy (apps);
 }
 
 static void
@@ -300,46 +291,45 @@ populate_list (GsAppFolderDialog *dialog)
 
 	folders = gs_folders_get_folders (priv->folders);
 	for (i = 0; folders[i]; i++) {
-		gtk_list_box_insert (GTK_LIST_BOX (priv->app_folder_list), create_row (dialog, folders[i]), -1);
+		gtk_list_box_insert (GTK_LIST_BOX (priv->app_folder_list), 
+                                     create_row (dialog, folders[i]), -1);
 	}
 	g_free (folders);
 }
 
 static void
-gs_app_folder_dialog_set_apps (GsAppFolderDialog *dialog,
-			       GList *apps)
+row_activated (GtkListBox *list_box, GtkListBoxRow *row, GsAppFolderDialog *dialog)
 {
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
-	gchar *label;
-	const gchar *app1, *app2, *app3;
 
-	priv->apps = g_list_copy (apps);
-
-	switch (g_list_length (priv->apps)) {
-	case 0:
-		label = g_strdup (_("Add or remove folders. Your application folders can be found in the Activities Overview."));
-		break;
-	case 1:
-		app1 = gs_app_get_name (GS_APP (priv->apps->data));
-		label = g_strdup_printf (_("Choose a folder for %s. Your application folders can be found in the Activities Overview."), app1);
-		break;
-	case 2:
-		app1 = gs_app_get_name (GS_APP (priv->apps->data));
-		app2 = gs_app_get_name (GS_APP (priv->apps->next->data));
-		label = g_strdup_printf (_("Choose a folder for %s and %s. Your application folders can be found in the Activities Overview."), app1, app2);
-		break;
-	case 3:
-		app1 = gs_app_get_name (GS_APP (priv->apps->data));
-		app2 = gs_app_get_name (GS_APP (priv->apps->next->data));
-		app3 = gs_app_get_name (GS_APP (priv->apps->next->next->data));
-		label = g_strdup_printf (_("Choose a folder for %s, %s and %s. Your application folders can be found in the Activities Overview."), app1, app2, app3);
-		break;
-	default:
-		label = g_strdup (_("Choose a folder for the selected applications. Your application folders can be found in the Activities Overview."));
-		break;
+	if (row == priv->new_folder_button)
+		new_folder_cb (dialog);
+	else {
+		GtkWidget *child;
+		child = gtk_bin_get_child (GTK_BIN (row));
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (child), TRUE);
 	}
-	gtk_label_set_label (GTK_LABEL (priv->description_label), label);
-	g_free (label);
+}
+
+static void
+add_new_folder_row (GsAppFolderDialog *dialog)
+{
+	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
+	GtkWidget *row, *button;
+
+	button = gtk_image_new_from_icon_name ("list-add-symbolic", GTK_ICON_SIZE_MENU);
+	gtk_widget_set_halign (button, GTK_ALIGN_FILL);
+	gtk_widget_set_valign (button, GTK_ALIGN_FILL);
+	row = gtk_list_box_row_new ();
+	priv->new_folder_button = GTK_LIST_BOX_ROW (row);
+	gtk_container_add (GTK_CONTAINER (row), button);
+	gtk_list_box_insert (GTK_LIST_BOX (priv->app_folder_list), row, -1);
+	gtk_size_group_add_widget (priv->rows, row);
+
+	g_signal_connect (priv->app_folder_list, "row-activated",
+			  G_CALLBACK (row_activated), dialog);
+
+	gtk_widget_show_all (row);
 }
 
 GtkWidget *
@@ -350,8 +340,9 @@ gs_app_folder_dialog_new (GtkWindow *parent, GList *apps)
 	dialog = g_object_new (GS_TYPE_APP_FOLDER_DIALOG,
 			       "transient-for", parent,
 			       NULL);
-	gs_app_folder_dialog_set_apps (dialog, apps);
+        set_apps (dialog, apps);
 	populate_list (dialog);
+ 	add_new_folder_row (dialog);
 
 	return GTK_WIDGET (dialog);
 }
