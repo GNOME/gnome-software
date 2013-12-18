@@ -109,7 +109,7 @@ gs_offline_updates_cancel (void)
 }
 
 #define PK_OFFLINE_UPDATE_RESULTS_GROUP		"PackageKit Offline Update Results"
-#define PK_OFFLINE_UPDATE_RESULTS_FILENAME	"/var/lib/PackageKit/offline-update-completed"
+#define PK_OFFLINE_UPDATE_RESULTS_FILENAME	"/var/lib/PackageKit/offline-update-competed"
 
 gboolean
 gs_offline_updates_get_status (gboolean  *success,
