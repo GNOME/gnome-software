@@ -85,17 +85,28 @@ gs_folders_class_init (GsFoldersClass *klass)
 	g_type_class_add_private (klass, sizeof (GsFoldersPrivate));
 }
 
-static const gchar *
-lookup_folder_name (const gchar *id)
+static gchar *
+lookup_folder_name (GsFolders *folders, const gchar *id)
 {
-	/* FIXME - we should consult directory files here.
-  	 * The one hardcoded entry here is just to test
-  	 * id-name separation.
-  	 */
-	if (g_strcmp0 (id, "other") == 0)
-		return "Sundry";
+	gchar *name = NULL;
 
-	return id;
+	if (g_str_has_suffix (id, ".directory")) {
+		GKeyFile *key_file;
+		gchar *file;
+		gchar *path;
+
+		file = g_build_filename ("desktop-directories", id, NULL);
+		key_file = g_key_file_new ();
+		if (g_key_file_load_from_data_dirs (key_file, file, &path, G_KEY_FILE_NONE, NULL)) {
+          		name = g_key_file_get_locale_string (key_file, "Desktop Entry", "Name", NULL, NULL);
+			g_free (path);
+		}
+
+		g_free (file);
+		g_key_file_unref (key_file);
+	}
+		
+	return name;
 }
 
 static void
@@ -108,6 +119,7 @@ load (GsFolders *folders)
 	GsFolder *folder;
 	gchar *app;
 	guint i;
+	gchar *name;
 
 	folders->priv->folders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)gs_folder_free);
 	folders->priv->apps = g_hash_table_new (g_str_hash, g_str_equal);
@@ -116,7 +128,9 @@ load (GsFolders *folders)
 	g_variant_iter_init (&iter, v);
 	while (g_variant_iter_next (&iter, "{&sas}", &id, &apps)) {
 
-		folder = gs_folder_new (id, lookup_folder_name (id));
+		name = lookup_folder_name (folders, id);
+		folder = gs_folder_new (id, name ? name : id);
+		g_free (name);
 		while (g_variant_iter_next (apps, "s", &app)) {
 			g_ptr_array_add (folder->apps, app);
 		}
