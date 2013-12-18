@@ -33,27 +33,41 @@ child_exit_cb (GPid pid, gint status, gpointer user_data)
 	g_spawn_close_pid (pid);
 }
 
+
+static gboolean
+gs_spawn_pkexec (const gchar *command, const gchar *parameter, GError **error)
+{
+	GPid pid;
+	const gchar *argv[4];
+	gboolean ret;
+
+	argv[0] = "pkexec";
+	argv[1] = command;
+	argv[2] = parameter;
+	argv[3] = NULL;
+	g_debug ("calling %s %s %s",
+		 argv[0], argv[1], argv[2] != NULL ? argv[2] : "");
+	ret = g_spawn_async (NULL, (gchar**)argv, NULL,
+			     G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
+			     NULL, NULL, &pid, error);
+	if (!ret)
+		return FALSE;
+	g_child_watch_add (pid, child_exit_cb, NULL);
+	return TRUE;
+}
+
 void
 gs_offline_updates_clear_status (void)
 {
 	gboolean ret;
 	GError *error = NULL;
-	const gchar *argv[3];
-	GPid pid;
 
-	argv[0] = "pkexec";
-	argv[1] = LIBEXECDIR "/pk-clear-offline-update";
-	argv[2] = NULL;
-	ret = g_spawn_async (NULL, (gchar**)argv, NULL,
-			     G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
-			     NULL, NULL, &pid, &error);
+	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-clear-offline-update", NULL, &error);
 	if (!ret) {
 		g_warning ("Failure clearing offline update message: %s",
 			   error->message);
 		g_error_free (error);
-		return;
 	}
-	g_child_watch_add (pid, child_exit_cb, NULL);
 }
 
 void
@@ -61,19 +75,10 @@ gs_offline_updates_trigger (void)
 {
 	gboolean ret;
 	GError *error = NULL;
-	const gchar *argv[3];
 	GDateTime *now;
 	GSettings *settings;
 
-	argv[0] = "pkexec";
-	argv[1] = LIBEXECDIR "/pk-trigger-offline-update";
-	argv[2] = NULL;
-
-	g_debug ("calling %s %s", argv[0], argv[1]);
-
-	ret = g_spawn_sync (NULL, (gchar**)argv, NULL,
-		 	    G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
-			    NULL, NULL, NULL, NULL, NULL, &error);
+	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-trigger-offline-update", NULL, &error);
 	if (!ret) {
 		g_warning ("Failure triggering offline update: %s",
 			   error->message);
@@ -93,18 +98,9 @@ gs_offline_updates_cancel (void)
 {
 	gboolean ret;
 	GError *error = NULL;
-	const gchar *argv[4];
 
-	argv[0] = "pkexec";
-	argv[1] = LIBEXECDIR "/pk-trigger-offline-update";
-	argv[2] = "--cancel";
-	argv[3] = NULL;
-
-	g_debug ("calling %s %s %s", argv[0], argv[1], argv[2]);
-
-	ret = g_spawn_sync (NULL, (gchar**)argv, NULL,
-		 	    G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
-			    NULL, NULL, NULL, NULL, NULL, &error);
+	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-trigger-offline-update",
+			       "--cancel", &error);
 	if (!ret) {
 		g_warning ("Failure cancelling offline update: %s",
 			   error->message);
