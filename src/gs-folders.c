@@ -128,18 +128,19 @@ load (GsFolders *folders)
 	g_variant_iter_init (&iter, v);
 	while (g_variant_iter_next (&iter, "{&sas}", &id, &apps)) {
 
-		name = lookup_folder_name (folders, id);
-		folder = gs_folder_new (id, name ? name : id);
-		g_free (name);
-		while (g_variant_iter_next (apps, "s", &app)) {
-			g_ptr_array_add (folder->apps, app);
-		}
+		if (g_variant_iter_n_children (apps) > 0) {
+			name = lookup_folder_name (folders, id);
+			folder = gs_folder_new (id, name ? name : id);
+			g_free (name);
+			while (g_variant_iter_next (apps, "s", &app)) {
+				g_ptr_array_add (folder->apps, app);
+			}
 		
-		g_hash_table_insert (folders->priv->folders, (gpointer)folder->id, folder);
-		for (i = 0; i < folder->apps->len; i++) {
-			g_hash_table_insert (folders->priv->apps, g_ptr_array_index (folder->apps, i), folder);
+			g_hash_table_insert (folders->priv->folders, (gpointer)folder->id, folder);
+			for (i = 0; i < folder->apps->len; i++) {
+				g_hash_table_insert (folders->priv->apps, g_ptr_array_index (folder->apps, i), folder);
+			}
 		}
-
 		g_variant_iter_free (apps);
 	}
 	g_variant_unref (v);
@@ -155,10 +156,12 @@ save (GsFolders *folders)
 	g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sas}"));
 	g_hash_table_iter_init (&iter, folders->priv->folders);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&folder)) {
-		g_ptr_array_add (folder->apps, NULL);
-		g_variant_builder_add (&builder, "{s^as}",
-				       folder->id, folder->apps->pdata);
-		g_ptr_array_remove (folder->apps, NULL);
+		if (folder->apps->len > 0) {
+			g_ptr_array_add (folder->apps, NULL);
+			g_variant_builder_add (&builder, "{s^as}",
+					       folder->id, folder->apps->pdata);
+			g_ptr_array_remove (folder->apps, NULL);
+		}
 	}
 
 	g_settings_set_value (folders->priv->settings, "app-folders", g_variant_builder_end (&builder));
