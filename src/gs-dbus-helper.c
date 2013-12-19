@@ -44,6 +44,12 @@ G_DEFINE_TYPE (GsDbusHelper, gs_dbus_helper, G_TYPE_OBJECT)
 
 typedef struct {
 	GDBusMethodInvocation	*invocation;
+	gboolean		 show_confirm_deps;
+	gboolean		 show_confirm_install;
+	gboolean		 show_confirm_search;
+	gboolean		 show_finished;
+	gboolean		 show_progress;
+	gboolean		 show_warning;
 } GsDbusHelperTask;
 
 /**
@@ -53,6 +59,45 @@ static void
 gs_dbus_helper_task_free (GsDbusHelperTask *dtask)
 {
 	g_free (dtask);
+}
+
+/**
+ * gs_dbus_helper_task_set_interaction:
+ **/
+static void
+gs_dbus_helper_task_set_interaction (GsDbusHelperTask *dtask, const gchar *interaction)
+{
+	gchar **interactions;
+	guint i;
+
+	interactions = g_strsplit (interaction, ",", -1);
+	for (i = 0; interactions[i] != NULL; i++) {
+		if (g_strcmp0 (interactions[i], "show-warnings") == 0)
+			dtask->show_warning = TRUE;
+		else if (g_strcmp0 (interactions[i], "hide-warnings") == 0)
+			dtask->show_warning = FALSE;
+		else if (g_strcmp0 (interactions[i], "show-progress") == 0)
+			dtask->show_progress = TRUE;
+		else if (g_strcmp0 (interactions[i], "hide-progress") == 0)
+			dtask->show_progress = FALSE;
+		else if (g_strcmp0 (interactions[i], "show-finished") == 0)
+			dtask->show_finished = TRUE;
+		else if (g_strcmp0 (interactions[i], "hide-finished") == 0)
+			dtask->show_finished = FALSE;
+		else if (g_strcmp0 (interactions[i], "show-confirm-search") == 0)
+			dtask->show_confirm_search = TRUE;
+		else if (g_strcmp0 (interactions[i], "hide-confirm-search") == 0)
+			dtask->show_confirm_search = FALSE;
+		else if (g_strcmp0 (interactions[i], "show-confirm-install") == 0)
+			dtask->show_confirm_install = TRUE;
+		else if (g_strcmp0 (interactions[i], "hide-confirm-install") == 0)
+			dtask->show_confirm_install = FALSE;
+		else if (g_strcmp0 (interactions[i], "show-confirm-deps") == 0)
+			dtask->show_confirm_deps = TRUE;
+		else if (g_strcmp0 (interactions[i], "hide-confirm-deps") == 0)
+			dtask->show_confirm_deps = FALSE;
+	}
+	g_strfreev (interactions);
 }
 
 /**
@@ -195,6 +240,7 @@ gs_dbus_helper_handle_method_call_query (GsDbusHelper *dbus_helper,
 		names = g_strsplit (name, "|", 1);
 		dtask = g_new0 (GsDbusHelperTask, 1);
 		dtask->invocation = invocation;
+		gs_dbus_helper_task_set_interaction (dtask, interaction);
 		pk_client_resolve_async (PK_CLIENT (dbus_helper->task),
 					 pk_bitfield_value (PK_FILTER_ENUM_INSTALLED),
 					 names, NULL,
@@ -207,6 +253,7 @@ gs_dbus_helper_handle_method_call_query (GsDbusHelper *dbus_helper,
 		names = g_strsplit (name, "|", 1);
 		dtask = g_new0 (GsDbusHelperTask, 1);
 		dtask->invocation = invocation;
+		gs_dbus_helper_task_set_interaction (dtask, interaction);
 		names = g_strsplit (name, "&", -1);
 		pk_client_search_files_async (PK_CLIENT (dbus_helper->task),
 					      pk_bitfield_value (PK_FILTER_ENUM_NEWEST),
