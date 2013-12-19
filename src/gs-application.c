@@ -29,6 +29,7 @@
 #include <gtk/gtk.h>
 #include <gio/gdesktopappinfo.h>
 
+#include "gs-dbus-helper.h"
 #include "gs-box.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
@@ -50,6 +51,7 @@ struct _GsApplication {
 	GsShell		*shell;
 	GsUpdateMonitor *update_monitor;
 	GsProxySettings *proxy_settings;
+	GsDbusHelper	*dbus_helper;
 	GsShellSearchProvider *search_provider;
 	GNetworkMonitor *network_monitor;
 };
@@ -423,6 +425,7 @@ gs_application_startup (GApplication *application)
 					 application);
 
 	GS_APPLICATION (application)->proxy_settings = gs_proxy_settings_new ();
+	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
 	gs_application_monitor_updates (GS_APPLICATION (application));
 	gs_application_provide_search (GS_APPLICATION (application));
 	gs_application_monitor_network (GS_APPLICATION (application));
@@ -450,6 +453,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->profile);
 	g_clear_object (&app->search_provider);
 	g_clear_object (&app->network_monitor);
+	g_clear_object (&app->dbus_helper);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->finalize (object);
 }

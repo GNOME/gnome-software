@@ -91,6 +91,8 @@ gnome_software_SOURCES =				\
 gnome_software_service_SOURCES =			\
 	gs-resources.c					\
 	gs-resources.h					\
+	gs-dbus-helper.c				\
+	gs-dbus-helper.h				\
 	gs-utils.c					\
 	gs-utils.h					\
 	gs-app.c					\
