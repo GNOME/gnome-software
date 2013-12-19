@@ -97,7 +97,7 @@ out:
 gdouble
 gs_plugin_get_priority (GsPlugin *plugin)
 {
-	return 1.0f;
+	return 1.2f;
 }
 
 /**
