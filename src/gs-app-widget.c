@@ -281,6 +281,9 @@ gs_app_widget_set_app (GsAppWidget *app_widget, GsApp *app)
 	g_signal_connect_object (app_widget->priv->app, "notify::state",
 				 G_CALLBACK (gs_app_widget_notify_props_changed_cb),
 				 app_widget, 0);
+	g_signal_connect_object (app_widget->priv->app, "notify::rating",
+				 G_CALLBACK (gs_app_widget_notify_props_changed_cb),
+				 app_widget, 0);
 	gs_app_widget_refresh (app_widget);
 }
 

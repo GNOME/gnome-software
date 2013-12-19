@@ -1255,6 +1255,7 @@ gs_app_set_rating (GsApp *app, gint rating)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->priv->rating = rating;
+	g_object_notify (G_OBJECT (app), "rating");
 }
 
 /**
@@ -1275,6 +1276,7 @@ gs_app_set_rating_kind (GsApp *app, GsAppRatingKind rating_kind)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->priv->rating_kind = rating_kind;
+	g_object_notify (G_OBJECT (app), "rating");
 }
 
 /**

@@ -159,8 +159,10 @@ gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
 	priv = gs_star_widget_get_instance_private (star);
 	rating = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button),
 						     "GsStarWidget::value"));
-	if (rating == priv->rating)
+	if (rating == priv->rating &&
+	    priv->rating_kind == GS_APP_RATING_KIND_USER)
 		return;
+	priv->rating_kind = GS_APP_RATING_KIND_USER;
 	priv->rating = rating;
 	g_signal_emit (star, signals[RATING_CHANGED], 0, priv->rating);
 	gs_star_widget_refresh (star);
