@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-widget.h"
+#include "gs-star-widget.h"
 #include "gs-markdown.h"
 #include "gs-utils.h"
 #include "gs-folders.h"
@@ -37,6 +38,7 @@ struct _GsAppWidgetPrivate
 	GtkWidget	*name_box;
 	GtkWidget	*name_label;
 	GtkWidget	*version_label;
+	GtkWidget	*star;
 	GtkWidget	*folder_label;
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
@@ -142,21 +144,32 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 			     gs_app_get_name (priv->app));
 	if (priv->show_update &&
 	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
+		gtk_widget_show (priv->version_label);
+		gtk_widget_hide (priv->star);
 		gtk_label_set_label (GTK_LABEL (priv->version_label),
 				     gs_app_get_update_version_ui (priv->app));
 	} else {
+		gtk_widget_hide (priv->version_label);
+		gtk_widget_show (priv->star);
+		gtk_widget_set_sensitive (priv->star, FALSE);
+		gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
+					   gs_app_get_rating_kind (priv->app),
+					   gs_app_get_rating (priv->app));
 		gtk_label_set_label (GTK_LABEL (priv->version_label),
 				     gs_app_get_version_ui (priv->app));
 	}
 
-	folders = gs_folders_get ();
-	folder = gs_folders_get_app_folder (folders, gs_app_get_id (priv->app));
-	if (folder)
-		folder = gs_folders_get_folder_name (folders, folder);
-	gtk_label_set_label (GTK_LABEL (priv->folder_label), folder);
-	gtk_widget_set_visible (priv->folder_label, folder != NULL);
-
-	g_object_unref (folders);
+	if (priv->show_update) {
+		gtk_widget_hide (priv->folder_label);
+	} else {
+		folders = gs_folders_get ();
+		folder = gs_folders_get_app_folder (folders, gs_app_get_id (priv->app));
+		if (folder)
+			folder = gs_folders_get_folder_name (folders, folder);
+		gtk_label_set_label (GTK_LABEL (priv->folder_label), folder);
+		gtk_widget_set_visible (priv->folder_label, folder != NULL);
+		g_object_unref (folders);
+	}
 
 	if (gs_app_get_pixbuf (priv->app))
 		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image),
@@ -306,6 +319,7 @@ gs_app_widget_class_init (GsAppWidgetClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, name_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, version_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, star);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, folder_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, description_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppWidget, button_box);
