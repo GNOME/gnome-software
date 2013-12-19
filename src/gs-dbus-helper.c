@@ -64,10 +64,10 @@ gs_dbus_helper_progress_cb (PkProgress *progress, PkProgressType type, gpointer 
 }
 
 /**
- * gs_dbus_helper_is_installed_resolve_cb:
+ * gs_dbus_helper_query_is_installed_cb:
  **/
 static void
-gs_dbus_helper_is_installed_resolve_cb (GObject *source, GAsyncResult *res, gpointer data)
+gs_dbus_helper_query_is_installed_cb (GObject *source, GAsyncResult *res, gpointer data)
 {
 	GError *error = NULL;
 	GPtrArray *array = NULL;
@@ -113,29 +113,107 @@ out:
 		g_object_unref (results);
 }
 
+/**
+ * gs_dbus_helper_query_search_file_cb:
+ **/
+static void
+gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointer data)
+{
+	GError *error = NULL;
+	GPtrArray *array = NULL;
+	GsDbusHelperTask *dtask = (GsDbusHelperTask *) data;
+	PkClient *client = PK_CLIENT (source);
+	PkError *error_code = NULL;
+	PkInfoEnum info;
+	PkPackage *item;
+	PkResults *results = NULL;
+
+	/* get the results */
+	results = pk_client_generic_finish (client, res, &error);
+	if (results == NULL) {
+		g_dbus_method_invocation_return_error (dtask->invocation,
+						       G_IO_ERROR,
+						       G_IO_ERROR_INVALID_ARGUMENT,
+						       "failed to search: %s",
+						       error->message);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* check error code */
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		g_dbus_method_invocation_return_error (dtask->invocation,
+						       G_IO_ERROR,
+						       G_IO_ERROR_INVALID_ARGUMENT,
+						       "failed to search: %s",
+						       pk_error_get_details (error_code));
+		goto out;
+	}
+
+	/* get results */
+	array = pk_results_get_package_array (results);
+	if (array->len == 0) {
+		//TODO: org.freedesktop.PackageKit.Query.unknown
+		g_dbus_method_invocation_return_error (dtask->invocation,
+						       G_IO_ERROR,
+						       G_IO_ERROR_INVALID_ARGUMENT,
+						       "failed to find any packages");
+		goto out;
+	}
+
+	/* get first item */
+	item = g_ptr_array_index (array, 0);
+	info = pk_package_get_info (item);
+	g_dbus_method_invocation_return_value (dtask->invocation,
+					       g_variant_new ("(bs)",
+							      info == PK_INFO_ENUM_INSTALLED,
+							      pk_package_get_name (item)));
+out:
+	if (error_code != NULL)
+		g_object_unref (error_code);
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	if (results != NULL)
+		g_object_unref (results);
+}
+
 static void
 gs_dbus_helper_handle_method_call_query (GsDbusHelper *dbus_helper,
 					 const gchar *method_name,
 					 GVariant *parameters,
 					 GDBusMethodInvocation *invocation)
 {
-	gchar **package_names;
-	const gchar *package_name;
+	gchar **names;
+	const gchar *name;
 	const gchar *interaction;
 	GsDbusHelperTask *dtask;
 
 	if (g_strcmp0 (method_name, "IsInstalled") == 0) {
 		g_variant_get (parameters, "(&s&s)",
-			       &package_name, &interaction);
-		package_names = g_strsplit (package_name, "|", 1);
+			       &name, &interaction);
+		names = g_strsplit (name, "|", 1);
 		dtask = g_new0 (GsDbusHelperTask, 1);
 		dtask->invocation = invocation;
 		pk_client_resolve_async (PK_CLIENT (dbus_helper->task),
 					 pk_bitfield_value (PK_FILTER_ENUM_INSTALLED),
-					 package_names, NULL,
+					 names, NULL,
 					 gs_dbus_helper_progress_cb, dtask,
-					 gs_dbus_helper_is_installed_resolve_cb, dtask);
-		g_strfreev (package_names);
+					 gs_dbus_helper_query_is_installed_cb, dtask);
+		g_strfreev (names);
+	} else if (g_strcmp0 (method_name, "SearchFile") == 0) {
+		g_variant_get (parameters, "(&s&s)",
+			       &name, &interaction);
+		names = g_strsplit (name, "|", 1);
+		dtask = g_new0 (GsDbusHelperTask, 1);
+		dtask->invocation = invocation;
+		names = g_strsplit (name, "&", -1);
+		pk_client_search_files_async (PK_CLIENT (dbus_helper->task),
+					      pk_bitfield_value (PK_FILTER_ENUM_NEWEST),
+					      names, NULL,
+					      gs_dbus_helper_progress_cb, dtask,
+					      gs_dbus_helper_query_search_file_cb, dtask);
+		g_strfreev (names);
 	} else {
 		g_dbus_method_invocation_return_error (invocation,
 						       G_IO_ERROR,
