@@ -228,6 +228,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* add any missing ratings data */
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
+		if (gs_app_get_id (app) == NULL)
+			continue;
 		if (gs_app_get_rating (app) != -1)
 			continue;
 		rating = gs_plugin_local_find_app (plugin, gs_app_get_id (app));
