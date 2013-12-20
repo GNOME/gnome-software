@@ -409,6 +409,11 @@
                     <property name="hscrollbar_policy">never</property>
                     <property name="vscrollbar_policy">automatic</property>
                     <property name="shadow_type">none</property>
+                    <child internal-child="accessible">
+                      <object class="AtkObject" id="overview-accessible">
+                        <property name="accessible-name">Overview page</property>
+                      </object>
+                    </child>
                     <style>
                       <class name="main-scrolled-software"/>
                     </style>
@@ -609,6 +614,11 @@
             <child>
               <object class="GtkStack" id="stack_install">
                 <property name="visible">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="installed-accessible">
+                    <property name="accessible-name">Installed page</property>
+                  </object>
+                </child>
                 <child>
                   <object class="GtkSpinner" id="spinner_install">
                     <property name="visible">True</property>
@@ -676,6 +686,11 @@
             <child>
               <object class="GtkStack" id="stack_search">
                 <property name="visible">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="search-accessible">
+                    <property name="accessible-name">Search page</property>
+                  </object>
+                </child>
                 <child>
                   <object class="GtkSpinner" id="spinner_search">
                     <property name="visible">True</property>
@@ -764,6 +779,11 @@
             <child>
               <object class="GtkStack" id="stack_updates">
                 <property name="visible">True</property>
+                <child internal-child="accessible">
+                  <object class="AtkObject" id="updates-accessible">
+                    <property name="accessible-name">Updates page</property>
+                  </object>
+                </child>
                 <child>
                   <object class="GtkSpinner" id="spinner_updates">
                     <property name="visible">True</property>
