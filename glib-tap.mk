@@ -126,7 +126,7 @@ installed_test_meta_DATA = $(installed_testcases:=.test)
 
 %.test: %$(EXEEXT) Makefile
 	$(AM_V_GEN) (echo '[Test]' > $@.tmp; \
-	echo 'Type=session' >> $@.tmp; \
+	echo 'Type=session-exclusive' >> $@.tmp; \
 	echo 'Exec=$(installed_testdir)/$<' >> $@.tmp; \
 	mv $@.tmp $@)
 
