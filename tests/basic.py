@@ -8,6 +8,11 @@
 # search page. Hit Escape and verify that we go back to the overview
 # page.
 
+from gi.repository import Gio
+
+settings = Gio.Settings.new("org.gnome.desktop.interface")
+settings.set_boolean ("toolkit-accessibility", True)
+
 import os
 from dogtail.tree import *
 from dogtail.utils import *

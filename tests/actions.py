@@ -6,13 +6,17 @@
 # Check that the expected actions are exported on the session bus.
 # Activate each action and verify the result.
 
-import os
+from gi.repository import Gio
+
+settings = Gio.Settings.new("org.gnome.desktop.interface")
+settings.set_boolean ("toolkit-accessibility", True)
+
 import dbus
 from dogtail.tree import *
 from dogtail.utils import *
 from dogtail.procedural import *
 
-#run('gnome-software')
+run('gnome-software')
 
 app = root.application('org.gnome.Software');
 
