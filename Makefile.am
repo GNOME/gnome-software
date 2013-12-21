@@ -1,7 +1,8 @@
 SUBDIRS =						\
 	data						\
 	po						\
-	src
+	src						\
+	tests
 
 snapshot:
 	$(MAKE) dist distdir=$(PACKAGE)-$(VERSION)-`date +"%Y%m%d"`

@@ -3,7 +3,7 @@ AC_PREREQ(2.63)
 
 AC_INIT([gnome-software],[3.11.4],[http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-software])
 AC_CONFIG_SRCDIR(src)
-AM_INIT_AUTOMAKE([1.11 no-dist-gzip dist-xz tar-ustar])
+AM_INIT_AUTOMAKE([1.11 no-dist-gzip dist-xz tar-ustar serial-tests])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 
@@ -98,6 +98,8 @@ GS_PLUGIN_API_VERSION=2
 AC_SUBST(GS_PLUGIN_API_VERSION)
 AC_DEFINE_UNQUOTED([GS_PLUGIN_API_VERSION], "$GS_PLUGIN_API_VERSION", [the plugin API version])
 
+GLIB_TESTS
+
 dnl ---------------------------------------------------------------------------
 dnl - Makefiles, etc.
 dnl ---------------------------------------------------------------------------
@@ -117,6 +119,7 @@ data/icons/256x256/Makefile
 data/icons/scalable/Makefile
 src/Makefile
 src/plugins/Makefile
+tests/Makefile
 ])
 AC_OUTPUT
 
