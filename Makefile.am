@@ -7,6 +7,8 @@ SUBDIRS =						\
 snapshot:
 	$(MAKE) dist distdir=$(PACKAGE)-$(VERSION)-`date +"%Y%m%d"`
 
+ACLOCAL_AMFLAGS = -I m4 ${ACLOCAL_FLAGS}
+
 DISTCLEANFILES =					\
 	gnome-software-*.tar.xz
 
