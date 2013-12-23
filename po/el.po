@@ -8,19 +8,71 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-06-09 18:10+0000\n"
-"PO-Revision-Date: 2013-07-08 18:14+0300\n"
+"POT-Creation-Date: 2013-12-18 21:46+0000\n"
+"PO-Revision-Date: 2013-12-22 20:34+0300\n"
 "Last-Translator: Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>\n"
-"Language-Team: team@gnome.gr\n"
+"Language-Team: team@lists.gnome.gr\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
+"X-Generator: Virtaal 0.7.0\n"
 "X-Project-Style: gnome\n"
 
+#: ../data/gnome-software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "Ένας διαχειριστής εφαρμογών για το GNOME"
+
+#: ../data/gnome-software.appdata.xml.in.h:2
+msgid ""
+"GNOME Software lets you install, remove and update applications and system "
+"extensions. It also allows you to update your system using an offline update."
+msgstr ""
+"Το λογισμικό GNOME σας επιτρέπει να εγκαταστήσετε, να αφαιρέσετε και να "
+"ενημερώσετε τις εφαρμογές και τις επεκτάσεις του συστήματος. Σας επιτρέπει "
+"επίσης να ενημερώσετε το σύστημά σας χρησιμοποιώντας μια ενημέρωση χωρίς "
+"σύνδεση."
+
+#: ../data/gnome-software.appdata.xml.in.h:3
+msgid "Goals:"
+msgstr "Σκοποί:"
+
+#: ../data/gnome-software.appdata.xml.in.h:4
+msgid ""
+"<li>View installed applications</li> <li>Remove installed applications</li> "
+"<li>View available application updates</li> <li>Install available updates</"
+"li> <li>Find new applications</li> <li>Install new applications</li> "
+"<li>Find an application to handle a specific type of file</li> <li>Installed "
+"apps and updates should be available when offline</li>"
+msgstr ""
+"<li>Προβολή εγκατεστημένων εφαρμογών</li> <li>Αφαίρεση εγκατεστημένων "
+"εφαρμογών</li> <li>Προβολή διαθέσιμων ενημερώσεων εφαρμογών</li> "
+"<li>Εγκατάσταση διαθέσιμων ενημερώσεων</li> <li>Εύρεση νέων εφαρμογών</li> "
+"<li>Εγκατάσταση νέων εφαρμογών</li> <li>Εύρεση μιας εφαρμογής για να "
+"χειριστεί έναν ειδικό τύπο αρχείου</li> <li>Οι εγκατεστημένες εφαρμογές και "
+"ενημερώσεις πρέπει να είναι διαθέσιμες χωρίς σύνδεση</li>"
+
+#: ../src/app-menu.ui.h:1
+msgid "_About"
+msgstr "_Περί"
+
+#: ../src/app-menu.ui.h:2
+msgid "_Quit"
+msgstr "Έ_ξοδος"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:79 ../src/gs-feature-tile.c:77
+#: ../src/gs-popular-tile.c:78 ../src/gs-shell-details.c:405
+#: ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "Εγκατεστημένο"
+
+#. TRANSLATORS: this is the application name
+#. TRANSLATORS: this is the main window title
 #: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
+#: ../src/gs-application.c:87 ../src/gs-shell.c:128
 msgid "Software"
 msgstr "Λογισμικό"
 
@@ -29,126 +81,1189 @@ msgid "Add, remove or update software on this computer"
 msgstr "Προσθήκη, αφαίρεση ή ενημέρωση λογισμικού σε αυτόν τον υπολογιστή"
 
 #: ../src/gnome-software.ui.h:2
-msgid "New"
-msgstr "Νέο"
+msgid "Go back"
+msgstr "Επιστροφή"
 
-#: ../src/gnome-software.ui.h:3
-msgid "Installed"
-msgstr "Εγκατεστημένο"
-
+#. Translators: A label for a button to show all available software.
 #: ../src/gnome-software.ui.h:4
-msgid "Updates"
-msgstr "Ενημερώσεις"
+msgid "_All"
+msgstr "Ό_λα"
 
-#: ../src/gnome-software.ui.h:5
-msgid "Overview"
-msgstr "Επισκόπηση"
+#. Translators: A label for a button to show only software which is already installed.
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software
+#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:406
+msgid "_Installed"
+msgstr "Ε_γκατεστημένο"
 
-#: ../src/gnome-software.ui.h:6
-msgid "Reviews"
-msgstr "Επιθεωρήσεις"
+#. Translators: A label for a button to show only updates which are available to install.
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install.
+#.
+#: ../src/gnome-software.ui.h:8 ../src/gs-shell-updates.c:146
+msgid "_Updates"
+msgstr "Ε_νημερώσεις"
 
-#: ../src/gnome-software.ui.h:7
-msgid "Related"
-msgstr "Σχετικό"
+#: ../src/gnome-software.ui.h:9
+msgid "Restart & Install"
+msgstr "Επανεκκίνηση & εγκατάσταση"
 
-#: ../src/gnome-software.ui.h:8 ../src/gs-app-widget.c:99
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:112
+#: ../src/gs-shell-details.c:91
 msgid "Install"
 msgstr "Εγκατάσταση"
 
-#: ../src/gnome-software.ui.h:9
-msgid "Update All"
-msgstr "Ενημέρωση όλων"
-
-#: ../src/gnome-software.ui.h:10
-msgid "Featured"
-msgstr "Γνωρίσματα"
-
-#: ../src/gnome-software.ui.h:11
-msgid "Popular"
-msgstr "Δημοφιλή"
-
-#: ../src/gnome-software.ui.h:12
-msgid "Categories"
-msgstr "Κατηγορίες"
-
-#: ../src/gnome-software.ui.h:13
-msgid "Description"
-msgstr "Περιγραφή"
-
-#: ../src/gnome-software.ui.h:14
-msgid ""
-"Shotwell is a digital photo organiser that runs on Linux. It is the default "
-"photo manager in Ubuntu and Fedora."
-msgstr ""
-"Το Shotwell είναι ένας ψηφιακός οργανωτής φωτογραφίας που εκτελείται σε "
-"Λίνουξ. Είναι ο προεπιλεγμένος διαχειριστής φωτογραφίας στο Ουμπούντου και "
-"Φεντόρα."
-
-#: ../src/gs-app-widget.c:105
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: button text in the header when an application can be erased
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:122
+#: ../src/gs-shell-details.c:124 ../src/gs-shell-details.c:322
+#: ../src/gs-shell-installed.c:170 ../src/gs-shell-search.c:122
 msgid "Remove"
 msgstr "Αφαίρεση"
 
-#: ../src/gs-app-widget.c:111
-msgid "Update"
-msgstr "Ενημέρωση"
+#: ../src/gnome-software.ui.h:12
+#: ../src/plugins/gs-plugin-hardcoded-popular.c:227
+msgid "Featured"
+msgstr "Γνωρίσματα"
 
-#. 'More' Expander
-#: ../src/gs-app-widget.c:438
-msgid "More  ▾"
-msgstr "Περισσότερα  ▾"
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: ../src/gnome-software.ui.h:14
+msgid "Picks"
+msgstr "Επιλεγμένα"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:185
-msgid "Waiting for package manager..."
-msgstr "Αναμονή για τον διαχειριστή πακέτου..."
+#: ../src/gnome-software.ui.h:15
+msgid "Categories"
+msgstr "Κατηγορίες"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:189
-msgid "Loading list of packages..."
-msgstr "Φόρτωση λίστας πακέτων..."
+#: ../src/gnome-software.ui.h:16
+msgid "No Application Data Found"
+msgstr "Δε βρέθηκαν δεδομένα εφαρμογών"
 
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:199 ../src/gs-main.c:260
-msgid "Downloading..."
-msgstr "Μεταφόρτωση..."
+#: ../src/gnome-software.ui.h:17
+msgid "No Application Found"
+msgstr "Δε βρέθηκαν εφαρμογές"
 
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:204 ../src/gs-main.c:264
-msgid "Querying..."
-msgstr "Ερώτημα..."
+#: ../src/gnome-software.ui.h:18
+msgid "Software is up to date"
+msgstr "Το λογισμικό σας είναι ενημερωμένο"
 
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:252
-msgid "Waiting..."
-msgstr "Αναμονή..."
+#: ../src/gnome-software.ui.h:19
+msgid "Visit _Website"
+msgstr "Επισκεφτείτε τον ι_στότοπο"
 
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:256
-msgid "Setting up..."
-msgstr "Ρύθμιση..."
+#: ../src/gnome-software.ui.h:20
+msgid "_History"
+msgstr "_Ιστορικό"
 
-#. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:435
-msgid "Requires restart"
-msgstr "Απαιτείται επανεκκίνηση"
+#: ../src/gnome-software.ui.h:21
+msgid "History"
+msgstr "Ιστορικό"
 
-#: ../src/gs-main.c:803
-msgid ""
-"The author of this software has not included a 'Description' in the desktop "
-"file..."
+#. Translators: Label for a button to close the update dialogue.
+#: ../src/gnome-software.ui.h:23
+msgid "Done"
+msgstr "Έτοιμο"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:85
+msgid "About Software"
+msgstr "Περί του λογισμικού"
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:90
+msgid "A nice way to manage the software on your system."
+msgstr "Ένας ωραίος τρόπος για διαχείριση του λογισμικού στο σύστημά σας."
+
+#: ../src/gs-application.c:94
+msgid "translator-credits"
 msgstr ""
-"Ο συγγραφέας αυτού του λογισμικού δεν έχει συμπεριλάβει 'Περιγραφή' στο "
-"αρχείο της επιφάνειας εργασίας..."
+"Ελληνική μεταφραστική ομάδα του GNOME\n"
+" Δημήτρης Σπίγγος <dmtrs32@gmail.com>\n"
+"Για περισσότερα δείτε: http://gnome.gr"
 
-#: ../src/gs-plugin-loader.c:306
-msgid "Includes performance, stability and security improvements for all users"
+#. TRANSLATORS: this is a command line option, please don't
+#. * translate the option names between ‘’
+#: ../src/gs-application.c:216
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
-"Περιλαμβάνει βελτιώσεις απόδοσης, σταθερότητας και ασφάλειας για όλους τους "
-"χρήστες"
+"Έναρξη λειτουργίας: είτε ‘updates’, ‘updated’, ‘installed’ ή ‘overview’"
 
-#: ../src/gs-plugin-loader.c:338
+#: ../src/gs-application.c:216
+msgid "MODE"
+msgstr "ΛΕΙΤΟΥΡΓΙΑ"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-app-widget.c:133 ../src/gs-shell-details.c:99
+msgid "Installing"
+msgstr "Εγκαθίσταται"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-app-widget.c:142 ../src/gs-shell-details.c:131
+msgid "Removing"
+msgstr "Αφαίρεση"
+
+#. TRANSLATORS: this is where all applications that don't
+#. * fit in other groups are put
+#: ../src/gs-category.c:175
+msgid "Other"
+msgstr "Άλλο"
+
+#. TRANSLATORS: this is a group of updates that are not packages and
+#. * are ot shown in the main list
+#: ../src/gs-plugin-loader.c:488
 msgid "OS Updates"
 msgstr "Ενημερώσεις λειτουργικού"
+
+#. TRANSLATORS: this is a longer description of the os-update item
+#: ../src/gs-plugin-loader.c:490 ../src/gs-plugin-loader.c:491
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr ""
+"Περιλαμβάνει βελτιώσεις απόδοσης, σταθερότητας και ασφάλειας για όλους τους "
+"χρήστες."
+
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-shell-details.c:307 ../src/gs-shell-installed.c:155
+#: ../src/gs-shell-search.c:107
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Είστε σίγουροι ότι θέλετε να αφαιρέσετε το %s;"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-shell-details.c:319 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:119
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr ""
+"το %s θα αφαιρεθεί και θα πρέπει να το εγκαταστήσετε ξανά για να το "
+"χρησιμοποιήσετε."
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was removed
+#: ../src/gs-shell-details.c:399
+msgid "Removed"
+msgstr "Αφαιρεμένο"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gs-shell-details.c:410
+msgid "Updated"
+msgstr "Ενημερωμένο"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing that something happened to the
+#. * application but we don't know what
+#: ../src/gs-shell-details.c:416
+msgid "Unknown"
+msgstr "Άγνωστο"
+
+#. TRANSLATORS: this is tab button to show the list of
+#. * installed software. The '%d' refers to the number of
+#. * applications either installing or erasing
+#: ../src/gs-shell-installed.c:411
+#, c-format
+msgid "_Installed (%d)"
+msgstr "Ε_γκατεστημένο (%d)"
+
+#. TRANSLATORS: A label for a button to show only updates
+#. * which are available to install. The '%d' refers to the
+#. * number of available updates
+#.
+#: ../src/gs-shell-updates.c:139
+#, c-format
+msgid "_Updates (%d)"
+msgstr "Ε_νημερώσεις (%d)"
+
+#. TRANSLATORS: window title to suggest that we are showing
+#. * the offline updates that have just been applied
+#: ../src/gs-shell-updates.c:206
+msgid "Recent Software Updates"
+msgstr "Πρόσφατες ενημερώσεις λογισμικού"
+
+#. TRANSLATORS: this is the summary of a notification that an application
+#. * has been successfully installed
+#: ../src/gs-utils.c:166
+#, c-format
+msgid "%s is now installed"
+msgstr "το %s είναι τώρα εγκατεστημένο"
+
+#. TRANSLATORS: this is button that opens the newly installed application
+#: ../src/gs-utils.c:169
+msgid "Launch"
+msgstr "Εκκίνηση"
+
+#: ../src/plugins/gs-plugin-appstream.c:271
+#, c-format
+msgid "No AppStream data found"
+msgstr "Δεν βρέθηκαν δεδομένα AppStream"
+
+#. TRANSLATORS: this is the menu spec main category for Audio
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:57
+msgid "Audio"
+msgstr "Ήχος"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:60
+msgctxt "Menu subcategory of Audio"
+msgid "Editing"
+msgstr "Επεξεργασία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:63
+msgctxt "Menu subcategory of Audio"
+msgid "Databases"
+msgstr "Βάσεις δεδομένων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:66
+msgctxt "Menu subcategory of Audio"
+msgid "Disc Burning"
+msgstr "Εγγραφή δίσκων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:69
+msgctxt "Menu subcategory of Audio"
+msgid "Ham Radio"
+msgstr "Ραδιοερασιτέχνες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:72
+msgctxt "Menu subcategory of Audio"
+msgid "MIDI"
+msgstr "MIDI"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:75
+msgctxt "Menu subcategory of Audio"
+msgid "Mixer"
+msgstr "Μείκτης"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:78
+msgctxt "Menu subcategory of Audio"
+msgid "Music"
+msgstr "Μουσική"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:81
+msgctxt "Menu subcategory of Audio"
+msgid "Players"
+msgstr "Συσκευές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:84
+msgctxt "Menu subcategory of Audio"
+msgid "Recorders"
+msgstr "Καταγραφείς"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:87
+msgctxt "Menu subcategory of Audio"
+msgid "Sequencers"
+msgstr "Μουσικοί συνθετητές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:90
+msgctxt "Menu subcategory of Audio"
+msgid "Tuners"
+msgstr "Δέκτες"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:94
+msgid "Development Tools"
+msgstr "Εργαλεία ανάπτυξης"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:97
+msgctxt "Menu subcategory of Development"
+msgid "Building"
+msgstr "Δόμηση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:100
+msgctxt "Menu subcategory of Development"
+msgid "Databases"
+msgstr "Βάσεις δεδομένων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:103
+msgctxt "Menu subcategory of Development"
+msgid "Debuggers"
+msgstr "Αποσφαλματωτές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:106
+msgctxt "Menu subcategory of Development"
+msgid "GUI Designers"
+msgstr "Σχεδιαστές GUI"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:109
+msgctxt "Menu subcategory of Development"
+msgid "IDE"
+msgstr "IDE"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:112
+msgctxt "Menu subcategory of Development"
+msgid "Profiling"
+msgstr "Κατατομές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:115
+msgctxt "Menu subcategory of Development"
+msgid "Project Management"
+msgstr "Διαχείριση έργου"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:118
+msgctxt "Menu subcategory of Development"
+msgid "Revision Control"
+msgstr "Έλεγχος αναθεώρησης"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:121
+msgctxt "Menu subcategory of Development"
+msgid "Translation"
+msgstr "Μετάφραση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:124
+msgctxt "Menu subcategory of Development"
+msgid "Web Development"
+msgstr "Ανάπτυξη ιστού"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:128
+msgid "Education"
+msgstr "Εκπαίδευση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:131
+msgctxt "Menu subcategory of Education"
+msgid "Art"
+msgstr "Τέχνη"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:134
+msgctxt "Menu subcategory of Education"
+msgid "Artificial Intelligence"
+msgstr "Τεχνητή νοημοσύνη"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:137
+msgctxt "Menu subcategory of Education"
+msgid "Astronomy"
+msgstr "Αστρονομία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:140
+msgctxt "Menu subcategory of Education"
+msgid "Biology"
+msgstr "Βιολογία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:143
+msgctxt "Menu subcategory of Education"
+msgid "Chemistry"
+msgstr "Χημεία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:146
+msgctxt "Menu subcategory of Education"
+msgid "Computer Science"
+msgstr "Επιστήμη υπολογιστών"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:149
+msgctxt "Menu subcategory of Education"
+msgid "Construction"
+msgstr "Κατασκευές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:152
+msgctxt "Menu subcategory of Education"
+msgid "Data Visualization"
+msgstr "Οπτικοποίηση δεδομένων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:155
+msgctxt "Menu subcategory of Education"
+msgid "Economy"
+msgstr "Οικονομία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:158
+msgctxt "Menu subcategory of Education"
+msgid "Electricity"
+msgstr "Ηλεκτρισμός"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:161
+msgctxt "Menu subcategory of Education"
+msgid "Electronics"
+msgstr "Ηλεκτρονικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:164
+msgctxt "Menu subcategory of Education"
+msgid "Engineering"
+msgstr "Μηχανική"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:167
+msgctxt "Menu subcategory of Education"
+msgid "Geography"
+msgstr "Γεωγραφία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:170
+msgctxt "Menu subcategory of Education"
+msgid "Geology"
+msgstr "Γεωλογία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:173
+msgctxt "Menu subcategory of Education"
+msgid "Geoscience"
+msgstr "Γεωλογικές επιστήμες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:176
+msgctxt "Menu subcategory of Education"
+msgid "History"
+msgstr "Ιστορία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:179
+msgctxt "Menu subcategory of Education"
+msgid "Humanities"
+msgstr "Ανθρωπιστικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:182
+msgctxt "Menu subcategory of Education"
+msgid "Image Processing"
+msgstr "Επεξεργασία εικόνας"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:185
+msgctxt "Menu subcategory of Education"
+msgid "Languages"
+msgstr "Γλώσσες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:188
+msgctxt "Menu subcategory of Education"
+msgid "Literature"
+msgstr "Λογοτεχνία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:191
+msgctxt "Menu subcategory of Education"
+msgid "Maps"
+msgstr "Χάρτες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:194
+msgctxt "Menu subcategory of Education"
+msgid "Math"
+msgstr "Μαθηματικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:197
+msgctxt "Menu subcategory of Education"
+msgid "Medical"
+msgstr "Ιατρικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:200
+msgctxt "Menu subcategory of Education"
+msgid "Music"
+msgstr "Μουσική"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:203
+msgctxt "Menu subcategory of Education"
+msgid "Numerical Analysis"
+msgstr "Αριθμητική ανάλυση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:206
+msgctxt "Menu subcategory of Education"
+msgid "Parallel Computing"
+msgstr "Παράλληλος υπολογισμός"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:209
+msgctxt "Menu subcategory of Education"
+msgid "Physics"
+msgstr "Φυσική"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:212
+msgctxt "Menu subcategory of Education"
+msgid "Robotics"
+msgstr "Ρομποτική"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:215
+msgctxt "Menu subcategory of Education"
+msgid "Spirituality"
+msgstr "Πνευματικότητα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:218
+msgctxt "Menu subcategory of Education"
+msgid "Sports"
+msgstr "Αθλητισμός"
+
+#. TRANSLATORS: this is the menu spec main category for Games
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:222
+msgid "Games"
+msgstr "Παιχνίδια"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:225
+msgctxt "Menu subcategory of Games"
+msgid "Action"
+msgstr "Ενέργεια"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:228
+msgctxt "Menu subcategory of Games"
+msgid "Adventure"
+msgstr "Περιπέτεια"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:231
+msgctxt "Menu subcategory of Games"
+msgid "Arcade"
+msgstr "Arcade"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:234
+msgctxt "Menu subcategory of Games"
+msgid "Blocks"
+msgstr "Κύβοι"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:237
+msgctxt "Menu subcategory of Games"
+msgid "Board"
+msgstr "Επιτραπέζια"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:240
+msgctxt "Menu subcategory of Games"
+msgid "Card"
+msgstr "Κάρτες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:243
+msgctxt "Menu subcategory of Games"
+msgid "Emulators"
+msgstr "Προσομοιωτές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:246
+msgctxt "Menu subcategory of Games"
+msgid "Kids"
+msgstr "Παιδικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:249
+msgctxt "Menu subcategory of Games"
+msgid "Logic"
+msgstr "Λογική"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:252
+msgctxt "Menu subcategory of Games"
+msgid "Role Playing"
+msgstr "Παιχνίδια ρόλων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:255
+msgctxt "Menu subcategory of Games"
+msgid "Shooter"
+msgstr "Σκοπευτές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:258
+msgctxt "Menu subcategory of Games"
+msgid "Simulation"
+msgstr "Προσομοίωση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:261
+msgctxt "Menu subcategory of Games"
+msgid "Sports"
+msgstr "Αθλητισμός"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:264
+msgctxt "Menu subcategory of Games"
+msgid "Strategy"
+msgstr "Στρατηγική"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:268
+msgid "Graphics"
+msgstr "Γραφικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:271
+msgctxt "Menu subcategory of Graphics"
+msgid "2D Graphics"
+msgstr "Γραφικά 2Δ"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:274
+msgctxt "Menu subcategory of Graphics"
+msgid "3D Graphics"
+msgstr "Γραφικά 3Δ"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:277
+msgctxt "Menu subcategory of Graphics"
+msgid "OCR"
+msgstr "OCR"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:280
+msgctxt "Menu subcategory of Graphics"
+msgid "Photography"
+msgstr "Φωτογραφία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:283
+msgctxt "Menu subcategory of Graphics"
+msgid "Publishing"
+msgstr "Δημοσιεύσεις"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:286
+msgctxt "Menu subcategory of Graphics"
+msgid "Raster Graphics"
+msgstr "Γραφικά εικονογραφιών"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:289
+msgctxt "Menu subcategory of Graphics"
+msgid "Scanning"
+msgstr "Σαρώσεις"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:292
+msgctxt "Menu subcategory of Graphics"
+msgid "Vector Graphics"
+msgstr "Διανυσματικά γραφικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:295
+msgctxt "Menu subcategory of Graphics"
+msgid "Viewer"
+msgstr "Προβολείς"
+
+#. TRANSLATORS: this is the menu spec main category for Network
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:299
+msgid "Internet"
+msgstr "Διαδίκτυο"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:302
+msgctxt "Menu subcategory of Network"
+msgid "Chat"
+msgstr "Συνομιλία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:305
+msgctxt "Menu subcategory of Network"
+msgid "Dialup"
+msgstr "Τηλεφωνική σύνδεση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:308
+msgctxt "Menu subcategory of Network"
+msgid "Email"
+msgstr "Αλληλογραφία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:311
+msgctxt "Menu subcategory of Network"
+msgid "Feed"
+msgstr "Τροφοδοσία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:314
+msgctxt "Menu subcategory of Network"
+msgid "File Transfer"
+msgstr "Μεταφορά αρχείων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:317
+msgctxt "Menu subcategory of Network"
+msgid "Ham Radio"
+msgstr "Ραδιοερασιτέχνες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:320
+msgctxt "Menu subcategory of Network"
+msgid "Instant Messaging"
+msgstr "Άμεσα μηνύματα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:323
+msgctxt "Menu subcategory of Network"
+msgid "IRC Clients"
+msgstr "Πελάτες IRC"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:326
+msgctxt "Menu subcategory of Network"
+msgid "Monitor"
+msgstr "Οθόνες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:329
+msgctxt "Menu subcategory of Network"
+msgid "News"
+msgstr "Ειδήσεις"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:332
+msgctxt "Menu subcategory of Network"
+msgid "P2P"
+msgstr "Ομότιμο δίκτυο"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:335
+msgctxt "Menu subcategory of Network"
+msgid "Remote Access"
+msgstr "Απομακρυσμένη πρόσβαση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:338
+msgctxt "Menu subcategory of Network"
+msgid "Telephony"
+msgstr "Τηλεφωνία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:341
+msgctxt "Menu subcategory of Network"
+msgid "Video Conference"
+msgstr "Βιντεοδιάσκεψη"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:344
+msgctxt "Menu subcategory of Network"
+msgid "Web Browser"
+msgstr "Περιηγητής διαδικτύου"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:347
+msgctxt "Menu subcategory of Network"
+msgid "Web Development"
+msgstr "Ανάπτυξη εφαρμογών διαδικτύου"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:351
+msgid "Office"
+msgstr "Γραφείο"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:354
+msgctxt "Menu subcategory of Office"
+msgid "Calendar"
+msgstr "Ημερολόγιο"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:357
+msgctxt "Menu subcategory of Office"
+msgid "Chart"
+msgstr "Διάγραμμα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:360
+msgctxt "Menu subcategory of Office"
+msgid "Contact Management"
+msgstr "Διαχείριση επαφών"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:363
+msgctxt "Menu subcategory of Office"
+msgid "Database"
+msgstr "Βάση δεδομένων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:366
+msgctxt "Menu subcategory of Office"
+msgid "Dictionary"
+msgstr "Λεξικό"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:369
+msgctxt "Menu subcategory of Office"
+msgid "Email"
+msgstr "Αλληλογραφία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:372
+msgctxt "Menu subcategory of Office"
+msgid "Finance"
+msgstr "Οικονομικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:375
+msgctxt "Menu subcategory of Office"
+msgid "Flow Chart"
+msgstr "Διάγραμμα ροής"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:378
+msgctxt "Menu subcategory of Office"
+msgid "PDA"
+msgstr "Υπολογιστής χειρός"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:381
+msgctxt "Menu subcategory of Office"
+msgid "Photography"
+msgstr "Φωτογραφία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:384
+msgctxt "Menu subcategory of Office"
+msgid "Presentation"
+msgstr "Παρουσίαση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:387
+msgctxt "Menu subcategory of Office"
+msgid "Project Management"
+msgstr "Διαχείριση έργου"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:390
+msgctxt "Menu subcategory of Office"
+msgid "Publishing"
+msgstr "Δημοσιεύσεις"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:393
+msgctxt "Menu subcategory of Office"
+msgid "Spreadsheet"
+msgstr "Υπολογιστικά φύλλα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:396
+msgctxt "Menu subcategory of Office"
+msgid "Viewer"
+msgstr "Προβολές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:399
+msgctxt "Menu subcategory of Office"
+msgid "Word Processor"
+msgstr "Επεξεργαστές κειμένου"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:403
+msgid "Science"
+msgstr "Επιστήμες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:406
+msgctxt "Menu subcategory of Science"
+msgid "Art"
+msgstr "Τέχνη"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:409
+msgctxt "Menu subcategory of Science"
+msgid "Artificial Intelligence"
+msgstr "Τεχνητή νοημοσύνη"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:412
+msgctxt "Menu subcategory of Science"
+msgid "Astronomy"
+msgstr "Αστρονομία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:415
+msgctxt "Menu subcategory of Science"
+msgid "Biology"
+msgstr "Βιολογία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:418
+msgctxt "Menu subcategory of Science"
+msgid "Chemistry"
+msgstr "Χημεία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:421
+msgctxt "Menu subcategory of Science"
+msgid "Computer Science"
+msgstr "Επιστήμη υπολογιστών"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:424
+msgctxt "Menu subcategory of Science"
+msgid "Construction"
+msgstr "Κατασκευές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:427
+msgctxt "Menu subcategory of Science"
+msgid "Data Visualization"
+msgstr "Οπτικοποίηση δεδομένων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:430
+msgctxt "Menu subcategory of Science"
+msgid "Economy"
+msgstr "Οικονομία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:433
+msgctxt "Menu subcategory of Science"
+msgid "Electricity"
+msgstr "Ηλεκτρισμός"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:436
+msgctxt "Menu subcategory of Science"
+msgid "Electronics"
+msgstr "Ηλεκτρονικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:439
+msgctxt "Menu subcategory of Science"
+msgid "Engineering"
+msgstr "Μηχανική"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:442
+msgctxt "Menu subcategory of Science"
+msgid "Geography"
+msgstr "Γεωγραφία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:445
+msgctxt "Menu subcategory of Science"
+msgid "Geology"
+msgstr "Γεωλογία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:448
+msgctxt "Menu subcategory of Science"
+msgid "Geoscience"
+msgstr "Γεωλογικές επιστήμες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:451
+msgctxt "Menu subcategory of Science"
+msgid "History"
+msgstr "Ιστορία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:454
+msgctxt "Menu subcategory of Science"
+msgid "Humanities"
+msgstr "Ανθρωπιστικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:457
+msgctxt "Menu subcategory of Science"
+msgid "Image Processing"
+msgstr "Επεξεργασία εικόνας"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:460
+msgctxt "Menu subcategory of Science"
+msgid "Languages"
+msgstr "Γλώσσες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:463
+msgctxt "Menu subcategory of Science"
+msgid "Literature"
+msgstr "Λογοτεχνία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:466
+msgctxt "Menu subcategory of Science"
+msgid "Maps"
+msgstr "Χάρτες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:469
+msgctxt "Menu subcategory of Science"
+msgid "Math"
+msgstr "Μαθηματικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:472
+msgctxt "Menu subcategory of Science"
+msgid "Medical"
+msgstr "Ιατρικά"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:475
+msgctxt "Menu subcategory of Science"
+msgid "Numerical Analysis"
+msgstr "Αριθμητική ανάλυση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:478
+msgctxt "Menu subcategory of Science"
+msgid "Parallel Computing"
+msgstr "Παράλληλος υπολογισμός"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:481
+msgctxt "Menu subcategory of Science"
+msgid "Physics"
+msgstr "Φυσική"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:484
+msgctxt "Menu subcategory of Science"
+msgid "Robotics"
+msgstr "Ρομποτική"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:487
+msgctxt "Menu subcategory of Science"
+msgid "Spirituality"
+msgstr "Πνευματικότητα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:490
+msgctxt "Menu subcategory of Science"
+msgid "Sports"
+msgstr "Αθλητισμός"
+
+#. TRANSLATORS: this is the menu spec main category for System
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:494
+msgid "System"
+msgstr "Σύστημα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:497
+msgctxt "Menu subcategory of System"
+msgid "Emulator"
+msgstr "Προσομοιωτές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:500
+msgctxt "Menu subcategory of System"
+msgid "File Manager"
+msgstr "Διαχειριστής αρχείου"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:503
+msgctxt "Menu subcategory of System"
+msgid "File System"
+msgstr "Σύστημα αρχείων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:506
+msgctxt "Menu subcategory of System"
+msgid "File Tools"
+msgstr "Εργαλεία αρχείων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:509
+msgctxt "Menu subcategory of System"
+msgid "Monitor"
+msgstr "Οθόνες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:512
+msgctxt "Menu subcategory of System"
+msgid "Security"
+msgstr "Ασφάλεια"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:515
+msgctxt "Menu subcategory of System"
+msgid "Terminal Emulator"
+msgstr "Προσομοιωτής τερματικού"
+
+#. TRANSLATORS: this is the menu spec main category for Utility
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:519
+msgid "Utilities"
+msgstr "Βοηθήματα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:522
+msgctxt "Menu subcategory of Utility"
+msgid "Accessibility"
+msgstr "Προσιτότητα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:525
+msgctxt "Menu subcategory of Utility"
+msgid "Archiving"
+msgstr "Αρχειοθέτηση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:528
+msgctxt "Menu subcategory of Utility"
+msgid "Calculator"
+msgstr "Αριθμομηχανή"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:531
+msgctxt "Menu subcategory of Utility"
+msgid "Clock"
+msgstr "Χρονιστές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:534
+msgctxt "Menu subcategory of Utility"
+msgid "Compression"
+msgstr "Συμπίεση"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:537
+msgctxt "Menu subcategory of Utility"
+msgid "File Tools"
+msgstr "Εργαλεία αρχείων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:540
+msgctxt "Menu subcategory of Utility"
+msgid "Maps"
+msgstr "Χάρτες"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:543
+msgctxt "Menu subcategory of Utility"
+msgid "Spirituality"
+msgstr "Πνευματικότητα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:546
+msgctxt "Menu subcategory of Utility"
+msgid "Telephony Tools"
+msgstr "Εργαλεία τηλεφωνίας"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:549
+msgctxt "Menu subcategory of Utility"
+msgid "Text Editor"
+msgstr "Επεξεργαστής κειμένου"
+
+#. TRANSLATORS: this is the menu spec main category for Video
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:553
+msgid "Video"
+msgstr "Βίντεο"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:556
+msgctxt "Menu subcategory of Video"
+msgid "Editing"
+msgstr "Επεξεργασία"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:559
+msgctxt "Menu subcategory of Video"
+msgid "Database"
+msgstr "βάση δεδομένων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:562
+msgctxt "Menu subcategory of Video"
+msgid "Disc Burning"
+msgstr "Εγγραφή δίσκων"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:565
+msgctxt "Menu subcategory of Video"
+msgid "Players"
+msgstr "Συσκευές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:568
+msgctxt "Menu subcategory of Video"
+msgid "Recorders"
+msgstr "Καταγραφείς"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:571
+msgctxt "Menu subcategory of Video"
+msgid "TV"
+msgstr "Τηλεόραση"
+
+#. TRANSLATORS: this is the main category for Add-ons
+#. TRANSLATORS: these are extra things that add to existing programs,
+#. * for instance fonts, codecs or language packs
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:575
+#: ../src/plugins/gs-plugin-packagekit.c:425
+msgid "Add-ons"
+msgstr "Πρόσθετα"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:578
+msgctxt "Menu subcategory of Addons"
+msgid "Fonts"
+msgstr "Γραμματοσειρές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:581
+msgctxt "Menu subcategory of Addons"
+msgid "Codecs"
+msgstr "Κωδικοποιητές-αποκωδικοποιητές"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:584
+msgctxt "Menu subcategory of Addons"
+msgid "Input Sources"
+msgstr "Πηγές εισόδου"
+
+#: ../src/plugins/gs-plugin-hardcoded-menu-spec.c:587
+msgctxt "Menu subcategory of Addons"
+msgid "Language Packs"
+msgstr "Γλωσσικά πακέτα"
+
+#. TRANSLATORS: audio/video decoders
+#: ../src/plugins/gs-plugin-packagekit.c:429
+msgid "Codecs"
+msgstr "Κωδικοποιητές-αποκωδικοποιητές"
+
+#. TRANSLATORS: fonts of different styles or languages
+#: ../src/plugins/gs-plugin-packagekit.c:433
+msgid "Fonts"
+msgstr "Γραμματοσειρές"
+
+#. TRANSLATORS: these are ways to enter text
+#: ../src/plugins/gs-plugin-packagekit.c:437
+msgid "Input Sources"
+msgstr "Πηγές εισόδου"
+
+#. TRANSLATORS: additional languages for apps
+#: ../src/plugins/gs-plugin-packagekit.c:441
+msgid "Language Packs"
+msgstr "Γλωσσικά πακέτα"
+
+#. TRANSLATORS: this is where update details either are
+#. * no longer available or were never provided in the first place
+#: ../src/plugins/gs-plugin-packagekit-refine.c:315
+msgid "No update details were provided"
+msgstr "Δεν δόθηκαν λεπτομέρειες ενημέρωσης"
+
+#~ msgid "New"
+#~ msgstr "Νέο"
+
+#~ msgid "Overview"
+#~ msgstr "Επισκόπηση"
+
+#~ msgid "Reviews"
+#~ msgstr "Επιθεωρήσεις"
+
+#~ msgid "Related"
+#~ msgstr "Σχετικό"
+
+#~ msgid "Update All"
+#~ msgstr "Ενημέρωση όλων"
+
+#~ msgid "Popular"
+#~ msgstr "Δημοφιλή"
+
+#~ msgid "Description"
+#~ msgstr "Περιγραφή"
+
+#~ msgid ""
+#~ "Shotwell is a digital photo organiser that runs on Linux. It is the "
+#~ "default photo manager in Ubuntu and Fedora."
+#~ msgstr ""
+#~ "Το Shotwell είναι ένας ψηφιακός οργανωτής φωτογραφίας που εκτελείται σε "
+#~ "Λίνουξ. Είναι ο προεπιλεγμένος διαχειριστής φωτογραφίας στο Ουμπούντου "
+#~ "και Φεντόρα."
+
+#~ msgid "More  ▾"
+#~ msgstr "Περισσότερα  ▾"
+
+#~ msgid "Waiting for package manager..."
+#~ msgstr "Αναμονή για τον διαχειριστή πακέτου..."
+
+#~ msgid "Loading list of packages..."
+#~ msgstr "Φόρτωση λίστας πακέτων..."
+
+#~ msgid "Downloading..."
+#~ msgstr "Μεταφόρτωση..."
+
+#~ msgid "Querying..."
+#~ msgstr "Ερώτημα..."
+
+#~ msgid "Waiting..."
+#~ msgstr "Αναμονή..."
+
+#~ msgid "Setting up..."
+#~ msgstr "Ρύθμιση..."
+
+#~ msgid "Requires restart"
+#~ msgstr "Απαιτείται επανεκκίνηση"
+
+#~ msgid ""
+#~ "The author of this software has not included a 'Description' in the "
+#~ "desktop file..."
+#~ msgstr ""
+#~ "Ο συγγραφέας αυτού του λογισμικού δεν έχει συμπεριλάβει 'Περιγραφή' στο "
+#~ "αρχείο της επιφάνειας εργασίας..."
