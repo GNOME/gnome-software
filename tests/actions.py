@@ -6,12 +6,12 @@
 # Check that the expected actions are exported on the session bus.
 # Activate each action and verify the result.
 
+import os
 from gi.repository import Gio
 
 settings = Gio.Settings.new("org.gnome.desktop.interface")
 settings.set_boolean ("toolkit-accessibility", True)
 
-import dbus
 from dogtail.tree import *
 from dogtail.utils import *
 from dogtail.procedural import *
@@ -20,21 +20,30 @@ run('gnome-software')
 
 app = root.application('org.gnome.Software');
 
-bus = dbus.SessionBus()
-proxy = bus.get_object('org.gnome.Software', '/org/gnome/Software')
-dbus_app = dbus.Interface(proxy, 'org.gtk.Application')
-dbus_app.Activate([])
+bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+proxy = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE,
+                               None,
+                               'org.gnome.Software',
+                               '/org/gnome/Software',
+                               'org.gtk.Application')
+proxy.call_sync('Activate', GLib.Variant('(a{sv})', ({},)), 0, -1, None)
 
 doDelay(1)
 assert (len(app.children) == 1)
 
-dbus_actions = dbus.Interface(proxy, 'org.gtk.Actions')
+dbus_actions = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE,
+                                      None,
+                                      'org.gnome.Software',
+                                      '/org/gnome/Software',
+                                      'org.gtk.Actions')
 
-names = dbus_actions.List()
+names = dbus_actions.call_sync('List', None, 0, -1, None).unpack()[0]
 assert (u'quit' in names)
 assert (u'about' in names)
 
-dbus_actions.Activate(u'about', [], [])
+dbus_actions.call_sync('Activate',
+                       GLib.Variant('(sava{sv})', (u'about', [], {})),
+                       0, -1, None)
 
 doDelay (1)
 assert (len(app.children) == 2)
@@ -42,5 +51,7 @@ app.dialog('About Software').child('Close').click()
 doDelay (1)
 assert (len(app.children) == 1)
 
-dbus_actions.Activate(u'quit', [], [])
+dbus_actions.call_sync('Activate',
+                       GLib.Variant('(sava{sv})', (u'quit', [], {})),
+                       0, -1, None)
 assert (len(app.children) == 0)
