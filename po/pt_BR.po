@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-12-09 16:52+0000\n"
-"PO-Revision-Date: 2013-12-09 20:13-0300\n"
+"POT-Creation-Date: 2013-12-19 11:19+0000\n"
+"PO-Revision-Date: 2013-12-19 11:45-0300\n"
 "Last-Translator: Rafael Ferreira <rafael.f.f1@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -48,8 +48,8 @@ msgstr ""
 "estar conectado a internet."
 
 #: ../src/app-folder-dialog.ui.h:1
-msgid "Application Folders"
-msgstr "Pastas de aplicativo"
+msgid "Add to Application Folder"
+msgstr "Adicionar à pasta de aplicativo"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-shell-details.c:160
 msgid "_Cancel"
@@ -58,10 +58,6 @@ msgstr "_Cancelar"
 #: ../src/app-folder-dialog.ui.h:3
 msgid "_Done"
 msgstr "C_oncluído"
-
-#: ../src/app-folder-dialog.ui.h:4
-msgid "_New Folder"
-msgstr "_Nova pasta"
 
 #: ../src/app-menu.ui.h:1
 msgid "_About"
@@ -85,7 +81,7 @@ msgstr "Instalado"
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:229 ../src/gs-shell.c:156
+#: ../src/gs-application.c:231 ../src/gs-shell.c:156
 msgid "Software"
 msgstr "Softwares"
 
@@ -126,14 +122,14 @@ msgstr "Reiniciar & instalar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:193
+#: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:206
 msgid "Install"
 msgstr "Instalar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:202
+#: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:215
 #: ../src/gs-shell-details.c:830 ../src/gs-shell-installed.c:204
 #: ../src/gs-shell-search.c:164
 msgid "Remove"
@@ -221,60 +217,17 @@ msgstr "Histórico"
 msgid "Done"
 msgstr "Concluído"
 
-#: ../src/gs-app-folder-dialog.c:320
-msgid ""
-"Add or remove folders. Your application folders can be found in the "
-"Activities Overview."
-msgstr ""
-"Adicione ou remove pastas. Suas pastas de aplicativos podem ser encontradas "
-"no Panorama de Atividades."
-
-#: ../src/gs-app-folder-dialog.c:324
-#, c-format
-msgid ""
-"Choose a folder for %s. Your application folders can be found in the "
-"Activities Overview."
-msgstr ""
-"Escolha uma pasta para %s. Suas pastas de aplicativo podem ser encontradas "
-"no Panorama de Atividades."
-
-#: ../src/gs-app-folder-dialog.c:329
-#, c-format
-msgid ""
-"Choose a folder for %s and %s. Your application folders can be found in the "
-"Activities Overview."
-msgstr ""
-"Escolha uma pasta para %s e %s. Suas pastas de aplicativo podem ser "
-"encontrados no Panorama de Atividades."
-
-#: ../src/gs-app-folder-dialog.c:335
-#, c-format
-msgid ""
-"Choose a folder for %s, %s and %s. Your application folders can be found in "
-"the Activities Overview."
-msgstr ""
-"Escolha uma pasta de %s, %s e %s. Suas pastas de aplicativo podem ser "
-"encontrados no Panorama de Atividades."
-
-#: ../src/gs-app-folder-dialog.c:338
-msgid ""
-"Choose a folder for the selected applications. Your application folders can "
-"be found in the Activities Overview."
-msgstr ""
-"Escolha uma pasta para os aplicativos selecionados. Suas pastas de "
-"aplicativo podem ser encontradas no Panorama de Atividades."
-
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:227
+#: ../src/gs-application.c:229
 msgid "About Software"
 msgstr "Sobre Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:232
+#: ../src/gs-application.c:234
 msgid "A nice way to manage the software on your system."
 msgstr "Um modo agradável de gerenciar softwares no seu sistema."
 
-#: ../src/gs-application.c:236
+#: ../src/gs-application.c:238
 msgid "translator-credits"
 msgstr ""
 "Rafael Ferreira <rafael.f.f1@gmail.com>, 2013.\n"
@@ -291,31 +244,31 @@ msgstr "Atualizações"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-widget.c:177
+#: ../src/gs-app-widget.c:190
 msgid "Visit website"
 msgstr "Visitar site da web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-widget.c:184 ../src/gs-shell-installed.c:590
+#: ../src/gs-app-widget.c:197 ../src/gs-shell-installed.c:589
 msgid "Cancel"
 msgstr "Cancelar"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:187
+#: ../src/gs-app-widget.c:200
 msgid "Pending"
 msgstr "Pendente"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: ../src/gs-app-widget.c:213
+#: ../src/gs-app-widget.c:226
 msgid "Installing"
 msgstr "Instalando"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: ../src/gs-app-widget.c:222
+#: ../src/gs-app-widget.c:235
 msgid "Removing"
 msgstr "Removendo"
 
@@ -363,70 +316,70 @@ msgid "Show profiling information for the service"
 msgstr "Mostrar informações de criação de perfil para este serviço"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:233
+#: ../src/gs-offline-updates.c:228
 msgid "Failed To Update"
 msgstr "Ocorreu falha ao atualizar"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:239
+#: ../src/gs-offline-updates.c:234
 msgid "A previous update was unfinished."
 msgstr "Uma atualização anterior não foi concluída."
 
 #. TRANSLATORS: the package manager needed to download
-#. *                  * something with no network available
-#: ../src/gs-offline-updates.c:249
+#. * something with no network available
+#: ../src/gs-offline-updates.c:244
 msgid "Network access was required but not available."
 msgstr "Foi solicitado acesso à rede mas a mesma não está disponível."
 
 #. TRANSLATORS: if the package is not signed correctly
-#. *                  *
-#: ../src/gs-offline-updates.c:258
+#. *
+#: ../src/gs-offline-updates.c:253
 msgid "An update was not signed in the correct way."
 msgstr "Uma atualização não foi sinalizada da forma correta."
 
 #. TRANSLATORS: the transaction failed in a way the user
-#. *                  * probably cannot comprehend. Package management systems
-#. *                                   * really are teh suck.
-#: ../src/gs-offline-updates.c:268
+#. * probably cannot comprehend. Package management systems
+#. * really are teh suck.
+#: ../src/gs-offline-updates.c:263
 msgid "The update could not be completed."
 msgstr "Não foi possível completar a atualização."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:273
+#: ../src/gs-offline-updates.c:268
 msgid "The update was cancelled."
 msgstr "A atualização foi cancelada."
 
 #. TRANSLATORS: the user must have updated manually after
-#. *                  * the updates were prepared
-#: ../src/gs-offline-updates.c:279
+#. * the updates were prepared
+#: ../src/gs-offline-updates.c:274
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
 "Foi solicitado uma atualização que não necessita de internet, porém nenhum "
 "pacote solicitou a atualização."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:283
+#: ../src/gs-offline-updates.c:278
 msgid "No space was left on the drive."
 msgstr "Não restou nenhum espaço em disco."
 
 #. TRANSLATORS: the update process failed in a general
-#. *                  * way, usually this message will come from source distros
-#. *                                   * like gentoo
-#: ../src/gs-offline-updates.c:291
+#. * way, usually this message will come from source distros
+#. * like gentoo
+#: ../src/gs-offline-updates.c:286
 msgid "An update failed to install correctly."
 msgstr "Uma atualização falhou em instalar corretamente."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:296
+#: ../src/gs-offline-updates.c:291
 msgid "The offline update failed in an unexpected way."
 msgstr ""
 "A atualização que não necessita de internet falhou de forma inesperada."
 
 #. TRANSLATORS: these are geeky messages from the
-#. *                                          * package manager no mortal is supposed to understand,
-#. *                                                                                   * but google might know what they mean
-#: ../src/gs-offline-updates.c:305
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: ../src/gs-offline-updates.c:300
 msgid "Detailed errors from the package manager follow:"
 msgstr "Seguem os erros detalhados do gerenciador de pacotes:"
 
@@ -462,34 +415,34 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:146
+#: ../src/gs-screenshot-image.c:129
 msgid "Screenshot not found"
 msgstr "A captura de tela não foi localizada"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:268
+#: ../src/gs-screenshot-image.c:236
 msgid "Screenshot size not found"
 msgstr "O tamanho da captura de tela não foi localizada"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:282
+#: ../src/gs-screenshot-image.c:250
 msgid "Could not create cache"
 msgstr "Não foi possível criar o cache"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:299
+#: ../src/gs-screenshot-image.c:267
 msgid "Screenshot not valid"
 msgstr "A captura de tela não é válida"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:305
+#: ../src/gs-screenshot-image.c:273
 msgid "Screenshot not available"
 msgstr "A captura de tela não está disponível"
 
-#: ../src/gs-screenshot-image.c:369
+#: ../src/gs-screenshot-image.c:326
 msgid "Screenshot"
 msgstr "Captura de tela"
 
@@ -578,13 +531,13 @@ msgstr "Removido"
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:508 ../src/gs-shell-updates.c:422
+#: ../src/gs-shell-installed.c:507 ../src/gs-shell-updates.c:422
 #: ../src/plugins/gs-plugin-packagekit.c:333
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Complementos"
 
-#: ../src/gs-shell-installed.c:597
+#: ../src/gs-shell-installed.c:596
 msgid "Click on items to select them"
 msgstr "Clique nos itens para selecioná-las"
 
@@ -1604,6 +1557,44 @@ msgstr "Fontes de entrada"
 msgctxt "Menu subcategory of Addons"
 msgid "Language Packs"
 msgstr "Pacotes de idiomas"
+
+#~ msgid "_New Folder"
+#~ msgstr "_Nova pasta"
+
+#~ msgid ""
+#~ "Add or remove folders. Your application folders can be found in the "
+#~ "Activities Overview."
+#~ msgstr ""
+#~ "Adicione ou remove pastas. Suas pastas de aplicativos podem ser "
+#~ "encontradas no Panorama de Atividades."
+
+#~ msgid ""
+#~ "Choose a folder for %s. Your application folders can be found in the "
+#~ "Activities Overview."
+#~ msgstr ""
+#~ "Escolha uma pasta para %s. Suas pastas de aplicativo podem ser "
+#~ "encontradas no Panorama de Atividades."
+
+#~ msgid ""
+#~ "Choose a folder for %s and %s. Your application folders can be found in "
+#~ "the Activities Overview."
+#~ msgstr ""
+#~ "Escolha uma pasta para %s e %s. Suas pastas de aplicativo podem ser "
+#~ "encontrados no Panorama de Atividades."
+
+#~ msgid ""
+#~ "Choose a folder for %s, %s and %s. Your application folders can be found "
+#~ "in the Activities Overview."
+#~ msgstr ""
+#~ "Escolha uma pasta de %s, %s e %s. Suas pastas de aplicativo podem ser "
+#~ "encontrados no Panorama de Atividades."
+
+#~ msgid ""
+#~ "Choose a folder for the selected applications. Your application folders "
+#~ "can be found in the Activities Overview."
+#~ msgstr ""
+#~ "Escolha uma pasta para os aplicativos selecionados. Suas pastas de "
+#~ "aplicativo podem ser encontradas no Panorama de Atividades."
 
 #~ msgid "_Installed (%d)"
 #~ msgstr "_Instalados (%d)"
