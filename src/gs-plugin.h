@@ -70,7 +70,7 @@ struct GsPlugin {
 	GsPluginUpdatesChanged	 updates_changed_fn;
 	gpointer		 updates_changed_user_data;
 	GsProfile		*profile;
-	GHashTable		*icon_cache;
+	GHashTable		*icon_cache;	/* key is the id.desktop */
 };
 
 typedef enum {

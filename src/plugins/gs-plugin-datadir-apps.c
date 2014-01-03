@@ -205,7 +205,7 @@ gs_plugin_datadir_apps_extract_desktop_data (GsPlugin *plugin,
 		goto out;
 
 	/* do we have an icon in the cache? */
-	icon_tmp = g_hash_table_lookup (plugin->icon_cache, app_id);
+	icon_tmp = g_hash_table_lookup (plugin->icon_cache, app_id_full_noprefix);
 	if (icon_tmp != NULL) {
 		pixbuf = gdk_pixbuf_new_from_file (icon_tmp, NULL);
 	} else {
