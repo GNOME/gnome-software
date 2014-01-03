@@ -611,7 +611,8 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_INSTALLED:
 	case GS_APP_STATE_UPDATABLE:
-		if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_DESKTOP) {
+		if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_DESKTOP ||
+		    gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_WEBAPP) {
 			gtk_widget_set_visible (widget, TRUE);
 		} else {
 			gtk_widget_set_visible (widget, FALSE);
