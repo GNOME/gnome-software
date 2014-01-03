@@ -2,23 +2,22 @@
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 #
-# Matej Urbančič <mateju@svn.gnome.org>, 2013.
+# Matej Urbančič <mateju@svn.gnome.org>, 2013-2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-10-20 13:26+0000\n"
-"PO-Revision-Date: 2013-10-20 18:19+0100\n"
+"POT-Creation-Date: 2014-01-03 13:11+0000\n"
+"PO-Revision-Date: 2014-01-03 22:24+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n"
-"%100==4 ? 3 : 0);\n"
+"Plural-Forms: nplurals=4; plural=(n%100==1 ? 1 : n%100==2 ? 2 : n%100==3 || n%100==4 ? 3 : 0);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
 "X-Generator: Poedit 1.5.4\n"
 
@@ -44,6 +43,18 @@ msgstr ""
 "programov in razširitev sistema. Obenem omogoča tudi posodabljanje vašega "
 "sistema s posodobitvami brez povezave."
 
+#: ../src/app-folder-dialog.ui.h:1
+msgid "Add to Application Folder"
+msgstr "Dodaj v programsko mapo"
+
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-shell-details.c:160
+msgid "_Cancel"
+msgstr "_Prekliči"
+
+#: ../src/app-folder-dialog.ui.h:3
+msgid "_Done"
+msgstr "_Končano"
+
 #: ../src/app-menu.ui.h:1
 msgid "_About"
 msgstr "_O programu"
@@ -58,15 +69,15 @@ msgstr "_Končaj"
 #. * where we are showing the application was installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:820
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:953
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Nameščeno"
 
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
-#: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:1
-#: ../src/gs-application.c:212 ../src/gs-shell.c:134
+#: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
+#: ../src/gs-application.c:231 ../src/gs-shell.c:156
 msgid "Software"
 msgstr "Programska oprema"
 
@@ -74,145 +85,145 @@ msgstr "Programska oprema"
 msgid "Add, remove or update software on this computer"
 msgstr "Dodajanje, odstranjevanje in posodabljanje programske opreme."
 
+#: ../src/gnome-software.ui.h:1
+msgid "Select All"
+msgstr "Izberi vse"
+
 #: ../src/gnome-software.ui.h:2
+msgid "Select None"
+msgstr "Odstrani izbor"
+
+#: ../src/gnome-software.ui.h:4
 msgid "Go back"
 msgstr "Pojdi nazaj"
 
 #. Translators: A label for a button to show all available software.
-#: ../src/gnome-software.ui.h:4
+#: ../src/gnome-software.ui.h:6
 msgid "_All"
 msgstr "_Vse"
 
 #. Translators: A label for a button to show only software which is already installed.
-#. TRANSLATORS: this is tab button to show the list of
-#. * installed software
-#: ../src/gnome-software.ui.h:6 ../src/gs-shell-installed.c:505
+#: ../src/gnome-software.ui.h:8
 msgid "_Installed"
 msgstr "_Nameščeno"
 
 #. Translators: A label for a button to show only updates which are available to install.
-#. TRANSLATORS: A label for a button to show only updates
-#. * which are available to install.
-#.
-#: ../src/gnome-software.ui.h:8 ../src/gs-shell-updates.c:112
+#: ../src/gnome-software.ui.h:10
 msgid "_Updates"
 msgstr "_Posodobitve"
 
-#: ../src/gnome-software.ui.h:9
+#: ../src/gnome-software.ui.h:11
 msgid "Restart & Install"
 msgstr "Namestitev in ponovni zagon"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#. TRANSLATORS: button text in the header when an application
-#. * can be installed
-#: ../src/gnome-software.ui.h:10 ../src/gs-app-widget.c:143
-#: ../src/gs-shell-details.c:108
+#: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:206
 msgid "Install"
 msgstr "Namesti"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
-#. TRANSLATORS: button text in the header when an application can be erased
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:11 ../src/gs-app-widget.c:151
-#: ../src/gs-shell-details.c:145 ../src/gs-shell-details.c:727
-#: ../src/gs-shell-installed.c:193 ../src/gs-shell-search.c:162
+#: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:215
+#: ../src/gs-shell-details.c:831 ../src/gs-shell-installed.c:204
+#: ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Odstrani"
 
-#: ../src/gnome-software.ui.h:12
-#: ../src/plugins/gs-plugin-hardcoded-popular.c:227
+#: ../src/gnome-software.ui.h:14
+#: ../src/plugins/gs-plugin-hardcoded-popular.c:228
 msgid "Featured"
 msgstr "Novosti v ospredju"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: ../src/gnome-software.ui.h:14
+#: ../src/gnome-software.ui.h:16
 msgid "Picks"
 msgstr "Izbor osebja"
 
-#: ../src/gnome-software.ui.h:15
+#: ../src/gnome-software.ui.h:17
 msgid "Categories"
 msgstr "Kategorije"
 
-#: ../src/gnome-software.ui.h:16
+#: ../src/gnome-software.ui.h:18
 msgid "No Application Data Found"
 msgstr "Podatkov o programu ni mogoče najti"
 
-#: ../src/gnome-software.ui.h:17
+#: ../src/gnome-software.ui.h:19
+msgid "Application _Folders"
+msgstr "Programske _mape"
+
+#: ../src/gnome-software.ui.h:20
 msgid "No Application Found"
 msgstr "Ni najdenih programov"
 
-#: ../src/gnome-software.ui.h:18
+#: ../src/gnome-software.ui.h:21
 msgid "Software is up to date"
 msgstr "Programska oprema je posodobljena"
 
-#: ../src/gnome-software.ui.h:19
-msgid "Description"
-msgstr "Opis"
+#: ../src/gnome-software.ui.h:22
+msgid "_Website"
+msgstr "_Spletišče"
 
-#: ../src/gnome-software.ui.h:20
+#: ../src/gnome-software.ui.h:23
+msgid "_History"
+msgstr "_Zgodovina"
+
+#. Translators: A label for a button to execute the selected application.
+#: ../src/gnome-software.ui.h:25
+msgid "_Launch"
+msgstr "_Zaženi"
+
+#: ../src/gnome-software.ui.h:26
 msgid "Details"
 msgstr "Podrobnosti"
 
-#: ../src/gnome-software.ui.h:21
+#: ../src/gnome-software.ui.h:27
 msgid "Version"
 msgstr "Različica"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gnome-software.ui.h:22 ../src/gs-shell-details.c:825
+#: ../src/gnome-software.ui.h:28 ../src/gs-shell-details.c:958
 msgid "Updated"
 msgstr "Posodobljeno"
 
-#: ../src/gnome-software.ui.h:23
+#: ../src/gnome-software.ui.h:29
 msgid "Category"
 msgstr "Kategorija"
 
-#: ../src/gnome-software.ui.h:24
+#: ../src/gnome-software.ui.h:30
 msgid "Licence"
 msgstr "Dovoljenje"
 
-#: ../src/gnome-software.ui.h:25
+#: ../src/gnome-software.ui.h:31
 msgid "Size"
 msgstr "Velikost"
 
-#: ../src/gnome-software.ui.h:26
+#: ../src/gnome-software.ui.h:32
 msgid "Developer"
 msgstr "Razvijalec"
 
-#: ../src/gnome-software.ui.h:27
-msgid "Support"
-msgstr "Podpora"
-
-#: ../src/gnome-software.ui.h:28
-msgid "_Website"
-msgstr "_Spletišče"
-
-#: ../src/gnome-software.ui.h:29
-msgid "_History"
-msgstr "_Zgodovina"
-
-#: ../src/gnome-software.ui.h:30
+#: ../src/gnome-software.ui.h:33
 msgid "History"
 msgstr "Zgodovina"
 
 #. Translators: Label for a button to close the update dialogue.
-#: ../src/gnome-software.ui.h:32
+#: ../src/gnome-software.ui.h:35
 msgid "Done"
 msgstr "Končano"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:210
+#: ../src/gs-application.c:229
 msgid "About Software"
 msgstr "O programu Programska oprema"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:215
+#: ../src/gs-application.c:234
 msgid "A nice way to manage the software on your system."
 msgstr "Enostaven način upravljanja s programsko opremo sistema."
 
-#: ../src/gs-application.c:219
+#: ../src/gs-application.c:238
 msgid "translator-credits"
 msgstr "Matej Urbančič"
 
@@ -226,34 +237,31 @@ msgstr "Posodobitve"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-widget.c:127
+#: ../src/gs-app-widget.c:190
 msgid "Visit website"
 msgstr "Obišči spletišče"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-widget.c:134 ../src/gs-shell-details.c:158
+#: ../src/gs-app-widget.c:197 ../src/gs-shell-installed.c:589
 msgid "Cancel"
 msgstr "Prekliči"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:137 ../src/gs-shell-details.c:92
+#: ../src/gs-app-widget.c:200
 msgid "Pending"
 msgstr "Na čakanju"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#. TRANSLATORS: button text in the header when an application
-#. * is in the process of being installed
-#: ../src/gs-app-widget.c:162 ../src/gs-shell-details.c:119
+#: ../src/gs-app-widget.c:226
 msgid "Installing"
 msgstr "Nameščanje"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-app-widget.c:171 ../src/gs-shell-details.c:152
+#: ../src/gs-app-widget.c:235
 msgid "Removing"
 msgstr "Odstranjevanje"
 
@@ -298,14 +306,89 @@ msgstr "Nastavi določeno raven razhroščevanja nekaterih."
 msgid "Show profiling information for the service"
 msgstr "Pokaži podrobnosti profila za storitev"
 
+#. TRANSLATORS: this is when the offline update failed
+#: ../src/gs-offline-updates.c:228
+msgid "Failed To Update"
+msgstr "Posodobitev je spodletela"
+
+#. TRANSLATORS: the transaction could not be completed
+#. * as a previous transaction was unfinished
+#: ../src/gs-offline-updates.c:234
+msgid "A previous update was unfinished."
+msgstr "Predhodna posodobitev ni bila uspešno končana."
+
+#. TRANSLATORS: the package manager needed to download
+#. * something with no network available
+#: ../src/gs-offline-updates.c:244
+#, fuzzy
+msgid "Network access was required but not available."
+msgstr "Jaz"
+
+#. TRANSLATORS: if the package is not signed correctly
+#. *
+#: ../src/gs-offline-updates.c:253
+#, fuzzy
+msgid "An update was not signed in the correct way."
+msgstr "Starejša datoteka z enakim imenom v “%s” že obstaja."
+
+#. TRANSLATORS: the transaction failed in a way the user
+#. * probably cannot comprehend. Package management systems
+#. * really are teh suck.
+#: ../src/gs-offline-updates.c:263
+#, fuzzy
+msgid "The update could not be completed."
+msgstr "Novejša datoteka z enakim imenom v “%s” že obstaja."
+
+#. TRANSLATORS: the user aborted the update manually
+#: ../src/gs-offline-updates.c:268
+msgid "The update was cancelled."
+msgstr "Posodobitev je bila preklicana."
+
+#. TRANSLATORS: the user must have updated manually after
+#. * the updates were prepared
+#: ../src/gs-offline-updates.c:274
+#, fuzzy
+msgid "An offline update was requested but no packages required updating."
+msgstr "Ali ste prepričani, da želite trajno izbrisati “%B” iz smeti?"
+
+#. TRANSLATORS: we ran out of disk space
+#: ../src/gs-offline-updates.c:278
+#, fuzzy
+msgid "No space was left on the drive."
+msgstr "Ali ste prepričani, da želite trajno izbrisati “%B”?"
+
+#. TRANSLATORS: the update process failed in a general
+#. * way, usually this message will come from source distros
+#. * like gentoo
+#: ../src/gs-offline-updates.c:286
+#, fuzzy
+msgid "An update failed to install correctly."
+msgstr ""
+"Datotek v mapi “%B” ni mogoče izbrisati, ker ni ustreznih dovoljenj za ogled."
+
+#. TRANSLATORS: We didn't handle the error type
+#: ../src/gs-offline-updates.c:291
+#, fuzzy
+msgid "The offline update failed in an unexpected way."
+msgstr ""
+"Med pridobivanjem podrobnosti o datotekah v mapi “%B” je prišlo do napake."
+
+#. TRANSLATORS: these are geeky messages from the
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: ../src/gs-offline-updates.c:300
+#, fuzzy
+msgid "Detailed errors from the package manager follow:"
+msgstr "Mape “%B” ni mogoče izbrisati, ker ni ustreznih dovoljenja za branje."
+
 #. TRANSLATORS: this is a group of updates that are not packages and
 #. * are ot shown in the main list
-#: ../src/gs-plugin-loader.c:654
+#: ../src/gs-plugin-loader.c:715
 msgid "OS Updates"
 msgstr "Posodobitve sistema"
 
 #. TRANSLATORS: this is a longer description of the os-update item
-#: ../src/gs-plugin-loader.c:656 ../src/gs-plugin-loader.c:657
+#: ../src/gs-plugin-loader.c:717 ../src/gs-plugin-loader.c:718
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
@@ -313,12 +396,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1205
+#: ../src/gs-plugin-loader.c:1270
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Za zapis %s ni na voljo dodatnih kodekov."
 
-#: ../src/gs-plugin-loader.c:1208
+#: ../src/gs-plugin-loader.c:1273
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -327,36 +410,62 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:146
+#: ../src/gs-screenshot-image.c:129
 msgid "Screenshot not found"
 msgstr "Zaslonske slike ni mogoče najti"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:266
+#: ../src/gs-screenshot-image.c:236
 msgid "Screenshot size not found"
 msgstr "Velikosti zaslonske slike ni mogoče najti"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:280
+#: ../src/gs-screenshot-image.c:250
 msgid "Could not create cache"
 msgstr "Ni mogoče ustvariti predpomnilnika"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:297
+#: ../src/gs-screenshot-image.c:267
 msgid "Screenshot not valid"
 msgstr "Zaslonska slika ni veljavna"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:303
+#: ../src/gs-screenshot-image.c:273
 msgid "Screenshot not available"
 msgstr "Zaslonska slika ni na voljo"
 
-#: ../src/gs-screenshot-image.c:365
+#: ../src/gs-screenshot-image.c:326
 msgid "Screenshot"
 msgstr "Zaslonska slika"
+
+#: ../src/gs-shell-details.c:93
+msgid "_Pending"
+msgstr "_V čakanju"
+
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gs-shell-details.c:109
+msgid "_Install"
+msgstr "_Namesti"
+
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-shell-details.c:120
+msgid "_Installing"
+msgstr "_Nameščanje"
+
+#. TRANSLATORS: button text in the header when an application can be erased
+#: ../src/gs-shell-details.c:147
+msgid "_Remove"
+msgstr "_Odstrani"
+
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-shell-details.c:154
+msgid "_Removing"
+msgstr "_Odstranjevanje"
 
 #. TRANSLATORS: this is where the licence is not known
 #. TRANSLATORS: this is where the version is not known
@@ -364,44 +473,44 @@ msgstr "Zaslonska slika"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-shell-details.c:460 ../src/gs-shell-details.c:479
-#: ../src/gs-shell-details.c:489 ../src/gs-shell-details.c:831
+#: ../src/gs-shell-details.c:528 ../src/gs-shell-details.c:547
+#: ../src/gs-shell-details.c:557 ../src/gs-shell-details.c:964
 msgid "Unknown"
 msgstr "Neznano"
 
 #. TRANSLATORS: this is where the licence is insanely
 #. * complicated and the full string is put into the tooltip
-#: ../src/gs-shell-details.c:465
+#: ../src/gs-shell-details.c:533
 msgid "Complicated!"
 msgstr "Zelo zapleteno!"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:486
+#: ../src/gs-shell-details.c:554
 msgid "Calculating…"
 msgstr "Poteka preračunavanje ..."
 
-#. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:500
+#. TRANSLATORS: this is where the updated date is not known
+#: ../src/gs-shell-details.c:570
 msgid "Never"
 msgstr "Nikoli"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:517
+#: ../src/gs-shell-details.c:587
 msgid "None"
 msgstr "Brez"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:712 ../src/gs-shell-installed.c:178
-#: ../src/gs-shell-search.c:147
+#: ../src/gs-shell-details.c:816 ../src/gs-shell-installed.c:189
+#: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Ali ste prepričani, da želite odstraniti %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:724 ../src/gs-shell-installed.c:190
-#: ../src/gs-shell-search.c:159
+#: ../src/gs-shell-details.c:828 ../src/gs-shell-installed.c:201
+#: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -409,7 +518,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:814
+#: ../src/gs-shell-details.c:947
 msgid "Removed"
 msgstr "Odstranjeno"
 
@@ -418,52 +527,83 @@ msgstr "Odstranjeno"
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:474 ../src/gs-shell-updates.c:389
-#: ../src/plugins/gs-plugin-packagekit.c:283
+#: ../src/gs-shell-installed.c:507 ../src/gs-shell-updates.c:422
+#: ../src/plugins/gs-plugin-packagekit.c:333
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Dodatki"
 
-#. TRANSLATORS: this is tab button to show the list of
-#. * installed software. The '%d' refers to the number of
-#. * applications either installing or erasing
-#: ../src/gs-shell-installed.c:510
-#, c-format
-msgid "_Installed (%d)"
-msgstr "_Nameščeno (%d)"
-
-#. TRANSLATORS: A label for a button to show only updates
-#. * which are available to install. The '%d' refers to the
-#. * number of available updates
-#.
-#: ../src/gs-shell-updates.c:105
-#, c-format
-msgid "_Updates (%d)"
-msgstr "_Posodobitve (%d)"
+#: ../src/gs-shell-installed.c:596
+#, fuzzy
+msgid "Click on items to select them"
+msgstr "S klikom se predmeti izberejo."
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:179
 msgid "Recent Software Updates"
 msgstr "Nedavne posodobitve programske opreme"
 
-#: ../src/gs-update-monitor.c:100
-msgid "Software Updates available"
-msgstr "Na voljo so posodobitve"
+#: ../src/gs-update-monitor.c:102
+#, fuzzy
+msgid "Software Updates Available"
+msgstr "Dostop do “%B” ni mogoč."
 
-#: ../src/gs-update-monitor.c:101
+#: ../src/gs-update-monitor.c:103
 msgid "Important OS and application updates are ready to be installed"
 msgstr ""
 
-#. TRANSLATORS: don't install updates now
-#: ../src/gs-update-monitor.c:109
+#: ../src/gs-update-monitor.c:106
+msgid "View"
+msgstr "Pogled"
+
+#: ../src/gs-update-monitor.c:107
 msgid "Not Now"
 msgstr "Ne zdaj"
 
-#. TRANSLATORS: view available updates
-#: ../src/gs-update-monitor.c:114
-msgid "View"
-msgstr "Pogled"
+#: ../src/gs-update-monitor.c:149
+#, fuzzy
+msgid "Software Update Installed"
+msgid_plural "Software Updates Installed"
+msgstr[0] "Med branjem “%B” je prišlo do napake."
+msgstr[1] "Na voljo so posodobitve"
+msgstr[2] "Na voljo so posodobitve"
+msgstr[3] "Na voljo so posodobitve"
+
+#. TRANSLATORS: message when we've done offline updates
+#: ../src/gs-update-monitor.c:153
+msgid "An important OS update has been installed."
+msgid_plural "Important OS updates have been installed."
+msgstr[0] "Nameščene so bile pomembne sistemske posodobitve."
+msgstr[1] "Nameščena je bila pomembna sistemska posodobitev."
+msgstr[2] "Nameščeni sta bili pomembni sistemski posodobitvi."
+msgstr[3] "Nameščene so bile pomembne sistemske posodobitve."
+
+#: ../src/gs-update-monitor.c:158
+#, fuzzy
+msgid "Software Updates Failed"
+msgstr "Dostop do “%B” ni mogoč."
+
+#. TRANSLATORS: message when we offline updates have failed
+#: ../src/gs-update-monitor.c:160
+#, fuzzy
+msgid "An important OS update failed to be installed."
+msgstr ""
+"Z datotekami v mapi “%B” ni mogoče upravljati, ker ni ustreznih dovoljenja "
+"za ogled."
+
+#: ../src/gs-update-monitor.c:169
+#, fuzzy
+msgid "Review"
+msgstr "Ocena"
+
+#: ../src/gs-update-monitor.c:171
+msgid "Show Details"
+msgstr "Pokaži podrobnosti"
+
+#: ../src/gs-update-monitor.c:172
+msgid "OK"
+msgstr "V redu"
 
 #. vim: set noexpandtab:
 #: ../src/gs-star-widget.ui.h:1
@@ -488,71 +628,71 @@ msgstr "Pet zvezdic"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:168
+#: ../src/gs-utils.c:131
 #, c-format
 msgid "%s is now installed"
 msgstr "%s je zdaj nameščen"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:171
+#: ../src/gs-utils.c:135
 msgid "Launch"
 msgstr "Zaženi"
 
-#: ../src/gs-utils.c:204
+#: ../src/gs-utils.c:160
 msgid "Sorry, this did not work"
 msgstr "Opravila ni bilo mogoče izvesti!"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:208
+#: ../src/gs-utils.c:164
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Namestitev %s je spodletela."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:213
+#: ../src/gs-utils.c:169
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Odstranjevanje %s je spodletelo."
 
-#: ../src/plugins/gs-plugin-appstream.c:266
+#: ../src/plugins/gs-plugin-appstream.c:335
 #, c-format
 msgid "No AppStream data found"
 msgstr "Ni najdenih podatkov AppStream"
 
 #. TRANSLATORS: this is when a webapp has no comment
-#: ../src/plugins/gs-plugin-epiphany.c:149
+#: ../src/plugins/gs-plugin-epiphany.c:147
 #, c-format
 msgid "Web app"
 msgstr "Spletni program"
 
 #. TRANSLATORS: this is the licence of the web-app
-#: ../src/plugins/gs-plugin-epiphany.c:161
+#: ../src/plugins/gs-plugin-epiphany.c:155
 msgid "Proprietary"
 msgstr "Lastniško"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:287
+#: ../src/plugins/gs-plugin-packagekit.c:337
 msgid "Codecs"
 msgstr "Kodeki"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:291
+#: ../src/plugins/gs-plugin-packagekit.c:341
 msgid "Fonts"
 msgstr "Pisave"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:295
+#: ../src/plugins/gs-plugin-packagekit.c:345
 msgid "Input Sources"
 msgstr "Vhodni viri"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:299
+#: ../src/plugins/gs-plugin-packagekit.c:349
 msgid "Language Packs"
 msgstr "Jezikovni paketi"
 
 #. TRANSLATORS: this is where update details either are
 #. * no longer available or were never provided in the first place
-#: ../src/plugins/gs-plugin-packagekit-refine.c:341
+#: ../src/plugins/gs-plugin-packagekit-refine.c:374
 msgid "No update details were provided"
 msgstr "Ni ponujenih podrobnosti za posodobitev"
 
@@ -1420,6 +1560,18 @@ msgstr "Vhodni viri"
 msgctxt "Menu subcategory of Addons"
 msgid "Language Packs"
 msgstr "Jezikovni paketi"
+
+#~ msgid "Description"
+#~ msgstr "Opis"
+
+#~ msgid "Support"
+#~ msgstr "Podpora"
+
+#~ msgid "_Installed (%d)"
+#~ msgstr "_Nameščeno (%d)"
+
+#~ msgid "_Updates (%d)"
+#~ msgstr "_Posodobitve (%d)"
 
 #~ msgid "Software has the following goals:"
 #~ msgstr "Programska oprema omogoča:"
