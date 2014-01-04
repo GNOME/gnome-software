@@ -51,14 +51,19 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
+	char *epiphany;
+
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 
 	/* we can only work with epiphany */
-	if (!g_file_test ("/usr/bin/epiphany", G_FILE_TEST_EXISTS)) {
+	epiphany = g_find_program_in_path ("epiphany");
+	if (epiphany == NULL) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_warning ("disabling '%s' as epiphany does not exist",
 			   plugin->name);
 	}
+
+	g_free (epiphany);
 }
 
 /**
