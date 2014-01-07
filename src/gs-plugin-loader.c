@@ -1612,6 +1612,7 @@ typedef struct {
 	GsAppState	 state_failure;
 	GsPluginLoaderFinishedFunc func;
 	gpointer	 func_user_data;
+	gboolean	 ret;
 } GsPluginLoaderThreadHelper;
 
 static gboolean
@@ -1652,6 +1653,26 @@ gs_app_set_state_in_idle (GsApp *app, GsAppState state)
 	g_idle_add (set_state_idle_cb, app_data);
 }
 
+static gboolean
+gs_app_fire_finished_in_idle_cb (gpointer user_data)
+{
+	GsPluginLoaderThreadHelper *helper = (GsPluginLoaderThreadHelper *) user_data;
+
+	if (helper->func != NULL) {
+		helper->func (helper->plugin_loader,
+			      helper->ret ? helper->app : NULL,
+			      helper->func_user_data);
+	}
+
+	g_object_unref (helper->plugin_loader);
+	g_object_unref (helper->app);
+	if (helper->cancellable != NULL)
+		g_object_unref (helper->cancellable);
+	g_free (helper);
+
+	return G_SOURCE_REMOVE;
+}
+
 /**
  * gs_plugin_loader_thread_func:
  **/
@@ -1659,7 +1680,6 @@ static gpointer
 gs_plugin_loader_thread_func (gpointer user_data)
 {
 	GsPluginLoaderThreadHelper *helper = (GsPluginLoaderThreadHelper *) user_data;
-	gboolean ret;
 	GError *error = NULL;
 
 	/* add to list */
@@ -1670,12 +1690,12 @@ gs_plugin_loader_thread_func (gpointer user_data)
 	g_idle_add (emit_pending_apps_idle, g_object_ref (helper->plugin_loader));
 
 	/* run action */
-	ret = gs_plugin_loader_run_action (helper->plugin_loader,
+	helper->ret = gs_plugin_loader_run_action (helper->plugin_loader,
 					   helper->app,
 					   helper->function_name,
 					   helper->cancellable,
 					   &error);
-	if (!ret) {
+	if (!helper->ret) {
 		gs_app_set_state_in_idle (helper->app, helper->state_failure);
 		g_warning ("failed to complete %s: %s", helper->function_name, error->message);
 		g_error_free (error);
@@ -1690,17 +1710,7 @@ gs_plugin_loader_thread_func (gpointer user_data)
 	g_idle_add (emit_pending_apps_idle, g_object_ref (helper->plugin_loader));
 
 	/* fire finished func */
-	if (helper->func != NULL) {
-		helper->func (helper->plugin_loader,
-			      ret ? helper->app : NULL,
-			      helper->func_user_data);
-	}
-
-	g_object_unref (helper->plugin_loader);
-	g_object_unref (helper->app);
-	if (helper->cancellable != NULL)
-		g_object_unref (helper->cancellable);
-	g_free (helper);
+	g_idle_add (gs_app_fire_finished_in_idle_cb, helper);
 	return NULL;
 }
 
