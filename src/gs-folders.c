@@ -27,6 +27,9 @@
 
 #include "gs-folders.h"
 
+#define APP_FOLDER_SCHEMA       "org.gnome.desktop.app-folders"
+#define APP_FOLDER_CHILD_SCHEMA "org.gnome.desktop.app-folders.folder"
+
 static void	gs_folders_finalize	(GObject	*object);
 
 #define GS_FOLDERS_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_FOLDERS, GsFoldersPrivate))
@@ -43,6 +46,8 @@ typedef struct
 {
 	gchar *id;
 	gchar *name;
+	gchar *translated;
+	gboolean translate;
 	GPtrArray *apps;
 } GsFolder;
 
@@ -55,15 +60,39 @@ struct GsFoldersPrivate
 
 G_DEFINE_TYPE (GsFolders, gs_folders, G_TYPE_OBJECT)
 
+static gchar *
+lookup_folder_name (const gchar *id)
+{
+	gchar *name = NULL;
+	GKeyFile *key_file;
+	gchar *file;
+
+	file = g_build_filename ("desktop-directories", id, NULL);
+	key_file = g_key_file_new ();
+	if (g_key_file_load_from_data_dirs (key_file, file, NULL, G_KEY_FILE_NONE, NULL)) {
+       		name = g_key_file_get_locale_string (key_file, "Desktop Entry", "Name", NULL, NULL);
+	}
+
+	g_free (file);
+	g_key_file_unref (key_file);
+
+	return name;
+}
+
 static GsFolder *
-gs_folder_new (const gchar *id, const gchar *name)
+gs_folder_new (const gchar *id, const gchar *name, gboolean translate)
 {
 	GsFolder *folder;
 
 	folder = g_new0 (GsFolder, 1);
 	folder->id = g_strdup (id);
-	folder->name = g_strdup (name ? name : id);
+	folder->name = g_strdup (name);
+	folder->translate = translate;
+	if (translate) {
+		folder->translated = lookup_folder_name (name);
+	}
 	folder->apps = g_ptr_array_new_with_free_func (g_free);
+
 
 	return folder;
 }
@@ -73,6 +102,7 @@ gs_folder_free (GsFolder *folder)
 {
 	g_free (folder->id);
 	g_free (folder->name);
+	g_free (folder->translated);
 	g_ptr_array_free (folder->apps, TRUE);
 	g_free (folder);
 }
@@ -85,87 +115,78 @@ gs_folders_class_init (GsFoldersClass *klass)
 	g_type_class_add_private (klass, sizeof (GsFoldersPrivate));
 }
 
-static gchar *
-lookup_folder_name (GsFolders *folders, const gchar *id)
-{
-	gchar *name = NULL;
-
-	if (g_str_has_suffix (id, ".directory")) {
-		GKeyFile *key_file;
-		gchar *file;
-		gchar *path;
-
-		file = g_build_filename ("desktop-directories", id, NULL);
-		key_file = g_key_file_new ();
-		if (g_key_file_load_from_data_dirs (key_file, file, &path, G_KEY_FILE_NONE, NULL)) {
-          		name = g_key_file_get_locale_string (key_file, "Desktop Entry", "Name", NULL, NULL);
-			g_free (path);
-		}
-
-		g_free (file);
-		g_key_file_unref (key_file);
-	}
-		
-	return name;
-}
-
 static void
 load (GsFolders *folders)
 {
-	GVariant *v;
-	GVariantIter iter;
-	const gchar *id;
-	GVariantIter *apps;
 	GsFolder *folder;
-	gchar *app;
-	guint i;
+	gchar **ids;
+	gchar **apps;
+	guint i, j;
 	gchar *name;
+        gchar *path;
+        gchar *child_path;
+        GSettings *settings;
+	gboolean translate;
 
 	folders->priv->folders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)gs_folder_free);
 	folders->priv->apps = g_hash_table_new (g_str_hash, g_str_equal);
 
-	v = g_settings_get_value (folders->priv->settings, "app-folders");
-	g_variant_iter_init (&iter, v);
-	while (g_variant_iter_next (&iter, "{&sas}", &id, &apps)) {
-
-		if (g_variant_iter_n_children (apps) > 0) {
-			name = lookup_folder_name (folders, id);
-			folder = gs_folder_new (id, name ? name : id);
-			g_free (name);
-			while (g_variant_iter_next (apps, "s", &app)) {
-				g_ptr_array_add (folder->apps, app);
-			}
-		
-			g_hash_table_insert (folders->priv->folders, (gpointer)folder->id, folder);
-			for (i = 0; i < folder->apps->len; i++) {
-				g_hash_table_insert (folders->priv->apps, g_ptr_array_index (folder->apps, i), folder);
-			}
+	ids = g_settings_get_strv (folders->priv->settings, "folder-children");
+        g_object_get (folders->priv->settings, "path", &path, NULL);
+	for (i = 0; ids[i]; i++) {
+                child_path = g_strconcat (path, "folders/", ids[i], "/", NULL);
+                settings = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
+                name = g_settings_get_string (settings, "name");
+		translate = g_settings_get_boolean (settings, "translate");
+		apps = g_settings_get_strv (settings, "apps");
+		folder = gs_folder_new (ids[i], name, translate);
+		for (j = 0; apps[j]; j++) {
+			g_ptr_array_add (folder->apps, apps[j]);
 		}
-		g_variant_iter_free (apps);
+		
+		g_hash_table_insert (folders->priv->folders, (gpointer)folder->id, folder);
+		for (j = 0; j < folder->apps->len; j++) {
+			g_hash_table_insert (folders->priv->apps, g_ptr_array_index (folder->apps, j), folder);
+		}
+
+		g_free (apps);
+		g_free (name);
+		g_object_unref (settings);
+                g_free (child_path);
 	}
-	g_variant_unref (v);
+	g_strfreev (ids);
 }
 
 static void
 save (GsFolders *folders)
 {
 	GHashTableIter iter;
-	GVariantBuilder builder;
 	GsFolder *folder;
-	
-	g_variant_builder_init (&builder, G_VARIANT_TYPE ("a{sas}"));
+	gpointer apps;
+	gchar *path;
+        gchar *child_path;
+	GSettings *settings;
+
+        g_object_get (folders->priv->settings, "path", &path, NULL);
 	g_hash_table_iter_init (&iter, folders->priv->folders);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&folder)) {
-		if (folder->apps->len > 0) {
-			g_ptr_array_add (folder->apps, NULL);
-			g_variant_builder_add (&builder, "{s^as}",
-					       folder->id, folder->apps->pdata);
-			g_ptr_array_remove (folder->apps, NULL);
-		}
-	}
+                child_path = g_strconcat (path, "folders/", folder->id, "/", NULL);
+                settings = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
+		g_settings_set_string (settings, "name", folder->name);
+		g_settings_set_boolean (settings, "translate", folder->translate);
+		g_ptr_array_add (folder->apps, NULL);
+		g_settings_set_strv (settings, "apps", (const gchar * const *)folder->apps->pdata);
+		g_ptr_array_remove (folder->apps, NULL);
 
-	g_settings_set_value (folders->priv->settings, "app-folders", g_variant_builder_end (&builder));
-	
+		g_object_unref (settings);
+		g_free (child_path);
+	}
+	g_free (path);
+
+	apps = g_hash_table_get_keys_as_array (folders->priv->folders, NULL);
+	g_settings_set_strv (folders->priv->settings, "folder-children",
+                             (const gchar * const *)apps);
+	g_free (apps);
 }
 
 static void
@@ -183,7 +204,7 @@ gs_folders_init (GsFolders *folders)
 {
 	folders->priv = GS_FOLDERS_GET_PRIVATE (folders);
 
-	folders->priv->settings = g_settings_new ("org.gnome.software");
+	folders->priv->settings = g_settings_new (APP_FOLDER_SCHEMA);
 	load (folders);
 }
 
@@ -231,16 +252,39 @@ gs_folders_get_apps (GsFolders *folders, const gchar *id)
 	return folder ? (const gchar**)folder->apps->pdata : NULL;
 }
 
-void
+static void
+canonicalize_key (gchar *key)
+{
+  gchar *p;
+
+  for (p = key; *p != 0; p++)
+    {
+      gchar c = *p;
+
+      if (c != '-' &&
+          (c < '0' || c > '9') &&
+          (c < 'A' || c > 'Z') &&
+          (c < 'a' || c > 'z'))
+        *p = '-';
+    }
+}
+
+const gchar *
 gs_folders_add_folder (GsFolders *folders, const gchar *id)
 {
 	GsFolder *folder;
+	gchar *key;
 
-	folder = g_hash_table_lookup (folders->priv->folders, id);
+	key = g_strdup (id);
+	canonicalize_key (key);	
+	folder = g_hash_table_lookup (folders->priv->folders, key);
 	if (!folder) {
-		folder = gs_folder_new (id, id);
+		folder = gs_folder_new (key, id, FALSE);
 		g_hash_table_insert (folders->priv->folders, folder->id, folder);
 	}
+	g_free (key);
+
+	return folder->id;
 }
 
 void
@@ -268,7 +312,14 @@ gs_folders_get_folder_name (GsFolders *folders, const gchar *id)
 
 	folder = g_hash_table_lookup (folders->priv->folders, id);
 
-	return folder ? folder->name : NULL;
+	if (folder) {
+		if (folder->translated)
+			return folder->translated;
+
+		return folder->name;
+	}
+
+	return NULL;
 }
 
 void
@@ -279,7 +330,9 @@ gs_folders_set_folder_name (GsFolders *folders, const gchar *id, const gchar *na
 	folder = g_hash_table_lookup (folders->priv->folders, id);
 	if (folder) {
 		g_free (folder->name);
+		g_free (folder->translated);
 		folder->name = g_strdup (name);
+		folder->translate = FALSE;
 	}
 }
 

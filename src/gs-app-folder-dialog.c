@@ -93,7 +93,7 @@ apply_changes (GsAppFolderDialog *dialog)
 
 	for (l = priv->apps; l; l = l->next) {
 		GsApp *app = l->data;
-		gs_folders_set_app_folder (priv->folders, gs_app_get_id (app), folder);
+		gs_folders_set_app_folder (priv->folders, gs_app_get_id_full (app), folder);
 	}
 
 	gs_folders_save (priv->folders);
@@ -129,6 +129,7 @@ done_editing (GtkEntry *entry, GsAppFolderDialog *dialog)
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
 	GtkWidget *row;
 	gchar *folder;
+	const gchar *id;
 	GtkWidget *label;
 	GtkWidget *parent;
 
@@ -147,8 +148,9 @@ done_editing (GtkEntry *entry, GsAppFolderDialog *dialog)
 	gtk_container_add (GTK_CONTAINER (parent), label);
 	g_object_set (parent, "margin", 10, NULL);
 
-	g_object_set_data_full (G_OBJECT (row), "folder", folder, g_free);
-	gs_folders_add_folder (priv->folders, folder);
+	id = gs_folders_add_folder (priv->folders, folder);
+	g_object_set_data (G_OBJECT (row), "folder", (gpointer)id);
+	g_free (folder);
 
 	gtk_widget_show (GTK_WIDGET (priv->new_folder_button));
 }
