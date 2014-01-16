@@ -93,6 +93,12 @@ AS_IF([test "$enable_man" != no], [
 ])
 AM_CONDITIONAL(ENABLE_MAN, test "$enable_man" != no)
 
+AC_ARG_ENABLE(dogtail,
+              [AS_HELP_STRING([--enable-dogtail],
+                              [test using dogtail [default=yes]])],,
+              enable_dogtail=yes)
+AM_CONDITIONAL(ENABLE_DOGTAIL, test "$enable_dogtail" != no)
+
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
 GS_PLUGIN_API_VERSION=2
@@ -134,5 +140,6 @@ echo "
         compiler:                  ${CC}
         cflags:                    ${CFLAGS}
         cppflags:                  ${CPPFLAGS}
+        Dogtail:                   ${enable_dogtail}
 "
 

@@ -1,5 +1,11 @@
+if ENABLE_DOGTAIL
 include $(top_srcdir)/glib-tap.mk
 
-test_scripts =			\
-	basic.py		\
+dist_test_scripts =					\
+	basic.py					\
+	actions.py
+endif
+
+EXTRA_DIST =						\
+	basic.py					\
 	actions.py
