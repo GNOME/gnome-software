@@ -391,7 +391,7 @@ gs_markdown_to_text_line_format (GsMarkdown *self, const gchar *line)
 	GString *string;
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
 	gboolean mode = FALSE;
-	gchar **codes;
+	gchar **codes = NULL;
 	gchar *text;
 	guint i;
 
@@ -421,6 +421,7 @@ gs_markdown_to_text_line_format (GsMarkdown *self, const gchar *line)
 	}
 	text = g_string_free (string, FALSE);
 out:
+	g_strfreev (codes);
 	return text;
 }
 
