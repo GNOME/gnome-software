@@ -1,3 +1,41 @@
+Version 3.11.4
+~~~~~~~~~~~~~~
+Released: 2013-01-16
+
+* Translations:
+ - Updated Brazilian Portuguese Translation proofread by Enrico Nicoletto (Rafael Ferreira)
+ - Updated Czech translation (Marek Černocký)
+ - Updated Finnish translation (Jiri Grönroos)
+ - Updated Galician translation (Fran Diéguez)
+ - Updated Greek translation (Dimitris Spingos)
+ - Updated Korean translation (Seong-ho Cho)
+ - Updated Slovenian translation (Matej Urbančič)
+ - Updated Spanish translation (Daniel Mustieles)
+
+* New Features:
+ - Add Ardour to the featured list (Jakub Steiner)
+ - Add a --enable-dogtail configure switch (Richard Hughes)
+ - Add a dep to gsettings-desktop-schemas (Richard Hughes)
+ - Add a test for actions (Matthias Clasen)
+ - Add some work-in-progress UI tests (Matthias Clasen, Colin Walters)
+ - Initial port of the PackageKit session interface (Richard Hughes)
+
+* Bugfix:
+ - Add some accessible names to widgets (Matthias Clasen)
+ - Don't notify every hour for available updates (Giovanni Campagna)
+ - Drop spinner for screenshot loading (Matthias Clasen)
+ - Ensure all calls to pkexec use g_child_watch_add() (Richard Hughes)
+ - Ensure that the application ratings are set correctly (Richard Hughes)
+ - Fix the name of the offline update file (Richard Hughes)
+ - Fix the speed regression by using the correct icon cache key (Richard Hughes)
+ - Look up app folder names (Matthias Clasen)
+ - Make app folder configuration available (Matthias Clasen)
+ - Recognize if installed by jhbuild (Giovanni Campagna)
+ - Show the 'Launch' button for installed web-apps too (Richard Hughes)
+ - Some updates to the app folder dialog (Matthias Clasen)
+ - Update project homepage url (William Jon McCann)
+ - Updates to the app widget layout (Matthias Clasen)
+
 Version 3.11.3
 ~~~~~~~~~~~~~~
 Released: 2013-12-17
