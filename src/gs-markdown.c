@@ -405,7 +405,7 @@ gs_markdown_to_text_line_format (GsMarkdown *self, const gchar *line)
 	/* we want to parse the code sections without formatting */
 	codes = g_strsplit (line, "`", -1);
 	string = g_string_new ("");
-	for (i=0; codes[i] != NULL; i++) {
+	for (i = 0; codes[i] != NULL; i++) {
 		if (!mode) {
 			text = gs_markdown_to_text_line_format_sections (self, codes[i]);
 			g_string_append (string, text);
@@ -548,7 +548,7 @@ gs_markdown_word_auto_format_code (const gchar *text)
 	words = g_strsplit (text, " ", -1);
 
 	/* search each word */
-	for (i=0; words[i] != NULL; i++) {
+	for (i = 0; words[i] != NULL; i++) {
 		if (gs_markdown_word_is_code (words[i])) {
 			temp = g_strdup_printf ("`%s`", words[i]);
 			g_free (words[i]);
@@ -600,7 +600,7 @@ gs_markdown_word_auto_format_urls (const gchar *text)
 	words = g_strsplit (text, " ", -1);
 
 	/* search each word */
-	for (i=0; words[i] != NULL; i++) {
+	for (i = 0; words[i] != NULL; i++) {
 		if (gs_markdown_word_is_url (words[i])) {
 			temp = g_strdup_printf ("<a href=\"%s\">%s</a>",
 						words[i], words[i]);
