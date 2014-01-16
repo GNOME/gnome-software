@@ -228,6 +228,7 @@ TESTS = gs-self-test
 
 EXTRA_DIST =						\
 	shell-search-provider-dbus-interfaces.xml	\
+	org.freedesktop.PackageKit.xml			\
 	gnome-software.gresource.xml			\
 	gnome-software.xml				\
 	gtk-style.css					\
