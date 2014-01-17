@@ -1,15 +1,15 @@
 # Spanish translation for gnome-software.
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
-# Daniel Mustieles <daniel.mustieles@gmail.com>, 2013.
+# Daniel Mustieles <daniel.mustieles@gmail.com>, 2013, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-12-24 18:12+0000\n"
-"PO-Revision-Date: 2013-12-30 11:34+0100\n"
+"POT-Creation-Date: 2014-01-17 00:51+0000\n"
+"PO-Revision-Date: 2014-01-17 11:36+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -45,7 +45,6 @@ msgstr ""
 "desconectado."
 
 #: ../src/app-folder-dialog.ui.h:1
-#| msgid "Application Folders"
 msgid "Add to Application Folder"
 msgstr "Añadir a la carpeta de aplicaciones"
 
@@ -71,7 +70,7 @@ msgstr "_Salir"
 #. * where we are showing the application was installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:952
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:953
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalado"
@@ -128,7 +127,7 @@ msgstr "Instalar"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:215
-#: ../src/gs-shell-details.c:830 ../src/gs-shell-installed.c:204
+#: ../src/gs-shell-details.c:831 ../src/gs-shell-installed.c:204
 #: ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Eliminar"
@@ -186,7 +185,7 @@ msgstr "Versión"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gnome-software.ui.h:28 ../src/gs-shell-details.c:957
+#: ../src/gnome-software.ui.h:28 ../src/gs-shell-details.c:958
 msgid "Updated"
 msgstr "Actualizado"
 
@@ -228,6 +227,47 @@ msgstr "Una buena manera de gestionar el software en su sistema."
 #: ../src/gs-application.c:238
 msgid "translator-credits"
 msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013"
+
+#: ../src/gs-application.c:476
+#| msgid "Add to Application Folder"
+msgid "Enter GApplication service mode"
+msgstr "Entrar en modo de servicio de GApplication"
+
+#. TRANSLATORS: this is a command line option
+#: ../src/gs-application.c:479 ../src/gs-launcher.c:61
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr ""
+"Modo de inicio, puede ser «actualizaciones», «actualizados», «instalados» o "
+"«vista general»"
+
+#: ../src/gs-application.c:479 ../src/gs-launcher.c:61
+msgid "MODE"
+msgstr "MODO"
+
+#: ../src/gs-application.c:481 ../src/gs-launcher.c:63
+msgid "Search for applications"
+msgstr "Buscar aplicaciones"
+
+#: ../src/gs-application.c:481 ../src/gs-launcher.c:63
+msgid "SEARCH"
+msgstr "BUSCAR"
+
+#: ../src/gs-application.c:483 ../src/gs-launcher.c:65
+msgid "Show application details"
+msgstr "Mostrar los detalles de la aplicación"
+
+#: ../src/gs-application.c:483 ../src/gs-application.c:485
+#: ../src/gs-launcher.c:65 ../src/gs-launcher.c:67
+msgid "ID"
+msgstr "ID"
+
+#: ../src/gs-application.c:485 ../src/gs-launcher.c:67
+msgid "Set the specified debugging level"
+msgstr "Establecer el nivel de depurado especificado"
+
+#: ../src/gs-application.c:487 ../src/gs-launcher.c:69
+msgid "Show profiling information for the service"
+msgstr "Mostrar información del perfil para el servicio"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
@@ -272,41 +312,6 @@ msgstr "Quitando"
 #: ../src/gs-category.c:174
 msgid "Other"
 msgstr "Otros"
-
-#. TRANSLATORS: this is a command line option
-#: ../src/gs-launcher.c:61
-msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
-msgstr ""
-"Modo de inicio, puede ser «actualizaciones», «actualizados», «instalados» o "
-"«vista general»"
-
-#: ../src/gs-launcher.c:61
-msgid "MODE"
-msgstr "MODO"
-
-#: ../src/gs-launcher.c:63
-msgid "Search for applications"
-msgstr "Buscar aplicaciones"
-
-#: ../src/gs-launcher.c:63
-msgid "SEARCH"
-msgstr "BUSCAR"
-
-#: ../src/gs-launcher.c:65
-msgid "Show application details"
-msgstr "Mostrar los detalles de la aplicación"
-
-#: ../src/gs-launcher.c:65 ../src/gs-launcher.c:67
-msgid "ID"
-msgstr "ID"
-
-#: ../src/gs-launcher.c:67
-msgid "Set the specified debugging level"
-msgstr "Establecer el nivel de depurado especificado"
-
-#: ../src/gs-launcher.c:69
-msgid "Show profiling information for the service"
-msgstr "Mostrar información del perfil para el servicio"
 
 #. TRANSLATORS: this is when the offline update failed
 #: ../src/gs-offline-updates.c:228
@@ -471,7 +476,7 @@ msgstr "_Quitando"
 #. * where we are showing that something happened to the
 #. * application but we don't know what
 #: ../src/gs-shell-details.c:528 ../src/gs-shell-details.c:547
-#: ../src/gs-shell-details.c:557 ../src/gs-shell-details.c:963
+#: ../src/gs-shell-details.c:557 ../src/gs-shell-details.c:964
 msgid "Unknown"
 msgstr "Desconocido"
 
@@ -499,14 +504,14 @@ msgstr "Ninguna"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:815 ../src/gs-shell-installed.c:189
+#: ../src/gs-shell-details.c:816 ../src/gs-shell-installed.c:189
 #: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "¿Está seguro de querer quitar %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:827 ../src/gs-shell-installed.c:201
+#: ../src/gs-shell-details.c:828 ../src/gs-shell-installed.c:201
 #: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -514,7 +519,7 @@ msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo.
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:946
+#: ../src/gs-shell-details.c:947
 msgid "Removed"
 msgstr "Eliminado"
 
@@ -646,13 +651,13 @@ msgid "No AppStream data found"
 msgstr "No se han encontrado datos de AppStream"
 
 #. TRANSLATORS: this is when a webapp has no comment
-#: ../src/plugins/gs-plugin-epiphany.c:147
+#: ../src/plugins/gs-plugin-epiphany.c:152
 #, c-format
 msgid "Web app"
 msgstr "Aplicación web"
 
 #. TRANSLATORS: this is the licence of the web-app
-#: ../src/plugins/gs-plugin-epiphany.c:155
+#: ../src/plugins/gs-plugin-epiphany.c:160
 msgid "Proprietary"
 msgstr "Propietaria"
 
