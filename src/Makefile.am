@@ -37,25 +37,17 @@ UI_FILES =						\
 dbusservicedir = $(datadir)/dbus-1/services
 dbusservice_DATA = org.gnome.Software.service
 
+org.gnome.Software.service: org.gnome.Software.service.in Makefile
+	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $<> $@
+
 searchproviderdir = $(datadir)/gnome-shell/search-providers
 searchprovider_DATA = gnome-software-search-provider.ini
-
-org.gnome.Software.service: Makefile
-	$(AM_V_GEN) (echo '[D-BUS Service]'; 				\
-	 echo 'Name=org.gnome.Software'; 				\
-	 echo 'Exec=${libexecdir}/gnome-software-service') > $@.tmp && 	\
-	 mv $@.tmp $@
 
 autostartdir = $(sysconfdir)/xdg/autostart
 autostart_DATA = gnome-software-service.desktop
 
-gnome-software-service.desktop: Makefile
-	$(AM_V_GEN) (echo '[Desktop Entry]';				\
-	 echo "Type=Application";					\
-	 echo "Name=GNOME Software";					\
-	 echo "Exec=${libexecdir}/gnome-software-service";		\
-	 echo "OnlyShowIn=GNOME;") > $@.tmp &&				\
-	 mv $@.tmp $@
+gnome-software-service.desktop: gnome-software-service.desktop.in Makefile
+	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $<> $@
 
 noinst_PROGRAMS =					\
 	gnome-software-cmd
@@ -82,13 +74,7 @@ gnome_software_cmd_CFLAGS =				\
 bin_PROGRAMS =						\
 	gnome-software
 
-libexec_PROGRAMS =					\
-	gnome-software-service
-
 gnome_software_SOURCES =				\
-	gs-launcher.c
-
-gnome_software_service_SOURCES =			\
 	gs-resources.c					\
 	gs-resources.h					\
 	gs-dbus-helper.c				\
@@ -160,12 +146,6 @@ gnome_software_service_SOURCES =			\
 	gs-main.c
 
 gnome_software_LDADD =					\
-	$(GLIB_LIBS)
-
-gnome_software_CFLAGS =					\
-	$(WARNINGFLAGS_C)
-
-gnome_software_service_LDADD =				\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)					\
 	$(SOUP_LIBS)					\
@@ -173,7 +153,7 @@ gnome_software_service_LDADD =				\
 	$(NOTIFY_LIBS)					\
 	-lm
 
-gnome_software_service_CFLAGS =				\
+gnome_software_CFLAGS =					\
 	-DLIBEXECDIR=\"$(libexecdir)\"			\
 	$(WARNINGFLAGS_C)
 
@@ -236,6 +216,8 @@ EXTRA_DIST =						\
 	shadow.png					\
 	shadow-active.png				\
 	$(desktop_in_files)				\
+	org.gnome.Software.service.in			\
+	gnome-software-service.desktop.in		\
 	$(searchprovider_DATA)				\
 	$(UI_FILES)
 

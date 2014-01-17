@@ -458,12 +458,114 @@ gs_application_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_application_parent_class)->finalize (object);
 }
 
+static gboolean
+gs_application_local_command_line (GApplication *app, gchar ***args, gint *status)
+{
+	GOptionContext *context;
+        gboolean gapplication_service = FALSE;
+	gchar *mode = NULL;
+	gchar *search = NULL;
+	gchar *id = NULL;
+	gboolean activate_ui = TRUE;
+	gboolean version = FALSE;
+	gboolean profile = FALSE;
+	gint debug_level = -1;
+	gint argc;
+	const GOptionEntry options[] = {
+                { "gapplication-service", '\0', 0, G_OPTION_ARG_NONE, &gapplication_service,
+                   _("Enter GApplication service mode"), NULL }, 
+		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
+		  /* TRANSLATORS: this is a command line option */
+		  _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
+		{ "search", '\0', 0, G_OPTION_ARG_STRING, &search,
+		  _("Search for applications"), _("SEARCH") },
+		{ "details", '\0', 0, G_OPTION_ARG_STRING, &id,
+		  _("Show application details"), _("ID") },
+		{ "set-debug-level", '\0', 0, G_OPTION_ARG_INT, &debug_level,
+		  _("Set the specified debugging level"), _("ID") },
+		{ "profile", 0, 0, G_OPTION_ARG_NONE, &profile,
+		  _("Show profiling information for the service"), NULL },
+		{ "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
+		{ NULL}
+	};
+	GError *error = NULL;
+
+	context = g_option_context_new ("");
+	g_option_context_add_main_entries (context, options, NULL);
+
+	argc = g_strv_length (*args);
+	if (!g_option_context_parse (context, &argc, args, &error)) {
+		g_printerr ("%s\n", error->message);
+		g_error_free (error);
+		*status = 1;
+		goto out;
+	}
+
+	if (version) {
+		g_print ("gnome-software " VERSION "\n");
+		*status = 0;
+		goto out;
+	}
+
+	if (gapplication_service) {
+		GApplicationFlags flags;
+
+		flags = g_application_get_flags (app);
+		g_application_set_flags (app, flags | G_APPLICATION_IS_SERVICE);
+		activate_ui = FALSE;
+	}
+
+	if (!g_application_register (app, NULL, &error)) {
+		g_printerr ("%s\n", error->message);
+		g_error_free (error);
+		*status = 1;
+		goto out;
+	}
+
+	if (profile) {
+		activate_ui = FALSE;
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"profile",
+						NULL);
+	}
+	if (debug_level >= 0) {
+		activate_ui = FALSE;
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"set-debug-level",
+						g_variant_new_int32 (debug_level));
+	}
+
+	if (mode != NULL) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"set-mode",
+						g_variant_new_string (mode));
+	} else if (search != NULL) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"search",
+						g_variant_new_string (search));
+	} else if (id != NULL) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"details",
+						g_variant_new ("(ss)", id, ""));
+	} else if (activate_ui) {
+		g_application_activate (app);
+	}
+
+	*status = 0;
+
+out:
+	g_option_context_free (context);
+
+	return TRUE;
+}
+
 static void
 gs_application_class_init (GsApplicationClass *class)
 {
 	G_OBJECT_CLASS (class)->finalize = gs_application_finalize;
 	G_APPLICATION_CLASS (class)->startup = gs_application_startup;
 	G_APPLICATION_CLASS (class)->activate = gs_application_activate;
+	G_APPLICATION_CLASS (class)->local_command_line = gs_application_local_command_line;
 }
 
 GsApplication *
@@ -471,7 +573,6 @@ gs_application_new (void)
 {
 	return g_object_new (GS_APPLICATION_TYPE,
 			     "application-id", "org.gnome.Software",
-			     "flags", G_APPLICATION_IS_SERVICE,
 			     NULL);
 }
 
