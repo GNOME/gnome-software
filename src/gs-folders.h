@@ -52,8 +52,6 @@ GType		  gs_folders_get_type		(void);
 GsFolders	 *gs_folders_get		(void);
 
 gchar		**gs_folders_get_folders	(GsFolders	*folders);
-const gchar	**gs_folders_get_apps		(GsFolders	*folders,
-						 const gchar    *id);
 const gchar	 *gs_folders_add_folder		(GsFolders  	*folders,
 						 const gchar	*id);
 void		  gs_folders_remove_folder      (GsFolders      *folders,
@@ -64,9 +62,11 @@ void		  gs_folders_set_folder_name 	(GsFolders 	*folders,
 						 const gchar	*id,
 						 const gchar	*name);
 const gchar	 *gs_folders_get_app_folder	(GsFolders	*folders,
-						 const gchar	*app);
+						 const gchar	*app,
+						 GPtrArray      *categories);
 void		  gs_folders_set_app_folder	(GsFolders	*folders,
 						 const gchar	*app,
+						 GPtrArray      *categories,
 						 const gchar	*id);
 void		  gs_folders_save		(GsFolders 	*folders);
 void		  gs_folders_revert		(GsFolders	*folders);
