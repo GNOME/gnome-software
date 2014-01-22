@@ -161,7 +161,6 @@ load (GsFolders *folders)
 		
 		categories = g_settings_get_strv (settings, "categories");
 		for (j = 0; categories[j]; j++) {
-g_print ("loading %s, found category %s\n", folder->id, categories[j]);
 			g_ptr_array_add (folder->categories, categories[j]);
 		}
 		
@@ -379,7 +378,6 @@ get_app_folder (GsFolders *folders, const gchar *app, GPtrArray *categories)
 		for (i = 0; i < categories->len; i++) {
 			folder = g_hash_table_lookup (folders->priv->categories, g_ptr_array_index (categories, i));
 			if (folder) {
-g_print ("app %s goes in folder %s by category %s\n", app, folder->id, (gchar *)g_ptr_array_index (categories, i));				
 				break;
 			}
 		}
@@ -408,8 +406,6 @@ gs_folders_set_app_folder (GsFolders *folders, const gchar *app, GPtrArray *cate
 {
 	GsFolder *folder;
 
-g_print ("set app folder: %s -> %s\n", app, id);
-
 	folder = get_app_folder (folders, app, categories);
 
 	if (folder) {
@@ -423,9 +419,7 @@ g_print ("set app folder: %s -> %s\n", app, id);
 		app_id = g_strdup (app);
 		folder = g_hash_table_lookup (folders->priv->folders, id);
 		g_ptr_array_add (folder->apps, app_id);
-		g_print ("add %s to apps in %s\n", app, id);
-		if (g_hash_table_remove (folder->excluded_apps, app))
-			g_print ("remove %s from excluded apps in %s\n", app, id);
+		g_hash_table_remove (folder->excluded_apps, app);
 		g_hash_table_insert (folders->priv->apps, app_id, folder);
 	} else {
 		guint i;
@@ -435,7 +429,6 @@ g_print ("set app folder: %s -> %s\n", app, id);
 			category = g_ptr_array_index (categories, i);
 			folder = g_hash_table_lookup (folders->priv->categories, category);
 			if (folder) {
-				g_print ("add %s to excluded_apps in %s, by category %s\n", app, folder->id, category);
 				g_hash_table_add (folder->excluded_apps, g_strdup (app));
 			}
 		}
