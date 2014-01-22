@@ -237,10 +237,10 @@ gs_dbus_helper_handle_method_call_query (GsDbusHelper *dbus_helper,
 	if (g_strcmp0 (method_name, "IsInstalled") == 0) {
 		g_variant_get (parameters, "(&s&s)",
 			       &name, &interaction);
-		names = g_strsplit (name, "|", 1);
 		dtask = g_new0 (GsDbusHelperTask, 1);
 		dtask->invocation = invocation;
 		gs_dbus_helper_task_set_interaction (dtask, interaction);
+		names = g_strsplit (name, "|", 1);
 		pk_client_resolve_async (PK_CLIENT (dbus_helper->task),
 					 pk_bitfield_value (PK_FILTER_ENUM_INSTALLED),
 					 names, NULL,
@@ -250,7 +250,6 @@ gs_dbus_helper_handle_method_call_query (GsDbusHelper *dbus_helper,
 	} else if (g_strcmp0 (method_name, "SearchFile") == 0) {
 		g_variant_get (parameters, "(&s&s)",
 			       &name, &interaction);
-		names = g_strsplit (name, "|", 1);
 		dtask = g_new0 (GsDbusHelperTask, 1);
 		dtask->invocation = invocation;
 		gs_dbus_helper_task_set_interaction (dtask, interaction);
