@@ -303,6 +303,19 @@ main (int argc, char **argv)
 				break;
 			}
 		}
+	} else if (argc == 2 && g_strcmp0 (argv[1], "featured") == 0) {
+		for (i = 0; i < repeat; i++) {
+			if (list != NULL)
+				gs_plugin_list_free (list);
+			list = gs_plugin_loader_get_featured (plugin_loader,
+							      refine_flags,
+							      NULL,
+							      &error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "get-categories") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
