@@ -31,6 +31,7 @@
 #include "gs-utils.h"
 #include "gs-app-widget.h"
 #include "gs-app-folder-dialog.h"
+#include "gs-folders.h"
 
 #define INSTALL_DATE_QUEUED     (G_MAXUINT - 1)
 #define INSTALL_DATE_INSTALLING (G_MAXUINT - 2)
@@ -233,6 +234,8 @@ gs_shell_installed_notify_state_changed_cb (GsApp *app,
 	gtk_list_box_invalidate_sort (shell->priv->list_box_installed);
 }
 
+static void selection_changed (GsShellInstalled *shell);
+
 static void
 gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 {
@@ -246,6 +249,8 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 	g_signal_connect_object (app, "notify::state",
 				 G_CALLBACK (gs_shell_installed_notify_state_changed_cb),
 				 shell, 0);
+	g_signal_connect_swapped (widget, "notify::selected",
+			 	  G_CALLBACK (selection_changed), shell);
 	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 	gtk_container_add (GTK_CONTAINER (priv->list_box_installed), widget);
 	gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
@@ -586,7 +591,8 @@ set_selection_mode (GsShellInstalled *shell_installed, gboolean selection_mode)
 		gtk_style_context_add_class (context, "selection-mode");
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
 		gtk_button_set_image (GTK_BUTTON (widget), NULL);
-		gtk_button_set_label (GTK_BUTTON (widget), _("Cancel"));
+		gtk_button_set_label (GTK_BUTTON (widget), _("_Cancel"));
+		gtk_button_set_use_underline (GTK_BUTTON (widget), TRUE);
 		gtk_widget_show (widget);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_hide (widget);
@@ -604,6 +610,13 @@ set_selection_mode (GsShellInstalled *shell_installed, gboolean selection_mode)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_show (widget);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_menu_button"));
+		gtk_widget_hide (widget);
+
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_add"));
+		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_move"));
+		gtk_widget_hide (widget);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_remove"));
 		gtk_widget_hide (widget);
 	}
 
@@ -647,8 +660,44 @@ get_selected_apps (GsShellInstalled *shell_installed)
 	return list;
 }
 
+static void
+selection_changed (GsShellInstalled *shell_installed)
+{
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+	GsFolders *folders;
+	GList *apps, *l;
+	GsApp *app;
+	gboolean has_folders, has_nonfolders;
+	GtkWidget *button;
+
+	folders = gs_folders_get ();
+	has_folders = has_nonfolders = FALSE;
+	apps = get_selected_apps (shell_installed);
+	for (l = apps; l; l = l->next) {
+		app = l->data;
+		if (gs_folders_get_app_folder (folders,
+				 	       gs_app_get_id_full (app),
+					       gs_app_get_categories (app))) {
+			has_folders = TRUE;
+		} else {
+			has_nonfolders = TRUE;
+		}
+	}
+	g_list_free (apps);
+	g_object_unref (folders);
+
+	button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_add"));
+	gtk_widget_set_visible (button, has_nonfolders);
+
+	button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_move"));
+	gtk_widget_set_visible (button, has_folders && !has_nonfolders);
+
+	button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_remove"));
+	gtk_widget_set_visible (button, has_folders);
+}
+
 static gboolean
-app_folder_dialog_done (GsShellInstalled *shell_installed)
+refresh_selected_rows (GsShellInstalled *shell_installed)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 	GList *children, *l;
@@ -659,6 +708,7 @@ app_folder_dialog_done (GsShellInstalled *shell_installed)
 		GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
 		if (gs_app_widget_get_selected (app_widget)) {
 			gs_app_widget_refresh (app_widget);
+			gs_app_widget_set_selected (app_widget, FALSE);
 		}
 	}
 	g_list_free (children);
@@ -679,7 +729,29 @@ show_folder_dialog (GtkButton *button, GsShellInstalled *shell_installed)
 	g_list_free (apps);
 	gtk_window_present (GTK_WINDOW (dialog));
 	g_signal_connect_swapped (dialog, "delete-event",
-				  G_CALLBACK (app_folder_dialog_done), shell_installed);
+				  G_CALLBACK (refresh_selected_rows), shell_installed);
+}
+
+static void
+remove_folders (GtkButton *button, GsShellInstalled *shell_installed)
+{
+	GList *apps, *l;
+	GsFolders *folders;
+	GsApp *app;
+
+	folders = gs_folders_get ();
+	apps = get_selected_apps (shell_installed);
+	for (l = apps; l; l = l->next) {
+		app = l->data;
+		gs_folders_set_app_folder (folders,
+					   gs_app_get_id_full (app),
+					   gs_app_get_categories (app),
+					   NULL);
+	}
+	g_list_free (apps);
+	g_object_unref (folders);
+
+	refresh_selected_rows (shell_installed);
 }
 
 static void
@@ -749,10 +821,18 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 
 	priv->bottom_bar = GTK_REVEALER (gtk_builder_get_object (priv->builder, "bottom_install"));
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_install"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_add"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (show_folder_dialog), shell_installed);
 	
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_move"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (show_folder_dialog), shell_installed);
+	
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_folder_remove"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (remove_folders), shell_installed);
+
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (selection_mode_cb), shell_installed);

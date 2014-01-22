@@ -54,6 +54,11 @@ struct _GsAppWidgetPrivate
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppWidget, gs_app_widget, GTK_TYPE_BIN)
 
 enum {
+	PROP_ZERO,
+	PROP_SELECTED
+};
+
+enum {
 	SIGNAL_BUTTON_CLICKED,
 	SIGNAL_LAST
 };
@@ -302,12 +307,50 @@ gs_app_widget_destroy (GtkWidget *object)
 }
 
 static void
+gs_app_widget_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	GsAppWidget *app_widget = GS_APP_WIDGET (object);
+
+        switch (prop_id) {
+        case PROP_SELECTED:
+		gs_app_widget_set_selected (app_widget, g_value_get_boolean (value));
+		break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+                break;
+	}
+}
+
+static void
+gs_app_widget_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	GsAppWidget *app_widget = GS_APP_WIDGET (object);
+
+        switch (prop_id) {
+        case PROP_SELECTED:
+		g_value_set_boolean (value, gs_app_widget_get_selected (app_widget));
+		break;
+        default:
+                G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+       		break;
+	}
+}
+
+static void
 gs_app_widget_class_init (GsAppWidgetClass *klass)
 {
+	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->set_property = gs_app_widget_set_property;
+	object_class->get_property = gs_app_widget_get_property;
+
 	widget_class->destroy = gs_app_widget_destroy;
+
+	pspec = g_param_spec_boolean ("selected", NULL, NULL,
+				      FALSE, G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_SELECTED, pspec);
 
 	signals [SIGNAL_BUTTON_CLICKED] =
 		g_signal_new ("button-clicked",
@@ -339,6 +382,12 @@ button_clicked (GtkWidget *widget, GsAppWidget *app_widget)
 }
 
 static void
+checkbox_toggled (GtkWidget *widget, GsAppWidget *app_widget)
+{
+	g_object_notify (G_OBJECT (app_widget), "selected");
+}
+
+static void
 gs_app_widget_init (GsAppWidget *app_widget)
 {
 	GsAppWidgetPrivate *priv;
@@ -353,6 +402,8 @@ gs_app_widget_init (GsAppWidget *app_widget)
 
 	g_signal_connect (priv->button, "clicked",
 			  G_CALLBACK (button_clicked), app_widget);
+	g_signal_connect (priv->checkbox, "toggled",
+			  G_CALLBACK (checkbox_toggled), app_widget);
 }
 
 void
@@ -393,17 +444,22 @@ gs_app_widget_set_selectable (GsAppWidget *app_widget, gboolean selectable)
 void
 gs_app_widget_set_selected (GsAppWidget *app_widget, gboolean selected)
 {
-	if (app_widget->priv->selectable)
+	if (!app_widget->priv->selectable)
+		return;
+
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_widget->priv->checkbox)) != selected) {
 		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (app_widget->priv->checkbox), selected);
+		g_object_notify (G_OBJECT (app_widget), "selected");
+	}
 }
 
 gboolean
 gs_app_widget_get_selected (GsAppWidget *app_widget)
 {
-	if (app_widget->priv->selectable)
-		return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_widget->priv->checkbox));
-	else
+	if (!app_widget->priv->selectable)
 		return FALSE;
+
+	return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_widget->priv->checkbox));
 }
 
 GtkWidget *

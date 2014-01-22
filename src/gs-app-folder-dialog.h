@@ -40,12 +40,12 @@ typedef struct _GsAppFolderDialogClass		GsAppFolderDialogClass;
 
 struct _GsAppFolderDialog
 {
-        GtkWindow 	parent;
+        GtkDialog 	parent;
 };
 
 struct _GsAppFolderDialogClass
 {
-        GtkWindowClass      parent_class;
+        GtkDialogClass      parent_class;
 };
 
 GType		 gs_app_folder_dialog_get_type	(void);
