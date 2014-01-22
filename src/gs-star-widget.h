@@ -58,6 +58,8 @@ gint		 gs_star_widget_get_rating		(GsStarWidget	*star);
 void		 gs_star_widget_set_rating		(GsStarWidget	*star,
 							 GsAppRatingKind rating_kind,
 							 gint		 rating);
+void		 gs_star_widget_set_icon_size		(GsStarWidget	*star,
+							 guint		 pixel_size);
 
 G_END_DECLS
 

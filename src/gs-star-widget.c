@@ -92,6 +92,22 @@ gs_star_widget_set_image_rating (GtkImage *image, GsAppRatingKind rating_kind,
 }
 
 /**
+ * gs_star_widget_set_icon_size:
+ **/
+void
+gs_star_widget_set_icon_size (GsStarWidget *star, guint pixel_size)
+{
+	GsStarWidgetPrivate *priv;
+	g_return_if_fail (GS_IS_STAR_WIDGET (star));
+	priv = gs_star_widget_get_instance_private (star);
+	gtk_image_set_pixel_size (GTK_IMAGE (priv->image1), pixel_size);
+	gtk_image_set_pixel_size (GTK_IMAGE (priv->image2), pixel_size);
+	gtk_image_set_pixel_size (GTK_IMAGE (priv->image3), pixel_size);
+	gtk_image_set_pixel_size (GTK_IMAGE (priv->image4), pixel_size);
+	gtk_image_set_pixel_size (GTK_IMAGE (priv->image5), pixel_size);
+}
+
+/**
  * gs_star_widget_refresh:
  **/
 static void
