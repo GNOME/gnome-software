@@ -528,21 +528,22 @@ static void
 gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 					    GsShellInstalled *shell_installed)
 {
-	gchar *label;
 	GPtrArray *pending;
-	GtkWidget *widget;
-	guint i;
 	GsApp *app;
+	GtkWidget *widget;
+	gchar *label;
+	guint i;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (shell_installed->priv->builder,
 						     "button_installed_counter"));
 	pending = gs_plugin_loader_get_pending (plugin_loader);
 	if (pending->len == 0) {
-		//gtk_widget_hide (widget);
-		label = g_strdup ("0");
+		gtk_widget_hide (widget);
 	} else {
 		gtk_widget_show (widget);
 		label = g_strdup_printf ("%d", pending->len);
+		gtk_label_set_label (GTK_LABEL (widget), label);
+		g_free (label);
 	}
 	for (i = 0; i < pending->len; i++) {
 		app = GS_APP (g_ptr_array_index (pending, i));
@@ -563,8 +564,6 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 		}
 	}
 
-	gtk_label_set_label (GTK_LABEL (widget), label);
-	g_free (label);
 	g_ptr_array_unref (pending);
 }
 
