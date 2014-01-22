@@ -695,24 +695,10 @@ selection_changed (GsShellInstalled *shell_installed)
 	gtk_widget_set_visible (button, has_folders);
 }
 
-static gboolean
-refresh_selected_rows (GsShellInstalled *shell_installed)
+static void
+folder_dialog_done (GsShellInstalled *shell_installed)
 {
-	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GList *children, *l;
-
-	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_installed));
-	for (l = children; l; l = l->next) {
-		GtkListBoxRow *row = l->data;
-		GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-		if (gs_app_widget_get_selected (app_widget)) {
-			gs_app_widget_refresh (app_widget);
-			gs_app_widget_set_selected (app_widget, FALSE);
-		}
-	}
-	g_list_free (children);
-
-	return FALSE;
+	set_selection_mode (shell_installed, FALSE);
 }
 
 static void
@@ -728,7 +714,7 @@ show_folder_dialog (GtkButton *button, GsShellInstalled *shell_installed)
 	g_list_free (apps);
 	gtk_window_present (GTK_WINDOW (dialog));
 	g_signal_connect_swapped (dialog, "delete-event",
-				  G_CALLBACK (refresh_selected_rows), shell_installed);
+				  G_CALLBACK (folder_dialog_done), shell_installed);
 }
 
 static void
@@ -748,9 +734,11 @@ remove_folders (GtkButton *button, GsShellInstalled *shell_installed)
 					   NULL);
 	}
 	g_list_free (apps);
+
+	gs_folders_save (folders);
 	g_object_unref (folders);
 
-	refresh_selected_rows (shell_installed);
+	set_selection_mode (shell_installed, FALSE);
 }
 
 static void
