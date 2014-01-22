@@ -89,6 +89,7 @@ struct GsAppPrivate
 	GPtrArray		*related; /* of GsApp */
 	GPtrArray		*history; /* of GsApp */
 	guint64			 install_date;
+	guint			 subsume_idle_id;
 };
 
 enum {
@@ -290,9 +291,24 @@ gs_app_to_string (GsApp *app)
 }
 
 /**
+ * gs_app_subsume_notify_cb:
+ **/
+static gboolean
+gs_app_subsume_notify_cb (gpointer user_data)
+{
+	GsApp *app = GS_APP (user_data);
+	g_object_thaw_notify (G_OBJECT (app));
+	app->priv->subsume_idle_id = 0;
+	return G_SOURCE_REMOVE;
+}
+
+/**
  * gs_app_subsume:
  *
  * Imports all the useful data from @other into @app.
+ *
+ * IMPORTANT: This method can be called from a thread, but because of this
+ * the g_object_notify() calls are done in an idle callback.
  **/
 void
 gs_app_subsume (GsApp *app, GsApp *other)
@@ -302,6 +318,12 @@ gs_app_subsume (GsApp *app, GsApp *other)
 	GsAppPrivate *priv = app->priv;
 	GsAppPrivate *priv2 = other->priv;
 	const gchar *tmp;
+
+	/* check we're not doing crazy things */
+	if (app->priv->subsume_idle_id != 0) {
+		g_warning ("Called gs_app_subsume() with idle pending");
+		return;
+	}
 
 	/* wait for all the properties to be set */
 	g_object_freeze_notify (G_OBJECT (app));
@@ -346,7 +368,7 @@ gs_app_subsume (GsApp *app, GsApp *other)
 	g_list_free (keys);
 
 	/* now emit all the changed signals */
-	g_object_thaw_notify (G_OBJECT (app));
+	priv->subsume_idle_id = g_idle_add (gs_app_subsume_notify_cb, app);
 }
 
 /**
