@@ -52,7 +52,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 {
 	GDateTime *date;
 	GKeyFile *kf;
-	GsApp *app;
+	GsApp *app = NULL;
 	const gchar *group = NULL;
 	gboolean ret = TRUE;
 	gchar **apps = NULL;
@@ -92,24 +92,34 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	}
 
 	app = gs_app_new (group);
-	s = g_key_file_get_string (kf, group, "background", NULL);
-	if (s != NULL) {
-		gs_app_set_metadata (app, "Featured::background", s);
-		g_free (s);
+	s = g_key_file_get_string (kf, group, "background", error);
+	if (s == NULL) {
+		ret = FALSE;
+		goto out;
 	}
-	s = g_key_file_get_string (kf, group, "stroke", NULL);
-	if (s != NULL) {
-		gs_app_set_metadata (app, "Featured::stroke-color", s);
-		g_free (s);
+	gs_app_set_metadata (app, "Featured::background", s);
+	g_free (s);
+
+	s = g_key_file_get_string (kf, group, "stroke", error);
+	if (s == NULL) {
+		ret = FALSE;
+		goto out;
 	}
-	s = g_key_file_get_string (kf, group, "text", NULL);
-	if (s != NULL) {
-		gs_app_set_metadata (app, "Featured::text-color", s);
-		g_free (s);
+	gs_app_set_metadata (app, "Featured::stroke-color", s);
+	g_free (s);
+
+	s = g_key_file_get_string (kf, group, "text", error);
+	if (s == NULL) {
+		ret = FALSE;
+		goto out;
 	}
+	gs_app_set_metadata (app, "Featured::text-color", s);
+	g_free (s);
+
 	gs_plugin_add_app (list, app);
-	g_object_unref (app);
 out:
+	if (app != NULL)
+		g_object_unref (app);
 	if (kf != NULL)
 		g_key_file_unref (kf);
 	g_free (path);
