@@ -343,6 +343,32 @@ gs_folders_get_folders (GsFolders *folders)
 	return (gchar**) g_hash_table_get_keys_as_array (folders->priv->folders, NULL);
 }
 
+gchar **
+gs_folders_get_nonempty_folders (GsFolders *folders)
+{
+	GHashTable *tmp;
+	GHashTableIter iter;
+	GsFolder *folder;
+	gchar **keys;
+
+	tmp = g_hash_table_new (g_str_hash, g_str_equal);
+
+	g_hash_table_iter_init (&iter, folders->priv->apps);
+	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&folder)) {
+		g_hash_table_add (tmp, folder->id);
+	}
+
+	g_hash_table_iter_init (&iter, folders->priv->categories);
+	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&folder)) {
+		g_hash_table_add (tmp, folder->id);
+	}
+
+	keys = (gchar **) g_hash_table_get_keys_as_array (tmp, NULL);
+	g_hash_table_destroy (tmp);
+
+	return keys;
+}
+
 static void
 canonicalize_key (gchar *key)
 {

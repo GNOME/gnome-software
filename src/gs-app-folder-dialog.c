@@ -245,7 +245,7 @@ populate_list (GsAppFolderDialog *dialog)
 	gchar **folders;
 	guint i;
 
-	folders = gs_folders_get_folders (priv->folders);
+	folders = gs_folders_get_nonempty_folders (priv->folders);
 	for (i = 0; folders[i]; i++) {
 		gtk_list_box_insert (GTK_LIST_BOX (priv->app_folder_list), 
                                      create_row (dialog, folders[i]), -1);
