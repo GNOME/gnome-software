@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-01-17 00:51+0000\n"
-"PO-Revision-Date: 2014-01-19 16:13+0100\n"
+"POT-Creation-Date: 2014-01-25 09:55+0000\n"
+"PO-Revision-Date: 2014-01-25 22:47+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -47,13 +47,14 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Přidání do složky aplikací"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-shell-details.c:160
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:115
+#: ../src/gs-shell-details.c:160 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "_Zrušit"
 
-#: ../src/app-folder-dialog.ui.h:3
-msgid "_Done"
-msgstr "_Hotovo"
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:116
+msgid "_Add"
+msgstr "Přid_at"
 
 #: ../src/app-menu.ui.h:1
 msgid "_About"
@@ -67,7 +68,7 @@ msgstr "U_končit"
 #. * that tells the user the application is installed
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
 #: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
 #: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:953
 #: ../src/popular-tile.ui.h:1
@@ -118,15 +119,15 @@ msgstr "Restartovat a instalovat"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:206
+#: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:211
 msgid "Install"
 msgstr "Instalovat"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:215
-#: ../src/gs-shell-details.c:831 ../src/gs-shell-installed.c:204
+#: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:220
+#: ../src/gs-shell-details.c:831 ../src/gs-shell-installed.c:205
 #: ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Odebrat"
@@ -150,68 +151,80 @@ msgid "No Application Data Found"
 msgstr "O aplikaci nebyly nalezeny žádné informace"
 
 #: ../src/gnome-software.ui.h:19
-msgid "Application _Folders"
-msgstr "S_ložky aplikací"
+msgid "_Add to Folder…"
+msgstr "Přid_at do složky…"
 
 #: ../src/gnome-software.ui.h:20
+msgid "_Move to Folder…"
+msgstr "Přesu_nout do složky…"
+
+#: ../src/gnome-software.ui.h:21
+msgid "_Remove from Folder"
+msgstr "Odeb_rat ze složky"
+
+#: ../src/gnome-software.ui.h:22
 msgid "No Application Found"
 msgstr "Žádná aplikace nebyla nalezena"
 
-#: ../src/gnome-software.ui.h:21
+#: ../src/gnome-software.ui.h:23
 msgid "Software is up to date"
 msgstr "Software je aktuální"
 
-#: ../src/gnome-software.ui.h:22
+#: ../src/gnome-software.ui.h:24
 msgid "_Website"
 msgstr "_Webové stránky"
 
-#: ../src/gnome-software.ui.h:23
+#: ../src/gnome-software.ui.h:25
 msgid "_History"
 msgstr "_Historie"
 
 #. Translators: A label for a button to execute the selected application.
-#: ../src/gnome-software.ui.h:25
+#: ../src/gnome-software.ui.h:27
 msgid "_Launch"
 msgstr "_Spustit"
 
-#: ../src/gnome-software.ui.h:26
+#: ../src/gnome-software.ui.h:28
 msgid "Details"
 msgstr "Podrobnosti"
 
-#: ../src/gnome-software.ui.h:27
+#: ../src/gnome-software.ui.h:29
 msgid "Version"
 msgstr "Verze"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gnome-software.ui.h:28 ../src/gs-shell-details.c:958
+#: ../src/gnome-software.ui.h:30 ../src/gs-shell-details.c:958
 msgid "Updated"
 msgstr "Aktualizováno"
 
-#: ../src/gnome-software.ui.h:29
+#: ../src/gnome-software.ui.h:31
 msgid "Category"
 msgstr "Kategorie"
 
-#: ../src/gnome-software.ui.h:30
+#: ../src/gnome-software.ui.h:32
 msgid "Licence"
 msgstr "Licence"
 
-#: ../src/gnome-software.ui.h:31
+#: ../src/gnome-software.ui.h:33
 msgid "Size"
 msgstr "Velikost"
 
-#: ../src/gnome-software.ui.h:32
+#: ../src/gnome-software.ui.h:34
 msgid "Developer"
 msgstr "Vývojář"
 
-#: ../src/gnome-software.ui.h:33
+#: ../src/gnome-software.ui.h:35
 msgid "History"
 msgstr "Historie"
 
 #. Translators: Label for a button to close the update dialogue.
-#: ../src/gnome-software.ui.h:35
+#: ../src/gnome-software.ui.h:37
 msgid "Done"
 msgstr "Hotovo"
+
+#: ../src/gs-app-folder-dialog.c:111
+msgid "Folder Name"
+msgstr "Název složky"
 
 #. TRANSLATORS: this is the title of the about window
 #: ../src/gs-application.c:229
@@ -232,76 +245,75 @@ msgid "Enter GApplication service mode"
 msgstr "Vstoupit do servisního režimu GApplication"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:479 ../src/gs-launcher.c:61
+#: ../src/gs-application.c:479
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Režim spuštění: buď „updates“ (aktualizace), „updated“ (aktualizované), "
 "„installed“ (nainstalované) nebo „overview“ (přehled)"
 
-#: ../src/gs-application.c:479 ../src/gs-launcher.c:61
+#: ../src/gs-application.c:479
 msgid "MODE"
 msgstr "REŽIM"
 
-#: ../src/gs-application.c:481 ../src/gs-launcher.c:63
+#: ../src/gs-application.c:481
 msgid "Search for applications"
 msgstr "Hledat aplikaci"
 
-#: ../src/gs-application.c:481 ../src/gs-launcher.c:63
+#: ../src/gs-application.c:481
 msgid "SEARCH"
 msgstr "HLEDAT"
 
-#: ../src/gs-application.c:483 ../src/gs-launcher.c:65
+#: ../src/gs-application.c:483
 msgid "Show application details"
 msgstr "Zobrazit informace o aplikaci"
 
 #: ../src/gs-application.c:483 ../src/gs-application.c:485
-#: ../src/gs-launcher.c:65 ../src/gs-launcher.c:67
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:485 ../src/gs-launcher.c:67
+#: ../src/gs-application.c:485
 msgid "Set the specified debugging level"
 msgstr "Nastavit zadanou úroveň ladění"
 
-#: ../src/gs-application.c:487 ../src/gs-launcher.c:69
+#: ../src/gs-application.c:487
 msgid "Show profiling information for the service"
 msgstr "Zobrazit profilovací informace pro službu"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:93 ../src/gs-feature-tile.c:81
+#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:95 ../src/gs-feature-tile.c:81
 #: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
 msgid "Updates"
 msgstr "Aktualizace"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-widget.c:190
+#: ../src/gs-app-widget.c:195
 msgid "Visit website"
 msgstr "Navštívit webové stránky"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-widget.c:197 ../src/gs-shell-installed.c:589
+#: ../src/gs-app-widget.c:202
 msgid "Cancel"
 msgstr "Zrušit"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:200
+#: ../src/gs-app-widget.c:205
 msgid "Pending"
 msgstr "Čeká na zpracování"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: ../src/gs-app-widget.c:226
+#: ../src/gs-app-widget.c:231
 msgid "Installing"
 msgstr "Instaluje se"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: ../src/gs-app-widget.c:235
+#: ../src/gs-app-widget.c:240
 msgid "Removing"
 msgstr "Odebírá se"
 
@@ -501,14 +513,14 @@ msgstr "Žádná"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:816 ../src/gs-shell-installed.c:189
+#: ../src/gs-shell-details.c:816 ../src/gs-shell-installed.c:190
 #: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Opravdu chcete odebrat %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:828 ../src/gs-shell-installed.c:201
+#: ../src/gs-shell-details.c:828 ../src/gs-shell-installed.c:202
 #: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -527,13 +539,13 @@ msgstr "Odebráno"
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:507 ../src/gs-shell-updates.c:422
+#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:422
 #: ../src/plugins/gs-plugin-packagekit.c:333
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Doplňky"
 
-#: ../src/gs-shell-installed.c:596
+#: ../src/gs-shell-installed.c:601
 msgid "Click on items to select them"
 msgstr "Kliknutím na položku ji vyberete."
 
