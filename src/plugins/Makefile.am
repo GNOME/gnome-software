@@ -41,6 +41,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_systemd-updates.la			\
 	libgs_plugin_packagekit-search.la		\
 	libgs_plugin_packagekit-refine.la		\
+	libgs_plugin_packagekit-refresh.la		\
 	libgs_plugin_packagekit-updates.la		\
 	libgs_plugin_packagekit-offline.la		\
 	libgs_plugin_packagekit-history.la		\
@@ -145,6 +146,14 @@ libgs_plugin_packagekit_refine_la_SOURCES =		\
 libgs_plugin_packagekit_refine_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_refine_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_refine_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+
+libgs_plugin_packagekit_refresh_la_SOURCES =		\
+	gs-plugin-packagekit-refresh.c			\
+	packagekit-common.c				\
+	packagekit-common.h
+libgs_plugin_packagekit_refresh_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
+libgs_plugin_packagekit_refresh_la_LDFLAGS = -module -avoid-version
+libgs_plugin_packagekit_refresh_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_packagekit_search_la_SOURCES =		\
 	gs-plugin-packagekit-search.c			\

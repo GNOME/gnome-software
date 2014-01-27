@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2012-2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2012-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -94,6 +94,11 @@ typedef enum {
 	GS_PLUGIN_REFINE_FLAGS_LAST
 } GsPluginRefineFlags;
 
+typedef enum {
+	GS_PLUGIN_REFRESH_FLAGS_UPDATES			= 1 << 0,
+	GS_PLUGIN_REFRESH_FLAGS_LAST
+} GsPluginRefreshFlags;
+
 /* helpers */
 #define	GS_PLUGIN_ERROR					1
 #define	GS_PLUGIN_GET_PRIVATE(x)			g_new0 (x,1)
@@ -123,6 +128,11 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
 							 GList		*list,
 							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
+typedef gboolean	 (*GsPluginRefreshFunc	)	(GsPlugin	*plugin,
+							 guint		 cache_age,
+							 GsPluginRefreshFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
@@ -199,6 +209,11 @@ gboolean	 gs_plugin_app_remove			(GsPlugin	*plugin,
 							 GError		**error);
 gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
 							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
+							 guint		 cache_age,
+							 GsPluginRefreshFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2007-2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2007-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -644,6 +644,7 @@ typedef struct {
 	GsPluginLoader			*plugin_loader;
 	GsPluginRefineFlags		 flags;
 	gchar				*value;
+	guint				 cache_age;
 	GsCategory			*category;
 	GsApp				*app;
 	GsAppState			 state_progress;
@@ -2774,5 +2775,225 @@ gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 	}
 	g_list_free_full (queue, g_object_unref);
 }
+
+/******************************************************************************/
+
+/**
+ * gs_plugin_loader_run_refresh_plugin:
+ **/
+static gboolean
+gs_plugin_loader_run_refresh_plugin (GsPluginLoader *plugin_loader,
+				     GsPlugin *plugin,
+				     guint cache_age,
+				     GsPluginRefreshFlags flags,
+				     GCancellable *cancellable,
+				     GError **error)
+{
+	const gchar *function_name = "gs_plugin_refresh";
+	gboolean exists;
+	gboolean ret = TRUE;
+	gchar *profile_id = NULL;
+	GError *error_local = NULL;
+	GsPluginRefreshFunc plugin_func = NULL;
+
+	exists = g_module_symbol (plugin->module,
+				  function_name,
+				  (gpointer *) &plugin_func);
+	if (!exists)
+		goto out;
+	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+				      plugin->name, function_name);
+	gs_profile_start (plugin_loader->priv->profile, profile_id);
+	ret = plugin_func (plugin, cache_age, flags, cancellable, &error_local);
+	if (!ret) {
+		if (g_error_matches (error_local,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
+			ret = TRUE;
+			g_debug ("not supported for plugin %s: %s",
+				 plugin->name,
+				 error_local->message);
+			g_clear_error (&error_local);
+		} else {
+			g_propagate_error (error, error_local);
+			goto out;
+		}
+	}
+out:
+	if (profile_id != NULL) {
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+	}
+	g_free (profile_id);
+	return ret;
+}
+
+/**
+ * gs_plugin_loader_run_refresh:
+ **/
+static gboolean
+gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
+			      guint cache_age,
+			      GsPluginRefreshFlags flags,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	gboolean anything_ran = FALSE;
+	gboolean ret = TRUE;
+	GsPlugin *plugin;
+	guint i;
+
+	/* run each plugin */
+	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
+		ret = g_cancellable_set_error_if_cancelled (cancellable, error);
+		if (ret) {
+			ret = FALSE;
+			goto out;
+		}
+		ret = gs_plugin_loader_run_refresh_plugin (plugin_loader,
+							   plugin,
+							   cache_age,
+							   flags,
+							   cancellable,
+							   error);
+		if (!ret)
+			goto out;
+		anything_ran = TRUE;
+	}
+
+	/* nothing ran */
+	if (!anything_ran) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_LOADER_ERROR,
+			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     "no plugin could handle refresh");
+		goto out;
+	}
+out:
+	return ret;
+}
+
+/**
+ * gs_plugin_loader_refresh_state_finish:
+ **/
+static void
+gs_plugin_loader_refresh_state_finish (GsPluginLoaderAsyncState *state,
+				       const GError *error)
+{
+	if (state->ret) {
+		g_simple_async_result_set_op_res_gboolean (state->res, TRUE);
+	} else {
+		g_simple_async_result_set_from_error (state->res, error);
+	}
+
+	/* deallocate */
+	if (state->cancellable != NULL)
+		g_object_unref (state->cancellable);
+	g_object_unref (state->res);
+	g_object_unref (state->plugin_loader);
+	g_slice_free (GsPluginLoaderAsyncState, state);
+}
+
+/**
+ * gs_plugin_loader_refresh_thread_cb:
+ **/
+static void
+gs_plugin_loader_refresh_thread_cb (GSimpleAsyncResult *res,
+				    GObject *object,
+				    GCancellable *cancellable)
+{
+	GError *error = NULL;
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+
+	state->ret = gs_plugin_loader_run_refresh (plugin_loader,
+						   state->cache_age,
+						   state->flags,
+						   cancellable,
+						   &error);
+	if (!state->ret) {
+		gs_plugin_loader_refresh_state_finish (state, error);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* success */
+	gs_plugin_loader_refresh_state_finish (state, NULL);
+out:
+	return;
+}
+
+/**
+ * gs_plugin_loader_refresh_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_refine()
+ * function.
+ **/
+void
+gs_plugin_loader_refresh_async (GsPluginLoader *plugin_loader,
+				guint cache_age,
+				GsPluginRefreshFlags flags,
+				GCancellable *cancellable,
+				GAsyncReadyCallback callback,
+				gpointer user_data)
+{
+	GCancellable *tmp;
+	GsPluginLoaderAsyncState *state;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->res = g_simple_async_result_new (G_OBJECT (plugin_loader),
+						callback,
+						user_data,
+						gs_plugin_loader_refresh_async);
+	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
+	state->cache_age = cache_age;
+	if (cancellable != NULL)
+		state->cancellable = g_object_ref (cancellable);
+
+	/* run in a thread */
+	tmp = g_cancellable_new ();
+	g_object_set_data (G_OBJECT (tmp), "state", state);
+	g_simple_async_result_run_in_thread (G_SIMPLE_ASYNC_RESULT (state->res),
+					     gs_plugin_loader_refresh_thread_cb,
+					     0,
+					     (GCancellable *) tmp);
+	g_object_unref (tmp);
+}
+
+/**
+ * gs_plugin_loader_refresh_finish:
+ *
+ * Return value: success
+ **/
+gboolean
+gs_plugin_loader_refresh_finish (GsPluginLoader *plugin_loader,
+				 GAsyncResult *res,
+				 GError **error)
+{
+	GSimpleAsyncResult *simple;
+
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	/* failed */
+	simple = G_SIMPLE_ASYNC_RESULT (res);
+	if (g_simple_async_result_propagate_error (simple, error))
+		return FALSE;
+
+	/* grab detail */
+	return g_simple_async_result_get_op_res_gboolean (simple);
+}
+
+/******************************************************************************/
 
 /* vim: set noexpandtab: */

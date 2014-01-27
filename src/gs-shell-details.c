@@ -173,7 +173,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	}
 
 	/* spinner */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner_end"));
 	if (kind == GS_APP_KIND_SYSTEM) {
 		gtk_widget_set_visible (widget, FALSE);
 		gtk_spinner_stop (GTK_SPINNER (widget));

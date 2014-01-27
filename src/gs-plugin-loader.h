@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2007-2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2007-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -162,6 +162,15 @@ void		 gs_plugin_loader_app_action_async	(GsPluginLoader	*plugin_loader,
 gboolean	 gs_plugin_loader_app_action_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
+gboolean	 gs_plugin_loader_refresh_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
+void		 gs_plugin_loader_refresh_async		(GsPluginLoader	*plugin_loader,
+							 guint		 cache_age,
+							 GsPluginRefreshFlags flags,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
 GsAppState	 gs_plugin_loader_get_state_for_app	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app);
 GPtrArray	*gs_plugin_loader_get_pending		(GsPluginLoader	*plugin_loader);

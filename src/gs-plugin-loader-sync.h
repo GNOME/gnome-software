@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2007-2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2007-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -66,6 +66,11 @@ gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
 gboolean	 gs_plugin_loader_app_action		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsPluginLoaderAction action,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_loader_refresh		(GsPluginLoader	*plugin_loader,
+							 guint		 cache_age,
+							 GsPluginRefreshFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
 GsApp		*gs_plugin_loader_get_app_by_id		(GsPluginLoader	*plugin_loader,
