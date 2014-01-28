@@ -96,7 +96,6 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 
 	/* get the current network state */
 	g_object_get (priv->control, "network-state", &network_state, NULL);
-network_state = PK_NETWORK_ENUM_MOBILE;//xxx
 	switch (network_state) {
 	case PK_NETWORK_ENUM_ONLINE:
 	case PK_NETWORK_ENUM_WIFI:
