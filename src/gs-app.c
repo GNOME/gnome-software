@@ -593,6 +593,15 @@ gs_app_get_source_default (GsApp *app)
 void
 gs_app_add_source (GsApp *app, const gchar *source)
 {
+	const gchar *tmp;
+	guint i;
+
+	/* check source doesn't already exist */
+	for (i = 0; i < app->priv->sources->len; i++) {
+		tmp = g_ptr_array_index (app->priv->sources, i);
+		if (g_strcmp0 (tmp, source) == 0)
+			return;
+	}
 	g_ptr_array_add (app->priv->sources, g_strdup (source));
 }
 
