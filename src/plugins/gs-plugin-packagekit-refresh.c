@@ -171,6 +171,33 @@ out:
 }
 
 /**
+ * gs_plugin_packagekit_refresh_set_text:
+ *
+ * The cases we have to deal with:
+ *  - Single line text, so all to summary
+ *  - Multiple line text, so first line to summary and the rest to description
+ */
+static void
+gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
+{
+	gchar *nl;
+	gchar *tmp;
+
+	/* look for newline */
+	tmp = g_strdup (text);
+	nl = g_strstr_len (tmp, -1, "\n");
+	if (nl == NULL) {
+		gs_app_set_summary (app, text);
+		goto out;
+	}
+	*nl = '\0';
+	gs_app_set_summary (app, tmp);
+	gs_app_set_description (app, nl + 1);
+out:
+	g_free (tmp);
+}
+
+/**
  * gs_plugin_refresh:
  */
 gboolean
@@ -234,7 +261,8 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_metadata (app, "PackageKit::local-filename", filename);
 	gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
 	gs_app_add_source_id (app, package_id);
-	gs_app_set_description (app, pk_details_get_description (item));
+	gs_plugin_packagekit_refresh_set_text (app,
+					       pk_details_get_description (item));
 	gs_app_set_url (app, GS_APP_URL_KIND_HOMEPAGE, pk_details_get_url (item));
 	gs_app_set_size (app, pk_details_get_size (item));
 	gs_app_set_licence (app, pk_details_get_license (item));
