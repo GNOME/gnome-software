@@ -600,6 +600,7 @@ gs_shell_show_app (GsShell *shell, GsApp *app)
 {
 	save_back_entry (shell);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL, TRUE);
+	gs_shell_activate (shell);
 }
 
 void
