@@ -528,12 +528,18 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_app_set_id (app, appstream_app_get_id (item));
 
 	/* set name */
-	if (appstream_app_get_name (item) != NULL && gs_app_get_name (app) == NULL)
-		gs_app_set_name (app, appstream_app_get_name (item));
+	if (appstream_app_get_name (item) != NULL) {
+		gs_app_set_name (app,
+				 GS_APP_QUALITY_HIGHEST,
+				 appstream_app_get_name (item));
+	}
 
 	/* set summary */
-	if (appstream_app_get_summary (item) != NULL && gs_app_get_summary (app) == NULL)
-		gs_app_set_summary (app, appstream_app_get_summary (item));
+	if (appstream_app_get_summary (item) != NULL) {
+		gs_app_set_summary (app,
+				    GS_APP_QUALITY_HIGHEST,
+				    appstream_app_get_summary (item));
+	}
 
 	/* add urls */
 	urls = appstream_app_get_urls (item);
@@ -560,8 +566,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_app_set_keywords (app, appstream_app_get_keywords (item));
 
 	/* set description */
-	if (appstream_app_get_description (item) != NULL && gs_app_get_description (app) == NULL)
-		gs_app_set_description (app, appstream_app_get_description (item));
+	if (appstream_app_get_description (item) != NULL) {
+		gs_app_set_description (app,
+					GS_APP_QUALITY_HIGHEST,
+					appstream_app_get_description (item));
+	}
 
 	/* set icon */
 	if (appstream_app_get_icon (item) != NULL && gs_app_get_pixbuf (app) == NULL)

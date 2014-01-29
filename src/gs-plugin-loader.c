@@ -712,12 +712,20 @@ gs_plugin_loader_add_os_update_item (GList *list)
 	app_os = gs_app_new ("os-update.virtual");
 	gs_app_set_kind (app_os, GS_APP_KIND_OS_UPDATE);
 	gs_app_set_state (app_os, GS_APP_STATE_UPDATABLE);
-	/* TRANSLATORS: this is a group of updates that are not packages and
-	 * are ot shown in the main list */
-	gs_app_set_name (app_os, _("OS Updates"));
-	/* TRANSLATORS: this is a longer description of the os-update item */
-	gs_app_set_summary (app_os, _("Includes performance, stability and security improvements for all users."));
-	gs_app_set_description (app_os, _("Includes performance, stability and security improvements for all users."));
+	gs_app_set_name (app_os,
+			 GS_APP_QUALITY_NORMAL,
+			 /* TRANSLATORS: this is a group of updates that are not
+			  * packages and are not shown in the main list */
+			 _("OS Updates"));
+	gs_app_set_summary (app_os,
+			    GS_APP_QUALITY_NORMAL,
+			    /* TRANSLATORS: this is a longer description of the
+			     * os-update item */
+			    _("Includes performance, stability and security "
+			      "improvements for all users."));
+	gs_app_set_description (app_os,
+				GS_APP_QUALITY_NORMAL,
+				gs_app_get_summary (app_os));
 	for (l = list; l != NULL; l = l->next) {
 		app_tmp = GS_APP (l->data);
 		if (gs_app_get_kind (app_tmp) != GS_APP_KIND_PACKAGE)

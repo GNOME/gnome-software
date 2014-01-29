@@ -293,6 +293,14 @@ gs_app_func (void)
 	g_assert_cmpstr (gs_app_get_version_ui (app), ==, "2.8.6-3");
 	g_assert_cmpstr (gs_app_get_update_version_ui (app), ==, "2.8.6-4");
 
+	/* check the quality stuff works */
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "dave");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "dave");
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "brian");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "dave");
+	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, "hugh");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "hugh");
+
 	g_object_unref (app);
 }
 
@@ -318,7 +326,7 @@ gs_plugin_loader_dedupe_func (void)
 
 	/* add app */
 	app1 = gs_app_new ("app1");
-	gs_app_set_description (app1, "description");
+	gs_app_set_description (app1, GS_APP_QUALITY_NORMAL, "description");
 	app1 = gs_plugin_loader_dedupe (loader, app1);
 	g_assert_cmpstr (gs_app_get_id (app1), ==, "app1");
 	g_assert_cmpstr (gs_app_get_description (app1), ==, "description");

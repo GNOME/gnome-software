@@ -102,24 +102,24 @@ gs_plugin_add_updates (GsPlugin *plugin,
 
 	/* add a normal application */
 	app = gs_app_new ("gnome-boxes");
-	gs_app_set_name (app, "Boxes");
-	gs_app_set_summary (app, "Do not segfault when using newer versons of libvirt.");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Boxes");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Do not segfault when using newer versons of libvirt.");
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_app_set_id_kind (app, GS_APP_ID_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
 
 	/* add an OS update */
 	app = gs_app_new ("libvirt-glib-devel;0.0.1;noarch;fedora");
-	gs_app_set_name (app, "libvirt-glib-devel");
-	gs_app_set_summary (app, "Fix several memory leaks.");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "libvirt-glib-devel");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Fix several memory leaks.");
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 	gs_app_set_id_kind (app, GS_APP_ID_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
 
 	/* add a second OS update */
 	app = gs_app_new ("gnome-boxes-libs;0.0.1;i386;updates-testing");
-	gs_app_set_name (app, "gnome-boxes-libs");
-	gs_app_set_summary (app, "Do not segfault when using newer versons of libvirt.");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "gnome-boxes-libs");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Do not segfault when using newer versons of libvirt.");
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 	gs_app_set_id_kind (app, GS_APP_ID_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
@@ -139,8 +139,8 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	GsApp *app;
 
 	app = gs_app_new ("gnome-power-manager");
-	gs_app_set_name (app, "Power Manager");
-	gs_app_set_summary (app, "Power Management Program");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Power Manager");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Power Management Program");
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_plugin_add_app (list, app);
@@ -161,8 +161,8 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	GsApp *app;
 
 	app = gs_app_new ("gnome-power-manager");
-	gs_app_set_name (app, "Power Manager");
-	gs_app_set_summary (app, "Power Management Program");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Power Manager");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Power Management Program");
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_plugin_add_app (list, app);
@@ -188,8 +188,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_name (app) == NULL) {
 			if (g_strcmp0 (gs_app_get_id (app), "gnome-boxes") == 0) {
-				gs_app_set_name (app, "Boxes");
-				gs_app_set_summary (app, "A simple GNOME 3 application to access remote or virtual systems");
+				gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Boxes");
+				gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A simple GNOME 3 application to access remote or virtual systems");
 			}
 		}
 	}
@@ -208,8 +208,8 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 {
 	GsApp *app;
 	app = gs_app_new ("gnome-boxes");
-	gs_app_set_name (app, "Boxes");
-	gs_app_set_summary (app, "View and use virtual machines");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Boxes");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
 	gs_app_set_url (app, GS_APP_URL_KIND_HOMEPAGE, "http://www.box.org");
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);

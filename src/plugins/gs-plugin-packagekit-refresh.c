@@ -187,12 +187,12 @@ gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
 	tmp = g_strdup (text);
 	nl = g_strstr_len (tmp, -1, "\n");
 	if (nl == NULL) {
-		gs_app_set_summary (app, text);
+		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, text);
 		goto out;
 	}
 	*nl = '\0';
-	gs_app_set_summary (app, tmp);
-	gs_app_set_description (app, nl + 1);
+	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, tmp);
+	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, nl + 1);
 out:
 	g_free (tmp);
 }
@@ -257,7 +257,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_management_plugin (app, "PackageKit");
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 	gs_app_set_state (app, GS_APP_STATE_LOCAL);
-	gs_app_set_name (app, split[PK_PACKAGE_ID_NAME]);
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
 	gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
 	gs_app_set_metadata (app, "PackageKit::local-filename", filename);
 	gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);

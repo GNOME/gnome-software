@@ -103,6 +103,14 @@ typedef enum {
 #define	GS_APP_URL_KIND_HOMEPAGE		"homepage"
 #define	GS_APP_URL_KIND_MISSING			"missing"
 
+typedef enum {
+	GS_APP_QUALITY_UNKNOWN,
+	GS_APP_QUALITY_LOWEST,
+	GS_APP_QUALITY_NORMAL,
+	GS_APP_QUALITY_HIGHEST,
+	GS_APP_QUALITY_LAST
+} GsAppQuality;
+
 GQuark		 gs_app_error_quark		(void);
 GType		 gs_app_get_type		(void);
 
@@ -130,6 +138,7 @@ void		 gs_app_set_state		(GsApp		*app,
 						 GsAppState	 state);
 const gchar	*gs_app_get_name		(GsApp		*app);
 void		 gs_app_set_name		(GsApp		*app,
+						 GsAppQuality	 quality,
 						 const gchar	*name);
 const gchar	*gs_app_get_source_default	(GsApp		*app);
 void		 gs_app_add_source		(GsApp		*app,
@@ -152,12 +161,14 @@ void		 gs_app_set_version		(GsApp		*app,
 						 const gchar	*version);
 const gchar	*gs_app_get_summary		(GsApp		*app);
 void		 gs_app_set_summary		(GsApp		*app,
+						 GsAppQuality	 quality,
 						 const gchar	*summary);
 const gchar	*gs_app_get_summary_missing	(GsApp		*app);
 void		 gs_app_set_summary_missing	(GsApp		*app,
 						 const gchar	*missing);
 const gchar	*gs_app_get_description		(GsApp		*app);
 void		 gs_app_set_description		(GsApp		*app,
+						 GsAppQuality	 quality,
 						 const gchar	*description);
 const gchar	*gs_app_get_url			(GsApp		*app,
 						 const gchar	*kind);

@@ -154,8 +154,8 @@ gs_plugin_add_installed_file (GsPlugin *plugin,
 
 	/* create application */
 	*app = gs_app_new (filename);
-	gs_app_set_name (*app, name);
-	gs_app_set_summary (*app, comment);
+	gs_app_set_name (*app, GS_APP_QUALITY_NORMAL, name);
+	gs_app_set_summary (*app, GS_APP_QUALITY_NORMAL, comment);
 	/* TRANSLATORS: this is the licence of the web-app */
 	gs_app_set_licence (*app, _("Proprietary"));
 	gs_app_set_state (*app, no_display ? GS_APP_STATE_AVAILABLE :

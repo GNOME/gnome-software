@@ -107,11 +107,11 @@ gs_plugin_datadir_apps_set_from_cache_item (GsApp *app,
 	gs_app_set_id (app, cache_item->id);
 	gs_app_set_metadata (app, "DataDir::desktop-icon", cache_item->icon_name);
 	if (cache_item->name != NULL)
-		gs_app_set_name (app, cache_item->name);
+		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, cache_item->name);
 	if (cache_item->pkgname != NULL)
 		gs_app_add_source (app, cache_item->pkgname);
 	if (cache_item->summary != NULL)
-		gs_app_set_summary (app, cache_item->summary);
+		gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST, cache_item->summary);
 	if (cache_item->pixbuf != NULL)
 		gs_app_set_pixbuf (app, cache_item->pixbuf);
 

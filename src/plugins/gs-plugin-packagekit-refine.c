@@ -147,8 +147,12 @@ gs_plugin_packagekit_resolve_packages_app (GPtrArray *packages,
 				if (gs_app_get_version (app) == NULL)
 					gs_app_set_version (app,
 						pk_package_get_version (package));
-				gs_app_set_metadata (app, "PackageKit::Summary",
-						     pk_package_get_summary (package));
+				gs_app_set_name (app,
+						 GS_APP_QUALITY_LOWEST,
+						 pk_package_get_name (package));
+				gs_app_set_summary (app,
+						    GS_APP_QUALITY_LOWEST,
+						    pk_package_get_summary (package));
 			}
 		}
 	}
@@ -455,11 +459,11 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 						pk_details_get_url (details));
 			}
 			size += pk_details_get_size (details);
-			if (gs_app_get_metadata_item (app, "PackageKit::Description") == NULL) {
-				desc = gs_pk_format_desc (pk_details_get_description (details));
-				gs_app_set_metadata (app, "PackageKit::Description", desc);
-				g_free (desc);
-			}
+			desc = gs_pk_format_desc (pk_details_get_description (details));
+			gs_app_set_description (app,
+						GS_APP_QUALITY_LOWEST,
+						desc);
+			g_free (desc);
 			break;
 		}
 	}

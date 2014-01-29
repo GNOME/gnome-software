@@ -58,6 +58,7 @@ struct GsAppPrivate
 	gchar			*id;
 	gchar			*id_full;
 	gchar			*name;
+	GsAppQuality		 name_quality;
 	gchar			*icon;
 	GPtrArray		*sources;
 	GPtrArray		*source_ids;
@@ -65,8 +66,10 @@ struct GsAppPrivate
 	gchar			*version;
 	gchar			*version_ui;
 	gchar			*summary;
+	GsAppQuality		 summary_quality;
 	gchar			*summary_missing;
 	gchar			*description;
+	GsAppQuality		 description_quality;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
 	GPtrArray		*keywords;
@@ -575,12 +578,20 @@ gs_app_get_name (GsApp *app)
 /**
  * gs_app_set_name:
  * @app:	A #GsApp instance
+ * @quality:	A data quality, e.g. %GS_APP_QUALITY_LOWEST
  * @name:	The short localized name, e.g. "Calculator"
  */
 void
-gs_app_set_name (GsApp *app, const gchar *name)
+gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (name != NULL);
+
+	/* only save this if the data is sufficiently high quality */
+	if (quality < app->priv->name_quality)
+		return;
+	app->priv->name_quality = quality;
+
 	g_free (app->priv->name);
 	app->priv->name = g_strdup (name);
 }
@@ -980,12 +991,19 @@ gs_app_get_summary (GsApp *app)
 /**
  * gs_app_set_summary:
  * @app:	A #GsApp instance
+ * @quality:	A data quality, e.g. %GS_APP_QUALITY_LOWEST
  * @summary:	The medium length localized name, e.g. "A graphical calculator for GNOME"
  */
 void
-gs_app_set_summary (GsApp *app, const gchar *summary)
+gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 {
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* only save this if the data is sufficiently high quality */
+	if (quality < app->priv->summary_quality)
+		return;
+	app->priv->summary_quality = quality;
+
 	g_free (app->priv->summary);
 	app->priv->summary = g_strdup (summary);
 }
@@ -1003,12 +1021,19 @@ gs_app_get_description (GsApp *app)
 /**
  * gs_app_set_description:
  * @app:	A #GsApp instance
+ * @quality:	A data quality, e.g. %GS_APP_QUALITY_LOWEST
  * @summary:	The multiline localized description, e.g. "GNOME Calculator is a graphical calculator for GNOME....."
  */
 void
-gs_app_set_description (GsApp *app, const gchar *description)
+gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *description)
 {
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* only save this if the data is sufficiently high quality */
+	if (quality < app->priv->summary_quality)
+		return;
+	app->priv->summary_quality = quality;
+
 	g_free (app->priv->description);
 	app->priv->description = g_strdup (description);
 }
@@ -1455,11 +1480,11 @@ gs_app_subsume (GsApp *app, GsApp *other)
 	if (priv2->project_group != NULL)
 		gs_app_set_project_group (app, priv2->project_group);
 	if (priv2->name != NULL)
-		gs_app_set_name (app, priv2->name);
+		gs_app_set_name (app, priv2->name_quality, priv2->name);
 	if (priv2->summary != NULL)
-		gs_app_set_summary (app, priv2->summary);
+		gs_app_set_summary (app, priv2->summary_quality, priv2->summary);
 	if (priv2->description != NULL)
-		gs_app_set_description (app, priv2->description);
+		gs_app_set_description (app, priv2->description_quality, priv2->description);
 	if (priv2->update_details != NULL)
 		gs_app_set_update_details (app, priv2->update_details);
 	if (priv2->update_version != NULL)
@@ -1535,16 +1560,22 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		gs_app_set_id (app, g_value_get_string (value));
 		break;
 	case PROP_NAME:
-		gs_app_set_name (app, g_value_get_string (value));
+		gs_app_set_name (app,
+				 GS_APP_QUALITY_UNKNOWN,
+				 g_value_get_string (value));
 		break;
 	case PROP_VERSION:
 		gs_app_set_version (app, g_value_get_string (value));
 		break;
 	case PROP_SUMMARY:
-		gs_app_set_summary (app, g_value_get_string (value));
+		gs_app_set_summary (app,
+				    GS_APP_QUALITY_UNKNOWN,
+				    g_value_get_string (value));
 		break;
 	case PROP_DESCRIPTION:
-		gs_app_set_description (app, g_value_get_string (value));
+		gs_app_set_description (app,
+					GS_APP_QUALITY_UNKNOWN,
+					g_value_get_string (value));
 		break;
 	case PROP_RATING:
 		gs_app_set_rating (app, g_value_get_int (value));

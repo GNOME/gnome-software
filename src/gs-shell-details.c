@@ -777,6 +777,7 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 
 	/* change widgets */
 	gs_shell_details_refresh (shell_details);
+	gs_shell_details_refresh_screenshots (shell_details);
 	gs_shell_details_refresh_all (shell_details);
 	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_READY);
 }

@@ -206,7 +206,9 @@ appdata_parse_end_element_cb (GMarkupParseContext *context,
 						   APPSTREAM_MARKUP_MODE_END);
 			tmp = appstream_markup_get_text (helper->markup);
 			if (tmp != NULL)
-				gs_app_set_description (helper->app, tmp);
+				gs_app_set_description (helper->app,
+							GS_APP_QUALITY_NORMAL,
+							tmp);
 			helper->tag = APPSTREAM_TAG_APPLICATION;
 		}
 	} else {
@@ -251,23 +253,19 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		break;
 	case APPSTREAM_TAG_NAME:
 		// FIXME: does not get best language
-		if (gs_app_get_name (helper->app) == NULL) {
-			tmp = appstream_xml_unmunge (text, text_len);
-			if (tmp == NULL)
-				break;
-			g_debug ("AppData: Setting name: %s", tmp);
-			gs_app_set_name (helper->app, tmp);
-		}
+		tmp = appstream_xml_unmunge (text, text_len);
+		if (tmp == NULL)
+			break;
+		g_debug ("AppData: Setting name: %s", tmp);
+		gs_app_set_name (helper->app, GS_APP_QUALITY_NORMAL, tmp);
 		break;
 	case APPSTREAM_TAG_SUMMARY:
 		// FIXME: does not get best language
-		if (gs_app_get_summary (helper->app) == NULL) {
-			tmp = appstream_xml_unmunge (text, text_len);
-			if (tmp == NULL)
-				break;
-			g_debug ("AppData: Setting summary: %s", tmp);
-			gs_app_set_summary (helper->app, tmp);
-		}
+		tmp = appstream_xml_unmunge (text, text_len);
+		if (tmp == NULL)
+			break;
+		g_debug ("AppData: Setting summary: %s", tmp);
+		gs_app_set_summary (helper->app, GS_APP_QUALITY_NORMAL, tmp);
 		break;
 	case APPSTREAM_TAG_URL:
 		if (gs_app_get_url (helper->app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
