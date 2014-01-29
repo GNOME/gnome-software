@@ -630,6 +630,17 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		break;
 	}
 
+	/* only show support box for non-local packages */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_details_support"));
+	switch (gs_app_get_state (priv->app)) {
+	case GS_APP_STATE_LOCAL:
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	default:
+		gtk_widget_set_visible (widget, TRUE);
+		break;
+	}
+
 	/* make history button insensitive if there is none */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
 	switch (gs_app_get_id_kind (priv->app)) {
