@@ -52,6 +52,7 @@ typedef struct {
 	GMainContext    *context;
 	GMainLoop	*loop;
 	gboolean	 ret;
+	GsApp		*app;
 } GsPluginLoaderHelper;
 
 static void
@@ -521,6 +522,56 @@ gs_plugin_loader_refresh (GsPluginLoader *plugin_loader,
 	g_main_context_unref (helper.context);
 
 	return helper.ret;
+}
+
+static void
+gs_plugin_loader_filename_to_app_finish_sync (GObject *source_object,
+					      GAsyncResult *res,
+					      gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
+	helper->app = gs_plugin_loader_filename_to_app_finish (plugin_loader,
+							       res,
+							       helper->error);
+	g_main_loop_quit (helper->loop);
+}
+
+/**
+ * gs_plugin_loader_filename_to_app:
+ **/
+GsApp *
+gs_plugin_loader_filename_to_app (GsPluginLoader *plugin_loader,
+				  const gchar *filename,
+				  GsPluginRefineFlags flags,
+				  GCancellable *cancellable,
+				  GError **error)
+{
+	GsPluginLoaderHelper helper;
+
+	/* create temp object */
+	helper.app = NULL;
+	helper.context = g_main_context_new ();
+	helper.loop = g_main_loop_new (helper.context, FALSE);
+	helper.error = error;
+
+	g_main_context_push_thread_default (helper.context);
+
+	/* run async method */
+	gs_plugin_loader_filename_to_app_async (plugin_loader,
+						filename,
+						flags,
+						cancellable,
+						gs_plugin_loader_filename_to_app_finish_sync,
+						&helper);
+	g_main_loop_run (helper.loop);
+
+	g_main_context_pop_thread_default (helper.context);
+
+	g_main_loop_unref (helper.loop);
+	g_main_context_unref (helper.context);
+
+	return helper.app;
 }
 
 /* vim: set noexpandtab: */

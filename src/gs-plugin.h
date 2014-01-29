@@ -135,6 +135,11 @@ typedef gboolean	 (*GsPluginRefreshFunc	)	(GsPlugin	*plugin,
 							 GsPluginRefreshFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginFilenameToAppFunc)	(GsPlugin	*plugin,
+							 GList		**list,
+							 const gchar	*filename,
+							 GCancellable	*cancellable,
+							 GError		**error);
 
 const gchar	*gs_plugin_get_name			(void);
 void		 gs_plugin_initialize			(GsPlugin	*plugin);
@@ -214,6 +219,11 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
 gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
 							 guint		 cache_age,
 							 GsPluginRefreshFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_filename_to_app		(GsPlugin	*plugin,
+							 GList		**list,
+							 const gchar	*filename,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

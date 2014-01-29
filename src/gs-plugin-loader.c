@@ -644,6 +644,7 @@ typedef struct {
 	GsPluginLoader			*plugin_loader;
 	GsPluginRefineFlags		 flags;
 	gchar				*value;
+	gchar				*filename;
 	guint				 cache_age;
 	GsCategory			*category;
 	GsApp				*app;
@@ -2992,6 +2993,200 @@ gs_plugin_loader_refresh_finish (GsPluginLoader *plugin_loader,
 
 	/* grab detail */
 	return g_simple_async_result_get_op_res_gboolean (simple);
+}
+
+/******************************************************************************/
+
+/**
+ * gs_plugin_loader_filename_to_app_state_finish:
+ **/
+static void
+gs_plugin_loader_filename_to_app_state_finish (GsPluginLoaderAsyncState *state,
+					       const GError *error)
+{
+	if (state->app != NULL) {
+		g_simple_async_result_set_op_res_gpointer (state->res,
+							   g_object_ref (state->app),
+							   (GDestroyNotify) g_object_unref);
+	} else {
+		g_simple_async_result_set_from_error (state->res, error);
+	}
+
+	if (state->cancellable != NULL)
+		g_object_unref (state->cancellable);
+	if (state->app != NULL)
+		g_object_unref (state->app);
+	g_free (state->filename);
+	gs_plugin_list_free (state->list);
+	g_object_unref (state->res);
+	g_object_unref (state->plugin_loader);
+	g_slice_free (GsPluginLoaderAsyncState, state);
+}
+
+/**
+ * gs_plugin_loader_filename_to_app_thread_cb:
+ **/
+static void
+gs_plugin_loader_filename_to_app_thread_cb (GSimpleAsyncResult *res,
+					    GObject *object,
+					    GCancellable *cancellable)
+{
+	const gchar *function_name = "gs_plugin_filename_to_app";
+	gboolean ret = TRUE;
+	gchar *profile_id;
+	GError *error = NULL;
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPlugin *plugin;
+	GsPluginFilenameToAppFunc plugin_func = NULL;
+	guint i;
+
+	/* run each plugin */
+	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
+		ret = g_cancellable_set_error_if_cancelled (cancellable, &error);
+		if (ret) {
+			gs_plugin_loader_filename_to_app_state_finish (state, error);
+			g_error_free (error);
+			goto out;
+		}
+		ret = g_module_symbol (plugin->module,
+				       function_name,
+				       (gpointer *) &plugin_func);
+		if (!ret)
+			continue;
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+					      plugin->name, function_name);
+		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		ret = plugin_func (plugin, &state->list, state->filename, cancellable, &error);
+		if (!ret) {
+			gs_plugin_loader_filename_to_app_state_finish (state, error);
+			g_error_free (error);
+			goto out;
+		}
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
+	}
+
+	/* dedupe applications we already know about */
+	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
+
+	/* run refine() on each one */
+	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   function_name,
+					   state->list,
+					   state->flags,
+					   cancellable,
+					   &error);
+	if (!ret) {
+		gs_plugin_loader_filename_to_app_state_finish (state, error);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* filter package list */
+	gs_plugin_list_filter_duplicates (&state->list);
+	if (state->list == NULL) {
+		g_set_error (&error,
+			     GS_PLUGIN_LOADER_ERROR,
+			     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+			     "no filename_to_app results to show");
+		gs_plugin_loader_filename_to_app_state_finish (state, error);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* success */
+	if (g_list_length (state->list) != 1) {
+		g_set_error (&error,
+			     GS_PLUGIN_LOADER_ERROR,
+			     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+			     "no application was created for %s",
+			     state->filename);
+		gs_plugin_loader_filename_to_app_state_finish (state, error);
+		g_error_free (error);
+		goto out;
+	}
+	state->app = g_object_ref (state->list->data);
+	gs_plugin_loader_filename_to_app_state_finish (state, NULL);
+out:
+	return;
+}
+
+/**
+ * gs_plugin_loader_filename_to_app_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_filename_to_app()
+ * function. The plugins can either return #GsApp objects of kind
+ * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ *
+ * Once the list of updates is refined, some of the #GsApp's of kind
+ * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
+ * or if they are core applications.
+ **/
+void
+gs_plugin_loader_filename_to_app_async (GsPluginLoader *plugin_loader,
+					const gchar *filename,
+					GsPluginRefineFlags flags,
+					GCancellable *cancellable,
+					GAsyncReadyCallback callback,
+					gpointer user_data)
+{
+	GCancellable *tmp;
+	GsPluginLoaderAsyncState *state;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->res = g_simple_async_result_new (G_OBJECT (plugin_loader),
+						callback,
+						user_data,
+						gs_plugin_loader_filename_to_app_async);
+	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
+	state->filename = g_strdup (filename);
+	if (cancellable != NULL)
+		state->cancellable = g_object_ref (cancellable);
+
+	/* run in a thread */
+	tmp = g_cancellable_new ();
+	g_object_set_data (G_OBJECT (tmp), "state", state);
+	g_simple_async_result_run_in_thread (G_SIMPLE_ASYNC_RESULT (state->res),
+					     gs_plugin_loader_filename_to_app_thread_cb,
+					     0,
+					     (GCancellable *) tmp);
+	g_object_unref (tmp);
+}
+
+/**
+ * gs_plugin_loader_filename_to_app_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): An application, or %NULL
+ **/
+GsApp *
+gs_plugin_loader_filename_to_app_finish (GsPluginLoader *plugin_loader,
+					 GAsyncResult *res,
+					 GError **error)
+{
+	GSimpleAsyncResult *simple;
+
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	/* failed */
+	simple = G_SIMPLE_ASYNC_RESULT (res);
+	if (g_simple_async_result_propagate_error (simple, error))
+		return NULL;
+
+	/* grab application */
+	return g_object_ref (g_simple_async_result_get_op_res_gpointer (simple));
 }
 
 /******************************************************************************/

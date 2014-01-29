@@ -136,6 +136,15 @@ void		 gs_plugin_loader_search_async		(GsPluginLoader	*plugin_loader,
 GList		*gs_plugin_loader_search_finish		(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
+void		 gs_plugin_loader_filename_to_app_async	(GsPluginLoader	*plugin_loader,
+							 const gchar	*filename,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GsApp		*gs_plugin_loader_filename_to_app_finish(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
 gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_dump_state		(GsPluginLoader	*plugin_loader);

@@ -169,3 +169,82 @@ out:
 		g_object_unref (results);
 	return ret;
 }
+
+/**
+ * gs_plugin_refresh:
+ */
+gboolean
+gs_plugin_filename_to_app (GsPlugin *plugin,
+			   GList **list,
+			   const gchar *filename,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	const gchar *package_id;
+	gboolean ret = TRUE;
+	gchar **files;
+	gchar **split = NULL;
+	GPtrArray *array = NULL;
+	GsApp *app = NULL;
+	PkDetails *item;
+	PkResults *results;
+
+	/* get details */
+	files = g_strsplit (filename, "\t", -1);
+	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), G_MAXUINT);
+	results = pk_client_get_details_local (PK_CLIENT (plugin->priv->task),
+					       files,
+					       cancellable,
+					       gs_plugin_packagekit_progress_cb, plugin,
+					       error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+
+	/* get results */
+	array = pk_results_get_details_array (results);
+	if (array->len == 0) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "no details for %s", filename);
+		goto out;
+	}
+	if (array->len > 1) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "too many details [%i] for %s",
+			     array->len, filename);
+		goto out;
+	}
+
+	/* create application */
+	item = g_ptr_array_index (array, 0);
+	app = gs_app_new (NULL);
+	package_id = pk_details_get_package_id (item);
+	split = pk_package_id_split (package_id);
+	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
+	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	gs_app_set_name (app, split[PK_PACKAGE_ID_NAME]);
+	gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
+	gs_app_set_metadata (app, "PackageKit::local-filename", filename);
+	gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
+	gs_app_add_source_id (app, package_id);
+	gs_app_set_description (app, pk_details_get_description (item));
+	gs_app_set_url (app, GS_APP_URL_KIND_HOMEPAGE, pk_details_get_url (item));
+	gs_app_set_size (app, pk_details_get_size (item));
+	gs_app_set_licence (app, pk_details_get_license (item));
+	gs_plugin_add_app (list, app);
+out:
+	if (app != NULL)
+		g_object_unref (app);
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	g_strfreev (split);
+	g_strfreev (files);
+	return ret;
+}
