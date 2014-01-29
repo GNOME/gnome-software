@@ -9,3 +9,5 @@ endif
 EXTRA_DIST =						\
 	basic.py					\
 	actions.py
+
+-include $(top_srcdir)/git.mk
