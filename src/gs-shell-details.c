@@ -36,6 +36,11 @@ static void	gs_shell_details_finalize	(GObject	*object);
 
 #define GS_SHELL_DETAILS_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_DETAILS, GsShellDetailsPrivate))
 
+typedef enum {
+	GS_SHELL_DETAILS_STATE_LOADING,
+	GS_SHELL_DETAILS_STATE_READY
+} GsShellDetailsState;
+
 struct GsShellDetailsPrivate
 {
 	GsPluginLoader		*plugin_loader;
@@ -60,6 +65,45 @@ void
 gs_shell_details_invalidate (GsShellDetails *shell_details)
 {
 	shell_details->priv->cache_valid = FALSE;
+}
+
+/**
+ * gs_shell_details_set_state:
+ **/
+static void
+gs_shell_details_set_state (GsShellDetails *shell_details,
+			    GsShellDetailsState state)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	GtkWidget *widget;
+
+	/* spinner */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_details"));
+	switch (state) {
+	case GS_SHELL_DETAILS_STATE_LOADING:
+		gtk_spinner_start (GTK_SPINNER (widget));
+		gtk_widget_show (widget);
+		break;
+	case GS_SHELL_DETAILS_STATE_READY:
+		gtk_spinner_stop (GTK_SPINNER (widget));
+		gtk_widget_hide (widget);
+		break;
+	default:
+		g_assert_not_reached ();
+	}
+
+	/* stack */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_details"));
+	switch (state) {
+	case GS_SHELL_DETAILS_STATE_LOADING:
+		gtk_stack_set_visible_child_name (GTK_STACK (widget), "spinner");
+		break;
+	case GS_SHELL_DETAILS_STATE_READY:
+		gtk_stack_set_visible_child_name (GTK_STACK (widget), "ready");
+		break;
+	default:
+		g_assert_not_reached ();
+	}
 }
 
 /**
@@ -687,6 +731,7 @@ gs_shell_details_app_refine_cb (GObject *source,
 		return;
 	}
 	gs_shell_details_refresh_all (shell_details);
+	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_READY);
 }
 
 /**
@@ -733,6 +778,7 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 	/* change widgets */
 	gs_shell_details_refresh (shell_details);
 	gs_shell_details_refresh_all (shell_details);
+	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_READY);
 }
 
 /**
@@ -742,6 +788,7 @@ void
 gs_shell_details_set_filename (GsShellDetails *shell_details, const gchar *filename)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
+	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_LOADING);
 	gs_plugin_loader_filename_to_app_async (priv->plugin_loader,
 						filename,
 						GS_PLUGIN_REFINE_FLAGS_DEFAULT |
@@ -766,6 +813,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	g_free (app_dump);
 
 	/* get extra details about the app */
+	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_LOADING);
 	gs_plugin_loader_app_refine_async (priv->plugin_loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
