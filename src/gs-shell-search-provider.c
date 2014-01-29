@@ -289,7 +289,7 @@ search_provider_name_acquired_cb (GDBusConnection *connection,
                                   const gchar     *name,
                                   gpointer         user_data)
 {
-	g_debug ("Search provider name acquired: %s\n", name);
+	g_debug ("Search provider name acquired: %s", name);
 }
 
 static void
@@ -297,7 +297,7 @@ search_provider_name_lost_cb (GDBusConnection *connection,
                               const gchar     *name,
                               gpointer         user_data)
 {
-	g_debug ("Search provider name lost: %s\n", name);
+	g_debug ("Search provider name lost: %s", name);
 }
 
 static void

@@ -141,7 +141,6 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 	/* join the lines*/
 	str = gs_app_widget_get_description (app_widget);
 	gs_string_replace (str, "\n", " ");
-	g_debug ("setting description: %s", str->str);
 	gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
 	g_string_free (str, TRUE);
 

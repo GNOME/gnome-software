@@ -319,20 +319,6 @@ search_activated (GSimpleAction *action,
 }
 
 static void
-set_debug_level_activated (GSimpleAction *action,
-			   GVariant      *parameter,
-			   gpointer       data)
-{
-	if (g_variant_get_int32 (parameter) > 0) {
-		g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
-		g_debug ("enabled debugging");
-	} else {
-		g_debug ("enabled disabled");
-		g_setenv ("G_MESSAGES_DEBUG", "", TRUE);
-	}
-}
-
-static void
 details_activated (GSimpleAction *action,
 		   GVariant      *parameter,
 		   gpointer       data)
@@ -405,7 +391,6 @@ static GActionEntry actions[] = {
 	{ "profile", profile_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
-	{ "set-debug-level", set_debug_level_activated, "i", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
         { "clear-offline-updates", clear_offline_updates, NULL, NULL, NULL },
@@ -469,7 +454,7 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 	gboolean activate_ui = TRUE;
 	gboolean version = FALSE;
 	gboolean profile = FALSE;
-	gint debug_level = -1;
+	gboolean verbose = FALSE;
 	gint argc;
 	const GOptionEntry options[] = {
                 { "gapplication-service", '\0', 0, G_OPTION_ARG_NONE, &gapplication_service,
@@ -481,7 +466,7 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 		  _("Search for applications"), _("SEARCH") },
 		{ "details", '\0', 0, G_OPTION_ARG_STRING, &id,
 		  _("Show application details"), _("ID") },
-		{ "set-debug-level", '\0', 0, G_OPTION_ARG_INT, &debug_level,
+		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
 		  _("Set the specified debugging level"), _("ID") },
 		{ "profile", 0, 0, G_OPTION_ARG_NONE, &profile,
 		  _("Show profiling information for the service"), NULL },
@@ -500,6 +485,9 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 		*status = 1;
 		goto out;
 	}
+
+	if (verbose)
+		g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
 	if (version) {
 		g_print ("gnome-software " VERSION "\n");
@@ -527,12 +515,6 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"profile",
 						NULL);
-	}
-	if (debug_level >= 0) {
-		activate_ui = FALSE;
-		g_action_group_activate_action (G_ACTION_GROUP (app),
-						"set-debug-level",
-						g_variant_new_int32 (debug_level));
 	}
 
 	if (mode != NULL) {

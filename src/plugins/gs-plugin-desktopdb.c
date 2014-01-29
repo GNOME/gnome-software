@@ -111,7 +111,7 @@ gs_plugin_desktopdb_set_metadata (GsPlugin *plugin,
 			goto out;
 		}
 		if (files->len == 0) {
-			g_debug ("not an application %s", pkg_name);
+			g_debug ("no desktopdb entry for %s", pkg_name);
 			goto out;
 		}
 

@@ -581,8 +581,8 @@ gs_plugin_refine (GsPlugin *plugin,
 			pkgname = g_ptr_array_index (sources, i);
 			rating = gs_plugin_resolve_app (plugin, pkgname);
 			if (rating != -1) {
-				g_debug ("fedora-tagger setting rating on %s to %i",
-					 pkgname, rating);
+//				g_debug ("fedora-tagger setting rating on %s to %i",
+//					 pkgname, rating);
 				gs_app_set_rating (app, rating);
 				gs_app_set_rating_kind (app, GS_APP_RATING_KIND_SYSTEM);
 			}

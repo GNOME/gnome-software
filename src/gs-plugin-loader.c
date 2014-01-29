@@ -438,8 +438,8 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 
 	/* don't show unconverted packages in the application view */
 	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
-		g_debug ("app invalid as only a package %s",
-			 gs_plugin_loader_get_app_str (app));
+//		g_debug ("app invalid as only a package %s",
+//			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
 
