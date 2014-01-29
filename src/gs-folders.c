@@ -491,6 +491,9 @@ gs_folders_get_app_folder (GsFolders *folders, const gchar *app, GPtrArray *cate
 {
 	GsFolder *folder;
 
+	if (app == NULL)
+		return NULL;
+
 	folder = get_app_folder (folders, app, categories);
 
 	return folder ? folder->id : NULL;
