@@ -1010,6 +1010,28 @@ gs_shell_updates_os_updates_sort_func (GtkListBoxRow *a,
 	return g_strcmp0 (key1, key2);
 }
 
+/**
+ * gs_shell_updates_get_properties_cb:
+ **/
+static void
+gs_shell_updates_get_properties_cb (GObject *source,
+				    GAsyncResult *res,
+				    gpointer user_data)
+{
+	gboolean ret;
+	GError *error = NULL;
+	GsShellUpdates *shell_updates = GS_SHELL_UPDATES (user_data);
+	PkControl *control = PK_CONTROL (source);
+
+	/* get result */
+	ret = pk_control_get_properties_finish (control, res, &error);
+	if (!ret) {
+		g_warning ("failed to get properties: %s", error->message);
+		g_error_free (error);
+	}
+	gs_shell_updates_update_ui_state (shell_updates);
+}
+
 void
 gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			GsShell *shell,
@@ -1017,22 +1039,13 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			GtkBuilder *builder,
 			GCancellable *cancellable)
 {
-	GError *error = NULL;
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
 	GtkWidget *sw;
-	gboolean ret;
 
 	g_return_if_fail (GS_IS_SHELL_UPDATES (shell_updates));
 
 	priv->shell = shell;
-
-	/* get the network state */
-	ret = pk_control_get_properties (priv->control, cancellable, &error);
-	if (!ret) {
-		g_warning ("failed to get properties: %s", error->message);
-		g_error_free (error);
-	}
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (priv->plugin_loader, "pending-apps-changed",
@@ -1103,11 +1116,14 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
 	g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
 
-	g_signal_connect (shell_updates->priv->control, "notify::network-state",
+	g_signal_connect (priv->control, "notify::network-state",
 			  G_CALLBACK (gs_shell_updates_notify_network_state_cb),
 			  shell_updates);
 
-	gs_shell_updates_update_ui_state (shell_updates);
+	/* get the initial network state */
+	pk_control_get_properties_async (priv->control, cancellable,
+					 gs_shell_updates_get_properties_cb,
+					 shell_updates);
 }
 
 /**
