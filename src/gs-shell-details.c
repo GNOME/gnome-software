@@ -688,6 +688,68 @@ gs_shell_details_app_refine_cb (GObject *source,
 }
 
 /**
+ * gs_shell_details_filename_to_app_cb:
+ **/
+static void
+gs_shell_details_filename_to_app_cb (GObject *source,
+				     GAsyncResult *res,
+				     gpointer user_data)
+{
+	gchar *tmp;
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
+	GsShellDetailsPrivate *priv = shell_details->priv;
+
+	if (priv->app != NULL)
+		g_object_unref (priv->app);
+	priv->app = gs_plugin_loader_filename_to_app_finish(plugin_loader,
+							    res,
+							    &error);
+	if (priv->app == NULL) {
+		g_warning ("failed to convert to GsApp: %s", error->message);
+		g_error_free (error);
+		return;
+	}
+
+	/* save app */
+	g_signal_connect_object (priv->app, "notify::state",
+				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 shell_details, 0);
+	g_signal_connect_object (priv->app, "notify::size",
+				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 shell_details, 0);
+	g_signal_connect_object (priv->app, "notify::licence",
+				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 shell_details, 0);
+
+	/* print what we've got */
+	tmp = gs_app_to_string (priv->app);
+	g_debug ("%s", tmp);
+	g_free (tmp);
+
+	/* change widgets */
+	gs_shell_details_refresh (shell_details);
+	gs_shell_details_refresh_all (shell_details);
+}
+
+/**
+ * gs_shell_details_set_filename:
+ **/
+void
+gs_shell_details_set_filename (GsShellDetails *shell_details, const gchar *filename)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	gs_plugin_loader_filename_to_app_async (priv->plugin_loader,
+						filename,
+						GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+						priv->cancellable,
+						gs_shell_details_filename_to_app_cb,
+						shell_details);
+}
+
+/**
  * gs_shell_details_set_app:
  **/
 void

@@ -341,6 +341,20 @@ details_activated (GSimpleAction *action,
 }
 
 static void
+filename_activated (GSimpleAction *action,
+		    GVariant      *parameter,
+		    gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	const gchar *filename;
+
+	gs_application_initialize_ui (app);
+
+	g_variant_get (parameter, "(&s)", &filename);
+	gs_shell_show_filename (app->shell, filename);
+}
+
+static void
 launch_activated (GSimpleAction *action,
 		  GVariant      *parameter,
 		  gpointer       data)
@@ -392,6 +406,7 @@ static GActionEntry actions[] = {
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
+	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
         { "clear-offline-updates", clear_offline_updates, NULL, NULL, NULL },
         { "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
@@ -450,6 +465,7 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
         gboolean gapplication_service = FALSE;
 	gchar *mode = NULL;
 	gchar *search = NULL;
+	gchar *local_filename = NULL;
 	gchar *id = NULL;
 	gboolean activate_ui = TRUE;
 	gboolean version = FALSE;
@@ -465,6 +481,8 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 		{ "search", '\0', 0, G_OPTION_ARG_STRING, &search,
 		  _("Search for applications"), _("SEARCH") },
 		{ "details", '\0', 0, G_OPTION_ARG_STRING, &id,
+		  _("Show application details"), _("ID") },
+		{ "local-filename", '\0', 0, G_OPTION_ARG_FILENAME, &local_filename,
 		  _("Show application details"), _("ID") },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
 		  _("Set the specified debugging level"), _("ID") },
@@ -529,6 +547,10 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details",
 						g_variant_new ("(ss)", id, ""));
+	} else if (local_filename != NULL) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"filename",
+						g_variant_new ("(s)", local_filename));
 	} else if (activate_ui) {
 		g_application_activate (app);
 	}
@@ -537,7 +559,7 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 
 out:
 	g_option_context_free (context);
-
+	g_free (local_filename);
 	return TRUE;
 }
 

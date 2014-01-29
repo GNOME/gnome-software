@@ -197,8 +197,12 @@ gs_shell_change_mode (GsShell *shell,
 		gs_shell_updates_refresh (priv->shell_updates, TRUE, scroll_up);
 		break;
 	case GS_SHELL_MODE_DETAILS:
-		gs_shell_details_set_app (priv->shell_details, app);
-		gs_shell_details_refresh (priv->shell_details);
+		if (app != NULL) {
+			gs_shell_details_set_app (priv->shell_details, app);
+			gs_shell_details_refresh (priv->shell_details);
+		}
+		if (data != NULL)
+			gs_shell_details_set_filename (priv->shell_details, data);
 		break;
 	case GS_SHELL_MODE_CATEGORY:
 		gs_shell_category_set_category (priv->shell_category,
@@ -619,6 +623,14 @@ gs_shell_show_search (GsShell *shell, const gchar *search)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	gtk_entry_set_text (GTK_ENTRY (widget), search);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
+}
+
+void
+gs_shell_show_filename (GsShell *shell, const gchar *filename)
+{
+	save_back_entry (shell);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, NULL, (gpointer) filename, TRUE);
+	gs_shell_activate (shell);
 }
 
 typedef struct {
