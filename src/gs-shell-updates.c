@@ -504,6 +504,7 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 	GsApp *app_related;
 	GsAppKind kind;
 	GtkWidget *widget;
+	const gchar *sort;
 
 	kind = gs_app_get_kind (app);
 
@@ -527,7 +528,11 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 		for (i = 0; i < related->len; i++) {
 			app_related = g_ptr_array_index (related, i);
 			row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
-			g_object_set_data_full (G_OBJECT (row), "app", g_object_ref (app_related), g_object_unref);
+			sort = gs_app_get_source_default (app_related);
+			g_object_set_data_full (G_OBJECT (row),
+						"sort",
+						g_strdup (sort),
+						g_free);
 			label = gtk_label_new (gs_app_get_source_default (app_related));
 			g_object_set (label,
 				      "margin-left", 20,
@@ -982,6 +987,21 @@ gs_shell_updates_sort_func (GtkListBoxRow *a,
 	return retval;
 }
 
+/**
+ * gs_shell_updates_os_updates_sort_func:
+ **/
+static gint
+gs_shell_updates_os_updates_sort_func (GtkListBoxRow *a,
+				       GtkListBoxRow *b,
+				       gpointer user_data)
+{
+	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
+	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
+	const gchar *key1 = g_object_get_data (o1, "sort");
+	const gchar *key2 = g_object_get_data (o2, "sort");
+	return g_strcmp0 (key1, key2);
+}
+
 void
 gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			GsShell *shell,
@@ -1031,10 +1051,9 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "list_box_update"));
 	g_signal_connect (GTK_LIST_BOX (widget), "row-activated",
 			  G_CALLBACK (gs_shell_updates_row_activated_cb), shell_updates);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (widget),
-				      gs_shell_updates_list_header_func,
-				      shell_updates,
-				      NULL);
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (widget),
+				    gs_shell_updates_os_updates_sort_func,
+				    shell_updates, NULL);
 
        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 	g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), shell_updates);
