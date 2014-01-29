@@ -585,7 +585,6 @@ void
 gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (name != NULL);
 
 	/* only save this if the data is sufficiently high quality */
 	if (quality < app->priv->name_quality)
