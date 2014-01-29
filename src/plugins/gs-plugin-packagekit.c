@@ -173,39 +173,71 @@ gs_plugin_app_install (GsPlugin *plugin,
 		goto out;
 
 	/* get the list of available package ids to install */
-	source_ids = gs_app_get_source_ids (app);
-	if (source_ids->len == 0) {
+	switch (gs_app_get_state (app)) {
+	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_UPDATABLE:
+		source_ids = gs_app_get_source_ids (app);
+		if (source_ids->len == 0) {
+			ret = FALSE;
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "installing not available");
+			goto out;
+		}
+		package_ids = g_new0 (gchar *, source_ids->len + 1);
+		for (i = 0; i < source_ids->len; i++) {
+			package_id = g_ptr_array_index (source_ids, i);
+			if (g_strstr_len (package_id, -1, ";installed") != NULL)
+				continue;
+			package_ids[cnt++] = g_strdup (package_id);
+		}
+		if (cnt == 0) {
+			ret = FALSE;
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "no packages to install");
+			goto out;
+		}
+		results = pk_task_install_packages_sync (plugin->priv->task,
+							 package_ids,
+							 cancellable,
+							 gs_plugin_packagekit_progress_cb, plugin,
+							 error);
+		if (results == NULL) {
+			ret = FALSE;
+			goto out;
+		}
+		break;
+	case GS_APP_STATE_LOCAL:
+		package_id = gs_app_get_metadata_item (app, "PackageKit::local-filename");
+		if (package_id == NULL) {
+			ret = FALSE;
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+					     "local package, but no filename");
+			goto out;
+		}
+		package_ids = g_strsplit (package_id, "\t", -1);
+		results = pk_task_install_files_sync (plugin->priv->task,
+						      package_ids,
+						      cancellable,
+						      gs_plugin_packagekit_progress_cb, plugin,
+						      error);
+		if (results == NULL) {
+			ret = FALSE;
+			goto out;
+		}
+		break;
+	default:
 		ret = FALSE;
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "installing not available");
-		goto out;
-	}
-	package_ids = g_new0 (gchar *, source_ids->len + 1);
-	for (i = 0; i < source_ids->len; i++) {
-		package_id = g_ptr_array_index (source_ids, i);
-		if (g_strstr_len (package_id, -1, ";installed") != NULL)
-			continue;
-		package_ids[cnt++] = g_strdup (package_id);
-	}
-	if (cnt == 0) {
-		ret = FALSE;
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "no packages to install");
-		goto out;
-	}
-
-	/* do the action */
-	results = pk_task_install_packages_sync (plugin->priv->task,
-						 package_ids,
-						 cancellable,
-						 gs_plugin_packagekit_progress_cb, plugin,
-						 error);
-	if (results == NULL) {
-		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "do not know how to install app in state %s",
+			     gs_app_state_to_string (gs_app_get_state (app)));
 		goto out;
 	}
 
