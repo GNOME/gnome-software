@@ -74,6 +74,7 @@ typedef enum {
 	GS_APP_STATE_REMOVING,
 	GS_APP_STATE_UPDATABLE,
 	GS_APP_STATE_UNAVAILABLE,	/* we found a reference to this */
+	GS_APP_STATE_LOCAL,
 	GS_APP_STATE_LAST
 } GsAppState;
 

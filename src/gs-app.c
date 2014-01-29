@@ -153,6 +153,8 @@ gs_app_state_to_string (GsAppState state)
 		return "installed";
 	if (state == GS_APP_STATE_AVAILABLE)
 		return "available";
+	if (state == GS_APP_STATE_LOCAL)
+		return "local";
 	if (state == GS_APP_STATE_QUEUED)
 		return "queued";
 	if (state == GS_APP_STATE_INSTALLING)
@@ -362,6 +364,7 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		if (state == GS_APP_STATE_INSTALLED ||
 		    state == GS_APP_STATE_QUEUED ||
 		    state == GS_APP_STATE_AVAILABLE ||
+		    state == GS_APP_STATE_LOCAL ||
 		    state == GS_APP_STATE_UPDATABLE ||
 		    state == GS_APP_STATE_UNAVAILABLE)
 			state_change_ok = TRUE;
@@ -411,6 +414,12 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 		    state == GS_APP_STATE_AVAILABLE)
 			state_change_ok = TRUE;
 		break;
+	case GS_APP_STATE_LOCAL:
+		/* local has to go into an action state */
+		if (state == GS_APP_STATE_UNKNOWN ||
+		    state == GS_APP_STATE_INSTALLING)
+			state_change_ok = TRUE;
+		break;
 	default:
 		g_warning ("state %s unhandled",
 			   gs_app_state_to_string (priv->state));
@@ -429,7 +438,8 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 	priv->state = state;
 
 	if (state == GS_APP_STATE_UNKNOWN ||
-            state == GS_APP_STATE_AVAILABLE)
+	    state == GS_APP_STATE_LOCAL ||
+	    state == GS_APP_STATE_AVAILABLE)
 		app->priv->install_date = 0;
 
 	return TRUE;

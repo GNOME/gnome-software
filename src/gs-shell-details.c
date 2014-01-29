@@ -101,6 +101,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
 	switch (state) {
 	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_LOCAL:
 		gtk_widget_set_visible (widget, TRUE);
 		gtk_widget_set_sensitive (widget, TRUE);
 		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "suggested-action");
@@ -159,6 +160,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 			gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
 			gtk_button_set_label (GTK_BUTTON (widget), _("_Cancel"));
 			break;
+		case GS_APP_STATE_LOCAL:
 		case GS_APP_STATE_AVAILABLE:
 		case GS_APP_STATE_INSTALLING:
 		case GS_APP_STATE_UNAVAILABLE:
@@ -185,6 +187,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		case GS_APP_STATE_QUEUED:
 		case GS_APP_STATE_UPDATABLE:
 		case GS_APP_STATE_UNAVAILABLE:
+		case GS_APP_STATE_LOCAL:
 			gtk_widget_set_visible (widget, FALSE);
 			gtk_spinner_stop (GTK_SPINNER (widget));
 			break;

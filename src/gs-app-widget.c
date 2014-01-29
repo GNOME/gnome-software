@@ -204,6 +204,7 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending"));
 		break;
 	case GS_APP_STATE_AVAILABLE:
+	case GS_APP_STATE_LOCAL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily installed */
