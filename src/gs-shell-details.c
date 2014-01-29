@@ -609,6 +609,11 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		break;
 	}
 
+	/* don't show a missing rating on a local file */
+	if (gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL &&
+	    gs_app_get_rating (priv->app) < 0)
+		gtk_widget_set_visible (priv->star, FALSE);
+
 	/* only mark the stars as sensitive if the application is installed */
 	gtk_widget_set_sensitive (priv->star,
 				  gs_app_get_state (priv->app) == GS_APP_STATE_INSTALLED);
