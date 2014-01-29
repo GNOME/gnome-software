@@ -528,6 +528,10 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 		for (i = 0; i < related->len; i++) {
 			app_related = g_ptr_array_index (related, i);
 			row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
+			g_object_set_data_full (G_OBJECT (row),
+						"app",
+						g_object_ref (app_related),
+						g_object_unref);
 			sort = gs_app_get_source_default (app_related);
 			g_object_set_data_full (G_OBJECT (row),
 						"sort",
