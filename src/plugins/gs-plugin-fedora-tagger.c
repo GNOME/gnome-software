@@ -296,13 +296,30 @@ gs_plugin_fedora_tagger_timestamp_cb (void *data, gint argc,
 	return 0;
 }
 
+typedef struct {
+	gchar		*pkgname;
+	gdouble		 rating;
+	gdouble		 vote_count;
+	gdouble		 user_count;
+	gdouble		 confidence;
+} FedoraTaggerItem;
+
+/**
+ * fedora_tagger_item_free:
+ */
+static void
+fedora_tagger_item_free (FedoraTaggerItem *item)
+{
+	g_free (item->pkgname);
+	g_slice_free (FedoraTaggerItem, item);
+}
+
 /**
  * gs_plugin_fedora_tagger_add:
  */
 static gboolean
 gs_plugin_fedora_tagger_add (GsPlugin *plugin,
-			     const gchar *package,
-			     gint rating,
+			     FedoraTaggerItem *item,
 			     GError **error)
 {
 	gboolean ret = TRUE;
@@ -311,8 +328,12 @@ gs_plugin_fedora_tagger_add (GsPlugin *plugin,
 	gint rc;
 
 	/* insert the entry */
-	statement = g_strdup_printf ("INSERT OR REPLACE INTO ratings (pkgname, rating) "
-				     "VALUES ('%s', '%i');", package, rating);
+	statement = g_strdup_printf ("INSERT OR REPLACE INTO ratings (pkgname, rating, "
+				     "vote_count, user_count, confidence) "
+				     "VALUES ('%s', '%.0f', '%.0f', '%.0f', '%.0f');",
+				     item->pkgname, item->rating,
+				     item->vote_count, item->user_count,
+				     item->confidence);
 	rc = sqlite3_exec (plugin->priv->db, statement, NULL, NULL, &error_msg);
 	if (rc != SQLITE_OK) {
 		g_set_error (error,
@@ -369,13 +390,15 @@ out:
 static gboolean
 gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 {
+	FedoraTaggerItem *item;
+	GPtrArray *items = NULL;
 	SoupMessage *msg = NULL;
 	gboolean ret = TRUE;
-	gchar **split = NULL;
 	gchar *error_msg = NULL;
-	gchar *tmp;
+	gchar **fields;
+	gchar **split = NULL;
 	gchar *uri = NULL;
-	gdouble rating;
+	gdouble count_sum = 0;
 	guint i;
 	guint status_code;
 
@@ -402,17 +425,65 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	}
 
 	/* process the tab-delimited data */
+	items = g_ptr_array_new_with_free_func ((GDestroyNotify) fedora_tagger_item_free);
 	split = g_strsplit (msg->response_body->data, "\n", -1);
 	for (i = 0; split[i] != NULL; i++) {
-		tmp = g_strstr_len (split[i], -1, "\t");
-		if (tmp == NULL)
+		if (split[i][0] == '\0' ||
+		    split[i][0] == '#')
 			continue;
-		*tmp = '\0';
-		rating = g_strtod (tmp + 1, NULL);
-		ret = gs_plugin_fedora_tagger_add (plugin,
-						   split[i],
-						   (gint) rating,
-						   error);
+		fields = g_strsplit (split[i], "\t", -1);
+		if (g_strv_length (fields) == 4) {
+			item = g_slice_new0 (FedoraTaggerItem);
+			item->pkgname = g_strdup (fields[0]);
+			item->rating = g_strtod (fields[1], NULL);
+			item->vote_count = g_strtod (fields[2], NULL);
+			item->user_count = g_strtod (fields[3], NULL);
+			g_ptr_array_add (items, item);
+		} else {
+			g_warning ("unexpected data from fedora-tagger, expected: "
+				   "'pkgname\trating\tvote_count\tuser_count' and got '%s'",
+				   split[i]);
+		}
+		g_strfreev (fields);
+	}
+
+	/* no suitable data? */
+	if (items->len == 0) {
+		ret = FALSE;
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "Failed to get data from fedora-tagger");
+		goto out;
+	}
+
+	/* calculate confidence */
+	for (i = 0; i < items->len; i++) {
+		item = g_ptr_array_index (items, i);
+		count_sum += item->vote_count;
+	}
+	if (count_sum == 0) {
+		ret = FALSE;
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "Failed to get vote count in fedora-tagger");
+		goto out;
+	}
+	count_sum /= (gdouble) items->len;
+	g_debug ("fedora-tagger vote_count average is %.2f", count_sum);
+	for (i = 0; i < items->len; i++) {
+		item = g_ptr_array_index (items, i);
+		item->confidence = MAX (100.0f * item->vote_count / count_sum, 100);
+	}
+
+	/* add each completed item */
+	for (i = 0; i < items->len; i++) {
+		item = g_ptr_array_index (items, i);
+		g_debug ("adding %s: %.1f%% [%.1f] {%.1f%%}",
+			 item->pkgname, item->rating,
+			 item->vote_count, item->confidence);
+		ret = gs_plugin_fedora_tagger_add (plugin, item, error);
 		if (!ret)
 			goto out;
 	}
@@ -425,6 +496,8 @@ out:
 	g_free (error_msg);
 	g_free (uri);
 	g_strfreev (split);
+	if (items != NULL)
+		g_ptr_array_unref (items);
 	if (msg != NULL)
 		g_object_unref (msg);
 	return ret;
@@ -438,6 +511,7 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 {
 	const gchar *statement;
 	gboolean ret = TRUE;
+	gboolean rebuild_ratings = FALSE;
 	gchar *error_msg = NULL;
 	gint rc;
 	gint64 mtime = 0;
@@ -462,7 +536,27 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 	sqlite3_exec (plugin->priv->db, "PRAGMA synchronous=OFF",
 		      NULL, NULL, NULL);
 
-	/* create table if required */
+	/* create ratings if required */
+	rc = sqlite3_exec (plugin->priv->db,
+			   "SELECT vote_count FROM ratings LIMIT 1",
+			   gs_plugin_fedora_tagger_timestamp_cb, &mtime,
+			   &error_msg);
+	if (rc != SQLITE_OK) {
+		g_debug ("creating table to repair: %s", error_msg);
+		sqlite3_free (error_msg);
+		statement = "DROP TABLE IF EXISTS ratings;";
+		sqlite3_exec (plugin->priv->db, statement, NULL, NULL, NULL);
+		statement = "CREATE TABLE ratings ("
+			    "pkgname TEXT PRIMARY KEY,"
+			    "rating INTEGER DEFAULT 0,"
+			    "vote_count INTEGER DEFAULT 0,"
+			    "user_count INTEGER DEFAULT 0,"
+			    "confidence INTEGER DEFAULT 0);";
+		sqlite3_exec (plugin->priv->db, statement, NULL, NULL, NULL);
+		rebuild_ratings = TRUE;
+	}
+
+	/* create timestamps if required */
 	rc = sqlite3_exec (plugin->priv->db,
 			   "SELECT value FROM timestamps WHERE key = 'mtime' LIMIT 1",
 			   gs_plugin_fedora_tagger_timestamp_cb, &mtime,
@@ -470,10 +564,6 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 	if (rc != SQLITE_OK) {
 		g_debug ("creating table to repair: %s", error_msg);
 		sqlite3_free (error_msg);
-		statement = "CREATE TABLE ratings ("
-			    "pkgname TEXT PRIMARY KEY,"
-			    "rating INTEGER DEFAULT 0);";
-		sqlite3_exec (plugin->priv->db, statement, NULL, NULL, NULL);
 		statement = "CREATE TABLE timestamps ("
 			    "key TEXT PRIMARY KEY,"
 			    "value INTEGER DEFAULT 0);";
@@ -487,7 +577,7 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 
 	/* no data */
 	now = g_get_real_time () / G_USEC_PER_SEC;
-	if (mtime == 0) {
+	if (mtime == 0 || rebuild_ratings) {
 		g_debug ("No fedora-tagger data");
 		ret = gs_plugin_fedora_tagger_download (plugin, error);
 		if (!ret)
@@ -507,6 +597,11 @@ out:
 	return ret;
 }
 
+typedef struct {
+	gint		 rating;
+	gint		 confidence;
+} FedoraTaggerHelper;
+
 /**
  * gs_plugin_fedora_tagger_ratings_sqlite_cb:
  **/
@@ -516,29 +611,58 @@ gs_plugin_fedora_tagger_ratings_sqlite_cb (void *data,
 					   gchar **argv,
 					   gchar **col_name)
 {
-	gint *rating = (gint *) data;
-	*rating = atoi (argv[0]);
+	FedoraTaggerHelper *helper = (FedoraTaggerHelper *) data;
+	helper->rating = atoi (argv[0]);
+	helper->confidence = atoi (argv[1]);
 	return 0;
 }
 
 /**
  * gs_plugin_resolve_app:
  */
-static gint
-gs_plugin_resolve_app (GsPlugin *plugin, const gchar *pkgname)
+static gboolean
+gs_plugin_resolve_app (GsPlugin *plugin,
+		       const gchar *pkgname,
+		       gint *rating,
+		       gint *confidence,
+		       GError **error)
 {
+	FedoraTaggerHelper helper;
+	gboolean ret = TRUE;
+	gchar *error_msg = NULL;
 	gchar *statement;
-	gint rating = -1;
+	gint rc;
 
-	statement = g_strdup_printf ("SELECT rating FROM ratings "
+	/* default values */
+	helper.rating = -1;
+	helper.confidence = -1;
+
+	/* query, but don't return an error if the package isn't found */
+	statement = g_strdup_printf ("SELECT rating, confidence FROM ratings "
 				     "WHERE pkgname = '%s'", pkgname);
-	sqlite3_exec (plugin->priv->db,
-		      statement,
-		      gs_plugin_fedora_tagger_ratings_sqlite_cb,
-		      &rating,
-		      NULL);
+	rc = sqlite3_exec (plugin->priv->db,
+			   statement,
+			   gs_plugin_fedora_tagger_ratings_sqlite_cb,
+			   &helper,
+			   &error_msg);
+	if (rc != SQLITE_OK) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "SQL error: %s", error_msg);
+		sqlite3_free (error_msg);
+		ret = FALSE;
+		goto out;
+	}
+
+	/* success */
+	if (rating != NULL)
+		*rating = helper.rating;
+	if (confidence != NULL)
+		*confidence = helper.confidence;
+out:
 	g_free (statement);
-	return rating;
+	return ret;
 }
 
 /**
@@ -557,6 +681,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	const gchar *pkgname;
 	gboolean ret = TRUE;
 	gint rating;
+	gint confidence;
 	guint i;
 
 	/* nothing to do here */
@@ -579,11 +704,18 @@ gs_plugin_refine (GsPlugin *plugin,
 		sources = gs_app_get_sources (app);
 		for (i = 0; i < sources->len; i++) {
 			pkgname = g_ptr_array_index (sources, i);
-			rating = gs_plugin_resolve_app (plugin, pkgname);
+			ret = gs_plugin_resolve_app (plugin,
+						     pkgname,
+						     &rating,
+						     &confidence,
+						     error);
+			if (!ret)
+				goto out;
 			if (rating != -1) {
-//				g_debug ("fedora-tagger setting rating on %s to %i",
-//					 pkgname, rating);
+				g_debug ("fedora-tagger setting rating on %s to %i%% [%i]",
+					 pkgname, rating, confidence);
 				gs_app_set_rating (app, rating);
+				gs_app_set_rating_confidence (app, confidence);
 				gs_app_set_rating_kind (app, GS_APP_RATING_KIND_SYSTEM);
 			}
 		}
