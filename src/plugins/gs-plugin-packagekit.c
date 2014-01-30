@@ -200,6 +200,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 					     "no packages to install");
 			goto out;
 		}
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		results = pk_task_install_packages_sync (plugin->priv->task,
 							 package_ids,
 							 cancellable,
@@ -221,6 +222,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			goto out;
 		}
 		package_ids = g_strsplit (package_id, "\t", -1);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
 		results = pk_task_install_files_sync (plugin->priv->task,
 						      package_ids,
 						      cancellable,
@@ -314,6 +316,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 
 	/* do the action */
+	gs_app_set_state (app, GS_APP_STATE_REMOVING);
 	results = pk_task_remove_packages_sync (plugin->priv->task,
 						package_ids,
 						TRUE, FALSE,

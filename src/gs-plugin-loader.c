@@ -648,7 +648,6 @@ typedef struct {
 	guint				 cache_age;
 	GsCategory			*category;
 	GsApp				*app;
-	GsAppState			 state_progress;
 	GsAppState			 state_success;
 	GsAppState			 state_failure;
 } GsPluginLoaderAsyncState;
@@ -1997,8 +1996,6 @@ gs_plugin_loader_app_action_thread_cb (GSimpleAsyncResult *res,
 	guint id;
 
 	/* add to list */
-	if (state->state_progress != GS_APP_STATE_UNKNOWN)
-		gs_app_set_state_in_idle (state->app, state->state_progress);
 	g_mutex_lock (&state->plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_add (state->plugin_loader->priv->pending_apps, g_object_ref (state->app));
 	g_mutex_unlock (&state->plugin_loader->priv->pending_apps_mutex);
@@ -2230,19 +2227,16 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	switch (action) {
 	case GS_PLUGIN_LOADER_ACTION_INSTALL:
 		state->function_name = "gs_plugin_app_install";
-		state->state_progress = GS_APP_STATE_INSTALLING;
 		state->state_success = GS_APP_STATE_INSTALLED;
 		state->state_failure = GS_APP_STATE_AVAILABLE;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_REMOVE:
 		state->function_name = "gs_plugin_app_remove";
-		state->state_progress = GS_APP_STATE_REMOVING;
 		state->state_success = GS_APP_STATE_AVAILABLE;
 		state->state_failure = GS_APP_STATE_INSTALLED;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_SET_RATING:
 		state->function_name = "gs_plugin_app_set_rating";
-		state->state_progress = GS_APP_STATE_UNKNOWN;
 		state->state_success = GS_APP_STATE_UNKNOWN;
 		state->state_failure = GS_APP_STATE_UNKNOWN;
 		break;
