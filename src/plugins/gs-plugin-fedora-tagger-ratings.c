@@ -42,7 +42,7 @@ struct GsPluginPrivate {
 const gchar *
 gs_plugin_get_name (void)
 {
-	return "fedora-tagger";
+	return "fedora-tagger-ratings";
 }
 
 #define GS_PLUGIN_FEDORA_TAGGER_OS_RELEASE_FN	"/etc/os-release"

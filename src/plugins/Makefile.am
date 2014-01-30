@@ -36,7 +36,8 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_menu-spec-categories.la		\
 	libgs_plugin_menu-spec-refine.la		\
 	libgs_plugin_local-ratings.la			\
-	libgs_plugin_fedora_tagger.la			\
+	libgs_plugin_fedora_tagger_ratings.la		\
+	libgs_plugin_fedora_tagger_usage.la		\
 	libgs_plugin_epiphany.la			\
 	libgs_plugin_systemd-updates.la			\
 	libgs_plugin_packagekit-search.la		\
@@ -52,10 +53,15 @@ libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
-libgs_plugin_fedora_tagger_la_SOURCES = gs-plugin-fedora-tagger.c
-libgs_plugin_fedora_tagger_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)
-libgs_plugin_fedora_tagger_la_LDFLAGS = -module -avoid-version
-libgs_plugin_fedora_tagger_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_fedora_tagger_ratings_la_SOURCES = gs-plugin-fedora-tagger-ratings.c
+libgs_plugin_fedora_tagger_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)
+libgs_plugin_fedora_tagger_ratings_la_LDFLAGS = -module -avoid-version
+libgs_plugin_fedora_tagger_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+
+libgs_plugin_fedora_tagger_usage_la_SOURCES = gs-plugin-fedora-tagger-usage.c
+libgs_plugin_fedora_tagger_usage_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)
+libgs_plugin_fedora_tagger_usage_la_LDFLAGS = -module -avoid-version
+libgs_plugin_fedora_tagger_usage_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_epiphany_la_SOURCES = gs-plugin-epiphany.c
 libgs_plugin_epiphany_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS)
