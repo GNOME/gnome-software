@@ -674,6 +674,25 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 	/* get the results */
 	ret = gs_plugin_loader_refresh_finish (plugin_loader, res, &error);
 	if (!ret) {
+		/* user cancel */
+		if (g_error_matches (error,
+				     G_IO_ERROR,
+				     G_IO_ERROR_CANCELLED)) {
+			switch (priv->state) {
+			case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
+				gs_shell_updates_set_state (shell_updates,
+							    GS_SHELL_UPDATES_STATE_HAS_UPDATES);
+				break;
+			case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
+				gs_shell_updates_set_state (shell_updates,
+							    GS_SHELL_UPDATES_STATE_NO_UPDATES);
+				break;
+			default:
+				g_assert_not_reached ();
+				break;
+			}
+			return;
+		}
 		g_warning ("failed to refresh: %s", error->message);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
 							     "label_updates_failed"));

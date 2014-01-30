@@ -2922,7 +2922,7 @@ gs_plugin_loader_refresh_thread_cb (GSimpleAsyncResult *res,
 	state->ret = gs_plugin_loader_run_refresh (plugin_loader,
 						   state->cache_age,
 						   state->flags,
-						   cancellable,
+						   state->cancellable,
 						   &error);
 	if (!state->ret) {
 		gs_plugin_loader_refresh_state_finish (state, error);
