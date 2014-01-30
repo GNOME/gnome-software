@@ -41,9 +41,10 @@ static void	gs_shell_updates_finalize	(GObject	*object);
 
 typedef enum {
 	GS_SHELL_UPDATES_STATE_STARTUP,
-	GS_SHELL_UPDATES_STATE_ACTION_REFRESH,
+	GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES,
+	GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES,
 	GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES,
-	GS_SHELL_UPDATES_STATE_NO_UPDATES_TO_SHOW,
+	GS_SHELL_UPDATES_STATE_NO_UPDATES,
 	GS_SHELL_UPDATES_STATE_HAS_UPDATES,
 	GS_SHELL_UPDATES_STATE_FAILED,
 	GS_SHELL_UPDATES_STATE_LAST,
@@ -111,11 +112,12 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_updates"));
 	switch (priv->state) {
 	case GS_SHELL_UPDATES_STATE_STARTUP:
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
 		gs_start_spinner (GTK_SPINNER (widget));
 		break;
-	case GS_SHELL_UPDATES_STATE_NO_UPDATES_TO_SHOW:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
+	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_FAILED:
 		gs_stop_spinner (GTK_SPINNER (widget));
@@ -135,7 +137,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 				       _("(This could take a while)"));
 		gtk_label_set_label (GTK_LABEL (widget), tmp);
 		g_free (tmp);
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 		tmp = g_strdup_printf ("%s\n%s",
 				       /* TRANSLATORS: the updates panel is starting up */
 				       _("Looking for new updates…"),
@@ -147,7 +149,8 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 		/* TRANSLATORS: this is when the updates panel is starting up */
 		gtk_label_set_label (GTK_LABEL (widget), _("Checking for updates…"));
 		break;
-	case GS_SHELL_UPDATES_STATE_NO_UPDATES_TO_SHOW:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
+	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_FAILED:
 		break;
@@ -159,12 +162,13 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	/* headerbar spinner */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner_start"));
 	switch (priv->state) {
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
 		gtk_widget_show (widget);
 		gtk_spinner_start (GTK_SPINNER (widget));
 		break;
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
-	case GS_SHELL_UPDATES_STATE_NO_UPDATES_TO_SHOW:
+	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_STARTUP:
 	case GS_SHELL_UPDATES_STATE_FAILED:
@@ -179,7 +183,8 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	/* headerbar refresh icon */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh_image"));
 	switch (priv->state) {
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
 					      "media-playback-stop-symbolic", 0);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
@@ -197,7 +202,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
 		gtk_widget_show (widget);
 		break;
-	case GS_SHELL_UPDATES_STATE_NO_UPDATES_TO_SHOW:
+	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
 					      "view-refresh-symbolic", 0);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
@@ -213,11 +218,11 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_updates"));
 	switch (priv->state) {
 	case GS_SHELL_UPDATES_STATE_STARTUP:
-	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
 		gtk_stack_set_visible_child_name (GTK_STACK (widget), "spinner");
 		break;
-	case GS_SHELL_UPDATES_STATE_NO_UPDATES_TO_SHOW:
+	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 		/* check we have a "free" network connection */
 		switch (network_state) {
 		case PK_NETWORK_ENUM_ONLINE:
@@ -240,6 +245,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 		}
 		break;
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
 		gtk_stack_set_visible_child_name (GTK_STACK (widget), "view");
 		break;
 	case GS_SHELL_UPDATES_STATE_FAILED:
@@ -323,7 +329,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
 			g_debug ("no updates to show");
 			gs_shell_updates_set_state (shell_updates,
-						    GS_SHELL_UPDATES_STATE_NO_UPDATES_TO_SHOW);
+						    GS_SHELL_UPDATES_STATE_NO_UPDATES);
 		} else {
 			g_warning ("failed to get updates: %s", error->message);
 			widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
@@ -692,7 +698,9 @@ gs_shell_updates_get_new_updates (GsShellUpdates *shell_updates)
 
 	/* force a check for updates and download */
 	gs_shell_updates_set_state (shell_updates,
-				    GS_SHELL_UPDATES_STATE_ACTION_REFRESH);
+				    priv->state == GS_SHELL_UPDATES_STATE_HAS_UPDATES ?
+				    GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES :
+				    GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES);
 	g_cancellable_reset (priv->cancellable_refresh);
 	gs_plugin_loader_refresh_async (priv->plugin_loader,
 					10 * 60,
@@ -779,7 +787,8 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 	PkNetworkEnum network_state;
 
 	/* cancel existing action? */
-	if (priv->state == GS_SHELL_UPDATES_STATE_ACTION_REFRESH) {
+	if (priv->state == GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES ||
+	    priv->state == GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES) {
 		g_cancellable_cancel (priv->cancellable_refresh);
 		return;
 	}
