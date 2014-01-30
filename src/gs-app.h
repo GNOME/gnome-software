@@ -213,6 +213,9 @@ void		 gs_app_set_metadata		(GsApp		*app,
 gint		 gs_app_get_rating		(GsApp		*app);
 void		 gs_app_set_rating		(GsApp		*app,
 						 gint		 rating);
+gint		 gs_app_get_rating_confidence	(GsApp		*app);
+void		 gs_app_set_rating_confidence	(GsApp		*app,
+						 gint		 rating_confidence);
 GsAppRatingKind	 gs_app_get_rating_kind		(GsApp		*app);
 void		 gs_app_set_rating_kind		(GsApp		*app,
 						 GsAppRatingKind rating_kind);

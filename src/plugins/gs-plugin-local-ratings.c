@@ -235,6 +235,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		rating = gs_plugin_local_find_app (plugin, gs_app_get_id (app));
 		if (rating != -1) {
 			gs_app_set_rating (app, rating);
+			gs_app_set_rating_confidence (app, 100);
 			gs_app_set_rating_kind (app, GS_APP_RATING_KIND_USER);
 		}
 	}
