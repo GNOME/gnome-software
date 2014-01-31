@@ -154,7 +154,7 @@ static gboolean
 gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 				    GsPlugin *plugin,
 				    const gchar *function_name_parent,
-				    GList *list,
+				    GList **list,
 				    GsPluginRefineFlags flags,
 				    GCancellable *cancellable,
 				    GError **error)
@@ -221,7 +221,7 @@ out:
 static gboolean
 gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     const gchar *function_name_parent,
-			     GList *list,
+			     GList **list,
 			     GsPluginRefineFlags flags,
 			     GCancellable *cancellable,
 			     GError **error)
@@ -230,9 +230,11 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	GsPlugin *plugin;
 	gboolean ret = TRUE;
 	guint i;
+	GList *freeze_list;
 
 	/* freeze all apps */
-	for (l = list; l != NULL; l = l->next)
+	freeze_list = gs_plugin_list_copy (*list);
+	for (l = freeze_list; l != NULL; l = l->next)
 		g_object_freeze_notify (G_OBJECT (l->data));
 
 	/* run each plugin */
@@ -252,12 +254,13 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	}
 
 	/* now emit all the changed signals */
-	for (l = list; l != NULL; l = l->next)
+	for (l = freeze_list; l != NULL; l = l->next)
 		g_object_thaw_notify (G_OBJECT (l->data));
 
 	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, list);
+	gs_plugin_loader_list_dedupe (plugin_loader, *list);
 out:
+	gs_plugin_list_free (freeze_list);
 	return ret;
 }
 
@@ -353,7 +356,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
-					   list,
+					   &list,
 					   flags,
 					   cancellable,
 					   error);
@@ -1376,7 +1379,7 @@ gs_plugin_loader_search_thread_cb (GSimpleAsyncResult *res,
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
-					   state->list,
+					   &state->list,
 					   state->flags,
 					   cancellable,
 					   &error);
@@ -1702,7 +1705,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GSimpleAsyncResult *res,
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
-					   state->list,
+					   &state->list,
 					   state->flags,
 					   cancellable,
 					   &error);
@@ -1863,7 +1866,7 @@ gs_plugin_loader_app_refine_thread_cb (GSimpleAsyncResult *res,
 	gs_plugin_add_app (&list, state->app);
 	state->ret = gs_plugin_loader_run_refine (plugin_loader,
 						  NULL,
-						  list,
+						  &list,
 						  state->flags,
 						  cancellable,
 						  &error);
@@ -2074,7 +2077,7 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 	if (list != NULL) {
 		ret = gs_plugin_loader_run_refine (plugin_loader,
 						   NULL,
-						   list,
+						   &list,
 						   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 						   NULL, //FIXME?
 						   error);
@@ -3143,7 +3146,7 @@ gs_plugin_loader_filename_to_app_thread_cb (GSimpleAsyncResult *res,
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
-					   state->list,
+					   &state->list,
 					   state->flags,
 					   cancellable,
 					   &error);

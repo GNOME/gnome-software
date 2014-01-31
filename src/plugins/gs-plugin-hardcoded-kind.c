@@ -49,7 +49,7 @@ gs_plugin_get_deps (GsPlugin *plugin)
  */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
-		  GList *list,
+		  GList **list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
@@ -93,7 +93,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		NULL };
 
 	/* just mark each one as core */
-	for (l = list; l != NULL; l = l->next) {
+	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		for (i = 0; apps[i] != NULL; i++) {
 			if (g_strcmp0 (apps[i], gs_app_get_id (app)) == 0) {

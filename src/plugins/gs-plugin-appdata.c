@@ -352,7 +352,7 @@ out:
  */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
-		  GList *list,
+		  GList **list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
@@ -371,7 +371,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			goto out;
 	}
 
-	for (l = list; l != NULL; l = l->next) {
+	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		id = gs_app_get_id (app);
 		if (id == NULL)

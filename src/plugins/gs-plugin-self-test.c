@@ -49,7 +49,7 @@ gs_plugin_initialize (GsPlugin *plugin)
  */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
-		  GList *list,
+		  GList **list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
@@ -57,7 +57,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	GList *l;
 
-	for (l = list; l != NULL; l = l->next) {
+	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
 			gs_app_set_state (app, GS_APP_STATE_INSTALLED);

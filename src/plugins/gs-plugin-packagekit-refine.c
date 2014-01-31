@@ -632,7 +632,7 @@ gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
  */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
-		  GList *list,
+		  GList **list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
@@ -647,7 +647,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* can we resolve in one go? */
 	gs_profile_start (plugin->profile, "packagekit-refine[name->id]");
-	for (l = list; l != NULL; l = l->next) {
+	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_source_id_default (app) != NULL)
 			continue;
@@ -674,7 +674,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* set the package-id for an installed desktop file */
 	gs_profile_start (plugin->profile, "packagekit-refine[desktop-filename->id]");
-	for (l = list; l != NULL; l = l->next) {
+	for (l = *list; l != NULL; l = l->next) {
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 			continue;
 		app = GS_APP (l->data);
@@ -695,7 +695,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* any update details missing? */
 	gs_profile_start (plugin->profile, "packagekit-refine[id->update-details]");
-	for (l = list; l != NULL; l = l->next) {
+	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
 			continue;
@@ -718,7 +718,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 ||
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) > 0) {
 		ret = gs_plugin_refine_require_details (plugin,
-							list,
+							*list,
 							cancellable,
 							error);
 		if (!ret)

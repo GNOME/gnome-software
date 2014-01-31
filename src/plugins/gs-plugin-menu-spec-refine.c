@@ -114,7 +114,7 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app)
  */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
-		  GList *list,
+		  GList **list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
@@ -123,7 +123,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	gboolean ret;
 
-	for (l = list; l != NULL; l = l->next) {
+	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_menu_path (app) == NULL) {
 			ret = gs_plugin_refine_app (plugin, app);

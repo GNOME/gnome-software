@@ -167,7 +167,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
-		  GList *list,
+		  GList **list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
@@ -175,7 +175,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	GList *l;
 
-	for (l = list; l != NULL; l = l->next) {
+	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_name (app) == NULL) {
 			if (g_strcmp0 (gs_app_get_id (app), "gnome-boxes") == 0) {

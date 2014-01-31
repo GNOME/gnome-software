@@ -274,7 +274,7 @@ out:
  */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
-		  GList *list,
+		  GList **list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
@@ -289,7 +289,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		goto out;
 
 	/* add any missing history data */
-	for (l = list; l != NULL; l = l->next) {
+	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		sources = gs_app_get_sources (app);
 		if (sources->len == 0)
