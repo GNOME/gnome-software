@@ -105,7 +105,50 @@ gs_plugin_list_filter (GList **list, GsPluginListFilter func, gpointer user_data
 }
 
 /**
- * gs_plugin_list_copy:
+ * gs_plugin_list_randomize_cb:
+ */
+static gint
+gs_plugin_list_randomize_cb (gconstpointer a, gconstpointer b)
+{
+	const gchar *k1;
+	const gchar *k2;
+	k1 = gs_app_get_metadata_item (GS_APP (a), "Plugin::sort-key");
+	k2 = gs_app_get_metadata_item (GS_APP (b), "Plugin::sort-key");
+	return g_strcmp0 (k1, k2);
+}
+
+/**
+ * gs_plugin_list_randomize:
+ *
+ * Randomize the order of the list, but don't change the order until the next day
+ **/
+void
+gs_plugin_list_randomize (GList **list)
+{
+	GDateTime *date;
+	GList *l;
+	GRand *rand;
+	GsApp *app;
+	gchar sort_key[] = { '\0', '\0', '\0', '\0' };
+
+	rand = g_rand_new ();
+	date = g_date_time_new_now_utc ();
+	g_rand_set_seed (rand, g_date_time_get_day_of_year (date));
+	for (l = *list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		sort_key[0] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
+		sort_key[1] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
+		sort_key[2] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
+		gs_app_set_metadata (app, "Plugin::sort-key", sort_key);
+	}
+	*list = g_list_sort (*list, gs_plugin_list_randomize_cb);
+
+	g_rand_free (rand);
+	g_date_time_unref (date);
+}
+
+/**
+ * gs_plugin_list_filter_duplicates:
  **/
 void
 gs_plugin_list_filter_duplicates (GList **list)

@@ -156,6 +156,7 @@ void		 gs_plugin_list_filter			(GList		**list,
 							 GsPluginListFilter func,
 							 gpointer	 user_data);
 void		 gs_plugin_list_filter_duplicates	(GList		**list);
+void		 gs_plugin_list_randomize		(GList		**list);
 
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
