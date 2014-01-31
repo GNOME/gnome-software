@@ -1025,12 +1025,45 @@ gs_plugin_loader_get_installed_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 /**
+ * gs_plugin_loader_get_popular_filter_cb:
+ */
+static gboolean
+gs_plugin_loader_get_popular_filter_cb (GsApp *app, gpointer user_data)
+{
+	/* dont suggest already installed application */
+	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
+		return FALSE;
+
+	/* only show featured popular applications */
+	if (!gs_app_has_category (app, "featured"))
+		return FALSE;
+
+	/* require long description */
+	if (gs_app_get_description (app) == NULL)
+		return FALSE;
+
+	/* require at least one screenshot */
+	if (gs_app_get_screenshots (app)->len == 0)
+		return FALSE;
+
+	/* don't suggest applications we don't have a lot of confidence in,
+	 * just because one user rated the app 100% doesn't make it awesome
+	 * compared to an app with 300 votes of 85% */
+	if (gs_app_get_rating_confidence (app) < 90)
+		return FALSE;
+	if (gs_app_get_rating (app) < 75)
+		return FALSE;
+
+	return TRUE;
+}
+
+/**
  * gs_plugin_loader_get_popular_thread_cb:
  **/
 static void
 gs_plugin_loader_get_popular_thread_cb (GSimpleAsyncResult *res,
-					  GObject *object,
-					  GCancellable *cancellable)
+					GObject *object,
+					GCancellable *cancellable)
 {
 	GError *error = NULL;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
@@ -1050,6 +1083,9 @@ gs_plugin_loader_get_popular_thread_cb (GSimpleAsyncResult *res,
 
 	/* filter package list */
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list,
+			       gs_plugin_loader_get_popular_filter_cb,
+			       NULL);
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
@@ -1059,6 +1095,9 @@ gs_plugin_loader_get_popular_thread_cb (GSimpleAsyncResult *res,
 		g_error_free (error);
 		goto out;
 	}
+
+	/* shuffle around the list */
+	gs_plugin_list_randomize (&state->list);
 
 	/* success */
 	state->ret = TRUE;
@@ -1090,7 +1129,7 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 						user_data,
 						gs_plugin_loader_get_popular_async);
 	state->plugin_loader = g_object_ref (plugin_loader);
-	state->flags = flags;
+	state->flags = flags | GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING;
 	if (cancellable != NULL)
 		state->cancellable = g_object_ref (cancellable);
 

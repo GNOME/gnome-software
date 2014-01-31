@@ -717,6 +717,54 @@ out:
 }
 
 /**
+ * gs_plugin_add_popular:
+ */
+gboolean
+gs_plugin_add_popular (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	AppstreamApp *item;
+	GPtrArray *array;
+	GsApp *app;
+	gboolean ret = TRUE;
+	guint i;
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, cancellable, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			goto out;
+	}
+
+	/* just add the apps without refining */
+	gs_profile_start (plugin->profile, "appstream::add-popular");
+	array = appstream_cache_get_items (plugin->priv->cache);
+	for (i = 0; i < array->len; i++) {
+		item = g_ptr_array_index (array, i);
+		if (appstream_app_get_id (item) == NULL)
+			continue;
+
+		/* require long description */
+		if (appstream_app_get_description (item) == NULL)
+			continue;
+
+		/* require at least one screenshot */
+		if (appstream_app_get_screenshots (item)->len == 0)
+			continue;
+
+		app = gs_app_new (appstream_app_get_id (item));
+		gs_plugin_add_app (list, app);
+		g_object_unref (app);
+	}
+	gs_profile_stop (plugin->profile, "appstream::add-popular");
+out:
+	return ret;
+}
+
+/**
  * gs_plugin_add_category_apps:
  */
 gboolean
