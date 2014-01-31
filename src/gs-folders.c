@@ -572,6 +572,43 @@ gs_folders_convert (void)
 			"X-GNOME-Sundry",
 			NULL
 		};
+		const gchar * const sundry_apps[] = {
+			"alacarte.desktop",
+			"authconfig.desktop",
+			"dconf-editor.desktop",
+			"fedora-release-notes.desktop",
+			"firewall-config.desktop",
+			"flash-player-properties.desktop",
+			"gconf-editor.desktop",
+			"gnome-abrt.desktop",
+			"gnome-power-statistics.desktop",
+			"ibus-setup-anthy.desktop",
+			"ibus-setup.desktop",
+			"ibus-setup-hangul.desktop",
+			"ibus-setup-libbopomofo.desktop",
+			"ibus-setup-libpinyin.desktop",
+			"ibus-setup-m17n.desktop",
+			"ibus-setup-typing-booster.desktop",
+			"im-chooser.desktop",
+			"itweb-settings.desktop",
+			"jhbuild.desktop",
+			"javaws.desktop",
+			"java-1.7.0-openjdk-jconsole.desktop",
+			"java-1.7.0-openjdk-policytool.desktop",
+			"log4j-chainsaw.desktop",
+			"log4j-logfactor5.desktop",
+			"nm-connection-editor.desktop",
+			"orca.desktop",
+			"setroubleshoot.desktop",
+			"system-config-date.desktop",
+			"system-config-firewall.desktop",
+			"system-config-keyboard.desktop",
+			"system-config-language.desktop",
+			"system-config-printer.desktop",
+			"system-config-users.desktop",
+			"vino-preferences.desktop",
+			NULL
+		};
 		gchar *path;
 		gchar *child_path;
 		GSettings *child;
@@ -593,6 +630,7 @@ gs_folders_convert (void)
 		g_settings_set_string (child, "name", "X-GNOME-Sundry.directory");
 		g_settings_set_boolean (child, "translate", TRUE);
 		g_settings_set_strv (child, "categories", sundry_categories);
+		g_settings_set_strv (child, "apps", sundry_apps);
 
 		g_object_unref (child);
 		g_free (child_path);
