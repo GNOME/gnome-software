@@ -72,6 +72,8 @@ void		  gs_folders_set_app_folder	(GsFolders	*folders,
 void		  gs_folders_save		(GsFolders 	*folders);
 void		  gs_folders_revert		(GsFolders	*folders);
 
+void              gs_folders_convert            (void);
+
 G_END_DECLS
 
 #endif /* __GS_FOLDERS_H */

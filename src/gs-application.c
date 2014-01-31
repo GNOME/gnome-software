@@ -38,6 +38,7 @@
 #include "gs-profile.h"
 #include "gs-shell-search-provider.h"
 #include "gs-offline-updates.h"
+#include "gs-folders.h"
 
 
 struct _GsApplication {
@@ -429,6 +430,7 @@ gs_application_startup (GApplication *application)
 	gs_application_monitor_updates (GS_APPLICATION (application));
 	gs_application_provide_search (GS_APPLICATION (application));
 	gs_application_monitor_network (GS_APPLICATION (application));
+	gs_folders_convert ();
 }
 
 static void

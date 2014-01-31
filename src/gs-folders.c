@@ -546,4 +546,61 @@ gs_folders_revert (GsFolders *folders)
 	load (folders);
 }
 
+/* Ensure we have the default folders for Utilities and Sundry.
+ * We can't do this as default values, since the schemas have
+ * no fixed path.
+ */
+void
+gs_folders_convert (void)
+{
+	GSettings *settings;
+	gchar **ids;
+
+	settings = g_settings_new (APP_FOLDER_SCHEMA);
+	ids = g_settings_get_strv (settings, "folder-children");
+	if (g_strv_length (ids) == 0) {
+		const gchar * const children[] = {
+			"Utilities",
+			"Sundry",
+			NULL
+		};
+		const gchar * const utility_categories[] = {
+			"Utilities",
+			NULL
+		};
+		const gchar * const sundry_categories[] = {
+			"X-GNOME-Sundry",
+			NULL
+		};
+		gchar *path;
+		gchar *child_path;
+		GSettings *child;
+
+		g_settings_set_strv (settings, "folder-children", children);
+        	g_object_get (settings, "path", &path, NULL);
+
+                child_path = g_strconcat (path, "folders/Utilities/", NULL);
+                child = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
+		g_settings_set_string (child, "name", "Utilities.directory");
+		g_settings_set_boolean (child, "translate", TRUE);
+		g_settings_set_strv (child, "categories", utility_categories);
+
+		g_object_unref (child);
+		g_free (child_path);
+		
+                child_path = g_strconcat (path, "folders/Sundry/", NULL);
+                child = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
+		g_settings_set_string (child, "name", "X-GNOME-Sundry.directory");
+		g_settings_set_boolean (child, "translate", TRUE);
+		g_settings_set_strv (child, "categories", sundry_categories);
+
+		g_object_unref (child);
+		g_free (child_path);
+		
+	}
+
+	g_strfreev (ids);
+	g_object_unref (settings);
+}
+
 /* vim: set noexpandtab: */
