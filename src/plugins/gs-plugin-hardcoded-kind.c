@@ -33,12 +33,15 @@ gs_plugin_get_name (void)
 }
 
 /**
- * gs_plugin_get_priority:
+ * gs_plugin_get_deps:
  */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
+const gchar **
+gs_plugin_get_deps (GsPlugin *plugin)
 {
-	return 50.0f;
+	static const gchar *deps[] = {
+		"appstream",		/* requires id */
+		NULL };
+	return deps;
 }
 
 /**

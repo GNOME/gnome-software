@@ -32,15 +32,6 @@ gs_plugin_get_name (void)
 	return "packagekit-offline";
 }
 
-/**
- * gs_plugin_get_priority:
- */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
-{
-	return 9.5f;
-}
-
 #define PK_OFFLINE_UPDATE_RESULTS_GROUP		"PackageKit Offline Update Results"
 #define PK_OFFLINE_UPDATE_RESULTS_FILENAME	"/var/lib/PackageKit/offline-update-competed"
 

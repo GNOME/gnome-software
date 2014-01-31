@@ -41,15 +41,6 @@ gs_plugin_get_name (void)
 	return "systemd-updates";
 }
 
-/**
- * gs_plugin_get_priority:
- */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
-{
-	return 10.0f;
-}
-
 #define PK_PREPARED_UPDATE_FN	"/var/lib/PackageKit/prepared-update"
 
 /**

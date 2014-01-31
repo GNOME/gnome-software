@@ -61,15 +61,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_get_priority:
- */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
-{
-	return 10.0f;
-}
-
-/**
  * gs_plugin_destroy:
  */
 void

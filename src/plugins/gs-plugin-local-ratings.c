@@ -59,12 +59,15 @@ gs_plugin_initialize (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_get_priority:
+ * gs_plugin_get_deps:
  */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
+const gchar **
+gs_plugin_get_deps (GsPlugin *plugin)
 {
-	return 1.1f;
+	static const gchar *deps[] = {
+		"appstream",	/* requires the app_id from the pkgname */
+		NULL };
+	return deps;
 }
 
 /**

@@ -36,15 +36,6 @@ gs_plugin_get_name (void)
 }
 
 /**
- * gs_plugin_get_priority:
- */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
-{
-	return -101.0f;
-}
-
-/**
  * gs_plugin_add_categories:
  */
 gboolean

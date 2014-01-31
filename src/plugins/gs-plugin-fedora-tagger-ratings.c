@@ -92,12 +92,16 @@ out:
 }
 
 /**
- * gs_plugin_get_priority:
+ * gs_plugin_get_deps:
  */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
+const gchar **
+gs_plugin_get_deps (GsPlugin *plugin)
 {
-	return 1.2f;
+	static const gchar *deps[] = {
+		"local-ratings",	/* user rating is better than guessed */
+		"packagekit",		/* pkgname */
+		NULL };
+	return deps;
 }
 
 /**

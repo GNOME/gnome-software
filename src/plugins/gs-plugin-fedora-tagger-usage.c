@@ -89,13 +89,15 @@ out:
 }
 
 /**
- * gs_plugin_get_priority:
+ * gs_plugin_get_deps:
  */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
+const gchar **
+gs_plugin_get_deps (GsPlugin *plugin)
 {
-	/* after packagekit */
-	return 20.f;
+	static const gchar *deps[] = {
+		"packagekit",		/* after the install/remove has succeeded */
+		NULL };
+	return deps;
 }
 
 /**

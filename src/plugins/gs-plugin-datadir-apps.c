@@ -79,12 +79,16 @@ gs_plugin_initialize (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_get_priority:
+ * gs_plugin_get_deps:
  */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
+const gchar **
+gs_plugin_get_deps (GsPlugin *plugin)
 {
-	return 1.0f;
+	static const gchar *deps[] = {
+		"datadir-filename",	/* requires DataDir::desktop-filename */
+		"datadir-filename-local",	/* ^^^ */
+		NULL };
+	return deps;
 }
 
 /**

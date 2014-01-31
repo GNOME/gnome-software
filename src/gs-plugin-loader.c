@@ -2412,7 +2412,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	gboolean ret;
 	GModule *module;
 	GsPluginGetNameFunc plugin_name = NULL;
-	GsPluginGetPriorityFunc plugin_prio = NULL;
+	GsPluginGetDepsFunc plugin_deps = NULL;
 	GsPlugin *plugin = NULL;
 
 	module = g_module_open (filename, 0);
@@ -2432,22 +2432,18 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 		goto out;
 	}
 
-	/* get priority */
-	ret = g_module_symbol (module,
-			       "gs_plugin_get_priority",
-			       (gpointer *) &plugin_prio);
-	if (!ret) {
-		g_warning ("Plugin %s requires priority", filename);
-		g_module_close (module);
-		goto out;
-	}
+	/* get plugins this plugin depends on */
+	g_module_symbol (module,
+			 "gs_plugin_get_deps",
+			 (gpointer *) &plugin_deps);
 
 	/* print what we know */
 	plugin = g_slice_new0 (GsPlugin);
 	plugin->enabled = TRUE;
 	plugin->module = module;
 	plugin->pixbuf_size = 64;
-	plugin->priority = plugin_prio (plugin);
+	plugin->priority = 0.f;
+	plugin->deps = plugin_deps != NULL ? plugin_deps (plugin) : NULL;
 	plugin->settings = g_object_ref (plugin_loader->priv->settings);
 	plugin->name = g_strdup (plugin_name ());
 	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
@@ -2502,15 +2498,41 @@ gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
 }
 
 /**
+ * gs_plugin_loader_find_plugin:
+ */
+static GsPlugin *
+gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
+			      const gchar *plugin_name)
+{
+	GsPluginLoaderPrivate *priv = plugin_loader->priv;
+	GsPlugin *plugin;
+	guint i;
+
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
+		if (g_strcmp0 (plugin->name, plugin_name) == 0)
+			return plugin;
+	}
+	return NULL;
+}
+
+/**
  * gs_plugin_loader_setup:
  */
 gboolean
 gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 {
 	const gchar *filename_tmp;
+	const gdouble dep_increment = 1.f;
+	gboolean changes;
 	gboolean ret = TRUE;
 	gchar *filename_plugin;
 	GDir *dir;
+	GsPlugin *dep;
+	GsPlugin *plugin;
+	guint dep_loop_check = 0;
+	guint i;
+	guint j;
 
 	g_return_val_if_fail (plugin_loader->priv->location != NULL, FALSE);
 
@@ -2536,6 +2558,46 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 		gs_plugin_loader_open_plugin (plugin_loader, filename_plugin);
 		g_free (filename_plugin);
 	} while (TRUE);
+
+	/* order by deps */
+	do {
+		changes = FALSE;
+		for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
+			plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+			if (plugin->deps == NULL)
+				continue;
+			for (j = 0; plugin->deps[j] != NULL; j++) {
+				dep = gs_plugin_loader_find_plugin (plugin_loader,
+								    plugin->deps[j]);
+				if (dep == NULL) {
+					g_warning ("cannot find plugin '%s'",
+						   plugin->deps[j]);
+					continue;
+				}
+				if (!dep->enabled)
+					continue;
+				if (plugin->priority <= dep->priority) {
+					g_debug ("%s [%.1f] requires %s [%.1f] "
+						 "so promoting to [%.1f]",
+						 plugin->name, plugin->priority,
+						 dep->name, dep->priority,
+						 dep->priority + dep_increment);
+					plugin->priority = dep->priority + dep_increment;
+					changes = TRUE;
+				}
+			}
+		}
+
+		/* check we're not stuck */
+		if (dep_loop_check++ > 100) {
+			ret = FALSE;
+			g_set_error (error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_FAILED,
+				     "got stuck in dep loop");
+			goto out;
+		}
+	} while (changes);
 
 	/* sort by priority */
 	g_ptr_array_sort (plugin_loader->priv->plugins,

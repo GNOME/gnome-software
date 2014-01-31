@@ -36,12 +36,16 @@ gs_plugin_get_name (void)
 }
 
 /**
- * gs_plugin_get_priority:
+ * gs_plugin_get_deps:
  */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
+const gchar **
+gs_plugin_get_deps (GsPlugin *plugin)
 {
-	return 2.0f;
+	static const gchar *deps[] = {
+		"appstream",		/* need GsApp category data */
+		"menu-spec-categories",	/* need menu-spec data */
+		NULL };
+	return deps;
 }
 
 /**

@@ -33,15 +33,6 @@ gs_plugin_get_name (void)
 }
 
 /**
- * gs_plugin_get_priority:
- */
-gdouble
-gs_plugin_get_priority (GsPlugin *plugin)
-{
-	return 1.0f;
-}
-
-/**
  * gs_plugin_initialize:
  */
 void
