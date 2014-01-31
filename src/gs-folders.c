@@ -564,8 +564,29 @@ gs_folders_convert (void)
 			"Sundry",
 			NULL
 		};
-		const gchar * const utility_categories[] = {
-			"Utilities",
+		const gchar * const utilities_categories[] = {
+			"X-GNOME-Utilities",
+			NULL
+		};
+		const gchar * const utilities_apps[] = {
+			"baobab.desktop",
+			"deja-dup-preferences.desktop",
+			"eog.desktop",
+			"evince.desktop",
+			"file-roller.desktop",
+			"gcalctool.desktop",
+			"gnome-dictionary.desktop",
+			"gnome-disks.desktop",
+			"gnome-font-viewer.desktop",
+			"gnome-screenshot.desktop",
+			"gnome-system-log.desktop",
+			"gnome-system-monitor.desktop",
+			"gnome-terminal.desktop",
+			"gnome-tweak-tool.desktop",
+			"gucharmap.desktop",
+			"seahorse.desktop",
+			"vinagre.desktop",
+			"yelp.desktop",
 			NULL
 		};
 		const gchar * const sundry_categories[] = {
@@ -618,9 +639,10 @@ gs_folders_convert (void)
 
                 child_path = g_strconcat (path, "folders/Utilities/", NULL);
                 child = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
-		g_settings_set_string (child, "name", "Utilities.directory");
+		g_settings_set_string (child, "name", "X-GNOME-Utilities.directory");
 		g_settings_set_boolean (child, "translate", TRUE);
-		g_settings_set_strv (child, "categories", utility_categories);
+		g_settings_set_strv (child, "categories", utilities_categories);
+		g_settings_set_strv (child, "apps", utilities_apps);
 
 		g_object_unref (child);
 		g_free (child_path);
