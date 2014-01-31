@@ -32,6 +32,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_desktopdb.la			\
 	libgs_plugin_hardcoded-featured.la		\
 	libgs_plugin_hardcoded-kind.la			\
+	libgs_plugin_hardcoded-categories.la		\
 	libgs_plugin_hardcoded-popular.la		\
 	libgs_plugin_menu-spec-categories.la		\
 	libgs_plugin_menu-spec-refine.la		\
@@ -110,6 +111,11 @@ libgs_plugin_hardcoded_popular_la_SOURCES = gs-plugin-hardcoded-popular.c
 libgs_plugin_hardcoded_popular_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_popular_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_popular_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+
+libgs_plugin_hardcoded_categories_la_SOURCES = gs-plugin-hardcoded-categories.c
+libgs_plugin_hardcoded_categories_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_hardcoded_categories_la_LDFLAGS = -module -avoid-version
+libgs_plugin_hardcoded_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_menu_spec_categories_la_SOURCES =		\
 	gs-plugin-menu-spec-categories.c		\
