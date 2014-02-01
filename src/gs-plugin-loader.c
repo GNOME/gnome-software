@@ -924,6 +924,7 @@ gs_plugin_loader_get_installed_thread_cb (GSimpleAsyncResult *res,
 
 	/* filter package list */
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_system, NULL);
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
