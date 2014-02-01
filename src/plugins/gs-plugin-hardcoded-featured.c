@@ -33,6 +33,52 @@ gs_plugin_get_name (void)
 }
 
 /**
+ * gs_plugin_add_featured_app:
+ */
+static gboolean
+gs_plugin_add_featured_app (GList **list,
+			    GKeyFile *kf,
+			    const gchar *id,
+			    GError **error)
+{
+	GsApp *app = NULL;
+	gboolean ret = TRUE;
+	gchar *background = NULL;
+	gchar *stroke = NULL;
+	gchar *text = NULL;
+
+	background = g_key_file_get_string (kf, id, "background", error);
+	if (background == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+	stroke = g_key_file_get_string (kf, id, "stroke", error);
+	if (stroke == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+	text = g_key_file_get_string (kf, id, "text", error);
+	if (text == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+
+	/* add app */
+	app = gs_app_new (id);
+	gs_app_set_metadata (app, "Featured::background", background);
+	gs_app_set_metadata (app, "Featured::stroke-color", stroke);
+	gs_app_set_metadata (app, "Featured::text-color", text);
+	gs_plugin_add_app (list, app);
+out:
+	if (app != NULL)
+		g_object_unref (app);
+	g_free (background);
+	g_free (stroke);
+	g_free (text);
+	return ret;
+}
+
+/**
  * gs_plugin_add_featured:
  */
 gboolean
@@ -41,15 +87,10 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-	GDateTime *date;
 	GKeyFile *kf;
-	GsApp *app = NULL;
-	const gchar *group = NULL;
 	gboolean ret = TRUE;
 	gchar **apps = NULL;
 	gchar *path;
-	gchar *s;
-	gsize n_apps;
 	guint i;
 
 	path = g_build_filename (DATADIR, "gnome-software", "featured.ini", NULL);
@@ -57,60 +98,13 @@ gs_plugin_add_featured (GsPlugin *plugin,
 	ret = g_key_file_load_from_file (kf, path, 0, error);
 	if (!ret)
 		goto out;
-
-	apps = g_key_file_get_groups (kf, &n_apps);
-	if (g_getenv ("GNOME_SOFTWARE_FEATURED")) {
-		const gchar *featured;
-		featured = g_getenv ("GNOME_SOFTWARE_FEATURED");
-		for (i = 0; apps[i]; i++) {
-			if (g_strcmp0 (apps[i], featured) == 0) {
-				group = featured;
-				break;
-			}
-		}
+	apps = g_key_file_get_groups (kf, NULL);
+	for (i = 0; apps[i]; i++) {
+		ret = gs_plugin_add_featured_app (list, kf, apps[i], error);
+		if (!ret)
+			goto out;
 	}
-
-	if (!group) {
-		/* In lieu of a random number generator, just
-		 * rotate the featured apps, giving each app
-		 * 3 days apiece.
-		 */
-		date = g_date_time_new_now_utc ();
-		i = g_date_time_get_day_of_year (date);
-		g_date_time_unref (date);
-		i = (i % (n_apps * 3)) / 3;
-		group = apps[i];
-	}
-
-	app = gs_app_new (group);
-	s = g_key_file_get_string (kf, group, "background", error);
-	if (s == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-	gs_app_set_metadata (app, "Featured::background", s);
-	g_free (s);
-
-	s = g_key_file_get_string (kf, group, "stroke", error);
-	if (s == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-	gs_app_set_metadata (app, "Featured::stroke-color", s);
-	g_free (s);
-
-	s = g_key_file_get_string (kf, group, "text", error);
-	if (s == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-	gs_app_set_metadata (app, "Featured::text-color", s);
-	g_free (s);
-
-	gs_plugin_add_app (list, app);
 out:
-	if (app != NULL)
-		g_object_unref (app);
 	if (kf != NULL)
 		g_key_file_unref (kf);
 	g_free (path);
