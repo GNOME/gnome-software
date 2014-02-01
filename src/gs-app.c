@@ -1431,10 +1431,6 @@ gs_app_has_category (GsApp *app, const gchar *category)
 
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 
-	/* nothing set */
-	if (app->priv->categories == NULL)
-		return FALSE;
-
 	/* find the category */
 	for (i = 0; i < app->priv->categories->len; i++) {
 		tmp = g_ptr_array_index (app->priv->categories, i);
@@ -1455,6 +1451,17 @@ gs_app_set_categories (GsApp *app, GPtrArray *categories)
 	if (app->priv->categories != NULL)
 		g_ptr_array_unref (app->priv->categories);
 	app->priv->categories = g_ptr_array_ref (categories);
+}
+
+/**
+ * gs_app_add_category:
+ */
+void
+gs_app_add_category (GsApp *app, const gchar *category)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (category != NULL);
+	g_ptr_array_add (app->priv->categories, g_strdup (category));
 }
 
 /**
@@ -1491,11 +1498,12 @@ gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
 void
 gs_app_subsume (GsApp *app, GsApp *other)
 {
+	const gchar *tmp;
 	GList *keys;
 	GList *l;
-	GsAppPrivate *priv = app->priv;
 	GsAppPrivate *priv2 = other->priv;
-	const gchar *tmp;
+	GsAppPrivate *priv = app->priv;
+	guint i;
 
 	/* an [updatable] installable package is more information than
 	 * just the fact that something is installed */
@@ -1524,6 +1532,10 @@ gs_app_subsume (GsApp *app, GsApp *other)
 		gs_app_set_update_version_internal (app, priv2->update_version);
 	if (priv2->pixbuf != NULL)
 		gs_app_set_pixbuf (app, priv2->pixbuf);
+	for (i = 0; i < priv2->categories->len; i++) {
+		tmp = g_ptr_array_index (priv2->categories, i);
+		gs_app_add_category (app, tmp);
+	}
 
 	/* also metadata */
 	keys = g_hash_table_get_keys (priv2->metadata);
@@ -1726,6 +1738,7 @@ gs_app_init (GsApp *app)
 	app->priv->rating_kind = GS_APP_RATING_KIND_UNKNOWN;
 	app->priv->sources = g_ptr_array_new_with_free_func (g_free);
 	app->priv->source_ids = g_ptr_array_new_with_free_func (g_free);
+	app->priv->categories = g_ptr_array_new_with_free_func (g_free);
 	app->priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
@@ -1776,8 +1789,7 @@ gs_app_finalize (GObject *object)
 		g_object_unref (priv->pixbuf);
 	if (priv->featured_pixbuf != NULL)
 		g_object_unref (priv->featured_pixbuf);
-	if (priv->categories != NULL)
-		g_ptr_array_unref (priv->categories);
+	g_ptr_array_unref (priv->categories);
 	if (priv->keywords != NULL)
 		g_ptr_array_unref (priv->keywords);
 
