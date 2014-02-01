@@ -2570,7 +2570,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 			plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
 			if (plugin->deps == NULL)
 				continue;
-			for (j = 0; plugin->deps[j] != NULL; j++) {
+			for (j = 0; plugin->deps[j] != NULL && !changes; j++) {
 				dep = gs_plugin_loader_find_plugin (plugin_loader,
 								    plugin->deps[j]);
 				if (dep == NULL) {
