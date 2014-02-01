@@ -42,7 +42,6 @@ gs_plugin_get_name (void)
 	return "fedora-tagger-usage";
 }
 
-#define GS_PLUGIN_FEDORA_TAGGER_OS_RELEASE_FN	"/etc/os-release"
 #define GS_PLUGIN_FEDORA_TAGGER_SERVER		"https://apps.fedoraproject.org/tagger"
 
 /**
@@ -51,41 +50,22 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	GError *error = NULL;
-	gboolean ret;
-	gchar *data = NULL;
-
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 
 	/* this is opt-in, and turned off by default */
-	ret = g_settings_get_boolean (plugin->settings, "enable-usage");
-	if (!ret) {
+	if (!g_settings_get_boolean (plugin->settings, "enable-usage")) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_debug ("disabling '%s' as 'enable-usage' disabled in GSettings",
 			 plugin->name);
-		goto out;
+		return;
 	}
 
 	/* check that we are running on Fedora */
-	ret = g_file_get_contents (GS_PLUGIN_FEDORA_TAGGER_OS_RELEASE_FN,
-				   &data, NULL, &error);
-	if (!ret) {
+	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
-		g_warning ("disabling '%s' as %s could not be read: %s",
-			   plugin->name,
-			   GS_PLUGIN_FEDORA_TAGGER_OS_RELEASE_FN,
-			   error->message);
-		g_error_free (error);
-		goto out;
+		g_debug ("disabling '%s' as we're not Fedora", plugin->name);
+		return;
 	}
-	if (g_strstr_len (data, -1, "ID=fedora\n") == NULL) {
-		gs_plugin_set_enabled (plugin, FALSE);
-		g_debug ("disabling '%s' as %s suggests we're not Fedora",
-			 plugin->name, GS_PLUGIN_FEDORA_TAGGER_OS_RELEASE_FN);
-		goto out;
-	}
-out:
-	g_free (data);
 }
 
 /**

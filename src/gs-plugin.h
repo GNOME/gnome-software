@@ -148,6 +148,8 @@ void		 gs_plugin_initialize			(GsPlugin	*plugin);
 void		 gs_plugin_destroy			(GsPlugin	*plugin);
 void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);
+gboolean	 gs_plugin_check_distro_id		(GsPlugin	*plugin,
+							 const gchar	*distro_id);
 void		 gs_plugin_add_app			(GList		**list,
 							 GsApp		*app);
 void		 gs_plugin_list_free			(GList		*list);

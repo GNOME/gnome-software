@@ -25,6 +25,8 @@
 
 #include "gs-plugin.h"
 
+#define GS_PLUGIN_OS_RELEASE_FN		"/etc/os-release"
+
 /**
  * gs_plugin_status_to_string:
  */
@@ -55,6 +57,38 @@ void
 gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
 {
 	plugin->enabled = enabled;
+}
+
+/**
+ * gs_plugin_check_distro_id:
+ **/
+gboolean
+gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
+{
+	GError *error = NULL;
+	gboolean ret;
+	gchar *data = NULL;
+	gchar *search = NULL;
+
+	/* check that we are running on Fedora */
+	ret = g_file_get_contents (GS_PLUGIN_OS_RELEASE_FN,
+				   &data, NULL, &error);
+	if (!ret) {
+		g_warning ("%s could not be read: %s",
+			   GS_PLUGIN_OS_RELEASE_FN,
+			   error->message);
+		g_error_free (error);
+		goto out;
+	}
+	search = g_strdup_printf ("ID=%s\n", distro_id);
+	if (g_strstr_len (data, -1, search) == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+out:
+	g_free (data);
+	g_free (search);
+	return ret;
 }
 
 /**
