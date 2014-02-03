@@ -1,3 +1,41 @@
+Version 3.11.5
+~~~~~~~~~~~~~~
+Released: 2014-02-03
+
+* Translations:
+ - Updated Chinese simplified translation (YunQiang Su)
+ - Updated Czech translation (Marek Černocký)
+ - Updated German translation (Christian Kirbach)
+ - Updated German translation; implementing bug report 719868 (Benjamin Steinwender)
+ - Updated Greek translation (Dimitris Spingos)
+ - Updated Serbian translation (Мирослав Николић)
+ - Updated Spanish translation (Daniel Mustieles)
+ - Updated Traditional Chinese translation (Cheng-Chia Tseng)
+
+* New Features:
+ - Add a concept of a rating confidence to each application (Richard Hughes)
+ - Add a file handler to allow Software to install local packages (Richard Hughes)
+ - Allow each plugin to define deps on other plugins (Richard Hughes)
+ - Generate the 'Picks' on the overview automatically (Richard Hughes)
+ - Show a star widget for each application in the category panel (Richard Hughes)
+ - Some design updates for app folders (Matthias Clasen)
+ - Update to the latest designs that allow refreshing of the update lists (Richard Hughes)
+
+* Bugfix:
+ - Add a plugin to optionally collect install/remove stats data (Richard Hughes)
+ - Allow multiple plugins to set the name, summary and description (Richard Hughes)
+ - Allow plugins to remove applications when resolving (Richard Hughes)
+ - Create default app folders (Matthias Clasen)
+ - Fix a crash when using gs_app_subsume() in a thread (Richard Hughes)
+ - Make the Transmission banner less critical (Jakub Steiner)
+ - Never show '[0]' in the installed panel tab (Richard Hughes)
+ - Prepopulate Sundry and Utilities (Matthias Clasen)
+ - Respect category mapping with App folders (Matthias Clasen)
+ - Reunify launcher and service into one binary (Matthias Clasen)
+ - Selection mode improvements for 'Installed' (Matthias Clasen)
+ - Updated FSF's address (Daniel Mustieles)
+ - Update to a new version of the tagger API to provide ratings confidence (Richard Hughes)
+
 Version 3.11.4
 ~~~~~~~~~~~~~~
 Released: 2013-01-16
