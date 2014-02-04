@@ -44,37 +44,44 @@ gs_plugin_add_featured_app (GList **list,
 	GsApp *app = NULL;
 	gboolean ret = TRUE;
 	gchar *background = NULL;
-	gchar *stroke = NULL;
-	gchar *text = NULL;
+	gchar *stroke_color = NULL;
+	gchar *text_color = NULL;
+	gchar *text_shadow = NULL;
 
 	background = g_key_file_get_string (kf, id, "background", error);
 	if (background == NULL) {
 		ret = FALSE;
 		goto out;
 	}
-	stroke = g_key_file_get_string (kf, id, "stroke", error);
-	if (stroke == NULL) {
+	stroke_color = g_key_file_get_string (kf, id, "stroke", error);
+	if (stroke_color == NULL) {
 		ret = FALSE;
 		goto out;
 	}
-	text = g_key_file_get_string (kf, id, "text", error);
-	if (text == NULL) {
+	text_color = g_key_file_get_string (kf, id, "text", error);
+	if (text_color == NULL) {
 		ret = FALSE;
 		goto out;
 	}
 
+	/* optional */
+	text_shadow = g_key_file_get_string (kf, id, "text-shadow", NULL);
+
 	/* add app */
 	app = gs_app_new (id);
 	gs_app_set_metadata (app, "Featured::background", background);
-	gs_app_set_metadata (app, "Featured::stroke-color", stroke);
-	gs_app_set_metadata (app, "Featured::text-color", text);
+	gs_app_set_metadata (app, "Featured::stroke-color", stroke_color);
+	gs_app_set_metadata (app, "Featured::text-color", text_color);
+	if (text_shadow != NULL)
+		gs_app_set_metadata (app, "Featured::text-shadow", text_shadow);
 	gs_plugin_add_app (list, app);
 out:
 	if (app != NULL)
 		g_object_unref (app);
 	g_free (background);
-	g_free (stroke);
-	g_free (text);
+	g_free (stroke_color);
+	g_free (text_color);
+	g_free (text_shadow);
 	return ret;
 }
 

@@ -97,8 +97,12 @@ void
 gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 {
 	GsFeatureTilePrivate *priv;
-	const gchar *tmp;
-	gchar *data;
+	GString *data = NULL;
+	const gchar *background;
+	const gchar *stroke_color;
+	const gchar *text_color;
+	const gchar *text_shadow;
+	gchar *tmp;
 
 	g_return_if_fail (GS_IS_FEATURE_TILE (tile));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
@@ -121,41 +125,45 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (priv->subtitle), gs_app_get_summary (app));
 
 	/* check the app has the featured data */
-	tmp = gs_app_get_metadata_item (app, "Featured::text-color");
-	if (tmp == NULL) {
-		data = gs_app_to_string (app);
+	text_color = gs_app_get_metadata_item (app, "Featured::text-color");
+	if (text_color == NULL) {
+		tmp = gs_app_to_string (app);
 		g_warning ("%s has no featured data: %s",
-			   gs_app_get_id (app), data);
+			   gs_app_get_id (app), tmp);
+		g_free (tmp);
 		goto out;
 	}
+	background = gs_app_get_metadata_item (app, "Featured::background");
+	stroke_color = gs_app_get_metadata_item (app, "Featured::stroke-color");
+	text_shadow = gs_app_get_metadata_item (app, "Featured::text-shadow");
 
-	data = g_strdup_printf (
-		".button.featured-tile {\n"
-		"  padding: 0;\n"
-		"  border-radius: 0;\n"
-		"  border-width: 1px;\n"
-		"  border-image: none;\n"
-		"  border-color: %s;\n"
-		"  color: %s;\n"
-		"  -GtkWidget-focus-padding: 0;\n"
-		"  outline-color: alpha(%s, 0.75);\n"
-		"  outline-style: dashed;\n"
-		"  outline-offset: 2px;\n"
-		"  background: %s;\n"
-		"}\n"
-		".button.featured-tile:hover {\n"
-		"  background: linear-gradient(to bottom,\n"
-                "                              alpha(#fff,0.16),\n"
-		"                              alpha(#aaa,0.16)), %s;\n"
-		"}\n",
-		gs_app_get_metadata_item (app, "Featured::stroke-color"),
-		gs_app_get_metadata_item (app, "Featured::text-color"),
-		gs_app_get_metadata_item (app, "Featured::text-color"),
-		gs_app_get_metadata_item (app, "Featured::background"),
-		gs_app_get_metadata_item (app, "Featured::background"));
-	gtk_css_provider_load_from_data (priv->provider, data, -1, NULL);
+	data = g_string_sized_new (1024);
+	g_string_append (data, ".button.featured-tile {\n");
+	g_string_append (data, "  padding: 0;\n");
+	g_string_append (data, "  border-radius: 0;\n");
+	g_string_append (data, "  border-width: 1px;\n");
+	g_string_append (data, "  border-image: none;\n");
+	g_string_append_printf (data, "  border-color: %s;\n", stroke_color);
+	if (text_shadow != NULL)
+		g_string_append_printf (data, "  text-shadow: %s;\n", text_shadow);
+	g_string_append_printf (data, "  color: %s;\n", text_color);
+	g_string_append (data, "  -GtkWidget-focus-padding: 0;\n");
+	g_string_append_printf (data, "  outline-color: alpha(%s, 0.75);\n", text_color);
+	g_string_append (data, "  outline-style: dashed;\n");
+	g_string_append (data, "  outline-offset: 2px;\n");
+	g_string_append_printf (data, "  background: %s;\n", background);
+	g_string_append (data, "}\n");
+	g_string_append (data, ".button.featured-tile:hover {\n");
+	g_string_append (data, "  background: linear-gradient(to bottom,\n");
+	g_string_append (data, "                              alpha(#fff,0.16),\n");
+	g_string_append_printf (data,
+				"                              alpha(#aaa,0.16)), %s;\n",
+				background);
+	g_string_append (data, "}\n");
+	gtk_css_provider_load_from_data (priv->provider, data->str, -1, NULL);
 out:
-	g_free (data);
+	if (data != NULL)
+		g_string_free (data, TRUE);
 }
 
 static void
