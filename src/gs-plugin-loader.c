@@ -1171,6 +1171,18 @@ gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 /**
+ * gs_plugin_loader_featured_debug:
+ **/
+static gboolean
+gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
+{
+	if (g_strcmp0 (gs_app_get_id_full (app),
+	    g_getenv ("GNOME_SOFTWARE_FEATURED")) == 0)
+		return TRUE;
+	return FALSE;
+}
+
+/**
  * gs_plugin_loader_get_featured_thread_cb:
  **/
 static void
@@ -1195,8 +1207,12 @@ gs_plugin_loader_get_featured_thread_cb (GSimpleAsyncResult *res,
 	}
 
 	/* filter package list */
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
-	gs_plugin_list_randomize (&state->list);
+	if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
+		gs_plugin_list_filter (&state->list, gs_plugin_loader_featured_debug, NULL);
+	} else {
+		gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+		gs_plugin_list_randomize (&state->list);
+	}
 	if (state->list == NULL) {
 		g_set_error_literal (&error,
 				     GS_PLUGIN_LOADER_ERROR,
