@@ -1,4 +1,5 @@
 %define alphatag                        #ALPHATAG#
+%define distrotag                       20
 
 Summary:   A software center for GNOME
 Name:      gnome-software
@@ -8,10 +9,9 @@ License:   GPLv2+
 Group:     Applications/System
 URL:       https://wiki.gnome.org/Apps/Software
 Source0:   http://download.gnome.org/sources/gnome-software/3.9/%{name}-%{version}.tar.xz
-Source1:   http://people.freedesktop.org/~hughsient/temp/fedora-20.xml.gz
-Source2:   http://people.freedesktop.org/~hughsient/temp/fedora-20-icons.tar.gz
+Source1:   http://people.freedesktop.org/~hughsient/temp/fedora-%{?distrotag}.xml.gz
+Source2:   http://people.freedesktop.org/~hughsient/temp/fedora-%{?distrotag}-icons.tar.gz
 Source3:   http://people.freedesktop.org/~hughsient/temp/fedora-20-codecs.xml
-Source4:   https://raw.github.com/hughsie/fedora-appstream/master/appstream-extra/web-apps.xml
 
 Requires:  epiphany
 Requires:  PackageKit
@@ -28,6 +28,7 @@ BuildRequires: gtk3-devel >= 3.9.12
 BuildRequires: libnotify-devel
 BuildRequires: PackageKit-glib-devel >= 0.8.10
 BuildRequires: libsoup-devel
+BuildRequires: gsettings-desktop-schemas-devel
 
 # this is not a library version
 %define gs_plugin_version               3
@@ -53,11 +54,10 @@ make %{?_smp_mflags}
 %__mkdir_p %{buildroot}%{_datadir}/app-info/xmls
 %__cp %{SOURCE1} %{buildroot}%{_datadir}/app-info/xmls
 %__cp %{SOURCE3} %{buildroot}%{_datadir}/app-info/xmls
-%__cp %{SOURCE4} %{buildroot}%{_datadir}/app-info/xmls
 
 # decompress and install AppStream icons
-%__mkdir_p %{buildroot}%{_datadir}/app-info/icons/fedora-20
-cd %{buildroot}%{_datadir}/app-info/icons/fedora-20
+%__mkdir_p %{buildroot}%{_datadir}/app-info/icons/fedora-%{?distrotag}
+cd %{buildroot}%{_datadir}/app-info/icons/fedora-%{?distrotag}
 %__tar xvzf %{SOURCE2}
 cd -
 
@@ -92,7 +92,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/gnome-software/*.png
 %{_datadir}/appdata/*.appdata.xml
 %{_datadir}/app-info/xmls/*
-%{_datadir}/app-info/icons/fedora-20/*.png
+%{_datadir}/app-info/icons/fedora-%{?distrotag}/*.png
 %{_mandir}/man1/gnome-software.1.gz
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/gnome-software/featured.ini
