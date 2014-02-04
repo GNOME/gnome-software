@@ -205,16 +205,23 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	GPtrArray *array = NULL;
 	GsApp *app = NULL;
 	PkDetails *item;
-	PkResults *results;
+	PkResults *results = NULL;
 
 	/* get details */
 	files = g_strsplit (filename, "\t", -1);
 	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), G_MAXUINT);
+#if PK_CHECK_VERSION(0,9,1)
 	results = pk_client_get_details_local (PK_CLIENT (plugin->priv->task),
 					       files,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, plugin,
 					       error);
+#else
+	g_set_error_literal (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "GetDetailsLocal() not supported");
+#endif
 	if (results == NULL) {
 		ret = FALSE;
 		goto out;
