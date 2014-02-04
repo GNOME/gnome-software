@@ -50,22 +50,27 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
+	GSettings *settings;
+
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 
 	/* this is opt-in, and turned off by default */
-	if (!g_settings_get_boolean (plugin->settings, "enable-usage")) {
+	settings = g_settings_new ("org.gnome.desktop.privacy");
+	if (!g_settings_get_boolean (settings, "send-software-usage-stats")) {
 		gs_plugin_set_enabled (plugin, FALSE);
-		g_debug ("disabling '%s' as 'enable-usage' disabled in GSettings",
-			 plugin->name);
-		return;
+		g_debug ("disabling '%s' as 'send-software-usage-stats' "
+			 "disabled in GSettings", plugin->name);
+		goto out;
 	}
 
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_debug ("disabling '%s' as we're not Fedora", plugin->name);
-		return;
+		goto out;
 	}
+out:
+	g_object_unref (settings);
 }
 
 /**

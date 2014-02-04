@@ -2504,7 +2504,6 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->pixbuf_size = 64;
 	plugin->priority = 0.f;
 	plugin->deps = plugin_deps != NULL ? plugin_deps (plugin) : NULL;
-	plugin->settings = g_object_ref (plugin_loader->priv->settings);
 	plugin->name = g_strdup (plugin_name ());
 	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
 	plugin->status_update_user_data = plugin_loader;
@@ -2706,7 +2705,6 @@ gs_plugin_loader_plugin_free (GsPlugin *plugin)
 	g_free (plugin->name);
 	g_object_unref (plugin->profile);
 	g_hash_table_unref (plugin->icon_cache);
-	g_object_unref (plugin->settings);
 	g_module_close (plugin->module);
 	g_slice_free (GsPlugin, plugin);
 }

@@ -72,7 +72,6 @@ struct GsPlugin {
 	gpointer		 updates_changed_user_data;
 	GsProfile		*profile;
 	GHashTable		*icon_cache;	/* key is the id.desktop */
-	GSettings		*settings;
 };
 
 typedef enum {
