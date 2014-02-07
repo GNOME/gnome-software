@@ -141,6 +141,8 @@ appstream_cache_app_id_kind_from_string (const gchar *id_kind)
 		return APPSTREAM_APP_ID_KIND_CODEC;
 	if (g_strcmp0 (id_kind, "webapp") == 0)
 		return APPSTREAM_APP_ID_KIND_WEBAPP;
+	if (g_strcmp0 (id_kind, "source") == 0)
+		return APPSTREAM_APP_ID_KIND_SOURCE;
 	return APPSTREAM_APP_ID_KIND_UNKNOWN;
 }
 
