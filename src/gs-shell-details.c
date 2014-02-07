@@ -526,18 +526,6 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	tmp = gs_app_get_description (priv->app);
 	gs_shell_details_set_description (shell_details, tmp);
 
-	/* do not show the 'Details' header if we are a local file and have no
-	 * long description */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_details_title"));
-	switch (gs_app_get_state (priv->app)) {
-	case GS_APP_STATE_LOCAL:
-		gtk_widget_set_visible (widget, tmp != NULL);
-		break;
-	default:
-		gtk_widget_set_visible (widget, TRUE);
-		break;
-	}
-
 	/* set the icon */
 	tmp = gs_app_get_metadata_item (priv->app, "DataDir::desktop-icon");
 	if (tmp != NULL) {
@@ -689,17 +677,6 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		break;
 	default:
 		gtk_widget_set_visible (widget, FALSE);
-		break;
-	}
-
-	/* only show support box for non-local packages */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_details_support"));
-	switch (gs_app_get_state (priv->app)) {
-	case GS_APP_STATE_LOCAL:
-		gtk_widget_set_visible (widget, FALSE);
-		break;
-	default:
-		gtk_widget_set_visible (widget, TRUE);
 		break;
 	}
 
