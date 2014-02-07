@@ -120,6 +120,7 @@ gs_plugin_packagekit_resolve_packages_app (GPtrArray *packages,
 {
 	GPtrArray *sources;
 	PkPackage *package;
+	const gchar *data;
 	const gchar *pkgname;
 	gchar *tmp;
 	guint i, j;
@@ -140,6 +141,9 @@ gs_plugin_packagekit_resolve_packages_app (GPtrArray *packages,
 				switch (pk_package_get_info (package)) {
 				case GS_APP_STATE_INSTALLED:
 					number_installed++;
+					data = pk_package_get_data (package);
+					if (g_str_has_prefix (data, "installed:"))
+						gs_app_set_origin (app, data + 10);
 					break;
 				case GS_APP_STATE_AVAILABLE:
 					number_available++;

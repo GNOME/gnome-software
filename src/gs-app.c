@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -76,6 +76,7 @@ struct GsAppPrivate
 	GHashTable		*urls;
 	gchar			*licence;
 	gchar			*menu_path;
+	gchar			*origin;
 	gchar			*update_version;
 	gchar			*update_version_ui;
 	gchar			*update_details;
@@ -267,6 +268,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tsummary-missing:\t%s\n", priv->summary_missing);
 	if (priv->menu_path != NULL && priv->menu_path[0] != '\0')
 		g_string_append_printf (str, "\tmenu-path:\t%s\n", priv->menu_path);
+	if (priv->origin != NULL && priv->origin[0] != '\0')
+		g_string_append_printf (str, "\torigin:\t%s\n", priv->origin);
 	if (priv->rating != -1)
 		g_string_append_printf (str, "\trating:\t%i\n", priv->rating);
 	if (priv->rating_confidence != -1)
@@ -1130,6 +1133,30 @@ gs_app_set_menu_path (GsApp *app, const gchar *menu_path)
 }
 
 /**
+ * gs_app_get_origin:
+ */
+const gchar *
+gs_app_get_origin (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->origin;
+}
+
+/**
+ * gs_app_set_origin:
+ *
+ * The origin is the original source of the application to show in the UI,
+ * e.g. "Fedora"
+ */
+void
+gs_app_set_origin (GsApp *app, const gchar *origin)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->priv->origin);
+	app->priv->origin = g_strdup (origin);
+}
+
+/**
  * gs_app_add_screenshot:
  */
 void
@@ -1771,6 +1798,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->icon);
 	g_free (priv->licence);
 	g_free (priv->menu_path);
+	g_free (priv->origin);
 	g_ptr_array_unref (priv->sources);
 	g_ptr_array_unref (priv->source_ids);
 	g_free (priv->project_group);

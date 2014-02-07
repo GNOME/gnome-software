@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -182,6 +182,9 @@ void		 gs_app_set_licence		(GsApp		*app,
 const gchar	*gs_app_get_menu_path		(GsApp		*app);
 void		 gs_app_set_menu_path		(GsApp		*app,
 						 const gchar	*menu_path);
+const gchar	*gs_app_get_origin		(GsApp		*app);
+void		 gs_app_set_origin		(GsApp		*app,
+						 const gchar	*origin);
 GPtrArray	*gs_app_get_screenshots		(GsApp		*app);
 void		 gs_app_add_screenshot		(GsApp		*app,
 						 GsScreenshot	*screenshot);

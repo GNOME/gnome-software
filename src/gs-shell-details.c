@@ -641,6 +641,24 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		gtk_label_set_label (GTK_LABEL (widget), tmp);
 	}
 
+	/* set the origin */
+	tmp = gs_app_get_origin (priv->app);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+						     "label_details_origin_value"));
+	if (tmp == NULL || tmp[0] == '\0') {
+		/* TRANSLATORS: this is where we don't know the origin of the
+		 * application */
+		gtk_label_set_label (GTK_LABEL (widget), _("Unknown"));
+	} else {
+		gtk_label_set_label (GTK_LABEL (widget), tmp);
+	}
+	gtk_widget_set_visible (widget,
+				gs_app_get_state (priv->app) == GS_APP_STATE_INSTALLED);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+						     "label_details_origin_title"));
+	gtk_widget_set_visible (widget,
+				gs_app_get_state (priv->app) == GS_APP_STATE_INSTALLED);
+
 	/* set the rating */
 	switch (gs_app_get_id_kind (priv->app)) {
 	case GS_APP_ID_KIND_WEBAPP:
