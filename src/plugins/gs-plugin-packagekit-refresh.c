@@ -166,6 +166,7 @@ out:
  *
  * The cases we have to deal with:
  *  - Single line text, so all to summary
+ *  - Single line long text, so all to description
  *  - Multiple line text, so first line to summary and the rest to description
  */
 static void
@@ -178,7 +179,11 @@ gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
 	tmp = g_strdup (text);
 	nl = g_strstr_len (tmp, -1, "\n");
 	if (nl == NULL) {
-		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, text);
+		if (strlen (text) < 40) {
+			gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, text);
+			goto out;
+		}
+		gs_app_set_description (app, GS_APP_QUALITY_LOWEST, text);
 		goto out;
 	}
 	*nl = '\0';
