@@ -692,6 +692,64 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		gtk_widget_set_visible (widget, TRUE);
 		break;
 	}
+
+	/* are we trying to replace something in the baseos */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "infobar_details_package_baseos"));
+	switch (gs_app_get_kind (priv->app)) {
+	case GS_APP_KIND_OS_UPDATE:
+		gtk_widget_set_visible (widget, TRUE);
+		break;
+	default:
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	}
+
+	/* is this a repo-release */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "infobar_details_repo"));
+	switch (gs_app_get_kind (priv->app)) {
+	case GS_APP_KIND_SOURCE:
+		gtk_widget_set_visible (widget, gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL);
+		break;
+	default:
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	}
+
+	/* an application */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "infobar_details_repo"));
+	switch (gs_app_get_kind (priv->app)) {
+	case GS_APP_KIND_SOURCE:
+		gtk_widget_set_visible (widget, gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL);
+		break;
+	default:
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	}
+
+	/* installing a app with a repo file */
+	tmp = gs_app_get_metadata_item (priv->app, "PackageKit::has-source");
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "infobar_details_app_repo"));
+	switch (gs_app_get_kind (priv->app)) {
+	case GS_APP_KIND_NORMAL:
+	case GS_APP_KIND_SYSTEM:
+		gtk_widget_set_visible (widget, tmp != NULL && gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL);
+		break;
+	default:
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	}
+
+	/* installing a app without a repo file */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "infobar_details_app_norepo"));
+	switch (gs_app_get_kind (priv->app)) {
+	case GS_APP_KIND_NORMAL:
+	case GS_APP_KIND_SYSTEM:
+		gtk_widget_set_visible (widget, tmp == NULL && gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL);
+		break;
+	default:
+		gtk_widget_set_visible (widget, FALSE);
+		break;
+	}
 }
 
 /**

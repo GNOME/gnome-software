@@ -62,6 +62,7 @@ typedef enum {
 	GS_APP_KIND_PACKAGE,	/* can be updated, but not installed or removed */
 	GS_APP_KIND_OS_UPDATE,	/* can be updated, but not installed or removed */
 	GS_APP_KIND_MISSING,	/* you can't do anything to this */
+	GS_APP_KIND_SOURCE,	/* can be installed, but not updated or removed */
 	GS_APP_KIND_LAST
 } GsAppKind;
 

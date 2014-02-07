@@ -142,6 +142,8 @@ gs_app_kind_to_string (GsAppKind kind)
 		return "os-update";
 	if (kind == GS_APP_KIND_MISSING)
 		return "missing";
+	if (kind == GS_APP_KIND_SOURCE)
+		return "source";
 	return NULL;
 }
 
