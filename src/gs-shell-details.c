@@ -382,6 +382,8 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 				      provided.width, provided.height);
 
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder,
+						     "box_details_screenshot_main"));
 	gtk_box_pack_start (GTK_BOX (widget), ssimg, FALSE, FALSE, 0);
 	gtk_widget_set_visible (ssimg, TRUE);
 
