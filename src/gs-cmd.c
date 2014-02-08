@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -133,6 +133,8 @@ gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION;
 	if (g_strcmp0 (flag, "update-details") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS;
+	if (g_strcmp0 (flag, "origin") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN;
 	g_set_error (error,
 		     GS_PLUGIN_ERROR,
 		     GS_PLUGIN_ERROR_NOT_SUPPORTED,
