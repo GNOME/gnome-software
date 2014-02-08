@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -23,13 +23,39 @@
 
 #include <gs-plugin.h>
 
+#include "gs-moduleset.h"
+
+struct GsPluginPrivate {
+	GsModuleset		*moduleset;
+	gsize			 done_init;
+};
+
 /**
  * gs_plugin_get_name:
  */
 const gchar *
 gs_plugin_get_name (void)
 {
-	return "hardcoded-kind";
+	return "moduleset-gnome";
+}
+
+/**
+ * gs_plugin_initialize:
+ */
+void
+gs_plugin_initialize (GsPlugin *plugin)
+{
+	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	plugin->priv->moduleset = gs_moduleset_new ();
+}
+
+/**
+ * gs_plugin_destroy:
+ */
+void
+gs_plugin_destroy (GsPlugin *plugin)
+{
+	g_object_unref (plugin->priv->moduleset);
 }
 
 /**
@@ -45,6 +71,32 @@ gs_plugin_get_deps (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_startup:
+ */
+static gboolean
+gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	gboolean ret;
+	gchar *filename;
+
+	/* Parse the XML */
+	gs_profile_start (plugin->profile, "moduleset-gnome::startup");
+	filename = g_build_filename (DATADIR,
+				     "gnome-software",
+				     "moduleset-gnome-apps.xml",
+				     NULL);
+	ret = gs_moduleset_parse_filename (plugin->priv->moduleset,
+					   filename,
+					   error);
+	if (!ret)
+		goto out;
+out:
+	g_free (filename);
+	gs_profile_stop (plugin->profile, "moduleset-gnome::startup");
+	return ret;
+}
+
+/**
  * gs_plugin_refine:
  */
 gboolean
@@ -56,51 +108,31 @@ gs_plugin_refine (GsPlugin *plugin,
 {
 	GList *l;
 	GsApp *app;
+	gboolean ret = TRUE;
+	gchar **apps = NULL;
 	guint i;
-	const gchar *apps[] = {
-		"baobab",
-		"eog",
-		"epiphany",
-		"evince",
-		"empathy",
-		"gcalctool",
-		"gedit",
-		"gnome-bluetooth",
-		"gnome-clocks",
-		"gnome-contacts",
-		"gnome-dictionary",
-		"gnome-disks",
-		"gnome-eog",
-		"gnome-font-viewer",
-		"gnome-gucharmap",
-		"gnome-keyring",
-		"gnome-menus",
-		"gnome-packagekit",
-		"gnome-screenshot",
-		"gnome-session",
-		"gnome-software",
-		"gnome-system-log",
-		"gnome-system-monitor",
-		"gnome-terminal",
-		"gnome-user-docs",
-		"gnome-user-share",
-		"gucharmap",
-		"nautilus",
-		"sushi",
-		"totem",
-		"vino",
-		"yelp",
-		NULL };
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, cancellable, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			goto out;
+	}
 
 	/* just mark each one as core */
+	apps = gs_moduleset_get_by_kind (plugin->priv->moduleset,
+					 GS_MODULESET_MODULE_KIND_APPLICATION);
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		for (i = 0; apps[i] != NULL; i++) {
-			if (g_strcmp0 (apps[i], gs_app_get_id (app)) == 0) {
+			if (g_strcmp0 (apps[i], gs_app_get_id_full (app)) == 0) {
 				gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
 				break;
 			}
 		}
 	}
-	return TRUE;
+out:
+	g_strfreev (apps);
+	return ret;
 }

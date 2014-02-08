@@ -4,19 +4,20 @@ SUBDIRS =						\
 
 resourcesdir = $(datadir)/gnome-software
 dist_resources_DATA =					\
-  featured-ardour.png \
-  featured-ardour-bg.png  \
-  featured-blender.png  \
-  featured-chess.png  \
+	featured-ardour.png				\
+	featured-ardour-bg.png				\
+	featured-blender.png				\
+	featured-chess.png				\
 	featured-firefox.png				\
 	featured-gimp.png				\
 	featured-gnome-sudoku.png			\
 	featured-mypaint.png				\
-	featured-transmission.png \
+	featured-transmission.png			\
 	featured-weather.png				\
 	featured-weather-bg.png				\
 	featured-xchat.png				\
-	featured.ini
+	featured.ini					\
+	moduleset-gnome-apps.xml
 
 @GSETTINGS_RULES@
 gsettings_SCHEMAS = org.gnome.software.gschema.xml

@@ -29,6 +29,8 @@
 #include "appstream-common.h"
 #include "appstream-markup.h"
 
+#include "gs-moduleset.h"
+
 static void
 appstream_common_func (void)
 {
@@ -138,6 +140,34 @@ appstream_markup_locale_func (void)
 	appstream_markup_free (markup);
 }
 
+static void
+moduleset_func (void)
+{
+	gboolean ret;
+	gchar **data;
+	GError *error = NULL;
+	GsModuleset *ms;
+
+	ms = gs_moduleset_new ();
+	ret = gs_moduleset_parse_filename (ms, "./moduleset-test.xml", &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	data = gs_moduleset_get_by_kind (ms, GS_MODULESET_MODULE_KIND_PACKAGE);
+	g_assert (data != NULL);
+	g_assert_cmpint (g_strv_length (data), ==, 1);
+	g_assert_cmpstr (data[0], ==, "kernel");
+	g_assert_cmpstr (data[1], ==, NULL);
+
+	data = gs_moduleset_get_by_kind (ms, GS_MODULESET_MODULE_KIND_APPLICATION);
+	g_assert (data != NULL);
+	g_assert_cmpint (g_strv_length (data), ==, 1);
+	g_assert_cmpstr (data[0], ==, "gnome-shell.desktop");
+	g_assert_cmpstr (data[1], ==, NULL);
+
+	g_object_unref (ms);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -149,6 +179,7 @@ main (int argc, char **argv)
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
 
 	/* tests go here */
+	g_test_add_func ("/moduleset", moduleset_func);
 	g_test_add_func ("/appstream-common", appstream_common_func);
 	g_test_add_func ("/appstream-markup{plain}", appstream_markup_plain_func);
 	g_test_add_func ("/appstream-markup{tags}", appstream_markup_tags_func);
