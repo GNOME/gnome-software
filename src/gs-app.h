@@ -57,12 +57,13 @@ typedef enum {
 
 typedef enum {
 	GS_APP_KIND_UNKNOWN,
-	GS_APP_KIND_NORMAL,	/* can be updated, removed and installed */
-	GS_APP_KIND_SYSTEM,	/* can be updated, but not installed or removed */
-	GS_APP_KIND_PACKAGE,	/* can be updated, but not installed or removed */
-	GS_APP_KIND_OS_UPDATE,	/* can be updated, but not installed or removed */
-	GS_APP_KIND_MISSING,	/* you can't do anything to this */
-	GS_APP_KIND_SOURCE,	/* can be installed, but not updated or removed */
+	GS_APP_KIND_NORMAL,	/* app	[ install:1 remove:1 update:1 ] */
+	GS_APP_KIND_SYSTEM,	/* app	[ install:0 remove:0 update:1 ] */
+	GS_APP_KIND_PACKAGE,	/* pkg	[ install:0 remove:0 update:1 ] */
+	GS_APP_KIND_OS_UPDATE,	/* pkg	[ install:0 remove:0 update:1 ] */
+	GS_APP_KIND_MISSING,	/* meta	[ install:0 remove:0 update:0 ] */
+	GS_APP_KIND_SOURCE,	/* src	[ install:1 remove:0 update:0 ] */
+	GS_APP_KIND_CORE,	/* pkg	[ install:0 remove:0 update:1 ] */
 	GS_APP_KIND_LAST
 } GsAppKind;
 

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -146,7 +146,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	switch (state) {
 	case GS_APP_STATE_AVAILABLE:
 	case GS_APP_STATE_LOCAL:
-		gtk_widget_set_visible (widget, TRUE);
+		gtk_widget_set_visible (widget, gs_app_get_kind (priv->app) != GS_APP_KIND_CORE);
 		gtk_widget_set_sensitive (widget, TRUE);
 		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "suggested-action");
 		/* TRANSLATORS: button text in the header when an application
@@ -714,7 +714,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	/* are we trying to replace something in the baseos */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "infobar_details_package_baseos"));
 	switch (gs_app_get_kind (priv->app)) {
-	case GS_APP_KIND_OS_UPDATE:
+	case GS_APP_KIND_CORE:
 		gtk_widget_set_visible (widget, TRUE);
 		break;
 	default:

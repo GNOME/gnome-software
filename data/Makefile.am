@@ -17,6 +17,7 @@ dist_resources_DATA =					\
 	featured-weather-bg.png				\
 	featured-xchat.png				\
 	featured.ini					\
+	moduleset-core.xml				\
 	moduleset-gnome-apps.xml
 
 @GSETTINGS_RULES@

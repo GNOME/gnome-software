@@ -145,6 +145,8 @@ gs_app_kind_to_string (GsAppKind kind)
 		return "missing";
 	if (kind == GS_APP_KIND_SOURCE)
 		return "source";
+	if (kind == GS_APP_KIND_CORE)
+		return "core";
 	return NULL;
 }
 
@@ -520,6 +522,7 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 		/* package can become either normal or a system application */
 		if (kind == GS_APP_KIND_NORMAL ||
 		    kind == GS_APP_KIND_SYSTEM ||
+		    kind == GS_APP_KIND_CORE ||
 		    kind == GS_APP_KIND_UNKNOWN)
 			state_change_ok = TRUE;
 		break;
