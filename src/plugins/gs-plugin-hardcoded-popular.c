@@ -37,20 +37,6 @@ gs_plugin_get_name (void)
 }
 
 /**
- * gs_plugin_initialize:
- */
-void
-gs_plugin_initialize (GsPlugin *plugin)
-{
-	/* check that we are running on Fedora */
-	if (gs_plugin_check_distro_id (plugin, "fedora")) {
-		gs_plugin_set_enabled (plugin, FALSE);
-		g_debug ("disabling '%s' as we're Fedora and have tagger", plugin->name);
-		return;
-	}
-}
-
-/**
  * gs_plugin_add_popular:
  */
 gboolean

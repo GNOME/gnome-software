@@ -170,27 +170,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_popular:
- */
-gboolean
-gs_plugin_add_popular (GsPlugin *plugin,
-		       GList **list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	guint i;
-	GsApp *app;
-
-	/* don't bother checking @list, the duplicate GsApp's will be merged */
-	for (i = 0; i < G_N_ELEMENTS (featured); i++) {
-		app = gs_app_new (featured[i].app);
-		gs_app_add_category (app, "featured");
-		gs_plugin_add_app (list, app);
-	}
-	return TRUE;
-}
-
 gboolean
 gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GsCategory *category,
