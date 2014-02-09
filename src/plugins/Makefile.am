@@ -10,6 +10,7 @@ AM_CPPFLAGS =						\
 	$(SQLITE_CFLAGS)				\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
+	-DGS_MODULESETDIR=\"$(datadir)/gnome-software/modulesets.d\" \
 	-DG_LOG_DOMAIN=\"GsPlugin\"			\
 	-DLIBDIR=\""$(libdir)"\"			\
 	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
@@ -31,10 +32,8 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_datadir_filename_local.la		\
 	libgs_plugin_desktopdb.la			\
 	libgs_plugin_hardcoded-featured.la		\
-	libgs_plugin_moduleset-core.la			\
-	libgs_plugin_moduleset-gnome.la			\
 	libgs_plugin_hardcoded-categories.la		\
-	libgs_plugin_moduleset-popular.la		\
+	libgs_plugin_moduleset.la			\
 	libgs_plugin_menu-spec-categories.la		\
 	libgs_plugin_menu-spec-refine.la		\
 	libgs_plugin_local-ratings.la			\
@@ -103,26 +102,13 @@ libgs_plugin_appdata_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_appdata_la_LDFLAGS = -module -avoid-version
 libgs_plugin_appdata_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
-libgs_plugin_moduleset_gnome_la_SOURCES =		\
+libgs_plugin_moduleset_la_SOURCES =			\
 	gs-moduleset.c					\
 	gs-moduleset.h					\
-	gs-plugin-moduleset-gnome.c
-libgs_plugin_moduleset_gnome_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_moduleset_gnome_la_LDFLAGS = -module -avoid-version
-libgs_plugin_moduleset_gnome_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
-
-libgs_plugin_moduleset_core_la_SOURCES =		\
-	gs-moduleset.c					\
-	gs-moduleset.h					\
-	gs-plugin-moduleset-core.c
-libgs_plugin_moduleset_core_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_moduleset_core_la_LDFLAGS = -module -avoid-version
-libgs_plugin_moduleset_core_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
-
-libgs_plugin_moduleset_popular_la_SOURCES = gs-plugin-moduleset-popular.c
-libgs_plugin_moduleset_popular_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_moduleset_popular_la_LDFLAGS = -module -avoid-version
-libgs_plugin_moduleset_popular_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+	gs-plugin-moduleset.c
+libgs_plugin_moduleset_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_moduleset_la_LDFLAGS = -module -avoid-version
+libgs_plugin_moduleset_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
 
 libgs_plugin_hardcoded_categories_la_SOURCES = gs-plugin-hardcoded-categories.c
 libgs_plugin_hardcoded_categories_la_LIBADD = $(GS_PLUGIN_LIBS)

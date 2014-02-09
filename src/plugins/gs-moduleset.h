@@ -49,11 +49,14 @@ typedef enum {
 GType		 gs_moduleset_get_type			(void);
 GsModuleset	*gs_moduleset_new			(void);
 
-const gchar	*gs_moduleset_get_name			(GsModuleset		*moduleset);
-gchar		**gs_moduleset_get_by_kind		(GsModuleset		*moduleset,
-							 GsModulesetModuleKind	 module_kind);
+gchar		**gs_moduleset_get_modules		(GsModuleset		*moduleset,
+							 GsModulesetModuleKind	 module_kind,
+							 const gchar		*name);
 gboolean	 gs_moduleset_parse_filename		(GsModuleset		*moduleset,
 							 const gchar		*filename,
+							 GError			**error);
+gboolean	 gs_moduleset_parse_path		(GsModuleset		*moduleset,
+							 const gchar		*path,
 							 GError			**error);
 
 G_END_DECLS

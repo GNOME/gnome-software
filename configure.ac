@@ -116,6 +116,7 @@ po/Makefile.in
 data/appdata/Makefile
 data/featured.ini
 data/Makefile
+data/modulesets/Makefile
 data/icons/Makefile
 data/icons/16x16/Makefile
 data/icons/22x22/Makefile

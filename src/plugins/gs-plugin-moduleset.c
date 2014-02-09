@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2011-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -21,7 +22,10 @@
 
 #include <config.h>
 
+#include <glib/gi18n.h>
+
 #include <gs-plugin.h>
+#include <gs-category.h>
 
 #include "gs-moduleset.h"
 
@@ -36,7 +40,20 @@ struct GsPluginPrivate {
 const gchar *
 gs_plugin_get_name (void)
 {
-	return "moduleset-gnome";
+	return "moduleset";
+}
+
+/**
+ * gs_plugin_get_deps:
+ */
+const gchar **
+gs_plugin_get_deps (GsPlugin *plugin)
+{
+	static const gchar *deps[] = {
+		"appstream",		/* requires id */
+		"packagekit",		/* pkgname */
+		NULL };
+	return deps;
 }
 
 /**
@@ -59,40 +76,63 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_get_deps:
- */
-const gchar **
-gs_plugin_get_deps (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"appstream",		/* requires id */
-		NULL };
-	return deps;
-}
-
-/**
  * gs_plugin_startup:
  */
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	gboolean ret;
-	gchar *filename;
 
 	/* Parse the XML */
-	gs_profile_start (plugin->profile, "moduleset-gnome::startup");
-	filename = g_build_filename (DATADIR,
-				     "gnome-software",
-				     "moduleset-gnome-apps.xml",
-				     NULL);
-	ret = gs_moduleset_parse_filename (plugin->priv->moduleset,
-					   filename,
-					   error);
+	gs_profile_start (plugin->profile, "moduleset::startup");
+	ret = gs_moduleset_parse_path (plugin->priv->moduleset,
+				       GS_MODULESETDIR,
+				       error);
 	if (!ret)
 		goto out;
 out:
-	g_free (filename);
-	gs_profile_stop (plugin->profile, "moduleset-gnome::startup");
+	gs_profile_stop (plugin->profile, "moduleset::startup");
+	return ret;
+}
+
+/**
+ * gs_plugin_add_popular:
+ */
+gboolean
+gs_plugin_add_popular (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GsApp *app;
+	gboolean ret = TRUE;
+	gchar **apps = NULL;
+	guint i;
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, cancellable, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			goto out;
+	}
+
+	if (g_getenv ("GNOME_SOFTWARE_POPULAR")) {
+		apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
+	} else {
+		apps = gs_moduleset_get_modules (plugin->priv->moduleset,
+						 GS_MODULESET_MODULE_KIND_APPLICATION,
+						 "popular");
+	}
+
+	/* just add all */
+	for (i = 0; apps[i]; i++) {
+		app = gs_app_new (apps[i]);
+		gs_plugin_add_app (list, app);
+		g_object_unref (app);
+	}
+out:
+	g_strfreev (apps);
 	return ret;
 }
 
@@ -110,6 +150,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	gboolean ret = TRUE;
 	gchar **apps = NULL;
+	gchar **pkgs = NULL;
 	guint i;
 
 	/* load XML files */
@@ -121,8 +162,9 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* just mark each one as core */
-	apps = gs_moduleset_get_by_kind (plugin->priv->moduleset,
-					 GS_MODULESET_MODULE_KIND_APPLICATION);
+	apps = gs_moduleset_get_modules (plugin->priv->moduleset,
+					 GS_MODULESET_MODULE_KIND_APPLICATION,
+					 "system");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		for (i = 0; apps[i] != NULL; i++) {
@@ -132,7 +174,24 @@ gs_plugin_refine (GsPlugin *plugin,
 			}
 		}
 	}
+
+	/* just mark each one as core */
+	pkgs = gs_moduleset_get_modules (plugin->priv->moduleset,
+					 GS_MODULESET_MODULE_KIND_PACKAGE,
+					 "core");
+	for (l = *list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		for (i = 0; pkgs[i] != NULL; i++) {
+			if (g_strcmp0 (pkgs[i], gs_app_get_source_default (app)) == 0) {
+				gs_app_set_kind (app, GS_APP_KIND_CORE);
+				break;
+			}
+		}
+	}
 out:
 	g_strfreev (apps);
+	g_strfreev (pkgs);
 	return ret;
 }
+
+/* vim: set noexpandtab: */

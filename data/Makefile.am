@@ -1,5 +1,6 @@
 SUBDIRS =						\
 	appdata						\
+	modulesets					\
 	icons
 
 resourcesdir = $(datadir)/gnome-software
@@ -16,10 +17,7 @@ dist_resources_DATA =					\
 	featured-weather.png				\
 	featured-weather-bg.png				\
 	featured-xchat.png				\
-	featured.ini					\
-	popular-apps.xml				\
-	moduleset-core.xml				\
-	moduleset-gnome-apps.xml
+	featured.ini
 
 @GSETTINGS_RULES@
 gsettings_SCHEMAS = org.gnome.software.gschema.xml

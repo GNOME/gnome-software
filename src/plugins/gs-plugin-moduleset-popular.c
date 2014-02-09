@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2011-2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2011-2014 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -69,21 +69,15 @@ static gboolean
 gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	gboolean ret;
-	gchar *filename;
 
 	/* Parse the XML */
 	gs_profile_start (plugin->profile, "moduleset-popular::startup");
-	filename = g_build_filename (DATADIR,
-				     "gnome-software",
-				     "popular-apps.xml",
-				     NULL);
-	ret = gs_moduleset_parse_filename (plugin->priv->moduleset,
-					   filename,
-					   error);
+	ret = gs_moduleset_parse_path (plugin->priv->moduleset,
+				       GS_MODULESETDIR,
+				       error);
 	if (!ret)
 		goto out;
 out:
-	g_free (filename);
 	gs_profile_stop (plugin->profile, "moduleset-popular::startup");
 	return ret;
 }
@@ -113,8 +107,9 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	if (g_getenv ("GNOME_SOFTWARE_POPULAR")) {
 		apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
 	} else {
-		apps = gs_moduleset_get_by_kind (plugin->priv->moduleset,
-						 GS_MODULESET_MODULE_KIND_APPLICATION);
+		apps = gs_moduleset_get_modules (plugin->priv->moduleset,
+						 GS_MODULESET_MODULE_KIND_APPLICATION,
+						 "popular");
 	}
 
 	/* just add all */

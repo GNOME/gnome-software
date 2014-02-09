@@ -28,6 +28,7 @@
 
 typedef struct {
 	GsModulesetModuleKind	 module_kind;
+	gchar			*name;
 	gchar			*id;
 } GsModulesetEntry;
 
@@ -39,7 +40,7 @@ typedef enum {
 } GsModulesetParserSection;
 
 typedef struct {
-	gchar			*name;
+	gchar			*name_tmp;
 	GPtrArray		*array;
 	GsModulesetEntry	*entry_tmp;
 	GsModulesetParserSection section;
@@ -48,20 +49,12 @@ typedef struct {
 G_DEFINE_TYPE_WITH_PRIVATE (GsModuleset, gs_moduleset, G_TYPE_OBJECT)
 
 /**
- * gs_moduleset_get_name:
- **/
-const gchar *
-gs_moduleset_get_name (GsModuleset *moduleset)
-{
-	GsModulesetPrivate *priv = gs_moduleset_get_instance_private (moduleset);
-	return priv->name;
-}
-
-/**
- * gs_moduleset_get_by_kind:
+ * gs_moduleset_get_modules:
  **/
 gchar **
-gs_moduleset_get_by_kind (GsModuleset *moduleset, GsModulesetModuleKind module_kind)
+gs_moduleset_get_modules (GsModuleset *moduleset,
+			  GsModulesetModuleKind module_kind,
+			  const gchar *name)
 {
 	GsModulesetPrivate *priv = gs_moduleset_get_instance_private (moduleset);
 	GsModulesetEntry *entry;
@@ -75,8 +68,11 @@ gs_moduleset_get_by_kind (GsModuleset *moduleset, GsModulesetModuleKind module_k
 	data = g_new0 (gchar *, priv->array->len);
 	for (i = 0; i < priv->array->len; i++) {
 		entry = g_ptr_array_index (priv->array, i);
-		if (entry->module_kind == module_kind)
-			data[idx++] = g_strdup (entry->id);
+		if (entry->module_kind != module_kind)
+			continue;
+		if (g_strcmp0 (entry->name, name) != 0)
+			continue;
+		data[idx++] = g_strdup (entry->id);
 	}
 
 	return data;
@@ -134,8 +130,8 @@ gs_moduleset_parser_start_element (GMarkupParseContext *context,
 		if (section_new == GS_MODULESET_PARSER_SECTION_MODULESET) {
 			for (i = 0; attribute_names[i] != NULL; i++) {
 				if (g_strcmp0 (attribute_names[i], "name") == 0) {
-					g_free (priv->name);
-					priv->name = g_strdup (attribute_values[i]);
+					g_free (priv->name_tmp);
+					priv->name_tmp = g_strdup (attribute_values[i]);
 				}
 			}
 			priv->section = section_new;
@@ -147,6 +143,7 @@ gs_moduleset_parser_start_element (GMarkupParseContext *context,
 		if (section_new == GS_MODULESET_PARSER_SECTION_MODULE) {
 			priv->section = section_new;
 			priv->entry_tmp = g_slice_new0 (GsModulesetEntry);
+			priv->entry_tmp->name = g_strdup (priv->name_tmp);
 			for (i = 0; attribute_names[i] != NULL; i++) {
 				if (g_strcmp0 (attribute_names[i], "type") == 0) {
 					kind = gs_moduleset_module_kind_from_string (attribute_values[i]);
@@ -178,6 +175,8 @@ gs_moduleset_parser_end_element (GMarkupParseContext *context,
 	switch (priv->section) {
 	case GS_MODULESET_PARSER_SECTION_MODULESET:
 		priv->section = GS_MODULESET_PARSER_SECTION_UNKNOWN;
+		g_free (priv->name_tmp);
+		priv->name_tmp = NULL;
 		break;
 	case GS_MODULESET_PARSER_SECTION_MODULE:
 		priv->section = GS_MODULESET_PARSER_SECTION_MODULESET;
@@ -248,10 +247,43 @@ out:
 	return ret;
 }
 
+/**
+ * gs_moduleset_parse_path:
+ **/
+gboolean
+gs_moduleset_parse_path (GsModuleset *moduleset, const gchar *path, GError **error)
+{
+	GDir *dir;
+	gboolean ret = TRUE;
+	const gchar *filename;
+	gchar *tmp;
+
+	/* search all the files in the path */
+	dir = g_dir_open (path, 0, error);
+	if (dir == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+	while ((filename = g_dir_read_name (dir)) != NULL) {
+		if (!g_str_has_suffix (filename, ".xml"))
+			continue;
+		tmp = g_build_filename (path, filename, NULL);
+		ret = gs_moduleset_parse_filename (moduleset, tmp, error);
+		g_free (tmp);
+		if (!ret)
+			goto out;
+	}
+out:
+	if (dir != NULL)
+		g_dir_close (dir);
+	return ret;
+}
+
 static void
 gs_moduleset_entry_free (GsModulesetEntry *entry)
 {
 	g_free (entry->id);
+	g_free (entry->name);
 	g_slice_free (GsModulesetEntry, entry);
 }
 
@@ -266,7 +298,6 @@ gs_moduleset_finalize (GObject *object)
 	moduleset = GS_MODULESET (object);
 	priv = gs_moduleset_get_instance_private (moduleset);
 	g_ptr_array_unref (priv->array);
-	g_free (priv->name);
 
 	G_OBJECT_CLASS (gs_moduleset_parent_class)->finalize (object);
 }
