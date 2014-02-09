@@ -1060,6 +1060,9 @@ gs_plugin_loader_get_popular_thread_cb (GSimpleAsyncResult *res,
 		goto out;
 	}
 
+	/* shuffle around the list */
+	gs_plugin_list_randomize (&state->list);
+
 	/* success */
 	state->ret = TRUE;
 	gs_plugin_loader_get_all_state_finish (state, NULL);
