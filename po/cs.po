@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-01-31 12:07+0000\n"
-"PO-Revision-Date: 2014-02-01 11:35+0100\n"
-"Last-Translator: Adam Matoušek <adamatousek@gmail.com>\n"
+"POT-Creation-Date: 2014-02-09 01:36+0000\n"
+"PO-Revision-Date: 2014-02-09 09:37+0100\n"
+"Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 0 : (n>=2 && n<=4) ? 1 : 2;\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Gtranslator 2.91.6\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "Application manager for GNOME"
@@ -70,7 +70,7 @@ msgstr "U_končit"
 #. * where we are showing the application was installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
 #: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:1097
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:1156
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Nainstalováno"
@@ -122,63 +122,83 @@ msgid "_Updates"
 msgstr "_Aktualizace"
 
 #: ../src/gnome-software.ui.h:11
-msgid "Restart & Install"
-msgstr "Restartovat a instalovat"
+msgid "Restart & _Install"
+msgstr "Restartovat a _instalovat"
 
-#. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be easily installed
-#: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:211
-msgid "Install"
-msgstr "Instalovat"
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:154
+msgid "_Install"
+msgstr "_Instalovat"
 
-#. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be easily removed
-#. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:220
-#: ../src/gs-shell-details.c:975 ../src/gs-shell-installed.c:205
-#: ../src/gs-shell-search.c:164
-msgid "Remove"
-msgstr "Odebrat"
+#. TRANSLATORS: button text in the header when an application can be erased
+#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:192
+msgid "_Remove"
+msgstr "Odeb_rat"
 
 #: ../src/gnome-software.ui.h:14
-#: ../src/plugins/gs-plugin-hardcoded-popular.c:231
+msgid "Select"
+msgstr "Vybrat"
+
+#: ../src/gnome-software.ui.h:15
+msgid "Check for updates"
+msgstr "Zkontrolovat aktualizace"
+
+#: ../src/gnome-software.ui.h:16
+msgid "Overview page"
+msgstr "Stránka s přehledem"
+
+#: ../src/gnome-software.ui.h:17
+#: ../src/plugins/gs-plugin-hardcoded-categories.c:159
 msgid "Featured"
 msgstr "Důležité"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
-#: ../src/gnome-software.ui.h:16
+#: ../src/gnome-software.ui.h:19
 msgid "Picks"
 msgstr "Doporučené"
 
-#: ../src/gnome-software.ui.h:17
+#: ../src/gnome-software.ui.h:20
 msgid "Categories"
 msgstr "Kategorie"
 
-#: ../src/gnome-software.ui.h:18
+#: ../src/gnome-software.ui.h:21
 msgid "No Application Data Found"
 msgstr "O aplikaci nebyly nalezeny žádné informace"
 
-#: ../src/gnome-software.ui.h:19
+#: ../src/gnome-software.ui.h:22
+msgid "Installed page"
+msgstr "Stránka s nainstalovanými"
+
+#: ../src/gnome-software.ui.h:23
 msgid "_Add to Folder…"
 msgstr "Přid_at do složky…"
 
-#: ../src/gnome-software.ui.h:20
+#: ../src/gnome-software.ui.h:24
 msgid "_Move to Folder…"
 msgstr "Přesu_nout do složky…"
 
-#: ../src/gnome-software.ui.h:21
+#: ../src/gnome-software.ui.h:25
 msgid "_Remove from Folder"
 msgstr "Odeb_rat ze složky"
 
-#: ../src/gnome-software.ui.h:22
+#: ../src/gnome-software.ui.h:26
+msgid "Search page"
+msgstr "Stránka hledání"
+
+#: ../src/gnome-software.ui.h:27
 msgid "No Application Found"
 msgstr "Žádná aplikace nebyla nalezena"
 
-#: ../src/gnome-software.ui.h:23
+#: ../src/gnome-software.ui.h:28
+msgid "Updates page"
+msgstr "Stránka s aktualizacemi"
+
+#: ../src/gnome-software.ui.h:29
 msgid "Software is up to date"
 msgstr "Software je aktuální"
 
-#: ../src/gnome-software.ui.h:24
+#: ../src/gnome-software.ui.h:30
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -186,73 +206,130 @@ msgstr ""
 "Kontrola aktualizací přes mobilní připojení může způsobit finanční náklady "
 "ze strany operátora připojení"
 
-#: ../src/gnome-software.ui.h:25
+#: ../src/gnome-software.ui.h:31
 msgid "_Check Anyway"
 msgstr "_Přesto zkontrolovat"
 
-#: ../src/gnome-software.ui.h:26
+#: ../src/gnome-software.ui.h:32
 msgid "Go online to check for updates"
 msgstr "Kvůli kontrole aktualizací se musíte připojit k síti"
 
-#: ../src/gnome-software.ui.h:27
+#: ../src/gnome-software.ui.h:33
 msgid "_Network Settings"
 msgstr "_Nastavení sítě"
 
-#: ../src/gnome-software.ui.h:28
+#: ../src/gnome-software.ui.h:34
+msgid "Details page"
+msgstr "Stránka s podrobnostmi"
+
+#: ../src/gnome-software.ui.h:35
 msgid "Getting software details…"
 msgstr "Získávají se podrobností o softwaru…"
 
-#: ../src/gnome-software.ui.h:29
+#: ../src/gnome-software.ui.h:36
+msgid "Software Source Detected"
+msgstr "Zjištěn zdroj softwaru"
+
+#: ../src/gnome-software.ui.h:37
+msgid ""
+"This application includes a software source which provides updates, as well "
+"as access to other software."
+msgstr ""
+"Tato aplikace zahrnuje zdroj softwaru, který poskytuje aktualizace a přístup "
+"k dalšímu softwaru."
+
+#: ../src/gnome-software.ui.h:38
+msgid "No Update Source Detected"
+msgstr "Nezjištěn žádný zdroj aktualizací"
+
+#: ../src/gnome-software.ui.h:39
+msgid ""
+"This application does not include a software source. It will not be updated "
+"with new versions."
+msgstr ""
+"Tato aplikace nezahrnuje zdroj softwaru. Nebude průběžně aktualizována na "
+"novější verze."
+
+#: ../src/gnome-software.ui.h:40
+msgid ""
+"This software is already provided by your distribution and should not be "
+"replaced."
+msgstr ""
+"Tento software již poskytuje vaše distribuce a neměli byste jej nahrazovat."
+
+#: ../src/gnome-software.ui.h:41
+#| msgid "Software Update Installed"
+#| msgid_plural "Software Updates Installed"
+msgid "Software Source Identified"
+msgstr "Rozpoznán zdroj softwaru"
+
+#: ../src/gnome-software.ui.h:42
+msgid ""
+"Adding this software source will give you access to additional software and "
+"upgrades."
+msgstr ""
+"Přídáním tohoto zdroje softwaru získáte přístup k dalšímu softwaru a "
+"aktualizacím."
+
+#: ../src/gnome-software.ui.h:43
+msgid "Only use software sources that you trust."
+msgstr "Používejte pouze zdroje softwaru, kterým věříte."
+
+#: ../src/gnome-software.ui.h:44
 msgid "_Website"
 msgstr "_Webové stránky"
 
-#: ../src/gnome-software.ui.h:30
+#: ../src/gnome-software.ui.h:45
 msgid "_History"
 msgstr "_Historie"
 
 #. Translators: A label for a button to execute the selected application.
-#: ../src/gnome-software.ui.h:32
+#: ../src/gnome-software.ui.h:47
 msgid "_Launch"
 msgstr "_Spustit"
 
-#: ../src/gnome-software.ui.h:33
+#: ../src/gnome-software.ui.h:48
 msgid "Details"
 msgstr "Podrobnosti"
 
-#: ../src/gnome-software.ui.h:34
+#: ../src/gnome-software.ui.h:49
 msgid "Version"
 msgstr "Verze"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gnome-software.ui.h:35 ../src/gs-shell-details.c:1102
+#: ../src/gnome-software.ui.h:50 ../src/gs-shell-details.c:1161
 msgid "Updated"
 msgstr "Aktualizováno"
 
-#: ../src/gnome-software.ui.h:36
+#: ../src/gnome-software.ui.h:51
 msgid "Category"
 msgstr "Kategorie"
 
-#: ../src/gnome-software.ui.h:37
+#: ../src/gnome-software.ui.h:52
+msgid "Source"
+msgstr "Zdroj"
+
+#: ../src/gnome-software.ui.h:53
 msgid "Licence"
 msgstr "Licence"
 
-#: ../src/gnome-software.ui.h:38
+#: ../src/gnome-software.ui.h:54
 msgid "Size"
 msgstr "Velikost"
 
-#: ../src/gnome-software.ui.h:39
+#: ../src/gnome-software.ui.h:55
 msgid "Developer"
 msgstr "Vývojář"
 
-#: ../src/gnome-software.ui.h:40
+#: ../src/gnome-software.ui.h:56
 msgid "History"
 msgstr "Historie"
 
 #. Translators: Label for a button to close the update dialogue.
-#: ../src/gnome-software.ui.h:42
-msgid "Done"
-msgstr "Hotovo"
+#: ../src/gnome-software.ui.h:58
+msgid "_Done"
+msgstr "_Hotovo"
 
 #: ../src/gs-app-folder-dialog.c:111
 msgid "Folder Name"
@@ -337,6 +414,20 @@ msgstr "Zrušit"
 #: ../src/gs-app-widget.c:204
 msgid "Pending"
 msgstr "Čeká na zpracování"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#: ../src/gs-app-widget.c:211
+msgid "Install"
+msgstr "Instalovat"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gs-app-widget.c:220 ../src/gs-shell-details.c:1034
+#: ../src/gs-shell-installed.c:205 ../src/gs-shell-search.c:164
+msgid "Remove"
+msgstr "Odebrat"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
@@ -425,13 +516,13 @@ msgstr "Dále jsou uvedeny podrobnosti o chybě získané od správy balíčků:
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:718
+#: ../src/gs-plugin-loader.c:721
 msgid "OS Updates"
 msgstr "Aktualizace OS"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:723
+#: ../src/gs-plugin-loader.c:726
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
@@ -439,12 +530,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1279
+#: ../src/gs-plugin-loader.c:1339
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Pro formát %s nejsou k dispozici žádné dodatečné kodeky."
 
-#: ../src/gs-plugin-loader.c:1282
+#: ../src/gs-plugin-loader.c:1342
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -491,21 +582,10 @@ msgid "_Pending"
 msgstr "Čeká na z_pracování"
 
 #. TRANSLATORS: button text in the header when an application
-#. * can be installed
-#: ../src/gs-shell-details.c:154
-msgid "_Install"
-msgstr "_Instalovat"
-
-#. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
 #: ../src/gs-shell-details.c:165
 msgid "_Installing"
 msgstr "_Instaluje se"
-
-#. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:192
-msgid "_Remove"
-msgstr "Odeb_rat"
 
 #. TRANSLATORS: button text in the header when an application can be installed
 #: ../src/gs-shell-details.c:199
@@ -515,46 +595,49 @@ msgstr "Odebí_rá se"
 #. TRANSLATORS: this is where the licence is not known
 #. TRANSLATORS: this is where the version is not known
 #. TRANSLATORS: this is where the size is not known
+#. TRANSLATORS: this is where we don't know the origin of the
+#. * application
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-shell-details.c:589 ../src/gs-shell-details.c:608
-#: ../src/gs-shell-details.c:618 ../src/gs-shell-details.c:1108
+#: ../src/gs-shell-details.c:582 ../src/gs-shell-details.c:601
+#: ../src/gs-shell-details.c:611 ../src/gs-shell-details.c:653
+#: ../src/gs-shell-details.c:1167
 msgid "Unknown"
 msgstr "Neznámá"
 
 #. TRANSLATORS: this is where the licence is insanely
 #. * complicated and the full string is put into the tooltip
-#: ../src/gs-shell-details.c:594
+#: ../src/gs-shell-details.c:587
 msgid "Complicated!"
 msgstr "Složitá!"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:615
+#: ../src/gs-shell-details.c:608
 msgid "Calculating…"
 msgstr "Vypočítává se…"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:631
+#: ../src/gs-shell-details.c:624
 msgid "Never"
 msgstr "Nikdy"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:641
 msgid "None"
 msgstr "Žádná"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:960 ../src/gs-shell-installed.c:190
+#: ../src/gs-shell-details.c:1019 ../src/gs-shell-installed.c:190
 #: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Opravdu chcete odebrat %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:972 ../src/gs-shell-installed.c:202
+#: ../src/gs-shell-details.c:1031 ../src/gs-shell-installed.c:202
 #: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -564,7 +647,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:1091
+#: ../src/gs-shell-details.c:1150
 msgid "Removed"
 msgstr "Odebráno"
 
@@ -785,7 +868,7 @@ msgstr "Jazykové balíčky"
 
 #. TRANSLATORS: this is where update details either are
 #. * no longer available or were never provided in the first place
-#: ../src/plugins/gs-plugin-packagekit-refine.c:382
+#: ../src/plugins/gs-plugin-packagekit-refine.c:412
 msgid "No update details were provided"
 msgstr "K aktualizaci nebyly poskytnuty žádné podrobnosti"
 
