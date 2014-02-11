@@ -12,6 +12,7 @@ dist_resources_DATA =					\
 	featured-firefox.png				\
 	featured-gimp.png				\
 	featured-gnome-sudoku.png			\
+	featured-inkscape.png				\
 	featured-mypaint.png				\
 	featured-transmission.png			\
 	featured-weather.png				\
