@@ -524,8 +524,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* is an app */
 	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN ||
 	    gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
-		if (gs_app_get_state (app) != GS_APP_STATE_LOCAL)
+		if (appstream_app_get_id_kind (item) == APPSTREAM_APP_ID_KIND_SOURCE) {
+			gs_app_set_kind (app, GS_APP_KIND_SOURCE);
+		} else {
 			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+		}
 	}
 
 	/* set id */
