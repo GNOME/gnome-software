@@ -94,6 +94,14 @@ void		 gs_plugin_loader_get_updates_async	(GsPluginLoader	*plugin_loader,
 GList		*gs_plugin_loader_get_updates_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
+void		 gs_plugin_loader_get_sources_async	(GsPluginLoader	*plugin_loader,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GList		*gs_plugin_loader_get_sources_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
 void		 gs_plugin_loader_get_popular_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,

@@ -193,6 +193,51 @@ gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader,
 }
 
 static void
+gs_plugin_loader_get_sources_finish_sync (GsPluginLoader *plugin_loader,
+					  GAsyncResult *res,
+					  GsPluginLoaderHelper *helper)
+{
+	helper->list = gs_plugin_loader_get_sources_finish (plugin_loader,
+							    res,
+							    helper->error);
+	g_main_loop_quit (helper->loop);
+}
+
+/**
+ * gs_plugin_loader_get_sources:
+ **/
+GList *
+gs_plugin_loader_get_sources (GsPluginLoader *plugin_loader,
+			      GsPluginRefineFlags flags,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	GsPluginLoaderHelper helper;
+
+	/* create temp object */
+	helper.context = g_main_context_new ();
+	helper.loop = g_main_loop_new (helper.context, FALSE);
+	helper.error = error;
+
+	g_main_context_push_thread_default (helper.context);
+
+	/* run async method */
+	gs_plugin_loader_get_sources_async (plugin_loader,
+					    flags,
+					    cancellable,
+					    (GAsyncReadyCallback) gs_plugin_loader_get_sources_finish_sync,
+					    &helper);
+	g_main_loop_run (helper.loop);
+
+	g_main_context_pop_thread_default (helper.context);
+
+	g_main_loop_unref (helper.loop);
+	g_main_context_unref (helper.context);
+
+	return helper.list;
+}
+
+static void
 gs_plugin_loader_get_popular_finish_sync (GsPluginLoader *plugin_loader,
 					  GAsyncResult *res,
 					  GsPluginLoaderHelper *helper)

@@ -141,6 +141,141 @@ out:
 }
 
 /**
+ * gs_plugin_add_sources_related:
+ */
+static gboolean
+gs_plugin_add_sources_related (GsPlugin *plugin,
+			       GHashTable *hash,
+			       GCancellable *cancellable,
+			       GError **error)
+{
+	GList *installed = NULL;
+	GList *l;
+	GsApp *app;
+	GsApp *app_tmp;
+	PkBitfield filter;
+	PkResults *results = NULL;
+	const gchar *id;
+	gboolean ret = TRUE;
+	gchar **split;
+
+	gs_profile_start (plugin->profile, "packagekit::add-sources-related");
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
+					 PK_FILTER_ENUM_NEWEST,
+					 PK_FILTER_ENUM_ARCH,
+					 PK_FILTER_ENUM_NOT_COLLECTIONS,
+					 -1);
+	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
+					   filter,
+					   cancellable,
+					   gs_plugin_packagekit_progress_cb, plugin,
+					   error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+	ret = gs_plugin_packagekit_add_results (plugin,
+						&installed,
+						results,
+						error);
+	if (!ret)
+		goto out;
+	for (l = installed; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		split = pk_package_id_split (gs_app_get_source_id_default (app));
+		if (g_str_has_prefix (split[PK_PACKAGE_ID_DATA], "installed:")) {
+			id = split[PK_PACKAGE_ID_DATA] + 10;
+			app_tmp = g_hash_table_lookup (hash, id);
+			if (app_tmp != NULL) {
+				g_debug ("found package %s from %s",
+					 gs_app_get_source_default (app), id);
+				gs_app_add_related (app_tmp, app);
+			}
+		}
+		g_strfreev (split);
+	}
+out:
+	gs_profile_stop (plugin->profile, "packagekit::add-sources-related");
+	gs_plugin_list_free (installed);
+	if (results != NULL)
+		g_object_unref (results);
+	return ret;
+}
+
+/**
+ * gs_plugin_add_sources:
+ */
+gboolean
+gs_plugin_add_sources (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	GPtrArray *array = NULL;
+	GsApp *app;
+	PkBitfield filter;
+	PkRepoDetail *rd;
+	PkResults *results;
+	const gchar *id;
+	gboolean ret = TRUE;
+	guint i;
+	GHashTable *hash = NULL;
+
+	/* ask PK for the repo details */
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
+					 PK_FILTER_ENUM_NOT_SUPPORTED,
+					 PK_FILTER_ENUM_INSTALLED,
+					 -1);
+	results = pk_client_get_repo_list (PK_CLIENT(plugin->priv->task),
+					   filter,
+					   cancellable,
+					   gs_plugin_packagekit_progress_cb, plugin,
+					   error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+	hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	array = pk_results_get_repo_detail_array (results);
+	for (i = 0; i < array->len; i++) {
+		rd = g_ptr_array_index (array, i);
+#if PK_CHECK_VERSION(0,9,1)
+		id = pk_repo_detail_get_id (rd);
+		/* FIXME: quick hack until we have data */
+		if (g_str_has_prefix (id, "rpmfusion"))
+			continue;
+		app = gs_app_new (id);
+		gs_app_set_management_plugin (app, "PackageKit");
+		gs_app_set_kind (app, GS_APP_KIND_SOURCE);
+		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, id);
+		gs_app_set_summary (app,
+				    GS_APP_QUALITY_LOWEST,
+				    pk_repo_detail_get_description (rd));
+		gs_plugin_add_app (list, app);
+		g_hash_table_insert (hash,
+				     g_strdup (id),
+				     (gpointer) app);
+		g_object_unref (app);
+#endif
+	}
+
+	/* get every application on the system and add it as a related package
+	 * if it matches */
+	ret = gs_plugin_add_sources_related (plugin, hash, cancellable, error);
+	if (!ret)
+		goto out;
+out:
+	if (hash != NULL)
+		g_hash_table_unref (hash);
+	if (array != NULL)
+		g_ptr_array_unref (array);
+	if (results != NULL)
+		g_object_unref (results);
+	return ret;
+}
+
+/**
  * gs_plugin_app_install:
  */
 gboolean
@@ -258,6 +393,79 @@ out:
 }
 
 /**
+ * gs_plugin_app_source_disable:
+ */
+static gboolean
+gs_plugin_app_source_disable (GsPlugin *plugin,
+			      GsApp *app,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	gboolean ret = TRUE;
+	PkResults *results;
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	results = pk_client_repo_enable (PK_CLIENT (plugin->priv->task),
+					 gs_app_get_id (app),
+					 FALSE,
+					 cancellable,
+					 gs_plugin_packagekit_progress_cb, plugin,
+					 error);
+	if (results == NULL) {
+		ret = FALSE;
+		goto out;
+	}
+out:
+	if (results != NULL)
+		g_object_unref (results);
+	return ret;
+}
+
+/**
+ * gs_plugin_app_source_remove:
+ */
+static gboolean
+gs_plugin_app_source_remove (GsPlugin *plugin,
+			     GsApp *app,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	gboolean ret = TRUE;
+#if PK_CHECK_VERSION(0,9,1)
+	PkResults *results;
+	GError *error_local = NULL;
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	results = pk_client_repo_remove (PK_CLIENT (plugin->priv->task),
+					 pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_NONE, -1),
+					 gs_app_get_id (app),
+					 TRUE,
+					 cancellable,
+					 gs_plugin_packagekit_progress_cb, plugin,
+					 &error_local);
+	if (results == NULL) {
+		/* fall back to disabling it */
+		g_warning ("ignoring source remove error, trying disable: %s",
+			   error_local->message);
+		g_error_free (error_local);
+		ret = gs_plugin_app_source_disable (plugin,
+						    app,
+						    cancellable,
+						    error);
+		goto out;
+	}
+out:
+	if (results != NULL)
+		g_object_unref (results);
+#else
+	ret = gs_plugin_app_source_disable (plugin, app, cancellable, error);
+#endif
+	return ret;
+}
+
+/**
  * gs_plugin_app_remove:
  */
 gboolean
@@ -279,6 +487,15 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
 		goto out;
+
+	/* remove repo and all apps in it */
+	if (gs_app_get_kind (app) == GS_APP_KIND_SOURCE) {
+		ret = gs_plugin_app_source_remove (plugin,
+						   app,
+						   cancellable,
+						   error);
+		goto out;
+	}
 
 	/* get the list of available package ids to install */
 	source_ids = gs_app_get_source_ids (app);

@@ -305,6 +305,13 @@ main (int argc, char **argv)
 				break;
 			}
 		}
+	} else if (argc == 2 && g_strcmp0 (argv[1], "sources") == 0) {
+		list = gs_plugin_loader_get_sources (plugin_loader,
+						     refine_flags,
+						     NULL,
+						     &error);
+		if (list == NULL)
+			ret = FALSE;
 	} else if (argc == 2 && g_strcmp0 (argv[1], "popular") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
@@ -373,7 +380,8 @@ main (int argc, char **argv)
 				     GS_PLUGIN_ERROR_FAILED,
 				     "Did not recognise option, use 'installed', "
 				     "'updates', 'popular', 'get-categories', "
-				     "'get-category-apps', 'filename-to-app', or 'search'");
+				     "'get-category-apps', 'filename-to-app', "
+				     "'sources', or 'search'");
 	}
 	if (!ret) {
 		g_print ("Failed: %s\n", error->message);

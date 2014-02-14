@@ -904,6 +904,123 @@ gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 /**
+ * gs_plugin_loader_get_sources_thread_cb:
+ **/
+static void
+gs_plugin_loader_get_sources_thread_cb (GSimpleAsyncResult *res,
+					GObject *object,
+					GCancellable *cancellable)
+{
+	GError *error = NULL;
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) g_object_get_data (G_OBJECT (cancellable), "state");
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+
+	state->list = gs_plugin_loader_run_results (plugin_loader,
+						    "gs_plugin_add_sources",
+						    state->flags,
+						    cancellable,
+						    &error);
+	if (state->list == NULL) {
+		gs_plugin_loader_get_all_state_finish (state, error);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* filter package list */
+	gs_plugin_list_filter_duplicates (&state->list);
+
+	/* dedupe applications we already know about */
+	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
+
+	/* none left? */
+	if (state->list == NULL) {
+		g_set_error_literal (&error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+				     "no sources to show");
+		gs_plugin_loader_get_all_state_finish (state, error);
+		g_error_free (error);
+		goto out;
+	}
+
+	/* success */
+	state->ret = TRUE;
+	gs_plugin_loader_get_all_state_finish (state, NULL);
+out:
+	return;
+}
+
+/**
+ * gs_plugin_loader_get_sources_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_sources()
+ * function. The plugins return #GsApp objects of kind %GS_APP_KIND_SOURCE..
+ *
+ * The *applications* installed from each source can be obtained using
+ * gs_app_get_related() if this information is available.
+ **/
+void
+gs_plugin_loader_get_sources_async (GsPluginLoader *plugin_loader,
+				    GsPluginRefineFlags flags,
+				    GCancellable *cancellable,
+				    GAsyncReadyCallback callback,
+				    gpointer user_data)
+{
+	GCancellable *tmp;
+	GsPluginLoaderAsyncState *state;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->res = g_simple_async_result_new (G_OBJECT (plugin_loader),
+						callback,
+						user_data,
+						gs_plugin_loader_get_sources_async);
+	state->plugin_loader = g_object_ref (plugin_loader);
+	state->flags = flags;
+	if (cancellable != NULL)
+		state->cancellable = g_object_ref (cancellable);
+
+	/* run in a thread */
+	tmp = g_cancellable_new ();
+	g_object_set_data (G_OBJECT (tmp), "state", state);
+	g_simple_async_result_run_in_thread (G_SIMPLE_ASYNC_RESULT (state->res),
+					     gs_plugin_loader_get_sources_thread_cb,
+					     0,
+					     (GCancellable *) tmp);
+	g_object_unref (tmp);
+}
+
+/**
+ * gs_plugin_loader_get_sources_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): A list of applications
+ **/
+GList *
+gs_plugin_loader_get_sources_finish (GsPluginLoader *plugin_loader,
+				       GAsyncResult *res,
+				       GError **error)
+{
+	GSimpleAsyncResult *simple;
+
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (G_IS_SIMPLE_ASYNC_RESULT (res), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	/* failed */
+	simple = G_SIMPLE_ASYNC_RESULT (res);
+	if (g_simple_async_result_propagate_error (simple, error))
+		return NULL;
+
+	/* grab detail */
+	return gs_plugin_list_copy (g_simple_async_result_get_op_res_gpointer (simple));
+}
+
+/******************************************************************************/
+
+/**
  * gs_plugin_loader_get_installed_thread_cb:
  **/
 static void

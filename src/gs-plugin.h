@@ -179,6 +179,10 @@ gboolean	 gs_plugin_add_updates			(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_add_sources			(GsPlugin	*plugin,
+							 GList		**list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_add_updates_historical	(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,

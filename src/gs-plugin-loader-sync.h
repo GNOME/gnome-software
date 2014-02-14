@@ -41,6 +41,10 @@ GList		*gs_plugin_loader_get_updates		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
+GList		*gs_plugin_loader_get_sources		(GsPluginLoader	*plugin_loader,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
 GList		*gs_plugin_loader_get_popular		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,

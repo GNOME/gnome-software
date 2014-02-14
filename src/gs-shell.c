@@ -25,6 +25,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gs-utils.h"
 #include "gs-shell.h"
 #include "gs-shell-details.h"
 #include "gs-shell-installed.h"
@@ -453,6 +454,176 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 }
 
 /**
+ * gs_shell_sources_list_header_func
+ **/
+static void
+gs_shell_sources_list_header_func (GtkListBoxRow *row,
+				   GtkListBoxRow *before,
+				   gpointer user_data)
+{
+	GtkWidget *header = NULL;
+	if (before != NULL)
+		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	gtk_list_box_row_set_header (row, header);
+}
+
+/**
+ * gs_shell_sources_list_sort_func:
+ **/
+static gint
+gs_shell_sources_list_sort_func (GtkListBoxRow *a,
+				 GtkListBoxRow *b,
+				 gpointer user_data)
+{
+	return a < b;
+}
+
+/**
+ * gs_shell_sources_add_app:
+ **/
+static void
+gs_shell_sources_add_app (GtkListBox *listbox, GsApp *app)
+{
+	GtkWidget *box;
+	GtkWidget *widget;
+
+	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+	gtk_widget_set_margin_top (box, 12);
+	gtk_widget_set_margin_start (box, 12);
+	gtk_widget_set_margin_bottom (box, 12);
+	gtk_widget_set_margin_end (box, 12);
+
+	widget = gtk_label_new (gs_app_get_name (app));
+	gtk_widget_set_halign (widget, GTK_ALIGN_START);
+	gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
+
+	gtk_list_box_prepend (listbox, box);
+	gtk_widget_show (widget);
+	gtk_widget_show (box);
+}
+
+/**
+ * gs_shell_sources_list_row_activated_cb:
+ **/
+static void
+gs_shell_sources_list_row_activated_cb (GtkListBox *list_box,
+					GtkListBoxRow *row,
+					GsShell *shell)
+{
+	GPtrArray *related;
+	GsApp *app;
+	GsShellPrivate *priv = shell->priv;
+	GtkWidget *widget;
+	guint cnt_apps = 0;
+	guint i;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_sources"));
+	gtk_stack_set_visible_child_name (GTK_STACK (widget), "source-details");
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_back"));
+	gtk_widget_show (widget);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_sources_apps"));
+	gs_container_remove_all (GTK_CONTAINER (widget));
+	app = GS_APP (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), 
+					 "GsShell::app"));
+	related = gs_app_get_related (app);
+	for (i = 0; i < related->len; i++) {
+		app = g_ptr_array_index (related, i);
+		switch (gs_app_get_kind (app)) {
+		case GS_APP_KIND_NORMAL:
+		case GS_APP_KIND_SYSTEM:
+			gs_shell_sources_add_app (GTK_LIST_BOX (widget), app);
+			cnt_apps++;
+			break;
+		default:
+			break;
+		}
+	}
+
+	/* save this */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_sources"));
+	g_object_set_data_full (G_OBJECT (widget), "GsShell::app",
+				g_object_ref (app),
+				(GDestroyNotify) g_object_unref);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_sources_apps"));
+	gtk_widget_set_visible (widget, cnt_apps != 0);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_sources2"));
+	gtk_widget_set_visible (widget, cnt_apps != 0);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_sources_none"));
+	gtk_widget_set_visible (widget, cnt_apps == 0);
+}
+
+/**
+ * gs_shell_sources_back_button_cb:
+ **/
+static void
+gs_shell_sources_back_button_cb (GtkWidget *widget, GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_back"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_sources"));
+	gtk_stack_set_visible_child_name (GTK_STACK (widget), "sources");
+}
+
+
+/**
+ * gs_shell_sources_app_removed_cb:
+ **/
+static void
+gs_shell_sources_app_removed_cb (GObject *source,
+				 GAsyncResult *res,
+				 gpointer user_data)
+{
+	GError *error = NULL;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsShell *shell = GS_SHELL (user_data);
+	GsShellPrivate *priv = shell->priv;
+	GtkWidget *widget;
+	gboolean ret;
+
+	ret = gs_plugin_loader_app_action_finish (plugin_loader,
+						  res,
+						  &error);
+	if (!ret) {
+		g_warning ("failed to remove: %s", error->message);
+		g_error_free (error);
+	} else {
+		gs_shell_show_sources (shell);
+	}
+
+	/* enable button */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_remove"));
+	gtk_widget_set_sensitive (widget, TRUE);
+}
+
+/**
+ * gs_shell_sources_remove_button_cb:
+ **/
+static void
+gs_shell_sources_remove_button_cb (GtkWidget *widget, GsShell *shell)
+{
+	GsApp *app;
+	GsShellPrivate *priv = shell->priv;
+
+	/* disable button */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_remove"));
+	gtk_widget_set_sensitive (widget, FALSE);
+
+	/* remove source */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_sources"));
+	app = GS_APP (g_object_get_data (G_OBJECT (widget), "GsShell::app"));
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+					   app,
+					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   priv->cancellable,
+					   gs_shell_sources_app_removed_cb,
+					   shell);
+}
+
+/**
  * gs_shell_setup:
  */
 GtkWindow *
@@ -519,6 +690,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			   GINT_TO_POINTER (GS_SHELL_MODE_UPDATES));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_overview_button_cb), shell);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_remove"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_sources_remove_button_cb), shell);
 
 	gs_shell_overview_setup (priv->shell_overview,
 				 shell,
@@ -564,10 +738,45 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_signal_connect (widget, "notify::text",
 			  G_CALLBACK (text_changed_handler), shell);
 
+	/* set up sources */
+	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_sources"));
+	g_signal_connect (main_window, "delete-event",
+			  G_CALLBACK (gtk_widget_hide_on_delete), NULL);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_sources"));
+	g_object_ref (widget);
+	gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (widget)), widget);
+	gtk_window_set_titlebar (GTK_WINDOW (main_window), widget);
+	g_object_unref (widget);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_sources"));
+	gtk_list_box_set_header_func (GTK_LIST_BOX (widget),
+				      gs_shell_sources_list_header_func,
+				      shell,
+				      NULL);
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (widget),
+				    gs_shell_sources_list_sort_func,
+				    shell, NULL);
+	g_signal_connect (widget, "row-activated",
+			  G_CALLBACK (gs_shell_sources_list_row_activated_cb), shell);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_sources_apps"));
+	gtk_list_box_set_header_func (GTK_LIST_BOX (widget),
+				      gs_shell_sources_list_header_func,
+				      shell,
+				      NULL);
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (widget),
+				    gs_shell_sources_list_sort_func,
+				    shell, NULL);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_back"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (gs_shell_sources_back_button_cb), shell);
+
 	/* load content */
 	g_signal_connect (priv->shell_overview, "refreshed",
 			  G_CALLBACK (initial_overview_load_done), shell);
 
+	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
 	return GTK_WINDOW (main_window);
 }
 
@@ -597,6 +806,159 @@ gs_shell_get_mode (GsShell *shell)
 	GsShellPrivate *priv = shell->priv;
 
 	return priv->mode;
+}
+
+/**
+ * gs_shell_sources_add_source:
+ **/
+static void
+gs_shell_sources_add_source (GtkListBox *listbox, GsApp *app)
+{
+	GsApp *app_tmp;
+	GtkWidget *widget;
+	GtkWidget *box;
+	GtkStyleContext *context;
+	GPtrArray *related;
+	gchar *text;
+	guint cnt_addon = 0;
+	guint cnt_apps = 0;
+	guint i;
+
+	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+	gtk_widget_set_margin_top (box, 12);
+	gtk_widget_set_margin_start (box, 12);
+	gtk_widget_set_margin_bottom (box, 12);
+	gtk_widget_set_margin_end (box, 12);
+
+	widget = gtk_label_new (gs_app_get_name (app));
+	gtk_widget_set_halign (widget, GTK_ALIGN_START);
+	gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
+	related = gs_app_get_related (app);
+
+	/* split up the types */
+	for (i = 0; i < related->len; i++) {
+		app_tmp = g_ptr_array_index (related, i);
+		switch (gs_app_get_id_kind (app_tmp)) {
+		case GS_APP_ID_KIND_WEBAPP:
+		case GS_APP_ID_KIND_DESKTOP:
+			cnt_apps++;
+			break;
+		case GS_APP_ID_KIND_FONT:
+		case GS_APP_ID_KIND_CODEC:
+		case GS_APP_ID_KIND_INPUT_METHOD:
+			cnt_addon++;
+			break;
+		default:
+			break;
+		}
+	}
+	if (cnt_apps == 0 && cnt_addon == 0) {
+		/* TRANSLATORS: this source has no apps installed from it */
+		text = g_strdup (_("No applications or addons installed"));
+	} else if (cnt_addon == 0) {
+		/* TRANSLATORS: this source has some apps installed from it */
+		text = g_strdup_printf (ngettext ("%i application installed",
+						  "%i applications installed",
+						  cnt_apps), cnt_apps);
+	} else if (cnt_apps == 0) {
+		/* TRANSLATORS: this source has some apps installed from it */
+		text = g_strdup_printf (ngettext ("%i addons installed",
+						  "%i addons installed",
+						  cnt_addon), cnt_addon);
+	} else {
+		/* TRANSLATORS: this source has some apps and addons installed from it */
+		text = g_strdup_printf (ngettext ("%i application installed (and %i addons)",
+						  "%i applications installed (and %i addons)",
+						  cnt_apps),
+					cnt_apps, cnt_addon);
+	}
+	widget = gtk_label_new (text);
+	g_free (text);
+	gtk_widget_set_halign (widget, GTK_ALIGN_START);
+	gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
+
+	context = gtk_widget_get_style_context (widget);
+	gtk_style_context_add_class (context, "dim-label");
+	g_object_set_data_full (G_OBJECT (box), "GsShell::app",
+				g_object_ref (app),
+				(GDestroyNotify) g_object_unref);
+
+	gtk_list_box_prepend (listbox, box);
+	gtk_widget_show_all (box);
+}
+
+/**
+ * gs_shell_sources_get_sources_cb:
+ **/
+static void
+gs_shell_sources_get_sources_cb (GsPluginLoader *plugin_loader,
+				 GAsyncResult *res,
+				 GsShell *shell)
+{
+	GError *error = NULL;
+	GList *l;
+	GList *list;
+	GsApp *app;
+	GtkWidget *widget;
+	GsShellPrivate *priv = shell->priv;
+
+	/* show results */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_sources"));
+	gtk_spinner_stop (GTK_SPINNER (widget));
+
+	/* get the results */
+	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		if (g_error_matches (error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
+			g_debug ("no sources to show");
+		} else {
+			g_warning ("failed to get sources: %s", error->message);
+		}
+		g_error_free (error);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_sources"));
+		gtk_stack_set_visible_child_name (GTK_STACK (widget), "sources-empty");
+		goto out;
+	}
+
+	/* add each */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_sources"));
+	gtk_stack_set_visible_child_name (GTK_STACK (widget), "sources");
+	for (l = list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_sources"));
+		gs_shell_sources_add_source (GTK_LIST_BOX (widget), app);
+	}
+out:
+	if (list != NULL)
+		gs_plugin_list_free (list);
+}
+
+void
+gs_shell_show_sources (GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	GtkWidget *widget;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_sources"));
+	gtk_stack_set_visible_child_name (GTK_STACK (widget), "sources-waiting");
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_sources"));
+	gtk_spinner_start (GTK_SPINNER (widget));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_back"));
+	gtk_widget_hide (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_sources"));
+	gs_container_remove_all (GTK_CONTAINER (widget));
+
+	/* get the list of non-core software sources */
+	gs_plugin_loader_get_sources_async (priv->plugin_loader,
+					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					    priv->cancellable,
+					    (GAsyncReadyCallback) gs_shell_sources_get_sources_cb,
+					    shell);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_sources"));
+	gtk_window_present (GTK_WINDOW (widget));
 }
 
 void

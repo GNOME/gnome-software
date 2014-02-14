@@ -523,6 +523,7 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 		if (kind == GS_APP_KIND_NORMAL ||
 		    kind == GS_APP_KIND_SYSTEM ||
 		    kind == GS_APP_KIND_CORE ||
+		    kind == GS_APP_KIND_SOURCE ||
 		    kind == GS_APP_KIND_UNKNOWN)
 			state_change_ok = TRUE;
 		break;
@@ -534,6 +535,7 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 		break;
 	case GS_APP_KIND_SYSTEM:
 	case GS_APP_KIND_OS_UPDATE:
+	case GS_APP_KIND_SOURCE:
 	case GS_APP_KIND_MISSING:
 		/* this can never change state */
 		break;

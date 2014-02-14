@@ -198,6 +198,14 @@ gs_application_initialize_ui (GsApplication *app)
 }
 
 static void
+sources_activated (GSimpleAction *action,
+		   GVariant      *parameter,
+		   gpointer       app)
+{
+	gs_shell_show_sources (GS_APPLICATION (app)->shell);
+}
+
+static void
 about_activated (GSimpleAction *action,
 		 GVariant      *parameter,
 		 gpointer       app)
@@ -402,6 +410,7 @@ show_offline_updates_error (GSimpleAction *action,
 
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
+	{ "sources", sources_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
 	{ "profile", profile_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
