@@ -355,6 +355,10 @@ gs_plugin_loader_func (void)
 	GsApp *app;
 	GsPluginLoader *loader;
 
+	/* not avaiable in make distcheck */
+	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
+		return;
+
 	loader = gs_plugin_loader_new ();
 	g_assert (GS_IS_PLUGIN_LOADER (loader));
 	g_signal_connect (loader, "status-changed",
@@ -494,6 +498,10 @@ gs_plugin_loader_refine_func (void)
 	const gchar *url;
 	gboolean ret;
 
+	/* not avaiable in make distcheck */
+	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
+		return;
+
 	/* load the plugins */
 	loader = gs_plugin_loader_new ();
 	gs_plugin_loader_set_location (loader, "./plugins/.libs");
@@ -541,6 +549,10 @@ gs_plugin_loader_empty_func (void)
 	GsCategory *sub;
 	GsPluginLoader *loader;
 	guint empty_subcats_cnt = 0;
+
+	/* not avaiable in make distcheck */
+	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
+		return;
 
 	/* load the plugins */
 	loader = gs_plugin_loader_new ();
@@ -622,6 +634,10 @@ gs_plugin_loader_webapps_func (void)
 	gchar *path;
 	gboolean ret;
 	GError *error = NULL;
+
+	/* not avaiable in make distcheck */
+	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
+		return;
 
 	/* load the plugins */
 	loader = gs_plugin_loader_new ();
