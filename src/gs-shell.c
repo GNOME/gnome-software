@@ -551,7 +551,7 @@ gs_shell_sources_list_row_activated_cb (GtkListBox *list_box,
 	gtk_widget_set_visible (widget, cnt_apps != 0);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_sources2"));
 	gtk_widget_set_visible (widget, cnt_apps != 0);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_sources_none"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_sources_noresults"));
 	gtk_widget_set_visible (widget, cnt_apps == 0);
 }
 
@@ -597,6 +597,13 @@ gs_shell_sources_app_removed_cb (GObject *source,
 	/* enable button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_remove"));
 	gtk_widget_set_sensitive (widget, TRUE);
+	gtk_button_set_label (GTK_BUTTON (widget), _("Remove Source"));
+
+	/* allow going back */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_back"));
+	gtk_widget_set_sensitive (widget, TRUE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_sources_apps"));
+	gtk_widget_set_sensitive (widget, TRUE);
 }
 
 /**
@@ -610,6 +617,13 @@ gs_shell_sources_remove_button_cb (GtkWidget *widget, GsShell *shell)
 
 	/* disable button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_remove"));
+	gtk_widget_set_sensitive (widget, FALSE);
+	gtk_button_set_label (GTK_BUTTON (widget), _("Removing…"));
+
+	/* disallow going back */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_sources_back"));
+	gtk_widget_set_sensitive (widget, FALSE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_sources_apps"));
 	gtk_widget_set_sensitive (widget, FALSE);
 
 	/* remove source */
@@ -824,7 +838,7 @@ gs_shell_sources_add_source (GtkListBox *listbox, GsApp *app)
 	guint cnt_apps = 0;
 	guint i;
 
-	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
+	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_margin_top (box, 12);
 	gtk_widget_set_margin_start (box, 12);
 	gtk_widget_set_margin_bottom (box, 12);
@@ -854,7 +868,7 @@ gs_shell_sources_add_source (GtkListBox *listbox, GsApp *app)
 	}
 	if (cnt_apps == 0 && cnt_addon == 0) {
 		/* TRANSLATORS: this source has no apps installed from it */
-		text = g_strdup (_("No applications or addons installed"));
+		text = g_strdup (_("No software installed"));
 	} else if (cnt_addon == 0) {
 		/* TRANSLATORS: this source has some apps installed from it */
 		text = g_strdup_printf (ngettext ("%i application installed",
@@ -862,13 +876,13 @@ gs_shell_sources_add_source (GtkListBox *listbox, GsApp *app)
 						  cnt_apps), cnt_apps);
 	} else if (cnt_apps == 0) {
 		/* TRANSLATORS: this source has some apps installed from it */
-		text = g_strdup_printf (ngettext ("%i addons installed",
-						  "%i addons installed",
+		text = g_strdup_printf (ngettext ("%i add-on installed",
+						  "%i add-ons installed",
 						  cnt_addon), cnt_addon);
 	} else {
 		/* TRANSLATORS: this source has some apps and addons installed from it */
-		text = g_strdup_printf (ngettext ("%i application installed (and %i addons)",
-						  "%i applications installed (and %i addons)",
+		text = g_strdup_printf (ngettext ("%i application and %i add-ons installed",
+						  "%i applications and %i add-ons installed",
 						  cnt_apps),
 					cnt_apps, cnt_addon);
 	}
