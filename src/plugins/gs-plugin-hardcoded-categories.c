@@ -89,6 +89,7 @@ static Featured featured[] = {
 	{ "System", "gnome-boxes.desktop" },
 	{ "System", "virt-manager.desktop" },
 	{ "System", "gnome-disks.desktop" },
+	{ "Development", "devassistant.desktop" },
 	{ "Development", "glade.desktop" },
 	{ "Development", "anjuta.desktop" },
 	{ "Development", "d-feet.desktop" },
