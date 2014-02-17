@@ -92,6 +92,7 @@ struct GsAppPrivate
 	GdkPixbuf		*pixbuf;
 	GdkPixbuf		*featured_pixbuf;
 	GPtrArray		*related; /* of GsApp */
+	GHashTable		*related_hash; /* of "id-source" */
 	GPtrArray		*history; /* of GsApp */
 	guint64			 install_date;
 };
@@ -1406,7 +1407,21 @@ gs_app_get_related (GsApp *app)
 void
 gs_app_add_related (GsApp *app, GsApp *app2)
 {
+	gchar *key;
+	gpointer found;
+
 	g_return_if_fail (GS_IS_APP (app));
+
+	key = g_strdup_printf ("%s-%s",
+			       gs_app_get_id_full (app2),
+			       gs_app_get_source_default (app2));
+	found = g_hash_table_lookup (app->priv->related_hash, key);
+	if (found != NULL) {
+		g_debug ("Already added %s as a related item", key);
+		g_free (key);
+		return;
+	}
+	g_hash_table_insert (app->priv->related_hash, key, GINT_TO_POINTER (1));
 	g_ptr_array_add (app->priv->related, g_object_ref (app2));
 }
 
@@ -1785,6 +1800,10 @@ gs_app_init (GsApp *app)
 						     g_str_equal,
 						     g_free,
 						     g_free);
+	app->priv->related_hash = g_hash_table_new_full (g_str_hash,
+							 g_str_equal,
+							 g_free,
+							 NULL);
 	app->priv->urls = g_hash_table_new_full (g_str_hash,
 						 g_str_equal,
 						 g_free,
@@ -1823,6 +1842,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->update_details);
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
+	g_hash_table_unref (priv->related_hash);
 	g_ptr_array_unref (priv->related);
 	g_ptr_array_unref (priv->history);
 	if (priv->pixbuf != NULL)
