@@ -1533,6 +1533,7 @@ gs_app_subsume (GsApp *app, GsApp *other)
 	const gchar *tmp;
 	GList *keys;
 	GList *l;
+	GsApp *app_tmp;
 	GsAppPrivate *priv2 = other->priv;
 	GsAppPrivate *priv = app->priv;
 	guint i;
@@ -1567,6 +1568,10 @@ gs_app_subsume (GsApp *app, GsApp *other)
 	for (i = 0; i < priv2->categories->len; i++) {
 		tmp = g_ptr_array_index (priv2->categories, i);
 		gs_app_add_category (app, tmp);
+	}
+	for (i = 0; i < priv2->related->len; i++) {
+		app_tmp = g_ptr_array_index (priv2->related, i);
+		gs_app_add_related (app, app_tmp);
 	}
 
 	/* also metadata */
