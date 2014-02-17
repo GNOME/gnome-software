@@ -148,18 +148,26 @@ moduleset_func (void)
 	GError *error = NULL;
 	GsModuleset *ms;
 
+	/* not avaiable in make distcheck */
+	if (!g_file_test ("./moduleset-test.xml", G_FILE_TEST_EXISTS))
+		return;
+
 	ms = gs_moduleset_new ();
 	ret = gs_moduleset_parse_filename (ms, "./moduleset-test.xml", &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 
-	data = gs_moduleset_get_by_kind (ms, GS_MODULESET_MODULE_KIND_PACKAGE);
+	data = gs_moduleset_get_modules (ms,
+					 GS_MODULESET_MODULE_KIND_PACKAGE,
+					 "gnome3");
 	g_assert (data != NULL);
 	g_assert_cmpint (g_strv_length (data), ==, 1);
 	g_assert_cmpstr (data[0], ==, "kernel");
 	g_assert_cmpstr (data[1], ==, NULL);
 
-	data = gs_moduleset_get_by_kind (ms, GS_MODULESET_MODULE_KIND_APPLICATION);
+	data = gs_moduleset_get_modules (ms,
+					 GS_MODULESET_MODULE_KIND_APPLICATION,
+					 "gnome3");
 	g_assert (data != NULL);
 	g_assert_cmpint (g_strv_length (data), ==, 1);
 	g_assert_cmpstr (data[0], ==, "gnome-shell.desktop");
