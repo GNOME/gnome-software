@@ -849,6 +849,7 @@ appstream_cache_parse_file (AppstreamCache *cache,
 			     APPSTREAM_CACHE_ERROR_FAILED,
 			     "cannot process file of type %s",
 			     content_type);
+		goto out;
 	}
 
 	/* add to array to maintain a ref for the lifetime of the AppstreamApp */
