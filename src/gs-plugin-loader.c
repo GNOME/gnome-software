@@ -227,6 +227,9 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     GError **error)
 {
 	GList *l;
+	GList *related_list = NULL;
+	GPtrArray *related;
+	GsApp *app;
 	GsPlugin *plugin;
 	gboolean ret = TRUE;
 	guint i;
@@ -253,6 +256,32 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			goto out;
 	}
 
+	/* also do related packages one layer deep */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED) > 0) {
+		flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED;
+		for (l = *list; l != NULL; l = l->next) {
+			app = GS_APP (l->data);
+			related = gs_app_get_related (app);
+			for (i = 0; i < related->len; i++) {
+				app = g_ptr_array_index (related, i);
+				g_debug ("refining related: %s[%s]",
+					 gs_app_get_id (app),
+					 gs_app_get_source_default (app));
+				gs_plugin_add_app (&related_list, app);
+			}
+		}
+		if (related_list != NULL) {
+			ret = gs_plugin_loader_run_refine (plugin_loader,
+							   function_name_parent,
+							   &related_list,
+							   flags,
+							   cancellable,
+							   error);
+			if (!ret)
+				goto out;
+		}
+	}
+
 	/* now emit all the changed signals */
 	for (l = freeze_list; l != NULL; l = l->next)
 		g_object_thaw_notify (G_OBJECT (l->data));
@@ -260,6 +289,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	/* dedupe applications we already know about */
 	gs_plugin_loader_list_dedupe (plugin_loader, *list);
 out:
+	gs_plugin_list_free (related_list);
 	gs_plugin_list_free (freeze_list);
 	return ret;
 }

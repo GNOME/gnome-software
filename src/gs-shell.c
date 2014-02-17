@@ -952,7 +952,8 @@ gs_shell_show_sources (GsShell *shell)
 
 	/* get the list of non-core software sources */
 	gs_plugin_loader_get_sources_async (priv->plugin_loader,
-					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					    GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+					    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED,
 					    priv->cancellable,
 					    (GAsyncReadyCallback) gs_shell_sources_get_sources_cb,
 					    shell);
