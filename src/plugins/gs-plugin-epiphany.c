@@ -59,8 +59,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 	epiphany = g_find_program_in_path ("epiphany");
 	if (epiphany == NULL) {
 		gs_plugin_set_enabled (plugin, FALSE);
-		g_warning ("disabling '%s' as epiphany does not exist",
-			   plugin->name);
+		g_debug ("disabling '%s' as epiphany does not exist",
+			 plugin->name);
 	}
 
 	g_free (epiphany);
