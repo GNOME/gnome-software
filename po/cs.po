@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-02-09 01:36+0000\n"
-"PO-Revision-Date: 2014-02-09 09:37+0100\n"
+"POT-Creation-Date: 2014-02-20 20:31+0000\n"
+"PO-Revision-Date: 2014-02-20 23:52+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -57,10 +57,14 @@ msgid "_Add"
 msgstr "Přid_at"
 
 #: ../src/app-menu.ui.h:1
+msgid "_Software Sources"
+msgstr "Zdroje _softwaru"
+
+#: ../src/app-menu.ui.h:2
 msgid "_About"
 msgstr "O _aplikaci"
 
-#: ../src/app-menu.ui.h:2
+#: ../src/app-menu.ui.h:3
 msgid "_Quit"
 msgstr "U_končit"
 
@@ -78,7 +82,7 @@ msgstr "Nainstalováno"
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:232 ../src/gs-shell.c:161
+#: ../src/gs-application.c:240 ../src/gs-shell.c:162
 msgid "Software"
 msgstr "Software"
 
@@ -149,7 +153,7 @@ msgid "Overview page"
 msgstr "Stránka s přehledem"
 
 #: ../src/gnome-software.ui.h:17
-#: ../src/plugins/gs-plugin-hardcoded-categories.c:159
+#: ../src/plugins/gs-plugin-hardcoded-categories.c:160
 msgid "Featured"
 msgstr "Důležité"
 
@@ -258,8 +262,6 @@ msgstr ""
 "Tento software již poskytuje vaše distribuce a neměli byste jej nahrazovat."
 
 #: ../src/gnome-software.ui.h:41
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "Software Source Identified"
 msgstr "Rozpoznán zdroj softwaru"
 
@@ -331,61 +333,112 @@ msgstr "Historie"
 msgid "_Done"
 msgstr "_Hotovo"
 
+#: ../src/gnome-software.ui.h:59
+msgid "Software Sources"
+msgstr "Zdroje softwaru"
+
+#: ../src/gnome-software.ui.h:60
+msgid "No sources found."
+msgstr "Nebyl nalezen žádný zdroj."
+
+#: ../src/gnome-software.ui.h:61
+msgid "Software sources give you access to additional software."
+msgstr "Zdroje softwaru poskytují přístup k dalšímu softwaru."
+
+#: ../src/gnome-software.ui.h:62
+msgid ""
+"Removing a source will also remove any software you have installed from it."
+msgstr ""
+"Odebráním zdroje rovněž odeberete případný software, který z něj byl "
+"nainstalován."
+
+#: ../src/gnome-software.ui.h:63
+msgid "No software installed from this source"
+msgstr "Z tohoto zdroje není nainstalován žádný software"
+
+#: ../src/gnome-software.ui.h:64
+msgid "Installed from this Source"
+msgstr "Instalováno z tohoto zdroje"
+
+#: ../src/gnome-software.ui.h:65
+msgid "Source Details"
+msgstr "Podrobnosti zdroje"
+
+#: ../src/gnome-software.ui.h:66
+msgid "Last Checked"
+msgstr "Poslední kontrola"
+
+#: ../src/gnome-software.ui.h:67
+msgid "Added"
+msgstr "Přidáno"
+
+#: ../src/gnome-software.ui.h:68
+msgid "Website"
+msgstr "Webové stránky"
+
+#: ../src/gnome-software.ui.h:69
+msgid "January 30, 2014"
+msgstr "30. ledna 2014"
+
+#: ../src/gnome-software.ui.h:70 ../src/gs-shell.c:600
+msgid "Remove Source"
+msgstr "Odebrat zdroj"
+
 #: ../src/gs-app-folder-dialog.c:111
 msgid "Folder Name"
 msgstr "Název složky"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:230
+#: ../src/gs-application.c:238
 msgid "About Software"
 msgstr "O aplikaci Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:235
+#: ../src/gs-application.c:243
 msgid "A nice way to manage the software on your system."
 msgstr "Elegantní způsob správy softwaru ve vašem počítači."
 
-#: ../src/gs-application.c:239
+#: ../src/gs-application.c:247
 msgid "translator-credits"
 msgstr "Marek Černocký <marek@manet.cz>"
 
-#: ../src/gs-application.c:479
+#: ../src/gs-application.c:488
 msgid "Enter GApplication service mode"
 msgstr "Vstoupit do servisního režimu GApplication"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:482
+#: ../src/gs-application.c:491
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Režim spuštění: buď „updates“ (aktualizace), „updated“ (aktualizované), "
 "„installed“ (nainstalované) nebo „overview“ (přehled)"
 
-#: ../src/gs-application.c:482
+#: ../src/gs-application.c:491
 msgid "MODE"
 msgstr "REŽIM"
 
-#: ../src/gs-application.c:484
+#: ../src/gs-application.c:493
 msgid "Search for applications"
 msgstr "Hledat aplikaci"
 
-#: ../src/gs-application.c:484
+#: ../src/gs-application.c:493
 msgid "SEARCH"
 msgstr "HLEDAT"
 
-#: ../src/gs-application.c:486 ../src/gs-application.c:488
+#: ../src/gs-application.c:495 ../src/gs-application.c:497
 msgid "Show application details"
 msgstr "Zobrazit informace o aplikaci"
 
-#: ../src/gs-application.c:486 ../src/gs-application.c:488
-#: ../src/gs-application.c:490
+#: ../src/gs-application.c:495 ../src/gs-application.c:497
+#: ../src/gs-application.c:499
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:490
+#: ../src/gs-application.c:499
 msgid "Set the specified debugging level"
 msgstr "Nastavit zadanou úroveň ladění"
 
-#: ../src/gs-application.c:492
+#: ../src/gs-application.c:501
 msgid "Show profiling information for the service"
 msgstr "Zobrazit profilovací informace pro službu"
 
@@ -516,13 +569,13 @@ msgstr "Dále jsou uvedeny podrobnosti o chybě získané od správy balíčků:
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:721
+#: ../src/gs-plugin-loader.c:758
 msgid "OS Updates"
 msgstr "Aktualizace OS"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:726
+#: ../src/gs-plugin-loader.c:763
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
@@ -530,12 +583,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1339
+#: ../src/gs-plugin-loader.c:1457
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Pro formát %s nejsou k dispozici žádné dodatečné kodeky."
 
-#: ../src/gs-plugin-loader.c:1342
+#: ../src/gs-plugin-loader.c:1460
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -576,6 +629,42 @@ msgstr "Snímek není k dispozici"
 #: ../src/gs-screenshot-image.c:326
 msgid "Screenshot"
 msgstr "Snímek"
+
+#: ../src/gs-shell.c:621
+msgid "Removing…"
+msgstr "Odebírá se…"
+
+#. TRANSLATORS: this source has no apps installed from it
+#: ../src/gs-shell.c:871
+msgid "No software installed"
+msgstr "Není nainstalován žádný software"
+
+#. TRANSLATORS: this source has some apps installed from it
+#: ../src/gs-shell.c:874
+#, c-format
+msgid "%i application installed"
+msgid_plural "%i applications installed"
+msgstr[0] "Nainstalována %i aplikace"
+msgstr[1] "Nainstalovány %i aplikace"
+msgstr[2] "Nainstalováno %i aplikací"
+
+#. TRANSLATORS: this source has some apps installed from it
+#: ../src/gs-shell.c:879
+#, c-format
+msgid "%i add-on installed"
+msgid_plural "%i add-ons installed"
+msgstr[0] "Nainstalován %i doplněk"
+msgstr[1] "Nainstalovány %i doplňky"
+msgstr[2] "Nainstalováno %i doplňků"
+
+#. TRANSLATORS: this source has some apps and addons installed from it
+#: ../src/gs-shell.c:884
+#, c-format
+msgid "%i application and %i add-ons installed"
+msgid_plural "%i applications and %i add-ons installed"
+msgstr[0] "Nainstalována %i aplikace a %i doplňky"
+msgstr[1] "Nainstalovány %i aplikace a %i doplňky"
+msgstr[2] "Nainstalováno %i aplikací a %i doplňků"
 
 #: ../src/gs-shell-details.c:137
 msgid "_Pending"
@@ -657,7 +746,7 @@ msgstr "Odebráno"
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
 #: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:638
-#: ../src/plugins/gs-plugin-packagekit.c:359
+#: ../src/plugins/gs-plugin-packagekit.c:576
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Doplňky"
@@ -847,22 +936,22 @@ msgid "Proprietary"
 msgstr "Soukromá"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:363
+#: ../src/plugins/gs-plugin-packagekit.c:580
 msgid "Codecs"
 msgstr "Kodeky"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:367
+#: ../src/plugins/gs-plugin-packagekit.c:584
 msgid "Fonts"
 msgstr "Písma"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:371
+#: ../src/plugins/gs-plugin-packagekit.c:588
 msgid "Input Sources"
 msgstr "Vstupní zdroje"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:375
+#: ../src/plugins/gs-plugin-packagekit.c:592
 msgid "Language Packs"
 msgstr "Jazykové balíčky"
 
