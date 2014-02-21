@@ -541,7 +541,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	if (pixbuf == NULL)
 		pixbuf = gs_app_get_pixbuf (priv->app);
 	if( pixbuf == NULL && gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL)
-		pixbuf = gs_pixbuf_load ("package-x-generic-symbolic", 96, NULL);
+		pixbuf = gs_pixbuf_load ("application-x-executable", 96, NULL);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
 	if (pixbuf != NULL) {
 		gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
