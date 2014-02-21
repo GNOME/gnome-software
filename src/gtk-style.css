@@ -46,6 +46,24 @@ GtkNotebook.main-notebook-software > GtkScrolledWindow {
         background-color: @content_view_bg;
 }
 
+.application-details-infobar.info {
+        background-color: #d3d7cf;
+        color: @theme_fg_color;
+        border-color: darker(#d3d7cf);
+        border-style: solid;
+        border-width: 1px;
+        text-shadow: none;
+}
+
+.application-details-infobar.warning {
+        background-color: #fcaf3e;
+        color: @theme_fg_color;
+        border-color: darker(#fcaf3e);
+        border-style: solid;
+        border-width: 1px;
+        text-shadow: none;
+}
+
 .application-details-title {
 	font-weight: bold;
 	font-size: 14px;
