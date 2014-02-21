@@ -81,11 +81,11 @@ gs_shell_details_set_state (GsShellDetails *shell_details,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_details"));
 	switch (state) {
 	case GS_SHELL_DETAILS_STATE_LOADING:
-		gtk_spinner_start (GTK_SPINNER (widget));
+		gs_start_spinner (GTK_SPINNER (widget));
 		gtk_widget_show (widget);
 		break;
 	case GS_SHELL_DETAILS_STATE_READY:
-		gtk_spinner_stop (GTK_SPINNER (widget));
+		gs_stop_spinner (GTK_SPINNER (widget));
 		gtk_widget_hide (widget);
 		break;
 	default:
