@@ -205,6 +205,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 {
 	const gchar *package_id;
 	gboolean ret = TRUE;
+	gchar *basename = NULL;
 	gchar **files;
 	gchar **split = NULL;
 	GPtrArray *array = NULL;
@@ -257,12 +258,14 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	app = gs_app_new (NULL);
 	package_id = pk_details_get_package_id (item);
 	split = pk_package_id_split (package_id);
+	basename = g_path_get_basename (filename);
 	gs_app_set_management_plugin (app, "PackageKit");
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 	gs_app_set_state (app, GS_APP_STATE_LOCAL);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
 	gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
 	gs_app_set_metadata (app, "PackageKit::local-filename", filename);
+	gs_app_set_origin (app, basename);
 	gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
 	gs_app_add_source_id (app, package_id);
 	gs_plugin_packagekit_refresh_set_text (app,
@@ -276,6 +279,8 @@ out:
 		g_object_unref (app);
 	if (array != NULL)
 		g_ptr_array_unref (array);
+	if (basename != NULL)
+		g_free (basename);
 	g_strfreev (split);
 	g_strfreev (files);
 	return ret;
