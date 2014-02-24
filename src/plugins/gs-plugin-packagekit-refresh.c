@@ -262,7 +262,13 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_management_plugin (app, "PackageKit");
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 	gs_app_set_state (app, GS_APP_STATE_LOCAL);
-	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
+#if PK_CHECK_VERSION(0,9,1)
+	if (pk_details_get_summary (item))
+		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
+				 pk_details_get_summary (item));
+	else
+#endif
+		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
 	gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
 	gs_app_set_metadata (app, "PackageKit::local-filename", filename);
 	gs_app_set_origin (app, basename);
