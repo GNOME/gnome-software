@@ -715,6 +715,11 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		break;
 	}
 
+	/* don't show missing history on a local file */
+	if (gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL &&
+	    history->len == 0)
+		gtk_widget_set_visible (widget, FALSE);
+
 	/* are we trying to replace something in the baseos */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "infobar_details_package_baseos"));
 	switch (gs_app_get_kind (priv->app)) {
