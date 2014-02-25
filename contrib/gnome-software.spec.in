@@ -11,9 +11,8 @@ URL:       https://wiki.gnome.org/Apps/Software
 Source0:   http://download.gnome.org/sources/gnome-software/3.9/%{name}-%{version}.tar.xz
 Source1:   http://people.freedesktop.org/~hughsient/temp/fedora-%{?distrotag}.xml.gz
 Source2:   http://people.freedesktop.org/~hughsient/temp/fedora-%{?distrotag}-icons.tar.gz
-Source3:   http://people.freedesktop.org/~hughsient/temp/fedora-20-codecs.xml
 
-Requires:  epiphany
+Requires:  epiphany-runtime
 Requires:  PackageKit
 Requires:  gnome-icon-theme
 Requires:  gnome-icon-theme-symbolic >= 3.10.1
@@ -53,7 +52,6 @@ make %{?_smp_mflags}
 # install AppStream data for Fedora
 %__mkdir_p %{buildroot}%{_datadir}/app-info/xmls
 %__cp %{SOURCE1} %{buildroot}%{_datadir}/app-info/xmls
-%__cp %{SOURCE3} %{buildroot}%{_datadir}/app-info/xmls
 
 # decompress and install AppStream icons
 %__mkdir_p %{buildroot}%{_datadir}/app-info/icons/fedora-%{?distrotag}
