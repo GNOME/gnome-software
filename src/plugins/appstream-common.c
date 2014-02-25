@@ -64,8 +64,10 @@ appstream_tag_from_string (const gchar *element_name)
 		return APPSTREAM_TAG_MIMETYPES;
 	if (g_strcmp0 (element_name, "mimetype") == 0)
 		return APPSTREAM_TAG_MIMETYPE;
-	if (g_strcmp0 (element_name, "licence") == 0)
-		return APPSTREAM_TAG_LICENCE;
+	if (g_strcmp0 (element_name, "licence") == 0) /* the deprecated name */
+		return APPSTREAM_TAG_PROJECT_LICENSE;
+	if (g_strcmp0 (element_name, "project_license") == 0)
+		return APPSTREAM_TAG_PROJECT_LICENSE;
 	if (g_strcmp0 (element_name, "screenshots") == 0)
 		return APPSTREAM_TAG_SCREENSHOTS;
 	if (g_strcmp0 (element_name, "screenshot") == 0)
@@ -121,8 +123,8 @@ appstream_tag_to_string (AppstreamTag tag)
 		return "mimetypes";
 	if (tag == APPSTREAM_TAG_MIMETYPE)
 		return "mimetype";
-	if (tag == APPSTREAM_TAG_LICENCE)
-		return "licence";
+	if (tag == APPSTREAM_TAG_PROJECT_LICENSE)
+		return "project_license";
 	if (tag == APPSTREAM_TAG_SCREENSHOTS)
 		return "screenshots";
 	if (tag == APPSTREAM_TAG_SCREENSHOT)

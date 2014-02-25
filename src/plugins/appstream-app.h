@@ -60,7 +60,7 @@ const gchar	*appstream_app_get_summary		(AppstreamApp	*app);
 const gchar	*appstream_app_get_project_group	(AppstreamApp	*app);
 GHashTable	*appstream_app_get_urls			(AppstreamApp	*app);
 GPtrArray	*appstream_app_get_keywords		(AppstreamApp	*app);
-const gchar	*appstream_app_get_licence		(AppstreamApp	*app);
+const gchar	*appstream_app_get_project_license	(AppstreamApp	*app);
 const gchar	*appstream_app_get_description		(AppstreamApp	*app);
 const gchar	*appstream_app_get_icon			(AppstreamApp	*app);
 gboolean	 appstream_app_has_category		(AppstreamApp	*app,
@@ -90,8 +90,8 @@ void		 appstream_app_add_url			(AppstreamApp	*app,
 							 const gchar	*kind,
 							 const gchar	*summary,
 							 gsize		 length);
-void		 appstream_app_set_licence		(AppstreamApp	*app,
-							 const gchar	*licence,
+void		 appstream_app_set_project_license	(AppstreamApp	*app,
+							 const gchar	*project_license,
 							 gsize		 length);
 void		 appstream_app_set_project_group	(AppstreamApp	*app,
 							 const gchar	*project_group,

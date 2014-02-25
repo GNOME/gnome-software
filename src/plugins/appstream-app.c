@@ -41,7 +41,7 @@ struct AppstreamApp
 	gchar			*description;
 	gchar			*description_lang;
 	GHashTable		*urls;
-	gchar			*licence;
+	gchar			*project_license;
 	gchar			*project_group;
 	gchar			*icon;
 	AppstreamAppIconKind	 icon_kind;
@@ -83,7 +83,7 @@ appstream_app_free (AppstreamApp *app)
 	g_free (app->id);
 	g_ptr_array_unref (app->pkgnames);
 	g_hash_table_unref (app->urls);
-	g_free (app->licence);
+	g_free (app->project_license);
 	g_free (app->project_group);
 	g_free (app->icon);
 	g_free (app->name);
@@ -212,12 +212,12 @@ appstream_app_get_keywords (AppstreamApp *app)
 }
 
 /**
- * appstream_app_get_licence:
+ * appstream_app_get_project_license:
  */
 const gchar *
-appstream_app_get_licence (AppstreamApp *app)
+appstream_app_get_project_license (AppstreamApp *app)
 {
-	return app->licence;
+	return app->project_license;
 }
 
 /**
@@ -398,14 +398,14 @@ appstream_app_add_url (AppstreamApp *app,
 }
 
 /**
- * appstream_app_set_licence:
+ * appstream_app_set_project_license:
  */
 void
-appstream_app_set_licence (AppstreamApp *app,
-			   const gchar *licence,
-			   gsize length)
+appstream_app_set_project_license (AppstreamApp *app,
+				   const gchar *project_license,
+				   gsize length)
 {
-	app->licence = g_strndup (licence, length);
+	app->project_license = g_strndup (project_license, length);
 }
 
 /**

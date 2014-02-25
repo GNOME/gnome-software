@@ -565,8 +565,8 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	}
 
 	/* set licence */
-	if (appstream_app_get_licence (item) != NULL && gs_app_get_licence (app) == NULL)
-		gs_app_set_licence (app, appstream_app_get_licence (item));
+	if (appstream_app_get_project_license (item) != NULL && gs_app_get_licence (app) == NULL)
+		gs_app_set_licence (app, appstream_app_get_project_license (item));
 
 	/* set keywords */
 	if (appstream_app_get_keywords (item) != NULL &&
