@@ -1385,7 +1385,19 @@ gs_app_get_metadata_item (GsApp *app, const gchar *key)
 void
 gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 {
+	const gchar *found;
+
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* check we're not overwriting */
+	found = g_hash_table_lookup (app->priv->metadata, key);
+	if (found != NULL) {
+		if (g_strcmp0 (found, value) == 0)
+			return;
+		g_warning ("tried overwriting key %s from %s to %s",
+			   key, found, value);
+		return;
+	}
 	g_hash_table_insert (app->priv->metadata,
 			     g_strdup (key),
 			     g_strdup (value));
