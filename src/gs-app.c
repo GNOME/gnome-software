@@ -1389,6 +1389,12 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 
 	g_return_if_fail (GS_IS_APP (app));
 
+	/* if no value, then remove the key */
+	if (value == NULL) {
+		g_hash_table_remove (app->priv->metadata, key);
+		return;
+	}
+
 	/* check we're not overwriting */
 	found = g_hash_table_lookup (app->priv->metadata, key);
 	if (found != NULL) {

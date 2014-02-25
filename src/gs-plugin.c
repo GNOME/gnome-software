@@ -142,12 +142,16 @@ gs_plugin_list_filter (GList **list, GsPluginListFilter func, gpointer user_data
  * gs_plugin_list_randomize_cb:
  */
 static gint
-gs_plugin_list_randomize_cb (gconstpointer a, gconstpointer b)
+gs_plugin_list_randomize_cb (gconstpointer a, gconstpointer b, gpointer user_data)
 {
 	const gchar *k1;
 	const gchar *k2;
-	k1 = gs_app_get_metadata_item (GS_APP (a), "Plugin::sort-key");
-	k2 = gs_app_get_metadata_item (GS_APP (b), "Plugin::sort-key");
+	gchar *key;
+
+	key = g_strdup_printf ("Plugin::sort-key[%p]", user_data);
+	k1 = gs_app_get_metadata_item (GS_APP (a), key);
+	k2 = gs_app_get_metadata_item (GS_APP (b), key);
+	g_free (key);
 	return g_strcmp0 (k1, k2);
 }
 
@@ -163,8 +167,10 @@ gs_plugin_list_randomize (GList **list)
 	GList *l;
 	GRand *rand;
 	GsApp *app;
+	gchar *key;
 	gchar sort_key[] = { '\0', '\0', '\0', '\0' };
 
+	key = g_strdup_printf ("Plugin::sort-key[%p]", list);
 	rand = g_rand_new ();
 	date = g_date_time_new_now_utc ();
 	g_rand_set_seed (rand, g_date_time_get_day_of_year (date));
@@ -173,10 +179,14 @@ gs_plugin_list_randomize (GList **list)
 		sort_key[0] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
 		sort_key[1] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
 		sort_key[2] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
-		gs_app_set_metadata (app, "Plugin::sort-key", sort_key);
+		gs_app_set_metadata (app, key, sort_key);
 	}
-	*list = g_list_sort (*list, gs_plugin_list_randomize_cb);
-
+	*list = g_list_sort_with_data (*list, gs_plugin_list_randomize_cb, list);
+	for (l = *list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		gs_app_set_metadata (app, key, NULL);
+	}
+	g_free (key);
 	g_rand_free (rand);
 	g_date_time_unref (date);
 }
