@@ -494,6 +494,12 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
+	if (gs_app_get_kind (app) == GS_APP_KIND_NORMAL &&
+	    gs_app_get_pixbuf (app) == NULL) {
+		g_debug ("app invalid as no pixbuf %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
 	return TRUE;
 }
 
