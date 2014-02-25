@@ -135,7 +135,6 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 	gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
 				   gs_app_get_rating_kind (priv->app),
 				   gs_app_get_rating (priv->app));
-	gtk_widget_set_visible (priv->stars, TRUE);
 
 	gtk_widget_hide (priv->waiting);
 
