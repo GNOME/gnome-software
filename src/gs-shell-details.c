@@ -704,12 +704,12 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 	/* make history button insensitive if there is none */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history"));
+	history = gs_app_get_history (priv->app);
 	switch (gs_app_get_id_kind (priv->app)) {
 	case GS_APP_ID_KIND_WEBAPP:
 		gtk_widget_set_visible (widget, FALSE);
 		break;
 	default:
-		history = gs_app_get_history (priv->app);
 		gtk_widget_set_sensitive (widget, history->len > 0);
 		gtk_widget_set_visible (widget, TRUE);
 		break;
