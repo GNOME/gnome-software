@@ -767,15 +767,18 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 				       text, text_len);
 		break;
 	case APPSTREAM_TAG_PROJECT_LICENSE:
-		if (helper->item_temp == NULL ||
-		    appstream_app_get_project_license (helper->item_temp) != NULL) {
+		if (helper->item_temp == NULL) {
 			g_set_error_literal (error,
 					     APPSTREAM_CACHE_ERROR,
 					     APPSTREAM_CACHE_ERROR_FAILED,
 					     "item_temp license invalid");
 			return;
 		}
-		appstream_app_set_project_license (helper->item_temp, text, text_len);
+		if (appstream_app_get_project_license (helper->item_temp) == NULL) {
+			appstream_app_set_project_license (helper->item_temp,
+							   text,
+							   text_len);
+		}
 		break;
 	case APPSTREAM_TAG_DESCRIPTION:
 		appstream_markup_add_content (helper->markup, text, text_len);
