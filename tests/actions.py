@@ -16,42 +16,45 @@ from dogtail.tree import *
 from dogtail.utils import *
 from dogtail.procedural import *
 
-run('gnome-software')
+try:
+    run('gnome-software')
 
-app = root.application('gnome-software');
+    app = root.application('gnome-software');
 
-bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
-proxy = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE,
-                               None,
-                               'org.gnome.Software',
-                               '/org/gnome/Software',
-                               'org.gtk.Application')
-proxy.call_sync('Activate', GLib.Variant('(a{sv})', ({},)), 0, -1, None)
+    bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
+    proxy = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE,
+                                   None,
+                                   'org.gnome.Software',
+                                   '/org/gnome/Software',
+                                   'org.gtk.Application')
+    proxy.call_sync('Activate', GLib.Variant('(a{sv})', ({},)), 0, -1, None)
 
-doDelay(1)
-assert (len(app.children) == 1)
+    doDelay(1)
+    assert (len(app.children) == 1)
 
-dbus_actions = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE,
-                                      None,
-                                      'org.gnome.Software',
-                                      '/org/gnome/Software',
-                                      'org.gtk.Actions')
+    dbus_actions = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE,
+                                          None,
+                                          'org.gnome.Software',
+                                          '/org/gnome/Software',
+                                          'org.gtk.Actions')
 
-names = dbus_actions.call_sync('List', None, 0, -1, None).unpack()[0]
-assert (u'quit' in names)
-assert (u'about' in names)
+    names = dbus_actions.call_sync('List', None, 0, -1, None).unpack()[0]
+    assert (u'quit' in names)
+    assert (u'about' in names)
 
-dbus_actions.call_sync('Activate',
-                       GLib.Variant('(sava{sv})', (u'about', [], {})),
-                       0, -1, None)
+    dbus_actions.call_sync('Activate',
+                           GLib.Variant('(sava{sv})', (u'about', [], {})),
+                           0, -1, None)
 
-doDelay (1)
-assert (len(app.children) == 2)
-app.dialog('About Software').child('Close').click()
-doDelay (1)
-assert (len(app.children) == 1)
+    doDelay (1)
+    assert (len(app.children) == 2)
+    app.dialog('About Software').child('Close').click()
+    doDelay (1)
+    assert (len(app.children) == 1)
 
-dbus_actions.call_sync('Activate',
-                       GLib.Variant('(sava{sv})', (u'quit', [], {})),
-                       0, -1, None)
-assert (len(app.children) == 0)
+    dbus_actions.call_sync('Activate',
+                           GLib.Variant('(sava{sv})', (u'quit', [], {})),
+                           0, -1, None)
+    assert (len(app.children) == 0)
+finally:
+    os.system("killall gnome-software")
