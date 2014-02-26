@@ -25,7 +25,6 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-tile.h"
-#include "gs-star-widget.h"
 
 struct _GsAppTilePrivate
 {
@@ -36,7 +35,6 @@ struct _GsAppTilePrivate
 	GtkWidget	*summary;
 	GtkWidget	*eventbox;
 	GtkWidget	*waiting;
-	GtkWidget	*stars;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppTile, gs_app_tile, GTK_TYPE_BIN)
@@ -132,9 +130,6 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 	if (!app)
 		return;
 	priv->app = g_object_ref (app);
-	gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
-				   gs_app_get_rating_kind (priv->app),
-				   gs_app_get_rating (priv->app));
 
 	gtk_widget_hide (priv->waiting);
 
@@ -184,7 +179,6 @@ gs_app_tile_init (GsAppTile *tile)
 	priv = gs_app_tile_get_instance_private (tile);
 	g_signal_connect_swapped (priv->button, "clicked",
 				  G_CALLBACK (button_clicked), tile);
-	gs_star_widget_set_icon_size (GS_STAR_WIDGET (priv->stars), 12);
 }
 
 static void
@@ -210,7 +204,6 @@ gs_app_tile_class_init (GsAppTileClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, summary);
         gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, eventbox);
         gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, waiting);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, stars);
 }
 
 GtkWidget *
