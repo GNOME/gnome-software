@@ -18,7 +18,7 @@ from dogtail.procedural import *
 
 run('gnome-software')
 
-app = root.application('org.gnome.Software');
+app = root.application('gnome-software');
 
 bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
 proxy = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE,
