@@ -129,6 +129,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	for (i = 0; apps[i]; i++) {
 		app = gs_app_new (apps[i]);
 		gs_plugin_add_app (list, app);
+		gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
 		g_object_unref (app);
 	}
 out:
