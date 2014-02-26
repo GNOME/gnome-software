@@ -95,6 +95,7 @@ struct GsAppPrivate
 	GHashTable		*related_hash; /* of "id-source" */
 	GPtrArray		*history; /* of GsApp */
 	guint64			 install_date;
+	guint64			 kudos;
 };
 
 enum {
@@ -224,6 +225,14 @@ gs_app_to_string (GsApp *app)
 				gs_app_state_to_string (priv->state));
 	if (priv->id_full != NULL)
 		g_string_append_printf (str, "\tid:\t%s\n", priv->id_full);
+	if ((priv->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
+		g_string_append (str, "\tkudo:\tmy-language\n");
+	if ((priv->kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
+		g_string_append (str, "\tkudo:\trecent-release\n");
+	if ((priv->kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
+		g_string_append (str, "\tkudo:\tfeatured-recommended\n");
+	if ((priv->kudos & GS_APP_KUDO_INTEGRATION) > 0)
+		g_string_append (str, "\tkudo:\tintegration\n");
 	if (priv->name != NULL)
 		g_string_append_printf (str, "\tname:\t%s\n", priv->name);
 	if (priv->icon != NULL)
@@ -1555,6 +1564,26 @@ gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
 }
 
 /**
+ * gs_app_add_kudo:
+ */
+void
+gs_app_add_kudo (GsApp *app, GsAppKudo kudo)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	app->priv->kudos |= kudo;
+}
+
+/**
+ * gs_app_get_kudos:
+ */
+guint64
+gs_app_get_kudos (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), 0);
+	return app->priv->kudos;
+}
+
+/**
  * gs_app_subsume:
  *
  * Imports all the useful data from @other into @app.
@@ -1608,6 +1637,7 @@ gs_app_subsume (GsApp *app, GsApp *other)
 		app_tmp = g_ptr_array_index (priv2->related, i);
 		gs_app_add_related (app, app_tmp);
 	}
+	priv->kudos |= priv2->kudos;
 
 	/* also metadata */
 	keys = g_hash_table_get_keys (priv2->metadata);

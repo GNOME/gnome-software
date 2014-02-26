@@ -97,6 +97,14 @@ typedef enum {
 	GS_APP_RATING_KIND_LAST
 } GsAppRatingKind;
 
+typedef enum {
+	GS_APP_KUDO_MY_LANGUAGE			= 1 << 0,
+	GS_APP_KUDO_RECENT_RELEASE		= 1 << 1,
+	GS_APP_KUDO_FEATURED_RECOMMENDED	= 1 << 2,
+	GS_APP_KUDO_INTEGRATION			= 1 << 3,
+	GS_APP_KUDO_LAST
+} GsAppKudo;
+
 #define	GS_APP_INSTALL_DATE_UNSET		0
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
 #define	GS_APP_SIZE_UNKNOWN			0
@@ -246,6 +254,9 @@ void		 gs_app_add_category		(GsApp		*app,
 GPtrArray	*gs_app_get_keywords		(GsApp		*app);
 void		 gs_app_set_keywords		(GsApp		*app,
 						 GPtrArray	*keywords);
+void		 gs_app_add_kudo		(GsApp		*app,
+						 GsAppKudo	 kudo);
+guint64		 gs_app_get_kudos		(GsApp		*app);
 
 G_END_DECLS
 
