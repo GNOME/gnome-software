@@ -15,6 +15,7 @@ settings.set_boolean ("toolkit-accessibility", True)
 from dogtail.tree import *
 from dogtail.utils import *
 from dogtail.procedural import *
+from dogtail.rawinput import keyCombo
 
 try:
     run('gnome-software')
@@ -48,7 +49,7 @@ try:
 
     doDelay (1)
     assert (len(app.children) == 2)
-    app.dialog('About Software').child('Close').click()
+    keyCombo("<Esc>")
     doDelay (1)
     assert (len(app.children) == 1)
 
