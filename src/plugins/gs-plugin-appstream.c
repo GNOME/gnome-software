@@ -33,6 +33,7 @@
 struct GsPluginPrivate {
 	AppstreamCache		*cache;
 	GPtrArray		*file_monitors;
+	gchar			*locale;
 	gchar			*cachedir;
 	gsize			 done_init;
 };
@@ -305,6 +306,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_free (plugin->priv->cachedir);
+	g_free (plugin->priv->locale);
 	g_object_unref (plugin->priv->cache);
 	g_ptr_array_unref (plugin->priv->file_monitors);
 }
@@ -318,7 +320,14 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	AppstreamApp *app;
 	GPtrArray *items;
 	gboolean ret;
+	gchar *tmp;
 	guint i;
+
+	/* get the locale without the UTF-8 suffix */
+	plugin->priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
+	tmp = g_strstr_len (plugin->priv->locale, -1, ".UTF-8");
+	if (tmp != NULL)
+		*tmp = '\0';
 
 	/* clear all existing file monitors */
 	g_ptr_array_set_size (plugin->priv->file_monitors, 0);
@@ -609,6 +618,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 
 	/* set screenshots */
 	gs_plugin_refine_add_screenshots (app, item);
+
+	/* is available in my language */
+	g_debug ("looking for %s", plugin->priv->locale);
+	if (appstream_app_has_locale (item, plugin->priv->locale) > 50)
+		gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 
 	return ret;
 }
