@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -200,6 +200,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_MIMETYPES:
 	case APPSTREAM_TAG_MIMETYPE:
 	case APPSTREAM_TAG_PRIORITY:
+	case APPSTREAM_TAG_LANGUAGES:
 		/* ignore */
 		break;
 	case APPSTREAM_TAG_ID:
@@ -259,6 +260,32 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			kind = appstream_screenshot_kind_from_string (tmp);
 			appstream_screenshot_set_kind (helper->screenshot, kind);
 		}
+		break;
+
+	case APPSTREAM_TAG_LANG:
+		if (helper->tag != APPSTREAM_TAG_LANGUAGES) {
+			g_set_error (error,
+				     APPSTREAM_CACHE_ERROR,
+				     APPSTREAM_CACHE_ERROR_FAILED,
+				     "XML start %s invalid, tag %s",
+				     element_name,
+				     appstream_tag_to_string (helper->tag));
+			return;
+		}
+
+		/* get the lang percentage */
+		for (i = 0; attribute_names[i] != NULL; i++) {
+			if (g_strcmp0 (attribute_names[i], "percentage") == 0) {
+				tmp = attribute_values[i];
+				break;
+			}
+		}
+
+		/* save language percentage */
+		if (tmp == NULL)
+			helper->priority = 100;
+		else
+			helper->priority = atoi (tmp);
 		break;
 	case APPSTREAM_TAG_CAPTION:
 		if (helper->screenshot == NULL ||
@@ -564,6 +591,12 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		helper->screenshot = NULL;
 		helper->tag = APPSTREAM_TAG_SCREENSHOTS;
 		break;
+	case APPSTREAM_TAG_LANG:
+		helper->tag = APPSTREAM_TAG_LANGUAGES;
+		break;
+	case APPSTREAM_TAG_LANGUAGES:
+		helper->tag = APPSTREAM_TAG_APPLICATION;
+		break;
 	case APPSTREAM_TAG_ID:
 	case APPSTREAM_TAG_PKGNAME:
 	case APPSTREAM_TAG_APPCATEGORIES:
@@ -780,6 +813,19 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 						  helper->lang_temp,
 						  text,
 						  text_len);
+		break;
+	case APPSTREAM_TAG_LANG:
+		if (helper->item_temp == NULL) {
+			g_set_error_literal (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "lang not started");
+			return;
+		}
+		appstream_app_add_locale (helper->item_temp,
+					  text,
+					  text_len,
+					  helper->priority);
 		break;
 	default:
 		/* ignore unknown entries */

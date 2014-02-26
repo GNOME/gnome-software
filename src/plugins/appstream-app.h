@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -112,6 +112,12 @@ void		 appstream_app_add_keyword		(AppstreamApp	*app,
 void		 appstream_app_add_mimetype		(AppstreamApp	*app,
 							 const gchar	*mimetype,
 							 gsize		 length);
+void		 appstream_app_add_locale		(AppstreamApp	*app,
+							 const gchar	*locale,
+							 gsize		 length,
+							 guint		 percentage);
+guint		 appstream_app_has_locale		(AppstreamApp	*app,
+							 const gchar	*locale);
 void		 appstream_app_add_desktop_core		(AppstreamApp	*app,
 							 const gchar	*desktop,
 							 gsize		 length);

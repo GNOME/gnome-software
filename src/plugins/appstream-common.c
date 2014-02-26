@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -82,6 +82,10 @@ appstream_tag_from_string (const gchar *element_name)
 		return APPSTREAM_TAG_PRIORITY;
 	if (g_strcmp0 (element_name, "caption") == 0)
 		return APPSTREAM_TAG_CAPTION;
+	if (g_strcmp0 (element_name, "languages") == 0)
+		return APPSTREAM_TAG_LANGUAGES;
+	if (g_strcmp0 (element_name, "lang") == 0)
+		return APPSTREAM_TAG_LANG;
 	return APPSTREAM_TAG_UNKNOWN;
 }
 
@@ -139,6 +143,10 @@ appstream_tag_to_string (AppstreamTag tag)
 		return "priority";
 	if (tag == APPSTREAM_TAG_CAPTION)
 		return "caption";
+	if (tag == APPSTREAM_TAG_LANGUAGES)
+		return "languages";
+	if (tag == APPSTREAM_TAG_LANG)
+		return "lang";
 	return NULL;
 }
 

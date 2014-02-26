@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -52,6 +52,8 @@ typedef enum {
 	APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP,
 	APPSTREAM_TAG_PRIORITY,
 	APPSTREAM_TAG_CAPTION,
+	APPSTREAM_TAG_LANGUAGES,
+	APPSTREAM_TAG_LANG,
 	APPSTREAM_TAG_LAST
 } AppstreamTag;
 

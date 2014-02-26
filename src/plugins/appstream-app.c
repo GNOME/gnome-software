@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -41,6 +41,7 @@ struct AppstreamApp
 	gchar			*description;
 	gchar			*description_lang;
 	GHashTable		*urls;
+	GHashTable		*languages;
 	gchar			*project_license;
 	gchar			*project_group;
 	gchar			*icon;
@@ -83,6 +84,7 @@ appstream_app_free (AppstreamApp *app)
 	g_free (app->id);
 	g_ptr_array_unref (app->pkgnames);
 	g_hash_table_unref (app->urls);
+	g_hash_table_unref (app->languages);
 	g_free (app->project_license);
 	g_free (app->project_group);
 	g_free (app->icon);
@@ -140,6 +142,7 @@ appstream_app_new (void)
 	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_screenshot_free);
 	app->token_cache = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_app_token_item_free);
 	app->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
+	app->languages = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	app->name_value = G_MAXUINT;
 	app->summary_value = G_MAXUINT;
 	app->icon_kind = APPSTREAM_APP_ICON_KIND_UNKNOWN;
@@ -480,6 +483,34 @@ appstream_app_add_mimetype (AppstreamApp *app,
 {
 	g_ptr_array_add (app->mimetypes,
 			 g_strndup (mimetype, length));
+}
+
+/**
+ * appstream_app_add_locale:
+ */
+void
+appstream_app_add_locale (AppstreamApp *app,
+			  const gchar *locale,
+			  gsize length,
+			  guint percentage)
+{
+	if (percentage < 50)
+		return;
+	g_hash_table_insert (app->languages,
+			     g_strndup (locale, length),
+			     GUINT_TO_POINTER (percentage));
+}
+
+/**
+ * appstream_app_has_locale:
+ */
+guint
+appstream_app_has_locale (AppstreamApp *app,
+			  const gchar *locale)
+{
+	gpointer found;
+	found = g_hash_table_lookup (app->languages, locale);
+	return GPOINTER_TO_UINT (found);
 }
 
 /**
