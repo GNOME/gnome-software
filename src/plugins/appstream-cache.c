@@ -288,6 +288,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 		else
 			helper->priority = atoi (tmp);
 		break;
+
 	case APPSTREAM_TAG_CAPTION:
 		if (helper->screenshot == NULL ||
 		    helper->tag != APPSTREAM_TAG_SCREENSHOT) {
@@ -311,6 +312,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			return;
 		if (!helper->lang_temp)
 			helper->lang_temp = g_strdup ("C");
+		break;
 
 	case APPSTREAM_TAG_VALUE:
 		if (helper->tag != APPSTREAM_TAG_METADATA) {
@@ -332,6 +334,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 						  "key", &helper->lang_temp,
 						  G_MARKUP_COLLECT_INVALID))
 			return;
+		break;
 
 	case APPSTREAM_TAG_IMAGE:
 		if (helper->item_temp == NULL ||
