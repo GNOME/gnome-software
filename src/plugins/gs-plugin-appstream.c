@@ -486,6 +486,7 @@ gs_plugin_refine_add_screenshots (GsApp *app, AppstreamApp *item)
 		return;
 
 	/* does the app already have some */
+	gs_app_add_kudo (app, GS_APP_KUDO_HAS_SCREENSHOTS);
 	if (gs_app_get_screenshots(app)->len > 0)
 		return;
 

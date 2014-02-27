@@ -243,6 +243,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append (str, "\tkudo:\tuses-app-menu\n");
 	if ((priv->kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
 		g_string_append (str, "\tkudo:\thas-keywords\n");
+	if ((priv->kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
+		g_string_append (str, "\tkudo:\thas-screenshots\n");
 	g_string_append_printf (str, "\tkudo-percentage:\t%i\n",
 				gs_app_get_kudos_percentage (app));
 	if (priv->name != NULL)
@@ -1632,6 +1634,8 @@ gs_app_get_kudos_percentage (GsApp *app)
 		percentage += 5;
 	if ((app->priv->kudos & GS_APP_KUDO_USES_APP_MENU) > 0)
 		percentage += 10;
+	if ((app->priv->kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
+		percentage += 20;
 	return MIN (percentage, 100);
 }
 

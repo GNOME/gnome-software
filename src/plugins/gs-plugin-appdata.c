@@ -250,6 +250,7 @@ appdata_parse_text_cb (GMarkupParseContext *context,
 		appstream_markup_add_content (helper->markup, text, text_len);
 		break;
 	case APPSTREAM_TAG_SCREENSHOT:
+		gs_app_add_kudo (helper->app, GS_APP_KUDO_HAS_SCREENSHOTS);
 		/* FIXME: actually add to API */
 		//tmp = appstream_xml_unmunge (text, text_len);
 		//gs_app_add_screenshot (helper->app, tmp);
