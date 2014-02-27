@@ -21,6 +21,7 @@
 
 #include <config.h>
 #include <glib/gi18n.h>
+#include <locale.h>
 
 #include <gs-plugin.h>
 #include <gs-plugin-loader.h>
