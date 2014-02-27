@@ -231,8 +231,18 @@ gs_app_to_string (GsApp *app)
 		g_string_append (str, "\tkudo:\trecent-release\n");
 	if ((priv->kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
 		g_string_append (str, "\tkudo:\tfeatured-recommended\n");
-	if ((priv->kudos & GS_APP_KUDO_INTEGRATION) > 0)
-		g_string_append (str, "\tkudo:\tintegration\n");
+	if ((priv->kudos & GS_APP_KUDO_MODERN_TOOLKIT) > 0)
+		g_string_append (str, "\tkudo:\tmodern-toolkit\n");
+	if ((priv->kudos & GS_APP_KUDO_SEARCH_PROVIDER) > 0)
+		g_string_append (str, "\tkudo:\tsearch-provider\n");
+	if ((priv->kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0)
+		g_string_append (str, "\tkudo:\tinstalls-user-docs\n");
+	if ((priv->kudos & GS_APP_KUDO_USES_NOTIFICATIONS) > 0)
+		g_string_append (str, "\tkudo:\tuses-notifications\n");
+	if ((priv->kudos & GS_APP_KUDO_USES_APP_MENU) > 0)
+		g_string_append (str, "\tkudo:\tuses-app-menu\n");
+	if ((priv->kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
+		g_string_append (str, "\tkudo:\thas-keywords\n");
 	if (priv->name != NULL)
 		g_string_append_printf (str, "\tname:\t%s\n", priv->name);
 	if (priv->icon != NULL)

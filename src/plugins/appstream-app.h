@@ -112,6 +112,12 @@ void		 appstream_app_add_keyword		(AppstreamApp	*app,
 void		 appstream_app_add_mimetype		(AppstreamApp	*app,
 							 const gchar	*mimetype,
 							 gsize		 length);
+void		 appstream_app_add_metadata		(AppstreamApp	*app,
+							 const gchar	*key,
+							 const gchar	*value,
+							 gsize		 length);
+const gchar	*appstream_app_get_metadata_item	(AppstreamApp	*app,
+							 const gchar	*key);
 void		 appstream_app_add_locale		(AppstreamApp	*app,
 							 const gchar	*locale,
 							 gsize		 length,

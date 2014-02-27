@@ -86,6 +86,10 @@ appstream_tag_from_string (const gchar *element_name)
 		return APPSTREAM_TAG_LANGUAGES;
 	if (g_strcmp0 (element_name, "lang") == 0)
 		return APPSTREAM_TAG_LANG;
+	if (g_strcmp0 (element_name, "metadata") == 0)
+		return APPSTREAM_TAG_METADATA;
+	if (g_strcmp0 (element_name, "value") == 0)
+		return APPSTREAM_TAG_VALUE;
 	return APPSTREAM_TAG_UNKNOWN;
 }
 
@@ -147,6 +151,10 @@ appstream_tag_to_string (AppstreamTag tag)
 		return "languages";
 	if (tag == APPSTREAM_TAG_LANG)
 		return "lang";
+	if (tag == APPSTREAM_TAG_METADATA)
+		return "metadata";
+	if (tag == APPSTREAM_TAG_VALUE)
+		return "value";
 	return NULL;
 }
 

@@ -198,6 +198,7 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_KEYWORDS:
 	case APPSTREAM_TAG_KEYWORD:
 	case APPSTREAM_TAG_MIMETYPES:
+	case APPSTREAM_TAG_METADATA:
 	case APPSTREAM_TAG_MIMETYPE:
 	case APPSTREAM_TAG_PRIORITY:
 	case APPSTREAM_TAG_LANGUAGES:
@@ -310,6 +311,27 @@ appstream_cache_start_element_cb (GMarkupParseContext *context,
 			return;
 		if (!helper->lang_temp)
 			helper->lang_temp = g_strdup ("C");
+
+	case APPSTREAM_TAG_VALUE:
+		if (helper->tag != APPSTREAM_TAG_METADATA) {
+			g_set_error (error,
+				     APPSTREAM_CACHE_ERROR,
+				     APPSTREAM_CACHE_ERROR_FAILED,
+				     "XML start %s invalid, tag %s",
+				     element_name,
+				     appstream_tag_to_string (helper->tag));
+			return;
+		}
+
+		/* get lang */
+		if (!g_markup_collect_attributes (element_name,
+						  attribute_names,
+						  attribute_values,
+						  error,
+						  G_MARKUP_COLLECT_STRDUP,
+						  "key", &helper->lang_temp,
+						  G_MARKUP_COLLECT_INVALID))
+			return;
 
 	case APPSTREAM_TAG_IMAGE:
 		if (helper->item_temp == NULL ||
@@ -603,6 +625,7 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
 	case APPSTREAM_TAG_KEYWORDS:
 	case APPSTREAM_TAG_MIMETYPES:
+	case APPSTREAM_TAG_METADATA:
 	case APPSTREAM_TAG_PROJECT_LICENSE:
 	case APPSTREAM_TAG_ICON:
 		helper->tag = APPSTREAM_TAG_APPLICATION;
@@ -623,6 +646,11 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		break;
 	case APPSTREAM_TAG_PRIORITY:
 		helper->tag = APPSTREAM_TAG_APPLICATIONS;
+		break;
+	case APPSTREAM_TAG_VALUE:
+		g_free (helper->lang_temp);
+		helper->lang_temp = NULL;
+		helper->tag = APPSTREAM_TAG_METADATA;
 		break;
 	default:
 		/* ignore unknown entries */
@@ -650,6 +678,7 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 	case APPSTREAM_TAG_APPCATEGORIES:
 	case APPSTREAM_TAG_KEYWORDS:
 	case APPSTREAM_TAG_MIMETYPES:
+	case APPSTREAM_TAG_METADATA:
 		/* ignore */
 		break;
 	case APPSTREAM_TAG_PRIORITY:
@@ -691,6 +720,19 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 			return;
 		}
 		appstream_app_add_mimetype (helper->item_temp, text, text_len);
+		break;
+	case APPSTREAM_TAG_VALUE:
+		if (helper->item_temp == NULL) {
+			g_set_error_literal (error,
+					     APPSTREAM_CACHE_ERROR,
+					     APPSTREAM_CACHE_ERROR_FAILED,
+					     "item_temp mimetype invalid");
+			return;
+		}
+		appstream_app_add_metadata (helper->item_temp,
+					    helper->lang_temp,
+					    text,
+					    text_len);
 		break;
 	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
 		if (helper->item_temp == NULL) {

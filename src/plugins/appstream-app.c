@@ -42,6 +42,7 @@ struct AppstreamApp
 	gchar			*description_lang;
 	GHashTable		*urls;
 	GHashTable		*languages;
+	GHashTable		*metadata;
 	gchar			*project_license;
 	gchar			*project_group;
 	gchar			*icon;
@@ -85,6 +86,7 @@ appstream_app_free (AppstreamApp *app)
 	g_ptr_array_unref (app->pkgnames);
 	g_hash_table_unref (app->urls);
 	g_hash_table_unref (app->languages);
+	g_hash_table_unref (app->metadata);
 	g_free (app->project_license);
 	g_free (app->project_group);
 	g_free (app->icon);
@@ -143,6 +145,7 @@ appstream_app_new (void)
 	app->token_cache = g_ptr_array_new_with_free_func ((GDestroyNotify) appstream_app_token_item_free);
 	app->urls = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	app->languages = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	app->metadata = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, g_free);
 	app->name_value = G_MAXUINT;
 	app->summary_value = G_MAXUINT;
 	app->icon_kind = APPSTREAM_APP_ICON_KIND_UNKNOWN;
@@ -483,6 +486,29 @@ appstream_app_add_mimetype (AppstreamApp *app,
 {
 	g_ptr_array_add (app->mimetypes,
 			 g_strndup (mimetype, length));
+}
+
+/**
+ * appstream_app_add_metadata:
+ */
+void
+appstream_app_add_metadata (AppstreamApp *app,
+			    const gchar *key,
+			    const gchar *value,
+			    gsize length)
+{
+	g_hash_table_insert (app->metadata,
+			     g_strdup (key),
+			     g_strndup (value, length));
+}
+
+/**
+ * appstream_app_get_metadata_item:
+ */
+const gchar *
+appstream_app_get_metadata_item (AppstreamApp *app, const gchar *key)
+{
+	return g_hash_table_lookup (app->metadata, key);
 }
 
 /**

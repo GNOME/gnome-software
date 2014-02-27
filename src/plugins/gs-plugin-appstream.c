@@ -580,8 +580,10 @@ gs_plugin_refine_item (GsPlugin *plugin,
 
 	/* set keywords */
 	if (appstream_app_get_keywords (item) != NULL &&
-	    gs_app_get_keywords (app) == NULL)
+	    gs_app_get_keywords (app) == NULL) {
 		gs_app_set_keywords (app, appstream_app_get_keywords (item));
+		gs_app_add_kudo (app, GS_APP_KUDO_HAS_KEYWORDS);
+	}
 
 	/* set description */
 	if (appstream_app_get_description (item) != NULL) {
@@ -620,10 +622,21 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* set screenshots */
 	gs_plugin_refine_add_screenshots (app, item);
 
-	/* is available in my language */
-	g_debug ("looking for %s", plugin->priv->locale);
+	/* add kudos */
 	if (appstream_app_has_locale (item, plugin->priv->locale) > 50)
 		gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
+	if (appstream_app_get_metadata_item (item, "X-Kudo-GTK3") != NULL)
+		gs_app_add_kudo (app, GS_APP_KUDO_MODERN_TOOLKIT);
+	if (appstream_app_get_metadata_item (item, "X-Kudo-SearchProvider") != NULL)
+		gs_app_add_kudo (app, GS_APP_KUDO_SEARCH_PROVIDER);
+	if (appstream_app_get_metadata_item (item, "X-Kudo-InstallsUserDocs") != NULL)
+		gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
+	if (appstream_app_get_metadata_item (item, "X-Kudo-UsesNotifications") != NULL)
+		gs_app_add_kudo (app, GS_APP_KUDO_USES_NOTIFICATIONS);
+	if (appstream_app_get_metadata_item (item, "X-Kudo-RecentRelease") != NULL)
+		gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
+	if (appstream_app_get_metadata_item (item, "X-Kudo-UsesAppMenu") != NULL)
+		gs_app_add_kudo (app, GS_APP_KUDO_USES_APP_MENU);
 
 	return ret;
 }
