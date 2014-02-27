@@ -90,6 +90,28 @@ gs_application_has_active_window (GsApplication *application)
 static void
 gs_application_init (GsApplication *application)
 {
+	const GOptionEntry options[] = {
+		{ "mode", '\0', 0, G_OPTION_ARG_STRING, NULL,
+		  /* TRANSLATORS: this is a command line option */
+		  _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
+		{ "search", '\0', 0, G_OPTION_ARG_STRING, NULL,
+		  _("Search for applications"), _("SEARCH") },
+		{ "details", '\0', 0, G_OPTION_ARG_STRING, NULL,
+		  _("Show application details"), _("ID") },
+		{ "local-filename", '\0', 0, G_OPTION_ARG_FILENAME, NULL,
+		  _("Open a local package file"), _("FILENAME") },
+		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, NULL,
+		  _("Show verbose debugging information"), NULL },
+		{ "profile", 0, 0, G_OPTION_ARG_NONE, NULL,
+		  _("Show profiling information for the service"), NULL },
+		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, NULL,
+		  _("Prefer local file sources to AppStream"), NULL },
+		{ "version", 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL },
+		{ NULL }
+	};
+
+	g_application_add_main_option_entries (G_APPLICATION (application), options);
+
 	application->profile = gs_profile_new ();
 }
 
@@ -614,113 +636,62 @@ gs_application_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_application_parent_class)->dispose (object);
 }
 
-static gboolean
-gs_application_local_command_line (GApplication *app, gchar ***args, gint *status)
+static int
+gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 {
-	GOptionContext *context;
-	gboolean gapplication_service = FALSE;
-	gchar *mode = NULL;
-	gchar *search = NULL;
-	gchar *id = NULL;
-	gboolean activate_ui = TRUE;
-	gboolean prefer_local = FALSE;
-	gboolean version = FALSE;
-	gboolean profile = FALSE;
-	gboolean verbose = FALSE;
-	gint argc;
-	_cleanup_free_ gchar *local_filename = NULL;
-	const GOptionEntry options[] = {
-		{ "gapplication-service", '\0', 0, G_OPTION_ARG_NONE, &gapplication_service,
-		   _("Enter GApplication service mode"), NULL }, 
-		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
-		  /* TRANSLATORS: this is a command line option */
-		  _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
-		{ "search", '\0', 0, G_OPTION_ARG_STRING, &search,
-		  _("Search for applications"), _("SEARCH") },
-		{ "details", '\0', 0, G_OPTION_ARG_STRING, &id,
-		  _("Show application details"), _("ID") },
-		{ "local-filename", '\0', 0, G_OPTION_ARG_FILENAME, &local_filename,
-		  _("Open a local package file"), _("FILENAME") },
-		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
-		  _("Show verbose debugging information"), NULL },
-		{ "profile", 0, 0, G_OPTION_ARG_NONE, &profile,
-		  _("Show profiling information for the service"), NULL },
-		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
-		  _("Prefer local file sources to AppStream"), NULL },
-		{ "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
-		{ NULL}
-	};
+	const gchar *id;
+	const gchar *local_filename;
+	const gchar *mode;
+	const gchar *search;
 	_cleanup_error_free_ GError *error = NULL;
 
-	context = g_option_context_new ("");
-	g_option_context_add_main_entries (context, options, NULL);
-
-	argc = g_strv_length (*args);
-	if (!g_option_context_parse (context, &argc, args, &error)) {
-		g_printerr ("%s\n", error->message);
-		*status = 1;
-		goto out;
-	}
-
-	if (verbose)
+	if (g_variant_dict_contains (options, "verbose"))
 		g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
 	/* prefer local sources */
-	if (prefer_local)
+	if (g_variant_dict_contains (options, "prefer-local"))
 		g_setenv ("GNOME_SOFTWARE_PREFER_LOCAL", "true", TRUE);
 
-	if (version) {
+	if (g_variant_dict_contains (options, "version")) {
 		g_print ("gnome-software " VERSION "\n");
-		*status = 0;
-		goto out;
-	}
-
-	if (gapplication_service) {
-		GApplicationFlags flags;
-
-		flags = g_application_get_flags (app);
-		g_application_set_flags (app, flags | G_APPLICATION_IS_SERVICE);
-		activate_ui = FALSE;
+		return 0;
 	}
 
 	if (!g_application_register (app, NULL, &error)) {
 		g_printerr ("%s\n", error->message);
-		*status = 1;
-		goto out;
+		return 1;
 	}
 
-	if (profile) {
-		activate_ui = FALSE;
+	if (g_variant_dict_contains (options, "profile")) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"profile",
 						NULL);
+		return 0;
 	}
 
-	if (mode != NULL) {
+	if (g_variant_dict_lookup (options, "mode", "&s", &mode)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"set-mode",
 						g_variant_new_string (mode));
-	} else if (search != NULL) {
+		return 0;
+	} else if (g_variant_dict_lookup (options, "search", "&s", &search)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"search",
 						g_variant_new_string (search));
-	} else if (id != NULL) {
+		return 0;
+	} else if (g_variant_dict_lookup (options, "details", "&s", &id)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details",
 						g_variant_new ("(ss)", id, ""));
-	} else if (local_filename != NULL) {
+		return 0;
+	} else if (g_variant_dict_lookup (options, "local-filename", "^&ay", &local_filename)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"filename",
 						g_variant_new ("(s)", local_filename));
-	} else if (activate_ui) {
-		g_application_activate (app);
+		return 0;
 	}
 
-	*status = 0;
-
-out:
-	g_option_context_free (context);
-	return TRUE;
+	return -1;
 }
 
 static void
@@ -729,7 +700,7 @@ gs_application_class_init (GsApplicationClass *class)
 	G_OBJECT_CLASS (class)->dispose = gs_application_dispose;
 	G_APPLICATION_CLASS (class)->startup = gs_application_startup;
 	G_APPLICATION_CLASS (class)->activate = gs_application_activate;
-	G_APPLICATION_CLASS (class)->local_command_line = gs_application_local_command_line;
+	G_APPLICATION_CLASS (class)->handle_local_options = gs_application_handle_local_options;
 	G_APPLICATION_CLASS (class)->dbus_register = gs_application_dbus_register;
 	G_APPLICATION_CLASS (class)->dbus_unregister = gs_application_dbus_unregister;
 }
