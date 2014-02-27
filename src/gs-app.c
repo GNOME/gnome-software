@@ -243,6 +243,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append (str, "\tkudo:\tuses-app-menu\n");
 	if ((priv->kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
 		g_string_append (str, "\tkudo:\thas-keywords\n");
+	g_string_append_printf (str, "\tkudo-percentage:\t%i\n",
+				gs_app_get_kudos_percentage (app));
 	if (priv->name != NULL)
 		g_string_append_printf (str, "\tname:\t%s\n", priv->name);
 	if (priv->icon != NULL)
@@ -1603,6 +1605,34 @@ gs_app_get_kudos_weight (GsApp *app)
 	tmp = tmp - ((tmp >> 1) & 0x55555555);
 	tmp = (tmp & 0x33333333) + ((tmp >> 2) & 0x33333333);
 	return (((tmp + (tmp >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
+}
+
+/**
+ * gs_app_get_kudos_percentage:
+ */
+guint
+gs_app_get_kudos_percentage (GsApp *app)
+{
+	guint percentage = 0;
+	if ((app->priv->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
+		percentage += 20;
+	if ((app->priv->kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
+		percentage += 20;
+	if ((app->priv->kudos & GS_APP_KUDO_FEATURED_RECOMMENDED) > 0)
+		percentage += 20;
+	if ((app->priv->kudos & GS_APP_KUDO_MODERN_TOOLKIT) > 0)
+		percentage += 20;
+	if ((app->priv->kudos & GS_APP_KUDO_SEARCH_PROVIDER) > 0)
+		percentage += 10;
+	if ((app->priv->kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0)
+		percentage += 10;
+	if ((app->priv->kudos & GS_APP_KUDO_USES_NOTIFICATIONS) > 0)
+		percentage += 20;
+	if ((app->priv->kudos & GS_APP_KUDO_HAS_KEYWORDS) > 0)
+		percentage += 5;
+	if ((app->priv->kudos & GS_APP_KUDO_USES_APP_MENU) > 0)
+		percentage += 10;
+	return MIN (percentage, 100);
 }
 
 /**

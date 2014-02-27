@@ -51,7 +51,7 @@ enum {
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
-static const gint rate_to_star[] = {1, 25, 50, 75, 100, -1};
+static const gint rate_to_star[] = {20, 40, 60, 80, 100, -1};
 
 /**
  * gs_star_widget_get_rating:

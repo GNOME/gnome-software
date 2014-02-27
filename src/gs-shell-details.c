@@ -677,7 +677,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		} else {
 			gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
 						   GS_APP_RATING_KIND_KUDOS,
-						   gs_app_get_kudos_weight (priv->app));
+						   gs_app_get_kudos_percentage (priv->app));
 		}
 		break;
 	}

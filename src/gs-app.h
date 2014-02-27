@@ -127,6 +127,8 @@ typedef enum {
 	GS_APP_QUALITY_LAST
 } GsAppQuality;
 
+#define	GS_APP_KUDOS_WEIGHT_TO_PERCENTAGE(w)	(w * 20)
+
 GQuark		 gs_app_error_quark		(void);
 GType		 gs_app_get_type		(void);
 
@@ -264,6 +266,7 @@ void		 gs_app_add_kudo		(GsApp		*app,
 						 GsAppKudo	 kudo);
 guint64		 gs_app_get_kudos		(GsApp		*app);
 guint		 gs_app_get_kudos_weight	(GsApp		*app);
+guint		 gs_app_get_kudos_percentage	(GsApp		*app);
 
 G_END_DECLS
 

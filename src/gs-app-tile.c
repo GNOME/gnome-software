@@ -139,7 +139,7 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 	} else {
 		gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
 					   GS_APP_RATING_KIND_KUDOS,
-					   gs_app_get_kudos_weight (priv->app));
+					   gs_app_get_kudos_percentage (priv->app));
 	}
 
 	gtk_widget_hide (priv->waiting);
