@@ -156,9 +156,15 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		gtk_widget_hide (priv->version_label);
 		gtk_widget_show (priv->star);
 		gtk_widget_set_sensitive (priv->star, FALSE);
-		gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
-					   gs_app_get_rating_kind (priv->app),
-					   gs_app_get_rating (priv->app));
+		if (gs_app_get_rating_kind (priv->app) == GS_APP_RATING_KIND_USER) {
+			gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
+						   GS_APP_RATING_KIND_USER,
+						   gs_app_get_rating (priv->app));
+		} else {
+			gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
+						   GS_APP_RATING_KIND_KUDOS,
+						   gs_app_get_kudos_weight (priv->app));
+		}
 		gtk_label_set_label (GTK_LABEL (priv->version_label),
 				     gs_app_get_version_ui (priv->app));
 	}

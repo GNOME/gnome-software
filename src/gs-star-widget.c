@@ -115,9 +115,6 @@ gs_star_widget_refresh (GsStarWidget *star)
 {
 	GsStarWidgetPrivate *priv;
 	priv = gs_star_widget_get_instance_private (star);
-
-	/* disabled, see https://bugzilla.gnome.org/show_bug.cgi?id=723760 */
-	gtk_widget_set_visible (GTK_WIDGET (star), FALSE);
 	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image1),
 					 priv->rating_kind,
 					 priv->rating,

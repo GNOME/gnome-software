@@ -94,6 +94,7 @@ typedef enum {
 	GS_APP_RATING_KIND_UNKNOWN,
 	GS_APP_RATING_KIND_USER,
 	GS_APP_RATING_KIND_SYSTEM,
+	GS_APP_RATING_KIND_KUDOS,
 	GS_APP_RATING_KIND_LAST
 } GsAppRatingKind;
 
@@ -262,6 +263,7 @@ void		 gs_app_set_keywords		(GsApp		*app,
 void		 gs_app_add_kudo		(GsApp		*app,
 						 GsAppKudo	 kudo);
 guint64		 gs_app_get_kudos		(GsApp		*app);
+guint		 gs_app_get_kudos_weight	(GsApp		*app);
 
 G_END_DECLS
 
