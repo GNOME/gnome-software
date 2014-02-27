@@ -651,8 +651,14 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		helper->tag = APPSTREAM_TAG_APPLICATIONS;
 		break;
 	case APPSTREAM_TAG_VALUE:
-		g_free (helper->lang_temp);
-		helper->lang_temp = NULL;
+		/* a tag with no content, e.g. <value key=name/> */
+		if (helper->lang_temp != NULL) {
+			appstream_app_add_metadata (helper->item_temp,
+						    helper->lang_temp,
+						    "", 0);
+			g_free (helper->lang_temp);
+			helper->lang_temp = NULL;
+		}
 		helper->tag = APPSTREAM_TAG_METADATA;
 		break;
 	default:
@@ -736,6 +742,8 @@ appstream_cache_text_cb (GMarkupParseContext *context,
 					    helper->lang_temp,
 					    text,
 					    text_len);
+		g_free (helper->lang_temp);
+		helper->lang_temp = NULL;
 		break;
 	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
 		if (helper->item_temp == NULL) {
