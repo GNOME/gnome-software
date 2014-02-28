@@ -123,6 +123,10 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	gboolean ret;
 
+	/* nothing to do here */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH) == 0)
+		goto out;
+
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_menu_path (app) == NULL) {
@@ -133,5 +137,6 @@ gs_plugin_refine (GsPlugin *plugin,
 			}
 		}
 	}
+out:
 	return TRUE;
 }
