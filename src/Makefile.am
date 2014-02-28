@@ -75,7 +75,7 @@ gnome_software_cmd_LDADD =				\
 	$(NOTIFY_LIBS)
 
 gnome_software_cmd_CFLAGS =				\
-	$(WARNINGFLAGS_C)
+	$(WARN_CFLAGS)
 
 bin_PROGRAMS =						\
 	gnome-software
@@ -167,7 +167,7 @@ gnome_software_LDADD =					\
 
 gnome_software_CFLAGS =					\
 	-DLIBEXECDIR=\"$(libexecdir)\"			\
-	$(WARNINGFLAGS_C)
+	$(WARN_CFLAGS)
 
 gs-shell-search-provider-generated.h gs-shell-search-provider-generated.c: Makefile.am $(srcdir)/shell-search-provider-dbus-interfaces.xml
 	$(AM_V_GEN) gdbus-codegen \
@@ -214,7 +214,7 @@ gs_self_test_LDADD =						\
 	$(GLIB_LIBS)						\
 	$(GTK_LIBS)
 
-gs_self_test_CFLAGS = $(WARNINGFLAGS_C)
+gs_self_test_CFLAGS = $(WARN_CFLAGS)
 
 TESTS = gs-self-test
 

@@ -52,27 +52,27 @@ plugin_LTLIBRARIES =					\
 libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
 libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
-libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_fedora_tagger_ratings_la_SOURCES = gs-plugin-fedora-tagger-ratings.c
 libgs_plugin_fedora_tagger_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)
 libgs_plugin_fedora_tagger_ratings_la_LDFLAGS = -module -avoid-version
-libgs_plugin_fedora_tagger_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_fedora_tagger_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_fedora_tagger_usage_la_SOURCES = gs-plugin-fedora-tagger-usage.c
 libgs_plugin_fedora_tagger_usage_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)
 libgs_plugin_fedora_tagger_usage_la_LDFLAGS = -module -avoid-version
-libgs_plugin_fedora_tagger_usage_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_fedora_tagger_usage_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_epiphany_la_SOURCES = gs-plugin-epiphany.c
 libgs_plugin_epiphany_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS)
 libgs_plugin_epiphany_la_LDFLAGS = -module -avoid-version
-libgs_plugin_epiphany_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_epiphany_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_self_test_la_SOURCES = gs-plugin-self-test.c
 libgs_plugin_self_test_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_self_test_la_LDFLAGS = -module -avoid-version
-libgs_plugin_self_test_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_self_test_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_appstream_la_SOURCES =			\
 	gs-plugin-appstream.c				\
@@ -90,7 +90,7 @@ libgs_plugin_appstream_la_SOURCES =			\
 	appstream-cache.h
 libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
-libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_appdata_la_SOURCES =			\
 	appstream-common.c				\
@@ -100,7 +100,7 @@ libgs_plugin_appdata_la_SOURCES =			\
 	gs-plugin-appdata.c
 libgs_plugin_appdata_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_appdata_la_LDFLAGS = -module -avoid-version
-libgs_plugin_appdata_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_appdata_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_moduleset_la_SOURCES =			\
 	gs-moduleset.c					\
@@ -108,12 +108,12 @@ libgs_plugin_moduleset_la_SOURCES =			\
 	gs-plugin-moduleset.c
 libgs_plugin_moduleset_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_moduleset_la_LDFLAGS = -module -avoid-version
-libgs_plugin_moduleset_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_moduleset_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_hardcoded_categories_la_SOURCES = gs-plugin-hardcoded-categories.c
 libgs_plugin_hardcoded_categories_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_categories_la_LDFLAGS = -module -avoid-version
-libgs_plugin_hardcoded_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_hardcoded_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_menu_spec_categories_la_SOURCES =		\
 	gs-plugin-menu-spec-categories.c		\
@@ -121,7 +121,7 @@ libgs_plugin_menu_spec_categories_la_SOURCES =		\
 	menu-spec-common.h
 libgs_plugin_menu_spec_categories_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_menu_spec_categories_la_LDFLAGS = -module -avoid-version
-libgs_plugin_menu_spec_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_menu_spec_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_menu_spec_refine_la_SOURCES =		\
 	gs-plugin-menu-spec-refine.c			\
@@ -129,17 +129,17 @@ libgs_plugin_menu_spec_refine_la_SOURCES =		\
 	menu-spec-common.h
 libgs_plugin_menu_spec_refine_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_menu_spec_refine_la_LDFLAGS = -module -avoid-version
-libgs_plugin_menu_spec_refine_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_menu_spec_refine_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_hardcoded_featured_la_SOURCES = gs-plugin-hardcoded-featured.c
 libgs_plugin_hardcoded_featured_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_featured_la_LDFLAGS = -module -avoid-version
-libgs_plugin_hardcoded_featured_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_hardcoded_featured_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_local_ratings_la_SOURCES = gs-plugin-local-ratings.c
 libgs_plugin_local_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
 libgs_plugin_local_ratings_la_LDFLAGS = -module -avoid-version
-libgs_plugin_local_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_local_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_la_SOURCES =			\
 	gs-plugin-packagekit.c				\
@@ -147,7 +147,7 @@ libgs_plugin_packagekit_la_SOURCES =			\
 	packagekit-common.h
 libgs_plugin_packagekit_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_la_LDFLAGS = -module -avoid-version
-libgs_plugin_packagekit_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_packagekit_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_refine_la_SOURCES =		\
 	gs-plugin-packagekit-refine.c			\
@@ -155,7 +155,7 @@ libgs_plugin_packagekit_refine_la_SOURCES =		\
 	packagekit-common.h
 libgs_plugin_packagekit_refine_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_refine_la_LDFLAGS = -module -avoid-version
-libgs_plugin_packagekit_refine_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_packagekit_refine_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_refresh_la_SOURCES =		\
 	gs-plugin-packagekit-refresh.c			\
@@ -163,7 +163,7 @@ libgs_plugin_packagekit_refresh_la_SOURCES =		\
 	packagekit-common.h
 libgs_plugin_packagekit_refresh_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_refresh_la_LDFLAGS = -module -avoid-version
-libgs_plugin_packagekit_refresh_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_packagekit_refresh_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_search_la_SOURCES =		\
 	gs-plugin-packagekit-search.c			\
@@ -171,7 +171,7 @@ libgs_plugin_packagekit_search_la_SOURCES =		\
 	packagekit-common.h
 libgs_plugin_packagekit_search_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_search_la_LDFLAGS = -module -avoid-version
-libgs_plugin_packagekit_search_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_packagekit_search_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_updates_la_SOURCES =		\
 	gs-plugin-packagekit-updates.c			\
@@ -179,42 +179,42 @@ libgs_plugin_packagekit_updates_la_SOURCES =		\
 	packagekit-common.h
 libgs_plugin_packagekit_updates_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_updates_la_LDFLAGS = -module -avoid-version
-libgs_plugin_packagekit_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_packagekit_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_systemd_updates_la_SOURCES = gs-plugin-systemd-updates.c
 libgs_plugin_systemd_updates_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_systemd_updates_la_LDFLAGS = -module -avoid-version
-libgs_plugin_systemd_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_systemd_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_history_la_SOURCES = gs-plugin-packagekit-history.c
 libgs_plugin_packagekit_history_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_packagekit_history_la_LDFLAGS = -module -avoid-version
-libgs_plugin_packagekit_history_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_packagekit_history_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_offline_la_SOURCES = gs-plugin-packagekit-offline.c
 libgs_plugin_packagekit_offline_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_packagekit_offline_la_LDFLAGS = -module -avoid-version
-libgs_plugin_packagekit_offline_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_packagekit_offline_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_desktopdb_la_SOURCES = gs-plugin-desktopdb.c
 libgs_plugin_desktopdb_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_desktopdb_la_LDFLAGS = -module -avoid-version
-libgs_plugin_desktopdb_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_desktopdb_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_datadir_apps_la_SOURCES = gs-plugin-datadir-apps.c
 libgs_plugin_datadir_apps_la_LIBADD = $(GS_PLUGIN_LIBS) $(GTK_LIBS)
 libgs_plugin_datadir_apps_la_LDFLAGS = -module -avoid-version
-libgs_plugin_datadir_apps_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_datadir_apps_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_datadir_filename_la_SOURCES = gs-plugin-datadir-filename.c
 libgs_plugin_datadir_filename_la_LIBADD = $(GS_PLUGIN_LIBS) $(GTK_LIBS)
 libgs_plugin_datadir_filename_la_LDFLAGS = -module -avoid-version
-libgs_plugin_datadir_filename_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_datadir_filename_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_datadir_filename_local_la_SOURCES = gs-plugin-datadir-filename-local.c
 libgs_plugin_datadir_filename_local_la_LIBADD = $(GS_PLUGIN_LIBS) $(GTK_LIBS)
 libgs_plugin_datadir_filename_local_la_LDFLAGS = -module -avoid-version
-libgs_plugin_datadir_filename_local_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARNINGFLAGS_C)
+libgs_plugin_datadir_filename_local_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 check_PROGRAMS =					\
 	gs-self-test
@@ -229,7 +229,7 @@ gs_self_test_LDADD =					\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)
 
-gs_self_test_CFLAGS = $(WARNINGFLAGS_C)
+gs_self_test_CFLAGS = $(WARN_CFLAGS)
 
 TESTS = gs-self-test
 
