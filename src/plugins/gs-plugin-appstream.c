@@ -598,7 +598,8 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_plugin_refine_item_pixbuf (plugin, app, item);
 
 	/* set categories */
-	if (appstream_app_get_categories (item) != NULL && gs_app_get_categories (app) == NULL)
+	if (appstream_app_get_categories (item) != NULL &&
+	    gs_app_get_categories (app)->len == 0)
 		gs_app_set_categories (app, appstream_app_get_categories (item));
 
 	/* set project group */

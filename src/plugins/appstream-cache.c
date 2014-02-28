@@ -593,7 +593,6 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 	section_new = appstream_tag_from_string (element_name);
 	switch (section_new) {
 	case APPSTREAM_TAG_APPLICATIONS:
-	case APPSTREAM_TAG_APPCATEGORY:
 	case APPSTREAM_TAG_KEYWORD:
 	case APPSTREAM_TAG_MIMETYPE:
 		/* ignore */
@@ -603,6 +602,9 @@ appstream_cache_end_element_cb (GMarkupParseContext *context,
 		appstream_cache_add_item (helper);
 		helper->item_temp = NULL;
 		helper->tag = APPSTREAM_TAG_APPLICATIONS;
+		break;
+	case APPSTREAM_TAG_APPCATEGORY:
+		helper->tag = APPSTREAM_TAG_APPCATEGORIES;
 		break;
 	case APPSTREAM_TAG_IMAGE:
 		appstream_screenshot_add_image (helper->screenshot,

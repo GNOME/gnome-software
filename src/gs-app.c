@@ -318,6 +318,10 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\trelated:\t%i\n", priv->related->len);
 	if (priv->history->len > 0)
 		g_string_append_printf (str, "\thistory:\t%i\n", priv->history->len);
+	for (i = 0; i < priv->categories->len; i++) {
+		tmp = g_ptr_array_index (priv->categories, i);
+		g_string_append_printf (str, "\tcategory:\t%s\n", tmp);
+	}
 	keys = g_hash_table_get_keys (priv->metadata);
 	for (l = keys; l != NULL; l = l->next) {
 		tmp = g_hash_table_lookup (priv->metadata, l->data);
@@ -1685,9 +1689,11 @@ gs_app_subsume (GsApp *app, GsApp *other)
 		gs_app_set_update_version_internal (app, priv2->update_version);
 	if (priv2->pixbuf != NULL)
 		gs_app_set_pixbuf (app, priv2->pixbuf);
-	for (i = 0; i < priv2->categories->len; i++) {
-		tmp = g_ptr_array_index (priv2->categories, i);
-		gs_app_add_category (app, tmp);
+	if (priv->categories != priv2->categories) {
+		for (i = 0; i < priv2->categories->len; i++) {
+			tmp = g_ptr_array_index (priv2->categories, i);
+			gs_app_add_category (app, tmp);
+		}
 	}
 	for (i = 0; i < priv2->related->len; i++) {
 		app_tmp = g_ptr_array_index (priv2->related, i);
