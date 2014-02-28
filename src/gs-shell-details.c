@@ -488,6 +488,21 @@ out:
 }
 
 /**
+ * gs_shell_details_is_addon_id_kind
+ **/
+static gboolean
+gs_shell_details_is_addon_id_kind (GsApp *app)
+{
+        GsAppIdKind id_kind;
+        id_kind = gs_app_get_id_kind (app);
+        if (id_kind == GS_APP_ID_KIND_DESKTOP)
+                return FALSE;
+        if (id_kind == GS_APP_ID_KIND_WEBAPP)
+                return FALSE;
+        return TRUE;
+}
+
+/**
  * gs_shell_details_refresh_all:
  **/
 static void
@@ -540,8 +555,14 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	}
 	if (pixbuf == NULL)
 		pixbuf = gs_app_get_pixbuf (priv->app);
-	if( pixbuf == NULL && gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL)
-		pixbuf = gs_pixbuf_load ("application-x-executable", 96, NULL);
+	if (pixbuf == NULL && gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL) {
+		if (gs_app_get_kind (priv->app) == GS_APP_KIND_SOURCE)
+			pixbuf = gs_pixbuf_load ("x-package-repository", 96, NULL);
+		else if (gs_shell_details_is_addon_id_kind (priv->app))
+			pixbuf = gs_pixbuf_load ("application-x-addon", 96, NULL);
+		else
+			pixbuf = gs_pixbuf_load ("application-x-executable", 96, NULL);
+	}
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_icon"));
 	if (pixbuf != NULL) {
 		gtk_image_set_from_pixbuf (GTK_IMAGE (widget), pixbuf);
