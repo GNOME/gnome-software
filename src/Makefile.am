@@ -34,6 +34,7 @@ UI_FILES =						\
 	gnome-software.ui				\
 	gs-history-dialog.ui			\
 	gs-star-widget.ui				\
+	gs-update-dialog.ui				\
 	screenshot-image.ui				\
 	popular-tile.ui
 
@@ -130,6 +131,8 @@ gnome_software_SOURCES =				\
 	gs-shell-updates.h				\
 	gs-shell-search.c				\
 	gs-shell-search.h				\
+	gs-update-dialog.c				\
+	gs-update-dialog.h				\
 	gs-update-monitor.c				\
 	gs-update-monitor.h				\
 	gs-proxy-settings.c				\

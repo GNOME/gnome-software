@@ -30,6 +30,7 @@
 #include "gs-app.h"
 #include "gs-app-widget.h"
 #include "gs-markdown.h"
+#include "gs-update-dialog.h"
 
 /* this isn't ideal, as PK should be abstracted away in a plugin, but
  * GNetworkMonitor doesn't provide us with a connection type */
@@ -59,7 +60,7 @@ struct GsShellUpdatesPrivate
 	GtkListBox		*list_box_updates;
 	gboolean		 cache_valid;
 	GsShell			*shell;
-	GsApp			*app;
+	GtkWidget		*update_dialog;
 	PkControl		*control;
 	GsShellUpdatesState	 state;
 	gboolean		 has_agreed_to_mobile_data;
@@ -428,150 +429,18 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 					    shell_updates);
 }
 
-/**
- * gs_shell_updates_set_updates_description_ui:
- **/
-static void
-gs_shell_updates_set_updates_description_ui (GsShellUpdates *shell_updates, GsApp *app)
-{
-	GsShellUpdatesPrivate *priv = shell_updates->priv;
-	GsAppKind kind;
-	GsMarkdown *markdown;
-	GtkWidget *widget;
-	gchar *tmp;
-	gchar *update_desc;
-
-	/* set window title */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-	kind = gs_app_get_kind (app);
-	if (kind == GS_APP_KIND_OS_UPDATE) {
-		gtk_window_set_title (GTK_WINDOW (widget), gs_app_get_name (app));
-	} else {
-		tmp = g_strdup_printf ("%s %s",
-				       gs_app_get_source_default (app),
-				       gs_app_get_update_version_ui (app));
-		gtk_window_set_title (GTK_WINDOW (widget), tmp);
-		g_free (tmp);
-	}
-
-	/* get the update description */
-	if (gs_app_get_update_details (app) == NULL) {
-		/* TRANSLATORS: this is where the packager did not write a
-		 * description for the update */
-		update_desc = g_strdup ("No update description");
-	} else {
-		markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
-		gs_markdown_set_smart_quoting (markdown, FALSE);
-		gs_markdown_set_autocode (markdown, TRUE);
-		update_desc = gs_markdown_parse (markdown, gs_app_get_update_details (app));
-		g_object_unref (markdown);
-	}
-
-	/* set update header */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
-	gtk_widget_set_visible (widget, kind == GS_APP_KIND_NORMAL || kind == GS_APP_KIND_SYSTEM);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update_details"));
-	gtk_widget_set_visible (widget, kind != GS_APP_KIND_OS_UPDATE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
-	gtk_widget_set_visible (widget, kind == GS_APP_KIND_OS_UPDATE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_details"));
-	gtk_label_set_markup (GTK_LABEL (widget), update_desc);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "image_update_icon"));
-	gtk_image_set_from_pixbuf (GTK_IMAGE (widget), gs_app_get_pixbuf (app));
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_name"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_name (app));
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_update_summary"));
-	gtk_label_set_label (GTK_LABEL (widget), gs_app_get_summary (app));
-	g_free (update_desc);
-}
-
-static void
-gs_shell_updates_row_activated_cb (GtkListBox *list_box,
-				   GtkListBoxRow *row,
-				   GsShellUpdates *shell_updates)
-{
-	GsShellUpdatesPrivate *priv = shell_updates->priv;
-	GsApp *app = NULL;
-	GtkWidget *widget;
-
-	app = GS_APP (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "app"));
-	/* setup package view */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
-	gtk_widget_hide (widget);
-	gs_shell_updates_set_updates_description_ui (shell_updates, app);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
-	gtk_widget_show (widget);
-}
-
 static void
 show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
-	GsApp *app_related;
-	GsAppKind kind;
-	GtkWidget *widget;
-	const gchar *sort;
+	GtkWidget *toplevel;
 
-	kind = gs_app_get_kind (app);
+	gs_update_dialog_set_app (GS_UPDATE_DIALOG (priv->update_dialog), app);
 
-	/* set update header */
-	gs_shell_updates_set_updates_description_ui (shell_updates, app);
+	toplevel = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
+	gtk_window_set_transient_for (GTK_WINDOW (priv->update_dialog), GTK_WINDOW (toplevel));
 
-	/* only OS updates can go back, and only on selection */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
-	gtk_widget_hide (widget);
-
-	/* set update description */
-	if (kind == GS_APP_KIND_OS_UPDATE) {
-		GPtrArray *related;
-		GtkListBox *list_box;
-		guint i;
-		GtkWidget *row, *label;
-
-		list_box = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_update"));
-		gs_container_remove_all (GTK_CONTAINER (list_box));
-		related = gs_app_get_related (app);
-		for (i = 0; i < related->len; i++) {
-			app_related = g_ptr_array_index (related, i);
-			row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
-			g_object_set_data_full (G_OBJECT (row),
-						"app",
-						g_object_ref (app_related),
-						g_object_unref);
-			sort = gs_app_get_source_default (app_related);
-			g_object_set_data_full (G_OBJECT (row),
-						"sort",
-						g_strdup (sort),
-						g_free);
-			label = gtk_label_new (gs_app_get_source_default (app_related));
-			g_object_set (label,
-				      "margin-left", 20,
-				      "margin-right", 20,
-				      "margin-top", 6,
-				      "margin-bottom", 6,
-				      "xalign", 0.0,
-				      NULL);
-			gtk_widget_set_halign (label, GTK_ALIGN_START);
-			gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-			gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
-			label = gtk_label_new (gs_app_get_update_version_ui (app_related));
-			g_object_set (label,
-				      "margin-left", 20,
-				      "margin-right", 20,
-				      "margin-top", 6,
-				      "margin-bottom", 6,
-				      "xalign", 1.0,
-				      NULL);
-			gtk_widget_set_halign (label, GTK_ALIGN_END);
-			gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-			gtk_box_pack_start (GTK_BOX (row), label, FALSE, FALSE, 0);
-			gtk_widget_show_all (row);
-			gtk_list_box_insert (list_box,row, -1);
-		}
-	}
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-	gtk_window_present (GTK_WINDOW (widget));
+	gtk_window_present (GTK_WINDOW (priv->update_dialog));
 }
 
 /**
@@ -582,17 +451,13 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 			       GtkListBoxRow *row,
 			       GsShellUpdates *shell_updates)
 {
-	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GsAppWidget *app_widget;
 	GsApp *app;
 
 	app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
 	app = gs_app_widget_get_app (app_widget);
 
-	g_clear_object (&priv->app);
-	priv->app = g_object_ref (app);
-
-	show_update_details (priv->app, shell_updates);
+	show_update_details (app, shell_updates);
 }
 
 /**
@@ -869,28 +734,6 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 }
 
 /**
- * gs_shell_updates_button_back_cb:
- **/
-static void
-gs_shell_updates_button_back_cb (GtkWidget *widget, GsShellUpdates *shell_updates)
-{
-	GsShellUpdatesPrivate *priv = shell_updates->priv;
-
-	/* return to the list view */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_update_header"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update_details"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
-	gtk_widget_show (widget);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-	gtk_window_set_title (GTK_WINDOW (widget), gs_app_get_name (priv->app));
-}
-
-/**
  * gs_shell_updates_changed_cb:
  */
 static void
@@ -918,31 +761,6 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 	gs_offline_updates_trigger ();
 	gs_reboot (gs_offline_updates_cancel);
 }
-
-static void
-scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
-{
-        GtkWidget *frame;
-
-        frame = gtk_bin_get_child (GTK_BIN (gtk_bin_get_child (GTK_BIN (swin))));
-
-	if (gtk_widget_get_mapped (GTK_WIDGET (sb))) {
-		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_IN);
-		if (GTK_IS_FRAME (frame))
-			gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
-	} else {
-		if (GTK_IS_FRAME (frame))
-			gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
-	}
-}
-
-static void
-dialog_update_hide_cb (GtkWidget *dialog, GsShellUpdates *shell_updates)
-{
-	g_clear_object (&shell_updates->priv->app);
-}
-
 
 /**
  * gs_shell_installed_sort_func:
@@ -1009,21 +827,6 @@ gs_shell_updates_sort_func (GtkListBoxRow *a,
 }
 
 /**
- * gs_shell_updates_os_updates_sort_func:
- **/
-static gint
-gs_shell_updates_os_updates_sort_func (GtkListBoxRow *a,
-				       GtkListBoxRow *b,
-				       gpointer user_data)
-{
-	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
-	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
-	const gchar *key1 = g_object_get_data (o1, "sort");
-	const gchar *key2 = g_object_get_data (o2, "sort");
-	return g_strcmp0 (key1, key2);
-}
-
-/**
  * gs_shell_updates_get_properties_cb:
  **/
 static void
@@ -1054,7 +857,6 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
-	GtkWidget *sw;
 
 	g_return_if_fail (GS_IS_SHELL_UPDATES (shell_updates));
 
@@ -1082,13 +884,6 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 				    gs_shell_updates_sort_func,
 				    shell_updates, NULL);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "list_box_update"));
-	g_signal_connect (GTK_LIST_BOX (widget), "row-activated",
-			  G_CALLBACK (gs_shell_updates_row_activated_cb), shell_updates);
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (widget),
-				    gs_shell_updates_os_updates_sort_func,
-				    shell_updates, NULL);
-
        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 	g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), shell_updates);
 
@@ -1105,25 +900,9 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_updates_button_network_settings_cb),
 			  shell_updates);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-	g_signal_connect (widget, "delete-event",
+	priv->update_dialog = gs_update_dialog_new ();
+	g_signal_connect (priv->update_dialog, "delete-event",
 			  G_CALLBACK (gtk_widget_hide_on_delete), shell_updates);
-	g_signal_connect (widget, "hide",
-			  G_CALLBACK (dialog_update_hide_cb), shell_updates);
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_back"));
-	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_shell_updates_button_back_cb),
-			  shell_updates);
-	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update_details"));
-	widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
-	g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
-	g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
-
-	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_update"));
-	widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
-	g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
-	g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
 
 	g_signal_connect (priv->control, "notify::network-state",
 			  G_CALLBACK (gs_shell_updates_notify_network_state_cb),
@@ -1175,7 +954,6 @@ gs_shell_updates_finalize (GObject *object)
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
 	g_object_unref (priv->control);
-	g_clear_object (&priv->app);
 
 	G_OBJECT_CLASS (gs_shell_updates_parent_class)->finalize (object);
 }
