@@ -29,6 +29,7 @@
 #include "gs-utils.h"
 
 #include "gs-shell-details.h"
+#include "gs-history-dialog.h"
 #include "gs-screenshot-image.h"
 #include "gs-star-widget.h"
 
@@ -49,9 +50,7 @@ struct GsShellDetailsPrivate
 	gboolean		 cache_valid;
 	GsApp			*app;
 	GsShell			*shell;
-	GtkSizeGroup		*history_sizegroup_state;
-	GtkSizeGroup		*history_sizegroup_timestamp;
-	GtkSizeGroup		*history_sizegroup_version;
+	GtkWidget		*history_dialog;
 	GtkWidget		*star;
 	SoupSession		*session;
 };
@@ -1096,21 +1095,6 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell
 }
 
 /**
- * gs_shell_details_history_sort_cb:
- **/
-static gint
-gs_shell_details_history_sort_cb (gconstpointer a, gconstpointer b)
-{
-	gint64 timestamp_a = gs_app_get_install_date (*(GsApp **) a);
-	gint64 timestamp_b = gs_app_get_install_date (*(GsApp **) b);
-	if (timestamp_a < timestamp_b)
-		return 1;
-	if (timestamp_a > timestamp_b)
-		return -1;
-	return 0;
-}
-
-/**
  * gs_shell_details_app_launch_button_cb:
  **/
 static void
@@ -1146,143 +1130,14 @@ static void
 gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	const gchar *tmp;
-	gchar *date_str;
-	GDateTime *datetime;
-	GPtrArray *history;
-	GsApp *app;
-	GtkBox *box;
-	GtkListBox *list_box;
-	guint64 timestamp;
-	guint i;
+	GtkWidget *toplevel;
 
-	/* add each history package to the dialog */
-	list_box = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_history"));
-	gs_container_remove_all (GTK_CONTAINER (list_box));
-	history = gs_app_get_history (priv->app);
-	g_ptr_array_sort (history, gs_shell_details_history_sort_cb);
-	for (i = 0; i < history->len; i++) {
-		app = g_ptr_array_index (history, i);
-		box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
+	gs_history_dialog_set_app (GS_HISTORY_DIALOG (priv->history_dialog), priv->app);
 
-		/* add the action */
-		switch (gs_app_get_state (app)) {
-		case GS_APP_STATE_AVAILABLE:
-		case GS_APP_STATE_REMOVING:
-			/* TRANSLATORS: this is the status in the history UI,
-			 * where we are showing the application was removed */
-			tmp = _("Removed");
-			break;
-		case GS_APP_STATE_INSTALLED:
-		case GS_APP_STATE_INSTALLING:
-			/* TRANSLATORS: this is the status in the history UI,
-			 * where we are showing the application was installed */
-			tmp = _("Installed");
-			break;
-		case GS_APP_STATE_UPDATABLE:
-			/* TRANSLATORS: this is the status in the history UI,
-			 * where we are showing the application was updated */
-			tmp = _("Updated");
-			break;
-		default:
-			/* TRANSLATORS: this is the status in the history UI,
-			 * where we are showing that something happened to the
-			 * application but we don't know what */
-			tmp = _("Unknown");
-			break;
-		}
-		widget = gtk_label_new (tmp);
-		g_object_set (widget,
-			      "margin-left", 20,
-			      "margin-right", 20,
-			      "margin-top", 6,
-			      "margin-bottom", 6,
-			      "xalign", 0.0,
-			      NULL);
-		gtk_size_group_add_widget (priv->history_sizegroup_state, widget);
-		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
+	toplevel = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
+	gtk_window_set_transient_for (GTK_WINDOW (priv->history_dialog), GTK_WINDOW (toplevel));
 
-		/* add the timestamp */
-		timestamp = gs_app_get_install_date (app);
-		datetime = g_date_time_new_from_unix_utc (timestamp);
-		if (timestamp == GS_APP_INSTALL_DATE_UNKNOWN) {
-			date_str = g_strdup ("");
-		} else {
-			date_str = g_date_time_format (datetime, "%e %B %Y");
-		}
-		widget = gtk_label_new (date_str);
-		g_object_set (widget,
-			      "margin-left", 20,
-			      "margin-right", 20,
-			      "margin-top", 6,
-			      "margin-bottom", 6,
-			      "xalign", 0.0,
-			      NULL);
-		gtk_size_group_add_widget (priv->history_sizegroup_timestamp, widget);
-		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
-		g_free (date_str);
-		g_date_time_unref (datetime);
-
-		/* add the version */
-		widget = gtk_label_new (gs_app_get_version (app));
-		g_object_set (widget,
-			      "margin-left", 20,
-			      "margin-right", 20,
-			      "margin-top", 6,
-			      "margin-bottom", 6,
-			      "xalign", 1.0,
-			      NULL);
-		gtk_size_group_add_widget (priv->history_sizegroup_version, widget);
-		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
-
-		gtk_widget_show_all (GTK_WIDGET (box));
-		gtk_list_box_insert (list_box, GTK_WIDGET (box), -1);
-	}
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_history"));
-	gtk_window_present (GTK_WINDOW (widget));
-}
-
-/**
- * gs_shell_details_list_header_func
- **/
-static void
-gs_shell_details_list_header_func (GtkListBoxRow *row,
-				   GtkListBoxRow *before,
-				   gpointer user_data)
-{
-	GtkWidget *header;
-
-	/* first entry */
-	header = gtk_list_box_row_get_header (row);
-	if (before == NULL) {
-		gtk_list_box_row_set_header (row, NULL);
-		return;
-	}
-
-	/* already set */
-	if (header != NULL)
-		return;
-
-	/* set new */
-	header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	gtk_list_box_row_set_header (row, header);
-}
-
-static void
-scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
-{
-        GtkWidget *frame;
-
-        frame = gtk_bin_get_child (GTK_BIN (gtk_bin_get_child (GTK_BIN (swin))));
-        if (gtk_widget_get_mapped (GTK_WIDGET (sb))) {
-                gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_IN);
-                gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
-        }
-        else {
-                gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-                gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
-        }
+	gtk_window_present (GTK_WINDOW (priv->history_dialog));
 }
 
 /**
@@ -1347,7 +1202,6 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget;
-	GtkListBox *list_box;
 	GtkWidget *sw;
 	GtkAdjustment *adj;
 
@@ -1369,13 +1223,6 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	gtk_widget_set_visible (priv->star, TRUE);
 	gtk_widget_set_valign (priv->star, GTK_ALIGN_START);
 	gtk_box_pack_start (GTK_BOX (sw), priv->star, FALSE, FALSE, 0);
-
-	/* setup history */
-	list_box = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_history"));
-	gtk_list_box_set_header_func (list_box,
-				      gs_shell_details_list_header_func,
-				      shell_details,
-				      NULL);
 
 	/* setup details */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
@@ -1400,14 +1247,9 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 			  shell_details);
 
 	/* setup history window */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_history"));
-	g_signal_connect (widget, "delete-event",
+	priv->history_dialog = gs_history_dialog_new ();
+	g_signal_connect (priv->history_dialog, "delete-event",
 			  G_CALLBACK (gtk_widget_hide_on_delete), shell_details);
-
-        sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_history"));
-        widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
-        g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
-        g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
 
 	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_details"));
         adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
@@ -1439,10 +1281,6 @@ gs_shell_details_init (GsShellDetails *shell_details)
 	shell_details->priv = GS_SHELL_DETAILS_GET_PRIVATE (shell_details);
 	priv = shell_details->priv;
 
-	priv->history_sizegroup_state = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	priv->history_sizegroup_timestamp = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	priv->history_sizegroup_version = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-
 	/* setup networking */
 	priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
 							    "gnome-software",
@@ -1462,10 +1300,6 @@ gs_shell_details_finalize (GObject *object)
 {
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (object);
 	GsShellDetailsPrivate *priv = shell_details->priv;
-
-	g_object_unref (priv->history_sizegroup_state);
-	g_object_unref (priv->history_sizegroup_timestamp);
-	g_object_unref (priv->history_sizegroup_version);
 
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);

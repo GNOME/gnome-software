@@ -32,6 +32,7 @@ UI_FILES =						\
 	category-tile.ui				\
 	feature-tile.ui					\
 	gnome-software.ui				\
+	gs-history-dialog.ui			\
 	gs-star-widget.ui				\
 	screenshot-image.ui				\
 	popular-tile.ui
@@ -101,6 +102,8 @@ gnome_software_SOURCES =				\
 	gs-app-tile.h					\
 	gs-app-folder-dialog.c				\
 	gs-app-folder-dialog.h				\
+	gs-history-dialog.c				\
+	gs-history-dialog.h				\
 	gs-box.h					\
 	gs-box.c					\
 	gs-plugin.c					\
