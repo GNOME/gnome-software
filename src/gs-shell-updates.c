@@ -815,9 +815,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
 		dialog = gtk_message_dialog_new (GTK_WINDOW (widget),
 						 GTK_DIALOG_MODAL |
-#if GTK_CHECK_VERSION(3,11,5)
 						 GTK_DIALOG_USE_HEADER_BAR |
-#endif
 						 GTK_DIALOG_DESTROY_WITH_PARENT,
 						 GTK_MESSAGE_ERROR,
 						 GTK_BUTTONS_CANCEL,
@@ -845,9 +843,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
 		dialog = gtk_message_dialog_new (GTK_WINDOW (widget),
 						 GTK_DIALOG_MODAL |
-#if GTK_CHECK_VERSION(3,11,5)
 						 GTK_DIALOG_USE_HEADER_BAR |
-#endif
 						 GTK_DIALOG_DESTROY_WITH_PARENT,
 						 GTK_MESSAGE_ERROR,
 						 GTK_BUTTONS_CANCEL,
