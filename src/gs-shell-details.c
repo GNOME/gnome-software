@@ -1223,17 +1223,6 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell
 }
 
 /**
- * gs_shell_details_button_close_cb:
- **/
-static void
-gs_shell_details_button_close_cb (GtkWidget *widget, GsShellDetails *shell_details)
-{
-	GsShellDetailsPrivate *priv = shell_details->priv;
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_history"));
-	gtk_widget_hide (widget);
-}
-
-/**
  * gs_shell_details_list_header_func
  **/
 static void
@@ -1387,10 +1376,6 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_details_website"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_details_website_cb),
-			  shell_details);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_history_close"));
-	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_shell_details_button_close_cb),
 			  shell_details);
 
 	/* setup history window */

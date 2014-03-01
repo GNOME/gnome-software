@@ -648,17 +648,6 @@ gs_shell_updates_list_header_func (GtkListBoxRow *row,
 }
 
 /**
- * gs_shell_updates_button_close_cb:
- **/
-static void
-gs_shell_updates_button_close_cb (GtkWidget *widget, GsShellUpdates *shell_updates)
-{
-	GsShellUpdatesPrivate *priv = shell_updates->priv;
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "dialog_update"));
-	gtk_widget_hide (widget);
-}
-
-/**
  * gs_shell_updates_refresh_cb:
  **/
 static void
@@ -1108,10 +1097,6 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), shell_updates);
 
 	/* setup update details window */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_close"));
-	g_signal_connect (widget, "clicked",
-			  G_CALLBACK (gs_shell_updates_button_close_cb),
-			  shell_updates);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_updates_button_refresh_cb),
