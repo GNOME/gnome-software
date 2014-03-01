@@ -1,15 +1,15 @@
 # Finnish translation for gnome-software.
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
-# Jiri Grönroos <jiri.gronroos+l10n@iki.fi>, 2013.
+# Jiri Grönroos <jiri.gronroos+l10n@iki.fi>, 2013, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-12-09 16:52+0000\n"
-"PO-Revision-Date: 2013-12-11 20:35+0200\n"
+"POT-Creation-Date: 2014-01-22 04:41+0000\n"
+"PO-Revision-Date: 2014-01-24 22:34+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <gnome-fi-laatu@lists.sourceforge.net>\n"
 "Language: fi\n"
@@ -28,6 +28,8 @@ msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
 msgstr ""
+"Ohjelmistot mahdollistaa uusien sovellusten löytämisen ja asennuksen sekä "
+"nykyisten sovellusten poistamisen."
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
 msgid ""
@@ -38,20 +40,18 @@ msgid ""
 msgstr ""
 
 #: ../src/app-folder-dialog.ui.h:1
-msgid "Application Folders"
-msgstr "Sovelluskansiot"
+#| msgid "Application Folders"
+msgid "Add to Application Folder"
+msgstr "Lisää sovelluskansioon"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-shell-details.c:160
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:115
+#: ../src/gs-shell-details.c:160 ../src/gs-shell-installed.c:594
 msgid "_Cancel"
 msgstr "_Peru"
 
-#: ../src/app-folder-dialog.ui.h:3
-msgid "_Done"
-msgstr "_Valmis"
-
-#: ../src/app-folder-dialog.ui.h:4
-msgid "_New Folder"
-msgstr "_Uusi kansio"
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:116
+msgid "_Add"
+msgstr "_Lisää"
 
 #: ../src/app-menu.ui.h:1
 msgid "_About"
@@ -67,7 +67,7 @@ msgstr "_Lopeta"
 #. * where we are showing the application was installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:952
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:953
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Asennettu"
@@ -75,7 +75,7 @@ msgstr "Asennettu"
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:229 ../src/gs-shell.c:156
+#: ../src/gs-application.c:231 ../src/gs-shell.c:156
 msgid "Software"
 msgstr "Ohjelmistot"
 
@@ -116,15 +116,15 @@ msgstr "Käynnistä uudelleen ja asenna"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:193
+#: ../src/gnome-software.ui.h:12 ../src/gs-app-widget.c:211
 msgid "Install"
 msgstr "Asenna"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:202
-#: ../src/gs-shell-details.c:830 ../src/gs-shell-installed.c:204
+#: ../src/gnome-software.ui.h:13 ../src/gs-app-widget.c:220
+#: ../src/gs-shell-details.c:831 ../src/gs-shell-installed.c:205
 #: ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Poista"
@@ -148,119 +148,139 @@ msgid "No Application Data Found"
 msgstr "Sovellustietoja ei löytynyt"
 
 #: ../src/gnome-software.ui.h:19
-msgid "Application _Folders"
-msgstr "S_ovelluskansiot"
+msgid "_Add to Folder…"
+msgstr "_Lisää kansioon…"
 
 #: ../src/gnome-software.ui.h:20
+#| msgid "_New Folder"
+msgid "_Move to Folder…"
+msgstr "_Siirrä kansioon…"
+
+#: ../src/gnome-software.ui.h:21
+#| msgid "_New Folder"
+msgid "_Remove from Folder"
+msgstr "_Poista kansiosta"
+
+#: ../src/gnome-software.ui.h:22
 msgid "No Application Found"
 msgstr "Sovellusta ei löytynyt"
 
-#: ../src/gnome-software.ui.h:21
+#: ../src/gnome-software.ui.h:23
 msgid "Software is up to date"
 msgstr "Ohjelmat ovat ajan tasalla"
 
-#: ../src/gnome-software.ui.h:22
+#: ../src/gnome-software.ui.h:24
 msgid "_Website"
 msgstr "_Verkkosivusto"
 
-#: ../src/gnome-software.ui.h:23
+#: ../src/gnome-software.ui.h:25
 msgid "_History"
 msgstr "_Historia"
 
 #. Translators: A label for a button to execute the selected application.
-#: ../src/gnome-software.ui.h:25
+#: ../src/gnome-software.ui.h:27
 msgid "_Launch"
 msgstr "_Käynnistä"
 
-#: ../src/gnome-software.ui.h:26
+#: ../src/gnome-software.ui.h:28
 msgid "Details"
 msgstr "Tiedot"
 
-#: ../src/gnome-software.ui.h:27
+#: ../src/gnome-software.ui.h:29
 msgid "Version"
 msgstr "Versio"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gnome-software.ui.h:28 ../src/gs-shell-details.c:957
+#: ../src/gnome-software.ui.h:30 ../src/gs-shell-details.c:958
 msgid "Updated"
 msgstr "Päivitetty"
 
-#: ../src/gnome-software.ui.h:29
+#: ../src/gnome-software.ui.h:31
 msgid "Category"
 msgstr "Luokka"
 
-#: ../src/gnome-software.ui.h:30
+#: ../src/gnome-software.ui.h:32
 msgid "Licence"
 msgstr "Lisenssi"
 
-#: ../src/gnome-software.ui.h:31
+#: ../src/gnome-software.ui.h:33
 msgid "Size"
 msgstr "Koko"
 
-#: ../src/gnome-software.ui.h:32
+#: ../src/gnome-software.ui.h:34
 msgid "Developer"
 msgstr "Kehittäjä"
 
-#: ../src/gnome-software.ui.h:33
+#: ../src/gnome-software.ui.h:35
 msgid "History"
 msgstr "Historia"
 
 #. Translators: Label for a button to close the update dialogue.
-#: ../src/gnome-software.ui.h:35
+#: ../src/gnome-software.ui.h:37
 msgid "Done"
 msgstr "Valmis"
 
-#: ../src/gs-app-folder-dialog.c:320
-msgid ""
-"Add or remove folders. Your application folders can be found in the "
-"Activities Overview."
-msgstr ""
-"Lisää tai poista kansioita. Sovelluskansiot sijaitsevat Toiminnot-"
-"yleisnäkymässä."
-
-#: ../src/gs-app-folder-dialog.c:324
-#, c-format
-msgid ""
-"Choose a folder for %s. Your application folders can be found in the "
-"Activities Overview."
-msgstr ""
-
-#: ../src/gs-app-folder-dialog.c:329
-#, c-format
-msgid ""
-"Choose a folder for %s and %s. Your application folders can be found in the "
-"Activities Overview."
-msgstr ""
-
-#: ../src/gs-app-folder-dialog.c:335
-#, c-format
-msgid ""
-"Choose a folder for %s, %s and %s. Your application folders can be found in "
-"the Activities Overview."
-msgstr ""
-
-#: ../src/gs-app-folder-dialog.c:338
-msgid ""
-"Choose a folder for the selected applications. Your application folders can "
-"be found in the Activities Overview."
-msgstr ""
-"Valitse kansio valittuna oleville sovelluksille. Sovelluskansiot sijaitsevat "
-"Toiminnot-yleisnäkymässä."
+#: ../src/gs-app-folder-dialog.c:111
+msgid "Folder Name"
+msgstr "Kansion nimi"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:227
+#: ../src/gs-application.c:229
 msgid "About Software"
 msgstr "Tietoja - Ohjelmistot"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:232
+#: ../src/gs-application.c:234
 msgid "A nice way to manage the software on your system."
 msgstr "Mukava tapa hallinta järjestelmän ohjelmistoja."
 
-#: ../src/gs-application.c:236
+#: ../src/gs-application.c:238
 msgid "translator-credits"
 msgstr "Jiri Grönroos"
+
+#: ../src/gs-application.c:476
+#, fuzzy
+#| msgid "Application Folders"
+msgid "Enter GApplication service mode"
+msgstr "Sovelluskansiot"
+
+#. TRANSLATORS: this is a command line option
+#: ../src/gs-application.c:479
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr ""
+"Käynnistystila, joko \"updates\", \"updated\", \"installed\" tai \"overview\""
+
+#: ../src/gs-application.c:479
+msgid "MODE"
+msgstr "TILA"
+
+#: ../src/gs-application.c:481
+msgid "Search for applications"
+msgstr "Etsi sovelluksia"
+
+#: ../src/gs-application.c:481
+msgid "SEARCH"
+msgstr ""
+
+#: ../src/gs-application.c:483
+msgid "Show application details"
+msgstr "Näytä sovelluksen tiedot"
+
+#: ../src/gs-application.c:483 ../src/gs-application.c:485
+#, fuzzy
+#| msgctxt "Menu subcategory of Development"
+#| msgid "IDE"
+msgid "ID"
+msgstr "Ohjelmointiympäristöt"
+
+#: ../src/gs-application.c:485
+msgid "Set the specified debugging level"
+msgstr "Aseta määritelty vianjäljitystaso"
+
+#: ../src/gs-application.c:487
+msgid "Show profiling information for the service"
+msgstr ""
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
@@ -272,31 +292,31 @@ msgstr "Päivitykset"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-widget.c:177
+#: ../src/gs-app-widget.c:195
 msgid "Visit website"
 msgstr "Käy verkkosivustolla"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-widget.c:184 ../src/gs-shell-installed.c:590
+#: ../src/gs-app-widget.c:202
 msgid "Cancel"
 msgstr "Peru"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:187
+#: ../src/gs-app-widget.c:205
 msgid "Pending"
 msgstr "Odottaa"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
-#: ../src/gs-app-widget.c:213
+#: ../src/gs-app-widget.c:231
 msgid "Installing"
 msgstr "Asennetaan"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being erased
-#: ../src/gs-app-widget.c:222
+#: ../src/gs-app-widget.c:240
 msgid "Removing"
 msgstr "Poistetaan"
 
@@ -306,105 +326,70 @@ msgstr "Poistetaan"
 msgid "Other"
 msgstr "Muut"
 
-#. TRANSLATORS: this is a command line option
-#: ../src/gs-launcher.c:61
-msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
-msgstr ""
-"Käynnistystila, joko \"updates\", \"updated\", \"installed\" tai \"overview\""
-
-#: ../src/gs-launcher.c:61
-msgid "MODE"
-msgstr "TILA"
-
-#: ../src/gs-launcher.c:63
-msgid "Search for applications"
-msgstr "Etsi sovelluksia"
-
-#: ../src/gs-launcher.c:63
-msgid "SEARCH"
-msgstr ""
-
-#: ../src/gs-launcher.c:65
-msgid "Show application details"
-msgstr "Näytä sovelluksen tiedot"
-
-#: ../src/gs-launcher.c:65 ../src/gs-launcher.c:67
-#, fuzzy
-#| msgctxt "Menu subcategory of Development"
-#| msgid "IDE"
-msgid "ID"
-msgstr "Ohjelmointiympäristöt"
-
-#: ../src/gs-launcher.c:67
-msgid "Set the specified debugging level"
-msgstr "Aseta määritelty vianjäljitystaso"
-
-#: ../src/gs-launcher.c:69
-msgid "Show profiling information for the service"
-msgstr ""
-
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:233
+#: ../src/gs-offline-updates.c:228
 msgid "Failed To Update"
 msgstr "Päivitys epäonnistui"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:239
+#: ../src/gs-offline-updates.c:234
 msgid "A previous update was unfinished."
 msgstr "Edellinen päivitys jäi viimeistelemättä."
 
 #. TRANSLATORS: the package manager needed to download
-#. *                  * something with no network available
-#: ../src/gs-offline-updates.c:249
+#. * something with no network available
+#: ../src/gs-offline-updates.c:244
 msgid "Network access was required but not available."
 msgstr "Verkkoyhteys vaadittiin, mutta sitä ei ollut saatavilla."
 
 #. TRANSLATORS: if the package is not signed correctly
-#. *                  *
-#: ../src/gs-offline-updates.c:258
+#. *
+#: ../src/gs-offline-updates.c:253
 msgid "An update was not signed in the correct way."
 msgstr "Päivitystä ei ollut allekirjoitettu hyväksyttävällä tavalla."
 
 #. TRANSLATORS: the transaction failed in a way the user
-#. *                  * probably cannot comprehend. Package management systems
-#. *                                   * really are teh suck.
-#: ../src/gs-offline-updates.c:268
+#. * probably cannot comprehend. Package management systems
+#. * really are teh suck.
+#: ../src/gs-offline-updates.c:263
 msgid "The update could not be completed."
 msgstr "Päivitystä ei voitu viedä loppuun."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:273
+#: ../src/gs-offline-updates.c:268
 msgid "The update was cancelled."
 msgstr "Päivitys peruttiin."
 
 #. TRANSLATORS: the user must have updated manually after
-#. *                  * the updates were prepared
-#: ../src/gs-offline-updates.c:279
+#. * the updates were prepared
+#: ../src/gs-offline-updates.c:274
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
+"Yhteydettömän tilan päivitystä pyydettiin, mutta yksikään paketti ei vaadi "
+"päivitystä."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:283
+#: ../src/gs-offline-updates.c:278
 msgid "No space was left on the drive."
 msgstr "Asemalla ei ole vapaata tilaa."
 
 #. TRANSLATORS: the update process failed in a general
-#. *                  * way, usually this message will come from source distros
-#. *                                   * like gentoo
-#: ../src/gs-offline-updates.c:291
+#. * way, usually this message will come from source distros
+#. * like gentoo
+#: ../src/gs-offline-updates.c:286
 msgid "An update failed to install correctly."
 msgstr "Päivityksen asennus epäonnistui."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:296
+#: ../src/gs-offline-updates.c:291
 msgid "The offline update failed in an unexpected way."
 msgstr "Yhteydettömän tilan päivitys epäonnistui odottamattomalla tavalla."
 
 #. TRANSLATORS: these are geeky messages from the
-#. *                                          * package manager no mortal is supposed to understand,
-#. *                                                                                   * but google might know what they mean
-#: ../src/gs-offline-updates.c:305
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: ../src/gs-offline-updates.c:300
 msgid "Detailed errors from the package manager follow:"
 msgstr "Yksityiskohtaiset virhetiedot pakettihallinnalta:"
 
@@ -437,65 +422,60 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:146
+#: ../src/gs-screenshot-image.c:129
 msgid "Screenshot not found"
 msgstr "Kuvakaappausta ei löytynyt"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:268
+#: ../src/gs-screenshot-image.c:236
 msgid "Screenshot size not found"
 msgstr "Kuvakaappauksen kokoa ei löytynyt"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:282
+#: ../src/gs-screenshot-image.c:250
 msgid "Could not create cache"
 msgstr "Välimuistin luominen ei onnistunut"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:299
+#: ../src/gs-screenshot-image.c:267
 msgid "Screenshot not valid"
 msgstr "Kuvakaappaus on virheellinen"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:305
+#: ../src/gs-screenshot-image.c:273
 msgid "Screenshot not available"
 msgstr "Kuvakaappausta ei ole saataville"
 
-#: ../src/gs-screenshot-image.c:369
+#: ../src/gs-screenshot-image.c:326
 msgid "Screenshot"
 msgstr "Kuvakaappaus"
 
 #: ../src/gs-shell-details.c:93
-#| msgid "Pending"
 msgid "_Pending"
 msgstr "_Odottaa"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
 #: ../src/gs-shell-details.c:109
-#| msgid "Install"
 msgid "_Install"
 msgstr "_Asenna"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
 #: ../src/gs-shell-details.c:120
-#| msgid "Installing"
 msgid "_Installing"
 msgstr "_Asennetaan"
 
 #. TRANSLATORS: button text in the header when an application can be erased
 #: ../src/gs-shell-details.c:147
-#| msgid "Remove"
 msgid "_Remove"
 msgstr "_Poista"
 
 #. TRANSLATORS: button text in the header when an application can be installed
 #: ../src/gs-shell-details.c:154
-#| msgid "Removing"
 msgid "_Removing"
 msgstr "_Poistetaan"
 
@@ -506,7 +486,7 @@ msgstr "_Poistetaan"
 #. * where we are showing that something happened to the
 #. * application but we don't know what
 #: ../src/gs-shell-details.c:528 ../src/gs-shell-details.c:547
-#: ../src/gs-shell-details.c:557 ../src/gs-shell-details.c:963
+#: ../src/gs-shell-details.c:557 ../src/gs-shell-details.c:964
 msgid "Unknown"
 msgstr "Tuntematon"
 
@@ -534,14 +514,14 @@ msgstr "Ei mitään"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:815 ../src/gs-shell-installed.c:189
+#: ../src/gs-shell-details.c:816 ../src/gs-shell-installed.c:190
 #: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Haluatko varmasti poistaa kohteen %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:827 ../src/gs-shell-installed.c:201
+#: ../src/gs-shell-details.c:828 ../src/gs-shell-installed.c:202
 #: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -550,7 +530,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:946
+#: ../src/gs-shell-details.c:947
 msgid "Removed"
 msgstr "Poistettu"
 
@@ -559,13 +539,13 @@ msgstr "Poistettu"
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:508 ../src/gs-shell-updates.c:422
+#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:422
 #: ../src/plugins/gs-plugin-packagekit.c:333
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Lisäosat"
 
-#: ../src/gs-shell-installed.c:597
+#: ../src/gs-shell-installed.c:602
 msgid "Click on items to select them"
 msgstr "Napsauta kohdetta valitaksesi sen"
 
@@ -681,13 +661,13 @@ msgid "No AppStream data found"
 msgstr "AppStream-tietoja ei löytynyt"
 
 #. TRANSLATORS: this is when a webapp has no comment
-#: ../src/plugins/gs-plugin-epiphany.c:147
+#: ../src/plugins/gs-plugin-epiphany.c:152
 #, c-format
 msgid "Web app"
 msgstr "Verkkosovellus"
 
 #. TRANSLATORS: this is the licence of the web-app
-#: ../src/plugins/gs-plugin-epiphany.c:155
+#: ../src/plugins/gs-plugin-epiphany.c:160
 msgid "Proprietary"
 msgstr "Suljettu"
 
@@ -1008,11 +988,10 @@ msgid "Arcade"
 msgstr "Pelihallipelit"
 
 #: ../src/plugins/menu-spec-common.c:91
-#, fuzzy
 #| msgid "Clock"
 msgctxt "Menu subcategory of Games"
 msgid "Blocks"
-msgstr "Kello"
+msgstr "Palikkapelit"
 
 #: ../src/plugins/menu-spec-common.c:92
 msgctxt "Menu subcategory of Games"
@@ -1237,7 +1216,7 @@ msgstr "Sähköposti"
 #: ../src/plugins/menu-spec-common.c:139
 msgctxt "Menu subcategory of Office"
 msgid "Finance"
-msgstr ""
+msgstr "Talous"
 
 #: ../src/plugins/menu-spec-common.c:140
 msgctxt "Menu subcategory of Office"
@@ -1583,6 +1562,26 @@ msgstr "Syötelähteet"
 msgctxt "Menu subcategory of Addons"
 msgid "Language Packs"
 msgstr "Kielipaketit"
+
+#~ msgid "_Done"
+#~ msgstr "_Valmis"
+
+#~ msgid "Application _Folders"
+#~ msgstr "S_ovelluskansiot"
+
+#~ msgid ""
+#~ "Add or remove folders. Your application folders can be found in the "
+#~ "Activities Overview."
+#~ msgstr ""
+#~ "Lisää tai poista kansioita. Sovelluskansiot sijaitsevat Toiminnot-"
+#~ "yleisnäkymässä."
+
+#~ msgid ""
+#~ "Choose a folder for the selected applications. Your application folders "
+#~ "can be found in the Activities Overview."
+#~ msgstr ""
+#~ "Valitse kansio valittuna oleville sovelluksille. Sovelluskansiot "
+#~ "sijaitsevat Toiminnot-yleisnäkymässä."
 
 #~ msgid "Description"
 #~ msgstr "Kuvaus"
