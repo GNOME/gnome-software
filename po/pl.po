@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-03-02 18:14+0100\n"
-"PO-Revision-Date: 2014-03-02 18:15+0100\n"
+"POT-Creation-Date: 2014-03-03 16:58+0100\n"
+"PO-Revision-Date: 2014-03-03 16:59+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -78,7 +78,7 @@ msgstr "Za_kończ"
 #. * where we are showing the application was installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
 #: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:1159
+#: ../src/gs-popular-tile.c:82 ../src/gs-shell-details.c:1180
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Zainstalowane"
@@ -231,8 +231,8 @@ msgid "Details page"
 msgstr "Strona szczegółów"
 
 #: ../src/gnome-software.ui.h:35
-msgid "Software Source Detected"
-msgstr "Wykryto źródło oprogramowania"
+msgid "Software Source Included"
+msgstr "Dołączono źródło oprogramowania"
 
 #: ../src/gnome-software.ui.h:36
 msgid ""
@@ -243,8 +243,8 @@ msgstr ""
 "dostęp do innego oprogramowania."
 
 #: ../src/gnome-software.ui.h:37
-msgid "No Update Source Detected"
-msgstr "Nie wykryto żadnego źródła aktualizacji"
+msgid "No Software Source Included"
+msgstr "Nie dołączono źródła oprogramowania"
 
 #: ../src/gnome-software.ui.h:38
 msgid ""
@@ -301,7 +301,7 @@ msgstr "Wersja"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gnome-software.ui.h:49 ../src/gs-shell-details.c:1164
+#: ../src/gnome-software.ui.h:49 ../src/gs-shell-details.c:1185
 msgid "Updated"
 msgstr "Zaktualizowane"
 
@@ -475,7 +475,7 @@ msgstr "Zainstaluj"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-widget.c:226 ../src/gs-shell-details.c:1037
+#: ../src/gs-app-widget.c:226 ../src/gs-shell-details.c:1058
 #: ../src/gs-shell-installed.c:205 ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Usuń"
@@ -688,44 +688,44 @@ msgstr "_Usuwanie"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-shell-details.c:582 ../src/gs-shell-details.c:601
-#: ../src/gs-shell-details.c:611 ../src/gs-shell-details.c:653
-#: ../src/gs-shell-details.c:1170
+#: ../src/gs-shell-details.c:603 ../src/gs-shell-details.c:622
+#: ../src/gs-shell-details.c:632 ../src/gs-shell-details.c:674
+#: ../src/gs-shell-details.c:1191
 msgid "Unknown"
 msgstr "Nieznane"
 
 #. TRANSLATORS: this is where the licence is insanely
 #. * complicated and the full string is put into the tooltip
-#: ../src/gs-shell-details.c:587
+#: ../src/gs-shell-details.c:608
 msgid "Complicated!"
 msgstr "Skomplikowana!"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:608
+#: ../src/gs-shell-details.c:629
 msgid "Calculating…"
 msgstr "Obliczanie…"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:624
+#: ../src/gs-shell-details.c:645
 msgid "Never"
 msgstr "Nigdy"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:641
+#: ../src/gs-shell-details.c:662
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1022 ../src/gs-shell-installed.c:190
+#: ../src/gs-shell-details.c:1043 ../src/gs-shell-installed.c:190
 #: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Na pewno usunąć program %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1034 ../src/gs-shell-installed.c:202
+#: ../src/gs-shell-details.c:1055 ../src/gs-shell-installed.c:202
 #: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -735,7 +735,7 @@ msgstr ""
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-shell-details.c:1153
+#: ../src/gs-shell-details.c:1174
 msgid "Removed"
 msgstr "Usunięte"
 
