@@ -32,6 +32,8 @@
 #include "gs-markdown.h"
 #include "gs-update-dialog.h"
 
+#include <gdesktop-enums.h>
+#include <langinfo.h>
 /* this isn't ideal, as PK should be abstracted away in a plugin, but
  * GNetworkMonitor doesn't provide us with a connection type */
 #include <packagekit-glib2/packagekit.h>
@@ -57,6 +59,8 @@ struct GsShellUpdatesPrivate
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*cancellable_refresh;
+	GSettings		*settings;
+	GSettings		*desktop_settings;
 	GtkListBox		*list_box_updates;
 	gboolean		 cache_valid;
 	GsShell			*shell;
@@ -64,6 +68,7 @@ struct GsShellUpdatesPrivate
 	PkControl		*control;
 	GsShellUpdatesState	 state;
 	gboolean		 has_agreed_to_mobile_data;
+	gboolean		 ampm_available;
 };
 
 enum {
@@ -82,6 +87,68 @@ void
 gs_shell_updates_invalidate (GsShellUpdates *shell_updates)
 {
 	shell_updates->priv->cache_valid = FALSE;
+}
+
+static GDateTime *
+time_next_midnight (void)
+{
+	GDateTime *now;
+	GDateTime *next_midnight;
+	GTimeSpan since_midnight;
+
+	now = g_date_time_new_now_local ();
+	since_midnight = g_date_time_get_hour (now) * G_TIME_SPAN_HOUR +
+	                 g_date_time_get_minute (now) * G_TIME_SPAN_MINUTE +
+	                 g_date_time_get_second (now) * G_TIME_SPAN_SECOND +
+	                 g_date_time_get_microsecond (now);
+	next_midnight = g_date_time_add (now, G_TIME_SPAN_DAY - since_midnight);
+	g_date_time_unref (now);
+
+	return next_midnight;
+}
+
+static gchar *
+gs_shell_updates_last_checked_time_string (GsShellUpdates *shell_updates)
+{
+	GsShellUpdatesPrivate *priv = shell_updates->priv;
+	GDesktopClockFormat clock_format;
+	GDateTime *last_checked;
+	GDateTime *midnight;
+	const gchar *format_string;
+	gchar *time_string;
+	gboolean use_24h_time;
+	gint64 tmp;
+	gint days_ago;
+
+	g_settings_get (priv->settings, "check-timestamp", "x", &tmp);
+	last_checked = g_date_time_new_from_unix_local (tmp);
+
+	midnight = time_next_midnight ();
+	days_ago = g_date_time_difference (midnight, last_checked) / G_TIME_SPAN_DAY;
+
+	clock_format = g_settings_get_enum (priv->desktop_settings, "clock-format");
+	use_24h_time = (clock_format == G_DESKTOP_CLOCK_FORMAT_24H || priv->ampm_available == FALSE);
+
+	if (days_ago < 1) { // today
+		if (use_24h_time) {
+			/* TRANSLATORS: Time in 24h format */
+			format_string = _("%R");
+		} else {
+			/* TRANSLATORS: Time in 12h format */
+			format_string = _("%l:%M %p");
+		}
+	} else {
+		/* TRANSLATORS: This is the date string with: day number, month name, year.
+		   i.e. "25 May 2012" */
+		format_string = _("%e %B %Y");
+	}
+
+	time_string = g_date_time_format (last_checked, format_string);
+
+	g_date_time_unref (last_checked);
+	g_date_time_unref (midnight);
+
+	return time_string;
 }
 
 /**
@@ -255,6 +322,20 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	default:
 		g_assert_not_reached ();
 		break;
+	}
+
+	/* last checked label */
+	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (widget)), "uptodate") == 0) {
+		gchar *last_checked;
+
+		tmp = gs_shell_updates_last_checked_time_string (shell_updates);
+		/* TRANSLATORS: This is the time when we last checked for updates */
+		last_checked = g_strdup_printf (_("Last checked: %s"), tmp);
+		g_free (tmp);
+
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_updates_last_checked"));
+		gtk_label_set_label (GTK_LABEL (widget), last_checked);
+		g_free (last_checked);
 	}
 }
 
@@ -932,10 +1013,18 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 static void
 gs_shell_updates_init (GsShellUpdates *shell_updates)
 {
+	const char *ampm;
+
 	shell_updates->priv = GS_SHELL_UPDATES_GET_PRIVATE (shell_updates);
 	shell_updates->priv->control = pk_control_new ();
 	shell_updates->priv->cancellable_refresh = g_cancellable_new ();
 	shell_updates->priv->state = GS_SHELL_UPDATES_STATE_STARTUP;
+	shell_updates->priv->settings = g_settings_new ("org.gnome.software");
+	shell_updates->priv->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
+
+	ampm = nl_langinfo (AM_STR);
+	if (ampm != NULL && *ampm != '\0')
+		shell_updates->priv->ampm_available = TRUE;
 }
 
 /**
@@ -954,6 +1043,8 @@ gs_shell_updates_finalize (GObject *object)
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
 	g_object_unref (priv->control);
+	g_object_unref (priv->settings);
+	g_object_unref (priv->desktop_settings);
 
 	G_OBJECT_CLASS (gs_shell_updates_parent_class)->finalize (object);
 }
