@@ -603,6 +603,7 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 {
 	GError *error = NULL;
 	gboolean ret;
+	GDateTime *now;
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
 
@@ -637,6 +638,12 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 		g_error_free (error);
 		return;
 	}
+
+	/* update the last checked timestamp */
+	now = g_date_time_new_now_local ();
+	g_settings_set (priv->settings, "check-timestamp", "x",
+	                g_date_time_to_unix (now));
+	g_date_time_unref (now);
 
 	/* get the new list */
 	gs_shell_updates_refresh (shell_updates, FALSE, TRUE);
