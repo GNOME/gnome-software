@@ -36,8 +36,8 @@ appstream_common_func (void)
 {
 	gchar *tmp;
 
-	g_assert_cmpstr (appstream_tag_to_string (APPSTREAM_TAG_LICENCE), == ,"licence");
-	g_assert_cmpint (appstream_tag_from_string ("licence"), == ,APPSTREAM_TAG_LICENCE);
+	g_assert_cmpstr (appstream_tag_to_string (APPSTREAM_TAG_PROJECT_LICENSE), == ,"project_license");
+	g_assert_cmpint (appstream_tag_from_string ("licence"), == ,APPSTREAM_TAG_PROJECT_LICENSE);
 	g_assert_cmpint (appstream_get_locale_value ("C"), ==, G_MAXUINT - 1);
 	g_assert_cmpint (appstream_get_locale_value ("xxx"), ==, G_MAXUINT);
 
