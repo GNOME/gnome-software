@@ -1,3 +1,40 @@
+Version 3.11.91
+~~~~~~~~~~~~~~~
+Released: 2014-03-05
+
+* Translations:
+ - Updated Czech translation (Marek Černocký)
+ - Updated Finnish translation (Jiri Grönroos)
+ - Updated Polish translation (Piotr Drąg)
+
+* New Features:
+ - Add CSS for infobar theming (Kalev Lember)
+ - Add support for the AppStream <languages> tag (Richard Hughes)
+ - Add the concept of 'kudos' to an application (Richard Hughes)
+ - Award a kudo if an application is available in the users language (Richard Hughes)
+ - Award a kudo if an application is featured or recommended (Richard Hughes)
+ - Award a kudo if an application ships an AppData screenshot (Richard Hughes)
+
+* Bugfix:
+ - Do not show local applications that do not have an icon specified (Richard Hughes)
+ - Do not use gtk_icon_theme_load_icon() as it's not thread safe (Richard Hughes)
+ - Don't show missing history on a local package install (Kalev Lember)
+ - Fade in the loading spinner (Kalev Lember)
+ - Fix multiple bugs that caused the menu path not to be shown (Richard Hughes)
+ - Improve tile layout in the category view (Kalev Lember)
+ - Let the 'origin' span 3 columns (Kalev Lember)
+ - Make use of the PackageKit summary in details when available (Giovanni Campagna)
+ - Remove Settings category from the desktop file (Giovanni Campagna)
+ - Remove the "Getting software details…" label (Kalev Lember)
+ - Show the filename for local package installation (Kalev Lember)
+ - Support the AppStream <project_license> tag (Richard Hughes)
+ - Update software source message wording (Kalev Lember)
+ - Use a per-list sort key when randomizing a list (Richard Hughes)
+ - Use application/x-executable icon for local packages (Kalev Lember)
+ - Use different icons for repo packages and addons (Kalev Lember)
+ - Use new-style dialogs (Matthias Clasen)
+ - Warn when overwriting metadata keys that already exist (Richard Hughes)
+
 Version 3.11.90
 ~~~~~~~~~~~~~~~
 Released: 2014-02-17
