@@ -499,9 +499,11 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 			gs_app_set_description (app,
 						GS_APP_QUALITY_LOWEST,
 						desc);
+#if PK_CHECK_VERSION(0,9,1)
 			gs_app_set_summary (app,
 					    GS_APP_QUALITY_LOWEST,
 					    pk_details_get_summary (details));
+#endif
 			g_free (desc);
 			break;
 		}
