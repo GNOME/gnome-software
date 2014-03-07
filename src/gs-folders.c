@@ -282,7 +282,7 @@ save (GsFolders *folders)
 	}
 	g_free (path);
 
-	apps = g_hash_table_get_keys_as_array (folders->priv->folders, NULL);
+	apps = gs_folders_get_nonempty_folders (folders);
 	g_settings_set_strv (folders->priv->settings, "folder-children",
                              (const gchar * const *)apps);
 	g_free (apps);
