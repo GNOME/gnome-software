@@ -277,9 +277,10 @@ add_folder_add (GtkButton *button, GsAppFolderDialog *dialog)
 
 	folder = gtk_entry_get_text (GTK_ENTRY (priv->new_folder_entry));
 	if (folder[0] != '\0') {
-		gs_folders_add_folder (priv->folders, folder);
+		const gchar *id;
+		id = gs_folders_add_folder (priv->folders, folder);
 		gtk_list_box_insert (GTK_LIST_BOX (priv->app_folder_list), 
-                       	             create_row (dialog, folder),
+				     create_row (dialog, id),
 				     gtk_list_box_row_get_index (priv->new_folder_button));
 	}
 }
