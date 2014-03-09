@@ -109,6 +109,7 @@ new_folder_cb (GsAppFolderDialog *dialog)
 
 	gtk_entry_set_text (GTK_ENTRY (priv->new_folder_entry), "");
 	gtk_widget_show (priv->new_folder_popover);
+	gtk_widget_grab_focus (priv->new_folder_entry);
 }
 
 static void
