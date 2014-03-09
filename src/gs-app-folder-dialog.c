@@ -261,6 +261,12 @@ update_sensitive (GObject *entry, GParamSpec *pspec, GtkWidget *button)
 }
 
 static void
+activate_entry (GtkEntry *entry, GtkWidget *button)
+{
+	gtk_widget_activate (button);
+}
+
+static void
 add_folder_add (GtkButton *button, GsAppFolderDialog *dialog)
 {
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
@@ -327,6 +333,7 @@ create_folder_name_popover (GsAppFolderDialog *dialog)
 
 	gtk_widget_set_sensitive (button, FALSE);
 	g_signal_connect (priv->new_folder_entry, "notify::text", G_CALLBACK (update_sensitive), button);
+	g_signal_connect (priv->new_folder_entry, "activate", G_CALLBACK (activate_entry), button);
 
 	gtk_widget_show_all (grid);
 }
