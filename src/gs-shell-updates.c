@@ -137,6 +137,30 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *shell_updates)
 			/* TRANSLATORS: Time in 12h format */
 			format_string = _("%l:%M %p");
 		}
+	} else if (days_ago < 2) { // yesterday
+		if (use_24h_time) {
+			/* TRANSLATORS: This is the word "Yesterday" followed by a
+			   time string in 24h format. i.e. "Yesterday, 14:30" */
+			format_string = _("Yesterday, %R");
+		} else {
+			/* TRANSLATORS: This is the word "Yesterday" followed by a
+			   time string in 12h format. i.e. "Yesterday, 2:30 PM" */
+			format_string = _("Yesterday, %l:%M %p");
+		}
+	} else if (days_ago < 3) {
+		format_string = _("Two days ago");
+	} else if (days_ago < 4) {
+		format_string = _("Three days ago");
+	} else if (days_ago < 5) {
+		format_string = _("Four days ago");
+	} else if (days_ago < 6) {
+		format_string = _("Five days ago");
+	} else if (days_ago < 7) {
+		format_string = _("Six days ago");
+	} else if (days_ago < 8) {
+		format_string = _("One week ago");
+	} else if (days_ago < 15) {
+		format_string = _("Two weeks ago");
 	} else {
 		/* TRANSLATORS: This is the date string with: day number, month name, year.
 		   i.e. "25 May 2012" */
