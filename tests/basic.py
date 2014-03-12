@@ -26,11 +26,21 @@ try:
     all_button = app.child('All')
     installed_button = app.child('Installed')
     updates_button = app.child('Updates')
+    back_button = app.child('Go back')
+    install_button = app.child(roleName='frame', name='Software', recursive=False).child(roleName='panel', name='', recursive=False).child(roleName='push button', name='Install')
+    remove_button = app.child(roleName='frame', name='Software', recursive=False).child(roleName='panel', name='', recursive=False).child(roleName='push button', name='Remove')
 
     overview_page = app.child('Overview page')
     installed_page = app.child('Installed page')
     updates_page = app.child('Updates page')
     search_page = app.child('Search page')
+    details_page = app.child('Details page')
+
+    website_details_button = details_page.child(roleName='push button', name='Website')
+    history_details_button = details_page.child(roleName='push button', name='History')
+    launch_details_button = details_page.child(roleName='push button', name='Launch')
+
+    search_page_listbox = search_page.child(roleName='list box')
 
     all_button.click()
     assert (all_button.getState().contains(pyatspi.STATE_ARMED))
@@ -86,6 +96,36 @@ try:
     assert (not installed_page.getState().contains(pyatspi.STATE_SHOWING))
     assert (not updates_page.getState().contains(pyatspi.STATE_SHOWING))
     assert (search_page.getState().contains(pyatspi.STATE_SHOWING))
+
+    """Details page test section"""
+    search_page_listbox.child(roleName='label', name='GNU Image Manipulation Program').click()
+    doDelay(4)
+    assert (not overview_page.getState().contains(pyatspi.STATE_SHOWING))
+    assert (not installed_page.getState().contains(pyatspi.STATE_SHOWING))
+    assert (not updates_page.getState().contains(pyatspi.STATE_SHOWING))
+    assert (not search_page.getState().contains(pyatspi.STATE_SHOWING))
+    assert (details_page.getState().contains(pyatspi.STATE_SHOWING))
+    assert (install_button.getState().contains(pyatspi.STATE_SHOWING) or remove_button.getState().contains(pyatspi.STATE_SHOWING))
+    assert (back_button.getState().contains(pyatspi.STATE_SHOWING))
+    assert (website_details_button.getState().contains(pyatspi.STATE_VISIBLE))
+    assert (history_details_button.getState().contains(pyatspi.STATE_VISIBLE))
+
+    if install_button.getState().contains(pyatspi.STATE_SHOWING):
+        assert (not launch_details_button.getState().contains(pyatspi.STATE_VISIBLE))
+    else:
+        assert (launch_details_button.getState().contains(pyatspi.STATE_VISIBLE))
+
+    back_button.click()
+    assert (not all_button.getState().contains(pyatspi.STATE_ARMED))
+    assert (not installed_button.getState().contains(pyatspi.STATE_ARMED))
+    assert (not updates_button.getState().contains(pyatspi.STATE_ARMED))
+    assert (not overview_page.getState().contains(pyatspi.STATE_SHOWING))
+    assert (not installed_page.getState().contains(pyatspi.STATE_SHOWING))
+    assert (not updates_page.getState().contains(pyatspi.STATE_SHOWING))
+    assert (search_page.getState().contains(pyatspi.STATE_SHOWING))
+    assert (not install_button.getState().contains(pyatspi.STATE_SHOWING))
+    assert (not remove_button.getState().contains(pyatspi.STATE_SHOWING))
+    assert (not back_button.getState().contains(pyatspi.STATE_SHOWING))
 
     keyCombo("Escape")
     assert (all_button.getState().contains(pyatspi.STATE_ARMED))
