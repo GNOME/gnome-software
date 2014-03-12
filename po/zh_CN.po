@@ -12,10 +12,10 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-03-08 08:33+0000\n"
-"PO-Revision-Date: 2014-03-08 18:53+0800\n"
+"POT-Creation-Date: 2014-03-11 20:34+0000\n"
+"PO-Revision-Date: 2014-03-12 16:20+0800\n"
 "Last-Translator: Sphinx Jiang <yishanj13@gmail.com>\n"
-"Language-Team: Chinese (China) <i18n-zh@googlegroups.com>\n"
+"Language-Team: Chinese (simplified) <i18n-zh@googlegroups.com>\n"
 "Language: zh_CN\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -48,12 +48,12 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "添加到应用程序文件夹"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:317
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
 #: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "取消(_C)"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:322
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
 msgid "_Add"
 msgstr "添加(_A)"
 
@@ -364,7 +364,7 @@ msgstr "2014年1月30日"
 msgid "Remove Source"
 msgstr "移除源"
 
-#: ../src/gs-app-folder-dialog.c:305
+#: ../src/gs-app-folder-dialog.c:313
 msgid "Folder Name"
 msgstr "目录名"
 
@@ -717,7 +717,7 @@ msgstr "%s 将被移除，想再次使用它您必须重新安装。"
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:503
+#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:584
 #: ../src/plugins/gs-plugin-packagekit.c:576
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
@@ -727,56 +727,79 @@ msgstr "附加组件"
 msgid "Click on items to select them"
 msgstr "点击项目来选择它们"
 
+#. TRANSLATORS: Time in 24h format
+#: ../src/gs-shell-updates.c:135
+msgid "%R"
+msgstr "%R"
+
+#. TRANSLATORS: Time in 12h format
+#: ../src/gs-shell-updates.c:138
+msgid "%l:%M %p"
+msgstr "%p %l:%M"
+
+#. TRANSLATORS: This is the date string with: day number, month name, year.
+#. i.e. "25 May 2012"
+#: ../src/gs-shell-updates.c:143
+msgid "%e %B %Y"
+msgstr "%Y %B %e"
+
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:137
+#: ../src/gs-shell-updates.c:204
 msgid "Setting up updates…"
 msgstr "设置更新中…"
 
-#: ../src/gs-shell-updates.c:138 ../src/gs-shell-updates.c:145
+#: ../src/gs-shell-updates.c:205 ../src/gs-shell-updates.c:212
 msgid "(This could take a while)"
 msgstr "(该过程会持续一会儿)"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:144
+#: ../src/gs-shell-updates.c:211
 msgid "Looking for new updates…"
 msgstr "新更新查找中…"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:151
+#: ../src/gs-shell-updates.c:218
 msgid "Checking for updates…"
 msgstr "更新检查中…"
 
+#. TRANSLATORS: This is the time when we last checked for updates
+#: ../src/gs-shell-updates.c:333
+#, c-format
+#| msgid "Last Checked"
+msgid "Last checked: %s"
+msgstr "上次检查：%s"
+
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:387
+#: ../src/gs-shell-updates.c:468
 msgid "Recent Software Updates"
 msgstr "近期软件更新"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:688
+#: ../src/gs-shell-updates.c:776
 msgid "No Network"
 msgstr "无网络连接"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:692
+#: ../src/gs-shell-updates.c:780
 msgid "Internet access is required to check for updates."
 msgstr "检查更新需要可访问网络。"
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:696
+#: ../src/gs-shell-updates.c:784
 msgid "Network Settings"
 msgstr "网络设置"
 
 #. TRANSLATORS: $$$
-#: ../src/gs-shell-updates.c:716
+#: ../src/gs-shell-updates.c:804
 msgid "Charges may apply"
 msgstr "可能引起费用"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:720
+#: ../src/gs-shell-updates.c:808
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -784,7 +807,7 @@ msgstr "使用移动宽带检查更新可能会花费流量。"
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:724
+#: ../src/gs-shell-updates.c:812
 msgid "Check Anyway"
 msgstr "依然检查"
 
