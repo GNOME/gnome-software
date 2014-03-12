@@ -21,7 +21,7 @@ from dogtail.procedural import *
 try:
     run('gnome-software')
 
-    app = root.application('gnome-software');
+    app = root.application('org.gnome.Software')
 
     all_button = app.child('All')
     installed_button = app.child('Installed')

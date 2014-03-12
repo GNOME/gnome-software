@@ -20,7 +20,7 @@ from dogtail.rawinput import keyCombo
 try:
     run('gnome-software')
 
-    app = root.application('gnome-software');
+    app = root.application('org.gnome.Software')
 
     bus = Gio.bus_get_sync(Gio.BusType.SESSION, None)
     proxy = Gio.DBusProxy.new_sync(bus, Gio.DBusProxyFlags.NONE,
