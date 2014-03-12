@@ -23,8 +23,7 @@
 
 #include <gs-plugin.h>
 
-#include "appstream-common.h"
-#include "appstream-markup.h"
+#include <appstream-glib.h>
 
 struct GsPluginPrivate {
 	gchar			*cachedir;
@@ -122,185 +121,23 @@ out:
 	return ret;
 }
 
-typedef struct {
-	AppstreamTag		 tag;
-	GsApp			*app;
-	AppstreamMarkup		*markup;
-} AppstreamCacheHelper;
-
 /**
- * appdata_parse_start_element_cb:
+ * gs_plugin_appdata_get_best_locale:
  */
-static void
-appdata_parse_start_element_cb (GMarkupParseContext *context,
-				const gchar *element_name,
-				const gchar **attribute_names,
-				const gchar **attribute_values,
-				gpointer user_data,
-				GError **error)
+static const gchar *
+gs_plugin_appdata_get_best_locale (GHashTable *locale_hash)
 {
-	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
+	const gchar * const *locales;
+	const gchar *tmp;
 	guint i;
 
-	/* description markup */
-	if (helper->tag == APPSTREAM_TAG_DESCRIPTION) {
-		for (i = 0; attribute_names[i] != NULL; i++) {
-			if (g_strcmp0 (attribute_names[i], "xml:lang") == 0) {
-				appstream_markup_set_lang (helper->markup,
-							   attribute_values[i]);
-				break;
-			}
-		}
-		if (g_strcmp0 (element_name, "p") == 0) {
-			appstream_markup_set_mode (helper->markup,
-						   APPSTREAM_MARKUP_MODE_P_START);
-		} else if (g_strcmp0 (element_name, "ul") == 0) {
-			appstream_markup_set_mode (helper->markup,
-						   APPSTREAM_MARKUP_MODE_UL_START);
-		} else if (g_strcmp0 (element_name, "li") == 0) {
-			appstream_markup_set_mode (helper->markup,
-						   APPSTREAM_MARKUP_MODE_LI_START);
-		}
-		return;
+	locales = g_get_language_names ();
+	for (i = 0; locales[i] != NULL; i++) {
+		tmp = g_hash_table_lookup (locale_hash, locales[i]);
+		if (tmp != NULL)
+			return tmp;
 	}
-
-	helper->tag = appstream_tag_from_string (element_name);
-	switch (helper->tag) {
-	case APPSTREAM_TAG_DESCRIPTION:
-		/* only process the description if it's not already been set;
-		 * doing all this string munging is moderately expensive */
-		appstream_markup_set_enabled (helper->markup,
-					      gs_app_get_description (helper->app) == NULL);
-		appstream_markup_set_mode (helper->markup,
-					   APPSTREAM_MARKUP_MODE_START);
-		break;
-	case APPSTREAM_TAG_UNKNOWN:
-		g_warning ("AppData: tag %s unknown", element_name);
-		break;
-	default:
-		break;
-	}
-}
-
-
-/**
- * appdata_parse_end_element_cb:
- */
-static void
-appdata_parse_end_element_cb (GMarkupParseContext *context,
-			      const gchar *element_name,
-			      gpointer user_data,
-			      GError **error)
-{
-	const gchar *tmp;
-	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
-	if (helper->tag == APPSTREAM_TAG_DESCRIPTION) {
-		if (g_strcmp0 (element_name, "p") == 0) {
-			appstream_markup_set_mode (helper->markup,
-						   APPSTREAM_MARKUP_MODE_P_END);
-		} else if (g_strcmp0 (element_name, "ul") == 0) {
-			appstream_markup_set_mode (helper->markup,
-						   APPSTREAM_MARKUP_MODE_UL_END);
-		} else if (g_strcmp0 (element_name, "li") == 0) {
-			appstream_markup_set_mode (helper->markup,
-						   APPSTREAM_MARKUP_MODE_LI_END);
-		} else if (g_strcmp0 (element_name, "description") == 0) {
-			appstream_markup_set_mode (helper->markup,
-						   APPSTREAM_MARKUP_MODE_END);
-			tmp = appstream_markup_get_text (helper->markup);
-			if (tmp != NULL)
-				gs_app_set_description (helper->app,
-							GS_APP_QUALITY_NORMAL,
-							tmp);
-			helper->tag = APPSTREAM_TAG_APPLICATION;
-		}
-	} else {
-		helper->tag = APPSTREAM_TAG_APPLICATION;
-	}
-}
-
-/**
- * appdata_parse_text_cb:
- */
-static void
-appdata_parse_text_cb (GMarkupParseContext *context,
-			const gchar *text,
-			gsize text_len,
-			gpointer user_data,
-			GError **error)
-{
-	AppstreamCacheHelper *helper = (AppstreamCacheHelper *) user_data;
-	gchar *tmp = NULL;
-
-	/* no useful content */
-	if (text_len == 0)
-		return;
-
-	switch (helper->tag) {
-	case APPSTREAM_TAG_APPLICATION:
-	case APPSTREAM_TAG_APPLICATIONS:
-	case APPSTREAM_TAG_ID:
-	case APPSTREAM_TAG_PROJECT_LICENSE:
-	case APPSTREAM_TAG_SCREENSHOTS:
-	case APPSTREAM_TAG_UPDATECONTACT:
-	case APPSTREAM_TAG_COMPULSORY_FOR_DESKTOP:
-		/* ignore */
-		break;
-	case APPSTREAM_TAG_DESCRIPTION:
-		appstream_markup_add_content (helper->markup, text, text_len);
-		break;
-	case APPSTREAM_TAG_SCREENSHOT:
-		gs_app_add_kudo (helper->app, GS_APP_KUDO_HAS_SCREENSHOTS);
-		/* FIXME: actually add to API */
-		//tmp = appstream_xml_unmunge (text, text_len);
-		//gs_app_add_screenshot (helper->app, tmp);
-		break;
-	case APPSTREAM_TAG_NAME:
-		// FIXME: does not get best language
-		tmp = appstream_xml_unmunge (text, text_len);
-		if (tmp == NULL)
-			break;
-		g_debug ("AppData: Setting name: %s", tmp);
-		gs_app_set_name (helper->app, GS_APP_QUALITY_NORMAL, tmp);
-		break;
-	case APPSTREAM_TAG_SUMMARY:
-		// FIXME: does not get best language
-		tmp = appstream_xml_unmunge (text, text_len);
-		if (tmp == NULL)
-			break;
-		g_debug ("AppData: Setting summary: %s", tmp);
-		gs_app_set_summary (helper->app, GS_APP_QUALITY_NORMAL, tmp);
-		break;
-	case APPSTREAM_TAG_URL:
-		if (gs_app_get_url (helper->app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
-			tmp = appstream_xml_unmunge (text, text_len);
-			if (tmp == NULL)
-				break;
-			g_debug ("AppData: Setting URL: %s", tmp);
-			gs_app_set_url (helper->app, GS_APP_URL_KIND_HOMEPAGE, tmp);
-		}
-		break;
-	case APPSTREAM_TAG_PROJECT_GROUP:
-		if (gs_app_get_project_group (helper->app) == NULL) {
-			tmp = appstream_xml_unmunge (text, text_len);
-			if (tmp == NULL)
-				break;
-			g_debug ("AppData: Setting project-group: %s", tmp);
-			gs_app_set_project_group (helper->app, tmp);
-		}
-		break;
-	default:
-		tmp = appstream_xml_unmunge (text, text_len);
-		if (tmp == NULL)
-			break;
-		if (helper->tag != APPSTREAM_TAG_UNKNOWN) {
-			g_warning ("AppData: unknown data '%s' is '%s'",
-				   appstream_tag_to_string (helper->tag), tmp);
-		}
-		break;
-	}
-	g_free (tmp);
-
+	return NULL;
 }
 
 /**
@@ -311,40 +148,80 @@ gs_plugin_refine_by_local_appdata (GsApp *app,
 				   const gchar *filename,
 				   GError **error)
 {
-	const GMarkupParser parser = {
-		appdata_parse_start_element_cb,
-		appdata_parse_end_element_cb,
-		appdata_parse_text_cb,
-		NULL /* passthrough */,
-		NULL /* error */ };
-	AppstreamCacheHelper *helper = NULL;
-	gchar *data;
+	GHashTable *description = NULL;
+	GNode *application;
+	GNode *n;
+	GNode *root = NULL;
+	const gchar *tmp;
 	gboolean ret;
-	GMarkupParseContext *ctx = NULL;
+	gchar *data = NULL;
+	gchar *desc = NULL;
 
 	/* read file */
 	ret = g_file_get_contents (filename, &data, NULL, error);
 	if (!ret)
 		goto out;
-
-	/* parse file */
-	helper = g_new0 (AppstreamCacheHelper, 1);
-	helper->app = app;
-	helper->markup = appstream_markup_new ();
-	ctx = g_markup_parse_context_new (&parser,
-					  G_MARKUP_PREFIX_ERROR_POSITION,
-					  helper,
-					  NULL);
-	ret = g_markup_parse_context_parse (ctx, data, -1, error);
-	if (!ret)
+	root = as_node_from_xml (data, -1, AS_NODE_FROM_XML_FLAG_NONE, error);
+	if (root == NULL) {
+		ret = FALSE;
 		goto out;
+	}
+
+	/* parse content */
+	application = as_node_find (root, "application");
+	if (application == NULL)
+		goto out;
+
+	/* <name> */
+	tmp = as_node_get_localized_best (application, "name");
+	if (tmp != NULL)
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, tmp);
+
+	/* <summary> */
+	tmp = as_node_get_localized_best (application, "summary");
+	if (tmp != NULL)
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, tmp);
+
+	/* <screenshots> */
+	n = as_node_find (application, "screenshots");
+	if (n != NULL)
+		gs_app_add_kudo (app, GS_APP_KUDO_HAS_SCREENSHOTS);
+
+	/* <url> */
+	n = as_node_find (root, "url");
+	if (n != NULL && gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
+		gs_app_set_url (app, GS_APP_URL_KIND_HOMEPAGE,
+				as_node_get_data (n));
+	}
+
+	/* <project_group> */
+	n = as_node_find (application, "project_group");
+	if (n != NULL && gs_app_get_project_group (app) == NULL)
+		gs_app_set_project_group (app, as_node_get_data (n));
+
+	/* <description> */
+	n = as_node_find (application, "description");
+	if (n != NULL) {
+		description = as_node_get_localized_unwrap (n, error);
+		if (description == NULL) {
+			ret = FALSE;
+			goto out;
+		}
+		tmp = gs_plugin_appdata_get_best_locale (description);
+		desc = as_markup_convert_simple (tmp, -1, error);
+		if (desc == NULL) {
+			ret = FALSE;
+			goto out;
+		}
+		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, desc);
+	}
 out:
-	if (ctx != NULL)
-		g_markup_parse_context_free (ctx);
-	if (helper != NULL)
-		appstream_markup_free (helper->markup);
-	g_free (helper);
+	if (root != NULL)
+		as_node_unref (root);
+	if (description != NULL)
+		g_hash_table_unref (description);
 	g_free (data);
+	g_free (desc);
 	return ret;
 }
 

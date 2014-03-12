@@ -63,6 +63,7 @@ dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.11.5 gio-unix-2.0)
 PKG_CHECK_MODULES(PACKAGEKIT, packagekit-glib2 >= 0.8.12)
+PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.1.1)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
 PKG_CHECK_MODULES(NOTIFY, libnotify)
 PKG_CHECK_MODULES(SOUP, libsoup-2.4)

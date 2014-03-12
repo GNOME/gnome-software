@@ -22,17 +22,15 @@
 #include <config.h>
 #include <glib/gi18n.h>
 #include <locale.h>
+#include <appstream-glib.h>
 
 #include <gs-plugin.h>
 #include <gs-plugin-loader.h>
 
-#include "appstream-app.h"
-#include "appstream-cache.h"
-
 #define	GS_PLUGIN_APPSTREAM_MAX_SCREENSHOTS	5
 
 struct GsPluginPrivate {
-	AppstreamCache		*cache;
+	AsStore			*store;
 	GPtrArray		*file_monitors;
 	gchar			*locale;
 	gchar			*cachedir;
@@ -49,26 +47,41 @@ gs_plugin_get_name (void)
 }
 
 /**
- * gs_plugin_appstream_icons_are_new_layout:
+ * as_app_has_category:
  */
 static gboolean
-gs_plugin_appstream_icons_are_new_layout (const gchar *dirname)
+as_app_has_category (AsApp *app, const gchar *category)
 {
-	GDir *dir;
+	GPtrArray *categories;
 	const gchar *tmp;
-	gboolean ret = TRUE;
+	guint i;
 
-	/* simply test if the first item is a file and if not, the icons are
-	 * in the new /var/cache/app-info/icons/${repo}/gimp.png layout */
-	dir = g_dir_open (dirname, 0, NULL);
-	if (dir == NULL)
-		goto out;
-	tmp = g_dir_read_name (dir);
-	ret = g_strstr_len (tmp, -1, ".") == NULL;
-out:
-	if (dir != NULL)
-		g_dir_close (dir);
-	return ret;
+	categories = as_app_get_categories (app);
+	for (i = 0; i < categories->len; i++) {
+		tmp = g_ptr_array_index (categories, i);
+		if (g_strcmp0 (tmp, category) == 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * as_app_has_compulsory_for_desktop:
+ */
+static gboolean
+as_app_has_compulsory_for_desktop (AsApp *app, const gchar *compulsory_for_desktop)
+{
+	GPtrArray *compulsory_for_desktops;
+	const gchar *tmp;
+	guint i;
+
+	compulsory_for_desktops = as_app_get_compulsory_for_desktops (app);
+	for (i = 0; i < compulsory_for_desktops->len; i++) {
+		tmp = g_ptr_array_index (compulsory_for_desktops, i);
+		if (g_strcmp0 (tmp, compulsory_for_desktop) == 0)
+			return TRUE;
+	}
+	return FALSE;
 }
 
 /**
@@ -78,23 +91,22 @@ static gboolean
 gs_plugin_parse_xml_file (GsPlugin *plugin,
 			  const gchar *parent_dir,
 			  const gchar *filename,
-			  const gchar *path_icons,
+			  const gchar *icon_root,
 			  GCancellable *cancellable,
 			  GError **error)
 {
 	GError *error_local = NULL;
 	GFile *file = NULL;
 	gboolean ret = FALSE;
-	gchar *path_icons_full = NULL;
 	gchar *path_xml = NULL;
-	gchar *repo_id;
+	gchar *origin_fallback;
 	gchar *tmp;
 
 	/* the first component of the file (e.g. "fedora-20.xml.gz)
 	 * is used for the icon directory as we might want to clean up
 	 * the icons manually if they are installed in /var/cache */
-	repo_id = g_strdup (filename);
-	tmp = g_strstr_len (repo_id, -1, ".xml");
+	origin_fallback = g_strdup (filename);
+	tmp = g_strstr_len (origin_fallback, -1, ".xml");
 	if (tmp == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -106,30 +118,21 @@ gs_plugin_parse_xml_file (GsPlugin *plugin,
 	}
 	tmp[0] = '\0';
 
-	/* support both old and new layouts */
-	if (gs_plugin_appstream_icons_are_new_layout (path_icons)) {
-		path_icons_full = g_build_filename (path_icons,
-						    repo_id,
-						    NULL);
-	} else {
-		path_icons_full = g_strdup (path_icons);
-	}
-
 	/* load this specific file */
 	path_xml  = g_build_filename (parent_dir, filename, NULL);
 	g_debug ("Loading AppStream XML %s with icon path %s",
-		 path_xml,
-		 path_icons_full);
+		 path_xml, icon_root);
 	file = g_file_new_for_path (path_xml);
-	ret = appstream_cache_parse_file (plugin->priv->cache,
-					  file,
-					  path_icons_full,
-					  NULL,
-					  &error_local);
+	as_store_set_origin (plugin->priv->store, origin_fallback);
+	ret = as_store_from_file (plugin->priv->store,
+				  file,
+				  icon_root,
+				  cancellable,
+				  &error_local);
 	if (!ret) {
 		if (g_error_matches (error_local,
-				     APPSTREAM_CACHE_ERROR,
-				     APPSTREAM_CACHE_ERROR_FAILED)) {
+				     AS_NODE_ERROR,
+				     AS_NODE_ERROR_FAILED)) {
 			ret = TRUE;
 			g_warning ("AppStream XML invalid: %s", error_local->message);
 			g_error_free (error_local);
@@ -139,9 +142,8 @@ gs_plugin_parse_xml_file (GsPlugin *plugin,
 		goto out;
 	}
 out:
-	g_free (path_icons_full);
 	g_free (path_xml);
-	g_free (repo_id);
+	g_free (origin_fallback);
 	if (file != NULL)
 		g_object_unref (file);
 	return ret;
@@ -169,7 +171,7 @@ gs_plugin_appstream_cache_changed_cb (GFileMonitor *monitor,
 static gboolean
 gs_plugin_parse_xml_dir (GsPlugin *plugin,
 			 const gchar *path_xml,
-			 const gchar *path_icons,
+			 const gchar *icon_root,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -204,7 +206,7 @@ gs_plugin_parse_xml_dir (GsPlugin *plugin,
 		ret = gs_plugin_parse_xml_file (plugin,
 						path_xml,
 						tmp,
-						path_icons,
+						icon_root,
 						cancellable,
 						error);
 		if (!ret)
@@ -229,44 +231,44 @@ gs_plugin_parse_xml (GsPlugin *plugin, GCancellable *cancellable, GError **error
 	const gchar * const * data_dirs;
 	gboolean ret;
 	gchar *path_xml = NULL;
-	gchar *path_icons = NULL;
+	gchar *icon_root = NULL;
 	guint i;
 
 	/* search all files */
 	data_dirs = g_get_system_data_dirs ();
 	for (i = 0; data_dirs[i] != NULL; i++) {
 		path_xml = g_build_filename (data_dirs[i], "app-info", "xmls", NULL);
-		path_icons = g_build_filename (data_dirs[i], "app-info", "icons", NULL);
+		icon_root = g_build_filename (data_dirs[i], "app-info", "icons", NULL);
 		ret = gs_plugin_parse_xml_dir (plugin,
 					       path_xml,
-					       path_icons,
+					       icon_root,
 					       cancellable,
 					       error);
 		g_free (path_xml);
-		g_free (path_icons);
+		g_free (icon_root);
 		if (!ret)
 			goto out;
 	}
 	path_xml = g_build_filename (g_get_user_data_dir (), "app-info", "xmls", NULL);
-	path_icons = g_build_filename (g_get_user_data_dir (), "app-info", "icons", NULL);
+	icon_root = g_build_filename (g_get_user_data_dir (), "app-info", "icons", NULL);
 	ret = gs_plugin_parse_xml_dir (plugin,
 				       path_xml,
-				       path_icons,
+				       icon_root,
 				       cancellable,
 				       error);
 	g_free (path_xml);
-	g_free (path_icons);
+	g_free (icon_root);
 	if (!ret)
 		goto out;
 	path_xml = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL);
-	path_icons = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "icons", NULL);
+	icon_root = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "icons", NULL);
 	ret = gs_plugin_parse_xml_dir (plugin,
 				       path_xml,
-				       path_icons,
+				       icon_root,
 				       cancellable,
 				       error);
 	g_free (path_xml);
-	g_free (path_icons);
+	g_free (icon_root);
 	if (!ret)
 		goto out;
 out:
@@ -281,7 +283,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->file_monitors = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
-	plugin->priv->cache = appstream_cache_new ();
+	plugin->priv->store = as_store_new ();
 	plugin->priv->cachedir = g_build_filename (DATADIR,
 						   "app-info",
 						   "icons",
@@ -308,7 +310,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_free (plugin->priv->cachedir);
 	g_free (plugin->priv->locale);
-	g_object_unref (plugin->priv->cache);
+	g_object_unref (plugin->priv->store);
 	g_ptr_array_unref (plugin->priv->file_monitors);
 }
 
@@ -318,7 +320,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	AppstreamApp *app;
+	AsApp *app;
 	GPtrArray *items;
 	gboolean ret;
 	gchar *tmp;
@@ -338,7 +340,7 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	ret = gs_plugin_parse_xml (plugin, cancellable, error);
 	if (!ret)
 		goto out;
-	items = appstream_cache_get_items (plugin->priv->cache);
+	items = as_store_get_apps (plugin->priv->store);
 	if (items->len == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
 		ret = FALSE;
@@ -352,12 +354,12 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* add icons to the icon name cache */
 	for (i = 0; i < items->len; i++) {
 		app = g_ptr_array_index (items, i);
-		if (appstream_app_get_icon_kind (app) != APPSTREAM_APP_ICON_KIND_CACHED)
+		if (as_app_get_icon_kind (app) != AS_ICON_KIND_CACHED)
 			continue;
 		g_hash_table_insert (plugin->icon_cache,
-				     g_strdup (appstream_app_get_id (app)),
-				     g_build_filename (appstream_app_get_userdata (app),
-						       appstream_app_get_icon (app),
+				     g_strdup (as_app_get_id (app)),
+				     g_build_filename (as_app_get_icon_path (app),
+						       as_app_get_icon (app),
 						       NULL));
 	}
 out:
@@ -406,7 +408,7 @@ out:
  * gs_plugin_refine_item_pixbuf:
  */
 static void
-gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
+gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
 	GError *error = NULL;
 	const gchar *icon;
@@ -414,12 +416,12 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 	gboolean ret;
 	gchar *icon_path = NULL;
 
-	icon = appstream_app_get_icon (item);
-	switch (appstream_app_get_icon_kind (item)) {
-	case APPSTREAM_APP_ICON_KIND_REMOTE:
+	icon = as_app_get_icon (item);
+	switch (as_app_get_icon_kind (item)) {
+	case AS_ICON_KIND_REMOTE:
 		gs_app_set_icon (app, icon);
 		break;
-	case APPSTREAM_APP_ICON_KIND_STOCK:
+	case AS_ICON_KIND_STOCK:
 		gs_app_set_icon (app, icon);
 		ret = gs_app_load_icon (app, &error);
 		if (!ret) {
@@ -429,10 +431,10 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AppstreamApp *item)
 			goto out;
 		}
 		break;
-	case APPSTREAM_APP_ICON_KIND_CACHED:
+	case AS_ICON_KIND_CACHED:
 
 		/* we assume <icon type="local">gnome-chess.png</icon> */
-		icon_dir = appstream_app_get_userdata (item);
+		icon_dir = as_app_get_icon_path (item);
 		icon_path = g_build_filename (icon_dir, icon, NULL);
 		gs_app_set_icon (app, icon_path);
 		ret = gs_app_load_icon (app, &error);
@@ -469,11 +471,11 @@ out:
  * gs_plugin_refine_add_screenshots:
  */
 static void
-gs_plugin_refine_add_screenshots (GsApp *app, AppstreamApp *item)
+gs_plugin_refine_add_screenshots (GsApp *app, AsApp *item)
 {
-	AppstreamImage *im;
-	AppstreamScreenshot *ss;
-	AppstreamScreenshotKind ss_kind;
+	AsImage *im;
+	AsScreenshot *ss;
+	AsScreenshotKind ss_kind;
 	GPtrArray *images_as;
 	GPtrArray *screenshots_as;
 	GsScreenshot *screenshot;
@@ -481,7 +483,7 @@ gs_plugin_refine_add_screenshots (GsApp *app, AppstreamApp *item)
 	guint j;
 
 	/* do we have any to add */
-	screenshots_as = appstream_app_get_screenshots (item);
+	screenshots_as = as_app_get_screenshots (item);
 	if (screenshots_as->len == 0)
 		return;
 
@@ -494,25 +496,25 @@ gs_plugin_refine_add_screenshots (GsApp *app, AppstreamApp *item)
 	for (i = 0; i < screenshots_as->len &&
 		    i < GS_PLUGIN_APPSTREAM_MAX_SCREENSHOTS; i++) {
 		ss = g_ptr_array_index (screenshots_as, i);
-		images_as = appstream_screenshot_get_images (ss);
+		images_as = as_screenshot_get_images (ss);
 		if (images_as->len == 0)
 			continue;
-		ss_kind = appstream_screenshot_get_kind (ss);
-		if (ss_kind == APPSTREAM_SCREENSHOT_KIND_UNKNOWN)
+		ss_kind = as_screenshot_get_kind (ss);
+		if (ss_kind == AS_SCREENSHOT_KIND_UNKNOWN)
 			continue;
 
 		/* create a new application screenshot and add each image */
 		screenshot = gs_screenshot_new ();
 		gs_screenshot_set_is_default (screenshot,
-					      ss_kind == APPSTREAM_SCREENSHOT_KIND_DEFAULT);
+					      ss_kind == AS_SCREENSHOT_KIND_DEFAULT);
 		gs_screenshot_set_caption (screenshot,
-					   appstream_screenshot_get_caption (ss));
+					   as_screenshot_get_caption (ss, NULL));
 		for (j = 0; j < images_as->len; j++) {
 			im = g_ptr_array_index (images_as, j);
 			gs_screenshot_add_image	(screenshot,
-						 appstream_image_get_url (im),
-						 appstream_image_get_width (im),
-						 appstream_image_get_height (im));
+						 as_image_get_url (im),
+						 as_image_get_width (im),
+						 as_image_get_height (im));
 		}
 		gs_app_add_screenshot (app, screenshot);
 		g_object_unref (screenshot);
@@ -525,17 +527,19 @@ gs_plugin_refine_add_screenshots (GsApp *app, AppstreamApp *item)
 static gboolean
 gs_plugin_refine_item (GsPlugin *plugin,
 		       GsApp *app,
-		       AppstreamApp *item,
+		       AsApp *item,
 		       GError **error)
 {
 	GHashTable *urls;
-	GPtrArray *tmp;
+	GPtrArray *pkgnames;
+	const gchar *tmp;
 	gboolean ret = TRUE;
+	gchar *from_xml;
 
 	/* is an app */
 	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN ||
 	    gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
-		if (appstream_app_get_id_kind (item) == APPSTREAM_APP_ID_KIND_SOURCE) {
+		if (as_app_get_id_kind (item) == AS_ID_KIND_SOURCE) {
 			gs_app_set_kind (app, GS_APP_KIND_SOURCE);
 		} else {
 			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
@@ -543,25 +547,27 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	}
 
 	/* set id */
-	if (appstream_app_get_id (item) != NULL && gs_app_get_id (app) == NULL)
-		gs_app_set_id (app, appstream_app_get_id (item));
+	if (as_app_get_id (item) != NULL && gs_app_get_id (app) == NULL)
+		gs_app_set_id (app, as_app_get_id (item));
 
 	/* set name */
-	if (appstream_app_get_name (item) != NULL) {
+	tmp = as_app_get_name (item, NULL);
+	if (tmp != NULL) {
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_HIGHEST,
-				 appstream_app_get_name (item));
+				 as_app_get_name (item, NULL));
 	}
 
 	/* set summary */
-	if (appstream_app_get_summary (item) != NULL) {
+	tmp = as_app_get_comment (item, NULL);
+	if (tmp != NULL) {
 		gs_app_set_summary (app,
 				    GS_APP_QUALITY_HIGHEST,
-				    appstream_app_get_summary (item));
+				    as_app_get_comment (item, NULL));
 	}
 
 	/* add urls */
-	urls = appstream_app_get_urls (item);
+	urls = as_app_get_urls (item);
 	if (g_hash_table_size (urls) > 0 &&
 	    gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
 		GList *keys;
@@ -576,70 +582,77 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	}
 
 	/* set licence */
-	if (appstream_app_get_project_license (item) != NULL && gs_app_get_licence (app) == NULL)
-		gs_app_set_licence (app, appstream_app_get_project_license (item));
+	if (as_app_get_project_license (item) != NULL && gs_app_get_licence (app) == NULL)
+		gs_app_set_licence (app, as_app_get_project_license (item));
 
 	/* set keywords */
-	if (appstream_app_get_keywords (item) != NULL &&
+	if (as_app_get_keywords (item) != NULL &&
 	    gs_app_get_keywords (app) == NULL) {
-		gs_app_set_keywords (app, appstream_app_get_keywords (item));
+		gs_app_set_keywords (app, as_app_get_keywords (item));
 		gs_app_add_kudo (app, GS_APP_KUDO_HAS_KEYWORDS);
 	}
 
 	/* set description */
-	if (appstream_app_get_description (item) != NULL) {
+	tmp = as_app_get_description (item, NULL);
+	if (tmp != NULL) {
+		from_xml = as_markup_convert_simple (tmp, -1, error);
+		if (from_xml == NULL) {
+			ret = FALSE;
+			goto out;
+		}
 		gs_app_set_description (app,
 					GS_APP_QUALITY_HIGHEST,
-					appstream_app_get_description (item));
+					from_xml);
+		g_free (from_xml);
 	}
 
 	/* set icon */
-	if (appstream_app_get_icon (item) != NULL && gs_app_get_pixbuf (app) == NULL)
+	if (as_app_get_icon (item) != NULL && gs_app_get_pixbuf (app) == NULL)
 		gs_plugin_refine_item_pixbuf (plugin, app, item);
 
 	/* set categories */
-	if (appstream_app_get_categories (item) != NULL &&
+	if (as_app_get_categories (item) != NULL &&
 	    gs_app_get_categories (app)->len == 0)
-		gs_app_set_categories (app, appstream_app_get_categories (item));
+		gs_app_set_categories (app, as_app_get_categories (item));
 
 	/* set project group */
-	if (appstream_app_get_project_group (item) != NULL &&
+	if (as_app_get_project_group (item) != NULL &&
 	    gs_app_get_project_group (app) == NULL)
-		gs_app_set_project_group (app, appstream_app_get_project_group (item));
+		gs_app_set_project_group (app, as_app_get_project_group (item));
 
 	/* this is a core application for the desktop and cannot be removed */
-	if (appstream_app_get_desktop_core (item, "GNOME") &&
+	if (as_app_has_compulsory_for_desktop (item, "GNOME") &&
 	    gs_app_get_kind (app) == GS_APP_KIND_NORMAL)
 		gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
 
 	/* set id kind */
 	if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_UNKNOWN)
-		gs_app_set_id_kind (app, appstream_app_get_id_kind (item));
+		gs_app_set_id_kind (app, as_app_get_id_kind (item));
 
 	/* set package names */
-	tmp = appstream_app_get_pkgnames (item);
-	if (tmp->len > 0 && gs_app_get_sources(app)->len == 0)
-		gs_app_set_sources (app, tmp);
+	pkgnames = as_app_get_pkgnames (item);
+	if (pkgnames->len > 0 && gs_app_get_sources(app)->len == 0)
+		gs_app_set_sources (app, pkgnames);
 
 	/* set screenshots */
 	gs_plugin_refine_add_screenshots (app, item);
 
 	/* add kudos */
-	if (appstream_app_has_locale (item, plugin->priv->locale) > 50)
+	if (as_app_get_language (item, plugin->priv->locale) > 50)
 		gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
-	if (appstream_app_get_metadata_item (item, "X-Kudo-GTK3") != NULL)
+	if (as_app_get_metadata_item (item, "X-Kudo-GTK3") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_MODERN_TOOLKIT);
-	if (appstream_app_get_metadata_item (item, "X-Kudo-SearchProvider") != NULL)
+	if (as_app_get_metadata_item (item, "X-Kudo-SearchProvider") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_SEARCH_PROVIDER);
-	if (appstream_app_get_metadata_item (item, "X-Kudo-InstallsUserDocs") != NULL)
+	if (as_app_get_metadata_item (item, "X-Kudo-InstallsUserDocs") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
-	if (appstream_app_get_metadata_item (item, "X-Kudo-UsesNotifications") != NULL)
+	if (as_app_get_metadata_item (item, "X-Kudo-UsesNotifications") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_USES_NOTIFICATIONS);
-	if (appstream_app_get_metadata_item (item, "X-Kudo-RecentRelease") != NULL)
+	if (as_app_get_metadata_item (item, "X-Kudo-RecentRelease") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
-	if (appstream_app_get_metadata_item (item, "X-Kudo-UsesAppMenu") != NULL)
+	if (as_app_get_metadata_item (item, "X-Kudo-UsesAppMenu") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_USES_APP_MENU);
-
+out:
 	return ret;
 }
 
@@ -653,13 +666,13 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 {
 	const gchar *id;
 	gboolean ret = TRUE;
-	AppstreamApp *item;
+	AsApp *item;
 
 	/* find anything that matches the ID */
 	id = gs_app_get_id_full (app);
 	if (id == NULL)
 		goto out;
-	item = appstream_cache_get_item_by_id (plugin->priv->cache, id);
+	item = as_store_get_app_by_id (plugin->priv->store, id);
 	if (item == NULL)
 		goto out;
 
@@ -679,7 +692,7 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 			       GsApp *app,
 			       GError **error)
 {
-	AppstreamApp *item = NULL;
+	AsApp *item = NULL;
 	GPtrArray *sources;
 	const gchar *pkgname;
 	gboolean ret = TRUE;
@@ -689,8 +702,8 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	sources = gs_app_get_sources (app);
 	for (i = 0; i < sources->len && item == NULL; i++) {
 		pkgname = g_ptr_array_index (sources, i);
-		item = appstream_cache_get_item_by_pkgname (plugin->priv->cache,
-							    pkgname);
+		item = as_store_get_app_by_pkgname (plugin->priv->store,
+						    pkgname);
 		if (item == NULL)
 			g_debug ("no AppStream match for {pkgname} %s", pkgname);
 	}
@@ -765,7 +778,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	const gchar *search_id2 = NULL;
 	gboolean ret = TRUE;
 	GsApp *app;
-	AppstreamApp *item;
+	AsApp *item;
 	GsCategory *parent;
 	GPtrArray *array;
 	guint i;
@@ -792,18 +805,18 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	}
 
 	/* just look at each app in turn */
-	array = appstream_cache_get_items (plugin->priv->cache);
+	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
-		if (appstream_app_get_id (item) == NULL)
+		if (as_app_get_id (item) == NULL)
 			continue;
-		if (!appstream_app_has_category (item, search_id1))
+		if (!as_app_has_category (item, search_id1))
 			continue;
-		if (search_id2 != NULL && !appstream_app_has_category (item, search_id2))
+		if (search_id2 != NULL && !as_app_has_category (item, search_id2))
 			continue;
 
 		/* got a search match, so add all the data we can */
-		app = gs_app_new (appstream_app_get_id (item));
+		app = gs_app_new (as_app_get_id (item));
 		ret = gs_plugin_refine_item (plugin, app, item, error);
 		if (!ret)
 			goto out;
@@ -818,14 +831,14 @@ out:
  * gs_plugin_appstream_match_item:
  */
 static gboolean
-gs_plugin_appstream_match_item (AppstreamApp *item, gchar **values)
+gs_plugin_appstream_match_item (AsApp *item, gchar **values)
 {
 	guint matches = 0;
 	guint i;
 
 	/* does the GsApp match *all* search keywords */
 	for (i = 0; values[i] != NULL; i++) {
-		matches = appstream_app_search_matches (item, values[i]);
+		matches = as_app_search_matches (item, values[i]);
 		if (matches == 0)
 			break;
 	}
@@ -842,7 +855,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	AppstreamApp *item;
+	AsApp *item;
 	gboolean ret = TRUE;
 	GPtrArray *array;
 	GsApp *app;
@@ -858,11 +871,11 @@ gs_plugin_add_search (GsPlugin *plugin,
 
 	/* search categories for the search term */
 	gs_profile_start (plugin->profile, "appstream::search");
-	array = appstream_cache_get_items (plugin->priv->cache);
+	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
 		if (gs_plugin_appstream_match_item (item, values)) {
-			app = gs_app_new (appstream_app_get_id (item));
+			app = gs_app_new (as_app_get_id (item));
 			ret = gs_plugin_refine_item (plugin, app, item, error);
 			if (!ret)
 				goto out;
@@ -883,7 +896,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	AppstreamApp *item;
+	AsApp *item;
 	const gchar *search_id1;
 	const gchar *search_id2 = NULL;
 	gboolean ret = TRUE;
@@ -903,9 +916,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			goto out;
 	}
 
-	/* find out how many packages are in each category */
+	/* find ogs_plugin_as_store_changed_cbut how many packages are in each category */
 	gs_profile_start (plugin->profile, "appstream::add-categories");
-	array = appstream_cache_get_items (plugin->priv->cache);
+	array = as_store_get_apps (plugin->priv->store);
 	for (l = *list; l != NULL; l = l->next) {
 		parent = GS_CATEGORY (l->data);
 		search_id2 = gs_category_get_id (parent);
@@ -916,15 +929,15 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			/* just look at each app in turn */
 			for (i = 0; i < array->len; i++) {
 				item = g_ptr_array_index (array, i);
-				if (appstream_app_get_id (item) == NULL)
+				if (as_app_get_id (item) == NULL)
 					continue;
-				if (appstream_app_get_priority (item) < 0)
+				if (as_app_get_priority (item) < 0)
 					continue;
-				if (!appstream_app_has_category (item, search_id2))
+				if (!as_app_has_category (item, search_id2))
 					continue;
 				search_id1 = gs_category_get_id (category);
 				if (search_id1 != NULL &&
-				    !appstream_app_has_category (item, search_id1))
+				    !as_app_has_category (item, search_id1))
 					continue;
 
 				/* we have another result */

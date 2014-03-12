@@ -2,6 +2,7 @@
 AUTOMAKE_OPTIONS = 1.7
 
 AM_CPPFLAGS =						\
+	$(APPSTREAM_CFLAGS)				\
 	$(GLIB_CFLAGS)					\
 	$(GTK_CFLAGS)					\
 	$(SQLITE_CFLAGS)				\
@@ -75,30 +76,14 @@ libgs_plugin_self_test_la_LDFLAGS = -module -avoid-version
 libgs_plugin_self_test_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_appstream_la_SOURCES =			\
-	gs-plugin-appstream.c				\
-	appstream-app.c					\
-	appstream-app.h					\
-	appstream-image.c				\
-	appstream-image.h				\
-	appstream-screenshot.c				\
-	appstream-screenshot.h				\
-	appstream-common.c				\
-	appstream-common.h				\
-	appstream-markup.c				\
-	appstream-markup.h				\
-	appstream-cache.c				\
-	appstream-cache.h
-libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS)
+	gs-plugin-appstream.c
+libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS) $(APPSTREAM_LIBS)
 libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
 libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_appdata_la_SOURCES =			\
-	appstream-common.c				\
-	appstream-common.h				\
-	appstream-markup.c				\
-	appstream-markup.h				\
 	gs-plugin-appdata.c
-libgs_plugin_appdata_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_appdata_la_LIBADD = $(GS_PLUGIN_LIBS) $(APPSTREAM_LIBS)
 libgs_plugin_appdata_la_LDFLAGS = -module -avoid-version
 libgs_plugin_appdata_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
@@ -220,8 +205,6 @@ check_PROGRAMS =					\
 	gs-self-test
 
 gs_self_test_SOURCES =					\
-	appstream-common.c				\
-	appstream-markup.c				\
 	gs-moduleset.c					\
 	gs-self-test.c
 
