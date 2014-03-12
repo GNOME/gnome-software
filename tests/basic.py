@@ -95,5 +95,12 @@ try:
     assert (not installed_page.getState().contains(pyatspi.STATE_SHOWING))
     assert (not updates_page.getState().contains(pyatspi.STATE_SHOWING))
     assert (not search_page.getState().contains(pyatspi.STATE_SHOWING))
+
+    super_menu = root.application('gnome-shell').child(roleName='menu', name='Software')
+    super_menu.click()
+    root.application('gnome-shell').child(roleName='label', name='Software Sources').click()
+    assert (len(app.children) == 2)
+    sources_dialog = app.children[-1]
+    assert (sources_dialog.child(roleName='label', name='Software Sources'))
 finally:
     os.system("killall gnome-software")
