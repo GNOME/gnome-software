@@ -921,7 +921,7 @@ gs_shell_sources_get_sources_cb (GsPluginLoader *plugin_loader,
 	gtk_spinner_stop (GTK_SPINNER (widget));
 
 	/* get the results */
-	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_get_sources_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
 				     GS_PLUGIN_LOADER_ERROR,
