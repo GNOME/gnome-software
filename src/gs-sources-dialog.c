@@ -133,7 +133,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
 
 	/* show results */
-	gtk_spinner_stop (GTK_SPINNER (priv->spinner));
+	gs_stop_spinner (GTK_SPINNER (priv->spinner));
 
 	/* get the results */
 	list = gs_plugin_loader_get_sources_finish (plugin_loader, res, &error);
@@ -167,7 +167,7 @@ reload_sources (GsSourcesDialog *dialog)
 	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
 
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "waiting");
-	gtk_spinner_start (GTK_SPINNER (priv->spinner));
+	gs_start_spinner (GTK_SPINNER (priv->spinner));
 	gtk_widget_hide (priv->button_back);
 	gs_container_remove_all (GTK_CONTAINER (priv->listbox));
 
