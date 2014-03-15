@@ -33,7 +33,8 @@ UI_FILES =						\
 	category-tile.ui				\
 	feature-tile.ui					\
 	gnome-software.ui				\
-	gs-history-dialog.ui			\
+	gs-history-dialog.ui				\
+	gs-sources-dialog.ui				\
 	gs-star-widget.ui				\
 	gs-update-dialog.ui				\
 	screenshot-image.ui				\
@@ -132,6 +133,8 @@ gnome_software_SOURCES =				\
 	gs-shell-updates.h				\
 	gs-shell-search.c				\
 	gs-shell-search.h				\
+	gs-sources-dialog.c				\
+	gs-sources-dialog.h				\
 	gs-update-dialog.c				\
 	gs-update-dialog.h				\
 	gs-update-monitor.c				\
