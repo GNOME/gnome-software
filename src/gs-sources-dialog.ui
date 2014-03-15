@@ -10,58 +10,53 @@
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
+    <property name="use_header_bar">1</property>
+    <child internal-child="headerbar">
+      <object class="GtkHeaderBar">
+        <child>
+          <object class="GtkButton" id="button_back">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="receives_default">True</property>
+            <child internal-child="accessible">
+              <object class="AtkObject" id="button_back_accessible">
+                <property name="accessible-name" translatable="yes">Go back</property>
+              </object>
+            </child>
+            <style>
+              <class name="image-button"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="image_back">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="icon_name">go-previous-symbolic</property>
+                <property name="icon_size">1</property>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="pack-type">start</property>
+          </packing>
+        </child>
+        <child type="title">
+          <object class="GtkLabel" id="label_header">
+            <property name="can_focus">False</property>
+            <property name="visible">True</property>
+            <property name="label" translatable="yes">Software Sources</property>
+            <property name="selectable">False</property>
+            <style>
+              <class name="title"/>
+            </style>
+          </object>
+        </child>
+      </object>
+    </child>
     <child internal-child="vbox">
       <object class="GtkBox" id="dialog-vbox1">
         <property name="visible">True</property>
         <property name="can_focus">False</property>
         <property name="orientation">vertical</property>
-        <child>
-          <object class="GtkHeaderBar" id="header">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="show_close_button">True</property>
-
-            <child>
-              <object class="GtkButton" id="button_back">
-                <property name="visible">True</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">False</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="button_back_accessible">
-                    <property name="accessible-name" translatable="yes">Go back</property>
-                  </object>
-                </child>
-                <style>
-                  <class name="image-button"/>
-                </style>
-                <child>
-                  <object class="GtkImage" id="image_back">
-                    <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="icon_name">go-previous-symbolic</property>
-                    <property name="icon_size">1</property>
-                  </object>
-                </child>
-              </object>
-            </child>
-            <child type="title">
-              <object class="GtkLabel" id="label_header">
-                <property name="can_focus">False</property>
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Software Sources</property>
-                <property name="selectable">False</property>
-                <style>
-                  <class name="title"/>
-                </style>
-              </object>
-            </child>
-          </object>
-          <packing>
-            <property name="expand">False</property>
-            <property name="fill">True</property>
-            <property name="position">0</property>
-          </packing>
-        </child>
         <child>
           <object class="GtkStack" id="stack">
             <property name="visible">True</property>

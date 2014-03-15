@@ -35,7 +35,6 @@ struct _GsSourcesDialogPrivate
 	GtkWidget	*button_back;
 	GtkWidget	*button_remove;
 	GtkWidget	*grid_noresults;
-	GtkWidget	*header;
 	GtkWidget	*label2;
 	GtkWidget	*listbox;
 	GtkWidget	*listbox_apps;
@@ -358,11 +357,6 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 
 	priv->cancellable = g_cancellable_new ();
 
-	g_object_ref (priv->header);
-	gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (priv->header)), priv->header);
-	gtk_window_set_titlebar (GTK_WINDOW (dialog), priv->header);
-	g_object_unref (priv->header);
-
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->listbox),
 				      list_header_func,
 				      dialog,
@@ -400,7 +394,6 @@ gs_sources_dialog_class_init (GsSourcesDialogClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, button_back);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, button_remove);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, grid_noresults);
-	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, header);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, label2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, listbox);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, listbox_apps);
