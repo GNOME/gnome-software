@@ -79,24 +79,24 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 		case GS_APP_STATE_REMOVING:
 			/* TRANSLATORS: this is the status in the history UI,
 			 * where we are showing the application was removed */
-			tmp = _("Removed");
+			tmp = C_("app status", "Removed");
 			break;
 		case GS_APP_STATE_INSTALLED:
 		case GS_APP_STATE_INSTALLING:
 			/* TRANSLATORS: this is the status in the history UI,
 			 * where we are showing the application was installed */
-			tmp = _("Installed");
+			tmp = C_("app status", "Installed");
 			break;
 		case GS_APP_STATE_UPDATABLE:
 			/* TRANSLATORS: this is the status in the history UI,
 			 * where we are showing the application was updated */
-			tmp = _("Updated");
+			tmp = C_("app status", "Updated");
 			break;
 		default:
 			/* TRANSLATORS: this is the status in the history UI,
 			 * where we are showing that something happened to the
 			 * application but we don't know what */
-			tmp = _("Unknown");
+			tmp = C_("app status", "Unknown");
 			break;
 		}
 		widget = gtk_label_new (tmp);

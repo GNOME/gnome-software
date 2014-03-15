@@ -590,12 +590,12 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	tmp = gs_app_get_licence (priv->app);
 	if (tmp == NULL) {
 		/* TRANSLATORS: this is where the licence is not known */
-		gtk_label_set_label (GTK_LABEL (priv->label_details_licence_value), _("Unknown"));
+		gtk_label_set_label (GTK_LABEL (priv->label_details_licence_value), C_("license", "Unknown"));
 		gtk_widget_set_tooltip_text (priv->label_details_licence_value, NULL);
 	} else if (strlen (tmp) > 40) {
 		/* TRANSLATORS: this is where the licence is insanely
 		 * complicated and the full string is put into the tooltip */
-		gtk_label_set_label (GTK_LABEL (priv->label_details_licence_value), _("Complicated!"));
+		gtk_label_set_label (GTK_LABEL (priv->label_details_licence_value), C_("license", "Complicated!"));
 		gtk_widget_set_tooltip_text (priv->label_details_licence_value, tmp);
 	} else {
 		gtk_label_set_label (GTK_LABEL (priv->label_details_licence_value), tmp);
@@ -608,16 +608,16 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		gtk_label_set_label (GTK_LABEL (priv->label_details_version_value), tmp);
 	} else {
 		/* TRANSLATORS: this is where the version is not known */
-		gtk_label_set_label (GTK_LABEL (priv->label_details_version_value), _("Unknown"));
+		gtk_label_set_label (GTK_LABEL (priv->label_details_version_value), C_("version", "Unknown"));
 	}
 
 	/* set the size */
 	if (gs_app_get_size (priv->app) == GS_APP_SIZE_UNKNOWN) {
 		/* TRANSLATORS: this is where the size is being worked out */
-		gtk_label_set_label (GTK_LABEL (priv->label_details_size_value), _("Calculating…"));
+		gtk_label_set_label (GTK_LABEL (priv->label_details_size_value), C_("size", "Calculating…"));
 	} else if (gs_app_get_size (priv->app) == GS_APP_SIZE_MISSING) {
 		/* TRANSLATORS: this is where the size is not known */
-		gtk_label_set_label (GTK_LABEL (priv->label_details_size_value), _("Unknown"));
+		gtk_label_set_label (GTK_LABEL (priv->label_details_size_value), C_("size", "Unknown"));
 	} else {
 		size = g_format_size (gs_app_get_size (priv->app));
 		gtk_label_set_label (GTK_LABEL (priv->label_details_size_value), size);
@@ -629,7 +629,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	if (updated == GS_APP_INSTALL_DATE_UNKNOWN ||
 	    updated == GS_APP_INSTALL_DATE_UNSET) {
 		/* TRANSLATORS: this is where the updated date is not known */
-		gtk_label_set_label (GTK_LABEL (priv->label_details_updated_value), _("Never"));
+		gtk_label_set_label (GTK_LABEL (priv->label_details_updated_value), C_("updated", "Never"));
 	} else {
 		GDateTime *dt;
 		dt = g_date_time_new_from_unix_utc (updated);
@@ -644,7 +644,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	if (tmp == NULL || tmp[0] == '\0') {
 		/* TRANSLATORS: this is the application isn't in any
 		 * defined menu category */
-		gtk_label_set_label (GTK_LABEL (priv->label_details_category_value), _("None"));
+		gtk_label_set_label (GTK_LABEL (priv->label_details_category_value), C_("menu category", "None"));
 	} else {
 		gtk_label_set_label (GTK_LABEL (priv->label_details_category_value), tmp);
 	}
@@ -654,7 +654,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	if (tmp == NULL || tmp[0] == '\0') {
 		/* TRANSLATORS: this is where we don't know the origin of the
 		 * application */
-		gtk_label_set_label (GTK_LABEL (priv->label_details_origin_value), _("Unknown"));
+		gtk_label_set_label (GTK_LABEL (priv->label_details_origin_value), C_("origin", "Unknown"));
 	} else {
 		gtk_label_set_label (GTK_LABEL (priv->label_details_origin_value), tmp);
 	}
