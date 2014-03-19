@@ -561,6 +561,19 @@ gs_update_monitor_class_init (GsUpdateMonitorClass *klass)
 }
 
 static void
+remove_stale_notifications (GsUpdateMonitor *monitor)
+{
+	if (gs_offline_updates_results_available ()) {
+		g_debug ("Withdrawing stale notifications");
+
+		g_application_withdraw_notification (monitor->application,
+		                                     "updates-available");
+		g_application_withdraw_notification (monitor->application,
+		                                     "offline-updates");
+	}
+}
+
+static void
 do_reschedule_updates (GSimpleAction   *action,
 		       GVariant        *parameter,
 		       GsUpdateMonitor *monitor)
@@ -585,6 +598,8 @@ gs_update_monitor_new (GsApplication *application)
 	monitor = GS_UPDATE_MONITOR (g_object_new (GS_TYPE_UPDATE_MONITOR, NULL));
 	monitor->application = G_APPLICATION (application);
 	g_application_hold (monitor->application);
+
+	remove_stale_notifications (monitor);
 
 	reschedule_updates = g_simple_action_new ("reschedule-updates", NULL);
 	g_signal_connect_object (reschedule_updates, "activate",

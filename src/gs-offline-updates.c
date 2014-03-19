@@ -112,6 +112,12 @@ gs_offline_updates_cancel (void)
 #define PK_OFFLINE_UPDATE_RESULTS_FILENAME	"/var/lib/PackageKit/offline-update-competed"
 
 gboolean
+gs_offline_updates_results_available (void)
+{
+	return g_file_test (PK_OFFLINE_UPDATE_RESULTS_FILENAME, G_FILE_TEST_EXISTS);
+}
+
+gboolean
 gs_offline_updates_get_status (gboolean  *success,
 			       guint     *num_packages,
 			       gchar    **error_code,
@@ -135,7 +141,7 @@ gs_offline_updates_get_status (gboolean  *success,
 	if (error_details)
 		*error_details = NULL;
 
-	if (!g_file_test (PK_OFFLINE_UPDATE_RESULTS_FILENAME, G_FILE_TEST_EXISTS))
+	if (!gs_offline_updates_results_available ())
 		goto out;
 
 	key_file = g_key_file_new ();
