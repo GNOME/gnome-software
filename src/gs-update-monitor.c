@@ -146,6 +146,13 @@ check_offline_update_cb (gpointer user_data)
 		goto out;
 
 	if (success) {
+		guint64 time_completed;
+
+		if (gs_offline_updates_get_time_completed (&time_completed)) {
+			g_settings_set (monitor->settings,
+			                "install-timestamp", "x", time_completed);
+		}
+
 		title = ngettext ("Software Update Installed",
 				  "Software Updates Installed",
 				  num_packages);

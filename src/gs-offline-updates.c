@@ -118,6 +118,30 @@ gs_offline_updates_results_available (void)
 }
 
 gboolean
+gs_offline_updates_get_time_completed (guint64 *time_completed)
+{
+	GFile *file;
+	GFileInfo *info;
+	gboolean result = FALSE;
+
+	file = g_file_new_for_path (PK_OFFLINE_UPDATE_RESULTS_FILENAME);
+	info = g_file_query_info (file,
+	                          G_FILE_ATTRIBUTE_TIME_MODIFIED,
+	                          G_FILE_QUERY_INFO_NONE,
+	                          NULL,
+	                          NULL);
+	if (info != NULL) {
+		*time_completed = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+		result = TRUE;
+	}
+
+	g_object_unref (file);
+	g_object_unref (info);
+
+	return result;
+}
+
+gboolean
 gs_offline_updates_get_status (gboolean  *success,
 			       guint     *num_packages,
 			       gchar    **error_code,
