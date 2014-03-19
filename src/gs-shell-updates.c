@@ -347,7 +347,8 @@ gs_shell_updates_set_state (GsShellUpdates *shell_updates,
 			    GsShellUpdatesState state)
 {
 	shell_updates->priv->state = state;
-	if (gs_shell_get_mode (shell_updates->priv->shell) == GS_SHELL_MODE_UPDATES)
+	if (gs_shell_get_mode (shell_updates->priv->shell) == GS_SHELL_MODE_UPDATES ||
+	    gs_shell_get_mode (shell_updates->priv->shell) == GS_SHELL_MODE_UPDATED)
 		gs_shell_updates_update_ui_state (shell_updates);
 }
 
