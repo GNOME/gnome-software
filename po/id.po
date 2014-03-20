@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-03-07 08:32+0000\n"
-"PO-Revision-Date: 2014-03-07 19:12+0700\n"
+"POT-Creation-Date: 2014-03-20 13:19+0000\n"
+"PO-Revision-Date: 2014-03-20 21:11+0700\n"
 "Last-Translator: Andika Triwidada <andika@gmail.com>\n"
 "Language-Team: Indonesian <gnome@i15n.org>\n"
 "Language: id\n"
@@ -28,37 +28,38 @@ msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
 msgstr ""
+"Perangkat Lunak memungkinkan Anda menemukan dan memasang aplikasi dan "
+"ekstensi sistem baru dan menghapus aplikasi yang telah dipasang."
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
-#, fuzzy
 msgid ""
 "GNOME Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"Perangkat Lunak GNOME memungkinkan Anda memasang, membongkar, dan "
-"memutakhirkan aplikasi dan ekstensi sistem. Itu juga memungkinkan Anda "
-"memutakhirkan sistem Anda memakai pemutakhiran luring."
+"GNOME Perangkat Lunak memajang aplikasi-aplikasi populer dan yang "
+"ditonjolkan dengan deskripsi yang berguna dan beberapa cuplikan layar per "
+"aplikasi. Aplikasi bisa ditemukan dengan meramban daftar kategori atau "
+"dengan mencari. Itu juga memungkinkan Anda memutakhirkan sistem Anda memakai "
+"pemutakhiran luring."
 
 #: ../src/app-folder-dialog.ui.h:1
-#, fuzzy
 msgid "Add to Application Folder"
-msgstr "Tak Ada Aplikasi Yang Ditemukan"
+msgstr "Tambah ke Folder Aplikasi"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:115
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
 #: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "_Batal"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:116
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
 msgid "_Add"
 msgstr "T_ambah"
 
 #: ../src/app-menu.ui.h:1
-#, fuzzy
 msgid "_Software Sources"
-msgstr "Perangkat Lunak"
+msgstr "_Sumber Perangkat Lunak"
 
 #: ../src/app-menu.ui.h:2
 msgid "_About"
@@ -93,13 +94,12 @@ msgid "Add, remove or update software on this computer"
 msgstr "Tambah, hapus, atau mutakhirkan perangkat lunak pada komputer ini"
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
-#, fuzzy
 msgid "Software Install"
-msgstr "Perangkat Lunak"
+msgstr "Pasang Perangkat Lunak"
 
 #: ../src/gnome-software-local-file.desktop.in.h:2
 msgid "Install selected software on the system"
-msgstr ""
+msgstr "Pasang perangkat lunak yang dipilih pada sistem"
 
 #: ../src/gnome-software.ui.h:1
 msgid "Select All"
@@ -130,31 +130,27 @@ msgid "_Updates"
 msgstr "Pem_utakhiran"
 
 #: ../src/gnome-software.ui.h:11
-#, fuzzy
 msgid "Restart & _Install"
-msgstr "Start Ulang & Pasang"
+msgstr "Start Ulang & _Pasang"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
 #: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:153
-#, fuzzy
 msgid "_Install"
-msgstr "Pasang"
+msgstr "_Pasang"
 
 #. TRANSLATORS: button text in the header when an application can be erased
 #: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:191
-#, fuzzy
 msgid "_Remove"
-msgstr "Hapus"
+msgstr "_Hapus"
 
 #: ../src/gnome-software.ui.h:14
 msgid "Select"
 msgstr "Pilih"
 
 #: ../src/gnome-software.ui.h:15
-#, fuzzy
 msgid "Check for updates"
-msgstr "Pemutakhiran Perangkat Lunak Baru-baru Ini"
+msgstr "Periksa pemutakhiran"
 
 #: ../src/gnome-software.ui.h:16
 msgid "Overview page"
@@ -163,7 +159,7 @@ msgstr "Halaman ringkasan"
 #: ../src/gnome-software.ui.h:17
 #: ../src/plugins/gs-plugin-hardcoded-categories.c:160
 msgid "Featured"
-msgstr ""
+msgstr "Ditonjolkan"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: ../src/gnome-software.ui.h:19
@@ -179,21 +175,20 @@ msgid "No Application Data Found"
 msgstr "Tak Ada Data Aplikasi Yang Ditemukan"
 
 #: ../src/gnome-software.ui.h:22
-#, fuzzy
 msgid "Installed page"
-msgstr "Terpasang"
+msgstr "Halaman terpasang"
 
 #: ../src/gnome-software.ui.h:23
 msgid "_Add to Folder…"
-msgstr ""
+msgstr "T_ambah ke Folder…"
 
 #: ../src/gnome-software.ui.h:24
 msgid "_Move to Folder…"
-msgstr ""
+msgstr "Pin_dah ke Folder…"
 
 #: ../src/gnome-software.ui.h:25
 msgid "_Remove from Folder"
-msgstr ""
+msgstr "Hapus da_ri Folder"
 
 #: ../src/gnome-software.ui.h:26
 msgid "Search page"
@@ -204,9 +199,8 @@ msgid "No Application Found"
 msgstr "Tak Ada Aplikasi Yang Ditemukan"
 
 #: ../src/gnome-software.ui.h:28
-#, fuzzy
 msgid "Updates page"
-msgstr "Pemutakhiran"
+msgstr "Halaman pemutakhiran"
 
 #: ../src/gnome-software.ui.h:29
 msgid "Software is up to date"
@@ -217,67 +211,74 @@ msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
 msgstr ""
+"Memeriksa pemutakhiran ketika memakai data seluler bisa menambah tagihan"
 
 #: ../src/gnome-software.ui.h:31
 msgid "_Check Anyway"
-msgstr ""
+msgstr "_Periksa Saja"
 
 #: ../src/gnome-software.ui.h:32
 msgid "Go online to check for updates"
-msgstr ""
+msgstr "Daring untuk memeriksa pemutakhiran"
 
 #: ../src/gnome-software.ui.h:33
 msgid "_Network Settings"
-msgstr ""
+msgstr "Pe_ngaturan Jaringan"
 
 #: ../src/gnome-software.ui.h:34
 msgid "Details page"
-msgstr ""
+msgstr "Halaman rincian"
 
 #: ../src/gnome-software.ui.h:35
 msgid "Software Source Included"
-msgstr ""
+msgstr "Sumber Perangkat Lunak Yang Disertakan"
 
 #: ../src/gnome-software.ui.h:36
 msgid ""
 "This application includes a software source which provides updates, as well "
 "as access to other software."
 msgstr ""
+"Aplikasi ini termasuk sumber perangkat lunak yang menyediakan pemutakhiran "
+"maupun akses ke perangkat lunak lain."
 
 #: ../src/gnome-software.ui.h:37
 msgid "No Software Source Included"
-msgstr ""
+msgstr "Tak Ada Sumber Perangkat Lunak Yang Disertakan"
 
 #: ../src/gnome-software.ui.h:38
 msgid ""
 "This application does not include a software source. It will not be updated "
 "with new versions."
 msgstr ""
+"Aplikasi ini tak termasuk sumber perangkat lunak. Ini tak akan dimutakhirkan "
+"ke versi baru."
 
 #: ../src/gnome-software.ui.h:39
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr ""
+"Perangkat lunak ini telah disediakan distribusi Anda dan tak boleh diganti."
 
 #: ../src/gnome-software.ui.h:40
 msgid "Software Source Identified"
-msgstr ""
+msgstr "Sumber Perangkat Lunak Teridentifikasi"
 
 #: ../src/gnome-software.ui.h:41
 msgid ""
 "Adding this software source will give you access to additional software and "
 "upgrades."
 msgstr ""
+"Menambahkan sumber perangkat lunak ini akan memberi Anda akses ke perangkat "
+"lunak tambahan dan peningkatan."
 
 #: ../src/gnome-software.ui.h:42
 msgid "Only use software sources that you trust."
-msgstr ""
+msgstr "Hanya pakai sumber perangkat lunak yang Anda percayai."
 
 #: ../src/gnome-software.ui.h:43
-#, fuzzy
 msgid "_Website"
-msgstr "Kunjungi Halaman _Web"
+msgstr "Situs _Web"
 
 #: ../src/gnome-software.ui.h:44
 msgid "_History"
@@ -328,28 +329,30 @@ msgstr "Sumber Perangkat Lunak"
 
 #: ../src/gnome-software.ui.h:56
 msgid "No sources found."
-msgstr ""
+msgstr "Tak ada sumber yang ditemukan."
 
 #: ../src/gnome-software.ui.h:57
 msgid "Software sources give you access to additional software."
-msgstr ""
+msgstr "Sumber perangkat lunak memberi Anda akses ke perangkat lunak tambahan."
 
 #: ../src/gnome-software.ui.h:58
 msgid ""
 "Removing a source will also remove any software you have installed from it."
 msgstr ""
+"Menghapus suatu sumber juga akan menghapus sebarang perangkat lunak yang "
+"telah Anda pasang darinya."
 
 #: ../src/gnome-software.ui.h:59
 msgid "No software installed from this source"
-msgstr ""
+msgstr "Tak ada perangkat lunak yang dipasang dari sumber ini"
 
 #: ../src/gnome-software.ui.h:60
 msgid "Installed from this Source"
-msgstr ""
+msgstr "Dipasang dari Sumber ini"
 
 #: ../src/gnome-software.ui.h:61
 msgid "Source Details"
-msgstr ""
+msgstr "Rincian Sumber"
 
 #: ../src/gnome-software.ui.h:62
 msgid "Last Checked"
@@ -371,7 +374,7 @@ msgstr "30 Januari 2014"
 msgid "Remove Source"
 msgstr "Hapus Sumber"
 
-#: ../src/gs-app-folder-dialog.c:111
+#: ../src/gs-app-folder-dialog.c:313
 msgid "Folder Name"
 msgstr "Nama Folder"
 
@@ -392,7 +395,7 @@ msgstr "Andika Triwidada <andika@gmail.com>, 2013, 2014."
 
 #: ../src/gs-application.c:488
 msgid "Enter GApplication service mode"
-msgstr ""
+msgstr "Masuk mode layanan GApplication"
 
 #. TRANSLATORS: this is a command line option
 #: ../src/gs-application.c:491
@@ -405,18 +408,16 @@ msgid "MODE"
 msgstr "MODE"
 
 #: ../src/gs-application.c:493
-#, fuzzy
 msgid "Search for applications"
-msgstr "Memasang aplikasi baru"
+msgstr "Cari aplikasi"
 
 #: ../src/gs-application.c:493
 msgid "SEARCH"
-msgstr ""
+msgstr "CARI"
 
 #: ../src/gs-application.c:495 ../src/gs-application.c:497
-#, fuzzy
 msgid "Show application details"
-msgstr "Tak Ada Aplikasi Yang Ditemukan"
+msgstr "Tampilkan rincian aplikasi"
 
 #: ../src/gs-application.c:495 ../src/gs-application.c:497
 #: ../src/gs-application.c:499
@@ -425,11 +426,11 @@ msgstr "ID"
 
 #: ../src/gs-application.c:499
 msgid "Set the specified debugging level"
-msgstr ""
+msgstr "Atur ke tingkat pengawakutuan yang dinyatakan"
 
 #: ../src/gs-application.c:501
 msgid "Show profiling information for the service"
-msgstr ""
+msgstr "Tampilkan informasi profil bagi layanan"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
@@ -442,9 +443,8 @@ msgstr "Pemutakhiran"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
 #: ../src/gs-app-widget.c:200
-#, fuzzy
 msgid "Visit website"
-msgstr "Kunjungi Halaman _Web"
+msgstr "Kunjungi situs web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
@@ -456,7 +456,7 @@ msgstr "Batal"
 #. * that has been queued for installation
 #: ../src/gs-app-widget.c:210
 msgid "Pending"
-msgstr ""
+msgstr "Tertunda"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
@@ -516,69 +516,70 @@ msgid "History"
 msgstr "Riwayat"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:228
+#: ../src/gs-offline-updates.c:258
 msgid "Failed To Update"
-msgstr ""
+msgstr "Gagal Memutakhirkan"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:234
+#: ../src/gs-offline-updates.c:264
 msgid "A previous update was unfinished."
-msgstr ""
+msgstr "Pemutakhiran sebelumnya tak selesai."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:244
+#: ../src/gs-offline-updates.c:274
 msgid "Network access was required but not available."
-msgstr ""
+msgstr "Akses jaringan diperlukan tapi tak tersedia."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:253
+#: ../src/gs-offline-updates.c:283
 msgid "An update was not signed in the correct way."
-msgstr ""
+msgstr "Suatu pemutakhiran tak ditandatangani secara benar."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:263
+#: ../src/gs-offline-updates.c:293
 msgid "The update could not be completed."
-msgstr ""
+msgstr "Pemutakhiran tak bisa diselesaikan."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:268
+#: ../src/gs-offline-updates.c:298
 msgid "The update was cancelled."
-msgstr ""
+msgstr "Pemutakhiran dibatalkan."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:274
+#: ../src/gs-offline-updates.c:304
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
+"Pemutakhiran luring diminta tapi tak ada paket yang perlu dimutakhirkan."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:278
+#: ../src/gs-offline-updates.c:308
 msgid "No space was left on the drive."
-msgstr ""
+msgstr "Tak ada ruang tersisa pada kandar."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:286
+#: ../src/gs-offline-updates.c:316
 msgid "An update failed to install correctly."
-msgstr ""
+msgstr "Suatu pemutakhiran gagal dipasang dengan benar."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:291
+#: ../src/gs-offline-updates.c:321
 msgid "The offline update failed in an unexpected way."
-msgstr ""
+msgstr "Pemutakhiran luring gagal dalam cara yang tak diduga."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:300
+#: ../src/gs-offline-updates.c:330
 msgid "Detailed errors from the package manager follow:"
-msgstr ""
+msgstr "Rincian galat dari manajer paket adalah:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
@@ -599,7 +600,7 @@ msgstr ""
 #: ../src/gs-plugin-loader.c:1463
 #, c-format
 msgid "No addon codecs are available for the %s format."
-msgstr ""
+msgstr "Tak ada kodek tambahan yang tersedia bagi format %s."
 
 #: ../src/gs-plugin-loader.c:1466
 #, c-format
@@ -607,39 +608,41 @@ msgid ""
 "Information about %s, as well as options for how to get a codec that can "
 "play this format can be found on the website."
 msgstr ""
+"Informasi tentang %s, maupun opsi tentang bagaimana mendapatkan suatu kodek "
+"yang dapat memutar format ini dapat ditemukan pada situs web."
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
 #: ../src/gs-screenshot-image.c:129
 msgid "Screenshot not found"
-msgstr ""
+msgstr "Cuplikan layar tak ditemukan"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
 #: ../src/gs-screenshot-image.c:236
 msgid "Screenshot size not found"
-msgstr ""
+msgstr "Ukuran cuplikan layar tak ditemukan"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
 #: ../src/gs-screenshot-image.c:250
 msgid "Could not create cache"
-msgstr ""
+msgstr "Tak bisa membuat singgahan"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
 #: ../src/gs-screenshot-image.c:267
 msgid "Screenshot not valid"
-msgstr ""
+msgstr "Cuplikan layar tak valid"
 
 #. TRANSLATORS: this is when networking is not available
 #: ../src/gs-screenshot-image.c:273
 msgid "Screenshot not available"
-msgstr ""
+msgstr "Cuplikan layar tak tersedia"
 
 #: ../src/gs-screenshot-image.c:326
 msgid "Screenshot"
-msgstr ""
+msgstr "Cuplikan layar"
 
 #: ../src/gs-shell.c:621
 msgid "Removing…"
@@ -647,62 +650,55 @@ msgstr "Menghapus…"
 
 #. TRANSLATORS: this source has no apps installed from it
 #: ../src/gs-shell.c:871
-#, fuzzy
 msgid "No software installed"
-msgstr "%s kini telah terpasang"
+msgstr "Tak ada perangkat lunak yang terpasang"
 
 #. TRANSLATORS: this source has some apps installed from it
 #: ../src/gs-shell.c:874
-#, fuzzy, c-format
+#, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
-msgstr[0] "%s kini telah terpasang"
-msgstr[1] "%s kini telah terpasang"
+msgstr[0] "%i aplikasi terpasang"
 
 #. TRANSLATORS: this source has some apps installed from it
 #: ../src/gs-shell.c:879
-#, fuzzy, c-format
+#, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
-msgstr[0] "%s kini telah terpasang"
-msgstr[1] "%s kini telah terpasang"
+msgstr[0] "%i add-on terpasang"
 
 #. TRANSLATORS: this source has some apps and addons installed from it
 #: ../src/gs-shell.c:884
 #, c-format
 msgid "%i application and %i add-ons installed"
 msgid_plural "%i applications and %i add-ons installed"
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "%i aplikasi dan %i add-on terpasang"
 
 #: ../src/gs-shell-details.c:136
 msgid "_Pending"
-msgstr ""
+msgstr "_Tertunda"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
 #: ../src/gs-shell-details.c:164
-#, fuzzy
 msgid "_Installing"
-msgstr "Memasang"
+msgstr "_Memasang"
 
 #. TRANSLATORS: button text in the header when an application can be installed
 #: ../src/gs-shell-details.c:198
-#, fuzzy
 msgid "_Removing"
-msgstr "Menghapus"
+msgstr "Meng_hapus"
 
 #. TRANSLATORS: this is where the licence is insanely
 #. * complicated and the full string is put into the tooltip
 #: ../src/gs-shell-details.c:607
 msgid "Complicated!"
-msgstr ""
+msgstr "Rumit!"
 
 #. TRANSLATORS: this is where the size is being worked out
 #: ../src/gs-shell-details.c:628
-#, fuzzy
 msgid "Calculating…"
-msgstr "Kalkulator"
+msgstr "Menghitung…"
 
 #. TRANSLATORS: this is where the updated date is not known
 #: ../src/gs-shell-details.c:644
@@ -735,7 +731,7 @@ msgstr "%s akan dihapus, dan Anda perlu memasangnya untuk memakainya lagi."
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:503
+#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:587
 #: ../src/plugins/gs-plugin-packagekit.c:576
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
@@ -743,120 +739,138 @@ msgstr "Tambahan"
 
 #: ../src/gs-shell-installed.c:601
 msgid "Click on items to select them"
-msgstr ""
+msgstr "Klik pada butir untuk memilihnya"
+
+#. TRANSLATORS: Time in 24h format
+#: ../src/gs-shell-updates.c:135
+msgid "%R"
+msgstr "%R"
+
+#. TRANSLATORS: Time in 12h format
+#: ../src/gs-shell-updates.c:138
+msgid "%l:%M %p"
+msgstr "%l:%M %p"
+
+#. TRANSLATORS: This is the date string with: day number, month name, year.
+#. i.e. "25 May 2012"
+#: ../src/gs-shell-updates.c:143
+msgid "%e %B %Y"
+msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:137
+#: ../src/gs-shell-updates.c:204
 msgid "Setting up updates…"
-msgstr ""
+msgstr "Menyiapkan pemutakhiran…"
 
-#: ../src/gs-shell-updates.c:138 ../src/gs-shell-updates.c:145
+#: ../src/gs-shell-updates.c:205 ../src/gs-shell-updates.c:212
 msgid "(This could take a while)"
-msgstr ""
+msgstr "(Ini mungkin makan waktu)"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:144
+#: ../src/gs-shell-updates.c:211
 msgid "Looking for new updates…"
-msgstr ""
+msgstr "Mencari pemutakhiran baru…"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:151
+#: ../src/gs-shell-updates.c:218
 msgid "Checking for updates…"
-msgstr ""
+msgstr "Memeriksa pemutakhiran…"
+
+#. TRANSLATORS: This is the time when we last checked for updates
+#: ../src/gs-shell-updates.c:334
+#, c-format
+msgid "Last checked: %s"
+msgstr "Terakhir diperiksa: %s"
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:387
+#: ../src/gs-shell-updates.c:471
 msgid "Recent Software Updates"
 msgstr "Pemutakhiran Perangkat Lunak Baru-baru Ini"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:688
+#: ../src/gs-shell-updates.c:779
 msgid "No Network"
 msgstr "Tak Ada Jaringan"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:692
+#: ../src/gs-shell-updates.c:783
 msgid "Internet access is required to check for updates."
-msgstr ""
+msgstr "Akses internet diperlukan untuk memeriksa pemutakhiran."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:696
+#: ../src/gs-shell-updates.c:787
 msgid "Network Settings"
 msgstr "Pengaturan Jaringan"
 
 #. TRANSLATORS: $$$
-#: ../src/gs-shell-updates.c:716
+#: ../src/gs-shell-updates.c:807
 msgid "Charges may apply"
-msgstr ""
+msgstr "Mungkin ada biaya"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:720
+#: ../src/gs-shell-updates.c:811
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
 msgstr ""
+"Memeriksa pemutakhiran ketika memakai data seluler bisa menyebabkan tambahan "
+"biaya."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:724
+#: ../src/gs-shell-updates.c:815
 msgid "Check Anyway"
 msgstr "Periksa Saja"
 
 #: ../src/gs-update-monitor.c:102
-#, fuzzy
 msgid "Software Updates Available"
-msgstr "Pemutakhiran Perangkat Lunak Baru-baru Ini"
+msgstr "Pemutakhiran Perangkat Lunak Tersedia"
 
 #: ../src/gs-update-monitor.c:103
 msgid "Important OS and application updates are ready to be installed"
-msgstr ""
+msgstr "Pemutakhiran OS dan aplikasi yang penting siap dipasang"
 
 #: ../src/gs-update-monitor.c:106
-#, fuzzy
 msgid "View"
-msgstr "Penilik"
+msgstr "Tilik"
 
 #: ../src/gs-update-monitor.c:107
 msgid "Not Now"
 msgstr "Jangan Sekarang"
 
-#: ../src/gs-update-monitor.c:149
-#, fuzzy
+#: ../src/gs-update-monitor.c:156
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
-msgstr[0] "Pemutakhiran Perangkat Lunak Baru-baru Ini"
-msgstr[1] "Pemutakhiran Perangkat Lunak Baru-baru Ini"
+msgstr[0] "Pemutakhiran Perangkat Lunak Terpasang"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:153
+#: ../src/gs-update-monitor.c:160
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
-msgstr[0] ""
-msgstr[1] ""
+msgstr[0] "Pemutakhiran OS yang penting telah dipasang."
 
-#: ../src/gs-update-monitor.c:158
-#, fuzzy
+#: ../src/gs-update-monitor.c:165
 msgid "Software Updates Failed"
-msgstr "Pemutakhiran Perangkat Lunak Baru-baru Ini"
+msgstr "Pemutakhiran Perangkat Lunak Gagal"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:160
+#: ../src/gs-update-monitor.c:167
 msgid "An important OS update failed to be installed."
-msgstr ""
+msgstr "Suatu pemutakhiran OS yang penting gagal dipasang."
 
-#: ../src/gs-update-monitor.c:169
+#: ../src/gs-update-monitor.c:176
 msgid "Review"
-msgstr ""
+msgstr "Ulasan"
 
-#: ../src/gs-update-monitor.c:171
+#: ../src/gs-update-monitor.c:178
 msgid "Show Details"
-msgstr ""
+msgstr "Tampilkan Rincian"
 
-#: ../src/gs-update-monitor.c:172
+#: ../src/gs-update-monitor.c:179
 msgid "OK"
 msgstr "OK"
 
@@ -895,19 +909,19 @@ msgstr "Luncurkan"
 
 #: ../src/gs-utils.c:160
 msgid "Sorry, this did not work"
-msgstr ""
+msgstr "Maaf, ini tidak bekerja"
 
 #. TRANSLATORS: this is when the install fails
 #: ../src/gs-utils.c:164
 #, c-format
 msgid "Installation of %s failed."
-msgstr ""
+msgstr "Pemasangan %s gagal."
 
 #. TRANSLATORS: this is when the remove fails
 #: ../src/gs-utils.c:169
 #, c-format
 msgid "Removal of %s failed."
-msgstr ""
+msgstr "Penghapusan %s gagal."
 
 #: ../src/plugins/gs-plugin-appstream.c:348
 #, c-format
@@ -918,12 +932,12 @@ msgstr "Tak ada data AppStream yang ditemukan"
 #: ../src/plugins/gs-plugin-epiphany.c:143
 #, c-format
 msgid "Web app"
-msgstr ""
+msgstr "App web"
 
 #. TRANSLATORS: this is the licence of the web-app
 #: ../src/plugins/gs-plugin-epiphany.c:151
 msgid "Proprietary"
-msgstr ""
+msgstr "Proprietary"
 
 #. TRANSLATORS: audio/video decoders
 #: ../src/plugins/gs-plugin-packagekit.c:580
