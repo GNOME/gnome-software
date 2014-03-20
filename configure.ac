@@ -128,8 +128,6 @@ data/icons/256x256/Makefile
 data/icons/scalable/Makefile
 src/Makefile
 src/plugins/Makefile
-src/org.gnome.Software.service
-src/gnome-software-service.desktop
 tests/Makefile
 ])
 AC_OUTPUT
