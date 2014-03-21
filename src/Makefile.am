@@ -6,7 +6,6 @@ AM_CPPFLAGS =						\
 	$(GTK_CFLAGS)					\
 	$(SOUP_CFLAGS)					\
 	$(PACKAGEKIT_CFLAGS)				\
-	$(NOTIFY_CFLAGS)				\
 	$(GNOME_DESKTOP_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
@@ -70,8 +69,7 @@ gnome_software_cmd_SOURCES =				\
 
 gnome_software_cmd_LDADD =				\
 	$(GLIB_LIBS)					\
-	$(GTK_LIBS)					\
-	$(NOTIFY_LIBS)
+	$(GTK_LIBS)
 
 gnome_software_cmd_CFLAGS =				\
 	$(WARNINGFLAGS_C)
@@ -159,7 +157,6 @@ gnome_software_LDADD =					\
 	$(GTK_LIBS)					\
 	$(SOUP_LIBS)					\
 	$(PACKAGEKIT_LIBS)				\
-	$(NOTIFY_LIBS)					\
 	-lm
 
 gnome_software_CFLAGS =					\
@@ -207,7 +204,6 @@ gs_self_test_SOURCES =						\
 	gs-self-test.c
 
 gs_self_test_LDADD =						\
-	$(NOTIFY_LIBS)						\
 	$(GLIB_LIBS)						\
 	$(GTK_LIBS)
 
