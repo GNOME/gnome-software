@@ -48,6 +48,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	GsCategory *sub;
 	const MenuSpecData *msdata;
 	gchar *tmp;
+	gchar msgctxt[100];
 	guint i;
 
 	msdata = menu_spec_get_data ();
@@ -58,10 +59,11 @@ gs_plugin_add_categories (GsPlugin *plugin,
 						    msdata[i].path,
 						    gettext(msdata[i].text));
 			*list = g_list_prepend (*list, category);
+			g_snprintf(msgctxt, 100, "Menu subcategory of %s", msdata[i].text);
 		} else {
 			sub = gs_category_new (category,
 					       tmp + 2,
-					       gettext(msdata[i].text));
+					       g_dpgettext2(GETTEXT_PACKAGE, msgctxt, msdata[i].text));
 			gs_category_add_subcategory (category, sub);
 			g_object_unref (sub);
 		}
