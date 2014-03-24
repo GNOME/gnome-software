@@ -9,7 +9,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2014-03-21 11:41+0000\n"
-"PO-Revision-Date: 2014-03-24 20:52+0100\n"
+"PO-Revision-Date: 2014-03-24 21:32+0100\n"
 "Last-Translator: Peter Mráz <etkinator@gmail.com>\n"
 "Language-Team: Slovak <gnome-sk-list@gnome.org>\n"
 "Language: sk\n"
@@ -242,7 +242,7 @@ msgid ""
 "charges"
 msgstr ""
 "Zisťovanie dostupných aktualizácií pomocou mobilného širokopásmového "
-"pripojenia môže viesť ku vzniku zmien"
+"pripojenia vám môže zvýšiť poplatky"
 
 #: ../src/gnome-software.ui.h:31
 msgid "_Check Anyway"
@@ -726,89 +726,86 @@ msgstr "Kliknutím na položky ich vyberiete"
 #. TRANSLATORS: Time in 24h format
 #: ../src/gs-shell-updates.c:135
 msgid "%R"
-msgstr ""
+msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
 #: ../src/gs-shell-updates.c:138
 msgid "%l:%M %p"
-msgstr ""
+msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
 #: ../src/gs-shell-updates.c:144
 msgid "Yesterday, %R"
-msgstr ""
+msgstr "Včera o %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
 #: ../src/gs-shell-updates.c:148
 msgid "Yesterday, %l:%M %p"
-msgstr ""
+msgstr "Včera o %l:%M %p"
 
 #: ../src/gs-shell-updates.c:151
 msgid "Two days ago"
-msgstr ""
+msgstr "Pred dvoma dňami"
 
 #: ../src/gs-shell-updates.c:153
-#, fuzzy
 #| msgid "Three Stars"
 msgid "Three days ago"
-msgstr "Tri hviezdičky"
+msgstr "Pred troma dňami"
 
 #: ../src/gs-shell-updates.c:155
-#, fuzzy
 #| msgid "Four Stars"
 msgid "Four days ago"
-msgstr "Štyri hviezdičky"
+msgstr "Pred štyrmi dňami"
 
 #: ../src/gs-shell-updates.c:157
-#, fuzzy
 #| msgid "Five Stars"
 msgid "Five days ago"
-msgstr "Päť hviezdičiek"
+msgstr "Pred piatimi dňami"
 
 #: ../src/gs-shell-updates.c:159
 msgid "Six days ago"
-msgstr ""
+msgstr "Pred šiestimi dňami"
 
 #: ../src/gs-shell-updates.c:161
 msgid "One week ago"
-msgstr ""
+msgstr "Pred týždňom"
 
 #: ../src/gs-shell-updates.c:163
 msgid "Two weeks ago"
-msgstr ""
+msgstr "Pred dvoma týždňami"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
 #: ../src/gs-shell-updates.c:167
 msgid "%e %B %Y"
-msgstr ""
+msgstr "%e. %B %Y"
 
 #. TRANSLATORS: the updates panel is starting up
 #: ../src/gs-shell-updates.c:228
 msgid "Setting up updates…"
-msgstr ""
+msgstr "Nastavujú sa aktualizácie…"
 
 #: ../src/gs-shell-updates.c:229 ../src/gs-shell-updates.c:236
 msgid "(This could take a while)"
-msgstr ""
+msgstr "(Môže to chvíľu trvať)"
 
 #. TRANSLATORS: the updates panel is starting up
 #: ../src/gs-shell-updates.c:235
 msgid "Looking for new updates…"
-msgstr ""
+msgstr "Vyhľadávajú sa nové aktualizácie…"
 
 #. TRANSLATORS: this is when the updates panel is starting up
 #: ../src/gs-shell-updates.c:242
 msgid "Checking for updates…"
-msgstr ""
+msgstr "Zisťuje sa dostupnosť aktualizácií…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
 #: ../src/gs-shell-updates.c:358
 #, c-format
 msgid "Last checked: %s"
-msgstr ""
+msgstr "Posledná kontrola: %s"
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
@@ -819,24 +816,24 @@ msgstr "Nedávne aktualizácie softvéru"
 #. TRANSLATORS: can't do updates check
 #: ../src/gs-shell-updates.c:803
 msgid "No Network"
-msgstr ""
+msgstr "Žiadne pripojenie k sieti\""
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
 #: ../src/gs-shell-updates.c:807
 msgid "Internet access is required to check for updates."
-msgstr ""
+msgstr "Na zistenie dostupnosti aktualizácií je potrebný prístup k internetu."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
 #: ../src/gs-shell-updates.c:811
 msgid "Network Settings"
-msgstr ""
+msgstr "Nastavenia siete"
 
 #. TRANSLATORS: $$$
 #: ../src/gs-shell-updates.c:831
 msgid "Charges may apply"
-msgstr ""
+msgstr "Možné zvýšenie poplatkov"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
@@ -845,49 +842,51 @@ msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
 msgstr ""
+"Zisťovanie dostupných aktualizácií pomocou mobilného širokopásmového "
+"pripojenia vám môže zvýšiť poplatky."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
 #: ../src/gs-shell-updates.c:839
 msgid "Check Anyway"
-msgstr ""
+msgstr "Napriek tomu skontrolovať"
 
 #. TRANSLATORS: this source has no apps installed from it
 #: ../src/gs-sources-dialog.c:91
-#, fuzzy
 #| msgid "%s is now installed"
 msgid "No software installed"
-msgstr "Softvér %s je teraz nainštalovaný"
+msgstr "Nebol nainštalovaný žiadny softvér"
 
 # cmdline description
 #. TRANSLATORS: this source has some apps installed from it
 #: ../src/gs-sources-dialog.c:94
-#, fuzzy, c-format
+#, c-format
 #| msgid "Show application details"
 msgid "%i application installed"
 msgid_plural "%i applications installed"
-msgstr[0] "Zobrazí podrobnosti o aplikácii"
-msgstr[1] "Zobrazí podrobnosti o aplikácii"
-msgstr[2] "Zobrazí podrobnosti o aplikácii"
+msgstr[0] "Bolo nainštalovaných %i aplikácií"
+msgstr[1] "Bola nainštalovaná %i aplikácia"
+msgstr[2] "Boli nainštalované %i aplikácie"
 
 #. TRANSLATORS: this source has some apps installed from it
 #: ../src/gs-sources-dialog.c:99
-#, fuzzy, c-format
+#, c-format
 #| msgid "%s is now installed"
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
-msgstr[0] "Softvér %s je teraz nainštalovaný"
-msgstr[1] "Softvér %s je teraz nainštalovaný"
-msgstr[2] "Softvér %s je teraz nainštalovaný"
+msgstr[0] "Bolo nainštalovaných %i doplnkov"
+msgstr[1] "Bol nainštalovaný %i doplnok"
+msgstr[2] "Boli nainštalované %i doplnky"
 
+# * https://bugzilla.gnome.org/show_bug.cgi?id=726990
 #. TRANSLATORS: this source has some apps and addons installed from it
 #: ../src/gs-sources-dialog.c:104
 #, c-format
 msgid "%i application and %i add-ons installed"
 msgid_plural "%i applications and %i add-ons installed"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
+msgstr[0] "Bolo nainštalovaných %i aplikácií a %i doplnkov"
+msgstr[1] "Bola nainštalovaná %i aplikácia a %i doplnkov"
+msgstr[2] "Boli nainštalované %i aplikácie a %i doplnkov"
 
 # GtkButton
 #: ../src/gs-sources-dialog.c:296 ../src/gs-sources-dialog.ui.h:14
