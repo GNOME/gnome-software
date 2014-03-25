@@ -31,9 +31,7 @@
 
 struct GsPluginPrivate {
 	AsStore			*store;
-	GPtrArray		*file_monitors;
 	gchar			*locale;
-	gchar			*cachedir;
 	gsize			 done_init;
 };
 
@@ -85,194 +83,13 @@ as_app_has_compulsory_for_desktop (AsApp *app, const gchar *compulsory_for_deskt
 }
 
 /**
- * gs_plugin_parse_xml_file:
- */
-static gboolean
-gs_plugin_parse_xml_file (GsPlugin *plugin,
-			  const gchar *parent_dir,
-			  const gchar *filename,
-			  const gchar *icon_root,
-			  GCancellable *cancellable,
-			  GError **error)
-{
-	GError *error_local = NULL;
-	GFile *file = NULL;
-	gboolean ret = FALSE;
-	gchar *path_xml = NULL;
-	gchar *origin_fallback;
-	gchar *tmp;
-
-	/* the first component of the file (e.g. "fedora-20.xml.gz)
-	 * is used for the icon directory as we might want to clean up
-	 * the icons manually if they are installed in /var/cache */
-	origin_fallback = g_strdup (filename);
-	tmp = g_strstr_len (origin_fallback, -1, ".xml");
-	if (tmp == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "AppStream metadata name %s/%s not valid, "
-			     "expected .xml[.*]",
-			     parent_dir, filename);
-		goto out;
-	}
-	tmp[0] = '\0';
-
-	/* load this specific file */
-	path_xml  = g_build_filename (parent_dir, filename, NULL);
-	g_debug ("Loading AppStream XML %s with icon path %s",
-		 path_xml, icon_root);
-	file = g_file_new_for_path (path_xml);
-	as_store_set_origin (plugin->priv->store, origin_fallback);
-	ret = as_store_from_file (plugin->priv->store,
-				  file,
-				  icon_root,
-				  cancellable,
-				  &error_local);
-	if (!ret) {
-		if (g_error_matches (error_local,
-				     AS_NODE_ERROR,
-				     AS_NODE_ERROR_FAILED)) {
-			ret = TRUE;
-			g_warning ("AppStream XML invalid: %s", error_local->message);
-			g_error_free (error_local);
-		} else {
-			g_propagate_error (error, error_local);
-		}
-		goto out;
-	}
-out:
-	g_free (path_xml);
-	g_free (origin_fallback);
-	if (file != NULL)
-		g_object_unref (file);
-	return ret;
-}
-
-/**
- * gs_plugin_appstream_cache_changed_cb:
+ * gs_plugin_appstream_store_changed_cb:
  */
 static void
-gs_plugin_appstream_cache_changed_cb (GFileMonitor *monitor,
-				      GFile *file, GFile *other_file,
-				      GFileMonitorEvent event_type,
-				      GsPlugin *plugin)
+gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 {
-	gchar *path;
-	path = g_file_get_path (file);
-	g_debug ("AppStream metadata %s changed, reloading cache", path);
+	g_debug ("AppStream metadata changed, reloading cache");
 	plugin->priv->done_init = FALSE;
-	g_free (path);
-}
-
-/**
- * gs_plugin_parse_xml_dir:
- */
-static gboolean
-gs_plugin_parse_xml_dir (GsPlugin *plugin,
-			 const gchar *path_xml,
-			 const gchar *icon_root,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	GDir *dir = NULL;
-	GFile *file_xml = NULL;
-	GFileMonitor *monitor = NULL;
-	const gchar *tmp;
-	gboolean ret = TRUE;
-
-	/* watch the directory for changes */
-	file_xml = g_file_new_for_path (path_xml);
-	monitor = g_file_monitor_directory (file_xml,
-					    G_FILE_MONITOR_NONE,
-					    cancellable,
-					    error);
-	if (monitor == NULL)
-		goto out;
-	g_signal_connect (monitor, "changed",
-			  G_CALLBACK (gs_plugin_appstream_cache_changed_cb),
-			  plugin);
-	g_ptr_array_add (plugin->priv->file_monitors, g_object_ref (monitor));
-
-	/* search all files */
-	if (!g_file_test (path_xml, G_FILE_TEST_EXISTS))
-		goto out;
-	dir = g_dir_open (path_xml, 0, error);
-	if (dir == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-	while ((tmp = g_dir_read_name (dir)) != NULL) {
-		ret = gs_plugin_parse_xml_file (plugin,
-						path_xml,
-						tmp,
-						icon_root,
-						cancellable,
-						error);
-		if (!ret)
-			goto out;
-	}
-out:
-	if (file_xml != NULL)
-		g_object_unref (file_xml);
-	if (monitor != NULL)
-		g_object_unref (monitor);
-	if (dir != NULL)
-		g_dir_close (dir);
-	return ret;
-}
-
-/**
- * gs_plugin_parse_xml:
- */
-static gboolean
-gs_plugin_parse_xml (GsPlugin *plugin, GCancellable *cancellable, GError **error)
-{
-	const gchar * const * data_dirs;
-	gboolean ret;
-	gchar *path_xml = NULL;
-	gchar *icon_root = NULL;
-	guint i;
-
-	/* search all files */
-	data_dirs = g_get_system_data_dirs ();
-	for (i = 0; data_dirs[i] != NULL; i++) {
-		path_xml = g_build_filename (data_dirs[i], "app-info", "xmls", NULL);
-		icon_root = g_build_filename (data_dirs[i], "app-info", "icons", NULL);
-		ret = gs_plugin_parse_xml_dir (plugin,
-					       path_xml,
-					       icon_root,
-					       cancellable,
-					       error);
-		g_free (path_xml);
-		g_free (icon_root);
-		if (!ret)
-			goto out;
-	}
-	path_xml = g_build_filename (g_get_user_data_dir (), "app-info", "xmls", NULL);
-	icon_root = g_build_filename (g_get_user_data_dir (), "app-info", "icons", NULL);
-	ret = gs_plugin_parse_xml_dir (plugin,
-				       path_xml,
-				       icon_root,
-				       cancellable,
-				       error);
-	g_free (path_xml);
-	g_free (icon_root);
-	if (!ret)
-		goto out;
-	path_xml = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "xmls", NULL);
-	icon_root = g_build_filename (LOCALSTATEDIR, "cache", "app-info", "icons", NULL);
-	ret = gs_plugin_parse_xml_dir (plugin,
-				       path_xml,
-				       icon_root,
-				       cancellable,
-				       error);
-	g_free (path_xml);
-	g_free (icon_root);
-	if (!ret)
-		goto out;
-out:
-	return ret;
 }
 
 /**
@@ -282,12 +99,10 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->file_monitors = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	plugin->priv->store = as_store_new ();
-	plugin->priv->cachedir = g_build_filename (DATADIR,
-						   "app-info",
-						   "icons",
-						   NULL);
+	g_signal_connect (plugin->priv->store, "changed",
+			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
+			  plugin);
 }
 
 /**
@@ -308,10 +123,8 @@ gs_plugin_get_deps (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_free (plugin->priv->cachedir);
 	g_free (plugin->priv->locale);
 	g_object_unref (plugin->priv->store);
-	g_ptr_array_unref (plugin->priv->file_monitors);
 }
 
 /**
@@ -332,12 +145,13 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	if (tmp != NULL)
 		*tmp = '\0';
 
-	/* clear all existing file monitors */
-	g_ptr_array_set_size (plugin->priv->file_monitors, 0);
-
 	/* Parse the XML */
 	gs_profile_start (plugin->profile, "appstream::startup");
-	ret = gs_plugin_parse_xml (plugin, cancellable, error);
+	ret = as_store_load (plugin->priv->store,
+			     AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM |
+			     AS_STORE_LOAD_FLAG_APP_INFO_USER,
+			     cancellable,
+			     error);
 	if (!ret)
 		goto out;
 	items = as_store_get_apps (plugin->priv->store);
