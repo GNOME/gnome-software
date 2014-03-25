@@ -199,7 +199,13 @@ gs_plugin_refine_search_pixbuf (GsPlugin *plugin,
 				const gchar *icon_dir,
 				const gchar *icon)
 {
-	const gchar *exensions[] = { "png", "svg", "gif", "ico", "xcf", NULL };
+	const gchar *exensions[] = { "png",
+				     "svg",
+				     "svgz",
+				     "gif",
+				     "ico",
+				     "xcf",
+				     NULL };
 	gchar *icon_path;
 	guint i;
 
