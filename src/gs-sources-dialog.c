@@ -57,6 +57,8 @@ add_source (GtkListBox *listbox, GsApp *app)
 	guint cnt_addon = 0;
 	guint cnt_apps = 0;
 	guint i;
+	_cleanup_free_ gchar *addons_text = NULL;
+	_cleanup_free_ gchar *apps_text = NULL;
 	_cleanup_free_ gchar *text = NULL;
 
 	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
@@ -87,25 +89,42 @@ add_source (GtkListBox *listbox, GsApp *app)
 			break;
 		}
 	}
+
+	/* TRANSLATORS: This string is used to construct the 'X applications
+	   and y add-ons installed' sentence, describing a software source. */
+	apps_text = g_strdup_printf (ngettext ("%i application",
+	                                       "%i applications",
+	                                       cnt_apps), cnt_apps);
+	/* TRANSLATORS: This string is used to construct the 'X applications
+	   and y add-ons installed' sentence, describing a software source. */
+	addons_text = g_strdup_printf (ngettext ("%i add-on",
+	                                         "%i add-ons",
+	                                         cnt_addon), cnt_addon);
 	if (cnt_apps == 0 && cnt_addon == 0) {
-		/* TRANSLATORS: this source has no apps installed from it */
+		/* TRANSLATORS: This string describes a software source that
+		   has no software installed from it. */
 		text = g_strdup (_("No software installed"));
 	} else if (cnt_addon == 0) {
-		/* TRANSLATORS: this source has some apps installed from it */
-		text = g_strdup_printf (ngettext ("%i application installed",
-						  "%i applications installed",
-						  cnt_apps), cnt_apps);
+		/* TRANSLATORS: This string is used to construct the 'X applications
+		   installed' sentence, describing a software source. */
+		text = g_strdup_printf (ngettext ("%s installed",
+		                                  "%s installed",
+		                                  cnt_apps),
+		                                  apps_text);
 	} else if (cnt_apps == 0) {
-		/* TRANSLATORS: this source has some apps installed from it */
-		text = g_strdup_printf (ngettext ("%i add-on installed",
-						  "%i add-ons installed",
-						  cnt_addon), cnt_addon);
+		/* TRANSLATORS: This string is used to construct the 'X add-ons
+		   installed' sentence, describing a software source. */
+		text = g_strdup_printf (ngettext ("%s installed",
+		                                  "%s installed",
+		                                  cnt_addon),
+		                                  addons_text);
 	} else {
-		/* TRANSLATORS: this source has some apps and addons installed from it */
-		text = g_strdup_printf (ngettext ("%i application and %i add-ons installed",
-						  "%i applications and %i add-ons installed",
-						  cnt_apps),
-					cnt_apps, cnt_addon);
+		/* TRANSLATORS: This string is used to construct the 'X applications
+		   and y add-ons installed' sentence, describing a software source. */
+		text = g_strdup_printf (ngettext ("%s and %s installed",
+		                                  "%s and %s installed",
+		                                  cnt_apps + cnt_addon),
+		                                  apps_text, addons_text);
 	}
 	widget = gtk_label_new (text);
 	gtk_widget_set_halign (widget, GTK_ALIGN_START);
