@@ -149,7 +149,8 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	gs_profile_start (plugin->profile, "appstream::startup");
 	ret = as_store_load (plugin->priv->store,
 			     AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM |
-			     AS_STORE_LOAD_FLAG_APP_INFO_USER,
+			     AS_STORE_LOAD_FLAG_APP_INFO_USER |
+			     AS_STORE_LOAD_FLAG_APP_INSTALL,
 			     cancellable,
 			     error);
 	if (!ret)
