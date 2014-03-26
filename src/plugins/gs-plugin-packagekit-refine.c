@@ -571,6 +571,21 @@ out:
 }
 
 /**
+ * gs_plugin_refine_app_needs_details:
+ */
+static gboolean
+gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsApp *app)
+{
+	if (gs_app_get_licence (app) == NULL)
+		return TRUE;
+	if (gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL)
+		return TRUE;
+	if (gs_app_get_description (app) == NULL && plugin->use_pkg_descriptions)
+		return TRUE;
+	return FALSE;
+}
+
+/**
  * gs_plugin_refine_require_details:
  */
 static gboolean
@@ -587,13 +602,9 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	gs_profile_start (plugin->profile, "packagekit-refine[source->licence]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_licence (app) != NULL &&
-		    gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) != NULL &&
-		    gs_app_get_size (app) != 0 &&
-		    (gs_app_get_description (app) != NULL ||
-		     g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") == NULL))
-			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
+			continue;
+		if (!gs_plugin_refine_app_needs_details (plugin, app))
 			continue;
 		list_tmp = g_list_prepend (list_tmp, app);
 	}

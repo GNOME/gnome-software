@@ -103,6 +103,12 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_signal_connect (plugin->priv->store, "changed",
 			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
 			  plugin);
+
+	/* AppInstall does not ever give us a long description */
+	if (gs_plugin_check_distro_id (plugin, "debian") ||
+	    gs_plugin_check_distro_id (plugin, "ubuntu")) {
+		plugin->use_pkg_descriptions = TRUE;
+	}
 }
 
 /**

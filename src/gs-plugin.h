@@ -63,6 +63,7 @@ struct GsPlugin {
 	gdouble			 priority;	/* largest number gets run first */
 	const gchar		**deps;		/* allow-none */
 	gboolean		 enabled;
+	gboolean		 use_pkg_descriptions;
 	gchar			*name;
 	GsPluginPrivate		*priv;
 	guint			 pixbuf_size;
