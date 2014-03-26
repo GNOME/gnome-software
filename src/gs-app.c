@@ -1070,9 +1070,9 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality < app->priv->summary_quality)
+	if (quality < app->priv->description_quality)
 		return;
-	app->priv->summary_quality = quality;
+	app->priv->description_quality = quality;
 
 	g_free (app->priv->description);
 	app->priv->description = g_strdup (description);
