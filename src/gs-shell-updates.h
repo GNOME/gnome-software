@@ -41,13 +41,13 @@ typedef struct GsShellUpdatesPrivate GsShellUpdatesPrivate;
 
 typedef struct
 {
-	 GObject		 parent;
+	 GtkBin			 parent;
 	 GsShellUpdatesPrivate	*priv;
 } GsShellUpdates;
 
 typedef struct
 {
-	GObjectClass		 parent_class;
+	GtkBinClass		 parent_class;
 } GsShellUpdatesClass;
 
 GType		 gs_shell_updates_get_type	(void);

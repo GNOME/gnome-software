@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.10"/>
+  <template class="GsShellUpdates" parent="GtkBin">
+    <child internal-child="accessible">
+      <object class="AtkObject" id="updates-accessible">
+        <property name="accessible-name" translatable="yes">Updates page</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkStack" id="stack_updates">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkBox" id="updates_spinner_box">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">12</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+            <child>
+              <object class="GtkSpinner" id="spinner_updates">
+                <property name="visible">True</property>
+                <property name="width_request">128</property>
+                <property name="height_request">128</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_updates_spinner">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label"/>
+                <property name="justify">center</property>
+                <attributes>
+                  <attribute name="scale" value="1.4"/>
+                </attributes>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="name">spinner</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkScrolledWindow" id="scrolledwindow_updates">
+            <property name="visible">True</property>
+            <property name="can_focus">True</property>
+            <property name="hscrollbar_policy">never</property>
+            <property name="vscrollbar_policy">automatic</property>
+            <property name="shadow_type">none</property>
+            <style>
+              <class name="main-scrolled-software"/>
+            </style>
+            <child>
+              <object class="GtkBox" id="list_box_updates_box">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <child>
+                  <object class="GtkListBox" id="list_box_updates">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="selection_mode">none</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkSeparator" id="list_box_updates_separator">
+                    <property name="visible">True</property>
+                    <property name="orientation">horizontal</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="name">view</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="updates_uptodate_box">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">48</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+            <child type="center">
+              <object class="GtkBox" id="updates_uptodate_centerbox">
+                <property name="visible">True</property>
+                <property name="orientation">vertical</property>
+                <property name="spacing">12</property>
+                <child>
+                  <object class="GtkImage" id="image_updates">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="pixel_size">128</property>
+                    <property name="icon_name">object-select-symbolic</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkLabel" id="label10">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes">Software is up to date</property>
+                    <attributes>
+                      <attribute name="scale" value="1.4"/>
+                    </attributes>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_updates_last_checked">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="margin_bottom">32</property>
+                <property name="label">Last checked: HH:MM</property>
+              </object>
+              <packing>
+                <property name="pack_type">end</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="name">uptodate</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="updates_mobile_box">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">12</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="image_updates_mobile">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="pixel_size">128</property>
+                <property name="icon_name">dialog-warning-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_updates_mobile">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Checking for updates when using mobile broadband could cause you to incur charges</property>
+                <property name="wrap">True</property>
+                <property name="halign">center</property>
+                <property name="max-width-chars">40</property>
+                <property name="justify">center</property>
+                <attributes>
+                  <attribute name="scale" value="1.4"/>
+                </attributes>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_updates_mobile">
+                <property name="label" translatable="yes">_Check Anyway</property>
+                <property name="width_request">150</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="hexpand">False</property>
+                <property name="halign">center</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="name">mobile</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="updates_offline_box">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">12</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="image_updates_offline">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="pixel_size">128</property>
+                <property name="icon_name">network-offline-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_updates_offline">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Go online to check for updates</property>
+                <property name="wrap">True</property>
+                <property name="halign">center</property>
+                <property name="justify">center</property>
+                <attributes>
+                  <attribute name="scale" value="1.4"/>
+                </attributes>
+              </object>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_updates_offline">
+                <property name="label" translatable="yes">_Network Settings</property>
+                <property name="width_request">150</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="hexpand">False</property>
+                <property name="halign">center</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+              </packing>
+            </child>
+          </object>
+          <packing>
+            <property name="name">offline</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="updates_failed_box">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">12</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+            <child>
+              <object class="GtkImage" id="image_updates_failed">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="pixel_size">128</property>
+                <property name="icon_name">action-unavailable-symbolic</property>
+              </object>
+            </child>
+            <child>
+              <object class="GtkLabel" id="label_updates_failed">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="wrap">True</property>
+                <property name="max-width-chars">60</property>
+                <property name="label" translatable="No">Failed to get updates</property>
+                <attributes>
+                  <attribute name="scale" value="1.4"/>
+                </attributes>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="name">failed</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
