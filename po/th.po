@@ -1,146 +1,1918 @@
 # Thai translation for gnome-software.
-# Copyright (C) 2013 Free Software Foundation, Inc.
+# Copyright (C) 2013-2014 Free Software Foundation, Inc.
 # This file is distributed under the same license as the gnome-software package.
-# Akom Chotiphantawanon <knight2000@gmail.com>, 2013.
 #
+# Akom Chotiphantawanon <knight2000@gmail.com>, 2013-2014.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2013-04-09 15:56+0000\n"
-"PO-Revision-Date: 2013-06-02 18:56+0700\n"
+"POT-Creation-Date: 2014-03-26 19:26+0700\n"
+"PO-Revision-Date: 2014-03-26 19:27+0700\n"
 "Last-Translator: Akom Chotiphantawanon <knight2000@gmail.com>\n"
 "Language-Team: Thai <thai-l10n@googlegroups.com>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: Plural-Forms: nplurals=1; plural=0;\n"
 
-#: ../src/gnome-software.desktop.in.h:1 ../src/gnome-software.ui.h:1
-msgid "Software"
-msgstr "ซอฟต์แวร์"
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "เครื่องมือจัดการโปรแกรมสำหรับ GNOME"
 
-#: ../src/gnome-software.desktop.in.h:2
-msgid "Add, remove or update software on this computer"
-msgstr "เพิ่ม ลบ หรือปรับรุ่นซอฟต์แวร์ในคอมพิวเตอร์นี้"
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
+msgid ""
+"Software allows you to find and install new applications and system "
+"extensions and remove existing installed applications."
+msgstr ""
+"\"ซอฟต์แวร์\" ช่วยคุณหาและติดตั้งโปรแกรมและส่วนขยายของระบบเพิ่มเติม "
+"และถอดถอนโปรแกรมที่ติดตั้งแล้ว"
 
-#: ../src/gnome-software.ui.h:2
-msgid "New"
-msgstr "ใหม่"
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
+msgid ""
+"GNOME Software showcases featured and popular applications with useful "
+"descriptions and multiple screenshots per application. Applications can be "
+"found either through browsing the list of categories or by searching. It "
+"also allows you to update your system using an offline update."
+msgstr ""
+"โปรแกรม \"ซอฟต์แวร์\" ของ GNOME จัดแสดงโปรแกรมที่เด่นและยอดนิยม "
+"พร้อมคำบรรยายที่เป็นประโยชน์และภาพหน้าจอหลายภาพต่อโปรแกรม "
+"คุณสามารถหาโปรแกรมผ่านการท่องดูตามหมวดหมู่หรือด้วยการค้นหาก็ได้ นอกจากนี้ "
+"ยังให้คุณปรับรุ่นระบบของคุณโดยใช้การปรับรุ่นแบบออฟไลน์ได้"
 
-#: ../src/gnome-software.ui.h:3
+#: ../src/app-folder-dialog.ui.h:1
+msgid "Add to Application Folder"
+msgstr "เพิ่มเข้าโฟลเดอร์โปรแกรม"
+
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
+#: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
+msgid "_Cancel"
+msgstr "_ยกเลิก"
+
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
+msgid "_Add"
+msgstr "เ_พิ่ม"
+
+#: ../src/app-menu.ui.h:1
+msgid "_Software Sources"
+msgstr "แ_หล่งซอฟต์แวร์"
+
+#: ../src/app-menu.ui.h:2
+msgid "_About"
+msgstr "เ_กี่ยวกับ"
+
+#: ../src/app-menu.ui.h:3
+msgid "_Quit"
+msgstr "_ออก"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is installed
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is installed
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
+#: ../src/gs-feature-tile.c:76 ../src/gs-history-dialog.c:88
+#: ../src/gs-popular-tile.c:79 ../src/gs-popular-tile.c:82
+#: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "ติดตั้งอยู่"
 
-#: ../src/gnome-software.ui.h:4
-msgid "Updates"
-msgstr "มีรุ่นใหม่"
+#. TRANSLATORS: this is the application name
+#. TRANSLATORS: this is the main window title
+#: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
+#: ../src/gs-application.c:240 ../src/gs-shell.c:162
+msgid "Software"
+msgstr "ซอฟต์แวร์"
 
-#: ../src/gnome-software.ui.h:5
-msgid "Overview"
-msgstr "ภาพรวม"
+#: ../src/org.gnome.Software.desktop.in.h:2
+msgid "Add, remove or update software on this computer"
+msgstr "เพิ่ม ลบ หรือปรับรุ่นซอฟต์แวร์ในคอมพิวเตอร์นี้"
 
+#: ../src/gnome-software-local-file.desktop.in.h:1
+msgid "Software Install"
+msgstr "ติดตั้งซอฟต์แวร์"
+
+#: ../src/gnome-software-local-file.desktop.in.h:2
+msgid "Install selected software on the system"
+msgstr "ติดตั้งซอฟต์แวร์ที่เลือกลงในระบบ"
+
+#: ../src/gnome-software.ui.h:1
+msgid "Select All"
+msgstr "เลือกทั้งหมด"
+
+#: ../src/gnome-software.ui.h:2
+msgid "Select None"
+msgstr "ไม่เลือก"
+
+#. vim: set noexpandtab:
+#: ../src/gnome-software.ui.h:4 ../src/gs-update-dialog.ui.h:1
+msgid "Go back"
+msgstr "กลับไป"
+
+#. Translators: A label for a button to show all available software.
 #: ../src/gnome-software.ui.h:6
-msgid "Reviews"
-msgstr "บทวิจารณ์"
+msgid "_All"
+msgstr "_ทั้งหมด"
 
-#: ../src/gnome-software.ui.h:7
-msgid "Related"
-msgstr "ที่เกี่ยวข้อง"
+#. Translators: A label for a button to show only software which is already installed.
+#: ../src/gnome-software.ui.h:8
+msgid "_Installed"
+msgstr "_ติดตั้งอยู่"
 
-#: ../src/gnome-software.ui.h:8 ../src/gs-app-widget.c:99
-msgid "Install"
-msgstr "ติดตั้ง"
-
-#: ../src/gnome-software.ui.h:9
-msgid "Update All"
-msgstr "ปรับรุ่นทั้งหมด"
-
+#. Translators: A label for a button to show only updates which are available to install.
 #: ../src/gnome-software.ui.h:10
+msgid "_Updates"
+msgstr "_มีรุ่นใหม่"
+
+#: ../src/gnome-software.ui.h:11
+msgid "Restart & _Install"
+msgstr "เริ่มใหม่และ_ติดตั้ง"
+
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:153
+msgid "_Install"
+msgstr "_ติดตั้ง"
+
+#. TRANSLATORS: button text in the header when an application can be erased
+#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:191
+msgid "_Remove"
+msgstr "_ถอดถอน"
+
+#: ../src/gnome-software.ui.h:14
+msgid "Select"
+msgstr "เลือก"
+
+#: ../src/gnome-software.ui.h:15
+msgid "Check for updates"
+msgstr "ตรวจสอบการปรับรุ่น"
+
+#: ../src/gnome-software.ui.h:16
+msgid "Overview page"
+msgstr "หน้าภาพรวม"
+
+#: ../src/gnome-software.ui.h:17
+#: ../src/plugins/gs-plugin-hardcoded-categories.c:160
 msgid "Featured"
 msgstr "เด่น"
 
-#: ../src/gnome-software.ui.h:11
-msgid "Popular"
-msgstr "นิยม"
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: ../src/gnome-software.ui.h:19
+msgid "Picks"
+msgstr "คัดสรร"
 
-#: ../src/gnome-software.ui.h:12
+#: ../src/gnome-software.ui.h:20
 msgid "Categories"
 msgstr "หมวด"
 
-#: ../src/gnome-software.ui.h:13
-msgid "Description"
-msgstr "คำบรรยาย"
+#: ../src/gnome-software.ui.h:21
+msgid "No Application Data Found"
+msgstr "ไม่พบข้อมูลโปรแกรม"
 
-#: ../src/gnome-software.ui.h:14
+#: ../src/gnome-software.ui.h:22
+msgid "Installed page"
+msgstr "หน้ารายการติดตั้งแล้ว"
+
+#: ../src/gnome-software.ui.h:23
+msgid "_Add to Folder…"
+msgstr "เ_พิ่มเข้าโฟลเดอร์…"
+
+#: ../src/gnome-software.ui.h:24
+msgid "_Move to Folder…"
+msgstr "_ย้ายไปโฟลเดอร์…"
+
+#: ../src/gnome-software.ui.h:25
+msgid "_Remove from Folder"
+msgstr "_ลบออกจากโฟลเดอร์"
+
+#: ../src/gnome-software.ui.h:26
+msgid "Search page"
+msgstr "หน้าค้นหา"
+
+#: ../src/gnome-software.ui.h:27
+msgid "No Application Found"
+msgstr "ไม่พบโปรแกรม"
+
+#: ../src/gnome-software.ui.h:28
+msgid "Updates page"
+msgstr "หน้ารายการปรับรุ่น"
+
+#: ../src/gnome-software.ui.h:29
+msgid "Software is up to date"
+msgstr "ซอฟต์แวร์เป็นรุ่นล่าสุดแล้ว"
+
+#: ../src/gnome-software.ui.h:30
 msgid ""
-"Shotwell is a digital photo organiser that runs on Linux. It is the default "
-"photo manager in Ubuntu and Fedora."
-msgstr ""
-"Shotwell เป็นโปรแกรมจัดการภาพถ่ายดิจิทัลที่ทำงานบนลินุกซ์ "
-"และเป็นโปรแกรมจัดการภาพถ่ายมาตรฐานของอูบุนตูและฟีดอรา"
+"Checking for updates when using mobile broadband could cause you to incur "
+"charges"
+msgstr "การตรวจสอบการปรับรุ่นขณะใช้บรอดแบนด์มือถืออาจทำให้คุณเสียค่าบริการ"
 
-#: ../src/gs-app-widget.c:105
+#: ../src/gnome-software.ui.h:31
+msgid "_Check Anyway"
+msgstr "_ตรวจสอบต่อไป"
+
+#: ../src/gnome-software.ui.h:32
+msgid "Go online to check for updates"
+msgstr "ออนไลน์เพื่อตรวจสอบการปรับรุ่น"
+
+#: ../src/gnome-software.ui.h:33
+msgid "_Network Settings"
+msgstr "ตั้งค่าเ_ครือข่าย"
+
+#: ../src/gnome-software.ui.h:34
+msgid "Details page"
+msgstr "หน้ารายละเอียด"
+
+#: ../src/gnome-software.ui.h:35
+msgid "Software Source Included"
+msgstr "มีแหล่งซอฟต์แวร์"
+
+#: ../src/gnome-software.ui.h:36
+msgid ""
+"This application includes a software source which provides updates, as well "
+"as access to other software."
+msgstr ""
+"โปรแกรมนี้มีแหล่งซอฟต์แวร์ ซึ่งมีการจัดเตรียมรายการปรับรุ่น และสามารถเข้าถึงซอฟต์แวร์อื่นๆ ได้"
+
+#: ../src/gnome-software.ui.h:37
+msgid "No Software Source Included"
+msgstr "ไม่มีแหล่งซอฟต์แวร์"
+
+#: ../src/gnome-software.ui.h:38
+msgid ""
+"This application does not include a software source. It will not be updated "
+"with new versions."
+msgstr "โปรแกรมนี้ไม่มีแหล่งซอฟต์แวร์ จะไม่มีการปรับรุ่นเป็นรุ่นใหม่"
+
+#: ../src/gnome-software.ui.h:39
+msgid ""
+"This software is already provided by your distribution and should not be "
+"replaced."
+msgstr "ซอฟต์แวร์นี้จัดเตรียมโดยชุดจัดแจกของคุณอยู่แล้ว และไม่ควรแทนที่"
+
+#: ../src/gnome-software.ui.h:40
+msgid "Software Source Identified"
+msgstr "แหล่งซอฟต์แวร์ที่ระบุที่มา"
+
+#: ../src/gnome-software.ui.h:41
+msgid ""
+"Adding this software source will give you access to additional software and "
+"upgrades."
+msgstr "การเพิ่มแหล่งซอฟต์แวร์นี้จะให้คุณเข้าถึงซอฟต์แวร์และการปรับรุ่นเพิ่มเติมได้"
+
+#: ../src/gnome-software.ui.h:42
+msgid "Only use software sources that you trust."
+msgstr "ใช้แหล่งซอฟต์แวร์ที่คุณเชื่อถือเท่านั้น"
+
+#: ../src/gnome-software.ui.h:43
+msgid "_Website"
+msgstr "เ_ว็บไซต์"
+
+#: ../src/gnome-software.ui.h:44
+msgid "_History"
+msgstr "_ประวัติ"
+
+#. Translators: A label for a button to execute the selected application.
+#: ../src/gnome-software.ui.h:46
+msgid "_Launch"
+msgstr "เ_รียกทำงาน"
+
+#: ../src/gnome-software.ui.h:47
+msgid "Details"
+msgstr "รายละเอียด"
+
+#: ../src/gnome-software.ui.h:48
+msgid "Version"
+msgstr "รุ่น"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gnome-software.ui.h:49 ../src/gs-history-dialog.c:93
+msgid "Updated"
+msgstr "ปรับรุ่นแล้ว"
+
+#: ../src/gnome-software.ui.h:50
+msgid "Category"
+msgstr "หมวด"
+
+#: ../src/gnome-software.ui.h:51
+msgid "Source"
+msgstr "แหล่ง"
+
+#: ../src/gnome-software.ui.h:52
+msgid "Licence"
+msgstr "สัญญาอนุญาต"
+
+#: ../src/gnome-software.ui.h:53
+msgid "Size"
+msgstr "ขนาด"
+
+#: ../src/gnome-software.ui.h:54
+msgid "Developer"
+msgstr "ผู้พัฒนา"
+
+#: ../src/gnome-software.ui.h:55
+msgid "Software Sources"
+msgstr "แหล่งซอฟต์แวร์"
+
+#: ../src/gnome-software.ui.h:56
+msgid "No sources found."
+msgstr "ไม่พบแหล่ง"
+
+#: ../src/gnome-software.ui.h:57
+msgid "Software sources give you access to additional software."
+msgstr "แหล่งซอฟต์แวร์จะเปิดให้คุณเข้าถึงซอฟต์แวร์เพิ่มเติมได้"
+
+#: ../src/gnome-software.ui.h:58
+msgid ""
+"Removing a source will also remove any software you have installed from it."
+msgstr "การลบแหล่งจะเป็นการลบซอฟต์แวร์ใดๆ ที่คุณได้ติดตั้งจากแหล่งนั้นด้วย"
+
+#: ../src/gnome-software.ui.h:59
+msgid "No software installed from this source"
+msgstr "ไม่มีซอฟต์แวร์ที่ติดตั้งจากแหล่งนี้"
+
+#: ../src/gnome-software.ui.h:60
+msgid "Installed from this Source"
+msgstr "ติดตั้งจากแหล่งนี้"
+
+#: ../src/gnome-software.ui.h:61
+msgid "Source Details"
+msgstr "รายละเอียดแหล่ง"
+
+#: ../src/gnome-software.ui.h:62
+msgid "Last Checked"
+msgstr "ตรวจสอบล่าสุด"
+
+#: ../src/gnome-software.ui.h:63
+msgid "Added"
+msgstr "วันที่เพิ่ม"
+
+#: ../src/gnome-software.ui.h:64
+msgid "Website"
+msgstr "เว็บไซต์"
+
+#: ../src/gnome-software.ui.h:65
+msgid "January 30, 2014"
+msgstr "30 มกราคม 2557"
+
+#: ../src/gnome-software.ui.h:66 ../src/gs-shell.c:600
+msgid "Remove Source"
+msgstr "ลบแหล่ง"
+
+#: ../src/gs-app-folder-dialog.c:313
+msgid "Folder Name"
+msgstr "ชื่อโฟลเดอร์"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:238
+msgid "About Software"
+msgstr "เกี่ยวกับ \"ซอฟต์แวร์\""
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:243
+msgid "A nice way to manage the software on your system."
+msgstr "วิธีที่ดีในการจัดการซอฟต์แวร์ในระบบของคุณ"
+
+#: ../src/gs-application.c:247
+msgid "translator-credits"
+msgstr "Akom Chotiphantawanon"
+
+#: ../src/gs-application.c:488
+msgid "Enter GApplication service mode"
+msgstr "เข้าโหมดบริการ GApplication"
+
+#. TRANSLATORS: this is a command line option
+#: ../src/gs-application.c:491
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr ""
+"โหมดเริ่มทำงาน: เป็นค่า ‘updates’ (รายการปรับรุ่น), ‘updated’ (รายการปรับรุ่นแล้ว), "
+"‘installed’ (รายการติดตั้งแล้ว) หรือ ‘overview’ (ภาพรวม) อย่างใดอย่างหนึ่ง"
+
+#: ../src/gs-application.c:491
+msgid "MODE"
+msgstr "โหมด"
+
+#: ../src/gs-application.c:493
+msgid "Search for applications"
+msgstr "ค้นหาโปรแกรม"
+
+#: ../src/gs-application.c:493
+msgid "SEARCH"
+msgstr "คำค้น"
+
+#: ../src/gs-application.c:495 ../src/gs-application.c:497
+msgid "Show application details"
+msgstr "แสดงรายละเอียดของโปรแกรม"
+
+#: ../src/gs-application.c:495 ../src/gs-application.c:497
+#: ../src/gs-application.c:499
+msgid "ID"
+msgstr "ID"
+
+#: ../src/gs-application.c:499
+msgid "Set the specified debugging level"
+msgstr "ตั้งระดับการดีบั๊กตามที่ระบุ"
+
+#: ../src/gs-application.c:501
+msgid "Show profiling information for the service"
+msgstr "แสดงข้อมูลการวัดประสิทธิภาพของบริการ"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user there is an update for the installed
+#. * application available
+#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:95 ../src/gs-feature-tile.c:81
+#: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
+msgid "Updates"
+msgstr "มีรุ่นใหม่"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#: ../src/gs-app-widget.c:200
+msgid "Visit website"
+msgstr "เยี่ยมชมเว็บไซต์"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows to cancel a queued install of the application
+#: ../src/gs-app-widget.c:207
+msgid "Cancel"
+msgstr "ยกเลิก"
+
+#. TRANSLATORS: this is a label that describes an application
+#. * that has been queued for installation
+#: ../src/gs-app-widget.c:210
+msgid "Pending"
+msgstr "รอติดตั้ง"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#: ../src/gs-app-widget.c:217
+msgid "Install"
+msgstr "ติดตั้ง"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gs-app-widget.c:226 ../src/gs-shell-details.c:1057
+#: ../src/gs-shell-installed.c:205 ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "ถอดถอน"
 
-#: ../src/gs-app-widget.c:111
-msgid "Update"
-msgstr "ปรับรุ่น"
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#: ../src/gs-app-widget.c:237
+msgid "Installing"
+msgstr "กำลังติดตั้ง"
 
-#. 'More' Expander
-#: ../src/gs-app-widget.c:438
-msgid "More  ▾"
-msgstr "เพิ่มเติม  ▾"
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#: ../src/gs-app-widget.c:246
+msgid "Removing"
+msgstr "กำลังถอดถอน"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:185
-msgid "Waiting for package manager..."
-msgstr "กำลังรอโปรแกรมจัดการแพกเกจ..."
+#. TRANSLATORS: this is where all applications that don't
+#. * fit in other groups are put
+#: ../src/gs-category.c:174
+msgid "Other"
+msgstr "อื่นๆ"
 
-#. TRANSLATORS: this is the transaction status
-#: ../src/gs-main.c:189
-msgid "Loading list of packages..."
-msgstr "กำลังโหลดรายชื่อแพกเกจ..."
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was removed
+#: ../src/gs-history-dialog.c:82
+msgid "Removed"
+msgstr "ถอดถอนแล้ว"
 
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:199 ../src/gs-main.c:260
-msgid "Downloading..."
-msgstr "กำลังดาวน์โหลด..."
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing that something happened to the
+#. * application but we don't know what
+#. TRANSLATORS: this is where the licence is not known
+#. TRANSLATORS: this is where the version is not known
+#. TRANSLATORS: this is where the size is not known
+#. TRANSLATORS: this is where we don't know the origin of the
+#. * application
+#: ../src/gs-history-dialog.c:99 ../src/gs-shell-details.c:602
+#: ../src/gs-shell-details.c:621 ../src/gs-shell-details.c:631
+#: ../src/gs-shell-details.c:673
+msgid "Unknown"
+msgstr "ไม่ทราบ"
 
-#. TRANSLATORS: this is the transaction status
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:204 ../src/gs-main.c:264
-msgid "Querying..."
-msgstr "กำลังสอบถาม..."
+#. vim: set noexpandtab:
+#: ../src/gs-history-dialog.ui.h:1
+msgid "History"
+msgstr "ประวัติ"
 
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:252
-msgid "Waiting..."
-msgstr "กำลังรอ..."
+#. TRANSLATORS: this is when the offline update failed
+#: ../src/gs-offline-updates.c:258
+msgid "Failed To Update"
+msgstr "ปรับรุ่นไม่สำเร็จ"
 
-#. TRANSLATORS: we're waiting for something to happen
-#: ../src/gs-main.c:256
-msgid "Setting up..."
-msgstr "กำลังตั้งค่า..."
+#. TRANSLATORS: the transaction could not be completed
+#. * as a previous transaction was unfinished
+#: ../src/gs-offline-updates.c:264
+msgid "A previous update was unfinished."
+msgstr "การปรับรุ่นครั้งก่อนยังไม่แล้วเสร็จ"
 
-#. TRANSLATORS: the update requires the user to reboot the computer
-#: ../src/gs-main.c:435
-msgid "Requires restart"
-msgstr "ต้องเริ่มเปิดเครื่องใหม่"
+#. TRANSLATORS: the package manager needed to download
+#. * something with no network available
+#: ../src/gs-offline-updates.c:274
+msgid "Network access was required but not available."
+msgstr "ต้องใช้การเชื่อมต่อเครือข่ายแต่ไม่สามารถเชื่อมต่อได้"
 
-#: ../src/gs-main.c:803
-msgid ""
-"The author of this software has not included a 'Description' in the desktop "
-"file..."
-msgstr "ผู้เขียนซอฟต์แวร์นี้ไม่ได้ให้ 'Description' (คำบรรยาย) ไว้ในแฟ้มเดสก์ท็อป..."
+#. TRANSLATORS: if the package is not signed correctly
+#. *
+#: ../src/gs-offline-updates.c:283
+msgid "An update was not signed in the correct way."
+msgstr "รายการปรับรุ่นไม่ได้เซ็นกำกับอย่างถูกต้อง"
 
-#: ../src/gs-plugin-loader.c:306
-msgid "Includes performance, stability and security improvements for all users"
-msgstr "มีการปรับปรุงประสิทธิภาพ เสถียรภาพ และการรักษาความปลอดภัยสำหรับผู้ใช้ทุกคน"
+#. TRANSLATORS: the transaction failed in a way the user
+#. * probably cannot comprehend. Package management systems
+#. * really are teh suck.
+#: ../src/gs-offline-updates.c:293
+msgid "The update could not be completed."
+msgstr "ไม่สามารถปรับรุ่นจนเสร็จสมบูรณ์ได้"
 
-#: ../src/gs-plugin-loader.c:338
+#. TRANSLATORS: the user aborted the update manually
+#: ../src/gs-offline-updates.c:298
+msgid "The update was cancelled."
+msgstr "การปรับรุ่นถูกยกเลิก"
+
+#. TRANSLATORS: the user must have updated manually after
+#. * the updates were prepared
+#: ../src/gs-offline-updates.c:304
+msgid "An offline update was requested but no packages required updating."
+msgstr "มีการร้องขอการปรับรุ่นแบบออฟไลน์ แต่ไม่มีแพกเกจใดที่ต้องปรับรุ่น"
+
+#. TRANSLATORS: we ran out of disk space
+#: ../src/gs-offline-updates.c:308
+msgid "No space was left on the drive."
+msgstr "ไม่เหลือพื้นที่ว่างในไดรว์"
+
+#. TRANSLATORS: the update process failed in a general
+#. * way, usually this message will come from source distros
+#. * like gentoo
+#: ../src/gs-offline-updates.c:316
+msgid "An update failed to install correctly."
+msgstr "รายการปรับรุ่นไม่สามารถติดตั้งได้อย่างถูกต้อง"
+
+#. TRANSLATORS: We didn't handle the error type
+#: ../src/gs-offline-updates.c:321
+msgid "The offline update failed in an unexpected way."
+msgstr "ปรับรุ่นแบบออฟไลน์ไม่สำเร็จในแบบที่ไม่คาดหมาย"
+
+#. TRANSLATORS: these are geeky messages from the
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: ../src/gs-offline-updates.c:330
+msgid "Detailed errors from the package manager follow:"
+msgstr "รายละเอียดข้อผิดพลาดจากโปรแกรมจัดการแพกเกจคือ:"
+
+#. TRANSLATORS: this is a group of updates that are not
+#. * packages and are not shown in the main list
+#: ../src/gs-plugin-loader.c:764
 msgid "OS Updates"
 msgstr "ปรับรุ่น OS"
+
+#. TRANSLATORS: this is a longer description of the
+#. * os-update item
+#: ../src/gs-plugin-loader.c:769
+msgid ""
+"Includes performance, stability and security improvements for all users."
+msgstr "มีการปรับปรุงประสิทธิภาพ เสถียรภาพ และการรักษาความปลอดภัยสำหรับผู้ใช้ทุกคน"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-plugin-loader.c:1463
+#, c-format
+msgid "No addon codecs are available for the %s format."
+msgstr "ไม่มีส่วนเสริมของตัวอ่าน-ลงรหัสสำหรับรูปแบบ %s"
+
+#: ../src/gs-plugin-loader.c:1466
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a codec that can "
+"play this format can be found on the website."
+msgstr ""
+"ข้อมูลเกี่ยวกับ %s และตัวเลือกสำหรับวิธีการรับตัวอ่าน-ลงรหัสที่สามารถเล่นรูปแบบนี้ มีอยู่ในในเว็บไซต์"
+
+#. TRANSLATORS: this is when we try to download a screenshot and
+#. * we get back 404
+#: ../src/gs-screenshot-image.c:129
+msgid "Screenshot not found"
+msgstr "ไม่พบภาพหน้าจอ"
+
+#. TRANSLATORS: this is when we request a screenshot size that
+#. * the generator did not create or the parser did not add
+#: ../src/gs-screenshot-image.c:236
+msgid "Screenshot size not found"
+msgstr "ไม่พบขนาดภาพหน้าจอ"
+
+#. TRANSLATORS: this is when we try create the cache directory
+#. * but we were out of space or permission was denied
+#: ../src/gs-screenshot-image.c:250
+msgid "Could not create cache"
+msgstr "ไม่สามารถสร้างแคชได้"
+
+#. TRANSLATORS: this is when we try to download a screenshot
+#. * that was not a valid URL
+#: ../src/gs-screenshot-image.c:267
+msgid "Screenshot not valid"
+msgstr "ภาพหน้าจอไม่ถูกต้อง"
+
+#. TRANSLATORS: this is when networking is not available
+#: ../src/gs-screenshot-image.c:273
+msgid "Screenshot not available"
+msgstr "ไม่มีภาพหน้าจอ"
+
+#: ../src/gs-screenshot-image.c:326
+msgid "Screenshot"
+msgstr "ภาพหน้าจอ"
+
+#: ../src/gs-shell.c:621
+msgid "Removing…"
+msgstr "กำลังถอดถอน…"
+
+#. TRANSLATORS: this source has no apps installed from it
+#: ../src/gs-shell.c:871
+msgid "No software installed"
+msgstr "ไม่มีซอฟต์แวร์ที่ติดตั้งไว้"
+
+#. TRANSLATORS: this source has some apps installed from it
+#: ../src/gs-shell.c:874
+#, c-format
+msgid "%i application installed"
+msgid_plural "%i applications installed"
+msgstr[0] "มีโปรแกรมติดตั้งไว้ %i รายการ"
+
+#. TRANSLATORS: this source has some apps installed from it
+#: ../src/gs-shell.c:879
+#, c-format
+msgid "%i add-on installed"
+msgid_plural "%i add-ons installed"
+msgstr[0] "มีส่วนเสริมติดตั้งไว้ %i รายการ"
+
+#. TRANSLATORS: this source has some apps and addons installed from it
+#: ../src/gs-shell.c:884
+#, c-format
+msgid "%i application and %i add-ons installed"
+msgid_plural "%i applications and %i add-ons installed"
+msgstr[0] "มีโปรแกรม %i รายการ และส่วนเสริม %i รายการติดตั้งไว้"
+
+#: ../src/gs-shell-details.c:136
+msgid "_Pending"
+msgstr "_รอติดตั้ง"
+
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-shell-details.c:164
+msgid "_Installing"
+msgstr "กำลัง_ติดตั้ง"
+
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-shell-details.c:198
+msgid "_Removing"
+msgstr "กำลัง_ถอดถอน"
+
+#. TRANSLATORS: this is where the licence is insanely
+#. * complicated and the full string is put into the tooltip
+#: ../src/gs-shell-details.c:607
+msgid "Complicated!"
+msgstr "ซับซ้อน!"
+
+#. TRANSLATORS: this is where the size is being worked out
+#: ../src/gs-shell-details.c:628
+msgid "Calculating…"
+msgstr "กำลังคำนวณ…"
+
+#. TRANSLATORS: this is where the updated date is not known
+#: ../src/gs-shell-details.c:644
+msgid "Never"
+msgstr "ไม่เคย"
+
+#. TRANSLATORS: this is the application isn't in any
+#. * defined menu category
+#: ../src/gs-shell-details.c:661
+msgid "None"
+msgstr "ไม่มี"
+
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-shell-details.c:1042 ../src/gs-shell-installed.c:190
+#: ../src/gs-shell-search.c:149
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการถอดถอน %s?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-shell-details.c:1054 ../src/gs-shell-installed.c:202
+#: ../src/gs-shell-search.c:161
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr "%s จะถูกถอดถอน และคุณจะต้องติดตั้งโปรแกรมดังกล่าวใหม่หากต้องการใช้งานอีกครั้ง"
+
+#. TRANSLATORS: This is the header dividing the normal
+#. * applications and the addons
+#. TRANSLATORS: these are extra things that add to existing programs,
+#. * for instance fonts, codecs or language packs
+#. TRANSLATORS: this is the main category for Add-ons
+#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:587
+#: ../src/plugins/gs-plugin-packagekit.c:576
+#: ../src/plugins/menu-spec-common.c:210
+msgid "Add-ons"
+msgstr "ส่วนเสริม"
+
+#: ../src/gs-shell-installed.c:601
+msgid "Click on items to select them"
+msgstr "คลิกที่รายการที่จะเลือก"
+
+#. TRANSLATORS: Time in 24h format
+#: ../src/gs-shell-updates.c:135
+msgid "%R"
+msgstr "%R"
+
+#. TRANSLATORS: Time in 12h format
+#: ../src/gs-shell-updates.c:138
+msgid "%l:%M %p"
+msgstr "%l:%M %p"
+
+#. TRANSLATORS: This is the date string with: day number, month name, year.
+#. i.e. "25 May 2012"
+#: ../src/gs-shell-updates.c:143
+msgid "%e %B %Y"
+msgstr "%e %B %Ey"
+
+#. TRANSLATORS: the updates panel is starting up
+#: ../src/gs-shell-updates.c:204
+msgid "Setting up updates…"
+msgstr "กำลังตั้งค่ารายการปรับรุ่น…"
+
+#: ../src/gs-shell-updates.c:205 ../src/gs-shell-updates.c:212
+msgid "(This could take a while)"
+msgstr "(อาจใช้เวลาสักครู่)"
+
+#. TRANSLATORS: the updates panel is starting up
+#: ../src/gs-shell-updates.c:211
+msgid "Looking for new updates…"
+msgstr "กำลังค้นหารายการปรับรุ่นใหม่…"
+
+#. TRANSLATORS: this is when the updates panel is starting up
+#: ../src/gs-shell-updates.c:218
+msgid "Checking for updates…"
+msgstr "กำลังตรวจสอบการปรับรุ่น…"
+
+#. TRANSLATORS: This is the time when we last checked for updates
+#: ../src/gs-shell-updates.c:334
+#, c-format
+msgid "Last checked: %s"
+msgstr "ตรวจสอบล่าสุด: %s"
+
+#. TRANSLATORS: window title to suggest that we are showing
+#. * the offline updates that have just been applied
+#: ../src/gs-shell-updates.c:471
+msgid "Recent Software Updates"
+msgstr "ซอฟต์แวร์ที่ปรับรุ่นล่าสุด"
+
+#. TRANSLATORS: can't do updates check
+#: ../src/gs-shell-updates.c:779
+msgid "No Network"
+msgstr "ไม่มีเครือข่าย"
+
+#. TRANSLATORS: we need network
+#. * to do the updates check
+#: ../src/gs-shell-updates.c:783
+msgid "Internet access is required to check for updates."
+msgstr "จำเป็นต้องเข้าถึงอินเทอร์เน็ตเพื่อตรวจสอบการปรับรุ่น"
+
+#. TRANSLATORS: this is a link to the
+#. * control-center network panel
+#: ../src/gs-shell-updates.c:787
+msgid "Network Settings"
+msgstr "ตั้งค่าเครือข่าย"
+
+#. TRANSLATORS: $$$
+#: ../src/gs-shell-updates.c:807
+msgid "Charges may apply"
+msgstr "อาจมีค่าใช้จ่าย"
+
+#. TRANSLATORS: we need network
+#. * to do the updates check
+#: ../src/gs-shell-updates.c:811
+msgid ""
+"Checking for updates while using mobile broadband could cause you to incur "
+"charges."
+msgstr "การตรวจสอบการปรับรุ่นขณะใช้บรอดแบนด์มือถืออาจทำให้คุณเสียค่าบริการ"
+
+#. TRANSLATORS: this is a link to the
+#. * control-center network panel
+#: ../src/gs-shell-updates.c:815
+msgid "Check Anyway"
+msgstr "ตรวจสอบต่อไป"
+
+#: ../src/gs-update-monitor.c:102
+msgid "Software Updates Available"
+msgstr "มีรายการปรับรุ่นซอฟต์แวร์"
+
+#: ../src/gs-update-monitor.c:103
+msgid "Important OS and application updates are ready to be installed"
+msgstr "การปรับรุ่นที่สำคัญของ OS และโปรแกรมต่างๆ พร้อมที่จะติดตั้งแล้ว"
+
+#: ../src/gs-update-monitor.c:106
+msgid "View"
+msgstr "ดู"
+
+#: ../src/gs-update-monitor.c:107
+msgid "Not Now"
+msgstr "ไม่ตอนนี้"
+
+#: ../src/gs-update-monitor.c:156
+msgid "Software Update Installed"
+msgid_plural "Software Updates Installed"
+msgstr[0] "ติดตั้งรายการปรับรุ่นซอฟต์แวร์แล้ว"
+
+#. TRANSLATORS: message when we've done offline updates
+#: ../src/gs-update-monitor.c:160
+msgid "An important OS update has been installed."
+msgid_plural "Important OS updates have been installed."
+msgstr[0] "ติดตั้งรายการปรับรุ่นที่สำคัญของ OS แล้ว"
+
+#: ../src/gs-update-monitor.c:165
+msgid "Software Updates Failed"
+msgstr "ปรับรุ่นซอฟต์แวร์ไม่สำเร็จ"
+
+#. TRANSLATORS: message when we offline updates have failed
+#: ../src/gs-update-monitor.c:167
+msgid "An important OS update failed to be installed."
+msgstr "ติดตั้งรายการปรับรุ่นที่สำคัญของ OS ไม่สำเร็จ"
+
+#: ../src/gs-update-monitor.c:176
+msgid "Review"
+msgstr "บทวิจารณ์"
+
+#: ../src/gs-update-monitor.c:178
+msgid "Show Details"
+msgstr "แสดงรายละเอียด"
+
+#: ../src/gs-update-monitor.c:179
+msgid "OK"
+msgstr "ตกลง"
+
+#. vim: set noexpandtab:
+#: ../src/gs-star-widget.ui.h:1
+msgid "One Star"
+msgstr "หนึ่งดาว"
+
+#: ../src/gs-star-widget.ui.h:2
+msgid "Two Stars"
+msgstr "สองดาว"
+
+#: ../src/gs-star-widget.ui.h:3
+msgid "Three Stars"
+msgstr "สามดาว"
+
+#: ../src/gs-star-widget.ui.h:4
+msgid "Four Stars"
+msgstr "สี่ดาว"
+
+#: ../src/gs-star-widget.ui.h:5
+msgid "Five Stars"
+msgstr "ห้าดาว"
+
+#. TRANSLATORS: this is the summary of a notification that an application
+#. * has been successfully installed
+#: ../src/gs-utils.c:131
+#, c-format
+msgid "%s is now installed"
+msgstr "%s ติดตั้งเสร็จแล้ว"
+
+#. TRANSLATORS: this is button that opens the newly installed application
+#: ../src/gs-utils.c:135
+msgid "Launch"
+msgstr "เรียกทำงาน"
+
+#: ../src/gs-utils.c:160
+msgid "Sorry, this did not work"
+msgstr "ขออภัย ทำงานล้มเหลว"
+
+#. TRANSLATORS: this is when the install fails
+#: ../src/gs-utils.c:164
+#, c-format
+msgid "Installation of %s failed."
+msgstr "ติดตั้ง %s ไม่สำเร็จ"
+
+#. TRANSLATORS: this is when the remove fails
+#: ../src/gs-utils.c:169
+#, c-format
+msgid "Removal of %s failed."
+msgstr "ถอดถอน %s ไม่สำเร็จ"
+
+#: ../src/plugins/gs-plugin-appstream.c:348
+#, c-format
+msgid "No AppStream data found"
+msgstr "ไม่พบข้อมูล AppStream"
+
+#. TRANSLATORS: this is when a webapp has no comment
+#: ../src/plugins/gs-plugin-epiphany.c:143
+#, c-format
+msgid "Web app"
+msgstr "โปรแกรมบนเว็บ"
+
+#. TRANSLATORS: this is the licence of the web-app
+#: ../src/plugins/gs-plugin-epiphany.c:151
+msgid "Proprietary"
+msgstr "กรรมสิทธิ์"
+
+#. TRANSLATORS: audio/video decoders
+#: ../src/plugins/gs-plugin-packagekit.c:580
+msgid "Codecs"
+msgstr "ตัวอ่าน-ลงรหัส"
+
+#. TRANSLATORS: fonts of different styles or languages
+#: ../src/plugins/gs-plugin-packagekit.c:584
+msgid "Fonts"
+msgstr "แบบอักษร"
+
+#. TRANSLATORS: these are ways to enter text
+#: ../src/plugins/gs-plugin-packagekit.c:588
+msgid "Input Sources"
+msgstr "แหล่งป้อนข้อความ"
+
+#. TRANSLATORS: additional languages for apps
+#: ../src/plugins/gs-plugin-packagekit.c:592
+msgid "Language Packs"
+msgstr "ชุดภาษา"
+
+#. TRANSLATORS: this is where update details either are
+#. * no longer available or were never provided in the first place
+#: ../src/plugins/gs-plugin-packagekit-refine.c:414
+msgid "No update details were provided"
+msgstr "ไม่มีรายละเอียดการปรับรุ่น"
+
+#. TRANSLATORS: this is the menu spec main category for Audio
+#: ../src/plugins/menu-spec-common.c:30
+msgid "Audio"
+msgstr "เสียง"
+
+#: ../src/plugins/menu-spec-common.c:31
+msgctxt "Menu subcategory of Audio"
+msgid "Editing"
+msgstr "การแก้ไข"
+
+#: ../src/plugins/menu-spec-common.c:32
+msgctxt "Menu subcategory of Audio"
+msgid "Databases"
+msgstr "ฐานข้อมูล"
+
+#: ../src/plugins/menu-spec-common.c:33
+msgctxt "Menu subcategory of Audio"
+msgid "Disc Burning"
+msgstr "การเขียนแผ่น"
+
+#: ../src/plugins/menu-spec-common.c:34
+msgctxt "Menu subcategory of Audio"
+msgid "Ham Radio"
+msgstr "วิทยุสมัครเล่น"
+
+#: ../src/plugins/menu-spec-common.c:35
+msgctxt "Menu subcategory of Audio"
+msgid "MIDI"
+msgstr "MIDI"
+
+#: ../src/plugins/menu-spec-common.c:36
+msgctxt "Menu subcategory of Audio"
+msgid "Mixer"
+msgstr "เครื่องมือปรับเสียง"
+
+#: ../src/plugins/menu-spec-common.c:37
+msgctxt "Menu subcategory of Audio"
+msgid "Music"
+msgstr "ดนตรี"
+
+#: ../src/plugins/menu-spec-common.c:38
+msgctxt "Menu subcategory of Audio"
+msgid "Players"
+msgstr "เครื่องมือเล่น"
+
+#: ../src/plugins/menu-spec-common.c:39
+msgctxt "Menu subcategory of Audio"
+msgid "Recorders"
+msgstr "เครื่องมืออัด"
+
+#: ../src/plugins/menu-spec-common.c:40
+msgctxt "Menu subcategory of Audio"
+msgid "Sequencers"
+msgstr "เครื่องเรียบเรียงดนตรี"
+
+#: ../src/plugins/menu-spec-common.c:41
+msgctxt "Menu subcategory of Audio"
+msgid "Tuners"
+msgstr "เครื่องมือตั้งเสียง"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/menu-spec-common.c:43
+msgid "Development Tools"
+msgstr "เครื่องมือพัฒนา"
+
+#: ../src/plugins/menu-spec-common.c:44
+msgctxt "Menu subcategory of Development"
+msgid "Building"
+msgstr "การประกอบสร้าง"
+
+#: ../src/plugins/menu-spec-common.c:45
+msgctxt "Menu subcategory of Development"
+msgid "Databases"
+msgstr "ฐานข้อมูล"
+
+#: ../src/plugins/menu-spec-common.c:46
+msgctxt "Menu subcategory of Development"
+msgid "Debuggers"
+msgstr "เครื่องมือดีบั๊ก"
+
+#: ../src/plugins/menu-spec-common.c:47
+msgctxt "Menu subcategory of Development"
+msgid "GUI Designers"
+msgstr "เครื่องมือออกแบบ GUI"
+
+#: ../src/plugins/menu-spec-common.c:48
+msgctxt "Menu subcategory of Development"
+msgid "IDE"
+msgstr "ชุดเครื่องมือพัฒนาเบ็ดเสร็จ"
+
+#: ../src/plugins/menu-spec-common.c:49
+msgctxt "Menu subcategory of Development"
+msgid "Profiling"
+msgstr "เครื่องมือวัดประสิทธิภาพ"
+
+#: ../src/plugins/menu-spec-common.c:50
+msgctxt "Menu subcategory of Development"
+msgid "Project Management"
+msgstr "การจัดการโครงการ"
+
+#: ../src/plugins/menu-spec-common.c:51
+msgctxt "Menu subcategory of Development"
+msgid "Revision Control"
+msgstr "การควบคุมฉบับแก้ไข"
+
+#: ../src/plugins/menu-spec-common.c:52
+msgctxt "Menu subcategory of Development"
+msgid "Translation"
+msgstr "การแปล"
+
+#: ../src/plugins/menu-spec-common.c:53
+msgctxt "Menu subcategory of Development"
+msgid "Web Development"
+msgstr "การพัฒนาเว็บ"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/menu-spec-common.c:55
+msgid "Education"
+msgstr "การศึกษา"
+
+#: ../src/plugins/menu-spec-common.c:56
+msgctxt "Menu subcategory of Education"
+msgid "Art"
+msgstr "ศิลปะ"
+
+#: ../src/plugins/menu-spec-common.c:57
+msgctxt "Menu subcategory of Education"
+msgid "Artificial Intelligence"
+msgstr "ปัญญาประดิษฐ์"
+
+#: ../src/plugins/menu-spec-common.c:58
+msgctxt "Menu subcategory of Education"
+msgid "Astronomy"
+msgstr "ดาราศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:59
+msgctxt "Menu subcategory of Education"
+msgid "Biology"
+msgstr "ชีววิทยา"
+
+#: ../src/plugins/menu-spec-common.c:60
+msgctxt "Menu subcategory of Education"
+msgid "Chemistry"
+msgstr "เคมี"
+
+#: ../src/plugins/menu-spec-common.c:61
+msgctxt "Menu subcategory of Education"
+msgid "Computer Science"
+msgstr "วิทยาการคอมพิวเตอร์"
+
+#: ../src/plugins/menu-spec-common.c:62
+msgctxt "Menu subcategory of Education"
+msgid "Construction"
+msgstr "การก่อสร้าง"
+
+#: ../src/plugins/menu-spec-common.c:63
+msgctxt "Menu subcategory of Education"
+msgid "Data Visualization"
+msgstr "การแสดงภาพข้อมูล"
+
+#: ../src/plugins/menu-spec-common.c:64
+msgctxt "Menu subcategory of Education"
+msgid "Economy"
+msgstr "เศรษฐกิจ"
+
+#: ../src/plugins/menu-spec-common.c:65
+msgctxt "Menu subcategory of Education"
+msgid "Electricity"
+msgstr "ไฟฟ้า"
+
+#: ../src/plugins/menu-spec-common.c:66
+msgctxt "Menu subcategory of Education"
+msgid "Electronics"
+msgstr "อิเล็กทรอนิกส์"
+
+#: ../src/plugins/menu-spec-common.c:67
+msgctxt "Menu subcategory of Education"
+msgid "Engineering"
+msgstr "วิศวกรรมศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:68
+msgctxt "Menu subcategory of Education"
+msgid "Geography"
+msgstr "ภูมิศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:69
+msgctxt "Menu subcategory of Education"
+msgid "Geology"
+msgstr "ธรณีวิทยา"
+
+#: ../src/plugins/menu-spec-common.c:70
+msgctxt "Menu subcategory of Education"
+msgid "Geoscience"
+msgstr "ธรณีศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:71
+msgctxt "Menu subcategory of Education"
+msgid "History"
+msgstr "ประวัติศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:72
+msgctxt "Menu subcategory of Education"
+msgid "Humanities"
+msgstr "มนุษยศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:73
+msgctxt "Menu subcategory of Education"
+msgid "Image Processing"
+msgstr "การประมวลผลภาพ"
+
+#: ../src/plugins/menu-spec-common.c:74
+msgctxt "Menu subcategory of Education"
+msgid "Languages"
+msgstr "ภาษา"
+
+#: ../src/plugins/menu-spec-common.c:75
+msgctxt "Menu subcategory of Education"
+msgid "Literature"
+msgstr "วรรณกรรม"
+
+#: ../src/plugins/menu-spec-common.c:76
+msgctxt "Menu subcategory of Education"
+msgid "Maps"
+msgstr "แผนที่"
+
+#: ../src/plugins/menu-spec-common.c:77
+msgctxt "Menu subcategory of Education"
+msgid "Math"
+msgstr "คณิตศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:78
+msgctxt "Menu subcategory of Education"
+msgid "Medical"
+msgstr "การแพทย์"
+
+#: ../src/plugins/menu-spec-common.c:79
+msgctxt "Menu subcategory of Education"
+msgid "Music"
+msgstr "ดนตรี"
+
+#: ../src/plugins/menu-spec-common.c:80
+msgctxt "Menu subcategory of Education"
+msgid "Numerical Analysis"
+msgstr "การวิเคราะห์เชิงตัวเลข"
+
+#: ../src/plugins/menu-spec-common.c:81
+msgctxt "Menu subcategory of Education"
+msgid "Parallel Computing"
+msgstr "การคำนวณแบบขนาน"
+
+#: ../src/plugins/menu-spec-common.c:82
+msgctxt "Menu subcategory of Education"
+msgid "Physics"
+msgstr "ฟิสิกส์"
+
+#: ../src/plugins/menu-spec-common.c:83
+msgctxt "Menu subcategory of Education"
+msgid "Robotics"
+msgstr "วิทยาการหุ่นยนต์"
+
+#: ../src/plugins/menu-spec-common.c:84
+msgctxt "Menu subcategory of Education"
+msgid "Spirituality"
+msgstr "จิตวิญญาณ"
+
+#: ../src/plugins/menu-spec-common.c:85
+msgctxt "Menu subcategory of Education"
+msgid "Sports"
+msgstr "กีฬา"
+
+#. TRANSLATORS: this is the menu spec main category for Games
+#: ../src/plugins/menu-spec-common.c:87
+msgid "Games"
+msgstr "เกม"
+
+#: ../src/plugins/menu-spec-common.c:88
+msgctxt "Menu subcategory of Games"
+msgid "Action"
+msgstr "แอคชัน"
+
+#: ../src/plugins/menu-spec-common.c:89
+msgctxt "Menu subcategory of Games"
+msgid "Adventure"
+msgstr "ผจญภัย"
+
+#: ../src/plugins/menu-spec-common.c:90
+msgctxt "Menu subcategory of Games"
+msgid "Arcade"
+msgstr "เกมตู้"
+
+#: ../src/plugins/menu-spec-common.c:91
+msgctxt "Menu subcategory of Games"
+msgid "Blocks"
+msgstr "บล็อค"
+
+#: ../src/plugins/menu-spec-common.c:92
+msgctxt "Menu subcategory of Games"
+msgid "Board"
+msgstr "หมากกระดาน"
+
+#: ../src/plugins/menu-spec-common.c:93
+msgctxt "Menu subcategory of Games"
+msgid "Card"
+msgstr "ไพ่"
+
+#: ../src/plugins/menu-spec-common.c:94
+msgctxt "Menu subcategory of Games"
+msgid "Emulators"
+msgstr "เลียนแบบ"
+
+#: ../src/plugins/menu-spec-common.c:95
+msgctxt "Menu subcategory of Games"
+msgid "Kids"
+msgstr "เด็ก"
+
+#: ../src/plugins/menu-spec-common.c:96
+msgctxt "Menu subcategory of Games"
+msgid "Logic"
+msgstr "ตรรกะ"
+
+#: ../src/plugins/menu-spec-common.c:97
+msgctxt "Menu subcategory of Games"
+msgid "Role Playing"
+msgstr "เล่นบท"
+
+#: ../src/plugins/menu-spec-common.c:98
+msgctxt "Menu subcategory of Games"
+msgid "Shooter"
+msgstr "ยิง"
+
+#: ../src/plugins/menu-spec-common.c:99
+msgctxt "Menu subcategory of Games"
+msgid "Simulation"
+msgstr "จำลอง"
+
+#: ../src/plugins/menu-spec-common.c:100
+msgctxt "Menu subcategory of Games"
+msgid "Sports"
+msgstr "กีฬา"
+
+#: ../src/plugins/menu-spec-common.c:101
+msgctxt "Menu subcategory of Games"
+msgid "Strategy"
+msgstr "แผนการ"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/menu-spec-common.c:103
+msgid "Graphics"
+msgstr "กราฟิกส์"
+
+#: ../src/plugins/menu-spec-common.c:104
+msgctxt "Menu subcategory of Graphics"
+msgid "2D Graphics"
+msgstr "กราฟิกส์ 2 มิติ"
+
+#: ../src/plugins/menu-spec-common.c:105
+msgctxt "Menu subcategory of Graphics"
+msgid "3D Graphics"
+msgstr "กราฟิกส์ 3 มิติ"
+
+#: ../src/plugins/menu-spec-common.c:106
+msgctxt "Menu subcategory of Graphics"
+msgid "OCR"
+msgstr "เครื่องอ่านอักขระด้วยแสง"
+
+#: ../src/plugins/menu-spec-common.c:107
+msgctxt "Menu subcategory of Graphics"
+msgid "Photography"
+msgstr "การถ่ายภาพ"
+
+#: ../src/plugins/menu-spec-common.c:108
+msgctxt "Menu subcategory of Graphics"
+msgid "Publishing"
+msgstr "การพิมพ์"
+
+#: ../src/plugins/menu-spec-common.c:109
+msgctxt "Menu subcategory of Graphics"
+msgid "Raster Graphics"
+msgstr "กราฟิกส์แบบแรสเตอร์"
+
+#: ../src/plugins/menu-spec-common.c:110
+msgctxt "Menu subcategory of Graphics"
+msgid "Scanning"
+msgstr "การสแกน"
+
+#: ../src/plugins/menu-spec-common.c:111
+msgctxt "Menu subcategory of Graphics"
+msgid "Vector Graphics"
+msgstr "กราฟิกส์แบบเวกเตอร์"
+
+#: ../src/plugins/menu-spec-common.c:112
+msgctxt "Menu subcategory of Graphics"
+msgid "Viewer"
+msgstr "ดูภาพ"
+
+#. TRANSLATORS: this is the menu spec main category for Network
+#: ../src/plugins/menu-spec-common.c:114
+msgid "Internet"
+msgstr "อินเทอร์เน็ต"
+
+#: ../src/plugins/menu-spec-common.c:115
+msgctxt "Menu subcategory of Network"
+msgid "Chat"
+msgstr "สนทนา"
+
+#: ../src/plugins/menu-spec-common.c:116
+msgctxt "Menu subcategory of Network"
+msgid "Dialup"
+msgstr "เชื่อมต่อโมเด็ม"
+
+#: ../src/plugins/menu-spec-common.c:117
+msgctxt "Menu subcategory of Network"
+msgid "Email"
+msgstr "อีเมล"
+
+#: ../src/plugins/menu-spec-common.c:118
+msgctxt "Menu subcategory of Network"
+msgid "Feed"
+msgstr "ข่าวป้อน"
+
+#: ../src/plugins/menu-spec-common.c:119
+msgctxt "Menu subcategory of Network"
+msgid "File Transfer"
+msgstr "ถ่ายโอนแฟ้ม"
+
+#: ../src/plugins/menu-spec-common.c:120
+msgctxt "Menu subcategory of Network"
+msgid "Ham Radio"
+msgstr "วิทยุสมัครเล่น"
+
+#: ../src/plugins/menu-spec-common.c:121
+msgctxt "Menu subcategory of Network"
+msgid "Instant Messaging"
+msgstr "ข้อความทันใจ"
+
+#: ../src/plugins/menu-spec-common.c:122
+msgctxt "Menu subcategory of Network"
+msgid "IRC Clients"
+msgstr "ลูกข่าย IRC"
+
+#: ../src/plugins/menu-spec-common.c:123
+msgctxt "Menu subcategory of Network"
+msgid "Monitor"
+msgstr "เฝ้าสังเกต"
+
+#: ../src/plugins/menu-spec-common.c:124
+msgctxt "Menu subcategory of Network"
+msgid "News"
+msgstr "ข่าว"
+
+#: ../src/plugins/menu-spec-common.c:125
+msgctxt "Menu subcategory of Network"
+msgid "P2P"
+msgstr "P2P"
+
+#: ../src/plugins/menu-spec-common.c:126
+msgctxt "Menu subcategory of Network"
+msgid "Remote Access"
+msgstr "การเข้าถึงระยะไกล"
+
+#: ../src/plugins/menu-spec-common.c:127
+msgctxt "Menu subcategory of Network"
+msgid "Telephony"
+msgstr "ระบบโทรศัพท์"
+
+#: ../src/plugins/menu-spec-common.c:128
+msgctxt "Menu subcategory of Network"
+msgid "Video Conference"
+msgstr "ประชุมทางวีดิทัศน์"
+
+#: ../src/plugins/menu-spec-common.c:129
+msgctxt "Menu subcategory of Network"
+msgid "Web Browser"
+msgstr "เว็บเบราว์เซอร์"
+
+#: ../src/plugins/menu-spec-common.c:130
+msgctxt "Menu subcategory of Network"
+msgid "Web Development"
+msgstr "การพัฒนาเว็บ"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/menu-spec-common.c:132
+msgid "Office"
+msgstr "สำนักงาน"
+
+#: ../src/plugins/menu-spec-common.c:133
+msgctxt "Menu subcategory of Office"
+msgid "Calendar"
+msgstr "ปฏิทิน"
+
+#: ../src/plugins/menu-spec-common.c:134
+msgctxt "Menu subcategory of Office"
+msgid "Chart"
+msgstr "แผนภูมิ"
+
+#: ../src/plugins/menu-spec-common.c:135
+msgctxt "Menu subcategory of Office"
+msgid "Contact Management"
+msgstr "การจัดการสมุดผู้ติดต่อ"
+
+#: ../src/plugins/menu-spec-common.c:136
+msgctxt "Menu subcategory of Office"
+msgid "Database"
+msgstr "ฐานข้อมูล"
+
+#: ../src/plugins/menu-spec-common.c:137
+msgctxt "Menu subcategory of Office"
+msgid "Dictionary"
+msgstr "พจนานุกรม"
+
+#: ../src/plugins/menu-spec-common.c:138
+msgctxt "Menu subcategory of Office"
+msgid "Email"
+msgstr "อีเมล"
+
+#: ../src/plugins/menu-spec-common.c:139
+msgctxt "Menu subcategory of Office"
+msgid "Finance"
+msgstr "การเงิน"
+
+#: ../src/plugins/menu-spec-common.c:140
+msgctxt "Menu subcategory of Office"
+msgid "Flow Chart"
+msgstr "ผังงาน"
+
+#: ../src/plugins/menu-spec-common.c:141
+msgctxt "Menu subcategory of Office"
+msgid "PDA"
+msgstr "PDA"
+
+#: ../src/plugins/menu-spec-common.c:142
+msgctxt "Menu subcategory of Office"
+msgid "Photography"
+msgstr "การถ่ายภาพ"
+
+#: ../src/plugins/menu-spec-common.c:143
+msgctxt "Menu subcategory of Office"
+msgid "Presentation"
+msgstr "การนำเสนอ"
+
+#: ../src/plugins/menu-spec-common.c:144
+msgctxt "Menu subcategory of Office"
+msgid "Project Management"
+msgstr "การจัดการโครงการ"
+
+#: ../src/plugins/menu-spec-common.c:145
+msgctxt "Menu subcategory of Office"
+msgid "Publishing"
+msgstr "การพิมพ์"
+
+#: ../src/plugins/menu-spec-common.c:146
+msgctxt "Menu subcategory of Office"
+msgid "Spreadsheet"
+msgstr "ตารางคำนวณ"
+
+#: ../src/plugins/menu-spec-common.c:147
+msgctxt "Menu subcategory of Office"
+msgid "Viewer"
+msgstr "โปรแกรมดูเอกสาร"
+
+#: ../src/plugins/menu-spec-common.c:148
+msgctxt "Menu subcategory of Office"
+msgid "Word Processor"
+msgstr "โปรแกรมประมวลคำ"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/menu-spec-common.c:150
+msgid "Science"
+msgstr "วิทยาศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:151
+msgctxt "Menu subcategory of Science"
+msgid "Art"
+msgstr "ศิลปะ"
+
+#: ../src/plugins/menu-spec-common.c:152
+msgctxt "Menu subcategory of Science"
+msgid "Artificial Intelligence"
+msgstr "ปัญญาประดิษฐ์"
+
+#: ../src/plugins/menu-spec-common.c:153
+msgctxt "Menu subcategory of Science"
+msgid "Astronomy"
+msgstr "ดาราศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:154
+msgctxt "Menu subcategory of Science"
+msgid "Biology"
+msgstr "ชีววิทยา"
+
+#: ../src/plugins/menu-spec-common.c:155
+msgctxt "Menu subcategory of Science"
+msgid "Chemistry"
+msgstr "เคมี"
+
+#: ../src/plugins/menu-spec-common.c:156
+msgctxt "Menu subcategory of Science"
+msgid "Computer Science"
+msgstr "วิทยาการคอมพิวเตอร์"
+
+#: ../src/plugins/menu-spec-common.c:157
+msgctxt "Menu subcategory of Science"
+msgid "Construction"
+msgstr "การก่อสร้าง"
+
+#: ../src/plugins/menu-spec-common.c:158
+msgctxt "Menu subcategory of Science"
+msgid "Data Visualization"
+msgstr "การแสดงภาพข้อมูล"
+
+#: ../src/plugins/menu-spec-common.c:159
+msgctxt "Menu subcategory of Science"
+msgid "Economy"
+msgstr "เศรษฐกิจ"
+
+#: ../src/plugins/menu-spec-common.c:160
+msgctxt "Menu subcategory of Science"
+msgid "Electricity"
+msgstr "ไฟฟ้า"
+
+#: ../src/plugins/menu-spec-common.c:161
+msgctxt "Menu subcategory of Science"
+msgid "Electronics"
+msgstr "อิเล็กทรอนิกส์"
+
+#: ../src/plugins/menu-spec-common.c:162
+msgctxt "Menu subcategory of Science"
+msgid "Engineering"
+msgstr "วิศวกรรมศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:163
+msgctxt "Menu subcategory of Science"
+msgid "Geography"
+msgstr "ภูมิศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:164
+msgctxt "Menu subcategory of Science"
+msgid "Geology"
+msgstr "ธรณีวิทยา"
+
+#: ../src/plugins/menu-spec-common.c:165
+msgctxt "Menu subcategory of Science"
+msgid "Geoscience"
+msgstr "ธรณีศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:166
+msgctxt "Menu subcategory of Science"
+msgid "History"
+msgstr "ประวัติศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:167
+msgctxt "Menu subcategory of Science"
+msgid "Humanities"
+msgstr "มนุษยศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:168
+msgctxt "Menu subcategory of Science"
+msgid "Image Processing"
+msgstr "การประมวลผลภาพ"
+
+#: ../src/plugins/menu-spec-common.c:169
+msgctxt "Menu subcategory of Science"
+msgid "Languages"
+msgstr "ภาษา"
+
+#: ../src/plugins/menu-spec-common.c:170
+msgctxt "Menu subcategory of Science"
+msgid "Literature"
+msgstr "วรรณกรรม"
+
+#: ../src/plugins/menu-spec-common.c:171
+msgctxt "Menu subcategory of Science"
+msgid "Maps"
+msgstr "แผนที่"
+
+#: ../src/plugins/menu-spec-common.c:172
+msgctxt "Menu subcategory of Science"
+msgid "Math"
+msgstr "คณิตศาสตร์"
+
+#: ../src/plugins/menu-spec-common.c:173
+msgctxt "Menu subcategory of Science"
+msgid "Medical"
+msgstr "การแพทย์"
+
+#: ../src/plugins/menu-spec-common.c:174
+msgctxt "Menu subcategory of Science"
+msgid "Numerical Analysis"
+msgstr "การวิเคราะห์เชิงตัวเลข"
+
+#: ../src/plugins/menu-spec-common.c:175
+msgctxt "Menu subcategory of Science"
+msgid "Parallel Computing"
+msgstr "การคำนวณแบบขนาน"
+
+#: ../src/plugins/menu-spec-common.c:176
+msgctxt "Menu subcategory of Science"
+msgid "Physics"
+msgstr "ฟิสิกส์"
+
+#: ../src/plugins/menu-spec-common.c:177
+msgctxt "Menu subcategory of Science"
+msgid "Robotics"
+msgstr "วิทยาการหุ่นยนต์"
+
+#: ../src/plugins/menu-spec-common.c:178
+msgctxt "Menu subcategory of Science"
+msgid "Spirituality"
+msgstr "จิตวิญญาณ"
+
+#: ../src/plugins/menu-spec-common.c:179
+msgctxt "Menu subcategory of Science"
+msgid "Sports"
+msgstr "กีฬา"
+
+#. TRANSLATORS: this is the menu spec main category for System
+#: ../src/plugins/menu-spec-common.c:181
+msgid "System"
+msgstr "ระบบ"
+
+#: ../src/plugins/menu-spec-common.c:182
+msgctxt "Menu subcategory of System"
+msgid "Emulator"
+msgstr "โปรแกรมเลียนแบบ"
+
+#: ../src/plugins/menu-spec-common.c:183
+msgctxt "Menu subcategory of System"
+msgid "File Manager"
+msgstr "โปรแกรมจัดการแฟ้ม"
+
+#: ../src/plugins/menu-spec-common.c:184
+msgctxt "Menu subcategory of System"
+msgid "File System"
+msgstr "ระบบแฟ้ม"
+
+#: ../src/plugins/menu-spec-common.c:185
+msgctxt "Menu subcategory of System"
+msgid "File Tools"
+msgstr "เครื่องมือแฟ้ม"
+
+#: ../src/plugins/menu-spec-common.c:186
+msgctxt "Menu subcategory of System"
+msgid "Monitor"
+msgstr "เฝ้าสังเกต"
+
+#: ../src/plugins/menu-spec-common.c:187
+msgctxt "Menu subcategory of System"
+msgid "Security"
+msgstr "การรักษาความปลอดภัย"
+
+#: ../src/plugins/menu-spec-common.c:188
+msgctxt "Menu subcategory of System"
+msgid "Terminal Emulator"
+msgstr "เทอร์มินัลเทียม"
+
+#. TRANSLATORS: this is the menu spec main category for Utility
+#: ../src/plugins/menu-spec-common.c:190
+msgid "Utilities"
+msgstr "อรรถประโยชน์"
+
+#: ../src/plugins/menu-spec-common.c:191
+msgctxt "Menu subcategory of Utility"
+msgid "Accessibility"
+msgstr "สิ่งอำนวยความสะดวก"
+
+#: ../src/plugins/menu-spec-common.c:192
+msgctxt "Menu subcategory of Utility"
+msgid "Archiving"
+msgstr "การจัดเก็บแฟ้ม"
+
+#: ../src/plugins/menu-spec-common.c:193
+msgctxt "Menu subcategory of Utility"
+msgid "Calculator"
+msgstr "เครื่องคิดเลข"
+
+#: ../src/plugins/menu-spec-common.c:194
+msgctxt "Menu subcategory of Utility"
+msgid "Clock"
+msgstr "นาฬิกา"
+
+#: ../src/plugins/menu-spec-common.c:195
+msgctxt "Menu subcategory of Utility"
+msgid "Compression"
+msgstr "การบีบอัด"
+
+#: ../src/plugins/menu-spec-common.c:196
+msgctxt "Menu subcategory of Utility"
+msgid "File Tools"
+msgstr "เครื่องมือแฟ้ม"
+
+#: ../src/plugins/menu-spec-common.c:197
+msgctxt "Menu subcategory of Utility"
+msgid "Maps"
+msgstr "แผนที่"
+
+#: ../src/plugins/menu-spec-common.c:198
+msgctxt "Menu subcategory of Utility"
+msgid "Spirituality"
+msgstr "จิตวิญญาณ"
+
+#: ../src/plugins/menu-spec-common.c:199
+msgctxt "Menu subcategory of Utility"
+msgid "Telephony Tools"
+msgstr "เครื่องมือระบบโทรศัพท์"
+
+#: ../src/plugins/menu-spec-common.c:200
+msgctxt "Menu subcategory of Utility"
+msgid "Text Editor"
+msgstr "เครื่องมือแก้ไขข้อความ"
+
+#. TRANSLATORS: this is the menu spec main category for Video
+#: ../src/plugins/menu-spec-common.c:202
+msgid "Video"
+msgstr "วีดิทัศน์"
+
+#: ../src/plugins/menu-spec-common.c:203
+msgctxt "Menu subcategory of Video"
+msgid "Editing"
+msgstr "การแก้ไข"
+
+#: ../src/plugins/menu-spec-common.c:204
+msgctxt "Menu subcategory of Video"
+msgid "Database"
+msgstr "ฐานข้อมูล"
+
+#: ../src/plugins/menu-spec-common.c:205
+msgctxt "Menu subcategory of Video"
+msgid "Disc Burning"
+msgstr "เขียนแผ่น"
+
+#: ../src/plugins/menu-spec-common.c:206
+msgctxt "Menu subcategory of Video"
+msgid "Players"
+msgstr "เครื่องมือเล่น"
+
+#: ../src/plugins/menu-spec-common.c:207
+msgctxt "Menu subcategory of Video"
+msgid "Recorders"
+msgstr "เครื่องมืออัด"
+
+#: ../src/plugins/menu-spec-common.c:208
+msgctxt "Menu subcategory of Video"
+msgid "TV"
+msgstr "โทรทัศน์"
+
+#: ../src/plugins/menu-spec-common.c:211
+msgctxt "Menu subcategory of Addons"
+msgid "Fonts"
+msgstr "แบบอักษร"
+
+#: ../src/plugins/menu-spec-common.c:212
+msgctxt "Menu subcategory of Addons"
+msgid "Codecs"
+msgstr "ตัวอ่าน-ลงรหัส"
+
+#: ../src/plugins/menu-spec-common.c:213
+msgctxt "Menu subcategory of Addons"
+msgid "Input Sources"
+msgstr "แหล่งป้อนข้อความ"
+
+#: ../src/plugins/menu-spec-common.c:214
+msgctxt "Menu subcategory of Addons"
+msgid "Language Packs"
+msgstr "ชุดภาษา"
+
+#~ msgid "Yesterday, %R"
+#~ msgstr "เมื่อวาน %R น."
+
+#~ msgid "Yesterday, %l:%M %p"
+#~ msgstr "เมื่อวาน %l:%M %p"
+
+#~ msgid "Two days ago"
+#~ msgstr "สองวันก่อน"
+
+#~ msgid "Three days ago"
+#~ msgstr "สามวันก่อน"
+
+#~ msgid "Four days ago"
+#~ msgstr "สี่วันก่อน"
+
+#~ msgid "Five days ago"
+#~ msgstr "ห้าวันก่อน"
+
+#~ msgid "Six days ago"
+#~ msgstr "หกวันก่อน"
+
+#~ msgid "One week ago"
+#~ msgstr "หนึ่งสัปดาห์ที่แล้ว"
+
+#~ msgid "Two weeks ago"
+#~ msgstr "สองสัปดาห์ที่แล้ว"
+
+#~ msgid "Done"
+#~ msgstr "เสร็จสิ้น"
+
+#~ msgid "_Installed (%d)"
+#~ msgstr "_ติดตั้งอยู่ (%d)"
+
+#~ msgid "_Updates (%d)"
+#~ msgstr "_มีรุ่นใหม่ (%d)"
+
+#~ msgid "Goals:"
+#~ msgstr "วัตถุประสงค์:"
+
+#~ msgid ""
+#~ "<li>View installed applications</li> <li>Remove installed applications</"
+#~ "li> <li>View available application updates</li> <li>Install available "
+#~ "updates</li> <li>Find new applications</li> <li>Install new applications</"
+#~ "li> <li>Find an application to handle a specific type of file</li> "
+#~ "<li>Installed apps and updates should be available when offline</li>"
+#~ msgstr ""
+#~ "<li>ดูโปรแกรมที่ติดตั้งแล้ว</li> <li>ถอดถอนโปรแกรมที่ติดตั้งแล้ว</li> "
+#~ "<li>ดูโปรแกรมที่สามารถปรับรุ่นได้</li> <li>ติดตั้งการปรับรุ่นที่มีให้</li> "
+#~ "<li>หาโปรแกรมใหม่</li> <li>ติดตั้งโปรแกรมใหม่</li> "
+#~ "<li>หาโปรแกรมที่จะจัดการชนิดเฉพาะของแฟ้ม</li> "
+#~ "<li>ติดตั้งโปรแกรมและปรับรุ่นที่มีให้เมื่อออฟไลน์</li>"
+
+#~ msgid "New"
+#~ msgstr "ใหม่"
+
+#~ msgid "Related"
+#~ msgstr "ที่เกี่ยวข้อง"
+
+#~ msgid "Update All"
+#~ msgstr "ปรับรุ่นทั้งหมด"
+
+#~ msgid "Popular"
+#~ msgstr "นิยม"
+
+#~ msgid "Description"
+#~ msgstr "คำบรรยาย"
+
+#~ msgid ""
+#~ "Shotwell is a digital photo organiser that runs on Linux. It is the "
+#~ "default photo manager in Ubuntu and Fedora."
+#~ msgstr ""
+#~ "Shotwell เป็นโปรแกรมจัดการภาพถ่ายดิจิทัลที่ทำงานบนลินุกซ์ "
+#~ "และเป็นโปรแกรมจัดการภาพถ่ายมาตรฐานของอูบุนตูและฟีดอรา"
+
+#~ msgid "More  ▾"
+#~ msgstr "เพิ่มเติม  ▾"
+
+#~ msgid "Waiting for package manager..."
+#~ msgstr "กำลังรอโปรแกรมจัดการแพกเกจ..."
+
+#~ msgid "Loading list of packages..."
+#~ msgstr "กำลังโหลดรายชื่อแพกเกจ..."
+
+#~ msgid "Downloading..."
+#~ msgstr "กำลังดาวน์โหลด..."
+
+#~ msgid "Querying..."
+#~ msgstr "กำลังสอบถาม..."
+
+#~ msgid "Waiting..."
+#~ msgstr "กำลังรอ..."
+
+#~ msgid "Setting up..."
+#~ msgstr "กำลังตั้งค่า..."
+
+#~ msgid "Requires restart"
+#~ msgstr "ต้องเริ่มเปิดเครื่องใหม่"
+
+#~ msgid ""
+#~ "The author of this software has not included a 'Description' in the "
+#~ "desktop file..."
+#~ msgstr "ผู้เขียนซอฟต์แวร์นี้ไม่ได้ให้ 'Description' (คำบรรยาย) ไว้ในแฟ้มเดสก์ท็อป..."
