@@ -121,6 +121,8 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *shell_updates)
 	gint days_ago;
 
 	g_settings_get (priv->settings, "check-timestamp", "x", &tmp);
+	if (tmp == 0)
+		return NULL;
 	last_checked = g_date_time_new_from_unix_local (tmp);
 
 	midnight = time_next_midnight ();
@@ -327,16 +329,18 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 
 	/* last checked label */
 	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (widget)), "uptodate") == 0) {
-		gchar *last_checked;
-
-		tmp = gs_shell_updates_last_checked_time_string (shell_updates);
-		/* TRANSLATORS: This is the time when we last checked for updates */
-		last_checked = g_strdup_printf (_("Last checked: %s"), tmp);
-		g_free (tmp);
-
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "label_updates_last_checked"));
-		gtk_label_set_label (GTK_LABEL (widget), last_checked);
-		g_free (last_checked);
+		tmp = gs_shell_updates_last_checked_time_string (shell_updates);
+		if (tmp != NULL) {
+			gchar *last_checked;
+
+			/* TRANSLATORS: This is the time when we last checked for updates */
+			last_checked = g_strdup_printf (_("Last checked: %s"), tmp);
+			gtk_label_set_label (GTK_LABEL (widget), last_checked);
+			g_free (last_checked);
+		}
+		gtk_widget_set_visible (widget, tmp != NULL);
+		g_free (tmp);
 	}
 }
 
