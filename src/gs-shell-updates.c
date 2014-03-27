@@ -40,8 +40,6 @@
 
 static void	gs_shell_updates_finalize	(GObject	*object);
 
-#define GS_SHELL_UPDATES_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_UPDATES, GsShellUpdatesPrivate))
-
 typedef enum {
 	GS_SHELL_UPDATES_STATE_STARTUP,
 	GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES,
@@ -78,7 +76,7 @@ enum {
 	COLUMN_UPDATE_LAST
 };
 
-G_DEFINE_TYPE (GsShellUpdates, gs_shell_updates, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellUpdates, gs_shell_updates, G_TYPE_OBJECT)
 
 /**
  * gs_shell_updates_invalidate:
@@ -1041,8 +1039,6 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_shell_updates_finalize;
-
-	g_type_class_add_private (klass, sizeof (GsShellUpdatesPrivate));
 }
 
 /**
@@ -1053,7 +1049,7 @@ gs_shell_updates_init (GsShellUpdates *shell_updates)
 {
 	const char *ampm;
 
-	shell_updates->priv = GS_SHELL_UPDATES_GET_PRIVATE (shell_updates);
+	shell_updates->priv = gs_shell_updates_get_instance_private (shell_updates);
 	shell_updates->priv->control = pk_control_new ();
 	shell_updates->priv->cancellable_refresh = g_cancellable_new ();
 	shell_updates->priv->state = GS_SHELL_UPDATES_STATE_STARTUP;
