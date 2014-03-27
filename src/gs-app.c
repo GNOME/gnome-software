@@ -51,8 +51,6 @@
 
 static void	gs_app_finalize	(GObject	*object);
 
-#define GS_APP_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_APP, GsAppPrivate))
-
 struct GsAppPrivate
 {
 	gchar			*id;
@@ -112,7 +110,7 @@ enum {
 	PROP_LAST
 };
 
-G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsApp, gs_app, G_TYPE_OBJECT)
 
 /**
  * gs_app_error_quark:
@@ -1886,8 +1884,6 @@ gs_app_class_init (GsAppClass *klass)
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_INSTALL_DATE, pspec);
-
-	g_type_class_add_private (klass, sizeof (GsAppPrivate));
 }
 
 /**
@@ -1896,7 +1892,7 @@ gs_app_class_init (GsAppClass *klass)
 static void
 gs_app_init (GsApp *app)
 {
-	app->priv = GS_APP_GET_PRIVATE (app);
+	app->priv = gs_app_get_instance_private (app);
 	app->priv->rating = -1;
 	app->priv->rating_confidence = -1;
 	app->priv->rating_kind = GS_APP_RATING_KIND_UNKNOWN;
