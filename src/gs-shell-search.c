@@ -32,8 +32,6 @@
 
 static void	gs_shell_search_finalize	(GObject	*object);
 
-#define GS_SHELL_SEARCH_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_SEARCH, GsShellSearchPrivate))
-
 struct GsShellSearchPrivate
 {
 	GsPluginLoader		*plugin_loader;
@@ -47,7 +45,7 @@ struct GsShellSearchPrivate
 	gchar			*value;
 };
 
-G_DEFINE_TYPE (GsShellSearch, gs_shell_search, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellSearch, gs_shell_search, G_TYPE_OBJECT)
 
 static void
 gs_shell_search_app_widget_activated_cb (GtkListBox *list_box,
@@ -510,8 +508,6 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_shell_search_finalize;
-
-	g_type_class_add_private (klass, sizeof (GsShellSearchPrivate));
 }
 
 /**
@@ -520,7 +516,7 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 static void
 gs_shell_search_init (GsShellSearch *shell_search)
 {
-	shell_search->priv = GS_SHELL_SEARCH_GET_PRIVATE (shell_search);
+	shell_search->priv = gs_shell_search_get_instance_private (shell_search);
 	shell_search->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_search->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
