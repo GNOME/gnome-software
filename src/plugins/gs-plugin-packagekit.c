@@ -248,7 +248,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_set_kind (app, GS_APP_KIND_SOURCE);
 		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
-		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, id);
+		gs_app_set_name (app,
+				 GS_APP_QUALITY_LOWEST,
+				 pk_repo_detail_get_description (rd));
 		gs_app_set_summary (app,
 				    GS_APP_QUALITY_LOWEST,
 				    pk_repo_detail_get_description (rd));
