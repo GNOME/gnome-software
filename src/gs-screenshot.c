@@ -28,8 +28,6 @@
 
 static void	gs_screenshot_finalize	(GObject	*object);
 
-#define GS_SCREENSHOT_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SCREENSHOT, GsScreenshotPrivate))
-
 struct GsScreenshotPrivate
 {
 	GPtrArray		*array;
@@ -43,7 +41,7 @@ typedef struct {
 	guint			 height;
 } GsScreenshotItem;
 
-G_DEFINE_TYPE (GsScreenshot, gs_screenshot, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsScreenshot, gs_screenshot, G_TYPE_OBJECT)
 
 /**
  * gs_screenshot_item_free:
@@ -200,7 +198,6 @@ gs_screenshot_class_init (GsScreenshotClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_screenshot_finalize;
-	g_type_class_add_private (klass, sizeof (GsScreenshotPrivate));
 }
 
 /**
@@ -209,7 +206,7 @@ gs_screenshot_class_init (GsScreenshotClass *klass)
 static void
 gs_screenshot_init (GsScreenshot *screenshot)
 {
-	screenshot->priv = GS_SCREENSHOT_GET_PRIVATE (screenshot);
+	screenshot->priv = gs_screenshot_get_instance_private (screenshot);
 	screenshot->priv->array = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_screenshot_item_free);
 }
 
