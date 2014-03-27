@@ -39,7 +39,7 @@ struct GsShellCategoryPrivate {
 	GtkWidget	*col1_placeholder;
 };
 
-G_DEFINE_TYPE (GsShellCategory, gs_shell_category, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellCategory, gs_shell_category, G_TYPE_OBJECT)
 
 void
 gs_shell_category_refresh (GsShellCategory *shell)
@@ -276,7 +276,7 @@ gs_shell_category_init (GsShellCategory *shell)
 {
 	GsShellCategoryPrivate *priv;
 
-	priv = G_TYPE_INSTANCE_GET_PRIVATE (shell, GS_TYPE_SHELL_CATEGORY, GsShellCategoryPrivate);
+	priv = gs_shell_category_get_instance_private (shell);
 	shell->priv = priv;
 
 	priv->col0_placeholder = g_object_ref_sink (gtk_label_new (""));
@@ -308,8 +308,6 @@ gs_shell_category_class_init (GsShellCategoryClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
 	object_class->finalize = gs_shell_category_finalize;
-
-	g_type_class_add_private (klass, sizeof (GsShellCategoryPrivate));
 }
 
 static void
