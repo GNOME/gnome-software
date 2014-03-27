@@ -47,8 +47,6 @@ static const gchar *page_name[] = {
 
 static void	gs_shell_finalize	(GObject	*object);
 
-#define GS_SHELL_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL, GsShellPrivate))
-
 typedef struct {
 	GsShellMode	 mode;
 	GtkWidget	*focus;
@@ -72,7 +70,7 @@ struct GsShellPrivate
 	GSList			*back_entry_stack;
 };
 
-G_DEFINE_TYPE (GsShell, gs_shell, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
 
 enum {
 	SIGNAL_LOADED,
@@ -723,8 +721,6 @@ gs_shell_class_init (GsShellClass *klass)
 			      G_STRUCT_OFFSET (GsShellClass, loaded),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
-
-	g_type_class_add_private (klass, sizeof (GsShellPrivate));
 }
 
 /**
@@ -733,7 +729,7 @@ gs_shell_class_init (GsShellClass *klass)
 static void
 gs_shell_init (GsShell *shell)
 {
-	shell->priv = GS_SHELL_GET_PRIVATE (shell);
+	shell->priv = gs_shell_get_instance_private (shell);
 	shell->priv->shell_overview = gs_shell_overview_new ();
 	shell->priv->shell_updates = gs_shell_updates_new ();
 	shell->priv->shell_installed = gs_shell_installed_new ();
