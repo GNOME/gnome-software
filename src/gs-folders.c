@@ -32,8 +32,6 @@
 
 static void	gs_folders_finalize	(GObject	*object);
 
-#define GS_FOLDERS_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_FOLDERS, GsFoldersPrivate))
-
 /* We are loading folders from a settings with type
  * a{sas}, which maps folder ids to list of app ids.
  *
@@ -61,7 +59,7 @@ struct GsFoldersPrivate
 	GHashTable *categories;
 };
 
-G_DEFINE_TYPE (GsFolders, gs_folders, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsFolders, gs_folders, G_TYPE_OBJECT)
 
 #if 0
 static void
@@ -176,7 +174,6 @@ gs_folders_class_init (GsFoldersClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_folders_finalize;
-	g_type_class_add_private (klass, sizeof (GsFoldersPrivate));
 }
 
 static void
@@ -303,7 +300,7 @@ clear (GsFolders *folders)
 static void
 gs_folders_init (GsFolders *folders)
 {
-	folders->priv = GS_FOLDERS_GET_PRIVATE (folders);
+	folders->priv = gs_folders_get_instance_private (folders);
 
 	folders->priv->settings = g_settings_new (APP_FOLDER_SCHEMA);
 	load (folders);
