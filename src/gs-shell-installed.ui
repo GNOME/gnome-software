@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <requires lib="gtk+" version="3.10"/>
+  <template class="GsShellInstalled" parent="GtkBin">
+    <child internal-child="accessible">
+      <object class="AtkObject" id="installed-accessible">
+        <property name="accessible-name" translatable="yes">Installed page</property>
+      </object>
+    </child>
+    <child>
+      <object class="GtkStack" id="stack_install">
+        <property name="visible">True</property>
+        <child>
+          <object class="GtkSpinner" id="spinner_install">
+            <property name="visible">True</property>
+            <property name="width_request">128</property>
+            <property name="height_request">128</property>
+            <property name="halign">center</property>
+            <property name="valign">center</property>
+            <property name="hexpand">True</property>
+            <property name="vexpand">True</property>
+          </object>
+          <packing>
+            <property name="name">spinner</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box_install">
+            <property name="visible">True</property>
+            <property name="orientation">vertical</property>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolledwindow_install">
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="hscrollbar_policy">never</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <property name="vexpand">True</property>
+                <property name="shadow_type">none</property>
+                <style>
+                  <class name="main-scrolled-software"/>
+                </style>
+                <child>
+                  <object class="GtkListBox" id="list_box_install">
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="selection_mode">none</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkRevealer" id="bottom_install">
+                <property name="visible">True</property>
+                <property name="transition-type">slide-up</property>
+                <child>
+                  <object class="GtkActionBar" id="action_bar">
+                    <property name="visible">True</property>
+                    <child>
+                      <object class="GtkButton" id="button_folder_add">
+                        <property name="label" translatable="yes">_Add to Folder…</property>
+                        <property name="use_underline">True</property>
+                        <property name="margin">6</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button_folder_move">
+                        <property name="label" translatable="yes">_Move to Folder…</property>
+                        <property name="use_underline">True</property>
+                        <property name="margin">6</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkButton" id="button_folder_remove">
+                        <property name="label" translatable="yes">_Remove from Folder</property>
+                        <property name="use_underline">True</property>
+                        <property name="margin">6</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="button_folder_fake">
+                        <property name="visible">True</property>
+                        <property name="label"/>
+                        <property name="margin">6</property>
+                      </object>
+                    </child>
+                  </object>
+                </child>
+              </object>
+            </child>
+          </object>
+          <packing>
+            <property name="name">view</property>
+          </packing>
+        </child>
+      </object>
+    </child>
+  </template>
+  <object class="GtkSizeGroup" id="sizegroup_folder_buttons">
+    <property name="ignore-hidden">False</property>
+    <property name="mode">vertical</property>
+    <widgets>
+      <widget name="button_folder_add"/>
+      <widget name="button_folder_move"/>
+      <widget name="button_folder_remove"/>
+      <widget name="button_folder_fake"/>
+    </widgets>
+  </object>
+</interface>

@@ -531,6 +531,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				priv->plugin_loader,
 				priv->builder,
 				priv->cancellable);
+	priv->shell_installed = GS_SHELL_INSTALLED (gtk_builder_get_object (priv->builder, "shell_installed"));
 	gs_shell_installed_setup (priv->shell_installed,
 				  shell,
 				  priv->plugin_loader,
@@ -735,7 +736,6 @@ gs_shell_init (GsShell *shell)
 {
 	shell->priv = gs_shell_get_instance_private (shell);
 	shell->priv->shell_overview = gs_shell_overview_new ();
-	shell->priv->shell_installed = gs_shell_installed_new ();
 	shell->priv->ignore_primary_buttons = FALSE;
 }
 
@@ -753,7 +753,6 @@ gs_shell_finalize (GObject *object)
 	g_object_unref (priv->cancellable);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->shell_overview);
-	g_object_unref (priv->shell_installed);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
 }

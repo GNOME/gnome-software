@@ -40,13 +40,13 @@ typedef struct GsShellInstalledPrivate GsShellInstalledPrivate;
 
 typedef struct
 {
-	 GObject			 parent;
+	 GtkBin				 parent;
 	 GsShellInstalledPrivate	*priv;
 } GsShellInstalled;
 
 typedef struct
 {
-	GObjectClass			 parent_class;
+	GtkBinClass			 parent_class;
 } GsShellInstalledClass;
 
 GType		 gs_shell_installed_get_type	(void);
