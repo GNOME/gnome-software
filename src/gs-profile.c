@@ -27,8 +27,6 @@
 
 static void	gs_profile_finalize	(GObject	*object);
 
-#define GS_PROFILE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_PROFILE, GsProfilePrivate))
-
 struct GsProfilePrivate
 {
 	GPtrArray	*current;
@@ -43,7 +41,7 @@ typedef struct {
 	gint64		 time_stop;
 } GsProfileItem;
 
-G_DEFINE_TYPE (GsProfile, gs_profile, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsProfile, gs_profile, G_TYPE_OBJECT)
 
 static gpointer gs_profile_object = NULL;
 
@@ -263,7 +261,6 @@ gs_profile_class_init (GsProfileClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_profile_finalize;
-	g_type_class_add_private (klass, sizeof (GsProfilePrivate));
 }
 
 /**
@@ -272,7 +269,7 @@ gs_profile_class_init (GsProfileClass *klass)
 static void
 gs_profile_init (GsProfile *profile)
 {
-	profile->priv = GS_PROFILE_GET_PRIVATE (profile);
+	profile->priv = gs_profile_get_instance_private (profile);
 	profile->priv->current = g_ptr_array_new ();
 	profile->priv->unthreaded = g_thread_self ();
 	profile->priv->archived = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_profile_item_free);
