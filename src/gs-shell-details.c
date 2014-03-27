@@ -35,8 +35,6 @@
 
 static void	gs_shell_details_finalize	(GObject	*object);
 
-#define GS_SHELL_DETAILS_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_DETAILS, GsShellDetailsPrivate))
-
 typedef enum {
 	GS_SHELL_DETAILS_STATE_LOADING,
 	GS_SHELL_DETAILS_STATE_READY
@@ -55,7 +53,7 @@ struct GsShellDetailsPrivate
 	SoupSession		*session;
 };
 
-G_DEFINE_TYPE (GsShellDetails, gs_shell_details, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellDetails, gs_shell_details, G_TYPE_OBJECT)
 
 /**
  * gs_shell_details_invalidate:
@@ -1266,8 +1264,6 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_shell_details_finalize;
-
-	g_type_class_add_private (klass, sizeof (GsShellDetailsPrivate));
 }
 
 /**
@@ -1278,7 +1274,7 @@ gs_shell_details_init (GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv;
 
-	shell_details->priv = GS_SHELL_DETAILS_GET_PRIVATE (shell_details);
+	shell_details->priv = gs_shell_details_get_instance_private (shell_details);
 	priv = shell_details->priv;
 
 	/* setup networking */
