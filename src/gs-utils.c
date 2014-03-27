@@ -289,7 +289,8 @@ gs_pixbuf_find_icon_name (const gchar *icon_name)
 		for (i = 0; iconset[i] != NULL; i++) {
 			for (j = 0; sizes[j] != NULL; j++) {
 				for (k = 0; section[k] != NULL; k++) {
-					path = g_build_filename ("/usr/share/icons/",
+					path = g_build_filename (DATADIR,
+								 "icons",
 								 iconset[i],
 								 sizes[j],
 								 section[k],
