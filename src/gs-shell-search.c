@@ -37,15 +37,19 @@ struct GsShellSearchPrivate
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
-	GtkListBox		*list_box_search;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	gboolean		 waiting;
 	GsShell			*shell;
 	gchar			*value;
+
+	GtkWidget		*list_box_search;
+	GtkWidget		*scrolledwindow_search;
+	GtkWidget		*spinner_search;
+	GtkWidget		*stack_search;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellSearch, gs_shell_search, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellSearch, gs_shell_search, GTK_TYPE_BIN)
 
 static void
 gs_shell_search_app_widget_activated_cb (GtkListBox *list_box,
@@ -249,9 +253,7 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *widget;
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "spinner_search"));
-	gs_stop_spinner (GTK_SPINNER (widget));
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_search"));
+	gs_stop_spinner (GTK_SPINNER (priv->spinner_search));
 
 	priv->waiting = FALSE;
 
@@ -266,10 +268,10 @@ gs_shell_search_get_search_cb (GObject *source_object,
 				   error->message);
 		}
 		g_error_free (error);
-		gtk_stack_set_visible_child_name (GTK_STACK (widget), "no-results");
+		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "no-results");
 		goto out;
 	}
-	gtk_stack_set_visible_child_name (GTK_STACK (widget), "results");
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "results");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		widget = gs_app_widget_new ();
@@ -295,7 +297,6 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 {
 	GsShellSearchPrivate *priv = shell_search->priv;
 	GtkWidget *widget;
-	GtkSpinner *spinner;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
@@ -306,14 +307,13 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 	if (priv->waiting)
 		return;
 
-        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_search"));
         if (scroll_up) {
                 GtkAdjustment *adj;
-                adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
+                adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_search));
                 gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
         }
         if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_SEARCH) {
-                gs_grab_focus_when_mapped (widget);
+                gs_grab_focus_when_mapped (priv->scrolledwindow_search);
         }
 
 	if (g_strcmp0 (value, priv->value) == 0)
@@ -337,10 +337,8 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 				       gs_shell_search_get_search_cb,
 				       shell_search);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_search"));
-	gtk_stack_set_visible_child_name (GTK_STACK (widget), "spinner");
-	spinner = GTK_SPINNER (gtk_builder_get_object (priv->builder, "spinner_search"));
-	gs_start_spinner (spinner);
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "spinner");
+	gs_start_spinner (GTK_SPINNER (priv->spinner_search));
 	priv->waiting = TRUE;
 }
 
@@ -489,13 +487,12 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 			  G_CALLBACK (gs_shell_search_filter_text_changed_cb), shell_search);
 
 	/* setup search */
-	priv->list_box_search = GTK_LIST_BOX (gtk_builder_get_object (priv->builder, "list_box_search"));
 	g_signal_connect (priv->list_box_search, "row-activated",
 			  G_CALLBACK (gs_shell_search_app_widget_activated_cb), shell_search);
-	gtk_list_box_set_header_func (priv->list_box_search,
+	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_search),
 				      gs_shell_search_list_header_func,
 				      shell_search, NULL);
-	gtk_list_box_set_sort_func (priv->list_box_search,
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_search),
 				    gs_shell_search_sort_func,
 				    shell_search, NULL);
 }
@@ -507,7 +504,16 @@ static void
 gs_shell_search_class_init (GsShellSearchClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
 	object_class->finalize = gs_shell_search_finalize;
+
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-shell-search.ui");
+
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, list_box_search);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, scrolledwindow_search);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, spinner_search);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, stack_search);
 }
 
 /**
@@ -516,6 +522,8 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 static void
 gs_shell_search_init (GsShellSearch *shell_search)
 {
+	gtk_widget_init_template (GTK_WIDGET (shell_search));
+
 	shell_search->priv = gs_shell_search_get_instance_private (shell_search);
 	shell_search->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_search->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);

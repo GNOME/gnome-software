@@ -41,13 +41,13 @@ typedef struct GsShellSearchPrivate GsShellSearchPrivate;
 
 typedef struct
 {
-	 GObject			 parent;
+	 GtkBin				 parent;
 	 GsShellSearchPrivate		*priv;
 } GsShellSearch;
 
 typedef struct
 {
-	GObjectClass			 parent_class;
+	GtkBinClass			 parent_class;
 } GsShellSearchClass;
 
 GType		 gs_shell_search_get_type	(void);

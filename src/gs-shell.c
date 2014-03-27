@@ -536,6 +536,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				  priv->plugin_loader,
 				  priv->builder,
 				  priv->cancellable);
+	priv->shell_search = GS_SHELL_SEARCH (gtk_builder_get_object (priv->builder, "shell_search"));
 	gs_shell_search_setup (priv->shell_search,
 			       shell,
 			       priv->plugin_loader,
@@ -735,7 +736,6 @@ gs_shell_init (GsShell *shell)
 	shell->priv = gs_shell_get_instance_private (shell);
 	shell->priv->shell_overview = gs_shell_overview_new ();
 	shell->priv->shell_installed = gs_shell_installed_new ();
-	shell->priv->shell_search = gs_shell_search_new ();
 	shell->priv->ignore_primary_buttons = FALSE;
 }
 
@@ -754,7 +754,6 @@ gs_shell_finalize (GObject *object)
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->shell_overview);
 	g_object_unref (priv->shell_installed);
-	g_object_unref (priv->shell_search);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
 }
