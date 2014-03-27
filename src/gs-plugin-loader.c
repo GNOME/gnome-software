@@ -29,8 +29,6 @@
 
 static void	gs_plugin_loader_finalize	(GObject	*object);
 
-#define GS_PLUGIN_LOADER_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_PLUGIN_LOADER, GsPluginLoaderPrivate))
-
 struct GsPluginLoaderPrivate
 {
 	GPtrArray		*plugins;
@@ -52,7 +50,7 @@ struct GsPluginLoaderPrivate
 	gboolean		 online; 
 };
 
-G_DEFINE_TYPE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
 enum {
 	SIGNAL_STATUS_CHANGED,
@@ -2862,8 +2860,6 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 			      G_STRUCT_OFFSET (GsPluginLoaderClass, updates_changed),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
-
-	g_type_class_add_private (klass, sizeof (GsPluginLoaderPrivate));
 }
 
 /**
@@ -2876,7 +2872,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	gchar **projects;
 	guint i;
 
-	plugin_loader->priv = GS_PLUGIN_LOADER_GET_PRIVATE (plugin_loader);
+	plugin_loader->priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	plugin_loader->priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
 	plugin_loader->priv->status_last = GS_PLUGIN_STATUS_LAST;
 	plugin_loader->priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
