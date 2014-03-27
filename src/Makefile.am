@@ -33,6 +33,7 @@ UI_FILES =						\
 	feature-tile.ui					\
 	gnome-software.ui				\
 	gs-history-dialog.ui				\
+	gs-shell-details.ui				\
 	gs-shell-updates.ui				\
 	gs-sources-dialog.ui				\
 	gs-star-widget.ui				\
