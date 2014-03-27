@@ -41,9 +41,19 @@ struct GsShellOverviewPrivate
 	GsShell			*shell;
 	gint			 refresh_count;
 	gboolean		 empty;
+
+	GtkWidget		*bin_featured;
+	GtkWidget		*box_overview;
+	GtkWidget		*box_popular;
+	GtkWidget		*category_heading;
+	GtkWidget		*featured_heading;
+	GtkWidget		*grid_categories;
+	GtkWidget		*popular_heading;
+	GtkWidget		*scrolledwindow_overview;
+	GtkWidget		*stack_overview;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellOverview, gs_shell_overview, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellOverview, gs_shell_overview, GTK_TYPE_BIN)
 
 enum {
 	SIGNAL_REFRESHED,
@@ -88,26 +98,24 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	GsApp *app;
 	gint i;
 	GtkWidget *tile;
-	GtkWidget *grid;
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
-	gtk_widget_set_visible (GTK_WIDGET (gtk_builder_get_object (priv->builder, "popular_heading")), list != NULL);
+	gtk_widget_set_visible (priv->popular_heading, list != NULL);
 	if (list == NULL) {
 		g_warning ("failed to get popular apps: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}
 
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
-	gs_container_remove_all (GTK_CONTAINER (grid));
+	gs_container_remove_all (GTK_CONTAINER (priv->box_popular));
 
 	for (l = list, i = 0; l != NULL && i < 6; l = l->next, i++) {
 		app = GS_APP (l->data);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (popular_tile_clicked), shell);
-		gtk_box_pack_start (GTK_BOX (grid), tile, TRUE, TRUE, 0);
+		gtk_box_pack_start (GTK_BOX (priv->box_popular), tile, TRUE, TRUE, 0);
 	}
 
 	priv->empty = FALSE;
@@ -138,16 +146,14 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GsShellOverviewPrivate *priv = shell->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *tile;
-	GtkWidget *box;
 	GList *list;
 	GError *error = NULL;
 	GsApp *app;
 
-	box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
-	gs_container_remove_all (GTK_CONTAINER (box));
+	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
 
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
-	gtk_widget_set_visible (GTK_WIDGET (gtk_builder_get_object (priv->builder, "featured_heading")), list != NULL);
+	gtk_widget_set_visible (priv->featured_heading, list != NULL);
 	if (list == NULL) {
 		g_warning ("failed to get featured apps: %s", error->message);
 		g_error_free (error);
@@ -160,7 +166,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	g_signal_connect (tile, "clicked",
 			  G_CALLBACK (feature_tile_clicked), shell);
 
-	gtk_container_add (GTK_CONTAINER (box), tile);
+	gtk_container_add (GTK_CONTAINER (priv->bin_featured), tile);
 
 	priv->empty = FALSE;
 
@@ -197,7 +203,6 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GList *l;
 	GList *list;
 	GsCategory *cat;
-	GtkWidget *grid;
 	GtkWidget *tile;
 	gboolean has_category = FALSE;
 
@@ -207,8 +212,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		g_error_free (error);
 		goto out;
 	}
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "grid_categories"));
-	gs_container_remove_all (GTK_CONTAINER (grid));
+	gs_container_remove_all (GTK_CONTAINER (priv->grid_categories));
 
 	for (l = list, i = 0; l; l = l->next) {
 		cat = GS_CATEGORY (l->data);
@@ -217,7 +221,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		tile = gs_category_tile_new (cat);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (category_tile_clicked), shell);
-		gtk_grid_attach (GTK_GRID (grid), tile, i % 3, i / 3, 1, 1);
+		gtk_grid_attach (GTK_GRID (priv->grid_categories), tile, i % 3, i / 3, 1, 1);
 		i++;
 		has_category = TRUE;
 	}
@@ -226,7 +230,7 @@ out:
 	if (has_category) {
 		priv->empty = FALSE;
 	}
-	gtk_widget_set_visible (GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_heading")), has_category);
+	gtk_widget_set_visible (priv->category_heading, has_category);
 
 	priv->cache_valid = TRUE;
 	priv->refresh_count--;
@@ -253,14 +257,13 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 		gtk_entry_set_text (GTK_ENTRY (widget), "");
 	}
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_overview"));
 	if (scroll_up) {
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (widget));
+		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_overview));
 		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 	}
 
 	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_OVERVIEW) {
-		gs_grab_focus_when_mapped (widget);
+		gs_grab_focus_when_mapped (priv->scrolledwindow_overview);
 	}
 
 	if (priv->cache_valid || priv->refresh_count > 0)
@@ -296,9 +299,8 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 			 GCancellable *cancellable)
 {
 	GsShellOverviewPrivate *priv = shell_overview->priv;
-	GtkWidget *sw, *widget;
 	GtkAdjustment *adj;
-	GtkWidget *grid, *tile;
+	GtkWidget *tile;
 	gint i;
 
 	g_return_if_fail (GS_IS_SHELL_OVERVIEW (shell_overview));
@@ -310,25 +312,23 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 	/* avoid a ref cycle */
 	priv->shell = shell;
 
-	sw = GTK_WIDGET (gtk_builder_get_object (builder, "scrolledwindow_overview"));
-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
- 	widget = GTK_WIDGET (gtk_builder_get_object (builder, "box_overview"));
-	gtk_container_set_focus_vadjustment (GTK_CONTAINER (widget), adj);
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_overview));
+	gtk_container_set_focus_vadjustment (GTK_CONTAINER (priv->box_overview), adj);
 
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "bin_featured"));
 	tile = gs_feature_tile_new (NULL);
-	gtk_container_add (GTK_CONTAINER (grid), tile);
+	gtk_container_add (GTK_CONTAINER (priv->bin_featured), tile);
 
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "box_popular"));
 	for (i = 0; i < 6; i++) {
 		tile = gs_popular_tile_new (NULL);
-		gtk_box_pack_start (GTK_BOX (grid), tile, TRUE, TRUE, 0);
+		gtk_box_pack_start (GTK_BOX (priv->box_popular), tile, TRUE, TRUE, 0);
 	}
 }
 
 static void
 gs_shell_overview_init (GsShellOverview *shell)
 {
+	gtk_widget_init_template (GTK_WIDGET (shell));
+
 	shell->priv = gs_shell_overview_get_instance_private (shell);
 }
 
@@ -349,13 +349,11 @@ static void
 gs_shell_overview_refreshed (GsShellOverview *shell)
 {
 	GsShellOverviewPrivate *priv = shell->priv;
-	GtkWidget *stack;
 
-	stack = GTK_WIDGET (gtk_builder_get_object (priv->builder, "stack_overview"));
 	if (priv->empty) {
-		gtk_stack_set_visible_child_name (GTK_STACK (stack), "no-results");
+		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_overview), "no-results");
 	} else {
-		gtk_stack_set_visible_child_name (GTK_STACK (stack), "overview");
+		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_overview), "overview");
 	}
 }
 
@@ -366,6 +364,8 @@ static void
 gs_shell_overview_class_init (GsShellOverviewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+
 	object_class->finalize = gs_shell_overview_finalize;
 	klass->refreshed = gs_shell_overview_refreshed;
 
@@ -375,6 +375,18 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 			      G_STRUCT_OFFSET (GsShellOverviewClass, refreshed),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
+
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-shell-overview.ui");
+
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, bin_featured);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_overview);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, category_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, featured_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, grid_categories);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, scrolledwindow_overview);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, stack_overview);
 }
 
 /**

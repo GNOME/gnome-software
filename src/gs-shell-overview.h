@@ -42,13 +42,13 @@ typedef struct GsShellOverviewPrivate GsShellOverviewPrivate;
 
 typedef struct
 {
-	 GObject		 parent;
+	 GtkBin			 parent;
 	 GsShellOverviewPrivate	*priv;
 } GsShellOverview;
 
 typedef struct
 {
-	GObjectClass		 parent_class;
+	GtkBinClass		 parent_class;
 
 	void	(*refreshed)	(GsShellOverview *shell);
 } GsShellOverviewClass;

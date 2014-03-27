@@ -520,6 +520,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_signal_connect (widget, "clicked",
 			  G_CALLBACK (gs_shell_overview_button_cb), shell);
 
+	priv->shell_overview = GS_SHELL_OVERVIEW (gtk_builder_get_object (priv->builder, "shell_overview"));
 	gs_shell_overview_setup (priv->shell_overview,
 				 shell,
 				 priv->plugin_loader,
@@ -735,7 +736,6 @@ static void
 gs_shell_init (GsShell *shell)
 {
 	shell->priv = gs_shell_get_instance_private (shell);
-	shell->priv->shell_overview = gs_shell_overview_new ();
 	shell->priv->ignore_primary_buttons = FALSE;
 }
 
@@ -752,7 +752,6 @@ gs_shell_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->cancellable);
 	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->shell_overview);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
 }

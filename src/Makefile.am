@@ -36,6 +36,7 @@ UI_FILES =						\
 	gs-shell-category.ui				\
 	gs-shell-details.ui				\
 	gs-shell-installed.ui				\
+	gs-shell-overview.ui				\
 	gs-shell-search.ui				\
 	gs-shell-updates.ui				\
 	gs-sources-dialog.ui				\
