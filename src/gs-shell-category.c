@@ -37,9 +37,15 @@ struct GsShellCategoryPrivate {
 	GsCategory	*category;
 	GtkWidget	*col0_placeholder;
 	GtkWidget	*col1_placeholder;
+
+	GtkWidget	*category_detail_grid;
+	GtkWidget	*frame_filter;
+	GtkWidget	*listbox_filter;
+	GtkWidget	*scrolledwindow_category;
+	GtkWidget	*scrolledwindow_filter;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellCategory, gs_shell_category, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellCategory, gs_shell_category, GTK_TYPE_BIN)
 
 void
 gs_shell_category_refresh (GsShellCategory *shell)
@@ -81,7 +87,6 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 	GList *l;
 	GList *list;
 	GsApp *app;
-	GtkWidget *grid;
 	GtkWidget *tile;
 	GsShellCategory *shell = GS_SHELL_CATEGORY (user_data);
 	GsShellCategoryPrivate *priv = shell->priv;
@@ -97,20 +102,19 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 		g_error_free (error);
 		goto out;
 	}
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-	gtk_grid_remove_column (GTK_GRID (grid), 1);
-	gtk_grid_remove_column (GTK_GRID (grid), 0);
+	gtk_grid_remove_column (GTK_GRID (priv->category_detail_grid), 1);
+	gtk_grid_remove_column (GTK_GRID (priv->category_detail_grid), 0);
 
 	for (l = list, i = 0; l != NULL; l = l->next, i++) {
 		app = GS_APP (l->data);
 		tile = gs_app_tile_new (app);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (app_tile_clicked), shell);
-		gtk_grid_attach (GTK_GRID (grid), tile, (i % 2), i / 2, 1, 1);
+		gtk_grid_attach (GTK_GRID (priv->category_detail_grid), tile, (i % 2), i / 2, 1, 1);
 	}
 
 	if (i == 1)
-		gtk_grid_attach (GTK_GRID (grid), priv->col1_placeholder, 1, 0, 1, 1);
+		gtk_grid_attach (GTK_GRID (priv->category_detail_grid), priv->col1_placeholder, 1, 0, 1, 1);
 
 out:
 	gs_plugin_list_free (list);
@@ -121,7 +125,6 @@ static void
 gs_shell_category_populate_filtered (GsShellCategory *shell)
 {
 	GsShellCategoryPrivate *priv = shell->priv;
-	GtkWidget *grid;
 	GsCategory *parent;
 	GtkWidget *tile;
 	guint i;
@@ -139,17 +142,16 @@ gs_shell_category_populate_filtered (GsShellCategory *shell)
 			 gs_category_get_id (priv->category));
 	}
 
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-	gtk_grid_remove_column (GTK_GRID (grid), 1);
-	gtk_grid_remove_column (GTK_GRID (grid), 0);
+	gtk_grid_remove_column (GTK_GRID (priv->category_detail_grid), 1);
+	gtk_grid_remove_column (GTK_GRID (priv->category_detail_grid), 0);
 
 	for (i = 0; i < MIN (30, gs_category_get_size (priv->category)); i++) {
 		tile = gs_app_tile_new (NULL);
-		gtk_grid_attach (GTK_GRID (grid), tile, (i % 2), i / 2, 1, 1);
+		gtk_grid_attach (GTK_GRID (priv->category_detail_grid), tile, (i % 2), i / 2, 1, 1);
 	}
 
-	gtk_grid_attach (GTK_GRID (grid), priv->col0_placeholder, 0, 0, 1, 1);
-	gtk_grid_attach (GTK_GRID (grid), priv->col1_placeholder, 1, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (priv->category_detail_grid), priv->col0_placeholder, 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (priv->category_detail_grid), priv->col1_placeholder, 1, 0, 1, 1);
 
 	gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
 						  priv->category,
@@ -189,30 +191,23 @@ static void
 gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *category, GsCategory *subcategory)
 {
 	GsShellCategoryPrivate *priv = shell->priv;
-	GtkWidget *grid;
-	GtkWidget *list_box;
 	GtkWidget *row;
 	GList *list, *l;
 	GsCategory *s;
-	GtkWidget *frame, *swin;
 
-	grid = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-	gs_container_remove_all (GTK_CONTAINER (grid));
+	gs_container_remove_all (GTK_CONTAINER (priv->category_detail_grid));
 
-	frame = GTK_WIDGET (gtk_builder_get_object (priv->builder, "frame_filter"));
-	swin = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_filter"));
-	gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (swin), GTK_SHADOW_NONE);
+	gtk_frame_set_shadow_type (GTK_FRAME (priv->frame_filter), GTK_SHADOW_IN);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (priv->scrolledwindow_filter), GTK_SHADOW_NONE);
 
 	list = gs_category_get_subcategories (category);
 	if (!list)
 		return;
 
-	gtk_grid_attach (GTK_GRID (grid), priv->col0_placeholder, 0, 0, 1, 1);
-	gtk_grid_attach (GTK_GRID (grid), priv->col1_placeholder, 1, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (priv->category_detail_grid), priv->col0_placeholder, 0, 0, 1, 1);
+	gtk_grid_attach (GTK_GRID (priv->category_detail_grid), priv->col1_placeholder, 1, 0, 1, 1);
 
-	list_box = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_filter"));
-	gs_container_remove_all (GTK_CONTAINER (list_box));
+	gs_container_remove_all (GTK_CONTAINER (priv->listbox_filter));
 
 	for  (l = list; l; l = l->next) {
 		s = l->data;
@@ -222,9 +217,9 @@ gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *catego
 		g_object_set_data_full (G_OBJECT (row), "category", g_object_ref (s), g_object_unref);
 		g_object_set (row, "xalign", 0.0, "margin", 6, NULL);
 		gtk_widget_show (row);
-		gtk_list_box_insert (GTK_LIST_BOX (list_box), row, -1);
+		gtk_list_box_insert (GTK_LIST_BOX (priv->listbox_filter), row, -1);
 		if (subcategory == s)
-			gtk_list_box_select_row (GTK_LIST_BOX (list_box), GTK_LIST_BOX_ROW (gtk_widget_get_parent (row)));
+			gtk_list_box_select_row (GTK_LIST_BOX (priv->listbox_filter), GTK_LIST_BOX_ROW (gtk_widget_get_parent (row)));
 	}
 	g_list_free (list);
 }
@@ -276,6 +271,8 @@ gs_shell_category_init (GsShellCategory *shell)
 {
 	GsShellCategoryPrivate *priv;
 
+	gtk_widget_init_template (GTK_WIDGET (shell));
+
 	priv = gs_shell_category_get_instance_private (shell);
 	shell->priv = priv;
 
@@ -306,8 +303,17 @@ static void
 gs_shell_category_class_init (GsShellCategoryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->finalize = gs_shell_category_finalize;
+
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-shell-category.ui");
+
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, category_detail_grid);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, frame_filter);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, listbox_filter);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, scrolledwindow_category);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, scrolledwindow_filter);
 }
 
 static void
@@ -329,27 +335,24 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 static gboolean
 key_event (GtkWidget *listbox, GdkEvent *event, GsShellCategory *shell)
 {
+	GsShellCategoryPrivate *priv = shell->priv;
 	guint keyval;
-	GtkWidget *sw;
-	GtkWidget *grid;
 	gboolean handled;
 
 	if (!gdk_event_get_keyval (event, &keyval))
 		return FALSE;
 
-	sw = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "scrolledwindow_category"));
-	grid = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "category_detail_grid"));
 	if (keyval == GDK_KEY_Page_Up ||
 	    keyval == GDK_KEY_KP_Page_Up)
-		g_signal_emit_by_name (sw, "scroll-child",
+		g_signal_emit_by_name (priv->scrolledwindow_category, "scroll-child",
 				       GTK_SCROLL_PAGE_UP, FALSE, &handled);
 	else if (keyval == GDK_KEY_Page_Down ||
 	    	 keyval == GDK_KEY_KP_Page_Down)
-		g_signal_emit_by_name (sw, "scroll-child",
+		g_signal_emit_by_name (priv->scrolledwindow_category, "scroll-child",
 				       GTK_SCROLL_PAGE_DOWN, FALSE, &handled);
 	else if (keyval == GDK_KEY_Tab ||
 		 keyval == GDK_KEY_KP_Tab)
-		gtk_widget_child_focus (grid, GTK_DIR_TAB_FORWARD);
+		gtk_widget_child_focus (priv->category_detail_grid, GTK_DIR_TAB_FORWARD);
 	else
 		return FALSE;
 
@@ -365,7 +368,6 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 {
 	GsShellCategoryPrivate *priv = shell_category->priv;
 	GtkWidget *widget;
-	GtkWidget *sw;
 	GtkAdjustment *adj;
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
@@ -373,22 +375,17 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 	priv->cancellable = g_cancellable_new ();
 	priv->shell = shell;
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_filter"));
-	g_signal_connect (widget, "row-selected", G_CALLBACK (filter_selected), shell_category);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (widget), add_separator, NULL, NULL);
+	g_signal_connect (priv->listbox_filter, "row-selected", G_CALLBACK (filter_selected), shell_category);
+	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->listbox_filter), add_separator, NULL, NULL);
 
-	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_filter"));
-	widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (sw));
-	g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), sw);
-	g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), sw);
+	widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (priv->scrolledwindow_filter));
+	g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow_filter);
+	g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow_filter);
 
-	sw = GTK_WIDGET (gtk_builder_get_object (priv->builder, "scrolledwindow_category"));
-	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (sw));
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "category_detail_grid"));
-	gtk_container_set_focus_vadjustment (GTK_CONTAINER (widget), adj);
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_category));
+	gtk_container_set_focus_vadjustment (GTK_CONTAINER (priv->category_detail_grid), adj);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "listbox_filter"));
-	g_signal_connect (widget, "key-press-event",
+	g_signal_connect (priv->listbox_filter, "key-press-event",
 			  G_CALLBACK (key_event), shell_category);
 }
 

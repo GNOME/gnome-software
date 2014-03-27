@@ -42,13 +42,13 @@ typedef struct GsShellCategoryPrivate GsShellCategoryPrivate;
 
 typedef struct
 {
-	 GObject			 parent;
+	 GtkBin				 parent;
 	 GsShellCategoryPrivate		*priv;
 } GsShellCategory;
 
 typedef struct
 {
-	GObjectClass			 parent_class;
+	GtkBinClass			 parent_class;
 } GsShellCategoryClass;
 
 GType		 gs_shell_category_get_type	(void);
