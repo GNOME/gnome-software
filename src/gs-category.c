@@ -28,8 +28,6 @@
 
 static void	gs_category_finalize	(GObject	*object);
 
-#define GS_CATEGORY_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_CATEGORY, GsCategoryPrivate))
-
 struct GsCategoryPrivate
 {
 	gchar		*id;
@@ -39,7 +37,7 @@ struct GsCategoryPrivate
 	GList		*subcategories;
 };
 
-G_DEFINE_TYPE (GsCategory, gs_category, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsCategory, gs_category, G_TYPE_OBJECT)
 
 /**
  * gs_category_get_size:
@@ -187,13 +185,12 @@ gs_category_class_init (GsCategoryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_category_finalize;
-	g_type_class_add_private (klass, sizeof (GsCategoryPrivate));
 }
 
 static void
 gs_category_init (GsCategory *category)
 {
-	category->priv = GS_CATEGORY_GET_PRIVATE (category);
+	category->priv = gs_category_get_instance_private (category);
 }
 
 static void
