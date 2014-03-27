@@ -40,8 +40,6 @@ static void	gs_shell_installed_finalize	(GObject	*object);
 static void	gs_shell_installed_remove_row	(GtkListBox	*list_box,
 						 GtkWidget	*child);
 
-#define GS_SHELL_INSTALLED_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_SHELL_INSTALLED, GsShellInstalledPrivate))
-
 struct GsShellInstalledPrivate
 {
 	GsPluginLoader		*plugin_loader;
@@ -57,7 +55,7 @@ struct GsShellInstalledPrivate
 	gboolean 		 selection_mode;
 };
 
-G_DEFINE_TYPE (GsShellInstalled, gs_shell_installed, G_TYPE_OBJECT)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellInstalled, gs_shell_installed, G_TYPE_OBJECT)
 
 static void gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 							GsShellInstalled *shell_installed);
@@ -844,8 +842,6 @@ gs_shell_installed_class_init (GsShellInstalledClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_shell_installed_finalize;
-
-	g_type_class_add_private (klass, sizeof (GsShellInstalledPrivate));
 }
 
 /**
@@ -854,7 +850,7 @@ gs_shell_installed_class_init (GsShellInstalledClass *klass)
 static void
 gs_shell_installed_init (GsShellInstalled *shell_installed)
 {
-	shell_installed->priv = GS_SHELL_INSTALLED_GET_PRIVATE (shell_installed);
+	shell_installed->priv = gs_shell_installed_get_instance_private (shell_installed);
 	shell_installed->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_installed->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
