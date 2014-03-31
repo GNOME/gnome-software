@@ -241,9 +241,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		rd = g_ptr_array_index (array, i);
 #if PK_CHECK_VERSION(0,9,1)
 		id = pk_repo_detail_get_id (rd);
-		/* FIXME: quick hack until we have data */
-		if (g_str_has_prefix (id, "rpmfusion"))
-			continue;
 		app = gs_app_new (id);
 		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_set_kind (app, GS_APP_KIND_SOURCE);
