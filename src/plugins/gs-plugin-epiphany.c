@@ -563,8 +563,8 @@ gs_plugin_epiphany_download (GsPlugin *plugin, const gchar *uri, const gchar *fi
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to set rating on fedora-tagger: %s",
-			     soup_status_get_phrase (status_code));
+			     "Failed to download icon %s: %s",
+			     uri, soup_status_get_phrase (status_code));
 		goto out;
 	}
 
