@@ -593,6 +593,8 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 		    (gs_app_get_description (app) != NULL ||
 		     g_getenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS") == NULL))
 			continue;
+		if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_WEBAPP)
+			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
 		list_tmp = g_list_prepend (list_tmp, app);
