@@ -88,6 +88,22 @@ cancel_current_search (GsShellSearchProvider *self)
 	}
 }
 
+/**
+ * search_sort_by_kudo_cb:
+ **/
+static gint
+search_sort_by_kudo_cb (gconstpointer a, gconstpointer b)
+{
+	guint pa, pb;
+	pa = gs_app_get_kudos_percentage (GS_APP (a));
+	pb = gs_app_get_kudos_percentage (GS_APP (b));
+	if (pa < pb)
+		return 1;
+	else if (pa > pb)
+		return -1;
+	return 0;
+}
+
 static void
 search_done_cb (GObject *source,
 		GAsyncResult *res,
@@ -112,6 +128,9 @@ search_done_cb (GObject *source,
 		cancel_current_search (self);
 		return;	
 	}
+
+	/* sort by kudos, as there is no ratings data by default */
+	list = g_list_sort (list, search_sort_by_kudo_cb);
 
 	g_variant_builder_init (&builder, G_VARIANT_TYPE ("as"));
 	for (l = list; l != NULL; l = l->next) {
