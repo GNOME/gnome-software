@@ -602,6 +602,8 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	gs_profile_start (plugin->profile, "packagekit-refine[source->licence]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
+		if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_WEBAPP)
+			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
 		if (!gs_plugin_refine_app_needs_details (plugin, app))
