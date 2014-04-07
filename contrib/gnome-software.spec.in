@@ -27,6 +27,7 @@ BuildRequires: gtk3-devel >= 3.9.12
 BuildRequires: libnotify-devel
 BuildRequires: PackageKit-glib-devel >= 0.8.10
 BuildRequires: libsoup-devel
+BuildRequires: gnome-desktop3-devel
 BuildRequires: gsettings-desktop-schemas-devel
 
 # this is not a library version
@@ -100,6 +101,8 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/dbus-1/services/org.gnome.Software.service
 %{_datadir}/gnome-shell/search-providers/gnome-software-search-provider.ini
 %{_datadir}/glib-2.0/schemas/org.gnome.software.gschema.xml
+%dir %{_datadir}/gnome-software/modulesets.d
+%{_datadir}/gnome-software/modulesets.d/*.xml
 
 %changelog
 * #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#
