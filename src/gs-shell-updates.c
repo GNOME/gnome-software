@@ -831,7 +831,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 						 GTK_DIALOG_DESTROY_WITH_PARENT,
 						 GTK_MESSAGE_ERROR,
 						 GTK_BUTTONS_CANCEL,
-						 /* TRANSLATORS: $$$ */
+						 /* TRANSLATORS: this is to explain that downloading updates may cost money */
 						 _("Charges may apply"));
 		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
 							  /* TRANSLATORS: we need network
