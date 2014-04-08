@@ -647,37 +647,6 @@ out:
 	return ret;
 }
 
-typedef struct {
-	GsApp *app;
-	GsAppState state;
-} AppStateData;
-
-static gboolean
-set_state_idle_cb (gpointer data)
-{
-	AppStateData *app_data = data;
-
-	gs_app_set_state (app_data->app, app_data->state);
-	g_object_unref (app_data->app);
-	g_free (app_data);
-
-	return G_SOURCE_REMOVE;
-}
-
-static void
-gs_app_set_state_in_idle (GsApp *app, GsAppState state)
-{
-	AppStateData *app_data;
-	guint id;
-
-	app_data = g_new (AppStateData, 1);
-	app_data->app = g_object_ref (app);
-	app_data->state = state;
-
-	id = g_idle_add (set_state_idle_cb, app_data);
-	g_source_set_name_by_id (id, "[gnome-software] set_state_idle_cb");
-}
-
 /******************************************************************************/
 
 /* async state */
@@ -2193,7 +2162,7 @@ gs_plugin_loader_app_action_thread_cb (GSimpleAsyncResult *res,
 						  state->cancellable,
 						  &error);
 	if (!state->ret) {
-		gs_app_set_state_in_idle (state->app, state->state_failure);
+		gs_app_set_state (state->app, state->state_failure);
 		gs_plugin_loader_app_action_state_finish (state, error);
 		g_error_free (error);
 		return;
@@ -2208,7 +2177,7 @@ gs_plugin_loader_app_action_thread_cb (GSimpleAsyncResult *res,
 
 	/* success */
 	if (state->state_success != GS_APP_STATE_UNKNOWN)
-		gs_app_set_state_in_idle (state->app, state->state_success);
+		gs_app_set_state (state->app, state->state_success);
 	gs_plugin_loader_app_action_state_finish (state, NULL);
 }
 
