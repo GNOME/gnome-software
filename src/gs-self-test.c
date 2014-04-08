@@ -275,6 +275,22 @@ gs_plugin_func (void)
 }
 
 static void
+gs_app_subsume_func (void)
+{
+	GsApp *new;
+	GsApp *old;
+
+	new = gs_app_new ("xxx.desktop");
+	old = gs_app_new ("yyy.desktop");
+	gs_app_set_metadata (old, "foo", "bar");
+	gs_app_subsume (new, old);
+	g_assert_cmpstr (gs_app_get_metadata_item (new, "foo"), ==, "bar");
+
+	g_object_unref (new);
+	g_object_unref (old);
+}
+
+static void
 gs_app_func (void)
 {
 	GsApp *app;
@@ -701,6 +717,7 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/plugin-loader{refine}", gs_plugin_loader_refine_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
+	g_test_add_func ("/gnome-software/app{subsume}", gs_app_subsume_func);
 	if (g_getenv ("HAS_APPSTREAM") != NULL)
 		g_test_add_func ("/gnome-software/plugin-loader{empty}", gs_plugin_loader_empty_func);
 	g_test_add_func ("/gnome-software/plugin-loader{dedupe}", gs_plugin_loader_dedupe_func);

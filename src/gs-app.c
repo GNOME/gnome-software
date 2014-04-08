@@ -1701,14 +1701,15 @@ gs_app_subsume (GsApp *app, GsApp *other)
 	}
 	priv->kudos |= priv2->kudos;
 
-	/* also metadata */
+	/* copy metadata from @other to @app unless the app already has a key
+	 * of that name */
 	keys = g_hash_table_get_keys (priv2->metadata);
 	for (l = keys; l != NULL; l = l->next) {
 		tmp = g_hash_table_lookup (priv->metadata, l->data);
-		if (tmp == NULL)
+		if (tmp != NULL)
 			continue;
 		tmp = g_hash_table_lookup (priv2->metadata, l->data);
-		gs_app_set_metadata (other, l->data, tmp);
+		gs_app_set_metadata (app, l->data, tmp);
 	}
 	g_list_free (keys);
 }
