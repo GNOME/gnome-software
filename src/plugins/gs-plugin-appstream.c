@@ -645,7 +645,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			continue;
 
 		/* got a search match, so add all the data we can */
-		app = gs_app_new (as_app_get_id (item));
+		app = gs_app_new (as_app_get_id_full (item));
 		ret = gs_plugin_refine_item (plugin, app, item, error);
 		if (!ret)
 			goto out;
@@ -686,7 +686,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
 		if (as_app_search_matches_all (item, values) != 0) {
-			app = gs_app_new (as_app_get_id (item));
+			app = gs_app_new (as_app_get_id_full (item));
 			ret = gs_plugin_refine_item (plugin, app, item, error);
 			if (!ret)
 				goto out;
