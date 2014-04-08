@@ -491,11 +491,12 @@ out:
 static gboolean
 gs_plugin_refine_from_id (GsPlugin *plugin,
 			  GsApp *app,
+			  gboolean *found,
 			  GError **error)
 {
 	const gchar *id;
 	gboolean ret = TRUE;
-	AsApp *item;
+	AsApp *item = NULL;
 
 	/* find anything that matches the ID */
 	id = gs_app_get_id_full (app);
@@ -510,6 +511,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	if (!ret)
 		goto out;
 out:
+	*found = (item != NULL);
 	return ret;
 }
 
@@ -560,6 +562,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GError **error)
 {
 	gboolean ret;
+	gboolean found;
 	GList *l;
 	GsApp *app;
 
@@ -574,15 +577,17 @@ gs_plugin_refine (GsPlugin *plugin,
 	gs_profile_start (plugin->profile, "appstream::refine");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		ret = gs_plugin_refine_from_id (plugin, app, error);
+		ret = gs_plugin_refine_from_id (plugin, app, &found, error);
 		if (!ret) {
 			gs_profile_stop (plugin->profile, "appstream::refine");
 			goto out;
 		}
-		ret = gs_plugin_refine_from_pkgname (plugin, app, error);
-		if (!ret) {
-			gs_profile_stop (plugin->profile, "appstream::refine");
-			goto out;
+		if (!found) {
+			ret = gs_plugin_refine_from_pkgname (plugin, app, error);
+			if (!ret) {
+				gs_profile_stop (plugin->profile, "appstream::refine");
+				goto out;
+			}
 		}
 	}
 	gs_profile_stop (plugin->profile, "appstream::refine");
