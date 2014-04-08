@@ -227,15 +227,10 @@ populate_list (GsAppFolderDialog *dialog)
 }
 
 static void
-row_activated (GtkListBox *list_box, GtkListBoxRow *row, GsAppFolderDialog *dialog)
+select_row (GtkListBox *list_box, GtkListBoxRow *row, GsAppFolderDialog *dialog)
 {
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
 	GtkWidget *image;
-
-	if (row == priv->new_folder_button) {
-		new_folder_cb (dialog);
-		return;
-	}
 
 	if (priv->selected_row) {
 		image = g_object_get_data (G_OBJECT (priv->selected_row), "image");
@@ -249,6 +244,18 @@ row_activated (GtkListBox *list_box, GtkListBoxRow *row, GsAppFolderDialog *dial
 		image = g_object_get_data (G_OBJECT (priv->selected_row), "image");
 		gtk_widget_show (image);
 		gtk_widget_set_sensitive (priv->done_button, TRUE);
+	}
+}
+
+static void
+row_activated (GtkListBox *list_box, GtkListBoxRow *row, GsAppFolderDialog *dialog)
+{
+	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
+
+	if (row == priv->new_folder_button) {
+		new_folder_cb (dialog);
+	} else {
+		select_row (list_box, row, dialog);
 	}
 }
 
@@ -278,10 +285,15 @@ add_folder_add (GtkButton *button, GsAppFolderDialog *dialog)
 	folder = gtk_entry_get_text (GTK_ENTRY (priv->new_folder_entry));
 	if (folder[0] != '\0') {
 		const gchar *id;
+		GtkWidget *row;
 		id = gs_folders_add_folder (priv->folders, folder);
+		row = create_row (dialog, id);
 		gtk_list_box_insert (GTK_LIST_BOX (priv->app_folder_list), 
-				     create_row (dialog, id),
+				     row,
 				     gtk_list_box_row_get_index (priv->new_folder_button));
+		select_row (GTK_LIST_BOX (priv->app_folder_list),
+                            GTK_LIST_BOX_ROW (row),
+                            dialog);
 	}
 }
 
