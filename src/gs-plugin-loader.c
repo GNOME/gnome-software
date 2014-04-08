@@ -2211,13 +2211,18 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 			continue;
 		app = gs_app_new (names[i]);
 		gs_app_set_state (app, GS_APP_STATE_QUEUED);
+
+		g_mutex_lock (&plugin_loader->priv->app_cache_mutex);
 		g_hash_table_insert (plugin_loader->priv->app_cache,
 				     g_strdup (gs_app_get_id (app)),
 				     g_object_ref (app));
+		g_mutex_unlock (&plugin_loader->priv->app_cache_mutex);
+
 		g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
 		g_ptr_array_add (plugin_loader->priv->pending_apps,
 				 g_object_ref (app));
 		g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+
 		g_debug ("adding pending app %s", gs_app_get_id (app));
 		gs_plugin_add_app (&list, app);
 		g_object_unref (app);
@@ -2447,6 +2452,7 @@ gs_plugin_loader_get_state_for_app (GsPluginLoader *plugin_loader, GsApp *app)
 	GsPluginLoaderPrivate *priv = plugin_loader->priv;
 	guint i;
 
+	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
 	for (i = 0; i < priv->pending_apps->len; i++) {
 		tmp = g_ptr_array_index (priv->pending_apps, i);
 		if (g_strcmp0 (gs_app_get_id (tmp), gs_app_get_id (app)) == 0) {
@@ -2454,6 +2460,7 @@ gs_plugin_loader_get_state_for_app (GsPluginLoader *plugin_loader, GsApp *app)
 			break;
 		}
 	}
+	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
 	return state;
 }
 
