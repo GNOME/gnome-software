@@ -655,24 +655,6 @@ out:
 }
 
 /**
- * gs_plugin_appstream_match_item:
- */
-static gboolean
-gs_plugin_appstream_match_item (AsApp *item, gchar **values)
-{
-	guint matches = 0;
-	guint i;
-
-	/* does the GsApp match *all* search keywords */
-	for (i = 0; values[i] != NULL; i++) {
-		matches = as_app_search_matches (item, values[i]);
-		if (matches == 0)
-			break;
-	}
-	return matches != 0;
-}
-
-/**
  * gs_plugin_add_search:
  */
 gboolean
@@ -701,7 +683,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
-		if (gs_plugin_appstream_match_item (item, values)) {
+		if (as_app_search_matches_all (item, values) != 0) {
 			app = gs_app_new (as_app_get_id (item));
 			ret = gs_plugin_refine_item (plugin, app, item, error);
 			if (!ret)
