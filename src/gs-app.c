@@ -330,6 +330,40 @@ gs_app_to_string (GsApp *app)
 	return g_string_free (str, FALSE);
 }
 
+typedef struct {
+	GsApp *app;
+	gchar *property_name;
+} AppNotifyData;
+
+static gboolean
+notify_idle_cb (gpointer data)
+{
+	AppNotifyData *notify_data = data;
+
+	g_object_notify (G_OBJECT (notify_data->app),
+	                 notify_data->property_name);
+
+	g_object_unref (notify_data->app);
+	g_free (notify_data->property_name);
+	g_free (notify_data);
+
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_app_queue_notify (GsApp *app, const gchar *property_name)
+{
+	AppNotifyData *notify_data;
+	guint id;
+
+	notify_data = g_new (AppNotifyData, 1);
+	notify_data->app = g_object_ref (app);
+	notify_data->property_name = g_strdup (property_name);
+
+	id = g_idle_add (notify_idle_cb, notify_data);
+	g_source_set_name_by_id (id, "[gnome-software] notify_idle_cb");
+}
+
 /**
  * gs_app_get_id:
  **/
@@ -505,7 +539,7 @@ void
 gs_app_set_state (GsApp *app, GsAppState state)
 {
 	if (gs_app_set_state_internal (app, state))
-		g_object_notify (G_OBJECT (app), "state");
+		gs_app_queue_notify (app, "state");
 }
 
 /**
@@ -581,7 +615,7 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 	}
 
 	priv->kind = kind;
-	g_object_notify (G_OBJECT (app), "kind");
+	gs_app_queue_notify (app, "kind");
 }
 
 /**
@@ -960,7 +994,7 @@ gs_app_ui_versions_populate (GsApp *app)
 		priv->version_ui = gs_app_get_ui_version (priv->version, flags[i]);
 		priv->update_version_ui = gs_app_get_ui_version (priv->update_version, flags[i]);
 		if (g_strcmp0 (priv->version_ui, priv->update_version_ui) != 0) {
-			g_object_notify (G_OBJECT (app), "version");
+			gs_app_queue_notify (app, "version");
 			return;
 		}
 		gs_app_ui_versions_invalidate (app);
@@ -1013,7 +1047,7 @@ gs_app_set_version (GsApp *app, const gchar *version)
 	g_free (app->priv->version);
 	app->priv->version = g_strdup (version);
 	gs_app_ui_versions_invalidate (app);
-	g_object_notify (G_OBJECT (app), "version");
+	gs_app_queue_notify (app, "version");
 }
 
 /**
@@ -1253,7 +1287,7 @@ gs_app_set_update_version (GsApp *app, const gchar *update_version)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	gs_app_set_update_version_internal (app, update_version);
-	g_object_notify (G_OBJECT (app), "version");
+	gs_app_queue_notify (app, "version");
 }
 
 /**
@@ -1319,7 +1353,7 @@ gs_app_set_rating (GsApp *app, gint rating)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->priv->rating = rating;
-	g_object_notify (G_OBJECT (app), "rating");
+	gs_app_queue_notify (app, "rating");
 }
 
 /**
@@ -1371,7 +1405,7 @@ gs_app_set_rating_kind (GsApp *app, GsAppRatingKind rating_kind)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->priv->rating_kind = rating_kind;
-	g_object_notify (G_OBJECT (app), "rating");
+	gs_app_queue_notify (app, "rating");
 }
 
 /**
