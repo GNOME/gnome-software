@@ -481,6 +481,8 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
 	if (as_app_get_metadata_item (item, "X-Kudo-UsesAppMenu") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_USES_APP_MENU);
+	if (as_app_get_metadata_item (item, "X-Kudo-Popular") != NULL)
+		gs_app_add_kudo (app, GS_APP_KUDO_POPULAR);
 out:
 	return ret;
 }
