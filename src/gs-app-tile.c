@@ -72,10 +72,8 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
         accessible = gtk_widget_get_accessible (priv->button);
 
 	label = gtk_bin_get_child (GTK_BIN (priv->eventbox));
-        switch (gs_app_get_state (app)) {
-        case GS_APP_STATE_INSTALLED:
-        case GS_APP_STATE_INSTALLING:
-        case GS_APP_STATE_REMOVING:
+	switch (gs_app_get_state (app)) {
+	case GS_APP_STATE_INSTALLED:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (app),
@@ -83,6 +81,24 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 		/* TRANSLATORS: this is the small blue label on the tile
 		 * that tells the user the application is installed */
 		gtk_label_set_label (GTK_LABEL (label), _("Installed"));
+		break;
+	case GS_APP_STATE_INSTALLING:
+		installed = TRUE;
+		name = g_strdup_printf ("%s (%s)",
+					gs_app_get_name (app),
+					_("Installing"));
+		/* TRANSLATORS: this is the small blue label on the tile
+		 * that tells the user the application is being installing */
+		gtk_label_set_label (GTK_LABEL (label), _("Installing"));
+		break;
+	case GS_APP_STATE_REMOVING:
+		installed = TRUE;
+		name = g_strdup_printf ("%s (%s)",
+					gs_app_get_name (app),
+					_("Removing"));
+		/* TRANSLATORS: this is the small blue label on the tile
+		 * that tells the user the application is being removed */
+		gtk_label_set_label (GTK_LABEL (label), _("Removing"));
 		break;
 	case GS_APP_STATE_UPDATABLE:
 		installed = TRUE;
