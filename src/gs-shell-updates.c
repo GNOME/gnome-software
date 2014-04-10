@@ -268,14 +268,14 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	case GS_SHELL_UPDATES_STATE_FAILED:
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
 		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
-					      "view-refresh-symbolic", 0);
+					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
 	        gtk_widget_set_visible (widget,
                                         gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATED);
 		break;
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
-					      "view-refresh-symbolic", 0);
+					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
 		gtk_widget_set_visible (widget,
 					is_free_connection || priv->has_agreed_to_mobile_data);
