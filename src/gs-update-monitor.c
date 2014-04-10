@@ -178,14 +178,20 @@ static gboolean
 check_offline_update_cb (gpointer user_data)
 {
 	GsUpdateMonitor *monitor = user_data;
+	guint64 time_last_notified;
 	guint64 time_update_completed;
 
+	g_settings_get (monitor->settings,
+	                "install-timestamp", "x", &time_last_notified);
+
 	if (gs_offline_updates_get_time_completed (&time_update_completed)) {
+		if (time_last_notified < time_update_completed)
+			show_installed_updates_notification (monitor);
+
 		g_settings_set (monitor->settings,
 		                "install-timestamp", "x", time_update_completed);
 	}
 
-	show_installed_updates_notification (monitor);
 	start_monitoring_offline_updates (monitor);
 
         monitor->check_offline_update_id = 0;
