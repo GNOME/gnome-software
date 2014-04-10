@@ -131,10 +131,9 @@ start_monitoring_offline_updates (GsUpdateMonitor *monitor)
         notify_offline_update_available (monitor);
 }
 
-static gboolean
-check_offline_update_cb (gpointer user_data)
+static void
+show_installed_updates_notification (GsUpdateMonitor *monitor)
 {
-	GsUpdateMonitor *monitor = user_data;
 	const gchar *message;
 	const gchar *title;
 	gboolean success;
@@ -143,7 +142,7 @@ check_offline_update_cb (gpointer user_data)
 	GIcon *icon;
 
 	if (!gs_offline_updates_get_status (&success, &num_packages, NULL, NULL))
-		goto out;
+		return;
 
 	if (success) {
 		guint64 time_completed;
@@ -180,8 +179,14 @@ check_offline_update_cb (gpointer user_data)
 
 	g_application_send_notification (monitor->application, "offline-updates", notification);
 	g_object_unref (notification);
+}
 
-out:
+static gboolean
+check_offline_update_cb (gpointer user_data)
+{
+	GsUpdateMonitor *monitor = user_data;
+
+	show_installed_updates_notification (monitor);
 	start_monitoring_offline_updates (monitor);
 
         monitor->check_offline_update_id = 0;
