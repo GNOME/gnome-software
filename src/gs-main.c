@@ -43,9 +43,6 @@ main (int argc, char **argv)
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 
-	/* workaround for https://bugzilla.gnome.org/show_bug.cgi?id=726475 */
-	g_setenv ("GTK_DEBUG", "no-pixel-cache", FALSE);
-
 	profile = gs_profile_new ();
 	gs_profile_start (profile, "GsMain");
 	application = gs_application_new ();
