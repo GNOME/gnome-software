@@ -145,13 +145,6 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 		return;
 
 	if (success) {
-		guint64 time_completed;
-
-		if (gs_offline_updates_get_time_completed (&time_completed)) {
-			g_settings_set (monitor->settings,
-			                "install-timestamp", "x", time_completed);
-		}
-
 		title = ngettext ("Software Update Installed",
 				  "Software Updates Installed",
 				  num_packages);
@@ -185,6 +178,12 @@ static gboolean
 check_offline_update_cb (gpointer user_data)
 {
 	GsUpdateMonitor *monitor = user_data;
+	guint64 time_update_completed;
+
+	if (gs_offline_updates_get_time_completed (&time_update_completed)) {
+		g_settings_set (monitor->settings,
+		                "install-timestamp", "x", time_update_completed);
+	}
 
 	show_installed_updates_notification (monitor);
 	start_monitoring_offline_updates (monitor);

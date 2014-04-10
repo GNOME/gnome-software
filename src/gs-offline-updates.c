@@ -75,8 +75,6 @@ gs_offline_updates_trigger (void)
 {
 	gboolean ret;
 	GError *error = NULL;
-	GDateTime *now;
-	GSettings *settings;
 
 	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-trigger-offline-update", NULL, &error);
 	if (!ret) {
@@ -84,13 +82,6 @@ gs_offline_updates_trigger (void)
 			   error->message);
 		g_error_free (error);
 	}
-
-	now = g_date_time_new_now_local ();
-	settings = g_settings_new ("org.gnome.software");
-	g_settings_set (settings, "install-timestamp", "x",
-			g_date_time_to_unix (now));
-	g_date_time_unref (now);
-	g_object_unref (settings);
 }
 
 void
