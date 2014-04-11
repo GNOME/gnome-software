@@ -1,3 +1,32 @@
+Version 3.12.1
+~~~~~~~~~~~~~~
+Released: 2014-04-11
+
+* Translations:
+ - Added Telugu Translation (Praveen Illa)
+ - Updated Catalan translation (Pau Iranzo)
+ - Updated German translation (Christian Kirbach)
+ - Updated Russian translation (Stas Solovey)
+ - Updated Slovenian translation (Matej Urbančič)
+ - Updated Thai translation (Akom Chotiphantawanon)
+ - Updated Slovak translation (Peter Mráz)
+
+* Bugfix:
+ - Always return valid results when using the shell search provider (Richard Hughes)
+ - Always show the featured background gradient (Richard Hughes)
+ - Disable the GTK pixel cache due to rendering artifacts (Richard Hughes)
+ - Do not show 'Installed' on the app tile when actually installing (Richard Hughes)
+ - Don't crash the search provider for apps with missing icons (Kalev Lember)
+ - Drop unused libnotify dep (Kalev Lember)
+ - GsApp: Notify property changes in an idle callback (Kalev Lember)
+ - Hide the last checked label if we haven't yet checked for updates (Kalev Lember)
+ - Improve thread safety in the plugin loader (Kalev Lember)
+ - Only show installed update notification once (Kalev Lember)
+ - Show the repo name in the sources dialog (Richard Hughes)
+ - Sort the results by kudo for the shell sort provider (Richard Hughes)
+ - Use a valid icon size for symbolic icons (Cosimo Cecchi)
+ - Use context to translate subcategory titles (Frédéric Péters)
+
 Version 3.12.0
 ~~~~~~~~~~~~~~
 Released: 2014-03-24
