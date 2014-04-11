@@ -68,6 +68,7 @@ struct GsShellDetailsPrivate
 	GtkWidget		*infobar_details_app_repo;
 	GtkWidget		*infobar_details_package_baseos;
 	GtkWidget		*infobar_details_repo;
+	GtkWidget		*infobar_details_webapp;
 	GtkWidget		*label_details_category_value;
 	GtkWidget		*label_details_developer_title;
 	GtkWidget		*label_details_developer_value;
@@ -768,6 +769,16 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		gtk_widget_set_visible (priv->infobar_details_app_norepo, FALSE);
 		break;
 	}
+
+	/* installing a webapp */
+	switch (gs_app_get_id_kind (priv->app)) {
+	case GS_APP_ID_KIND_WEBAPP:
+		gtk_widget_set_visible (priv->infobar_details_webapp, TRUE);
+		break;
+	default:
+		gtk_widget_set_visible (priv->infobar_details_webapp, FALSE);
+		break;
+	}
 }
 
 /**
@@ -1254,6 +1265,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_app_repo);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_package_baseos);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_repo);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_webapp);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_category_value);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_developer_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_developer_value);
