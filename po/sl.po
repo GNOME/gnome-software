@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2014-03-22 12:08+0000\n"
-"PO-Revision-Date: 2014-04-03 20:24+0100\n"
+"PO-Revision-Date: 2014-04-05 11:55+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -33,16 +33,17 @@ msgid ""
 msgstr ""
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
-#, fuzzy
 msgid ""
 "GNOME Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"Programska oprema GNOME omogoča nameščanje, odstranjevanje in posodabljanje "
-"programov in razširitev sistema. Obenem omogoča tudi posodabljanje vašega "
-"sistema s posodobitvami brez povezave."
+"Program za nameščanje programske opreme namizja GNOME omogoča ogled in "
+"iskanje paketov preko kratkih opisov, zaslonskih posnetkov vmesnika in "
+"drugih možnosti. Pakete je mogoče iskati tudi z brskanjem po seznamu "
+"kategorij. Obenem omogoča tudi posodabljanje sistema s posodobitvami brez "
+"povezave."
 
 #: ../src/app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
@@ -266,7 +267,7 @@ msgstr ""
 
 #: ../src/gnome-software.ui.h:42
 msgid "Only use software sources that you trust."
-msgstr ""
+msgstr "Uporabi le programske vire, ki so vredni zaupanja."
 
 #: ../src/gnome-software.ui.h:43
 msgid "_Website"
@@ -325,7 +326,7 @@ msgstr "Ni najdenih virov"
 
 #: ../src/gnome-software.ui.h:57
 msgid "Software sources give you access to additional software."
-msgstr ""
+msgstr "Programski viri omogočajo dostop do dodatne programske opreme."
 
 #: ../src/gnome-software.ui.h:58
 msgid ""
@@ -334,7 +335,7 @@ msgstr ""
 
 #: ../src/gnome-software.ui.h:59
 msgid "No software installed from this source"
-msgstr ""
+msgstr "Iz tega vira ni nameščenih programskih paketov"
 
 #: ../src/gnome-software.ui.h:60
 msgid "Installed from this Source"
@@ -383,9 +384,8 @@ msgid "translator-credits"
 msgstr "Matej Urbančič"
 
 #: ../src/gs-application.c:488
-#, fuzzy
 msgid "Enter GApplication service mode"
-msgstr "Vstopi v celozaslonski način"
+msgstr "Vstopi v način GApplication"
 
 #. TRANSLATORS: this is a command line option
 #: ../src/gs-application.c:491
@@ -526,17 +526,15 @@ msgstr "Za izvedbo opravila je zahtevan spletni dostop, ki pa ni na voljo"
 #. TRANSLATORS: if the package is not signed correctly
 #. *
 #: ../src/gs-offline-updates.c:283
-#, fuzzy
 msgid "An update was not signed in the correct way."
-msgstr "Starejša datoteka z enakim imenom v “%s” že obstaja."
+msgstr "Paketi posodobitve niso podpisani na ustrezen način."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
 #: ../src/gs-offline-updates.c:293
-#, fuzzy
 msgid "The update could not be completed."
-msgstr "Novejša datoteka z enakim imenom v “%s” že obstaja."
+msgstr "Posodobitve ni mogoče končati."
 
 #. TRANSLATORS: the user aborted the update manually
 #: ../src/gs-offline-updates.c:298
@@ -546,9 +544,9 @@ msgstr "Posodobitev je bila preklicana."
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
 #: ../src/gs-offline-updates.c:304
-#, fuzzy
 msgid "An offline update was requested but no packages required updating."
-msgstr "Ali ste prepričani, da želite trajno izbrisati “%B” iz smeti?"
+msgstr ""
+"Zahtevana je posodobitev brez povezave, vendar ni paketov za posodobitev."
 
 #. TRANSLATORS: we ran out of disk space
 #: ../src/gs-offline-updates.c:308
@@ -564,18 +562,15 @@ msgstr "Namestitev posodobitve je spodletela."
 
 #. TRANSLATORS: We didn't handle the error type
 #: ../src/gs-offline-updates.c:321
-#, fuzzy
 msgid "The offline update failed in an unexpected way."
-msgstr ""
-"Med pridobivanjem podrobnosti o datotekah v mapi “%B” je prišlo do napake."
+msgstr "Posodobitev brez povezave je spodletela na nepričakovan način."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
 #: ../src/gs-offline-updates.c:330
-#, fuzzy
 msgid "Detailed errors from the package manager follow:"
-msgstr "Mape “%B” ni mogoče izbrisati, ker ni ustreznih dovoljenja za branje."
+msgstr "Podrobne napake upravljalnika paketov so:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
@@ -802,6 +797,7 @@ msgstr "Ni omrežne povezave"
 #: ../src/gs-shell-updates.c:783
 msgid "Internet access is required to check for updates."
 msgstr ""
+"Za preverjanje za posodobitve mora biti vzpostavljena povezava v splet."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
@@ -811,9 +807,8 @@ msgstr "Omrežne nastavitve"
 
 #. TRANSLATORS: $$$
 #: ../src/gs-shell-updates.c:807
-#, fuzzy
 msgid "Charges may apply"
-msgstr "Uporabi datoteke poštnega predala"
+msgstr "Uporaba lahko vpliva na višino računa"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
@@ -822,6 +817,8 @@ msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
 msgstr ""
+"Preverjanje za posodobitve z uporabo širokopasovnega mobilnega omrežja lahko "
+"vpliva na višino račna za telefon."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
@@ -835,7 +832,7 @@ msgstr "Na voljo so posodobitve programske opreme"
 
 #: ../src/gs-update-monitor.c:103
 msgid "Important OS and application updates are ready to be installed"
-msgstr ""
+msgstr "Na voljo so pomembne sistemske posodobitve in posodobitve programov"
 
 #: ../src/gs-update-monitor.c:106
 msgid "View"
@@ -846,13 +843,12 @@ msgid "Not Now"
 msgstr "Ne zdaj"
 
 #: ../src/gs-update-monitor.c:156
-#, fuzzy
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
-msgstr[0] "Med branjem “%B” je prišlo do napake."
-msgstr[1] "Na voljo so posodobitve"
-msgstr[2] "Na voljo so posodobitve"
-msgstr[3] "Na voljo so posodobitve"
+msgstr[0] "Paketi za posodobitev so nameščeni"
+msgstr[1] "Paket za posodobitev so nameščen"
+msgstr[2] "Paketa za posodobitev sta nameščena"
+msgstr[3] "Paketi za posodobitev so nameščeni"
 
 #. TRANSLATORS: message when we've done offline updates
 #: ../src/gs-update-monitor.c:160
@@ -869,11 +865,8 @@ msgstr "Posodabljanje programske opreme je spodletelo"
 
 #. TRANSLATORS: message when we offline updates have failed
 #: ../src/gs-update-monitor.c:167
-#, fuzzy
 msgid "An important OS update failed to be installed."
-msgstr ""
-"Z datotekami v mapi “%B” ni mogoče upravljati, ker ni ustreznih dovoljenja "
-"za ogled."
+msgstr "Namestitev pomembne posodobitve sistema je spodletela."
 
 #: ../src/gs-update-monitor.c:176
 msgid "Review"
