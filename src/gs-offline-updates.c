@@ -124,10 +124,10 @@ gs_offline_updates_get_time_completed (guint64 *time_completed)
 	if (info != NULL) {
 		*time_completed = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
 		result = TRUE;
+		g_object_unref (info);
 	}
 
 	g_object_unref (file);
-	g_object_unref (info);
 
 	return result;
 }
