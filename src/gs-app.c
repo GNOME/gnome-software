@@ -245,6 +245,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append (str, "\tkudo:\thas-screenshots\n");
 	if ((priv->kudos & GS_APP_KUDO_POPULAR) > 0)
 		g_string_append (str, "\tkudo:\tpopular\n");
+	if ((priv->kudos & GS_APP_KUDO_IBUS_HAS_SYMBOL) > 0)
+		g_string_append (str, "\tkudo:\tibus-has-symbol\n");
 	g_string_append_printf (str, "\tkudo-percentage:\t%i\n",
 				gs_app_get_kudos_percentage (app));
 	if (priv->name != NULL)
@@ -1673,6 +1675,8 @@ gs_app_get_kudos_percentage (GsApp *app)
 	if ((app->priv->kudos & GS_APP_KUDO_USES_APP_MENU) > 0)
 		percentage += 10;
 	if ((app->priv->kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
+		percentage += 20;
+	if ((app->priv->kudos & GS_APP_KUDO_IBUS_HAS_SYMBOL) > 0)
 		percentage += 20;
 
 	/* popular apps should be at *least* 50% */
