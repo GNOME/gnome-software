@@ -212,6 +212,8 @@ gs_app_to_string (GsApp *app)
 	const gchar *tmp;
 	guint i;
 
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
 	str = g_string_new ("GsApp:\n");
 	g_string_append_printf (str, "\tkind:\t%s\n",
 				gs_app_kind_to_string (priv->kind));
@@ -542,6 +544,8 @@ gs_app_set_state_internal (GsApp *app, GsAppState state)
 void
 gs_app_set_state (GsApp *app, GsAppState state)
 {
+	g_return_if_fail (GS_IS_APP (app));
+
 	if (gs_app_set_state_internal (app, state))
 		gs_app_queue_notify (app, "state");
 }
@@ -693,6 +697,8 @@ gs_app_add_source (GsApp *app, const gchar *source)
 	const gchar *tmp;
 	guint i;
 
+	g_return_if_fail (GS_IS_APP (app));
+
 	/* check source doesn't already exist */
 	for (i = 0; i < app->priv->sources->len; i++) {
 		tmp = g_ptr_array_index (app->priv->sources, i);
@@ -777,6 +783,8 @@ gs_app_add_source_id (GsApp *app, const gchar *source_id)
 {
 	const gchar *tmp;
 	guint i;
+
+	g_return_if_fail (GS_IS_APP (app));
 
 	/* only add if not already present */
 	for (i = 0; i < app->priv->source_ids->len; i++) {
@@ -1656,6 +1664,9 @@ guint
 gs_app_get_kudos_percentage (GsApp *app)
 {
 	guint percentage = 0;
+
+	g_return_val_if_fail (GS_IS_APP (app), 0);
+
 	if ((app->priv->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
 		percentage += 20;
 	if ((app->priv->kudos & GS_APP_KUDO_RECENT_RELEASE) > 0)
@@ -1704,6 +1715,9 @@ gs_app_subsume (GsApp *app, GsApp *other)
 	GsAppPrivate *priv2 = other->priv;
 	GsAppPrivate *priv = app->priv;
 	guint i;
+
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_APP (other));
 
 	/* an [updatable] installable package is more information than
 	 * just the fact that something is installed */
