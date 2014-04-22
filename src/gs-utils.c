@@ -247,6 +247,18 @@ gs_mkdir_parent (const gchar *path, GError **error)
 	return ret;
 }
 
+static GtkIconTheme *icon_theme_singleton;
+static GMutex        icon_theme_lock;
+
+static GtkIconTheme *
+icon_theme_get (void)
+{
+	if (icon_theme_singleton == NULL)
+		icon_theme_singleton = gtk_icon_theme_new ();
+
+	return icon_theme_singleton;
+}
+
 /**
  * gs_pixbuf_load:
  **/
@@ -269,12 +281,14 @@ gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
 							   icon_size,
 							   error);
 	} else if (g_strstr_len (icon_name, -1, ".") == NULL) {
-		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		g_mutex_lock (&icon_theme_lock);
+		pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 						   icon_name,
 						   icon_size,
 						   GTK_ICON_LOOKUP_USE_BUILTIN |
 						   GTK_ICON_LOOKUP_FORCE_SIZE,
 						   error);
+		g_mutex_unlock (&icon_theme_lock);
 	} else {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
