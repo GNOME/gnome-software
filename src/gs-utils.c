@@ -248,75 +248,12 @@ gs_mkdir_parent (const gchar *path, GError **error)
 }
 
 /**
- * gs_pixbuf_find_icon_name:
- */
-static gchar *
-gs_pixbuf_find_icon_name (const gchar *icon_name)
-{
-	guint i, j, k, l;
-	gchar *path;
-	gchar **icons = NULL;
-	const gchar *iconset[] = { "gnome",
-				   "hicolor",
-				   NULL };
-	const gchar *sizes[] = { "64x64",
-				 "128x128",
-				 "256x256",
-				 "scalable",
-				 "32x32",
-				 "48x48",
-				 NULL };
-	const gchar *section[] = { "apps",
-				   "mimetypes",
-				   "stock",
-				   "actions",
-				   "categories",
-				   "devices",
-				   "places",
-				   "status",
-				   "filesystems",
-				   "intl",
-				   "emotes",
-				   "emblems",
-				   NULL };
-	const gchar *extentions[] = { "png",
-				      "svg",
-				      NULL };
-
-	icons = g_new0 (gchar *, G_N_ELEMENTS (extentions) + 1);
-	for (l = 0; extentions[l] != NULL; l++) {
-		icons[l] = g_strdup_printf ("%s.%s", icon_name, extentions[l]);
-		for (i = 0; iconset[i] != NULL; i++) {
-			for (j = 0; sizes[j] != NULL; j++) {
-				for (k = 0; section[k] != NULL; k++) {
-					path = g_build_filename (DATADIR,
-								 "icons",
-								 iconset[i],
-								 sizes[j],
-								 section[k],
-								 icons[l],
-								 NULL);
-					if (g_file_test (path, G_FILE_TEST_EXISTS))
-						goto out;
-					g_free (path);
-				}
-			}
-		}
-	}
-	path = NULL;
-out:
-	g_strfreev (icons);
-	return path;
-}
-
-/**
  * gs_pixbuf_load:
  **/
 GdkPixbuf *
 gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
 {
 	GdkPixbuf *pixbuf = NULL;
-	gchar *filename;
 
 	g_return_val_if_fail (icon_name != NULL, NULL);
 	g_return_val_if_fail (icon_size > 0, NULL);
@@ -332,19 +269,12 @@ gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
 							   icon_size,
 							   error);
 	} else if (g_strstr_len (icon_name, -1, ".") == NULL) {
-		filename = gs_pixbuf_find_icon_name (icon_name);
-		if (filename != NULL) {
-			pixbuf = gdk_pixbuf_new_from_file_at_size (filename,
-								   icon_size,
-								   icon_size,
-								   error);
-			g_free (filename);
-		} else {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "Cannot find %s", icon_name);
-		}
+		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+						   icon_name,
+						   icon_size,
+						   GTK_ICON_LOOKUP_USE_BUILTIN |
+						   GTK_ICON_LOOKUP_FORCE_SIZE,
+						   error);
 	} else {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
