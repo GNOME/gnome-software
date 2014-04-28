@@ -126,12 +126,10 @@ gs_update_dialog_set_app (GsUpdateDialog *dialog, GsApp *app)
 	/* set update description */
 	if (kind == GS_APP_KIND_OS_UPDATE) {
 		GPtrArray *related;
-		GtkListBox *list_box;
 		guint i;
 		GtkWidget *row, *label;
 
-		list_box = GTK_LIST_BOX (priv->list_box);
-		gs_container_remove_all (GTK_CONTAINER (list_box));
+		gs_container_remove_all (GTK_CONTAINER (priv->list_box));
 		related = gs_app_get_related (app);
 		for (i = 0; i < related->len; i++) {
 			app_related = g_ptr_array_index (related, i);
@@ -168,7 +166,7 @@ gs_update_dialog_set_app (GsUpdateDialog *dialog, GsApp *app)
 			gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 			gtk_box_pack_start (GTK_BOX (row), label, FALSE, FALSE, 0);
 			gtk_widget_show_all (row);
-			gtk_list_box_insert (list_box,row, -1);
+			gtk_list_box_insert (GTK_LIST_BOX (priv->list_box), row, -1);
 		}
 	}
 }
