@@ -308,8 +308,11 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tpixbuf:\t%p\n", priv->pixbuf);
 	if (priv->featured_pixbuf != NULL)
 		g_string_append_printf (str, "\tfeatured-pixbuf:\t%p\n", priv->featured_pixbuf);
-	if (priv->install_date != 0)
-		g_string_append_printf (str, "\tinstall-date:\t%lu\n", priv->install_date);
+	if (priv->install_date != 0) {
+		g_string_append_printf (str, "\tinstall-date:\t%"
+					G_GUINT64_FORMAT "\n",
+					priv->install_date);
+	}
 	if (priv->size != 0) {
 		g_string_append_printf (str, "\tsize:\t%" G_GUINT64_FORMAT "k\n",
 					priv->size / 1024);

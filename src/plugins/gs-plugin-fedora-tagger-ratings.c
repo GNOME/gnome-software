@@ -568,14 +568,15 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 		if (!ret)
 			goto out;
 	} else if (now - mtime > GS_PLUGIN_FEDORA_TAGGER_AGE_MAX) {
-		g_debug ("fedora-tagger data was %li days old, so regetting",
+		g_debug ("fedora-tagger data was %" G_GINT64_FORMAT
+			 " days old, so regetting",
 			 (now - mtime) / ( 60 * 60 * 24));
 		ret = gs_plugin_fedora_tagger_download (plugin, error);
 		if (!ret)
 			goto out;
 	} else {
-		g_debug ("fedora-tagger data %li days old, "
-			 "so no need to redownload",
+		g_debug ("fedora-tagger data %" G_GINT64_FORMAT
+			 " days old, so no need to redownload",
 			 (now - mtime) / ( 60 * 60 * 24));
 	}
 out:
