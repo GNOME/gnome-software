@@ -425,7 +425,6 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		g_free (text);
 		gtk_widget_show (widget);
 	} else {
-		gtk_label_set_label (GTK_LABEL (widget), "4");
 		gtk_widget_hide (widget);
 	}
 
