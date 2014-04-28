@@ -1,5 +1,87 @@
-3.11.92 - 2014-03-19
---------------------
+Version 3.13.1
+~~~~~~~~~~~~~~
+Released: 2014-04-28
+
+* Translations:
+ - Added Basque language (Inaki Larranaga Murgoitio)
+ - Added French translation (AlainLojewski)
+ - Added Lithuanian translation (Aurimas Černius)
+ - Added Portuguese translation (Tiagosdot)
+ - Added Telugu Translation (Praveen Illa)
+ - Fix typo in Catalan translation (Jordi Mas)
+ - Updated Brazilian Portuguese translation (Rafael Ferreira)
+ - Updated Catalan translation (Pau Iranzo)
+ - Updated Chinese (China) translation (Sphinx Jiang, Wylmer Wang)
+ - Updated Chinese (Taiwan) translation (Cheng-Chia Tseng)
+ - Updated Czech translation (Marek Černocký)
+ - Updated Danish translation (Ask H. Larsen)
+ - Updated Finnish translation update (Jiri Grönroos)
+ - Updated Galician translation (Fran Diéguez)
+ - Updated German translation (Christian Kirbach)
+ - Updated Greek translation (Dimitris Spingos, maria thukididu)
+ - Updated Hungarian translation (Gábor Kelemen)
+ - Updated Indonesian translation (Andika Triwidada)
+ - Updated Italian translation (Gianvito Cavasoli)
+ - Updated Korean translation (Seong-ho Cho)
+ - Updated Latvian translation (Rūdolfs Mazurs)
+ - Updated Lithuanian translation (Aurimas Černius)
+ - Updated Norwegian bokmål translation (Kjartan Maraas)
+ - Updated Polish translation (Piotr Drąg)
+ - Updated Punjabi translation (A S Alam)
+ - Updated Russian translation (Stas Solovey, Yuri Myasoedov)
+ - Updated Slovak translation (Peter Mráz)
+ - Updated Slovenian translation (Matej Urbančič)
+ - Updated Spanish translation (Daniel Mustieles)
+ - Updated Thai translation (Akom Chotiphantawanon)
+ - Updated Traditional Chinese translation (Chao-Hsiung Liao)
+ - Updated Ukrainian translation (Daniel Korostil)
+
+* New Features:
+ - Add an extra star if the IBus component defines a symbol (Richard Hughes)
+ - Add some more dogtail tests (Martin Simon)
+ - Load app-install data on Ubuntu systems (Richard Hughes)
+ - Popular applications should imply a certain level of quality (Richard Hughes)
+ - Port from GSimpleAsyncResult to GTask (Kalev Lember)
+ - Port to using Appstream-Glib in the AppStream and AppData plugins (Richard Hughes)
+ - Show an infobar with explanatory text for webapps (Kalev Lember)
+ - Show the time we last checked for updates (Kalev Lember)
+ - Update landing page 'Picks' (Jakub Steiner)
+ - Use a popover for the add folder subdialog (Matthias Clasen)
+ - Use package descriptions for applications on Ubuntu and Debian (Richard Hughes)
+
+* Bugfix:
+ - Add translation context in a number of places (Matthias Clasen)
+ - Always return valid results when using the shell search provider (Richard Hughes)
+ - Always show the featured background gradient (Richard Hughes)
+ - Bump minimum gtk+ version to 3.11.5 (Kalev Lember)
+ - Call g_set_prgname to set correct name for a11y tests (Vadim Rutkovsky)
+ - Do not blacklist rpmfusion from the sources dialog (Richard Hughes)
+ - Do not show 'Installed' on the app tile when actually installing (Richard Hughes)
+ - Don't crash in the search provider for apps with missing icons (Kalev Lember)
+ - Don't generate .service and .desktop file from config.status (Matthias Clasen)
+ - Fade in the loading spinner in the sources dialog (Kalev Lember)
+ - Fix build with PackageKit < 0.9.1 (Dominique Leuenberger)
+ - Fix showing recently installed updates (Kalev Lember)
+ - Fix threadsafety issues with gtk icon theme use (Kalev Lember)
+ - Grab focus to the entry in the app folder dialog (Matthias Clasen)
+ - Hide the screenshot widget when it cannot be loaded (Richard Hughes)
+ - Improve display of recently installed updates (Matthias Clasen)
+ - Improve thread safety in the plugin loader (Kalev Lember)
+ - Only show installed update notification once (Kalev Lember)
+ - Only show non-empty folders in the shell (Matthias Clasen)
+ - Select newly created app folders (Matthias Clasen)
+ - Set an icon name for the main window (Richard Hughes)
+ - Set the main window as the parent for error dialogs (Kalev Lember)
+ - Show the repo name in the sources dialog (Richard Hughes)
+ - Sort the results by kudo for the shell sort provider (Richard Hughes)
+ - Update the last installed timestamp after successful offline updates (Kalev Lember)
+ - Update URLs in the DOAP file (Piotr Drąg)
+ - Use a valid icon size for symbolic icons (Cosimo Cecchi)
+ - Use context to translate subcategory titles (Frédéric Péters)
+
+Version 3.11.92
+~~~~~~~~~~~~~~~
+Released: 2014-03-19
 
 * Translations:
  - Chinese (China)
