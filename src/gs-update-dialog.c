@@ -173,6 +173,17 @@ gs_update_dialog_set_app (GsUpdateDialog *dialog, GsApp *app)
 	}
 }
 
+static void
+list_header_func (GtkListBoxRow *row,
+                  GtkListBoxRow *before,
+                  gpointer user_data)
+{
+	GtkWidget *header = NULL;
+	if (before != NULL)
+		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	gtk_list_box_row_set_header (row, header);
+}
+
 static gint
 os_updates_sort_func (GtkListBoxRow *a,
                       GtkListBoxRow *b,
@@ -237,6 +248,9 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 
 	g_signal_connect (GTK_LIST_BOX (priv->list_box), "row-activated",
 	                  G_CALLBACK (row_activated_cb), dialog);
+	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box),
+	                              list_header_func,
+	                              dialog, NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box),
 	                            os_updates_sort_func,
 	                            dialog, NULL);
