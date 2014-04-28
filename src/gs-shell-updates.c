@@ -469,8 +469,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 out:
-	if (list != NULL)
-		gs_plugin_list_free (list);
+	gs_plugin_list_free (list);
 }
 
 /**
