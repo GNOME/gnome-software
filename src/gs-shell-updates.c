@@ -61,7 +61,6 @@ struct GsShellUpdatesPrivate
 	GSettings		*desktop_settings;
 	gboolean		 cache_valid;
 	GsShell			*shell;
-	GtkWidget		*update_dialog;
 	PkControl		*control;
 	GsShellUpdatesState	 state;
 	gboolean		 has_agreed_to_mobile_data;
@@ -545,14 +544,16 @@ static void
 show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
+	GtkWidget *dialog;
 	GtkWidget *toplevel;
 
-	gs_update_dialog_set_app (GS_UPDATE_DIALOG (priv->update_dialog), app);
+	dialog = gs_update_dialog_new ();
+	gs_update_dialog_set_app (GS_UPDATE_DIALOG (dialog), app);
 
 	toplevel = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	gtk_window_set_transient_for (GTK_WINDOW (priv->update_dialog), GTK_WINDOW (toplevel));
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (toplevel));
 
-	gtk_window_present (GTK_WINDOW (priv->update_dialog));
+	gtk_window_present (GTK_WINDOW (dialog));
 }
 
 /**
@@ -1014,9 +1015,6 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	g_signal_connect (priv->button_updates_offline, "clicked",
 			  G_CALLBACK (gs_shell_updates_button_network_settings_cb),
 			  shell_updates);
-	priv->update_dialog = gs_update_dialog_new ();
-	g_signal_connect (priv->update_dialog, "delete-event",
-			  G_CALLBACK (gtk_widget_hide_on_delete), shell_updates);
 
 	g_signal_connect (priv->control, "notify::network-state",
 			  G_CALLBACK (gs_shell_updates_notify_network_state_cb),
