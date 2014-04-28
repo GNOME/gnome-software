@@ -40,6 +40,7 @@ struct _GsUpdateDialogPrivate
 	GtkWidget	*list_box;
 	GtkWidget	*scrolledwindow;
 	GtkWidget	*scrolledwindow_details;
+	GtkWidget	*stack;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsUpdateDialog, gs_update_dialog, GTK_TYPE_DIALOG)
@@ -80,8 +81,6 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 
 	/* set update header */
 	gtk_widget_set_visible (priv->box_header, kind == GS_APP_KIND_NORMAL || kind == GS_APP_KIND_SYSTEM);
-	gtk_widget_set_visible (priv->scrolledwindow_details, kind != GS_APP_KIND_OS_UPDATE);
-	gtk_widget_set_visible (priv->scrolledwindow, kind == GS_APP_KIND_OS_UPDATE);
 	gtk_label_set_markup (GTK_LABEL (priv->label_details), update_desc);
 	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image_icon), gs_app_get_pixbuf (app));
 	gtk_label_set_label (GTK_LABEL (priv->label_name), gs_app_get_name (app));
@@ -99,7 +98,7 @@ row_activated_cb (GtkListBox *list_box,
 
 	app = GS_APP (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "app"));
 	/* setup package view */
-	gtk_widget_hide (priv->scrolledwindow);
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "package-details");
 	set_updates_description_ui (dialog, app);
 	gtk_widget_show (priv->button_back);
 }
@@ -168,6 +167,9 @@ gs_update_dialog_set_app (GsUpdateDialog *dialog, GsApp *app)
 			gtk_widget_show_all (row);
 			gtk_list_box_insert (GTK_LIST_BOX (priv->list_box), row, -1);
 		}
+		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "os-update-list");
+	} else {
+		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "package-details");
 	}
 }
 
@@ -191,9 +193,7 @@ button_back_cb (GtkWidget *widget, GsUpdateDialog *dialog)
 
 	/* return to the list view */
 	gtk_widget_hide (priv->button_back);
-	gtk_widget_hide (priv->box_header);
-	gtk_widget_hide (priv->scrolledwindow_details);
-	gtk_widget_show (priv->scrolledwindow);
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "os-update-list");
 
 	gtk_window_set_title (GTK_WINDOW (dialog), gs_app_get_name (priv->app));
 }
@@ -273,6 +273,7 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, list_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, scrolledwindow);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, scrolledwindow_details);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, stack);
 }
 
 GtkWidget *
