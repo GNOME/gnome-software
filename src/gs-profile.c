@@ -236,8 +236,9 @@ gs_profile_dump (GsProfile *profile)
 			g_print ("#");
 		for (j = bar_offset + bar_length; j < console_width + 1; j++)
 			g_print (" ");
-		g_print ("@%04lims ", (item->time_stop - time_start) / 1000);
-		g_print ("%s %lims\n", item->id, time_ms);
+		g_print ("@%04" G_GINT64_FORMAT "ms ",
+			 (item->time_stop - time_start) / 1000);
+		g_print ("%s %" G_GINT64_FORMAT "ms\n", item->id, time_ms);
 	}
 
 	/* not all complete */
@@ -248,7 +249,8 @@ gs_profile_dump (GsProfile *profile)
 			for (j = 0; j < console_width; j++)
 				g_print ("$");
 			time_ms = (item->time_stop - item->time_start) / 1000;
-			g_print (" @????ms %s %lims\n", item->id, time_ms);
+			g_print (" @????ms %s %" G_GINT64_FORMAT "ms\n",
+				 item->id, time_ms);
 		}
 	}
 }
