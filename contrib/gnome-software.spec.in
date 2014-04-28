@@ -29,6 +29,7 @@ BuildRequires: PackageKit-glib-devel >= 0.8.10
 BuildRequires: libsoup-devel
 BuildRequires: gnome-desktop3-devel
 BuildRequires: gsettings-desktop-schemas-devel
+BuildRequires: libappstream-glib-devel
 
 # this is not a library version
 %define gs_plugin_version               3
@@ -41,13 +42,12 @@ and update software in the GNOME desktop.
 %setup -q
 
 %build
-%configure
+%configure --disable-static
 make %{?_smp_mflags}
 
 %install
 %make_install
 
-%__rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.a
 %__rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.la
 
 # install AppStream data for Fedora
