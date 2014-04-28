@@ -237,12 +237,10 @@ save_back_entry (GsShell *shell)
 	entry->mode = priv->mode;
 
 	if (priv->mode == GS_SHELL_MODE_CATEGORY) {
-		g_clear_object (&entry->category);
 		entry->category = gs_shell_category_get_category (priv->shell_category);
 		g_object_ref (entry->category);
 	}
 	else if (priv->mode == GS_SHELL_MODE_DETAILS) {
-		g_clear_object (&entry->app);
 		entry->app = gs_shell_details_get_app (priv->shell_details);
 		g_object_ref (entry->app);
 	}
