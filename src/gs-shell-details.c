@@ -133,7 +133,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	switch (state) {
 	case GS_APP_STATE_QUEUED:
 		gtk_widget_set_visible (widget, TRUE);
-		gtk_label_set_label (GTK_LABEL (widget), _("_Pending"));
+		gtk_label_set_label (GTK_LABEL (widget), _("Pending"));
 		break;
 	default:
 		gtk_widget_set_visible (widget, FALSE);
