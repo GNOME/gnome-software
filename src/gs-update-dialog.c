@@ -28,8 +28,15 @@
 #include "gs-markdown.h"
 #include "gs-utils.h"
 
+typedef struct {
+	gchar		*title;
+	gchar		*stack_page;
+	GtkWidget	*focus;
+} BackEntry;
+
 struct _GsUpdateDialogPrivate
 {
+	GQueue		*back_entry_stack;
 	GsApp		*app;
 	GtkWidget	*box_header;
 	GtkWidget	*button_back;
@@ -44,6 +51,28 @@ struct _GsUpdateDialogPrivate
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsUpdateDialog, gs_update_dialog, GTK_TYPE_DIALOG)
+
+static void
+save_back_entry (GsUpdateDialog *dialog)
+{
+	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
+	BackEntry *entry;
+
+	entry = g_slice_new0 (BackEntry);
+	entry->stack_page = g_strdup (gtk_stack_get_visible_child_name (GTK_STACK (priv->stack)));
+	entry->title = g_strdup (gtk_window_get_title (GTK_WINDOW (dialog)));
+	entry->focus = gtk_window_get_focus (GTK_WINDOW (dialog));
+
+	g_queue_push_head (priv->back_entry_stack, entry);
+}
+
+static void
+back_entry_free (BackEntry *entry)
+{
+	g_free (entry->stack_page);
+	g_free (entry->title);
+	g_slice_free (BackEntry, entry);
+}
 
 static void
 set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
@@ -86,6 +115,9 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (priv->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (priv->label_summary), gs_app_get_summary (app));
 	g_free (update_desc);
+
+	/* show the back button if needed */
+	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
 }
 
 static void
@@ -97,10 +129,13 @@ row_activated_cb (GtkListBox *list_box,
 	GsApp *app = NULL;
 
 	app = GS_APP (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "app"));
+
+	/* save the current stack state for the back button */
+	save_back_entry (dialog);
+
 	/* setup package view */
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "package-details");
 	set_updates_description_ui (dialog, app);
-	gtk_widget_show (priv->button_back);
 }
 
 void
@@ -118,9 +153,6 @@ gs_update_dialog_set_app (GsUpdateDialog *dialog, GsApp *app)
 
 	/* set update header */
 	set_updates_description_ui (dialog, app);
-
-	/* only OS updates can go back, and only on selection */
-	gtk_widget_hide (priv->button_back);
 
 	/* set update description */
 	if (kind == GS_APP_KIND_OS_UPDATE) {
@@ -201,12 +233,17 @@ static void
 button_back_cb (GtkWidget *widget, GsUpdateDialog *dialog)
 {
 	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
+	BackEntry *entry;
 
-	/* return to the list view */
-	gtk_widget_hide (priv->button_back);
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "os-update-list");
+	/* return to the previous view */
+	entry = g_queue_pop_head (priv->back_entry_stack);
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), entry->stack_page);
+	gtk_window_set_title (GTK_WINDOW (dialog), entry->title);
+	if (entry->focus)
+		gtk_widget_grab_focus (entry->focus);
+	back_entry_free (entry);
 
-	gtk_window_set_title (GTK_WINDOW (dialog), gs_app_get_name (priv->app));
+	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
 }
 
 static void
@@ -233,6 +270,10 @@ gs_update_dialog_finalize (GObject *object)
 	GsUpdateDialog *dialog = GS_UPDATE_DIALOG (object);
 	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 
+	if (priv->back_entry_stack != NULL) {
+		g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) back_entry_free);
+		priv->back_entry_stack = NULL;
+	}
 	g_clear_object (&priv->app);
 
 	G_OBJECT_CLASS (gs_update_dialog_parent_class)->finalize (object);
@@ -245,6 +286,8 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 	GtkWidget *scrollbar;
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
+
+	priv->back_entry_stack = g_queue_new ();
 
 	g_signal_connect (GTK_LIST_BOX (priv->list_box), "row-activated",
 	                  G_CALLBACK (row_activated_cb), dialog);
