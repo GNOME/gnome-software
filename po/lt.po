@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-04-24 19:23+0000\n"
-"PO-Revision-Date: 2014-04-24 23:04+0300\n"
+"POT-Creation-Date: 2014-05-03 07:28+0000\n"
+"PO-Revision-Date: 2014-05-03 21:56+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Lithuanian <gnome-lt@lists.akl.lt>\n"
 "Language: lt\n"
@@ -248,7 +248,7 @@ msgstr "Atsisakyti"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:210
+#: ../src/gs-app-widget.c:210 ../src/gs-shell-details.c:161
 msgid "Pending"
 msgstr "Laukia"
 
@@ -275,7 +275,6 @@ msgstr "Kita"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
 #: ../src/gs-history-dialog.c:82
-#| msgid "Removed"
 msgctxt "app status"
 msgid "Removed"
 msgstr "Pašalinta"
@@ -283,7 +282,6 @@ msgstr "Pašalinta"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
 #: ../src/gs-history-dialog.c:88
-#| msgid "Installed"
 msgctxt "app status"
 msgid "Installed"
 msgstr "Įdiegta"
@@ -291,7 +289,6 @@ msgstr "Įdiegta"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
 #: ../src/gs-history-dialog.c:93
-#| msgid "Updated"
 msgctxt "app status"
 msgid "Updated"
 msgstr "Atnaujinta"
@@ -300,7 +297,6 @@ msgstr "Atnaujinta"
 #. * where we are showing that something happened to the
 #. * application but we don't know what
 #: ../src/gs-history-dialog.c:99
-#| msgid "Unknown"
 msgctxt "app status"
 msgid "Unknown"
 msgstr "Nežinoma"
@@ -437,10 +433,6 @@ msgstr "Ekrano nuotrauka neprieinama"
 msgid "Screenshot"
 msgstr "Ekrano nuotrauka"
 
-#: ../src/gs-shell-details.c:161
-msgid "_Pending"
-msgstr "_Laukiama"
-
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
 #: ../src/gs-shell-details.c:189
@@ -454,7 +446,6 @@ msgstr "Š_alinama"
 
 #. TRANSLATORS: this is where the licence is not known
 #: ../src/gs-shell-details.c:594
-#| msgid "Unknown"
 msgctxt "license"
 msgid "Unknown"
 msgstr "Nežinoma"
@@ -462,35 +453,30 @@ msgstr "Nežinoma"
 #. TRANSLATORS: this is where the licence is insanely
 #. * complicated and the full string is put into the tooltip
 #: ../src/gs-shell-details.c:599
-#| msgid "Complicated!"
 msgctxt "license"
 msgid "Complicated!"
 msgstr "Sudėtinga!"
 
 #. TRANSLATORS: this is where the version is not known
 #: ../src/gs-shell-details.c:612
-#| msgid "Unknown"
 msgctxt "version"
 msgid "Unknown"
 msgstr "Nežinoma"
 
 #. TRANSLATORS: this is where the size is being worked out
 #: ../src/gs-shell-details.c:618
-#| msgid "Calculating…"
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Skaičiuojama…"
 
 #. TRANSLATORS: this is where the size is not known
 #: ../src/gs-shell-details.c:621
-#| msgid "Unknown"
 msgctxt "size"
 msgid "Unknown"
 msgstr "Nežinoma"
 
 #. TRANSLATORS: this is where the updated date is not known
 #: ../src/gs-shell-details.c:633
-#| msgid "Never"
 msgctxt "updated"
 msgid "Never"
 msgstr "Niekada"
@@ -498,7 +484,6 @@ msgstr "Niekada"
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
 #: ../src/gs-shell-details.c:648
-#| msgid "None"
 msgctxt "menu category"
 msgid "None"
 msgstr "Nėra"
@@ -506,7 +491,6 @@ msgstr "Nėra"
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
 #: ../src/gs-shell-details.c:658
-#| msgid "Unknown"
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Nežinoma"
@@ -723,17 +707,14 @@ msgid "Two days ago"
 msgstr "Prieš dvi dienas"
 
 #: ../src/gs-shell-updates.c:162
-#| msgid "Three Stars"
 msgid "Three days ago"
 msgstr "Prieš tris dienas"
 
 #: ../src/gs-shell-updates.c:164
-#| msgid "Four Stars"
 msgid "Four days ago"
 msgstr "Prieš keturias dienas"
 
 #: ../src/gs-shell-updates.c:166
-#| msgid "Five Stars"
 msgid "Five days ago"
 msgstr "Prieš penkias dienas"
 
@@ -1125,52 +1106,72 @@ msgid "Development Tools"
 msgstr "Programavimo įrankiai"
 
 #: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Building"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Kūrimas"
 
 #: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Databases"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Duomenų bazės"
 
 #: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Debuggers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Derintuvės"
 
 #: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "GUI Designers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "GUI įrankiai"
 
 #: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "IDE"
+msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "IDE"
 
 #: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Profiling"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Profiliavimas"
 
 #: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Project Management"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Projektų valdymas"
 
 #: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Revision Control"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Versijavimo sistemos"
 
 #: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Translation"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Vertimai"
 
 #: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Žiniatinklio kūrimas"
 
