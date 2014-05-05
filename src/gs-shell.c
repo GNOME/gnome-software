@@ -406,16 +406,22 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 }
 
 static void
-text_changed_handler (GObject *entry, GParamSpec *pspec, GsShell *shell)
-{
+search_changed_handler (GObject *entry, GsShell *shell) {
 	const gchar *text;
 
-	if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
-		return;
-
 	text = gtk_entry_get_text (GTK_ENTRY (entry));
-	if (text[0] == '\0')
+
+	if (text[0] == '\0' && gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
 		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
+		return;
+	}
+
+	if (strlen(text) > 2) {
+		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
+			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
+		else
+			gs_shell_search_refresh (shell->priv->shell_search, text, TRUE);
+	}
 }
 
 static gboolean
@@ -562,8 +568,8 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	g_signal_connect (widget, "key-press-event",
 			  G_CALLBACK (entry_keypress_handler), shell);
-	g_signal_connect (widget, "notify::text",
-			  G_CALLBACK (text_changed_handler), shell);
+	g_signal_connect (widget, "search-changed",
+			  G_CALLBACK (search_changed_handler), shell);
 
 	/* load content */
 	g_signal_connect (priv->shell_overview, "refreshed",

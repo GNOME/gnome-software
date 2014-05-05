@@ -37,9 +37,9 @@ struct GsShellSearchPrivate
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
+	GCancellable		*search_cancellable;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
-	gboolean		 waiting;
 	GsShell			*shell;
 	gchar			*value;
 
@@ -253,8 +253,6 @@ gs_shell_search_get_search_cb (GObject *source_object,
 
 	gs_stop_spinner (GTK_SPINNER (priv->spinner_search));
 
-	priv->waiting = FALSE;
-
 	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
@@ -302,8 +300,10 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_widget_show (widget);
 
-	if (priv->waiting)
-		return;
+	if (priv->search_cancellable != NULL) {
+		g_cancellable_cancel (priv->search_cancellable);
+		g_clear_object (&priv->search_cancellable);
+	}
 
         if (scroll_up) {
                 GtkAdjustment *adj;
@@ -323,6 +323,9 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_search));
 
+	/* Initiate cancellable */
+	priv->search_cancellable = g_cancellable_new ();
+
 	/* search for apps */
 	gs_plugin_loader_search_async (priv->plugin_loader,
 				       value,
@@ -331,23 +334,12 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-				       priv->cancellable,
+				       priv->search_cancellable,
 				       gs_shell_search_get_search_cb,
 				       shell_search);
 
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "spinner");
 	gs_start_spinner (GTK_SPINNER (priv->spinner_search));
-	priv->waiting = TRUE;
-}
-
-/**
- * gs_shell_search_filter_text_changed_cb:
- **/
-static void
-gs_shell_search_filter_text_changed_cb (GtkEntry *entry,
-					GsShellSearch *shell_search)
-{
-	/* FIXME: do something? */
 }
 
 /**
@@ -458,6 +450,21 @@ gs_shell_search_list_header_func (GtkListBoxRow *row,
 }
 
 /**
+ * gs_shell_search_cancel_cb:
+ */
+static void
+gs_shell_search_cancel_cb (GCancellable *cancellable,
+			   GsShellSearch *shell_search)
+{
+	GsShellSearchPrivate *priv = shell_search->priv;
+
+	if (priv->search_cancellable != NULL) {
+		g_cancellable_cancel (priv->search_cancellable);
+		g_clear_object (&priv->search_cancellable);
+	}
+}
+
+/**
  * gs_shell_search_setup:
  */
 void
@@ -468,7 +475,6 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 			  GCancellable *cancellable)
 {
 	GsShellSearchPrivate *priv = shell_search->priv;
-	GtkWidget *widget;
 
 	g_return_if_fail (GS_IS_SHELL_SEARCH (shell_search));
 
@@ -477,10 +483,10 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 	priv->cancellable = g_object_ref (cancellable);
 	priv->shell = shell;
 
-	/* refilter on search box changing */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	g_signal_connect (GTK_EDITABLE (widget), "search-changed",
-			  G_CALLBACK (gs_shell_search_filter_text_changed_cb), shell_search);
+	/* connect the cancellables */
+	g_cancellable_connect (priv->cancellable,
+			       G_CALLBACK (gs_shell_search_cancel_cb),
+			       shell_search, NULL);
 
 	/* setup search */
 	g_signal_connect (priv->list_box_search, "row-activated",
@@ -540,6 +546,12 @@ gs_shell_search_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
+
+	if (priv->search_cancellable != NULL) {
+		g_cancellable_cancel (priv->search_cancellable);
+		g_clear_object (&priv->search_cancellable);
+	}
+
 	g_free (priv->value);
 
 	G_OBJECT_CLASS (gs_shell_search_parent_class)->finalize (object);
