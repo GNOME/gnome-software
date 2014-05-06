@@ -138,3 +138,17 @@ GtkBox.star {
     border-radius: 4px;
     padding: 0px 4px;
 }
+
+.category-sidebar {
+	border-radius: 0;
+	border-bottom-width: 0;
+	border-top-width: 0;
+}
+
+.category-sidebar GtkListBoxRow {
+	padding-left: 6px;
+}
+
+.category-sidebar GtkListBoxRow:dir(rtl) {
+	padding-right: 6px;
+}

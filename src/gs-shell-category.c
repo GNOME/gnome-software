@@ -39,7 +39,6 @@ struct GsShellCategoryPrivate {
 	GtkWidget	*col1_placeholder;
 
 	GtkWidget	*category_detail_grid;
-	GtkWidget	*frame_filter;
 	GtkWidget	*listbox_filter;
 	GtkWidget	*scrolledwindow_category;
 	GtkWidget	*scrolledwindow_filter;
@@ -161,16 +160,6 @@ gs_shell_category_populate_filtered (GsShellCategory *shell)
 }
 
 static void
-add_separator (GtkListBoxRow *row, GtkListBoxRow *before, gpointer data)
-{
-	if (!before) {
-		return;
-	}
-
-	gtk_list_box_row_set_header (row, gtk_separator_new (GTK_ORIENTATION_HORIZONTAL));
-}
-
-static void
 filter_selected (GtkListBox *filters, GtkListBoxRow *row, gpointer data)
 {
 	GsShellCategory *shell = GS_SHELL_CATEGORY (data);
@@ -195,9 +184,6 @@ gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *catego
 
 	gs_container_remove_all (GTK_CONTAINER (priv->category_detail_grid));
 
-	gtk_frame_set_shadow_type (GTK_FRAME (priv->frame_filter), GTK_SHADOW_IN);
-	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (priv->scrolledwindow_filter), GTK_SHADOW_NONE);
-
 	list = gs_category_get_subcategories (category);
 	if (!list)
 		return;
@@ -213,7 +199,7 @@ gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *catego
 			continue;
 		row = gtk_label_new (gs_category_get_name (s));
 		g_object_set_data_full (G_OBJECT (row), "category", g_object_ref (s), g_object_unref);
-		g_object_set (row, "xalign", 0.0, "margin", 6, NULL);
+		g_object_set (row, "xalign", 0.0, "margin", 10, NULL);
 		gtk_widget_show (row);
 		gtk_list_box_insert (GTK_LIST_BOX (priv->listbox_filter), row, -1);
 		if (subcategory == s)
@@ -308,26 +294,9 @@ gs_shell_category_class_init (GsShellCategoryClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-category.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, category_detail_grid);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, frame_filter);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, listbox_filter);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, scrolledwindow_category);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, scrolledwindow_filter);
-}
-
-static void
-scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
-{
-	GtkWidget *frame;
-
-	frame = gtk_bin_get_child (GTK_BIN (gtk_bin_get_child (GTK_BIN (swin))));
-	if (gtk_widget_get_mapped (GTK_WIDGET (sb))) {
-		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_IN);
-		gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_NONE);
-	}
-	else {
-		gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
-		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
-	}
 }
 
 static gboolean
@@ -365,7 +334,6 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 			 GCancellable *cancellable)
 {
 	GsShellCategoryPrivate *priv = shell_category->priv;
-	GtkWidget *widget;
 	GtkAdjustment *adj;
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
@@ -374,11 +342,6 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 	priv->shell = shell;
 
 	g_signal_connect (priv->listbox_filter, "row-selected", G_CALLBACK (filter_selected), shell_category);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->listbox_filter), add_separator, NULL, NULL);
-
-	widget = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (priv->scrolledwindow_filter));
-	g_signal_connect (widget, "map", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow_filter);
-	g_signal_connect (widget, "unmap", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow_filter);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_category));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (priv->category_detail_grid), adj);
