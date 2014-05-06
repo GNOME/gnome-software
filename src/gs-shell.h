@@ -73,6 +73,7 @@ void		 gs_shell_refresh		(GsShell	*shell,
 void		 gs_shell_set_mode		(GsShell	*shell,
 						 GsShellMode	 mode);
 GsShellMode	 gs_shell_get_mode		(GsShell	*shell);
+void		 gs_shell_show_installed_updates(GsShell	*shell);
 void		 gs_shell_show_sources		(GsShell	*shell);
 void		 gs_shell_show_app		(GsShell	*shell,
 						 GsApp		*app);

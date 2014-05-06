@@ -25,7 +25,9 @@
 #include <gtk/gtk.h>
 
 #include "gs-update-dialog.h"
+#include "gs-app-widget.h"
 #include "gs-markdown.h"
+#include "gs-offline-updates.h"
 #include "gs-utils.h"
 
 typedef struct {
@@ -37,7 +39,6 @@ typedef struct {
 struct _GsUpdateDialogPrivate
 {
 	GQueue		*back_entry_stack;
-	GsApp		*app;
 	GtkWidget	*box_header;
 	GtkWidget	*button_back;
 	GtkWidget	*image_icon;
@@ -45,6 +46,7 @@ struct _GsUpdateDialogPrivate
 	GtkWidget	*label_name;
 	GtkWidget	*label_summary;
 	GtkWidget	*list_box;
+	GtkWidget	*list_box_installed_updates;
 	GtkWidget	*scrolledwindow;
 	GtkWidget	*scrolledwindow_details;
 	GtkWidget	*stack;
@@ -125,8 +127,7 @@ row_activated_cb (GtkListBox *list_box,
                   GtkListBoxRow *row,
                   GsUpdateDialog *dialog)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
-	GsApp *app = NULL;
+	GsApp *app;
 
 	app = GS_APP (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "app"));
 
@@ -134,8 +135,68 @@ row_activated_cb (GtkListBox *list_box,
 	save_back_entry (dialog);
 
 	/* setup package view */
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "package-details");
-	set_updates_description_ui (dialog, app);
+	gs_update_dialog_show_update_details (dialog, app);
+}
+
+static void
+installed_updates_row_activated_cb (GtkListBox *list_box,
+                                    GtkListBoxRow *row,
+                                    GsUpdateDialog *dialog)
+{
+	GsAppWidget *app_widget;
+	GsApp *app;
+
+	app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
+	app = gs_app_widget_get_app (app_widget);
+
+	/* save the current stack state for the back button */
+	save_back_entry (dialog);
+
+	gs_update_dialog_show_update_details (dialog, app);
+}
+
+void
+gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installed_updates)
+{
+	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
+	GList *l;
+	GsApp *app;
+	GtkWidget *widget;
+	guint64 time_updates_installed;
+
+	/* TRANSLATORS: this is the title of the installed updates dialog window */
+	gtk_window_set_title (GTK_WINDOW (dialog), _("Installed Updates"));
+
+	if (gs_offline_updates_get_time_completed (&time_updates_installed)) {
+		GDateTime *date;
+		GtkWidget *header;
+		gchar *date_str;
+		gchar *subtitle;
+
+		date = g_date_time_new_from_unix_utc (time_updates_installed);
+		date_str = g_date_time_format (date, "%x");
+		g_date_time_unref (date);
+
+		/* TRANSLATORS: this is the subtitle of the installed updates dialog window */
+		subtitle = g_strdup_printf (_("Installed on %s"), date_str);
+		header = gtk_dialog_get_header_bar (GTK_DIALOG (dialog));
+		gtk_header_bar_set_subtitle (GTK_HEADER_BAR (header), subtitle);
+
+		g_free (date_str);
+	}
+
+	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "installed-updates-list");
+
+	gs_container_remove_all (GTK_CONTAINER (priv->list_box_installed_updates));
+	for (l = installed_updates; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		widget = gs_app_widget_new ();
+		gs_app_widget_set_show_update (GS_APP_WIDGET (widget), TRUE);
+		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
+		gtk_container_add (GTK_CONTAINER (priv->list_box_installed_updates), widget);
+		gtk_widget_show (widget);
+	}
 }
 
 void
@@ -145,9 +206,6 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	GsApp *app_related;
 	GsAppKind kind;
 	const gchar *sort;
-
-	g_clear_object (&priv->app);
-	priv->app = g_object_ref (app);
 
 	kind = gs_app_get_kind (app);
 
@@ -228,7 +286,6 @@ os_updates_sort_func (GtkListBoxRow *a,
 	return g_strcmp0 (key1, key2);
 }
 
-
 static void
 button_back_cb (GtkWidget *widget, GsUpdateDialog *dialog)
 {
@@ -274,7 +331,6 @@ gs_update_dialog_finalize (GObject *object)
 		g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) back_entry_free);
 		priv->back_entry_stack = NULL;
 	}
-	g_clear_object (&priv->app);
 
 	G_OBJECT_CLASS (gs_update_dialog_parent_class)->finalize (object);
 }
@@ -297,6 +353,17 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box),
 	                            os_updates_sort_func,
 	                            dialog, NULL);
+
+	g_signal_connect (GTK_LIST_BOX (priv->list_box_installed_updates), "row-activated",
+			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
+	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_installed_updates),
+				      list_header_func,
+				      dialog, NULL);
+#if 0
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_updates),
+				    installed_updates_sort_func,
+				    dialog, NULL);
+#endif
 
 	g_signal_connect (priv->button_back, "clicked",
 	                  G_CALLBACK (button_back_cb),
@@ -328,6 +395,7 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, label_name);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, label_summary);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, list_box);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, list_box_installed_updates);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, scrolledwindow);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, scrolledwindow_details);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, stack);

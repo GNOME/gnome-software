@@ -300,7 +300,8 @@ set_mode_activated (GSimpleAction *action,
 	} else if (g_strcmp0 (mode, "overview") == 0) {
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
 	} else if (g_strcmp0 (mode, "updated") == 0) {
-		gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATED);
+		gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
+		gs_shell_show_installed_updates (app->shell);
 	} else {
 		g_warning ("Mode '%s' not recognised", mode);
 	}

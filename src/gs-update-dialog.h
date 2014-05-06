@@ -51,6 +51,8 @@ struct _GsUpdateDialogClass
 
 GType		 gs_update_dialog_get_type			(void);
 GtkWidget	*gs_update_dialog_new				(void);
+void		 gs_update_dialog_show_installed_updates	(GsUpdateDialog		*dialog,
+								 GList			*installed_updates);
 void		 gs_update_dialog_show_update_details		(GsUpdateDialog		*dialog,
 								 GsApp			*app);
 

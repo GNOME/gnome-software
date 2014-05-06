@@ -34,6 +34,7 @@
 #include "gs-shell-updates.h"
 #include "gs-shell-category.h"
 #include "gs-sources-dialog.h"
+#include "gs-update-dialog.h"
 
 static const gchar *page_name[] = {
 	"overview",
@@ -602,6 +603,62 @@ gs_shell_get_mode (GsShell *shell)
 	GsShellPrivate *priv = shell->priv;
 
 	return priv->mode;
+}
+
+static void
+gs_shell_get_installed_updates_cb (GsPluginLoader *plugin_loader,
+                                   GAsyncResult *res,
+                                   GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	GError *error = NULL;
+	GList *list;
+	GtkWidget *dialog;
+	GtkWidget *toplevel;
+
+	/* get the results */
+	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		if (g_error_matches (error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
+			g_debug ("no updates to show");
+		} else {
+			g_warning ("failed to get updates: %s", error->message);
+		}
+		g_error_free (error);
+		goto out;
+	}
+
+	dialog = gs_update_dialog_new ();
+	gs_update_dialog_show_installed_updates (GS_UPDATE_DIALOG (dialog), list);
+
+	toplevel = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (toplevel));
+
+	gtk_window_present (GTK_WINDOW (dialog));
+
+out:
+	gs_plugin_list_free (list);
+}
+
+
+void
+gs_shell_show_installed_updates (GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	guint64 refine_flags;
+
+	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
+	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+	               GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
+
+	gs_plugin_loader_get_updates_async (priv->plugin_loader,
+	                                    refine_flags,
+	                                    priv->cancellable,
+	                                    (GAsyncReadyCallback) gs_shell_get_installed_updates_cb,
+	                                    shell);
 }
 
 void
