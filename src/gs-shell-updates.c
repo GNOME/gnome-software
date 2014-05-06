@@ -548,7 +548,7 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 	GtkWidget *toplevel;
 
 	dialog = gs_update_dialog_new ();
-	gs_update_dialog_set_app (GS_UPDATE_DIALOG (dialog), app);
+	gs_update_dialog_show_update_details (GS_UPDATE_DIALOG (dialog), app);
 
 	toplevel = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
 	gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (toplevel));

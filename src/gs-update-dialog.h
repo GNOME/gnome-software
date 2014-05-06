@@ -49,10 +49,10 @@ struct _GsUpdateDialogClass
 	GtkDialogClass	 parent_class;
 };
 
-GType		 gs_update_dialog_get_type	(void);
-GtkWidget	*gs_update_dialog_new		(void);
-void		 gs_update_dialog_set_app	(GsUpdateDialog		*dialog,
-						 GsApp			*app);
+GType		 gs_update_dialog_get_type			(void);
+GtkWidget	*gs_update_dialog_new				(void);
+void		 gs_update_dialog_show_update_details		(GsUpdateDialog		*dialog,
+								 GsApp			*app);
 
 #endif /* GS_UPDATE_DIALOG_H */
 

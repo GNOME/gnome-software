@@ -139,7 +139,7 @@ row_activated_cb (GtkListBox *list_box,
 }
 
 void
-gs_update_dialog_set_app (GsUpdateDialog *dialog, GsApp *app)
+gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 {
 	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GsApp *app_related;
