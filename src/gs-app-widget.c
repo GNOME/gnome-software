@@ -249,6 +249,8 @@ gs_app_widget_refresh (GsAppWidget *app_widget)
 		break;
 	}
 
+	gtk_widget_set_visible (priv->button_box, !priv->show_update);
+
 	if (priv->selectable) {
 		if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_DESKTOP ||
 		    gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_WEBAPP)
