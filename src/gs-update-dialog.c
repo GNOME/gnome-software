@@ -39,6 +39,8 @@ typedef struct {
 struct _GsUpdateDialogPrivate
 {
 	GQueue		*back_entry_stack;
+	GtkSizeGroup	*sizegroup_image;
+	GtkSizeGroup	*sizegroup_name;
 	GtkWidget	*box_header;
 	GtkWidget	*button_back;
 	GtkWidget	*image_icon;
@@ -195,6 +197,9 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 		gs_app_widget_set_show_update (GS_APP_WIDGET (widget), TRUE);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_installed_updates), widget);
+		gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
+		                               priv->sizegroup_image,
+		                               priv->sizegroup_name);
 		gtk_widget_show (widget);
 	}
 }
@@ -331,6 +336,8 @@ gs_update_dialog_finalize (GObject *object)
 		g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) back_entry_free);
 		priv->back_entry_stack = NULL;
 	}
+	g_object_unref (priv->sizegroup_image);
+	g_object_unref (priv->sizegroup_name);
 
 	G_OBJECT_CLASS (gs_update_dialog_parent_class)->finalize (object);
 }
@@ -344,6 +351,8 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	priv->back_entry_stack = g_queue_new ();
+	priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	g_signal_connect (GTK_LIST_BOX (priv->list_box), "row-activated",
 	                  G_CALLBACK (row_activated_cb), dialog);

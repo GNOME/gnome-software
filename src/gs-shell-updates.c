@@ -65,6 +65,8 @@ struct GsShellUpdatesPrivate
 	GsShellUpdatesState	 state;
 	gboolean		 has_agreed_to_mobile_data;
 	gboolean		 ampm_available;
+	GtkSizeGroup		*sizegroup_image;
+	GtkSizeGroup		*sizegroup_name;
 
 	GtkWidget		*button_updates_mobile;
 	GtkWidget		*button_updates_offline;
@@ -464,6 +466,9 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		gs_app_widget_set_show_update (GS_APP_WIDGET (widget), TRUE);
 		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
+		gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
+		                               priv->sizegroup_image,
+		                               priv->sizegroup_name);
 		gtk_widget_show (widget);
 	}
 
@@ -1066,6 +1071,8 @@ gs_shell_updates_init (GsShellUpdates *shell_updates)
 	shell_updates->priv->state = GS_SHELL_UPDATES_STATE_STARTUP;
 	shell_updates->priv->settings = g_settings_new ("org.gnome.software");
 	shell_updates->priv->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
+	shell_updates->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	shell_updates->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	ampm = nl_langinfo (AM_STR);
 	if (ampm != NULL && *ampm != '\0')
@@ -1090,6 +1097,8 @@ gs_shell_updates_finalize (GObject *object)
 	g_object_unref (priv->control);
 	g_object_unref (priv->settings);
 	g_object_unref (priv->desktop_settings);
+	g_object_unref (priv->sizegroup_image);
+	g_object_unref (priv->sizegroup_name);
 
 	G_OBJECT_CLASS (gs_shell_updates_parent_class)->finalize (object);
 }
