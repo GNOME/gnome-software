@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-update-dialog.h"
-#include "gs-app-widget.h"
+#include "gs-app-row.h"
 #include "gs-markdown.h"
 #include "gs-offline-updates.h"
 #include "gs-utils.h"
@@ -145,11 +145,9 @@ installed_updates_row_activated_cb (GtkListBox *list_box,
                                     GtkListBoxRow *row,
                                     GsUpdateDialog *dialog)
 {
-	GsAppWidget *app_widget;
 	GsApp *app;
 
-	app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	app = gs_app_widget_get_app (app_widget);
+	app = gs_app_row_get_app (GS_APP_ROW (row));
 
 	/* save the current stack state for the back button */
 	save_back_entry (dialog);
@@ -193,13 +191,13 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_installed_updates));
 	for (l = installed_updates; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		widget = gs_app_widget_new ();
-		gs_app_widget_set_show_update (GS_APP_WIDGET (widget), TRUE);
-		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
+		widget = gs_app_row_new ();
+		gs_app_row_set_show_update (GS_APP_ROW (widget), TRUE);
+		gs_app_row_set_app (GS_APP_ROW (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_installed_updates), widget);
-		gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
-		                               priv->sizegroup_image,
-		                               priv->sizegroup_name);
+		gs_app_row_set_size_groups (GS_APP_ROW (widget),
+		                            priv->sizegroup_image,
+		                            priv->sizegroup_name);
 		gtk_widget_show (widget);
 	}
 }

@@ -28,7 +28,7 @@
 #include "gs-utils.h"
 #include "gs-offline-updates.h"
 #include "gs-app.h"
-#include "gs-app-widget.h"
+#include "gs-app-row.h"
 #include "gs-markdown.h"
 #include "gs-update-dialog.h"
 
@@ -458,13 +458,13 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		widget = gs_app_widget_new ();
-		gs_app_widget_set_show_update (GS_APP_WIDGET (widget), TRUE);
-		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
+		widget = gs_app_row_new ();
+		gs_app_row_set_show_update (GS_APP_ROW (widget), TRUE);
+		gs_app_row_set_app (GS_APP_ROW (widget), app);
 		gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
-		gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
-		                               priv->sizegroup_image,
-		                               priv->sizegroup_name);
+		gs_app_row_set_size_groups (GS_APP_ROW (widget),
+		                            priv->sizegroup_image,
+		                            priv->sizegroup_name);
 		gtk_widget_show (widget);
 	}
 
@@ -552,11 +552,9 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 			       GtkListBoxRow *row,
 			       GsShellUpdates *shell_updates)
 {
-	GsAppWidget *app_widget;
 	GsApp *app;
 
-	app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	app = gs_app_widget_get_app (app_widget);
+	app = gs_app_row_get_app (GS_APP_ROW (row));
 
 	show_update_details (app, shell_updates);
 }
@@ -584,8 +582,6 @@ gs_shell_updates_list_header_func (GtkListBoxRow *row,
 				   GtkListBoxRow *before,
 				   gpointer user_data)
 {
-	GsAppWidget *aw1;
-	GsAppWidget *aw2;
 	GtkStyleContext *context;
 	GtkWidget *header;
 
@@ -595,10 +591,8 @@ gs_shell_updates_list_header_func (GtkListBoxRow *row,
 		return;
 
 	/* desktop -> addons */
-	aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (before)));
-	aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	if (!gs_shell_updates_is_addon_id_kind (gs_app_widget_get_app (aw1)) &&
-	    gs_shell_updates_is_addon_id_kind (gs_app_widget_get_app (aw2))) {
+	if (!gs_shell_updates_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (before))) &&
+	    gs_shell_updates_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (row)))) {
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the addons */
 		header = gtk_label_new (_("Add-ons"));
@@ -915,10 +909,8 @@ gs_shell_updates_sort_func (GtkListBoxRow *a,
 			    GtkListBoxRow *b,
 			    gpointer user_data)
 {
-	GsAppWidget *aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (a)));
-	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
-	GsApp *a1 = gs_app_widget_get_app (aw1);
-	GsApp *a2 = gs_app_widget_get_app (aw2);
+	GsApp *a1 = gs_app_row_get_app (GS_APP_ROW (a));
+	GsApp *a2 = gs_app_row_get_app (GS_APP_ROW (b));
 	gchar *key1 = gs_shell_updates_get_app_sort_key (a1);
 	gchar *key2 = gs_shell_updates_get_app_sort_key (a2);
 	gint retval;

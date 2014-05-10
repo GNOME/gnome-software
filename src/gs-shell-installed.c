@@ -29,7 +29,7 @@
 #include "gs-shell-installed.h"
 #include "gs-app.h"
 #include "gs-utils.h"
-#include "gs-app-widget.h"
+#include "gs-app-row.h"
 #include "gs-app-folder-dialog.h"
 #include "gs-folders.h"
 
@@ -78,27 +78,23 @@ gs_shell_installed_invalidate (GsShellInstalled *shell_installed)
 }
 
 static void
-gs_shell_installed_app_widget_activated_cb (GtkListBox *list_box,
-					    GtkListBoxRow *row,
-					    GsShellInstalled *shell_installed)
+gs_shell_installed_app_row_activated_cb (GtkListBox *list_box,
+                                         GtkListBoxRow *row,
+                                         GsShellInstalled *shell_installed)
 {
-	GsAppWidget *app_widget;
-
-	app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-
 	if (shell_installed->priv->selection_mode) {
 		gboolean selected;
-		selected = gs_app_widget_get_selected (app_widget);
-		gs_app_widget_set_selected (app_widget, !selected);
+		selected = gs_app_row_get_selected (GS_APP_ROW (row));
+		gs_app_row_set_selected (GS_APP_ROW (row), !selected);
 	} else {
 		GsApp *app;
-		app = gs_app_widget_get_app (app_widget);
+		app = gs_app_row_get_app (GS_APP_ROW (row));
 		gs_shell_show_app (shell_installed->priv->shell, app);
 	}
 }
 
 typedef struct {
-	GsAppWidget		*app_widget;
+	GsAppRow		*app_row;
 	GsShellInstalled	*shell_installed;
 } GsShellInstalledHelper;
 
@@ -149,7 +145,7 @@ gs_shell_installed_app_removed_cb (GObject *source,
 						  res,
 						  &error);
 	if (!ret) {
-		app = gs_app_widget_get_app (helper->app_widget);
+		app = gs_app_row_get_app (helper->app_row);
 		g_warning ("failed to remove %s: %s",
 			   gs_app_get_id (app),
 			   error->message);
@@ -160,13 +156,13 @@ gs_shell_installed_app_removed_cb (GObject *source,
 		g_error_free (error);
 	} else {
 		/* remove from the list */
-		app = gs_app_widget_get_app (helper->app_widget);
+		app = gs_app_row_get_app (helper->app_row);
 		g_debug ("removed %s", gs_app_get_id (app));
 		gs_shell_installed_remove_row (GTK_LIST_BOX (priv->list_box_install),
-					       GTK_WIDGET (helper->app_widget));
+					       GTK_WIDGET (helper->app_row));
 	}
 
-	g_object_unref (helper->app_widget);
+	g_object_unref (helper->app_row);
 	g_object_unref (helper->shell_installed);
 	g_free (helper);
 }
@@ -175,7 +171,7 @@ gs_shell_installed_app_removed_cb (GObject *source,
  * gs_shell_installed_app_remove_cb:
  **/
 static void
-gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
+gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 				  GsShellInstalled *shell_installed)
 {
 	GsApp *app;
@@ -188,7 +184,7 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 
 	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 	markup = g_string_new ("");
-	app = gs_app_widget_get_app (app_widget);
+	app = gs_app_row_get_app (app_row);
 	g_string_append_printf (markup,
 				/* TRANSLATORS: this is a prompt message, and
 				 * '%s' is an application summary, e.g. 'GNOME Clocks' */
@@ -216,7 +212,7 @@ gs_shell_installed_app_remove_cb (GsAppWidget *app_widget,
 		g_debug ("removing %s", gs_app_get_id (app));
 		helper = g_new0 (GsShellInstalledHelper, 1);
 		helper->shell_installed = g_object_ref (shell_installed);
-		helper->app_widget = g_object_ref (app_widget);
+		helper->app_row = g_object_ref (app_row);
 		gs_plugin_loader_app_action_async (priv->plugin_loader,
 						   app,
 						   GS_PLUGIN_LOADER_ACTION_REMOVE,
@@ -245,27 +241,27 @@ static void
 gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 {
 	GsShellInstalledPrivate *priv = shell->priv;
-	GtkWidget *widget;
+	GtkWidget *app_row;
 
-	widget = gs_app_widget_new ();
-	gs_app_widget_set_colorful (GS_APP_WIDGET (widget), FALSE);
-	g_signal_connect (widget, "button-clicked",
+	app_row = gs_app_row_new ();
+	gs_app_row_set_colorful (GS_APP_ROW (app_row), FALSE);
+	g_signal_connect (app_row, "button-clicked",
 			  G_CALLBACK (gs_shell_installed_app_remove_cb), shell);
 	g_signal_connect_object (app, "notify::state",
 				 G_CALLBACK (gs_shell_installed_notify_state_changed_cb),
 				 shell, 0);
-	g_signal_connect_swapped (widget, "notify::selected",
+	g_signal_connect_swapped (app_row, "notify::selected",
 			 	  G_CALLBACK (selection_changed), shell);
-	gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-	gtk_container_add (GTK_CONTAINER (priv->list_box_install), widget);
-	gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
-				       priv->sizegroup_image,
-				       priv->sizegroup_name);
+	gs_app_row_set_app (GS_APP_ROW (app_row), app);
+	gtk_container_add (GTK_CONTAINER (priv->list_box_install), app_row);
+	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
+	                            priv->sizegroup_image,
+	                            priv->sizegroup_name);
 
-	gs_app_widget_set_selectable (GS_APP_WIDGET (widget),
-				      priv->selection_mode);
+	gs_app_row_set_selectable (GS_APP_ROW (app_row),
+	                           priv->selection_mode);
 
-	gtk_widget_show (widget);
+	gtk_widget_show (app_row);
 }
 
 /**
@@ -440,7 +436,6 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 			      gpointer user_data)
 {
 	GsApp *a1, *a2;
-	GsAppWidget *aw1, *aw2;
 	gchar *key1 = NULL;
 	gchar *key2 = NULL;
 	gint retval = 0;
@@ -451,10 +446,8 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 		goto out;
 	}
 
-	aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (a)));
-	aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
-	a1 = gs_app_widget_get_app (aw1);
-	a2 = gs_app_widget_get_app (aw2);
+	a1 = gs_app_row_get_app (GS_APP_ROW (a));
+	a2 = gs_app_row_get_app (GS_APP_ROW (b));
 	key1 = gs_shell_installed_get_app_sort_key (a1);
 	key2 = gs_shell_installed_get_app_sort_key (a2);
 
@@ -489,8 +482,6 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 				     GtkListBoxRow *before,
 				     gpointer user_data)
 {
-	GsAppWidget *aw1;
-	GsAppWidget *aw2;
 	GtkStyleContext *context;
 	GtkWidget *header;
 
@@ -500,10 +491,8 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 		return;
 
 	/* desktop -> addons */
-	aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (before)));
-	aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	if (!gs_shell_installed_is_addon_id_kind (gs_app_widget_get_app (aw1)) &&
-	    gs_shell_installed_is_addon_id_kind (gs_app_widget_get_app (aw2))) {
+	if (!gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (before))) &&
+	    gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (row)))) {
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the addons */
 		header = gtk_label_new (_("Add-ons"));
@@ -569,8 +558,6 @@ set_selection_mode (GsShellInstalled *shell_installed, gboolean selection_mode)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 	GList *children, *l;
-	GtkWidget *row;
-	GtkWidget *app_widget;
 	GtkWidget *header;
 	GtkWidget *widget;
 	GtkStyleContext *context;
@@ -615,10 +602,9 @@ set_selection_mode (GsShellInstalled *shell_installed, gboolean selection_mode)
 
 	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
 	for (l = children; l; l = l->next) {
-		row = l->data;
-		app_widget = gtk_bin_get_child (GTK_BIN (row));
-		gs_app_widget_set_selectable (GS_APP_WIDGET (app_widget),
-					      priv->selection_mode);
+		GsAppRow *app_row = GS_APP_ROW (l->data);
+		gs_app_row_set_selectable (app_row,
+		                           priv->selection_mode);
 	}
 	g_list_free (children);
 
@@ -642,10 +628,9 @@ get_selected_apps (GsShellInstalled *shell_installed)
 	list = NULL;
 	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
 	for (l = children; l; l = l->next) {
-		GtkListBoxRow *row = l->data;
-		GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-		if (gs_app_widget_get_selected (app_widget)) {
-			list = g_list_prepend (list, gs_app_widget_get_app (app_widget));	
+		GsAppRow *app_row = GS_APP_ROW (l->data);
+		if (gs_app_row_get_selected (app_row)) {
+			list = g_list_prepend (list, gs_app_row_get_app (app_row));
 		}
 	}
 	g_list_free (children);
@@ -737,9 +722,8 @@ select_all_cb (GtkMenuItem *item, GsShellInstalled *shell_installed)
 
 	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
 	for (l = children; l; l = l->next) {
-		GtkListBoxRow *row = l->data;
-		GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-		gs_app_widget_set_selected (app_widget, TRUE);
+		GsAppRow *app_row = GS_APP_ROW (l->data);
+		gs_app_row_set_selected (app_row, TRUE);
 	}
 	g_list_free (children);
 }
@@ -752,9 +736,8 @@ select_none_cb (GtkMenuItem *item, GsShellInstalled *shell_installed)
 
 	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
 	for (l = children; l; l = l->next) {
-		GtkListBoxRow *row = l->data;
-		GsAppWidget *app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-		gs_app_widget_set_selected (app_widget, FALSE);
+		GsAppRow *app_row = GS_APP_ROW (l->data);
+		gs_app_row_set_selected (app_row, FALSE);
 	}
 	g_list_free (children);
 }
@@ -785,7 +768,7 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 
 	/* setup installed */
 	g_signal_connect (priv->list_box_install, "row-activated",
-			  G_CALLBACK (gs_shell_installed_app_widget_activated_cb), shell_installed);
+			  G_CALLBACK (gs_shell_installed_app_row_activated_cb), shell_installed);
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_install),
 				      gs_shell_installed_list_header_func,
 				      shell_installed, NULL);

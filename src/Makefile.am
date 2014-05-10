@@ -28,10 +28,10 @@ UI_FILES =						\
 	app-folder-dialog.ui				\
 	app-menu.ui					\
 	app-tile.ui					\
-	app-widget.ui					\
 	category-tile.ui				\
 	feature-tile.ui					\
 	gnome-software.ui				\
+	gs-app-row.ui					\
 	gs-history-dialog.ui				\
 	gs-shell-category.ui				\
 	gs-shell-details.ui				\
@@ -95,8 +95,8 @@ gnome_software_SOURCES =				\
 	gs-app.h					\
 	gs-category.c					\
 	gs-category.h					\
-	gs-app-widget.c					\
-	gs-app-widget.h					\
+	gs-app-row.c					\
+	gs-app-row.h					\
 	gs-star-widget.c				\
 	gs-star-widget.h				\
 	gs-popular-tile.c				\

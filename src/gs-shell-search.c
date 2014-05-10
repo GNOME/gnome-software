@@ -28,7 +28,7 @@
 #include "gs-shell.h"
 #include "gs-app.h"
 #include "gs-utils.h"
-#include "gs-app-widget.h"
+#include "gs-app-row.h"
 
 static void	gs_shell_search_finalize	(GObject	*object);
 
@@ -52,15 +52,13 @@ struct GsShellSearchPrivate
 G_DEFINE_TYPE_WITH_PRIVATE (GsShellSearch, gs_shell_search, GTK_TYPE_BIN)
 
 static void
-gs_shell_search_app_widget_activated_cb (GtkListBox *list_box,
-					 GtkListBoxRow *row,
-					 GsShellSearch *shell_search)
+gs_shell_search_app_row_activated_cb (GtkListBox *list_box,
+                                      GtkListBoxRow *row,
+                                      GsShellSearch *shell_search)
 {
 	GsApp *app;
-	GsAppWidget *app_widget;
 
-	app_widget = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (row)));
-	app = gs_app_widget_get_app (app_widget);
+	app = gs_app_row_get_app (GS_APP_ROW (row));
 	gs_shell_show_app (shell_search->priv->shell, app);
 }
 
@@ -220,14 +218,14 @@ gs_shell_search_show_missing_url (GsApp *app)
 }
 
 /**
- * gs_shell_search_app_widget_clicked_cb:
+ * gs_shell_search_app_row_clicked_cb:
  **/
 static void
-gs_shell_search_app_widget_clicked_cb (GsAppWidget *app_widget,
-				       GsShellSearch *shell_search)
+gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
+                                    GsShellSearch *shell_search)
 {
 	GsApp *app;
-	app = gs_app_widget_get_app (app_widget);
+	app = gs_app_row_get_app (app_row);
 	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE)
 		gs_shell_search_app_install (shell_search, app);
 	else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
@@ -251,7 +249,7 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	GsShellSearch *shell_search = GS_SHELL_SEARCH (user_data);
 	GsShellSearchPrivate *priv = shell_search->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GtkWidget *widget;
+	GtkWidget *app_row;
 
 	gs_stop_spinner (GTK_SPINNER (priv->spinner_search));
 
@@ -274,16 +272,16 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "results");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		widget = gs_app_widget_new ();
-		g_signal_connect (widget, "button-clicked",
-				  G_CALLBACK (gs_shell_search_app_widget_clicked_cb),
+		app_row = gs_app_row_new ();
+		g_signal_connect (app_row, "button-clicked",
+				  G_CALLBACK (gs_shell_search_app_row_clicked_cb),
 				  shell_search);
-		gs_app_widget_set_app (GS_APP_WIDGET (widget), app);
-		gtk_container_add (GTK_CONTAINER (priv->list_box_search), widget);
-		gs_app_widget_set_size_groups (GS_APP_WIDGET (widget),
-					       priv->sizegroup_image,
-					       priv->sizegroup_name);
-		gtk_widget_show (widget);
+		gs_app_row_set_app (GS_APP_ROW (app_row), app);
+		gtk_container_add (GTK_CONTAINER (priv->list_box_search), app_row);
+		gs_app_row_set_size_groups (GS_APP_ROW (app_row),
+		                            priv->sizegroup_image,
+		                            priv->sizegroup_name);
+		gtk_widget_show (app_row);
 	}
 
 out: ;
@@ -418,10 +416,8 @@ gs_shell_search_sort_func (GtkListBoxRow *a,
 			   GtkListBoxRow *b,
 			   gpointer user_data)
 {
-	GsAppWidget *aw1 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (a)));
-	GsAppWidget *aw2 = GS_APP_WIDGET (gtk_bin_get_child (GTK_BIN (b)));
-	GsApp *a1 = gs_app_widget_get_app (aw1);
-	GsApp *a2 = gs_app_widget_get_app (aw2);
+	GsApp *a1 = gs_app_row_get_app (GS_APP_ROW (a));
+	GsApp *a2 = gs_app_row_get_app (GS_APP_ROW (b));
 	gchar *key1 = gs_shell_search_get_app_sort_key (a1);
 	gchar *key2 = gs_shell_search_get_app_sort_key (a2);
 	gint retval;
@@ -488,7 +484,7 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 
 	/* setup search */
 	g_signal_connect (priv->list_box_search, "row-activated",
-			  G_CALLBACK (gs_shell_search_app_widget_activated_cb), shell_search);
+			  G_CALLBACK (gs_shell_search_app_row_activated_cb), shell_search);
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_search),
 				      gs_shell_search_list_header_func,
 				      shell_search, NULL);
