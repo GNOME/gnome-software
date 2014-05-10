@@ -717,7 +717,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			goto out;
 	}
 
-	/* find ogs_plugin_as_store_changed_cbut how many packages are in each category */
+	/* find out how many packages are in each category */
 	gs_profile_start (plugin->profile, "appstream::add-categories");
 	array = as_store_get_apps (plugin->priv->store);
 	for (l = *list; l != NULL; l = l->next) {
