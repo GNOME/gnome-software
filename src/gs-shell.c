@@ -43,7 +43,6 @@ static const gchar *page_name[] = {
 	"updates",
 	"details",
 	"category",
-	"updates"
 };
 
 static void	gs_shell_finalize	(GObject	*object);
@@ -192,10 +191,7 @@ gs_shell_change_mode (GsShell *shell,
 		gs_shell_search_refresh (priv->shell_search, text, scroll_up);
 		break;
 	case GS_SHELL_MODE_UPDATES:
-		gs_shell_updates_refresh (priv->shell_updates, FALSE, scroll_up);
-		break;
-	case GS_SHELL_MODE_UPDATED:
-		gs_shell_updates_refresh (priv->shell_updates, TRUE, scroll_up);
+		gs_shell_updates_refresh (priv->shell_updates, scroll_up);
 		break;
 	case GS_SHELL_MODE_DETAILS:
 		if (app != NULL) {
@@ -289,7 +285,7 @@ initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 
 	g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
 
-	gs_shell_updates_refresh (shell->priv->shell_updates, FALSE, TRUE);
+	gs_shell_updates_refresh (shell->priv->shell_updates, TRUE);
 	gs_shell_installed_refresh (shell->priv->shell_installed, TRUE);
 
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);

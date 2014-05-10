@@ -300,8 +300,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
 					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
-	        gtk_widget_set_visible (widget,
-                                        gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATED);
+		gtk_widget_show (widget);
 		break;
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
@@ -381,8 +380,7 @@ gs_shell_updates_set_state (GsShellUpdates *shell_updates,
 			    GsShellUpdatesState state)
 {
 	shell_updates->priv->state = state;
-	if (gs_shell_get_mode (shell_updates->priv->shell) == GS_SHELL_MODE_UPDATES ||
-	    gs_shell_get_mode (shell_updates->priv->shell) == GS_SHELL_MODE_UPDATED)
+	if (gs_shell_get_mode (shell_updates->priv->shell) == GS_SHELL_MODE_UPDATES)
 		gs_shell_updates_update_ui_state (shell_updates);
 }
 
@@ -418,8 +416,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates_counter"));
-	if (list != NULL &&
-            gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATED) {
+	if (list != NULL) {
 		gchar *text;
 		text = g_strdup_printf ("%d", g_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
@@ -430,8 +427,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 	if (list != NULL &&
-            gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES &&
-            gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATED)
+            gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES)
 		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "needs-attention");
 	else
 		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
@@ -481,27 +477,16 @@ out:
  **/
 void
 gs_shell_updates_refresh (GsShellUpdates *shell_updates,
-			  gboolean show_historical,
 			  gboolean scroll_up)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
-	GtkWindow *window;
 	GList *list;
 	guint64 refine_flags;
 
-	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES ||
-            gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATED) {
+	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_show (widget);
-	}
-
-	/* set the window title to be more specific */
-	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
-	if (show_historical) {
-		/* TRANSLATORS: window title to suggest that we are showing
-		 * the offline updates that have just been applied */
-		gtk_window_set_title (window, _("Recent Software Updates"));
 	}
 
 	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
@@ -534,8 +519,6 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
-	if (show_historical)
-		refine_flags |= GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
 	gs_shell_updates_set_state (shell_updates,
 				    GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES);
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
@@ -681,7 +664,7 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 	g_date_time_unref (now);
 
 	/* get the new list */
-	gs_shell_updates_refresh (shell_updates, FALSE, TRUE);
+	gs_shell_updates_refresh (shell_updates, TRUE);
 }
 
 /**
@@ -864,7 +847,7 @@ gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
 			     GsShellUpdates *shell_updates)
 {
 	gs_shell_updates_invalidate (shell_updates);
-	gs_shell_updates_refresh (shell_updates, FALSE, TRUE);
+	gs_shell_updates_refresh (shell_updates, TRUE);
 }
 
 /**
