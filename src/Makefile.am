@@ -141,6 +141,8 @@ gnome_software_SOURCES =				\
 	gs-sources-dialog.h				\
 	gs-update-dialog.c				\
 	gs-update-dialog.h				\
+	gs-update-list.c				\
+	gs-update-list.h				\
 	gs-update-monitor.c				\
 	gs-update-monitor.h				\
 	gs-proxy-settings.c				\

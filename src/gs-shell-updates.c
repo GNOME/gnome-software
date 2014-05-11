@@ -31,6 +31,7 @@
 #include "gs-app-row.h"
 #include "gs-markdown.h"
 #include "gs-update-dialog.h"
+#include "gs-update-list.h"
 
 #include <gdesktop-enums.h>
 #include <langinfo.h>
@@ -65,8 +66,6 @@ struct GsShellUpdatesPrivate
 	GsShellUpdatesState	 state;
 	gboolean		 has_agreed_to_mobile_data;
 	gboolean		 ampm_available;
-	GtkSizeGroup		*sizegroup_image;
-	GtkSizeGroup		*sizegroup_name;
 
 	GtkWidget		*button_updates_mobile;
 	GtkWidget		*button_updates_offline;
@@ -406,7 +405,6 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	GError *error = NULL;
 	GList *l;
 	GList *list;
-	GsApp *app;
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
 
@@ -457,15 +455,8 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 					    GS_SHELL_UPDATES_STATE_HAS_UPDATES);
 	}
 	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		widget = gs_app_row_new ();
-		gs_app_row_set_show_update (GS_APP_ROW (widget), TRUE);
-		gs_app_row_set_app (GS_APP_ROW (widget), app);
-		gtk_container_add (GTK_CONTAINER (priv->list_box_updates), widget);
-		gs_app_row_set_size_groups (GS_APP_ROW (widget),
-		                            priv->sizegroup_image,
-		                            priv->sizegroup_name);
-		gtk_widget_show (widget);
+		gs_update_list_add_app (GS_UPDATE_LIST (priv->list_box_updates),
+		                        GS_APP (l->data));
 	}
 
 out:
@@ -557,54 +548,6 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 	app = gs_app_row_get_app (GS_APP_ROW (row));
 
 	show_update_details (app, shell_updates);
-}
-
-/**
- * gs_shell_updates_is_addon_id_kind
- **/
-static gboolean
-gs_shell_updates_is_addon_id_kind (GsApp *app)
-{
-	GsAppIdKind id_kind;
-	id_kind = gs_app_get_id_kind (app);
-	if (id_kind == GS_APP_ID_KIND_DESKTOP)
-		return FALSE;
-	if (id_kind == GS_APP_ID_KIND_WEBAPP)
-		return FALSE;
-	return TRUE;
-}
-
-/**
- * gs_shell_updates_list_header_func
- **/
-static void
-gs_shell_updates_list_header_func (GtkListBoxRow *row,
-				   GtkListBoxRow *before,
-				   gpointer user_data)
-{
-	GtkStyleContext *context;
-	GtkWidget *header;
-
-	/* first entry */
-	gtk_list_box_row_set_header (row, NULL);
-	if (before == NULL)
-		return;
-
-	/* desktop -> addons */
-	if (!gs_shell_updates_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (before))) &&
-	    gs_shell_updates_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (row)))) {
-		/* TRANSLATORS: This is the header dividing the normal
-		 * applications and the addons */
-		header = gtk_label_new (_("Add-ons"));
-		g_object_set (header,
-			      "xalign", 0.0,
-			      NULL);
-		context = gtk_widget_get_style_context (header);
-		gtk_style_context_add_class (context, "header-label");
-	} else {
-		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
-	}
-	gtk_list_box_row_set_header (row, header);
 }
 
 /**
@@ -863,68 +806,6 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 }
 
 /**
- * gs_shell_installed_sort_func:
- **/
-static gchar *
-gs_shell_updates_get_app_sort_key (GsApp *app)
-{
-	GString *key;
-
-	key = g_string_sized_new (64);
-
-	/* sort by kind */
-	switch (gs_app_get_kind (app)) {
-	case GS_APP_KIND_OS_UPDATE:
-		g_string_append (key, "1:");
-		break;
-	default:
-		g_string_append (key, "2:");
-		break;
-	}
-
-	/* sort desktop files, then addons */
-	switch (gs_app_get_id_kind (app)) {
-	case GS_APP_ID_KIND_DESKTOP:
-		g_string_append (key, "1:");
-		break;
-	default:
-		g_string_append (key, "2:");
-		break;
-	}
-
-	/* sort by install date */
-	g_string_append_printf (key, "%09" G_GUINT64_FORMAT ":",
-				G_MAXUINT64 - gs_app_get_install_date (app));
-
-	/* finally, sort by short name */
-	g_string_append (key, gs_app_get_name (app));
-	return g_string_free (key, FALSE);
-}
-
-/**
- * gs_shell_updates_sort_func:
- **/
-static gint
-gs_shell_updates_sort_func (GtkListBoxRow *a,
-			    GtkListBoxRow *b,
-			    gpointer user_data)
-{
-	GsApp *a1 = gs_app_row_get_app (GS_APP_ROW (a));
-	GsApp *a2 = gs_app_row_get_app (GS_APP_ROW (b));
-	gchar *key1 = gs_shell_updates_get_app_sort_key (a1);
-	gchar *key2 = gs_shell_updates_get_app_sort_key (a2);
-	gint retval;
-
-	/* compare the keys according to the algorithm above */
-	retval = g_strcmp0 (key1, key2);
-
-	g_free (key1);
-	g_free (key2);
-
-	return retval;
-}
-
-/**
  * gs_shell_updates_get_properties_cb:
  **/
 static void
@@ -973,13 +854,6 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	/* setup updates */
 	g_signal_connect (priv->list_box_updates, "row-activated",
 			  G_CALLBACK (gs_shell_updates_activated_cb), shell_updates);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_updates),
-				      gs_shell_updates_list_header_func,
-				      shell_updates,
-				      NULL);
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_updates),
-				    gs_shell_updates_sort_func,
-				    shell_updates, NULL);
 
        widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 	g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), shell_updates);
@@ -1046,8 +920,6 @@ gs_shell_updates_init (GsShellUpdates *shell_updates)
 	shell_updates->priv->state = GS_SHELL_UPDATES_STATE_STARTUP;
 	shell_updates->priv->settings = g_settings_new ("org.gnome.software");
 	shell_updates->priv->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
-	shell_updates->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	shell_updates->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	ampm = nl_langinfo (AM_STR);
 	if (ampm != NULL && *ampm != '\0')
@@ -1072,8 +944,6 @@ gs_shell_updates_finalize (GObject *object)
 	g_object_unref (priv->control);
 	g_object_unref (priv->settings);
 	g_object_unref (priv->desktop_settings);
-	g_object_unref (priv->sizegroup_image);
-	g_object_unref (priv->sizegroup_name);
 
 	G_OBJECT_CLASS (gs_shell_updates_parent_class)->finalize (object);
 }

@@ -28,6 +28,7 @@
 #include "gs-app-row.h"
 #include "gs-markdown.h"
 #include "gs-offline-updates.h"
+#include "gs-update-list.h"
 #include "gs-utils.h"
 
 typedef struct {
@@ -39,8 +40,6 @@ typedef struct {
 struct _GsUpdateDialogPrivate
 {
 	GQueue		*back_entry_stack;
-	GtkSizeGroup	*sizegroup_image;
-	GtkSizeGroup	*sizegroup_name;
 	GtkWidget	*box_header;
 	GtkWidget	*button_back;
 	GtkWidget	*image_icon;
@@ -160,8 +159,6 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 {
 	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GList *l;
-	GsApp *app;
-	GtkWidget *widget;
 	guint64 time_updates_installed;
 
 	/* TRANSLATORS: this is the title of the installed updates dialog window */
@@ -190,15 +187,8 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_installed_updates));
 	for (l = installed_updates; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		widget = gs_app_row_new ();
-		gs_app_row_set_show_update (GS_APP_ROW (widget), TRUE);
-		gs_app_row_set_app (GS_APP_ROW (widget), app);
-		gtk_container_add (GTK_CONTAINER (priv->list_box_installed_updates), widget);
-		gs_app_row_set_size_groups (GS_APP_ROW (widget),
-		                            priv->sizegroup_image,
-		                            priv->sizegroup_name);
-		gtk_widget_show (widget);
+		gs_update_list_add_app (GS_UPDATE_LIST (priv->list_box_installed_updates),
+		                        GS_APP (l->data));
 	}
 }
 
@@ -334,8 +324,6 @@ gs_update_dialog_finalize (GObject *object)
 		g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) back_entry_free);
 		priv->back_entry_stack = NULL;
 	}
-	g_object_unref (priv->sizegroup_image);
-	g_object_unref (priv->sizegroup_name);
 
 	G_OBJECT_CLASS (gs_update_dialog_parent_class)->finalize (object);
 }
@@ -349,8 +337,6 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	priv->back_entry_stack = g_queue_new ();
-	priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	g_signal_connect (GTK_LIST_BOX (priv->list_box), "row-activated",
 	                  G_CALLBACK (row_activated_cb), dialog);
@@ -363,14 +349,6 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 
 	g_signal_connect (GTK_LIST_BOX (priv->list_box_installed_updates), "row-activated",
 			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_installed_updates),
-				      list_header_func,
-				      dialog, NULL);
-#if 0
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_updates),
-				    installed_updates_sort_func,
-				    dialog, NULL);
-#endif
 
 	g_signal_connect (priv->button_back, "clicked",
 	                  G_CALLBACK (button_back_cb),
