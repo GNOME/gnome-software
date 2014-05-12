@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-03-21 20:39+0000\n"
-"PO-Revision-Date: 2014-03-22 09:03+0200\n"
+"POT-Creation-Date: 2014-05-12 13:15+0000\n"
+"PO-Revision-Date: 2014-05-12 20:58+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
 "Language: sr\n"
@@ -48,17 +48,16 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Додај у фасциклу програма"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
 #: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "_Откажи"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
 msgid "_Add"
 msgstr "_Додај"
 
 #: ../src/app-menu.ui.h:1
-#| msgid "Software"
 msgid "_Software Sources"
 msgstr "_Извори програма"
 
@@ -76,7 +75,7 @@ msgstr "_Изађи"
 #. * where we are showing the application was installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-history-dialog.c:88
 #: ../src/gs-popular-tile.c:79 ../src/gs-popular-tile.c:82
 #: ../src/popular-tile.ui.h:1
@@ -131,7 +130,6 @@ msgid "_Updates"
 msgstr "_Освежења"
 
 #: ../src/gnome-software.ui.h:11
-#| msgid "Restart & Install"
 msgid "Restart & _Install"
 msgstr "Поново покрени и _инсталирај"
 
@@ -147,12 +145,10 @@ msgid "_Remove"
 msgstr "_Уклони"
 
 #: ../src/gnome-software.ui.h:14
-#| msgid "Select All"
 msgid "Select"
 msgstr "Изабери"
 
 #: ../src/gnome-software.ui.h:15
-#| msgid "Checking for updates…"
 msgid "Check for updates"
 msgstr "Провери ажурирања"
 
@@ -179,7 +175,6 @@ msgid "No Application Data Found"
 msgstr "Нисам пронашао податке програма"
 
 #: ../src/gnome-software.ui.h:22
-#| msgid "Installed"
 msgid "Installed page"
 msgstr "Страница инсталираног"
 
@@ -204,7 +199,6 @@ msgid "No Application Found"
 msgstr "Нисам пронашао програме"
 
 #: ../src/gnome-software.ui.h:28
-#| msgid "Updates"
 msgid "Updates page"
 msgstr "Страница освежења"
 
@@ -233,13 +227,10 @@ msgid "_Network Settings"
 msgstr "_Подешавања мреже"
 
 #: ../src/gnome-software.ui.h:34
-#| msgid "Details"
 msgid "Details page"
 msgstr "Страница појединости"
 
 #: ../src/gnome-software.ui.h:35
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "Software Source Included"
 msgstr "Укључени извор софтвера"
 
@@ -252,8 +243,6 @@ msgstr ""
 "другом софтверу."
 
 #: ../src/gnome-software.ui.h:37
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "No Software Source Included"
 msgstr "Није укључен никакав извор софтвера"
 
@@ -274,8 +263,6 @@ msgstr ""
 "замените."
 
 #: ../src/gnome-software.ui.h:40
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "Software Source Identified"
 msgstr "Препознати извор софтвера"
 
@@ -323,7 +310,6 @@ msgid "Category"
 msgstr "Категорија"
 
 #: ../src/gnome-software.ui.h:51
-#| msgid "Input Sources"
 msgid "Source"
 msgstr "Извор"
 
@@ -340,7 +326,6 @@ msgid "Developer"
 msgstr "Програмер"
 
 #: ../src/gnome-software.ui.h:55
-#| msgid "Software"
 msgid "Software Sources"
 msgstr "Извори програма"
 
@@ -367,7 +352,6 @@ msgid "Installed from this Source"
 msgstr "Инсталрани са овог извора"
 
 #: ../src/gnome-software.ui.h:61
-#| msgid "Show Details"
 msgid "Source Details"
 msgstr "Појединости извора"
 
@@ -380,7 +364,6 @@ msgid "Added"
 msgstr "Додат"
 
 #: ../src/gnome-software.ui.h:64
-#| msgid "_Website"
 msgid "Website"
 msgstr "Веб страница"
 
@@ -389,11 +372,10 @@ msgid "January 30, 2014"
 msgstr "30. јануар 2014."
 
 #: ../src/gnome-software.ui.h:66 ../src/gs-shell.c:600
-#| msgid "Remove"
 msgid "Remove Source"
 msgstr "Уклони извор"
 
-#: ../src/gs-app-folder-dialog.c:313
+#: ../src/gs-app-folder-dialog.c:325
 msgid "Folder Name"
 msgstr "Назив фасцикле"
 
@@ -405,7 +387,7 @@ msgstr "О Програмку"
 #. TRANSLATORS: well, we seem to think so, anyway
 #: ../src/gs-application.c:243
 msgid "A nice way to manage the software on your system."
-msgstr "Прикладан начин за управљање програмима на вашем систему"
+msgstr "Прикладан начин за управљање програмима на вашем систему."
 
 #: ../src/gs-application.c:247
 msgid "translator-credits"
@@ -422,8 +404,8 @@ msgstr "Унеси режим услуге ГПрограма"
 #: ../src/gs-application.c:491
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
-"Режим покретања: „updates“ (освежења), „updated“ (освежен), "
-"„installed“ (инсталиран) или „overview“ (преглед)"
+"Режим покретања: „updates“ (освежења), „updated“ (освежен), „installed“ "
+"(инсталиран) или „overview“ (преглед)"
 
 #: ../src/gs-application.c:491
 msgid "MODE"
@@ -455,10 +437,27 @@ msgid "Show profiling information for the service"
 msgstr "Приказује податке профилисања за услугу"
 
 #. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being installing
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92 ../src/gs-app-widget.c:237
+msgid "Installing"
+msgstr "Инсталирам"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being removed
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#: ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101 ../src/gs-app-widget.c:246
+msgid "Removing"
+msgstr "Уклањам"
+
+#. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:95 ../src/gs-feature-tile.c:81
-#: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
+#: ../src/gs-app-tile.c:107 ../src/gs-app-tile.c:111
+#: ../src/gs-feature-tile.c:81 ../src/gs-popular-tile.c:88
+#: ../src/gs-popular-tile.c:92
 msgid "Updates"
 msgstr "Освежења"
 
@@ -476,7 +475,7 @@ msgstr "Откажи"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:210
+#: ../src/gs-app-widget.c:210 ../src/gs-shell-details.c:136
 msgid "Pending"
 msgstr "На чекању"
 
@@ -493,18 +492,6 @@ msgstr "Инсталирај"
 #: ../src/gs-shell-installed.c:205 ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Уклони"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being installed
-#: ../src/gs-app-widget.c:237
-msgid "Installing"
-msgstr "Инсталирам"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being erased
-#: ../src/gs-app-widget.c:246
-msgid "Removing"
-msgstr "Уклањам"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -538,92 +525,92 @@ msgid "History"
 msgstr "Историјат"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:258
+#: ../src/gs-offline-updates.c:249
 msgid "Failed To Update"
 msgstr "Нисам успео да ажурирам"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:264
+#: ../src/gs-offline-updates.c:255
 msgid "A previous update was unfinished."
 msgstr "Претходно ажурирање је остало недовршено."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:274
+#: ../src/gs-offline-updates.c:265
 msgid "Network access was required but not available."
 msgstr "Био је потребан приступ мрежи али је недоступна."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:283
+#: ../src/gs-offline-updates.c:274
 msgid "An update was not signed in the correct way."
 msgstr "Једно ажурирање није означено на прави начин."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:293
+#: ../src/gs-offline-updates.c:284
 msgid "The update could not be completed."
 msgstr "Ажурирање не може бити довршено."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:298
+#: ../src/gs-offline-updates.c:289
 msgid "The update was cancelled."
 msgstr "Ажурирање је отказано."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:304
+#: ../src/gs-offline-updates.c:295
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
 "Затражено је ажурирање ван мреже али ниједан пакет није затражио ажурирање."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:308
+#: ../src/gs-offline-updates.c:299
 msgid "No space was left on the drive."
 msgstr "Нема више простора на диску."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:316
+#: ../src/gs-offline-updates.c:307
 msgid "An update failed to install correctly."
 msgstr "Једно ажурирање није успело да се исправно инсталира."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:321
+#: ../src/gs-offline-updates.c:312
 msgid "The offline update failed in an unexpected way."
 msgstr "Ажурирање ван мреже није успело на очекивани начин."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:330
+#: ../src/gs-offline-updates.c:321
 msgid "Detailed errors from the package manager follow:"
 msgstr "Опширније грешке управника пакета следе:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:764
+#: ../src/gs-plugin-loader.c:733
 msgid "OS Updates"
 msgstr "Доградње ОС-а"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:769
+#: ../src/gs-plugin-loader.c:738
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr "Укључује побољшања одлика, стабилности и безбедности за све кориснике."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1463
+#: ../src/gs-plugin-loader.c:1432
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Нису доступни кодеци додатка за запис „%s“."
 
-#: ../src/gs-plugin-loader.c:1466
+#: ../src/gs-plugin-loader.c:1435
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -666,20 +653,17 @@ msgid "Screenshot"
 msgstr "Снимак екрана"
 
 #: ../src/gs-shell.c:621
-#| msgid "Removing"
 msgid "Removing…"
 msgstr "Уклањам…"
 
 #. TRANSLATORS: this source has no apps installed from it
 #: ../src/gs-shell.c:871
-#| msgid "Software Install"
 msgid "No software installed"
 msgstr "Никакав софтвер није инсталиран"
 
 #. TRANSLATORS: this source has some apps installed from it
 #: ../src/gs-shell.c:874
 #, c-format
-#| msgid "Show application details"
 msgid "%i application installed"
 msgid_plural "%i applications installed"
 msgstr[0] "Инсталиран је %i програм"
@@ -690,7 +674,6 @@ msgstr[3] "Инсталиран је %i програм"
 #. TRANSLATORS: this source has some apps installed from it
 #: ../src/gs-shell.c:879
 #, c-format
-#| msgid "%s is now installed"
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
 msgstr[0] "Инсталиран је %i додатак"
@@ -707,10 +690,6 @@ msgstr[0] "Инсталиран је %i програм и %i додатак"
 msgstr[1] "Инсталирана су %i програма и %i додатка"
 msgstr[2] "Инсталирано је %i програма и %i додатака"
 msgstr[3] "Инсталиран је %i програм и %i додатак"
-
-#: ../src/gs-shell-details.c:136
-msgid "_Pending"
-msgstr "_На чекању"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
@@ -768,8 +747,8 @@ msgstr ""
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:587
-#: ../src/plugins/gs-plugin-packagekit.c:576
+#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:591
+#: ../src/plugins/gs-plugin-packagekit.c:578
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Додаци"
@@ -779,77 +758,77 @@ msgid "Click on items to select them"
 msgstr "Кликните на ставке да их изаберете"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:135
+#: ../src/gs-shell-updates.c:137
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:138
+#: ../src/gs-shell-updates.c:140
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:143
+#: ../src/gs-shell-updates.c:145
 msgid "%e %B %Y"
 msgstr "%e. %B %Y."
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:204
+#: ../src/gs-shell-updates.c:206
 msgid "Setting up updates…"
 msgstr "Подешавам ажурирања…"
 
-#: ../src/gs-shell-updates.c:205 ../src/gs-shell-updates.c:212
+#: ../src/gs-shell-updates.c:207 ../src/gs-shell-updates.c:214
 msgid "(This could take a while)"
 msgstr "(Ово може да потраје)"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:211
+#: ../src/gs-shell-updates.c:213
 msgid "Looking for new updates…"
 msgstr "Тражим нова ажурирања…"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:218
+#: ../src/gs-shell-updates.c:220
 msgid "Checking for updates…"
 msgstr "Проверавам ажурирања…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:334
+#: ../src/gs-shell-updates.c:338
 #, c-format
 msgid "Last checked: %s"
 msgstr "Последња провера: %s"
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:471
+#: ../src/gs-shell-updates.c:475
 msgid "Recent Software Updates"
 msgstr "Скорашња освежења софтвера"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:779
+#: ../src/gs-shell-updates.c:783
 msgid "No Network"
 msgstr "Нема мреже"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:783
+#: ../src/gs-shell-updates.c:787
 msgid "Internet access is required to check for updates."
 msgstr "Потребан је приступ Интернету за проверу ажурирања."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:787
+#: ../src/gs-shell-updates.c:791
 msgid "Network Settings"
 msgstr "Подешавања мреже"
 
 #. TRANSLATORS: $$$
-#: ../src/gs-shell-updates.c:807
+#: ../src/gs-shell-updates.c:811
 msgid "Charges may apply"
 msgstr "Трошкови могу бити повећани"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:811
+#: ../src/gs-shell-updates.c:815
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -859,7 +838,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:815
+#: ../src/gs-shell-updates.c:819
 msgid "Check Anyway"
 msgstr "Ипак провери"
 
@@ -879,7 +858,7 @@ msgstr "Преглед"
 msgid "Not Now"
 msgstr "Не сада"
 
-#: ../src/gs-update-monitor.c:156
+#: ../src/gs-update-monitor.c:148
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Инсталирано је освежење софтвера"
@@ -888,7 +867,7 @@ msgstr[2] "Инсталирана су освежења софтвера"
 msgstr[3] "Инсталирано је освежење софтвера"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:160
+#: ../src/gs-update-monitor.c:152
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Инсталирано је важно ажурирање система."
@@ -896,24 +875,24 @@ msgstr[1] "Инсталирана су важна ажурирања систе�
 msgstr[2] "Инсталирана су важна ажурирања система."
 msgstr[3] "Инсталирано је важно ажурирање система."
 
-#: ../src/gs-update-monitor.c:165
+#: ../src/gs-update-monitor.c:157
 msgid "Software Updates Failed"
 msgstr "Ажурирање софтвера није успело"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:159
 msgid "An important OS update failed to be installed."
 msgstr "Није успело инсталирање важног ажурирања система."
 
-#: ../src/gs-update-monitor.c:176
+#: ../src/gs-update-monitor.c:168
 msgid "Review"
 msgstr "Преглед"
 
-#: ../src/gs-update-monitor.c:178
+#: ../src/gs-update-monitor.c:170
 msgid "Show Details"
 msgstr "Прикажи појединости"
 
-#: ../src/gs-update-monitor.c:179
+#: ../src/gs-update-monitor.c:171
 msgid "OK"
 msgstr "У реду"
 
@@ -983,22 +962,22 @@ msgid "Proprietary"
 msgstr "Власнички"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:580
+#: ../src/plugins/gs-plugin-packagekit.c:582
 msgid "Codecs"
 msgstr "Kодеци"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:584
+#: ../src/plugins/gs-plugin-packagekit.c:586
 msgid "Fonts"
 msgstr "Словни ликови"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:588
+#: ../src/plugins/gs-plugin-packagekit.c:590
 msgid "Input Sources"
 msgstr "Извори улаза"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:592
+#: ../src/plugins/gs-plugin-packagekit.c:594
 msgid "Language Packs"
 msgstr "Пакети језика"
 
@@ -1074,52 +1053,72 @@ msgid "Development Tools"
 msgstr "Развојни алати"
 
 #: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Building"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Изградња"
 
 #: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Databases"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Базе података"
 
 #: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Debuggers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
-msgstr "Исправљачи грешака"
+msgstr "Прочишћавачи"
 
 #: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "GUI Designers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "Израда сучеља"
 
 #: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "IDE"
+msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "ИРО"
 
 #: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Profiling"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Профилисање"
 
 #: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Project Management"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Управљање пројектима"
 
 #: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Revision Control"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Управљање прегледима"
 
 #: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Translation"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Превођење"
 
 #: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Развој веба"
 
@@ -1409,82 +1408,114 @@ msgid "Internet"
 msgstr "Интернет"
 
 #: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Chat"
+msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Ћаскање"
 
 #: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Dialup"
+msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Позивање"
 
 #: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Email"
+msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "Ел. пошта"
 
 #: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Feed"
+msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Довод"
 
 #: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "File Transfer"
+msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Пренос датотека"
 
 #: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Ham Radio"
+msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
 msgstr "Хам радио"
 
 #: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Instant Messaging"
+msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Брзе поруке"
 
 #: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "IRC Clients"
+msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "Програми за ИРЦ"
 
 #: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Monitor"
+msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Надгледање"
 
 #: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "News"
+msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Вести"
 
 #: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "P2P"
+msgctxt "Menu subcategory of Internet"
 msgid "P2P"
 msgstr "П2П"
 
 #: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Remote Access"
+msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Удаљени приступ"
 
 #: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Telephony"
+msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Телефонија"
 
 #: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Video Conference"
+msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
-msgstr "Видео конференције"
+msgstr "Видео састанчење"
 
 #: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Web Browser"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Веб прегледник"
 
 #: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
 msgstr "Развој веба"
 
@@ -1769,54 +1800,74 @@ msgid "Utilities"
 msgstr "Алатке"
 
 #: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Accessibility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Приступачност"
 
 #: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Archiving"
+msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Архивирање"
 
 #: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Calculator"
+msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Калкулатор"
 
 #: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Clock"
+msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Часовник"
 
 #: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Compression"
+msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Паковање"
 
 #: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of System"
+#| msgid "File Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
-msgstr "Алатке за датотеке"
+msgstr "Алати датотека"
 
 #: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Maps"
+msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Карте"
 
 #: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Spirituality"
+msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Духовност"
 
 #: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Telephony Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Алати за телефонију"
 
 #: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Text Editor"
+msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
-msgstr "Уређивач текста"
+msgstr "Уређивачи текста"
 
 #. TRANSLATORS: this is the menu spec main category for Video
 #: ../src/plugins/menu-spec-common.c:202
@@ -1854,24 +1905,71 @@ msgid "TV"
 msgstr "ТВ"
 
 #: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Addons"
+#| msgid "Fonts"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Словни ликови"
 
 #: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Addons"
+#| msgid "Codecs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Kодеци"
 
 #: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Addons"
+#| msgid "Input Sources"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Извори улаза"
 
 #: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Addons"
+#| msgid "Language Packs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Пакети језика"
+
+#~ msgid "_Pending"
+#~ msgstr "_На чекању"
+
+#~ msgctxt "Menu subcategory of Development"
+#~ msgid "Databases"
+#~ msgstr "Базе података"
+
+#~ msgctxt "Menu subcategory of Network"
+#~ msgid "Ham Radio"
+#~ msgstr "Хам радио"
+
+#~ msgctxt "Menu subcategory of Network"
+#~ msgid "Web Development"
+#~ msgstr "Развој веба"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "File Tools"
+#~ msgstr "Алатке за датотеке"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "Maps"
+#~ msgstr "Карте"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "Spirituality"
+#~ msgstr "Духовност"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Fonts"
+#~ msgstr "Словни ликови"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Codecs"
+#~ msgstr "Kодеци"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Input Sources"
+#~ msgstr "Извори улаза"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Language Packs"
+#~ msgstr "Пакети језика"
 
 #~ msgid "Getting software details…"
 #~ msgstr "Добављам појединости софтвера…"
