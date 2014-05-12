@@ -8,16 +8,16 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-03-20 20:36+0000\n"
-"PO-Revision-Date: 2014-03-21 09:26+0300\n"
-"Last-Translator: Dimitris Spingos (Δημήτρης Σπίγγος) <dmtrs32@gmail.com>\n"
+"POT-Creation-Date: 2014-05-12 19:49+0000\n"
+"PO-Revision-Date: 2014-05-12 23:05+0200\n"
+"Last-Translator: Tom Tryfonidis <tomtryf@gmail.com>\n"
 "Language-Team: team@lists.gnome.gr\n"
 "Language: el\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Virtaal 0.7.0\n"
+"X-Generator: Poedit 1.6.4\n"
 "X-Project-Style: gnome\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
@@ -49,12 +49,12 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Προσθήκη στον φάκελο εφαρμογών"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
 #: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "_Ακύρωση"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
 msgid "_Add"
 msgstr "_Προσθήκη"
 
@@ -76,7 +76,7 @@ msgstr "Έ_ξοδος"
 #. * where we are showing the application was installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-history-dialog.c:88
 #: ../src/gs-popular-tile.c:79 ../src/gs-popular-tile.c:82
 #: ../src/popular-tile.ui.h:1
@@ -377,7 +377,7 @@ msgstr "30 Ιανουαρίου 2014"
 msgid "Remove Source"
 msgstr "Απομάκρυνση πηγής"
 
-#: ../src/gs-app-folder-dialog.c:313
+#: ../src/gs-app-folder-dialog.c:325
 msgid "Folder Name"
 msgstr "Όνομα φακέλου"
 
@@ -438,10 +438,27 @@ msgid "Show profiling information for the service"
 msgstr "Εμφάνιση πληροφοριών κατατομής για την υπηρεσία"
 
 #. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being installing
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92 ../src/gs-app-widget.c:237
+msgid "Installing"
+msgstr "Εγκαθίσταται"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being removed
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#: ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101 ../src/gs-app-widget.c:246
+msgid "Removing"
+msgstr "Αφαίρεση"
+
+#. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:95 ../src/gs-feature-tile.c:81
-#: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
+#: ../src/gs-app-tile.c:107 ../src/gs-app-tile.c:111
+#: ../src/gs-feature-tile.c:81 ../src/gs-popular-tile.c:88
+#: ../src/gs-popular-tile.c:92
 msgid "Updates"
 msgstr "Ενημερώσεις"
 
@@ -459,7 +476,7 @@ msgstr "Ακύρωση"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:210
+#: ../src/gs-app-widget.c:210 ../src/gs-shell-details.c:136
 msgid "Pending"
 msgstr "Εκκρεμεί"
 
@@ -475,18 +492,6 @@ msgstr "Εγκατάσταση"
 #: ../src/gs-app-widget.c:226 ../src/gs-shell-details.c:1057
 #: ../src/gs-shell-installed.c:205 ../src/gs-shell-search.c:164
 msgid "Remove"
-msgstr "Αφαίρεση"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being installed
-#: ../src/gs-app-widget.c:237
-msgid "Installing"
-msgstr "Εγκαθίσταται"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being erased
-#: ../src/gs-app-widget.c:246
-msgid "Removing"
 msgstr "Αφαίρεση"
 
 #. TRANSLATORS: this is where all applications that don't
@@ -521,81 +526,81 @@ msgid "History"
 msgstr "Ιστορικό"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:258
+#: ../src/gs-offline-updates.c:249
 msgid "Failed To Update"
 msgstr "Αποτυχία ενημέρωσης"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:264
+#: ../src/gs-offline-updates.c:255
 msgid "A previous update was unfinished."
 msgstr "Μια προηγούμενη ενημέρωση δεν ολοκληρώθηκε."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:274
+#: ../src/gs-offline-updates.c:265
 msgid "Network access was required but not available."
 msgstr "Απαιτείται πρόσβαση στο δίκτυο αλλά δεν είναι διαθέσιμη."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:283
+#: ../src/gs-offline-updates.c:274
 msgid "An update was not signed in the correct way."
 msgstr "Μια ενημέρωση δεν υπεγράφη με τον σωστό τρόπο."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:293
+#: ../src/gs-offline-updates.c:284
 msgid "The update could not be completed."
 msgstr "Η ενημέρωση δεν μπόρεσε να ολοκληρωθεί."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:298
+#: ../src/gs-offline-updates.c:289
 msgid "The update was cancelled."
 msgstr "Η ενημέρωση ακυρώθηκε."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:304
+#: ../src/gs-offline-updates.c:295
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
 "Ζητήθηκε μια ενημέρωση εκτός σύνδεσης, αλλά κανένα πακέτο δεν χρειάζεται "
 "ενημέρωση."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:308
+#: ../src/gs-offline-updates.c:299
 msgid "No space was left on the drive."
 msgstr "Δεν έχει απομείνει χώρος στον δίσκο."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:316
+#: ../src/gs-offline-updates.c:307
 msgid "An update failed to install correctly."
 msgstr "Απέτυχε να εγκατασταθεί σωστά μια ενημέρωση."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:321
+#: ../src/gs-offline-updates.c:312
 msgid "The offline update failed in an unexpected way."
 msgstr "Απέτυχε η ενημέρωση εκτός σύνδεσης με απροσδόκητο τρόπο."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:330
+#: ../src/gs-offline-updates.c:321
 msgid "Detailed errors from the package manager follow:"
 msgstr "Ακολουθούν λεπτομερή σφάλματα από τον διαχειριστή πακέτων:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:764
+#: ../src/gs-plugin-loader.c:733
 msgid "OS Updates"
 msgstr "Ενημερώσεις λειτουργικού"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:769
+#: ../src/gs-plugin-loader.c:738
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
@@ -604,14 +609,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1463
+#: ../src/gs-plugin-loader.c:1432
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr ""
 "Δεν υπάρχουν διαθέσιμα πρόσθετα κωδικοποιητών-αποκωδικοποιητών για τη μορφή "
 "%s."
 
-#: ../src/gs-plugin-loader.c:1466
+#: ../src/gs-plugin-loader.c:1435
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -687,10 +692,6 @@ msgid_plural "%i applications and %i add-ons installed"
 msgstr[0] "%i εφαρμογή και %i πρόσθετα εγκαταστάθηκαν"
 msgstr[1] "%i εφαρμογές και %i πρόσθετα εγκαταστάθηκαν"
 
-#: ../src/gs-shell-details.c:136
-msgid "_Pending"
-msgstr "Ε_κκρεμεί"
-
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
 #: ../src/gs-shell-details.c:164
@@ -746,8 +747,8 @@ msgstr ""
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:587
-#: ../src/plugins/gs-plugin-packagekit.c:576
+#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:591
+#: ../src/plugins/gs-plugin-packagekit.c:578
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Πρόσθετα"
@@ -757,77 +758,77 @@ msgid "Click on items to select them"
 msgstr "Πατήστε στα στοιχεία για να τα επιλέξετε"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:135
+#: ../src/gs-shell-updates.c:137
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:138
+#: ../src/gs-shell-updates.c:140
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:143
+#: ../src/gs-shell-updates.c:145
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:204
+#: ../src/gs-shell-updates.c:206
 msgid "Setting up updates…"
 msgstr "Ρύθμιση ενημερώσεων…"
 
-#: ../src/gs-shell-updates.c:205 ../src/gs-shell-updates.c:212
+#: ../src/gs-shell-updates.c:207 ../src/gs-shell-updates.c:214
 msgid "(This could take a while)"
 msgstr "(Αυτό ίσως απαιτήσει λίγο χρόνο)"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:211
+#: ../src/gs-shell-updates.c:213
 msgid "Looking for new updates…"
 msgstr "Αναζήτηση νέων ενημερώσεων…"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:218
+#: ../src/gs-shell-updates.c:220
 msgid "Checking for updates…"
 msgstr "Έλεγχος για ενημερώσεις…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:334
+#: ../src/gs-shell-updates.c:338
 #, c-format
 msgid "Last checked: %s"
 msgstr "Ελέγχθηκε τελευταία φορά: %s"
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:471
+#: ../src/gs-shell-updates.c:475
 msgid "Recent Software Updates"
 msgstr "Πρόσφατες ενημερώσεις λογισμικού"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:779
+#: ../src/gs-shell-updates.c:783
 msgid "No Network"
 msgstr "Χωρίς δίκτυο"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:783
+#: ../src/gs-shell-updates.c:787
 msgid "Internet access is required to check for updates."
 msgstr "Η πρόσβαση διαδικτύου απαιτείται για έλεγχο ενημερώσεων."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:787
+#: ../src/gs-shell-updates.c:791
 msgid "Network Settings"
 msgstr "Ρύθμιση δικτύου"
 
 #. TRANSLATORS: $$$
-#: ../src/gs-shell-updates.c:807
+#: ../src/gs-shell-updates.c:811
 msgid "Charges may apply"
 msgstr "Μπορεί να εμφανιστούν φορτία"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:811
+#: ../src/gs-shell-updates.c:815
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -837,7 +838,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:815
+#: ../src/gs-shell-updates.c:819
 msgid "Check Anyway"
 msgstr "Να ελεγχθεί οπωσδήποτε"
 
@@ -859,37 +860,37 @@ msgstr "Προβολή"
 msgid "Not Now"
 msgstr "Όχι τώρα"
 
-#: ../src/gs-update-monitor.c:156
+#: ../src/gs-update-monitor.c:148
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Εγκαταστάθηκε ενημέρωση λογισμικού"
 msgstr[1] "Εγκαταστάθηκαν ενημερώσεις λογισμικού"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:160
+#: ../src/gs-update-monitor.c:152
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Εγκαταστάθηκε μια σημαντική ενημέρωση του λειτουργικού συστήματος."
 msgstr[1] "Εγκαταστάθηκαν σημαντικές ενημερώσεις του λειτουργικού συστήματος."
 
-#: ../src/gs-update-monitor.c:165
+#: ../src/gs-update-monitor.c:157
 msgid "Software Updates Failed"
 msgstr "Αποτυχία ενημερώσεων λογισμικού"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:159
 msgid "An important OS update failed to be installed."
 msgstr "Μία σημαντική ενημέρωση λογισμικού απέτυχε να εγκατασταθεί."
 
-#: ../src/gs-update-monitor.c:176
+#: ../src/gs-update-monitor.c:168
 msgid "Review"
 msgstr "Αναθεώρηση"
 
-#: ../src/gs-update-monitor.c:178
+#: ../src/gs-update-monitor.c:170
 msgid "Show Details"
 msgstr "Εμφάνιση λεπτομερειών"
 
-#: ../src/gs-update-monitor.c:179
+#: ../src/gs-update-monitor.c:171
 msgid "OK"
 msgstr "Εντάξει"
 
@@ -959,22 +960,22 @@ msgid "Proprietary"
 msgstr "Ιδιοταγές"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:580
+#: ../src/plugins/gs-plugin-packagekit.c:582
 msgid "Codecs"
 msgstr "Κωδικοποιητές-αποκωδικοποιητές"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:584
+#: ../src/plugins/gs-plugin-packagekit.c:586
 msgid "Fonts"
 msgstr "Γραμματοσειρές"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:588
+#: ../src/plugins/gs-plugin-packagekit.c:590
 msgid "Input Sources"
 msgstr "Πηγές εισόδου"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:592
+#: ../src/plugins/gs-plugin-packagekit.c:594
 msgid "Language Packs"
 msgstr "Γλωσσικά πακέτα"
 
@@ -1050,52 +1051,72 @@ msgid "Development Tools"
 msgstr "Εργαλεία ανάπτυξης"
 
 #: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Building"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Δόμηση"
 
 #: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Databases"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Βάσεις δεδομένων"
 
 #: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Debuggers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Αποσφαλματωτές"
 
 #: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "GUI Designers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "Σχεδιαστές GUI"
 
 #: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "IDE"
+msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "IDE"
 
 #: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Profiling"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Κατατομές"
 
 #: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Project Management"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Διαχείριση έργου"
 
 #: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Revision Control"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Έλεγχος αναθεώρησης"
 
 #: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Translation"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Μετάφραση"
 
 #: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Ανάπτυξη ιστού"
 
@@ -1385,84 +1406,116 @@ msgid "Internet"
 msgstr "Διαδίκτυο"
 
 #: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Chat"
+msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Συνομιλία"
 
 #: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Dialup"
+msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Τηλεφωνική σύνδεση"
 
 #: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Email"
+msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "Αλληλογραφία"
 
 #: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Feed"
+msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Ροή"
 
 #: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "File Transfer"
+msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Μεταφορά αρχείων"
 
 #: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Ham Radio"
+msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
 msgstr "Ραδιοερασιτέχνες"
 
 #: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Instant Messaging"
+msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Άμεσα μηνύματα"
 
 #: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "IRC Clients"
+msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "Πελάτες IRC"
 
 #: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Monitor"
+msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Οθόνες"
 
 #: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "News"
+msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Ειδήσεις"
 
 #: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "P2P"
+msgctxt "Menu subcategory of Internet"
 msgid "P2P"
-msgstr "Ομότιμο δίκτυο"
+msgstr "P2P"
 
 #: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Remote Access"
+msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Απομακρυσμένη πρόσβαση"
 
 #: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Telephony"
+msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Τηλεφωνία"
 
 #: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Video Conference"
+msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Βιντεοδιάσκεψη"
 
 #: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Web Browser"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Περιηγητής διαδικτύου"
 
 #: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
-msgstr "Ανάπτυξη εφαρμογών διαδικτύου"
+msgstr "Ανάπτυξη ιστού"
 
 #. TRANSLATORS: this is the menu spec main category for Office
 #: ../src/plugins/menu-spec-common.c:132
@@ -1745,52 +1798,72 @@ msgid "Utilities"
 msgstr "Βοηθήματα"
 
 #: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Accessibility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Προσιτότητα"
 
 #: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Archiving"
+msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Αρχειοθέτηση"
 
 #: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Calculator"
+msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Αριθμομηχανή"
 
 #: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Clock"
+msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Χρονιστές"
 
 #: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Compression"
+msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Συμπίεση"
 
 #: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of System"
+#| msgid "File Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
 msgstr "Εργαλεία αρχείων"
 
 #: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Maps"
+msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Χάρτες"
 
 #: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Spirituality"
+msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Πνευματικότητα"
 
 #: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Telephony Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Εργαλεία τηλεφωνίας"
 
 #: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Text Editor"
+msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
 msgstr "Επεξεργαστής κειμένου"
 
@@ -1830,24 +1903,71 @@ msgid "TV"
 msgstr "Τηλεόραση"
 
 #: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Addons"
+#| msgid "Fonts"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Γραμματοσειρές"
 
 #: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Addons"
+#| msgid "Codecs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Κωδικοποιητές-αποκωδικοποιητές"
 
 #: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Addons"
+#| msgid "Input Sources"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Πηγές εισόδου"
 
 #: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Addons"
+#| msgid "Language Packs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Γλωσσικά πακέτα"
+
+#~ msgid "_Pending"
+#~ msgstr "Ε_κκρεμεί"
+
+#~ msgctxt "Menu subcategory of Development"
+#~ msgid "Databases"
+#~ msgstr "Βάσεις δεδομένων"
+
+#~ msgctxt "Menu subcategory of Network"
+#~ msgid "Ham Radio"
+#~ msgstr "Ραδιοερασιτέχνες"
+
+#~ msgctxt "Menu subcategory of Network"
+#~ msgid "Web Development"
+#~ msgstr "Ανάπτυξη εφαρμογών διαδικτύου"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "File Tools"
+#~ msgstr "Εργαλεία αρχείων"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "Maps"
+#~ msgstr "Χάρτες"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "Spirituality"
+#~ msgstr "Πνευματικότητα"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Fonts"
+#~ msgstr "Γραμματοσειρές"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Codecs"
+#~ msgstr "Κωδικοποιητές-αποκωδικοποιητές"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Input Sources"
+#~ msgstr "Πηγές εισόδου"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Language Packs"
+#~ msgstr "Γλωσσικά πακέτα"
 
 #~ msgid "Getting software details…"
 #~ msgstr "Λήψη λεπτομερειών λογισμικού…"
