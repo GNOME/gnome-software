@@ -597,9 +597,9 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		/* TRANSLATORS: this is where the licence is insanely
 		 * complicated and the full string is put into the tooltip */
 		gtk_label_set_label (GTK_LABEL (priv->label_details_licence_value), C_("license", "Complicated!"));
-		gtk_widget_set_tooltip_text (priv->label_details_licence_value, tmp);
+		gtk_widget_set_tooltip_markup (priv->label_details_licence_value, tmp);
 	} else {
-		gtk_label_set_label (GTK_LABEL (priv->label_details_licence_value), tmp);
+		gtk_label_set_markup (GTK_LABEL (priv->label_details_licence_value), tmp);
 		gtk_widget_set_tooltip_text (priv->label_details_licence_value, NULL);
 	}
 

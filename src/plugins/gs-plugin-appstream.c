@@ -330,6 +330,43 @@ gs_plugin_refine_add_screenshots (GsApp *app, AsApp *item)
 }
 
 /**
+ * gs_plugin_appstream_set_license:
+ */
+static void
+gs_plugin_appstream_set_license (GsApp *app, const gchar *license_string)
+{
+	GString *urld;
+	gchar **tokens;
+	guint i;
+
+	/* tokenize the license string and URLify any SPDX IDs */
+	urld = g_string_sized_new (strlen (license_string) + 1);
+	tokens = as_utils_spdx_license_tokenize (license_string);
+	for (i = 0; tokens[i] != NULL; i++) {
+
+		/* literal text */
+		if (g_str_has_prefix (tokens[i], "#")) {
+			g_string_append (urld, tokens[i] + 1);
+			continue;
+		}
+
+		/* unknown value */
+		if (!as_utils_is_spdx_license_id (tokens[i])) {
+			g_string_append (urld, tokens[i]);
+			continue;
+		}
+
+		/* SPDX value */
+		g_string_append_printf (urld,
+					"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
+					tokens[i], tokens[i]);
+	}
+	gs_app_set_licence (app, urld->str);
+	g_strfreev (tokens);
+	g_string_free (urld, TRUE);
+}
+
+/**
  * gs_plugin_refine_item:
  */
 static gboolean
@@ -391,7 +428,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 
 	/* set licence */
 	if (as_app_get_project_license (item) != NULL && gs_app_get_licence (app) == NULL)
-		gs_app_set_licence (app, as_app_get_project_license (item));
+		gs_plugin_appstream_set_license (app, as_app_get_project_license (item));
 
 	/* set keywords */
 	if (as_app_get_keywords (item) != NULL &&
