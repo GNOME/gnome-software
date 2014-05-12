@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-03-11 08:34+0000\n"
-"PO-Revision-Date: 2014-03-11 16:16+0200\n"
+"POT-Creation-Date: 2014-05-12 19:30+0000\n"
+"PO-Revision-Date: 2014-05-12 22:48+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Lithuanian <gnome-lt@lists.akl.lt>\n"
 "Language: lt\n"
@@ -49,12 +49,12 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Pridėti programų aplanką"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
 #: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "_Atsisakyti"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
 msgid "_Add"
 msgstr "_Pridėti"
 
@@ -76,7 +76,7 @@ msgstr "_Išeiti"
 #. * where we are showing the application was installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-history-dialog.c:88
 #: ../src/gs-popular-tile.c:79 ../src/gs-popular-tile.c:82
 #: ../src/popular-tile.ui.h:1
@@ -377,7 +377,7 @@ msgstr "2014 sausio 30"
 msgid "Remove Source"
 msgstr "Pašalinti šaltinį"
 
-#: ../src/gs-app-folder-dialog.c:313
+#: ../src/gs-app-folder-dialog.c:325
 msgid "Folder Name"
 msgstr "Aplanko pavadinimas"
 
@@ -438,10 +438,27 @@ msgid "Show profiling information for the service"
 msgstr "Rodyti tarnybos profiliavimo informaciją"
 
 #. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being installing
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92 ../src/gs-app-widget.c:237
+msgid "Installing"
+msgstr "Diegiama"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being removed
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#: ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101 ../src/gs-app-widget.c:246
+msgid "Removing"
+msgstr "Šalinama"
+
+#. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:95 ../src/gs-feature-tile.c:81
-#: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
+#: ../src/gs-app-tile.c:107 ../src/gs-app-tile.c:111
+#: ../src/gs-feature-tile.c:81 ../src/gs-popular-tile.c:88
+#: ../src/gs-popular-tile.c:92
 msgid "Updates"
 msgstr "Atnaujinimai"
 
@@ -459,7 +476,7 @@ msgstr "Atsisakyti"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:210
+#: ../src/gs-app-widget.c:210 ../src/gs-shell-details.c:136
 msgid "Pending"
 msgstr "Laukia"
 
@@ -476,18 +493,6 @@ msgstr "Įdiegti"
 #: ../src/gs-shell-installed.c:205 ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Pašalinti"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being installed
-#: ../src/gs-app-widget.c:237
-msgid "Installing"
-msgstr "Diegiama"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being erased
-#: ../src/gs-app-widget.c:246
-msgid "Removing"
-msgstr "Šalinama"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -521,91 +526,91 @@ msgid "History"
 msgstr "Istorija"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:228
+#: ../src/gs-offline-updates.c:249
 msgid "Failed To Update"
 msgstr "Nepavyko atnaujinti"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:234
+#: ../src/gs-offline-updates.c:255
 msgid "A previous update was unfinished."
 msgstr "Ankstesnis atnaujinimas nebuvo baigtas."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:244
+#: ../src/gs-offline-updates.c:265
 msgid "Network access was required but not available."
 msgstr "Buvo reikalinga tinklo prieiga, bet nebuvo prieinama."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:253
+#: ../src/gs-offline-updates.c:274
 msgid "An update was not signed in the correct way."
 msgstr "Atnaujinimas nebuvo tvarkingai pasirašytas."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:263
+#: ../src/gs-offline-updates.c:284
 msgid "The update could not be completed."
 msgstr "Atnaujinimo nepavyko užbaigti."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:268
+#: ../src/gs-offline-updates.c:289
 msgid "The update was cancelled."
 msgstr "Atnaujinimas buvo nutrauktas."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:274
+#: ../src/gs-offline-updates.c:295
 msgid "An offline update was requested but no packages required updating."
 msgstr "Atnaujinimas atsijungus buvo prašytas, bet nėra atnaujinamų paketų."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:278
+#: ../src/gs-offline-updates.c:299
 msgid "No space was left on the drive."
 msgstr "Diske neliko vietos."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:286
+#: ../src/gs-offline-updates.c:307
 msgid "An update failed to install correctly."
 msgstr "Atnaujinimo nepavyko tvarkingai įdiegti."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:291
+#: ../src/gs-offline-updates.c:312
 msgid "The offline update failed in an unexpected way."
 msgstr "Atnaujinimas atsijungus nepavyko netikėtu būdu."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:300
+#: ../src/gs-offline-updates.c:321
 msgid "Detailed errors from the package manager follow:"
 msgstr "Detalios klaidos iš paketų tvarkyklės:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:764
+#: ../src/gs-plugin-loader.c:733
 msgid "OS Updates"
 msgstr "OS atnaujinimai"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:769
+#: ../src/gs-plugin-loader.c:738
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr "Turi našumo, stabilumo bei saugumo patobulinimus visiems naudotojams."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1463
+#: ../src/gs-plugin-loader.c:1432
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nėra papildomų kodekų %s formatui."
 
-#: ../src/gs-plugin-loader.c:1466
+#: ../src/gs-plugin-loader.c:1435
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -683,10 +688,6 @@ msgstr[0] "Įdiegta %i programa(-os) ir %i priedas(-ai)"
 msgstr[1] "Įdiegta %i programa(-os) ir %i priedas(-ai)"
 msgstr[2] "Įdiegta %i programa(-os) ir %i priedas(-ai)"
 
-#: ../src/gs-shell-details.c:136
-msgid "_Pending"
-msgstr "_Laukiama"
-
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
 #: ../src/gs-shell-details.c:164
@@ -740,8 +741,8 @@ msgstr "%s bus pašalinta, norint naudotis, reikės vėl įdiegti."
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:584
-#: ../src/plugins/gs-plugin-packagekit.c:576
+#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:591
+#: ../src/plugins/gs-plugin-packagekit.c:578
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Priedai"
@@ -751,78 +752,77 @@ msgid "Click on items to select them"
 msgstr "Spauskite elementui pažymėti"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:135
+#: ../src/gs-shell-updates.c:137
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:138
+#: ../src/gs-shell-updates.c:140
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:143
+#: ../src/gs-shell-updates.c:145
 msgid "%e %B %Y"
 msgstr "%Y %e %B"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:204
+#: ../src/gs-shell-updates.c:206
 msgid "Setting up updates…"
 msgstr "Nustatomi atnaujinimai…"
 
-#: ../src/gs-shell-updates.c:205 ../src/gs-shell-updates.c:212
+#: ../src/gs-shell-updates.c:207 ../src/gs-shell-updates.c:214
 msgid "(This could take a while)"
 msgstr "(Tai gali užtrukti)"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:211
+#: ../src/gs-shell-updates.c:213
 msgid "Looking for new updates…"
 msgstr "Ieškoma naujų atnaujinimų…"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:218
+#: ../src/gs-shell-updates.c:220
 msgid "Checking for updates…"
 msgstr "Tikrinama, ar yra atnaujinimų…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:333
+#: ../src/gs-shell-updates.c:338
 #, c-format
-#| msgid "Last Checked"
 msgid "Last checked: %s"
 msgstr "Paskutinį kartą tikrinta: %s"
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:468
+#: ../src/gs-shell-updates.c:475
 msgid "Recent Software Updates"
 msgstr "Neseni atnaujinimai"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:776
+#: ../src/gs-shell-updates.c:783
 msgid "No Network"
 msgstr "Nėra tinklo"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:780
+#: ../src/gs-shell-updates.c:787
 msgid "Internet access is required to check for updates."
 msgstr "Atnaujinimų tikrinimui reikalingas tinklo ryšys."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:784
+#: ../src/gs-shell-updates.c:791
 msgid "Network Settings"
 msgstr "Tinklo nustatymai"
 
 #. TRANSLATORS: $$$
-#: ../src/gs-shell-updates.c:804
+#: ../src/gs-shell-updates.c:811
 msgid "Charges may apply"
 msgstr "Tai gali kainuoti"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:808
+#: ../src/gs-shell-updates.c:815
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -831,7 +831,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:812
+#: ../src/gs-shell-updates.c:819
 msgid "Check Anyway"
 msgstr "Vistiek tikrinti"
 
@@ -851,7 +851,7 @@ msgstr "Rodyti"
 msgid "Not Now"
 msgstr "Ne dabar"
 
-#: ../src/gs-update-monitor.c:149
+#: ../src/gs-update-monitor.c:148
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Programinės įrangos atnaujinimas įdiegtas"
@@ -859,31 +859,31 @@ msgstr[1] "Programinės įrangos atnaujinimai įdiegti"
 msgstr[2] "Programinės įrangos atnaujinimai įdiegti"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:153
+#: ../src/gs-update-monitor.c:152
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Svarbus OS atnaujinimas įdiegtas"
 msgstr[1] "Svarbūs OS atnaujinimai įdiegti"
 msgstr[2] "Svarbūs OS atnaujinimai įdiegti"
 
-#: ../src/gs-update-monitor.c:158
+#: ../src/gs-update-monitor.c:157
 msgid "Software Updates Failed"
 msgstr "Nepavyko įdiegti atnaujinimų"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:160
+#: ../src/gs-update-monitor.c:159
 msgid "An important OS update failed to be installed."
 msgstr "Nepavyko įdiegti svarbaus OS atnaujinimo."
 
-#: ../src/gs-update-monitor.c:169
+#: ../src/gs-update-monitor.c:168
 msgid "Review"
 msgstr "Peržiūrėti"
 
-#: ../src/gs-update-monitor.c:171
+#: ../src/gs-update-monitor.c:170
 msgid "Show Details"
 msgstr "Rodyti detalią informaciją"
 
-#: ../src/gs-update-monitor.c:172
+#: ../src/gs-update-monitor.c:171
 msgid "OK"
 msgstr "Gerai"
 
@@ -953,22 +953,22 @@ msgid "Proprietary"
 msgstr "Nuosavybinė"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:580
+#: ../src/plugins/gs-plugin-packagekit.c:582
 msgid "Codecs"
 msgstr "Kodekai"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:584
+#: ../src/plugins/gs-plugin-packagekit.c:586
 msgid "Fonts"
 msgstr "Šriftai"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:588
+#: ../src/plugins/gs-plugin-packagekit.c:590
 msgid "Input Sources"
 msgstr "Įvesties šaltiniai"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:592
+#: ../src/plugins/gs-plugin-packagekit.c:594
 msgid "Language Packs"
 msgstr "Kalbų paketai"
 
@@ -1044,52 +1044,72 @@ msgid "Development Tools"
 msgstr "Programavimo įrankiai"
 
 #: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Building"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Kūrimas"
 
 #: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Databases"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Duomenų bazės"
 
 #: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Debuggers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Derintuvės"
 
 #: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "GUI Designers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "GUI įrankiai"
 
 #: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "IDE"
+msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "IDE"
 
 #: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Profiling"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Profiliavimas"
 
 #: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Project Management"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Projektų valdymas"
 
 #: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Revision Control"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Versijavimo sistemos"
 
 #: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Translation"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Vertimai"
 
 #: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Žiniatinklio kūrimas"
 
@@ -1379,82 +1399,114 @@ msgid "Internet"
 msgstr "Internetas"
 
 #: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Chat"
+msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Pokalbiai"
 
 #: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Dialup"
+msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Prisijungimas"
 
 #: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Email"
+msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "El. paštas"
 
 #: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Feed"
+msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Sklaidos kanalai"
 
 #: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "File Transfer"
+msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Failų perdavimas"
 
 #: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Ham Radio"
+msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
-msgstr "Ham Radijas"
+msgstr "Ham radijas"
 
 #: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Instant Messaging"
+msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Tiesioginiai pranešimai"
 
 #: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "IRC Clients"
+msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "IRC klientai"
 
 #: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Monitor"
+msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Monitorius"
 
 #: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "News"
+msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Naujienos"
 
 #: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "P2P"
+msgctxt "Menu subcategory of Internet"
 msgid "P2P"
 msgstr "P2P"
 
 #: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Remote Access"
+msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Nuotolinė prieiga"
 
 #: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Telephony"
+msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Telefonija"
 
 #: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Video Conference"
+msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Vaizdo konferencija"
 
 #: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Web Browser"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Žiniatinklio naršyklė"
 
 #: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
 msgstr "Žiniatinklio kūrimas"
 
@@ -1739,52 +1791,72 @@ msgid "Utilities"
 msgstr "Priemonės"
 
 #: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Accessibility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Prieiga"
 
 #: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Archiving"
+msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Archyvavimas"
 
 #: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Calculator"
+msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Skaičiuotuvas"
 
 #: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Clock"
+msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Laikrodis"
 
 #: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Compression"
+msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Suspaudimas"
 
 #: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of System"
+#| msgid "File Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
 msgstr "Failų įrankiai"
 
 #: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Maps"
+msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Žemėlapiai"
 
 #: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Spirituality"
+msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Dvasiniai dalykai"
 
 #: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Telephony Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Telefonijos įrankiai"
 
 #: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Text Editor"
+msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
 msgstr "Tekstų redaktorius"
 
@@ -1824,21 +1896,26 @@ msgid "TV"
 msgstr "TV"
 
 #: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Addons"
+#| msgid "Fonts"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Šriftai"
 
 #: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Addons"
+#| msgid "Codecs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Kodekai"
 
 #: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Addons"
+#| msgid "Input Sources"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Įvesties šaltiniai"
 
 #: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Addons"
+#| msgid "Language Packs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Kalbų paketai"
+
