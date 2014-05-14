@@ -265,14 +265,23 @@ quit_activated (GSimpleAction *action,
 		GVariant      *parameter,
 		gpointer       app)
 {
+	GApplicationFlags flags;
 	GList *windows;
 	GtkWidget *window;
 
-	windows = gtk_application_get_windows (GTK_APPLICATION (app));
-	if (windows) {
-		window = windows->data;
-		gtk_widget_hide (window);
+	flags = g_application_get_flags (app);
+
+	if (flags & G_APPLICATION_IS_SERVICE) {
+		windows = gtk_application_get_windows (GTK_APPLICATION (app));
+		if (windows) {
+			window = windows->data;
+			gtk_widget_hide (window);
+		}
+
+		return;
 	}
+
+	g_application_quit (G_APPLICATION (app));
 }
 
 static void
