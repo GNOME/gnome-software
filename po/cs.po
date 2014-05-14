@@ -5,11 +5,11 @@
 #
 msgid ""
 msgstr ""
-"Project-Id-Version: gnome-software master\n"
+"Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-04-24 07:26+0000\n"
-"PO-Revision-Date: 2014-04-24 12:11+0200\n"
+"POT-Creation-Date: 2014-05-14 07:29+0000\n"
+"PO-Revision-Date: 2014-05-14 10:11+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -244,7 +244,7 @@ msgstr "Zrušit"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:210
+#: ../src/gs-app-widget.c:210 ../src/gs-shell-details.c:161
 msgid "Pending"
 msgstr "Čeká na zpracování"
 
@@ -257,7 +257,7 @@ msgstr "Instalovat"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-widget.c:226 ../src/gs-shell-details.c:1044
+#: ../src/gs-app-widget.c:226 ../src/gs-shell-details.c:1039
 #: ../src/gs-shell-installed.c:210 ../src/gs-shell-search.c:166
 msgid "Remove"
 msgstr "Odebrat"
@@ -432,10 +432,6 @@ msgstr "Snímek není k dispozici"
 msgid "Screenshot"
 msgstr "Snímek"
 
-#: ../src/gs-shell-details.c:161
-msgid "_Pending"
-msgstr "Čeká na z_pracování"
-
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
 #: ../src/gs-shell-details.c:189
@@ -453,61 +449,54 @@ msgctxt "license"
 msgid "Unknown"
 msgstr "Neznámá"
 
-#. TRANSLATORS: this is where the licence is insanely
-#. * complicated and the full string is put into the tooltip
-#: ../src/gs-shell-details.c:599
-msgctxt "license"
-msgid "Complicated!"
-msgstr "Složitá!"
-
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:612
+#: ../src/gs-shell-details.c:607
 msgctxt "version"
 msgid "Unknown"
 msgstr "Neznámá"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:618
+#: ../src/gs-shell-details.c:613
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Vypočítává se…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:621
+#: ../src/gs-shell-details.c:616
 msgctxt "size"
 msgid "Unknown"
 msgstr "Neznámá"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:633
+#: ../src/gs-shell-details.c:628
 msgctxt "updated"
 msgid "Never"
 msgstr "Nikdy"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:643
 msgctxt "menu category"
 msgid "None"
 msgstr "Žádná"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:658
+#: ../src/gs-shell-details.c:653
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Neznámý"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1029 ../src/gs-shell-installed.c:195
+#: ../src/gs-shell-details.c:1024 ../src/gs-shell-installed.c:195
 #: ../src/gs-shell-search.c:151
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Opravdu chcete odebrat %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1041 ../src/gs-shell-installed.c:207
+#: ../src/gs-shell-details.c:1036 ../src/gs-shell-installed.c:207
 #: ../src/gs-shell-search.c:163
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -1024,7 +1013,7 @@ msgstr "Instalace aplikace %s selhala."
 msgid "Removal of %s failed."
 msgstr "Odebrání aplikace %s selhalo."
 
-#: ../src/plugins/gs-plugin-appstream.c:171
+#: ../src/plugins/gs-plugin-appstream.c:152
 #, c-format
 msgid "No AppStream data found"
 msgstr "Nebyla nalezena žádná data AppStream"
@@ -1112,52 +1101,52 @@ msgid "Development Tools"
 msgstr "Vývojářské nástroje"
 
 #: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Sestavování"
 
 #: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Databáze"
 
 #: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Ladicí programy"
 
 #: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "Navrhování GUI"
 
 #: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
-msgstr "IDE"
+msgstr "Vývojářská prostředí"
 
 #: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Profilování"
 
 #: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Správa projektů"
 
 #: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Správa verzí"
 
 #: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Překlady"
 
 #: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Vývoj webů"
 
@@ -1447,82 +1436,82 @@ msgid "Internet"
 msgstr "Internet"
 
 #: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Diskuze"
 
 #: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Vytáčené spojení"
 
 #: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "Pošta"
 
 #: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Kanály"
 
 #: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Přenos souborů"
 
 #: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
 msgstr "HAM radio"
 
 #: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Rychlé zprávy"
 
 #: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "Klienti IRC"
 
 #: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
-msgstr "Sledování"
+msgstr "Sledování stavu"
 
 #: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Diskuzní skupiny"
 
 #: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "P2P"
-msgstr "P2P"
+msgstr "Sdílení P2P"
 
 #: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Vzdálený přístup"
 
 #: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Telefonování"
 
 #: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Videokonference"
 
 #: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Webové prohlížeče"
 
 #: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
 msgstr "Vývoj webů"
 
@@ -1807,52 +1796,52 @@ msgid "Utilities"
 msgstr "Nástroje"
 
 #: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Přístupnost"
 
 #: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Archivování"
 
 #: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Kalkulačky"
 
 #: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Hodiny"
 
 #: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Komprimace"
 
 #: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
 msgstr "Nástroje pro soubory"
 
 #: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Mapy"
 
 #: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Duchovno"
 
 #: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Telefonní nástroje"
 
 #: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
 msgstr "Textové editory"
 
@@ -1892,21 +1881,21 @@ msgid "TV"
 msgstr "Televize"
 
 #: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Písma"
 
 #: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Kodeky"
 
 #: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Vstupní zdroje"
 
 #: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Jazykové balíčky"
