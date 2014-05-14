@@ -456,8 +456,12 @@ gs_application_finalize (GObject *object)
 {
 	GsApplication *app = GS_APPLICATION (object);
 
+	if (app->cancellable != NULL) {
+		g_cancellable_cancel (app->cancellable);
+		g_clear_object (&app->cancellable);
+	}
+
 	g_clear_object (&app->plugin_loader);
-	g_clear_object (&app->cancellable);
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
 	g_clear_object (&app->update_monitor);
