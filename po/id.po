@@ -6,18 +6,18 @@
 # Dirgita <dirgitadevina@yahoo.co.id>, 2014.
 msgid ""
 msgstr ""
-"Project-Id-Version: gnome-software master\n"
+"Project-Id-Version: gnome-software gnome-3-12\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-04-05 20:00+0000\n"
-"PO-Revision-Date: 2014-04-09 05:37+0700\n"
-"Last-Translator: Dirgita <dirgitadevina@yahoo.co.id>\n"
+"POT-Creation-Date: 2014-05-20 19:24+0000\n"
+"PO-Revision-Date: 2014-05-21 12:08+0700\n"
+"Last-Translator: Andika Triwidada <andika@gmail.com>\n"
 "Language-Team: Indonesian <gnome-l10n-id@googlegroups.com>\n"
 "Language: id\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Poedit 1.5.7\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
@@ -49,12 +49,12 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Tambah ke Folder Aplikasi"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
 #: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "_Batal"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
 msgid "_Add"
 msgstr "T_ambah"
 
@@ -76,7 +76,7 @@ msgstr "_Keluar"
 #. * where we are showing the application was installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-history-dialog.c:88
 #: ../src/gs-popular-tile.c:79 ../src/gs-popular-tile.c:82
 #: ../src/popular-tile.ui.h:1
@@ -375,7 +375,7 @@ msgstr "30 Januari 2014"
 msgid "Remove Source"
 msgstr "Hapus Sumber"
 
-#: ../src/gs-app-folder-dialog.c:313
+#: ../src/gs-app-folder-dialog.c:325
 msgid "Folder Name"
 msgstr "Nama Folder"
 
@@ -434,10 +434,27 @@ msgid "Show profiling information for the service"
 msgstr "Tampilkan informasi profil bagi layanan"
 
 #. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being installing
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92 ../src/gs-app-widget.c:237
+msgid "Installing"
+msgstr "Memasang"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being removed
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#: ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101 ../src/gs-app-widget.c:246
+msgid "Removing"
+msgstr "Menghapus"
+
+#. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:95 ../src/gs-feature-tile.c:81
-#: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
+#: ../src/gs-app-tile.c:107 ../src/gs-app-tile.c:111
+#: ../src/gs-feature-tile.c:81 ../src/gs-popular-tile.c:88
+#: ../src/gs-popular-tile.c:92
 msgid "Updates"
 msgstr "Pemutakhiran"
 
@@ -455,7 +472,7 @@ msgstr "Batal"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:210
+#: ../src/gs-app-widget.c:210 ../src/gs-shell-details.c:136
 msgid "Pending"
 msgstr "Tertunda"
 
@@ -472,18 +489,6 @@ msgstr "Pasang"
 #: ../src/gs-shell-installed.c:205 ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Hapus"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being installed
-#: ../src/gs-app-widget.c:237
-msgid "Installing"
-msgstr "Memasang"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being erased
-#: ../src/gs-app-widget.c:246
-msgid "Removing"
-msgstr "Menghapus"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -517,80 +522,80 @@ msgid "History"
 msgstr "Riwayat"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:258
+#: ../src/gs-offline-updates.c:249
 msgid "Failed To Update"
 msgstr "Gagal Memutakhirkan"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:264
+#: ../src/gs-offline-updates.c:255
 msgid "A previous update was unfinished."
 msgstr "Pemutakhiran sebelumnya tak selesai."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:274
+#: ../src/gs-offline-updates.c:265
 msgid "Network access was required but not available."
 msgstr "Akses jaringan diperlukan tapi tak tersedia."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:283
+#: ../src/gs-offline-updates.c:274
 msgid "An update was not signed in the correct way."
 msgstr "Suatu pemutakhiran tak ditandatangani secara benar."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:293
+#: ../src/gs-offline-updates.c:284
 msgid "The update could not be completed."
 msgstr "Pemutakhiran tak bisa diselesaikan."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:298
+#: ../src/gs-offline-updates.c:289
 msgid "The update was cancelled."
 msgstr "Pemutakhiran dibatalkan."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:304
+#: ../src/gs-offline-updates.c:295
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
 "Pemutakhiran luring diminta tapi tak ada paket yang perlu dimutakhirkan."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:308
+#: ../src/gs-offline-updates.c:299
 msgid "No space was left on the drive."
 msgstr "Tak ada ruang tersisa pada kandar."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:316
+#: ../src/gs-offline-updates.c:307
 msgid "An update failed to install correctly."
 msgstr "Suatu pemutakhiran gagal dipasang dengan benar."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:321
+#: ../src/gs-offline-updates.c:312
 msgid "The offline update failed in an unexpected way."
 msgstr "Pemutakhiran luring gagal dalam cara yang tak diduga."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:330
+#: ../src/gs-offline-updates.c:321
 msgid "Detailed errors from the package manager follow:"
 msgstr "Rincian galat dari manajer paket adalah:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:764
+#: ../src/gs-plugin-loader.c:733
 msgid "OS Updates"
 msgstr "Pemutakhiran OS"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:769
+#: ../src/gs-plugin-loader.c:738
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
@@ -598,12 +603,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1463
+#: ../src/gs-plugin-loader.c:1432
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Tak ada kodek tambahan yang tersedia bagi format %s."
 
-#: ../src/gs-plugin-loader.c:1466
+#: ../src/gs-plugin-loader.c:1435
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -674,10 +679,6 @@ msgstr[0] "%i add-on terpasang"
 msgid "%i application and %i add-ons installed"
 msgid_plural "%i applications and %i add-ons installed"
 msgstr[0] "%i aplikasi dan %i add-on terpasang"
-
-#: ../src/gs-shell-details.c:136
-msgid "_Pending"
-msgstr "_Tertunda"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
@@ -843,35 +844,35 @@ msgstr "Tilik"
 msgid "Not Now"
 msgstr "Jangan Sekarang"
 
-#: ../src/gs-update-monitor.c:156
+#: ../src/gs-update-monitor.c:148
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Pemutakhiran Perangkat Lunak Terpasang"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:160
+#: ../src/gs-update-monitor.c:152
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Pemutakhiran OS yang penting telah dipasang."
 
-#: ../src/gs-update-monitor.c:165
+#: ../src/gs-update-monitor.c:157
 msgid "Software Updates Failed"
 msgstr "Pemutakhiran Perangkat Lunak Gagal"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:159
 msgid "An important OS update failed to be installed."
 msgstr "Suatu pemutakhiran OS yang penting gagal dipasang."
 
-#: ../src/gs-update-monitor.c:176
+#: ../src/gs-update-monitor.c:168
 msgid "Review"
 msgstr "Ulasan"
 
-#: ../src/gs-update-monitor.c:178
+#: ../src/gs-update-monitor.c:170
 msgid "Show Details"
 msgstr "Tampilkan Rincian"
 
-#: ../src/gs-update-monitor.c:179
+#: ../src/gs-update-monitor.c:171
 msgid "OK"
 msgstr "OK"
 
@@ -1032,52 +1033,52 @@ msgid "Development Tools"
 msgstr "Alat Pengembangan"
 
 #: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Membangun"
 
 #: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Basis Data"
 
 #: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Pengawakutu"
 
 #: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "Perancang GUI"
 
 #: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "IDE"
 
 #: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Memprofil"
 
 #: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Manajemen Proyek"
 
 #: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Kendali Revisi"
 
 #: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Penerjemahan"
 
 #: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Pengembangan Web"
 
@@ -1367,82 +1368,82 @@ msgid "Internet"
 msgstr "Internet"
 
 #: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Mengobrol"
 
 #: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Dialup"
 
 #: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "Surel"
 
 #: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Asupan"
 
 #: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Transfer Berkas"
 
 #: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
 msgstr "Radio Amatir"
 
 #: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Perpesanan Instan"
 
 #: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "Klien IRC"
 
 #: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Pemantau"
 
 #: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Berita"
 
 #: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "P2P"
 msgstr "P2P"
 
 #: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Akses Jarak Jauh"
 
 #: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Telefoni"
 
 #: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Konferensi Video"
 
 #: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Peramban Web"
 
 #: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
 msgstr "Pengembangan Web"
 
@@ -1727,52 +1728,52 @@ msgid "Utilities"
 msgstr "Utilitas"
 
 #: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Aksesibilitas"
 
 #: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Pengarsipan"
 
 #: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Kalkulator"
 
 #: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Jam"
 
 #: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Kompresi"
 
 #: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
 msgstr "Alat Berkas"
 
 #: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Peta"
 
 #: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Spiritualitas"
 
 #: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Alat Telefoni"
 
 #: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
 msgstr "Penyunting Teks"
 
@@ -1812,23 +1813,21 @@ msgid "TV"
 msgstr "TV"
 
 #: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Fonta"
 
 #: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Kodek"
 
 #: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Sumber Masukan"
 
 #: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Paket Bahasa"
-
-
