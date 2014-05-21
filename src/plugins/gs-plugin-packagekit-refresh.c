@@ -194,7 +194,7 @@ out:
 }
 
 /**
- * gs_plugin_refresh:
+ * gs_plugin_filename_to_app:
  */
 gboolean
 gs_plugin_filename_to_app (GsPlugin *plugin,
