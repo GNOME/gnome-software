@@ -51,11 +51,13 @@ struct _GsAppRowClass
 {
 	GtkListBoxRowClass	 parent_class;
 	void			(*button_clicked)	(GsAppRow	*app_row);
+	void			(*unrevealed)		(GsAppRow	*app_row);
 };
 
 GType		 gs_app_row_get_type			(void);
 GtkWidget	*gs_app_row_new				(void);
 void		 gs_app_row_refresh			(GsAppRow	*app_row);
+void		 gs_app_row_unreveal			(GsAppRow	*app_row);
 void		 gs_app_row_set_colorful		(GsAppRow	*app_row,
 							 gboolean	 colorful);
 void		 gs_app_row_set_show_update		(GsAppRow	*app_row,

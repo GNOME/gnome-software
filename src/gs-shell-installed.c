@@ -37,8 +37,6 @@
 #define INSTALL_DATE_INSTALLING (G_MAXUINT - 2)
 
 static void	gs_shell_installed_finalize	(GObject	*object);
-static void	gs_shell_installed_remove_row	(GtkListBox	*list_box,
-						 GtkWidget	*child);
 
 struct GsShellInstalledPrivate
 {
@@ -99,36 +97,12 @@ typedef struct {
 } GsShellInstalledHelper;
 
 static void
-row_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer data)
+row_unrevealed (GObject *row, GParamSpec *pspec, gpointer data)
 {
-	GtkWidget *row, *list;
+	GtkWidget *list;
 
-	row = gtk_widget_get_parent (GTK_WIDGET (revealer));
-	list = gtk_widget_get_parent (row);
-
-	gtk_container_remove (GTK_CONTAINER (list), row);
-}
-
-static void
-gs_shell_installed_remove_row (GtkListBox *list_box, GtkWidget *child)
-{
-	GtkWidget *row, *revealer;
-
-	gtk_widget_set_sensitive (child, FALSE);
-	row = gtk_widget_get_parent (child);
-	revealer = gtk_revealer_new ();
-	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), TRUE);
-	gtk_widget_show (revealer);
-
-	g_object_ref (child);
-	gtk_container_remove (GTK_CONTAINER (row), child);
-	gtk_container_add (GTK_CONTAINER (revealer), child);
-	g_object_unref (child);
-
-	gtk_container_add (GTK_CONTAINER (row), revealer);
-	g_signal_connect (revealer, "notify::child-revealed",
-			  G_CALLBACK (row_unrevealed), NULL);
-	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), FALSE);
+	list = gtk_widget_get_parent (GTK_WIDGET (row));
+	gtk_container_remove (GTK_CONTAINER (list), GTK_WIDGET (row));
 }
 
 /**
@@ -163,8 +137,9 @@ gs_shell_installed_app_removed_cb (GObject *source,
 		/* remove from the list */
 		app = gs_app_row_get_app (helper->app_row);
 		g_debug ("removed %s", gs_app_get_id (app));
-		gs_shell_installed_remove_row (GTK_LIST_BOX (priv->list_box_install),
-					       GTK_WIDGET (helper->app_row));
+		gs_app_row_unreveal (helper->app_row);
+		g_signal_connect (helper->app_row, "unrevealed",
+		                  G_CALLBACK (row_unrevealed), NULL);
 	}
 
 	g_object_unref (helper->app_row);

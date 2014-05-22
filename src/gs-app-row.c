@@ -60,6 +60,7 @@ enum {
 
 enum {
 	SIGNAL_BUTTON_CLICKED,
+	SIGNAL_UNREVEALED,
 	SIGNAL_LAST
 };
 
@@ -250,6 +251,40 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 }
 
+static void
+child_unrevealed (GObject *revealer, GParamSpec *pspec, gpointer user_data)
+{
+	GsAppRow *app_row = user_data;
+
+	g_signal_emit (app_row, signals[SIGNAL_UNREVEALED], 0);
+}
+
+void
+gs_app_row_unreveal (GsAppRow *app_row)
+{
+	GtkWidget *child;
+	GtkWidget *revealer;
+
+	g_return_if_fail (GS_IS_APP_ROW (app_row));
+
+	child = gtk_bin_get_child (GTK_BIN (app_row));
+	gtk_widget_set_sensitive (child, FALSE);
+
+	revealer = gtk_revealer_new ();
+	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), TRUE);
+	gtk_widget_show (revealer);
+
+	g_object_ref (child);
+	gtk_container_remove (GTK_CONTAINER (app_row), child);
+	gtk_container_add (GTK_CONTAINER (revealer), child);
+	g_object_unref (child);
+
+	gtk_container_add (GTK_CONTAINER (app_row), revealer);
+	g_signal_connect (revealer, "notify::child-revealed",
+			  G_CALLBACK (child_unrevealed), app_row);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), FALSE);
+}
+
 /**
  * gs_app_row_get_app:
  **/
@@ -353,6 +388,13 @@ gs_app_row_class_init (GsAppRowClass *klass)
 		g_signal_new ("button-clicked",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (GsAppRowClass, button_clicked),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
+
+	signals [SIGNAL_UNREVEALED] =
+		g_signal_new ("unrevealed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsAppRowClass, unrevealed),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
