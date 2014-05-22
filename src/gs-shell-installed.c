@@ -119,7 +119,12 @@ gs_shell_installed_remove_row (GtkListBox *list_box, GtkWidget *child)
 	revealer = gtk_revealer_new ();
 	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), TRUE);
 	gtk_widget_show (revealer);
-	gtk_widget_reparent (child, revealer);
+
+	g_object_ref (child);
+	gtk_container_remove (GTK_CONTAINER (row), child);
+	gtk_container_add (GTK_CONTAINER (revealer), child);
+	g_object_unref (child);
+
 	gtk_container_add (GTK_CONTAINER (row), revealer);
 	g_signal_connect (revealer, "notify::child-revealed",
 			  G_CALLBACK (row_unrevealed), NULL);
