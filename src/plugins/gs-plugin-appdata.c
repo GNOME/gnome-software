@@ -26,7 +26,6 @@
 #include <appstream-glib.h>
 
 struct GsPluginPrivate {
-	gchar			*cachedir;
 	gsize			 done_init;
 	GHashTable		*hash;		/* of "id" : "filename" */
 };
@@ -48,9 +47,6 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->cachedir = g_build_filename (DATADIR,
-						   "appdata",
-						   NULL);
 	plugin->priv->hash = g_hash_table_new_full (g_str_hash, g_str_equal,
 						    g_free, g_free);
 }
@@ -73,25 +69,28 @@ gs_plugin_get_deps (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_free (plugin->priv->cachedir);
 	g_hash_table_unref (plugin->priv->hash);
 }
 
 /**
- * gs_plugin_startup:
+ * gs_plugin_add_datadir:
  */
 static gboolean
-gs_plugin_startup (GsPlugin *plugin, GError **error)
+gs_plugin_add_datadir (GsPlugin *plugin, const gchar *datadir, GError **error)
 {
-	GDir *dir;
+	GDir *dir = NULL;
 	GError *error_local = NULL;
 	const gchar *tmp;
 	gboolean ret = TRUE;
+	gchar *cachedir;
 	gchar *ext_tmp;
 	gchar *id;
 
 	/* find all the files installed */
-	dir = g_dir_open (plugin->priv->cachedir, 0, &error_local);
+	cachedir = g_build_filename (datadir, "appdata", NULL);
+	if (!g_file_test (cachedir, G_FILE_TEST_EXISTS))
+		goto out;
+	dir = g_dir_open (cachedir, 0, &error_local);
 	if (dir == NULL) {
 		g_debug ("Could not open AppData directory: %s",
 			 error_local->message);
@@ -103,41 +102,42 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 			continue;
 		if (!g_str_has_suffix (tmp, ".appdata.xml")) {
 			g_warning ("AppData: not a data file: %s/%s",
-				   plugin->priv->cachedir, tmp);
+				   cachedir, tmp);
 			continue;
 		}
 		id = g_strdup (tmp);
 		ext_tmp = g_strstr_len (id, -1, ".appdata.xml");
 		if (ext_tmp != NULL)
 			*ext_tmp = '\0';
-		g_hash_table_insert (plugin->priv->hash,
-				     id,
-				     g_build_filename (plugin->priv->cachedir,
-						       tmp, NULL));
+		g_hash_table_insert (plugin->priv->hash, id,
+				     g_build_filename (cachedir, tmp, NULL));
 	}
 out:
+	g_free (cachedir);
 	if (dir != NULL)
 		g_dir_close (dir);
 	return ret;
 }
 
 /**
- * gs_plugin_appdata_get_best_locale:
+ * gs_plugin_startup:
  */
-static const gchar *
-gs_plugin_appdata_get_best_locale (GHashTable *locale_hash)
+static gboolean
+gs_plugin_startup (GsPlugin *plugin, GError **error)
 {
-	const gchar * const *locales;
-	const gchar *tmp;
+	const gchar * const *dirs;
+	gboolean ret = TRUE;
 	guint i;
 
-	locales = g_get_language_names ();
-	for (i = 0; locales[i] != NULL; i++) {
-		tmp = g_hash_table_lookup (locale_hash, locales[i]);
-		if (tmp != NULL)
-			return tmp;
+	/* add all possible locations */
+	dirs = g_get_system_data_dirs ();
+	for (i = 0; dirs[i] != NULL; i++) {
+		ret = gs_plugin_add_datadir (plugin, dirs[i], error);
+		if (!ret)
+			goto out;
 	}
-	return NULL;
+out:
+	return ret;
 }
 
 /**
