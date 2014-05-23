@@ -148,66 +148,49 @@ gs_plugin_refine_by_local_appdata (GsApp *app,
 				   const gchar *filename,
 				   GError **error)
 {
-	GHashTable *description = NULL;
-	GNode *application;
-	GNode *n;
-	GNode *root = NULL;
+	AsApp *appdata;
+	GPtrArray *screenshots;
 	const gchar *tmp;
 	gboolean ret;
-	gchar *data = NULL;
 	gchar *desc = NULL;
 
-	/* read file */
-	ret = g_file_get_contents (filename, &data, NULL, error);
+	/* parse */
+	appdata = as_app_new ();
+	ret = as_app_parse_file (appdata,
+				 filename,
+				 AS_APP_PARSE_FLAG_USE_HEURISTICS,
+				 error);
 	if (!ret)
-		goto out;
-	root = as_node_from_xml (data, -1, AS_NODE_FROM_XML_FLAG_NONE, error);
-	if (root == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-
-	/* parse content */
-	application = as_node_find (root, "application");
-	if (application == NULL)
 		goto out;
 
 	/* <name> */
-	tmp = as_node_get_localized_best (application, "name");
+	tmp = as_app_get_name (appdata, NULL);
 	if (tmp != NULL)
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL, tmp);
 
 	/* <summary> */
-	tmp = as_node_get_localized_best (application, "summary");
+	tmp = as_app_get_comment (appdata, NULL);
 	if (tmp != NULL)
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, tmp);
 
 	/* <screenshots> */
-	n = as_node_find (application, "screenshots");
-	if (n != NULL)
+	screenshots = as_app_get_screenshots (appdata);
+	if (screenshots->len > 0)
 		gs_app_add_kudo (app, GS_APP_KUDO_HAS_SCREENSHOTS);
 
 	/* <url> */
-	n = as_node_find (root, "url");
-	if (n != NULL && gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
-		gs_app_set_url (app, GS_APP_URL_KIND_HOMEPAGE,
-				as_node_get_data (n));
-	}
+	tmp = as_app_get_url_item (appdata, AS_URL_KIND_HOMEPAGE);
+	if (tmp != NULL && gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL)
+		gs_app_set_url (app, GS_APP_URL_KIND_HOMEPAGE, tmp);
 
 	/* <project_group> */
-	n = as_node_find (application, "project_group");
-	if (n != NULL && gs_app_get_project_group (app) == NULL)
-		gs_app_set_project_group (app, as_node_get_data (n));
+	tmp = as_app_get_project_group (appdata);
+	if (tmp != NULL && gs_app_get_project_group (app) == NULL)
+		gs_app_set_project_group (app, tmp);
 
 	/* <description> */
-	n = as_node_find (application, "description");
-	if (n != NULL) {
-		description = as_node_get_localized_unwrap (n, error);
-		if (description == NULL) {
-			ret = FALSE;
-			goto out;
-		}
-		tmp = gs_plugin_appdata_get_best_locale (description);
+	tmp = as_app_get_description (appdata, NULL);
+	if (tmp != NULL) {
 		desc = as_markup_convert_simple (tmp, -1, error);
 		if (desc == NULL) {
 			ret = FALSE;
@@ -216,12 +199,8 @@ gs_plugin_refine_by_local_appdata (GsApp *app,
 		gs_app_set_description (app, GS_APP_QUALITY_NORMAL, desc);
 	}
 out:
-	if (root != NULL)
-		as_node_unref (root);
-	if (description != NULL)
-		g_hash_table_unref (description);
-	g_free (data);
 	g_free (desc);
+	g_object_unref (appdata);
 	return ret;
 }
 
