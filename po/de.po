@@ -8,9 +8,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-04-05 22:41+0200\n"
-"PO-Revision-Date: 2014-04-05 22:42+0100\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-05-18 19:28+0000\n"
+"PO-Revision-Date: 2014-05-21 11:05+0100\n"
 "Last-Translator: Christian Kirbach <christian.kirbach@gmail.com>\n"
 "Language-Team: Deutsch <>\n"
 "Language: de\n"
@@ -18,7 +19,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.5.4\n"
+"X-Generator: Poedit 1.5.5\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "Application manager for GNOME"
@@ -51,12 +52,12 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Zu Anwendungsordner hinzufügen"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
 #: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "_Abbrechen"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
 msgid "_Add"
 msgstr "_Hinzufügen"
 
@@ -78,7 +79,7 @@ msgstr "_Beenden"
 #. * where we are showing the application was installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-history-dialog.c:88
 #: ../src/gs-popular-tile.c:79 ../src/gs-popular-tile.c:82
 #: ../src/popular-tile.ui.h:1
@@ -379,7 +380,7 @@ msgstr "30. Januar 2014"
 msgid "Remove Source"
 msgstr "Quelle entfernen"
 
-#: ../src/gs-app-folder-dialog.c:313
+#: ../src/gs-app-folder-dialog.c:325
 msgid "Folder Name"
 msgstr "Ordnername"
 
@@ -440,10 +441,27 @@ msgid "Show profiling information for the service"
 msgstr "Profiling-Informationen für den Dienst anzeigen"
 
 #. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being installing
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92 ../src/gs-app-widget.c:237
+msgid "Installing"
+msgstr "Installieren"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being removed
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#: ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101 ../src/gs-app-widget.c:246
+msgid "Removing"
+msgstr "Entfernen"
+
+#. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:95 ../src/gs-feature-tile.c:81
-#: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
+#: ../src/gs-app-tile.c:107 ../src/gs-app-tile.c:111
+#: ../src/gs-feature-tile.c:81 ../src/gs-popular-tile.c:88
+#: ../src/gs-popular-tile.c:92
 msgid "Updates"
 msgstr "Aktualisierungen"
 
@@ -461,7 +479,7 @@ msgstr "Abbrechen"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:210
+#: ../src/gs-app-widget.c:210 ../src/gs-shell-details.c:136
 msgid "Pending"
 msgstr "Ausstehend"
 
@@ -477,18 +495,6 @@ msgstr "Installieren"
 #: ../src/gs-app-widget.c:226 ../src/gs-shell-details.c:1057
 #: ../src/gs-shell-installed.c:205 ../src/gs-shell-search.c:164
 msgid "Remove"
-msgstr "Entfernen"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being installed
-#: ../src/gs-app-widget.c:237
-msgid "Installing"
-msgstr "Installieren"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being erased
-#: ../src/gs-app-widget.c:246
-msgid "Removing"
 msgstr "Entfernen"
 
 #. TRANSLATORS: this is where all applications that don't
@@ -523,82 +529,82 @@ msgid "History"
 msgstr "Verlauf"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:258
+#: ../src/gs-offline-updates.c:249
 msgid "Failed To Update"
 msgstr "Aktualisierung fehlgeschlagen"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:264
+#: ../src/gs-offline-updates.c:255
 msgid "A previous update was unfinished."
 msgstr "Eine frühere Aktualisierung wurde nicht abgeschlossen."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:274
+#: ../src/gs-offline-updates.c:265
 msgid "Network access was required but not available."
 msgstr "Netzwerkzugriff war erforderlich, jedoch nicht verfügbar."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:283
+#: ../src/gs-offline-updates.c:274
 msgid "An update was not signed in the correct way."
 msgstr "Eine Aktualisierung wurde nicht ordnungsgemäß signiert."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:293
+#: ../src/gs-offline-updates.c:284
 msgid "The update could not be completed."
 msgstr "Die Aktualisierung konnte nicht abgeschlossen werden."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:298
+#: ../src/gs-offline-updates.c:289
 msgid "The update was cancelled."
 msgstr "Die Aktualisierung wurde abgebrochen."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:304
+#: ../src/gs-offline-updates.c:295
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
 "Eine Offline-Aktualisierung wurde angefordert, allerdings benötigen keine "
 "Pakete eine Aktualisierung"
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:308
+#: ../src/gs-offline-updates.c:299
 msgid "No space was left on the drive."
 msgstr "Ungenügender Platz auf der Festplatte."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:316
+#: ../src/gs-offline-updates.c:307
 msgid "An update failed to install correctly."
 msgstr "Die Installation einer Aktualisierung ist fehlgeschlagen."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:321
+#: ../src/gs-offline-updates.c:312
 msgid "The offline update failed in an unexpected way."
 msgstr "Die Offline-Aktualisierung ist auf unerwartete Weise fehlgeschlagen."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:330
+#: ../src/gs-offline-updates.c:321
 msgid "Detailed errors from the package manager follow:"
 msgstr ""
 "Siehe nachfolgend die detaillierten Fehlermeldungen von der Paketverwaltung:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:764
+#: ../src/gs-plugin-loader.c:733
 msgid "OS Updates"
 msgstr "Betriebssystemaktualisierungen"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:769
+#: ../src/gs-plugin-loader.c:738
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
@@ -607,12 +613,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1463
+#: ../src/gs-plugin-loader.c:1432
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Es sind keine zusätzlichen Codecs für das Format %s verfügbar."
 
-#: ../src/gs-plugin-loader.c:1466
+#: ../src/gs-plugin-loader.c:1435
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -686,10 +692,6 @@ msgid "%i application and %i add-ons installed"
 msgid_plural "%i applications and %i add-ons installed"
 msgstr[0] "%i Anwendung und %i Add-on installiert"
 msgstr[1] "%i Anwendungen und %i Add-ons installiert"
-
-#: ../src/gs-shell-details.c:136
-msgid "_Pending"
-msgstr "_Ausstehend"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
@@ -860,38 +862,38 @@ msgstr "Ansicht"
 msgid "Not Now"
 msgstr "Jetzt nicht"
 
-#: ../src/gs-update-monitor.c:156
+#: ../src/gs-update-monitor.c:148
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Software-Aktualisierung installiert"
 msgstr[1] "Kürzlich aktualisierte Software"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:160
+#: ../src/gs-update-monitor.c:152
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Eine wichtige Betriebssystemaktualisierung wurde installiert."
 msgstr[1] "Wichtige Betriebssystemaktualisierungen wurden installiert."
 
-#: ../src/gs-update-monitor.c:165
+#: ../src/gs-update-monitor.c:157
 msgid "Software Updates Failed"
 msgstr "Software-Aktualisierungen fehlgeschlagen"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:159
 msgid "An important OS update failed to be installed."
 msgstr ""
 "Eine wichtige Betriebssystemaktualisierung konnte nicht installiert werden."
 
-#: ../src/gs-update-monitor.c:176
+#: ../src/gs-update-monitor.c:168
 msgid "Review"
 msgstr "Überprüfen"
 
-#: ../src/gs-update-monitor.c:178
+#: ../src/gs-update-monitor.c:170
 msgid "Show Details"
 msgstr "Details anzeigen"
 
-#: ../src/gs-update-monitor.c:179
+#: ../src/gs-update-monitor.c:171
 msgid "OK"
 msgstr "OK"
 
@@ -1052,52 +1054,72 @@ msgid "Development Tools"
 msgstr "Entwicklungswerkzeuge"
 
 #: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Building"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Erstellung"
 
 #: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Databases"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Datenbanken"
 
 #: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Debuggers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Fehlerdiagnose"
 
 #: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "GUI Designers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "GUI-Entwurf"
 
 #: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "IDE"
+msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "Integrierte Entwicklungsumgebung"
 
 #: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Profiling"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Profiling"
 
 #: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Project Management"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Projektverwaltung"
 
 #: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Revision Control"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Revisionskontrolle"
 
 #: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Translation"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Übersetzung"
 
 #: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Web-Entwicklung"
 
@@ -1387,82 +1409,114 @@ msgid "Internet"
 msgstr "Internet"
 
 #: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Chat"
+msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Chat"
 
 #: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Dialup"
+msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Verbindungsaufbau"
 
 #: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Email"
+msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "E-Mail"
 
 #: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Feed"
+msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Nachrichtenquellen"
 
 #: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "File Transfer"
+msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Dateiübertragung"
 
 #: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Ham Radio"
+msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
 msgstr "Amateurfunk"
 
 #: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Instant Messaging"
+msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Sofortnachrichten"
 
 #: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "IRC Clients"
+msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "IRC-Anwendungen"
 
 #: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Monitor"
+msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Überwachung"
 
 #: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "News"
+msgctxt "Menu subcategory of Internet"
 msgid "News"
-msgstr "Neuigkeiten"
+msgstr "Nachrichten"
 
 #: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "P2P"
+msgctxt "Menu subcategory of Internet"
 msgid "P2P"
 msgstr "P2P"
 
 #: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Remote Access"
+msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Fernzugriff"
 
 #: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Telephony"
+msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Telefonie"
 
 #: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Video Conference"
+msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Videokonferenz"
 
 #: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Web Browser"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Internetbrowser"
 
 #: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
 msgstr "Web-Entwicklung"
 
@@ -1747,52 +1801,72 @@ msgid "Utilities"
 msgstr "Zubehör"
 
 #: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Accessibility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Barrierefreiheit"
 
 #: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Archiving"
+msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Archivierung"
 
 #: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Calculator"
+msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Taschenrechner"
 
 #: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Clock"
+msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Uhr"
 
 #: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Compression"
+msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Komprimierung"
 
 #: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of System"
+#| msgid "File Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
 msgstr "Dateiwerkzeuge"
 
 #: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Maps"
+msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Karten"
 
 #: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Spirituality"
+msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Geistigkeit"
 
 #: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Telephony Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Telefoniewerkzeuge"
 
 #: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Text Editor"
+msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
 msgstr "Texteditor"
 
@@ -1832,24 +1906,71 @@ msgid "TV"
 msgstr "TV"
 
 #: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Addons"
+#| msgid "Fonts"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Schriftarten"
 
 #: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Addons"
+#| msgid "Codecs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Codecs"
 
 #: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Addons"
+#| msgid "Input Sources"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Eingabequellen"
 
 #: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Addons"
+#| msgid "Language Packs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Sprachpakete"
+
+#~ msgid "_Pending"
+#~ msgstr "_Ausstehend"
+
+#~ msgctxt "Menu subcategory of Development"
+#~ msgid "Databases"
+#~ msgstr "Datenbanken"
+
+#~ msgctxt "Menu subcategory of Network"
+#~ msgid "Ham Radio"
+#~ msgstr "Amateurfunk"
+
+#~ msgctxt "Menu subcategory of Network"
+#~ msgid "Web Development"
+#~ msgstr "Web-Entwicklung"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "File Tools"
+#~ msgstr "Dateiwerkzeuge"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "Maps"
+#~ msgstr "Karten"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "Spirituality"
+#~ msgstr "Geistigkeit"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Fonts"
+#~ msgstr "Schriftarten"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Codecs"
+#~ msgstr "Codecs"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Input Sources"
+#~ msgstr "Eingabequellen"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Language Packs"
+#~ msgstr "Sprachpakete"
 
 #~ msgid "Getting software details…"
 #~ msgstr "Software-Details werden ermittelt …"
