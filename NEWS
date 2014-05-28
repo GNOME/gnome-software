@@ -1,3 +1,48 @@
+Version 3.13.2
+~~~~~~~~~~~~~~
+Released: 2014-05-28
+
+* Translations:
+ - Added Catalan (Valencian) translation (Carles Ferrando)
+ - Added Khmer translation (Khoem Sokhem)
+ - Added Swedish translation (Mattias Eriksson)
+ - Updated Catalan translation (Jordi Mas)
+ - Updated Czech translation (Marek Černocký)
+ - Updated French translation (Alexandre Franke)
+ - Updated Galician translations (Fran Diéguez)
+ - Updated Greek translation (Tom Tryfonidis)
+ - Updated Hungarian translation (Balázs Úr)
+ - Updated Indonesian translation (Andika Triwidada)
+ - Updated Lithuanian translation (Aurimas Černius)
+ - Updated Polish translation (Piotr Drąg)
+ - Updated Slovenian translation (Matej Urbančič)
+ - Updated Spanish translation (Daniel Mustieles)
+
+* New Features:
+ - Implement search-as-you-type in the overview (Elad Alfassa)
+ - Make the project licenses hyperlinked to the SPDX site (Richard Hughes)
+ - Move installed updates review to a dialog (Kalev Lember)
+ - Support both old-style and new-style appdata files (Richard Hughes)
+
+* Bugfix:
+ - Add Kalev to AUTHORS (Richard Hughes)
+ - Add <project_license> to the AppData file (Richard Hughes)
+ - app widget: Don't reserve space for buttons in the update viewing mode (Kalev Lember)
+ - Break out common code for a list of updates in a separate class (Kalev Lember)
+ - Depend on a new appstream-glib (Richard Hughes)
+ - Don't show _Pending in the header (Matthias Clasen)
+ - Fix the formatting specifiers for the i386 build with newer GCCs (Richard Hughes)
+ - GsApplication: Cancel the cancellable on shutdown (Kalev Lember)
+ - GsApplication: Don't stay running as a service when not asked to (Kalev Lember)
+ - menu-spec: Fix translation of some categories (Matthias Clasen)
+ - Never put 'Complicated' in the license field (Richard Hughes)
+ - Rename GsAppWidget to GsAppRow (Kalev Lember)
+ - Replace deprecated gtk_widget_reparent use (Kalev Lember)
+ - update dialog: Draw a separator between listbox items (Kalev Lember)
+ - update dialog: Implement better back button state tracking (Kalev Lember)
+ - update dialog: Use a GtkStack instead of manually hiding widgets (Kalev Lember)
+ - Use the AppData files in all of the datadirs (Richard Hughes)
+
 Version 3.13.1
 ~~~~~~~~~~~~~~
 Released: 2014-04-28
