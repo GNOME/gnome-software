@@ -300,11 +300,6 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
 	gtk_widget_show (widget);
 
-	if (priv->search_cancellable != NULL) {
-		g_cancellable_cancel (priv->search_cancellable);
-		g_clear_object (&priv->search_cancellable);
-	}
-
         if (scroll_up) {
                 GtkAdjustment *adj;
                 adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_search));
@@ -323,8 +318,9 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_search));
 
-	/* Initiate cancellable */
-	priv->search_cancellable = g_cancellable_new ();
+	/* cancel any pending searches */
+	g_cancellable_cancel (priv->search_cancellable);
+	g_cancellable_reset (priv->search_cancellable);
 
 	/* search for apps */
 	gs_plugin_loader_search_async (priv->plugin_loader,
@@ -529,6 +525,7 @@ gs_shell_search_init (GsShellSearch *shell_search)
 	shell_search->priv = gs_shell_search_get_instance_private (shell_search);
 	shell_search->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_search->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	shell_search->priv->search_cancellable = g_cancellable_new ();
 }
 
 /**
