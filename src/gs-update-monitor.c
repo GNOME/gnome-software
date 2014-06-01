@@ -61,8 +61,6 @@ struct _GsUpdateMonitorClass {
 
 G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
 
-static void notify_offline_update_available (GsUpdateMonitor *monitor);
-
 static gboolean
 reenable_offline_update_notification (gpointer data)
 {
@@ -71,8 +69,6 @@ reenable_offline_update_notification (gpointer data)
 	monitor->offline_update_notified = FALSE;
 
 	monitor->reenable_offline_update_id = 0;
-
-	notify_offline_update_available (monitor);
 
 	return G_SOURCE_REMOVE;
 }
@@ -95,7 +91,7 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 
 	monitor->offline_update_notified = TRUE;
 
-	/* Notify in another hour, if the user does nothing (closes the notification) */
+	/* rate limit update notifications to once per hour */
 	monitor->reenable_offline_update_id = g_timeout_add_seconds (3600, reenable_offline_update_notification, monitor);
 	g_source_set_name_by_id (monitor->reenable_offline_update_id, "[gnome-software] reenable_offline_update_notification");
 
@@ -104,7 +100,7 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	n = g_notification_new (title);
 	g_notification_set_body (n, body);
 	g_notification_add_button_with_target (n, _("View"), "app.set-mode", "s", "updates");
-	g_notification_add_button (n, _("Not Now"), "app.reschedule-updates");
+	g_notification_add_button (n, _("Not Now"), "app.nop");
 	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
 	g_application_send_notification (monitor->application, "updates-available", n);
 	g_object_unref (n);
@@ -591,38 +587,16 @@ remove_stale_notifications (GsUpdateMonitor *monitor)
 	}
 }
 
-static void
-do_reschedule_updates (GSimpleAction   *action,
-		       GVariant        *parameter,
-		       GsUpdateMonitor *monitor)
-{
-	if (monitor->reenable_offline_update_id)
-		g_source_remove (monitor->reenable_offline_update_id);
-
-	/* The user explicitly clicked "Not now". Don't bother him
-	   for another 6 hours */
-
-	monitor->offline_update_notified = TRUE;
-	monitor->reenable_offline_update_id = g_timeout_add_seconds (6 * 3600, reenable_offline_update_notification, monitor);
-	g_source_set_name_by_id (monitor->reenable_offline_update_id, "[gnome-software] reenable_offline_update_notification (longer)");
-}
-
 GsUpdateMonitor *
 gs_update_monitor_new (GsApplication *application)
 {
 	GsUpdateMonitor *monitor;
-	GSimpleAction *reschedule_updates;
 
 	monitor = GS_UPDATE_MONITOR (g_object_new (GS_TYPE_UPDATE_MONITOR, NULL));
 	monitor->application = G_APPLICATION (application);
 	g_application_hold (monitor->application);
 
 	remove_stale_notifications (monitor);
-
-	reschedule_updates = g_simple_action_new ("reschedule-updates", NULL);
-	g_signal_connect_object (reschedule_updates, "activate",
-				 G_CALLBACK (do_reschedule_updates), monitor, 0);
-	g_action_map_add_action (G_ACTION_MAP (application), G_ACTION (reschedule_updates));
 
 	return monitor;
 }
