@@ -61,6 +61,8 @@ struct _GsUpdateMonitorClass {
 
 G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
 
+static void check_updates (GsUpdateMonitor *monitor);
+
 static gboolean
 reenable_offline_update_notification (gpointer data)
 {
@@ -124,7 +126,7 @@ start_monitoring_offline_updates (GsUpdateMonitor *monitor)
 
 	g_signal_connect (monitor->offline_update_monitor, "changed",
 			  G_CALLBACK (offline_update_monitor_cb), monitor);
-        notify_offline_update_available (monitor);
+	check_updates (monitor);
 }
 
 static void
@@ -424,16 +426,12 @@ refresh_cache (GsUpdateMonitor *monitor)
 				       monitor);
 }
 
-static gboolean
-check_hourly_cb (gpointer data)
+static void
+check_updates (GsUpdateMonitor *monitor)
 {
-	GsUpdateMonitor *monitor = data;
-
-	g_debug ("Hourly updates check");
-
 	/* no need to check again */	
 	if (monitor->refresh_cache_due)
-		return G_SOURCE_CONTINUE;
+		return;
 
 	if (monitor->check_timestamp != NULL) {
 		GDateTime *now;
@@ -452,11 +450,11 @@ check_hourly_cb (gpointer data)
 		if (!((now_year > year) ||
 		      (now_year == year && now_month > month) ||
 		      (now_year == year && now_month == month && now_day > day)))
-			return G_SOURCE_CONTINUE;
+			return;
 
 		/* ...and past 6am */
 		if (!(now_hour >= 6))
-			return G_SOURCE_CONTINUE;
+			return;
 
 		g_clear_pointer (&monitor->check_timestamp, g_date_time_unref);
 	}
@@ -471,6 +469,15 @@ check_hourly_cb (gpointer data)
 	monitor->get_updates_due = TRUE;
 
 	refresh_cache (monitor);
+}
+
+static gboolean
+check_hourly_cb (gpointer data)
+{
+	GsUpdateMonitor *monitor = data;
+
+	g_debug ("Hourly updates check");
+	check_updates (monitor);
 
 	return G_SOURCE_CONTINUE;
 }
