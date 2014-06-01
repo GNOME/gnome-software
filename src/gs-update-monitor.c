@@ -498,6 +498,7 @@ notify_network_state_cb (PkControl *control,
 	if (monitor->network_available != available) {
 		monitor->network_available = available;
 
+		/* resume any pending operations */
 		refresh_cache (monitor);
 		get_updates (monitor);
 		download_updates (monitor);
