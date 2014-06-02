@@ -471,8 +471,34 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
 
 	/* set id kind */
-	if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_UNKNOWN)
-		gs_app_set_id_kind (app, as_app_get_id_kind (item));
+	if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_UNKNOWN) {
+		switch (as_app_get_id_kind (item)) {
+		case AS_ID_KIND_UNKNOWN:
+			gs_app_set_id_kind (app, GS_APP_ID_KIND_UNKNOWN);
+			break;
+		case AS_ID_KIND_DESKTOP:
+			gs_app_set_id_kind (app, GS_APP_ID_KIND_DESKTOP);
+			break;
+		case AS_ID_KIND_FONT:
+			gs_app_set_id_kind (app, GS_APP_ID_KIND_FONT);
+			break;
+		case AS_ID_KIND_CODEC:
+			gs_app_set_id_kind (app, GS_APP_ID_KIND_CODEC);
+			break;
+		case AS_ID_KIND_INPUT_METHOD:
+			gs_app_set_id_kind (app, GS_APP_ID_KIND_INPUT_METHOD);
+			break;
+		case AS_ID_KIND_WEB_APP:
+			gs_app_set_id_kind (app, GS_APP_ID_KIND_WEBAPP);
+			break;
+		case AS_ID_KIND_SOURCE:
+			/* handled above */
+			break;
+		default:
+			g_warning ("Unhandled AsIdKind '%s'", as_id_kind_to_string (as_app_get_id_kind (item)));
+			break;
+		}
+	}
 
 	/* set package names */
 	pkgnames = as_app_get_pkgnames (item);
