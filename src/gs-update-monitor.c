@@ -38,6 +38,7 @@ struct _GsUpdateMonitor {
 	GCancellable    *cancellable;
 
 	guint		 check_hourly_id;
+	guint		 start_hourly_checks_id;
 	GDateTime	*check_timestamp;
 	GDateTime	*install_timestamp;
 	gboolean         refresh_cache_due;
@@ -60,8 +61,6 @@ struct _GsUpdateMonitorClass {
 };
 
 G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
-
-static void check_updates (GsUpdateMonitor *monitor);
 
 static gboolean
 reenable_offline_update_notification (gpointer data)
@@ -126,7 +125,6 @@ start_monitoring_offline_updates (GsUpdateMonitor *monitor)
 
 	g_signal_connect (monitor->offline_update_monitor, "changed",
 			  G_CALLBACK (offline_update_monitor_cb), monitor);
-	check_updates (monitor);
 }
 
 static void
@@ -482,6 +480,23 @@ check_hourly_cb (gpointer data)
 	return G_SOURCE_CONTINUE;
 }
 
+static gboolean
+start_hourly_checks_cb (gpointer data)
+{
+	GsUpdateMonitor *monitor = data;
+
+	g_debug ("First hourly updates check");
+	check_updates (monitor);
+
+	monitor->check_hourly_id =
+		g_timeout_add_seconds (3600, check_hourly_cb, monitor);
+	g_source_set_name_by_id (monitor->check_hourly_id,
+				 "[gnome-software] check_hourly_cb");
+
+	monitor->start_hourly_checks_id = 0;
+	return G_SOURCE_REMOVE;
+}
+
 static void
 notify_network_state_cb (PkControl *control,
 			 GParamSpec *pspec,
@@ -522,10 +537,10 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
 	monitor->check_timestamp = g_date_time_new_from_unix_local (tmp);
 
-	monitor->check_hourly_id =
-		g_timeout_add_seconds (3600, check_hourly_cb, monitor);
-	g_source_set_name_by_id (monitor->check_hourly_id,
-				 "[gnome-software] check_hourly_cb");
+	monitor->start_hourly_checks_id =
+		g_timeout_add_seconds (60, start_hourly_checks_cb, monitor);
+	g_source_set_name_by_id (monitor->start_hourly_checks_id,
+				 "[gnome-software] start_hourly_checks_cb");
 
 	monitor->cancellable = g_cancellable_new ();
 	monitor->task = pk_task_new ();
@@ -553,6 +568,10 @@ gs_update_monitor_finalize (GObject *object)
 	if (monitor->check_hourly_id != 0) {
 		g_source_remove (monitor->check_hourly_id);
 		monitor->check_hourly_id = 0;
+	}
+	if (monitor->start_hourly_checks_id != 0) {
+		g_source_remove (monitor->start_hourly_checks_id);
+		monitor->start_hourly_checks_id = 0;
 	}
 	if (monitor->check_offline_update_id != 0) {
 		g_source_remove (monitor->check_offline_update_id);
