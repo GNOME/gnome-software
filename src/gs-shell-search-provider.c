@@ -345,8 +345,6 @@ search_provider_bus_acquired_cb (GDBusConnection *connection,
 					connection,
 					"/org/gnome/Software/SearchProvider", NULL);
 	g_dbus_object_manager_server_set_connection (self->object_manager, connection);
-
-	g_application_release (g_application_get_default ());
 }
 
 static void
@@ -369,6 +367,7 @@ search_provider_dispose (GObject *obj)
 	g_clear_object (&self->cancellable);
 	g_hash_table_destroy (self->metas_cache);
 	cancel_current_search (self);
+	g_application_release (g_application_get_default ());
 
 	G_OBJECT_CLASS (gs_shell_search_provider_parent_class)->dispose (obj);
 }
