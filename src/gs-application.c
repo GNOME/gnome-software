@@ -55,6 +55,7 @@ struct _GsApplication {
 	GsDbusHelper	*dbus_helper;
 	GsShellSearchProvider *search_provider;
 	GNetworkMonitor *network_monitor;
+	GSettings       *settings;
 };
 
 struct _GsApplicationClass {
@@ -84,9 +85,27 @@ gs_application_init (GsApplication *application)
 }
 
 static void
+download_updates_setting_changed (GSettings     *settings,
+                                  const gchar   *key,
+                                  GsApplication *app)
+{
+	if (g_settings_get_boolean (settings, key)) {
+		g_debug ("Enabling update monitor");
+		app->update_monitor = gs_update_monitor_new (app);
+	} else {
+		g_debug ("Disabling update monitor");
+		g_clear_object (&app->update_monitor);
+	}
+}
+
+static void
 gs_application_monitor_updates (GsApplication *app)
 {
-	app->update_monitor = gs_update_monitor_new (app);
+	g_signal_connect (app->settings, "changed::download-updates",
+	                  G_CALLBACK (download_updates_setting_changed), app);
+	download_updates_setting_changed (app->settings,
+	                                  "download-updates",
+	                                  app);
 }
 
 static void
@@ -446,6 +465,7 @@ gs_application_startup (GApplication *application)
 
 	GS_APPLICATION (application)->proxy_settings = gs_proxy_settings_new ();
 	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
+	GS_APPLICATION (application)->settings = g_settings_new ("org.gnome.software");
 	gs_application_monitor_updates (GS_APPLICATION (application));
 	gs_application_provide_search (GS_APPLICATION (application));
 	gs_application_monitor_network (GS_APPLICATION (application));
@@ -479,6 +499,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->search_provider);
 	g_clear_object (&app->network_monitor);
 	g_clear_object (&app->dbus_helper);
+	g_clear_object (&app->settings);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->finalize (object);
 }
