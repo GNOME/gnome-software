@@ -1905,10 +1905,13 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	                                   state->function_name,
 	                                   cancellable,
 	                                   &error);
-	if (!ret) {
+	if (ret) {
+		if (state->state_success != GS_APP_STATE_UNKNOWN)
+			gs_app_set_state (state->app, state->state_success);
+		g_task_return_boolean (task, TRUE);
+	} else {
 		gs_app_set_state (state->app, state->state_failure);
 		g_task_return_error (task, error);
-		return;
 	}
 
 	/* remove from list */
@@ -1917,11 +1920,6 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
 	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
-
-	/* success */
-	if (state->state_success != GS_APP_STATE_UNKNOWN)
-		gs_app_set_state (state->app, state->state_success);
-	g_task_return_boolean (task, TRUE);
 }
 
 static gboolean
