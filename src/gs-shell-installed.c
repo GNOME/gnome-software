@@ -355,6 +355,7 @@ static gchar *
 gs_shell_installed_get_app_sort_key (GsApp *app)
 {
 	GString *key;
+	gchar *casefolded_name;
 
 	key = g_string_sized_new (64);
 
@@ -396,12 +397,11 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 		break;
 	}
 
-	/* sort by install date */
-	g_string_append_printf (key, "%09" G_GUINT64_FORMAT ":",
-				G_MAXUINT64 - gs_app_get_install_date (app));
-
 	/* finally, sort by short name */
-	g_string_append (key, gs_app_get_name (app));
+	casefolded_name = g_utf8_casefold (gs_app_get_name (app), -1);
+	g_string_append (key, casefolded_name);
+	g_free (casefolded_name);
+
 	return g_string_free (key, FALSE);
 }
 
