@@ -93,7 +93,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	} else {
 		tmp = g_strdup_printf ("%s %s",
 		                       gs_app_get_source_default (app),
-		                       gs_app_get_update_version_ui (app));
+		                       gs_app_get_update_version (app));
 		gtk_window_set_title (GTK_WINDOW (dialog), tmp);
 		g_free (tmp);
 	}
@@ -236,7 +236,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 			gtk_widget_set_halign (label, GTK_ALIGN_START);
 			gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 			gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
-			label = gtk_label_new (gs_app_get_update_version_ui (app_related));
+			label = gtk_label_new (gs_app_get_update_version (app_related));
 			g_object_set (label,
 			              "margin-left", 20,
 			              "margin-right", 20,
