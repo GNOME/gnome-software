@@ -33,9 +33,6 @@
 #include "gs-app-folder-dialog.h"
 #include "gs-folders.h"
 
-#define INSTALL_DATE_QUEUED     (G_MAXUINT - 1)
-#define INSTALL_DATE_INSTALLING (G_MAXUINT - 2)
-
 static void	gs_shell_installed_finalize	(GObject	*object);
 
 struct GsShellInstalledPrivate
@@ -364,6 +361,7 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 	/* sort installed, removing, other */
 	switch (gs_app_get_state (app)) {
 	case GS_APP_STATE_INSTALLING:
+	case GS_APP_STATE_QUEUED:
 		g_string_append (key, "1:");
 		break;
 	case GS_APP_STATE_REMOVING:
@@ -487,6 +485,27 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 	gtk_list_box_row_set_header (row, header);
 }
 
+static gboolean
+gs_shell_installed_has_app (GsShellInstalled *shell_installed,
+                            GsApp *app)
+{
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+	GList *children, *l;
+	gboolean ret = FALSE;
+
+	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
+	for (l = children; l; l = l->next) {
+		GsAppRow *app_row = GS_APP_ROW (l->data);
+		if (gs_app_row_get_app (app_row) == app) {
+			ret = TRUE;
+			break;
+		}
+	}
+	g_list_free (children);
+
+	return ret;
+}
+
 /**
  * gs_shell_installed_pending_apps_changed_cb:
  */
@@ -513,21 +532,9 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	}
 	for (i = 0; i < pending->len; i++) {
 		app = GS_APP (g_ptr_array_index (pending, i));
-		/* Sort installing apps above removing and
-		 * installed apps. Be careful not to add
-		 * pending apps more than once.
-		 */
-		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED) {
-			if (gs_app_get_install_date (app) != INSTALL_DATE_QUEUED) {
-				gs_app_set_install_date (app, INSTALL_DATE_QUEUED);
-				gs_shell_installed_add_app (shell_installed, app);
-			}
-		} else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLING) {
-			if (gs_app_get_install_date (app) != INSTALL_DATE_INSTALLING) {
-				gs_app_set_install_date (app, INSTALL_DATE_INSTALLING);
-				gs_shell_installed_add_app (shell_installed, app);
-			}
-		}
+		/* Be careful not to add pending apps more than once. */
+		if (gs_shell_installed_has_app (shell_installed, app) == FALSE)
+			gs_shell_installed_add_app (shell_installed, app);
 	}
 
 	g_ptr_array_unref (pending);
