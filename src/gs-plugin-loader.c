@@ -993,7 +993,6 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_system, NULL);
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
 		                         GS_PLUGIN_LOADER_ERROR,

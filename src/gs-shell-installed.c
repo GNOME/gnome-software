@@ -452,6 +452,15 @@ gs_shell_installed_is_addon_id_kind (GsApp *app)
 	return TRUE;
 }
 
+static gboolean
+gs_shell_installed_is_system_application (GsApp *app)
+{
+	if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_DESKTOP &&
+	    gs_app_get_kind (app) == GS_APP_KIND_SYSTEM)
+		return TRUE;
+	return FALSE;
+}
+
 /**
  * gs_shell_installed_list_header_func
  **/
@@ -468,9 +477,18 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 	if (before == NULL)
 		return;
 
-	/* desktop -> addons */
-	if (!gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (before))) &&
-	    gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (row)))) {
+	if (!gs_shell_installed_is_system_application (gs_app_row_get_app (GS_APP_ROW (before))) &&
+	    gs_shell_installed_is_system_application (gs_app_row_get_app (GS_APP_ROW (row)))) {
+		/* TRANSLATORS: This is the header dividing the normal
+		 * applications and the system ones */
+		header = gtk_label_new (_("System Applications"));
+		g_object_set (header,
+		              "xalign", 0.0,
+		              NULL);
+		context = gtk_widget_get_style_context (header);
+		gtk_style_context_add_class (context, "header-label");
+	} else if (!gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (before))) &&
+	           gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (row)))) {
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the addons */
 		header = gtk_label_new (_("Add-ons"));
