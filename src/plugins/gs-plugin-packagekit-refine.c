@@ -408,11 +408,6 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 			gs_app_set_update_details (app, pk_update_detail_get_update_text (update_detail));
 			break;
 		}
-		if (gs_app_get_update_details (app) == NULL) {
-			/* TRANSLATORS: this is where update details either are
-			 * no longer available or were never provided in the first place */
-			gs_app_set_update_details (app, _("No update details were provided"));
-		}
 	}
 out:
 	if (array != NULL)

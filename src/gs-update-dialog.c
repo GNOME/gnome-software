@@ -85,6 +85,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	GsMarkdown *markdown;
 	gchar *tmp;
 	gchar *update_desc;
+	const gchar *update_details;
 
 	/* set window title */
 	kind = gs_app_get_kind (app);
@@ -99,15 +100,16 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	}
 
 	/* get the update description */
-	if (gs_app_get_update_details (app) == NULL) {
+	update_details = gs_app_get_update_details (app);
+	if (update_details == NULL || update_details[0] == '\0') {
 		/* TRANSLATORS: this is where the packager did not write a
 		 * description for the update */
-		update_desc = g_strdup ("No update description");
+		update_desc = g_strdup ("No update description available.");
 	} else {
 		markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 		gs_markdown_set_smart_quoting (markdown, FALSE);
 		gs_markdown_set_autocode (markdown, TRUE);
-		update_desc = gs_markdown_parse (markdown, gs_app_get_update_details (app));
+		update_desc = gs_markdown_parse (markdown, update_details);
 		g_object_unref (markdown);
 	}
 
