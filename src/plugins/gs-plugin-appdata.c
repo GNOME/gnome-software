@@ -100,11 +100,8 @@ gs_plugin_add_datadir (GsPlugin *plugin, const gchar *datadir, GError **error)
 	while ((tmp = g_dir_read_name (dir)) != NULL) {
 		if (g_strcmp0 (tmp, "schema") == 0)
 			continue;
-		if (!g_str_has_suffix (tmp, ".appdata.xml")) {
-			g_warning ("AppData: not a data file: %s/%s",
-				   cachedir, tmp);
+		if (as_app_guess_source_kind (tmp) != AS_APP_SOURCE_KIND_APPDATA)
 			continue;
-		}
 		id = g_strdup (tmp);
 		ext_tmp = g_strstr_len (id, -1, ".appdata.xml");
 		if (ext_tmp != NULL)
