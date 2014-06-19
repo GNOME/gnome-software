@@ -367,6 +367,28 @@ gs_plugin_appstream_set_license (GsApp *app, const gchar *license_string)
 }
 
 /**
+ * gs_plugin_appstream_is_recent_release:
+ */
+static gboolean
+gs_plugin_appstream_is_recent_release (AsApp *app)
+{
+	AsRelease *release;
+	GPtrArray *releases;
+	guint secs;
+
+	/* get newest release */
+	releases = as_app_get_releases (app);
+	if (releases->len == 0)
+		return FALSE;
+	release = g_ptr_array_index (releases, 0);
+
+	/* is last build less than one year ago? */
+	secs = (g_get_real_time () / G_USEC_PER_SEC) -
+		as_release_get_timestamp (release);
+	return secs / (60 * 60 * 24) < 365;
+}
+
+/**
  * gs_plugin_refine_item:
  */
 static gboolean
@@ -508,6 +530,10 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* set screenshots */
 	gs_plugin_refine_add_screenshots (app, item);
 
+	/* was this application released recently */
+	if (gs_plugin_appstream_is_recent_release (item))
+		gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
+
 	/* add kudos */
 	if (as_app_get_language (item, plugin->priv->locale) > 50)
 		gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
@@ -521,8 +547,6 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
 	if (as_app_get_metadata_item (item, "X-Kudo-UsesNotifications") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_USES_NOTIFICATIONS);
-	if (as_app_get_metadata_item (item, "X-Kudo-RecentRelease") != NULL)
-		gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
 	if (as_app_get_metadata_item (item, "X-Kudo-UsesAppMenu") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_USES_APP_MENU);
 	if (as_app_get_metadata_item (item, "X-Kudo-Popular") != NULL)
