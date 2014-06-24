@@ -34,7 +34,6 @@ struct _GsAppAddonRowPrivate
 	GtkWidget	*name_box;
 	GtkWidget	*name_label;
 	GtkWidget	*description_label;
-	GtkWidget	*spinner;
 	GtkWidget	*label;
 	GtkWidget	*checkbox;
 };
@@ -113,19 +112,6 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 		break;
 	default:
 		gtk_widget_set_visible (priv->label, FALSE);
-		break;
-	}
-
-	/* update the spinner */
-	switch (gs_app_get_state (row->priv->app)) {
-	case GS_APP_STATE_INSTALLING:
-	case GS_APP_STATE_REMOVING:
-		gtk_spinner_start (GTK_SPINNER (priv->spinner));
-		gtk_widget_set_visible (priv->spinner, TRUE);
-		break;
-	default:
-		gtk_spinner_stop (GTK_SPINNER (priv->spinner));
-		gtk_widget_set_visible (priv->spinner, FALSE);
 		break;
 	}
 
@@ -251,7 +237,6 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, name_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, name_label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, description_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, checkbox);
 }
