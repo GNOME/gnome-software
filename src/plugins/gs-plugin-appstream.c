@@ -35,6 +35,8 @@ struct GsPluginPrivate {
 	gsize			 done_init;
 };
 
+static gboolean gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error);
+
 /**
  * gs_plugin_get_name:
  */
@@ -276,6 +278,38 @@ out:
 }
 
 /**
+ * gs_plugin_refine_add_addons:
+ */
+static void
+gs_plugin_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
+{
+	GPtrArray *addons;
+	guint i;
+
+	addons = as_app_get_addons (item);
+	if (addons == NULL)
+		return;
+
+	for (i = 0; i < addons->len; i++) {
+		AsApp *as_addon = g_ptr_array_index (addons, i);
+		GsApp *addon;
+		GError *error = NULL;
+		gboolean ret;
+
+		addon = gs_app_new (as_app_get_id_full (as_addon));
+
+		/* add all the data we can */
+		ret = gs_plugin_refine_item (plugin, addon, as_addon, &error);
+		if (!ret) {
+			g_warning ("failed to refine addon: %s", error->message);
+			g_error_free (error);
+			continue;
+		}
+
+		gs_app_add_addon (app, addon);
+	}
+}
+/**
  * gs_plugin_refine_add_screenshots:
  */
 static void
@@ -516,6 +550,9 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		case AS_ID_KIND_SOURCE:
 			/* handled above */
 			break;
+		case AS_ID_KIND_ADDON:
+			gs_app_set_id_kind (app, GS_APP_ID_KIND_ADDON);
+			break;
 		default:
 			g_warning ("Unhandled AsIdKind '%s'", as_id_kind_to_string (as_app_get_id_kind (item)));
 			break;
@@ -526,6 +563,9 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	pkgnames = as_app_get_pkgnames (item);
 	if (pkgnames->len > 0 && gs_app_get_sources(app)->len == 0)
 		gs_app_set_sources (app, pkgnames);
+
+	/* set addons */
+	gs_plugin_refine_add_addons (plugin, app, item);
 
 	/* set screenshots */
 	gs_plugin_refine_add_screenshots (app, item);

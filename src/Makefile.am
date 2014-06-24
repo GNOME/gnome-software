@@ -31,6 +31,7 @@ UI_FILES =						\
 	category-tile.ui				\
 	feature-tile.ui					\
 	gnome-software.ui				\
+	gs-app-addon-row.ui				\
 	gs-app-row.ui					\
 	gs-history-dialog.ui				\
 	gs-shell-category.ui				\
@@ -95,6 +96,8 @@ gnome_software_SOURCES =				\
 	gs-app.h					\
 	gs-category.c					\
 	gs-category.h					\
+	gs-app-addon-row.c				\
+	gs-app-addon-row.h				\
 	gs-app-row.c					\
 	gs-app-row.h					\
 	gs-star-widget.c				\

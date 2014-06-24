@@ -602,7 +602,7 @@
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="margin_top">28</property>
-                        <property name="margin_bottom">24</property>
+                        <property name="margin_bottom">12</property>
                         <property name="halign">start</property>
                         <property name="valign">start</property>
                         <property name="hexpand">True</property>
@@ -888,6 +888,69 @@
                         <property name="position">10</property>
                       </packing>
                     </child>
+
+                    <child>
+                      <object class="GtkBox" id="box_addons">
+                        <property name="visible">True</property>
+                        <property name="orientation">vertical</property>
+                        <property name="margin_top">28</property>
+
+                        <child>
+                          <object class="GtkBox" id="box_addons_title">
+                            <property name="visible">True</property>
+                            <property name="orientation">vertical</property>
+                            <property name="margin_bottom">12</property>
+                            <child>
+                              <object class="GtkLabel" id="label_addons_title">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="halign">start</property>
+                                <property name="valign">start</property>
+                                <property name="hexpand">True</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Addons</property>
+                                <style>
+                                  <class name="application-details-title"/>
+                                </style>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_addons_uninstalled_app">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="xalign">0</property>
+                                <property name="label" translatable="yes">Selected addons will be installed with the application.</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+
+                        <child>
+                          <object class="GtkFrame" id="box_addons_frame">
+                            <property name="visible">True</property>
+                            <property name="shadow_type">in</property>
+                            <property name="halign">fill</property>
+                            <property name="valign">start</property>
+                            <style>
+                              <class name="view"/>
+                            </style>
+                            <child>
+                              <object class="GtkListBox" id="list_box_addons">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="selection_mode">none</property>
+                              </object>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">11</property>
+                      </packing>
+                    </child>
+
                   </object>
                 </child>
               </object>

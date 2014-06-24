@@ -225,7 +225,9 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     GError **error)
 {
 	GList *l;
+	GList *addons_list = NULL;
 	GList *related_list = NULL;
+	GPtrArray *addons;
 	GPtrArray *related;
 	GsApp *app;
 	GsPlugin *plugin;
@@ -252,6 +254,32 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 							  error);
 		if (!ret)
 			goto out;
+	}
+
+	/* refine addons one layer deep */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) > 0) {
+		flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS;
+		for (l = *list; l != NULL; l = l->next) {
+			app = GS_APP (l->data);
+			addons = gs_app_get_addons (app);
+			for (i = 0; i < addons->len; i++) {
+				GsApp *addon = g_ptr_array_index (addons, i);
+				g_debug ("refining app %s addon %s",
+					 gs_app_get_id (app),
+					 gs_app_get_id (addon));
+				gs_plugin_add_app (&addons_list, addon);
+			}
+		}
+		if (addons_list != NULL) {
+			ret = gs_plugin_loader_run_refine (plugin_loader,
+							   function_name_parent,
+							   &addons_list,
+							   flags,
+							   cancellable,
+							   error);
+			if (!ret)
+				goto out;
+		}
 	}
 
 	/* also do related packages one layer deep */
@@ -287,6 +315,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	/* dedupe applications we already know about */
 	gs_plugin_loader_list_dedupe (plugin_loader, *list);
 out:
+	gs_plugin_list_free (addons_list);
 	gs_plugin_list_free (related_list);
 	gs_plugin_list_free (freeze_list);
 	return ret;
@@ -1888,7 +1917,9 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GPtrArray *addons;
 	gboolean ret;
+	guint i;
 	guint id;
 
 	/* add to list */
@@ -1905,11 +1936,28 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	                                   cancellable,
 	                                   &error);
 	if (ret) {
-		if (state->state_success != GS_APP_STATE_UNKNOWN)
+		if (state->state_success != GS_APP_STATE_UNKNOWN) {
 			gs_app_set_state (state->app, state->state_success);
+			addons = gs_app_get_addons (state->app);
+			for (i = 0; i < addons->len; i++) {
+				GsApp *addon = g_ptr_array_index (addons, i);
+				if (gs_app_get_to_be_installed (addon)) {
+					gs_app_set_state (addon, state->state_success);
+					gs_app_set_to_be_installed (addon, FALSE);
+				}
+			}
+		}
 		g_task_return_boolean (task, TRUE);
 	} else {
 		gs_app_set_state (state->app, state->state_failure);
+		addons = gs_app_get_addons (state->app);
+		for (i = 0; i < addons->len; i++) {
+			GsApp *addon = g_ptr_array_index (addons, i);
+			if (gs_app_get_to_be_installed (addon)) {
+				gs_app_set_state (addon, state->state_failure);
+				gs_app_set_to_be_installed (addon, FALSE);
+			}
+		}
 		g_task_return_error (task, error);
 	}
 
@@ -2029,9 +2077,11 @@ save_install_queue (GsPluginLoader *plugin_loader)
 static void
 add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
+	GPtrArray *addons;
+	guint i;
 	guint id;
 
-	/* FIXME: persist this */
+	/* queue the app itself */
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_add (plugin_loader->priv->pending_apps, g_object_ref (app));
 	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
@@ -2040,12 +2090,22 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 	save_install_queue (plugin_loader);
+
+	/* recursively queue any addons */
+	addons = gs_app_get_addons (app);
+	for (i = 0; i < addons->len; i++) {
+		GsApp *addon = g_ptr_array_index (addons, i);
+		if (gs_app_get_to_be_installed (addon))
+			add_app_to_install_queue (plugin_loader, addon);
+	}
 }
 
 static gboolean
 remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
+	GPtrArray *addons;
 	gboolean ret;
+	guint i;
 	guint id;
 
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
@@ -2057,6 +2117,13 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 		id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 		g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 		save_install_queue (plugin_loader);
+
+		/* recursively remove any queued addons */
+		addons = gs_app_get_addons (app);
+		for (i = 0; i < addons->len; i++) {
+			GsApp *addon = g_ptr_array_index (addons, i);
+			remove_app_from_install_queue (plugin_loader, addon);
+		}
 	}
 
 	return ret;

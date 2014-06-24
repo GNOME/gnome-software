@@ -29,6 +29,7 @@
 #include "gs-utils.h"
 
 #include "gs-shell-details.h"
+#include "gs-app-addon-row.h"
 #include "gs-history-dialog.h"
 #include "gs-screenshot-image.h"
 #include "gs-star-widget.h"
@@ -55,6 +56,7 @@ struct GsShellDetailsPrivate
 	GtkWidget		*application_details_icon;
 	GtkWidget		*application_details_summary;
 	GtkWidget		*application_details_title;
+	GtkWidget		*box_addons;
 	GtkWidget		*box_details;
 	GtkWidget		*box_details_description;
 	GtkWidget		*box_details_header;
@@ -69,6 +71,7 @@ struct GsShellDetailsPrivate
 	GtkWidget		*infobar_details_package_baseos;
 	GtkWidget		*infobar_details_repo;
 	GtkWidget		*infobar_details_webapp;
+	GtkWidget		*label_addons_uninstalled_app;
 	GtkWidget		*label_details_category_value;
 	GtkWidget		*label_details_developer_title;
 	GtkWidget		*label_details_developer_value;
@@ -78,6 +81,7 @@ struct GsShellDetailsPrivate
 	GtkWidget		*label_details_size_value;
 	GtkWidget		*label_details_updated_value;
 	GtkWidget		*label_details_version_value;
+	GtkWidget		*list_box_addons;
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
 	GtkWidget		*stack_details;
@@ -513,6 +517,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	GError *error = NULL;
 	GPtrArray *history;
 	GdkPixbuf *pixbuf = NULL;
+	GList *addons, *l;
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget2;
 	const gchar *tmp;
@@ -774,6 +779,83 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		gtk_widget_set_visible (priv->infobar_details_webapp, FALSE);
 		break;
 	}
+
+	/* only show the "select addons" string if the app isn't yet installed */
+	switch (gs_app_get_state (priv->app)) {
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+		gtk_widget_set_visible (priv->label_addons_uninstalled_app, FALSE);
+		break;
+	default:
+		gtk_widget_set_visible (priv->label_addons_uninstalled_app, TRUE);
+		break;
+	}
+
+	addons = gtk_container_get_children (GTK_CONTAINER (priv->list_box_addons));
+	gtk_widget_set_visible (priv->box_addons, addons != NULL);
+	for (l = addons; l; l = l->next) {
+		/* show checkboxes in front of addons if the app isn't yet installed */
+		switch (gs_app_get_state (priv->app)) {
+		case GS_APP_STATE_INSTALLED:
+		case GS_APP_STATE_UPDATABLE:
+			break;
+		default:
+			break;
+		}
+	}
+	g_list_free (addons);
+}
+
+static void
+list_header_func (GtkListBoxRow *row,
+                  GtkListBoxRow *before,
+                  gpointer user_data)
+{
+	GtkWidget *header = NULL;
+	if (before != NULL)
+		header = gtk_separator_new (GTK_ORIENTATION_HORIZONTAL);
+	gtk_list_box_row_set_header (row, header);
+}
+
+static gint
+list_sort_func (GtkListBoxRow *a,
+                GtkListBoxRow *b,
+                gpointer user_data)
+{
+	GsApp *a1 = gs_app_addon_row_get_addon (GS_APP_ADDON_ROW (a));
+	GsApp *a2 = gs_app_addon_row_get_addon (GS_APP_ADDON_ROW (b));
+
+	return g_strcmp0 (gs_app_get_name (a1),
+	                  gs_app_get_name (a2));
+}
+
+static void gs_shell_details_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsShellDetails *shell_details);
+
+static void
+gs_shell_details_refresh_addons (GsShellDetails *shell_details)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	GPtrArray *addons;
+	guint i;
+
+	gs_container_remove_all (GTK_CONTAINER (priv->list_box_addons));
+
+	addons = gs_app_get_addons (priv->app);
+	for (i = 0; i < addons->len; i++) {
+		GsApp *addon;
+		GtkWidget *row;
+
+	        addon = g_ptr_array_index (addons, i);
+	        row = gs_app_addon_row_new ();
+
+	        gs_app_addon_row_set_addon (GS_APP_ADDON_ROW (row), addon);
+	        gtk_container_add (GTK_CONTAINER (priv->list_box_addons), row);
+	        gtk_widget_show (row);
+
+	        g_signal_connect (row, "notify::selected",
+	                          G_CALLBACK (gs_shell_details_addon_selected_cb),
+	                          shell_details);
+	}
 }
 
 /**
@@ -800,6 +882,7 @@ gs_shell_details_app_refine_cb (GObject *source,
 		g_error_free (error);
 		return;
 	}
+	gs_shell_details_refresh_addons (shell_details);
 	gs_shell_details_refresh_all (shell_details);
 	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_READY);
 }
@@ -848,6 +931,7 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 	/* change widgets */
 	gs_shell_details_refresh (shell_details);
 	gs_shell_details_refresh_screenshots (shell_details);
+	gs_shell_details_refresh_addons (shell_details);
 	gs_shell_details_refresh_all (shell_details);
 	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_READY);
 }
@@ -894,7 +978,8 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
 					   priv->cancellable,
 					   gs_shell_details_app_refine_cb,
 					   shell_details);
@@ -1004,10 +1089,10 @@ gs_shell_details_app_removed_cb (GObject *source,
 }
 
 /**
- * gs_shell_details_app_remove_button_cb:
+ * gs_shell_details_app_remove
  **/
 static void
-gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
+gs_shell_details_app_remove (GsShellDetails *shell_details, GsApp *app)
 {
 	GsShellDetailsHelper *helper;
 	GsShellDetailsPrivate *priv = shell_details->priv;
@@ -1022,7 +1107,7 @@ gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *shell_
 				/* TRANSLATORS: this is a prompt message, and
 				 * '%s' is an application summary, e.g. 'GNOME Clocks' */
 				_("Are you sure you want to remove %s?"),
-				gs_app_get_name (priv->app));
+				gs_app_get_name (app));
 	g_string_prepend (markup, "<b>");
 	g_string_append (markup, "</b>");
 	dialog = gtk_message_dialog_new (window,
@@ -1034,20 +1119,20 @@ gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *shell_
 	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
 						    /* TRANSLATORS: longer dialog text */
 						    _("%s will be removed, and you will have to install it to use it again."),
-						    gs_app_get_name (priv->app));
+						    gs_app_get_name (app));
 	/* TRANSLATORS: this is button text to remove the application */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
-	if (gs_app_get_state (priv->app) == GS_APP_STATE_INSTALLED)
+	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
 		response = gtk_dialog_run (GTK_DIALOG (dialog));
 	else
 		response = GTK_RESPONSE_OK; /* pending install */
 	if (response == GTK_RESPONSE_OK) {
-		g_debug ("remove %s", gs_app_get_id (priv->app));
+		g_debug ("remove %s", gs_app_get_id (app));
 		helper = g_new0 (GsShellDetailsHelper, 1);
 		helper->shell_details = g_object_ref (shell_details);
-		helper->app = g_object_ref (priv->app);
+		helper->app = g_object_ref (app);
 		gs_plugin_loader_app_action_async (priv->plugin_loader,
-						   priv->app,
+						   app,
 						   GS_PLUGIN_LOADER_ACTION_REMOVE,
 						   priv->cancellable,
 						   gs_shell_details_app_removed_cb,
@@ -1058,22 +1143,87 @@ gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *shell_
 }
 
 /**
+ * gs_shell_details_app_remove_button_cb:
+ **/
+static void
+gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+
+	gs_shell_details_app_remove (shell_details, priv->app);
+}
+
+/**
+ * gs_shell_details_app_install:
+ **/
+static void
+gs_shell_details_app_install (GsShellDetails *shell_details, GsApp *app)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	GsShellDetailsHelper *helper;
+
+	helper = g_new0 (GsShellDetailsHelper, 1);
+	helper->shell_details = g_object_ref (shell_details);
+	helper->app = g_object_ref (app);
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+					   app,
+					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   priv->cancellable,
+					   gs_shell_details_app_installed_cb,
+					   helper);
+}
+
+/**
  * gs_shell_details_app_install_button_cb:
  **/
 static void
 gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	GsShellDetailsHelper *helper;
-	helper = g_new0 (GsShellDetailsHelper, 1);
-	helper->shell_details = g_object_ref (shell_details);
-	helper->app = g_object_ref (priv->app);
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-					   priv->app,
-					   GS_PLUGIN_LOADER_ACTION_INSTALL,
-					   priv->cancellable,
-					   gs_shell_details_app_installed_cb,
-					   helper);
+	GList *addons, *l;
+
+	/* Mark ticked addons to be installed together with the app */
+	addons = gtk_container_get_children (GTK_CONTAINER (priv->list_box_addons));
+	for (l = addons; l; l = l->next) {
+		if (gs_app_addon_row_get_selected (l->data)) {
+			GsApp *addon = gs_app_addon_row_get_addon (l->data);
+
+			if (gs_app_get_state (addon) == GS_APP_STATE_AVAILABLE)
+				gs_app_set_to_be_installed (addon, TRUE);
+		}
+	}
+	g_list_free (addons);
+
+	gs_shell_details_app_install (shell_details, priv->app);
+}
+
+/**
+ * gs_shell_details_addon_selected_cb:
+ **/
+static void
+gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
+                                    GParamSpec *pspec,
+                                    GsShellDetails *shell_details)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	GsApp *addon;
+
+	addon = gs_app_addon_row_get_addon (row);
+
+	/* If the main app is already installed, ticking the addon checkbox
+	 * triggers an immediate install. Otherwise we'll install the addon
+	 * together with the main app. */
+	switch (gs_app_get_state (priv->app)) {
+	case GS_APP_STATE_INSTALLED:
+	case GS_APP_STATE_UPDATABLE:
+		if (gs_app_addon_row_get_selected (row))
+			gs_shell_details_app_install (shell_details, addon);
+		else
+			gs_shell_details_app_remove (shell_details, addon);
+		break;
+	default:
+		break;
+	}
 }
 
 /**
@@ -1247,6 +1397,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, application_details_icon);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, application_details_summary);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, application_details_title);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, box_addons);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, box_details);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, box_details_description);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, box_details_header);
@@ -1261,6 +1412,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_package_baseos);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_repo);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_webapp);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_addons_uninstalled_app);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_category_value);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_developer_title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_developer_value);
@@ -1270,6 +1422,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_size_value);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_updated_value);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_version_value);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, list_box_addons);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, scrolledwindow_details);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, spinner_details);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, stack_details);
@@ -1297,6 +1450,13 @@ gs_shell_details_init (GsShellDetails *shell_details)
 		soup_session_add_feature_by_type (priv->session,
 						  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
 	}
+
+	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_addons),
+	                              list_header_func,
+	                              shell_details, NULL);
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_addons),
+	                            list_sort_func,
+	                            shell_details, NULL);
 }
 
 /**

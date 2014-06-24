@@ -87,6 +87,7 @@ typedef enum {
 	GS_APP_ID_KIND_FONT,
 	GS_APP_ID_KIND_CODEC,
 	GS_APP_ID_KIND_WEBAPP,
+	GS_APP_ID_KIND_ADDON,
 	GS_APP_ID_KIND_LAST
 } GsAppIdKind;
 
@@ -246,6 +247,9 @@ void		 gs_app_set_rating_kind		(GsApp		*app,
 guint64		 gs_app_get_size		(GsApp		*app);
 void		 gs_app_set_size		(GsApp		*app,
 						 guint64	 size);
+GPtrArray	*gs_app_get_addons		(GsApp		*app);
+void		 gs_app_add_addon		(GsApp		*app,
+						 GsApp		*addon);
 GPtrArray	*gs_app_get_related		(GsApp		*app);
 void		 gs_app_add_related		(GsApp		*app,
 						 GsApp		*app2);
@@ -270,6 +274,9 @@ void		 gs_app_add_kudo		(GsApp		*app,
 guint64		 gs_app_get_kudos		(GsApp		*app);
 guint		 gs_app_get_kudos_weight	(GsApp		*app);
 guint		 gs_app_get_kudos_percentage	(GsApp		*app);
+gboolean	 gs_app_get_to_be_installed	(GsApp		*app);
+void		 gs_app_set_to_be_installed	(GsApp		*app,
+						 gboolean	 to_be_installed);
 
 G_END_DECLS
 

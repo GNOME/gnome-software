@@ -89,11 +89,14 @@ struct GsAppPrivate
 	GHashTable		*metadata;
 	GdkPixbuf		*pixbuf;
 	GdkPixbuf		*featured_pixbuf;
+	GPtrArray		*addons; /* of GsApp */
+	GHashTable		*addons_hash; /* of "id" */
 	GPtrArray		*related; /* of GsApp */
 	GHashTable		*related_hash; /* of "id-source" */
 	GPtrArray		*history; /* of GsApp */
 	guint64			 install_date;
 	guint64			 kudos;
+	gboolean		 to_be_installed;
 };
 
 enum {
@@ -1484,6 +1487,39 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 }
 
 /**
+ * gs_app_get_addons:
+ */
+GPtrArray *
+gs_app_get_addons (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->addons;
+}
+
+/**
+ * gs_app_add_addon:
+ */
+void
+gs_app_add_addon (GsApp *app, GsApp *addon)
+{
+	gpointer found;
+	const gchar *id;
+
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_APP (addon));
+
+	id = gs_app_get_id (addon);
+	found = g_hash_table_lookup (app->priv->addons_hash, id);
+	if (found != NULL) {
+		g_debug ("Already added %s as an addon", id);
+		return;
+	}
+	g_hash_table_insert (app->priv->addons_hash, g_strdup (id), GINT_TO_POINTER (1));
+
+	g_ptr_array_add (app->priv->addons, g_object_ref (addon));
+}
+
+/**
  * gs_app_get_related:
  */
 GPtrArray *
@@ -1698,6 +1734,26 @@ gs_app_get_kudos_percentage (GsApp *app)
 		percentage = MAX (percentage, 50);
 
 	return MIN (percentage, 100);
+}
+
+/**
+ * gs_app_get_to_be_installed:
+ */
+gboolean
+gs_app_get_to_be_installed (GsApp *app)
+{
+	GsAppPrivate *priv = app->priv;
+	return priv->to_be_installed;
+}
+
+/**
+ * gs_app_set_to_be_installed:
+ */
+void
+gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
+{
+	GsAppPrivate *priv = app->priv;
+	priv->to_be_installed = to_be_installed;
 }
 
 /**
@@ -1962,6 +2018,7 @@ gs_app_init (GsApp *app)
 	app->priv->sources = g_ptr_array_new_with_free_func (g_free);
 	app->priv->source_ids = g_ptr_array_new_with_free_func (g_free);
 	app->priv->categories = g_ptr_array_new_with_free_func (g_free);
+	app->priv->addons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->priv->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
@@ -1969,6 +2026,10 @@ gs_app_init (GsApp *app)
 						     g_str_equal,
 						     g_free,
 						     g_free);
+	app->priv->addons_hash = g_hash_table_new_full (g_str_hash,
+	                                                g_str_equal,
+	                                                g_free,
+	                                                NULL);
 	app->priv->related_hash = g_hash_table_new_full (g_str_hash,
 							 g_str_equal,
 							 g_free,
@@ -2011,6 +2072,8 @@ gs_app_finalize (GObject *object)
 	g_free (priv->update_details);
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
+	g_hash_table_unref (priv->addons_hash);
+	g_ptr_array_unref (priv->addons);
 	g_hash_table_unref (priv->related_hash);
 	g_ptr_array_unref (priv->related);
 	g_ptr_array_unref (priv->history);

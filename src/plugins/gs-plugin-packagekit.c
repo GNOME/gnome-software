@@ -283,15 +283,15 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GPtrArray *array = NULL;
+	GPtrArray *addons;
+	GPtrArray *array_package_ids = NULL;
 	GPtrArray *source_ids;
 	PkError *error_code = NULL;
 	PkResults *results = NULL;
 	const gchar *package_id;
 	gboolean ret = TRUE;
 	gchar **package_ids = NULL;
-	guint i;
-	guint cnt = 0;
+	guint i, j;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
@@ -310,14 +310,32 @@ gs_plugin_app_install (GsPlugin *plugin,
 					     "installing not available");
 			goto out;
 		}
-		package_ids = g_new0 (gchar *, source_ids->len + 1);
+		array_package_ids = g_ptr_array_new_with_free_func (g_free);
 		for (i = 0; i < source_ids->len; i++) {
 			package_id = g_ptr_array_index (source_ids, i);
 			if (g_strstr_len (package_id, -1, ";installed") != NULL)
 				continue;
-			package_ids[cnt++] = g_strdup (package_id);
+			g_ptr_array_add (array_package_ids, g_strdup (package_id));
 		}
-		if (cnt == 0) {
+
+		addons = gs_app_get_addons (app);
+		for (i = 0; i < addons->len; i++) {
+			GsApp *addon = g_ptr_array_index (addons, i);
+
+			if (!gs_app_get_to_be_installed (addon))
+				continue;
+
+			source_ids = gs_app_get_source_ids (addon);
+			for (j = 0; j < source_ids->len; j++) {
+				package_id = g_ptr_array_index (source_ids, j);
+				if (g_strstr_len (package_id, -1, ";installed") != NULL)
+					continue;
+				g_ptr_array_add (array_package_ids, g_strdup (package_id));
+			}
+		}
+		g_ptr_array_add (array_package_ids, NULL);
+
+		if (array_package_ids->len == 0) {
 			ret = FALSE;
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
@@ -326,8 +344,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 			goto out;
 		}
 		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+		addons = gs_app_get_addons (app);
+		for (i = 0; i < addons->len; i++) {
+			GsApp *addon = g_ptr_array_index (addons, i);
+			if (gs_app_get_to_be_installed (addon))
+				gs_app_set_state (addon, GS_APP_STATE_INSTALLING);
+		}
 		results = pk_task_install_packages_sync (plugin->priv->task,
-							 package_ids,
+							 (gchar **) array_package_ids->pdata,
 							 cancellable,
 							 gs_plugin_packagekit_progress_cb, plugin,
 							 error);
@@ -384,8 +408,8 @@ out:
 	g_strfreev (package_ids);
 	if (error_code != NULL)
 		g_object_unref (error_code);
-	if (array != NULL)
-		g_ptr_array_unref (array);
+	if (array_package_ids != NULL)
+		g_ptr_array_unref (array_package_ids);
 	if (results != NULL)
 		g_object_unref (results);
 	return ret;
