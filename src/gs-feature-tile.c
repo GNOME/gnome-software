@@ -139,6 +139,7 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 
 	data = g_string_sized_new (1024);
 	g_string_append (data, ".button.featured-tile {\n");
+	g_string_append (data, "  all: unset;\n");
 	g_string_append (data, "  padding: 0;\n");
 	g_string_append (data, "  border-radius: 0;\n");
 	g_string_append (data, "  border-width: 1px;\n");
