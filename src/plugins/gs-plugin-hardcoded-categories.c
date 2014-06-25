@@ -70,11 +70,11 @@ static Featured featured[] = {
 	{ "Game", "quadrapassel.desktop" },
 	{ "Game", "sol.desktop" },
 	{ "Game", "neverball.desktop" },
-	{ "Game", "gnomine.desktop" },
+	{ "Game", "gnome-mines.desktop" },
 	{ "Game", "wesnoth.desktop" },
 	{ "Game", "supertuxkart.desktop" }, // id ?
 	{ "Game", "redeclipse.desktop" },
-	{ "Game", "glchess.desktop" },
+	{ "Game", "gnome-chess.desktop" },
 	{ "Office", "evolution.desktop" },
 	{ "Office", "geary.desktop" },
 	{ "Office", "gnucash.desktop" },
@@ -107,22 +107,22 @@ static Featured featured[] = {
 	{ "Graphics", "shotwell.desktop" },
 	{ "Graphics", "scribus.desktop" },
 	{ "Graphics", "simple-scan.desktop" },
-	{ "Graphics", "gnome-font-viewer.desktop" },
+	{ "Graphics", "org.gnome.font-viewer.desktop" },
 	{ "Science", "stellarium.desktop" },
 	{ "Science", "octave.desktop" },
 	{ "Science", "saoimage.desktop" },
-	{ "Utility", "gnome-documents.desktop" },
+	{ "Utility", "org.gnome.Documents.desktop" },
 	{ "Utility", "bijiben.desktop" },
-	{ "Utility", "gnome-photos.desktop" },
+	{ "Utility", "org.gnome.Photos.desktop" },
 	{ "Utility", "workrave.desktop" },
-	{ "Utility", "gnome-clocks.desktop" },
+	{ "Utility", "org.gnome.clocks.desktop" },
 	{ "Education", "celestia.desktop" },
 	{ "Network", "geary.desktop" },
 	{ "Network", "mozilla-thunderbird.desktop" },
 	{ "Network", "firefox.desktop" },
 	{ "Network", "transmission-gtk.desktop" },
 	{ "Network", "xchat.desktop" },
-	{ "Network", "polari.desktop" }, // id ?
+	{ "Network", "org.gnome.Polari.desktop" }, // id ?
 	{ "Network", "vinagre.desktop" },
 	{ "Network", "epiphany.desktop" },
 	{ "Network", "pidgin.desktop" },
@@ -131,7 +131,7 @@ static Featured featured[] = {
 	{ "Video", "vlc.desktop" }, // id ?
 	{ "Video", "totem.desktop" },
 	{ "Video", "openshot.desktop" }, // ?
-	{ "Video", "cheese.desktop" },
+	{ "Video", "org.gnome.Cheese.desktop" },
 };
 
 gboolean

@@ -566,16 +566,16 @@ gs_folders_convert (void)
 			NULL
 		};
 		const gchar * const utilities_apps[] = {
-			"baobab.desktop",
+			"org.gnome.baobab.desktop",
 			"deja-dup-preferences.desktop",
 			"eog.desktop",
 			"evince.desktop",
-			"file-roller.desktop",
-			"gcalctool.desktop",
+			"org.gnome.FileRoller.desktop",
+			"gnome-calculator.desktop",
 			"gnome-dictionary.desktop",
 			"gnome-disks.desktop",
-			"gnome-font-viewer.desktop",
-			"gnome-screenshot.desktop",
+			"org.gnome.font-viewer.desktop",
+			"org.gnome.Screenshot.desktop",
 			"gnome-system-log.desktop",
 			"gnome-system-monitor.desktop",
 			"gnome-terminal.desktop",
@@ -593,7 +593,7 @@ gs_folders_convert (void)
 		const gchar * const sundry_apps[] = {
 			"alacarte.desktop",
 			"authconfig.desktop",
-			"dconf-editor.desktop",
+			"ca.desrt.dconf-editor.desktop",
 			"fedora-release-notes.desktop",
 			"firewall-config.desktop",
 			"flash-player-properties.desktop",
