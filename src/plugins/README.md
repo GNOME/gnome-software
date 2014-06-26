@@ -5,24 +5,7 @@ requests and to service user actions like installing, removing and updating.
 Plugins are disabled by default, and need to be enabled manually before they
 are used.
 This allows different distributions to pick and choose how the application
-installer gathers data just by setting a single GSettings key. For instance:
-
->  SuSE has AppStream data and also uses
-> PackageKit. The default on SuSE would
-> be  to enable the `appstream` and
-> `packagekit` plugins and leave the
-> rest disabled.
-
->  Fedora doesn't have AppStream data,
-> so it has to make do with other local
-> data.  On Fedora we would enable the
-> `datadir-apps`, `desktop-db` and all
-> the  `hardcoded` plugins to get some
-> sensible results. For Fedora, it
-> probably also  makes sense to write a
-> plugin that interfaces with FAS or
-> fedora-tagger to get  the extra
-> metadata for uninstalled applications.
+installer gathers data just by setting a single GSettings key.
 
 Plugins also have a priority system where the largest number gets run first.
 That means if one plugin requires some property or metadata set by another
@@ -135,34 +118,3 @@ Overview:    | <p>
 Methods:     | `AddCategoryApps`
 Requires:    | `nothing`
 Refines:     | `[source]->[name,summary,pixbuf,id,kind]`
-
-### datadir-apps ###
-Uses the files in /usr/share/applications to provide icons and, translations for
-installed applications.
-
-Overview:    | <p>
--------------|---
-Methods:     | `nothing`
-Requires:    | `nothing`
-Refines:     | `{DataDir::desktop-filename}->[name]`, `{DataDir::desktop-filename}->[summary]`, `{DataDir::desktop-filename}->[pixbuf]`, `{DataDir::desktop-filename}->[id]`, `{DataDir::desktop-filename}->[kind]`
-
-### datadir-filename ###
-Uses the existance of a files in /usr/share/applications, named $id.desktop to
-set the correct desktop filename., This is useful if we just have a bare `[id]`
-from something like, AddPopular and want to get the details using 'datadir-apps'
-
-Overview:    | <p>
--------------|---
-Methods:     | `nothing`
-Requires:    | `nothing`
-Refines:     | `[id]->{DataDir::desktop-filename}`
-
-### datadir-filename-local ###
-Sets any applications not installed with datadir or /usr as installed as these
-might have been installed manually or using jhbuild.
-
-Overview:    | <p>
--------------|---
-Methods:     | `nothing`
-Requires:    | `nothing`
-Refines:     | `{DataDir::desktop-filename}->[state]`, `[management-plugin]`

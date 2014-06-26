@@ -101,7 +101,7 @@ const gchar **
 gs_plugin_get_deps (GsPlugin *plugin)
 {
 	static const gchar *deps[] = {
-		"datadir-apps",		/* set the state using the installed file */
+		"hardcoded-categories",	/* need category list */
 		NULL };
 	return deps;
 }
@@ -139,6 +139,8 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	ret = as_store_load (plugin->priv->store,
 			     AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM |
 			     AS_STORE_LOAD_FLAG_APP_INFO_USER |
+			     AS_STORE_LOAD_FLAG_APPDATA |
+			     AS_STORE_LOAD_FLAG_DESKTOP |
 			     AS_STORE_LOAD_FLAG_APP_INSTALL,
 			     cancellable,
 			     error);
@@ -271,6 +273,7 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		}
 		break;
 	default:
+		g_warning ("icon kind unknown for %s", as_app_get_id_full (item));
 		break;
 	}
 out:
@@ -453,6 +456,27 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		} else {
 			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 		}
+	}
+
+	/* is installed already */
+	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
+		switch (as_app_get_source_kind (item)) {
+		case AS_APP_SOURCE_KIND_APPDATA:
+		case AS_APP_SOURCE_KIND_DESKTOP:
+			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+		case AS_APP_SOURCE_KIND_METAINFO:
+			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			break;
+		default:
+			break;
+		}
+	}
+
+	/* give the desktopdb plugin a fighting chance */
+	if (as_app_get_source_file (item) != NULL &&
+	    gs_app_get_metadata_item (app, "DataDir::desktop-filename") == NULL) {
+		gs_app_set_metadata (app, "DataDir::desktop-filename",
+				     as_app_get_source_file (item));
 	}
 
 	/* set id */
@@ -819,6 +843,47 @@ gs_plugin_add_search (GsPlugin *plugin,
 		}
 	}
 	gs_profile_stop (plugin->profile, "appstream::search");
+out:
+	return ret;
+}
+
+/**
+ * gs_plugin_add_installed:
+ */
+gboolean
+gs_plugin_add_installed (GsPlugin *plugin,
+			 GList **list,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	AsApp *item;
+	gboolean ret = TRUE;
+	GPtrArray *array;
+	GsApp *app;
+	guint i;
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, cancellable, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			goto out;
+	}
+
+	/* search categories for the search term */
+	gs_profile_start (plugin->profile, "appstream::add_installed");
+	array = as_store_get_apps (plugin->priv->store);
+	for (i = 0; i < array->len; i++) {
+		item = g_ptr_array_index (array, i);
+		if (as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_APPDATA) {
+			app = gs_app_new (as_app_get_id_full (item));
+			ret = gs_plugin_refine_item (plugin, app, item, error);
+			if (!ret)
+				goto out;
+			gs_plugin_add_app (list, app);
+		}
+	}
+	gs_profile_stop (plugin->profile, "appstream::add_installed");
 out:
 	return ret;
 }

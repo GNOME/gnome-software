@@ -61,7 +61,7 @@ dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.13.1 gio-unix-2.0)
 PKG_CHECK_MODULES(PACKAGEKIT, packagekit-glib2 >= 0.8.12)
-PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.1.8)
+PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.2.2)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
 PKG_CHECK_MODULES(SOUP, libsoup-2.4)
 PKG_CHECK_MODULES(GSETTINGS_DESKTOP_SCHEMAS, gsettings-desktop-schemas >= 3.11.5)
@@ -89,7 +89,7 @@ AM_CONDITIONAL(ENABLE_DOGTAIL, test "$enable_dogtail" != no)
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-GS_PLUGIN_API_VERSION=3
+GS_PLUGIN_API_VERSION=4
 AC_SUBST(GS_PLUGIN_API_VERSION)
 AC_DEFINE_UNQUOTED([GS_PLUGIN_API_VERSION], "$GS_PLUGIN_API_VERSION", [the plugin API version])
 
