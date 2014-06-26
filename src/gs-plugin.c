@@ -210,7 +210,7 @@ gs_plugin_list_filter_duplicates (GList **list)
 	hash = g_hash_table_new (g_str_hash, g_str_equal);
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		id = gs_app_get_id (app);
+		id = gs_app_get_id_full (app);
 		if (id == NULL) {
 			gs_plugin_add_app (&new, app);
 			continue;
