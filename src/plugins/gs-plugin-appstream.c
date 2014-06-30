@@ -889,6 +889,52 @@ out:
 }
 
 /**
+ * gs_plugin_add_categories_for_app:
+ */
+static void
+gs_plugin_add_categories_for_app (GList *list, AsApp *app)
+{
+	GList *children;
+	GList *l;
+	GList *l2;
+	GsCategory *category;
+	GsCategory *parent;
+	gboolean found_subcat;
+
+	/* does it match the main category */
+	for (l = list; l != NULL; l = l->next) {
+		parent = GS_CATEGORY (l->data);
+		if (!as_app_has_category (app, gs_category_get_id (parent)))
+			continue;
+		gs_category_increment_size (parent);
+
+		/* does it match any sub-categories */
+		found_subcat = FALSE;
+		children = gs_category_get_subcategories (parent);
+		for (l2 = children; l2 != NULL; l2 = l2->next) {
+			category = GS_CATEGORY (l2->data);
+			if (!as_app_has_category (app, gs_category_get_id (category)))
+				continue;
+			gs_category_increment_size (category);
+			found_subcat = TRUE;
+		}
+		g_list_free (children);
+
+		/* matching the main category but no subcategories means we have
+		 * to create a new 'Other' subcategory manually */
+		if (!found_subcat) {
+			category = gs_category_find_child (parent, "other");
+			if (category == NULL) {
+				category = gs_category_new (parent, "other", NULL);
+				gs_category_add_subcategory (parent, category);
+			}
+			as_app_add_category (app, gs_category_get_id (category), -1);
+			gs_category_increment_size (category);
+		}
+	}
+}
+
+/**
  * gs_plugin_add_categories:
  */
 gboolean
@@ -897,16 +943,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	AsApp *item;
-	const gchar *search_id1;
-	const gchar *search_id2 = NULL;
-	gboolean ret = TRUE;
-	GList *l;
-	GList *l2;
-	GList *children;
+	AsApp *app;
 	GPtrArray *array;
-	GsCategory *category;
-	GsCategory *parent;
+	gboolean ret = TRUE;
 	guint i;
 
 	/* load XML files */
@@ -920,33 +959,13 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	/* find out how many packages are in each category */
 	gs_profile_start (plugin->profile, "appstream::add-categories");
 	array = as_store_get_apps (plugin->priv->store);
-	for (l = *list; l != NULL; l = l->next) {
-		parent = GS_CATEGORY (l->data);
-		search_id2 = gs_category_get_id (parent);
-		children = gs_category_get_subcategories (parent);
-		for (l2 = children; l2 != NULL; l2 = l2->next) {
-			category = GS_CATEGORY (l2->data);
-
-			/* just look at each app in turn */
-			for (i = 0; i < array->len; i++) {
-				item = g_ptr_array_index (array, i);
-				if (as_app_get_id (item) == NULL)
-					continue;
-				if (as_app_get_priority (item) < 0)
-					continue;
-				if (!as_app_has_category (item, search_id2))
-					continue;
-				search_id1 = gs_category_get_id (category);
-				if (search_id1 != NULL &&
-				    !as_app_has_category (item, search_id1))
-					continue;
-
-				/* we have another result */
-				gs_category_increment_size (category);
-				gs_category_increment_size (parent);
-			}
-		}
-		g_list_free (children);
+	for (i = 0; i < array->len; i++) {
+		app = g_ptr_array_index (array, i);
+		if (as_app_get_id (app) == NULL)
+			continue;
+		if (as_app_get_priority (app) < 0)
+			continue;
+		gs_plugin_add_categories_for_app (*list, app);
 	}
 	gs_profile_stop (plugin->profile, "appstream::add-categories");
 out:

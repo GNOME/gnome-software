@@ -89,6 +89,24 @@ gs_category_set_name (GsCategory *category, const gchar *name)
 }
 
 GsCategory *
+gs_category_find_child (GsCategory *category, const gchar *id)
+{
+	GList *l;
+	GsCategoryPrivate *priv = category->priv;
+	GsCategory *tmp;
+
+	/* find the subcategory */
+	if (priv->subcategories == NULL)
+		return NULL;
+	for (l = priv->subcategories; l != NULL; l = l->next) {
+		tmp = GS_CATEGORY (l->data);
+		if (g_strcmp0 (id, gs_category_get_id (tmp)) == 0)
+			return tmp;
+	}
+	return NULL;
+}
+
+GsCategory *
 gs_category_get_parent (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
@@ -129,12 +147,12 @@ gs_category_sort_subcategories_cb (gconstpointer a, gconstpointer b)
 	const gchar *id_a = gs_category_get_id (ca);
 	const gchar *id_b = gs_category_get_id (cb);
 
-	if (!id_a)
+	if (g_strcmp0 (id_a, "other") == 0)
 		return 1;
 	else if (g_strcmp0 (id_a, "featured") == 0)
 		return -1;
 
-	if (!id_b)
+	if (g_strcmp0 (id_b, "other") == 0)
 		return -1;
 	else if (g_strcmp0 (id_b, "featured") == 0)
 		return 1;
@@ -148,32 +166,11 @@ gs_category_sort_subcategories_cb (gconstpointer a, gconstpointer b)
 void
 gs_category_sort_subcategories (GsCategory *category)
 {
-	gboolean subcat_all = FALSE;
-	GList *l;
-	GsCategory *all;
 	GsCategoryPrivate *priv = category->priv;
-	const gchar *id;
 
 	/* nothing here */
 	if (priv->subcategories == NULL)
 		return;
-
-	/* ensure there is a general entry */
-	for (l = priv->subcategories; l != NULL; l = l->next) {
-		id = gs_category_get_id (GS_CATEGORY (l->data));
-		if (id == NULL) {
-			subcat_all = TRUE;
-			break;
-		}
-	}
-	if (!subcat_all && g_strcmp0 (category->priv->id, "Addons") != 0) {
-		/* TRANSLATORS: this is where all applications that don't
-		 * fit in other groups are put */
-		all = gs_category_new (category, NULL, _("Other"));
-		all->priv->size = G_MAXUINT;
-		gs_category_add_subcategory (category, all);
-		g_object_unref (all);
-	}
 
 	/* actually sort the data */
 	priv->subcategories = g_list_sort (priv->subcategories,
@@ -210,6 +207,14 @@ GsCategory *
 gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
 {
 	GsCategory *category;
+
+	/* special case, we don't want translations in the plugins */
+	if (g_strcmp0 (id, "other") == 0) {
+		/* TRANSLATORS: this is where all applications that don't
+		 * fit in other groups are put */
+		name =_("Other");
+	}
+
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
 	category->priv->parent = parent;
 	category->priv->id = g_strdup (id);
