@@ -478,9 +478,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 		gtk_widget_show (widget);
-	}
 
-	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
 		gtk_widget_set_visible (widget, TRUE);
 	}
