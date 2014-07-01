@@ -136,6 +136,10 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* Parse the XML */
 	gs_profile_start (plugin->profile, "appstream::startup");
+	if (g_getenv ("GNOME_SOFTWARE_PREFER_LOCAL") != NULL) {
+		as_store_set_add_flags (plugin->priv->store,
+					AS_STORE_ADD_FLAG_PREFER_LOCAL);
+	}
 	ret = as_store_load (plugin->priv->store,
 			     AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM |
 			     AS_STORE_LOAD_FLAG_APP_INFO_USER |

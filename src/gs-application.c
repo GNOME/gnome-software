@@ -514,6 +514,7 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 	gchar *local_filename = NULL;
 	gchar *id = NULL;
 	gboolean activate_ui = TRUE;
+	gboolean prefer_local = FALSE;
 	gboolean version = FALSE;
 	gboolean profile = FALSE;
 	gboolean verbose = FALSE;
@@ -534,6 +535,8 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 		  _("Set the specified debugging level"), _("ID") },
 		{ "profile", 0, 0, G_OPTION_ARG_NONE, &profile,
 		  _("Show profiling information for the service"), NULL },
+		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
+		  "Prefer local file sources to AppStream", NULL },
 		{ "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
 		{ NULL}
 	};
@@ -552,6 +555,10 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 
 	if (verbose)
 		g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+
+	/* prefer local sources */
+	if (prefer_local)
+		g_setenv ("GNOME_SOFTWARE_PREFER_LOCAL", "true", TRUE);
 
 	if (version) {
 		g_print ("gnome-software " VERSION "\n");

@@ -186,6 +186,7 @@ main (int argc, char **argv)
 	GsCategory *category = NULL;
 	GsPluginLoader *plugin_loader = NULL;
 	GsProfile *profile = NULL;
+	gboolean prefer_local = FALSE;
 	gboolean ret;
 	gboolean show_results = FALSE;
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
@@ -201,6 +202,8 @@ main (int argc, char **argv)
 		  "Set any refine flags required for the action", NULL },
 		{ "repeat", '\0', 0, G_OPTION_ARG_INT, &repeat,
 		  "Repeat the action this number of times", NULL },
+		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
+		  "Prefer local file sources to AppStream", NULL },
 		{ NULL}
 	};
 
@@ -223,6 +226,10 @@ main (int argc, char **argv)
 		g_error_free (error);
 		goto out;
 	}
+
+	/* prefer local sources */
+	if (prefer_local)
+		g_setenv ("GNOME_SOFTWARE_PREFER_LOCAL", "true", TRUE);
 
 	/* parse any refine flags */
 	refine_flags = gs_cmd_parse_refine_flags (refine_flags_str, &error);
