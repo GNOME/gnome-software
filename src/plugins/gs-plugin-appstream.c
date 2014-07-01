@@ -322,14 +322,10 @@ gs_plugin_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
 static void
 gs_plugin_refine_add_screenshots (GsApp *app, AsApp *item)
 {
-	AsImage *im;
 	AsScreenshot *ss;
-	AsScreenshotKind ss_kind;
 	GPtrArray *images_as;
 	GPtrArray *screenshots_as;
-	GsScreenshot *screenshot;
 	guint i;
-	guint j;
 
 	/* do we have any to add */
 	screenshots_as = as_app_get_screenshots (item);
@@ -348,25 +344,9 @@ gs_plugin_refine_add_screenshots (GsApp *app, AsApp *item)
 		images_as = as_screenshot_get_images (ss);
 		if (images_as->len == 0)
 			continue;
-		ss_kind = as_screenshot_get_kind (ss);
-		if (ss_kind == AS_SCREENSHOT_KIND_UNKNOWN)
+		if (as_screenshot_get_kind (ss) == AS_SCREENSHOT_KIND_UNKNOWN)
 			continue;
-
-		/* create a new application screenshot and add each image */
-		screenshot = gs_screenshot_new ();
-		gs_screenshot_set_is_default (screenshot,
-					      ss_kind == AS_SCREENSHOT_KIND_DEFAULT);
-		gs_screenshot_set_caption (screenshot,
-					   as_screenshot_get_caption (ss, NULL));
-		for (j = 0; j < images_as->len; j++) {
-			im = g_ptr_array_index (images_as, j);
-			gs_screenshot_add_image	(screenshot,
-						 as_image_get_url (im),
-						 as_image_get_width (im),
-						 as_image_get_height (im));
-		}
-		gs_app_add_screenshot (app, screenshot);
-		g_object_unref (screenshot);
+		gs_app_add_screenshot (app, ss);
 	}
 }
 

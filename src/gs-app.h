@@ -24,8 +24,7 @@
 
 #include <glib-object.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
-
-#include "gs-screenshot.h"
+#include <appstream-glib.h>
 
 G_BEGIN_DECLS
 
@@ -208,7 +207,7 @@ void		 gs_app_set_origin		(GsApp		*app,
 						 const gchar	*origin);
 GPtrArray	*gs_app_get_screenshots		(GsApp		*app);
 void		 gs_app_add_screenshot		(GsApp		*app,
-						 GsScreenshot	*screenshot);
+						 AsScreenshot	*screenshot);
 const gchar	*gs_app_get_update_version	(GsApp		*app);
 const gchar	*gs_app_get_update_version_ui	(GsApp		*app);
 void		 gs_app_set_update_version	(GsApp		*app,

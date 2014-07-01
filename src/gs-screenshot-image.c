@@ -29,7 +29,7 @@
 
 struct _GsScreenshotImagePrivate
 {
-	GsScreenshot	*screenshot;
+	AsScreenshot	*screenshot;
 	GtkWidget	*stack;
 	GtkWidget	*box_error;
 	GtkWidget	*image1;
@@ -48,7 +48,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN
 /**
  * gs_screenshot_image_get_screenshot:
  **/
-GsScreenshot *
+AsScreenshot *
 gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
 {
 	GsScreenshotImagePrivate *priv;
@@ -90,10 +90,10 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 }
 
 /**
- * gs_screenshot_show_image:
+ * as_screenshot_show_image:
  **/
 static void
-gs_screenshot_show_image (GsScreenshotImage *ssimg)
+as_screenshot_show_image (GsScreenshotImage *ssimg)
 {
 	GdkPixbuf *pixbuf;
 	GsScreenshotImagePrivate *priv;
@@ -162,7 +162,7 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	}
 
 	/* got image, so show */
-	gs_screenshot_show_image (ssimg);
+	as_screenshot_show_image (ssimg);
 out:
 	g_object_unref (ssimg);
 }
@@ -184,12 +184,12 @@ gs_screenshot_image_set_cachedir (GsScreenshotImage *ssimg, const gchar *cachedi
  **/
 void
 gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
-				    GsScreenshot *screenshot)
+				    AsScreenshot *screenshot)
 {
 	GsScreenshotImagePrivate *priv;
 
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
-	g_return_if_fail (GS_IS_SCREENSHOT (screenshot));
+	g_return_if_fail (AS_IS_SCREENSHOT (screenshot));
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
@@ -226,6 +226,7 @@ void
 gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 				GCancellable *cancellable)
 {
+	AsImage *im;
 	GsScreenshotImagePrivate *priv;
 	SoupMessage *msg = NULL;
 	SoupURI *base_uri = NULL;
@@ -239,20 +240,21 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
-	g_return_if_fail (GS_IS_SCREENSHOT (priv->screenshot));
+	g_return_if_fail (AS_IS_SCREENSHOT (priv->screenshot));
 	g_return_if_fail (priv->width != 0);
 	g_return_if_fail (priv->height != 0);
 
 	/* test if size specific cachdir exists */
-	url = gs_screenshot_get_url (priv->screenshot,
-				     priv->width,
-				     priv->height);
-	if (url == NULL) {
+	im = as_screenshot_get_image (priv->screenshot,
+				      priv->width,
+				      priv->height);
+	if (im == NULL) {
 		/* TRANSLATORS: this is when we request a screenshot size that
 		 * the generator did not create or the parser did not add */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot size not found"));
 		goto out;
 	}
+	url = as_image_get_url (im);
 	basename = g_path_get_basename (url);
 	sizedir = g_strdup_printf ("%ux%u", priv->width, priv->height);
 	cachedir = g_build_filename (priv->cachedir,
@@ -271,7 +273,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* does local file already exist */
 	priv->filename = g_build_filename (cachedir, basename, NULL);
 	if (g_file_test (priv->filename, G_FILE_TEST_EXISTS)) {
-		gs_screenshot_show_image (ssimg);
+		as_screenshot_show_image (ssimg);
 		goto out;
 	}
 

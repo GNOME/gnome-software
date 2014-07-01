@@ -2,6 +2,7 @@ SUBDIRS =						\
 	plugins
 
 AM_CPPFLAGS =						\
+	$(APPSTREAM_CFLAGS)				\
 	$(GLIB_CFLAGS)					\
 	$(GTK_CFLAGS)					\
 	$(SOUP_CFLAGS)					\
@@ -70,12 +71,12 @@ gnome_software_cmd_SOURCES =				\
 	gs-utils.c					\
 	gs-plugin-loader.c				\
 	gs-plugin-loader-sync.c				\
-	gs-screenshot.c					\
 	gs-category.c					\
 	gs-plugin.c					\
 	gs-profile.c
 
 gnome_software_cmd_LDADD =				\
+	$(APPSTREAM_LIBS)				\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)
 
@@ -122,8 +123,6 @@ gnome_software_SOURCES =				\
 	gs-profile.h					\
 	gs-screenshot-image.c				\
 	gs-screenshot-image.h				\
-	gs-screenshot.c					\
-	gs-screenshot.h					\
 	gs-shell.c					\
 	gs-shell.h					\
 	gs-markdown.c					\
@@ -167,6 +166,7 @@ gnome_software_SOURCES =				\
 	gs-main.c
 
 gnome_software_LDADD =					\
+	$(APPSTREAM_LIBS)				\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)					\
 	$(SOUP_LIBS)					\
@@ -213,11 +213,11 @@ gs_self_test_SOURCES =						\
 	gs-plugin-loader.c					\
 	gs-plugin.c						\
 	gs-profile.c						\
-	gs-screenshot.c						\
 	gs-utils.c						\
 	gs-self-test.c
 
 gs_self_test_LDADD =						\
+	$(APPSTREAM_LIBS)					\
 	$(GLIB_LIBS)						\
 	$(GTK_LIBS)
 

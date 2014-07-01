@@ -25,8 +25,7 @@
 
 #include <gtk/gtk.h>
 #include <libsoup/soup.h>
-
-#include "gs-screenshot.h"
+#include <appstream-glib.h>
 
 #define GS_TYPE_SCREENSHOT_IMAGE		(gs_screenshot_image_get_type())
 #define GS_SCREENSHOT_IMAGE(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_SCREENSHOT_IMAGE, GsScreenshotImage))
@@ -55,9 +54,9 @@ struct _GsScreenshotImageClass
 GType		 gs_screenshot_image_get_type		(void);
 GtkWidget	*gs_screenshot_image_new		(SoupSession		*session);
 
-GsScreenshot	*gs_screenshot_image_get_screenshot	(GsScreenshotImage	*ssimg);
+AsScreenshot	*gs_screenshot_image_get_screenshot	(GsScreenshotImage	*ssimg);
 void		 gs_screenshot_image_set_screenshot	(GsScreenshotImage	*ssimg,
-							 GsScreenshot		*screenshot);
+							 AsScreenshot		*screenshot);
 const gchar	*gs_screenshot_image_get_cachedir	(GsScreenshotImage	*ssimg);
 void		 gs_screenshot_image_set_cachedir	(GsScreenshotImage	*ssimg,
 							 const gchar		*cachedir);

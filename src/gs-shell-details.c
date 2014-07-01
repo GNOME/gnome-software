@@ -300,7 +300,7 @@ gs_shell_details_screenshot_selected_cb (GtkListBox *list,
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GsScreenshotImage *ssmain;
 	GsScreenshotImage *ssthumb;
-	GsScreenshot *ss;
+	AsScreenshot *ss;
 	GList *children;
 
 	if (row == NULL)
@@ -323,7 +323,7 @@ static void
 gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 {
 	GPtrArray *screenshots;
-	GsScreenshot *ss;
+	AsScreenshot *ss;
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *label;
 	GtkWidget *list;
@@ -339,7 +339,7 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 			ss = g_ptr_array_index (screenshots, i);
 
 			/* set caption */
-			label = gtk_label_new (gs_screenshot_get_caption (ss));
+			label = gtk_label_new (as_screenshot_get_caption (ss, NULL));
 			g_object_set (label,
 				      "xalign", 0.0,
 				      NULL);
@@ -381,12 +381,12 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 	/* use a slightly larger screenshot if it's the only screenshot */
 	if (screenshots->len == 1) {
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      GS_SCREENSHOT_SIZE_MAIN_ONLY_WIDTH,
-					      GS_SCREENSHOT_SIZE_MAIN_ONLY_HEIGHT);
+					      AS_IMAGE_LARGE_WIDTH,
+					      AS_IMAGE_LARGE_HEIGHT);
 	} else {
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      GS_SCREENSHOT_SIZE_MAIN_WIDTH,
-					      GS_SCREENSHOT_SIZE_MAIN_HEIGHT);
+					      AS_IMAGE_NORMAL_WIDTH,
+					      AS_IMAGE_NORMAL_HEIGHT);
 	}
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 	gtk_box_pack_start (GTK_BOX (priv->box_details_screenshot_main), ssimg, FALSE, FALSE, 0);
@@ -408,8 +408,8 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 						  g_get_user_cache_dir ());
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-					      GS_SCREENSHOT_SIZE_THUMBNAIL_WIDTH,
-					      GS_SCREENSHOT_SIZE_THUMBNAIL_HEIGHT);
+					      AS_IMAGE_THUMBNAIL_WIDTH,
+					      AS_IMAGE_THUMBNAIL_HEIGHT);
 		gtk_style_context_add_class (gtk_widget_get_style_context (ssimg),
 					     "screenshot-image-thumb");
 		gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);

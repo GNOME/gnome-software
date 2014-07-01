@@ -207,11 +207,12 @@ gs_app_id_kind_to_string (GsAppIdKind id_kind)
 gchar *
 gs_app_to_string (GsApp *app)
 {
+	AsImage *im;
+	AsScreenshot *ss;
 	GList *keys;
 	GList *l;
 	GString *str;
 	GsAppPrivate *priv = app->priv;
-	GsScreenshot *ss;
 	const gchar *tmp;
 	guint i;
 
@@ -276,11 +277,12 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tdescription:\t%s\n", priv->description);
 	for (i = 0; i < priv->screenshots->len; i++) {
 		ss = g_ptr_array_index (priv->screenshots, i);
-		tmp = gs_screenshot_get_caption (ss);
+		tmp = as_screenshot_get_caption (ss, NULL);
+		im = as_screenshot_get_image (ss, 0, 0);
+		if (im == NULL)
+			continue;
 		g_string_append_printf (str, "\tscreenshot-%02i:\t%s [%s]\n",
-					i, gs_screenshot_get_url (ss,
-								  G_MAXUINT,
-								  G_MAXUINT),
+					i, as_image_get_url (im),
 					tmp != NULL ? tmp : "<none>");
 	}
 	for (i = 0; i < priv->sources->len; i++) {
@@ -1242,7 +1244,7 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
  * gs_app_add_screenshot:
  */
 void
-gs_app_add_screenshot (GsApp *app, GsScreenshot *screenshot)
+gs_app_add_screenshot (GsApp *app, AsScreenshot *screenshot)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_ptr_array_add (app->priv->screenshots, g_object_ref (screenshot));
