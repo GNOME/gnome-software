@@ -536,7 +536,7 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 		{ "profile", 0, 0, G_OPTION_ARG_NONE, &profile,
 		  _("Show profiling information for the service"), NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
-		  "Prefer local file sources to AppStream", NULL },
+		  _("Prefer local file sources to AppStream"), NULL },
 		{ "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
 		{ NULL}
 	};
