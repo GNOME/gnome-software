@@ -84,7 +84,7 @@ struct GsAppPrivate
 	GsAppRatingKind		 rating_kind;
 	guint64			 size;
 	GsAppKind		 kind;
-	GsAppIdKind		 id_kind;
+	AsIdKind		 id_kind;
 	GsAppState		 state;
 	GHashTable		*metadata;
 	GdkPixbuf		*pixbuf;
@@ -181,27 +181,6 @@ gs_app_state_to_string (GsAppState state)
 }
 
 /**
- * gs_app_id_kind_to_string:
- **/
-const gchar *
-gs_app_id_kind_to_string (GsAppIdKind id_kind)
-{
-	if (id_kind == GS_APP_ID_KIND_UNKNOWN)
-		return "unknown";
-	if (id_kind == GS_APP_ID_KIND_DESKTOP)
-		return "desktop";
-	if (id_kind == GS_APP_ID_KIND_INPUT_METHOD)
-		return "input-method";
-	if (id_kind == GS_APP_ID_KIND_FONT)
-		return "font";
-	if (id_kind == GS_APP_ID_KIND_CODEC)
-		return "codec";
-	if (id_kind == GS_APP_ID_KIND_WEBAPP)
-		return "webapp";
-	return NULL;
-}
-
-/**
  * gs_app_to_string:
  **/
 gchar *
@@ -221,9 +200,9 @@ gs_app_to_string (GsApp *app)
 	str = g_string_new ("GsApp:\n");
 	g_string_append_printf (str, "\tkind:\t%s\n",
 				gs_app_kind_to_string (priv->kind));
-	if (priv->id_kind != GS_APP_ID_KIND_UNKNOWN) {
+	if (priv->id_kind != AS_ID_KIND_UNKNOWN) {
 		g_string_append_printf (str, "\tid-kind:\t%s\n",
-					gs_app_id_kind_to_string (priv->id_kind));
+					as_id_kind_to_string (priv->id_kind));
 	}
 	g_string_append_printf (str, "\tstate:\t%s\n",
 				gs_app_state_to_string (priv->state));
@@ -636,7 +615,7 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 /**
  * gs_app_get_id_kind:
  */
-GsAppIdKind
+AsIdKind
 gs_app_get_id_kind (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), GS_APP_KIND_UNKNOWN);
@@ -647,7 +626,7 @@ gs_app_get_id_kind (GsApp *app)
  * gs_app_set_id_kind:
  */
 void
-gs_app_set_id_kind (GsApp *app, GsAppIdKind id_kind)
+gs_app_set_id_kind (GsApp *app, AsIdKind id_kind)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->priv->id_kind = id_kind;

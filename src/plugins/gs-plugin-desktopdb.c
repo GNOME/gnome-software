@@ -129,8 +129,8 @@ gs_plugin_desktopdb_set_metadata (GsPlugin *plugin,
 		gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 
 	/* promote to a desktop type */
-	if (gs_app_get_id_kind (app) == GS_APP_ID_KIND_UNKNOWN)
-		gs_app_set_id_kind (app, GS_APP_ID_KIND_DESKTOP);
+	if (gs_app_get_id_kind (app) == AS_ID_KIND_UNKNOWN)
+		gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
 
 	gs_app_set_metadata (app,
 			     "DataDir::desktop-filename",

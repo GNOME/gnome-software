@@ -80,17 +80,6 @@ typedef enum {
 } GsAppState;
 
 typedef enum {
-	GS_APP_ID_KIND_UNKNOWN,
-	GS_APP_ID_KIND_DESKTOP,
-	GS_APP_ID_KIND_INPUT_METHOD,
-	GS_APP_ID_KIND_FONT,
-	GS_APP_ID_KIND_CODEC,
-	GS_APP_ID_KIND_WEBAPP,
-	GS_APP_ID_KIND_ADDON,
-	GS_APP_ID_KIND_LAST
-} GsAppIdKind;
-
-typedef enum {
 	GS_APP_RATING_KIND_UNKNOWN,
 	GS_APP_RATING_KIND_USER,
 	GS_APP_RATING_KIND_SYSTEM,
@@ -138,7 +127,6 @@ GType		 gs_app_get_type		(void);
 GsApp		*gs_app_new			(const gchar	*id);
 gchar		*gs_app_to_string		(GsApp		*app);
 const gchar	*gs_app_kind_to_string		(GsAppKind	 kind);
-const gchar	*gs_app_id_kind_to_string	(GsAppIdKind	 id_kind);
 const gchar	*gs_app_state_to_string		(GsAppState	 state);
 
 void		 gs_app_subsume			(GsApp		*app,
@@ -151,9 +139,9 @@ void		 gs_app_set_id			(GsApp		*app,
 GsAppKind	 gs_app_get_kind		(GsApp		*app);
 void		 gs_app_set_kind		(GsApp		*app,
 						 GsAppKind	 kind);
-GsAppIdKind	 gs_app_get_id_kind		(GsApp		*app);
+AsIdKind	 gs_app_get_id_kind		(GsApp		*app);
 void		 gs_app_set_id_kind		(GsApp		*app,
-						 GsAppIdKind	 id_kind);
+						 AsIdKind	 id_kind);
 GsAppState	 gs_app_get_state		(GsApp		*app);
 void		 gs_app_set_state		(GsApp		*app,
 						 GsAppState	 state);

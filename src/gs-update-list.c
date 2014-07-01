@@ -23,6 +23,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <appstream-glib.h>
 
 #include "gs-update-list.h"
 
@@ -57,11 +58,11 @@ gs_update_list_add_app (GsUpdateList *update_list,
 static gboolean
 is_addon_id_kind (GsApp *app)
 {
-	GsAppIdKind id_kind;
+	AsIdKind id_kind;
 	id_kind = gs_app_get_id_kind (app);
-	if (id_kind == GS_APP_ID_KIND_DESKTOP)
+	if (id_kind == AS_ID_KIND_DESKTOP)
 		return FALSE;
-	if (id_kind == GS_APP_ID_KIND_WEBAPP)
+	if (id_kind == AS_ID_KIND_WEB_APP)
 		return FALSE;
 	return TRUE;
 }
@@ -115,7 +116,7 @@ get_app_sort_key (GsApp *app)
 
 	/* sort desktop files, then addons */
 	switch (gs_app_get_id_kind (app)) {
-	case GS_APP_ID_KIND_DESKTOP:
+	case AS_ID_KIND_DESKTOP:
 		g_string_append (key, "1:");
 		break;
 	default:

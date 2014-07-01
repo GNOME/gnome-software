@@ -152,7 +152,7 @@ gs_plugin_add_installed_file (GsPlugin *plugin,
 	gs_app_set_state (*app, no_display ? GS_APP_STATE_AVAILABLE :
 					     GS_APP_STATE_INSTALLED);
 	gs_app_set_kind (*app, GS_APP_KIND_NORMAL);
-	gs_app_set_id_kind (*app, GS_APP_ID_KIND_WEBAPP);
+	gs_app_set_id_kind (*app, AS_ID_KIND_WEB_APP);
 	gs_app_add_source_id (*app, path);
 	gs_app_set_icon (*app, icon);
 	ret = gs_app_load_icon (*app, error);
@@ -700,7 +700,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_id_kind (app) != GS_APP_ID_KIND_WEBAPP)
+		if (gs_app_get_id_kind (app) != AS_ID_KIND_WEB_APP)
 			continue;
 		gs_app_set_size (app, 4096);
 		tmp = gs_app_get_source_id_default (app);

@@ -73,13 +73,13 @@ add_source (GtkListBox *listbox, GsApp *app)
 	for (i = 0; i < related->len; i++) {
 		app_tmp = g_ptr_array_index (related, i);
 		switch (gs_app_get_id_kind (app_tmp)) {
-		case GS_APP_ID_KIND_WEBAPP:
-		case GS_APP_ID_KIND_DESKTOP:
+		case AS_ID_KIND_WEB_APP:
+		case AS_ID_KIND_DESKTOP:
 			cnt_apps++;
 			break;
-		case GS_APP_ID_KIND_FONT:
-		case GS_APP_ID_KIND_CODEC:
-		case GS_APP_ID_KIND_INPUT_METHOD:
+		case AS_ID_KIND_FONT:
+		case AS_ID_KIND_CODEC:
+		case AS_ID_KIND_INPUT_METHOD:
 			cnt_addon++;
 			break;
 		default:

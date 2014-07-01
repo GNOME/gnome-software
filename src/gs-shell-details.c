@@ -25,6 +25,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 #include <gio/gdesktopappinfo.h>
+#include <appstream-glib.h>
 
 #include "gs-utils.h"
 
@@ -331,7 +332,7 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 	guint i;
 
 	/* treat screenshots differently */
-	if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_FONT) {
+	if (gs_app_get_id_kind (priv->app) == AS_ID_KIND_FONT) {
 		gs_container_remove_all (GTK_CONTAINER (priv->box_details_screenshot_thumbnails));
 		gs_container_remove_all (GTK_CONTAINER (priv->box_details_screenshot_main));
 		screenshots = gs_app_get_screenshots (priv->app);
@@ -493,11 +494,11 @@ out:
 static gboolean
 gs_shell_details_is_addon_id_kind (GsApp *app)
 {
-        GsAppIdKind id_kind;
+        AsIdKind id_kind;
         id_kind = gs_app_get_id_kind (app);
-        if (id_kind == GS_APP_ID_KIND_DESKTOP)
+        if (id_kind == AS_ID_KIND_DESKTOP)
                 return FALSE;
-        if (id_kind == GS_APP_ID_KIND_WEBAPP)
+        if (id_kind == AS_ID_KIND_WEB_APP)
                 return FALSE;
         return TRUE;
 }
@@ -662,7 +663,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 	/* set the rating */
 	switch (gs_app_get_id_kind (priv->app)) {
-	case GS_APP_ID_KIND_WEBAPP:
+	case AS_ID_KIND_WEB_APP:
 		gtk_widget_set_visible (priv->star, FALSE);
 		break;
 	default:
@@ -692,8 +693,8 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	switch (gs_app_get_state (priv->app)) {
 	case GS_APP_STATE_INSTALLED:
 	case GS_APP_STATE_UPDATABLE:
-		if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_DESKTOP ||
-		    gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_WEBAPP) {
+		if (gs_app_get_id_kind (priv->app) == AS_ID_KIND_DESKTOP ||
+		    gs_app_get_id_kind (priv->app) == AS_ID_KIND_WEB_APP) {
 			gtk_widget_set_visible (priv->button_details_launch, TRUE);
 		} else {
 			gtk_widget_set_visible (priv->button_details_launch, FALSE);
@@ -707,7 +708,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (priv->app);
 	switch (gs_app_get_id_kind (priv->app)) {
-	case GS_APP_ID_KIND_WEBAPP:
+	case AS_ID_KIND_WEB_APP:
 		gtk_widget_set_visible (priv->button_history, FALSE);
 		break;
 	default:
@@ -766,7 +767,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 	/* installing a webapp */
 	switch (gs_app_get_id_kind (priv->app)) {
-	case GS_APP_ID_KIND_WEBAPP:
+	case AS_ID_KIND_WEB_APP:
 		gtk_widget_set_visible (priv->infobar_details_webapp, TRUE);
 		break;
 	default:

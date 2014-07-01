@@ -242,8 +242,8 @@ gs_app_row_refresh (GsAppRow *app_row)
 	gtk_widget_set_visible (priv->button_box, !priv->show_update);
 
 	if (priv->selectable) {
-		if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_DESKTOP ||
-		    gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_WEBAPP)
+		if (gs_app_get_id_kind (priv->app) == AS_ID_KIND_DESKTOP ||
+		    gs_app_get_id_kind (priv->app) == AS_ID_KIND_WEB_APP)
 			gtk_widget_set_visible (priv->checkbox, TRUE);
 		gtk_widget_set_sensitive (priv->button, FALSE);
 	} else {
