@@ -329,7 +329,6 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 	GtkWidget *list;
 	GtkWidget *ssimg;
 	guint i;
-	GtkRequisition provided;
 
 	/* treat screenshots differently */
 	if (gs_app_get_id_kind (priv->app) == GS_APP_ID_KIND_FONT) {
@@ -381,19 +380,14 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 
 	/* use a slightly larger screenshot if it's the only screenshot */
 	if (screenshots->len == 1) {
-		gs_screenshot_get_url (ss,
-				       GS_SCREENSHOT_SIZE_MAIN_ONLY_WIDTH,
-				       GS_SCREENSHOT_SIZE_MAIN_ONLY_HEIGHT,
-				       &provided);
+		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
+					      GS_SCREENSHOT_SIZE_MAIN_ONLY_WIDTH,
+					      GS_SCREENSHOT_SIZE_MAIN_ONLY_HEIGHT);
 	} else {
-		gs_screenshot_get_url (ss,
-				       GS_SCREENSHOT_SIZE_MAIN_WIDTH,
-				       GS_SCREENSHOT_SIZE_MAIN_HEIGHT,
-				       &provided);
+		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
+					      GS_SCREENSHOT_SIZE_MAIN_WIDTH,
+					      GS_SCREENSHOT_SIZE_MAIN_HEIGHT);
 	}
-	gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-				      provided.width, provided.height);
-
 	gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 	gtk_box_pack_start (GTK_BOX (priv->box_details_screenshot_main), ssimg, FALSE, FALSE, 0);
 	gtk_widget_set_visible (ssimg, TRUE);

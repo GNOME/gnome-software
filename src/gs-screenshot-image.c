@@ -95,16 +95,32 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 static void
 gs_screenshot_show_image (GsScreenshotImage *ssimg)
 {
+	GdkPixbuf *pixbuf;
 	GsScreenshotImagePrivate *priv;
+
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
 	/* show icon */
 	if (g_strcmp0 (priv->current_image, "image1") == 0) {
-		gtk_image_set_from_file (GTK_IMAGE (priv->image2), priv->filename);
+		pixbuf = gdk_pixbuf_new_from_file_at_scale (priv->filename,
+							    priv->width,
+							    priv->height,
+							    FALSE, NULL);
+		if (pixbuf != NULL) {
+			gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image2), pixbuf);
+			g_object_unref (pixbuf);
+		}
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image2");
 		priv->current_image = "image2";
 	} else {
-		gtk_image_set_from_file (GTK_IMAGE (priv->image1), priv->filename);
+		pixbuf = gdk_pixbuf_new_from_file_at_scale (priv->filename,
+							    priv->width,
+							    priv->height,
+							    FALSE, NULL);
+		if (pixbuf != NULL) {
+			gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image1), pixbuf);
+			g_object_unref (pixbuf);
+		}
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image1");
 		priv->current_image = "image1";
 	}
@@ -230,8 +246,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* test if size specific cachdir exists */
 	url = gs_screenshot_get_url (priv->screenshot,
 				     priv->width,
-				     priv->height,
-				     NULL);
+				     priv->height);
 	if (url == NULL) {
 		/* TRANSLATORS: this is when we request a screenshot size that
 		 * the generator did not create or the parser did not add */

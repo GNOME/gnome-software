@@ -280,8 +280,7 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tscreenshot-%02i:\t%s [%s]\n",
 					i, gs_screenshot_get_url (ss,
 								  G_MAXUINT,
-								  G_MAXUINT,
-								  NULL),
+								  G_MAXUINT),
 					tmp != NULL ? tmp : "<none>");
 	}
 	for (i = 0; i < priv->sources->len; i++) {

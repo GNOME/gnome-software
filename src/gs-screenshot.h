@@ -70,8 +70,7 @@ void		 gs_screenshot_add_image	(GsScreenshot		*screenshot,
 						 guint			 height);
 const gchar	*gs_screenshot_get_url		(GsScreenshot		*screenshot,
 						 guint			 width,
-						 guint			 height,
-						 GtkRequisition		*provided);
+						 guint			 height);
 
 G_END_DECLS
 

@@ -130,10 +130,7 @@ gs_screenshot_add_image (GsScreenshot *screenshot,
  *
  **/
 const gchar *
-gs_screenshot_get_url (GsScreenshot *screenshot,
-		       guint width,
-		       guint height,
-		       GtkRequisition *provided)
+gs_screenshot_get_url (GsScreenshot *screenshot, guint width, guint height)
 {
 	GsScreenshotItem *item_tmp;
 	GsScreenshotItem *item = NULL;
@@ -158,12 +155,6 @@ gs_screenshot_get_url (GsScreenshot *screenshot,
 
 	if (item == NULL)
 		return NULL;
-
-	if (provided != NULL) {
-		provided->width = item->width;
-		provided->height = item->height;
-	}
-
 	return item->url;
 }
 
