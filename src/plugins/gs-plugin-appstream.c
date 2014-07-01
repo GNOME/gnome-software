@@ -337,11 +337,6 @@ gs_plugin_refine_add_screenshots (GsApp *app, AsApp *item)
 	if (gs_app_get_screenshots(app)->len > 0)
 		return;
 
-	/* do not add source images */
-	if (as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_APPDATA ||
-	    as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_DESKTOP)
-		return;
-
 	/* add any we know */
 	for (i = 0; i < screenshots_as->len &&
 		    i < GS_PLUGIN_APPSTREAM_MAX_SCREENSHOTS; i++) {
@@ -361,9 +356,6 @@ gs_plugin_refine_add_screenshots (GsApp *app, AsApp *item)
 					   as_screenshot_get_caption (ss, NULL));
 		for (j = 0; j < images_as->len; j++) {
 			im = g_ptr_array_index (images_as, j);
-			if (as_image_get_width (im) <= 0 ||
-			    as_image_get_height (im) <= 0)
-				continue;
 			gs_screenshot_add_image	(screenshot,
 						 as_image_get_url (im),
 						 as_image_get_width (im),

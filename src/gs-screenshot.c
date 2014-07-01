@@ -106,8 +106,6 @@ gs_screenshot_add_image (GsScreenshot *screenshot,
 
 	g_return_if_fail (GS_IS_SCREENSHOT (screenshot));
 	g_return_if_fail (url != NULL);
-	g_return_if_fail (width > 0);
-	g_return_if_fail (height > 0);
 
 	/* check if already exists */
 	item = gs_screenshot_get_item_exact (screenshot, width, height);
