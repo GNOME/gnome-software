@@ -161,7 +161,7 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 				gs_app_set_management_plugin (app, "PackageKit");
 				gs_app_add_source_id (app, pk_package_get_id (package));
 				switch (pk_package_get_info (package)) {
-				case GS_APP_STATE_INSTALLED:
+				case AS_APP_STATE_INSTALLED:
 					number_installed++;
 					data = pk_package_get_data (package);
 					if (g_str_has_prefix (data, "installed:")) {
@@ -170,7 +170,7 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 										 data + 10);
 					}
 					break;
-				case GS_APP_STATE_AVAILABLE:
+				case AS_APP_STATE_AVAILABLE:
 					number_available++;
 					break;
 				default:
@@ -195,24 +195,24 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 	/* if *all* the source packages for the app are installed then the
 	 * application is considered completely installed */
 	if (number_installed == sources->len && number_available == 0) {
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	} else if (number_installed + number_available == sources->len) {
 		/* if all the source packages are installed and all the rest
 		 * of the packages are available then the app is available */
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	} else if (number_installed + number_available > sources->len) {
 		/* we have more packages returned than source packages */
-		gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-		gs_app_set_state (app, GS_APP_STATE_UPDATABLE);
+		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 	} else if (number_installed + number_available < sources->len) {
 		/* we have less packages returned than source packages */
 		tmp = gs_app_to_string (app);
 		g_debug ("Failed to find all packages for:\n%s", tmp);
 		g_free (tmp);
 		gs_app_set_kind (app, GS_APP_KIND_UNKNOWN);
-		gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
+		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 	}
 }
 
@@ -338,7 +338,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	if (packages->len == 1) {
 		package = g_ptr_array_index (packages, 0);
 		gs_app_add_source_id (app, pk_package_get_id (package));
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_management_plugin (app, "PackageKit");
 	} else {
 		g_warning ("Failed to find one package for %s, %s, [%d]",
@@ -756,7 +756,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		sources = gs_app_get_sources (app);
 		if (sources->len == 0)
 			continue;
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN ||
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN ||
 		    gs_plugin_refine_requires_package_id (app, flags) ||
 		    gs_plugin_refine_requires_version (app, flags)) {
 			resolve_all = g_list_prepend (resolve_all, app);
@@ -797,7 +797,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	gs_profile_start (plugin->profile, "packagekit-refine[id->update-details]");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_state (app) != GS_APP_STATE_UPDATABLE)
+		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
 			continue;
 		if (gs_plugin_refine_requires_update_details (app, flags))
 			updatedetails_all = g_list_prepend (updatedetails_all, app);

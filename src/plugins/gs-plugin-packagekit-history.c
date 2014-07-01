@@ -96,13 +96,13 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	g_assert (ret);
 	switch (info_enum) {
 	case PK_INFO_ENUM_INSTALLING:
-		gs_app_set_state (history, GS_APP_STATE_INSTALLED);
+		gs_app_set_state (history, AS_APP_STATE_INSTALLED);
 		break;
 	case PK_INFO_ENUM_REMOVING:
-		gs_app_set_state (history, GS_APP_STATE_AVAILABLE);
+		gs_app_set_state (history, AS_APP_STATE_AVAILABLE);
 		break;
 	case PK_INFO_ENUM_UPDATING:
-		gs_app_set_state (history, GS_APP_STATE_UPDATABLE);
+		gs_app_set_state (history, AS_APP_STATE_UPDATABLE);
 		break;
 	default:
 		ret = FALSE;
@@ -237,11 +237,11 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 		if (!ret) {
 			/* make up a fake entry as we know this package was at
 			 * least installed at some point in time */
-			if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED) {
+			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 				app_dummy = gs_app_new (gs_app_get_id_full (app));
 				gs_app_set_install_date (app_dummy, GS_APP_INSTALL_DATE_UNKNOWN);
 				gs_app_set_kind (app_dummy, GS_APP_KIND_PACKAGE);
-				gs_app_set_state (app_dummy, GS_APP_STATE_INSTALLED);
+				gs_app_set_state (app_dummy, AS_APP_STATE_INSTALLED);
 				gs_app_set_version (app_dummy, gs_app_get_version (app));
 				gs_app_add_history (app, app_dummy);
 				g_object_unref (app_dummy);

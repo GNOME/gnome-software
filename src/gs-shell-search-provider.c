@@ -135,7 +135,7 @@ search_done_cb (GObject *source,
 	g_variant_builder_init (&builder, G_VARIANT_TYPE ("as"));
 	for (l = list; l != NULL; l = l->next) {
 		GsApp *app = GS_APP (l->data);
-		if (gs_app_get_state (app) != GS_APP_STATE_AVAILABLE)
+		if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE)
 			continue;
 		g_variant_builder_add (&builder, "s", gs_app_get_id (app));
 	}

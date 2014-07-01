@@ -149,8 +149,8 @@ gs_plugin_add_installed_file (GsPlugin *plugin,
 	gs_app_set_summary (*app, GS_APP_QUALITY_NORMAL, comment);
 	/* TRANSLATORS: this is the licence of the web-app */
 	gs_app_set_licence (*app, _("Proprietary"));
-	gs_app_set_state (*app, no_display ? GS_APP_STATE_AVAILABLE :
-					     GS_APP_STATE_INSTALLED);
+	gs_app_set_state (*app, no_display ? AS_APP_STATE_AVAILABLE :
+					     AS_APP_STATE_INSTALLED);
 	gs_app_set_kind (*app, GS_APP_KIND_NORMAL);
 	gs_app_set_id_kind (*app, AS_ID_KIND_WEB_APP);
 	gs_app_add_source_id (*app, path);
@@ -234,7 +234,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	/* add all installed apps */
 	for (l = plugin->priv->list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_state (app) != GS_APP_STATE_INSTALLED)
+		if (gs_app_get_state (app) != AS_APP_STATE_INSTALLED)
 			continue;
 		gs_plugin_add_app (list, app);
 	}
@@ -369,11 +369,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 	filename = gs_app_get_source_id_default (app);
 	if (filename == NULL)
 		goto out;
-	gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	ret = gs_plugin_app_set_enabled (filename, TRUE, error);
 	if (!ret)
 		goto out;
-	gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 out:
 	return ret;
 }
@@ -405,11 +405,11 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	filename = gs_app_get_source_id_default (app);
 	if (filename == NULL)
 		goto out;
-	gs_app_set_state (app, GS_APP_STATE_REMOVING);
+	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	ret = gs_plugin_app_set_enabled (filename, FALSE, error);
 	if (!ret)
 		goto out;
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 out:
 	return ret;
 }
@@ -461,8 +461,8 @@ gs_plugin_write_file (GsApp *app, const gchar *filename, GError **error)
 				G_KEY_FILE_DESKTOP_KEY_TERMINAL,
 				FALSE);
 	switch (gs_app_get_state (app)) {
-	case GS_APP_STATE_INSTALLING:
-	case GS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_INSTALLED:
 		enabled = TRUE;
 		break;
 	default:
@@ -616,7 +616,7 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	GError *error_local = NULL;
 
 	/* this is not yet installed */
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 
 	/* calculate SHA1 hash of name */
 	hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, gs_app_get_name (app), -1);
@@ -637,8 +637,8 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 						   &error_local);
 		if (!ret) {
 			/* this isn't a fatal error */
-			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
-			gs_app_set_state (app, GS_APP_STATE_UNAVAILABLE);
+			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+			gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 			g_debug ("Failed to download %s: %s",
 				 gs_app_get_icon (app), error_local->message);
 			g_error_free (error_local);

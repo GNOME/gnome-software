@@ -435,13 +435,13 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	}
 
 	/* is installed already */
-	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
+	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
 		switch (as_app_get_source_kind (item)) {
 		case AS_APP_SOURCE_KIND_APPDATA:
 		case AS_APP_SOURCE_KIND_DESKTOP:
 			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 		case AS_APP_SOURCE_KIND_METAINFO:
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 			break;
 		default:
 			break;

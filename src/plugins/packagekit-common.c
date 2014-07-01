@@ -156,13 +156,13 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 		gs_app_set_version (app, pk_package_get_version (package));
 		switch (pk_package_get_info (package)) {
 		case PK_INFO_ENUM_INSTALLED:
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 			break;
 		case PK_INFO_ENUM_AVAILABLE:
-			gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 			break;
 		default:
-			gs_app_set_state (app, GS_APP_STATE_UNKNOWN);
+			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 			g_warning ("unknown info state of %s",
 				   pk_info_enum_to_string (pk_package_get_info (package)));
 		}

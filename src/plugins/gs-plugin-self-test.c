@@ -59,8 +59,8 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
-			gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 		}
 	}

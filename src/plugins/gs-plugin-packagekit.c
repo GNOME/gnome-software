@@ -244,7 +244,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		app = gs_app_new (id);
 		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_set_kind (app, GS_APP_KIND_SOURCE);
-		gs_app_set_state (app, GS_APP_STATE_INSTALLED);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_LOWEST,
 				 pk_repo_detail_get_description (rd));
@@ -299,8 +299,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	/* get the list of available package ids to install */
 	switch (gs_app_get_state (app)) {
-	case GS_APP_STATE_AVAILABLE:
-	case GS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_UPDATABLE:
 		source_ids = gs_app_get_source_ids (app);
 		if (source_ids->len == 0) {
 			ret = FALSE;
@@ -343,12 +343,12 @@ gs_plugin_app_install (GsPlugin *plugin,
 					     "no packages to install");
 			goto out;
 		}
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		addons = gs_app_get_addons (app);
 		for (i = 0; i < addons->len; i++) {
 			GsApp *addon = g_ptr_array_index (addons, i);
 			if (gs_app_get_to_be_installed (addon))
-				gs_app_set_state (addon, GS_APP_STATE_INSTALLING);
+				gs_app_set_state (addon, AS_APP_STATE_INSTALLING);
 		}
 		results = pk_task_install_packages_sync (plugin->priv->task,
 							 (gchar **) array_package_ids->pdata,
@@ -360,7 +360,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			goto out;
 		}
 		break;
-	case GS_APP_STATE_LOCAL:
+	case AS_APP_STATE_AVAILABLE_LOCAL:
 		package_id = gs_app_get_metadata_item (app, "PackageKit::local-filename");
 		if (package_id == NULL) {
 			ret = FALSE;
@@ -371,7 +371,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			goto out;
 		}
 		package_ids = g_strsplit (package_id, "\t", -1);
-		gs_app_set_state (app, GS_APP_STATE_INSTALLING);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		results = pk_task_install_files_sync (plugin->priv->task,
 						      package_ids,
 						      cancellable,
@@ -388,7 +388,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "do not know how to install app in state %s",
-			     gs_app_state_to_string (gs_app_get_state (app)));
+			     as_app_state_to_string (gs_app_get_state (app)));
 		goto out;
 	}
 
@@ -547,7 +547,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 
 	/* do the action */
-	gs_app_set_state (app, GS_APP_STATE_REMOVING);
+	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	results = pk_task_remove_packages_sync (plugin->priv->task,
 						package_ids,
 						TRUE, FALSE,

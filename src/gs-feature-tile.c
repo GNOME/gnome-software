@@ -68,19 +68,19 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsFeatureTile *tile)
         accessible = gtk_widget_get_accessible (priv->button);
 
         switch (gs_app_get_state (app)) {
-        case GS_APP_STATE_INSTALLED:
-        case GS_APP_STATE_INSTALLING:
-        case GS_APP_STATE_REMOVING:
+        case AS_APP_STATE_INSTALLED:
+        case AS_APP_STATE_INSTALLING:
+        case AS_APP_STATE_REMOVING:
                 name = g_strdup_printf ("%s (%s)",
                                         gs_app_get_name (app),
                                         _("Installed"));
                 break;
-        case GS_APP_STATE_UPDATABLE:
+        case AS_APP_STATE_UPDATABLE:
                 name = g_strdup_printf ("%s (%s)",
                                         gs_app_get_name (app),
                                         _("Updates"));
                 break;
-        case GS_APP_STATE_AVAILABLE:
+        case AS_APP_STATE_AVAILABLE:
         default:
                 name = g_strdup (gs_app_get_name (app));
                 break;

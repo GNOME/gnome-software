@@ -143,7 +143,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GsAppKind kind;
-	GsAppState state;
+	AsAppState state;
 	GtkWidget *widget;
 	GtkAdjustment *adj;
 
@@ -161,7 +161,7 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	/* label */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_label"));
 	switch (state) {
-	case GS_APP_STATE_QUEUED:
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (widget, TRUE);
 		gtk_label_set_label (GTK_LABEL (widget), _("Pending"));
 		break;
@@ -173,8 +173,8 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	/* install button */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
 	switch (state) {
-	case GS_APP_STATE_AVAILABLE:
-	case GS_APP_STATE_LOCAL:
+	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (widget, gs_app_get_kind (priv->app) != GS_APP_KIND_CORE);
 		gtk_widget_set_sensitive (widget, TRUE);
 		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "suggested-action");
@@ -182,10 +182,10 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		 * can be installed */
 		gtk_button_set_label (GTK_BUTTON (widget), _("_Install"));
 		break;
-	case GS_APP_STATE_QUEUED:
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (widget, FALSE);
 		break;
-	case GS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_INSTALLING:
 		gtk_widget_set_visible (widget, TRUE);
 		gtk_widget_set_sensitive (widget, FALSE);
 		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "suggested-action");
@@ -193,16 +193,16 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		 * is in the process of being installed */
 		gtk_button_set_label (GTK_BUTTON (widget), _("_Installing"));
 		break;
-	case GS_APP_STATE_UNKNOWN:
-	case GS_APP_STATE_INSTALLED:
-	case GS_APP_STATE_REMOVING:
-	case GS_APP_STATE_UPDATABLE:
-	case GS_APP_STATE_UNAVAILABLE:
+	case AS_APP_STATE_UNKNOWN:
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_REMOVING:
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UNAVAILABLE:
 		gtk_widget_set_visible (widget, FALSE);
 		break;
 	default:
 		g_warning ("App unexpectedly in state %s",
-			   gs_app_state_to_string (state));
+			   as_app_state_to_string (state));
 		g_assert_not_reached ();
 	}
 
@@ -212,37 +212,37 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		gtk_widget_set_visible (widget, FALSE);
 	} else {
 		switch (state) {
-		case GS_APP_STATE_INSTALLED:
-		case GS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_INSTALLED:
+		case AS_APP_STATE_UPDATABLE:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, TRUE);
 			gtk_style_context_add_class (gtk_widget_get_style_context (widget), "destructive-action");
 			/* TRANSLATORS: button text in the header when an application can be erased */
 			gtk_button_set_label (GTK_BUTTON (widget), _("_Remove"));
 			break;
-		case GS_APP_STATE_REMOVING:
+		case AS_APP_STATE_REMOVING:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, FALSE);
 			gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
 			/* TRANSLATORS: button text in the header when an application can be installed */
 			gtk_button_set_label (GTK_BUTTON (widget), _("_Removing"));
 			break;
-		case GS_APP_STATE_QUEUED:
+		case AS_APP_STATE_QUEUED_FOR_INSTALL:
 			gtk_widget_set_visible (widget, TRUE);
 			gtk_widget_set_sensitive (widget, TRUE);
 			gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
 			gtk_button_set_label (GTK_BUTTON (widget), _("_Cancel"));
 			break;
-		case GS_APP_STATE_LOCAL:
-		case GS_APP_STATE_AVAILABLE:
-		case GS_APP_STATE_INSTALLING:
-		case GS_APP_STATE_UNAVAILABLE:
-		case GS_APP_STATE_UNKNOWN:
+		case AS_APP_STATE_AVAILABLE_LOCAL:
+		case AS_APP_STATE_AVAILABLE:
+		case AS_APP_STATE_INSTALLING:
+		case AS_APP_STATE_UNAVAILABLE:
+		case AS_APP_STATE_UNKNOWN:
 			gtk_widget_set_visible (widget, FALSE);
 			break;
 		default:
 			g_warning ("App unexpectedly in state %s",
-				   gs_app_state_to_string (state));
+				   as_app_state_to_string (state));
 			g_assert_not_reached ();
 		}
 	}
@@ -254,24 +254,24 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		gtk_spinner_stop (GTK_SPINNER (widget));
 	} else {
 		switch (state) {
-		case GS_APP_STATE_UNKNOWN:
-		case GS_APP_STATE_INSTALLED:
-		case GS_APP_STATE_AVAILABLE:
-		case GS_APP_STATE_QUEUED:
-		case GS_APP_STATE_UPDATABLE:
-		case GS_APP_STATE_UNAVAILABLE:
-		case GS_APP_STATE_LOCAL:
+		case AS_APP_STATE_UNKNOWN:
+		case AS_APP_STATE_INSTALLED:
+		case AS_APP_STATE_AVAILABLE:
+		case AS_APP_STATE_QUEUED_FOR_INSTALL:
+		case AS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_UNAVAILABLE:
+		case AS_APP_STATE_AVAILABLE_LOCAL:
 			gtk_widget_set_visible (widget, FALSE);
 			gtk_spinner_stop (GTK_SPINNER (widget));
 			break;
-		case GS_APP_STATE_INSTALLING:
-		case GS_APP_STATE_REMOVING:
+		case AS_APP_STATE_INSTALLING:
+		case AS_APP_STATE_REMOVING:
 			gtk_spinner_start (GTK_SPINNER (widget));
 			gtk_widget_set_visible (widget, TRUE);
 			break;
 		default:
 			g_warning ("App unexpectedly in state %s",
-				   gs_app_state_to_string (state));
+				   as_app_state_to_string (state));
 			g_assert_not_reached ();
 		}
 	}
@@ -554,7 +554,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	}
 	if (pixbuf == NULL)
 		pixbuf = gs_app_get_pixbuf (priv->app);
-	if (pixbuf == NULL && gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL) {
+	if (pixbuf == NULL && gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL) {
 		if (gs_app_get_kind (priv->app) == GS_APP_KIND_SOURCE)
 			pixbuf = gs_pixbuf_load ("x-package-repository", 96, NULL);
 		else if (gs_shell_details_is_addon_id_kind (priv->app))
@@ -655,11 +655,11 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		gtk_label_set_label (GTK_LABEL (priv->label_details_origin_value), tmp);
 	}
 	gtk_widget_set_visible (priv->label_details_origin_value,
-				gs_app_get_state (priv->app) == GS_APP_STATE_INSTALLED ||
-				gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL);
+				gs_app_get_state (priv->app) == AS_APP_STATE_INSTALLED ||
+				gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 	gtk_widget_set_visible (priv->label_details_origin_title,
-				gs_app_get_state (priv->app) == GS_APP_STATE_INSTALLED ||
-				gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL);
+				gs_app_get_state (priv->app) == AS_APP_STATE_INSTALLED ||
+				gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* set the rating */
 	switch (gs_app_get_id_kind (priv->app)) {
@@ -681,18 +681,18 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	}
 
 	/* don't show a missing rating on a local file */
-	if (gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL &&
+	if (gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL &&
 	    gs_app_get_rating (priv->app) < 0)
 		gtk_widget_set_visible (priv->star, FALSE);
 
 	/* only mark the stars as sensitive if the application is installed */
 	gtk_widget_set_sensitive (priv->star,
-				  gs_app_get_state (priv->app) == GS_APP_STATE_INSTALLED);
+				  gs_app_get_state (priv->app) == AS_APP_STATE_INSTALLED);
 
 	/* only show launch button when the application is installed */
 	switch (gs_app_get_state (priv->app)) {
-	case GS_APP_STATE_INSTALLED:
-	case GS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
 		if (gs_app_get_id_kind (priv->app) == AS_ID_KIND_DESKTOP ||
 		    gs_app_get_id_kind (priv->app) == AS_ID_KIND_WEB_APP) {
 			gtk_widget_set_visible (priv->button_details_launch, TRUE);
@@ -718,7 +718,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	}
 
 	/* don't show missing history on a local file */
-	if (gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL &&
+	if (gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL &&
 	    history->len == 0)
 		gtk_widget_set_visible (priv->button_history, FALSE);
 
@@ -735,7 +735,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	/* is this a repo-release */
 	switch (gs_app_get_kind (priv->app)) {
 	case GS_APP_KIND_SOURCE:
-		gtk_widget_set_visible (priv->infobar_details_repo, gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL);
+		gtk_widget_set_visible (priv->infobar_details_repo, gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 		break;
 	default:
 		gtk_widget_set_visible (priv->infobar_details_repo, FALSE);
@@ -747,7 +747,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	switch (gs_app_get_kind (priv->app)) {
 	case GS_APP_KIND_NORMAL:
 	case GS_APP_KIND_SYSTEM:
-		gtk_widget_set_visible (priv->infobar_details_app_repo, tmp != NULL && gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL);
+		gtk_widget_set_visible (priv->infobar_details_app_repo, tmp != NULL && gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 		break;
 	default:
 		gtk_widget_set_visible (priv->infobar_details_app_repo, FALSE);
@@ -758,7 +758,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	switch (gs_app_get_kind (priv->app)) {
 	case GS_APP_KIND_NORMAL:
 	case GS_APP_KIND_SYSTEM:
-		gtk_widget_set_visible (priv->infobar_details_app_norepo, tmp == NULL && gs_app_get_state (priv->app) == GS_APP_STATE_LOCAL);
+		gtk_widget_set_visible (priv->infobar_details_app_norepo, tmp == NULL && gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 		break;
 	default:
 		gtk_widget_set_visible (priv->infobar_details_app_norepo, FALSE);
@@ -777,8 +777,8 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 	/* only show the "select addons" string if the app isn't yet installed */
 	switch (gs_app_get_state (priv->app)) {
-	case GS_APP_STATE_INSTALLED:
-	case GS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
 		gtk_widget_set_visible (priv->label_addons_uninstalled_app, FALSE);
 		break;
 	default:
@@ -791,8 +791,8 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	for (l = addons; l; l = l->next) {
 		/* show checkboxes in front of addons if the app isn't yet installed */
 		switch (gs_app_get_state (priv->app)) {
-		case GS_APP_STATE_INSTALLED:
-		case GS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_INSTALLED:
+		case AS_APP_STATE_UPDATABLE:
 			break;
 		default:
 			break;
@@ -1040,7 +1040,7 @@ gs_shell_details_app_installed_cb (GObject *source,
 	}
 
 	/* only show this if the window is not active */
-	if (gs_app_get_state (helper->app) != GS_APP_STATE_QUEUED &&
+	if (gs_app_get_state (helper->app) != AS_APP_STATE_QUEUED_FOR_INSTALL &&
 	    !gs_shell_is_active (helper->shell_details->priv->shell))
 		gs_app_notify_installed (helper->app);
 	gs_shell_details_refresh_all (helper->shell_details);
@@ -1117,7 +1117,7 @@ gs_shell_details_app_remove (GsShellDetails *shell_details, GsApp *app)
 						    gs_app_get_name (app));
 	/* TRANSLATORS: this is button text to remove the application */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
-	if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
+	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
 		response = gtk_dialog_run (GTK_DIALOG (dialog));
 	else
 		response = GTK_RESPONSE_OK; /* pending install */
@@ -1183,7 +1183,7 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell
 		if (gs_app_addon_row_get_selected (l->data)) {
 			GsApp *addon = gs_app_addon_row_get_addon (l->data);
 
-			if (gs_app_get_state (addon) == GS_APP_STATE_AVAILABLE)
+			if (gs_app_get_state (addon) == AS_APP_STATE_AVAILABLE)
 				gs_app_set_to_be_installed (addon, TRUE);
 		}
 	}
@@ -1209,8 +1209,8 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 	 * triggers an immediate install. Otherwise we'll install the addon
 	 * together with the main app. */
 	switch (gs_app_get_state (priv->app)) {
-	case GS_APP_STATE_INSTALLED:
-	case GS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
 		if (gs_app_addon_row_get_selected (row))
 			gs_shell_details_app_install (shell_details, addon);
 		else

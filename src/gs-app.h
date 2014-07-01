@@ -67,19 +67,6 @@ typedef enum {
 } GsAppKind;
 
 typedef enum {
-	GS_APP_STATE_UNKNOWN,
-	GS_APP_STATE_INSTALLED,
-	GS_APP_STATE_AVAILABLE,
-	GS_APP_STATE_QUEUED,
-	GS_APP_STATE_INSTALLING,
-	GS_APP_STATE_REMOVING,
-	GS_APP_STATE_UPDATABLE,
-	GS_APP_STATE_UNAVAILABLE,	/* we found a reference to this */
-	GS_APP_STATE_LOCAL,
-	GS_APP_STATE_LAST
-} GsAppState;
-
-typedef enum {
 	GS_APP_RATING_KIND_UNKNOWN,
 	GS_APP_RATING_KIND_USER,
 	GS_APP_RATING_KIND_SYSTEM,
@@ -127,7 +114,6 @@ GType		 gs_app_get_type		(void);
 GsApp		*gs_app_new			(const gchar	*id);
 gchar		*gs_app_to_string		(GsApp		*app);
 const gchar	*gs_app_kind_to_string		(GsAppKind	 kind);
-const gchar	*gs_app_state_to_string		(GsAppState	 state);
 
 void		 gs_app_subsume			(GsApp		*app,
 						 GsApp		*other);
@@ -142,9 +128,9 @@ void		 gs_app_set_kind		(GsApp		*app,
 AsIdKind	 gs_app_get_id_kind		(GsApp		*app);
 void		 gs_app_set_id_kind		(GsApp		*app,
 						 AsIdKind	 id_kind);
-GsAppState	 gs_app_get_state		(GsApp		*app);
+AsAppState	 gs_app_get_state		(GsApp		*app);
 void		 gs_app_set_state		(GsApp		*app,
-						 GsAppState	 state);
+						 AsAppState	 state);
 const gchar	*gs_app_get_name		(GsApp		*app);
 void		 gs_app_set_name		(GsApp		*app,
 						 GsAppQuality	 quality,

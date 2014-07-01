@@ -226,11 +226,11 @@ gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
 {
 	GsApp *app;
 	app = gs_app_row_get_app (app_row);
-	if (gs_app_get_state (app) == GS_APP_STATE_AVAILABLE)
+	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
 		gs_shell_search_app_install (shell_search, app);
-	else if (gs_app_get_state (app) == GS_APP_STATE_INSTALLED)
+	else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
 		gs_shell_search_app_remove (shell_search, app);
-	else if (gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE)
+	else if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE)
 		gs_shell_search_show_missing_url (app);
 }
 

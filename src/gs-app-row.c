@@ -82,7 +82,7 @@ gs_app_row_get_description (GsAppRow *app_row)
 
 	/* convert the markdown update description into PangoMarkup */
 	if (priv->show_update &&
-	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
+	    gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE) {
 		tmp = gs_app_get_update_details (priv->app);
 		if (tmp != NULL && tmp[0] != '\0') {
 			markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
@@ -137,7 +137,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
 			     gs_app_get_name (priv->app));
 	if (priv->show_update &&
-	    gs_app_get_state (priv->app) == GS_APP_STATE_UPDATABLE) {
+	    gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE) {
 		gtk_widget_show (priv->version_label);
 		gtk_widget_hide (priv->star);
 		gtk_label_set_label (GTK_LABEL (priv->version_label),
@@ -183,13 +183,13 @@ gs_app_row_refresh (GsAppRow *app_row)
 	gtk_style_context_remove_class (context, "destructive-action");
 
 	switch (gs_app_get_state (app_row->priv->app)) {
-	case GS_APP_STATE_UNAVAILABLE:
+	case AS_APP_STATE_UNAVAILABLE:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
 		break;
-	case GS_APP_STATE_QUEUED:
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (priv->label, TRUE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
@@ -199,15 +199,15 @@ gs_app_row_refresh (GsAppRow *app_row)
 		 * that has been queued for installation */
 		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending"));
 		break;
-	case GS_APP_STATE_AVAILABLE:
-	case GS_APP_STATE_LOCAL:
+	case AS_APP_STATE_AVAILABLE:
+	case AS_APP_STATE_AVAILABLE_LOCAL:
 		gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
 		break;
-	case GS_APP_STATE_UPDATABLE:
-	case GS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_INSTALLED:
 		if (gs_app_get_kind (app_row->priv->app) != GS_APP_KIND_SYSTEM &&
 		    !app_row->priv->show_update)
 			gtk_widget_set_visible (priv->button, TRUE);
@@ -217,7 +217,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 		if (priv->colorful)
 			gtk_style_context_add_class (context, "destructive-action");
 		break;
-	case GS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_INSTALLING:
 		gtk_spinner_start (GTK_SPINNER (priv->spinner));
 		gtk_widget_set_visible (priv->spinner, TRUE);
 		gtk_widget_set_visible (priv->button, TRUE);
@@ -226,7 +226,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 		 * shows the status of an application being installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Installing"));
 		break;
-	case GS_APP_STATE_REMOVING:
+	case AS_APP_STATE_REMOVING:
 		gtk_spinner_start (GTK_SPINNER (priv->spinner));
 		gtk_widget_set_visible (priv->spinner, TRUE);
 		gtk_widget_set_visible (priv->button, TRUE);

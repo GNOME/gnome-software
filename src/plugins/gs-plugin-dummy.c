@@ -132,7 +132,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	app = gs_app_new ("gnome-power-manager");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Power Manager");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Power Management Program");
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_plugin_add_app (list, app);
 	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
@@ -154,7 +154,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	app = gs_app_new ("gnome-power-manager");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Power Manager");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Power Management Program");
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_plugin_add_app (list, app);
 	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
@@ -203,7 +203,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
 	gs_app_set_url (app, GS_APP_URL_KIND_HOMEPAGE, "http://www.box.org");
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
-	gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/gnome-boxes.png", NULL));
 	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);

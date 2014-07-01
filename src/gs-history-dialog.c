@@ -75,19 +75,19 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 
 		/* add the action */
 		switch (gs_app_get_state (app)) {
-		case GS_APP_STATE_AVAILABLE:
-		case GS_APP_STATE_REMOVING:
+		case AS_APP_STATE_AVAILABLE:
+		case AS_APP_STATE_REMOVING:
 			/* TRANSLATORS: this is the status in the history UI,
 			 * where we are showing the application was removed */
 			tmp = C_("app status", "Removed");
 			break;
-		case GS_APP_STATE_INSTALLED:
-		case GS_APP_STATE_INSTALLING:
+		case AS_APP_STATE_INSTALLED:
+		case AS_APP_STATE_INSTALLING:
 			/* TRANSLATORS: this is the status in the history UI,
 			 * where we are showing the application was installed */
 			tmp = C_("app status", "Installed");
 			break;
-		case GS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_UPDATABLE:
 			/* TRANSLATORS: this is the status in the history UI,
 			 * where we are showing the application was updated */
 			tmp = C_("app status", "Updated");

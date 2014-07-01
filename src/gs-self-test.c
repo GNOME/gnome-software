@@ -460,7 +460,7 @@ gs_plugin_loader_func (void)
 	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-screenshot");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Screenshot");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Save images of your screen or individual windows");
-	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_SYSTEM);
 	g_assert (gs_app_get_pixbuf (app) != NULL);
 	gs_plugin_list_free (list);
@@ -693,7 +693,7 @@ gs_plugin_loader_webapps_func (void)
 					   &error);
 	g_assert_no_error (error);
 	g_assert (ret);
-	g_assert_cmpint (gs_app_get_state (app), ==, GS_APP_STATE_UNAVAILABLE);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UNAVAILABLE);
 
 	g_unlink (path);
 	g_free (path);

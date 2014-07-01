@@ -182,7 +182,7 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 						    gs_app_get_name (app));
 	/* TRANSLATORS: this is button text to remove the application */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
-	if (gs_app_get_state (app) == GS_APP_STATE_QUEUED)
+	if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
 		response = GTK_RESPONSE_OK; /* pending install */
 	else
 		response = gtk_dialog_run (GTK_DIALOG (dialog));
@@ -362,11 +362,11 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 
 	/* sort installed, removing, other */
 	switch (gs_app_get_state (app)) {
-	case GS_APP_STATE_INSTALLING:
-	case GS_APP_STATE_QUEUED:
+	case AS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 		g_string_append (key, "1:");
 		break;
-	case GS_APP_STATE_REMOVING:
+	case AS_APP_STATE_REMOVING:
 		g_string_append (key, "2:");
 		break;
 	default:

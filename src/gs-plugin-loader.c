@@ -475,7 +475,7 @@ static gboolean
 gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 {
 	/* don't show unknown state */
-	if (gs_app_get_state (app) == GS_APP_STATE_UNKNOWN) {
+	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
 		g_debug ("app invalid as state unknown %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
@@ -483,7 +483,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 
 	/* don't show unconverted unavailables */
 	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN &&
-		gs_app_get_state (app) == GS_APP_STATE_UNAVAILABLE) {
+		gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
 		g_debug ("app invalid as unconverted unavailable %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
@@ -686,8 +686,8 @@ typedef struct {
 	guint				 cache_age;
 	GsCategory			*category;
 	GsApp				*app;
-	GsAppState			 state_success;
-	GsAppState			 state_failure;
+	AsAppState			 state_success;
+	AsAppState			 state_failure;
 } GsPluginLoaderAsyncState;
 
 /******************************************************************************/
@@ -734,7 +734,7 @@ gs_plugin_loader_add_os_update_item (GList *list)
 	/* create new meta object */
 	app_os = gs_app_new ("os-update.virtual");
 	gs_app_set_kind (app_os, GS_APP_KIND_OS_UPDATE);
-	gs_app_set_state (app_os, GS_APP_STATE_UPDATABLE);
+	gs_app_set_state (app_os, AS_APP_STATE_UPDATABLE);
 	gs_app_set_name (app_os,
 			 GS_APP_QUALITY_NORMAL,
 			 /* TRANSLATORS: this is a group of updates that are not
@@ -850,7 +850,7 @@ out:
  * This means all of the #GsApp's returning from this function are of kind
  * %GS_APP_KIND_NORMAL, %GS_APP_KIND_SYSTEM or %GS_APP_KIND_OS_UPDATE.
  *
- * The #GsApps may be in state %GS_APP_STATE_INSTALLED or %GS_APP_STATE_AVAILABLE
+ * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
  **/
 void
@@ -1054,7 +1054,7 @@ out:
  * This means all of the #GsApp's returning from this function are of kind
  * %GS_APP_KIND_NORMAL.
  *
- * The #GsApps will all initially be in state %GS_APP_STATE_INSTALLED.
+ * The #GsApps will all initially be in state %AS_APP_STATE_INSTALLED.
  **/
 void
 gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
@@ -1265,7 +1265,7 @@ out:
  * This means all of the #GsApp's returning from this function are of kind
  * %GS_APP_KIND_NORMAL or %GS_APP_KIND_SYSTEM.
  *
- * The #GsApps may be in state %GS_APP_STATE_INSTALLED or %GS_APP_STATE_AVAILABLE
+ * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
  **/
 void
@@ -1366,7 +1366,7 @@ gs_plugin_loader_convert_unavailable (GList *list, const gchar *search)
 		if (gs_app_get_kind (app) != GS_APP_KIND_UNKNOWN &&
 		    gs_app_get_kind (app) != GS_APP_KIND_MISSING)
 			continue;
-		if (gs_app_get_state (app) != GS_APP_STATE_UNAVAILABLE)
+		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
 			continue;
 		if (gs_app_get_id_kind (app) != AS_ID_KIND_CODEC)
 			continue;
@@ -1486,7 +1486,7 @@ out:
  * This means all of the #GsApp's returning from this function are of kind
  * %GS_APP_KIND_NORMAL.
  *
- * The #GsApps may be in state %GS_APP_STATE_INSTALLED or %GS_APP_STATE_AVAILABLE
+ * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
  **/
 void
@@ -1761,7 +1761,7 @@ out:
  * This means all of the #GsApp's returning from this function are of kind
  * %GS_APP_KIND_NORMAL.
  *
- * The #GsApps may be in state %GS_APP_STATE_INSTALLED or %GS_APP_STATE_AVAILABLE
+ * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
  **/
 void
@@ -1936,7 +1936,7 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	                                   cancellable,
 	                                   &error);
 	if (ret) {
-		if (state->state_success != GS_APP_STATE_UNKNOWN) {
+		if (state->state_success != AS_APP_STATE_UNKNOWN) {
 			gs_app_set_state (state->app, state->state_success);
 			addons = gs_app_get_addons (state->app);
 			for (i = 0; i < addons->len; i++) {
@@ -1998,7 +1998,7 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 		if (strlen (names[i]) == 0)
 			continue;
 		app = gs_app_new (names[i]);
-		gs_app_set_state (app, GS_APP_STATE_QUEUED);
+		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
 
 		g_mutex_lock (&plugin_loader->priv->app_cache_mutex);
 		g_hash_table_insert (plugin_loader->priv->app_cache,
@@ -2051,7 +2051,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	for (i = pending_apps->len - 1; i >= 0; i--) {
 		GsApp *app;
 		app = g_ptr_array_index (pending_apps, i);
-		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED) {
+		if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
 			g_string_append (s, gs_app_get_id (app));
 			g_string_append_c (s, '\n');
 		}
@@ -2086,7 +2086,7 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	g_ptr_array_add (plugin_loader->priv->pending_apps, g_object_ref (app));
 	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
 
-	gs_app_set_state (app, GS_APP_STATE_QUEUED);
+	gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
 	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 	save_install_queue (plugin_loader);
@@ -2113,7 +2113,7 @@ remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
 
 	if (ret) {
-		gs_app_set_state (app, GS_APP_STATE_AVAILABLE);
+		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 		g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
 		save_install_queue (plugin_loader);
@@ -2175,18 +2175,18 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	switch (action) {
 	case GS_PLUGIN_LOADER_ACTION_INSTALL:
 		state->function_name = "gs_plugin_app_install";
-		state->state_success = GS_APP_STATE_INSTALLED;
-		state->state_failure = GS_APP_STATE_AVAILABLE;
+		state->state_success = AS_APP_STATE_INSTALLED;
+		state->state_failure = AS_APP_STATE_AVAILABLE;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_REMOVE:
 		state->function_name = "gs_plugin_app_remove";
-		state->state_success = GS_APP_STATE_AVAILABLE;
-		state->state_failure = GS_APP_STATE_INSTALLED;
+		state->state_success = AS_APP_STATE_AVAILABLE;
+		state->state_failure = AS_APP_STATE_INSTALLED;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_SET_RATING:
 		state->function_name = "gs_plugin_app_set_rating";
-		state->state_success = GS_APP_STATE_UNKNOWN;
-		state->state_failure = GS_APP_STATE_UNKNOWN;
+		state->state_success = AS_APP_STATE_UNKNOWN;
+		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
 	default:
 		g_assert_not_reached ();
@@ -2224,10 +2224,10 @@ gs_plugin_loader_app_action_finish (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_get_state_for_app:
  **/
-GsAppState
+AsAppState
 gs_plugin_loader_get_state_for_app (GsPluginLoader *plugin_loader, GsApp *app)
 {
-	GsAppState state = GS_APP_STATE_UNKNOWN;
+	AsAppState state = AS_APP_STATE_UNKNOWN;
 	GsApp *tmp;
 	GsPluginLoaderPrivate *priv = plugin_loader->priv;
 	guint i;
@@ -2763,7 +2763,7 @@ gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
 	for (i = 0; i < plugin_loader->priv->pending_apps->len; i++) {
 		app = g_ptr_array_index (plugin_loader->priv->pending_apps, i);
-		if (gs_app_get_state (app) == GS_APP_STATE_QUEUED)
+		if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
 			gs_plugin_add_app (&queue, app);
 	}
 	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);

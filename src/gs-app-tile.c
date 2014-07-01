@@ -73,7 +73,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 
 	label = gtk_bin_get_child (GTK_BIN (priv->eventbox));
 	switch (gs_app_get_state (app)) {
-	case GS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_INSTALLED:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (app),
@@ -82,7 +82,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 		 * that tells the user the application is installed */
 		gtk_label_set_label (GTK_LABEL (label), _("Installed"));
 		break;
-	case GS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_INSTALLING:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (app),
@@ -91,7 +91,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 		 * that tells the user the application is being installing */
 		gtk_label_set_label (GTK_LABEL (label), _("Installing"));
 		break;
-	case GS_APP_STATE_REMOVING:
+	case AS_APP_STATE_REMOVING:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (app),
@@ -100,7 +100,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 		 * that tells the user the application is being removed */
 		gtk_label_set_label (GTK_LABEL (label), _("Removing"));
 		break;
-	case GS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (app),
@@ -110,8 +110,8 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 		 * application available */
 		gtk_label_set_label (GTK_LABEL (label), _("Updates"));
 		break;
-        case GS_APP_STATE_QUEUED:
-        case GS_APP_STATE_AVAILABLE:
+        case AS_APP_STATE_QUEUED_FOR_INSTALL:
+        case AS_APP_STATE_AVAILABLE:
         default:
 		installed = FALSE;
 		name = g_strdup (gs_app_get_name (app));
