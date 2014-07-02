@@ -967,3 +967,155 @@ gs_plugin_add_categories (GsPlugin *plugin,
 out:
 	return ret;
 }
+
+/**
+ * gs_plugin_add_popular_from_category:
+ */
+static gboolean
+gs_plugin_add_popular_from_category (GsPlugin *plugin,
+				     const gchar *category,
+				     GList **list,
+				     GHashTable *ignore_apps,
+				     GError **error)
+{
+	AsApp *item;
+	GPtrArray *array;
+	GsApp *app;
+	gboolean ret = TRUE;
+	guint i;
+
+	/* search categories for the search term */
+	array = as_store_get_apps (plugin->priv->store);
+	for (i = 0; i < array->len; i++) {
+		item = g_ptr_array_index (array, i);
+
+		/* find not-installed desktop application with long descriptions
+		 * and perfect screenshots and that we've not suggested before */
+		if (as_app_get_state (item) == AS_APP_STATE_INSTALLED)
+			continue;
+		if (as_app_get_id_kind (item) != AS_ID_KIND_DESKTOP)
+			continue;
+		if (as_app_get_description (item, NULL) == NULL)
+			continue;
+		if (g_hash_table_lookup (ignore_apps, as_app_get_id_full (item)) != NULL)
+			continue;
+		if (!as_app_has_category (item, category))
+			continue;
+
+		/* add application */
+		app = gs_app_new (as_app_get_id_full (item));
+		ret = gs_plugin_refine_item (plugin, app, item, error);
+		if (!ret)
+			goto out;
+
+		/* only suggest awesome applications */
+		if ((gs_app_get_kudos (app) & GS_APP_KUDO_PERFECT_SCREENSHOTS) > 0 &&
+		    gs_app_get_kudos_weight (app) >= 4) {
+			g_debug ("suggesting %s as others installed from %s",
+				 as_app_get_id (item), category);
+			gs_plugin_add_app (list, app);
+			g_hash_table_insert (ignore_apps,
+					     (gpointer) as_app_get_id_full (item),
+					     GINT_TO_POINTER (1));
+		}
+		g_object_unref (app);
+	}
+out:
+	return ret;
+}
+
+/**
+ * gs_plugin_add_popular:
+ */
+gboolean
+gs_plugin_add_popular (GsPlugin *plugin,
+			GList **list,
+			GCancellable *cancellable,
+			GError **error)
+{
+	AsApp *item;
+	GHashTable *ignore_apps = NULL;
+	GHashTable *ignore_cats = NULL;
+	GPtrArray *array;
+	GPtrArray *categories;
+	const gchar *tmp;
+	gboolean ret = TRUE;
+	guint i;
+	guint j;
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, cancellable, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			goto out;
+	}
+
+	/* ignore main categories */
+	ignore_cats = g_hash_table_new (g_str_hash, g_str_equal);
+	g_hash_table_insert (ignore_cats, (gpointer) "Audio", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Development", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Education", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Game", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Graphics", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Network", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Office", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Science", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "System", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Utility", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Video", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Addons", GINT_TO_POINTER (1));
+
+	/* ignore core apps */
+	g_hash_table_insert (ignore_cats, (gpointer) "Core", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "other", GINT_TO_POINTER (1));
+
+	/* get already installed applications */
+	ignore_apps = g_hash_table_new (g_str_hash, g_str_equal);
+	array = as_store_get_apps (plugin->priv->store);
+	for (i = 0; i < array->len; i++) {
+		item = g_ptr_array_index (array, i);
+		if (as_app_get_state (item) != AS_APP_STATE_INSTALLED)
+			continue;
+		g_hash_table_insert (ignore_apps,
+				     (gpointer) as_app_get_id_full (item),
+				     GINT_TO_POINTER (1));
+	}
+
+	/* search categories for the search term */
+	gs_profile_start (plugin->profile, "appstream::add_popular");
+	for (i = 0; i < array->len; i++) {
+		item = g_ptr_array_index (array, i);
+
+		/* find installed desktop applications */
+		if (as_app_get_state (item) != AS_APP_STATE_INSTALLED)
+			continue;
+		if (as_app_get_id_kind (item) != AS_ID_KIND_DESKTOP)
+			continue;
+		if (as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_DESKTOP)
+			continue;
+
+		/* find non-installed apps with appdata in any category */
+		categories = as_app_get_categories (item);
+		for (j = 0; j < categories->len; j++) {
+			tmp = g_ptr_array_index (categories, j);
+			if (g_hash_table_lookup (ignore_cats, tmp) != NULL)
+				continue;
+			ret = gs_plugin_add_popular_from_category (plugin,
+								   tmp,
+								   list,
+								   ignore_apps,
+								   error);
+			if (!ret)
+				goto out;
+		}
+
+	}
+	gs_profile_stop (plugin->profile, "appstream::add_popular");
+out:
+	if (ignore_cats != NULL)
+		g_hash_table_unref (ignore_cats);
+	if (ignore_apps != NULL)
+		g_hash_table_unref (ignore_apps);
+	return ret;
+}
