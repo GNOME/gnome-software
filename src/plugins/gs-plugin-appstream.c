@@ -792,6 +792,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 		gs_plugin_add_app (list, app);
+		g_object_unref (app);
 	}
 	gs_profile_stop (plugin->profile, "appstream::add-category-apps");
 out:
@@ -833,6 +834,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 			if (!ret)
 				goto out;
 			gs_plugin_add_app (list, app);
+			g_object_unref (app);
 		}
 	}
 	gs_profile_stop (plugin->profile, "appstream::search");
@@ -874,6 +876,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			if (!ret)
 				goto out;
 			gs_plugin_add_app (list, app);
+			g_object_unref (app);
 		}
 	}
 	gs_profile_stop (plugin->profile, "appstream::add_installed");
