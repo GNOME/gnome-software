@@ -245,7 +245,7 @@ gs_app_to_string (GsApp *app)
 		tmp = g_ptr_array_index (priv->source_ids, i);
 		g_string_append_printf (str, "\tsource-id-%02i:\t%s\n", i, tmp);
 	}
-	tmp = g_hash_table_lookup (priv->urls, GS_APP_URL_KIND_HOMEPAGE);
+	tmp = g_hash_table_lookup (priv->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
 	if (tmp != NULL)
 		g_string_append_printf (str, "\turl{homepage}:\t%s\n", tmp);
 	if (priv->licence != NULL)
@@ -1085,23 +1085,21 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
  * gs_app_get_url:
  */
 const gchar *
-gs_app_get_url (GsApp *app, const gchar *kind)
+gs_app_get_url (GsApp *app, AsUrlKind kind)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return g_hash_table_lookup (app->priv->urls, kind);
+	return g_hash_table_lookup (app->priv->urls, as_url_kind_to_string (kind));
 }
 
 /**
  * gs_app_set_url:
- * @app:	A #GsApp instance
- * @summary:	The home page URL, e.g. "http://www.foo.com/gcalctool/"
  */
 void
-gs_app_set_url (GsApp *app, const gchar *kind, const gchar *url)
+gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_hash_table_insert (app->priv->urls,
-			     g_strdup (kind),
+			     g_strdup (as_url_kind_to_string (kind)),
 			     g_strdup (url));
 }
 

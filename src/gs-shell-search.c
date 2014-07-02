@@ -209,7 +209,7 @@ gs_shell_search_show_missing_url (GsApp *app)
 	const gchar *url;
 	gboolean ret;
 
-	url = gs_app_get_url (app, GS_APP_URL_KIND_MISSING);
+	url = gs_app_get_url (app, AS_URL_KIND_MISSING);
 	ret = gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error);
 	if (!ret) {
 		g_warning ("spawn of '%s' failed", url);

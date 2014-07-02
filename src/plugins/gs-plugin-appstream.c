@@ -478,13 +478,13 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* add urls */
 	urls = as_app_get_urls (item);
 	if (g_hash_table_size (urls) > 0 &&
-	    gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
+	    gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL) {
 		GList *keys;
 		GList *l;
 		keys = g_hash_table_get_keys (urls);
 		for (l = keys; l != NULL; l = l->next) {
 			gs_app_set_url (app,
-					l->data,
+					as_url_kind_from_string (l->data),
 					g_hash_table_lookup (urls, l->data));
 		}
 		g_list_free (keys);

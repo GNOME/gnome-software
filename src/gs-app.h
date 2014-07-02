@@ -95,9 +95,6 @@ typedef enum {
 #define	GS_APP_SIZE_UNKNOWN			0
 #define	GS_APP_SIZE_MISSING			1
 
-#define	GS_APP_URL_KIND_HOMEPAGE		"homepage"
-#define	GS_APP_URL_KIND_MISSING			"missing"
-
 typedef enum {
 	GS_APP_QUALITY_UNKNOWN,
 	GS_APP_QUALITY_LOWEST,
@@ -166,9 +163,9 @@ void		 gs_app_set_description		(GsApp		*app,
 						 GsAppQuality	 quality,
 						 const gchar	*description);
 const gchar	*gs_app_get_url			(GsApp		*app,
-						 const gchar	*kind);
+						 AsUrlKind	 kind);
 void		 gs_app_set_url			(GsApp		*app,
-						 const gchar	*kind,
+						 AsUrlKind	 kind,
 						 const gchar	*url);
 const gchar	*gs_app_get_licence		(GsApp		*app);
 void		 gs_app_set_licence		(GsApp		*app,

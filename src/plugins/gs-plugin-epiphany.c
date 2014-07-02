@@ -440,7 +440,7 @@ gs_plugin_write_file (GsApp *app, const gchar *filename, GError **error)
 			       G_KEY_FILE_DESKTOP_KEY_COMMENT,
 			       gs_app_get_summary (app));
 
-	url = gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE);
+	url = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
 	wmclass = g_strdup_printf ("%s-%s",
 				   gs_app_get_id (app),
 				   gs_app_get_metadata_item (app, "Epiphany::hash"));

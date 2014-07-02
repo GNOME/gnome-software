@@ -484,9 +484,9 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 			}
 			if (gs_app_get_licence (app) == NULL)
 				gs_app_set_licence (app, pk_details_get_license (details));
-			if (gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL) {
+			if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL) {
 				gs_app_set_url (app,
-						GS_APP_URL_KIND_HOMEPAGE,
+						AS_URL_KIND_HOMEPAGE,
 						pk_details_get_url (details));
 			}
 			size += pk_details_get_size (details);
@@ -573,7 +573,7 @@ gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_licence (app) == NULL)
 		return TRUE;
-	if (gs_app_get_url (app, GS_APP_URL_KIND_HOMEPAGE) == NULL)
+	if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)
 		return TRUE;
 	if (gs_app_get_size (app) == GS_APP_SIZE_UNKNOWN)
 		return TRUE;
