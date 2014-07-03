@@ -285,7 +285,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
-					      "media-playback-stop-symbolic", 0);
+					      "media-playback-stop-symbolic", GTK_ICON_SIZE_MENU);
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
 		gtk_widget_show (widget);
 		break;
