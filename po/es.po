@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-06-30 07:31+0000\n"
-"PO-Revision-Date: 2014-06-30 12:47+0200\n"
+"POT-Creation-Date: 2014-07-03 07:33+0000\n"
+"PO-Revision-Date: 2014-07-03 12:54+0200\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -49,7 +49,7 @@ msgid "Add to Application Folder"
 msgstr "Añadir a la carpeta de aplicaciones"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:233 ../src/gs-shell-installed.c:582
+#: ../src/gs-shell-details.c:234 ../src/gs-shell-installed.c:583
 msgid "_Cancel"
 msgstr "_Cancelar"
 
@@ -90,7 +90,6 @@ msgid "Add, remove or update software on this computer"
 msgstr "Añadir, quitar o actualizar software en este equipo"
 
 #: ../src/org.gnome.Software.desktop.in.h:3
-#| msgid "Updates;Upgrade;Sources;Repositories;Preferences;Install;Store;"
 msgid ""
 "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
 "Software;App;Store;"
@@ -141,12 +140,12 @@ msgstr "Reiniciar e _instalar"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:182
+#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:183
 msgid "_Install"
 msgstr "_Instalar"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:220
+#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:221
 msgid "_Remove"
 msgstr "_Quitar"
 
@@ -176,50 +175,54 @@ msgstr "Una buena manera de gestionar el software en su sistema."
 msgid "translator-credits"
 msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013, 2014"
 
-#: ../src/gs-application.c:523
+#: ../src/gs-application.c:524
 msgid "Enter GApplication service mode"
 msgstr "Entrar en modo de servicio de GApplication"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:526
+#: ../src/gs-application.c:527
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Modo de inicio, puede ser «actualizaciones», «actualizados», «instalados» o "
 "«vista general»"
 
-#: ../src/gs-application.c:526
+#: ../src/gs-application.c:527
 msgid "MODE"
 msgstr "MODO"
 
-#: ../src/gs-application.c:528
+#: ../src/gs-application.c:529
 msgid "Search for applications"
 msgstr "Buscar aplicaciones"
 
-#: ../src/gs-application.c:528
+#: ../src/gs-application.c:529
 msgid "SEARCH"
 msgstr "BUSCAR"
 
-#: ../src/gs-application.c:530 ../src/gs-application.c:532
+#: ../src/gs-application.c:531 ../src/gs-application.c:533
 msgid "Show application details"
 msgstr "Mostrar los detalles de la aplicación"
 
-#: ../src/gs-application.c:530 ../src/gs-application.c:532
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:531 ../src/gs-application.c:533
+#: ../src/gs-application.c:535
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:535
 msgid "Set the specified debugging level"
 msgstr "Establecer el nivel de depurado especificado"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:537
 msgid "Show profiling information for the service"
 msgstr "Mostrar información del perfil para el servicio"
+
+#: ../src/gs-application.c:539
+msgid "Prefer local file sources to AppStream"
+msgstr "Preferir las fuentes de archivos locales a las de AppStream"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
 #: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:200
-#: ../src/gs-shell-details.c:165
+#: ../src/gs-shell-details.c:166
 msgid "Pending"
 msgstr "Pendiente"
 
@@ -262,8 +265,8 @@ msgstr "Instalar"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:216 ../src/gs-shell-details.c:1124
-#: ../src/gs-shell-installed.c:183 ../src/gs-shell-search.c:164
+#: ../src/gs-app-row.c:216 ../src/gs-shell-details.c:1119
+#: ../src/gs-shell-installed.c:184 ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Eliminar"
 
@@ -278,7 +281,7 @@ msgstr "Actualizaciones"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:172
+#: ../src/gs-category.c:215
 msgid "Other"
 msgstr "Otros"
 
@@ -416,102 +419,102 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:130
+#: ../src/gs-screenshot-image.c:146
 msgid "Screenshot not found"
 msgstr "Captura de pantalla no encontrada"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:238
+#: ../src/gs-screenshot-image.c:254
 msgid "Screenshot size not found"
 msgstr "Tamaño de la captura de pantalla no encontrado"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:252
+#: ../src/gs-screenshot-image.c:269
 msgid "Could not create cache"
 msgstr "No se pudo crear la caché"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:269
+#: ../src/gs-screenshot-image.c:286
 msgid "Screenshot not valid"
 msgstr "Captura de pantalla no válida"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:275
+#: ../src/gs-screenshot-image.c:292
 msgid "Screenshot not available"
 msgstr "Captura de pantalla no disponible"
 
-#: ../src/gs-screenshot-image.c:328
+#: ../src/gs-screenshot-image.c:345
 msgid "Screenshot"
 msgstr "Captura de pantalla"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:193
+#: ../src/gs-shell-details.c:194
 msgid "_Installing"
 msgstr "_Instalando"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:227
+#: ../src/gs-shell-details.c:228
 msgid "_Removing"
 msgstr "_Quitando"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:599
+#: ../src/gs-shell-details.c:594
 msgctxt "license"
 msgid "Unknown"
 msgstr "Desconocida"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:612
+#: ../src/gs-shell-details.c:607
 msgctxt "version"
 msgid "Unknown"
 msgstr "Desconocida"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:618
+#: ../src/gs-shell-details.c:613
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Calculando…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:621
+#: ../src/gs-shell-details.c:616
 msgctxt "size"
 msgid "Unknown"
 msgstr "Desconocido"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:633
+#: ../src/gs-shell-details.c:628
 msgctxt "updated"
 msgid "Never"
 msgstr "Nunca"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:643
 msgctxt "menu category"
 msgid "None"
 msgstr "Ninguna"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:658
+#: ../src/gs-shell-details.c:653
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconocido"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1109 ../src/gs-shell-installed.c:168
+#: ../src/gs-shell-details.c:1104 ../src/gs-shell-installed.c:169
 #: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "¿Está seguro de querer quitar %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1121 ../src/gs-shell-installed.c:180
+#: ../src/gs-shell-details.c:1116 ../src/gs-shell-installed.c:181
 #: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
@@ -616,7 +619,6 @@ msgid "Source"
 msgstr "Fuente"
 
 #: ../src/gs-shell-details.ui.h:22
-#| msgid "Licence"
 msgid "License"
 msgstr "Licencia"
 
@@ -631,8 +633,8 @@ msgstr "Desarrollador"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:25 ../src/gs-shell-installed.c:494
-#: ../src/gs-update-list.c:87 ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-shell-details.ui.h:25 ../src/gs-shell-installed.c:495
+#: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Complementos"
 
@@ -642,11 +644,11 @@ msgstr "Los complementos seleccionados se instalarán con la aplicación."
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:484
+#: ../src/gs-shell-installed.c:485
 msgid "System Applications"
 msgstr "Aplicaciones del sistema"
 
-#: ../src/gs-shell-installed.c:590
+#: ../src/gs-shell-installed.c:591
 msgid "Click on items to select them"
 msgstr "Pulse sobre los elementos para seleccionarlos"
 
@@ -1040,7 +1042,7 @@ msgstr "Falló la instalación de %s."
 msgid "Removal of %s failed."
 msgstr "Falló al eliminar %s."
 
-#: ../src/plugins/gs-plugin-appstream.c:156
+#: ../src/plugins/gs-plugin-appstream.c:160
 #, c-format
 msgid "No AppStream data found"
 msgstr "No se han encontrado datos de AppStream"
