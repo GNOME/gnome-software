@@ -25,6 +25,10 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#define GNOME_DESKTOP_USE_UNSTABLE_API
+#include <libgnome-desktop/gnome-bg.h>
+#include <libgnome-desktop/gnome-desktop-thumbnail.h>
+
 #include "gs-screenshot-image.h"
 
 struct _GsScreenshotImagePrivate
@@ -90,40 +94,102 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 }
 
 /**
+ * gs_screenshot_image_get_desktop_pixbuf:
+ **/
+static GdkPixbuf *
+gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
+{
+	GdkPixbuf *pixbuf;
+	GnomeBG *bg;
+	GnomeDesktopThumbnailFactory *factory;
+	GSettings *settings;
+	GsScreenshotImagePrivate *priv;
+
+	priv = gs_screenshot_image_get_instance_private (ssimg);
+
+	factory = gnome_desktop_thumbnail_factory_new (GNOME_DESKTOP_THUMBNAIL_SIZE_LARGE);
+	bg = gnome_bg_new ();
+	settings = g_settings_new ("org.gnome.desktop.background");
+	gnome_bg_load_from_preferences (bg, settings);
+	pixbuf = gnome_bg_create_thumbnail (bg, factory, gdk_screen_get_default (), priv->width, priv->height);
+	g_object_unref (bg);
+	g_object_unref (factory);
+	g_object_unref (settings);
+	return pixbuf;
+}
+
+/**
+ * gs_screenshot_image_use_desktop_background:
+ **/
+static gboolean
+gs_screenshot_image_use_desktop_background (GdkPixbuf *pixbuf)
+{
+	AsImage *im;
+	gboolean ret;
+
+	/* nothing to show, means no background mode */
+	if (pixbuf == NULL)
+		return FALSE;
+
+	/* use a temp AsImage */
+	im = as_image_new ();
+	as_image_set_pixbuf (im, pixbuf);
+	ret = (as_image_get_alpha_flags (im) & AS_IMAGE_ALPHA_FLAG_INTERNAL) > 0;
+	g_object_unref (im);
+	return ret;
+}
+
+/**
  * as_screenshot_show_image:
  **/
 static void
 as_screenshot_show_image (GsScreenshotImage *ssimg)
 {
-	GdkPixbuf *pixbuf;
+	GdkPixbuf *pixbuf_bg = NULL;
+	GdkPixbuf *pixbuf = NULL;
 	GsScreenshotImagePrivate *priv;
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
+	/* this is always going to have alpha */
+	pixbuf = gdk_pixbuf_new_from_file_at_scale (priv->filename,
+						    priv->width,
+						    priv->height,
+						    FALSE, NULL);
+	if (pixbuf != NULL) {
+		if (gs_screenshot_image_use_desktop_background (pixbuf)) {
+			pixbuf_bg = gs_screenshot_image_get_desktop_pixbuf (ssimg);
+			if (pixbuf_bg == NULL) {
+				pixbuf_bg = g_object_ref (pixbuf);
+			} else {
+				gdk_pixbuf_composite (pixbuf, pixbuf_bg,
+						      0, 0,
+						      priv->width, priv->height,
+						      0, 0, 1.0f, 1.0f,
+						      GDK_INTERP_NEAREST, 255);
+			}
+		} else {
+			pixbuf_bg = g_object_ref (pixbuf);
+		}
+	}
+
 	/* show icon */
 	if (g_strcmp0 (priv->current_image, "image1") == 0) {
-		pixbuf = gdk_pixbuf_new_from_file_at_scale (priv->filename,
-							    priv->width,
-							    priv->height,
-							    FALSE, NULL);
-		if (pixbuf != NULL) {
-			gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image2), pixbuf);
-			g_object_unref (pixbuf);
-		}
+		if (pixbuf_bg != NULL)
+			gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image2), pixbuf_bg);
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image2");
 		priv->current_image = "image2";
 	} else {
-		pixbuf = gdk_pixbuf_new_from_file_at_scale (priv->filename,
-							    priv->width,
-							    priv->height,
-							    FALSE, NULL);
-		if (pixbuf != NULL) {
-			gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image1), pixbuf);
-			g_object_unref (pixbuf);
-		}
+		if (pixbuf_bg != NULL)
+			gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image1), pixbuf_bg);
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image1");
 		priv->current_image = "image1";
 	}
+
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
+	if (pixbuf_bg != NULL)
+		g_object_unref (pixbuf_bg);
 	gtk_widget_show (GTK_WIDGET (ssimg));
 }
 

@@ -174,6 +174,7 @@ gnome_software_LDADD =					\
 	$(GTK_LIBS)					\
 	$(SOUP_LIBS)					\
 	$(PACKAGEKIT_LIBS)				\
+	$(GNOME_DESKTOP_LIBS)				\
 	-lm
 
 gnome_software_CFLAGS =					\
