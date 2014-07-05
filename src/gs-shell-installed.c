@@ -126,8 +126,8 @@ gs_shell_installed_app_removed_cb (GObject *source,
 		g_warning ("failed to remove %s: %s",
 			   gs_app_get_id (app),
 			   error->message);
-		gs_app_notify_failed_modal (priv->builder,
-					    app,
+		gs_app_notify_failed_modal (app,
+					    gs_shell_get_window (priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_REMOVE,
 					    error);
 		g_error_free (error);
@@ -157,10 +157,8 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 	GString *markup;
 	GtkResponseType response;
 	GtkWidget *dialog;
-	GtkWindow *window;
 	GsShellInstalledHelper *helper;
 
-	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 	markup = g_string_new ("");
 	app = gs_app_row_get_app (app_row);
 	g_string_append_printf (markup,
@@ -170,7 +168,7 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 				gs_app_get_name (app));
 	g_string_prepend (markup, "<b>");
 	g_string_append (markup, "</b>");
-	dialog = gtk_message_dialog_new (window,
+	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 					 GTK_DIALOG_MODAL,
 					 GTK_MESSAGE_QUESTION,
 					 GTK_BUTTONS_CANCEL,

@@ -67,6 +67,7 @@ struct GsShellPrivate
 	GsShellDetails		*shell_details;
 	GsShellCategory		*shell_category;
 	GtkBuilder		*builder;
+	GtkWindow		*main_window;
 	GSList			*back_entry_stack;
 };
 
@@ -85,10 +86,18 @@ static guint signals [SIGNAL_LAST] = { 0 };
 gboolean
 gs_shell_is_active (GsShell *shell)
 {
-	GtkWindow *window;
-	window = GTK_WINDOW (gtk_builder_get_object (shell->priv->builder,
-						     "window_software"));
-	return gtk_window_is_active (window);
+	GsShellPrivate *priv = shell->priv;
+	return gtk_window_is_active (priv->main_window);
+}
+
+/**
+ * gs_shell_get_window:
+ **/
+GtkWindow *
+gs_shell_get_window (GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	return priv->main_window;
 }
 
 /**
@@ -97,9 +106,8 @@ gs_shell_is_active (GsShell *shell)
 void
 gs_shell_activate (GsShell *shell)
 {
-	GtkWindow *window;
-	window = GTK_WINDOW (gtk_builder_get_object (shell->priv->builder, "window_software"));
-	gtk_window_present (window);
+	GsShellPrivate *priv = shell->priv;
+	gtk_window_present (priv->main_window);
 }
 
 static void
@@ -111,7 +119,6 @@ gs_shell_change_mode (GsShell *shell,
 {
 	GsShellPrivate *priv = shell->priv;
 	GtkWidget *widget;
-	GtkWindow *window;
 	const gchar *text;
 	GtkStyleContext *context;
 
@@ -156,9 +163,8 @@ gs_shell_change_mode (GsShell *shell,
 	context = gtk_widget_get_style_context (GTK_WIDGET (gtk_builder_get_object (priv->builder, "header")));
 	gtk_style_context_remove_class (context, "selection-mode");
 	/* set the window title back to default */
-	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 	/* TRANSLATORS: this is the main window title */
-	gtk_window_set_title (window, _("Software"));
+	gtk_window_set_title (priv->main_window, _("Software"));
 
 	/* update main buttons according to mode */
 	priv->ignore_primary_buttons = TRUE;
@@ -228,10 +234,10 @@ save_back_entry (GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
 	BackEntry *entry;
-	GtkWidget *window;
 
 	entry = g_new0 (BackEntry, 1);
 	entry->mode = priv->mode;
+	entry->focus = gtk_window_get_focus (priv->main_window);
 
 	if (priv->mode == GS_SHELL_MODE_CATEGORY) {
 		entry->category = gs_shell_category_get_category (priv->shell_category);
@@ -241,9 +247,6 @@ save_back_entry (GsShell *shell)
 		entry->app = gs_shell_details_get_app (priv->shell_details);
 		g_object_ref (entry->app);
 	}
-
-	window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	entry->focus = gtk_window_get_focus (GTK_WINDOW (window));
 
 	priv->back_entry_stack = g_slist_prepend (priv->back_entry_stack, entry);
 }
@@ -456,11 +459,10 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 /**
  * gs_shell_setup:
  */
-GtkWindow *
+void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
 	GsShellPrivate *priv = shell->priv;
-	GtkWidget *main_window = NULL;
 	GtkWidget *widget;
 
 	g_return_val_if_fail (GS_IS_SHELL (shell), NULL);
@@ -470,25 +472,24 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 
 	/* get UI */
 	priv->builder = gtk_builder_new_from_resource ("/org/gnome/software/gnome-software.ui");
+	priv->main_window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 
 	/* add application specific icons to search path */
 	gtk_icon_theme_append_search_path (gtk_icon_theme_get_default (),
 					   GS_DATA G_DIR_SEPARATOR_S "icons");
 
-	/* fix up the header bar */
-	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-
-	g_signal_connect (main_window, "delete-event",
+	g_signal_connect (priv->main_window, "delete-event",
 			  G_CALLBACK (gtk_widget_hide_on_delete), NULL);
 
+	/* fix up the header bar */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
 	g_object_ref (widget);
 	gtk_container_remove (GTK_CONTAINER (gtk_widget_get_parent (widget)), widget);
-	gtk_window_set_titlebar (GTK_WINDOW (main_window), widget);
+	gtk_window_set_titlebar (GTK_WINDOW (priv->main_window), widget);
 	g_object_unref (widget);
 
 	/* global keynav */
-	g_signal_connect_after (main_window, "key_press_event",
+	g_signal_connect_after (priv->main_window, "key_press_event",
 				G_CALLBACK (window_key_press_event), shell);
 
 	/* setup buttons */
@@ -555,8 +556,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	g_signal_connect (GTK_EDITABLE (widget), "activate",
 			  G_CALLBACK (gs_shell_search_activated_cb), shell);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	g_signal_connect (widget, "key-press-event",
+	g_signal_connect (priv->main_window, "key-press-event",
 			  G_CALLBACK (window_keypress_handler), shell);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	g_signal_connect (widget, "key-press-event",
@@ -567,9 +567,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* load content */
 	g_signal_connect (priv->shell_overview, "refreshed",
 			  G_CALLBACK (initial_overview_load_done), shell);
-
-	main_window = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	return GTK_WINDOW (main_window);
 }
 
 /**
@@ -609,7 +606,6 @@ gs_shell_get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	GError *error = NULL;
 	GList *list;
 	GtkWidget *dialog;
-	GtkWidget *toplevel;
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
@@ -628,9 +624,7 @@ gs_shell_get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	dialog = gs_update_dialog_new ();
 	gs_update_dialog_show_installed_updates (GS_UPDATE_DIALOG (dialog), list);
 
-	toplevel = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (toplevel));
-
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), priv->main_window);
 	gtk_window_present (GTK_WINDOW (dialog));
 
 out:
@@ -661,11 +655,8 @@ gs_shell_show_sources (GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
 	GtkWidget *dialog;
-	GtkWidget *toplevel;
 
-	toplevel = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	dialog = gs_sources_dialog_new (GTK_WINDOW (toplevel), priv->plugin_loader);
-
+	dialog = gs_sources_dialog_new (priv->main_window, priv->plugin_loader);
 	gtk_window_present (GTK_WINDOW (dialog));
 }
 

@@ -84,8 +84,8 @@ gs_shell_search_app_installed_cb (GObject *source,
 		g_warning ("failed to install %s: %s",
 			   gs_app_get_id (helper->app),
 			   error->message);
-		gs_app_notify_failed_modal (helper->shell_search->priv->builder,
-					    helper->app,
+		gs_app_notify_failed_modal (helper->app,
+					    gs_shell_get_window (helper->shell_search->priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_INSTALL,
 					    error);
 		g_error_free (error);
@@ -118,8 +118,8 @@ gs_shell_search_app_removed_cb (GObject *source,
 	if (!ret) {
 		g_warning ("failed to remove: %s",
 			   error->message);
-		gs_app_notify_failed_modal (helper->shell_search->priv->builder,
-					    helper->app,
+		gs_app_notify_failed_modal (helper->app,
+					    gs_shell_get_window (helper->shell_search->priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_REMOVE,
 					    error);
 		g_error_free (error);
@@ -139,9 +139,7 @@ gs_shell_search_app_remove (GsShellSearch *shell_search, GsApp *app)
 	GString *markup;
 	GtkResponseType response;
 	GtkWidget *dialog;
-	GtkWindow *window;
 
-	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 	markup = g_string_new ("");
 	g_string_append_printf (markup,
 				/* TRANSLATORS: this is a prompt message, and
@@ -150,7 +148,7 @@ gs_shell_search_app_remove (GsShellSearch *shell_search, GsApp *app)
 				gs_app_get_name (app));
 	g_string_prepend (markup, "<b>");
 	g_string_append (markup, "</b>");
-	dialog = gtk_message_dialog_new (window,
+	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 					 GTK_DIALOG_MODAL,
 					 GTK_MESSAGE_QUESTION,
 					 GTK_BUTTONS_CANCEL,

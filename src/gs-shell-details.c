@@ -1031,8 +1031,8 @@ gs_shell_details_app_installed_cb (GObject *source,
 		g_warning ("failed to install %s: %s",
 			   gs_app_get_id (helper->app),
 			   error->message);
-		gs_app_notify_failed_modal (helper->shell_details->priv->builder,
-					    helper->app,
+		gs_app_notify_failed_modal (helper->app,
+					    gs_shell_get_window (helper->shell_details->priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_INSTALL,
 					    error);
 		g_error_free (error);
@@ -1069,8 +1069,8 @@ gs_shell_details_app_removed_cb (GObject *source,
 		g_warning ("failed to remove %s: %s",
 			   gs_app_get_id (helper->app),
 			   error->message);
-		gs_app_notify_failed_modal (helper->shell_details->priv->builder,
-					    helper->app,
+		gs_app_notify_failed_modal (helper->app,
+					    gs_shell_get_window (helper->shell_details->priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_REMOVE,
 					    error);
 		g_error_free (error);
@@ -1094,9 +1094,7 @@ gs_shell_details_app_remove (GsShellDetails *shell_details, GsApp *app)
 	GString *markup;
 	GtkResponseType response;
 	GtkWidget *dialog;
-	GtkWindow *window;
 
-	window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 	markup = g_string_new ("");
 	g_string_append_printf (markup,
 				/* TRANSLATORS: this is a prompt message, and
@@ -1105,7 +1103,7 @@ gs_shell_details_app_remove (GsShellDetails *shell_details, GsApp *app)
 				gs_app_get_name (app));
 	g_string_prepend (markup, "<b>");
 	g_string_append (markup, "</b>");
-	dialog = gtk_message_dialog_new (window,
+	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 					 GTK_DIALOG_MODAL,
 					 GTK_MESSAGE_QUESTION,
 					 GTK_BUTTONS_CANCEL,
@@ -1257,13 +1255,10 @@ static void
 gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	GtkWidget *toplevel;
 
 	gs_history_dialog_set_app (GS_HISTORY_DIALOG (priv->history_dialog), priv->app);
 
-	toplevel = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	gtk_window_set_transient_for (GTK_WINDOW (priv->history_dialog), GTK_WINDOW (toplevel));
-
+	gtk_window_set_transient_for (GTK_WINDOW (priv->history_dialog), gs_shell_get_window (priv->shell));
 	gtk_window_present (GTK_WINDOW (priv->history_dialog));
 }
 

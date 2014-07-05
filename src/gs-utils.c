@@ -147,13 +147,12 @@ gs_app_notify_installed (GsApp *app)
  * gs_app_notify_failed_modal:
  **/
 void
-gs_app_notify_failed_modal (GtkBuilder *builder,
-			    GsApp *app,
+gs_app_notify_failed_modal (GsApp *app,
+			    GtkWindow *parent_window,
 			    GsPluginLoaderAction action,
 			    const GError *error)
 {
 	GtkWidget *dialog;
-	GtkWindow *window;
 	gchar *title;
 	gchar *msg;
 
@@ -173,8 +172,7 @@ gs_app_notify_failed_modal (GtkBuilder *builder,
 		g_assert_not_reached ();
 		break;
 	}
-	window = GTK_WINDOW (gtk_builder_get_object (builder, "window_software"));
-	dialog = gtk_message_dialog_new (window,
+	dialog = gtk_message_dialog_new (parent_window,
 					 GTK_DIALOG_MODAL |
 					 GTK_DIALOG_DESTROY_WITH_PARENT,
 					 GTK_MESSAGE_ERROR,

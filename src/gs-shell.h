@@ -85,11 +85,12 @@ void		 gs_shell_show_filename		(GsShell	*shell,
 void		 gs_shell_show_search_result	(GsShell	*shell,
 						 const gchar	*id,
 						 const gchar    *search);
-GtkWindow	*gs_shell_setup			(GsShell	*shell,
+void		 gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);
 void		 gs_shell_invalidate		(GsShell	*shell);
 gboolean	 gs_shell_is_active		(GsShell	*shell);
+GtkWindow	*gs_shell_get_window		(GsShell	*shell);
 
 G_END_DECLS
 

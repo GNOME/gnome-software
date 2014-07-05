@@ -522,14 +522,11 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *dialog;
-	GtkWidget *toplevel;
 
 	dialog = gs_update_dialog_new ();
 	gs_update_dialog_show_update_details (GS_UPDATE_DIALOG (dialog), app);
 
-	toplevel = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-	gtk_window_set_transient_for (GTK_WINDOW (dialog), GTK_WINDOW (toplevel));
-
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), gs_shell_get_window (priv->shell));
 	gtk_window_present (GTK_WINDOW (dialog));
 }
 
@@ -718,8 +715,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 		gs_shell_updates_get_new_updates (shell_updates);
 		break;
 	case PK_NETWORK_ENUM_OFFLINE:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-		dialog = gtk_message_dialog_new (GTK_WINDOW (widget),
+		dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 						 GTK_DIALOG_MODAL |
 						 GTK_DIALOG_USE_HEADER_BAR |
 						 GTK_DIALOG_DESTROY_WITH_PARENT,
@@ -746,8 +742,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 			gs_shell_updates_get_new_updates (shell_updates);
 			break;
 		}
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "window_software"));
-		dialog = gtk_message_dialog_new (GTK_WINDOW (widget),
+		dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 						 GTK_DIALOG_MODAL |
 						 GTK_DIALOG_USE_HEADER_BAR |
 						 GTK_DIALOG_DESTROY_WITH_PARENT,
