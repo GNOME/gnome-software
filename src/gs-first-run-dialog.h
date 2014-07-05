@@ -48,7 +48,7 @@ struct _GsFirstRunDialogClass
 };
 
 GType		 gs_first_run_dialog_get_type	(void);
-GtkWidget	*gs_first_run_dialog_new		(void);
+GtkWidget	*gs_first_run_dialog_new	(void);
 
 #endif /* GS_FIRST_RUN_DIALOG_H */
 
