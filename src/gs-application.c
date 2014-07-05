@@ -31,6 +31,7 @@
 
 #include "gs-dbus-helper.h"
 #include "gs-box.h"
+#include "gs-first-run-dialog.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
 #include "gs-proxy-settings.h"
@@ -162,6 +163,20 @@ gs_application_provide_search (GsApplication *app)
 	app->search_provider = gs_shell_search_provider_new ();
 	gs_shell_search_provider_setup (app->search_provider,
 					app->plugin_loader);
+}
+
+static void
+gs_application_show_first_run_dialog (GsApplication *app)
+{
+	GtkWidget *dialog;
+
+	if (g_settings_get_boolean (app->settings, "first-run") == TRUE) {
+		dialog = gs_first_run_dialog_new ();
+		gtk_window_set_transient_for (GTK_WINDOW (dialog), gs_shell_get_window (app->shell));
+		gtk_window_present (GTK_WINDOW (dialog));
+
+		g_settings_set_boolean (app->settings, "first-run", FALSE);
+	}
 }
 
 static void
@@ -477,6 +492,7 @@ gs_application_activate (GApplication *application)
 	gs_application_initialize_ui (GS_APPLICATION (application));
 	gs_shell_set_mode (GS_APPLICATION (application)->shell, GS_SHELL_MODE_OVERVIEW);
 	gs_shell_activate (GS_APPLICATION (application)->shell);
+	gs_application_show_first_run_dialog (GS_APPLICATION (application));
 }
 
 static void

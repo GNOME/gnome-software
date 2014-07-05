@@ -34,6 +34,7 @@ UI_FILES =						\
 	gnome-software.ui				\
 	gs-app-addon-row.ui				\
 	gs-app-row.ui					\
+	gs-first-run-dialog.ui				\
 	gs-history-dialog.ui				\
 	gs-shell-category.ui				\
 	gs-shell-details.ui				\
@@ -113,6 +114,8 @@ gnome_software_SOURCES =				\
 	gs-app-tile.h					\
 	gs-app-folder-dialog.c				\
 	gs-app-folder-dialog.h				\
+	gs-first-run-dialog.c				\
+	gs-first-run-dialog.h				\
 	gs-history-dialog.c				\
 	gs-history-dialog.h				\
 	gs-box.h					\
