@@ -212,6 +212,9 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	PkNetworkEnum network_state;
 	gboolean is_free_connection;
 
+	if (gs_shell_get_mode (shell_updates->priv->shell) != GS_SHELL_MODE_UPDATES)
+		return;
+
 	/* get the current network state */
 	g_object_get (priv->control, "network-state", &network_state, NULL);
 	switch (network_state) {
@@ -329,6 +332,25 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 		break;
 	}
 
+	/* headerbar update button */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+	switch (priv->state) {
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
+	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
+		gtk_widget_show (widget);
+		break;
+	case GS_SHELL_UPDATES_STATE_STARTUP:
+	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
+	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
+	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
+	case GS_SHELL_UPDATES_STATE_FAILED:
+		gtk_widget_hide (widget);
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+
 	/* stack */
 	switch (priv->state) {
 	case GS_SHELL_UPDATES_STATE_STARTUP:
@@ -395,8 +417,7 @@ gs_shell_updates_set_state (GsShellUpdates *shell_updates,
 			    GsShellUpdatesState state)
 {
 	shell_updates->priv->state = state;
-	if (gs_shell_get_mode (shell_updates->priv->shell) == GS_SHELL_MODE_UPDATES)
-		gs_shell_updates_update_ui_state (shell_updates);
+	gs_shell_updates_update_ui_state (shell_updates);
 }
 
 /**
@@ -428,6 +449,10 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	for (l = list; l != NULL; l = l->next) {
+		gs_update_list_add_app (GS_UPDATE_LIST (priv->list_box_updates),
+		                        GS_APP (l->data));
+	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates_counter"));
 	if (list != NULL) {
@@ -446,10 +471,6 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	else
 		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
 
-	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-		gtk_widget_set_visible (widget, list != NULL);
-	}
 	if (list == NULL) {
 		if (g_error_matches (error,
 				     GS_PLUGIN_LOADER_ERROR,
@@ -465,17 +486,11 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 						    GS_SHELL_UPDATES_STATE_FAILED);
 		}
 		g_error_free (error);
-		goto out;
 	} else {
 		gs_shell_updates_set_state (shell_updates,
 					    GS_SHELL_UPDATES_STATE_HAS_UPDATES);
 	}
-	for (l = list; l != NULL; l = l->next) {
-		gs_update_list_add_app (GS_UPDATE_LIST (priv->list_box_updates),
-		                        GS_APP (l->data));
-	}
 
-out:
 	gs_plugin_list_free (list);
 }
 
@@ -488,7 +503,6 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
-	GList *list;
 	guint64 refine_flags;
 
 	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
@@ -506,18 +520,15 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 	}
 
 	/* no need to refresh */
-	if (FALSE && priv->cache_valid) {
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
-		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-		list = gtk_container_get_children (GTK_CONTAINER (priv->list_box_updates));
-		gtk_widget_set_visible (widget, list != NULL);
-		g_list_free (list);
+	if (priv->cache_valid) {
+		gs_shell_updates_update_ui_state (shell_updates);
 		return;
 	}
 
-	if (priv->state == GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES)
+	if (priv->state == GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES) {
+		gs_shell_updates_update_ui_state (shell_updates);
 		return;
+	}
 
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
 
@@ -612,6 +623,7 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 	g_date_time_unref (now);
 
 	/* get the new list */
+	gs_shell_updates_invalidate (shell_updates);
 	gs_shell_updates_refresh (shell_updates, TRUE);
 }
 
@@ -847,8 +859,7 @@ gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	priv->last_status = status;
-	if (gs_shell_get_mode (shell_updates->priv->shell) == GS_SHELL_MODE_UPDATES)
-		gs_shell_updates_update_ui_state (shell_updates);
+	gs_shell_updates_update_ui_state (shell_updates);
 }
 
 void
