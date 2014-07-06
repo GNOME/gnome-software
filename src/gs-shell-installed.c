@@ -312,8 +312,6 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 	if (priv->cache_valid)
 		return;
 
-	gtk_widget_show (priv->spinner_install);
-
 	if (priv->waiting)
 		return;
 
