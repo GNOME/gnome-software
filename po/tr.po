@@ -2,14 +2,14 @@
 # Copyright (C) 2014 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 # Muhammet Kara <muhammetk@gmail.com>, 2014.
+# sabri ünal <yakushabb@gmail.com>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
-"software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-06-06 21:01+0000\n"
-"PO-Revision-Date: 2014-06-07 00:04+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-07-06 07:33+0000\n"
+"PO-Revision-Date: 2014-07-06 14:07+0000\n"
 "Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -17,7 +17,6 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 1.6.5\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "Application manager for GNOME"
@@ -27,9 +26,7 @@ msgstr "GNOME için uygulama yöneticisi"
 msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
-msgstr ""
-"Yazılımlar uygulaması, yeni uygulamalar ve sistem uzantılarını bulup "
-"kurmanıza ve halihazırda kurulu olan uygulamaları kaldırmanıza olanak tanır."
+msgstr "Yazılımlar uygulaması, yeni uygulamalar ve sistem uzantılarını bulup kurmanıza ve halihazırda kurulu olan uygulamaları kaldırmanıza olanak tanır."
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
 msgid ""
@@ -37,19 +34,14 @@ msgid ""
 "descriptions and multiple screenshots per application. Applications can be "
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
-msgstr ""
-"GNOME Software; seçkin ve popüler uygulamaları, her uygulama için kullanışlı "
-"bir açıklama ve çoklu ekran görüntüleri ile birlikte beğeninize sunar. "
-"Uygulamalar, kategori listesinde gezinerek ya da arama yoluyla bulunabilir. "
-"Ayrıca çevrimdışı bir güncellemeyi kullanarak sisteminizi güncellemenize "
-"olanak tanır."
+msgstr "GNOME Software; seçkin ve popüler uygulamaları, her uygulama için kullanışlı bir açıklama ve çoklu ekran görüntüleri ile birlikte beğeninize sunar. Uygulamalar, kategori listesinde gezinerek ya da arama yoluyla bulunabilir. Ayrıca çevrimdışı bir güncellemeyi kullanarak sisteminizi güncellemenize olanak tanır."
 
 #: ../src/app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Uygulama Klasörüne Ekle"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:229 ../src/gs-shell-installed.c:582
+#: ../src/gs-shell-details.c:234 ../src/gs-shell-installed.c:581
 msgid "_Cancel"
 msgstr "_İptal"
 
@@ -71,16 +63,18 @@ msgstr "_Çıkış"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
-#: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/popular-tile.ui.h:1
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
+#: ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83 ../src/gs-feature-tile.c:76
+#: ../src/gs-popular-tile.c:79 ../src/gs-popular-tile.c:82
+#: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Kuruldu"
 
 #. TRANSLATORS: this is the application name
+#. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:259 ../src/gs-shell.c:161
+#: ../src/gs-application.c:273 ../src/gs-shell.c:167
 msgid "Software"
 msgstr "Yazılımlar"
 
@@ -89,10 +83,9 @@ msgid "Add, remove or update software on this computer"
 msgstr "Bu bilgisayarda yazılım ekleyin, kaldırın ya da güncelleyin"
 
 #: ../src/org.gnome.Software.desktop.in.h:3
-msgid "Updates;Upgrade;Sources;Repositories;Preferences;Install;Store;"
-msgstr ""
-"Güncellemeler;Yükseltme;Kaynaklar;Yazılım Depoları;Tercihler;Kur;Yükle;"
-"Mağaza;"
+msgid ""
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;"
+msgstr "Güncellemeler;Güncelleştirmeler;Yükseltme;Kaynaklar;Sürüm Depoları;Tercihler;Yükle;Kur;Kaldır;Program;Yazılım;Uygulama;Mağaza;"
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
 msgid "Software Install"
@@ -121,12 +114,14 @@ msgstr "Geri git"
 msgid "_All"
 msgstr "_Tümü"
 
-#. Translators: A label for a button to show only software which is already installed.
+#. Translators: A label for a button to show only software which is already
+#. installed.
 #: ../src/gnome-software.ui.h:8
 msgid "_Installed"
 msgstr "_Kuruldu"
 
-#. Translators: A label for a button to show only updates which are available to install.
+#. Translators: A label for a button to show only updates which are available
+#. to install.
 #: ../src/gnome-software.ui.h:10
 msgid "_Updates"
 msgstr "_Güncellemeler"
@@ -137,12 +132,12 @@ msgstr "Yeniden Başlat ve _Kur"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:178
+#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:183
 msgid "_Install"
 msgstr "_Kur"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:216
+#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:221
 msgid "_Remove"
 msgstr "Kaldı_r"
 
@@ -159,58 +154,85 @@ msgid "Folder Name"
 msgstr "Klasör Adı"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:257
+#: ../src/gs-application.c:271
 msgid "About Software"
 msgstr "Yazılımlar Hakkında"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:262
+#: ../src/gs-application.c:276
 msgid "A nice way to manage the software on your system."
 msgstr "Sisteminizdeki yazılımları yönetmenin güzel bir yolu."
 
-#: ../src/gs-application.c:266
+#: ../src/gs-application.c:280
 msgid "translator-credits"
 msgstr "Muhammet Kara <muhammetk@gmail.com>"
 
-#: ../src/gs-application.c:523
+#: ../src/gs-application.c:539
 msgid "Enter GApplication service mode"
 msgstr "GApplication hizmet kipine gir"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:526
+#: ../src/gs-application.c:542
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
-msgstr ""
-"Başlangıç kipi: ‘updates’ (güncellemeler), ‘updated’ (güncellendi), "
-"‘installed’ (kuruldu) ya da ‘overview’ (genel görünüm)"
+msgstr "Başlangıç kipi: ‘updates’ (güncellemeler), ‘updated’ (güncellendi), ‘installed’ (kuruldu) ya da ‘overview’ (genel görünüm)"
 
-#: ../src/gs-application.c:526
+#: ../src/gs-application.c:542
 msgid "MODE"
 msgstr "KİP"
 
-#: ../src/gs-application.c:528
+#: ../src/gs-application.c:544
 msgid "Search for applications"
 msgstr "Uygulamalarda ara"
 
-#: ../src/gs-application.c:528
+#: ../src/gs-application.c:544
 msgid "SEARCH"
 msgstr "ARA"
 
-#: ../src/gs-application.c:530 ../src/gs-application.c:532
+#: ../src/gs-application.c:546 ../src/gs-application.c:548
 msgid "Show application details"
 msgstr "Uygulama ayrıntılarını göster"
 
-#: ../src/gs-application.c:530 ../src/gs-application.c:532
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:546 ../src/gs-application.c:548
+#: ../src/gs-application.c:550
 msgid "ID"
 msgstr "Kimlik"
 
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:550
 msgid "Set the specified debugging level"
 msgstr "Belirtilen hata ayıklama düzeyini ayarla"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:552
 msgid "Show profiling information for the service"
 msgstr "Hizmetin profil oluşturma bilgilerini göster"
+
+#: ../src/gs-application.c:554
+msgid "Prefer local file sources to AppStream"
+msgstr "AppStream yerine yerel dosya kaynaklarını tercih et."
+
+#. TRANSLATORS: this is a label that describes an application
+#. * that has been queued for installation
+#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:200
+#: ../src/gs-shell-details.c:166
+msgid "Pending"
+msgstr "Beklemede"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being installing
+#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:227
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92
+msgid "Installing"
+msgstr "Kuruluyor"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being removed
+#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:236
+#: ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101
+msgid "Removing"
+msgstr "Kaldırılıyor"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
@@ -224,12 +246,6 @@ msgstr "Web sitesini ziyaret et"
 msgid "Cancel"
 msgstr "İptal"
 
-#. TRANSLATORS: this is a label that describes an application
-#. * that has been queued for installation
-#: ../src/gs-app-row.c:200 ../src/gs-shell-details.c:161
-msgid "Pending"
-msgstr "Beklemede"
-
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
 #: ../src/gs-app-row.c:207
@@ -239,26 +255,10 @@ msgstr "Kur"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:216 ../src/gs-shell-details.c:1039
-#: ../src/gs-shell-installed.c:183 ../src/gs-shell-search.c:164
+#: ../src/gs-app-row.c:216 ../src/gs-shell-details.c:1117
+#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:162
 msgid "Remove"
 msgstr "Kaldır"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being installed
-#. TRANSLATORS: this is the small blue label on the tile
-#. * that tells the user the application is being installing
-#: ../src/gs-app-row.c:227 ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92
-msgid "Installing"
-msgstr "Kuruluyor"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being erased
-#. TRANSLATORS: this is the small blue label on the tile
-#. * that tells the user the application is being removed
-#: ../src/gs-app-row.c:236 ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101
-msgid "Removing"
-msgstr "Kaldırılıyor"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
@@ -271,9 +271,29 @@ msgstr "Güncellemeler"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:172
+#: ../src/gs-category.c:215
 msgid "Other"
 msgstr "Diğer"
+
+#. vim: set noexpandtab:
+#: ../src/gs-first-run-dialog.ui.h:1
+msgid "Welcome"
+msgstr "Hoş Geldiniz"
+
+#: ../src/gs-first-run-dialog.ui.h:2
+msgid "Welcome to Software"
+msgstr "Yazılımlar'a Hoş Geldiniz"
+
+#: ../src/gs-first-run-dialog.ui.h:3
+msgid ""
+"Software lets you install all the software you need, all from one place. See"
+" our recommendations, browse the categories, or search for the applications "
+"you want."
+msgstr "Yazılımlar uygulaması, ihtiyacınız olan tüm yazılımları tek bir yerden kurmanıza olanak tanır. Bizim önerdiklerimize bakın, kategorilere gözatın ya da istediğiniz uygulamaları bulmak için arama yapın."
+
+#: ../src/gs-first-run-dialog.ui.h:4
+msgid "_Let's Get Started"
+msgstr "_Hadi Başlayalım"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
@@ -348,9 +368,7 @@ msgstr "Güncelleme iptal edildi."
 #. * the updates were prepared
 #: ../src/gs-offline-updates.c:295
 msgid "An offline update was requested but no packages required updating."
-msgstr ""
-"Bir çevrimdışı güncelleştirme istendi, ancak güncelleştirme gerektiren bir "
-"paket bulunmuyor."
+msgstr "Bir çevrimdışı güncelleştirme istendi, ancak güncelleştirme gerektiren bir paket bulunmuyor."
 
 #. TRANSLATORS: we ran out of disk space
 #: ../src/gs-offline-updates.c:299
@@ -378,76 +396,71 @@ msgstr "Paket yöneticisinden gelen hata ayrıntıları:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:713
+#: ../src/gs-plugin-loader.c:742
 msgid "OS Updates"
 msgstr "İşletim Sistemi Güncellemeleri"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:718
-msgid ""
-"Includes performance, stability and security improvements for all users."
-msgstr ""
-"Tüm kullanıcılar için performans, kararlılık ve güvenlik iyileştirmeleri "
-"içerir."
+#: ../src/gs-plugin-loader.c:747
+msgid "Includes performance, stability and security improvements."
+msgstr "Performans, kararlılık ve güvenlik geliştirmeleri içerir."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1310
+#: ../src/gs-plugin-loader.c:1338
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s biçimi için kullanılabilir ek kodek yok."
 
-#: ../src/gs-plugin-loader.c:1313
+#: ../src/gs-plugin-loader.c:1341
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
 "play this format can be found on the website."
-msgstr ""
-"Hem %s hakkındaki bilgiler hem de bu biçimi oynatabilen bir kod çözücüyü "
-"nasıl edinebileceğinizle ilgili seçenekleri, web sitesinde bulabilirsiniz."
+msgstr "Hem %s hakkındaki bilgiler hem de bu biçimi oynatabilen bir kod çözücüyü nasıl edinebileceğinizle ilgili seçenekleri, web sitesinde bulabilirsiniz."
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:130
+#: ../src/gs-screenshot-image.c:146
 msgid "Screenshot not found"
 msgstr "Ekran görüntüsü bulunamadı"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:238
+#: ../src/gs-screenshot-image.c:254
 msgid "Screenshot size not found"
 msgstr "Ekran görüntüsü boyutu bulunamadı"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:252
+#: ../src/gs-screenshot-image.c:269
 msgid "Could not create cache"
 msgstr "Önbellek oluşturulamadı"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:269
+#: ../src/gs-screenshot-image.c:286
 msgid "Screenshot not valid"
 msgstr "Ekran görüntüsü geçerli değil"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:275
+#: ../src/gs-screenshot-image.c:292
 msgid "Screenshot not available"
 msgstr "Ekran görüntüsü kullanılabilir değil"
 
-#: ../src/gs-screenshot-image.c:328
+#: ../src/gs-screenshot-image.c:345
 msgid "Screenshot"
 msgstr "Ekran Görüntüsü"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:189
+#: ../src/gs-shell-details.c:194
 msgid "_Installing"
 msgstr "_Kuruluyor"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:223
+#: ../src/gs-shell-details.c:228
 msgid "_Removing"
 msgstr "_Kaldırılıyor"
 
@@ -497,15 +510,15 @@ msgstr "Bilinmiyor"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1024 ../src/gs-shell-installed.c:168
-#: ../src/gs-shell-search.c:149
+#: ../src/gs-shell-details.c:1102 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:147
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "%s uygulamasını kaldırmak istediğinizden emin misiniz?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1036 ../src/gs-shell-installed.c:180
-#: ../src/gs-shell-search.c:161
+#: ../src/gs-shell-details.c:1114 ../src/gs-shell-installed.c:179
+#: ../src/gs-shell-search.c:159
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s kaldırılacak ve tekrar kullanmak için yeniden kurmanız gerekecek."
@@ -523,9 +536,7 @@ msgstr "Yazılımı Kaynağı Dahildir"
 msgid ""
 "This application includes a software source which provides updates, as well "
 "as access to other software."
-msgstr ""
-"Bu uygulama; güncellemelerin yanı sıra, başka yazılımlara erişim sağlayan "
-"bir yazılım kaynağı içerir."
+msgstr "Bu uygulama; güncellemelerin yanı sıra, başka yazılımlara erişim sağlayan bir yazılım kaynağı içerir."
 
 #: ../src/gs-shell-details.ui.h:4
 msgid "No Software Source Included"
@@ -535,19 +546,16 @@ msgstr "Yazılım Kaynağı Dahil Değildir"
 msgid ""
 "This application does not include a software source. It will not be updated "
 "with new versions."
-msgstr ""
-"Bu uygulamada yazılım kaynağı bulunmuyor. Yeni sürümleri çıktığında "
-"güncellenmeyecek."
+msgstr "Bu uygulamada yazılım kaynağı bulunmuyor. Yeni sürümleri çıktığında güncellenmeyecek."
 
 #: ../src/gs-shell-details.ui.h:6
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
-msgstr ""
-"Bu yazılım zaten dağıtımınız tarafından sağlanmaktadır ve "
-"değiştirilmemelidir."
+msgstr "Bu yazılım zaten dağıtımınız tarafından sağlanmaktadır ve değiştirilmemelidir."
 
-#. Translators: a repository file used for installing software has been discovered.
+#. Translators: a repository file used for installing software has been
+#. discovered.
 #: ../src/gs-shell-details.ui.h:8
 msgid "Software Source Identified"
 msgstr "Yazılım Kaynağı Belirlendi"
@@ -556,9 +564,7 @@ msgstr "Yazılım Kaynağı Belirlendi"
 msgid ""
 "Adding this software source will give you access to additional software and "
 "upgrades."
-msgstr ""
-"Bu yazılım kaynağını eklemek, ek yazılımlara ve yükseltmelere erişmenizi "
-"sağlar."
+msgstr "Bu yazılım kaynağını eklemek, ek yazılımlara ve yükseltmelere erişmenizi sağlar."
 
 #: ../src/gs-shell-details.ui.h:10
 msgid "Only use software sources that you trust."
@@ -572,9 +578,7 @@ msgstr "Sadece İnternet Uygulaması"
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
-msgstr ""
-"Bu uygulama, yalnızca etkin bir İnternet bağlantınız olduğunda "
-"kullanılabilir."
+msgstr "Bu uygulama, yalnızca etkin bir İnternet bağlantınız olduğunda kullanılabilir."
 
 #: ../src/gs-shell-details.ui.h:13
 msgid "_Website"
@@ -610,7 +614,7 @@ msgid "Source"
 msgstr "Kaynak"
 
 #: ../src/gs-shell-details.ui.h:22
-msgid "Licence"
+msgid "License"
 msgstr "Lisans"
 
 #: ../src/gs-shell-details.ui.h:23
@@ -622,21 +626,24 @@ msgid "Developer"
 msgstr "Geliştirici"
 
 #. TRANSLATORS: This is the header dividing the normal
-#. * applications and the system ones
-#: ../src/gs-shell-installed.c:484
-#| msgid "Search for applications"
-msgid "System Applications"
-msgstr "Sistem Uygulamaları"
-
-#. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:494 ../src/gs-update-list.c:87
-#: ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-shell-details.ui.h:25 ../src/gs-shell-installed.c:493
+#: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Eklentiler"
 
-#: ../src/gs-shell-installed.c:590
+#: ../src/gs-shell-details.ui.h:26
+msgid "Selected add-ons will be installed with the application."
+msgstr "Seçilen eklentiler, uygulama ile birlikte yüklenecek."
+
+#. TRANSLATORS: This is the header dividing the normal
+#. * applications and the system ones
+#: ../src/gs-shell-installed.c:483
+msgid "System Applications"
+msgstr "Sistem Uygulamaları"
+
+#: ../src/gs-shell-installed.c:589
 msgid "Click on items to select them"
 msgstr "Öğeleri seçmek için tıklayın"
 
@@ -667,7 +674,8 @@ msgstr "Genel bakış sayfası"
 msgid "Featured"
 msgstr "Vitrin"
 
-#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#. Translators: This is a heading for software which has been featured
+#. ('picked') by the distribution.
 #: ../src/gs-shell-overview.ui.h:4
 msgid "Picks"
 msgstr "Sizin için seçtiklerimiz"
@@ -771,40 +779,38 @@ msgid "Last checked: %s"
 msgstr "Son kontrol: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:731
+#: ../src/gs-shell-updates.c:725
 msgid "No Network"
 msgstr "Ağ Yok"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:735
+#: ../src/gs-shell-updates.c:729
 msgid "Internet access is required to check for updates."
 msgstr "Güncellemeleri denetlemek için İnternet erişimi gerekir."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:739
+#: ../src/gs-shell-updates.c:733
 msgid "Network Settings"
 msgstr "Ağ Ayarları"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:759
+#: ../src/gs-shell-updates.c:752
 msgid "Charges may apply"
 msgstr "Ücret uygulanabilir"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:763
+#: ../src/gs-shell-updates.c:756
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
-msgstr ""
-"Mobil geniş bant kullanımı sırasında güncellemeleri denetlemek sizin için ek "
-"masrafa neden olabilir."
+msgstr "Mobil geniş bant kullanımı sırasında güncellemeleri denetlemek sizin için ek masrafa neden olabilir."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:767
+#: ../src/gs-shell-updates.c:760
 msgid "Check Anyway"
 msgstr "Yine de Denetle"
 
@@ -821,9 +827,7 @@ msgstr "Yazılım güncel"
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
-msgstr ""
-"Mobil geniş bant kullanımı sırasında güncellemeleri denetlemek sizin için ek "
-"masrafa neden olabilir."
+msgstr "Mobil geniş bant kullanımı sırasında güncellemeleri denetlemek sizin için ek masrafa neden olabilir."
 
 #: ../src/gs-shell-updates.ui.h:4
 msgid "_Check Anyway"
@@ -887,9 +891,7 @@ msgstr "Yazılım kaynakları, ek yazılımlara erişmenizi sağlar."
 #: ../src/gs-sources-dialog.ui.h:5
 msgid ""
 "Removing a source will also remove any software you have installed from it."
-msgstr ""
-"Bir kaynağı kaldırmak, bu kaynaktan kurmuş olduğunuz tüm yazılımları da "
-"kaldıracaktır."
+msgstr "Bir kaynağı kaldırmak, bu kaynaktan kurmuş olduğunuz tüm yazılımları da kaldıracaktır."
 
 #: ../src/gs-sources-dialog.ui.h:6
 msgid "No software installed from this source"
@@ -916,12 +918,12 @@ msgid "Website"
 msgstr "Web Sitesi"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:165
+#: ../src/gs-update-dialog.c:167
 msgid "Installed Updates"
 msgstr "Yüklü Güncellemeler"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:178
+#: ../src/gs-update-dialog.c:180
 #, c-format
 msgid "Installed on %s"
 msgstr "%s'de yüklendi"
@@ -1007,23 +1009,23 @@ msgstr "%s şimdi kuruldu"
 msgid "Launch"
 msgstr "Başlat"
 
-#: ../src/gs-utils.c:160
+#: ../src/gs-utils.c:159
 msgid "Sorry, this did not work"
 msgstr "Üzgünüm, bu işe yaramadı"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:164
+#: ../src/gs-utils.c:163
 #, c-format
 msgid "Installation of %s failed."
 msgstr "%s kurulumu başarısız oldu."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:169
+#: ../src/gs-utils.c:168
 #, c-format
 msgid "Removal of %s failed."
 msgstr "%s uygulaması kaldırılamadı."
 
-#: ../src/plugins/gs-plugin-appstream.c:152
+#: ../src/plugins/gs-plugin-appstream.c:160
 #, c-format
 msgid "No AppStream data found"
 msgstr "AppStream verisi bulunamadı"
@@ -1038,12 +1040,6 @@ msgstr "Web uygulaması"
 #: ../src/plugins/gs-plugin-epiphany.c:151
 msgid "Proprietary"
 msgstr "Sahipli"
-
-#. TRANSLATORS: this is where update details either are
-#. * no longer available or were never provided in the first place
-#: ../src/plugins/gs-plugin-packagekit-refine.c:414
-msgid "No update details were provided"
-msgstr "Hiçbir güncelleme ayrıntısı sağlanmamış"
 
 #. TRANSLATORS: this is the menu spec main category for Audio
 #: ../src/plugins/menu-spec-common.c:30
