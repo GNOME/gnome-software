@@ -465,7 +465,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	GsShellPrivate *priv = shell->priv;
 	GtkWidget *widget;
 
-	g_return_val_if_fail (GS_IS_SHELL (shell), NULL);
+	g_return_if_fail (GS_IS_SHELL (shell));
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->cancellable = g_object_ref (cancellable);
