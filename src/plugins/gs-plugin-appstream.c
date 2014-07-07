@@ -178,49 +178,6 @@ out:
 }
 
 /**
- * gs_plugin_refine_search_pixbuf:
- *
- * This method allows us to cope with metadata like this:
- *
- * <icon type="local">gnome-chess</icon>
- * <icon type="local">geary</icon>
- *
- * Where .../app-info/icons/gnome-chess.png and .../app-info/icons/geary.svg
- * exist.
- *
- * Basically, we have to stick on the extension and stat() each file in turn.
- */
-static gchar *
-gs_plugin_refine_search_pixbuf (GsPlugin *plugin,
-				const gchar *icon_dir,
-				const gchar *icon)
-{
-	const gchar *exensions[] = { "png",
-				     "svg",
-				     "svgz",
-				     "gif",
-				     "ico",
-				     "xcf",
-				     NULL };
-	gchar *icon_path;
-	guint i;
-
-	/* exists */
-	for (i = 0; exensions[i] != NULL; i++) {
-		icon_path = g_strdup_printf ("%s/%s.%s",
-					     icon_dir,
-					     icon,
-					     exensions[i]);
-		if (g_file_test (icon_path, G_FILE_TEST_EXISTS))
-			goto out;
-		g_free (icon_path);
-		icon_path = NULL;
-	}
-out:
-	return icon_path;
-}
-
-/**
  * gs_plugin_refine_item_pixbuf:
  */
 static void
@@ -255,24 +212,9 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		gs_app_set_icon (app, icon_path);
 		ret = gs_app_load_icon (app, &error);
 		if (!ret) {
-			g_warning ("falling back to searching for %s", icon_path);
-			g_clear_error (&error);
-			g_free (icon_path);
-
-			/* we are not going to be doing this forever,
-			 * SO FIX YOUR APPSTREAM METADATA */
-			icon_path = gs_plugin_refine_search_pixbuf (plugin, icon_dir, icon);
-			if (icon_path == NULL) {
-				g_warning ("failed to load cached icon %s", icon);
-				goto out;
-			}
-			gs_app_set_icon (app, icon_path);
-			ret = gs_app_load_icon (app, &error);
-			if (!ret) {
-				g_warning ("failed to load cached icon %s: %s",
-					   icon, error->message);
-				g_error_free (error);
-			}
+			g_warning ("failed to load cached icon %s: %s",
+				   icon, error->message);
+			g_error_free (error);
 			goto out;
 		}
 		break;
