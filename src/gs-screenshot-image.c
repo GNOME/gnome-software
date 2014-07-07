@@ -135,10 +135,13 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 				 SoupMessage *msg,
 				 gpointer user_data)
 {
+	AsImage *im = NULL;
 	GsScreenshotImagePrivate *priv;
 	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
-	gboolean ret;
 	GError *error = NULL;
+	GdkPixbuf *pixbuf = NULL;
+	GInputStream *stream = NULL;
+	gboolean ret;
 
 	if (msg->status_code != SOUP_STATUS_OK) {
 		/* TRANSLATORS: this is when we try to download a screenshot and
@@ -150,11 +153,28 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
-	/* save to file */
-	ret = g_file_set_contents (priv->filename,
-				   msg->response_body->data,
-				   msg->response_body->length,
-				   &error);
+	/* create a buffer with the data */
+	stream = g_memory_input_stream_new_from_data (msg->response_body->data,
+						      msg->response_body->length,
+						      NULL);
+	if (stream == NULL)
+		goto out;
+
+	/* load the image */
+	pixbuf = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
+	if (pixbuf == NULL) {
+		/* TRANSLATORS: possibly image file corrupt or not an image */
+		gs_screenshot_image_set_error (ssimg, _("Failed to load image"));
+		goto out;
+	}
+
+	/* save to file, using the same code as the AppStream builder so the
+	 * preview looks the same */
+	im = as_image_new ();
+	as_image_set_pixbuf (im, pixbuf);
+	ret = as_image_save_filename (im, priv->filename,
+				      priv->width, priv->height,
+				      AS_IMAGE_SAVE_FLAG_PAD_16_9, &error);
 	if (!ret) {
 		gs_screenshot_image_set_error (ssimg, error->message);
 		g_error_free (error);
@@ -164,6 +184,12 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	/* got image, so show */
 	as_screenshot_show_image (ssimg);
 out:
+	if (stream != NULL)
+		g_object_unref (stream);
+	if (pixbuf != NULL)
+		g_object_unref (pixbuf);
+	if (im != NULL)
+		g_object_unref (im);
 	g_object_unref (ssimg);
 }
 
