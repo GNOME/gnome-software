@@ -9,9 +9,9 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-06-30 07:31+0000\n"
-"PO-Revision-Date: 2014-06-30 22:20+0400\n"
-"Last-Translator: Yuri Myasoedov <ymyasoedov@yandex.ru>\n"
+"POT-Creation-Date: 2014-07-08 07:34+0000\n"
+"PO-Revision-Date: 2014-07-08 18:23+0300\n"
+"Last-Translator: Yuri Myasoedov <omerta13@yandex.ru>\n"
 "Language-Team: русский <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -19,7 +19,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Poedit 1.6.5\n"
+"X-Generator: Poedit 1.5.4\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "Application manager for GNOME"
@@ -50,7 +50,7 @@ msgid "Add to Application Folder"
 msgstr "Добавить в папку приложения"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:233 ../src/gs-shell-installed.c:582
+#: ../src/gs-shell-details.c:234 ../src/gs-shell-installed.c:581
 msgid "_Cancel"
 msgstr "О_тменить"
 
@@ -68,7 +68,7 @@ msgstr "_О приложении"
 
 #: ../src/app-menu.ui.h:3
 msgid "_Quit"
-msgstr "_Завершить"
+msgstr "_Закончить"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
@@ -80,9 +80,10 @@ msgid "Installed"
 msgstr "Установлено"
 
 #. TRANSLATORS: this is the application name
+#. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:259 ../src/gs-shell.c:161
+#: ../src/gs-application.c:273 ../src/gs-shell.c:167
 msgid "Software"
 msgstr "Программное обеспечение"
 
@@ -142,12 +143,12 @@ msgstr "Перезапустить и _установить"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:182
+#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:183
 msgid "_Install"
 msgstr "_Установить"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:220
+#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:221
 msgid "_Remove"
 msgstr "У_далить"
 
@@ -164,65 +165,69 @@ msgid "Folder Name"
 msgstr "Имя папки"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:257
+#: ../src/gs-application.c:271
 msgid "About Software"
 msgstr "О приложении"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:262
+#: ../src/gs-application.c:276
 msgid "A nice way to manage the software on your system."
 msgstr "Удобная программа управления программным обеспечением в системе."
 
-#: ../src/gs-application.c:266
+#: ../src/gs-application.c:280
 msgid "translator-credits"
 msgstr ""
 "Стас Соловей <whats_up@tut.by>, 2013, 2014.Юрий Мясоедов <ymyasoedov@yandex."
 "ru>, 2014."
 
-#: ../src/gs-application.c:523
+#: ../src/gs-application.c:539
 msgid "Enter GApplication service mode"
 msgstr "Запустить GApplication в режиме службы"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:526
+#: ../src/gs-application.c:542
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Режим при запуске: «updates» (обновления), «updated» (обновлённые), "
 "«installed» (установленные) или «overview» (обзор)"
 
-#: ../src/gs-application.c:526
+#: ../src/gs-application.c:542
 msgid "MODE"
 msgstr "РЕЖИМ"
 
-#: ../src/gs-application.c:528
+#: ../src/gs-application.c:544
 msgid "Search for applications"
 msgstr "Поиск приложений"
 
-#: ../src/gs-application.c:528
+#: ../src/gs-application.c:544
 msgid "SEARCH"
 msgstr "ПОИСК"
 
-#: ../src/gs-application.c:530 ../src/gs-application.c:532
+#: ../src/gs-application.c:546 ../src/gs-application.c:548
 msgid "Show application details"
 msgstr "Показать информацию о приложении"
 
-#: ../src/gs-application.c:530 ../src/gs-application.c:532
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:546 ../src/gs-application.c:548
+#: ../src/gs-application.c:550
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:550
 msgid "Set the specified debugging level"
 msgstr "Установить указанный уровень отладки"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:552
 msgid "Show profiling information for the service"
 msgstr "Показывать профилировочную информацию для службы"
+
+#: ../src/gs-application.c:554
+msgid "Prefer local file sources to AppStream"
+msgstr "Предпочитать локальные источники вместо AppStream"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
 #: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:200
-#: ../src/gs-shell-details.c:165
+#: ../src/gs-shell-details.c:166
 msgid "Pending"
 msgstr "Ожидают"
 
@@ -265,8 +270,8 @@ msgstr "Установить"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:216 ../src/gs-shell-details.c:1124
-#: ../src/gs-shell-installed.c:183 ../src/gs-shell-search.c:164
+#: ../src/gs-app-row.c:216 ../src/gs-shell-details.c:1117
+#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:162
 msgid "Remove"
 msgstr "Удалить"
 
@@ -281,9 +286,33 @@ msgstr "Обновления"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:172
+#: ../src/gs-category.c:215
 msgid "Other"
 msgstr "Другое"
+
+#. vim: set noexpandtab:
+#: ../src/gs-first-run-dialog.ui.h:1
+msgid "Welcome"
+msgstr "Добро пожаловать"
+
+#: ../src/gs-first-run-dialog.ui.h:2
+#| msgid "About Software"
+msgid "Welcome to Software"
+msgstr "Добро пожаловать в менеджер приложений"
+
+#: ../src/gs-first-run-dialog.ui.h:3
+msgid ""
+"Software lets you install all the software you need, all from one place. See "
+"our recommendations, browse the categories, or search for the applications "
+"you want."
+msgstr ""
+"Менеджер приложений — это программа для централизованного управления "
+"программным обеспечением. Смотрите категории и рекомендации или найдите "
+"интересующие вас приложения."
+
+#: ../src/gs-first-run-dialog.ui.h:4
+msgid "_Let’s Go Shopping"
+msgstr "_Отправляемся за покупками"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
@@ -394,20 +423,20 @@ msgstr "Обновления ОС"
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
 #: ../src/gs-plugin-loader.c:747
-msgid ""
-"Includes performance, stability and security improvements for all users."
+#| msgid ""
+#| "Includes performance, stability and security improvements for all users."
+msgid "Includes performance, stability and security improvements."
 msgstr ""
-"Включает улучшения производительности, стабильности и безопасности для всех "
-"пользователей."
+"Включает в себя улучшения по производительности, стабильности и безопасности."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1339
+#: ../src/gs-plugin-loader.c:1338
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Нет доступных кодеков для формата %s."
 
-#: ../src/gs-plugin-loader.c:1342
+#: ../src/gs-plugin-loader.c:1341
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -418,103 +447,109 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:130
+#: ../src/gs-screenshot-image.c:149
 msgid "Screenshot not found"
 msgstr "Картинка не найдена"
 
+#. TRANSLATORS: possibly image file corrupt or not an image
+#: ../src/gs-screenshot-image.c:167
+#| msgid "Failed To Update"
+msgid "Failed to load image"
+msgstr "Не удалось загрузить изображение"
+
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:238
+#: ../src/gs-screenshot-image.c:280
 msgid "Screenshot size not found"
 msgstr "Размер картинки не найден"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:252
+#: ../src/gs-screenshot-image.c:295
 msgid "Could not create cache"
 msgstr "Не удалось создать кэш"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:269
+#: ../src/gs-screenshot-image.c:312
 msgid "Screenshot not valid"
 msgstr "Картинка недоступна"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:275
+#: ../src/gs-screenshot-image.c:318
 msgid "Screenshot not available"
 msgstr "Картинка недоступна"
 
-#: ../src/gs-screenshot-image.c:328
+#: ../src/gs-screenshot-image.c:371
 msgid "Screenshot"
 msgstr "Картинка"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:193
+#: ../src/gs-shell-details.c:194
 msgid "_Installing"
 msgstr "У_становка"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:227
+#: ../src/gs-shell-details.c:228
 msgid "_Removing"
 msgstr "У_даление"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:599
+#: ../src/gs-shell-details.c:594
 msgctxt "license"
 msgid "Unknown"
 msgstr "Неизвестная"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:612
+#: ../src/gs-shell-details.c:607
 msgctxt "version"
 msgid "Unknown"
 msgstr "Неизвестная"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:618
+#: ../src/gs-shell-details.c:613
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Подсчёт…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:621
+#: ../src/gs-shell-details.c:616
 msgctxt "size"
 msgid "Unknown"
 msgstr "Неизвестно"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:633
+#: ../src/gs-shell-details.c:628
 msgctxt "updated"
 msgid "Never"
 msgstr "Никогда"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:643
 msgctxt "menu category"
 msgid "None"
 msgstr "Нет"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:658
+#: ../src/gs-shell-details.c:653
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Неизвестно"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1109 ../src/gs-shell-installed.c:168
-#: ../src/gs-shell-search.c:149
+#: ../src/gs-shell-details.c:1102 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:147
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Уверены, что хотите удалить %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1121 ../src/gs-shell-installed.c:180
-#: ../src/gs-shell-search.c:161
+#: ../src/gs-shell-details.c:1114 ../src/gs-shell-installed.c:179
+#: ../src/gs-shell-search.c:159
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -623,7 +658,6 @@ msgid "Source"
 msgstr "Источник"
 
 #: ../src/gs-shell-details.ui.h:22
-#| msgid "Licence"
 msgid "License"
 msgstr "Лицензия"
 
@@ -638,8 +672,8 @@ msgstr "Разработчик"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:25 ../src/gs-shell-installed.c:494
-#: ../src/gs-update-list.c:87 ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-shell-details.ui.h:25 ../src/gs-shell-installed.c:493
+#: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Дополнения"
 
@@ -649,12 +683,11 @@ msgstr "Выбранные дополнения будут установлен�
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:484
-#| msgid "Search for applications"
+#: ../src/gs-shell-installed.c:483
 msgid "System Applications"
 msgstr "Системные приложения"
 
-#: ../src/gs-shell-installed.c:590
+#: ../src/gs-shell-installed.c:589
 msgid "Click on items to select them"
 msgstr "Нажмите, чтобы выделить"
 
@@ -791,30 +824,30 @@ msgid "Last checked: %s"
 msgstr "Последняя проверка: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:729
+#: ../src/gs-shell-updates.c:725
 msgid "No Network"
 msgstr "Нет сети"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:733
+#: ../src/gs-shell-updates.c:729
 msgid "Internet access is required to check for updates."
 msgstr "Для проверки обновлений требуется подключение к Интернету."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:737
+#: ../src/gs-shell-updates.c:733
 msgid "Network Settings"
 msgstr "Параметры сети"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:757
+#: ../src/gs-shell-updates.c:752
 msgid "Charges may apply"
 msgstr "Возможны дополнительные расходы"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:761
+#: ../src/gs-shell-updates.c:756
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -825,7 +858,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:765
+#: ../src/gs-shell-updates.c:760
 msgid "Check Anyway"
 msgstr "Всё равно проверить"
 
@@ -947,14 +980,12 @@ msgstr "Веб-сайт"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
 #: ../src/gs-update-dialog.c:167
-#| msgid "Installed page"
 msgid "Installed Updates"
 msgstr "Установленные обновления"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
 #: ../src/gs-update-dialog.c:180
 #, c-format
-#| msgid "Installed"
 msgid "Installed on %s"
 msgstr "Установлено %s"
 
@@ -1043,23 +1074,23 @@ msgstr "Приложение %s установлено"
 msgid "Launch"
 msgstr "Запустить"
 
-#: ../src/gs-utils.c:160
+#: ../src/gs-utils.c:159
 msgid "Sorry, this did not work"
 msgstr "Это не работает"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:164
+#: ../src/gs-utils.c:163
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Не удалось установить %s."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:169
+#: ../src/gs-utils.c:168
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Не удалось удалить %s."
 
-#: ../src/plugins/gs-plugin-appstream.c:156
+#: ../src/plugins/gs-plugin-appstream.c:160
 #, c-format
 msgid "No AppStream data found"
 msgstr "Данные AppStream не найдены"
@@ -1141,71 +1172,51 @@ msgid "Development Tools"
 msgstr "Инструменты разработки"
 
 #: ../src/plugins/menu-spec-common.c:44
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Building"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Сборка"
 
 #: ../src/plugins/menu-spec-common.c:45
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Databases"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Базы данных"
 
 #: ../src/plugins/menu-spec-common.c:46
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Debuggers"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Отладчики"
 
 #: ../src/plugins/menu-spec-common.c:47
-#| msgctxt "Menu subcategory of Development"
-#| msgid "GUI Designers"
 msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "Проектирование интерфейса"
 
 #: ../src/plugins/menu-spec-common.c:48
-#| msgctxt "Menu subcategory of Development"
-#| msgid "IDE"
 msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "Среды разработки"
 
 #: ../src/plugins/menu-spec-common.c:49
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Profiling"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Профилирование"
 
 #: ../src/plugins/menu-spec-common.c:50
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Project Management"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Управление проектами"
 
 #: ../src/plugins/menu-spec-common.c:51
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Revision Control"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Контроль версий"
 
 #: ../src/plugins/menu-spec-common.c:52
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Translation"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Перевод"
 
 #: ../src/plugins/menu-spec-common.c:53
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Web Development"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Веб-разработка"
@@ -1496,113 +1507,81 @@ msgid "Internet"
 msgstr "Интернет"
 
 #: ../src/plugins/menu-spec-common.c:115
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Chat"
 msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Чат"
 
 #: ../src/plugins/menu-spec-common.c:116
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Dialup"
 msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Коммутируемое соединение"
 
 #: ../src/plugins/menu-spec-common.c:117
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Email"
 msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "Электронная почта"
 
 #: ../src/plugins/menu-spec-common.c:118
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Feed"
 msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Новостные ленты"
 
 #: ../src/plugins/menu-spec-common.c:119
-#| msgctxt "Menu subcategory of Network"
-#| msgid "File Transfer"
 msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Передача файлов"
 
 #: ../src/plugins/menu-spec-common.c:120
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Ham Radio"
 msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
 msgstr "Любительское радио"
 
 #: ../src/plugins/menu-spec-common.c:121
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Instant Messaging"
 msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Обмен сообщениями"
 
 #: ../src/plugins/menu-spec-common.c:122
-#| msgctxt "Menu subcategory of Network"
-#| msgid "IRC Clients"
 msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "Клиенты IRC"
 
 #: ../src/plugins/menu-spec-common.c:123
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Monitor"
 msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Мониторинг"
 
 #: ../src/plugins/menu-spec-common.c:124
-#| msgctxt "Menu subcategory of Network"
-#| msgid "News"
 msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Новости"
 
 #: ../src/plugins/menu-spec-common.c:125
-#| msgctxt "Menu subcategory of Network"
-#| msgid "P2P"
 msgctxt "Menu subcategory of Internet"
 msgid "P2P"
 msgstr "Пиринговые сети"
 
 #: ../src/plugins/menu-spec-common.c:126
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Remote Access"
 msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Удалённый доступ"
 
 #: ../src/plugins/menu-spec-common.c:127
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Telephony"
 msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Телефония"
 
 #: ../src/plugins/menu-spec-common.c:128
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Video Conference"
 msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Видеоконференция"
 
 #: ../src/plugins/menu-spec-common.c:129
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Web Browser"
 msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Веб-браузеры"
 
 #: ../src/plugins/menu-spec-common.c:130
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Web Development"
 msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
 msgstr "Веб-разработка"
@@ -1888,71 +1867,51 @@ msgid "Utilities"
 msgstr "Утилиты"
 
 #: ../src/plugins/menu-spec-common.c:191
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Accessibility"
 msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Специальные возможности"
 
 #: ../src/plugins/menu-spec-common.c:192
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Archiving"
 msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Архивирование"
 
 #: ../src/plugins/menu-spec-common.c:193
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Calculator"
 msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Калькуляторы"
 
 #: ../src/plugins/menu-spec-common.c:194
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Clock"
 msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Часы"
 
 #: ../src/plugins/menu-spec-common.c:195
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Compression"
 msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Сжатие"
 
 #: ../src/plugins/menu-spec-common.c:196
-#| msgctxt "Menu subcategory of System"
-#| msgid "File Tools"
 msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
 msgstr "Файловые инструменты"
 
 #: ../src/plugins/menu-spec-common.c:197
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Maps"
 msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Карты"
 
 #: ../src/plugins/menu-spec-common.c:198
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Spirituality"
 msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Религия"
 
 #: ../src/plugins/menu-spec-common.c:199
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Telephony Tools"
 msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Инструменты телефонии"
 
 #: ../src/plugins/menu-spec-common.c:200
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Text Editor"
 msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
 msgstr "Текстовые редакторы"
@@ -1993,81 +1952,21 @@ msgid "TV"
 msgstr "ТВ"
 
 #: ../src/plugins/menu-spec-common.c:211
-#| msgid "Fonts"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Шрифты"
 
 #: ../src/plugins/menu-spec-common.c:212
-#| msgid "Codecs"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Кодеки"
 
 #: ../src/plugins/menu-spec-common.c:213
-#| msgid "Input Sources"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Источники ввода"
 
 #: ../src/plugins/menu-spec-common.c:214
-#| msgid "Language Packs"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Языковые пакеты"
-
-#~ msgid "_Pending"
-#~ msgstr "_Ожидают"
-
-#~ msgctxt "license"
-#~ msgid "Complicated!"
-#~ msgstr "См. во всплывающей подсказке"
-
-#~ msgid "Recent Software Updates"
-#~ msgstr "Недавние обновления программного обеспечения"
-
-#~ msgid "No update details were provided"
-#~ msgstr "Дополнительные сведения об обновлении не были предоставлены"
-
-#~ msgctxt "Menu subcategory of Development"
-#~ msgid "Databases"
-#~ msgstr "Базы данных"
-
-#~ msgctxt "Menu subcategory of Network"
-#~ msgid "Ham Radio"
-#~ msgstr "Любительское радио"
-
-#~ msgctxt "Menu subcategory of Network"
-#~ msgid "Web Development"
-#~ msgstr "Веб Разработка"
-
-#~ msgctxt "Menu subcategory of Utility"
-#~ msgid "File Tools"
-#~ msgstr "Файловые Инструменты"
-
-#~ msgctxt "Menu subcategory of Utility"
-#~ msgid "Maps"
-#~ msgstr "Карты"
-
-#~ msgctxt "Menu subcategory of Utility"
-#~ msgid "Spirituality"
-#~ msgstr "Духовное"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Fonts"
-#~ msgstr "Шрифты"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Codecs"
-#~ msgstr "Кодеки"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Input Sources"
-#~ msgstr "Источники ввода"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Language Packs"
-#~ msgstr "Языковые Пакеты"
-
-#~ msgid "January 30, 2014"
-#~ msgstr "30 января 2014"
