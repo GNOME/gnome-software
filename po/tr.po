@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-07-06 07:33+0000\n"
-"PO-Revision-Date: 2014-07-06 14:07+0000\n"
+"POT-Creation-Date: 2014-07-08 07:34+0000\n"
+"PO-Revision-Date: 2014-07-08 11:29+0000\n"
 "Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -292,8 +292,8 @@ msgid ""
 msgstr "Yazılımlar uygulaması, ihtiyacınız olan tüm yazılımları tek bir yerden kurmanıza olanak tanır. Bizim önerdiklerimize bakın, kategorilere gözatın ya da istediğiniz uygulamaları bulmak için arama yapın."
 
 #: ../src/gs-first-run-dialog.ui.h:4
-msgid "_Let's Get Started"
-msgstr "_Hadi Başlayalım"
+msgid "_Let’s Go Shopping"
+msgstr "_Hadi Alışverişe Çıkalım"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
@@ -422,34 +422,39 @@ msgstr "Hem %s hakkındaki bilgiler hem de bu biçimi oynatabilen bir kod çöz�
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:146
+#: ../src/gs-screenshot-image.c:149
 msgid "Screenshot not found"
 msgstr "Ekran görüntüsü bulunamadı"
 
+#. TRANSLATORS: possibly image file corrupt or not an image
+#: ../src/gs-screenshot-image.c:167
+msgid "Failed to load image"
+msgstr "Resim yüklenemedi"
+
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:254
+#: ../src/gs-screenshot-image.c:280
 msgid "Screenshot size not found"
 msgstr "Ekran görüntüsü boyutu bulunamadı"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:269
+#: ../src/gs-screenshot-image.c:295
 msgid "Could not create cache"
 msgstr "Önbellek oluşturulamadı"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:286
+#: ../src/gs-screenshot-image.c:312
 msgid "Screenshot not valid"
 msgstr "Ekran görüntüsü geçerli değil"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:292
+#: ../src/gs-screenshot-image.c:318
 msgid "Screenshot not available"
 msgstr "Ekran görüntüsü kullanılabilir değil"
 
-#: ../src/gs-screenshot-image.c:345
+#: ../src/gs-screenshot-image.c:371
 msgid "Screenshot"
 msgstr "Ekran Görüntüsü"
 
