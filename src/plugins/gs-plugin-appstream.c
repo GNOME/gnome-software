@@ -404,9 +404,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 {
 	GHashTable *urls;
 	GPtrArray *pkgnames;
+	GPtrArray *kudos;
 	const gchar *tmp;
 	gboolean ret = TRUE;
 	gchar *from_xml;
+	guint i;
 
 	/* is an app */
 	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN ||
@@ -560,6 +562,32 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_app_add_kudo (app, GS_APP_KUDO_POPULAR);
 	if (as_app_get_metadata_item (item, "X-IBus-Symbol") != NULL)
 		gs_app_add_kudo (app, GS_APP_KUDO_IBUS_HAS_SYMBOL);
+
+	/* add new-style kudos */
+	kudos = as_app_get_kudos (item);
+	for (i = 0; i < kudos->len; i++) {
+		tmp = g_ptr_array_index (kudos, i);
+		switch (as_kudo_kind_from_string (tmp)) {
+		case AS_KUDO_KIND_SEARCH_PROVIDER:
+			gs_app_add_kudo (app, GS_APP_KUDO_SEARCH_PROVIDER);
+			break;
+		case AS_KUDO_KIND_USER_DOCS:
+			gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
+			break;
+		case AS_KUDO_KIND_APP_MENU:
+			gs_app_add_kudo (app, GS_APP_KUDO_USES_APP_MENU);
+			break;
+		case AS_KUDO_KIND_MODERN_TOOLKIT:
+			gs_app_add_kudo (app, GS_APP_KUDO_MODERN_TOOLKIT);
+			break;
+		case AS_KUDO_KIND_NOTIFICATIONS:
+			gs_app_add_kudo (app, GS_APP_KUDO_USES_NOTIFICATIONS);
+			break;
+		default:
+			g_debug ("no idea how to handle kudo '%s'", tmp);
+			break;
+		}
+	}
 out:
 	return ret;
 }
