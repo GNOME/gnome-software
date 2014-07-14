@@ -2,9 +2,9 @@
 # Copyright (C) 2013-2014 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 # Rafael Ferreira <rafael.f.f1@gmail.com>, 2013.
-# Enrico Nicoletto <liverig@gmail.com>, 2013, 2014.
 # Juan Diego Martins da Costa Cruz <juan.martins@ifrn.edu.br>, 2013.
 # Georges Basile Stavracas Neto <georges.stavracas@gmail.com>, 2013, 2014.
+# Enrico Nicoletto <liverig@gmail.com>, 2013, 2014.
 #
 msgid ""
 msgstr ""
@@ -12,8 +12,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2014-07-09 07:46+0000\n"
-"PO-Revision-Date: 2014-07-14 11:09-0300\n"
-"Last-Translator: Georges Basile Stavracas Neto <georges.stavracas@gmail.com>\n"
+"PO-Revision-Date: 2014-07-14 11:31-0300\n"
+"Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -98,6 +98,8 @@ msgid ""
 "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
 "Software;App;Store;"
 msgstr ""
+"Atualizações;Upgrade;Atualização;Fontes;Repositórios;Preferências;Instalação;"
+"Instalar;Desinstalar;Programa;Software;Aplicativo;App;Loja;Store;"
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
 msgid "Software Install"
@@ -166,7 +168,7 @@ msgstr "Nome da pasta"
 #. TRANSLATORS: this is the title of the about window
 #: ../src/gs-application.c:271
 msgid "About Software"
-msgstr "Sobre Software"
+msgstr "Sobre o aplicativo Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
 #: ../src/gs-application.c:276
@@ -224,7 +226,7 @@ msgstr "Mostrar informações de criação de perfil para este serviço"
 
 #: ../src/gs-application.c:554
 msgid "Prefer local file sources to AppStream"
-msgstr ""
+msgstr "Preferir fontes locais de arquivos ao invés do AppStream"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
@@ -295,13 +297,12 @@ msgstr "Outros"
 #. vim: set noexpandtab:
 #: ../src/gs-first-run-dialog.ui.h:1
 msgid "Welcome"
-msgstr ""
+msgstr "Bem vindo(a)"
 
 #: ../src/gs-first-run-dialog.ui.h:2
-#, fuzzy
 #| msgid "About Software"
 msgid "Welcome to Software"
-msgstr "Sobre Software"
+msgstr "Seja bem vindo(a) ao aplicativo Software"
 
 #: ../src/gs-first-run-dialog.ui.h:3
 msgid ""
@@ -309,10 +310,13 @@ msgid ""
 "our recommendations, browse the categories, or search for the applications "
 "you want."
 msgstr ""
+"O aplicativo Software permite a você instalar todos os programas que você "
+"precisa, tudo de um só lugar. Consulte nossas recomendações, navegue pelas "
+"categorias ou pesquise pelos aplicativos que desejar."
 
 #: ../src/gs-first-run-dialog.ui.h:4
 msgid "_Let’s Go Shopping"
-msgstr ""
+msgstr "_Vamos às compras"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
@@ -425,13 +429,10 @@ msgstr "Atualizações do SO"
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
 #: ../src/gs-plugin-loader.c:760
-#, fuzzy
 #| msgid ""
 #| "Includes performance, stability and security improvements for all users."
 msgid "Includes performance, stability and security improvements."
-msgstr ""
-"Inclui melhorias de desempenho, estabilidade e segurança para todos os "
-"usuários."
+msgstr "Inclui melhorias de desempenho, estabilidade e segurança."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -457,10 +458,9 @@ msgstr "A captura de tela não foi localizada"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
 #: ../src/gs-screenshot-image.c:167
-#, fuzzy
 #| msgid "Failed To Update"
 msgid "Failed to load image"
-msgstr "Ocorreu falha ao atualizar"
+msgstr "Ocorreu falha ao carregar imagem"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
@@ -658,7 +658,6 @@ msgid "Source"
 msgstr "Fonte"
 
 #: ../src/gs-shell-details.ui.h:22
-#, fuzzy
 #| msgid "Licence"
 msgid "License"
 msgstr "Licença"
@@ -681,15 +680,14 @@ msgstr "Complementos"
 
 #: ../src/gs-shell-details.ui.h:26
 msgid "Selected add-ons will be installed with the application."
-msgstr ""
+msgstr "Os complementos selecionados serão instalados com o aplicativo."
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
 #: ../src/gs-shell-installed.c:483
-#, fuzzy
 #| msgid "Search for applications"
 msgid "System Applications"
-msgstr "Pesquisar por aplicativos"
+msgstr "Aplicativos de sistema"
 
 #: ../src/gs-shell-installed.c:589
 msgid "Click on items to select them"
@@ -1089,7 +1087,7 @@ msgstr "A remoção de %s falhou."
 #: ../src/plugins/gs-plugin-appstream.c:160
 #, c-format
 msgid "No AppStream data found"
-msgstr "Nenhum dado de AppStream encontrado"
+msgstr "Nenhum dado do AppStream encontrado"
 
 #. TRANSLATORS: this is when a webapp has no comment
 #: ../src/plugins/gs-plugin-epiphany.c:143
