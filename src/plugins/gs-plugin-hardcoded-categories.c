@@ -96,7 +96,7 @@ static Featured featured[] = {
 	{ "Development", "eclipse.desktop" },
 	{ "Development", "gitg.desktop" },
 	{ "Development", "monodevelop.desktop" },
-	{ "Development", "gedit.desktop" },
+	{ "Development", "org.gnome.gedit.desktop" },
 	{ "Development", "devhelp.desktop" },
 	{ "Graphics", "gimp.desktop" },
 	{ "Graphics", "mypaint.desktop" },
