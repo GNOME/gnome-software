@@ -10,7 +10,7 @@ Released: 2014-xx-xx
 * New Features:
 * Bugfix:
 
-git shortlog GNOME_SOFTWARE_3_13_3.. | grep -i -v trivial | grep -v Merge | uniq > NEWS.new
+git log --format=" - %s (%an)" GNOME_SOFTWARE_3_13_3.. | grep -i -v trivial | grep -v Merge | uniq > NEWS.new
 
 3. Commit changes in gnome-software git:
 
