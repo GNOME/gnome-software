@@ -101,8 +101,8 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 		}
 		widget = gtk_label_new (tmp);
 		g_object_set (widget,
-		              "margin-left", 20,
-		              "margin-right", 20,
+		              "margin-start", 20,
+		              "margin-end", 20,
 		              "margin-top", 6,
 		              "margin-bottom", 6,
 		              "xalign", 0.0,
@@ -120,8 +120,8 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 		}
 		widget = gtk_label_new (date_str);
 		g_object_set (widget,
-		              "margin-left", 20,
-		              "margin-right", 20,
+		              "margin-start", 20,
+		              "margin-end", 20,
 		              "margin-top", 6,
 		              "margin-bottom", 6,
 		              "xalign", 0.0,
@@ -134,8 +134,8 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 		/* add the version */
 		widget = gtk_label_new (gs_app_get_version (app));
 		g_object_set (widget,
-		              "margin-left", 20,
-		              "margin-right", 20,
+		              "margin-start", 20,
+		              "margin-end", 20,
 		              "margin-top", 6,
 		              "margin-bottom", 6,
 		              "xalign", 1.0,

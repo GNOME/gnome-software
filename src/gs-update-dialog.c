@@ -229,8 +229,8 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 			                        g_free);
 			label = gtk_label_new (gs_app_get_source_default (app_related));
 			g_object_set (label,
-			              "margin-left", 20,
-			              "margin-right", 20,
+			              "margin-start", 20,
+			              "margin-end", 20,
 			              "margin-top", 6,
 			              "margin-bottom", 6,
 			              "xalign", 0.0,
@@ -240,8 +240,8 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 			gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
 			label = gtk_label_new (gs_app_get_update_version (app_related));
 			g_object_set (label,
-			              "margin-left", 20,
-			              "margin-right", 20,
+			              "margin-start", 20,
+			              "margin-end", 20,
 			              "margin-top", 6,
 			              "margin-bottom", 6,
 			              "xalign", 1.0,
