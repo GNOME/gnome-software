@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-05-18 19:28+0000\n"
-"PO-Revision-Date: 2014-05-18 22:44+0300\n"
+"POT-Creation-Date: 2014-07-25 19:36+0000\n"
+"PO-Revision-Date: 2014-07-25 23:33+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: Lithuanian <gnome-lt@lists.akl.lt>\n"
 "Language: lt\n"
@@ -50,7 +50,7 @@ msgid "Add to Application Folder"
 msgstr "Pridėti programų aplanką"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:229 ../src/gs-shell-installed.c:577
+#: ../src/gs-shell-details.c:234 ../src/gs-shell-installed.c:581
 msgid "_Cancel"
 msgstr "_Atsisakyti"
 
@@ -72,22 +72,32 @@ msgstr "_Išeiti"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
-#: ../src/gs-feature-tile.c:76 ../src/gs-popular-tile.c:79
-#: ../src/gs-popular-tile.c:82 ../src/popular-tile.ui.h:1
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
+#: ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83 ../src/gs-feature-tile.c:76
+#: ../src/gs-popular-tile.c:79 ../src/gs-popular-tile.c:82
+#: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Įdiegta"
 
 #. TRANSLATORS: this is the application name
+#. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:240 ../src/gs-shell.c:161
+#: ../src/gs-application.c:273 ../src/gs-shell.c:167
 msgid "Software"
 msgstr "Programinė įranga"
 
 #: ../src/org.gnome.Software.desktop.in.h:2
 msgid "Add, remove or update software on this computer"
 msgstr "Pridėti, šalinti arba atnaujinti šio kompiuterio programinę įrangą"
+
+#: ../src/org.gnome.Software.desktop.in.h:3
+msgid ""
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
+"Software;App;Store;"
+msgstr ""
+"Atnaujinimai;Šaltiniai;Saugyklos;Nustatymai;Įdiegti;Išdiegti;Programa;"
+"Programinė;Įranga;"
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
 msgid "Software Install"
@@ -132,12 +142,12 @@ msgstr "Perleisti ir į_diegti"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:178
+#: ../src/gnome-software.ui.h:12 ../src/gs-shell-details.c:183
 msgid "_Install"
 msgstr "Į_diegti"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:216
+#: ../src/gnome-software.ui.h:13 ../src/gs-shell-details.c:221
 msgid "_Remove"
 msgstr "_Pašalinti"
 
@@ -154,98 +164,78 @@ msgid "Folder Name"
 msgstr "Aplanko pavadinimas"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:238
+#: ../src/gs-application.c:271
 msgid "About Software"
 msgstr "Apie programinę įrangą"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:243
+#: ../src/gs-application.c:276
 msgid "A nice way to manage the software on your system."
 msgstr "Gražus būdas tvarkyti sistemos programinę įrangą."
 
-#: ../src/gs-application.c:247
+#: ../src/gs-application.c:280
 msgid "translator-credits"
 msgstr ""
 "Išvertė:\n"
 "Aurimas Černius <aurisc4@gmail.com>"
 
-#: ../src/gs-application.c:502
+#: ../src/gs-application.c:539
 msgid "Enter GApplication service mode"
 msgstr "Įveskite GApplication tarnybos veikseną"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:505
+#: ../src/gs-application.c:542
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Paleidimo veiksena: viena iš „updates“, „updated“, „installed“ arba "
 "„overview“"
 
-#: ../src/gs-application.c:505
+#: ../src/gs-application.c:542
 msgid "MODE"
 msgstr "VEIKSENA"
 
-#: ../src/gs-application.c:507
+#: ../src/gs-application.c:544
 msgid "Search for applications"
 msgstr "Ieškoti programų"
 
-#: ../src/gs-application.c:507
+#: ../src/gs-application.c:544
 msgid "SEARCH"
 msgstr "IEŠKOTI"
 
-#: ../src/gs-application.c:509 ../src/gs-application.c:511
+#: ../src/gs-application.c:546 ../src/gs-application.c:548
 msgid "Show application details"
 msgstr "Rodyti programas detalią informaciją"
 
-#: ../src/gs-application.c:509 ../src/gs-application.c:511
-#: ../src/gs-application.c:513
+#: ../src/gs-application.c:546 ../src/gs-application.c:548
+#: ../src/gs-application.c:550
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:513
+#: ../src/gs-application.c:550
 msgid "Set the specified debugging level"
 msgstr "Nustatyti nurodytą derinimo lygį"
 
-#: ../src/gs-application.c:515
+#: ../src/gs-application.c:552
 msgid "Show profiling information for the service"
 msgstr "Rodyti tarnybos profiliavimo informaciją"
 
-#. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be easily installed
-#: ../src/gs-app-row.c:189
-msgid "Visit website"
-msgstr "Aplankyti tinklapį"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:196
-msgid "Cancel"
-msgstr "Atsisakyti"
+#: ../src/gs-application.c:554
+msgid "Prefer local file sources to AppStream"
+msgstr "Teikti pirmenybę vietiniams failų šaltiniams vietoj AppStream"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-row.c:199 ../src/gs-shell-details.c:161
+#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:200
+#: ../src/gs-shell-details.c:166
 msgid "Pending"
 msgstr "Laukia"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be easily installed
-#: ../src/gs-app-row.c:206
-msgid "Install"
-msgstr "Įdiegti"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * allows the application to be easily removed
-#. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:215 ../src/gs-shell-details.c:1039
-#: ../src/gs-shell-installed.c:206 ../src/gs-shell-search.c:164
-msgid "Remove"
-msgstr "Pašalinti"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
-#: ../src/gs-app-row.c:226 ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92
+#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:227
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92
 msgid "Installing"
 msgstr "Diegiama"
 
@@ -253,9 +243,36 @@ msgstr "Diegiama"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-row.c:235 ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101
+#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:236
+#: ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101
 msgid "Removing"
 msgstr "Šalinama"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#: ../src/gs-app-row.c:190
+msgid "Visit website"
+msgstr "Aplankyti tinklapį"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows to cancel a queued install of the application
+#: ../src/gs-app-row.c:197
+msgid "Cancel"
+msgstr "Atsisakyti"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#: ../src/gs-app-row.c:207
+msgid "Install"
+msgstr "Įdiegti"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gs-app-row.c:216 ../src/gs-shell-details.c:1117
+#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:162
+msgid "Remove"
+msgstr "Pašalinti"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
@@ -268,9 +285,33 @@ msgstr "Atnaujinimai"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:172
+#: ../src/gs-category.c:215
 msgid "Other"
 msgstr "Kita"
+
+#. vim: set noexpandtab:
+#: ../src/gs-first-run-dialog.ui.h:1
+msgid "Welcome"
+msgstr "Sveiki"
+
+#: ../src/gs-first-run-dialog.ui.h:2
+#| msgid "About Software"
+msgid "Welcome to Software"
+msgstr "Sveiki pradėję naudoti Programinę įrangą"
+
+#: ../src/gs-first-run-dialog.ui.h:3
+msgid ""
+"Software lets you install all the software you need, all from one place. See "
+"our recommendations, browse the categories, or search for the applications "
+"you want."
+msgstr ""
+"Programinė įranga leidžia įdiegti visą reikiamą programinę įrangą, viską "
+"vienoje vietoje. Matykite mūsų rekomendacijas, naršykite kategorijas ar "
+"ieškokite pageidaujamų programų."
+
+#: ../src/gs-first-run-dialog.ui.h:4
+msgid "_Let’s Go Shopping"
+msgstr "_Pradėkite apsipirkinėti"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
@@ -373,25 +414,26 @@ msgstr "Detalios klaidos iš paketų tvarkyklės:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:713
+#: ../src/gs-plugin-loader.c:755
 msgid "OS Updates"
 msgstr "OS atnaujinimai"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:718
-msgid ""
-"Includes performance, stability and security improvements for all users."
-msgstr "Turi našumo, stabilumo bei saugumo patobulinimus visiems naudotojams."
+#: ../src/gs-plugin-loader.c:760
+#| msgid ""
+#| "Includes performance, stability and security improvements for all users."
+msgid "Includes performance, stability and security improvements."
+msgstr "Turi našumo, stabilumo bei saugumo patobulinimus."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1311
+#: ../src/gs-plugin-loader.c:1352
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nėra papildomų kodekų %s formatui."
 
-#: ../src/gs-plugin-loader.c:1314
+#: ../src/gs-plugin-loader.c:1355
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -402,45 +444,51 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:130
+#: ../src/gs-screenshot-image.c:215
 msgid "Screenshot not found"
 msgstr "Ekrano nuotrauka nerasta"
 
+#. TRANSLATORS: possibly image file corrupt or not an image
+#: ../src/gs-screenshot-image.c:233
+#| msgid "Failed To Update"
+msgid "Failed to load image"
+msgstr "Nepavyko įkelti paveikslėlio"
+
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:238
+#: ../src/gs-screenshot-image.c:346
 msgid "Screenshot size not found"
 msgstr "Ekrano nuotraukos dydis nerastas"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:252
+#: ../src/gs-screenshot-image.c:361
 msgid "Could not create cache"
 msgstr "Nepavyko sukurti podėlio"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:269
+#: ../src/gs-screenshot-image.c:378
 msgid "Screenshot not valid"
 msgstr "Ekrano nuotrauka netinkama"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:275
+#: ../src/gs-screenshot-image.c:384
 msgid "Screenshot not available"
 msgstr "Ekrano nuotrauka neprieinama"
 
-#: ../src/gs-screenshot-image.c:328
+#: ../src/gs-screenshot-image.c:437
 msgid "Screenshot"
 msgstr "Ekrano nuotrauka"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:189
+#: ../src/gs-shell-details.c:194
 msgid "_Installing"
 msgstr "_Diegiama"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:223
+#: ../src/gs-shell-details.c:228
 msgid "_Removing"
 msgstr "Š_alinama"
 
@@ -490,15 +538,15 @@ msgstr "Nežinoma"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1024 ../src/gs-shell-installed.c:191
-#: ../src/gs-shell-search.c:149
+#: ../src/gs-shell-details.c:1102 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:147
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Ar tikrai norite pašalinti %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1036 ../src/gs-shell-installed.c:203
-#: ../src/gs-shell-search.c:161
+#: ../src/gs-shell-details.c:1114 ../src/gs-shell-installed.c:179
+#: ../src/gs-shell-search.c:159
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s bus pašalinta, norint naudotis, reikės vėl įdiegti."
@@ -601,7 +649,8 @@ msgid "Source"
 msgstr "Šaltinis"
 
 #: ../src/gs-shell-details.ui.h:22
-msgid "Licence"
+#| msgid "Licence"
+msgid "License"
 msgstr "Licencija"
 
 #: ../src/gs-shell-details.ui.h:23
@@ -615,12 +664,23 @@ msgstr "Kūrėjas"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:498 ../src/gs-update-list.c:87
-#: ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-shell-details.ui.h:25 ../src/gs-shell-installed.c:493
+#: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Priedai"
 
-#: ../src/gs-shell-installed.c:585
+#: ../src/gs-shell-details.ui.h:26
+msgid "Selected add-ons will be installed with the application."
+msgstr "Pasirinkti priedai bus įdiegti su programa."
+
+#. TRANSLATORS: This is the header dividing the normal
+#. * applications and the system ones
+#: ../src/gs-shell-installed.c:483
+#| msgid "Search for applications"
+msgid "System Applications"
+msgstr "Sisteminės programos"
+
+#: ../src/gs-shell-installed.c:589
 msgid "Click on items to select them"
 msgstr "Spauskite elementui pažymėti"
 
@@ -755,30 +815,30 @@ msgid "Last checked: %s"
 msgstr "Paskutinį kartą tikrinta: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:731
+#: ../src/gs-shell-updates.c:725
 msgid "No Network"
 msgstr "Nėra tinklo"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:735
+#: ../src/gs-shell-updates.c:729
 msgid "Internet access is required to check for updates."
 msgstr "Atnaujinimų tikrinimui reikalingas tinklo ryšys."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:739
+#: ../src/gs-shell-updates.c:733
 msgid "Network Settings"
 msgstr "Tinklo nustatymai"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:759
+#: ../src/gs-shell-updates.c:752
 msgid "Charges may apply"
 msgstr "Tai gali kainuoti"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:763
+#: ../src/gs-shell-updates.c:756
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -787,7 +847,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:767
+#: ../src/gs-shell-updates.c:760
 msgid "Check Anyway"
 msgstr "Vistiek tikrinti"
 
@@ -905,35 +965,33 @@ msgid "Website"
 msgstr "Tinklapis"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:165
-#| msgid "Installed page"
+#: ../src/gs-update-dialog.c:167
 msgid "Installed Updates"
 msgstr "Įdiegti atnaujinimai"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:178
+#: ../src/gs-update-dialog.c:180
 #, c-format
-#| msgid "Installed"
 msgid "Installed on %s"
 msgstr "Įdiegta %s"
 
-#: ../src/gs-update-monitor.c:102
+#: ../src/gs-update-monitor.c:99
 msgid "Software Updates Available"
 msgstr "Yra programinės įrangos atnaujinimų"
 
-#: ../src/gs-update-monitor.c:103
+#: ../src/gs-update-monitor.c:100
 msgid "Important OS and application updates are ready to be installed"
 msgstr "Svarbūs OS ir programų atnaujinimai paruošti diegimui"
 
-#: ../src/gs-update-monitor.c:106
+#: ../src/gs-update-monitor.c:103
 msgid "View"
 msgstr "Rodyti"
 
-#: ../src/gs-update-monitor.c:107
+#: ../src/gs-update-monitor.c:104
 msgid "Not Now"
 msgstr "Ne dabar"
 
-#: ../src/gs-update-monitor.c:148
+#: ../src/gs-update-monitor.c:144
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Programinės įrangos atnaujinimas įdiegtas"
@@ -941,31 +999,31 @@ msgstr[1] "Programinės įrangos atnaujinimai įdiegti"
 msgstr[2] "Programinės įrangos atnaujinimai įdiegti"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:152
+#: ../src/gs-update-monitor.c:148
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Svarbus OS atnaujinimas įdiegtas"
 msgstr[1] "Svarbūs OS atnaujinimai įdiegti"
 msgstr[2] "Svarbūs OS atnaujinimai įdiegti"
 
-#: ../src/gs-update-monitor.c:157
+#: ../src/gs-update-monitor.c:153
 msgid "Software Updates Failed"
 msgstr "Nepavyko įdiegti atnaujinimų"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:159
+#: ../src/gs-update-monitor.c:155
 msgid "An important OS update failed to be installed."
 msgstr "Nepavyko įdiegti svarbaus OS atnaujinimo."
 
-#: ../src/gs-update-monitor.c:168
+#: ../src/gs-update-monitor.c:164
 msgid "Review"
 msgstr "Peržiūrėti"
 
-#: ../src/gs-update-monitor.c:170
+#: ../src/gs-update-monitor.c:166
 msgid "Show Details"
 msgstr "Rodyti detalią informaciją"
 
-#: ../src/gs-update-monitor.c:171
+#: ../src/gs-update-monitor.c:167
 msgid "OK"
 msgstr "Gerai"
 
@@ -1002,23 +1060,23 @@ msgstr "%s dabar įdiegta"
 msgid "Launch"
 msgstr "Paleisti"
 
-#: ../src/gs-utils.c:160
+#: ../src/gs-utils.c:159
 msgid "Sorry, this did not work"
 msgstr "Atleiskite, tai nesuveikė"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:164
+#: ../src/gs-utils.c:163
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Nepavyko įdiegti %s."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:169
+#: ../src/gs-utils.c:168
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Nepavyko pašalinti %s."
 
-#: ../src/plugins/gs-plugin-appstream.c:152
+#: ../src/plugins/gs-plugin-appstream.c:160
 #, c-format
 msgid "No AppStream data found"
 msgstr "Nerasta AppStream duomenų"
@@ -1033,12 +1091,6 @@ msgstr "Internetinė programa"
 #: ../src/plugins/gs-plugin-epiphany.c:151
 msgid "Proprietary"
 msgstr "Nuosavybinė"
-
-#. TRANSLATORS: this is where update details either are
-#. * no longer available or were never provided in the first place
-#: ../src/plugins/gs-plugin-packagekit-refine.c:414
-msgid "No update details were provided"
-msgstr "Atnaujinimo detali informacija nepateikta"
 
 #. TRANSLATORS: this is the menu spec main category for Audio
 #: ../src/plugins/menu-spec-common.c:30
@@ -1441,113 +1493,81 @@ msgid "Internet"
 msgstr "Internetas"
 
 #: ../src/plugins/menu-spec-common.c:115
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Chat"
 msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Pokalbiai"
 
 #: ../src/plugins/menu-spec-common.c:116
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Dialup"
 msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Prisijungimas"
 
 #: ../src/plugins/menu-spec-common.c:117
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Email"
 msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "El. paštas"
 
 #: ../src/plugins/menu-spec-common.c:118
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Feed"
 msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Sklaidos kanalai"
 
 #: ../src/plugins/menu-spec-common.c:119
-#| msgctxt "Menu subcategory of Network"
-#| msgid "File Transfer"
 msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Failų perdavimas"
 
 #: ../src/plugins/menu-spec-common.c:120
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Ham Radio"
 msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
 msgstr "Ham radijas"
 
 #: ../src/plugins/menu-spec-common.c:121
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Instant Messaging"
 msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Tiesioginiai pranešimai"
 
 #: ../src/plugins/menu-spec-common.c:122
-#| msgctxt "Menu subcategory of Network"
-#| msgid "IRC Clients"
 msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "IRC klientai"
 
 #: ../src/plugins/menu-spec-common.c:123
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Monitor"
 msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Monitorius"
 
 #: ../src/plugins/menu-spec-common.c:124
-#| msgctxt "Menu subcategory of Network"
-#| msgid "News"
 msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Naujienos"
 
 #: ../src/plugins/menu-spec-common.c:125
-#| msgctxt "Menu subcategory of Network"
-#| msgid "P2P"
 msgctxt "Menu subcategory of Internet"
 msgid "P2P"
 msgstr "P2P"
 
 #: ../src/plugins/menu-spec-common.c:126
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Remote Access"
 msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Nuotolinė prieiga"
 
 #: ../src/plugins/menu-spec-common.c:127
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Telephony"
 msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Telefonija"
 
 #: ../src/plugins/menu-spec-common.c:128
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Video Conference"
 msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Vaizdo konferencija"
 
 #: ../src/plugins/menu-spec-common.c:129
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Web Browser"
 msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Žiniatinklio naršyklė"
 
 #: ../src/plugins/menu-spec-common.c:130
-#| msgctxt "Menu subcategory of Development Tools"
-#| msgid "Web Development"
 msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
 msgstr "Žiniatinklio kūrimas"
@@ -1833,71 +1853,51 @@ msgid "Utilities"
 msgstr "Priemonės"
 
 #: ../src/plugins/menu-spec-common.c:191
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Accessibility"
 msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Prieiga"
 
 #: ../src/plugins/menu-spec-common.c:192
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Archiving"
 msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Archyvavimas"
 
 #: ../src/plugins/menu-spec-common.c:193
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Calculator"
 msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Skaičiuotuvas"
 
 #: ../src/plugins/menu-spec-common.c:194
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Clock"
 msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Laikrodis"
 
 #: ../src/plugins/menu-spec-common.c:195
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Compression"
 msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Suspaudimas"
 
 #: ../src/plugins/menu-spec-common.c:196
-#| msgctxt "Menu subcategory of System"
-#| msgid "File Tools"
 msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
 msgstr "Failų įrankiai"
 
 #: ../src/plugins/menu-spec-common.c:197
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Maps"
 msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Žemėlapiai"
 
 #: ../src/plugins/menu-spec-common.c:198
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Spirituality"
 msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Dvasiniai dalykai"
 
 #: ../src/plugins/menu-spec-common.c:199
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Telephony Tools"
 msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Telefonijos įrankiai"
 
 #: ../src/plugins/menu-spec-common.c:200
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Text Editor"
 msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
 msgstr "Tekstų redaktorius"
@@ -1938,29 +1938,21 @@ msgid "TV"
 msgstr "TV"
 
 #: ../src/plugins/menu-spec-common.c:211
-#| msgctxt "Menu subcategory of Addons"
-#| msgid "Fonts"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Šriftai"
 
 #: ../src/plugins/menu-spec-common.c:212
-#| msgctxt "Menu subcategory of Addons"
-#| msgid "Codecs"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Kodekai"
 
 #: ../src/plugins/menu-spec-common.c:213
-#| msgctxt "Menu subcategory of Addons"
-#| msgid "Input Sources"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Įvesties šaltiniai"
 
 #: ../src/plugins/menu-spec-common.c:214
-#| msgctxt "Menu subcategory of Addons"
-#| msgid "Language Packs"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Kalbų paketai"
