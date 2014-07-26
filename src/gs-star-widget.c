@@ -241,7 +241,7 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 			      NULL, NULL, g_cclosure_marshal_VOID__UINT,
 			      G_TYPE_NONE, 1, G_TYPE_UINT);
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-star-widget.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-star-widget.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button1);
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, button2);

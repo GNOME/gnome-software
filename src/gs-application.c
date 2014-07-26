@@ -197,7 +197,7 @@ gs_application_initialize_ui (GsApplication *app)
 					   DATADIR "/gnome-software/icons/hicolor");
 
 	/* set up the app menu */
-	builder = gtk_builder_new_from_resource ("/org/gnome/software/app-menu.ui");
+	builder = gtk_builder_new_from_resource ("/org/gnome/Software/app-menu.ui");
 	app_menu = G_MENU_MODEL (gtk_builder_get_object (builder, "appmenu"));
 	gtk_application_set_app_menu (GTK_APPLICATION (app), app_menu);
 	g_object_unref (builder);
@@ -209,9 +209,9 @@ gs_application_initialize_ui (GsApplication *app)
 						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 	g_object_get (gtk_settings_get_default (), "gtk-theme-name", &theme, NULL);
 	if (g_strcmp0 (theme, "HighContrast") == 0) {
-		file = g_file_new_for_uri ("resource:///org/gnome/software/gtk-style-hc.css");
+		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style-hc.css");
 	} else {
-		file = g_file_new_for_uri ("resource:///org/gnome/software/gtk-style.css");
+		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style.css");
 	}
 	gtk_css_provider_load_from_file (app->provider, file, NULL);
 	g_object_unref (file);

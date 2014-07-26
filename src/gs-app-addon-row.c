@@ -232,7 +232,7 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 	                              FALSE, G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SELECTED, pspec);
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-app-addon-row.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-addon-row.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, name_box);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, name_label);

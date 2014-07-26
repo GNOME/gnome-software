@@ -224,7 +224,7 @@ gs_app_tile_class_init (GsAppTileClass *klass)
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/app-tile.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/app-tile.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, image);

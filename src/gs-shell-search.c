@@ -504,7 +504,7 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 
 	object_class->finalize = gs_shell_search_finalize;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-shell-search.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-search.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, list_box_search);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, scrolledwindow_search);

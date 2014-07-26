@@ -389,7 +389,7 @@ gs_sources_dialog_class_init (GsSourcesDialogClass *klass)
 
 	object_class->finalize = gs_sources_dialog_finalize;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-sources-dialog.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-sources-dialog.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, button_back);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, button_remove);

@@ -307,7 +307,7 @@ gs_shell_category_class_init (GsShellCategoryClass *klass)
 
 	object_class->finalize = gs_shell_category_finalize;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-shell-category.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-category.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, category_detail_grid);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellCategory, frame_filter);

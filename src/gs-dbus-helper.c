@@ -367,7 +367,7 @@ gs_dbus_helper_init (GsDbusHelper *dbus_helper)
 
 	/* load introspection */
 	data = g_resource_lookup_data (gs_get_resource (),
-				       "/org/gnome/software/org.freedesktop.PackageKit.xml",
+				       "/org/gnome/Software/org.freedesktop.PackageKit.xml",
 				       G_RESOURCE_LOOKUP_FLAGS_NONE,
 				       NULL);
 	xml = g_bytes_get_data (data, NULL);

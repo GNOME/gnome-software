@@ -223,7 +223,7 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/feature-tile.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/feature-tile.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, image);

@@ -471,7 +471,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	priv->cancellable = g_object_ref (cancellable);
 
 	/* get UI */
-	priv->builder = gtk_builder_new_from_resource ("/org/gnome/software/gnome-software.ui");
+	priv->builder = gtk_builder_new_from_resource ("/org/gnome/Software/gnome-software.ui");
 	priv->main_window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
 
 	/* add application specific icons to search path */

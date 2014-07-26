@@ -182,7 +182,7 @@ gs_popular_tile_class_init (GsPopularTileClass *klass)
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/popular-tile.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/popular-tile.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, label);

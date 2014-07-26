@@ -58,7 +58,7 @@ gs_first_run_dialog_class_init (GsFirstRunDialogClass *klass)
 {
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-first-run-dialog.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-first-run-dialog.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsFirstRunDialog, button);
 }

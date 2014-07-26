@@ -471,7 +471,7 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 	widget_class->draw = gs_screenshot_image_draw;
 
 	gtk_widget_class_set_template_from_resource (widget_class,
-						     "/org/gnome/software/screenshot-image.ui");
+						     "/org/gnome/Software/screenshot-image.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, stack);
 	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, image1);

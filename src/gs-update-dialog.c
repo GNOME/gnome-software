@@ -373,7 +373,7 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 
 	object_class->finalize = gs_update_dialog_finalize;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-update-dialog.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-update-dialog.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, box_header);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, button_back);

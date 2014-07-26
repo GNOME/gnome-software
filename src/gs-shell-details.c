@@ -1382,7 +1382,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 
 	object_class->finalize = gs_shell_details_finalize;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-shell-details.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-details.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, application_details_icon);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, application_details_summary);

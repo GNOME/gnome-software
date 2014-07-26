@@ -884,7 +884,7 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 
 	object_class->finalize = gs_shell_updates_finalize;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-shell-updates.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-updates.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellUpdates, button_updates_mobile);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellUpdates, button_updates_offline);

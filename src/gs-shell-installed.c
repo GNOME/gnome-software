@@ -816,7 +816,7 @@ gs_shell_installed_class_init (GsShellInstalledClass *klass)
 
 	object_class->finalize = gs_shell_installed_finalize;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/software/gs-shell-installed.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-installed.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellInstalled, bottom_install);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellInstalled, button_folder_add);
