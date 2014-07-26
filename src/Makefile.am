@@ -27,7 +27,7 @@ desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
 UI_FILES =						\
 	app-folder-dialog.ui				\
-	app-menu.ui					\
+	menus.ui					\
 	app-tile.ui					\
 	category-tile.ui				\
 	feature-tile.ui					\
