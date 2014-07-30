@@ -77,6 +77,7 @@ cancel_current_search (GsShellSearchProvider *self)
 		PendingSearch *search;
 
 		g_cancellable_cancel (self->cancellable);
+		g_cancellable_reset (self->cancellable);
 
 		search = self->current_search;
 		self->current_search = NULL;
