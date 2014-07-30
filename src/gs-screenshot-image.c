@@ -224,21 +224,6 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
-	/* no need to pad */
-	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT) {
-		ret = g_file_set_contents (priv->filename,
-					   msg->response_body->data,
-					   msg->response_body->length,
-					   &error);
-		if (!ret) {
-			gs_screenshot_image_set_error (ssimg, error->message);
-			g_error_free (error);
-			goto out;
-		}
-		as_screenshot_show_image (ssimg);
-		goto out;
-	}
-
 	/* create a buffer with the data */
 	stream = g_memory_input_stream_new_from_data (msg->response_body->data,
 						      msg->response_body->length,
@@ -254,17 +239,32 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		goto out;
 	}
 
-	/* save to file, using the same code as the AppStream builder so the
-	 * preview looks the same */
-	im = as_image_new ();
-	as_image_set_pixbuf (im, pixbuf);
-	ret = as_image_save_filename (im, priv->filename,
-				      priv->width, priv->height,
-				      AS_IMAGE_SAVE_FLAG_PAD_16_9, &error);
-	if (!ret) {
-		gs_screenshot_image_set_error (ssimg, error->message);
-		g_error_free (error);
-		goto out;
+	/* is image size destination size unknown or exactly the correct size */
+	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT ||
+	    (priv->width == gdk_pixbuf_get_width (pixbuf) &&
+	     priv->height == gdk_pixbuf_get_height (pixbuf))) {
+		ret = g_file_set_contents (priv->filename,
+					   msg->response_body->data,
+					   msg->response_body->length,
+					   &error);
+		if (!ret) {
+			gs_screenshot_image_set_error (ssimg, error->message);
+			g_error_free (error);
+			goto out;
+		}
+	} else {
+		/* save to file, using the same code as the AppStream builder
+		 * so the preview looks the same */
+		im = as_image_new ();
+		as_image_set_pixbuf (im, pixbuf);
+		ret = as_image_save_filename (im, priv->filename,
+					      priv->width, priv->height,
+					      AS_IMAGE_SAVE_FLAG_PAD_16_9, &error);
+		if (!ret) {
+			gs_screenshot_image_set_error (ssimg, error->message);
+			g_error_free (error);
+			goto out;
+		}
 	}
 
 	/* got image, so show */
