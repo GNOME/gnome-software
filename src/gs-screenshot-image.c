@@ -151,25 +151,30 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
-	/* this is always going to have alpha */
-	pixbuf = gdk_pixbuf_new_from_file_at_scale (priv->filename,
-						    priv->width,
-						    priv->height,
-						    FALSE, NULL);
-	if (pixbuf != NULL) {
-		if (gs_screenshot_image_use_desktop_background (pixbuf)) {
-			pixbuf_bg = gs_screenshot_image_get_desktop_pixbuf (ssimg);
-			if (pixbuf_bg == NULL) {
-				pixbuf_bg = g_object_ref (pixbuf);
+	/* no need to composite */
+	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT) {
+		pixbuf_bg = gdk_pixbuf_new_from_file (priv->filename, NULL);
+	} else {
+		/* this is always going to have alpha */
+		pixbuf = gdk_pixbuf_new_from_file_at_scale (priv->filename,
+							    priv->width,
+							    priv->height,
+							    FALSE, NULL);
+		if (pixbuf != NULL) {
+			if (gs_screenshot_image_use_desktop_background (pixbuf)) {
+				pixbuf_bg = gs_screenshot_image_get_desktop_pixbuf (ssimg);
+				if (pixbuf_bg == NULL) {
+					pixbuf_bg = g_object_ref (pixbuf);
+				} else {
+					gdk_pixbuf_composite (pixbuf, pixbuf_bg,
+							      0, 0,
+							      priv->width, priv->height,
+							      0, 0, 1.0f, 1.0f,
+							      GDK_INTERP_NEAREST, 255);
+				}
 			} else {
-				gdk_pixbuf_composite (pixbuf, pixbuf_bg,
-						      0, 0,
-						      priv->width, priv->height,
-						      0, 0, 1.0f, 1.0f,
-						      GDK_INTERP_NEAREST, 255);
+				pixbuf_bg = g_object_ref (pixbuf);
 			}
-		} else {
-			pixbuf_bg = g_object_ref (pixbuf);
 		}
 	}
 
@@ -218,6 +223,21 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	}
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
+
+	/* no need to pad */
+	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT) {
+		ret = g_file_set_contents (priv->filename,
+					   msg->response_body->data,
+					   msg->response_body->length,
+					   &error);
+		if (!ret) {
+			gs_screenshot_image_set_error (ssimg, error->message);
+			g_error_free (error);
+			goto out;
+		}
+		as_screenshot_show_image (ssimg);
+		goto out;
+	}
 
 	/* create a buffer with the data */
 	stream = g_memory_input_stream_new_from_data (msg->response_body->data,
@@ -348,7 +368,11 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 	url = as_image_get_url (im);
 	basename = g_path_get_basename (url);
-	sizedir = g_strdup_printf ("%ux%u", priv->width, priv->height);
+	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT) {
+		sizedir = g_strdup ("unknown");
+	} else {
+		sizedir = g_strdup_printf ("%ux%u", priv->width, priv->height);
+	}
 	cachedir = g_build_filename (priv->cachedir,
 				     "gnome-software",
 				     "screenshots",
