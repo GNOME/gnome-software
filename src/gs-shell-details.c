@@ -545,7 +545,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	/* set the icon */
 	tmp = gs_app_get_metadata_item (priv->app, "DataDir::desktop-icon");
 	if (tmp != NULL) {
-		pixbuf = gs_pixbuf_load (tmp, 96, &error);
+		pixbuf = gs_pixbuf_load (tmp, NULL, 96, &error);
 		if (pixbuf == NULL) {
 			g_warning ("Failed to load desktop icon: %s",
 				   error->message);
@@ -556,11 +556,11 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		pixbuf = gs_app_get_pixbuf (priv->app);
 	if (pixbuf == NULL && gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL) {
 		if (gs_app_get_kind (priv->app) == GS_APP_KIND_SOURCE)
-			pixbuf = gs_pixbuf_load ("x-package-repository", 96, NULL);
+			pixbuf = gs_pixbuf_load ("x-package-repository", NULL, 96, NULL);
 		else if (gs_shell_details_is_addon_id_kind (priv->app))
-			pixbuf = gs_pixbuf_load ("application-x-addon", 96, NULL);
+			pixbuf = gs_pixbuf_load ("application-x-addon", NULL, 96, NULL);
 		else
-			pixbuf = gs_pixbuf_load ("application-x-executable", 96, NULL);
+			pixbuf = gs_pixbuf_load ("application-x-executable", NULL, 96, NULL);
 	}
 	if (pixbuf != NULL) {
 		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->application_details_icon), pixbuf);

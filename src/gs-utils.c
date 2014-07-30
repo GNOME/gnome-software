@@ -247,6 +247,7 @@ gs_mkdir_parent (const gchar *path, GError **error)
 
 static GtkIconTheme *icon_theme_singleton;
 static GMutex        icon_theme_lock;
+static GHashTable   *icon_theme_paths;
 
 static GtkIconTheme *
 icon_theme_get (void)
@@ -257,11 +258,29 @@ icon_theme_get (void)
 	return icon_theme_singleton;
 }
 
+static void
+icon_theme_add_path (const gchar *path)
+{
+	if (path == NULL)
+		return;
+
+	if (icon_theme_paths == NULL)
+		icon_theme_paths = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
+	if (!g_hash_table_contains (icon_theme_paths, path)) {
+		gtk_icon_theme_prepend_search_path (icon_theme_get (), path);
+		g_hash_table_add (icon_theme_paths, g_strdup (path));
+	}
+}
+
 /**
  * gs_pixbuf_load:
  **/
 GdkPixbuf *
-gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
+gs_pixbuf_load (const gchar *icon_name,
+		const gchar *icon_path,
+		guint icon_size,
+		GError **error)
 {
 	GdkPixbuf *pixbuf = NULL;
 
@@ -278,8 +297,9 @@ gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
 							   icon_size,
 							   icon_size,
 							   error);
-	} else if (g_strstr_len (icon_name, -1, ".") == NULL) {
+	} else {
 		g_mutex_lock (&icon_theme_lock);
+		icon_theme_add_path (icon_path);
 		pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 						   icon_name,
 						   icon_size,
@@ -287,11 +307,6 @@ gs_pixbuf_load (const gchar *icon_name, guint icon_size, GError **error)
 						   GTK_ICON_LOOKUP_FORCE_SIZE,
 						   error);
 		g_mutex_unlock (&icon_theme_lock);
-	} else {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to load icon '%s'", icon_name);
 	}
 	return pixbuf;
 }

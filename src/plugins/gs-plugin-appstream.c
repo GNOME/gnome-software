@@ -185,9 +185,10 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
 	GError *error = NULL;
 	const gchar *icon;
-	const gchar *icon_dir;
+	const gchar *icon_path;
 	gboolean ret;
-	gchar *icon_path = NULL;
+	gchar *icon_no_ext = NULL;
+	gchar *tmp;
 
 	icon = as_app_get_icon (item);
 	switch (as_app_get_icon_kind (item)) {
@@ -205,11 +206,16 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		}
 		break;
 	case AS_ICON_KIND_CACHED:
+		icon_path = as_app_get_icon_path (item);
 
-		/* we assume <icon type="local">gnome-chess.png</icon> */
-		icon_dir = as_app_get_icon_path (item);
-		icon_path = g_build_filename (icon_dir, icon, NULL);
-		gs_app_set_icon (app, icon_path);
+		/* strip icon extension if present */
+		icon_no_ext = g_strdup (icon);
+		tmp = g_strrstr (icon_no_ext, ".png");
+		if (tmp != NULL)
+			*tmp = '\0';
+
+		gs_app_set_icon (app, icon_no_ext);
+		gs_app_set_icon_path (app, icon_path);
 		ret = gs_app_load_icon (app, &error);
 		if (!ret) {
 			g_warning ("failed to load cached icon %s: %s",
@@ -223,7 +229,7 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		break;
 	}
 out:
-	g_free (icon_path);
+	g_free (icon_no_ext);
 }
 
 /**

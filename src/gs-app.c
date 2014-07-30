@@ -58,6 +58,7 @@ struct GsAppPrivate
 	gchar			*name;
 	GsAppQuality		 name_quality;
 	gchar			*icon;
+	gchar			*icon_path;
 	GPtrArray		*sources;
 	GPtrArray		*source_ids;
 	gchar			*project_group;
@@ -213,6 +214,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tname:\t%s\n", priv->name);
 	if (priv->icon != NULL)
 		g_string_append_printf (str, "\ticon:\t%s\n", priv->icon);
+	if (priv->icon_path != NULL)
+		g_string_append_printf (str, "\ticon-path:\t%s\n", priv->icon_path);
 	if (priv->version != NULL)
 		g_string_append_printf (str, "\tversion:\t%s\n", priv->version);
 	if (priv->version_ui != NULL)
@@ -814,6 +817,29 @@ gs_app_set_icon (GsApp *app, const gchar *icon)
 }
 
 /**
+ * gs_app_get_icon_path:
+ */
+const gchar *
+gs_app_get_icon_path (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->priv->icon_path;
+}
+
+/**
+ * gs_app_set_icon_path:
+ */
+void
+gs_app_set_icon_path (GsApp *app, const gchar *icon_path)
+{
+	g_return_if_fail (GS_IS_APP (app));
+
+	/* save theme path */
+	g_free (app->priv->icon_path);
+	app->priv->icon_path = g_strdup (icon_path);
+}
+
+/**
  * gs_app_load_icon:
  */
 gboolean
@@ -826,7 +852,7 @@ gs_app_load_icon (GsApp *app, GError **error)
 	g_return_val_if_fail (app->priv->icon != NULL, FALSE);
 
 	/* either load from the theme or from a file */
-	pixbuf = gs_pixbuf_load (app->priv->icon, 64, error);
+	pixbuf = gs_pixbuf_load (app->priv->icon, app->priv->icon_path, 64, error);
 	if (pixbuf == NULL) {
 		ret = FALSE;
 		goto out;
@@ -2010,6 +2036,7 @@ gs_app_finalize (GObject *object)
 	g_free (priv->name);
 	g_hash_table_unref (priv->urls);
 	g_free (priv->icon);
+	g_free (priv->icon_path);
 	g_free (priv->licence);
 	g_free (priv->menu_path);
 	g_free (priv->origin);
