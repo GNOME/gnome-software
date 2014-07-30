@@ -1045,6 +1045,7 @@ gs_plugin_add_popular_by_cat (GsPlugin *plugin,
 	g_hash_table_insert (ignore_cats, (gpointer) "Core", GINT_TO_POINTER (1));
 	g_hash_table_insert (ignore_cats, (gpointer) "PackageManager", GINT_TO_POINTER (1));
 	g_hash_table_insert (ignore_cats, (gpointer) "TerminalEmulator", GINT_TO_POINTER (1));
+	g_hash_table_insert (ignore_cats, (gpointer) "Settings", GINT_TO_POINTER (1));
 	g_hash_table_insert (ignore_cats, (gpointer) "other", GINT_TO_POINTER (1));
 
 	/* get already installed applications */
