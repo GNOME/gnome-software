@@ -9,13 +9,11 @@ License:   GPLv2+
 Group:     Applications/System
 URL:       https://wiki.gnome.org/Apps/Software
 Source0:   http://download.gnome.org/sources/gnome-software/3.13/%{name}-%{version}.tar.xz
-Source1:   http://people.freedesktop.org/~hughsient/temp/fedora-%{?distrotag}.xml.gz
-Source2:   http://people.freedesktop.org/~hughsient/temp/fedora-%{?distrotag}-icons.tar.gz
 
+Requires:  appstream-data
 Requires:  epiphany-runtime
+Requires:  gsettings-desktop-schemas
 Requires:  PackageKit
-Requires:  gnome-icon-theme
-Requires:  gnome-icon-theme-symbolic >= 3.10.1
 
 BuildRequires: gettext
 BuildRequires: intltool
@@ -50,16 +48,6 @@ make %{?_smp_mflags}
 
 %__rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.la
 
-# install AppStream data for Fedora
-%__mkdir_p %{buildroot}%{_datadir}/app-info/xmls
-%__cp %{SOURCE1} %{buildroot}%{_datadir}/app-info/xmls
-
-# decompress and install AppStream icons
-%__mkdir_p %{buildroot}%{_datadir}/app-info/icons/fedora-%{?distrotag}
-cd %{buildroot}%{_datadir}/app-info/icons/fedora-%{?distrotag}
-%__tar xvzf %{SOURCE2}
-cd -
-
 # make the software center load faster
 desktop-file-edit %{buildroot}%{_datadir}/applications/org.gnome.Software.desktop \
     --set-key=X-AppInstall-Package --set-value=%{name}
@@ -90,8 +78,6 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %dir %{_datadir}/gnome-software
 %{_datadir}/gnome-software/*.png
 %{_datadir}/appdata/*.appdata.xml
-%{_datadir}/app-info/xmls/*
-%{_datadir}/app-info/icons/fedora-%{?distrotag}/*.png
 %{_mandir}/man1/gnome-software.1.gz
 %{_datadir}/icons/hicolor/*/apps/*
 %{_datadir}/gnome-software/featured.ini
