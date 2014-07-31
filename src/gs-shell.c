@@ -68,7 +68,7 @@ struct GsShellPrivate
 	GsShellCategory		*shell_category;
 	GtkBuilder		*builder;
 	GtkWindow		*main_window;
-	GSList			*back_entry_stack;
+	GQueue			*back_entry_stack;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -248,7 +248,7 @@ save_back_entry (GsShell *shell)
 		g_object_ref (entry->app);
 	}
 
-	priv->back_entry_stack = g_slist_prepend (priv->back_entry_stack, entry);
+	g_queue_push_head (priv->back_entry_stack, entry);
 }
 
 static void
@@ -268,9 +268,7 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 	GsShellPrivate *priv = shell->priv;
 	BackEntry *entry;
 
-	g_assert (priv->back_entry_stack);
-	entry = priv->back_entry_stack->data;
-	priv->back_entry_stack = g_slist_remove (priv->back_entry_stack, entry);
+	entry = g_queue_pop_head (priv->back_entry_stack);
 
 	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category, FALSE);
 
@@ -777,6 +775,7 @@ static void
 gs_shell_init (GsShell *shell)
 {
 	shell->priv = gs_shell_get_instance_private (shell);
+	shell->priv->back_entry_stack = g_queue_new ();
 	shell->priv->ignore_primary_buttons = FALSE;
 }
 
@@ -789,7 +788,7 @@ gs_shell_finalize (GObject *object)
 	GsShell *shell = GS_SHELL (object);
 	GsShellPrivate *priv = shell->priv;
 
-	g_slist_free_full (priv->back_entry_stack, (GDestroyNotify) free_back_entry);
+	g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) free_back_entry);
 	g_object_unref (priv->builder);
 	g_object_unref (priv->cancellable);
 	g_object_unref (priv->plugin_loader);
