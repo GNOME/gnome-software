@@ -54,8 +54,6 @@ gs_shell_category_refresh (GsShellCategory *shell)
 	GtkWidget *widget;
 	GsCategory *category;
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-	gtk_widget_show (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	gtk_widget_show (widget);
 	category = priv->category;

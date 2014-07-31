@@ -151,8 +151,6 @@ gs_shell_change_mode (GsShell *shell,
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
-	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_menu_button"));
@@ -165,6 +163,10 @@ gs_shell_change_mode (GsShell *shell,
 	/* set the window title back to default */
 	/* TRANSLATORS: this is the main window title */
 	gtk_window_set_title (priv->main_window, _("Software"));
+
+	/* show the back button if needed */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+	gtk_widget_set_visible (widget, !g_queue_is_empty (priv->back_entry_stack));
 
 	/* update main buttons according to mode */
 	priv->ignore_primary_buttons = TRUE;
@@ -454,6 +456,21 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 	return GDK_EVENT_PROPAGATE;
 }
 
+static gboolean
+main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
+{
+	GsShell *shell = user_data;
+	GsShellPrivate *priv = shell->priv;
+	BackEntry *entry;
+
+	while ((entry = g_queue_pop_head (priv->back_entry_stack)) != NULL) {
+		free_back_entry (entry);
+	}
+
+	gtk_widget_hide (dialog);
+	return TRUE;
+}
+
 /**
  * gs_shell_setup:
  */
@@ -477,7 +494,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 					   GS_DATA G_DIR_SEPARATOR_S "icons");
 
 	g_signal_connect (priv->main_window, "delete-event",
-			  G_CALLBACK (gtk_widget_hide_on_delete), NULL);
+	                  G_CALLBACK (main_window_closed_cb), shell);
 
 	/* fix up the header bar */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
