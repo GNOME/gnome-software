@@ -28,9 +28,7 @@ MAINTAINERCLEANFILES =					\
 	Makefile.in					\
 	missing						\
 	mkinstalldirs					\
-	omf.make					\
-	test-driver					\
-	xmldocs.make
+	test-driver
 
 EXTRA_DIST =						\
 	AUTHORS						\
