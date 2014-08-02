@@ -317,6 +317,17 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 }
 
 static void
+unset_focus (GtkWidget *widget)
+{
+	GtkWidget *focus;
+
+	focus = gtk_window_get_focus (GTK_WINDOW (widget));
+	if (GTK_IS_LABEL (focus))
+		gtk_label_select_region (GTK_LABEL (focus), 0, 0);
+	gtk_window_set_focus (GTK_WINDOW (widget), NULL);
+}
+
+static void
 gs_update_dialog_finalize (GObject *object)
 {
 	GsUpdateDialog *dialog = GS_UPDATE_DIALOG (object);
@@ -355,6 +366,8 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 	g_signal_connect (priv->button_back, "clicked",
 	                  G_CALLBACK (button_back_cb),
 	                  dialog);
+
+	g_signal_connect_after (dialog, "show", G_CALLBACK (unset_focus), NULL);
 
 	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (priv->scrolledwindow_details));
 	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow_details);
