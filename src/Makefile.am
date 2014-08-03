@@ -236,8 +236,6 @@ EXTRA_DIST =						\
 	gnome-software.xml				\
 	gtk-style.css					\
 	gtk-style-hc.css				\
-	shadow.png					\
-	shadow-active.png				\
 	$(desktop_in_files)				\
 	org.gnome.Software.service.in			\
 	gnome-software-service.desktop.in		\
