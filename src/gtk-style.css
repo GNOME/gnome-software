@@ -145,10 +145,26 @@ GtkBox.star {
 	border-top-width: 0;
 }
 
+.category-sidebar GtkListBox {
+	background-color: @theme_bg_color;
+}
+
 .category-sidebar GtkListBoxRow {
 	padding-left: 6px;
+	animation: none;
+	transition: none;
 }
 
 .category-sidebar GtkListBoxRow:dir(rtl) {
 	padding-right: 6px;
+	animation: none;
+	transition: none;
+}
+
+.category-sidebar GtkListBoxRow:hover {
+	background-color: @theme_bg_color;
+}
+
+.category-sidebar GtkListBoxRow:selected:hover {
+	background-color: @theme_selected_bg_color;
 }
