@@ -29,21 +29,13 @@
 struct _GsPopularTilePrivate
 {
 	GsApp		*app;
-	GtkWidget	*button;
 	GtkWidget	*label;
 	GtkWidget	*image;
 	GtkWidget	*eventbox;
 	GtkWidget	*waiting;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsPopularTile, gs_popular_tile, GTK_TYPE_BIN)
-
-enum {
-	SIGNAL_CLICKED,
-	SIGNAL_LAST
-};
-
-static guint signals [SIGNAL_LAST] = { 0 };
+G_DEFINE_TYPE_WITH_PRIVATE (GsPopularTile, gs_popular_tile, GTK_TYPE_BUTTON)
 
 GsApp *
 gs_popular_tile_get_app (GsPopularTile *tile)
@@ -66,7 +58,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsPopularTile *tile)
 	gchar *name;
 
 	priv = gs_popular_tile_get_instance_private (tile);
-	accessible = gtk_widget_get_accessible (priv->button);
+	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
 	label = gtk_bin_get_child (GTK_BIN (priv->eventbox));
 	switch (gs_app_get_state (app)) {
@@ -147,44 +139,21 @@ gs_popular_tile_destroy (GtkWidget *widget)
 }
 
 static void
-button_clicked (GsPopularTile *tile)
-{
-	GsPopularTilePrivate *priv;
-	priv = gs_popular_tile_get_instance_private (tile);
-	if (priv->app)
-		g_signal_emit (tile, signals[SIGNAL_CLICKED], 0);
-}
-
-static void
 gs_popular_tile_init (GsPopularTile *tile)
 {
-	GsPopularTilePrivate *priv;
-
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
-	priv = gs_popular_tile_get_instance_private (tile);
-	g_signal_connect_swapped (priv->button, "clicked",
-				  G_CALLBACK (button_clicked), tile);
 }
 
 static void
 gs_popular_tile_class_init (GsPopularTileClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	widget_class->destroy = gs_popular_tile_destroy;
 
-	signals [SIGNAL_CLICKED] =
-		g_signal_new ("clicked",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsPopularTileClass, clicked),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE, 0);
-
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/popular-tile.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, image);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, eventbox);

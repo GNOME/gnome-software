@@ -41,15 +41,13 @@ typedef struct _GsPopularTilePrivate		GsPopularTilePrivate;
 
 struct _GsPopularTile
 {
-	GtkBin		   parent;
+	GtkButton		 parent;
 	GsPopularTilePrivate	*priv;
 };
 
 struct _GsPopularTileClass
 {
-	GtkBinClass	 parent_class;
-
-	void			(*clicked)	(GsPopularTile	*tile);
+	GtkButtonClass		 parent_class;
 };
 
 GType		 gs_popular_tile_get_type		(void);
