@@ -134,6 +134,7 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	g_string_append (data, "  border-radius: 0;\n");
 	g_string_append (data, "  border-width: 1px;\n");
 	g_string_append (data, "  border-image: none;\n");
+	g_string_append (data, "  box-shadow: inset 0 0 0 1px alpha(@theme_fg_color,0.3), 0 0 1px alpha(black,0.4);\n");
 	g_string_append_printf (data, "  border-color: %s;\n", stroke_color);
 	if (text_shadow != NULL)
 		g_string_append_printf (data, "  text-shadow: %s;\n", text_shadow);
