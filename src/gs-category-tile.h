@@ -41,15 +41,13 @@ typedef struct _GsCategoryTilePrivate		GsCategoryTilePrivate;
 
 struct _GsCategoryTile
 {
-	GtkBin		   parent;
+	GtkButton		 parent;
 	GsCategoryTilePrivate	*priv;
 };
 
 struct _GsCategoryTileClass
 {
-	GtkBinClass	 parent_class;
-
-	void			(*clicked)	(GsCategoryTile	*tile);
+	GtkButtonClass		 parent_class;
 };
 
 GType		 gs_category_tile_get_type		(void);

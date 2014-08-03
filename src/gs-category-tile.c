@@ -29,18 +29,10 @@
 struct _GsCategoryTilePrivate
 {
 	GsCategory	*cat;
-	GtkWidget	*button;
 	GtkWidget	*label;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsCategoryTile, gs_category_tile, GTK_TYPE_BIN)
-
-enum {
-	SIGNAL_CLICKED,
-	SIGNAL_LAST
-};
-
-static guint signals [SIGNAL_LAST] = { 0 };
+G_DEFINE_TYPE_WITH_PRIVATE (GsCategoryTile, gs_category_tile, GTK_TYPE_BUTTON)
 
 GsCategory *
 gs_category_tile_get_category (GsCategoryTile *tile)
@@ -83,41 +75,21 @@ gs_category_tile_destroy (GtkWidget *widget)
 }
 
 static void
-button_clicked (GsCategoryTile *tile)
-{
-	g_signal_emit (tile, signals[SIGNAL_CLICKED], 0);
-}
-
-static void
 gs_category_tile_init (GsCategoryTile *tile)
 {
-	GsCategoryTilePrivate *priv;
-
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
-	priv = gs_category_tile_get_instance_private (tile);
-	g_signal_connect_swapped (priv->button, "clicked",
-				  G_CALLBACK (button_clicked), tile);
 }
 
 static void
 gs_category_tile_class_init (GsCategoryTileClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	widget_class->destroy = gs_category_tile_destroy;
 
-	signals [SIGNAL_CLICKED] =
-		g_signal_new ("clicked",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsCategoryTileClass, clicked),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE, 0);
-
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/category-tile.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsCategoryTile, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsCategoryTile, label);
 }
 
