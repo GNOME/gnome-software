@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-popular-tile.h"
+#include "gs-star-widget.h"
 
 struct _GsPopularTilePrivate
 {
@@ -32,6 +33,7 @@ struct _GsPopularTilePrivate
 	GtkWidget	*label;
 	GtkWidget	*image;
 	GtkWidget	*eventbox;
+	GtkWidget	*stars;
 	GtkWidget	*waiting;
 };
 
@@ -114,6 +116,17 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 		return;
 	priv->app = g_object_ref (app);
 
+	if (gs_app_get_rating_kind (priv->app) == GS_APP_RATING_KIND_USER) {
+		gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
+		                           GS_APP_RATING_KIND_USER,
+		                           gs_app_get_rating (priv->app));
+	} else {
+		gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
+		                           GS_APP_RATING_KIND_KUDOS,
+		                           gs_app_get_kudos_percentage (priv->app));
+	}
+	gtk_widget_show (priv->stars);
+
         gtk_widget_hide (priv->waiting);
 
 	g_signal_connect (priv->app, "notify::state",
@@ -141,8 +154,13 @@ gs_popular_tile_destroy (GtkWidget *widget)
 static void
 gs_popular_tile_init (GsPopularTile *tile)
 {
+	GsPopularTilePrivate *priv;
+
+	priv = gs_popular_tile_get_instance_private (tile);
+
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
+	gs_star_widget_set_icon_size (GS_STAR_WIDGET (priv->stars), 12);
 }
 
 static void
@@ -157,6 +175,7 @@ gs_popular_tile_class_init (GsPopularTileClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, image);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, eventbox);
+	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, stars);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, waiting);
 }
 
