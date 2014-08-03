@@ -221,7 +221,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		tile = gs_category_tile_new (cat);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (category_tile_clicked), shell);
-		gtk_grid_attach (GTK_GRID (priv->grid_categories), tile, i % 3, i / 3, 1, 1);
+		gtk_grid_attach (GTK_GRID (priv->grid_categories), tile, i % 4, i / 4, 1, 1);
 		i++;
 		has_category = TRUE;
 	}
