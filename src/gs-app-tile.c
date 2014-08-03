@@ -30,7 +30,6 @@
 struct _GsAppTilePrivate
 {
 	GsApp		*app;
-	GtkWidget	*button;
 	GtkWidget	*image;
 	GtkWidget	*name;
 	GtkWidget	*summary;
@@ -39,14 +38,7 @@ struct _GsAppTilePrivate
 	GtkWidget	*stars;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsAppTile, gs_app_tile, GTK_TYPE_BIN)
-
-enum {
-	SIGNAL_CLICKED,
-	SIGNAL_LAST
-};
-
-static guint signals [SIGNAL_LAST] = { 0 };
+G_DEFINE_TYPE_WITH_PRIVATE (GsAppTile, gs_app_tile, GTK_TYPE_BUTTON)
 
 GsApp *
 gs_app_tile_get_app (GsAppTile *tile)
@@ -69,7 +61,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 	gchar *name;
 
         priv = gs_app_tile_get_instance_private (tile);
-        accessible = gtk_widget_get_accessible (priv->button);
+        accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
 	label = gtk_bin_get_child (GTK_BIN (priv->eventbox));
 	switch (gs_app_get_state (app)) {
@@ -187,16 +179,6 @@ gs_app_tile_destroy (GtkWidget *widget)
 }
 
 static void
-button_clicked (GsAppTile *tile)
-{
-	GsAppTilePrivate *priv;
-
-	priv = gs_app_tile_get_instance_private (tile);
-	if (priv->app)
-		g_signal_emit (tile, signals[SIGNAL_CLICKED], 0);
-}
-
-static void
 gs_app_tile_init (GsAppTile *tile)
 {
 	GsAppTilePrivate *priv;
@@ -204,29 +186,18 @@ gs_app_tile_init (GsAppTile *tile)
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
 	priv = gs_app_tile_get_instance_private (tile);
-	g_signal_connect_swapped (priv->button, "clicked",
-				  G_CALLBACK (button_clicked), tile);
 	gs_star_widget_set_icon_size (GS_STAR_WIDGET (priv->stars), 12);
 }
 
 static void
 gs_app_tile_class_init (GsAppTileClass *klass)
 {
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	widget_class->destroy = gs_app_tile_destroy;
 
-	signals [SIGNAL_CLICKED] =
-		g_signal_new ("clicked",
-			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
-			      G_STRUCT_OFFSET (GsAppTileClass, clicked),
-			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
-			      G_TYPE_NONE, 0);
-
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/app-tile.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, image);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, name);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, summary);
