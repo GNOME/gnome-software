@@ -29,6 +29,7 @@
 typedef struct {
 	GsModulesetModuleKind	 module_kind;
 	gchar			*name;
+	gchar			*category;
 	gchar			*id;
 } GsModulesetEntry;
 
@@ -54,7 +55,8 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsModuleset, gs_moduleset, G_TYPE_OBJECT)
 gchar **
 gs_moduleset_get_modules (GsModuleset *moduleset,
 			  GsModulesetModuleKind module_kind,
-			  const gchar *name)
+			  const gchar *name,
+			  const gchar *category)
 {
 	GsModulesetPrivate *priv = gs_moduleset_get_instance_private (moduleset);
 	GsModulesetEntry *entry;
@@ -71,6 +73,8 @@ gs_moduleset_get_modules (GsModuleset *moduleset,
 		if (entry->module_kind != module_kind)
 			continue;
 		if (g_strcmp0 (entry->name, name) != 0)
+			continue;
+		if (g_strcmp0 (entry->category, category) != 0)
 			continue;
 		data[idx++] = g_strdup (entry->id);
 	}
@@ -119,6 +123,7 @@ gs_moduleset_parser_start_element (GMarkupParseContext *context,
 	GsModulesetPrivate *priv = gs_moduleset_get_instance_private (moduleset);
 	GsModulesetParserSection section_new;
 	GsModulesetModuleKind kind = GS_MODULESET_MODULE_KIND_UNKNOWN;
+	const gchar *category = NULL;
 	guint i;
 
 	section_new = gs_moduleset_section_from_string (element_name);
@@ -148,8 +153,12 @@ gs_moduleset_parser_start_element (GMarkupParseContext *context,
 				if (g_strcmp0 (attribute_names[i], "type") == 0) {
 					kind = gs_moduleset_module_kind_from_string (attribute_values[i]);
 				}
+				if (g_strcmp0 (attribute_names[i], "category") == 0) {
+					category = attribute_values[i];
+				}
 			}
 			priv->entry_tmp->module_kind = kind;
+			priv->entry_tmp->category = g_strdup (category);
 			return;
 		}
 		g_warning ("moduleset->%s", element_name);
@@ -284,6 +293,7 @@ gs_moduleset_entry_free (GsModulesetEntry *entry)
 {
 	g_free (entry->id);
 	g_free (entry->name);
+	g_free (entry->category);
 	g_slice_free (GsModulesetEntry, entry);
 }
 

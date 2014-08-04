@@ -101,6 +101,7 @@ out:
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
 		       GList **list,
+		       const gchar *category,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -122,7 +123,8 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	} else {
 		apps = gs_moduleset_get_modules (plugin->priv->moduleset,
 						 GS_MODULESET_MODULE_KIND_APPLICATION,
-						 "popular");
+						 "popular",
+						 category);
 	}
 
 	/* just add all */
@@ -165,7 +167,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* just mark each one as core */
 	apps = gs_moduleset_get_modules (plugin->priv->moduleset,
 					 GS_MODULESET_MODULE_KIND_APPLICATION,
-					 "system");
+					 "system",
+					 NULL);
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		for (i = 0; apps[i] != NULL; i++) {
@@ -179,7 +182,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* just mark each one as core */
 	pkgs = gs_moduleset_get_modules (plugin->priv->moduleset,
 					 GS_MODULESET_MODULE_KIND_PACKAGE,
-					 "core");
+					 "core",
+					 NULL);
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		for (i = 0; pkgs[i] != NULL; i++) {

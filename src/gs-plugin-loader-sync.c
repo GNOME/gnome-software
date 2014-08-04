@@ -254,6 +254,7 @@ gs_plugin_loader_get_popular_finish_sync (GsPluginLoader *plugin_loader,
 GList *
 gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
 			      GsPluginRefineFlags flags,
+			      const gchar *category,
 			      GCancellable *cancellable,
 			      GError **error)
 {
@@ -269,6 +270,7 @@ gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
 	/* run async method */
 	gs_plugin_loader_get_popular_async (plugin_loader,
 					    flags,
+					    category,
 					    cancellable,
 					    (GAsyncReadyCallback) gs_plugin_loader_get_popular_finish_sync,
 					    &helper);

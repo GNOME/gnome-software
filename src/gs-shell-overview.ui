@@ -113,6 +113,48 @@
                       </packing>
                     </child>
                     <child>
+                      <object class="GtkLabel" id="popular_games_heading">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="xalign">0</property>
+                        <property name="label" translatable="yes" comments="Translators: This is a heading for games which have been featured ('recommended') by the distribution.">Recommended Games</property>
+                        <property name="margin-top">24</property>
+                        <property name="margin-bottom">12</property>
+                        <property name="margin-start">24</property>
+                        <property name="margin-end">24</property>
+                        <accessibility>
+                          <relation target="box_popular_games" type="label-for"/>
+                        </accessibility>
+                        <style>
+                          <class name="index-title-alignment-software"/>
+                        </style>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkBox" id="box_popular_games">
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_start">12</property>
+                        <property name="margin_end">12</property>
+                        <property name="spacing">12</property>
+                        <property name="homogeneous">True</property>
+                        <property name="valign">start</property>
+                        <accessibility>
+                          <relation target="popular_games_heading" type="labelled-by"/>
+                        </accessibility>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">5</property>
+                      </packing>
+                    </child>
+                    <child>
                       <object class="GtkLabel" id="category_heading">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
@@ -132,7 +174,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">4</property>
+                        <property name="position">6</property>
                       </packing>
                     </child>
                     <child>
@@ -153,7 +195,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">5</property>
+                        <property name="position">7</property>
                       </packing>
                     </child>
                   </object>

@@ -45,10 +45,12 @@ struct GsShellOverviewPrivate
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
+	GtkWidget		*box_popular_games;
 	GtkWidget		*category_heading;
 	GtkWidget		*featured_heading;
 	GtkWidget		*grid_categories;
 	GtkWidget		*popular_heading;
+	GtkWidget		*popular_games_heading;
 	GtkWidget		*scrolledwindow_overview;
 	GtkWidget		*stack_overview;
 };
@@ -116,6 +118,49 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (popular_tile_clicked), shell);
 		gtk_box_pack_start (GTK_BOX (priv->box_popular), tile, TRUE, TRUE, 0);
+	}
+
+	priv->empty = FALSE;
+
+out:
+	gs_plugin_list_free (list);
+	priv->refresh_count--;
+	if (priv->refresh_count == 0)
+		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
+}
+
+static void
+gs_shell_overview_get_popular_games_cb (GObject *source_object,
+                                        GAsyncResult *res,
+                                        gpointer user_data)
+{
+	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
+	GsShellOverviewPrivate *priv = shell->priv;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GError *error = NULL;
+	GList *l;
+	GList *list;
+	GsApp *app;
+	gint i;
+	GtkWidget *tile;
+
+	/* get popular games */
+	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
+	gtk_widget_set_visible (priv->popular_games_heading, list != NULL);
+	if (list == NULL) {
+		g_warning ("failed to get popular games: %s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+
+	gs_container_remove_all (GTK_CONTAINER (priv->box_popular_games));
+
+	for (l = list, i = 0; l != NULL && i < 6; l = l->next, i++) {
+		app = GS_APP (l->data);
+		tile = gs_popular_tile_new (app);
+		g_signal_connect (tile, "clicked",
+			  G_CALLBACK (popular_tile_clicked), shell);
+		gtk_box_pack_start (GTK_BOX (priv->box_popular_games), tile, TRUE, TRUE, 0);
 	}
 
 	priv->empty = FALSE;
@@ -270,7 +315,7 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 		return;
 
 	priv->empty = TRUE;
-	priv->refresh_count = 3;
+	priv->refresh_count = 4;
 
 	gs_plugin_loader_get_featured_async (priv->plugin_loader,
 					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
@@ -280,8 +325,16 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					    NULL,
 					    priv->cancellable,
 					    gs_shell_overview_get_popular_cb,
+					    shell);
+
+	gs_plugin_loader_get_popular_async (priv->plugin_loader,
+					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					    "Game",
+					    priv->cancellable,
+					    gs_shell_overview_get_popular_games_cb,
 					    shell);
 
 	gs_plugin_loader_get_categories_async (priv->plugin_loader,
@@ -381,10 +434,12 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, bin_featured);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular_games);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, category_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, featured_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, grid_categories);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_games_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, stack_overview);
 }

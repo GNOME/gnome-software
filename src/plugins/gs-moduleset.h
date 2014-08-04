@@ -51,7 +51,8 @@ GsModuleset	*gs_moduleset_new			(void);
 
 gchar		**gs_moduleset_get_modules		(GsModuleset		*moduleset,
 							 GsModulesetModuleKind	 module_kind,
-							 const gchar		*name);
+							 const gchar		*name,
+							 const gchar		*category);
 gboolean	 gs_moduleset_parse_filename		(GsModuleset		*moduleset,
 							 const gchar		*filename,
 							 GError			**error);

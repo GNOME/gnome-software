@@ -122,6 +122,11 @@ typedef gboolean	 (*GsPluginCategoryFunc)	(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginPopularFunc)		(GsPlugin	*plugin,
+							 GList		**list,
+							 const gchar	*category,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginResultsFunc)		(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,
@@ -201,6 +206,7 @@ gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
 							 GError		**error);
 gboolean	 gs_plugin_add_popular			(GsPlugin	*plugin,
 							 GList		**list,
+							 const gchar	*category,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_featured			(GsPlugin	*plugin,

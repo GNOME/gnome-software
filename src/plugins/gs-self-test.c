@@ -47,7 +47,8 @@ moduleset_func (void)
 
 	data = gs_moduleset_get_modules (ms,
 					 GS_MODULESET_MODULE_KIND_PACKAGE,
-					 "gnome3");
+					 "gnome3",
+					 NULL);
 	g_assert (data != NULL);
 	g_assert_cmpint (g_strv_length (data), ==, 1);
 	g_assert_cmpstr (data[0], ==, "kernel");
@@ -55,7 +56,8 @@ moduleset_func (void)
 
 	data = gs_moduleset_get_modules (ms,
 					 GS_MODULESET_MODULE_KIND_APPLICATION,
-					 "gnome3");
+					 "gnome3",
+					 NULL);
 	g_assert (data != NULL);
 	g_assert_cmpint (g_strv_length (data), ==, 1);
 	g_assert_cmpstr (data[0], ==, "gnome-shell.desktop");

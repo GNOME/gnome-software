@@ -1169,6 +1169,7 @@ out:
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
 			GList **list,
+			const gchar *category,
 			GCancellable *cancellable,
 			GError **error)
 {
@@ -1182,6 +1183,10 @@ gs_plugin_add_popular (GsPlugin *plugin,
 			goto out;
 	}
 	gs_profile_start (plugin->profile, "appstream::add_popular");
+
+	/* FIXME: support different popular kinds */
+	if (category != NULL)
+		goto out;
 
 	/* use category heuristic */
 	ret = gs_plugin_add_popular_by_cat (plugin, list, cancellable, error);
