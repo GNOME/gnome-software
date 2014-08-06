@@ -241,8 +241,8 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 
 	/* is image size destination size unknown or exactly the correct size */
 	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT ||
-	    (priv->width == gdk_pixbuf_get_width (pixbuf) &&
-	     priv->height == gdk_pixbuf_get_height (pixbuf))) {
+	    (priv->width == (guint) gdk_pixbuf_get_width (pixbuf) &&
+	     priv->height == (guint) gdk_pixbuf_get_height (pixbuf))) {
 		ret = g_file_set_contents (priv->filename,
 					   msg->response_body->data,
 					   msg->response_body->length,
