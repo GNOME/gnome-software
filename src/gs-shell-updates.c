@@ -847,7 +847,8 @@ gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	priv->last_status = status;
-	gs_shell_updates_update_ui_state (shell_updates);
+	if (gs_shell_get_mode (shell_updates->priv->shell) == GS_SHELL_MODE_UPDATES)
+		gs_shell_updates_update_ui_state (shell_updates);
 }
 
 void
