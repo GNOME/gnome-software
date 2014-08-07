@@ -257,6 +257,8 @@ handle_get_result_metas (GsShellSearchProvider2        *skeleton,
 	g_variant_builder_init (&builder, G_VARIANT_TYPE ("aa{sv}"));
 	for (i = 0; results[i]; i++) {
 		meta_variant = (GVariant*)g_hash_table_lookup (self->metas_cache, results[i]);
+		if (meta_variant == NULL)
+			continue;
 		g_variant_builder_add_value (&builder, meta_variant);
 	}
 
