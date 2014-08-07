@@ -63,6 +63,7 @@ struct GsShellUpdatesPrivate
 	gboolean		 cache_valid;
 	GsShell			*shell;
 	PkControl		*control;
+	GsPluginStatus		 last_status;
 	GsShellUpdatesState	 state;
 	gboolean		 has_agreed_to_mobile_data;
 	gboolean		 ampm_available;
@@ -185,6 +186,21 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *shell_updates)
 }
 
 /**
+ * gs_shell_updates_get_state_string:
+ **/
+static const gchar *
+gs_shell_updates_get_state_string (GsPluginStatus status)
+{
+	if (status == GS_PLUGIN_STATUS_DOWNLOADING) {
+		/* TRANSLATORS: the updates are being downloaded */
+		return _("Downloading new updates…");
+	}
+
+	/* TRANSLATORS: the update panel is doing *something* vague */
+	return _("Looking for new updates…");
+}
+
+/**
  * gs_shell_updates_update_ui_state:
  **/
 static void
@@ -238,8 +254,8 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 		g_free (tmp);
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 		tmp = g_strdup_printf ("%s\n%s",
+				       gs_shell_updates_get_state_string (priv->last_status),
 				       /* TRANSLATORS: the updates panel is starting up */
-				       _("Looking for new updates…"),
 				       _("(This could take a while)"));
 		gtk_label_set_label (GTK_LABEL (priv->label_updates_spinner), tmp);
 		g_free (tmp);
@@ -820,6 +836,20 @@ gs_shell_updates_get_properties_cb (GObject *source,
 	gs_shell_updates_update_ui_state (shell_updates);
 }
 
+/**
+ * gs_shell_updates_status_changed_cb:
+ **/
+static void
+gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
+				    GsApp *app,
+				    GsPluginStatus status,
+				    GsShellUpdates *shell_updates)
+{
+	GsShellUpdatesPrivate *priv = shell_updates->priv;
+	priv->last_status = status;
+	gs_shell_updates_update_ui_state (shell_updates);
+}
+
 void
 gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			GsShell *shell,
@@ -840,6 +870,9 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			  shell_updates);
 	g_signal_connect (priv->plugin_loader, "updates-changed",
 			  G_CALLBACK (gs_shell_updates_changed_cb),
+			  shell_updates);
+	g_signal_connect (priv->plugin_loader, "status-changed",
+			  G_CALLBACK (gs_shell_updates_status_changed_cb),
 			  shell_updates);
 	priv->builder = g_object_ref (builder);
 	priv->cancellable = g_object_ref (cancellable);
