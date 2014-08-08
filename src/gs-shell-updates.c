@@ -893,7 +893,7 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	g_signal_connect (priv->list_box_updates, "row-activated",
 			  G_CALLBACK (gs_shell_updates_activated_cb), shell_updates);
 
-       widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
 	g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), shell_updates);
 
 	/* setup update details window */
