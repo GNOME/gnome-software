@@ -1758,6 +1758,7 @@ gs_app_subsume (GsApp *app, GsApp *other)
 
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (GS_IS_APP (other));
+	g_return_if_fail (app != other);
 
 	/* an [updatable] installable package is more information than
 	 * just the fact that something is installed */
