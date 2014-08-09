@@ -85,7 +85,7 @@ apply_changes (GsAppFolderDialog *dialog)
 	for (l = priv->apps; l; l = l->next) {
 		GsApp *app = l->data;
 		gs_folders_set_app_folder (priv->folders,
-					   gs_app_get_id_full (app),
+					   gs_app_get_id (app),
 					   gs_app_get_categories (app),
 					   folder);
 	}

@@ -217,7 +217,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	for (i = 0; i < G_N_ELEMENTS (featured); i++) {
 		for (l = *list; l != NULL; l = l->next) {
 			app = GS_APP (l->data);
-			id = gs_app_get_id_full (app);
+			id = gs_app_get_id (app);
 			if (g_strcmp0 (id, featured[i].app) != 0)
 				continue;
 			gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);

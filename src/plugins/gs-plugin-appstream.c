@@ -612,7 +612,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	AsApp *item = NULL;
 
 	/* find anything that matches the ID */
-	id = gs_app_get_id_full (app);
+	id = gs_app_get_id (app);
 	if (id == NULL)
 		goto out;
 	item = as_store_get_app_by_id (plugin->priv->store, id);

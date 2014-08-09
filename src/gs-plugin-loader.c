@@ -450,7 +450,7 @@ gs_plugin_loader_get_app_str (GsApp *app)
 	const gchar *id;
 
 	/* first try the actual id */
-	id = gs_app_get_id_full (app);
+	id = gs_app_get_id (app);
 	if (id != NULL)
 		return id;
 
@@ -1209,7 +1209,7 @@ gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
 static gboolean
 gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
 {
-	if (g_strcmp0 (gs_app_get_id_full (app),
+	if (g_strcmp0 (gs_app_get_id (app),
 	    g_getenv ("GNOME_SOFTWARE_FEATURED")) == 0)
 		return TRUE;
 	return FALSE;

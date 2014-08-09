@@ -1229,7 +1229,7 @@ gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *shell_
 	GdkDisplay *display;
 	const gchar *desktop_id;
 
-	desktop_id = gs_app_get_id_full (shell_details->priv->app);
+	desktop_id = gs_app_get_id (shell_details->priv->app);
 	display = gdk_display_get_default ();
 	appinfo = G_APP_INFO (g_desktop_app_info_new (desktop_id));
 	if (appinfo == NULL) {

@@ -87,7 +87,7 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	PkInfoEnum info_enum;
 
 	/* create new history item with same ID as parent */
-	history = gs_app_new (gs_app_get_id_full (app));
+	history = gs_app_new (gs_app_get_id (app));
 	gs_app_set_kind (history, GS_APP_KIND_PACKAGE);
 	gs_app_set_name (history, GS_APP_QUALITY_NORMAL, gs_app_get_name (app));
 
@@ -238,7 +238,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			/* make up a fake entry as we know this package was at
 			 * least installed at some point in time */
 			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
-				app_dummy = gs_app_new (gs_app_get_id_full (app));
+				app_dummy = gs_app_new (gs_app_get_id (app));
 				gs_app_set_install_date (app_dummy, GS_APP_INSTALL_DATE_UNKNOWN);
 				gs_app_set_kind (app_dummy, GS_APP_KIND_PACKAGE);
 				gs_app_set_state (app_dummy, AS_APP_STATE_INSTALLED);

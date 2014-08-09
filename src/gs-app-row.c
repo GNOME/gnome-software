@@ -163,7 +163,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_widget_hide (priv->folder_label);
 	} else {
 		folders = gs_folders_get ();
-		folder = gs_folders_get_app_folder (folders, gs_app_get_id_full (priv->app), gs_app_get_categories (priv->app));
+		folder = gs_folders_get_app_folder (folders, gs_app_get_id (priv->app), gs_app_get_categories (priv->app));
 		if (folder)
 			folder = gs_folders_get_folder_name (folders, folder);
 		gtk_label_set_label (GTK_LABEL (priv->folder_label), folder);

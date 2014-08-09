@@ -655,7 +655,7 @@ selection_changed (GsShellInstalled *shell_installed)
 	for (l = apps; l; l = l->next) {
 		app = l->data;
 		if (gs_folders_get_app_folder (folders,
-				 	       gs_app_get_id_full (app),
+					       gs_app_get_id (app),
 					       gs_app_get_categories (app))) {
 			has_folders = TRUE;
 		} else {
@@ -704,7 +704,7 @@ remove_folders (GtkButton *button, GsShellInstalled *shell_installed)
 	for (l = apps; l; l = l->next) {
 		app = l->data;
 		gs_folders_set_app_folder (folders,
-					   gs_app_get_id_full (app),
+					   gs_app_get_id (app),
 					   gs_app_get_categories (app),
 					   NULL);
 	}
