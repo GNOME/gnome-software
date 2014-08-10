@@ -67,6 +67,8 @@ struct GsShellDetailsPrivate
 	GtkWidget		*button_details_launch;
 	GtkWidget		*button_details_website;
 	GtkWidget		*button_history;
+	GtkWidget		*button_install;
+	GtkWidget		*button_remove;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
 	GtkWidget		*infobar_details_package_baseos;
@@ -169,34 +171,33 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	}
 
 	/* install button */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
 	switch (state) {
 	case AS_APP_STATE_AVAILABLE:
 	case AS_APP_STATE_AVAILABLE_LOCAL:
-		gtk_widget_set_visible (widget, gs_app_get_kind (priv->app) != GS_APP_KIND_CORE);
-		gtk_widget_set_sensitive (widget, TRUE);
-		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "suggested-action");
+		gtk_widget_set_visible (priv->button_install, gs_app_get_kind (priv->app) != GS_APP_KIND_CORE);
+		gtk_widget_set_sensitive (priv->button_install, TRUE);
+		gtk_style_context_add_class (gtk_widget_get_style_context (priv->button_install), "suggested-action");
 		/* TRANSLATORS: button text in the header when an application
 		 * can be installed */
-		gtk_button_set_label (GTK_BUTTON (widget), _("_Install"));
+		gtk_button_set_label (GTK_BUTTON (priv->button_install), _("_Install"));
 		break;
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-		gtk_widget_set_visible (widget, FALSE);
+		gtk_widget_set_visible (priv->button_install, FALSE);
 		break;
 	case AS_APP_STATE_INSTALLING:
-		gtk_widget_set_visible (widget, TRUE);
-		gtk_widget_set_sensitive (widget, FALSE);
-		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "suggested-action");
+		gtk_widget_set_visible (priv->button_install, TRUE);
+		gtk_widget_set_sensitive (priv->button_install, FALSE);
+		gtk_style_context_remove_class (gtk_widget_get_style_context (priv->button_install), "suggested-action");
 		/* TRANSLATORS: button text in the header when an application
 		 * is in the process of being installed */
-		gtk_button_set_label (GTK_BUTTON (widget), _("_Installing"));
+		gtk_button_set_label (GTK_BUTTON (priv->button_install), _("_Installing"));
 		break;
 	case AS_APP_STATE_UNKNOWN:
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_REMOVING:
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UNAVAILABLE:
-		gtk_widget_set_visible (widget, FALSE);
+		gtk_widget_set_visible (priv->button_install, FALSE);
 		break;
 	default:
 		g_warning ("App unexpectedly in state %s",
@@ -205,38 +206,37 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	}
 
 	/* remove button */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
 	if (kind == GS_APP_KIND_SYSTEM) {
-		gtk_widget_set_visible (widget, FALSE);
+		gtk_widget_set_visible (priv->button_remove, FALSE);
 	} else {
 		switch (state) {
 		case AS_APP_STATE_INSTALLED:
 		case AS_APP_STATE_UPDATABLE:
-			gtk_widget_set_visible (widget, TRUE);
-			gtk_widget_set_sensitive (widget, TRUE);
-			gtk_style_context_add_class (gtk_widget_get_style_context (widget), "destructive-action");
+			gtk_widget_set_visible (priv->button_remove, TRUE);
+			gtk_widget_set_sensitive (priv->button_remove, TRUE);
+			gtk_style_context_add_class (gtk_widget_get_style_context (priv->button_remove), "destructive-action");
 			/* TRANSLATORS: button text in the header when an application can be erased */
-			gtk_button_set_label (GTK_BUTTON (widget), _("_Remove"));
+			gtk_button_set_label (GTK_BUTTON (priv->button_remove), _("_Remove"));
 			break;
 		case AS_APP_STATE_REMOVING:
-			gtk_widget_set_visible (widget, TRUE);
-			gtk_widget_set_sensitive (widget, FALSE);
-			gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
+			gtk_widget_set_visible (priv->button_remove, TRUE);
+			gtk_widget_set_sensitive (priv->button_remove, FALSE);
+			gtk_style_context_remove_class (gtk_widget_get_style_context (priv->button_remove), "destructive-action");
 			/* TRANSLATORS: button text in the header when an application can be installed */
-			gtk_button_set_label (GTK_BUTTON (widget), _("_Removing"));
+			gtk_button_set_label (GTK_BUTTON (priv->button_remove), _("_Removing"));
 			break;
 		case AS_APP_STATE_QUEUED_FOR_INSTALL:
-			gtk_widget_set_visible (widget, TRUE);
-			gtk_widget_set_sensitive (widget, TRUE);
-			gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "destructive-action");
-			gtk_button_set_label (GTK_BUTTON (widget), _("_Cancel"));
+			gtk_widget_set_visible (priv->button_remove, TRUE);
+			gtk_widget_set_sensitive (priv->button_remove, TRUE);
+			gtk_style_context_remove_class (gtk_widget_get_style_context (priv->button_remove), "destructive-action");
+			gtk_button_set_label (GTK_BUTTON (priv->button_remove), _("_Cancel"));
 			break;
 		case AS_APP_STATE_AVAILABLE_LOCAL:
 		case AS_APP_STATE_AVAILABLE:
 		case AS_APP_STATE_INSTALLING:
 		case AS_APP_STATE_UNAVAILABLE:
 		case AS_APP_STATE_UNKNOWN:
-			gtk_widget_set_visible (widget, FALSE);
+			gtk_widget_set_visible (priv->button_remove, FALSE);
 			break;
 		default:
 			g_warning ("App unexpectedly in state %s",
@@ -1321,7 +1321,6 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 			GCancellable *cancellable)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	GtkWidget *widget;
 	GtkAdjustment *adj;
 
 	g_return_if_fail (GS_IS_SHELL_DETAILS (shell_details));
@@ -1342,12 +1341,10 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	gtk_box_pack_start (GTK_BOX (priv->box_details_header), priv->star, FALSE, FALSE, 0);
 
 	/* setup details */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (priv->button_install, "clicked",
 			  G_CALLBACK (gs_shell_details_app_install_button_cb),
 			  shell_details);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
-	g_signal_connect (widget, "clicked",
+	g_signal_connect (priv->button_remove, "clicked",
 			  G_CALLBACK (gs_shell_details_app_remove_button_cb),
 			  shell_details);
 	g_signal_connect (priv->button_history, "clicked",
@@ -1395,6 +1392,8 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, button_details_launch);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, button_details_website);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, button_history);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, button_install);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, button_remove);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_app_norepo);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_app_repo);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, infobar_details_package_baseos);

@@ -141,10 +141,6 @@ gs_shell_change_mode (GsShell *shell,
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_label"));
 	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_install"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_remove"));
-	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
