@@ -434,8 +434,8 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	}
 
 	/* set id */
-	if (as_app_get_id (item) != NULL && gs_app_get_id (app) == NULL)
-		gs_app_set_id (app, as_app_get_id (item));
+	if (as_app_get_id_full (item) != NULL && gs_app_get_id (app) == NULL)
+		gs_app_set_id (app, as_app_get_id_full (item));
 
 	/* set name */
 	tmp = as_app_get_name (item, NULL);
@@ -741,7 +741,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
-		if (as_app_get_id (item) == NULL)
+		if (as_app_get_id_full (item) == NULL)
 			continue;
 		if (!as_app_has_category (item, search_id1))
 			continue;
@@ -919,7 +919,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		app = g_ptr_array_index (array, i);
-		if (as_app_get_id (app) == NULL)
+		if (as_app_get_id_full (app) == NULL)
 			continue;
 		if (as_app_get_priority (app) < 0)
 			continue;
@@ -986,7 +986,7 @@ gs_plugin_add_popular_from_category (GsPlugin *plugin,
 		/* only suggest awesome applications */
 		if (gs_plugin_appstream_is_app_awesome (app)) {
 			g_debug ("suggesting %s as others installed from category %s",
-				 as_app_get_id (item), category);
+				 as_app_get_id_full (item), category);
 			gs_plugin_add_app (list, app);
 			g_hash_table_insert (ignore_apps,
 					     (gpointer) as_app_get_id_full (item),
@@ -1147,12 +1147,12 @@ gs_plugin_add_popular_by_source (GsPlugin *plugin,
 		/* only suggest awesome apps */
 		if (gs_plugin_appstream_is_app_awesome (app)) {
 			g_debug ("suggesting %s as others installed from source %s",
-				 as_app_get_id (item),
+				 as_app_get_id_full (item),
 				 as_app_get_source_pkgname (item));
 			gs_plugin_add_app (list, app);
 		} else {
 			g_debug ("not suggesting %s as not awesome enough",
-				 as_app_get_id (item));
+				 as_app_get_id_full (item));
 		}
 		g_object_unref (app);
 	}
