@@ -1004,11 +1004,11 @@ out:
 static gboolean
 gs_plugin_add_popular_by_cat (GsPlugin *plugin,
 			      GList **list,
+			      GHashTable *ignore_apps,
 			      GCancellable *cancellable,
 			      GError **error)
 {
 	AsApp *item;
-	GHashTable *ignore_apps = NULL;
 	GHashTable *ignore_cats = NULL;
 	GPtrArray *array;
 	GPtrArray *categories;
@@ -1040,19 +1040,8 @@ gs_plugin_add_popular_by_cat (GsPlugin *plugin,
 	g_hash_table_insert (ignore_cats, (gpointer) "Settings", GINT_TO_POINTER (1));
 	g_hash_table_insert (ignore_cats, (gpointer) "other", GINT_TO_POINTER (1));
 
-	/* get already installed applications */
-	ignore_apps = g_hash_table_new (g_str_hash, g_str_equal);
-	array = as_store_get_apps (plugin->priv->store);
-	for (i = 0; i < array->len; i++) {
-		item = g_ptr_array_index (array, i);
-		if (as_app_get_state (item) != AS_APP_STATE_INSTALLED)
-			continue;
-		g_hash_table_insert (ignore_apps,
-				     (gpointer) as_app_get_id_full (item),
-				     GINT_TO_POINTER (1));
-	}
-
 	/* search categories for the search term */
+	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
 
@@ -1084,8 +1073,6 @@ gs_plugin_add_popular_by_cat (GsPlugin *plugin,
 out:
 	if (ignore_cats != NULL)
 		g_hash_table_unref (ignore_cats);
-	if (ignore_apps != NULL)
-		g_hash_table_unref (ignore_apps);
 	return ret;
 }
 
@@ -1173,7 +1160,11 @@ gs_plugin_add_popular (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
+	AsApp *item;
+	GHashTable *ignore_apps = NULL;
+	GPtrArray *array;
 	gboolean ret = TRUE;
+	guint i;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -1184,21 +1175,41 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	}
 	gs_profile_start (plugin->profile, "appstream::add_popular");
 
-	/* FIXME: support different popular kinds */
-	if (category != NULL)
-		goto out;
+	/* get already installed applications */
+	ignore_apps = g_hash_table_new (g_str_hash, g_str_equal);
+	array = as_store_get_apps (plugin->priv->store);
+	for (i = 0; i < array->len; i++) {
+		item = g_ptr_array_index (array, i);
+		if (as_app_get_state (item) != AS_APP_STATE_INSTALLED)
+			continue;
+		g_hash_table_insert (ignore_apps,
+				     (gpointer) as_app_get_id_full (item),
+				     GINT_TO_POINTER (1));
+	}
 
-	/* use category heuristic */
-	ret = gs_plugin_add_popular_by_cat (plugin, list, cancellable, error);
-	if (!ret)
-		goto out;
+	if (category == NULL) {
+		/* use category heuristic */
+		ret = gs_plugin_add_popular_by_cat (plugin, list, ignore_apps, cancellable, error);
+		if (!ret)
+			goto out;
 
-	/* use source-package heuristic */
-	ret = gs_plugin_add_popular_by_source (plugin, list, cancellable, error);
-	if (!ret)
-		goto out;
+		/* use source-package heuristic */
+		ret = gs_plugin_add_popular_by_source (plugin, list, cancellable, error);
+		if (!ret)
+			goto out;
+	} else {
+		ret = gs_plugin_add_popular_from_category (plugin,
+							   category,
+							   list,
+							   ignore_apps,
+							   error);
+		if (!ret)
+			goto out;
+	}
 
 	gs_profile_stop (plugin->profile, "appstream::add_popular");
 out:
+	if (ignore_apps != NULL)
+		g_hash_table_unref (ignore_apps);
 	return ret;
 }
