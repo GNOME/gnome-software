@@ -122,11 +122,9 @@ gs_plugin_destroy (GsPlugin *plugin)
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	AsApp *app;
 	GPtrArray *items;
 	gboolean ret;
 	gchar *tmp;
-	guint i;
 
 	/* get the locale without the UTF-8 suffix */
 	plugin->priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
@@ -159,18 +157,6 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			     GS_PLUGIN_LOADER_ERROR_FAILED,
 			     _("No AppStream data found"));
 		goto out;
-	}
-
-	/* add icons to the icon name cache */
-	for (i = 0; i < items->len; i++) {
-		app = g_ptr_array_index (items, i);
-		if (as_app_get_icon_kind (app) != AS_ICON_KIND_CACHED)
-			continue;
-		g_hash_table_insert (plugin->icon_cache,
-				     g_strdup (as_app_get_id (app)),
-				     g_build_filename (as_app_get_icon_path (app),
-						       as_app_get_icon (app),
-						       NULL));
 	}
 out:
 	gs_profile_stop (plugin->profile, "appstream::startup");
