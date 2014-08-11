@@ -47,12 +47,12 @@ struct GsShellOverviewPrivate
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
-	GtkWidget		*box_popular_games;
+	GtkWidget		*box_popular_rotating;
 	GtkWidget		*category_heading;
 	GtkWidget		*featured_heading;
 	GtkWidget		*grid_categories;
 	GtkWidget		*popular_heading;
-	GtkWidget		*popular_games_heading;
+	GtkWidget		*popular_rotating_heading;
 	GtkWidget		*scrolledwindow_overview;
 	GtkWidget		*stack_overview;
 };
@@ -132,9 +132,9 @@ out:
 }
 
 static void
-gs_shell_overview_get_popular_games_cb (GObject *source_object,
-                                        GAsyncResult *res,
-                                        gpointer user_data)
+gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
+                                           GAsyncResult *res,
+                                           gpointer user_data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
 	GsShellOverviewPrivate *priv = shell->priv;
@@ -146,32 +146,32 @@ gs_shell_overview_get_popular_games_cb (GObject *source_object,
 	gint i;
 	GtkWidget *tile;
 
-	/* get popular games */
+	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		g_warning ("failed to get popular games: %s", error->message);
+		g_warning ("failed to get recommended applications: %s", error->message);
 		g_error_free (error);
-		gtk_widget_hide (priv->popular_games_heading);
-		gtk_widget_hide (priv->box_popular_games);
+		gtk_widget_hide (priv->popular_rotating_heading);
+		gtk_widget_hide (priv->box_popular_rotating);
 		goto out;
 	} else if (g_list_length (list) < N_TILES) {
-		g_warning ("hiding recommended games: found only %d to show, need at least %d", g_list_length (list), N_TILES);
-		gtk_widget_hide (priv->popular_games_heading);
-		gtk_widget_hide (priv->box_popular_games);
+		g_warning ("hiding recommended applications: found only %d to show, need at least %d", g_list_length (list), N_TILES);
+		gtk_widget_hide (priv->popular_rotating_heading);
+		gtk_widget_hide (priv->box_popular_rotating);
 		goto out;
 	}
 
-	gtk_widget_show (priv->popular_games_heading);
-	gtk_widget_show (priv->box_popular_games);
+	gtk_widget_show (priv->popular_rotating_heading);
+	gtk_widget_show (priv->box_popular_rotating);
 
-	gs_container_remove_all (GTK_CONTAINER (priv->box_popular_games));
+	gs_container_remove_all (GTK_CONTAINER (priv->box_popular_rotating));
 
 	for (l = list, i = 0; l != NULL && i < N_TILES; l = l->next, i++) {
 		app = GS_APP (l->data);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (popular_tile_clicked), shell);
-		gtk_box_pack_start (GTK_BOX (priv->box_popular_games), tile, TRUE, TRUE, 0);
+		gtk_box_pack_start (GTK_BOX (priv->box_popular_rotating), tile, TRUE, TRUE, 0);
 	}
 
 	priv->empty = FALSE;
@@ -300,9 +300,11 @@ out:
 void
 gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 {
+	GDateTime *date;
 	GsShellOverviewPrivate *priv = shell->priv;
 	GtkWidget *widget;
 	GtkAdjustment *adj;
+	const gchar *category_of_day;
 
 	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_OVERVIEW) {
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
@@ -328,6 +330,31 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 	priv->empty = TRUE;
 	priv->refresh_count = 4;
 
+	date = g_date_time_new_now_utc ();
+	switch (g_date_time_get_day_of_year (date) % 4) {
+	case 0:
+		category_of_day = "Audio";
+		/* TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution */
+		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Audio Applications"));
+		break;
+	case 1:
+		category_of_day = "Game";
+		/* TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution */
+		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Games"));
+		break;
+	case 2:
+		category_of_day = "Graphics";
+		/* TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution */
+		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Graphics Applications"));
+		break;
+	case 3:
+		category_of_day = "Office";
+		/* TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution */
+		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Office Applications"));
+		break;
+	}
+	g_date_time_unref (date);
+
 	gs_plugin_loader_get_featured_async (priv->plugin_loader,
 					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					     priv->cancellable,
@@ -343,9 +370,9 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					    "Game",
+					    category_of_day,
 					    priv->cancellable,
-					    gs_shell_overview_get_popular_games_cb,
+					    gs_shell_overview_get_popular_rotating_cb,
 					    shell);
 
 	gs_plugin_loader_get_categories_async (priv->plugin_loader,
@@ -445,12 +472,12 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, bin_featured);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular_games);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular_rotating);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, category_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, featured_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, grid_categories);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_heading);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_games_heading);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_rotating_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, stack_overview);
 }
