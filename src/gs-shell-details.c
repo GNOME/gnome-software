@@ -511,21 +511,21 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	GdkPixbuf *pixbuf = NULL;
 	GList *addons, *l;
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	GtkWidget *widget2;
+	GtkWidget *widget;
 	const gchar *tmp;
 	gchar *size;
 	guint64 updated;
 
 	/* change widgets */
 	tmp = gs_app_get_name (priv->app);
-	widget2 = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	if (tmp != NULL && tmp[0] != '\0') {
 		gtk_label_set_label (GTK_LABEL (priv->application_details_title), tmp);
-		gtk_label_set_label (GTK_LABEL (widget2), tmp);
+		gtk_label_set_label (GTK_LABEL (widget), tmp);
 		gtk_widget_set_visible (priv->application_details_title, TRUE);
 	} else {
 		gtk_widget_set_visible (priv->application_details_title, FALSE);
-		gtk_label_set_label (GTK_LABEL (widget2), "");
+		gtk_label_set_label (GTK_LABEL (widget), "");
 	}
 	tmp = gs_app_get_summary (priv->app);
 	if (tmp != NULL && tmp[0] != '\0') {
