@@ -1130,6 +1130,9 @@ gs_shell_details_app_remove (GsShellDetails *shell_details, GsApp *app)
 	}
 	g_string_free (markup, TRUE);
 	gtk_widget_destroy (dialog);
+
+	gs_shell_details_refresh_addons (shell_details);
+	gs_shell_details_refresh_all (shell_details);
 }
 
 /**
