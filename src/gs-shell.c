@@ -136,11 +136,6 @@ gs_shell_change_mode (GsShell *shell,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner_start"));
 	gtk_spinner_stop (GTK_SPINNER (widget));
 	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner_end"));
-	gtk_spinner_stop (GTK_SPINNER (widget));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_label"));
-	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));

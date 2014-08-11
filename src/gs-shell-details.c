@@ -84,9 +84,11 @@ struct GsShellDetailsPrivate
 	GtkWidget		*label_details_size_value;
 	GtkWidget		*label_details_updated_value;
 	GtkWidget		*label_details_version_value;
+	GtkWidget		*label_pending;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
+	GtkWidget		*spinner_install_remove;
 	GtkWidget		*stack_details;
 };
 
@@ -159,14 +161,12 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	state = gs_app_get_state (priv->app);
 
 	/* label */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_label"));
 	switch (state) {
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-		gtk_widget_set_visible (widget, TRUE);
-		gtk_label_set_label (GTK_LABEL (widget), _("Pending"));
+		gtk_widget_set_visible (priv->label_pending, TRUE);
 		break;
 	default:
-		gtk_widget_set_visible (widget, FALSE);
+		gtk_widget_set_visible (priv->label_pending, FALSE);
 		break;
 	}
 
@@ -246,10 +246,9 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	}
 
 	/* spinner */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner_end"));
 	if (kind == GS_APP_KIND_SYSTEM) {
-		gtk_widget_set_visible (widget, FALSE);
-		gtk_spinner_stop (GTK_SPINNER (widget));
+		gtk_widget_set_visible (priv->spinner_install_remove, FALSE);
+		gtk_spinner_stop (GTK_SPINNER (priv->spinner_install_remove));
 	} else {
 		switch (state) {
 		case AS_APP_STATE_UNKNOWN:
@@ -259,13 +258,13 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 		case AS_APP_STATE_UPDATABLE:
 		case AS_APP_STATE_UNAVAILABLE:
 		case AS_APP_STATE_AVAILABLE_LOCAL:
-			gtk_widget_set_visible (widget, FALSE);
-			gtk_spinner_stop (GTK_SPINNER (widget));
+			gtk_widget_set_visible (priv->spinner_install_remove, FALSE);
+			gtk_spinner_stop (GTK_SPINNER (priv->spinner_install_remove));
 			break;
 		case AS_APP_STATE_INSTALLING:
 		case AS_APP_STATE_REMOVING:
-			gtk_spinner_start (GTK_SPINNER (widget));
-			gtk_widget_set_visible (widget, TRUE);
+			gtk_spinner_start (GTK_SPINNER (priv->spinner_install_remove));
+			gtk_widget_set_visible (priv->spinner_install_remove, TRUE);
 			break;
 		default:
 			g_warning ("App unexpectedly in state %s",
@@ -1409,9 +1408,11 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_size_value);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_updated_value);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_details_version_value);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, label_pending);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, list_box_addons);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, scrolledwindow_details);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, spinner_details);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, spinner_install_remove);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellDetails, stack_details);
 }
 
