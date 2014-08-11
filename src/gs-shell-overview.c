@@ -32,6 +32,8 @@
 #include "gs-category-tile.h"
 #include "gs-utils.h"
 
+#define N_TILES 6
+
 struct GsShellOverviewPrivate
 {
 	GsPluginLoader		*plugin_loader;
@@ -112,7 +114,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 
 	gs_container_remove_all (GTK_CONTAINER (priv->box_popular));
 
-	for (l = list, i = 0; l != NULL && i < 6; l = l->next, i++) {
+	for (l = list, i = 0; l != NULL && i < N_TILES; l = l->next, i++) {
 		app = GS_APP (l->data);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
@@ -146,16 +148,25 @@ gs_shell_overview_get_popular_games_cb (GObject *source_object,
 
 	/* get popular games */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
-	gtk_widget_set_visible (priv->popular_games_heading, list != NULL);
 	if (list == NULL) {
 		g_warning ("failed to get popular games: %s", error->message);
 		g_error_free (error);
+		gtk_widget_hide (priv->popular_games_heading);
+		gtk_widget_hide (priv->box_popular_games);
+		goto out;
+	} else if (g_list_length (list) < N_TILES) {
+		g_warning ("hiding recommended games: found only %d to show, need at least %d", g_list_length (list), N_TILES);
+		gtk_widget_hide (priv->popular_games_heading);
+		gtk_widget_hide (priv->box_popular_games);
 		goto out;
 	}
 
+	gtk_widget_show (priv->popular_games_heading);
+	gtk_widget_show (priv->box_popular_games);
+
 	gs_container_remove_all (GTK_CONTAINER (priv->box_popular_games));
 
-	for (l = list, i = 0; l != NULL && i < 6; l = l->next, i++) {
+	for (l = list, i = 0; l != NULL && i < N_TILES; l = l->next, i++) {
 		app = GS_APP (l->data);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
@@ -371,7 +382,7 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 	tile = gs_feature_tile_new (NULL);
 	gtk_container_add (GTK_CONTAINER (priv->bin_featured), tile);
 
-	for (i = 0; i < 6; i++) {
+	for (i = 0; i < N_TILES; i++) {
 		tile = gs_popular_tile_new (NULL);
 		gtk_box_pack_start (GTK_BOX (priv->box_popular), tile, TRUE, TRUE, 0);
 	}
