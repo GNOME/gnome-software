@@ -56,6 +56,7 @@ desktop-file-edit %{buildroot}%{_datadir}/applications/org.gnome.Software.deskto
 
 %check
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
+DESTDIR=%{buildroot} appstream-util check-root
 
 %post
 touch --no-create %{_datadir}/icons/hicolor &>/dev/null || :
