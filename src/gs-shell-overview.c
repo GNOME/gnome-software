@@ -352,6 +352,9 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 		/* TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution */
 		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Office Applications"));
 		break;
+	default:
+		g_assert_not_reached ();
+		break;
 	}
 	g_date_time_unref (date);
 
