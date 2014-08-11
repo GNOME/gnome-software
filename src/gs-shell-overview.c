@@ -412,6 +412,9 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_popular_tile_new (NULL);
 		gtk_box_pack_start (GTK_BOX (priv->box_popular), tile, TRUE, TRUE, 0);
+
+		tile = gs_popular_tile_new (NULL);
+		gtk_box_pack_start (GTK_BOX (priv->box_popular_rotating), tile, TRUE, TRUE, 0);
 	}
 }
 
