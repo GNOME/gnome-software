@@ -404,7 +404,7 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to set rating on fedora-tagger: %s",
+			     "Failed to download fedora-tagger dump: %s",
 			     soup_status_get_phrase (status_code));
 		goto out;
 	}
@@ -494,6 +494,7 @@ out:
 static gboolean
 gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 {
+	GError *error_local = NULL;
 	const gchar *statement;
 	gboolean ret = TRUE;
 	gboolean rebuild_ratings = FALSE;
@@ -564,9 +565,13 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 	now = g_get_real_time () / G_USEC_PER_SEC;
 	if (mtime == 0 || rebuild_ratings) {
 		g_debug ("No fedora-tagger data");
-		ret = gs_plugin_fedora_tagger_download (plugin, error);
-		if (!ret)
+		/* this should not be fatal */
+		if (!gs_plugin_fedora_tagger_download (plugin, &error_local)) {
+			g_warning ("Failed to get fedora-tagger data: %s",
+				   error_local->message);
+			g_error_free (error_local);
 			goto out;
+		}
 	} else if (now - mtime > GS_PLUGIN_FEDORA_TAGGER_AGE_MAX) {
 		g_debug ("fedora-tagger data was %" G_GINT64_FORMAT
 			 " days old, so regetting",
