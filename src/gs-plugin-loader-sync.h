@@ -48,6 +48,7 @@ GList		*gs_plugin_loader_get_sources		(GsPluginLoader	*plugin_loader,
 GList		*gs_plugin_loader_get_popular		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 const gchar	*category,
+							 const gchar	*category_exclude,
 							 GCancellable	*cancellable,
 							 GError		**error);
 GList		*gs_plugin_loader_get_featured		(GsPluginLoader	*plugin_loader,

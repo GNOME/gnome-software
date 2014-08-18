@@ -449,6 +449,7 @@ gs_plugin_loader_run_popular_plugin (GsPluginLoader *plugin_loader,
 				     const gchar *function_name,
 				     GList **list,
 				     const gchar *category,
+				     const gchar *category_exclude,
 				     GCancellable *cancellable,
 				     GError **error)
 {
@@ -469,7 +470,7 @@ gs_plugin_loader_run_popular_plugin (GsPluginLoader *plugin_loader,
 				      plugin->name, function_name);
 	gs_profile_start (plugin_loader->priv->profile, profile_id);
 	g_assert (error == NULL || *error == NULL);
-	ret = plugin_func (plugin, list, category, cancellable, error);
+	ret = plugin_func (plugin, list, category, category_exclude, cancellable, error);
 	if (!ret)
 		goto out;
 out:
@@ -489,6 +490,7 @@ gs_plugin_loader_run_popular (GsPluginLoader *plugin_loader,
 			      const gchar *function_name,
 			      GsPluginRefineFlags flags,
 			      const gchar *category,
+			      const gchar *category_exclude,
 			      GCancellable *cancellable,
 			      GError **error)
 {
@@ -523,6 +525,7 @@ gs_plugin_loader_run_popular (GsPluginLoader *plugin_loader,
 							   function_name,
 							   &list,
 							   category,
+							   category_exclude,
 							   cancellable,
 							   error);
 		if (!ret)
@@ -819,6 +822,7 @@ typedef struct {
 	gchar				*value;
 	gchar				*filename;
 	gchar				*popular_category;
+	gchar				*popular_category_exclude;
 	guint				 cache_age;
 	GsCategory			*category;
 	GsApp				*app;
@@ -838,6 +842,7 @@ gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
 
 	g_free (state->filename);
 	g_free (state->popular_category);
+	g_free (state->popular_category_exclude);
 	g_free (state->value);
 	gs_plugin_list_free (state->list);
 	g_slice_free (GsPluginLoaderAsyncState, state);
@@ -1254,6 +1259,7 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 						    "gs_plugin_add_popular",
 						    state->flags,
 						    state->popular_category,
+						    state->popular_category_exclude,
 						    cancellable,
 						    &error);
 	if (state->list == NULL) {
@@ -1288,6 +1294,7 @@ void
 gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 				    GsPluginRefineFlags flags,
 				    const gchar *category,
+				    const gchar *category_exclude,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -1302,6 +1309,7 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
 	state->popular_category = g_strdup (category);
+	state->popular_category_exclude = g_strdup (category_exclude);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);

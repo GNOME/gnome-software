@@ -367,6 +367,7 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					    NULL,
+					    category_of_day,
 					    priv->cancellable,
 					    gs_shell_overview_get_popular_cb,
 					    shell);
@@ -374,6 +375,7 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					    category_of_day,
+					    NULL,
 					    priv->cancellable,
 					    gs_shell_overview_get_popular_rotating_cb,
 					    shell);

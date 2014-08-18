@@ -956,8 +956,9 @@ gs_plugin_appstream_is_app_awesome (GsApp *app)
  */
 static gboolean
 gs_plugin_add_popular_from_category (GsPlugin *plugin,
-				     const gchar *category,
 				     GList **list,
+				     const gchar *category,
+				     const gchar *category_exclude,
 				     GHashTable *ignore_apps,
 				     GError **error)
 {
@@ -983,6 +984,8 @@ gs_plugin_add_popular_from_category (GsPlugin *plugin,
 		if (g_hash_table_lookup (ignore_apps, as_app_get_id_full (item)) != NULL)
 			continue;
 		if (!as_app_has_category (item, category))
+			continue;
+		if (category_exclude != NULL && as_app_has_category (item, category_exclude))
 			continue;
 
 		/* add application */
@@ -1012,6 +1015,7 @@ out:
 static gboolean
 gs_plugin_add_popular_by_cat (GsPlugin *plugin,
 			      GList **list,
+			      const gchar *category_exclude,
 			      GHashTable *ignore_apps,
 			      GCancellable *cancellable,
 			      GError **error)
@@ -1068,8 +1072,9 @@ gs_plugin_add_popular_by_cat (GsPlugin *plugin,
 			if (g_hash_table_lookup (ignore_cats, tmp) != NULL)
 				continue;
 			ret = gs_plugin_add_popular_from_category (plugin,
-								   tmp,
 								   list,
+								   tmp,
+								   category_exclude,
 								   ignore_apps,
 								   error);
 			if (!ret)
@@ -1165,6 +1170,7 @@ gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
 			GList **list,
 			const gchar *category,
+			const gchar *category_exclude,
 			GCancellable *cancellable,
 			GError **error)
 {
@@ -1197,7 +1203,12 @@ gs_plugin_add_popular (GsPlugin *plugin,
 
 	if (category == NULL) {
 		/* use category heuristic */
-		ret = gs_plugin_add_popular_by_cat (plugin, list, ignore_apps, cancellable, error);
+		ret = gs_plugin_add_popular_by_cat (plugin,
+		                                    list,
+		                                    category_exclude,
+		                                    ignore_apps,
+		                                    cancellable,
+		                                    error);
 		if (!ret)
 			goto out;
 
@@ -1207,8 +1218,9 @@ gs_plugin_add_popular (GsPlugin *plugin,
 			goto out;
 	} else {
 		ret = gs_plugin_add_popular_from_category (plugin,
-							   category,
 							   list,
+							   category,
+							   NULL,
 							   ignore_apps,
 							   error);
 		if (!ret)

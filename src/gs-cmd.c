@@ -331,6 +331,7 @@ main (int argc, char **argv)
 							     refine_flags,
 							     NULL,
 							     NULL,
+							     NULL,
 							     &error);
 			if (list == NULL) {
 				ret = FALSE;
