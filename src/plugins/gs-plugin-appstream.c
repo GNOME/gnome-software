@@ -473,11 +473,19 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_plugin_appstream_set_license (app, as_app_get_project_license (item));
 
 	/* set keywords */
+#if AS_CHECK_VERSION(0,3,0)
+	if (as_app_get_keywords (item, NULL) != NULL &&
+	    gs_app_get_keywords (app) == NULL) {
+		gs_app_set_keywords (app, as_app_get_keywords (item, NULL));
+		gs_app_add_kudo (app, GS_APP_KUDO_HAS_KEYWORDS);
+	}
+#else
 	if (as_app_get_keywords (item) != NULL &&
 	    gs_app_get_keywords (app) == NULL) {
 		gs_app_set_keywords (app, as_app_get_keywords (item));
 		gs_app_add_kudo (app, GS_APP_KUDO_HAS_KEYWORDS);
 	}
+#endif
 
 	/* set description */
 	tmp = as_app_get_description (item, NULL);
