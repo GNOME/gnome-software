@@ -402,7 +402,7 @@ gs_plugin_loader_func (void)
 	ret = gs_plugin_loader_set_enabled (loader, "notgoingtoexist", TRUE);
 	g_assert (!ret);
 
-	list = gs_plugin_loader_get_popular (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, NULL, &error);
+	list = gs_plugin_loader_get_popular (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, NULL, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (list != NULL);
 	g_assert_cmpint (_status_changed_cnt, ==, 1);
