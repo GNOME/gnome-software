@@ -129,7 +129,7 @@ static Featured featured[] = {
 	{ "Network", "chromium.desktop" }, // id ?
 	{ "Video", "pitivi.desktop" },
 	{ "Video", "vlc.desktop" }, // id ?
-	{ "Video", "totem.desktop" },
+	{ "Video", "org.gnome.Totem.desktop" },
 	{ "Video", "openshot.desktop" }, // ?
 	{ "Video", "org.gnome.Cheese.desktop" },
 };
