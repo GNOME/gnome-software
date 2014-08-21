@@ -1,18 +1,18 @@
 # Russian translation for gnome-software.
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
-# Stas Solovey <whats_up@tut.by>, 2013, 2014.
 # Yuri Myasoedov <ymyasoedov@yandex.ru>, 2014.
+# Stas Solovey <whats_up@tut.by>, 2013, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-04-13 08:01+0000\n"
-"PO-Revision-Date: 2014-04-13 20:59+0400\n"
-"Last-Translator: Yuri Myasoedov <ymyasoedov@yandex.ru>\n"
-"Language-Team: русский <gnome-cyr@gnome.org>\n"
+"POT-Creation-Date: 2014-08-21 07:37+0000\n"
+"PO-Revision-Date: 2014-08-21 22:23+0300\n"
+"Last-Translator: Stas Solovey <whats_up@tut.by>\n"
+"Language-Team: Русский <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -49,12 +49,12 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Добавить в папку программы"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
 #: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "О_тменить"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
 msgid "_Add"
 msgstr "_Добавить"
 
@@ -384,7 +384,7 @@ msgstr "30 января 2014"
 msgid "Remove Source"
 msgstr "Удалить источник"
 
-#: ../src/gs-app-folder-dialog.c:313
+#: ../src/gs-app-folder-dialog.c:325
 msgid "Folder Name"
 msgstr "Имя папки"
 
@@ -481,7 +481,7 @@ msgstr "Отменить"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:210
+#: ../src/gs-app-widget.c:210 ../src/gs-shell-details.c:136
 msgid "Pending"
 msgstr "Ожидают"
 
@@ -696,10 +696,6 @@ msgstr[0] "%i приложение и %i дополнение установле
 msgstr[1] "%i приложения и %i дополнения установлены"
 msgstr[2] "%i приложений и %i дополнений установлены"
 
-#: ../src/gs-shell-details.c:136
-msgid "_Pending"
-msgstr "_Ожидают"
-
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
 #: ../src/gs-shell-details.c:164
@@ -869,7 +865,6 @@ msgid "Not Now"
 msgstr "Не сейчас"
 
 #: ../src/gs-update-monitor.c:148
-#| msgid "Recent Software Updates"
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Установлено обновление программного обеспечения"
@@ -878,7 +873,6 @@ msgstr[2] "Установлены обновления программного 
 
 #. TRANSLATORS: message when we've done offline updates
 #: ../src/gs-update-monitor.c:152
-#| msgid "Important OS and application updates are ready to be installed"
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Установлено важное обновление ОС."
@@ -886,13 +880,11 @@ msgstr[1] "Установлены важные обновления ОС."
 msgstr[2] "Установлены важные обновления ОС."
 
 #: ../src/gs-update-monitor.c:157
-#| msgid "Recent Software Updates"
 msgid "Software Updates Failed"
 msgstr "Не удалось обновить программное обеспечение"
 
 #. TRANSLATORS: message when we offline updates have failed
 #: ../src/gs-update-monitor.c:159
-#| msgid "Important OS and application updates are ready to be installed"
 msgid "An important OS update failed to be installed."
 msgstr "Не удалось установить важное обновление ОС."
 
@@ -1065,52 +1057,52 @@ msgid "Development Tools"
 msgstr "Инструменты разработки"
 
 #: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Сборка"
 
 #: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Базы данных"
 
 #: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Отладчики"
 
 #: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "Разработка GUI"
 
 #: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "IDE"
 
 #: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Профилирование"
 
 #: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Управление проектом"
 
 #: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Контроль версий"
 
 #: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Перевод"
 
 #: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Веб разработка"
 
@@ -1400,84 +1392,84 @@ msgid "Internet"
 msgstr "Интернет"
 
 #: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Чат"
 
 #: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Коммутируемое подключение"
 
 #: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "Электронная почта"
 
 #: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Новостные ленты"
 
 #: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Передача файлов"
 
 #: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
 msgstr "Любительское радио"
 
 #: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Обмен сообщениями"
 
 #: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "Клиенты IRC"
 
 #: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Монитор"
 
 #: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Новости"
 
 #: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "P2P"
 msgstr "Пиринговые сети"
 
 #: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Удалённый доступ"
 
 #: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Телефония"
 
 #: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Видеоконференция"
 
 #: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Веб Браузеры"
 
 #: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Network"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
-msgstr "Веб Разработка"
+msgstr "Веб разработка"
 
 #. TRANSLATORS: this is the menu spec main category for Office
 #: ../src/plugins/menu-spec-common.c:132
@@ -1760,54 +1752,54 @@ msgid "Utilities"
 msgstr "Утилиты"
 
 #: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Специальные возможности"
 
 #: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Архиваторы"
 
 #: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Калькуляторы"
 
 #: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Часы"
 
 #: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Сжатие"
 
 #: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
-msgstr "Файловые Инструменты"
+msgstr "Файловые инструменты"
 
 #: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Карты"
 
 #: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
-msgstr "Духовное"
+msgstr "Религия"
 
 #: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
-msgstr "Телефонические Инструменты"
+msgstr "Телефонические инструменты"
 
 #: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
-msgstr "Текстовые Редакторы"
+msgstr "Текстовые редакторы"
 
 #. TRANSLATORS: this is the menu spec main category for Video
 #: ../src/plugins/menu-spec-common.c:202
@@ -1822,7 +1814,7 @@ msgstr "Редактирование"
 #: ../src/plugins/menu-spec-common.c:204
 msgctxt "Menu subcategory of Video"
 msgid "Database"
-msgstr "Базы Данных"
+msgstr "Базы данных"
 
 #: ../src/plugins/menu-spec-common.c:205
 msgctxt "Menu subcategory of Video"
@@ -1845,24 +1837,67 @@ msgid "TV"
 msgstr "ТВ"
 
 #: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Шрифты"
 
 #: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Кодеки"
 
 #: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Источники ввода"
 
 #: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Addons"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
-msgstr "Языковые Пакеты"
+msgstr "Языковые пакеты"
+
+#~ msgid "_Pending"
+#~ msgstr "_Ожидают"
+
+#~ msgctxt "Menu subcategory of Development"
+#~ msgid "Databases"
+#~ msgstr "Базы данных"
+
+#~ msgctxt "Menu subcategory of Network"
+#~ msgid "Ham Radio"
+#~ msgstr "Любительское радио"
+
+#~ msgctxt "Menu subcategory of Network"
+#~ msgid "Web Development"
+#~ msgstr "Веб Разработка"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "File Tools"
+#~ msgstr "Файловые Инструменты"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "Maps"
+#~ msgstr "Карты"
+
+#~ msgctxt "Menu subcategory of Utility"
+#~ msgid "Spirituality"
+#~ msgstr "Духовное"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Fonts"
+#~ msgstr "Шрифты"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Codecs"
+#~ msgstr "Кодеки"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Input Sources"
+#~ msgstr "Источники ввода"
+
+#~ msgctxt "Menu subcategory of Addons"
+#~ msgid "Language Packs"
+#~ msgstr "Языковые Пакеты"
 
 #~ msgid "Done"
 #~ msgstr "Готово"
