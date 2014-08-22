@@ -317,8 +317,11 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_search));
 
 	/* cancel any pending searches */
-	g_cancellable_cancel (priv->search_cancellable);
-	g_cancellable_reset (priv->search_cancellable);
+	if (priv->search_cancellable != NULL) {
+		g_cancellable_cancel (priv->search_cancellable);
+		g_object_unref (priv->search_cancellable);
+	}
+	priv->search_cancellable = g_cancellable_new ();
 
 	/* search for apps */
 	gs_plugin_loader_search_async (priv->plugin_loader,
@@ -456,10 +459,8 @@ gs_shell_search_cancel_cb (GCancellable *cancellable,
 {
 	GsShellSearchPrivate *priv = shell_search->priv;
 
-	if (priv->search_cancellable != NULL) {
+	if (priv->search_cancellable != NULL)
 		g_cancellable_cancel (priv->search_cancellable);
-		g_clear_object (&priv->search_cancellable);
-	}
 }
 
 /**
@@ -527,7 +528,6 @@ gs_shell_search_init (GsShellSearch *shell_search)
 	shell_search->priv = gs_shell_search_get_instance_private (shell_search);
 	shell_search->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_search->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	shell_search->priv->search_cancellable = g_cancellable_new ();
 }
 
 /**
@@ -546,10 +546,8 @@ gs_shell_search_finalize (GObject *object)
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
 
-	if (priv->search_cancellable != NULL) {
-		g_cancellable_cancel (priv->search_cancellable);
-		g_clear_object (&priv->search_cancellable);
-	}
+	if (priv->search_cancellable != NULL)
+		g_object_unref (priv->search_cancellable);
 
 	g_free (priv->value);
 
