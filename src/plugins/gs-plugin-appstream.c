@@ -29,6 +29,10 @@
 
 #define	GS_PLUGIN_APPSTREAM_MAX_SCREENSHOTS	5
 
+#if AS_CHECK_VERSION(0,3,0)
+#define as_app_get_id_full(a)	as_app_get_id(a)
+#endif
+
 struct GsPluginPrivate {
 	AsStore			*store;
 	gchar			*locale;
