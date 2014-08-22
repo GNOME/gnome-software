@@ -1789,6 +1789,26 @@ gs_app_subsume (GsApp *app, GsApp *other)
 }
 
 /**
+ * gs_app_set_search_sort_key:
+ */
+void
+gs_app_set_search_sort_key (GsApp *app, guint match_value)
+{
+	gchar md_value[4];
+	g_snprintf (md_value, 4, "%03i", match_value);
+	gs_app_set_metadata (app, "SearchMatch", md_value);
+}
+
+/**
+ * gs_app_get_search_sort_key:
+ */
+const gchar *
+gs_app_get_search_sort_key (GsApp *app)
+{
+	return gs_app_get_metadata_item (app, "SearchMatch");
+}
+
+/**
  * gs_app_get_property:
  */
 static void

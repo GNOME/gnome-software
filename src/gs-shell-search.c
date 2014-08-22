@@ -373,8 +373,11 @@ gs_shell_search_get_app_sort_key (GsApp *app)
 	desc = gs_app_get_description (app);
 	g_string_append_printf (key, "%c:", desc != NULL ? '2' : '1');
 
-	/* sort by rating */
-	rating = gs_app_get_rating (app);
+	/* sort by the search key */
+	g_string_append_printf (key, "%s:", gs_app_get_search_sort_key (app));
+
+	/* sort by kudos */
+	rating = gs_app_get_kudos_weight (app);
 	g_string_append_printf (key, "%03i:", rating > 0 ? rating : 0);
 
 	/* sort by length of description */

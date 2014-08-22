@@ -784,6 +784,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	GPtrArray *array;
 	GsApp *app;
 	guint i;
+	guint match_value;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -798,11 +799,13 @@ gs_plugin_add_search (GsPlugin *plugin,
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
-		if (as_app_search_matches_all (item, values) != 0) {
+		match_value = as_app_search_matches_all (item, values);
+		if (match_value != 0) {
 			app = gs_app_new (as_app_get_id_full (item));
 			ret = gs_plugin_refine_item (plugin, app, item, error);
 			if (!ret)
 				goto out;
+			gs_app_set_search_sort_key (app, match_value);
 			gs_plugin_add_app (list, app);
 			g_object_unref (app);
 		}
