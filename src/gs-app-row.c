@@ -49,6 +49,7 @@ struct _GsAppRowPrivate
 	gboolean	 colorful;
 	gboolean	 show_update;
 	gboolean	 selectable;
+	guint		 pending_refresh_id;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppRow, gs_app_row, GTK_TYPE_LIST_BOX_ROW)
@@ -296,6 +297,19 @@ gs_app_row_get_app (GsAppRow *app_row)
 }
 
 /**
+ * gs_app_row_refresh_idle_cb:
+ **/
+static gboolean
+gs_app_row_refresh_idle_cb (gpointer user_data)
+{
+	GsAppRow *app_row = GS_APP_ROW (user_data);
+	GsAppRowPrivate *priv = app_row->priv;
+	priv->pending_refresh_id = 0;
+	gs_app_row_refresh (app_row);
+	return FALSE;
+}
+
+/**
  * gs_app_row_notify_props_changed_cb:
  **/
 static void
@@ -303,7 +317,10 @@ gs_app_row_notify_props_changed_cb (GsApp *app,
                                     GParamSpec *pspec,
                                     GsAppRow *app_row)
 {
-	gs_app_row_refresh (app_row);
+	GsAppRowPrivate *priv = app_row->priv;
+	if (priv->pending_refresh_id > 0)
+		return;
+	priv->pending_refresh_id = g_idle_add (gs_app_row_refresh_idle_cb, app_row);
 }
 
 /**
@@ -334,6 +351,10 @@ gs_app_row_destroy (GtkWidget *object)
 	GsAppRowPrivate *priv = app_row->priv;
 
 	g_clear_object (&priv->app);
+	if (priv->pending_refresh_id != 0) {
+		g_source_remove (priv->pending_refresh_id);
+		priv->pending_refresh_id = 0;
+	}
 
 	GTK_WIDGET_CLASS (gs_app_row_parent_class)->destroy (object);
 }
