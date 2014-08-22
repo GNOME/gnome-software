@@ -609,7 +609,6 @@ static gboolean
 gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
 	gboolean ret;
-	gchar *filename = NULL;
 	gchar *path = NULL;
 	gchar *filename_icon = NULL;
 	gchar *hash;
@@ -654,10 +653,9 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 		goto out;
 
 	/* save file */
-	filename = g_strdup_printf ("%s.desktop", gs_app_get_id (app));
 	path = g_build_filename (g_get_user_data_dir (),
 				 "applications",
-				 filename,
+				 gs_app_get_id (app),
 				 NULL);
 	ret = gs_plugin_write_file (app, path, error);
 	if (!ret)
@@ -670,7 +668,6 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 out:
 	g_free (hash);
 	g_free (path);
-	g_free (filename);
 	g_free (filename_icon);
 	return ret;
 }
