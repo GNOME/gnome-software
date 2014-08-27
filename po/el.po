@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-08-11 19:32+0000\n"
-"PO-Revision-Date: 2014-08-12 01:02+0200\n"
+"POT-Creation-Date: 2014-08-27 07:38+0000\n"
+"PO-Revision-Date: 2014-08-27 16:43+0200\n"
 "Last-Translator: Tom Tryfonidis <tomtryf@gmail.com>\n"
 "Language-Team: team@lists.gnome.gr\n"
 "Language: el\n"
@@ -186,18 +186,25 @@ msgstr "Αναζήτηση για εφαρμογές"
 msgid "SEARCH"
 msgstr "ΑΝΑΖΗΤΗΣΗ"
 
-#: ../src/gs-application.c:538 ../src/gs-application.c:540
+#: ../src/gs-application.c:538
 msgid "Show application details"
 msgstr "Εμφάνιση λεπτομερειών εφαρμογής"
 
-#: ../src/gs-application.c:538 ../src/gs-application.c:540
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:538
 msgid "ID"
 msgstr "ΑΝΑΓΝΩΡΙΣΤΙΚΟ"
 
+#: ../src/gs-application.c:540
+msgid "Open a local package file"
+msgstr "Άνοιγμα τοπικού πακέτου"
+
+#: ../src/gs-application.c:540
+msgid "FILENAME"
+msgstr "ΟΝΟΜΑ ΑΡΧΕΙΟΥ"
+
 #: ../src/gs-application.c:542
-msgid "Set the specified debugging level"
-msgstr "Ορισμός του συγκεκριμένου επιπέδου αποσφαλμάτωσης"
+msgid "Show verbose debugging information"
+msgstr "Εμφάνιση πληροφοριών αποσφαλμάτωσης"
 
 #: ../src/gs-application.c:544
 msgid "Show profiling information for the service"
@@ -209,7 +216,7 @@ msgstr "Προτιμήστε τοπικές πηγές αρχείων σε AppSt
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:200
+#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:201
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Εκκρεμεί"
@@ -218,7 +225,7 @@ msgstr "Εκκρεμεί"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
-#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:227
+#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
 #: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
 msgid "Installing"
 msgstr "Εγκαθίσταται"
@@ -227,33 +234,33 @@ msgstr "Εγκαθίσταται"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:236
+#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
 #: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
 msgid "Removing"
 msgstr "Αφαίρεση"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:190
+#: ../src/gs-app-row.c:191
 msgid "Visit website"
 msgstr "Επισκεφθείτε τον ιστότοπο"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:197
+#: ../src/gs-app-row.c:198
 msgid "Cancel"
 msgstr "Ακύρωση"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:207
+#: ../src/gs-app-row.c:208
 msgid "Install"
 msgstr "Εγκατάσταση"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:216 ../src/gs-shell-details.c:1114
+#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1114
 #: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:162
 msgid "Remove"
 msgstr "Αφαίρεση"
@@ -399,13 +406,13 @@ msgstr "Ακολουθούν λεπτομερή σφάλματα από τον �
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:879
+#: ../src/gs-plugin-loader.c:884
 msgid "OS Updates"
 msgstr "Ενημερώσεις λειτουργικού"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:884
+#: ../src/gs-plugin-loader.c:889
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "Περιλαμβάνει βελτιώσεις απόδοσης, σταθερότητας και ασφάλειας για όλους τους "
@@ -413,12 +420,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1479
+#: ../src/gs-plugin-loader.c:1487
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Δεν υπάρχουν διαθέσιμα πρόσθετα κωδικοποιητών για τη μορφή %s."
 
-#: ../src/gs-plugin-loader.c:1482
+#: ../src/gs-plugin-loader.c:1490
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -701,7 +708,6 @@ msgstr "Α_φαίρεση από τον κατάλογο"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:338
-#| msgid "System Applications"
 msgid "Recommended Audio Applications"
 msgstr "Προτεινόμενες εφαρμογές ήχου"
 
@@ -717,7 +723,6 @@ msgstr "Προτεινόμενες εφαρμογές γραφικών"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:353
-#| msgid "Internet Only Application"
 msgid "Recommended Office Applications"
 msgstr "Προτεινόμενες εφαρμογές γραφείου"
 
@@ -727,7 +732,6 @@ msgid "Overview page"
 msgstr "Σελίδα επισκόπησης"
 
 #: ../src/gs-shell-overview.ui.h:2
-#| msgid "System Applications"
 msgid "Featured Application"
 msgstr "Δημοφιλέστερη εφαρμογή"
 
@@ -811,7 +815,6 @@ msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
 #: ../src/gs-shell-updates.c:196
-#| msgid "Looking for new updates…"
 msgid "Downloading new updates…"
 msgstr "Λήψη νέων ενημερώσεων…"
 
@@ -1101,10 +1104,26 @@ msgstr "Απέτυχε η εγκατάσταση του %s."
 msgid "Removal of %s failed."
 msgstr "Απέτυχε η αφαίρεση του %s."
 
-#: ../src/plugins/gs-plugin-appstream.c:158
+#: ../src/plugins/gs-plugin-appstream.c:162
 #, c-format
 msgid "No AppStream data found"
 msgstr "Δεν βρέθηκαν δεδομένα AppStream"
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Conjunctive AND Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 and MIT and BSD-2-Clause"
+#: ../src/plugins/gs-plugin-appstream.c:312
+msgid " and "
+msgstr "και"
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Disjunctive OR Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 or MIT"
+#: ../src/plugins/gs-plugin-appstream.c:320
+msgid " or "
+msgstr "ή"
 
 #. TRANSLATORS: this is when a webapp has no comment
 #: ../src/plugins/gs-plugin-epiphany.c:143
@@ -1997,6 +2016,9 @@ msgstr "_Περί"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "Έ_ξοδος"
+
+#~ msgid "Set the specified debugging level"
+#~ msgstr "Ορισμός του συγκεκριμένου επιπέδου αποσφαλμάτωσης"
 
 #~ msgid "Picks"
 #~ msgstr "Επιλεγμένα"
