@@ -58,6 +58,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 						     g_free,
 						     g_free);
 	g_mutex_init (&plugin->priv->plugin_mutex);
+	gs_plugin_set_enabled (plugin, FALSE);
 }
 
 /**
