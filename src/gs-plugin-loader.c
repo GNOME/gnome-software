@@ -656,6 +656,22 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 }
 
 /**
+ * gs_plugin_loader_filter_qt_for_gtk:
+ **/
+static gboolean
+gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
+{
+	/* hide the QT versions in preference to the GTK ones */
+	if (g_strcmp0 (gs_app_get_id (app), "transmission-qt.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "hotot-qt.desktop") == 0) {
+		g_debug ("removing QT version of %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
+	return TRUE;
+}
+
+/**
  * gs_plugin_loader_app_is_non_system:
  **/
 static gboolean
@@ -1596,6 +1612,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
 		gs_plugin_list_filter (&state->list,
