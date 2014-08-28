@@ -613,6 +613,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		case AS_KUDO_KIND_NOTIFICATIONS:
 			gs_app_add_kudo (app, GS_APP_KUDO_USES_NOTIFICATIONS);
 			break;
+#if AS_CHECK_VERSION(0,3,0)
+		case AS_KUDO_KIND_HIGH_CONTRAST:
+			gs_app_add_kudo (app, GS_APP_KUDO_HIGH_CONTRAST);
+			break;
+#endif
 		default:
 			g_debug ("no idea how to handle kudo '%s'", tmp);
 			break;
