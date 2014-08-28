@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-08-25 07:39+0000\n"
-"PO-Revision-Date: 2014-08-25 16:00+0200\n"
+"POT-Creation-Date: 2014-08-28 19:37+0000\n"
+"PO-Revision-Date: 2014-08-29 01:37+0200\n"
 "Last-Translator: Alain Lojewski <allomervan@gmail.com>\n"
 "Language-Team: French <gnomefr@traduc.org>\n"
 "Language: fr\n"
@@ -84,7 +84,8 @@ msgid ""
 "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
 "Software;App;Store;"
 msgstr ""
-"mises à jour;mise à niveau;sources;dépôts;préférences;installer;désinstaller;programme;application;logiciel;magasin;"
+"mises à jour;mise à niveau;sources;dépôts;préférences;installer;désinstaller;"
+"programme;application;logiciel;magasin;"
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
 msgid "Software Install"
@@ -285,7 +286,9 @@ msgid ""
 "our recommendations, browse the categories, or search for the applications "
 "you want."
 msgstr ""
-"Logiciels vous permet d'installer toutes les applications dont vous avez besoin à partir d'un seul endroit. Consultez nos recommandations, les catégories, ou recherchez les applications qui vous intéressent."
+"Logiciels vous permet d'installer toutes les applications dont vous avez "
+"besoin à partir d'un seul endroit. Consultez nos recommandations, les "
+"catégories, ou recherchez les applications qui vous intéressent."
 
 #: ../src/gs-first-run-dialog.ui.h:4
 msgid "_Let’s Go Shopping"
@@ -394,25 +397,25 @@ msgstr "Voici les détails des erreurs du gestionnaire de paquets :"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:884
+#: ../src/gs-plugin-loader.c:900
 msgid "OS Updates"
 msgstr "Mises à jour du système d'exploitation"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:889
+#: ../src/gs-plugin-loader.c:905
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "Elle inclut des améliorations de performances, de stabilité et de sécurité."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1487
+#: ../src/gs-plugin-loader.c:1503
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Aucun codec au format %s n'est disponible pour l'extension."
 
-#: ../src/gs-plugin-loader.c:1490
+#: ../src/gs-plugin-loader.c:1506
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -664,8 +667,7 @@ msgstr "Extensions"
 
 #: ../src/gs-shell-details.ui.h:29
 msgid "Selected add-ons will be installed with the application."
-msgstr ""
-"Les extensions sélectionnées vont être installées avec l'application."
+msgstr "Les extensions sélectionnées vont être installées avec l'application."
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
@@ -1099,6 +1101,22 @@ msgstr "La désinstallation de %s a échoué."
 #, c-format
 msgid "No AppStream data found"
 msgstr "Aucune donnée AppStream trouvée"
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Conjunctive AND Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 and MIT and BSD-2-Clause"
+#: ../src/plugins/gs-plugin-appstream.c:312
+msgid " and "
+msgstr " et "
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Disjunctive OR Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 or MIT"
+#: ../src/plugins/gs-plugin-appstream.c:320
+msgid " or "
+msgstr " ou "
 
 #. TRANSLATORS: this is when a webapp has no comment
 #: ../src/plugins/gs-plugin-epiphany.c:143
