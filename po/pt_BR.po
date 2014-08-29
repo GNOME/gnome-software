@@ -11,8 +11,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-08-21 07:37+0000\n"
-"PO-Revision-Date: 2014-08-21 16:43-0300\n"
+"POT-Creation-Date: 2014-08-29 07:39+0000\n"
+"PO-Revision-Date: 2014-08-29 10:26-0300\n"
 "Last-Translator: Enrico Nicoletto <liverig@gmail.com>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
@@ -214,7 +214,7 @@ msgstr "Preferir fontes locais de arquivos ao invés do AppStream"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:200
+#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:201
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Pendente"
@@ -223,7 +223,7 @@ msgstr "Pendente"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
-#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:227
+#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
 #: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
 msgid "Installing"
 msgstr "Instalando"
@@ -232,33 +232,33 @@ msgstr "Instalando"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:236
+#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
 #: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
 msgid "Removing"
 msgstr "Removendo"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:190
+#: ../src/gs-app-row.c:191
 msgid "Visit website"
 msgstr "Visitar site da web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:197
+#: ../src/gs-app-row.c:198
 msgid "Cancel"
 msgstr "Cancelar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:207
+#: ../src/gs-app-row.c:208
 msgid "Install"
 msgstr "Instalar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:216 ../src/gs-shell-details.c:1114
+#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1114
 #: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:162
 msgid "Remove"
 msgstr "Remover"
@@ -405,24 +405,24 @@ msgstr "Seguem os erros detalhados do gerenciador de pacotes:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:884
+#: ../src/gs-plugin-loader.c:900
 msgid "OS Updates"
 msgstr "Atualizações do SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:889
+#: ../src/gs-plugin-loader.c:905
 msgid "Includes performance, stability and security improvements."
 msgstr "Inclui melhorias de desempenho, estabilidade e segurança."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1487
+#: ../src/gs-plugin-loader.c:1503
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Não há complementos de codecs disponíveis para o formato %s."
 
-#: ../src/gs-plugin-loader.c:1490
+#: ../src/gs-plugin-loader.c:1506
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -701,7 +701,6 @@ msgstr "_Remover da pasta"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:338
-#| msgid "Remove installed applications"
 msgid "Recommended Audio Applications"
 msgstr "Aplicativos de áudio recomendados"
 
@@ -712,13 +711,11 @@ msgstr "Jogos recomendados"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:348
-#| msgid "Remove installed applications"
 msgid "Recommended Graphics Applications"
 msgstr "Aplicativos gráficos recomendados"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:353
-#| msgid "Remove installed applications"
 msgid "Recommended Office Applications"
 msgstr "Aplicativos de escritório recomendados"
 
@@ -728,7 +725,6 @@ msgid "Overview page"
 msgstr "Página de visão geral"
 
 #: ../src/gs-shell-overview.ui.h:2
-#| msgid "System Applications"
 msgid "Featured Application"
 msgstr "Aplicativos destacados"
 
@@ -812,7 +808,6 @@ msgstr "%e de %B de %Y"
 
 #. TRANSLATORS: the updates are being downloaded
 #: ../src/gs-shell-updates.c:196
-#| msgid "Looking for new updates…"
 msgid "Downloading new updates…"
 msgstr "Baixando novas atualizações…"
 
@@ -1103,10 +1098,26 @@ msgid "Removal of %s failed."
 msgstr "A remoção de %s falhou."
 
 # http://www.freedesktop.org/wiki/Distributions/AppStream/
-#: ../src/plugins/gs-plugin-appstream.c:158
+#: ../src/plugins/gs-plugin-appstream.c:162
 #, c-format
 msgid "No AppStream data found"
 msgstr "Nenhum dado do AppStream encontrado"
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Conjunctive AND Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 and MIT and BSD-2-Clause"
+#: ../src/plugins/gs-plugin-appstream.c:312
+msgid " and "
+msgstr " e "
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Disjunctive OR Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 or MIT"
+#: ../src/plugins/gs-plugin-appstream.c:320
+msgid " or "
+msgstr " ou "
 
 #. TRANSLATORS: this is when a webapp has no comment
 #: ../src/plugins/gs-plugin-epiphany.c:143
