@@ -41,7 +41,6 @@ EXTRA_DIST =						\
 	README
 
 DISTCHECK_CONFIGURE_FLAGS = 				\
-	--enable-gtk-doc				\
 	--disable-dogtail
 
 distclean-local:
