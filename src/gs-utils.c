@@ -325,7 +325,7 @@ reboot_done (GObject *source, GAsyncResult *res, gpointer data)
 	}
 
 	if (error) {
-		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s\n", error->message);
+		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s", error->message);
 		g_error_free (error);
 	}
 
