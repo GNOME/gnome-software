@@ -819,11 +819,16 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
+offline_updates_triggered_cb (void)
+{
+	gs_reboot (gs_offline_updates_cancel);
+}
+
+static void
 gs_shell_updates_button_update_all_cb (GtkButton      *button,
 				       GsShellUpdates *updates)
 {
-	gs_offline_updates_trigger ();
-	gs_reboot (gs_offline_updates_cancel);
+	gs_offline_updates_trigger (offline_updates_triggered_cb);
 }
 
 /**

@@ -30,12 +30,16 @@
 static void
 child_exit_cb (GPid pid, gint status, gpointer user_data)
 {
+	GCallback child_exited = user_data;
+
 	g_spawn_close_pid (pid);
+
+	if (child_exited != NULL)
+		child_exited ();
 }
 
-
 static gboolean
-gs_spawn_pkexec (const gchar *command, const gchar *parameter, GError **error)
+gs_spawn_pkexec (const gchar *command, const gchar *parameter, GCallback child_exited, GError **error)
 {
 	GPid pid;
 	const gchar *argv[4];
@@ -52,7 +56,8 @@ gs_spawn_pkexec (const gchar *command, const gchar *parameter, GError **error)
 			     NULL, NULL, &pid, error);
 	if (!ret)
 		return FALSE;
-	g_child_watch_add (pid, child_exit_cb, NULL);
+
+	g_child_watch_add (pid, child_exit_cb, child_exited);
 	return TRUE;
 }
 
@@ -62,7 +67,7 @@ gs_offline_updates_clear_status (void)
 	gboolean ret;
 	GError *error = NULL;
 
-	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-clear-offline-update", NULL, &error);
+	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-clear-offline-update", NULL, NULL, &error);
 	if (!ret) {
 		g_warning ("Failure clearing offline update message: %s",
 			   error->message);
@@ -71,12 +76,12 @@ gs_offline_updates_clear_status (void)
 }
 
 void
-gs_offline_updates_trigger (void)
+gs_offline_updates_trigger (GCallback child_exited)
 {
 	gboolean ret;
 	GError *error = NULL;
 
-	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-trigger-offline-update", NULL, &error);
+	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-trigger-offline-update", NULL, child_exited, &error);
 	if (!ret) {
 		g_warning ("Failure triggering offline update: %s",
 			   error->message);
@@ -91,7 +96,7 @@ gs_offline_updates_cancel (void)
 	GError *error = NULL;
 
 	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-trigger-offline-update",
-			       "--cancel", &error);
+			       "--cancel", NULL, &error);
 	if (!ret) {
 		g_warning ("Failure cancelling offline update: %s",
 			   error->message);
