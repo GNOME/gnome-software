@@ -3,10 +3,11 @@
   <requires lib="gtk+" version="3.10"/>
   <template class="GsShellCategory" parent="GtkBin">
     <child>
-      <object class="GsBox" id="box_category">
+      <object class="GtkBox" id="box_category">
         <property name="visible">True</property>
         <child>
           <object class="GtkScrolledWindow" id="scrolledwindow_filter">
+            <property name="width-request">220</property>
             <property name="visible">True</property>
             <property name="margin-top">0</property>
             <property name="margin-bottom">0</property>
@@ -28,9 +29,6 @@
               </object>
             </child>
           </object>
-          <packing>
-            <property name="relative_size">0.5</property>
-          </packing>
         </child>
         <child>
           <object class="GtkScrolledWindow" id="scrolledwindow_category">
@@ -70,9 +68,6 @@
               </object>
             </child>
           </object>
-          <packing>
-            <property name="relative_size">2.0</property>
-          </packing>
         </child>
       </object>
     </child>
