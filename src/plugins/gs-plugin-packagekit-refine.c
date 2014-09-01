@@ -31,6 +31,7 @@
 #include "packagekit-common.h"
 
 struct GsPluginPrivate {
+	PkControl		*control;
 	PkClient		*client;
 	GHashTable		*sources;
 };
@@ -47,11 +48,25 @@ gs_plugin_get_name (void)
 /**
  * gs_plugin_initialize:
  */
+static void
+gs_plugin_packagekit_cache_invalid_cb (PkControl *control, GsPlugin *plugin)
+{
+	gs_plugin_updates_changed (plugin);
+}
+
+/**
+ * gs_plugin_initialize:
+ */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->client = pk_client_new ();
+	plugin->priv->control = pk_control_new ();
+	g_signal_connect (plugin->priv->control, "updates-changed",
+			  G_CALLBACK (gs_plugin_packagekit_cache_invalid_cb), plugin);
+	g_signal_connect (plugin->priv->control, "repo-list-changed",
+			  G_CALLBACK (gs_plugin_packagekit_cache_invalid_cb), plugin);
 	pk_client_set_background (plugin->priv->client, FALSE);
 	pk_client_set_interactive (plugin->priv->client, FALSE);
 	pk_client_set_cache_age (plugin->priv->client, G_MAXUINT);
@@ -82,6 +97,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_hash_table_unref (plugin->priv->sources);
 	g_object_unref (plugin->priv->client);
+	g_object_unref (plugin->priv->control);
 }
 
 /**
