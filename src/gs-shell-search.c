@@ -94,6 +94,7 @@ gs_shell_search_app_installed_cb (GObject *source,
 		if (!gs_shell_is_active (helper->shell_search->priv->shell))
 			gs_app_notify_installed (helper->app);
 	}
+	gs_shell_search_reload (helper->shell_search);
 	g_object_unref (helper->app);
 	g_object_unref (helper->shell_search);
 	g_free (helper);
@@ -124,6 +125,7 @@ gs_shell_search_app_removed_cb (GObject *source,
 					    error);
 		g_error_free (error);
 	}
+	gs_shell_search_reload (helper->shell_search);
 	g_object_unref (helper->app);
 	g_object_unref (helper->shell_search);
 	g_free (helper);
@@ -284,13 +286,65 @@ out: ;
 }
 
 /**
- * gs_shell_search_refresh:
+ * gs_shell_search_load:
+ */
+static void
+gs_shell_search_load (GsShellSearch *shell_search)
+{
+	GsShellSearchPrivate *priv = shell_search->priv;
+
+	/* remove old entries */
+	gs_container_remove_all (GTK_CONTAINER (priv->list_box_search));
+
+	/* cancel any pending searches */
+	if (priv->search_cancellable != NULL) {
+		g_cancellable_cancel (priv->search_cancellable);
+		g_object_unref (priv->search_cancellable);
+	}
+	priv->search_cancellable = g_cancellable_new ();
+
+	/* search for apps */
+	gs_plugin_loader_search_async (priv->plugin_loader,
+				       priv->value,
+				       GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+				       priv->search_cancellable,
+				       gs_shell_search_get_search_cb,
+				       shell_search);
+
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "spinner");
+	gs_start_spinner (GTK_SPINNER (priv->spinner_search));
+}
+
+/**
+ * gs_shell_search_reload:
+ */
+void
+gs_shell_search_reload (GsShellSearch *shell_search)
+{
+	GsShellSearchPrivate *priv = shell_search->priv;
+	if (priv->value != NULL)
+		gs_shell_search_load (shell_search);
+}
+
+/**
+ * gs_shell_search_switch_to:
  **/
 void
-gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboolean scroll_up)
+gs_shell_search_switch_to (GsShellSearch *shell_search, const gchar *value, gboolean scroll_up)
 {
 	GsShellSearchPrivate *priv = shell_search->priv;
 	GtkWidget *widget;
+
+	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_SEARCH) {
+		g_warning ("Called switch_to(search) when in mode %s",
+			   gs_shell_get_mode_string (priv->shell));
+		return;
+	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
@@ -313,31 +367,7 @@ gs_shell_search_refresh (GsShellSearch *shell_search, const gchar *value, gboole
 	g_free (priv->value);
 	priv->value = g_strdup (value);
 
-	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (priv->list_box_search));
-
-	/* cancel any pending searches */
-	if (priv->search_cancellable != NULL) {
-		g_cancellable_cancel (priv->search_cancellable);
-		g_object_unref (priv->search_cancellable);
-	}
-	priv->search_cancellable = g_cancellable_new ();
-
-	/* search for apps */
-	gs_plugin_loader_search_async (priv->plugin_loader,
-				       value,
-				       GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-				       priv->search_cancellable,
-				       gs_shell_search_get_search_cb,
-				       shell_search);
-
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "spinner");
-	gs_start_spinner (GTK_SPINNER (priv->spinner_search));
+	gs_shell_search_load (shell_search);
 }
 
 /**

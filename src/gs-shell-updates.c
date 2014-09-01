@@ -495,23 +495,59 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 }
 
 /**
- * gs_shell_updates_refresh:
+ * gs_shell_updates_load:
+ */
+static void
+gs_shell_updates_load (GsShellUpdates *shell_updates)
+{
+	GsShellUpdatesPrivate *priv = shell_updates->priv;
+	guint64 refine_flags;
+
+	gs_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
+
+	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
+	gs_shell_updates_set_state (shell_updates,
+				    GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES);
+	gs_plugin_loader_get_updates_async (priv->plugin_loader,
+					    refine_flags,
+					    priv->cancellable,
+					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
+					    shell_updates);
+}
+
+/**
+ * gs_shell_updates_reload:
+ */
+void
+gs_shell_updates_reload (GsShellUpdates *shell_updates)
+{
+	gs_shell_updates_invalidate (shell_updates);
+	gs_shell_updates_load (shell_updates);
+}
+
+/**
+ * gs_shell_updates_switch_to:
  **/
 void
-gs_shell_updates_refresh (GsShellUpdates *shell_updates,
-			  gboolean scroll_up)
+gs_shell_updates_switch_to (GsShellUpdates *shell_updates,
+			    gboolean scroll_up)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
-	guint64 refine_flags;
 
-	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_UPDATES) {
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-		gtk_widget_show (widget);
-
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
-		gtk_widget_set_visible (widget, TRUE);
+	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES) {
+		g_warning ("Called switch_to(updates) when in mode %s",
+			   gs_shell_get_mode_string (priv->shell));
+		return;
 	}
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+	gtk_widget_show (widget);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
+	gtk_widget_set_visible (widget, TRUE);
 
 	if (scroll_up) {
 		GtkAdjustment *adj;
@@ -529,19 +565,7 @@ gs_shell_updates_refresh (GsShellUpdates *shell_updates,
 		gs_shell_updates_update_ui_state (shell_updates);
 		return;
 	}
-
-	gs_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
-
-	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
-	gs_shell_updates_set_state (shell_updates,
-				    GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES);
-	gs_plugin_loader_get_updates_async (priv->plugin_loader,
-					    refine_flags,
-					    priv->cancellable,
-					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
-					    shell_updates);
+	gs_shell_updates_load (shell_updates);
 }
 
 static void
@@ -624,7 +648,7 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 
 	/* get the new list */
 	gs_shell_updates_invalidate (shell_updates);
-	gs_shell_updates_refresh (shell_updates, TRUE);
+	gs_shell_updates_switch_to (shell_updates, TRUE);
 }
 
 /**
@@ -798,17 +822,6 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 }
 
 /**
- * gs_shell_updates_changed_cb:
- */
-static void
-gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
-			     GsShellUpdates *shell_updates)
-{
-	gs_shell_updates_invalidate (shell_updates);
-	gs_shell_updates_refresh (shell_updates, TRUE);
-}
-
-/**
  * gs_shell_updates_pending_apps_changed_cb:
  */
 static void
@@ -884,9 +897,6 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (priv->plugin_loader, "pending-apps-changed",
 			  G_CALLBACK (gs_shell_updates_pending_apps_changed_cb),
-			  shell_updates);
-	g_signal_connect (priv->plugin_loader, "updates-changed",
-			  G_CALLBACK (gs_shell_updates_changed_cb),
 			  shell_updates);
 	g_signal_connect (priv->plugin_loader, "status-changed",
 			  G_CALLBACK (gs_shell_updates_status_changed_cb),

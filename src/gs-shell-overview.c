@@ -295,37 +295,14 @@ out:
 }
 
 /**
- * gs_shell_overview_refresh:
- **/
-void
-gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
+ * gs_shell_overview_load:
+ */
+static void
+gs_shell_overview_load (GsShellOverview *shell_overview)
 {
 	GDateTime *date;
-	GsShellOverviewPrivate *priv = shell->priv;
-	GtkWidget *widget;
-	GtkAdjustment *adj;
+	GsShellOverviewPrivate *priv = shell_overview->priv;
 	const gchar *category_of_day;
-
-	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_OVERVIEW) {
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-		gtk_widget_show (widget);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_widget_show (widget);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-		gtk_entry_set_text (GTK_ENTRY (widget), "");
-	}
-
-	if (scroll_up) {
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_overview));
-		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
-	}
-
-	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_OVERVIEW) {
-		gs_grab_focus_when_mapped (priv->scrolledwindow_overview);
-	}
-
-	if (priv->cache_valid || priv->refresh_count > 0)
-		return;
 
 	priv->empty = TRUE;
 	priv->refresh_count = 4;
@@ -362,7 +339,7 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					     priv->cancellable,
 					     gs_shell_overview_get_featured_cb,
-					     shell);
+					     shell_overview);
 
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
@@ -370,7 +347,7 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 					    category_of_day,
 					    priv->cancellable,
 					    gs_shell_overview_get_popular_cb,
-					    shell);
+					    shell_overview);
 
 	gs_plugin_loader_get_popular_async (priv->plugin_loader,
 					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
@@ -378,13 +355,58 @@ gs_shell_overview_refresh (GsShellOverview *shell, gboolean scroll_up)
 					    NULL,
 					    priv->cancellable,
 					    gs_shell_overview_get_popular_rotating_cb,
-					    shell);
+					    shell_overview);
 
 	gs_plugin_loader_get_categories_async (priv->plugin_loader,
 					       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					       priv->cancellable,
 					       gs_shell_overview_get_categories_cb,
-					       shell);
+					       shell_overview);
+}
+
+/**
+ * gs_shell_overview_reload:
+ */
+void
+gs_shell_overview_reload (GsShellOverview *shell_overview)
+{
+	gs_shell_overview_invalidate (shell_overview);
+	gs_shell_overview_load (shell_overview);
+}
+
+/**
+ * gs_shell_overview_switch_to:
+ **/
+void
+gs_shell_overview_switch_to (GsShellOverview *shell, gboolean scroll_up)
+{
+	GsShellOverviewPrivate *priv = shell->priv;
+	GtkWidget *widget;
+	GtkAdjustment *adj;
+
+	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_OVERVIEW) {
+		g_warning ("Called switch_to(overview) when in mode %s",
+			   gs_shell_get_mode_string (priv->shell));
+		return;
+	}
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+	gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	gtk_widget_show (widget);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	gtk_entry_set_text (GTK_ENTRY (widget), "");
+
+	if (scroll_up) {
+		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_overview));
+		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
+	}
+
+	gs_grab_focus_when_mapped (priv->scrolledwindow_overview);
+
+	if (priv->cache_valid || priv->refresh_count > 0)
+		return;
+	gs_shell_overview_load (shell);
 }
 
 void

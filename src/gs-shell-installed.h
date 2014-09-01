@@ -53,8 +53,9 @@ GType		 gs_shell_installed_get_type	(void);
 
 GsShellInstalled *gs_shell_installed_new	(void);
 void		 gs_shell_installed_invalidate	(GsShellInstalled	*shell_installed);
-void		 gs_shell_installed_refresh	(GsShellInstalled	*shell_installed,
+void		 gs_shell_installed_switch_to	(GsShellInstalled	*shell_installed,
 						 gboolean		scroll_up);
+void		 gs_shell_installed_reload	(GsShellInstalled	*shell_installed);
 void		 gs_shell_installed_setup	(GsShellInstalled	*shell_installed,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,

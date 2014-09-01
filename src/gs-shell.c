@@ -179,23 +179,23 @@ gs_shell_change_mode (GsShell *shell,
 	priv->mode = mode;
 	switch (mode) {
 	case GS_SHELL_MODE_OVERVIEW:
-		gs_shell_overview_refresh (priv->shell_overview, scroll_up);
+		gs_shell_overview_switch_to (priv->shell_overview, scroll_up);
 		break;
 	case GS_SHELL_MODE_INSTALLED:
-		gs_shell_installed_refresh (priv->shell_installed, scroll_up);
+		gs_shell_installed_switch_to (priv->shell_installed, scroll_up);
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		text = gtk_entry_get_text (GTK_ENTRY (widget));
-		gs_shell_search_refresh (priv->shell_search, text, scroll_up);
+		gs_shell_search_switch_to (priv->shell_search, text, scroll_up);
 		break;
 	case GS_SHELL_MODE_UPDATES:
-		gs_shell_updates_refresh (priv->shell_updates, scroll_up);
+		gs_shell_updates_switch_to (priv->shell_updates, scroll_up);
 		break;
 	case GS_SHELL_MODE_DETAILS:
 		if (app != NULL) {
 			gs_shell_details_set_app (priv->shell_details, app);
-			gs_shell_details_refresh (priv->shell_details);
+			gs_shell_details_switch_to (priv->shell_details);
 		}
 		if (data != NULL)
 			gs_shell_details_set_filename (priv->shell_details, data);
@@ -203,7 +203,7 @@ gs_shell_change_mode (GsShell *shell,
 	case GS_SHELL_MODE_CATEGORY:
 		gs_shell_category_set_category (priv->shell_category,
 						GS_CATEGORY (data));
-		gs_shell_category_refresh (priv->shell_category);
+		gs_shell_category_switch_to (priv->shell_category);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -279,8 +279,8 @@ initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 
 	g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
 
-	gs_shell_updates_refresh (shell->priv->shell_updates, TRUE);
-	gs_shell_installed_refresh (shell->priv->shell_installed, TRUE);
+	gs_shell_updates_reload (shell->priv->shell_updates);
+	gs_shell_installed_reload (shell->priv->shell_installed);
 
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 }
@@ -296,7 +296,7 @@ gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
 		return;
 
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
-		gs_shell_search_refresh (priv->shell_search, text, TRUE);
+		gs_shell_search_switch_to (priv->shell_search, text, TRUE);
 	} else {
 		gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 	}
@@ -414,7 +414,7 @@ search_changed_handler (GObject *entry, GsShell *shell) {
 		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
 			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 		else
-			gs_shell_search_refresh (shell->priv->shell_search, text, TRUE);
+			gs_shell_search_switch_to (shell->priv->shell_search, text, TRUE);
 	}
 }
 
@@ -463,6 +463,21 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 }
 
 /**
+ * gs_shell_updates_changed_cb:
+ */
+static void
+gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader, GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	gs_shell_category_reload (priv->shell_category);
+	gs_shell_details_reload (priv->shell_details);
+	gs_shell_installed_reload (priv->shell_installed);
+	gs_shell_overview_reload (priv->shell_overview);
+	gs_shell_search_reload (priv->shell_search);
+	gs_shell_updates_reload (priv->shell_updates);
+}
+
+/**
  * gs_shell_setup:
  */
 void
@@ -474,6 +489,8 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_return_if_fail (GS_IS_SHELL (shell));
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
+	g_signal_connect (priv->plugin_loader, "updates-changed",
+			  G_CALLBACK (gs_shell_updates_changed_cb), shell);
 	priv->cancellable = g_object_ref (cancellable);
 
 	/* get UI */
@@ -601,6 +618,13 @@ gs_shell_get_mode (GsShell *shell)
 	GsShellPrivate *priv = shell->priv;
 
 	return priv->mode;
+}
+
+const gchar *
+gs_shell_get_mode_string (GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	return page_name[priv->mode];
 }
 
 static void
@@ -740,7 +764,7 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 	if (search != NULL && search[0] != '\0') {
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		gtk_entry_set_text (GTK_ENTRY (widget), search);
-		gs_shell_search_refresh (priv->shell_search, search, TRUE);
+		gs_shell_search_switch_to (priv->shell_search, search, TRUE);
 
 		gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 	}

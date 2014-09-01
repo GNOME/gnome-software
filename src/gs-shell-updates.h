@@ -54,8 +54,9 @@ GType		 gs_shell_updates_get_type	(void);
 
 GsShellUpdates	*gs_shell_updates_new		(void);
 void		 gs_shell_updates_invalidate	(GsShellUpdates		*shell_updates);
-void		 gs_shell_updates_refresh	(GsShellUpdates		*shell_updates,
+void		 gs_shell_updates_switch_to	(GsShellUpdates		*shell_updates,
 						 gboolean		 scroll_up);
+void		 gs_shell_updates_reload	(GsShellUpdates		*shell_updates);
 void		 gs_shell_updates_setup		(GsShellUpdates		*shell_updates,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,

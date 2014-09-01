@@ -47,7 +47,6 @@ struct GsShellDetailsPrivate
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
-	gboolean		 cache_valid;
 	GsApp			*app;
 	GsShell			*shell;
 	GtkWidget		*history_dialog;
@@ -95,15 +94,6 @@ struct GsShellDetailsPrivate
 G_DEFINE_TYPE_WITH_PRIVATE (GsShellDetails, gs_shell_details, GTK_TYPE_BIN)
 
 /**
- * gs_shell_details_invalidate:
- **/
-void
-gs_shell_details_invalidate (GsShellDetails *shell_details)
-{
-	shell_details->priv->cache_valid = FALSE;
-}
-
-/**
  * gs_shell_details_set_state:
  **/
 static void
@@ -140,10 +130,10 @@ gs_shell_details_set_state (GsShellDetails *shell_details,
 }
 
 /**
- * gs_shell_details_refresh:
+ * gs_shell_details_switch_to:
  **/
 void
-gs_shell_details_refresh (GsShellDetails *shell_details)
+gs_shell_details_switch_to (GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GsAppKind kind;
@@ -151,8 +141,11 @@ gs_shell_details_refresh (GsShellDetails *shell_details)
 	GtkWidget *widget;
 	GtkAdjustment *adj;
 
-	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_DETAILS)
+	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_DETAILS) {
+		g_warning ("Called switch_to(details) when in mode %s",
+			   gs_shell_get_mode_string (priv->shell));
 		return;
+	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	gtk_widget_show (widget);
@@ -287,7 +280,7 @@ gs_shell_details_notify_state_changed_cb (GsApp *app,
 					  GParamSpec *pspec,
 					  GsShellDetails *shell_details)
 {
-	gs_shell_details_refresh (shell_details);
+	gs_shell_details_switch_to (shell_details);
 }
 
 static void
@@ -921,7 +914,7 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 	g_free (tmp);
 
 	/* change widgets */
-	gs_shell_details_refresh (shell_details);
+	gs_shell_details_switch_to (shell_details);
 	gs_shell_details_refresh_screenshots (shell_details);
 	gs_shell_details_refresh_addons (shell_details);
 	gs_shell_details_refresh_all (shell_details);
@@ -946,6 +939,40 @@ gs_shell_details_set_filename (GsShellDetails *shell_details, const gchar *filen
 }
 
 /**
+ * gs_shell_details_load:
+ **/
+static void
+gs_shell_details_load (GsShellDetails *shell_details)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	gs_plugin_loader_app_refine_async (priv->plugin_loader, priv->app,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
+					   priv->cancellable,
+					   gs_shell_details_app_refine_cb,
+					   shell_details);
+}
+
+/**
+ * gs_shell_details_reload:
+ **/
+void
+gs_shell_details_reload (GsShellDetails *shell_details)
+{
+	GsShellDetailsPrivate *priv = shell_details->priv;
+	if (priv->app != NULL)
+		gs_shell_details_load (shell_details);
+}
+
+/**
  * gs_shell_details_set_app:
  **/
 void
@@ -961,20 +988,6 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 
 	/* get extra details about the app */
 	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_LOADING);
-	gs_plugin_loader_app_refine_async (priv->plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
-					   priv->cancellable,
-					   gs_shell_details_app_refine_cb,
-					   shell_details);
 
 	/* save app */
 	if (priv->app != NULL)
@@ -989,6 +1002,7 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	g_signal_connect_object (priv->app, "notify::licence",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 shell_details, 0);
+	gs_shell_details_load (shell_details);
 
 	/* set screenshots */
 	gs_shell_details_refresh_screenshots (shell_details);
@@ -1040,7 +1054,7 @@ gs_shell_details_app_installed_cb (GObject *source,
 	if (gs_app_get_state (helper->app) != AS_APP_STATE_QUEUED_FOR_INSTALL &&
 	    !gs_shell_is_active (helper->shell_details->priv->shell))
 		gs_app_notify_installed (helper->app);
-	gs_shell_details_refresh_all (helper->shell_details);
+	gs_shell_details_reload (helper->shell_details);
 	g_object_unref (helper->shell_details);
 	g_object_unref (helper->app);
 	g_free (helper);
@@ -1074,7 +1088,7 @@ gs_shell_details_app_removed_cb (GObject *source,
 		return;
 	}
 
-	gs_shell_details_refresh_all (helper->shell_details);
+	gs_shell_details_reload (helper->shell_details);
 	g_object_unref (helper->shell_details);
 	g_object_unref (helper->app);
 	g_free (helper);

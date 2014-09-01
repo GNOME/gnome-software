@@ -46,8 +46,16 @@ struct GsShellCategoryPrivate {
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShellCategory, gs_shell_category, GTK_TYPE_BIN)
 
+/**
+ * gs_shell_category_reload:
+ */
 void
-gs_shell_category_refresh (GsShellCategory *shell)
+gs_shell_category_reload (GsShellCategory *shell_category)
+{
+}
+
+void
+gs_shell_category_switch_to (GsShellCategory *shell)
 {
 	GsShellCategoryPrivate *priv = shell->priv;
 	GtkWidget *widget;

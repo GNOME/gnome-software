@@ -280,22 +280,64 @@ out:
 }
 
 /**
- * gs_shell_installed_refresh:
+ * gs_shell_installed_load:
+ */
+static void
+gs_shell_installed_load (GsShellInstalled *shell_installed)
+{
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+
+	/* remove old entries */
+	gs_container_remove_all (GTK_CONTAINER (priv->list_box_install));
+
+	/* get popular apps */
+	gs_plugin_loader_get_installed_async (priv->plugin_loader,
+					      GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
+					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+					      priv->cancellable,
+					      gs_shell_installed_get_installed_cb,
+					      shell_installed);
+	gs_start_spinner (GTK_SPINNER (priv->spinner_install));
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_install), "spinner");
+
+	priv->waiting = TRUE;
+}
+
+/**
+ * gs_shell_installed_reload:
+ */
+void
+gs_shell_installed_reload (GsShellInstalled *shell_installed)
+{
+	gs_shell_installed_invalidate (shell_installed);
+	gs_shell_installed_load (shell_installed);
+}
+
+/**
+ * gs_shell_installed_switch_to:
  **/
 void
-gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_up)
+gs_shell_installed_switch_to (GsShellInstalled *shell_installed, gboolean scroll_up)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 	GtkWidget *widget;
 
-	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_INSTALLED) {
-		set_selection_mode (shell_installed, FALSE);
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
-		gtk_widget_show (widget);
-
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
-		gtk_widget_show (widget);
+	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_INSTALLED) {
+		g_warning ("Called switch_to(installed) when in mode %s",
+			   gs_shell_get_mode_string (priv->shell));
+		return;
 	}
+
+	set_selection_mode (shell_installed, FALSE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+	gtk_widget_show (widget);
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
+	gtk_widget_show (widget);
 
 	gtk_list_box_invalidate_sort (GTK_LIST_BOX (priv->list_box_install));
 
@@ -314,26 +356,7 @@ gs_shell_installed_refresh (GsShellInstalled *shell_installed, gboolean scroll_u
 
 	if (priv->waiting)
 		return;
-
-	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (priv->list_box_install));
-
-	/* get popular apps */
-	gs_plugin_loader_get_installed_async (priv->plugin_loader,
-					      GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-					      priv->cancellable,
-					      gs_shell_installed_get_installed_cb,
-					      shell_installed);
-
-	gs_start_spinner (GTK_SPINNER (priv->spinner_install));
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_install), "spinner");
-
-	priv->waiting = TRUE;
+	gs_shell_installed_load (shell_installed);
 }
 
 /**
