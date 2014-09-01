@@ -765,8 +765,6 @@ gs_plugin_refine (GsPlugin *plugin,
 	gs_profile_start (plugin->profile, "packagekit-refine[name->id]");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_source_id_default (app) != NULL)
-			continue;
 		if (gs_app_get_id_kind (app) == AS_ID_KIND_WEB_APP)
 			continue;
 		sources = gs_app_get_sources (app);

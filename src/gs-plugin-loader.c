@@ -2502,10 +2502,21 @@ gs_plugin_loader_status_update_cb (GsPlugin *plugin,
 static void
 gs_plugin_loader_updates_changed_cb (GsPlugin *plugin, gpointer user_data)
 {
+	GList *apps;
+	GList *l;
+	GsApp *app;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 
-	/* not valid anymore */
+	/* no longer know the state of these */
 	g_mutex_lock (&plugin_loader->priv->app_cache_mutex);
+	apps = g_hash_table_get_values (plugin_loader->priv->app_cache);
+	for (l = apps; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+	}
+	g_list_free (apps);
+
+	/* not valid anymore */
 	g_hash_table_remove_all (plugin_loader->priv->app_cache);
 	g_mutex_unlock (&plugin_loader->priv->app_cache_mutex);
 
