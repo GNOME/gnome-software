@@ -2503,6 +2503,13 @@ static void
 gs_plugin_loader_updates_changed_cb (GsPlugin *plugin, gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+
+	/* not valid anymore */
+	g_mutex_lock (&plugin_loader->priv->app_cache_mutex);
+	g_hash_table_remove_all (plugin_loader->priv->app_cache);
+	g_mutex_unlock (&plugin_loader->priv->app_cache_mutex);
+
+	/* notify shells */
 	g_debug ("updates-changed");
 	g_signal_emit (plugin_loader, signals[SIGNAL_UPDATES_CHANGED], 0);
 }
