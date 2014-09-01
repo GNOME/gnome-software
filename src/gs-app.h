@@ -145,6 +145,7 @@ void		 gs_app_add_source_id		(GsApp		*app,
 GPtrArray	*gs_app_get_source_ids		(GsApp		*app);
 void		 gs_app_set_source_ids		(GsApp		*app,
 						 GPtrArray	*source_ids);
+void		 gs_app_clear_source_ids	(GsApp		*app);
 const gchar	*gs_app_get_project_group	(GsApp		*app);
 void		 gs_app_set_project_group	(GsApp		*app,
 						 const gchar	*source);

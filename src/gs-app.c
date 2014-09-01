@@ -701,6 +701,16 @@ gs_app_get_source_ids (GsApp *app)
 }
 
 /**
+ * gs_app_clear_source_ids:
+ */
+void
+gs_app_clear_source_ids (GsApp *app)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_ptr_array_set_size (app->priv->source_ids, 0);
+}
+
+/**
  * gs_app_set_source_ids:
  * @app:	A #GsApp instance
  * @source_id:	The source-id, e.g. ["gnome-calculator;0.134;fedora"]

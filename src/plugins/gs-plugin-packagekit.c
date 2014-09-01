@@ -392,6 +392,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 		goto out;
 	}
 
+	/* no longer valid */
+	gs_app_clear_source_ids (app);
+
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
 	if (error_code != NULL) {
@@ -558,6 +561,9 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		ret = FALSE;
 		goto out;
 	}
+
+	/* no longer valid */
+	gs_app_clear_source_ids (app);
 
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
