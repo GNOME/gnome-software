@@ -396,6 +396,11 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 	g_free (old_text);
 	g_free (new_text);
 
+	/* We set "editable" so the text in the  entry won't get selected on focus */
+	g_object_set (entry, "editable", FALSE, NULL);
+	gtk_widget_grab_focus (entry);
+	g_object_set (entry, "editable", TRUE, NULL);
+
 	return handled;
 }
 

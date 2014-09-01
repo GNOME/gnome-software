@@ -357,9 +357,6 @@ gs_shell_search_switch_to (GsShellSearch *shell_search, const gchar *value, gboo
                 adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_search));
                 gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
         }
-        if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_SEARCH) {
-                gs_grab_focus_when_mapped (priv->scrolledwindow_search);
-        }
 
 	if (g_strcmp0 (value, priv->value) == 0)
 		return;
