@@ -173,12 +173,11 @@ out:
 static void
 gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
+	GdkPixbuf *pb = NULL;
 	GError *error = NULL;
 	const gchar *icon;
-	const gchar *icon_path;
 	gboolean ret;
-	gchar *icon_no_ext = NULL;
-	gchar *tmp;
+	gchar *full_filename = NULL;
 
 	icon = as_app_get_icon (item);
 	switch (as_app_get_icon_kind (item)) {
@@ -196,30 +195,24 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		}
 		break;
 	case AS_ICON_KIND_CACHED:
-		icon_path = as_app_get_icon_path (item);
-
-		/* strip icon extension if present */
-		icon_no_ext = g_strdup (icon);
-		tmp = g_strrstr (icon_no_ext, ".png");
-		if (tmp != NULL)
-			*tmp = '\0';
-
-		gs_app_set_icon (app, icon_no_ext);
-		gs_app_set_icon_path (app, icon_path);
-		ret = gs_app_load_icon (app, &error);
-		if (!ret) {
+		full_filename = g_build_filename (as_app_get_icon_path (item), icon, NULL);
+		pb = gdk_pixbuf_new_from_file (full_filename, &error);
+		if (pb == NULL) {
 			g_warning ("failed to load cached icon %s: %s",
-				   icon, error->message);
+				   full_filename, error->message);
 			g_error_free (error);
 			goto out;
 		}
+		gs_app_set_pixbuf (app, pb);
 		break;
 	default:
 		g_warning ("icon kind unknown for %s", as_app_get_id_full (item));
 		break;
 	}
 out:
-	g_free (icon_no_ext);
+	if (pb != NULL)
+		g_object_unref (pb);
+	g_free (full_filename);
 }
 
 /**
