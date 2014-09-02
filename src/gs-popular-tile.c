@@ -33,8 +33,8 @@ struct _GsPopularTilePrivate
 	GtkWidget	*label;
 	GtkWidget	*image;
 	GtkWidget	*eventbox;
+	GtkWidget	*stack;
 	GtkWidget	*stars;
-	GtkWidget	*waiting;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPopularTile, gs_popular_tile, GTK_TYPE_BUTTON)
@@ -125,9 +125,7 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 		                           GS_APP_RATING_KIND_KUDOS,
 		                           gs_app_get_kudos_percentage (priv->app));
 	}
-	gtk_widget_show (priv->stars);
-
-        gtk_widget_hide (priv->waiting);
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "content");
 
 	g_signal_connect (priv->app, "notify::state",
 		 	  G_CALLBACK (app_state_changed), tile);
@@ -175,8 +173,8 @@ gs_popular_tile_class_init (GsPopularTileClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, image);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, eventbox);
+	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, stack);
 	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, stars);
-	gtk_widget_class_bind_template_child_private (widget_class, GsPopularTile, waiting);
 }
 
 GtkWidget *

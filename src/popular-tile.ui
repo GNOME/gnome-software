@@ -8,11 +8,10 @@
       <class name="tile"/>
     </style>
     <child>
-      <object class="GtkOverlay" id="overlay">
+      <object class="GtkStack" id="stack">
         <property name="visible">True</property>
-        <property name="halign">fill</property>
-        <property name="valign">fill</property>
-        <child type="overlay">
+        <property name="can_focus">False</property>
+        <child>
           <object class="GtkImage" id="waiting">
             <property name="visible">True</property>
             <property name="halign">center</property>
@@ -23,76 +22,89 @@
               <class name="dim-label"/>
             </style>
           </object>
-        </child>
-        <child type="overlay">
-          <object class="GtkEventBox" id="eventbox">
-            <property name="no_show_all">True</property>
-            <property name="visible_window">True</property>
-            <property name="halign">end</property>
-            <property name="valign">end</property>
-            <property name="margin-bottom">35</property>
-            <style>
-              <class name="installed-overlay-box"/>
-            </style>
-            <child>
-              <object class="GtkLabel" id="installed-label">
-                <property name="visible">True</property>
-                <property name="label" translatable="yes">Installed</property>
-                <property name="margin-start">16</property>
-                <property name="margin-end">16</property>
-                <property name="margin-top">4</property>
-                <property name="margin-bottom">4</property>
-              </object>
-            </child>
-          </object>
+          <packing>
+            <property name="name">waiting</property>
+          </packing>
         </child>
         <child>
-          <object class="GtkEventBox" id="eboxbox">
+          <object class="GtkOverlay" id="overlay">
             <property name="visible">True</property>
+            <property name="halign">fill</property>
+            <property name="valign">fill</property>
+            <child type="overlay">
+              <object class="GtkEventBox" id="eventbox">
+                <property name="no_show_all">True</property>
+                <property name="visible_window">True</property>
+                <property name="halign">end</property>
+                <property name="valign">end</property>
+                <property name="margin-bottom">35</property>
+                <style>
+                  <class name="installed-overlay-box"/>
+                </style>
+                <child>
+                  <object class="GtkLabel" id="installed-label">
+                    <property name="visible">True</property>
+                    <property name="label" translatable="yes">Installed</property>
+                    <property name="margin-start">16</property>
+                    <property name="margin-end">16</property>
+                    <property name="margin-top">4</property>
+                    <property name="margin-bottom">4</property>
+                  </object>
+                </child>
+              </object>
+            </child>
             <child>
-              <object class="GtkBox" id="box">
+              <object class="GtkEventBox" id="eboxbox">
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
-                <property name="halign">fill</property>
-                <property name="valign">fill</property>
-                <property name="margin">10</property>
                 <child>
-                  <object class="GtkImage" id="image">
+                  <object class="GtkBox" id="box">
                     <property name="visible">True</property>
-                    <property name="valign">center</property>
+                    <property name="orientation">vertical</property>
+                    <property name="halign">fill</property>
+                    <property name="valign">fill</property>
+                    <property name="margin">10</property>
+                    <child>
+                      <object class="GtkImage" id="image">
+                        <property name="visible">True</property>
+                        <property name="valign">center</property>
+                      </object>
+                      <packing>
+                        <property name="expand">True</property>
+                        <property name="fill">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkLabel" id="label">
+                        <property name="visible">True</property>
+                        <property name="valign">end</property>
+                        <property name="margin">6</property>
+                        <property name="ellipsize">end</property>
+                        <property name="width_chars">12</property>
+                        <property name="max_width_chars">12</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GsStarWidget" id="stars">
+                        <property name="visible">True</property>
+                        <property name="halign">center</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                      </packing>
+                    </child>
                   </object>
-                  <packing>
-                    <property name="expand">True</property>
-                    <property name="fill">True</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GtkLabel" id="label">
-                    <property name="visible">True</property>
-                    <property name="valign">end</property>
-                    <property name="margin">6</property>
-                    <property name="ellipsize">end</property>
-                    <property name="width_chars">12</property>
-                    <property name="max_width_chars">12</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                  </packing>
-                </child>
-                <child>
-                  <object class="GsStarWidget" id="stars">
-                    <property name="visible">False</property>
-                    <property name="halign">center</property>
-                  </object>
-                  <packing>
-                    <property name="expand">False</property>
-                    <property name="fill">True</property>
-                  </packing>
                 </child>
               </object>
             </child>
           </object>
+          <packing>
+            <property name="name">content</property>
+          </packing>
         </child>
       </object>
     </child>
