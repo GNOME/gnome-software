@@ -1,3 +1,42 @@
+Version 3.13.91
+~~~~~~~~~~~~~~~
+Released: 2014-09-02
+
+* Translations:
+ - Added Assamese translation (Nilamdyuti Goswami)
+ - Updated Brazilian Portuguese translation (Enrico Nicoletto)
+ - Updated Chinese (Taiwan) translation (Cheng-Chia Tseng)
+ - Updated Czech translation (Marek Černocký)
+ - Updated French translation (Alain Lojewski, Alexandre Franke)
+ - Updated Galician translations (Fran Diéguez)
+ - Updated Greek translation (Tom Tryfonidis)
+ - Updated Norwegian bokmål translation. (Kjartan Maraas)
+ - Updated Spanish translation (Daniel Mustieles)
+ - Updated Traditional Chinese translation (Hong Kong and Taiwan) (Chao-Hsiung Liao)
+
+* New Features:
+ - Support the new HighContrast kudo (Richard Hughes)
+
+* Bugfix:
+ - Avoid resizing tiles during initial front page load (Kalev Lember)
+ - Improve the "Installed" label positioning on the front page tiles (Kalev Lember)
+ - Do not use the GTK icon cache when loading AppStream icons (Richard Hughes)
+ - Improve the category sidebar sizing (Kalev Lember)
+ - Focus the search entry on keypress (Elad Alfassa)
+ - Make screenshot selection work again (Matthias Clasen)
+ - Reload pages in the software center when the updates cache is changed or
+   when another tool touches the package database (Richard Hughes)
+ - Improve robustness with the "Restart & Install" shutdown dialog (Kalev Lember)
+ - Do not show QT versions of applications where a GTK version is available (Richard Hughes)
+ - Remove the DesktopDB database plugin (Richard Hughes)
+ - Fix compile for people using appstream-glib from git master (Richard Hughes)
+ - Fix occasional search-as-you-type crash (Richard Hughes)
+ - Do not create Epiphany webapps with double .desktop prefix (Kalev Lember)
+ - Fix an issue that caused duplicate search results (Richard Hughes)
+ - Sort by the search match value when displaying multiple apps (Richard Hughes)
+ - Update hardcoded desktop file names after latest renames (Kalev Lember)
+ - Allow translation of the 'and' and 'or' terms in the project license (Richard Hughes)
+
 Version 3.13.90
 ~~~~~~~~~~~~~~~
 Released: 2014-08-19
