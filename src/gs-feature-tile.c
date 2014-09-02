@@ -30,9 +30,9 @@ struct _GsFeatureTilePrivate
 {
 	GsApp		*app;
 	GtkWidget	*image;
+	GtkWidget	*stack;
 	GtkWidget	*title;
 	GtkWidget	*subtitle;
-	GtkWidget	*waiting;
 	GtkCssProvider  *provider;
 };
 
@@ -105,7 +105,7 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 
 	priv->app = g_object_ref (app);
 
-	gtk_widget_hide (priv->waiting);
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "content");
 
         g_signal_connect (priv->app, "notify::state",
                           G_CALLBACK (app_state_changed), tile);
@@ -197,9 +197,9 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/feature-tile.ui");
 
 	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, image);
+	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, stack);
 	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, title);
 	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, subtitle);
-	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, waiting);
 }
 
 GtkWidget *

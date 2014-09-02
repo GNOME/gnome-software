@@ -8,11 +8,10 @@
       <class name="featured-tile"/>
     </style>
     <child>
-      <object class="GtkOverlay" id="overlay">
+      <object class="GtkStack" id="stack">
         <property name="visible">True</property>
-        <property name="halign">fill</property>
-        <property name="valign">fill</property>
-        <child type="overlay">
+        <property name="can_focus">False</property>
+        <child>
           <object class="GtkImage" id="waiting">
             <property name="visible">True</property>
             <property name="halign">center</property>
@@ -23,6 +22,9 @@
               <class name="dim-label"/>
             </style>
           </object>
+          <packing>
+            <property name="name">waiting</property>
+          </packing>
         </child>
         <child>
           <object class="GsBox" id="box">
@@ -78,6 +80,9 @@
               </packing>
             </child>
           </object>
+          <packing>
+            <property name="name">content</property>
+          </packing>
         </child>
       </object>
     </child>
