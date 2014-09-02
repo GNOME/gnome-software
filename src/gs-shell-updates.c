@@ -61,6 +61,7 @@ struct GsShellUpdatesPrivate
 	GSettings		*settings;
 	GSettings		*desktop_settings;
 	gboolean		 cache_valid;
+	gboolean		 in_progress;
 	GsShell			*shell;
 	PkControl		*control;
 	GsPluginStatus		 last_status;
@@ -492,6 +493,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 	gs_plugin_list_free (list);
+	priv->in_progress = FALSE;
 }
 
 /**
@@ -503,8 +505,10 @@ gs_shell_updates_load (GsShellUpdates *shell_updates)
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	guint64 refine_flags;
 
+	if (priv->in_progress)
+		return;
+	priv->in_progress = TRUE;
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_updates));
-
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
