@@ -34,7 +34,7 @@ struct _GsAppTilePrivate
 	GtkWidget	*name;
 	GtkWidget	*summary;
 	GtkWidget	*eventbox;
-	GtkWidget	*waiting;
+	GtkWidget	*stack;
 	GtkWidget	*stars;
 };
 
@@ -150,7 +150,7 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 					   gs_app_get_kudos_percentage (priv->app));
 	}
 
-	gtk_widget_hide (priv->waiting);
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "content");
 
         g_signal_connect (priv->app, "notify::state",
                           G_CALLBACK (app_state_changed), tile);
@@ -202,7 +202,7 @@ gs_app_tile_class_init (GsAppTileClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, name);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, summary);
         gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, eventbox);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, waiting);
+        gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, stack);
         gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, stars);
 }
 
