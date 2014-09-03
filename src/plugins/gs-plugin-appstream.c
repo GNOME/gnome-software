@@ -798,6 +798,79 @@ out:
 }
 
 /**
+ * gs_plugin_add_search_item_add:
+ */
+static gboolean
+gs_plugin_add_search_item_add (GsPlugin *plugin,
+			       GList **list,
+			       AsApp *item,
+			       guint match_value,
+			       GError **error)
+{
+	GsApp *app;
+	app = gs_app_new (as_app_get_id_full (item));
+	if (!gs_plugin_refine_item (plugin, app, item, error)) {
+		g_object_unref (app);
+		return FALSE;
+	}
+	gs_app_set_search_sort_key (app, match_value);
+	gs_plugin_add_app (list, app);
+	g_object_unref (app);
+	return TRUE;
+}
+
+/**
+ * gs_plugin_add_search_item:
+ */
+static gboolean
+gs_plugin_add_search_item (GsPlugin *plugin,
+			   GList **list,
+			   AsApp *app,
+			   gchar **values,
+			   GError **error)
+{
+	AsApp *item;
+	GPtrArray *extends;
+	const gchar *id;
+	gboolean ret = TRUE;
+	guint i;
+	guint match_value;
+
+	/* no match */
+	match_value = as_app_search_matches_all (app, values);
+	if (match_value == 0)
+		goto out;
+
+	/* if the app does not extend an application, then just add it */
+	extends = as_app_get_extends (app);
+	if (extends->len == 0) {
+		ret = gs_plugin_add_search_item_add (plugin,
+						     list,
+						     app,
+						     match_value,
+						     error);
+		goto out;
+	}
+
+	/* add the thing that we extend, not the addon itself */
+	for (i = 0; i < extends->len; i++) {
+		id = g_ptr_array_index (extends, i);
+		item = as_store_get_app_by_id (plugin->priv->store, id);
+		if (item == NULL)
+			continue;
+		ret = gs_plugin_add_search_item_add (plugin,
+						     list,
+						     item,
+						     match_value,
+						     error);
+		if (!ret)
+			goto out;
+	}
+out:
+	return ret;
+}
+
+/**
  * gs_plugin_add_search:
  */
 gboolean
@@ -808,11 +881,9 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GError **error)
 {
 	AsApp *item;
-	gboolean ret = TRUE;
 	GPtrArray *array;
-	GsApp *app;
+	gboolean ret = TRUE;
 	guint i;
-	guint match_value;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -827,16 +898,9 @@ gs_plugin_add_search (GsPlugin *plugin,
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
-		match_value = as_app_search_matches_all (item, values);
-		if (match_value != 0) {
-			app = gs_app_new (as_app_get_id_full (item));
-			ret = gs_plugin_refine_item (plugin, app, item, error);
-			if (!ret)
-				goto out;
-			gs_app_set_search_sort_key (app, match_value);
-			gs_plugin_add_app (list, app);
-			g_object_unref (app);
-		}
+		ret = gs_plugin_add_search_item (plugin, list, item, values, error);
+		if (!ret)
+			goto out;
 	}
 	gs_profile_stop (plugin->profile, "appstream::search");
 out:
