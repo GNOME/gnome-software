@@ -49,7 +49,6 @@ main (int argc, char **argv)
 	status = g_application_run (G_APPLICATION (application), argc, argv);
 	g_object_unref (application);
 	gs_profile_stop (profile, "GsMain");
-	gs_profile_dump (profile);
 	g_object_unref (profile);
 
 	return status;
