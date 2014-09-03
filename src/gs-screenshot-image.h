@@ -57,7 +57,6 @@ GtkWidget	*gs_screenshot_image_new		(SoupSession		*session);
 AsScreenshot	*gs_screenshot_image_get_screenshot	(GsScreenshotImage	*ssimg);
 void		 gs_screenshot_image_set_screenshot	(GsScreenshotImage	*ssimg,
 							 AsScreenshot		*screenshot);
-const gchar	*gs_screenshot_image_get_cachedir	(GsScreenshotImage	*ssimg);
 void		 gs_screenshot_image_set_cachedir	(GsScreenshotImage	*ssimg,
 							 const gchar		*cachedir);
 void		 gs_screenshot_image_set_size		(GsScreenshotImage	*ssimg,

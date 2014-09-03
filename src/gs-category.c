@@ -80,14 +80,6 @@ gs_category_get_name (GsCategory *category)
 	return category->priv->name;
 }
 
-void
-gs_category_set_name (GsCategory *category, const gchar *name)
-{
-	g_return_if_fail (GS_IS_CATEGORY (category));
-	g_free (category->priv->name);
-	category->priv->name = g_strdup (name);
-}
-
 GsCategory *
 gs_category_find_child (GsCategory *category, const gchar *id)
 {

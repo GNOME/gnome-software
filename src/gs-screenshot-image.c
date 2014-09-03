@@ -62,18 +62,6 @@ gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
 }
 
 /**
- * gs_screenshot_image_get_cachedir:
- **/
-const gchar *
-gs_screenshot_image_get_cachedir (GsScreenshotImage *ssimg)
-{
-	GsScreenshotImagePrivate *priv;
-	g_return_val_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg), NULL);
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-	return priv->cachedir;
-}
-
-/**
  * gs_screenshot_image_set_error:
  **/
 static void

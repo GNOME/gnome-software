@@ -92,7 +92,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsShellUpdates, gs_shell_updates, GTK_TYPE_BIN)
 /**
  * gs_shell_updates_invalidate:
  **/
-void
+static void
 gs_shell_updates_invalidate (GsShellUpdates *shell_updates)
 {
 	shell_updates->priv->cache_valid = FALSE;
