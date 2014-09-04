@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
+#include <packagekit-glib2/packagekit.h>
 
 #include "gs-shell.h"
 #include "gs-shell-updates.h"
@@ -35,9 +36,6 @@
 
 #include <gdesktop-enums.h>
 #include <langinfo.h>
-/* this isn't ideal, as PK should be abstracted away in a plugin, but
- * GNetworkMonitor doesn't provide us with a connection type */
-#include <packagekit-glib2/packagekit.h>
 
 static void	gs_shell_updates_finalize	(GObject	*object);
 
@@ -836,16 +834,27 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-offline_updates_triggered_cb (void)
+gs_offline_updates_cancel (void)
 {
-	gs_reboot (gs_offline_updates_cancel);
+	GError *error = NULL;
+	if (!pk_offline_cancel (NULL, &error)) {
+		g_warning ("failed to cancel the offline update: %s", error->message);
+		g_error_free (error);
+		return;
+	}
 }
 
 static void
 gs_shell_updates_button_update_all_cb (GtkButton      *button,
 				       GsShellUpdates *updates)
 {
-	gs_offline_updates_trigger (offline_updates_triggered_cb);
+	GError *error = NULL;
+	if (!pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT, NULL, &error)) {
+		g_warning ("failed to trigger an offline update: %s", error->message);
+		g_error_free (error);
+		return;
+	}
+	gs_reboot (gs_offline_updates_cancel);
 }
 
 /**

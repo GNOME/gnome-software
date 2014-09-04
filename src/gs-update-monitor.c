@@ -132,22 +132,24 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 {
 	const gchar *message;
 	const gchar *title;
-	gboolean success;
-	guint num_packages = 1;
 	GNotification *notification;
 	GIcon *icon;
+	PkResults *results;
 
-	if (!gs_offline_updates_get_status (&success, &num_packages, NULL, NULL))
+	results = pk_offline_get_results (NULL);
+	if (results == NULL)
 		return;
-
-	if (success) {
+	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS) {
+		GPtrArray *packages;
+		packages = pk_results_get_package_array (results);
 		title = ngettext ("Software Update Installed",
 				  "Software Updates Installed",
-				  num_packages);
+				  packages->len);
 		/* TRANSLATORS: message when we've done offline updates */
 		message = ngettext ("An important OS update has been installed.",
 				    "Important OS updates have been installed.",
-				    num_packages);
+				    packages->len);
+		g_ptr_array_unref (packages);
 	} else {
 
 		title = _("Software Updates Failed");
@@ -160,7 +162,7 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 	icon = g_themed_icon_new ("gnome-software-symbolic");
 	g_notification_set_icon (notification, icon);
 	g_object_unref (icon);
-	if (success)
+	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS)
 		g_notification_add_button_with_target (notification, _("Review"), "app.set-mode", "s", "updated");
 	else
 		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
@@ -168,6 +170,7 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 
 	g_application_send_notification (monitor->application, "offline-updates", notification);
 	g_object_unref (notification);
+	g_object_unref (results);
 }
 
 static gboolean
@@ -180,7 +183,8 @@ check_offline_update_cb (gpointer user_data)
 	g_settings_get (monitor->settings,
 	                "install-timestamp", "x", &time_last_notified);
 
-	if (gs_offline_updates_get_time_completed (&time_update_completed)) {
+	time_update_completed = pk_offline_get_results_mtime (NULL);
+	if (time_update_completed > 0) {
 		if (time_last_notified < time_update_completed)
 			show_installed_updates_notification (monitor);
 
@@ -603,7 +607,7 @@ gs_update_monitor_class_init (GsUpdateMonitorClass *klass)
 static void
 remove_stale_notifications (GsUpdateMonitor *monitor)
 {
-	if (gs_offline_updates_results_available ()) {
+	if (pk_offline_get_results_mtime (NULL) > 0) {
 		g_debug ("Withdrawing stale notifications");
 
 		g_application_withdraw_notification (monitor->application,

@@ -26,15 +26,6 @@
 
 G_BEGIN_DECLS
 
-void     gs_offline_updates_trigger		(GCallback  child_exited);
-void     gs_offline_updates_cancel		(void);
-void     gs_offline_updates_clear_status	(void);
-gboolean gs_offline_updates_results_available	(void);
-gboolean gs_offline_updates_get_time_completed	(guint64   *time_completed);
-gboolean gs_offline_updates_get_status		(gboolean  *success,
-						 guint     *num_packages,
-						 gchar    **error_code,
-						 gchar    **error_details);
 void     gs_offline_updates_show_error		(void);
 
 

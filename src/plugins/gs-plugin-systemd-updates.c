@@ -41,8 +41,6 @@ gs_plugin_get_name (void)
 	return "systemd-updates";
 }
 
-#define PK_PREPARED_UPDATE_FN	"/var/lib/PackageKit/prepared-update"
-
 /**
  * gs_plugin_initialize:
  */
@@ -81,24 +79,13 @@ gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	GFile *file;
-	gboolean ret = TRUE;
-
-	file = g_file_new_for_path (PK_PREPARED_UPDATE_FN);
-	plugin->priv->monitor = g_file_monitor_file (file,
-						     G_FILE_MONITOR_NONE,
-						     cancellable,
-						     error);
-	if (plugin->priv->monitor == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	plugin->priv->monitor = pk_offline_get_prepared_monitor (cancellable, error);
+	if (plugin->priv->monitor == NULL)
+		return FALSE;
 	g_signal_connect (plugin->priv->monitor, "changed",
 			  G_CALLBACK (gs_plugin_systemd_updates_changed_cb),
 			  plugin);
-out:
-	g_object_unref (file);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -110,11 +97,11 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GError *error_local = NULL;
 	GsApp *app;
 	gboolean ret;
 	gchar **package_ids = NULL;
 	gchar **split;
-	gchar *data = NULL;
 	guint i;
 
 	/* watch the file in case it comes or goes */
@@ -125,19 +112,22 @@ gs_plugin_add_updates (GsPlugin *plugin,
 			goto out;
 	}
 
-	/* does the file exist ? */
-	if (!g_file_test (PK_PREPARED_UPDATE_FN, G_FILE_TEST_EXISTS)) {
-		ret = TRUE;
+	/* get the id's if the file exists */
+	package_ids = pk_offline_get_prepared_ids (&error_local);
+	if (package_ids == NULL) {
+		if (g_error_matches (error_local,
+				     PK_OFFLINE_ERROR,
+				     PK_OFFLINE_ERROR_NO_DATA)) {
+			g_error_free (error_local);
+			ret = TRUE;
+		} else {
+			g_propagate_error (error, error_local);
+			ret = FALSE;
+		}
 		goto out;
 	}
 
-	/* get the list of packages to update */
-	ret = g_file_get_contents (PK_PREPARED_UPDATE_FN, &data, NULL, error);
-	if (!ret)
-		goto out;
-
 	/* add them to the new array */
-	package_ids = g_strsplit (data, "\n", -1);
 	for (i = 0; package_ids[i] != NULL; i++) {
 		app = gs_app_new (NULL);
 		gs_app_set_management_plugin (app, "PackageKit");
@@ -151,7 +141,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		g_strfreev (split);
 	}
 out:
-	g_free (data);
 	g_strfreev (package_ids);
 	return ret;
 }

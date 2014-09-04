@@ -27,210 +27,6 @@
 #include "gs-offline-updates.h"
 #include "gs-utils.h"
 
-static void
-child_exit_cb (GPid pid, gint status, gpointer user_data)
-{
-	GCallback child_exited = user_data;
-
-	g_spawn_close_pid (pid);
-
-	if (child_exited != NULL)
-		child_exited ();
-}
-
-static gboolean
-gs_spawn_pkexec (const gchar *command, const gchar *parameter, GCallback child_exited, GError **error)
-{
-	GPid pid;
-	const gchar *argv[4];
-	gboolean ret;
-
-	argv[0] = "pkexec";
-	argv[1] = command;
-	argv[2] = parameter;
-	argv[3] = NULL;
-	g_debug ("calling %s %s %s",
-		 argv[0], argv[1], argv[2] != NULL ? argv[2] : "");
-	ret = g_spawn_async (NULL, (gchar**)argv, NULL,
-			     G_SPAWN_DO_NOT_REAP_CHILD | G_SPAWN_SEARCH_PATH,
-			     NULL, NULL, &pid, error);
-	if (!ret)
-		return FALSE;
-
-	g_child_watch_add (pid, child_exit_cb, child_exited);
-	return TRUE;
-}
-
-void
-gs_offline_updates_clear_status (void)
-{
-	gboolean ret;
-	GError *error = NULL;
-
-	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-clear-offline-update", NULL, NULL, &error);
-	if (!ret) {
-		g_warning ("Failure clearing offline update message: %s",
-			   error->message);
-		g_error_free (error);
-	}
-}
-
-void
-gs_offline_updates_trigger (GCallback child_exited)
-{
-	gboolean ret;
-	GError *error = NULL;
-
-	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-trigger-offline-update", NULL, child_exited, &error);
-	if (!ret) {
-		g_warning ("Failure triggering offline update: %s",
-			   error->message);
-		g_error_free (error);
-	}
-}
-
-void
-gs_offline_updates_cancel (void)
-{
-	gboolean ret;
-	GError *error = NULL;
-
-	ret = gs_spawn_pkexec (LIBEXECDIR "/pk-trigger-offline-update",
-			       "--cancel", NULL, &error);
-	if (!ret) {
-		g_warning ("Failure cancelling offline update: %s",
-			   error->message);
-		g_error_free (error);
-	}
-}
-
-#define PK_OFFLINE_UPDATE_RESULTS_GROUP		"PackageKit Offline Update Results"
-#define PK_OFFLINE_UPDATE_RESULTS_FILENAME	"/var/lib/PackageKit/offline-update-competed"
-
-gboolean
-gs_offline_updates_results_available (void)
-{
-	return g_file_test (PK_OFFLINE_UPDATE_RESULTS_FILENAME, G_FILE_TEST_EXISTS);
-}
-
-gboolean
-gs_offline_updates_get_time_completed (guint64 *time_completed)
-{
-	GFile *file;
-	GFileInfo *info;
-	gboolean result = FALSE;
-
-	file = g_file_new_for_path (PK_OFFLINE_UPDATE_RESULTS_FILENAME);
-	info = g_file_query_info (file,
-	                          G_FILE_ATTRIBUTE_TIME_MODIFIED,
-	                          G_FILE_QUERY_INFO_NONE,
-	                          NULL,
-	                          NULL);
-	if (info != NULL) {
-		*time_completed = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
-		result = TRUE;
-		g_object_unref (info);
-	}
-
-	g_object_unref (file);
-
-	return result;
-}
-
-gboolean
-gs_offline_updates_get_status (gboolean  *success,
-			       guint     *num_packages,
-			       gchar    **error_code,
-			       gchar    **error_details)
-{
-	GKeyFile *key_file = NULL;
-	gchar *packages = NULL;
-	gchar *code = NULL;
-	gchar *details = NULL;
-	gboolean result = FALSE;
-	gboolean ret;
-	GError *error = NULL;
-	gint i;
-
-	g_debug ("get offline update status");
-
-	*success = FALSE;
-	*num_packages = 0;
-	if (error_code)
-		*error_code = 0;
-	if (error_details)
-		*error_details = NULL;
-
-	if (!gs_offline_updates_results_available ())
-		goto out;
-
-	key_file = g_key_file_new ();
-	ret = g_key_file_load_from_file (key_file,
-					 PK_OFFLINE_UPDATE_RESULTS_FILENAME,
-					 G_KEY_FILE_NONE,
-					 &error);
-	if (!ret) {
-		g_warning ("failed to open %s: %s",
-			   PK_OFFLINE_UPDATE_RESULTS_FILENAME,
-			   error->message);
-		g_error_free (error);
-		goto out;
-	}
-
-	*success = g_key_file_get_boolean (key_file,
-					   PK_OFFLINE_UPDATE_RESULTS_GROUP,
-					   "Success",
-					   NULL);
-
-	if (*success) {
-		packages = g_key_file_get_string (key_file,
-						  PK_OFFLINE_UPDATE_RESULTS_GROUP,
-						  "Packages",
-						  NULL);
-
-		if (packages == NULL) {
-			g_warning ("No 'Packages' in %s",
-				   PK_OFFLINE_UPDATE_RESULTS_FILENAME);
-			goto out;
-		}
-
-		for (i = 0; packages[i] != '\0'; i++) {
-			if (packages[i] == ',')
-				(*num_packages)++;
-		}
-
-	} else {
-
-		code = g_key_file_get_string (key_file,
-					      PK_OFFLINE_UPDATE_RESULTS_GROUP,
-					      "ErrorCode",
-					      NULL);
-		details = g_key_file_get_string (key_file,
-						 PK_OFFLINE_UPDATE_RESULTS_GROUP,
-						 "ErrorDetails",
-						 NULL);
-	}
-
-	result = TRUE;
-
-out:
-	g_debug ("success %d, packages %s, error %s %s",
-		 *success, packages, code, details);
-	if (error_code)
-		*error_code = code;
-	else
-		g_free (code);
-	if (error_details)
-		*error_details = details;
-	else
-		g_free (details);
-	g_free (packages);
-	if (key_file != NULL)
-		g_key_file_free (key_file);
-
-	return result;
-}
-
 void
 gs_offline_updates_show_error (void)
 {
@@ -238,22 +34,25 @@ gs_offline_updates_show_error (void)
 	gboolean show_geeky = FALSE;
 	GString *msg;
 	GtkWidget *dialog;
-	gboolean success;
-	guint num_packages;
-	gchar *error_code;
-	gchar *error_details;
-	PkErrorEnum error_enum = PK_ERROR_ENUM_UNKNOWN;
+	GError *error = NULL;
+	PkResults *results = NULL;
+	PkError *pk_error = NULL;
 
-	if (!gs_offline_updates_get_status (&success, &num_packages, &error_code, &error_details))
-		return;
+	results = pk_offline_get_results (NULL);
+	if (results == NULL)
+		goto out;
+	pk_error = pk_results_get_error_code (results);
+	if (pk_error == NULL)
+		goto out;
 
-	if (error_code != NULL)
-		error_enum = pk_error_enum_from_string (error_code);
+	/* can this happen in reality? */
+	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS)
+		goto out;
 
 	/* TRANSLATORS: this is when the offline update failed */
 	title = _("Failed To Update");
 	msg = g_string_new ("");
-	switch (error_enum) {
+	switch (pk_error_get_code (pk_error)) {
 	case PK_ERROR_ENUM_UNFINISHED_TRANSACTION:
 		/* TRANSLATORS: the transaction could not be completed
  		 * as a previous transaction was unfinished */
@@ -324,7 +123,7 @@ gs_offline_updates_show_error (void)
 					 * package manager no mortal is supposed to understand,
 					 * but google might know what they mean */
 					_("Detailed errors from the package manager follow:"),
-					error_details);
+					pk_error_get_details (pk_error));
 	}
 	dialog = gtk_message_dialog_new (NULL,
 					 0,
@@ -338,11 +137,17 @@ gs_offline_updates_show_error (void)
 				  dialog);
 	gtk_widget_show (dialog);
 
-	gs_offline_updates_clear_status ();
+	if (!pk_offline_clear_results (NULL, &error)) {
+		g_warning ("Failure clearing offline update message: %s",
+			   error->message);
+		g_error_free (error);
+	}
 	g_string_free (msg, TRUE);
-
-	g_free (error_code);
-	g_free (error_details);
+out:
+	if (pk_error != NULL)
+		g_object_unref (pk_error);
+	if (results != NULL)
+		g_object_unref (results);
 }
 
 /* vim: set noexpandtab: */

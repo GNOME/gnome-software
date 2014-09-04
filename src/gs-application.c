@@ -28,6 +28,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <gio/gdesktopappinfo.h>
+#include <packagekit-glib2/packagekit.h>
 
 #include "gs-dbus-helper.h"
 #include "gs-box.h"
@@ -432,7 +433,12 @@ clear_offline_updates (GSimpleAction *action,
 		       GVariant      *parameter,
 		       gpointer       data)
 {
-	gs_offline_updates_clear_status ();
+	GError *error = NULL;
+	if (!pk_offline_clear_results (NULL, &error)) {
+		g_warning ("Failure clearing offline update message: %s",
+			   error->message);
+		g_error_free (error);
+	}
 }
 
 static void

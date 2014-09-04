@@ -23,6 +23,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <packagekit-glib2/packagekit.h>
 
 #include "gs-update-dialog.h"
 #include "gs-app-row.h"
@@ -166,7 +167,8 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 	/* TRANSLATORS: this is the title of the installed updates dialog window */
 	gtk_window_set_title (GTK_WINDOW (dialog), _("Installed Updates"));
 
-	if (gs_offline_updates_get_time_completed (&time_updates_installed)) {
+	time_updates_installed = pk_offline_get_results_mtime (NULL);
+	if (time_updates_installed > 0) {
 		GDateTime *date;
 		GtkWidget *header;
 		gchar *date_str;
