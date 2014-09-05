@@ -901,7 +901,7 @@ gs_plugin_loader_add_os_update_item (GList *list)
 	gs_app_set_summary (app_os,
 			    GS_APP_QUALITY_NORMAL,
 			    /* TRANSLATORS: this is a longer description of the
-			     * os-update item */
+			     * "OS Updates" string */
 			    _("Includes performance, stability and security improvements."));
 	gs_app_set_description (app_os,
 				GS_APP_QUALITY_NORMAL,
