@@ -104,7 +104,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	if (update_details == NULL || update_details[0] == '\0') {
 		/* TRANSLATORS: this is where the packager did not write a
 		 * description for the update */
-		update_desc = g_strdup ("No update description available.");
+		update_desc = g_strdup (_("No update description available."));
 	} else {
 		markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 		gs_markdown_set_smart_quoting (markdown, FALSE);
