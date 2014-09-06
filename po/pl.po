@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-03 03:54+0200\n"
-"PO-Revision-Date: 2014-09-03 03:55+0200\n"
+"POT-Creation-Date: 2014-09-06 03:27+0200\n"
+"PO-Revision-Date: 2014-09-06 03:28+0200\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -271,7 +271,7 @@ msgstr "Aktualizacje"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:215
+#: ../src/gs-category.c:207
 msgid "Other"
 msgstr "Inne"
 
@@ -406,7 +406,7 @@ msgid "OS Updates"
 msgstr "Aktualizacje systemu"
 
 #. TRANSLATORS: this is a longer description of the
-#. * os-update item
+#. * "OS Updates" string
 #: ../src/gs-plugin-loader.c:905
 msgid "Includes performance, stability and security improvements."
 msgstr "Zawiera ulepszenia wydajności, stabilności i bezpieczeństwa."
@@ -429,39 +429,39 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:220
+#: ../src/gs-screenshot-image.c:208
 msgid "Screenshot not found"
 msgstr "Nie odnaleziono zrzutu ekranu"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:238
+#: ../src/gs-screenshot-image.c:226
 msgid "Failed to load image"
 msgstr "Wczytanie obrazu się nie powiodło"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:366
+#: ../src/gs-screenshot-image.c:354
 msgid "Screenshot size not found"
 msgstr "Nie odnaleziono wymiarów zrzutu ekranu"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:385
+#: ../src/gs-screenshot-image.c:373
 msgid "Could not create cache"
 msgstr "Nie można utworzyć pamięci podręcznej"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:402
+#: ../src/gs-screenshot-image.c:390
 msgid "Screenshot not valid"
 msgstr "Nieprawidłowy zrzut ekranu"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:408
+#: ../src/gs-screenshot-image.c:396
 msgid "Screenshot not available"
 msgstr "Niedostępny zrzut ekranu"
 
-#: ../src/gs-screenshot-image.c:466
+#: ../src/gs-screenshot-image.c:454
 msgid "Screenshot"
 msgstr "Zrzut ekranu"
 
@@ -987,6 +987,12 @@ msgstr "Dodano"
 #: ../src/gs-sources-dialog.ui.h:12
 msgid "Website"
 msgstr "Witryna"
+
+#. TRANSLATORS: this is where the packager did not write a
+#. * description for the update
+#: ../src/gs-update-dialog.c:107
+msgid "No update description available."
+msgstr "Brak dostępnego opisu aktualizacji."
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
 #: ../src/gs-update-dialog.c:167
