@@ -629,8 +629,10 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show unconverted packages in the application view */
-	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
-//		g_debug ("app invalid as only a package %s",
+	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE ||
+	    gs_app_get_kind (app) == GS_APP_KIND_CORE) {
+//		g_debug ("app invalid as only a %s: %s",
+//			 gs_app_kind_to_string (gs_app_get_kind (app)),
 //			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
@@ -867,6 +869,21 @@ gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
 /******************************************************************************/
 
 /**
+ * gs_plugin_loader_merge_into_os_update:
+ **/
+static gboolean
+gs_plugin_loader_merge_into_os_update (GsApp *app)
+{
+	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE)
+		return TRUE;
+	if (gs_app_get_kind (app) == GS_APP_KIND_CORE)
+		return TRUE;
+	if (gs_app_get_kind (app) == GS_APP_KIND_SOURCE)
+		return TRUE;
+	return FALSE;
+}
+
+/**
  * gs_plugin_loader_add_os_update_item:
  **/
 static GList *
@@ -883,8 +900,10 @@ gs_plugin_loader_add_os_update_item (GList *list)
 	/* do we have any packages left that are not apps? */
 	for (l = list; l != NULL; l = l->next) {
 		app_tmp = GS_APP (l->data);
-		if (gs_app_get_kind (app_tmp) == GS_APP_KIND_PACKAGE)
+		if (gs_plugin_loader_merge_into_os_update (app_tmp)) {
 			has_os_update = TRUE;
+			break;
+		}
 	}
 	if (!has_os_update)
 		goto out;
@@ -908,7 +927,7 @@ gs_plugin_loader_add_os_update_item (GList *list)
 				gs_app_get_summary (app_os));
 	for (l = list; l != NULL; l = l->next) {
 		app_tmp = GS_APP (l->data);
-		if (gs_app_get_kind (app_tmp) != GS_APP_KIND_PACKAGE)
+		if (!gs_plugin_loader_merge_into_os_update (app_tmp))
 			continue;
 		gs_app_add_related (app_os, app_tmp);
 	}
