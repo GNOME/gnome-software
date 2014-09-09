@@ -8,9 +8,9 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-03-21 11:41+0000\n"
-"PO-Revision-Date: 2014-03-24 21:34+0100\n"
-"Last-Translator: Peter Mráz <etkinator@gmail.com>\n"
+"POT-Creation-Date: 2014-05-25 07:29+0000\n"
+"PO-Revision-Date: 2014-05-25 15:53+0100\n"
+"Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: Slovak <gnome-sk-list@gnome.org>\n"
 "Language: sk\n"
 "MIME-Version: 1.0\n"
@@ -49,17 +49,16 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Pridanie do priečinka s aplikáciami"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:325
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
 #: ../src/gs-shell-details.c:204 ../src/gs-shell-installed.c:593
 msgid "_Cancel"
 msgstr "_Zrušiť"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:330
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
 msgid "_Add"
 msgstr "_Pridať"
 
 #: ../src/app-menu.ui.h:1
-#| msgid "Software"
 msgid "_Software Sources"
 msgstr "Zdroje _softvéru"
 
@@ -77,7 +76,7 @@ msgstr "_Ukončiť"
 #. * where we are showing the application was installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
+#: ../src/app-tile.ui.h:1 ../src/gs-app-tile.c:80 ../src/gs-app-tile.c:83
 #: ../src/gs-feature-tile.c:76 ../src/gs-history-dialog.c:88
 #: ../src/gs-popular-tile.c:79 ../src/gs-popular-tile.c:82
 #: ../src/popular-tile.ui.h:1
@@ -87,7 +86,7 @@ msgstr "Nainštalovaný"
 #. TRANSLATORS: this is the application name
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:240 ../src/gs-shell.c:163
+#: ../src/gs-application.c:240 ../src/gs-shell.c:162
 msgid "Software"
 msgstr "Softvér"
 
@@ -96,8 +95,6 @@ msgid "Add, remove or update software on this computer"
 msgstr "Pridáva, odstraňuje alebo aktualizuje softvér vo vašom počítači"
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "Software Install"
 msgstr "Inštalácia softvéru"
 
@@ -117,8 +114,7 @@ msgstr "Zrušiť výber"
 
 # GtkButton
 #. vim: set noexpandtab:
-#: ../src/gnome-software.ui.h:4 ../src/gs-sources-dialog.ui.h:2
-#: ../src/gs-update-dialog.ui.h:1
+#: ../src/gnome-software.ui.h:4 ../src/gs-update-dialog.ui.h:1
 msgid "Go back"
 msgstr "Prejsť späť"
 
@@ -141,7 +137,6 @@ msgstr "_Aktualizácie"
 
 # GtkButton
 #: ../src/gnome-software.ui.h:11
-#| msgid "Restart & Install"
 msgid "Restart & _Install"
 msgstr "Reštartovať a _inštalovať"
 
@@ -160,12 +155,10 @@ msgstr "O_dstrániť"
 
 # GtkButton
 #: ../src/gnome-software.ui.h:14
-#| msgid "Select All"
 msgid "Select"
 msgstr "Vybrať"
 
 #: ../src/gnome-software.ui.h:15
-#| msgid "Recent Software Updates"
 msgid "Check for updates"
 msgstr "Zistiť dostupnosť aktualizácií"
 
@@ -199,13 +192,11 @@ msgid "No Application Data Found"
 msgstr "Nenašli sa žiadne údaje aplikácie"
 
 #: ../src/gnome-software.ui.h:22
-#| msgid "Installed"
 msgid "Installed page"
 msgstr "Nainštalovaný balík"
 
 # GsAppFolderDialog title, GtkLabel
 #: ../src/gnome-software.ui.h:23
-#| msgid "Add to Application Folder"
 msgid "_Add to Folder…"
 msgstr "_Pridať do priečinka…"
 
@@ -227,7 +218,6 @@ msgid "No Application Found"
 msgstr "Nenašla sa žiadna aplikácia"
 
 #: ../src/gnome-software.ui.h:28
-#| msgid "Updates"
 msgid "Updates page"
 msgstr "Strana s aktualizáciami"
 
@@ -258,13 +248,10 @@ msgstr "_Nastavenia siete"
 
 # GtkLabel
 #: ../src/gnome-software.ui.h:34
-#| msgid "Details"
 msgid "Details page"
 msgstr "Stránka s podrobnosťami"
 
 #: ../src/gnome-software.ui.h:35
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "Software Source Included"
 msgstr "Zahrnuté zdroje softvéru"
 
@@ -277,8 +264,6 @@ msgstr ""
 "s prístupom k ďalšiemu softvéru."
 
 #: ../src/gnome-software.ui.h:37
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "No Software Source Included"
 msgstr "Žiadne zahrnuté zdroje softvéru"
 
@@ -297,8 +282,6 @@ msgid ""
 msgstr "Softvér je už poskytovaný vašou distribúciou a nemal by byť nahradený."
 
 #: ../src/gnome-software.ui.h:40
-#| msgid "Software Update Installed"
-#| msgid_plural "Software Updates Installed"
 msgid "Software Source Identified"
 msgstr "Zdroj softvéru identifikovaný"
 
@@ -336,7 +319,7 @@ msgid "Details"
 msgstr "Podrobnosti"
 
 # GtkLabel
-#: ../src/gnome-software.ui.h:48 ../src/gs-sources-dialog.ui.h:9
+#: ../src/gnome-software.ui.h:48
 msgid "Version"
 msgstr "Verzia"
 
@@ -353,7 +336,6 @@ msgid "Category"
 msgstr "Kategória"
 
 #: ../src/gnome-software.ui.h:51
-#| msgid "Input Sources"
 msgid "Source"
 msgstr "Zdroj"
 
@@ -372,7 +354,60 @@ msgstr "Veľkosť"
 msgid "Developer"
 msgstr "Vývojár"
 
-#: ../src/gs-app-folder-dialog.c:313
+#: ../src/gnome-software.ui.h:55
+msgid "Software Sources"
+msgstr "Zdroje softvéru"
+
+#: ../src/gnome-software.ui.h:56
+msgid "No sources found."
+msgstr "Nenašli sa žiadne zdroje"
+
+#: ../src/gnome-software.ui.h:57
+msgid "Software sources give you access to additional software."
+msgstr "Zdroje softvéru vám umožňujú získať dodatočný softvér."
+
+#: ../src/gnome-software.ui.h:58
+msgid ""
+"Removing a source will also remove any software you have installed from it."
+msgstr ""
+"Odstránením zdroja bude tiež odstránený všetok softvér, ktorý ste z neho "
+"nainštalovali."
+
+#: ../src/gnome-software.ui.h:59
+msgid "No software installed from this source"
+msgstr "\"Z tohto zdroja nie je nainštalovaný žiadny softvér"
+
+#: ../src/gnome-software.ui.h:60
+msgid "Installed from this Source"
+msgstr "Nainštalovaný z tohto zdroja"
+
+#: ../src/gnome-software.ui.h:61
+msgid "Source Details"
+msgstr "podrobnosti o zdroji"
+
+#: ../src/gnome-software.ui.h:62
+msgid "Last Checked"
+msgstr "Posledná kontrola"
+
+#: ../src/gnome-software.ui.h:63
+msgid "Added"
+msgstr "Pridaný"
+
+# GtkButton
+#: ../src/gnome-software.ui.h:64
+msgid "Website"
+msgstr "Webová stránka"
+
+#: ../src/gnome-software.ui.h:65
+msgid "January 30, 2014"
+msgstr "30. januára 2014"
+
+# GtkButton
+#: ../src/gnome-software.ui.h:66 ../src/gs-shell.c:600
+msgid "Remove Source"
+msgstr "Odstrániť zdroj"
+
+#: ../src/gs-app-folder-dialog.c:325
 msgid "Folder Name"
 msgstr "Názov priečinka"
 
@@ -392,7 +427,6 @@ msgstr "Dušan Kazik <prescott66@gmail.com>"
 
 # GsAppFolderDialog title, GtkLabel
 #: ../src/gs-application.c:488
-#| msgid "Add to Application Folder"
 msgid "Enter GApplication service mode"
 msgstr "Vstúpi do servisného režimu GApplication"
 
@@ -438,10 +472,27 @@ msgid "Show profiling information for the service"
 msgstr "Zobrazí profilovacie informácie pre službu"
 
 #. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being installing
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#: ../src/gs-app-tile.c:89 ../src/gs-app-tile.c:92 ../src/gs-app-widget.c:237
+msgid "Installing"
+msgstr "Inštaluje sa"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being removed
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#: ../src/gs-app-tile.c:98 ../src/gs-app-tile.c:101 ../src/gs-app-widget.c:246
+msgid "Removing"
+msgstr "Odstraňuje sa"
+
+#. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:95 ../src/gs-feature-tile.c:81
-#: ../src/gs-popular-tile.c:88 ../src/gs-popular-tile.c:92
+#: ../src/gs-app-tile.c:107 ../src/gs-app-tile.c:111
+#: ../src/gs-feature-tile.c:81 ../src/gs-popular-tile.c:88
+#: ../src/gs-popular-tile.c:92
 msgid "Updates"
 msgstr "Aktualizácie"
 
@@ -459,7 +510,7 @@ msgstr "Zrušiť"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-widget.c:210
+#: ../src/gs-app-widget.c:210 ../src/gs-shell-details.c:136
 msgid "Pending"
 msgstr "Čaká na inštaláciu"
 
@@ -478,18 +529,6 @@ msgstr "Inštalovať"
 #: ../src/gs-shell-installed.c:205 ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Odstrániť"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being installed
-#: ../src/gs-app-widget.c:237
-msgid "Installing"
-msgstr "Inštaluje sa"
-
-#. TRANSLATORS: this is a button next to the search results that
-#. * shows the status of an application being erased
-#: ../src/gs-app-widget.c:246
-msgid "Removing"
-msgstr "Odstraňuje sa"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -525,81 +564,81 @@ msgstr "História"
 
 # title
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:258
+#: ../src/gs-offline-updates.c:249
 msgid "Failed To Update"
 msgstr "Zlyhanie aktualizácie"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:264
+#: ../src/gs-offline-updates.c:255
 msgid "A previous update was unfinished."
 msgstr "Predchádzajúca aktualizácia nebola dokončená."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:274
+#: ../src/gs-offline-updates.c:265
 msgid "Network access was required but not available."
 msgstr "Bolo potrebné sieťové pripojenie, ale nie je dostupné."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:283
+#: ../src/gs-offline-updates.c:274
 msgid "An update was not signed in the correct way."
 msgstr "Aktualizácia nebola správnym spôsobom podpísaná."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:293
+#: ../src/gs-offline-updates.c:284
 msgid "The update could not be completed."
 msgstr "Aktualizáciu sa nepodarilo dokončiť."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:298
+#: ../src/gs-offline-updates.c:289
 msgid "The update was cancelled."
 msgstr "Aktualizácia bola zrušená."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:304
+#: ../src/gs-offline-updates.c:295
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
 "Bola vyžiadaná aktualizácia bez prístupu k sieti, no žiadne balíky "
 "nevyžadujú aktualizáciu."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:308
+#: ../src/gs-offline-updates.c:299
 msgid "No space was left on the drive."
 msgstr "Na jednotke nebol dostatok miesta."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:316
+#: ../src/gs-offline-updates.c:307
 msgid "An update failed to install correctly."
 msgstr "Zlyhala správna inštalácia aktualizácie."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:321
+#: ../src/gs-offline-updates.c:312
 msgid "The offline update failed in an unexpected way."
 msgstr "Aktualizácia bez prístupu k sieti zlyhala neočakávaným spôsobom."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:330
+#: ../src/gs-offline-updates.c:321
 msgid "Detailed errors from the package manager follow:"
 msgstr "Podrobné chybové správy od správcu balíkov:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:764
+#: ../src/gs-plugin-loader.c:733
 msgid "OS Updates"
 msgstr "Aktualizácie operačného systému"
 
 #. TRANSLATORS: this is a longer description of the
 #. * os-update item
-#: ../src/gs-plugin-loader.c:769
+#: ../src/gs-plugin-loader.c:738
 msgid ""
 "Includes performance, stability and security improvements for all users."
 msgstr ""
@@ -607,12 +646,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1463
+#: ../src/gs-plugin-loader.c:1432
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nie sú dostupné žiadne doplnky s kodekmi pre formát %s."
 
-#: ../src/gs-plugin-loader.c:1466
+#: ../src/gs-plugin-loader.c:1435
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -654,9 +693,43 @@ msgstr "Snímka obrazovky nie je dostupná"
 msgid "Screenshot"
 msgstr "Snímka obrazovky"
 
-#: ../src/gs-shell-details.c:136
-msgid "_Pending"
-msgstr "Č_aká na inštaláciu"
+#: ../src/gs-shell.c:621
+msgid "Removing…"
+msgstr "Odstraňuje sa…"
+
+#. TRANSLATORS: this source has no apps installed from it
+#: ../src/gs-shell.c:871
+msgid "No software installed"
+msgstr "Nebol nainštalovaný žiadny softvér"
+
+# cmdline description
+#. TRANSLATORS: this source has some apps installed from it
+#: ../src/gs-shell.c:874
+#, c-format
+msgid "%i application installed"
+msgid_plural "%i applications installed"
+msgstr[0] "Bolo nainštalovaných %i aplikácií"
+msgstr[1] "Bola nainštalovaná %i aplikácia"
+msgstr[2] "Boli nainštalované %i aplikácie"
+
+#. TRANSLATORS: this source has some apps installed from it
+#: ../src/gs-shell.c:879
+#, c-format
+msgid "%i add-on installed"
+msgid_plural "%i add-ons installed"
+msgstr[0] "Bolo nainštalovaných %i doplnkov"
+msgstr[1] "Bol nainštalovaný %i doplnok"
+msgstr[2] "Boli nainštalované %i doplnky"
+
+# * https://bugzilla.gnome.org/show_bug.cgi?id=726990
+#. TRANSLATORS: this source has some apps and addons installed from it
+#: ../src/gs-shell.c:884
+#, c-format
+msgid "%i application and %i add-ons installed"
+msgid_plural "%i applications and %i add-ons installed"
+msgstr[0] "Bolo nainštalovaných %i aplikácií a %i doplnkov"
+msgstr[1] "Bola nainštalovaná %i aplikácia a %i doplnkov"
+msgstr[2] "Boli nainštalované %i aplikácie a %i doplnkov"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
@@ -713,8 +786,8 @@ msgstr ""
 #. TRANSLATORS: these are extra things that add to existing programs,
 #. * for instance fonts, codecs or language packs
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:611
-#: ../src/plugins/gs-plugin-packagekit.c:576
+#: ../src/gs-shell-installed.c:512 ../src/gs-shell-updates.c:591
+#: ../src/plugins/gs-plugin-packagekit.c:578
 #: ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Doplnky"
@@ -724,120 +797,77 @@ msgid "Click on items to select them"
 msgstr "Kliknutím na položky ich vyberiete"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:135
+#: ../src/gs-shell-updates.c:137
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:138
+#: ../src/gs-shell-updates.c:140
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
-#. TRANSLATORS: This is the word "Yesterday" followed by a
-#. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:144
-msgid "Yesterday, %R"
-msgstr "Včera o %R"
-
-#. TRANSLATORS: This is the word "Yesterday" followed by a
-#. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:148
-msgid "Yesterday, %l:%M %p"
-msgstr "Včera o %l:%M %p"
-
-#: ../src/gs-shell-updates.c:151
-msgid "Two days ago"
-msgstr "Pred dvoma dňami"
-
-#: ../src/gs-shell-updates.c:153
-#| msgid "Three Stars"
-msgid "Three days ago"
-msgstr "Pred troma dňami"
-
-#: ../src/gs-shell-updates.c:155
-#| msgid "Four Stars"
-msgid "Four days ago"
-msgstr "Pred štyrmi dňami"
-
-#: ../src/gs-shell-updates.c:157
-#| msgid "Five Stars"
-msgid "Five days ago"
-msgstr "Pred piatimi dňami"
-
-#: ../src/gs-shell-updates.c:159
-msgid "Six days ago"
-msgstr "Pred šiestimi dňami"
-
-#: ../src/gs-shell-updates.c:161
-msgid "One week ago"
-msgstr "Pred týždňom"
-
-#: ../src/gs-shell-updates.c:163
-msgid "Two weeks ago"
-msgstr "Pred dvoma týždňami"
-
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:167
+#: ../src/gs-shell-updates.c:145
 msgid "%e %B %Y"
 msgstr "%e. %B %Y"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:228
+#: ../src/gs-shell-updates.c:206
 msgid "Setting up updates…"
 msgstr "Nastavujú sa aktualizácie…"
 
-#: ../src/gs-shell-updates.c:229 ../src/gs-shell-updates.c:236
+#: ../src/gs-shell-updates.c:207 ../src/gs-shell-updates.c:214
 msgid "(This could take a while)"
 msgstr "(Môže to chvíľu trvať)"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:235
+#: ../src/gs-shell-updates.c:213
 msgid "Looking for new updates…"
 msgstr "Vyhľadávajú sa nové aktualizácie…"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:242
+#: ../src/gs-shell-updates.c:220
 msgid "Checking for updates…"
 msgstr "Zisťuje sa dostupnosť aktualizácií…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:358
+#: ../src/gs-shell-updates.c:338
 #, c-format
 msgid "Last checked: %s"
 msgstr "Posledná kontrola: %s"
 
 #. TRANSLATORS: window title to suggest that we are showing
 #. * the offline updates that have just been applied
-#: ../src/gs-shell-updates.c:495
+#: ../src/gs-shell-updates.c:475
 msgid "Recent Software Updates"
 msgstr "Nedávne aktualizácie softvéru"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:803
+#: ../src/gs-shell-updates.c:783
 msgid "No Network"
 msgstr "Žiadne pripojenie k sieti\""
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:807
+#: ../src/gs-shell-updates.c:787
 msgid "Internet access is required to check for updates."
 msgstr "Na zistenie dostupnosti aktualizácií je potrebný prístup k internetu."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:811
+#: ../src/gs-shell-updates.c:791
 msgid "Network Settings"
 msgstr "Nastavenia siete"
 
 #. TRANSLATORS: $$$
-#: ../src/gs-shell-updates.c:831
+#: ../src/gs-shell-updates.c:811
 msgid "Charges may apply"
 msgstr "Možné zvýšenie poplatkov"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:835
+#: ../src/gs-shell-updates.c:815
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -847,109 +877,9 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:839
+#: ../src/gs-shell-updates.c:819
 msgid "Check Anyway"
 msgstr "Napriek tomu skontrolovať"
-
-#. TRANSLATORS: this source has no apps installed from it
-#: ../src/gs-sources-dialog.c:91
-#| msgid "%s is now installed"
-msgid "No software installed"
-msgstr "Nebol nainštalovaný žiadny softvér"
-
-# cmdline description
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:94
-#, c-format
-#| msgid "Show application details"
-msgid "%i application installed"
-msgid_plural "%i applications installed"
-msgstr[0] "Bolo nainštalovaných %i aplikácií"
-msgstr[1] "Bola nainštalovaná %i aplikácia"
-msgstr[2] "Boli nainštalované %i aplikácie"
-
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:99
-#, c-format
-#| msgid "%s is now installed"
-msgid "%i add-on installed"
-msgid_plural "%i add-ons installed"
-msgstr[0] "Bolo nainštalovaných %i doplnkov"
-msgstr[1] "Bol nainštalovaný %i doplnok"
-msgstr[2] "Boli nainštalované %i doplnky"
-
-# * https://bugzilla.gnome.org/show_bug.cgi?id=726990
-#. TRANSLATORS: this source has some apps and addons installed from it
-#: ../src/gs-sources-dialog.c:104
-#, c-format
-msgid "%i application and %i add-ons installed"
-msgid_plural "%i applications and %i add-ons installed"
-msgstr[0] "Bolo nainštalovaných %i aplikácií a %i doplnkov"
-msgstr[1] "Bola nainštalovaná %i aplikácia a %i doplnkov"
-msgstr[2] "Boli nainštalované %i aplikácie a %i doplnkov"
-
-# GtkButton
-#: ../src/gs-sources-dialog.c:296 ../src/gs-sources-dialog.ui.h:14
-#| msgid "Remove"
-msgid "Remove Source"
-msgstr "Odstrániť zdroj"
-
-#: ../src/gs-sources-dialog.c:311
-#| msgid "Removing"
-msgid "Removing…"
-msgstr "Odstraňuje sa…"
-
-#. vim: set noexpandtab:
-#: ../src/gs-sources-dialog.ui.h:1
-#| msgid "Software"
-msgid "Software Sources"
-msgstr "Zdroje softvéru"
-
-#: ../src/gs-sources-dialog.ui.h:3
-msgid "No sources found."
-msgstr "Nenašli sa žiadne zdroje"
-
-#: ../src/gs-sources-dialog.ui.h:4
-msgid "Software sources give you access to additional software."
-msgstr "Zdroje softvéru vám umožňujú získať dodatočný softvér."
-
-#: ../src/gs-sources-dialog.ui.h:5
-msgid ""
-"Removing a source will also remove any software you have installed from it."
-msgstr ""
-"Odstránením zdroja bude tiež odstránený všetok softvér, ktorý ste z neho "
-"nainštalovali."
-
-#: ../src/gs-sources-dialog.ui.h:6
-msgid "No software installed from this source"
-msgstr "\"Z tohto zdroja nie je nainštalovaný žiadny softvér"
-
-#: ../src/gs-sources-dialog.ui.h:7
-msgid "Installed from this Source"
-msgstr "Nainštalovaný z tohto zdroja"
-
-#: ../src/gs-sources-dialog.ui.h:8
-#| msgid "Show Details"
-msgid "Source Details"
-msgstr "podrobnosti o zdroji"
-
-#: ../src/gs-sources-dialog.ui.h:10
-msgid "Last Checked"
-msgstr "Posledná kontrola"
-
-#: ../src/gs-sources-dialog.ui.h:11
-msgid "Added"
-msgstr "Pridaný"
-
-# GtkButton
-#: ../src/gs-sources-dialog.ui.h:12
-#| msgid "_Website"
-msgid "Website"
-msgstr "Webová stránka"
-
-#: ../src/gs-sources-dialog.ui.h:13
-msgid "January 30, 2014"
-msgstr "30. januára 2014"
 
 #: ../src/gs-update-monitor.c:102
 msgid "Software Updates Available"
@@ -969,7 +899,7 @@ msgstr "Zobraziť"
 msgid "Not Now"
 msgstr "Teraz nie"
 
-#: ../src/gs-update-monitor.c:156
+#: ../src/gs-update-monitor.c:148
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Aktualizácie softvéru boli nainštalované"
@@ -977,7 +907,7 @@ msgstr[1] "Aktualizácia softvéru bola nainštalovaná"
 msgstr[2] "Aktualizácie softvéru boli nainštalované"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:160
+#: ../src/gs-update-monitor.c:152
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Dôležité aktualizácie operačného systému boli nainštalované."
@@ -985,24 +915,24 @@ msgstr[1] "Dôležitá aktualizácia operačného systému bola nainštalovaná.
 msgstr[2] "Dôležité aktualizácie operačného systému boli nainštalované."
 
 # title
-#: ../src/gs-update-monitor.c:165
+#: ../src/gs-update-monitor.c:157
 msgid "Software Updates Failed"
 msgstr "Zlyhanie aktualizácií softvéru"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:159
 msgid "An important OS update failed to be installed."
 msgstr "Zlyhala inštalácia dôležitej aktualizácie operačného systému."
 
-#: ../src/gs-update-monitor.c:176
+#: ../src/gs-update-monitor.c:168
 msgid "Review"
 msgstr "Prezrieť"
 
-#: ../src/gs-update-monitor.c:178
+#: ../src/gs-update-monitor.c:170
 msgid "Show Details"
 msgstr "Zobraziť podrobnosti"
 
-#: ../src/gs-update-monitor.c:179
+#: ../src/gs-update-monitor.c:171
 msgid "OK"
 msgstr "OK"
 
@@ -1056,7 +986,7 @@ msgstr "Inštalácia softvéru %s zlyhala."
 msgid "Removal of %s failed."
 msgstr "Odstránenie softvéru %s zlyhalo."
 
-#: ../src/plugins/gs-plugin-appstream.c:350
+#: ../src/plugins/gs-plugin-appstream.c:348
 #, c-format
 msgid "No AppStream data found"
 msgstr "Nenašli sa žiadne údaje toku AppStream"
@@ -1073,22 +1003,22 @@ msgid "Proprietary"
 msgstr "Uzavretá"
 
 #. TRANSLATORS: audio/video decoders
-#: ../src/plugins/gs-plugin-packagekit.c:580
+#: ../src/plugins/gs-plugin-packagekit.c:582
 msgid "Codecs"
 msgstr "Kodeky"
 
 #. TRANSLATORS: fonts of different styles or languages
-#: ../src/plugins/gs-plugin-packagekit.c:584
+#: ../src/plugins/gs-plugin-packagekit.c:586
 msgid "Fonts"
 msgstr "Písma"
 
 #. TRANSLATORS: these are ways to enter text
-#: ../src/plugins/gs-plugin-packagekit.c:588
+#: ../src/plugins/gs-plugin-packagekit.c:590
 msgid "Input Sources"
 msgstr "Zdroje vstupu"
 
 #. TRANSLATORS: additional languages for apps
-#: ../src/plugins/gs-plugin-packagekit.c:592
+#: ../src/plugins/gs-plugin-packagekit.c:594
 msgid "Language Packs"
 msgstr "Jazykové balíky"
 
@@ -1164,52 +1094,72 @@ msgid "Development Tools"
 msgstr "Nástroje na vývoj"
 
 #: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Building"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Zostavovanie"
 
 #: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Databases"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Databázy"
 
 #: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Debuggers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Nástroje na ladenie"
 
 #: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "GUI Designers"
+msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "Návrhári prostredia GUI"
 
 #: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "IDE"
+msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "Integrované prostredia IDE"
 
 #: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Profiling"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Profilovanie"
 
 #: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Project Management"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Správa projektov"
 
 #: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Revision Control"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Správa revízií"
 
 #: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Translation"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Preklad"
 
 #: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Vývoj webu"
 
@@ -1499,82 +1449,114 @@ msgid "Internet"
 msgstr "Internet"
 
 #: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Chat"
+msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Rozhovor"
 
 #: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Dialup"
+msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Spojenie vytáčaním"
 
 #: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Email"
+msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "Email"
 
 #: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Feed"
+msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Informačný kanál"
 
 #: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "File Transfer"
+msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Prenos súborov"
 
 #: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Ham Radio"
+msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
-msgstr "Nástroje na bezdrôtové spojenia"
+msgstr "Amatérske rádio"
 
 #: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Instant Messaging"
+msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Priama komunikácia"
 
 #: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "IRC Clients"
+msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "Klienti IRC"
 
 #: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Monitor"
+msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Monitorovanie"
 
 #: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "News"
+msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Diskusné kanály noviniek"
 
 #: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "P2P"
+msgctxt "Menu subcategory of Internet"
 msgid "P2P"
 msgstr "P2P"
 
 #: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Remote Access"
+msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Vzdialený prístup"
 
 #: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Telephony"
+msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Telefonovanie"
 
 #: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Video Conference"
+msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Video konferencia"
 
 #: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Network"
+#| msgid "Web Browser"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Webový prehliadač"
 
 #: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Network"
+#| msgctxt "Menu subcategory of Development"
+#| msgid "Web Development"
+msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
 msgstr "Vývoj webu"
 
@@ -1859,52 +1841,72 @@ msgid "Utilities"
 msgstr "Pomôcky"
 
 #: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Accessibility"
+msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Uľahčenie prístupu"
 
 #: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Archiving"
+msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Archivácia"
 
 #: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Calculator"
+msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Kalkulačka"
 
 #: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Clock"
+msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Hodiny"
 
 #: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Compression"
+msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Komprimácia"
 
 #: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of System"
+#| msgid "File Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
 msgstr "Súborové nástroje"
 
 #: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Maps"
+msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Mapy"
 
 #: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Spirituality"
+msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Spiritualita"
 
 #: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Telephony Tools"
+msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Nástroje na telefonovanie"
 
 #: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utility"
+#| msgctxt "Menu subcategory of Utility"
+#| msgid "Text Editor"
+msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
 msgstr "Textový editor"
 
@@ -1944,21 +1946,37 @@ msgid "TV"
 msgstr "Televízia"
 
 #: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Addons"
+#| msgid "Fonts"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Fonts"
 msgstr "Písma"
 
 #: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Addons"
+#| msgid "Codecs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Kodeky"
 
 #: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Addons"
+#| msgid "Input Sources"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Zdroje vstupu"
 
 #: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Addons"
+#| msgid "Language Packs"
+msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Jazykové balíky"
+
+#~ msgid "_Pending"
+#~ msgstr "Č_aká na inštaláciu"
+
+#~ msgid "Yesterday, %R"
+#~ msgstr "Včera o %R"
+
+#~ msgid "Yesterday, %l:%M %p"
+#~ msgstr "Včera o %l:%M %p"
+
+#~ msgid "Two days ago"
+#~ msgstr "Pred dvoma dňami"
