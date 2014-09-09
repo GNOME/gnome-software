@@ -149,8 +149,6 @@ gs_application_initialize_plugins (GsApplication *app)
 		g_warning ("Failed to setup plugins: %s", error->message);
 		exit (1);
 	}
-	gs_plugin_loader_set_enabled (app->plugin_loader,
-				      "packagekit-updates", FALSE);
 
 	/* show the priority of each plugin */
 	gs_plugin_loader_dump_state (app->plugin_loader);
