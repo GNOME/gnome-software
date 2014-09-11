@@ -99,6 +99,9 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 
 	priv = gs_feature_tile_get_instance_private (tile);
 
+	if (priv->app)
+		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, tile);
+
 	g_clear_object (&priv->app);
 	if (!app)
 		return;
@@ -159,6 +162,9 @@ gs_feature_tile_destroy (GtkWidget *widget)
 	GsFeatureTilePrivate *priv;
 
 	priv = gs_feature_tile_get_instance_private (tile);
+
+	if (priv->app)
+		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, tile);
 
 	g_clear_object (&priv->app);
 	g_clear_object (&priv->provider);
