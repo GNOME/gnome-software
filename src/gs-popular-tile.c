@@ -111,6 +111,9 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 
 	priv = gs_popular_tile_get_instance_private (tile);
 
+	if (priv->app)
+		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, tile);
+
 	g_clear_object (&priv->app);
 	if (!app)
 		return;
@@ -143,6 +146,9 @@ gs_popular_tile_destroy (GtkWidget *widget)
 	GsPopularTilePrivate *priv;
 
 	priv = gs_popular_tile_get_instance_private (tile);
+
+	if (priv->app)
+		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, tile);
 
 	g_clear_object (&priv->app);
 

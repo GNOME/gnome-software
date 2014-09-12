@@ -350,6 +350,9 @@ gs_app_row_destroy (GtkWidget *object)
 	GsAppRow *app_row = GS_APP_ROW (object);
 	GsAppRowPrivate *priv = app_row->priv;
 
+	if (priv->app)
+		g_signal_handlers_disconnect_by_func (priv->app, gs_app_row_notify_props_changed_cb, app_row);
+
 	g_clear_object (&priv->app);
 	if (priv->pending_refresh_id != 0) {
 		g_source_remove (priv->pending_refresh_id);

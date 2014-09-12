@@ -181,6 +181,9 @@ gs_app_addon_row_destroy (GtkWidget *object)
 	GsAppAddonRow *row = GS_APP_ADDON_ROW (object);
 	GsAppAddonRowPrivate *priv = row->priv;
 
+	if (priv->app)
+		g_signal_handlers_disconnect_by_func (priv->app, gs_app_addon_row_notify_props_changed_cb, row);
+
 	g_clear_object (&priv->app);
 
 	GTK_WIDGET_CLASS (gs_app_addon_row_parent_class)->destroy (object);
