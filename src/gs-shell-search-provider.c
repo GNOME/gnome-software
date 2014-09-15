@@ -36,7 +36,6 @@ typedef struct {
 	GsShellSearchProvider *provider;
 	GDBusMethodInvocation *invocation;
 	gint ref_count;
-	GCancellable *cancellable;
 } PendingSearch;
 
 struct _GsShellSearchProvider {
@@ -46,6 +45,7 @@ struct _GsShellSearchProvider {
 	GDBusObjectManagerServer *object_manager;
 	GsShellSearchProvider2 *skeleton;
 	GsPluginLoader *plugin_loader;
+	GCancellable *cancellable;
 	PendingSearch *current_search;
 
 	GHashTable *metas_cache;
@@ -66,10 +66,8 @@ pending_search_unref (PendingSearch *search)
 {
 	search->ref_count--;
 
-	if (search->ref_count == 0) {
-		g_object_unref (search->cancellable);
+	if (search->ref_count == 0)
 		g_slice_free (PendingSearch, search);
-	}
 }
 
 static void
@@ -78,7 +76,8 @@ cancel_current_search (GsShellSearchProvider *self)
 	if (self->current_search) {
 		PendingSearch *search;
 
-		g_cancellable_cancel (self->current_search->cancellable);
+		g_cancellable_cancel (self->cancellable);
+		g_cancellable_reset (self->cancellable);
 
 		search = self->current_search;
 		self->current_search = NULL;
@@ -171,10 +170,9 @@ execute_search (GsShellSearchProvider  *self,
 	self->current_search->provider = self;
 	self->current_search->invocation = invocation;
 	self->current_search->ref_count = 1;
-	self->current_search->cancellable = g_cancellable_new ();
 
 	gs_plugin_loader_search_async (self->plugin_loader,
-				       string, 0, self->current_search->cancellable,
+				       string, 0, self->cancellable,
 				       search_done_cb,
 				       pending_search_ref (self->current_search));
 	g_free (string);
@@ -369,6 +367,7 @@ search_provider_dispose (GObject *obj)
 
 	g_clear_object (&self->object_manager);
 	g_clear_object (&self->plugin_loader);
+	g_clear_object (&self->cancellable);
 	g_hash_table_destroy (self->metas_cache);
 	cancel_current_search (self);
 	g_application_release (g_application_get_default ());
@@ -411,4 +410,5 @@ gs_shell_search_provider_setup (GsShellSearchProvider *provider,
 				GsPluginLoader *loader)
 {
 	provider->plugin_loader = g_object_ref (loader);
+	provider->cancellable = g_cancellable_new ();
 }
