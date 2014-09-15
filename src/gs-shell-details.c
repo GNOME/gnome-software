@@ -276,8 +276,10 @@ static gboolean
 gs_shell_details_switch_to_idle (gpointer user_data)
 {
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
+	GsShellDetailsPrivate *priv = shell_details->priv;
 
-	gs_shell_details_switch_to (shell_details);
+	if (gs_shell_get_mode (priv->shell) == GS_SHELL_MODE_DETAILS)
+		gs_shell_details_switch_to (shell_details);
 
 	g_object_unref (shell_details);
 	return G_SOURCE_REMOVE;
