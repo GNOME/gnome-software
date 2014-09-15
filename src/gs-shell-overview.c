@@ -132,8 +132,10 @@ out:
 	gs_plugin_list_free (list);
 	priv->loading_popular = FALSE;
 	priv->refresh_count--;
-	if (priv->refresh_count == 0)
+	if (priv->refresh_count == 0) {
+		priv->cache_valid = TRUE;
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
+	}
 }
 
 static void
@@ -185,8 +187,10 @@ out:
 	gs_plugin_list_free (list);
 	priv->loading_popular_rotating = FALSE;
 	priv->refresh_count--;
-	if (priv->refresh_count == 0)
+	if (priv->refresh_count == 0) {
+		priv->cache_valid = TRUE;
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
+	}
 }
 
 static void
@@ -236,8 +240,10 @@ out:
 	gs_plugin_list_free (list);
 	priv->loading_featured = FALSE;
 	priv->refresh_count--;
-	if (priv->refresh_count == 0)
+	if (priv->refresh_count == 0) {
+		priv->cache_valid = TRUE;
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
+	}
 }
 
 static void
@@ -295,11 +301,12 @@ out:
 	}
 	gtk_widget_set_visible (priv->category_heading, has_category);
 
-	priv->cache_valid = TRUE;
 	priv->loading_categories = FALSE;
 	priv->refresh_count--;
-	if (priv->refresh_count == 0)
+	if (priv->refresh_count == 0) {
+		priv->cache_valid = TRUE;
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
+	}
 }
 
 /**
