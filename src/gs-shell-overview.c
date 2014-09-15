@@ -42,6 +42,10 @@ struct GsShellOverviewPrivate
 	gboolean		 cache_valid;
 	GsShell			*shell;
 	gint			 refresh_count;
+	gboolean		 loading_featured;
+	gboolean		 loading_popular;
+	gboolean		 loading_popular_rotating;
+	gboolean		 loading_categories;
 	gboolean		 empty;
 
 	GtkWidget		*bin_featured;
@@ -126,6 +130,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 
 out:
 	gs_plugin_list_free (list);
+	priv->loading_popular = FALSE;
 	priv->refresh_count--;
 	if (priv->refresh_count == 0)
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
@@ -178,6 +183,7 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 
 out:
 	gs_plugin_list_free (list);
+	priv->loading_popular_rotating = FALSE;
 	priv->refresh_count--;
 	if (priv->refresh_count == 0)
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
@@ -228,6 +234,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 
 out:
 	gs_plugin_list_free (list);
+	priv->loading_featured = FALSE;
 	priv->refresh_count--;
 	if (priv->refresh_count == 0)
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
@@ -289,6 +296,7 @@ out:
 	gtk_widget_set_visible (priv->category_heading, has_category);
 
 	priv->cache_valid = TRUE;
+	priv->loading_categories = FALSE;
 	priv->refresh_count--;
 	if (priv->refresh_count == 0)
 		g_signal_emit (shell, signals[SIGNAL_REFRESHED], 0);
@@ -305,7 +313,6 @@ gs_shell_overview_load (GsShellOverview *shell_overview)
 	const gchar *category_of_day;
 
 	priv->empty = TRUE;
-	priv->refresh_count = 4;
 
 	date = g_date_time_new_now_utc ();
 	switch (g_date_time_get_day_of_year (date) % 4) {
@@ -335,33 +342,49 @@ gs_shell_overview_load (GsShellOverview *shell_overview)
 	}
 	g_date_time_unref (date);
 
-	gs_plugin_loader_get_featured_async (priv->plugin_loader,
-					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					     priv->cancellable,
-					     gs_shell_overview_get_featured_cb,
-					     shell_overview);
+	if (!priv->loading_featured) {
+		priv->loading_featured = TRUE;
+		gs_plugin_loader_get_featured_async (priv->plugin_loader,
+						     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						     priv->cancellable,
+						     gs_shell_overview_get_featured_cb,
+						     shell_overview);
+		priv->refresh_count++;
+	}
 
-	gs_plugin_loader_get_popular_async (priv->plugin_loader,
-					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					    NULL,
-					    category_of_day,
-					    priv->cancellable,
-					    gs_shell_overview_get_popular_cb,
-					    shell_overview);
+	if (!priv->loading_popular) {
+		priv->loading_popular = TRUE;
+		gs_plugin_loader_get_popular_async (priv->plugin_loader,
+						    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						    NULL,
+						    category_of_day,
+						    priv->cancellable,
+						    gs_shell_overview_get_popular_cb,
+						    shell_overview);
+		priv->refresh_count++;
+	}
 
-	gs_plugin_loader_get_popular_async (priv->plugin_loader,
-					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					    category_of_day,
-					    NULL,
-					    priv->cancellable,
-					    gs_shell_overview_get_popular_rotating_cb,
-					    shell_overview);
+	if (!priv->loading_popular_rotating) {
+		priv->loading_popular_rotating = TRUE;
+		gs_plugin_loader_get_popular_async (priv->plugin_loader,
+						    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						    category_of_day,
+						    NULL,
+						    priv->cancellable,
+						    gs_shell_overview_get_popular_rotating_cb,
+						    shell_overview);
+		priv->refresh_count++;
+	}
 
-	gs_plugin_loader_get_categories_async (priv->plugin_loader,
-					       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					       priv->cancellable,
-					       gs_shell_overview_get_categories_cb,
-					       shell_overview);
+	if (!priv->loading_categories) {
+		priv->loading_categories = TRUE;
+		gs_plugin_loader_get_categories_async (priv->plugin_loader,
+						       GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						       priv->cancellable,
+						       gs_shell_overview_get_categories_cb,
+						       shell_overview);
+		priv->refresh_count++;
+	}
 }
 
 /**
