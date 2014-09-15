@@ -99,7 +99,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 {
 	GError *error_local = NULL;
 	GsApp *app;
-	gboolean ret;
+	gboolean ret = TRUE;
 	gchar **package_ids = NULL;
 	gchar **split;
 	guint i;
