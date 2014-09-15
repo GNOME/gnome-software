@@ -976,7 +976,7 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 						    state->flags,
 						    cancellable,
 						    &error);
-	if (state->list == NULL) {
+	if (error != NULL) {
 		g_task_return_error (task, error);
 		goto out;
 	}
@@ -1091,7 +1091,7 @@ gs_plugin_loader_get_sources_thread_cb (GTask *task,
 						    state->flags,
 						    cancellable,
 						    &error);
-	if (state->list == NULL) {
+	if (error != NULL) {
 		g_task_return_error (task, error);
 		goto out;
 	}
@@ -1189,12 +1189,12 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
 						    state->flags,
 						    cancellable,
 						    &error);
-	state->list = g_list_concat (state->list, g_list_copy_deep (plugin_loader->priv->queued_installs, (GCopyFunc)g_object_ref, NULL));
-
-	if (state->list == NULL) {
+	if (error != NULL) {
 		g_task_return_error (task, error);
 		goto out;
 	}
+
+	state->list = g_list_concat (state->list, g_list_copy_deep (plugin_loader->priv->queued_installs, (GCopyFunc)g_object_ref, NULL));
 
 	/* filter package list */
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
@@ -1297,7 +1297,7 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 						    state->popular_category_exclude,
 						    cancellable,
 						    &error);
-	if (state->list == NULL) {
+	if (error != NULL) {
 		g_task_return_error (task, error);
 		goto out;
 	}
@@ -1404,7 +1404,7 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
 						    state->flags,
 						    cancellable,
 						    &error);
-	if (state->list == NULL) {
+	if (error != NULL) {
 		g_task_return_error (task, error);
 		goto out;
 	}
