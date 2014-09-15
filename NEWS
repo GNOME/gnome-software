@@ -1,3 +1,51 @@
+Version 3.13.92
+~~~~~~~~~~~~~~~
+Released: 2014-09-15
+
+* Translations:
+ - Updated Assamese translation (Nilamdyuti Goswami)
+ - Updated Brazilian Portuguese translation (Enrico Nicoletto)
+ - Updated Catalan translation (Gil Forcada)
+ - Updated Catalan (Valencian) translation (Carles Ferrando)
+ - Updated Czech translation (Marek Černocký)
+ - Updated Finnish translation (Jiri Grönroos)
+ - Updated French translation (Alexandre Franke)
+ - Updated Galician translations (Fran Diéguez)
+ - Updated German translation (Christian Kirbach)
+ - Updated Hebrew translation (Yosef Or Boczko)
+ - Updated Hungarian translation (Balázs Úr)
+ - Updated Indonesian translation (Andika Triwidada)
+ - Updated Korean translation (Seong-ho Cho)
+ - Updated Lithuanian translsation (Aurimas Černius)
+ - Updated Norwegian bokmål translation. (Kjartan Maraas)
+ - Updated Polish translation (Piotr Drąg)
+ - Updated Punjabi translation (A S Alam)
+ - Updated Russian translation (Yuri Myasoedov)
+ - Updated Slovak translation (Dušan Kazik)
+ - Updated Spanish translation (Daniel Mustieles)
+ - Updated Swedish translation (Mattias Eriksson)
+
+* New Features:
+ - Use the new PackageKit 1.0.0 'Offline' interface to do offline updates
+   (Richard Hughes)
+
+* Bugfix:
+ - Fix a number of crashes that stemmed from us incorrectly using the gtk+ API
+   from worker threads (Kalev Lember)
+ - Don't use thread unsafe g_main_context_find_source_by_id (Kalev Lember)
+ - Avoid crashing on kind changes on "core" apps (Kalev Lember)
+ - Fix a crash when going back from Details view after having installed an app
+   (Kalev Lember)
+ - Improve the Installed page to not show duplicate entries after having
+   refreshed updates (Kalev Lember)
+ - Fix the gnome-software UI not showing up after using gnome-shell search
+   (Kalev Lember)
+ - Don't show core packages like kernel and glibc under Add-ons (Richard Hughes)
+ - Remove unused PackageKit runtime-updates and search plugins (Richard Hughes)
+ - When searching returns addons, return the application they extend (Richard Hughes)
+ - ... and a number of other crasher and correctness fixes for various corner
+   cases (Kalev Lember)
+
 Version 3.13.91
 ~~~~~~~~~~~~~~~
 Released: 2014-09-02
