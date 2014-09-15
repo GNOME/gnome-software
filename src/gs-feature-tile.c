@@ -49,38 +49,53 @@ gs_feature_tile_get_app (GsFeatureTile *tile)
 	return priv->app;
 }
 
-static void
-app_state_changed (GsApp *app, GParamSpec *pspec, GsFeatureTile *tile)
+static gboolean
+app_state_changed_idle (gpointer user_data)
 {
+        GsFeatureTile *tile = GS_FEATURE_TILE (user_data);
+        GsFeatureTilePrivate *priv;
         AtkObject *accessible;
         gchar *name;
 
+        priv = gs_feature_tile_get_instance_private (tile);
         accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
-        switch (gs_app_get_state (app)) {
+        switch (gs_app_get_state (priv->app)) {
         case AS_APP_STATE_INSTALLED:
         case AS_APP_STATE_INSTALLING:
         case AS_APP_STATE_REMOVING:
                 name = g_strdup_printf ("%s (%s)",
-                                        gs_app_get_name (app),
+                                        gs_app_get_name (priv->app),
                                         _("Installed"));
                 break;
         case AS_APP_STATE_UPDATABLE:
                 name = g_strdup_printf ("%s (%s)",
-                                        gs_app_get_name (app),
+                                        gs_app_get_name (priv->app),
                                         _("Updates"));
                 break;
         case AS_APP_STATE_AVAILABLE:
         default:
-                name = g_strdup (gs_app_get_name (app));
+                name = g_strdup (gs_app_get_name (priv->app));
                 break;
         }
 
         if (GTK_IS_ACCESSIBLE (accessible)) {
                 atk_object_set_name (accessible, name);
-                atk_object_set_description (accessible, gs_app_get_summary (app));
+                atk_object_set_description (accessible, gs_app_get_summary (priv->app));
         }
         g_free (name);
+
+        g_object_unref (tile);
+        return G_SOURCE_REMOVE;
+}
+
+static void
+app_state_changed (GsApp *app, GParamSpec *pspec, GsFeatureTile *tile)
+{
+	guint id;
+
+	id = g_idle_add (app_state_changed_idle, g_object_ref (tile));
+	g_source_set_name_by_id (id, "[gnome-software] app_state_changed_idle");
 }
 
 void

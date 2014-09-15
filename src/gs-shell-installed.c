@@ -200,6 +200,17 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 	gtk_widget_destroy (dialog);
 }
 
+static gboolean
+gs_shell_installed_invalidate_sort_idle (gpointer user_data)
+{
+	GsShellInstalled *shell = GS_SHELL_INSTALLED (user_data);
+
+	gtk_list_box_invalidate_sort (GTK_LIST_BOX (shell->priv->list_box_install));
+
+	g_object_unref (shell);
+	return G_SOURCE_REMOVE;
+}
+
 /**
  * gs_shell_installed_notify_state_changed_cb:
  **/
@@ -208,7 +219,10 @@ gs_shell_installed_notify_state_changed_cb (GsApp *app,
 					    GParamSpec *pspec,
 					    GsShellInstalled *shell)
 {
-	gtk_list_box_invalidate_sort (GTK_LIST_BOX (shell->priv->list_box_install));
+	guint id;
+
+	id = g_idle_add (gs_shell_installed_invalidate_sort_idle, g_object_ref (shell));
+	g_source_set_name_by_id (id, "[gnome-software] gs_shell_installed_invalidate_sort_idle");
 }
 
 static void selection_changed (GsShellInstalled *shell);

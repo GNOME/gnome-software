@@ -153,12 +153,26 @@ gs_app_addon_row_get_addon (GsAppAddonRow *row)
 	return row->priv->app;
 }
 
+static gboolean
+gs_app_addon_row_refresh_idle (gpointer user_data)
+{
+	GsAppAddonRow *row = GS_APP_ADDON_ROW (user_data);
+
+	gs_app_addon_row_refresh (row);
+
+	g_object_unref (row);
+	return G_SOURCE_REMOVE;
+}
+
 static void
 gs_app_addon_row_notify_props_changed_cb (GsApp *app,
                                           GParamSpec *pspec,
                                           GsAppAddonRow *row)
 {
-	gs_app_addon_row_refresh (row);
+	guint id;
+
+	id = g_idle_add (gs_app_addon_row_refresh_idle, g_object_ref (row));
+	g_source_set_name_by_id (id, "[gnome-software] gs_app_addon_row_refresh_idle");
 }
 
 void

@@ -272,6 +272,17 @@ gs_shell_details_switch_to (GsShellDetails *shell_details)
 	gs_grab_focus_when_mapped (priv->scrolledwindow_details);
 }
 
+static gboolean
+gs_shell_details_switch_to_idle (gpointer user_data)
+{
+	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
+
+	gs_shell_details_switch_to (shell_details);
+
+	g_object_unref (shell_details);
+	return G_SOURCE_REMOVE;
+}
+
 /**
  * gs_shell_details_notify_state_changed_cb:
  **/
@@ -280,7 +291,10 @@ gs_shell_details_notify_state_changed_cb (GsApp *app,
 					  GParamSpec *pspec,
 					  GsShellDetails *shell_details)
 {
-	gs_shell_details_switch_to (shell_details);
+	guint id;
+
+	id = g_idle_add (gs_shell_details_switch_to_idle, g_object_ref (shell_details));
+	g_source_set_name_by_id (id, "[gnome-software] gs_shell_details_switch_to_idle");
 }
 
 static void

@@ -51,9 +51,10 @@ gs_app_tile_get_app (GsAppTile *tile)
 	return priv->app;
 }
 
-static void
-app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
+static gboolean
+app_state_changed_idle (gpointer user_data)
 {
+	GsAppTile *tile = GS_APP_TILE (user_data);
 	AtkObject *accessible;
 	GsAppTilePrivate *priv;
 	GtkWidget *label;
@@ -64,11 +65,11 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
         accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
 	label = gtk_bin_get_child (GTK_BIN (priv->eventbox));
-	switch (gs_app_get_state (app)) {
+	switch (gs_app_get_state (priv->app)) {
 	case AS_APP_STATE_INSTALLED:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
-					gs_app_get_name (app),
+					gs_app_get_name (priv->app),
 					_("Installed"));
 		/* TRANSLATORS: this is the small blue label on the tile
 		 * that tells the user the application is installed */
@@ -77,7 +78,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 	case AS_APP_STATE_INSTALLING:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
-					gs_app_get_name (app),
+					gs_app_get_name (priv->app),
 					_("Installing"));
 		/* TRANSLATORS: this is the small blue label on the tile
 		 * that tells the user the application is being installing */
@@ -86,7 +87,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 	case AS_APP_STATE_REMOVING:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
-					gs_app_get_name (app),
+					gs_app_get_name (priv->app),
 					_("Removing"));
 		/* TRANSLATORS: this is the small blue label on the tile
 		 * that tells the user the application is being removed */
@@ -95,7 +96,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 	case AS_APP_STATE_UPDATABLE:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
-					gs_app_get_name (app),
+					gs_app_get_name (priv->app),
 					_("Updates"));
 		/* TRANSLATORS: this is the small blue label on the tile
 		 * that tells the user there is an update for the installed
@@ -106,7 +107,7 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
         case AS_APP_STATE_AVAILABLE:
         default:
 		installed = FALSE;
-		name = g_strdup (gs_app_get_name (app));
+		name = g_strdup (gs_app_get_name (priv->app));
                 break;
         }
 
@@ -114,9 +115,21 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 
 	if (GTK_IS_ACCESSIBLE (accessible)) {
 		atk_object_set_name (accessible, name);
-		atk_object_set_description (accessible, gs_app_get_summary (app));
+		atk_object_set_description (accessible, gs_app_get_summary (priv->app));
 	}
 	g_free (name);
+
+	g_object_unref (tile);
+	return G_SOURCE_REMOVE;
+}
+
+static void
+app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
+{
+	guint id;
+
+	id = g_idle_add (app_state_changed_idle, g_object_ref (tile));
+	g_source_set_name_by_id (id, "[gnome-software] app_state_changed_idle");
 }
 
 void
