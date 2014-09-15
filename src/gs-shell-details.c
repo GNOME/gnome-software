@@ -291,10 +291,7 @@ gs_shell_details_notify_state_changed_cb (GsApp *app,
 					  GParamSpec *pspec,
 					  GsShellDetails *shell_details)
 {
-	guint id;
-
-	id = g_idle_add (gs_shell_details_switch_to_idle, g_object_ref (shell_details));
-	g_source_set_name_by_id (id, "[gnome-software] gs_shell_details_switch_to_idle");
+	g_idle_add (gs_shell_details_switch_to_idle, g_object_ref (shell_details));
 }
 
 static void

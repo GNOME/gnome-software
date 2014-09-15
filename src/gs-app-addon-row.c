@@ -169,10 +169,7 @@ gs_app_addon_row_notify_props_changed_cb (GsApp *app,
                                           GParamSpec *pspec,
                                           GsAppAddonRow *row)
 {
-	guint id;
-
-	id = g_idle_add (gs_app_addon_row_refresh_idle, g_object_ref (row));
-	g_source_set_name_by_id (id, "[gnome-software] gs_app_addon_row_refresh_idle");
+	g_idle_add (gs_app_addon_row_refresh_idle, g_object_ref (row));
 }
 
 void

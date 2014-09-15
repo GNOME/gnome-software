@@ -272,15 +272,13 @@ void
 gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 {
 	GsPluginStatusHelper *helper;
-	guint id;
 
 	helper = g_slice_new0 (GsPluginStatusHelper);
 	helper->plugin = plugin;
 	helper->status = status;
 	if (app != NULL)
 		helper->app = g_object_ref (app);
-	id = g_idle_add (gs_plugin_status_update_cb, helper);
-	g_source_set_name_by_id (id, "[gnome-software] gs_plugin_status_update_cb");
+	g_idle_add (gs_plugin_status_update_cb, helper);
 }
 
 /**
@@ -300,9 +298,7 @@ gs_plugin_updates_changed_cb (gpointer user_data)
 void
 gs_plugin_updates_changed (GsPlugin *plugin)
 {
-	guint id;
-	id = g_idle_add (gs_plugin_updates_changed_cb, plugin);
-	g_source_set_name_by_id (id, "[gnome-software] gs_plugin_updates_changed_cb");
+	g_idle_add (gs_plugin_updates_changed_cb, plugin);
 }
 
 /* vim: set noexpandtab: */

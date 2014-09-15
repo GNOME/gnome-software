@@ -325,14 +325,12 @@ static void
 gs_app_queue_notify (GsApp *app, const gchar *property_name)
 {
 	AppNotifyData *notify_data;
-	guint id;
 
 	notify_data = g_new (AppNotifyData, 1);
 	notify_data->app = g_object_ref (app);
 	notify_data->property_name = g_strdup (property_name);
 
-	id = g_idle_add (notify_idle_cb, notify_data);
-	g_source_set_name_by_id (id, "[gnome-software] notify_idle_cb");
+	g_idle_add (notify_idle_cb, notify_data);
 }
 
 /**

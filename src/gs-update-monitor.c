@@ -94,7 +94,6 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 
 	/* rate limit update notifications to once per hour */
 	monitor->reenable_offline_update_id = g_timeout_add_seconds (3600, reenable_offline_update_notification, monitor);
-	g_source_set_name_by_id (monitor->reenable_offline_update_id, "[gnome-software] reenable_offline_update_notification");
 
 	title = _("Software Updates Available");
 	body = _("Important OS and application updates are ready to be installed");
@@ -494,8 +493,6 @@ start_hourly_checks_cb (gpointer data)
 
 	monitor->check_hourly_id =
 		g_timeout_add_seconds (3600, check_hourly_cb, monitor);
-	g_source_set_name_by_id (monitor->check_hourly_id,
-				 "[gnome-software] check_hourly_cb");
 
 	monitor->start_hourly_checks_id = 0;
 	return G_SOURCE_REMOVE;
@@ -534,8 +531,6 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 
 	monitor->check_offline_update_id = 
 		g_timeout_add_seconds (15, check_offline_update_cb, monitor);
-	g_source_set_name_by_id (monitor->check_offline_update_id,
-				 "[gnome-software] check_offline_update_cb");
 
 	monitor->settings = g_settings_new ("org.gnome.software");
 	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
@@ -543,8 +538,6 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 
 	monitor->start_hourly_checks_id =
 		g_timeout_add_seconds (60, start_hourly_checks_cb, monitor);
-	g_source_set_name_by_id (monitor->start_hourly_checks_id,
-				 "[gnome-software] start_hourly_checks_cb");
 
 	monitor->cancellable = g_cancellable_new ();
 	monitor->task = pk_task_new ();

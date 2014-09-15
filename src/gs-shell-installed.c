@@ -219,10 +219,7 @@ gs_shell_installed_notify_state_changed_cb (GsApp *app,
 					    GParamSpec *pspec,
 					    GsShellInstalled *shell)
 {
-	guint id;
-
-	id = g_idle_add (gs_shell_installed_invalidate_sort_idle, g_object_ref (shell));
-	g_source_set_name_by_id (id, "[gnome-software] gs_shell_installed_invalidate_sort_idle");
+	g_idle_add (gs_shell_installed_invalidate_sort_idle, g_object_ref (shell));
 }
 
 static void selection_changed (GsShellInstalled *shell);

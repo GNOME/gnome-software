@@ -126,10 +126,7 @@ app_state_changed_idle (gpointer user_data)
 static void
 app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 {
-	guint id;
-
-	id = g_idle_add (app_state_changed_idle, g_object_ref (tile));
-	g_source_set_name_by_id (id, "[gnome-software] app_state_changed_idle");
+	g_idle_add (app_state_changed_idle, g_object_ref (tile));
 }
 
 void

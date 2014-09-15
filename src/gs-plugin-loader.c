@@ -2104,14 +2104,12 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	GPtrArray *addons;
 	gboolean ret;
 	guint i;
-	guint id;
 
 	/* add to list */
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_add (plugin_loader->priv->pending_apps, g_object_ref (state->app));
 	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
-	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
-	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
+	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 
 	/* perform action */
 	ret = gs_plugin_loader_run_action (plugin_loader,
@@ -2149,8 +2147,7 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
 	g_ptr_array_remove (plugin_loader->priv->pending_apps, state->app);
 	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
-	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
-	g_source_set_name_by_id (id, "[gnome-software] emit_pending_apps_idle");
+	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
 
 static gboolean
