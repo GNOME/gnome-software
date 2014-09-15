@@ -298,6 +298,10 @@ gs_shell_installed_load (GsShellInstalled *shell_installed)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 
+	if (priv->waiting)
+		return;
+	priv->waiting = TRUE;
+
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_install));
 
@@ -314,8 +318,6 @@ gs_shell_installed_load (GsShellInstalled *shell_installed)
 					      shell_installed);
 	gs_start_spinner (GTK_SPINNER (priv->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_install), "spinner");
-
-	priv->waiting = TRUE;
 }
 
 /**
@@ -365,8 +367,6 @@ gs_shell_installed_switch_to (GsShellInstalled *shell_installed, gboolean scroll
 	if (priv->cache_valid)
 		return;
 
-	if (priv->waiting)
-		return;
 	gs_shell_installed_load (shell_installed);
 }
 
