@@ -705,10 +705,11 @@ selection_changed (GsShellInstalled *shell_installed)
 	gtk_widget_set_visible (priv->button_folder_remove, has_folders);
 }
 
-static void
+static gboolean
 folder_dialog_done (GsShellInstalled *shell_installed)
 {
 	set_selection_mode (shell_installed, FALSE);
+	return FALSE;
 }
 
 static void
