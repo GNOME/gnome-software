@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-08-27 07:38+0000\n"
-"PO-Revision-Date: 2014-08-27 16:43+0200\n"
+"POT-Creation-Date: 2014-09-21 07:31+0000\n"
+"PO-Revision-Date: 2014-09-21 16:50+0200\n"
 "Last-Translator: Tom Tryfonidis <tomtryf@gmail.com>\n"
 "Language-Team: team@lists.gnome.gr\n"
 "Language: el\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Poedit 1.6.5\n"
+"X-Generator: Poedit 1.6.9\n"
 "X-Project-Style: gnome\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
@@ -51,7 +51,7 @@ msgid "Add to Application Folder"
 msgstr "Προσθήκη στον φάκελο εφαρμογών"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:232 ../src/gs-shell-installed.c:580
+#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:614
 msgid "_Cancel"
 msgstr "_Ακύρωση"
 
@@ -62,8 +62,8 @@ msgstr "_Προσθήκη"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
-#: ../src/gs-app-tile.c:72 ../src/gs-app-tile.c:75 ../src/gs-feature-tile.c:66
-#: ../src/gs-popular-tile.c:73 ../src/gs-popular-tile.c:76
+#: ../src/gs-app-tile.c:73 ../src/gs-app-tile.c:76 ../src/gs-feature-tile.c:69
+#: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Εγκατεστημένο"
@@ -72,7 +72,7 @@ msgstr "Εγκατεστημένο"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:265 ../src/gs-shell.c:156
+#: ../src/gs-application.c:264 ../src/gs-shell.c:156
 msgid "Software"
 msgstr "Λογισμικό"
 
@@ -144,16 +144,16 @@ msgid "Folder Name"
 msgstr "Όνομα φακέλου"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:263
+#: ../src/gs-application.c:262
 msgid "About Software"
 msgstr "Περί του λογισμικού"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:268
+#: ../src/gs-application.c:267
 msgid "A nice way to manage the software on your system."
 msgstr "Ένας ωραίος τρόπος για τη διαχείριση του λογισμικού στο σύστημά σας."
 
-#: ../src/gs-application.c:272
+#: ../src/gs-application.c:271
 msgid "translator-credits"
 msgstr ""
 "Ελληνική μεταφραστική ομάδα GNOME\n"
@@ -164,53 +164,53 @@ msgstr ""
 "Για περισσότερες πληροφορίες, επισκεφθείτε τη σελίδα\n"
 "http://gnome.gr/"
 
-#: ../src/gs-application.c:531
+#: ../src/gs-application.c:535
 msgid "Enter GApplication service mode"
 msgstr "Εισαγωγή λειτουργίας υπηρεσίας GApplication"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:538
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Λειτουργία εκκίνησης : είτε ‘updates’, ‘updated’, ‘installed’ ή ‘overview’"
 
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:538
 msgid "MODE"
 msgstr "ΛΕΙΤΟΥΡΓΙΑ"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:540
 msgid "Search for applications"
 msgstr "Αναζήτηση για εφαρμογές"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:540
 msgid "SEARCH"
 msgstr "ΑΝΑΖΗΤΗΣΗ"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:542
 msgid "Show application details"
 msgstr "Εμφάνιση λεπτομερειών εφαρμογής"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:542
 msgid "ID"
 msgstr "ΑΝΑΓΝΩΡΙΣΤΙΚΟ"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:544
 msgid "Open a local package file"
 msgstr "Άνοιγμα τοπικού πακέτου"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:544
 msgid "FILENAME"
 msgstr "ΟΝΟΜΑ ΑΡΧΕΙΟΥ"
 
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:546
 msgid "Show verbose debugging information"
 msgstr "Εμφάνιση πληροφοριών αποσφαλμάτωσης"
 
-#: ../src/gs-application.c:544
+#: ../src/gs-application.c:548
 msgid "Show profiling information for the service"
 msgstr "Εμφάνιση πληροφοριών προφίλ για την υπηρεσία"
 
-#: ../src/gs-application.c:546
+#: ../src/gs-application.c:550
 msgid "Prefer local file sources to AppStream"
 msgstr "Προτιμήστε τοπικές πηγές αρχείων σε AppStream"
 
@@ -226,7 +226,7 @@ msgstr "Εκκρεμεί"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
 #: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
-#: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
+#: ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
 msgid "Installing"
 msgstr "Εγκαθίσταται"
 
@@ -235,7 +235,7 @@ msgstr "Εγκαθίσταται"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
 #: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
-#: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
+#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:94
 msgid "Removing"
 msgstr "Αφαίρεση"
 
@@ -260,23 +260,23 @@ msgstr "Εγκατάσταση"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1114
-#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:162
+#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1141
+#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "Αφαίρεση"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:99 ../src/gs-app-tile.c:103
-#: ../src/gs-feature-tile.c:71 ../src/gs-popular-tile.c:82
-#: ../src/gs-popular-tile.c:86
+#: ../src/gs-app-tile.c:100 ../src/gs-app-tile.c:104
+#: ../src/gs-feature-tile.c:74 ../src/gs-popular-tile.c:83
+#: ../src/gs-popular-tile.c:87
 msgid "Updates"
 msgstr "Ενημερώσεις"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:215
+#: ../src/gs-category.c:207
 msgid "Other"
 msgstr "Άλλο"
 
@@ -338,81 +338,81 @@ msgid "History"
 msgstr "Ιστορικό"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:249
+#: ../src/gs-offline-updates.c:53
 msgid "Failed To Update"
 msgstr "Αποτυχία ενημέρωσης"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:255
+#: ../src/gs-offline-updates.c:59
 msgid "A previous update was unfinished."
 msgstr "Δεν ολοκληρώθηκε μια προηγούμενη ενημέρωση."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:265
+#: ../src/gs-offline-updates.c:69
 msgid "Network access was required but not available."
 msgstr "Απαιτείται πρόσβαση στο δίκτυο αλλά δεν είναι διαθέσιμη."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:274
+#: ../src/gs-offline-updates.c:78
 msgid "An update was not signed in the correct way."
 msgstr "Μια ενημέρωση δεν υπεγράφη με τον σωστό τρόπο."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:284
+#: ../src/gs-offline-updates.c:88
 msgid "The update could not be completed."
 msgstr "Η ενημέρωση δεν μπόρεσε να ολοκληρωθεί."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:289
+#: ../src/gs-offline-updates.c:93
 msgid "The update was cancelled."
 msgstr "Η ενημέρωση ακυρώθηκε."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:295
+#: ../src/gs-offline-updates.c:99
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
 "Ζητήθηκε μια ενημέρωση εκτός σύνδεσης, αλλά κανένα πακέτο δεν χρειάζεται "
 "ενημέρωση."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:299
+#: ../src/gs-offline-updates.c:103
 msgid "No space was left on the drive."
 msgstr "Δεν έχει απομείνει χώρος στον δίσκο."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:307
+#: ../src/gs-offline-updates.c:111
 msgid "An update failed to install correctly."
 msgstr "Απέτυχε να εγκατασταθεί σωστά μια ενημέρωση."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:312
+#: ../src/gs-offline-updates.c:116
 msgid "The offline update failed in an unexpected way."
 msgstr "Απέτυχε η ενημέρωση εκτός σύνδεσης με απροσδόκητο τρόπο."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:321
+#: ../src/gs-offline-updates.c:125
 msgid "Detailed errors from the package manager follow:"
 msgstr "Ακολουθούν λεπτομερή σφάλματα από τον διαχειριστή πακέτων:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:884
+#: ../src/gs-plugin-loader.c:919
 msgid "OS Updates"
 msgstr "Ενημερώσεις λειτουργικού"
 
 #. TRANSLATORS: this is a longer description of the
-#. * os-update item
-#: ../src/gs-plugin-loader.c:889
+#. * "OS Updates" string
+#: ../src/gs-plugin-loader.c:924
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "Περιλαμβάνει βελτιώσεις απόδοσης, σταθερότητας και ασφάλειας για όλους τους "
@@ -420,12 +420,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1487
+#: ../src/gs-plugin-loader.c:1522
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Δεν υπάρχουν διαθέσιμα πρόσθετα κωδικοποιητών για τη μορφή %s."
 
-#: ../src/gs-plugin-loader.c:1490
+#: ../src/gs-plugin-loader.c:1525
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -437,119 +437,119 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:220
+#: ../src/gs-screenshot-image.c:208
 msgid "Screenshot not found"
 msgstr "Δεν βρέθηκε στιγμιότυπο"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:238
+#: ../src/gs-screenshot-image.c:226
 msgid "Failed to load image"
 msgstr "Αποτυχία φόρτωσης εικόνας"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:366
+#: ../src/gs-screenshot-image.c:354
 msgid "Screenshot size not found"
 msgstr "Δεν βρέθηκε μέγεθος στιγμιοτύπου"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:385
+#: ../src/gs-screenshot-image.c:373
 msgid "Could not create cache"
 msgstr "Αδυναμία δημιουργίας λανθάνουσας μνήμης"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:402
+#: ../src/gs-screenshot-image.c:390
 msgid "Screenshot not valid"
 msgstr "Άκυρο στιγμιότυπο οθόνης"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:408
+#: ../src/gs-screenshot-image.c:396
 msgid "Screenshot not available"
 msgstr "Μη διαθέσιμο στιγμιότυπο οθόνης"
 
-#: ../src/gs-screenshot-image.c:461
+#: ../src/gs-screenshot-image.c:454
 msgid "Screenshot"
 msgstr "Στιγμιότυπο οθόνης"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:182 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:175 ../src/gs-shell-details.ui.h:2
 msgid "_Install"
 msgstr "Ε_γκατάσταση"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:193
+#: ../src/gs-shell-details.c:186
 msgid "_Installing"
 msgstr "Ε_γκαθίσταται"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:219 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:212 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "Α_φαίρεση"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:226
+#: ../src/gs-shell-details.c:219
 msgid "_Removing"
 msgstr "Α_φαιρείται"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:591
+#: ../src/gs-shell-details.c:597
 msgctxt "license"
 msgid "Unknown"
 msgstr "Άγνωστη"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:604
+#: ../src/gs-shell-details.c:610
 msgctxt "version"
 msgid "Unknown"
 msgstr "Άγνωστη"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:610
+#: ../src/gs-shell-details.c:616
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Υπολογισμός…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:613
+#: ../src/gs-shell-details.c:619
 msgctxt "size"
 msgid "Unknown"
 msgstr "Άγνωστο"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:625
+#: ../src/gs-shell-details.c:631
 msgctxt "updated"
 msgid "Never"
 msgstr "Ποτέ"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:640
+#: ../src/gs-shell-details.c:646
 msgctxt "menu category"
 msgid "None"
 msgstr "Καμία"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:650
+#: ../src/gs-shell-details.c:656
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Άγνωστη"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1099 ../src/gs-shell-installed.c:167
-#: ../src/gs-shell-search.c:147
+#: ../src/gs-shell-details.c:1126 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Είστε σίγουροι ότι θέλετε να αφαιρέσετε το %s;"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1111 ../src/gs-shell-installed.c:179
-#: ../src/gs-shell-search.c:159
+#: ../src/gs-shell-details.c:1138 ../src/gs-shell-installed.c:179
+#: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -670,7 +670,7 @@ msgstr "Προγραμματιστής"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:492
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:526
 #: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Πρόσθετα"
@@ -681,11 +681,11 @@ msgstr "Τα επιλεγμένα πρόσθετα θα εγκατασταθού
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:482
+#: ../src/gs-shell-installed.c:516
 msgid "System Applications"
 msgstr "Εφαρμογές συστήματος"
 
-#: ../src/gs-shell-installed.c:588
+#: ../src/gs-shell-installed.c:622
 msgid "Click on items to select them"
 msgstr "Πατήστε στα αντικείμενα για να τα επιλέξετε"
 
@@ -707,22 +707,22 @@ msgid "_Remove from Folder"
 msgstr "Α_φαίρεση από τον κατάλογο"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:338
+#: ../src/gs-shell-overview.c:329
 msgid "Recommended Audio Applications"
 msgstr "Προτεινόμενες εφαρμογές ήχου"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:343
+#: ../src/gs-shell-overview.c:334
 msgid "Recommended Games"
 msgstr "Προτεινόμενα παιχνίδια"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:348
+#: ../src/gs-shell-overview.c:339
 msgid "Recommended Graphics Applications"
 msgstr "Προτεινόμενες εφαρμογές γραφικών"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:353
+#: ../src/gs-shell-overview.c:344
 msgid "Recommended Office Applications"
 msgstr "Προτεινόμενες εφαρμογές γραφείου"
 
@@ -758,117 +758,117 @@ msgid "No Application Found"
 msgstr "Δε βρέθηκαν εφαρμογές"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:145
+#: ../src/gs-shell-updates.c:144
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:148
+#: ../src/gs-shell-updates.c:147
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:154
+#: ../src/gs-shell-updates.c:153
 msgid "Yesterday, %R"
 msgstr "Χθες, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:158
+#: ../src/gs-shell-updates.c:157
 msgid "Yesterday, %l:%M %p"
 msgstr "Χθες, %l:%M %p"
 
-#: ../src/gs-shell-updates.c:161
+#: ../src/gs-shell-updates.c:160
 msgid "Two days ago"
 msgstr "Δύο ημέρες πριν"
 
-#: ../src/gs-shell-updates.c:163
+#: ../src/gs-shell-updates.c:162
 msgid "Three days ago"
 msgstr "Τρεις ημέρες πριν"
 
-#: ../src/gs-shell-updates.c:165
+#: ../src/gs-shell-updates.c:164
 msgid "Four days ago"
 msgstr "Τέσσερις ημέρες πριν"
 
-#: ../src/gs-shell-updates.c:167
+#: ../src/gs-shell-updates.c:166
 msgid "Five days ago"
 msgstr "Πέντε ημέρες πριν"
 
-#: ../src/gs-shell-updates.c:169
+#: ../src/gs-shell-updates.c:168
 msgid "Six days ago"
 msgstr "Έξι ημέρες πριν"
 
-#: ../src/gs-shell-updates.c:171
+#: ../src/gs-shell-updates.c:170
 msgid "One week ago"
 msgstr "Πριν από μία εβδομάδα"
 
-#: ../src/gs-shell-updates.c:173
+#: ../src/gs-shell-updates.c:172
 msgid "Two weeks ago"
 msgstr "Πριν από δύο εβδομάδες"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:177
+#: ../src/gs-shell-updates.c:176
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:196
+#: ../src/gs-shell-updates.c:195
 msgid "Downloading new updates…"
 msgstr "Λήψη νέων ενημερώσεων…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:200
+#: ../src/gs-shell-updates.c:199
 msgid "Looking for new updates…"
 msgstr "Αναζήτηση νέων ενημερώσεων…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:254
+#: ../src/gs-shell-updates.c:253
 msgid "Setting up updates…"
 msgstr "Ρύθμιση ενημερώσεων…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:255 ../src/gs-shell-updates.c:262
+#: ../src/gs-shell-updates.c:254 ../src/gs-shell-updates.c:261
 msgid "(This could take a while)"
 msgstr "(Αυτό ίσως απαιτήσει λίγο χρόνο)"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:268
+#: ../src/gs-shell-updates.c:267
 msgid "Checking for updates…"
 msgstr "Έλεγχος για ενημερώσεις…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:402
+#: ../src/gs-shell-updates.c:401
 #, c-format
 msgid "Last checked: %s"
 msgstr "Ελέγχθηκε τελευταία φορά: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:753
+#: ../src/gs-shell-updates.c:779
 msgid "No Network"
 msgstr "Χωρίς δίκτυο"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:757
+#: ../src/gs-shell-updates.c:783
 msgid "Internet access is required to check for updates."
 msgstr "Απαιτείται πρόσβαση διαδικτύου για τον έλεγχο ενημερώσεων."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:761
+#: ../src/gs-shell-updates.c:787
 msgid "Network Settings"
 msgstr "Ρυθμίσεις δικτύου"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:780
+#: ../src/gs-shell-updates.c:806
 msgid "Charges may apply"
 msgstr "Μπορεί να εμφανιστούν φορτία"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:784
+#: ../src/gs-shell-updates.c:810
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -878,7 +878,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:788
+#: ../src/gs-shell-updates.c:814
 msgid "Check Anyway"
 msgstr "Να ελεγχθεί οπωσδήποτε"
 
@@ -992,32 +992,38 @@ msgstr "Προστέθηκε"
 msgid "Website"
 msgstr "Ιστότοπος"
 
+#. TRANSLATORS: this is where the packager did not write a
+#. * description for the update
+#: ../src/gs-update-dialog.c:115
+msgid "No update description available."
+msgstr "Μη διαθέσιμη περιγραφή της ενημέρωσης."
+
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:167
+#: ../src/gs-update-dialog.c:175
 msgid "Installed Updates"
 msgstr "Εγκατεστημένες ενημερώσεις"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:180
+#: ../src/gs-update-dialog.c:189
 #, c-format
 msgid "Installed on %s"
 msgstr "Εγκατεστημένο στο %s"
 
-#: ../src/gs-update-monitor.c:99
+#: ../src/gs-update-monitor.c:98
 msgid "Software Updates Available"
 msgstr "Υπάρχουν διαθέσιμες ενημερώσεις λογισμικού"
 
-#: ../src/gs-update-monitor.c:100
+#: ../src/gs-update-monitor.c:99
 msgid "Important OS and application updates are ready to be installed"
 msgstr ""
 "Σημαντικές ενημερώσεις λειτουργικού συστήματος και εφαρμογών είναι έτοιμες "
 "να εγκατασταθούν "
 
-#: ../src/gs-update-monitor.c:103
+#: ../src/gs-update-monitor.c:102
 msgid "View"
 msgstr "Προβολή"
 
-#: ../src/gs-update-monitor.c:104
+#: ../src/gs-update-monitor.c:103
 msgid "Not Now"
 msgstr "Όχι τώρα"
 
@@ -1034,24 +1040,24 @@ msgid_plural "Important OS updates have been installed."
 msgstr[0] "Εγκαταστάθηκε μια σημαντική ενημέρωση του λειτουργικού συστήματος."
 msgstr[1] "Εγκαταστάθηκαν σημαντικές ενημερώσεις του λειτουργικού συστήματος."
 
-#: ../src/gs-update-monitor.c:153
+#: ../src/gs-update-monitor.c:154
 msgid "Software Updates Failed"
 msgstr "Αποτυχία ενημερώσεων λογισμικού"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:155
+#: ../src/gs-update-monitor.c:156
 msgid "An important OS update failed to be installed."
 msgstr "Απέτυχε να εγκατασταθεί μία σημαντική ενημέρωση λογισμικού."
 
-#: ../src/gs-update-monitor.c:164
+#: ../src/gs-update-monitor.c:165
 msgid "Review"
 msgstr "Αναθεώρηση"
 
-#: ../src/gs-update-monitor.c:166
+#: ../src/gs-update-monitor.c:167
 msgid "Show Details"
 msgstr "Εμφάνιση λεπτομερειών"
 
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:168
 msgid "OK"
 msgstr "Εντάξει"
 
@@ -1078,28 +1084,28 @@ msgstr "Πέντε αστέρια"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:131
+#: ../src/gs-utils.c:129
 #, c-format
 msgid "%s is now installed"
 msgstr "το %s είναι τώρα εγκατεστημένο"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:135
+#: ../src/gs-utils.c:133
 msgid "Launch"
 msgstr "Εκκίνηση"
 
-#: ../src/gs-utils.c:159
+#: ../src/gs-utils.c:157
 msgid "Sorry, this did not work"
 msgstr "Συγνώμη, αυτό δεν δούλεψε"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:163
+#: ../src/gs-utils.c:161
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Απέτυχε η εγκατάσταση του %s."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:168
+#: ../src/gs-utils.c:166
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Απέτυχε η αφαίρεση του %s."
@@ -1113,7 +1119,7 @@ msgstr "Δεν βρέθηκαν δεδομένα AppStream"
 #. * be considered a "Conjunctive AND Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#: ../src/plugins/gs-plugin-appstream.c:312
+#: ../src/plugins/gs-plugin-appstream.c:305
 msgid " and "
 msgstr "και"
 
@@ -1121,7 +1127,7 @@ msgstr "και"
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/plugins/gs-plugin-appstream.c:320
+#: ../src/plugins/gs-plugin-appstream.c:313
 msgid " or "
 msgstr "ή"
 
@@ -2043,9 +2049,6 @@ msgstr "Έ_ξοδος"
 
 #~ msgid "Language Packs"
 #~ msgstr "Γλωσσικά πακέτα"
-
-#~ msgid "No update details were provided"
-#~ msgstr "Δεν δόθηκαν λεπτομέρειες ενημέρωσης"
 
 #~ msgid "_Pending"
 #~ msgstr "Ε_κκρεμεί"
