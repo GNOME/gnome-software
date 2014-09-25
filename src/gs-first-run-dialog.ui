@@ -6,6 +6,7 @@
     <property name="can_focus">False</property>
     <property name="title" translatable="yes">Welcome</property>
     <property name="modal">True</property>
+    <property name="resizable">False</property>
     <property name="destroy_with_parent">True</property>
     <property name="type_hint">dialog</property>
     <property name="skip_taskbar_hint">True</property>
@@ -87,15 +88,15 @@
             <property name="receives_default">True</property>
             <property name="halign">center</property>
             <property name="valign">center</property>
-            <property name="margin_top">2</property>
-            <property name="margin_bottom">5</property>
+            <property name="margin_top">23</property>
+            <property name="margin_bottom">26</property>
             <property name="use_underline">True</property>
             <style>
               <class name="suggested-action"/>
             </style>
           </object>
           <packing>
-            <property name="expand">True</property>
+            <property name="expand">False</property>
             <property name="fill">True</property>
             <property name="position">1</property>
           </packing>
