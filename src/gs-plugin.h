@@ -67,6 +67,7 @@ struct GsPlugin {
 	gchar			*name;
 	GsPluginPrivate		*priv;
 	guint			 pixbuf_size;
+	gint			 scale;
 	GsPluginStatusUpdate	 status_update_fn;
 	gpointer		 status_update_user_data;
 	GsPluginUpdatesChanged	 updates_changed_fn;

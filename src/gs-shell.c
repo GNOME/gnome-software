@@ -488,6 +488,17 @@ gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 }
 
 /**
+ * gs_shell_main_window_mapped_cb:
+ */
+static void
+gs_shell_main_window_mapped_cb (GtkWidget *widget, GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	gs_plugin_loader_set_scale (priv->plugin_loader,
+				    gtk_widget_get_scale_factor (widget));
+}
+
+/**
  * gs_shell_setup:
  */
 void
@@ -506,6 +517,8 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* get UI */
 	priv->builder = gtk_builder_new_from_resource ("/org/gnome/Software/gnome-software.ui");
 	priv->main_window = GTK_WINDOW (gtk_builder_get_object (priv->builder, "window_software"));
+	g_signal_connect (priv->main_window, "map",
+			  G_CALLBACK (gs_shell_main_window_mapped_cb), shell);
 
 	/* add application specific icons to search path */
 	gtk_icon_theme_append_search_path (gtk_icon_theme_get_default (),

@@ -44,6 +44,7 @@ struct GsPluginLoaderPrivate
 	GSettings		*settings;
 
 	gchar			**compatible_projects;
+	gint			 scale;
 
 	GList			*queued_installs;
 	gboolean		 online; 
@@ -2589,12 +2590,39 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->updates_changed_fn = gs_plugin_loader_updates_changed_cb;
 	plugin->updates_changed_user_data = plugin_loader;
 	plugin->profile = g_object_ref (plugin_loader->priv->profile);
+	plugin->scale = gs_plugin_loader_get_scale (plugin_loader);
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
 
 	/* add to array */
 	g_ptr_array_add (plugin_loader->priv->plugins, plugin);
 out:
 	return plugin;
+}
+
+/**
+ * gs_plugin_loader_set_scale:
+ */
+void
+gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, gint scale)
+{
+	GsPlugin *plugin;
+	guint i;
+
+	/* save globally, and update each plugin */
+	plugin_loader->priv->scale = scale;
+	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+		plugin->scale = scale;
+	}
+}
+
+/**
+ * gs_plugin_loader_get_scale:
+ */
+gint
+gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
+{
+	return plugin_loader->priv->scale;
 }
 
 /**
@@ -2828,6 +2856,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	guint i;
 
 	plugin_loader->priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	plugin_loader->priv->scale = 1;
 	plugin_loader->priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
 	plugin_loader->priv->status_last = GS_PLUGIN_STATUS_LAST;
 	plugin_loader->priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
