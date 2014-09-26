@@ -124,7 +124,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	/* set update header */
 	gtk_widget_set_visible (priv->box_header, kind == GS_APP_KIND_NORMAL || kind == GS_APP_KIND_SYSTEM);
 	gtk_label_set_markup (GTK_LABEL (priv->label_details), update_desc);
-	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image_icon), gs_app_get_pixbuf (app));
+	gs_image_set_from_pixbuf (GTK_IMAGE (priv->image_icon), gs_app_get_pixbuf (app));
 	gtk_label_set_label (GTK_LABEL (priv->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (priv->label_summary), gs_app_get_summary (app));
 	g_free (update_desc);

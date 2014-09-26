@@ -26,6 +26,7 @@
 
 #include "gs-popular-tile.h"
 #include "gs-star-widget.h"
+#include "gs-utils.h"
 
 struct _GsPopularTilePrivate
 {
@@ -144,7 +145,7 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 		 	  G_CALLBACK (app_state_changed), tile);
 	app_state_changed (priv->app, NULL, tile);
 
-	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image), gs_app_get_pixbuf (priv->app));
+	gs_image_set_from_pixbuf (GTK_IMAGE (priv->image), gs_app_get_pixbuf (priv->app));
 
 	gtk_label_set_label (GTK_LABEL (priv->label), gs_app_get_name (app));
 }

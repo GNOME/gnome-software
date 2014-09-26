@@ -353,4 +353,27 @@ gs_reboot (GCallback reboot_failed)
 	g_object_unref (bus);
 }
 
+/**
+ * gs_image_set_from_pixbuf_with_scale:
+ **/
+void
+gs_image_set_from_pixbuf_with_scale (GtkImage *image, const GdkPixbuf *pixbuf, gint scale)
+{
+	cairo_surface_t *surface;
+	surface = gdk_cairo_surface_create_from_pixbuf (pixbuf, scale, NULL);
+	gtk_image_set_from_surface (image, surface);
+	cairo_surface_destroy (surface);
+}
+
+/**
+ * gs_image_set_from_pixbuf:
+ **/
+void
+gs_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
+{
+	gint scale;
+	scale = gdk_pixbuf_get_width (pixbuf) / 64;
+	gs_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
+}
+
 /* vim: set noexpandtab: */

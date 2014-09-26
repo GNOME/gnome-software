@@ -168,6 +168,53 @@ out:
 }
 
 /**
+ * _as_app_get_icon_for_scale:
+ */
+static GdkPixbuf *
+_as_app_get_icon_for_scale (AsApp *app, gint scale, GError **error)
+{
+	GdkPixbuf *pixbuf = NULL;
+	const gchar *icon;
+	const gchar *icon_path;
+	gchar *filename_hidpi = NULL;
+	gchar *filename_lodpi = NULL;
+	gchar *filename = NULL;
+
+	/* HiDPI */
+	icon = as_app_get_icon (app);
+	if (icon == NULL)
+		goto out;
+	icon_path = as_app_get_icon_path (app);
+	if (icon_path == NULL)
+		goto out;
+	if (scale == 2) {
+		filename_hidpi = g_build_filename (icon_path, "128x128", icon, NULL);
+		if (g_file_test (filename_hidpi, G_FILE_TEST_EXISTS)) {
+			pixbuf = gdk_pixbuf_new_from_file (filename_hidpi, error);
+			if (pixbuf == NULL)
+				goto out;
+			goto out;
+		}
+	}
+
+	/* LoDPI */
+	filename_lodpi = g_build_filename (icon_path, "64x64", icon, NULL);
+	if (g_file_test (filename_lodpi, G_FILE_TEST_EXISTS)) {
+		pixbuf = gdk_pixbuf_new_from_file (filename_lodpi, error);
+		goto out;
+	}
+
+	/* fallback */
+	filename = g_build_filename (icon_path, icon, NULL);
+	pixbuf = gdk_pixbuf_new_from_file (filename, error);
+out:
+	g_free (filename_hidpi);
+	g_free (filename_lodpi);
+	g_free (filename);
+	return pixbuf;
+}
+
+/**
  * gs_plugin_refine_item_pixbuf:
  */
 static void
@@ -177,7 +224,6 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 	GError *error = NULL;
 	const gchar *icon;
 	gboolean ret;
-	gchar *full_filename = NULL;
 
 	icon = as_app_get_icon (item);
 	switch (as_app_get_icon_kind (item)) {
@@ -195,11 +241,10 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		}
 		break;
 	case AS_ICON_KIND_CACHED:
-		full_filename = g_build_filename (as_app_get_icon_path (item), icon, NULL);
-		pb = gdk_pixbuf_new_from_file (full_filename, &error);
+		pb = _as_app_get_icon_for_scale (item, plugin->scale, &error);
 		if (pb == NULL) {
 			g_warning ("failed to load cached icon %s: %s",
-				   full_filename, error->message);
+				   as_app_get_icon (item), error->message);
 			g_error_free (error);
 			goto out;
 		}
@@ -212,7 +257,6 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 out:
 	if (pb != NULL)
 		g_object_unref (pb);
-	g_free (full_filename);
 }
 
 /**

@@ -51,6 +51,12 @@ GdkPixbuf *gs_pixbuf_load		(const gchar	*icon_name,
 					 GError		**error);
 void     gs_reboot                      (GCallback	  reboot_failed);
 
+void	gs_image_set_from_pixbuf_with_scale	(GtkImage		*image,
+						 const GdkPixbuf	*pixbuf,
+						 gint			 scale);
+void	gs_image_set_from_pixbuf		(GtkImage		*image,
+						 const GdkPixbuf	*pixbuf);
+
 G_END_DECLS
 
 #endif /* __GS_UTILS_H */

@@ -566,7 +566,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 			pixbuf = gs_pixbuf_load ("application-x-executable", NULL, 96, NULL);
 	}
 	if (pixbuf != NULL) {
-		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->application_details_icon), pixbuf);
+		gs_image_set_from_pixbuf (GTK_IMAGE (priv->application_details_icon), pixbuf);
 		gtk_widget_set_visible (priv->application_details_icon, TRUE);
 	} else {
 		gtk_widget_set_visible (priv->application_details_icon, FALSE);

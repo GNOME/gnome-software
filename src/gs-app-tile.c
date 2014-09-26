@@ -26,6 +26,7 @@
 
 #include "gs-app-tile.h"
 #include "gs-star-widget.h"
+#include "gs-utils.h"
 
 struct _GsAppTilePrivate
 {
@@ -166,7 +167,7 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
                           G_CALLBACK (app_state_changed), tile);
         app_state_changed (priv->app, NULL, tile);
 
-	gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image), gs_app_get_pixbuf (app));
+	gs_image_set_from_pixbuf (GTK_IMAGE (priv->image), gs_app_get_pixbuf (app));
 	gtk_label_set_label (GTK_LABEL (priv->name), gs_app_get_name (app));
 	summary = gs_app_get_summary (app);
 	gtk_label_set_label (GTK_LABEL (priv->summary), summary);

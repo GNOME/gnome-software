@@ -173,8 +173,8 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	if (gs_app_get_pixbuf (priv->app))
-		gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image),
-					   gs_app_get_pixbuf (priv->app));
+		gs_image_set_from_pixbuf (GTK_IMAGE (priv->image),
+					  gs_app_get_pixbuf (priv->app));
 	gtk_widget_set_visible (priv->button, FALSE);
 	gtk_widget_set_sensitive (priv->button, TRUE);
 	gtk_widget_set_visible (priv->spinner, FALSE);
