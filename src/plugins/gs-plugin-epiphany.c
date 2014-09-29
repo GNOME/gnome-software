@@ -155,7 +155,7 @@ gs_plugin_add_installed_file (GsPlugin *plugin,
 	gs_app_set_id_kind (*app, AS_ID_KIND_WEB_APP);
 	gs_app_add_source_id (*app, path);
 	gs_app_set_icon (*app, icon);
-	ret = gs_app_load_icon (*app, error);
+	ret = gs_app_load_icon (*app, plugin->scale, error);
 	if (!ret)
 		goto out;
 out:
@@ -648,7 +648,7 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 
 	/* set local icon name */
 	gs_app_set_icon (app, filename_icon);
-	ret = gs_app_load_icon (app, error);
+	ret = gs_app_load_icon (app, plugin->scale, error);
 	if (!ret)
 		goto out;
 

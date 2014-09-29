@@ -248,7 +248,7 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		break;
 	case AS_ICON_KIND_STOCK:
 		gs_app_set_icon (app, icon);
-		ret = gs_app_load_icon (app, &error);
+		ret = gs_app_load_icon (app, plugin->scale, &error);
 		if (!ret) {
 			g_warning ("failed to load stock icon %s: %s",
 				   icon, error->message);

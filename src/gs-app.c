@@ -830,7 +830,7 @@ gs_app_set_icon_path (GsApp *app, const gchar *icon_path)
  * gs_app_load_icon:
  */
 gboolean
-gs_app_load_icon (GsApp *app, GError **error)
+gs_app_load_icon (GsApp *app, gint scale, GError **error)
 {
 	GdkPixbuf *pixbuf = NULL;
 	gboolean ret = TRUE;
@@ -839,7 +839,8 @@ gs_app_load_icon (GsApp *app, GError **error)
 	g_return_val_if_fail (app->priv->icon != NULL, FALSE);
 
 	/* either load from the theme or from a file */
-	pixbuf = gs_pixbuf_load (app->priv->icon, app->priv->icon_path, 64, error);
+	pixbuf = gs_pixbuf_load (app->priv->icon, app->priv->icon_path,
+				 64 * scale, error);
 	if (pixbuf == NULL) {
 		ret = FALSE;
 		goto out;
