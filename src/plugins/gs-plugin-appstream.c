@@ -37,6 +37,7 @@ struct GsPluginPrivate {
 	AsStore			*store;
 	gchar			*locale;
 	gsize			 done_init;
+	gboolean		 has_hi_dpi_support;
 };
 
 static gboolean gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error);
@@ -129,6 +130,9 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GPtrArray *items;
 	gboolean ret;
 	gchar *tmp;
+#if AS_CHECK_VERSION(0,3,1)
+	guint i;
+#endif
 
 	/* get the locale without the UTF-8 suffix */
 	plugin->priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
@@ -162,6 +166,18 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			     _("No AppStream data found"));
 		goto out;
 	}
+
+	/* look for any application with a HiDPI icon kudo */
+#if AS_CHECK_VERSION(0,3,1)
+	for (i = 0; i < items->len; i++) {
+		AsApp *app;
+		app = g_ptr_array_index (items, i);
+		if (as_app_has_kudo_kind (app, AS_KUDO_KIND_HI_DPI_ICON)) {
+			plugin->priv->has_hi_dpi_support = TRUE;
+			break;
+		}
+	}
+#endif
 out:
 	gs_profile_stop (plugin->profile, "appstream::startup");
 	return ret;
@@ -1126,6 +1142,11 @@ gs_plugin_add_popular_from_category (GsPlugin *plugin,
 			continue;
 		if (category_exclude != NULL && as_app_has_category (item, category_exclude))
 			continue;
+#if AS_CHECK_VERSION(0,3,1)
+		if (plugin->priv->has_hi_dpi_support &&
+		    !as_app_has_kudo_kind (item, AS_KUDO_KIND_HI_DPI_ICON))
+			continue;
+#endif
 
 		/* add application */
 		app = gs_app_new (as_app_get_id_full (item));
