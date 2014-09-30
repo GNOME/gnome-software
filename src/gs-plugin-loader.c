@@ -308,13 +308,13 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		}
 	}
 
+	/* dedupe applications we already know about */
+	gs_plugin_loader_list_dedupe (plugin_loader, *list);
+out:
 	/* now emit all the changed signals */
 	for (l = freeze_list; l != NULL; l = l->next)
 		g_object_thaw_notify (G_OBJECT (l->data));
 
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, *list);
-out:
 	gs_plugin_list_free (addons_list);
 	gs_plugin_list_free (related_list);
 	gs_plugin_list_free (freeze_list);
