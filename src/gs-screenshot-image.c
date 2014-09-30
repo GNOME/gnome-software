@@ -30,6 +30,7 @@
 #include <libgnome-desktop/gnome-desktop-thumbnail.h>
 
 #include "gs-screenshot-image.h"
+#include "gs-utils.h"
 
 struct _GsScreenshotImagePrivate
 {
@@ -45,6 +46,7 @@ struct _GsScreenshotImagePrivate
 	const gchar	*current_image;
 	guint		 width;
 	guint		 height;
+	gint		 scale;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
@@ -168,13 +170,17 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 
 	/* show icon */
 	if (g_strcmp0 (priv->current_image, "image1") == 0) {
-		if (pixbuf_bg != NULL)
-			gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image2), pixbuf_bg);
+		if (pixbuf_bg != NULL) {
+			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image2),
+							     pixbuf_bg, priv->scale);
+		}
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image2");
 		priv->current_image = "image2";
 	} else {
-		if (pixbuf_bg != NULL)
-			gtk_image_set_from_pixbuf (GTK_IMAGE (priv->image1), pixbuf_bg);
+		if (pixbuf_bg != NULL) {
+			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image1),
+							     pixbuf_bg, priv->scale);
+		}
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image1");
 		priv->current_image = "image1";
 	}
@@ -326,7 +332,7 @@ void
 gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 				GCancellable *cancellable)
 {
-	AsImage *im;
+	AsImage *im = NULL;
 	GsScreenshotImagePrivate *priv;
 	SoupMessage *msg = NULL;
 	SoupURI *base_uri = NULL;
@@ -344,10 +350,22 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	g_return_if_fail (priv->width != 0);
 	g_return_if_fail (priv->height != 0);
 
-	/* test if size specific cachdir exists */
-	im = as_screenshot_get_image (priv->screenshot,
-				      priv->width,
-				      priv->height);
+	/* load the HiDPI image if it exists */
+	priv->scale = 1;
+	if (gtk_widget_get_scale_factor (GTK_WIDGET (ssimg)) > 1) {
+		im = as_screenshot_get_image (priv->screenshot,
+					      priv->width * 2,
+					      priv->height * 2);
+		if (im != NULL)
+			priv->scale *= 2;
+	}
+
+	/* fallback to LoDPI if it exists */
+	if (im == NULL) {
+		im = as_screenshot_get_image (priv->screenshot,
+					      priv->width,
+					      priv->height);
+	}
 	if (im == NULL) {
 		/* TRANSLATORS: this is when we request a screenshot size that
 		 * the generator did not create or the parser did not add */
