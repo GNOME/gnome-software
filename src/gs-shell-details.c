@@ -834,6 +834,9 @@ gs_shell_details_refresh_addons (GsShellDetails *shell_details)
 		GtkWidget *row;
 
 	        addon = g_ptr_array_index (addons, i);
+		if (gs_app_get_state (addon) == AS_APP_STATE_UNAVAILABLE)
+			continue;
+
 	        row = gs_app_addon_row_new ();
 
 	        gs_app_addon_row_set_addon (GS_APP_ADDON_ROW (row), addon);
