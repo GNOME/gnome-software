@@ -515,7 +515,7 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	GError *error = NULL;
 	GPtrArray *history;
 	GdkPixbuf *pixbuf = NULL;
-	GList *addons, *l;
+	GList *addons;
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget;
 	const gchar *tmp;
@@ -791,16 +791,6 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 	addons = gtk_container_get_children (GTK_CONTAINER (priv->list_box_addons));
 	gtk_widget_set_visible (priv->box_addons, addons != NULL);
-	for (l = addons; l; l = l->next) {
-		/* show checkboxes in front of addons if the app isn't yet installed */
-		switch (gs_app_get_state (priv->app)) {
-		case AS_APP_STATE_INSTALLED:
-		case AS_APP_STATE_UPDATABLE:
-			break;
-		default:
-			break;
-		}
-	}
 	g_list_free (addons);
 }
 
