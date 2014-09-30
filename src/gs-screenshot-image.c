@@ -460,11 +460,6 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 
 	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
-	gtk_widget_add_events (ssimg->priv->stack, GDK_BUTTON_PRESS_MASK |
-	                                           GDK_BUTTON_RELEASE_MASK |
-	                                           GDK_TOUCH_MASK |
-	                                           GDK_ENTER_NOTIFY_MASK |
-	                                           GDK_LEAVE_NOTIFY_MASK);
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (ssimg));
 	if (accessible != 0) {
