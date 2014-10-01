@@ -183,6 +183,59 @@ out:
 	return ret;
 }
 
+#if AS_CHECK_VERSION(0,3,1)
+
+/**
+ * gs_plugin_refine_item_pixbuf:
+ */
+static void
+gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
+{
+	GError *error = NULL;
+	AsIcon *icon;
+	gboolean ret;
+
+	icon = as_app_get_icon_default (item);
+	switch (as_icon_get_kind (icon)) {
+	case AS_ICON_KIND_REMOTE:
+		gs_app_set_icon (app, as_icon_get_name (icon));
+		break;
+	case AS_ICON_KIND_STOCK:
+		gs_app_set_icon (app, as_icon_get_name (icon));
+		ret = gs_app_load_icon (app, plugin->scale, &error);
+		if (!ret) {
+			g_warning ("failed to load stock icon %s: %s",
+				   as_icon_get_name (icon), error->message);
+			g_error_free (error);
+			return;
+		}
+		break;
+	case AS_ICON_KIND_CACHED:
+		if (plugin->scale == 2)
+			icon = as_app_get_icon_for_size (item, 128, 128);
+		if (icon == NULL)
+			icon = as_app_get_icon_for_size (item, 64, 64);
+		if (icon == NULL) {
+			g_warning ("failed to find cached icon %s",
+				   as_icon_get_name (icon));
+			return;
+		}
+		if (!as_icon_load (icon, AS_ICON_LOAD_FLAG_SEARCH_SIZE, &error)) {
+			g_warning ("failed to load cached icon %s: %s",
+				   as_icon_get_name (icon), error->message);
+			g_error_free (error);
+			return;
+		}
+		gs_app_set_pixbuf (app, as_icon_get_pixbuf (icon));
+		break;
+	default:
+		g_warning ("icon kind unknown for %s", as_app_get_id_full (item));
+		break;
+	}
+}
+
+#else
+
 /**
  * _as_app_get_icon_for_scale:
  */
@@ -274,6 +327,7 @@ out:
 	if (pb != NULL)
 		g_object_unref (pb);
 }
+#endif
 
 /**
  * gs_plugin_refine_add_addons:
@@ -585,8 +639,13 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	}
 
 	/* set icon */
+#if AS_CHECK_VERSION(0,3,1)
+	if (as_app_get_icon_default (item) != NULL && gs_app_get_pixbuf (app) == NULL)
+		gs_plugin_refine_item_pixbuf (plugin, app, item);
+#else
 	if (as_app_get_icon (item) != NULL && gs_app_get_pixbuf (app) == NULL)
 		gs_plugin_refine_item_pixbuf (plugin, app, item);
+#endif
 
 	/* set categories */
 	if (as_app_get_categories (item) != NULL &&
