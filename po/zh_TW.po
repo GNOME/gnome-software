@@ -8,15 +8,15 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-08-30 19:40+0000\n"
-"PO-Revision-Date: 2014-08-31 13:57+0800\n"
-"Last-Translator: Chao-Hsiung Liao <j_h_liau@yahoo.com.tw>\n"
+"POT-Creation-Date: 2014-10-02 07:45+0000\n"
+"PO-Revision-Date: 2014-10-02 20:44+0800\n"
+"Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
 "Language: zh_TW\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.6.3\n"
+"X-Generator: Poedit 1.5.4\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
@@ -46,7 +46,7 @@ msgid "Add to Application Folder"
 msgstr "加入到應用程式資料夾中"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:232 ../src/gs-shell-installed.c:580
+#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:614
 msgid "_Cancel"
 msgstr "取消(_C)"
 
@@ -57,8 +57,8 @@ msgstr "加入(_A)"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
-#: ../src/gs-app-tile.c:72 ../src/gs-app-tile.c:75 ../src/gs-feature-tile.c:66
-#: ../src/gs-popular-tile.c:73 ../src/gs-popular-tile.c:76
+#: ../src/gs-app-tile.c:74 ../src/gs-app-tile.c:77 ../src/gs-feature-tile.c:69
+#: ../src/gs-popular-tile.c:75 ../src/gs-popular-tile.c:78
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "已安裝"
@@ -67,7 +67,7 @@ msgstr "已安裝"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:265 ../src/gs-shell.c:156
+#: ../src/gs-application.c:264 ../src/gs-shell.c:156
 msgid "Software"
 msgstr "軟體"
 
@@ -138,67 +138,67 @@ msgid "Folder Name"
 msgstr "資料夾名稱"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:263
+#: ../src/gs-application.c:262
 msgid "About Software"
 msgstr "關於《軟體》"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:268
+#: ../src/gs-application.c:267
 msgid "A nice way to manage the software on your system."
 msgstr "管理系統中軟體的絕佳方式。"
 
-#: ../src/gs-application.c:272
+#: ../src/gs-application.c:271
 msgid "translator-credits"
 msgstr "Cheng-Chia Tseng <pswo10680@gmail.com>, 2013-14."
 
-#: ../src/gs-application.c:531
+#: ../src/gs-application.c:535
 msgid "Enter GApplication service mode"
 msgstr "請輸入 GApplication 服務模式"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:538
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "初始啟動模式：可以是「updates」(更新)、「updated」(已更新)、「installed」(已"
 "安裝) 或「overview」(概覽)"
 
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:538
 msgid "MODE"
 msgstr "模式"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:540
 msgid "Search for applications"
 msgstr "搜尋用程式"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:540
 msgid "SEARCH"
 msgstr "搜尋"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:542
 msgid "Show application details"
 msgstr "顯示應用程式細節"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:542
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:544
 msgid "Open a local package file"
 msgstr "開啟本機軟體包檔案"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:544
 msgid "FILENAME"
 msgstr "FILENAME"
 
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:546
 msgid "Show verbose debugging information"
 msgstr "詳細顯示除錯用訊息"
 
-#: ../src/gs-application.c:544
+#: ../src/gs-application.c:548
 msgid "Show profiling information for the service"
 msgstr "顯示該服務的評測資訊"
 
-#: ../src/gs-application.c:546
+#: ../src/gs-application.c:550
 msgid "Prefer local file sources to AppStream"
 msgstr "AppStream 偏好使用本地端檔案來源"
 
@@ -214,7 +214,7 @@ msgstr "擱置中"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
 #: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
-#: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
+#: ../src/gs-app-tile.c:83 ../src/gs-app-tile.c:86
 msgid "Installing"
 msgstr "安裝中"
 
@@ -223,7 +223,7 @@ msgstr "安裝中"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
 #: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
-#: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
+#: ../src/gs-app-tile.c:92 ../src/gs-app-tile.c:95
 msgid "Removing"
 msgstr "移除中"
 
@@ -248,23 +248,23 @@ msgstr "安裝"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1114
-#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:162
+#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1134
+#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:164
 msgid "Remove"
 msgstr "移除"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:99 ../src/gs-app-tile.c:103
-#: ../src/gs-feature-tile.c:71 ../src/gs-popular-tile.c:82
-#: ../src/gs-popular-tile.c:86
+#: ../src/gs-app-tile.c:101 ../src/gs-app-tile.c:105
+#: ../src/gs-feature-tile.c:74 ../src/gs-popular-tile.c:84
+#: ../src/gs-popular-tile.c:88
 msgid "Updates"
 msgstr "更新"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:215
+#: ../src/gs-category.c:207
 msgid "Other"
 msgstr "其他"
 
@@ -325,90 +325,90 @@ msgid "History"
 msgstr "歷史"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:249
+#: ../src/gs-offline-updates.c:53
 msgid "Failed To Update"
 msgstr "無法更新"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:255
+#: ../src/gs-offline-updates.c:59
 msgid "A previous update was unfinished."
 msgstr "上個更新尚未完成。"
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:265
+#: ../src/gs-offline-updates.c:69
 msgid "Network access was required but not available."
 msgstr "需要有網路存取但卻無法使用。"
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:274
+#: ../src/gs-offline-updates.c:78
 msgid "An update was not signed in the correct way."
 msgstr "有項更新的簽署方式不正確。"
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:284
+#: ../src/gs-offline-updates.c:88
 msgid "The update could not be completed."
 msgstr "無法完成更新。"
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:289
+#: ../src/gs-offline-updates.c:93
 msgid "The update was cancelled."
 msgstr "更新已取消。"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:295
+#: ../src/gs-offline-updates.c:99
 msgid "An offline update was requested but no packages required updating."
 msgstr "已請求離線更新，但沒有軟體包需要更新。"
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:299
+#: ../src/gs-offline-updates.c:103
 msgid "No space was left on the drive."
 msgstr "裝置剩餘空間不足。"
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:307
+#: ../src/gs-offline-updates.c:111
 msgid "An update failed to install correctly."
 msgstr "無法正確安裝更新。"
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:312
+#: ../src/gs-offline-updates.c:116
 msgid "The offline update failed in an unexpected way."
 msgstr "離線更新以不如預期的方式失敗。"
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:321
+#: ../src/gs-offline-updates.c:125
 msgid "Detailed errors from the package manager follow:"
 msgstr "軟體包管理程式的詳細錯誤資訊如下："
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:900
+#: ../src/gs-plugin-loader.c:927
 msgid "OS Updates"
 msgstr "作業系統更新"
 
 #. TRANSLATORS: this is a longer description of the
-#. * os-update item
-#: ../src/gs-plugin-loader.c:905
+#. * "OS Updates" string
+#: ../src/gs-plugin-loader.c:932
 msgid "Includes performance, stability and security improvements."
 msgstr "包括效能、穩定性、安全性等改善。"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1503
+#: ../src/gs-plugin-loader.c:1531
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "沒有可用的 %s 格式附加編解碼器。"
 
-#: ../src/gs-plugin-loader.c:1506
+#: ../src/gs-plugin-loader.c:1534
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -418,119 +418,119 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:220
+#: ../src/gs-screenshot-image.c:214
 msgid "Screenshot not found"
 msgstr "找不到螢幕擷圖"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:238
+#: ../src/gs-screenshot-image.c:232
 msgid "Failed to load image"
 msgstr "無法載入影像"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:366
+#: ../src/gs-screenshot-image.c:372
 msgid "Screenshot size not found"
 msgstr "找不到螢幕擷圖的大小"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:385
+#: ../src/gs-screenshot-image.c:391
 msgid "Could not create cache"
 msgstr "無法建立快取"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:402
+#: ../src/gs-screenshot-image.c:408
 msgid "Screenshot not valid"
 msgstr "螢幕擷圖無效"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:408
+#: ../src/gs-screenshot-image.c:414
 msgid "Screenshot not available"
 msgstr "螢幕擷圖無法使用"
 
-#: ../src/gs-screenshot-image.c:461
+#: ../src/gs-screenshot-image.c:467
 msgid "Screenshot"
 msgstr "螢幕擷圖"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:182 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:175 ../src/gs-shell-details.ui.h:2
 msgid "_Install"
 msgstr "安裝(_I)"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:193
+#: ../src/gs-shell-details.c:186
 msgid "_Installing"
 msgstr "安裝中(_I)"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:219 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:212 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "移除(_R)"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:226
+#: ../src/gs-shell-details.c:219
 msgid "_Removing"
 msgstr "移除中(_R)"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:591
+#: ../src/gs-shell-details.c:597
 msgctxt "license"
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:604
+#: ../src/gs-shell-details.c:610
 msgctxt "version"
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:610
+#: ../src/gs-shell-details.c:616
 msgctxt "size"
 msgid "Calculating…"
 msgstr "計算中…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:613
+#: ../src/gs-shell-details.c:619
 msgctxt "size"
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:625
+#: ../src/gs-shell-details.c:631
 msgctxt "updated"
 msgid "Never"
 msgstr "永不"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:640
+#: ../src/gs-shell-details.c:646
 msgctxt "menu category"
 msgid "None"
 msgstr "無"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:650
+#: ../src/gs-shell-details.c:656
 msgctxt "origin"
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1099 ../src/gs-shell-installed.c:167
-#: ../src/gs-shell-search.c:147
+#: ../src/gs-shell-details.c:1119 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:149
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "您確定要移除 %s？"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1111 ../src/gs-shell-installed.c:179
-#: ../src/gs-shell-search.c:159
+#: ../src/gs-shell-details.c:1131 ../src/gs-shell-installed.c:179
+#: ../src/gs-shell-search.c:161
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s 將被移除，將來若您想使用時則須再次安裝。"
@@ -639,7 +639,7 @@ msgstr "開發者"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:492
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:526
 #: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "附加元件"
@@ -650,11 +650,11 @@ msgstr "選取的附加元件會隨該程式一併安裝。"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:482
+#: ../src/gs-shell-installed.c:516
 msgid "System Applications"
 msgstr "系統應用程式"
 
-#: ../src/gs-shell-installed.c:588
+#: ../src/gs-shell-installed.c:622
 msgid "Click on items to select them"
 msgstr "點按項目可以選取"
 
@@ -676,22 +676,22 @@ msgid "_Remove from Folder"
 msgstr "從資料夾中移除(_R)"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:338
+#: ../src/gs-shell-overview.c:329
 msgid "Recommended Audio Applications"
 msgstr "推薦的音訊應用程式"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:343
+#: ../src/gs-shell-overview.c:334
 msgid "Recommended Games"
 msgstr "推薦的遊戲"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:348
+#: ../src/gs-shell-overview.c:339
 msgid "Recommended Graphics Applications"
 msgstr "推薦的美工圖形應用程式"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:353
+#: ../src/gs-shell-overview.c:344
 msgid "Recommended Office Applications"
 msgstr "推薦的辦公應用程式"
 
@@ -727,117 +727,117 @@ msgid "No Application Found"
 msgstr "找不到應用程式"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:145
+#: ../src/gs-shell-updates.c:144
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:148
+#: ../src/gs-shell-updates.c:147
 msgid "%l:%M %p"
 msgstr "%p %l:%M"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:154
+#: ../src/gs-shell-updates.c:153
 msgid "Yesterday, %R"
 msgstr "昨日 %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:158
+#: ../src/gs-shell-updates.c:157
 msgid "Yesterday, %l:%M %p"
 msgstr "昨日%p %l:%M"
 
-#: ../src/gs-shell-updates.c:161
+#: ../src/gs-shell-updates.c:160
 msgid "Two days ago"
 msgstr "兩天前"
 
-#: ../src/gs-shell-updates.c:163
+#: ../src/gs-shell-updates.c:162
 msgid "Three days ago"
 msgstr "三天前"
 
-#: ../src/gs-shell-updates.c:165
+#: ../src/gs-shell-updates.c:164
 msgid "Four days ago"
 msgstr "四天前"
 
-#: ../src/gs-shell-updates.c:167
+#: ../src/gs-shell-updates.c:166
 msgid "Five days ago"
 msgstr "五天前"
 
-#: ../src/gs-shell-updates.c:169
+#: ../src/gs-shell-updates.c:168
 msgid "Six days ago"
 msgstr "六天前"
 
-#: ../src/gs-shell-updates.c:171
+#: ../src/gs-shell-updates.c:170
 msgid "One week ago"
 msgstr "一週前"
 
-#: ../src/gs-shell-updates.c:173
+#: ../src/gs-shell-updates.c:172
 msgid "Two weeks ago"
 msgstr "兩週前"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:177
+#: ../src/gs-shell-updates.c:176
 msgid "%e %B %Y"
 msgstr "%Y年%m月%e日"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:196
+#: ../src/gs-shell-updates.c:195
 msgid "Downloading new updates…"
 msgstr "下載新的更新中…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:200
+#: ../src/gs-shell-updates.c:199
 msgid "Looking for new updates…"
 msgstr "尋找新的更新中…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:254
+#: ../src/gs-shell-updates.c:253
 msgid "Setting up updates…"
 msgstr "設置更新中…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:255 ../src/gs-shell-updates.c:262
+#: ../src/gs-shell-updates.c:254 ../src/gs-shell-updates.c:261
 msgid "(This could take a while)"
 msgstr "(這可能會花上一段時間)"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:268
+#: ../src/gs-shell-updates.c:267
 msgid "Checking for updates…"
 msgstr "正檢查是否有更新…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:402
+#: ../src/gs-shell-updates.c:401
 #, c-format
 msgid "Last checked: %s"
 msgstr "上次檢查：%s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:753
+#: ../src/gs-shell-updates.c:779
 msgid "No Network"
 msgstr "沒有網路"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:757
+#: ../src/gs-shell-updates.c:783
 msgid "Internet access is required to check for updates."
 msgstr "需要存取網際網路以檢查更新。"
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:761
+#: ../src/gs-shell-updates.c:787
 msgid "Network Settings"
 msgstr "網路設定值"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:780
+#: ../src/gs-shell-updates.c:806
 msgid "Charges may apply"
 msgstr "可能需要費用"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:784
+#: ../src/gs-shell-updates.c:810
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -845,7 +845,7 @@ msgstr "使用行動寬頻檢查更新，可能讓您負擔額外的數據傳輸
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:788
+#: ../src/gs-shell-updates.c:814
 msgid "Check Anyway"
 msgstr "無論如何都檢查"
 
@@ -952,30 +952,37 @@ msgstr "加入時間"
 msgid "Website"
 msgstr "網站"
 
+#. TRANSLATORS: this is where the packager did not write a
+#. * description for the update
+#: ../src/gs-update-dialog.c:115
+#| msgid "No update details were provided"
+msgid "No update description available."
+msgstr "未提供更新的詳細資訊。"
+
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:167
+#: ../src/gs-update-dialog.c:175
 msgid "Installed Updates"
 msgstr "已安裝的更新"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:180
+#: ../src/gs-update-dialog.c:189
 #, c-format
 msgid "Installed on %s"
 msgstr "已安裝於 %s"
 
-#: ../src/gs-update-monitor.c:99
+#: ../src/gs-update-monitor.c:98
 msgid "Software Updates Available"
 msgstr "有軟體更新可用"
 
-#: ../src/gs-update-monitor.c:100
+#: ../src/gs-update-monitor.c:99
 msgid "Important OS and application updates are ready to be installed"
 msgstr "已備妥重要的作業系統與應用程式更新可供安裝"
 
-#: ../src/gs-update-monitor.c:103
+#: ../src/gs-update-monitor.c:102
 msgid "View"
 msgstr "檢視"
 
-#: ../src/gs-update-monitor.c:104
+#: ../src/gs-update-monitor.c:103
 msgid "Not Now"
 msgstr "現在不是時候"
 
@@ -990,24 +997,24 @@ msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "重要的作業系統更新已安裝。"
 
-#: ../src/gs-update-monitor.c:153
+#: ../src/gs-update-monitor.c:154
 msgid "Software Updates Failed"
 msgstr "軟體更新失敗"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:155
+#: ../src/gs-update-monitor.c:156
 msgid "An important OS update failed to be installed."
 msgstr "重要的作業系統更新安裝失敗。"
 
-#: ../src/gs-update-monitor.c:164
+#: ../src/gs-update-monitor.c:165
 msgid "Review"
 msgstr "檢閱"
 
-#: ../src/gs-update-monitor.c:166
+#: ../src/gs-update-monitor.c:167
 msgid "Show Details"
 msgstr "顯示細節"
 
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:168
 msgid "OK"
 msgstr "確定"
 
@@ -1034,33 +1041,33 @@ msgstr "五顆星"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:131
+#: ../src/gs-utils.c:129
 #, c-format
 msgid "%s is now installed"
 msgstr "%s 現已安裝"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:135
+#: ../src/gs-utils.c:133
 msgid "Launch"
 msgstr "啟動"
 
-#: ../src/gs-utils.c:159
+#: ../src/gs-utils.c:157
 msgid "Sorry, this did not work"
 msgstr "很抱歉，那沒有用"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:163
+#: ../src/gs-utils.c:161
 #, c-format
 msgid "Installation of %s failed."
 msgstr "%s 安裝失敗。"
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:168
+#: ../src/gs-utils.c:166
 #, c-format
 msgid "Removal of %s failed."
 msgstr "%s 移除失敗。"
 
-#: ../src/plugins/gs-plugin-appstream.c:162
+#: ../src/plugins/gs-plugin-appstream.c:166
 #, c-format
 msgid "No AppStream data found"
 msgstr "找不到 AppStream 資料"
@@ -1069,7 +1076,7 @@ msgstr "找不到 AppStream 資料"
 #. * be considered a "Conjunctive AND Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#: ../src/plugins/gs-plugin-appstream.c:312
+#: ../src/plugins/gs-plugin-appstream.c:419
 msgid " and "
 msgstr " and "
 
@@ -1077,7 +1084,7 @@ msgstr " and "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/plugins/gs-plugin-appstream.c:320
+#: ../src/plugins/gs-plugin-appstream.c:427
 msgid " or "
 msgstr " or "
 
@@ -1990,9 +1997,6 @@ msgstr "退出(_Q)"
 
 #~ msgid "Recent Software Updates"
 #~ msgstr "最近軟體更新"
-
-#~ msgid "No update details were provided"
-#~ msgstr "未提供更新的詳細資訊"
 
 #~ msgctxt "Menu subcategory of Development"
 #~ msgid "Databases"
