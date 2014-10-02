@@ -86,7 +86,7 @@ static Featured featured[] = {
 	{ "Office", "gramps.desktop" },
 	{ "Office", "lyx.desktop" },
 	{ "System", "gparted.desktop" },
-	{ "System", "gnome-boxes.desktop" },
+	{ "System", "org.gnome.Boxes.desktop" },
 	{ "System", "virt-manager.desktop" },
 	{ "System", "gnome-disks.desktop" },
 	{ "Development", "devassistant.desktop" },
