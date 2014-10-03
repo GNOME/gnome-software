@@ -37,6 +37,7 @@ packagekit_status_enum_to_plugin_status (PkStatusEnum status)
 
 	switch (status) {
 	case PK_STATUS_ENUM_SETUP:
+	case PK_STATUS_ENUM_CANCEL:
 	case PK_STATUS_ENUM_FINISHED:
 	case PK_STATUS_ENUM_UNKNOWN:
 		break;
