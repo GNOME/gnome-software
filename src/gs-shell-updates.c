@@ -666,7 +666,13 @@ gs_shell_updates_get_new_updates (GsShellUpdates *shell_updates)
 				    priv->state == GS_SHELL_UPDATES_STATE_HAS_UPDATES ?
 				    GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES :
 				    GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES);
-	g_cancellable_reset (priv->cancellable_refresh);
+
+	if (priv->cancellable_refresh != NULL) {
+		g_cancellable_cancel (priv->cancellable_refresh);
+		g_object_unref (priv->cancellable_refresh);
+	}
+	priv->cancellable_refresh = g_cancellable_new ();
+
 	gs_plugin_loader_refresh_async (priv->plugin_loader,
 					10 * 60,
 					GS_PLUGIN_REFRESH_FLAGS_UPDATES,
@@ -755,6 +761,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 	if (priv->state == GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES ||
 	    priv->state == GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES) {
 		g_cancellable_cancel (priv->cancellable_refresh);
+		g_clear_object (&priv->cancellable_refresh);
 		return;
 	}
 
@@ -982,7 +989,6 @@ gs_shell_updates_init (GsShellUpdates *shell_updates)
 
 	shell_updates->priv = gs_shell_updates_get_instance_private (shell_updates);
 	shell_updates->priv->control = pk_control_new ();
-	shell_updates->priv->cancellable_refresh = g_cancellable_new ();
 	shell_updates->priv->state = GS_SHELL_UPDATES_STATE_STARTUP;
 	shell_updates->priv->settings = g_settings_new ("org.gnome.software");
 	shell_updates->priv->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
@@ -1001,9 +1007,11 @@ gs_shell_updates_finalize (GObject *object)
 	GsShellUpdates *shell_updates = GS_SHELL_UPDATES (object);
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 
-	g_cancellable_cancel (priv->cancellable_refresh);
+	if (priv->cancellable_refresh != NULL) {
+		g_cancellable_cancel (priv->cancellable_refresh);
+		g_object_unref (priv->cancellable_refresh);
+	}
 
-	g_object_unref (priv->cancellable_refresh);
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);

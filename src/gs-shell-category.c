@@ -134,8 +134,11 @@ gs_shell_category_populate_filtered (GsShellCategory *shell)
 	GtkWidget *tile;
 	guint i;
 
-	g_cancellable_cancel (priv->cancellable);
-	g_cancellable_reset (priv->cancellable);
+	if (priv->cancellable != NULL) {
+		g_cancellable_cancel (priv->cancellable);
+		g_object_unref (priv->cancellable);
+	}
+	priv->cancellable = g_cancellable_new ();
 
 	parent = gs_category_get_parent (priv->category);
 	if (parent == NULL) {
@@ -281,10 +284,14 @@ gs_shell_category_finalize (GObject *object)
 	GsShellCategory *shell = GS_SHELL_CATEGORY (object);
 	GsShellCategoryPrivate *priv = shell->priv;
 
+	if (priv->cancellable != NULL) {
+		g_cancellable_cancel (priv->cancellable);
+		g_clear_object (&priv->cancellable);
+	}
+
 	g_clear_object (&priv->builder);
 	g_clear_object (&priv->category);
 	g_clear_object (&priv->plugin_loader);
-	g_clear_object (&priv->cancellable);
 	g_clear_object (&priv->col0_placeholder);
 	g_clear_object (&priv->col1_placeholder);
 
@@ -346,7 +353,6 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	priv->builder = g_object_ref (builder);
-	priv->cancellable = g_cancellable_new ();
 	priv->shell = shell;
 
 	g_signal_connect (priv->listbox_filter, "row-selected", G_CALLBACK (filter_selected), shell_category);
