@@ -125,7 +125,7 @@ gs_plugin_destroy (GsPlugin *plugin)
  * gs_plugin_startup:
  */
 static gboolean
-gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+gs_plugin_startup (GsPlugin *plugin, GError **error)
 {
 	GPtrArray *items;
 	gboolean ret;
@@ -152,7 +152,7 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			     AS_STORE_LOAD_FLAG_APPDATA |
 			     AS_STORE_LOAD_FLAG_DESKTOP |
 			     AS_STORE_LOAD_FLAG_APP_INSTALL,
-			     cancellable,
+			     NULL,
 			     error);
 	if (!ret)
 		goto out;
@@ -824,7 +824,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
+		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
 			goto out;
@@ -871,7 +871,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
+		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
 			goto out;
@@ -1008,7 +1008,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
+		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
 			goto out;
@@ -1048,7 +1048,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
+		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
 			goto out;
@@ -1135,7 +1135,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
+		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
 			goto out;
@@ -1406,7 +1406,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
+		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
 			goto out;
