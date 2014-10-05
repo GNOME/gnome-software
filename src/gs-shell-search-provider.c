@@ -113,7 +113,6 @@ search_done_cb (GObject *source,
 	PendingSearch *search = user_data;
 	GsShellSearchProvider *self = search->provider;
 	GList *list, *l;
-	GError *error = NULL;
 	GVariantBuilder builder;
 
 	if (self->current_search != search) {
@@ -124,7 +123,7 @@ search_done_cb (GObject *source,
 
 	pending_search_unref (search);
 
-	list = gs_plugin_loader_search_finish (self->plugin_loader, res, &error);
+	list = gs_plugin_loader_search_finish (self->plugin_loader, res, NULL);
 	if (list == NULL) {
 		cancel_current_search (self);
 		return;	
