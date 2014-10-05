@@ -748,6 +748,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GList *updatedetails_all = NULL;
 	GPtrArray *sources;
 	GsApp *app;
+	const gchar *profile_id = NULL;
 	const gchar *tmp;
 	gboolean ret = TRUE;
 
@@ -762,7 +763,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* can we resolve in one go? */
-	gs_profile_start (plugin->profile, "packagekit-refine[name->id]");
+	profile_id = "packagekit-refine[name->id]";
+	gs_profile_start (plugin->profile, profile_id);
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_id_kind (app) == AS_ID_KIND_WEB_APP)
@@ -784,10 +786,12 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 	}
-	gs_profile_stop (plugin->profile, "packagekit-refine[name->id]");
+	gs_profile_stop (plugin->profile, profile_id);
+	profile_id = NULL;
 
 	/* set the package-id for an installed desktop file */
-	gs_profile_start (plugin->profile, "packagekit-refine[desktop-filename->id]");
+	profile_id = "packagekit-refine[desktop-filename->id]";
+	gs_profile_start (plugin->profile, profile_id);
 	for (l = *list; l != NULL; l = l->next) {
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 			continue;
@@ -805,10 +809,12 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 	}
-	gs_profile_stop (plugin->profile, "packagekit-refine[desktop-filename->id]");
+	gs_profile_stop (plugin->profile, profile_id);
+	profile_id = NULL;
 
 	/* any update details missing? */
-	gs_profile_start (plugin->profile, "packagekit-refine[id->update-details]");
+	profile_id = "packagekit-refine[id->update-details]";
+	gs_profile_start (plugin->profile, profile_id);
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
@@ -824,7 +830,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 	}
-	gs_profile_stop (plugin->profile, "packagekit-refine[id->update-details]");
+	gs_profile_stop (plugin->profile, profile_id);
+	profile_id = NULL;
 
 	/* any important details missing? */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0 ||
@@ -839,6 +846,8 @@ gs_plugin_refine (GsPlugin *plugin,
 			goto out;
 	}
 out:
+	if (profile_id != NULL)
+		gs_profile_stop (plugin->profile, profile_id);
 	g_list_free (resolve_all);
 	g_list_free (updatedetails_all);
 	return ret;

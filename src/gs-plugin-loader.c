@@ -1583,7 +1583,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 {
 	const gchar *function_name = "gs_plugin_add_search";
 	gboolean ret = TRUE;
-	gchar *profile_id;
+	gchar *profile_id = NULL;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
@@ -1616,7 +1616,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		gs_profile_stop (plugin_loader->priv->profile, profile_id);
-		g_free (profile_id);
+		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* dedupe applications we already know about */
@@ -1658,6 +1658,10 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 out:
+	if (profile_id != NULL) {
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
+	}
 	g_strfreev (values);
 }
 
@@ -1749,7 +1753,7 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 {
 	const gchar *function_name = "gs_plugin_add_categories";
 	gboolean ret = TRUE;
-	gchar *profile_id;
+	gchar *profile_id = NULL;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
@@ -1781,7 +1785,7 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		gs_profile_stop (plugin_loader->priv->profile, profile_id);
-		g_free (profile_id);
+		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* sort by name */
@@ -1801,6 +1805,10 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 out:
+	if (profile_id != NULL) {
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
+	}
 	return;
 }
 
@@ -1865,7 +1873,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 {
 	const gchar *function_name = "gs_plugin_add_category_apps";
 	gboolean ret = TRUE;
-	gchar *profile_id;
+	gchar *profile_id = NULL;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
@@ -1896,7 +1904,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		gs_profile_stop (plugin_loader->priv->profile, profile_id);
-		g_free (profile_id);
+		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* dedupe applications we already know about */
@@ -1933,6 +1941,10 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 out:
+	if (profile_id != NULL) {
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
+	}
 	return;
 }
 
@@ -3202,7 +3214,7 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 {
 	const gchar *function_name = "gs_plugin_filename_to_app";
 	gboolean ret = TRUE;
-	gchar *profile_id;
+	gchar *profile_id = NULL;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
@@ -3233,7 +3245,7 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 		gs_profile_stop (plugin_loader->priv->profile, profile_id);
-		g_free (profile_id);
+		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* dedupe applications we already know about */
@@ -3272,6 +3284,10 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 	}
 	g_task_return_pointer (task, g_object_ref (state->list->data), (GDestroyNotify) g_object_unref);
 out:
+	if (profile_id != NULL) {
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_free (profile_id);
+	}
 	return;
 }
 

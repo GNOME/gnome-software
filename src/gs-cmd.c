@@ -406,9 +406,9 @@ main (int argc, char **argv)
 		gs_cmd_show_results_apps (list);
 		gs_cmd_show_results_categories (categories);
 	}
+out:
 	gs_profile_stop (profile, "GsCmd");
 	gs_profile_dump (profile);
-out:
 	g_option_context_free (context);
 	g_free (refine_flags_str);
 	g_strfreev (split);

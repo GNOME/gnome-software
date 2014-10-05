@@ -832,23 +832,19 @@ gs_plugin_refine (GsPlugin *plugin,
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		ret = gs_plugin_refine_from_id (plugin, app, &found, error);
-		if (!ret) {
-			gs_profile_stop (plugin->profile, "appstream::refine");
+		if (!ret)
 			goto out;
-		}
 		if (!found) {
 			ret = gs_plugin_refine_from_pkgname (plugin, app, error);
-			if (!ret) {
-				gs_profile_stop (plugin->profile, "appstream::refine");
+			if (!ret)
 				goto out;
-			}
 		}
 	}
-	gs_profile_stop (plugin->profile, "appstream::refine");
 
 	/* sucess */
 	ret = TRUE;
 out:
+	gs_profile_stop (plugin->profile, "appstream::refine");
 	return ret;
 }
 
@@ -911,8 +907,8 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		gs_plugin_add_app (list, app);
 		g_object_unref (app);
 	}
-	gs_profile_stop (plugin->profile, "appstream::add-category-apps");
 out:
+	gs_profile_stop (plugin->profile, "appstream::add-category-apps");
 	return ret;
 }
 
@@ -1021,8 +1017,8 @@ gs_plugin_add_search (GsPlugin *plugin,
 		if (!ret)
 			goto out;
 	}
-	gs_profile_stop (plugin->profile, "appstream::search");
 out:
+	gs_profile_stop (plugin->profile, "appstream::search");
 	return ret;
 }
 
@@ -1063,8 +1059,8 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			g_object_unref (app);
 		}
 	}
-	gs_profile_stop (plugin->profile, "appstream::add_installed");
 out:
+	gs_profile_stop (plugin->profile, "appstream::add_installed");
 	return ret;
 }
 
@@ -1147,8 +1143,8 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			continue;
 		gs_plugin_add_categories_for_app (*list, app);
 	}
-	gs_profile_stop (plugin->profile, "appstream::add-categories");
 out:
+	gs_profile_stop (plugin->profile, "appstream::add-categories");
 	return ret;
 }
 
@@ -1301,8 +1297,8 @@ gs_plugin_add_popular_by_cat (GsPlugin *plugin,
 		}
 
 	}
-	gs_profile_stop (plugin->profile, "appstream::add_popular[cat]");
 out:
+	gs_profile_stop (plugin->profile, "appstream::add_popular[cat]");
 	if (ignore_cats != NULL)
 		g_hash_table_unref (ignore_cats);
 	return ret;
@@ -1375,8 +1371,8 @@ gs_plugin_add_popular_by_source (GsPlugin *plugin,
 		}
 		g_object_unref (app);
 	}
-	gs_profile_stop (plugin->profile, "appstream::add_popular[source]");
 out:
+	gs_profile_stop (plugin->profile, "appstream::add_popular[source]");
 	if (installed != NULL)
 		g_hash_table_unref (installed);
 	return ret;
@@ -1446,8 +1442,8 @@ gs_plugin_add_popular (GsPlugin *plugin,
 			goto out;
 	}
 
-	gs_profile_stop (plugin->profile, "appstream::add_popular");
 out:
+	gs_profile_stop (plugin->profile, "appstream::add_popular");
 	if (ignore_apps != NULL)
 		g_hash_table_unref (ignore_apps);
 	return ret;
