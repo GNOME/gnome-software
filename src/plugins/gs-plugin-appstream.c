@@ -355,10 +355,12 @@ gs_plugin_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
 		if (!ret) {
 			g_warning ("failed to refine addon: %s", error->message);
 			g_error_free (error);
+			g_object_unref (addon);
 			continue;
 		}
 
 		gs_app_add_addon (app, addon);
+		g_object_unref (addon);
 	}
 }
 /**
