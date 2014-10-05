@@ -1708,6 +1708,7 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
+	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_search_thread_cb);
 	g_object_unref (task);
 }
