@@ -710,6 +710,9 @@ gs_shell_show_sources (GsShell *shell)
 	GtkWidget *dialog;
 
 	dialog = gs_sources_dialog_new (priv->main_window, priv->plugin_loader);
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy),
+				  dialog);
 	gtk_window_present (GTK_WINDOW (dialog));
 }
 
