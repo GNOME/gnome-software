@@ -251,10 +251,16 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *app_row;
 
-	gs_stop_spinner (GTK_SPINNER (priv->spinner_search));
-
 	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
+		if (g_error_matches (error,
+		                     G_IO_ERROR,
+		                     G_IO_ERROR_CANCELLED)) {
+			g_debug ("search cancelled");
+			g_error_free (error);
+			goto out;
+		}
+
 		if (g_error_matches (error,
 				     GS_PLUGIN_LOADER_ERROR,
 				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
@@ -264,9 +270,12 @@ gs_shell_search_get_search_cb (GObject *source_object,
 				   error->message);
 		}
 		g_error_free (error);
+		gs_stop_spinner (GTK_SPINNER (priv->spinner_search));
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "no-results");
 		goto out;
 	}
+
+	gs_stop_spinner (GTK_SPINNER (priv->spinner_search));
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "results");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
