@@ -111,7 +111,8 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
 	gtk_widget_set_visible (priv->popular_heading, list != NULL);
 	if (list == NULL) {
-		g_warning ("failed to get popular apps: %s", error->message);
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("failed to get popular apps: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}
@@ -156,7 +157,8 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		g_warning ("failed to get recommended applications: %s", error->message);
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("failed to get recommended applications: %s", error->message);
 		g_error_free (error);
 		gtk_widget_hide (priv->popular_rotating_heading);
 		gtk_widget_hide (priv->box_popular_rotating);
@@ -221,7 +223,8 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
 	gtk_widget_set_visible (priv->featured_heading, list != NULL);
 	if (list == NULL) {
-		g_warning ("failed to get featured apps: %s", error->message);
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("failed to get featured apps: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}
@@ -277,7 +280,8 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 
 	list = gs_plugin_loader_get_categories_finish (plugin_loader, res, &error);
 	if (list == NULL) {
-		g_warning ("failed to get categories: %s", error->message);
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("failed to get categories: %s", error->message);
 		g_error_free (error);
 		goto out;
 	}

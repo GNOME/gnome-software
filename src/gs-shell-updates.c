@@ -478,7 +478,8 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 			gs_shell_updates_set_state (shell_updates,
 						    GS_SHELL_UPDATES_STATE_NO_UPDATES);
 		} else {
-			g_warning ("failed to get updates: %s", error->message);
+			if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+				g_warning ("failed to get updates: %s", error->message);
 			gtk_label_set_label (GTK_LABEL (priv->label_updates_failed),
 			                     error->message);
 			gs_shell_updates_set_state (shell_updates,

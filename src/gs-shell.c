@@ -667,6 +667,10 @@ gs_shell_get_installed_updates_cb (GsPluginLoader *plugin_loader,
 				     GS_PLUGIN_LOADER_ERROR,
 				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
 			g_debug ("no updates to show");
+		} else if (g_error_matches (error,
+		                            G_IO_ERROR,
+		                            G_IO_ERROR_CANCELLED)) {
+			g_debug ("get updates cancelled");
 		} else {
 			g_warning ("failed to get updates: %s", error->message);
 		}

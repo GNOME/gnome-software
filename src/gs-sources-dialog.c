@@ -142,6 +142,10 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 				     GS_PLUGIN_LOADER_ERROR,
 				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
 			g_debug ("no sources to show");
+		} else if (g_error_matches (error,
+		                            G_IO_ERROR,
+		                            G_IO_ERROR_CANCELLED)) {
+			g_debug ("get sources cancelled");
 		} else {
 			g_warning ("failed to get sources: %s", error->message);
 		}
