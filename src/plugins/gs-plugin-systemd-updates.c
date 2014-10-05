@@ -138,6 +138,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 		gs_plugin_add_app (list, app);
+		g_object_unref (app);
 		g_strfreev (split);
 	}
 out:
