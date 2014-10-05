@@ -496,6 +496,7 @@ gs_plugin_write_file (GsApp *app, const gchar *filename, GError **error)
 	if (!ret)
 		goto out;
 out:
+	g_free (data);
 	g_free (profile);
 	g_free (exec);
 	g_free (wmclass);
