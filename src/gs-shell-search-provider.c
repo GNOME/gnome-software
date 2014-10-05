@@ -35,7 +35,6 @@
 typedef struct {
 	GsShellSearchProvider *provider;
 	GDBusMethodInvocation *invocation;
-	gint ref_count;
 } PendingSearch;
 
 struct _GsShellSearchProvider {
@@ -46,47 +45,17 @@ struct _GsShellSearchProvider {
 	GsShellSearchProvider2 *skeleton;
 	GsPluginLoader *plugin_loader;
 	GCancellable *cancellable;
-	PendingSearch *current_search;
 
 	GHashTable *metas_cache;
 };
 
 G_DEFINE_TYPE (GsShellSearchProvider, gs_shell_search_provider, G_TYPE_OBJECT)
 
-static PendingSearch *
-pending_search_ref (PendingSearch *search)
-{
-	search->ref_count++;
-
-	return search;
-}
-
 static void
-pending_search_unref (PendingSearch *search)
+pending_search_free (PendingSearch *search)
 {
-	search->ref_count--;
-
-	if (search->ref_count == 0)
-		g_slice_free (PendingSearch, search);
-}
-
-static void
-cancel_current_search (GsShellSearchProvider *self)
-{
-	if (self->current_search) {
-		PendingSearch *search;
-
-		g_cancellable_cancel (self->cancellable);
-		g_cancellable_reset (self->cancellable);
-
-		search = self->current_search;
-		self->current_search = NULL;
-
-		g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", NULL));
-		search->invocation = NULL;
-
-		pending_search_unref (search);
-	}
+	g_object_unref (search->invocation);
+	g_slice_free (PendingSearch, search);
 }
 
 /**
@@ -115,17 +84,10 @@ search_done_cb (GObject *source,
 	GList *list, *l;
 	GVariantBuilder builder;
 
-	if (self->current_search != search) {
-		/* canceled */
-		pending_search_unref (search);
-		return;
-	}
-
-	pending_search_unref (search);
-
 	list = gs_plugin_loader_search_finish (self->plugin_loader, res, NULL);
 	if (list == NULL) {
-		cancel_current_search (self);
+		g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", NULL));
+		pending_search_free (search);
 		return;	
 	}
 
@@ -139,12 +101,10 @@ search_done_cb (GObject *source,
 			continue;
 		g_variant_builder_add (&builder, "s", gs_app_get_id (app));
 	}
-	g_dbus_method_invocation_return_value (self->current_search->invocation, g_variant_new ("(as)", &builder));
+	g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", &builder));
 
 	g_list_free_full (list, g_object_unref);
-
-	pending_search_unref (self->current_search);
-	self->current_search = NULL;
+	pending_search_free (search);
 }
 
 static void
@@ -152,11 +112,15 @@ execute_search (GsShellSearchProvider  *self,
 		GDBusMethodInvocation  *invocation,
 		gchar                 **terms)
 {
+	PendingSearch *pending_search;
 	gchar *string;
 
 	string = g_strjoinv (" ", terms);
 
-	cancel_current_search (self);
+	if (self->cancellable != NULL) {
+		g_cancellable_cancel (self->cancellable);
+		g_clear_object (&self->cancellable);
+	}
 
 	/* don't attempt searches for a single character */
 	if (g_strv_length (terms) == 1 &&
@@ -165,15 +129,15 @@ execute_search (GsShellSearchProvider  *self,
 		return;
 	}
 
-	self->current_search = g_slice_new (PendingSearch);
-	self->current_search->provider = self;
-	self->current_search->invocation = invocation;
-	self->current_search->ref_count = 1;
+	pending_search = g_slice_new (PendingSearch);
+	pending_search->provider = self;
+	pending_search->invocation = g_object_ref (invocation);
 
+	self->cancellable = g_cancellable_new ();
 	gs_plugin_loader_search_async (self->plugin_loader,
 				       string, 0, self->cancellable,
 				       search_done_cb,
-				       pending_search_ref (self->current_search));
+				       pending_search);
 	g_free (string);
 }
 
@@ -364,11 +328,15 @@ search_provider_dispose (GObject *obj)
 		g_clear_object (&self->skeleton);
 	}
 
+	if (self->cancellable != NULL) {
+		g_cancellable_cancel (self->cancellable);
+		g_clear_object (&self->cancellable);
+	}
+
 	g_clear_object (&self->object_manager);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
 	g_hash_table_destroy (self->metas_cache);
-	cancel_current_search (self);
 	g_application_release (g_application_get_default ());
 
 	G_OBJECT_CLASS (gs_shell_search_provider_parent_class)->dispose (obj);
@@ -409,5 +377,4 @@ gs_shell_search_provider_setup (GsShellSearchProvider *provider,
 				GsPluginLoader *loader)
 {
 	provider->plugin_loader = g_object_ref (loader);
-	provider->cancellable = g_cancellable_new ();
 }
