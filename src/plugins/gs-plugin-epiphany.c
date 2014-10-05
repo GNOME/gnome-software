@@ -297,6 +297,9 @@ gs_plugin_add_search (GsPlugin *plugin,
 
 	/* add any matching apps */
 	for (l = plugin->priv->list; l != NULL; l = l->next) {
+		if (g_cancellable_set_error_if_cancelled (cancellable, error))
+			goto out;
+
 		app = GS_APP (l->data);
 		if (gs_plugin_epiphany_match_app (app, values))
 			gs_plugin_add_app (list, app);

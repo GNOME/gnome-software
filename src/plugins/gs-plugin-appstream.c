@@ -944,6 +944,7 @@ gs_plugin_add_search_item (GsPlugin *plugin,
 			   GList **list,
 			   AsApp *app,
 			   gchar **values,
+			   GCancellable *cancellable,
 			   GError **error)
 {
 	AsApp *item;
@@ -971,6 +972,9 @@ gs_plugin_add_search_item (GsPlugin *plugin,
 
 	/* add the thing that we extend, not the addon itself */
 	for (i = 0; i < extends->len; i++) {
+		if (g_cancellable_set_error_if_cancelled (cancellable, error))
+			goto out;
+
 		id = g_ptr_array_index (extends, i);
 		item = as_store_get_app_by_id (plugin->priv->store, id);
 		if (item == NULL)
@@ -1014,8 +1018,11 @@ gs_plugin_add_search (GsPlugin *plugin,
 	gs_profile_start (plugin->profile, "appstream::search");
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
+		if (g_cancellable_set_error_if_cancelled (cancellable, error))
+			goto out;
+
 		item = g_ptr_array_index (array, i);
-		ret = gs_plugin_add_search_item (plugin, list, item, values, error);
+		ret = gs_plugin_add_search_item (plugin, list, item, values, cancellable, error);
 		if (!ret)
 			goto out;
 	}
