@@ -41,6 +41,7 @@ struct GsShellSearchPrivate
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	GsShell			*shell;
+	gchar			*appid_to_show;
 	gchar			*value;
 
 	GtkWidget		*list_box_search;
@@ -234,6 +235,36 @@ gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
 		gs_shell_search_show_missing_url (app);
 }
 
+typedef struct {
+	GsShellSearch *shell_search;
+	GsApp *app;
+} RefineData;
+
+static void
+refine_cb (GObject *source,
+           GAsyncResult *res,
+           gpointer data)
+{
+	RefineData *refine = data;
+	GsShellSearchPrivate *priv = refine->shell_search->priv;
+	GError *error = NULL;
+
+	if (!gs_plugin_loader_app_refine_finish (priv->plugin_loader,
+	                                         res,
+	                                         &error)) {
+		g_warning ("%s", error->message);
+		g_error_free (error);
+		goto out;
+	}
+
+	refine->app = gs_plugin_loader_dedupe (priv->plugin_loader, refine->app);
+	gs_shell_show_app (priv->shell, refine->app);
+
+out:
+	g_object_unref (refine->app);
+	g_free (refine);
+}
+
 /**
  * gs_shell_search_get_search_cb:
  **/
@@ -291,6 +322,24 @@ gs_shell_search_get_search_cb (GObject *source_object,
 		gtk_widget_show (app_row);
 	}
 
+	if (priv->appid_to_show != NULL) {
+		RefineData *refine;
+
+		refine = g_new0 (RefineData, 1);
+		refine->shell_search = shell_search;
+		refine->app = gs_app_new (priv->appid_to_show);
+		gs_plugin_loader_app_refine_async (priv->plugin_loader,
+		                                   refine->app,
+		                                   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
+		                                   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
+		                                   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
+		                                   priv->cancellable,
+		                                   refine_cb,
+		                                   refine);
+
+		g_clear_pointer (&priv->appid_to_show, g_free);
+	}
+
 out: ;
 }
 
@@ -338,6 +387,21 @@ gs_shell_search_reload (GsShellSearch *shell_search)
 	GsShellSearchPrivate *priv = shell_search->priv;
 	if (priv->value != NULL)
 		gs_shell_search_load (shell_search);
+}
+
+
+/**
+ * gs_shell_search_set_appid_to_show:
+ *
+ * Switch to the specified app id after loading the search results.
+ **/
+void
+gs_shell_search_set_appid_to_show (GsShellSearch *shell_search, const gchar *appid)
+{
+	GsShellSearchPrivate *priv = shell_search->priv;
+
+	g_free (priv->appid_to_show);
+	priv->appid_to_show = g_strdup (appid);
 }
 
 /**
@@ -585,6 +649,7 @@ gs_shell_search_finalize (GObject *object)
 	if (priv->search_cancellable != NULL)
 		g_object_unref (priv->search_cancellable);
 
+	g_free (priv->appid_to_show);
 	g_free (priv->value);
 
 	G_OBJECT_CLASS (gs_shell_search_parent_class)->finalize (object);

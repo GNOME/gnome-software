@@ -53,6 +53,8 @@ typedef struct
 GType		 gs_shell_search_get_type	(void);
 
 GsShellSearch	*gs_shell_search_new		(void);
+void		 gs_shell_search_set_appid_to_show (GsShellSearch	*shell_search,
+						 const gchar		*appid);
 void		 gs_shell_search_switch_to	(GsShellSearch		*shell_search,
 						 const gchar		*text,
 						 gboolean                scroll_up);
