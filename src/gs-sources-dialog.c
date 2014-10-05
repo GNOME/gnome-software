@@ -333,7 +333,7 @@ set_plugin_loader (GsSourcesDialog *dialog, GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_sources_dialog_finalize (GObject *object)
+gs_sources_dialog_dispose (GObject *object)
 {
 	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (object);
 	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
@@ -345,7 +345,7 @@ gs_sources_dialog_finalize (GObject *object)
 		g_clear_object (&priv->cancellable);
 	}
 
-	G_OBJECT_CLASS (gs_sources_dialog_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_sources_dialog_parent_class)->dispose (object);
 }
 
 static void
@@ -387,7 +387,7 @@ gs_sources_dialog_class_init (GsSourcesDialogClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_sources_dialog_finalize;
+	object_class->dispose = gs_sources_dialog_dispose;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-sources-dialog.ui");
 
