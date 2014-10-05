@@ -78,18 +78,39 @@
               <object class="GtkBox" id="box_empty">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <property name="halign">center</property>
+                <property name="valign">center</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+                <property name="spacing">16</property>
                 <property name="orientation">vertical</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
+                <child>
+                  <object class="GtkImage" id="icon_empty">
+                    <property name="visible">True</property>
+                    <property name="icon_name">gnome-software-symbolic</property>
+                    <property name="pixel-size">64</property>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">0</property>
+                  </packing>
+                </child>
                 <child>
                   <object class="GtkLabel" id="label_empty">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <property name="justify">center</property>
-                    <property name="label" translatable="yes">No sources found.</property>
+                    <property name="wrap">True</property>
+                    <property name="max_width_chars">40</property>
                     <property name="halign">center</property>
                     <property name="valign">center</property>
                   </object>
                   <packing>
-                    <property name="expand">True</property>
+                    <property name="expand">False</property>
                     <property name="fill">True</property>
                     <property name="position">1</property>
                   </packing>

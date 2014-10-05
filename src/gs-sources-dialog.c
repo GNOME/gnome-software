@@ -37,6 +37,8 @@ struct _GsSourcesDialogPrivate
 	GtkWidget	*button_remove;
 	GtkWidget	*grid_noresults;
 	GtkWidget	*label2;
+	GtkWidget	*label_empty;
+	GtkWidget	*label_header;
 	GtkWidget	*listbox;
 	GtkWidget	*listbox_apps;
 	GtkWidget	*scrolledwindow_apps;
@@ -171,8 +173,13 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 			g_warning ("failed to get sources: %s", error->message);
 		}
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "empty");
+		gtk_style_context_add_class (gtk_widget_get_style_context (priv->label_header),
+		                             "dim-label");
 		goto out;
 	}
+
+	gtk_style_context_remove_class (gtk_widget_get_style_context (priv->label_header),
+	                                "dim-label");
 
 	/* add each */
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "sources");
@@ -343,6 +350,35 @@ remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 					   dialog);
 }
 
+static gchar *
+get_os_name (void)
+{
+	gchar *name = NULL;
+	_cleanup_free_ gchar *buffer = NULL;
+
+	if (g_file_get_contents ("/etc/os-release", &buffer, NULL, NULL)) {
+		gchar *start, *end;
+
+		start = end = NULL;
+		if ((start = strstr (buffer, "NAME=")) != NULL) {
+			start += strlen ("NAME=");
+			end = strchr (start, '\n');
+		}
+
+		if (start != NULL && end != NULL) {
+			name = g_strndup (start, end - start);
+		}
+	}
+
+	if (name == NULL) {
+		/* TRANSLATORS: this is the fallback text we use if we can't
+		   figure out the name of the operating system */
+		name = g_strdup (_("the operating system"));
+	}
+
+	return name;
+}
+
 static void
 set_plugin_loader (GsSourcesDialog *dialog, GsPluginLoader *plugin_loader)
 {
@@ -371,6 +407,8 @@ static void
 gs_sources_dialog_init (GsSourcesDialog *dialog)
 {
 	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
+	_cleanup_free_ gchar *label_text = NULL;
+	_cleanup_free_ gchar *os_name = NULL;
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
@@ -394,6 +432,14 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 				    list_sort_func,
 				    dialog, NULL);
 
+	os_name = get_os_name ();
+	/* TRANSLATORS: This is the text displayed in the Software Sources
+	   dialog when no OS-provided software sources are enabled. %s gets
+	   replaced by the name of the actual distro, e.g. Fedora. */
+	label_text = g_strdup_printf (_("Software sources can be downloaded from the internet. They give you access to additional software that is not provided by %s."),
+	                              os_name);
+	gtk_label_set_text (GTK_LABEL (priv->label_empty), label_text);
+
 	g_signal_connect (priv->button_back, "clicked",
 			  G_CALLBACK (back_button_cb), dialog);
 	g_signal_connect (priv->button_remove, "clicked",
@@ -414,6 +460,8 @@ gs_sources_dialog_class_init (GsSourcesDialogClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, button_remove);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, grid_noresults);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, label2);
+	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, label_empty);
+	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, label_header);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, listbox);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, listbox_apps);
 	gtk_widget_class_bind_template_child_private (widget_class, GsSourcesDialog, scrolledwindow_apps);
