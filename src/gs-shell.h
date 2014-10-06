@@ -86,6 +86,8 @@ void		 gs_shell_show_filename		(GsShell	*shell,
 void		 gs_shell_show_search_result	(GsShell	*shell,
 						 const gchar	*id,
 						 const gchar    *search);
+void		 gs_shell_show_details		(GsShell	*shell,
+						 const gchar	*id);
 void		 gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);

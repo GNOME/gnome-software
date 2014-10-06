@@ -760,16 +760,23 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 	GsShellPrivate *priv = shell->priv;
 	GtkWidget *widget;
 
-	if (search != NULL && search[0] != '\0') {
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-		gtk_entry_set_text (GTK_ENTRY (widget), search);
-		gs_shell_search_set_appid_to_show (priv->shell_search, id);
-		gs_shell_search_switch_to (priv->shell_search, search, TRUE);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	gtk_entry_set_text (GTK_ENTRY (widget), search);
+	gs_shell_search_set_appid_to_show (priv->shell_search, id);
+	gs_shell_search_switch_to (priv->shell_search, search, TRUE);
 
-		gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
-	}
+	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 }
 
+void
+gs_shell_show_details (GsShell *shell, const gchar *id)
+{
+	GsApp *app;
+
+	app = gs_app_new (id);
+	gs_shell_show_app (shell, app);
+	g_object_unref (app);
+}
 
 /**
  * gs_shell_class_init:

@@ -380,7 +380,10 @@ details_activated (GSimpleAction *action,
 	gs_application_initialize_ui (app);
 
 	g_variant_get (parameter, "(&s&s)", &id, &search);
-	gs_shell_show_search_result (app->shell, id, search);
+	if (search != NULL && search[0] != '\0')
+		gs_shell_show_search_result (app->shell, id, search);
+	else
+		gs_shell_show_details (app->shell, id);
 }
 
 static void
