@@ -55,7 +55,7 @@ typedef struct
 	GtkWidget		*box_popular_rotating;
 	GtkWidget		*category_heading;
 	GtkWidget		*featured_heading;
-	GtkWidget		*grid_categories;
+	GtkWidget		*flowbox_categories;
 	GtkWidget		*popular_heading;
 	GtkWidget		*popular_rotating_heading;
 	GtkWidget		*scrolledwindow_overview;
@@ -307,7 +307,6 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GsShellOverview *self = GS_SHELL_OVERVIEW (user_data);
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	gint i;
 	GList *l;
 	GsCategory *cat;
 	GtkWidget *tile;
@@ -321,17 +320,17 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 			g_warning ("failed to get categories: %s", error->message);
 		goto out;
 	}
-	gs_container_remove_all (GTK_CONTAINER (priv->grid_categories));
+	gs_container_remove_all (GTK_CONTAINER (priv->flowbox_categories));
 
-	for (l = list, i = 0; l; l = l->next) {
+	for (l = list; l; l = l->next) {
 		cat = GS_CATEGORY (l->data);
 		if (gs_category_get_size (cat) == 0)
 			continue;
 		tile = gs_category_tile_new (cat);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (category_tile_clicked), self);
-		gtk_grid_attach (GTK_GRID (priv->grid_categories), tile, i % 4, i / 4, 1, 1);
-		i++;
+		gtk_flow_box_insert (GTK_FLOW_BOX (priv->flowbox_categories), tile, -1);
+		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		has_category = TRUE;
 	}
 out:
@@ -588,7 +587,7 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular_rotating);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, category_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, featured_heading);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, grid_categories);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, flowbox_categories);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_rotating_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, scrolledwindow_overview);
