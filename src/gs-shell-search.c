@@ -388,9 +388,6 @@ gs_shell_search_switch_to (GsShellSearch *shell_search, const gchar *value, gboo
                 gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
         }
 
-	if (g_strcmp0 (value, priv->value) == 0)
-		return;
-
 	g_free (priv->value);
 	priv->value = g_strdup (value);
 
