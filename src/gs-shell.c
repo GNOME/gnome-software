@@ -69,6 +69,7 @@ struct GsShellPrivate
 	GtkBuilder		*builder;
 	GtkWindow		*main_window;
 	GQueue			*back_entry_stack;
+	gboolean		 ignore_next_search_changed_signal;
 };
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -410,8 +411,15 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 }
 
 static void
-search_changed_handler (GObject *entry, GsShell *shell) {
+search_changed_handler (GObject *entry, GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
 	const gchar *text;
+
+	if (priv->ignore_next_search_changed_signal) {
+		priv->ignore_next_search_changed_signal = FALSE;
+		return;
+	}
 
 	text = gtk_entry_get_text (GTK_ENTRY (entry));
 
@@ -761,10 +769,13 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 	GtkWidget *widget;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_entry_set_text (GTK_ENTRY (widget), search);
-	gs_shell_search_set_appid_to_show (priv->shell_search, id);
-	gs_shell_search_switch_to (priv->shell_search, search, TRUE);
 
+	/* ignore next "search-changed" signal to avoid getting a callback
+         * after 150 ms and messing up the state */
+	priv->ignore_next_search_changed_signal = TRUE;
+	gtk_entry_set_text (GTK_ENTRY (widget), search);
+
+	gs_shell_search_set_appid_to_show (priv->shell_search, id);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 }
 
