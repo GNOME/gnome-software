@@ -862,6 +862,7 @@ gs_shell_details_app_refine_cb (GObject *source,
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	gboolean ret;
+	gchar *app_dump;
 
 	ret = gs_plugin_loader_app_refine_finish (plugin_loader,
 						  res,
@@ -873,6 +874,12 @@ gs_shell_details_app_refine_cb (GObject *source,
 		g_error_free (error);
 		return;
 	}
+
+	/* show some debugging */
+	app_dump = gs_app_to_string (priv->app);
+	g_debug ("%s", app_dump);
+	g_free (app_dump);
+
 	gs_shell_details_refresh_addons (shell_details);
 	gs_shell_details_refresh_all (shell_details);
 	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_READY);
@@ -985,12 +992,6 @@ void
 gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	gchar *app_dump;
-
-	/* show some debugging */
-	app_dump = gs_app_to_string (app);
-	g_debug ("%s", app_dump);
-	g_free (app_dump);
 
 	/* get extra details about the app */
 	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_LOADING);
