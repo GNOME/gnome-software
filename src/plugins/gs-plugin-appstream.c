@@ -78,6 +78,10 @@ gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 {
 	g_debug ("AppStream metadata changed, reloading cache");
 	plugin->priv->done_init = FALSE;
+
+	/* this is not strictly true, but it causes all the UI to be reloaded
+	 * which is what we really want */
+	gs_plugin_updates_changed (plugin);
 }
 
 /**
