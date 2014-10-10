@@ -275,7 +275,10 @@ _as_app_get_icon_for_scale (AsApp *app, gint scale, GError **error)
 
 	/* fallback */
 	filename = g_build_filename (icon_path, icon, NULL);
-	pixbuf = gdk_pixbuf_new_from_file (filename, error);
+	pixbuf = gdk_pixbuf_new_from_file_at_scale (filename, 64, 64,
+						    FALSE, error);
+	if (pixbuf == NULL)
+		goto out;
 out:
 	g_free (filename_hidpi);
 	g_free (filename_lodpi);
