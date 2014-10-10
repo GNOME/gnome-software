@@ -134,6 +134,9 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	guint i;
 #endif
 
+	/* clear all existing applications if the store was invalidated */
+	as_store_remove_all (plugin->priv->store);
+
 	/* get the locale without the UTF-8 suffix */
 	plugin->priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
 	tmp = g_strstr_len (plugin->priv->locale, -1, ".UTF-8");
