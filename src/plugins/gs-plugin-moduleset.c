@@ -127,6 +127,14 @@ gs_plugin_add_popular (GsPlugin *plugin,
 						 "popular",
 						 category);
 	}
+	if (apps == NULL) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "No moduleset data found");
+		goto out;
+	}
 
 	/* just add all */
 	for (i = 0; apps[i]; i++) {
@@ -178,6 +186,14 @@ gs_plugin_refine (GsPlugin *plugin,
 				break;
 			}
 		}
+	}
+	if (apps == NULL) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "No moduleset data found");
+		goto out;
 	}
 
 	/* just mark each one as core */
