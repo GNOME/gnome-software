@@ -1,3 +1,41 @@
+Version 3.14.1
+~~~~~~~~~~~~~~
+Released: 2014-10-13
+
+* Translations:
+ - New Afrikaans translation (Friedel Wolff)
+ - Updated Arabic translation (Abderrahim Kitouni, Shuaib Zahda and Safa Alfulaij)
+ - Updated Chinese (Taiwan) translation (Cheng-Chia Tseng)
+ - Updated Italian translation (Gianvito Cavasoli)
+ - Updated Latvian translation (Rūdolfs Mazurs)
+ - Updated Russian translation (Stas Solovey)
+ - Updated Serbian translation (Мирослав Николић)
+ - Updated Traditional Chinese translation (Iris Gou)
+
+* New Features:
+ - Load 128x128 icons if they are installed on HiDPI hardware (Richard Hughes)
+ - Try to load HiDPI screenshots on HiDPI hardware (Richard Hughes)
+
+* Bugfix:
+ - Always load the fallback icon at 64x64 size (Richard Hughes)
+ - Avoid flickering the spinner during find-as-you-type (Kalev Lember)
+ - Avoid restarting spinner animation when repeatedly calling start (Kalev Lember)
+ - Clear all existing applications if the store was invalidated (Richard Hughes)
+ - Destroy the sources dialog when it's closed (Kalev Lember)
+ - Disable text shadow for the updates counter label (Kalev Lember)
+ - Don't allow cancelling appstream plugin plugin startup (Kalev Lember)
+ - Don't crash when the moduleset data is not yet installed (Richard Hughes)
+ - Don't ignore duplicate searches (Kalev Lember)
+ - Don't show addons that are in unavailable state (Kalev Lember)
+ - Don't warn for cancelled operations (Kalev Lember)
+ - First run dialog nonresizable and corrected margins (Rafal Luzynski)
+ - Fix a race with displaying results from shell search provider (Kalev Lember)
+ - Make --details work again (Kalev Lember)
+ - Make search cancelling quicker (Kalev Lember)
+ - Plug a leak when adding apps to the list of updates (Kalev Lember)
+ - Plug a memory leak when refining addons (Kalev Lember)
+ - Reload the all the shells when the AppStream metadata changes (Richard Hughes)
+
 Version 3.14.0
 ~~~~~~~~~~~~~~
 Released: 2014-09-22
