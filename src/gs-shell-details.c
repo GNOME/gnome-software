@@ -880,6 +880,7 @@ gs_shell_details_app_refine_cb (GObject *source,
 	g_debug ("%s", app_dump);
 	g_free (app_dump);
 
+	gs_shell_details_refresh_screenshots (shell_details);
 	gs_shell_details_refresh_addons (shell_details);
 	gs_shell_details_refresh_all (shell_details);
 	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_READY);
@@ -1010,9 +1011,6 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 shell_details, 0);
 	gs_shell_details_load (shell_details);
-
-	/* set screenshots */
-	gs_shell_details_refresh_screenshots (shell_details);
 
 	/* change widgets */
 	gs_shell_details_refresh_all (shell_details);
