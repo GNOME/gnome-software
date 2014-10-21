@@ -554,6 +554,14 @@ gs_plugin_epiphany_download (GsPlugin *plugin, const gchar *uri, const gchar *fi
 
 	/* create the GET data */
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
+	if (msg == NULL) {
+		ret = FALSE;
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "%s is not a valid URL", uri);
+		goto out;
+	}
 
 	/* ensure networking is set up */
 	ret = gs_plugin_setup_networking (plugin, error);
