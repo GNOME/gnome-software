@@ -625,6 +625,7 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	gchar *filename_icon = NULL;
 	gchar *hash;
 	GError *error_local = NULL;
+	GFile *file = NULL;
 
 	/* this is not yet installed */
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -642,10 +643,18 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 		ret = gs_mkdir_parent (filename_icon, error);
 		if (!ret)
 			goto out;
-		ret = gs_plugin_epiphany_download (plugin,
-						   gs_app_get_icon (app),
-						   filename_icon,
-						   &error_local);
+		if (g_str_has_prefix (gs_app_get_icon (app), "/")) {
+			file = g_file_new_for_path (filename_icon);
+			ret = g_file_make_symbolic_link (file,
+							 gs_app_get_icon (app),
+							 NULL,
+							 &error_local);
+		} else {
+			ret = gs_plugin_epiphany_download (plugin,
+							   gs_app_get_icon (app),
+							   filename_icon,
+							   &error_local);
+		}
 		if (!ret) {
 			/* this isn't a fatal error */
 			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
@@ -678,6 +687,8 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	gs_plugin_add_app (&plugin->priv->list, app);
 	gs_app_set_management_plugin (app, "Epiphany");
 out:
+	if (file != NULL)
+		g_object_unref (file);
 	g_free (hash);
 	g_free (path);
 	g_free (filename_icon);
