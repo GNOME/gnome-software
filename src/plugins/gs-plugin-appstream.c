@@ -208,7 +208,9 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		gs_app_set_icon (app, as_icon_get_name (icon));
 		break;
 	case AS_ICON_KIND_STOCK:
+#if AS_CHECK_VERSION(0,2,7)
 	case AS_ICON_KIND_LOCAL:
+#endif
 		gs_app_set_icon (app, as_icon_get_name (icon));
 		ret = gs_app_load_icon (app, plugin->scale, &error);
 		if (!ret) {
