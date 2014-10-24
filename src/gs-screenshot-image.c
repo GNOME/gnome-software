@@ -193,6 +193,46 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 }
 
 /**
+ * gs_screenshot_image_show_blurred:
+ **/
+static void
+gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
+				  const gchar *filename_thumb)
+{
+	AsImage *im;
+	GdkPixbuf *pb = NULL;
+	GsScreenshotImagePrivate *priv;
+	gboolean ret;
+
+	priv = gs_screenshot_image_get_instance_private (ssimg);
+
+	/* create an helper which can do the blurring for us */
+	im = as_image_new ();
+	ret = as_image_load_filename (im, filename_thumb, NULL);
+	if (!ret)
+		goto out;
+	pb = as_image_save_pixbuf (im,
+				   priv->width * priv->scale,
+				   priv->height * priv->scale,
+				   AS_IMAGE_SAVE_FLAG_BLUR);
+	if (pb == NULL)
+		goto out;
+
+	if (g_strcmp0 (priv->current_image, "image1") == 0) {
+		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image1),
+						     pb, priv->scale);
+	} else {
+		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image2),
+						     pb, priv->scale);
+	}
+out:
+	if (im != NULL)
+		g_object_unref (im);
+	if (pb != NULL)
+		g_object_unref (pb);
+}
+
+/**
  * gs_screenshot_image_complete_cb:
  **/
 static void
@@ -339,6 +379,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	const gchar *url;
 	gchar *basename = NULL;
 	gchar *cachedir = NULL;
+	gchar *cachedir2 = NULL;
 	gchar *sizedir = NULL;
 	gint rc;
 
@@ -399,6 +440,19 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		goto out;
 	}
 
+	/* can we load a blurred smaller version of this straight away */
+	if (priv->width > AS_IMAGE_THUMBNAIL_WIDTH &&
+	    priv->height > AS_IMAGE_THUMBNAIL_HEIGHT) {
+		cachedir2 = g_build_filename (priv->cachedir,
+					      "gnome-software",
+					      "screenshots",
+					      "112x63",
+					      basename,
+					      NULL);
+		if (g_file_test (cachedir2, G_FILE_TEST_EXISTS))
+			gs_screenshot_image_show_blurred (ssimg, cachedir2);
+	}
+
 	/* download file */
 	g_debug ("downloading %s to %s", url, priv->filename);
 	base_uri = soup_uri_new (url);
@@ -423,6 +477,7 @@ out:
 	g_free (basename);
 	g_free (sizedir);
 	g_free (cachedir);
+	g_free (cachedir2);
 	if (base_uri != NULL)
 		soup_uri_free (base_uri);
 }
