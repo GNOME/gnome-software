@@ -126,14 +126,66 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_appstream_get_origins_hash:
+ *
+ * Returns: A hash table with a string key of the application origin and a
+ * value of the guint percentage of the store is made up by that origin.
+ */
+static GHashTable *
+gs_plugin_appstream_get_origins_hash (GPtrArray *array)
+{
+	AsApp *app;
+	GHashTable *origins = NULL;
+	GList *keys = NULL;
+	GList *l;
+	const gchar *tmp;
+	gdouble perc;
+	guint *cnt;
+	guint i;
+
+	/* create a hash table with origin:cnt */
+	origins = g_hash_table_new_full (g_str_hash, g_str_equal,
+					 g_free, g_free);
+	for (i = 0; i < array->len; i++) {
+		app = g_ptr_array_index (array, i);
+		tmp = as_app_get_origin (app);
+		if (tmp == NULL)
+			continue;
+		cnt = g_hash_table_lookup (origins, tmp);
+		if (cnt == NULL) {
+			cnt = g_new0 (guint, 1);
+			g_hash_table_insert (origins, g_strdup (tmp), cnt);
+		}
+		(*cnt)++;
+	}
+
+	/* convert the cnt to a percentage */
+	keys = g_hash_table_get_keys (origins);
+	for (l = keys; l != NULL; l = l->next) {
+		tmp = l->data;
+		cnt = g_hash_table_lookup (origins, tmp);
+		perc = (100.f / (gdouble) array->len) * (gdouble) (*cnt);
+		g_debug ("origin %s provides %i apps (%.0f%%)", tmp, *cnt, perc);
+		*cnt = perc;
+	}
+
+	g_list_free (keys);
+	return origins;
+}
+
+/**
  * gs_plugin_startup:
  */
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GError **error)
 {
+	AsApp *app;
+	GHashTable *origins = NULL;
 	GPtrArray *items;
 	gboolean ret;
+	const gchar *origin;
 	gchar *tmp;
+	guint *perc;
 #if AS_CHECK_VERSION(0,3,1)
 	guint i;
 #endif
@@ -174,10 +226,24 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 		goto out;
 	}
 
+	/* add search terms for apps not in the main source */
+	origins = gs_plugin_appstream_get_origins_hash (items);
+	for (i = 0; i < items->len; i++) {
+		app = g_ptr_array_index (items, i);
+		origin = as_app_get_origin (app);
+		if (origin == NULL)
+			continue;
+		perc = g_hash_table_lookup (origins, origin);
+		if (*perc < 10) {
+			g_debug ("Adding keyword '%s' to %s",
+				 origin, as_app_get_id (app));
+			as_app_add_keyword (app, NULL, origin, -1);
+		}
+	}
+
 	/* look for any application with a HiDPI icon kudo */
 #if AS_CHECK_VERSION(0,3,1)
 	for (i = 0; i < items->len; i++) {
-		AsApp *app;
 		app = g_ptr_array_index (items, i);
 		if (as_app_has_kudo_kind (app, AS_KUDO_KIND_HI_DPI_ICON)) {
 			plugin->priv->has_hi_dpi_support = TRUE;
@@ -186,6 +252,8 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	}
 #endif
 out:
+	if (origins != NULL)
+		g_hash_table_unref (origins);
 	gs_profile_stop (plugin->profile, "appstream::startup");
 	return ret;
 }
