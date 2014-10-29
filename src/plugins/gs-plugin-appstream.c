@@ -713,6 +713,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (tmp != NULL) {
 		from_xml = as_markup_convert_simple (tmp, -1, error);
 		if (from_xml == NULL) {
+			g_prefix_error (error, "trying to parse '%s': ", tmp);
 			ret = FALSE;
 			goto out;
 		}
@@ -1264,9 +1265,9 @@ gs_plugin_add_popular_from_category (GsPlugin *plugin,
 				     GError **error)
 {
 	AsApp *item;
+	GError *error_local = NULL;
 	GPtrArray *array;
 	GsApp *app;
-	gboolean ret = TRUE;
 	guint i;
 
 	/* search categories for the search term */
@@ -1296,9 +1297,14 @@ gs_plugin_add_popular_from_category (GsPlugin *plugin,
 
 		/* add application */
 		app = gs_app_new (as_app_get_id_full (item));
-		ret = gs_plugin_refine_item (plugin, app, item, error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_refine_item (plugin, app, item, &error_local)) {
+			g_warning ("Failed to refine %s: %s",
+				   as_app_get_id (item),
+				   error_local->message);
+			g_clear_error (&error_local);
+			g_object_unref (app);
+			continue;
+		}
 
 		/* only suggest awesome applications */
 		if (gs_plugin_appstream_is_app_awesome (app)) {
@@ -1311,8 +1317,7 @@ gs_plugin_add_popular_from_category (GsPlugin *plugin,
 		}
 		g_object_unref (app);
 	}
-out:
-	return ret;
+	return TRUE;
 }
 
 /**
