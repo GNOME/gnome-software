@@ -109,6 +109,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
+	gtk_widget_set_visible (priv->box_popular, list != NULL);
 	gtk_widget_set_visible (priv->popular_heading, list != NULL);
 	if (list == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
