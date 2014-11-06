@@ -3006,6 +3006,8 @@ gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 	if (plugin_loader->priv->online == online)
 		return;
 
+	g_debug ("*** Network status change: %s", online ? "online" : "offline");
+
 	plugin_loader->priv->online = online;
 
 	if (!online)

@@ -115,7 +115,6 @@ network_changed_cb (GNetworkMonitor *monitor,
 		    gboolean available,
 		    GsApplication *app)
 {
-	g_debug ("*** Network status change: %s", available ? "online" : "offline");
 	gs_plugin_loader_set_network_status (app->plugin_loader, available);
 }
 
