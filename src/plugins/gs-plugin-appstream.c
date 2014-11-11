@@ -125,6 +125,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (plugin->priv->store);
 }
 
+#if AS_CHECK_VERSION(0,3,2)
 /**
  * gs_plugin_appstream_get_origins_hash:
  *
@@ -172,6 +173,7 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 	g_list_free (keys);
 	return origins;
 }
+#endif
 
 /**
  * gs_plugin_startup:
@@ -179,15 +181,17 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GError **error)
 {
-	AsApp *app;
-	GHashTable *origins = NULL;
 	GPtrArray *items;
 	gboolean ret;
-	const gchar *origin;
 	gchar *tmp;
-	guint *perc;
 #if AS_CHECK_VERSION(0,3,1)
 	guint i;
+#endif
+#if AS_CHECK_VERSION(0,3,2)
+	AsApp *app;
+	GHashTable *origins = NULL;
+	const gchar *origin;
+	guint *perc;
 #endif
 
 	/* clear all existing applications if the store was invalidated */
@@ -227,6 +231,7 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	}
 
 	/* add search terms for apps not in the main source */
+#if AS_CHECK_VERSION(0,3,2)
 	origins = gs_plugin_appstream_get_origins_hash (items);
 	for (i = 0; i < items->len; i++) {
 		app = g_ptr_array_index (items, i);
@@ -240,6 +245,7 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 			as_app_add_keyword (app, NULL, origin, -1);
 		}
 	}
+#endif
 
 	/* look for any application with a HiDPI icon kudo */
 #if AS_CHECK_VERSION(0,3,1)
@@ -252,8 +258,10 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	}
 #endif
 out:
+#if AS_CHECK_VERSION(0,3,2)
 	if (origins != NULL)
 		g_hash_table_unref (origins);
+#endif
 	gs_profile_stop (plugin->profile, "appstream::startup");
 	return ret;
 }
