@@ -10,7 +10,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-09-09 09:30+0000\n"
+"POT-Creation-Date: 2014-11-11 20:34+0000\n"
 "PO-Revision-Date: 2014-09-09 19:54+0100\n"
 "Last-Translator: Mattias Eriksson <snaggen@gmail.com>\n"
 "Language-Team: Swedish (https://l10n.gnome.org/vertimus/geary/master/po/sv)\n"
@@ -51,7 +51,7 @@ msgid "Add to Application Folder"
 msgstr "Lägg till i programmapp"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:603
+#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:615
 msgid "_Cancel"
 msgstr "A_vbryt"
 
@@ -62,8 +62,8 @@ msgstr "_Lägg till"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
-#: ../src/gs-app-tile.c:72 ../src/gs-app-tile.c:75 ../src/gs-feature-tile.c:66
-#: ../src/gs-popular-tile.c:73 ../src/gs-popular-tile.c:76
+#: ../src/gs-app-tile.c:74 ../src/gs-app-tile.c:77 ../src/gs-feature-tile.c:69
+#: ../src/gs-popular-tile.c:75 ../src/gs-popular-tile.c:78
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Installerad"
@@ -72,7 +72,7 @@ msgstr "Installerad"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:264 ../src/gs-shell.c:156
+#: ../src/gs-application.c:263 ../src/gs-shell.c:157
 msgid "Software"
 msgstr "Programvara"
 
@@ -142,16 +142,16 @@ msgid "Folder Name"
 msgstr "Mappnamn"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:262
+#: ../src/gs-application.c:261
 msgid "About Software"
 msgstr "Om Programvara"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:267
+#: ../src/gs-application.c:266
 msgid "A nice way to manage the software on your system."
 msgstr "Ett trevligt sätt att hantera programvaran på ditt system."
 
-#: ../src/gs-application.c:271
+#: ../src/gs-application.c:270
 msgid "translator-credits"
 msgstr ""
 "Mattias Eriksson <snaggen@gmail.com>\n"
@@ -159,54 +159,54 @@ msgstr ""
 "Skicka synpunkter på översättningen till\n"
 "<tp-sv@listor.tp-sv.se>."
 
-#: ../src/gs-application.c:535
+#: ../src/gs-application.c:537
 msgid "Enter GApplication service mode"
 msgstr "Starta GApplication-tjänsteläge"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:540
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Uppstartsläge: antingen ‘updates’ (uppdateringar) , ‘updated’ (uppdaterad), "
 "‘installed’ (installerad) eller ‘overview' (översikt)"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:540
 msgid "MODE"
 msgstr "LÄGE"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:542
 msgid "Search for applications"
 msgstr "Sök efter program"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:542
 msgid "SEARCH"
 msgstr "SÖKNING"
 
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:544
 msgid "Show application details"
 msgstr "Visa programdetaljer"
 
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:544
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:544
+#: ../src/gs-application.c:546
 msgid "Open a local package file"
 msgstr "Öppna en lokal paketfil"
 
-#: ../src/gs-application.c:544
+#: ../src/gs-application.c:546
 msgid "FILENAME"
 msgstr "FILNAMN"
 
-#: ../src/gs-application.c:546
+#: ../src/gs-application.c:548
 msgid "Show verbose debugging information"
 msgstr "Visa utökad felsökningsinformation"
 
-#: ../src/gs-application.c:548
+#: ../src/gs-application.c:550
 msgid "Show profiling information for the service"
 msgstr "Visa profileringsinformation för tjänsten"
 
-#: ../src/gs-application.c:550
+#: ../src/gs-application.c:552
 msgid "Prefer local file sources to AppStream"
 msgstr "Föredra lokala filkällor framför AppStream"
 
@@ -222,7 +222,7 @@ msgstr "Väntar"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
 #: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
-#: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
+#: ../src/gs-app-tile.c:83 ../src/gs-app-tile.c:86
 msgid "Installing"
 msgstr "Installerar"
 
@@ -231,7 +231,7 @@ msgstr "Installerar"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
 #: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
-#: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
+#: ../src/gs-app-tile.c:92 ../src/gs-app-tile.c:95
 msgid "Removing"
 msgstr "Tar bort"
 
@@ -256,17 +256,17 @@ msgstr "Installera"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1128
-#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:164
+#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1133
+#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:165
 msgid "Remove"
 msgstr "Ta bort"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:99 ../src/gs-app-tile.c:103
-#: ../src/gs-feature-tile.c:71 ../src/gs-popular-tile.c:82
-#: ../src/gs-popular-tile.c:86
+#: ../src/gs-app-tile.c:101 ../src/gs-app-tile.c:105
+#: ../src/gs-feature-tile.c:74 ../src/gs-popular-tile.c:84
+#: ../src/gs-popular-tile.c:88
 msgid "Updates"
 msgstr "Uppdaterar"
 
@@ -400,24 +400,24 @@ msgstr "Detaljerat felmeddelande från pakethanteraren lyder:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:919
+#: ../src/gs-plugin-loader.c:927
 msgid "OS Updates"
 msgstr "Systemuppdateringar"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:924
+#: ../src/gs-plugin-loader.c:932
 msgid "Includes performance, stability and security improvements."
 msgstr "Innehåller prestanda-, stabilitets- och säkerhetsförbättringar."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1522
+#: ../src/gs-plugin-loader.c:1536
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Inga kodek-tillägg finns tillgängliga för %s-formatet."
 
-#: ../src/gs-plugin-loader.c:1525
+#: ../src/gs-plugin-loader.c:1539
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -428,39 +428,39 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:208
+#: ../src/gs-screenshot-image.c:214
 msgid "Screenshot not found"
 msgstr "Skärmbild kunde inte hittas"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:226
+#: ../src/gs-screenshot-image.c:232
 msgid "Failed to load image"
 msgstr "Misslyckades med att läsa in bild"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:354
+#: ../src/gs-screenshot-image.c:372
 msgid "Screenshot size not found"
 msgstr "Skärmbildsstorlek kunde inte hittas"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:373
+#: ../src/gs-screenshot-image.c:391
 msgid "Could not create cache"
 msgstr "Kunde inte skapa katalog för temporärlagring"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:390
+#: ../src/gs-screenshot-image.c:408
 msgid "Screenshot not valid"
 msgstr "Skärmbilden är ogiltig"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:396
+#: ../src/gs-screenshot-image.c:414
 msgid "Screenshot not available"
 msgstr "Skärmbilden inte tillgänglig"
 
-#: ../src/gs-screenshot-image.c:454
+#: ../src/gs-screenshot-image.c:467
 msgid "Screenshot"
 msgstr "Skärmbild"
 
@@ -487,60 +487,60 @@ msgid "_Removing"
 msgstr "_Tar bort"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:584
+#: ../src/gs-shell-details.c:597
 msgctxt "license"
 msgid "Unknown"
 msgstr "Okänd"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:597
+#: ../src/gs-shell-details.c:610
 msgctxt "version"
 msgid "Unknown"
 msgstr "Okänd"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:603
+#: ../src/gs-shell-details.c:616
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Beräknar…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:606
+#: ../src/gs-shell-details.c:619
 msgctxt "size"
 msgid "Unknown"
 msgstr "Okänd"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:618
+#: ../src/gs-shell-details.c:631
 msgctxt "updated"
 msgid "Never"
 msgstr "Aldrig"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:633
+#: ../src/gs-shell-details.c:646
 msgctxt "menu category"
 msgid "None"
 msgstr "Ingen"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:643
+#: ../src/gs-shell-details.c:656
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Okänd"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1113 ../src/gs-shell-installed.c:167
-#: ../src/gs-shell-search.c:149
+#: ../src/gs-shell-details.c:1118 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:150
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Är du säker att du vill ta bort %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1125 ../src/gs-shell-installed.c:179
-#: ../src/gs-shell-search.c:161
+#: ../src/gs-shell-details.c:1130 ../src/gs-shell-installed.c:179
+#: ../src/gs-shell-search.c:162
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -614,7 +614,7 @@ msgstr ""
 
 #: ../src/gs-shell-details.ui.h:16
 msgid "_Website"
-msgstr "_Webbpats"
+msgstr "_Webbplats"
 
 #: ../src/gs-shell-details.ui.h:17
 msgid "_History"
@@ -660,7 +660,7 @@ msgstr "Utvecklare"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:515
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:527
 #: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Tillägg"
@@ -671,11 +671,11 @@ msgstr "Valda tillägg kommer att installeras med programmet."
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:505
+#: ../src/gs-shell-installed.c:517
 msgid "System Applications"
 msgstr "Systemprogram"
 
-#: ../src/gs-shell-installed.c:611
+#: ../src/gs-shell-installed.c:623
 msgid "Click on items to select them"
 msgstr "Klicka på poster för att välja dem"
 
@@ -697,22 +697,22 @@ msgid "_Remove from Folder"
 msgstr "_Ta bort från mapp"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:315
+#: ../src/gs-shell-overview.c:334
 msgid "Recommended Audio Applications"
 msgstr "Rekommenderade ljudprogram"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:320
+#: ../src/gs-shell-overview.c:339
 msgid "Recommended Games"
 msgstr "Rekommenderade Spel"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:325
+#: ../src/gs-shell-overview.c:344
 msgid "Recommended Graphics Applications"
 msgstr "Rekommenderade grafikprogram"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:330
+#: ../src/gs-shell-overview.c:349
 msgid "Recommended Office Applications"
 msgstr "Rekommenderade produktivitetsprogram"
 
@@ -835,30 +835,30 @@ msgid "Last checked: %s"
 msgstr "Senaste sökning: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:779
+#: ../src/gs-shell-updates.c:787
 msgid "No Network"
 msgstr "Inget nätverk"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:783
+#: ../src/gs-shell-updates.c:791
 msgid "Internet access is required to check for updates."
 msgstr "Internetförbindelse krävs för att söka efter uppdateringar."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:787
+#: ../src/gs-shell-updates.c:795
 msgid "Network Settings"
 msgstr "Nätverksinställningar"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:806
+#: ../src/gs-shell-updates.c:814
 msgid "Charges may apply"
 msgstr "Kostnader kan tillkomma"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:810
+#: ../src/gs-shell-updates.c:818
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -867,7 +867,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:814
+#: ../src/gs-shell-updates.c:822
 msgid "Check Anyway"
 msgstr "Kontrollera ändå"
 
@@ -927,11 +927,11 @@ msgid_plural "%i applications and %i add-ons installed"
 msgstr[0] "%i program och %i tillägg installerat"
 msgstr[1] "%i program och %i tillägg installerade"
 
-#: ../src/gs-sources-dialog.c:296 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:300 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "Ta bort källa"
 
-#: ../src/gs-sources-dialog.c:311
+#: ../src/gs-sources-dialog.c:315
 msgid "Removing…"
 msgstr "Ta bort…"
 
@@ -981,69 +981,68 @@ msgstr "Webbplats"
 
 #. TRANSLATORS: this is where the packager did not write a
 #. * description for the update
-#: ../src/gs-update-dialog.c:108
-#| msgid "No update details were provided"
+#: ../src/gs-update-dialog.c:115
 msgid "No update description available."
 msgstr "Ingen beskrivning för uppdatering tillgänglig."
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:168
+#: ../src/gs-update-dialog.c:175
 msgid "Installed Updates"
 msgstr "Installerade uppdateringar"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:182
+#: ../src/gs-update-dialog.c:189
 #, c-format
 msgid "Installed on %s"
 msgstr "Installerade på %s"
 
-#: ../src/gs-update-monitor.c:99
+#: ../src/gs-update-monitor.c:98
 msgid "Software Updates Available"
 msgstr "Programvaruuppdateringar tillgängliga"
 
-#: ../src/gs-update-monitor.c:100
+#: ../src/gs-update-monitor.c:99
 msgid "Important OS and application updates are ready to be installed"
 msgstr "Viktiga system- och programuppdateringar är redo att installeras"
 
-#: ../src/gs-update-monitor.c:103
+#: ../src/gs-update-monitor.c:102
 msgid "View"
 msgstr "Visa"
 
-#: ../src/gs-update-monitor.c:104
+#: ../src/gs-update-monitor.c:103
 msgid "Not Now"
 msgstr "Inte nu"
 
-#: ../src/gs-update-monitor.c:145
+#: ../src/gs-update-monitor.c:144
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Programvaruuppdatering installerad"
 msgstr[1] "Programvaruuppdateringar installerade"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:149
+#: ../src/gs-update-monitor.c:148
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "En viktig systemuppdatering har installerats."
 msgstr[1] "Viktiga systemuppdateringar har installerats."
 
-#: ../src/gs-update-monitor.c:155
+#: ../src/gs-update-monitor.c:154
 msgid "Software Updates Failed"
 msgstr "Programvaruuppdatering misslyckades"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:157
+#: ../src/gs-update-monitor.c:156
 msgid "An important OS update failed to be installed."
 msgstr "Misslyckades med att installera en viktig systemuppdatering."
 
-#: ../src/gs-update-monitor.c:166
+#: ../src/gs-update-monitor.c:165
 msgid "Review"
 msgstr "Granska"
 
-#: ../src/gs-update-monitor.c:168
+#: ../src/gs-update-monitor.c:167
 msgid "Show Details"
 msgstr "Visa detaljer"
 
-#: ../src/gs-update-monitor.c:169
+#: ../src/gs-update-monitor.c:168
 msgid "OK"
 msgstr "OK"
 
@@ -1070,33 +1069,33 @@ msgstr "Fem stjärnor"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:131
+#: ../src/gs-utils.c:135
 #, c-format
 msgid "%s is now installed"
 msgstr "%s har installerats"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:135
+#: ../src/gs-utils.c:139
 msgid "Launch"
 msgstr "Starta"
 
-#: ../src/gs-utils.c:159
+#: ../src/gs-utils.c:163
 msgid "Sorry, this did not work"
 msgstr "Tyvärr, detta lyckades inte"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:163
+#: ../src/gs-utils.c:167
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Installationen av %s misslyckades."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:168
+#: ../src/gs-utils.c:172
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Borttagning av %s misslyckades."
 
-#: ../src/plugins/gs-plugin-appstream.c:162
+#: ../src/plugins/gs-plugin-appstream.c:229
 #, c-format
 msgid "No AppStream data found"
 msgstr "Inget AppStream-data hittades"
@@ -1105,7 +1104,7 @@ msgstr "Inget AppStream-data hittades"
 #. * be considered a "Conjunctive AND Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#: ../src/plugins/gs-plugin-appstream.c:305
+#: ../src/plugins/gs-plugin-appstream.c:511
 msgid " and "
 msgstr " och "
 
@@ -1113,7 +1112,7 @@ msgstr " och "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/plugins/gs-plugin-appstream.c:313
+#: ../src/plugins/gs-plugin-appstream.c:519
 msgid " or "
 msgstr " eller "
 
