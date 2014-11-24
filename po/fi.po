@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-09-07 07:35+0000\n"
-"PO-Revision-Date: 2014-09-07 21:08+0300\n"
+"POT-Creation-Date: 2014-11-24 08:34+0000\n"
+"PO-Revision-Date: 2014-11-24 19:04+0200\n"
 "Last-Translator: Jiri Grönroos <jiri.gronroos+l10n@iki.fi>\n"
 "Language-Team: suomi <gnome-fi-laatu@lists.sourceforge.net>\n"
 "Language: fi\n"
@@ -49,7 +49,7 @@ msgid "Add to Application Folder"
 msgstr "Lisää sovelluskansioon"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:603
+#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:615
 msgid "_Cancel"
 msgstr "_Peru"
 
@@ -60,8 +60,8 @@ msgstr "_Lisää"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
-#: ../src/gs-app-tile.c:72 ../src/gs-app-tile.c:75 ../src/gs-feature-tile.c:66
-#: ../src/gs-popular-tile.c:73 ../src/gs-popular-tile.c:76
+#: ../src/gs-app-tile.c:74 ../src/gs-app-tile.c:77 ../src/gs-feature-tile.c:69
+#: ../src/gs-popular-tile.c:75 ../src/gs-popular-tile.c:78
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Asennettu"
@@ -70,7 +70,7 @@ msgstr "Asennettu"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:265 ../src/gs-shell.c:156
+#: ../src/gs-application.c:263 ../src/gs-shell.c:157
 msgid "Software"
 msgstr "Ohjelmistot"
 
@@ -141,71 +141,71 @@ msgid "Folder Name"
 msgstr "Kansion nimi"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:263
+#: ../src/gs-application.c:261
 msgid "About Software"
 msgstr "Tietoja - Ohjelmistot"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:268
+#: ../src/gs-application.c:266
 msgid "A nice way to manage the software on your system."
 msgstr "Mukava tapa hallinta järjestelmän ohjelmistoja."
 
-#: ../src/gs-application.c:272
+#: ../src/gs-application.c:270
 msgid "translator-credits"
 msgstr "Jiri Grönroos"
 
-#: ../src/gs-application.c:531
+#: ../src/gs-application.c:537
 #, fuzzy
 #| msgid "Application Folders"
 msgid "Enter GApplication service mode"
 msgstr "Sovelluskansiot"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:540
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Käynnistystila, joko \"updates\", \"updated\", \"installed\" tai \"overview\""
 
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:540
 msgid "MODE"
 msgstr "TILA"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:542
 msgid "Search for applications"
 msgstr "Etsi sovelluksia"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:542
 msgid "SEARCH"
 msgstr ""
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:544
 msgid "Show application details"
 msgstr "Näytä sovelluksen tiedot"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:544
 #, fuzzy
 #| msgctxt "Menu subcategory of Development"
 #| msgid "IDE"
 msgid "ID"
 msgstr "Ohjelmointiympäristöt"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:546
 msgid "Open a local package file"
 msgstr "Avaa paikallinen pakettitiedosto"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:546
 msgid "FILENAME"
 msgstr ""
 
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:548
 msgid "Show verbose debugging information"
 msgstr ""
 
-#: ../src/gs-application.c:544
+#: ../src/gs-application.c:550
 msgid "Show profiling information for the service"
 msgstr "Näytä palvelun profilointitietoja"
 
-#: ../src/gs-application.c:546
+#: ../src/gs-application.c:552
 msgid "Prefer local file sources to AppStream"
 msgstr ""
 
@@ -221,7 +221,7 @@ msgstr "Odottaa"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
 #: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
-#: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
+#: ../src/gs-app-tile.c:83 ../src/gs-app-tile.c:86
 msgid "Installing"
 msgstr "Asennetaan"
 
@@ -230,7 +230,7 @@ msgstr "Asennetaan"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
 #: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
-#: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
+#: ../src/gs-app-tile.c:92 ../src/gs-app-tile.c:95
 msgid "Removing"
 msgstr "Poistetaan"
 
@@ -255,17 +255,17 @@ msgstr "Asenna"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1128
-#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:164
+#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1133
+#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:165
 msgid "Remove"
 msgstr "Poista"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:99 ../src/gs-app-tile.c:103
-#: ../src/gs-feature-tile.c:71 ../src/gs-popular-tile.c:82
-#: ../src/gs-popular-tile.c:86
+#: ../src/gs-app-tile.c:101 ../src/gs-app-tile.c:105
+#: ../src/gs-feature-tile.c:74 ../src/gs-popular-tile.c:84
+#: ../src/gs-popular-tile.c:88
 msgid "Updates"
 msgstr "Päivitykset"
 
@@ -281,7 +281,6 @@ msgid "Welcome"
 msgstr "Tervetuloa"
 
 #: ../src/gs-first-run-dialog.ui.h:2
-#| msgid "About Software"
 msgid "Welcome to Software"
 msgstr "Tervetuloa ohjelmistojen pariin"
 
@@ -301,7 +300,6 @@ msgstr "_Siirry ohjelmistojen pariin"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
 #: ../src/gs-history-dialog.c:82
-#| msgid "Removed"
 msgctxt "app status"
 msgid "Removed"
 msgstr "Poistettu"
@@ -309,7 +307,6 @@ msgstr "Poistettu"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
 #: ../src/gs-history-dialog.c:88
-#| msgid "Installed"
 msgctxt "app status"
 msgid "Installed"
 msgstr "Asennettu"
@@ -317,7 +314,6 @@ msgstr "Asennettu"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
 #: ../src/gs-history-dialog.c:93
-#| msgid "Updated"
 msgctxt "app status"
 msgid "Updated"
 msgstr "Päivitetty"
@@ -326,7 +322,6 @@ msgstr "Päivitetty"
 #. * where we are showing that something happened to the
 #. * application but we don't know what
 #: ../src/gs-history-dialog.c:99
-#| msgid "Unknown"
 msgctxt "app status"
 msgid "Unknown"
 msgstr "Tuntematon"
@@ -337,95 +332,93 @@ msgid "History"
 msgstr "Historia"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:254
+#: ../src/gs-offline-updates.c:53
 msgid "Failed To Update"
 msgstr "Päivitys epäonnistui"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:260
+#: ../src/gs-offline-updates.c:59
 msgid "A previous update was unfinished."
 msgstr "Edellinen päivitys jäi viimeistelemättä."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:270
+#: ../src/gs-offline-updates.c:69
 msgid "Network access was required but not available."
 msgstr "Verkkoyhteys vaadittiin, mutta sitä ei ollut saatavilla."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:279
+#: ../src/gs-offline-updates.c:78
 msgid "An update was not signed in the correct way."
 msgstr "Päivitystä ei ollut allekirjoitettu hyväksyttävällä tavalla."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:289
+#: ../src/gs-offline-updates.c:88
 msgid "The update could not be completed."
 msgstr "Päivitystä ei voitu viedä loppuun."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:294
+#: ../src/gs-offline-updates.c:93
 msgid "The update was cancelled."
 msgstr "Päivitys peruttiin."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:300
+#: ../src/gs-offline-updates.c:99
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
 "Yhteydettömän tilan päivitystä pyydettiin, mutta yksikään paketti ei vaadi "
 "päivitystä."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:304
+#: ../src/gs-offline-updates.c:103
 msgid "No space was left on the drive."
 msgstr "Asemalla ei ole vapaata tilaa."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:312
+#: ../src/gs-offline-updates.c:111
 msgid "An update failed to install correctly."
 msgstr "Päivityksen asennus epäonnistui."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:317
+#: ../src/gs-offline-updates.c:116
 msgid "The offline update failed in an unexpected way."
 msgstr "Yhteydettömän tilan päivitys epäonnistui odottamattomalla tavalla."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:326
+#: ../src/gs-offline-updates.c:125
 msgid "Detailed errors from the package manager follow:"
 msgstr "Yksityiskohtaiset virhetiedot pakettihallinnalta:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:900
+#: ../src/gs-plugin-loader.c:927
 msgid "OS Updates"
 msgstr "Järjestelmäpäivitykset"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:905
-#| msgid ""
-#| "Includes performance, stability and security improvements for all users."
+#: ../src/gs-plugin-loader.c:932
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "Sisältää suorituskykyyn, vakauteen ja turvallisuuteen liittyviä parannuksia."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1503
+#: ../src/gs-plugin-loader.c:1536
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s-muotoa varten ei ole lisäkoodekkeja saatavilla."
 
-#: ../src/gs-plugin-loader.c:1506
+#: ../src/gs-plugin-loader.c:1539
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -436,40 +429,39 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:208
+#: ../src/gs-screenshot-image.c:254
 msgid "Screenshot not found"
 msgstr "Kuvakaappausta ei löytynyt"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:226
-#| msgid "Failed To Update"
+#: ../src/gs-screenshot-image.c:272
 msgid "Failed to load image"
 msgstr "Kuvan lataaminen epäonnistui"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:354
+#: ../src/gs-screenshot-image.c:413
 msgid "Screenshot size not found"
 msgstr "Kuvakaappauksen kokoa ei löytynyt"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:373
+#: ../src/gs-screenshot-image.c:432
 msgid "Could not create cache"
 msgstr "Välimuistin luominen ei onnistunut"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:390
+#: ../src/gs-screenshot-image.c:462
 msgid "Screenshot not valid"
 msgstr "Kuvakaappaus on virheellinen"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:396
+#: ../src/gs-screenshot-image.c:468
 msgid "Screenshot not available"
 msgstr "Kuvakaappausta ei ole saataville"
 
-#: ../src/gs-screenshot-image.c:454
+#: ../src/gs-screenshot-image.c:522
 msgid "Screenshot"
 msgstr "Kuvakaappaus"
 
@@ -496,67 +488,60 @@ msgid "_Removing"
 msgstr "_Poistetaan"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:584
-#| msgid "Unknown"
+#: ../src/gs-shell-details.c:597
 msgctxt "license"
 msgid "Unknown"
 msgstr "Tuntematon"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:597
-#| msgid "Unknown"
+#: ../src/gs-shell-details.c:610
 msgctxt "version"
 msgid "Unknown"
 msgstr "Tuntematon"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:603
-#| msgid "Calculating…"
+#: ../src/gs-shell-details.c:616
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Lasketaan…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:606
-#| msgid "Unknown"
+#: ../src/gs-shell-details.c:619
 msgctxt "size"
 msgid "Unknown"
 msgstr "Tuntematon"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:618
-#| msgid "Never"
+#: ../src/gs-shell-details.c:631
 msgctxt "updated"
 msgid "Never"
 msgstr "Ei koskaan"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:633
-#| msgid "None"
+#: ../src/gs-shell-details.c:646
 msgctxt "menu category"
 msgid "None"
 msgstr "Ei määritelty"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:643
-#| msgid "Unknown"
+#: ../src/gs-shell-details.c:656
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Tuntematon"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1113 ../src/gs-shell-installed.c:167
-#: ../src/gs-shell-search.c:149
+#: ../src/gs-shell-details.c:1118 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:150
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Haluatko varmasti poistaa kohteen %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1125 ../src/gs-shell-installed.c:179
-#: ../src/gs-shell-search.c:161
+#: ../src/gs-shell-details.c:1130 ../src/gs-shell-installed.c:179
+#: ../src/gs-shell-search.c:162
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -615,7 +600,6 @@ msgid "Only use software sources that you trust."
 msgstr "Käytä vain lähteitä, joihin luotat."
 
 #: ../src/gs-shell-details.ui.h:14
-#| msgid "Application"
 msgid "Internet Only Application"
 msgstr "Vaatii internetyhteyden"
 
@@ -660,7 +644,6 @@ msgid "Source"
 msgstr "Lähde"
 
 #: ../src/gs-shell-details.ui.h:25
-#| msgid "Licence"
 msgid "License"
 msgstr "Lisenssi"
 
@@ -675,7 +658,7 @@ msgstr "Kehittäjä"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:515
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:527
 #: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Lisäosat"
@@ -686,12 +669,11 @@ msgstr "Valitut lisäosat asennetaan sovelluksen mukana."
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:505
-#| msgid "Application"
+#: ../src/gs-shell-installed.c:517
 msgid "System Applications"
 msgstr "Järjestelmäsovellukset"
 
-#: ../src/gs-shell-installed.c:611
+#: ../src/gs-shell-installed.c:623
 msgid "Click on items to select them"
 msgstr "Napsauta kohdetta valitaksesi sen"
 
@@ -713,24 +695,22 @@ msgid "_Remove from Folder"
 msgstr "_Poista kansiosta"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:315
-#| msgid "Application"
+#: ../src/gs-shell-overview.c:334
 msgid "Recommended Audio Applications"
 msgstr "Suositut äänisovellukset"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:320
+#: ../src/gs-shell-overview.c:339
 msgid "Recommended Games"
 msgstr "Suositut pelit"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:325
+#: ../src/gs-shell-overview.c:344
 msgid "Recommended Graphics Applications"
 msgstr "Suositut grafiikkasovellukset"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:330
-#| msgid "Application"
+#: ../src/gs-shell-overview.c:349
 msgid "Recommended Office Applications"
 msgstr "Suositut toimistosovellukset"
 
@@ -740,7 +720,6 @@ msgid "Overview page"
 msgstr "Yhteenvetosivu"
 
 #: ../src/gs-shell-overview.ui.h:2
-#| msgid "Application"
 msgid "Featured Application"
 msgstr "Valokeilassa"
 
@@ -767,121 +746,117 @@ msgid "No Application Found"
 msgstr "Sovellusta ei löytynyt"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:146
+#: ../src/gs-shell-updates.c:144
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:149
+#: ../src/gs-shell-updates.c:147
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:155
+#: ../src/gs-shell-updates.c:153
 msgid "Yesterday, %R"
 msgstr "Eilen, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:159
+#: ../src/gs-shell-updates.c:157
 msgid "Yesterday, %l:%M %p"
 msgstr "Eilen, %l:%M %p"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:160
 msgid "Two days ago"
 msgstr "Kaksi päivää sitten"
 
-#: ../src/gs-shell-updates.c:164
-#| msgid "Three Stars"
+#: ../src/gs-shell-updates.c:162
 msgid "Three days ago"
 msgstr "Kolme päivää sitten"
 
-#: ../src/gs-shell-updates.c:166
-#| msgid "Four Stars"
+#: ../src/gs-shell-updates.c:164
 msgid "Four days ago"
 msgstr "Neljä päivää sitten"
 
-#: ../src/gs-shell-updates.c:168
-#| msgid "Five Stars"
+#: ../src/gs-shell-updates.c:166
 msgid "Five days ago"
 msgstr "Viisi päivää sitten"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:168
 msgid "Six days ago"
 msgstr "Kuusi päivää sitten"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:170
 msgid "One week ago"
 msgstr "Viikko sitten"
 
-#: ../src/gs-shell-updates.c:174
+#: ../src/gs-shell-updates.c:172
 msgid "Two weeks ago"
 msgstr "Kaksi viikkoa sitten"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:178
+#: ../src/gs-shell-updates.c:176
 msgid "%e %B %Y"
 msgstr "%e. %Bta %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:197
-#| msgid "Looking for new updates…"
+#: ../src/gs-shell-updates.c:195
 msgid "Downloading new updates…"
 msgstr "Ladataan uusia päivityksiä…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:201
+#: ../src/gs-shell-updates.c:199
 msgid "Looking for new updates…"
 msgstr "Etsitään uusia päivityksiä…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:255
+#: ../src/gs-shell-updates.c:253
 msgid "Setting up updates…"
 msgstr "Asetetaan päivityksiä…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:256 ../src/gs-shell-updates.c:263
+#: ../src/gs-shell-updates.c:254 ../src/gs-shell-updates.c:261
 msgid "(This could take a while)"
 msgstr "(Tämä saattaa kestää hetken)"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:269
+#: ../src/gs-shell-updates.c:267
 msgid "Checking for updates…"
 msgstr "Tarkistetaan päivityksiä…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:403
+#: ../src/gs-shell-updates.c:401
 #, c-format
 msgid "Last checked: %s"
 msgstr "Viimeksi tarkistettu: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:781
+#: ../src/gs-shell-updates.c:787
 msgid "No Network"
 msgstr "Ei verkkoa"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:785
+#: ../src/gs-shell-updates.c:791
 msgid "Internet access is required to check for updates."
 msgstr "Päivitysten tarkistaminen vaatii internetyhteyden."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:789
+#: ../src/gs-shell-updates.c:795
 msgid "Network Settings"
 msgstr "Verkkoasetukset"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:808
+#: ../src/gs-shell-updates.c:814
 msgid "Charges may apply"
 msgstr "Saattaa aiheuttaa lisäkuluja"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:812
+#: ../src/gs-shell-updates.c:818
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -891,7 +866,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:816
+#: ../src/gs-shell-updates.c:822
 msgid "Check Anyway"
 msgstr "Tarkista silti"
 
@@ -953,11 +928,11 @@ msgid_plural "%i applications and %i add-ons installed"
 msgstr[0] "%i sovellus ja %i lisäosaa asennettu"
 msgstr[1] "%i sovellusta ja %i lisäosaa asennettu"
 
-#: ../src/gs-sources-dialog.c:296 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:300 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "Poista lähde"
 
-#: ../src/gs-sources-dialog.c:311
+#: ../src/gs-sources-dialog.c:315
 msgid "Removing…"
 msgstr "Poistetaan…"
 
@@ -1007,37 +982,35 @@ msgstr "Verkkosivusto"
 
 #. TRANSLATORS: this is where the packager did not write a
 #. * description for the update
-#: ../src/gs-update-dialog.c:107
+#: ../src/gs-update-dialog.c:115
 msgid "No update description available."
 msgstr "Päivityksen kuvausta ei ole saatavilla."
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:167
-#| msgid "Installed page"
+#: ../src/gs-update-dialog.c:175
 msgid "Installed Updates"
 msgstr "Asennetut päivitykset"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:180
+#: ../src/gs-update-dialog.c:189
 #, c-format
-#| msgid "Installed"
 msgid "Installed on %s"
 msgstr "Asennettu %s"
 
-#: ../src/gs-update-monitor.c:99
+#: ../src/gs-update-monitor.c:98
 msgid "Software Updates Available"
 msgstr "Ohjelmistopäivityksiä saatavilla"
 
-#: ../src/gs-update-monitor.c:100
+#: ../src/gs-update-monitor.c:99
 msgid "Important OS and application updates are ready to be installed"
 msgstr ""
 "Tärkeitä järjestelmä- ja sovelluspäivityksiä on valmiina asennettavaksi"
 
-#: ../src/gs-update-monitor.c:103
+#: ../src/gs-update-monitor.c:102
 msgid "View"
 msgstr "Näytä"
 
-#: ../src/gs-update-monitor.c:104
+#: ../src/gs-update-monitor.c:103
 msgid "Not Now"
 msgstr "Ei nyt"
 
@@ -1054,24 +1027,24 @@ msgid_plural "Important OS updates have been installed."
 msgstr[0] "Tärkeä järjestelmäpäivitys asennettiin."
 msgstr[1] "Tärkeitä järjestelmäpäivityksiä asennettiin."
 
-#: ../src/gs-update-monitor.c:153
+#: ../src/gs-update-monitor.c:154
 msgid "Software Updates Failed"
 msgstr "Ohjelmistopäivitykset epäonnistuivat"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:155
+#: ../src/gs-update-monitor.c:156
 msgid "An important OS update failed to be installed."
 msgstr "Tärkeän järjestelmäpäivityksen asennus epäonnistui."
 
-#: ../src/gs-update-monitor.c:164
+#: ../src/gs-update-monitor.c:165
 msgid "Review"
-msgstr "Arvostelu"
+msgstr "Näytä"
 
-#: ../src/gs-update-monitor.c:166
+#: ../src/gs-update-monitor.c:167
 msgid "Show Details"
 msgstr "Näytä tiedot"
 
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:168
 msgid "OK"
 msgstr "OK"
 
@@ -1098,33 +1071,33 @@ msgstr "Viisi tähteä"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:131
+#: ../src/gs-utils.c:135
 #, c-format
 msgid "%s is now installed"
 msgstr "%s on nyt asennettu"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:135
+#: ../src/gs-utils.c:139
 msgid "Launch"
 msgstr "Käynnistä"
 
-#: ../src/gs-utils.c:159
+#: ../src/gs-utils.c:163
 msgid "Sorry, this did not work"
 msgstr "Valitettavasti se ei toiminut"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:163
+#: ../src/gs-utils.c:167
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Kohteen %s asennus epäonnistui."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:168
+#: ../src/gs-utils.c:172
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Kohteen %s poistaminen epäonnistui."
 
-#: ../src/plugins/gs-plugin-appstream.c:162
+#: ../src/plugins/gs-plugin-appstream.c:225
 #, c-format
 msgid "No AppStream data found"
 msgstr "AppStream-tietoja ei löytynyt"
@@ -1133,7 +1106,7 @@ msgstr "AppStream-tietoja ei löytynyt"
 #. * be considered a "Conjunctive AND Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#: ../src/plugins/gs-plugin-appstream.c:305
+#: ../src/plugins/gs-plugin-appstream.c:503
 msgid " and "
 msgstr " ja "
 
@@ -1141,7 +1114,7 @@ msgstr " ja "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/plugins/gs-plugin-appstream.c:313
+#: ../src/plugins/gs-plugin-appstream.c:511
 msgid " or "
 msgstr " tai "
 
@@ -1226,71 +1199,51 @@ msgid "Development Tools"
 msgstr "Kehitystyökalut"
 
 #: ../src/plugins/menu-spec-common.c:44
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Building"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
 msgstr "Kääntäminen"
 
 #: ../src/plugins/menu-spec-common.c:45
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Databases"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Databases"
 msgstr "Tietokannat"
 
 #: ../src/plugins/menu-spec-common.c:46
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Debuggers"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Debuggers"
 msgstr "Vianjäljittimet"
 
 #: ../src/plugins/menu-spec-common.c:47
-#| msgctxt "Menu subcategory of Development"
-#| msgid "GUI Designers"
 msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
 msgstr "Käyttöliittymäsuunnittelu"
 
 #: ../src/plugins/menu-spec-common.c:48
-#| msgctxt "Menu subcategory of Development"
-#| msgid "IDE"
 msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
 msgstr "Ohjelmointiympäristöt"
 
 #: ../src/plugins/menu-spec-common.c:49
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Profiling"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
 msgstr "Profilointi"
 
 #: ../src/plugins/menu-spec-common.c:50
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Project Management"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
 msgstr "Projektinhallinta"
 
 #: ../src/plugins/menu-spec-common.c:51
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Revision Control"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
 msgstr "Versionhallinta"
 
 #: ../src/plugins/menu-spec-common.c:52
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Translation"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Translation"
 msgstr "Kielenkäännös"
 
 #: ../src/plugins/menu-spec-common.c:53
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Web Development"
 msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
 msgstr "Web-kehitys"
@@ -1581,113 +1534,81 @@ msgid "Internet"
 msgstr "Internet"
 
 #: ../src/plugins/menu-spec-common.c:115
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Chat"
 msgctxt "Menu subcategory of Internet"
 msgid "Chat"
 msgstr "Keskustelu"
 
 #: ../src/plugins/menu-spec-common.c:116
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Dialup"
 msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
 msgstr "Puhelinverkkoyhteydet"
 
 #: ../src/plugins/menu-spec-common.c:117
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Email"
 msgctxt "Menu subcategory of Internet"
 msgid "Email"
 msgstr "Sähköposti"
 
 #: ../src/plugins/menu-spec-common.c:118
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Feed"
 msgctxt "Menu subcategory of Internet"
 msgid "Feed"
 msgstr "Syötteet"
 
 #: ../src/plugins/menu-spec-common.c:119
-#| msgctxt "Menu subcategory of Network"
-#| msgid "File Transfer"
 msgctxt "Menu subcategory of Internet"
 msgid "File Transfer"
 msgstr "Tiedostonsiirto"
 
 #: ../src/plugins/menu-spec-common.c:120
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Ham Radio"
 msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
 msgstr "Amatööriradio"
 
 #: ../src/plugins/menu-spec-common.c:121
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Instant Messaging"
 msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
 msgstr "Pikaviestintä"
 
 #: ../src/plugins/menu-spec-common.c:122
-#| msgctxt "Menu subcategory of Network"
-#| msgid "IRC Clients"
 msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
 msgstr "IRC-sovellukset"
 
 #: ../src/plugins/menu-spec-common.c:123
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Monitor"
 msgctxt "Menu subcategory of Internet"
 msgid "Monitor"
 msgstr "Seuranta"
 
 #: ../src/plugins/menu-spec-common.c:124
-#| msgctxt "Menu subcategory of Network"
-#| msgid "News"
 msgctxt "Menu subcategory of Internet"
 msgid "News"
 msgstr "Uutisryhmät"
 
 #: ../src/plugins/menu-spec-common.c:125
-#| msgctxt "Menu subcategory of Network"
-#| msgid "P2P"
 msgctxt "Menu subcategory of Internet"
 msgid "P2P"
 msgstr "Vertaisverkko"
 
 #: ../src/plugins/menu-spec-common.c:126
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Remote Access"
 msgctxt "Menu subcategory of Internet"
 msgid "Remote Access"
 msgstr "Etäkäyttö"
 
 #: ../src/plugins/menu-spec-common.c:127
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Telephony"
 msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
 msgstr "Puhelinpalvelut"
 
 #: ../src/plugins/menu-spec-common.c:128
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Video Conference"
 msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
 msgstr "Videoneuvottelu"
 
 #: ../src/plugins/menu-spec-common.c:129
-#| msgctxt "Menu subcategory of Network"
-#| msgid "Web Browser"
 msgctxt "Menu subcategory of Internet"
 msgid "Web Browser"
 msgstr "Verkkoselaimet"
 
 #: ../src/plugins/menu-spec-common.c:130
-#| msgctxt "Menu subcategory of Development"
-#| msgid "Web Development"
 msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
 msgstr "Web-kehitys"
@@ -1973,71 +1894,51 @@ msgid "Utilities"
 msgstr "Apuohjelmat"
 
 #: ../src/plugins/menu-spec-common.c:191
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Accessibility"
 msgctxt "Menu subcategory of Utilities"
 msgid "Accessibility"
 msgstr "Esteettömyys"
 
 #: ../src/plugins/menu-spec-common.c:192
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Archiving"
 msgctxt "Menu subcategory of Utilities"
 msgid "Archiving"
 msgstr "Arkistointi"
 
 #: ../src/plugins/menu-spec-common.c:193
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Calculator"
 msgctxt "Menu subcategory of Utilities"
 msgid "Calculator"
 msgstr "Laskimet"
 
 #: ../src/plugins/menu-spec-common.c:194
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Clock"
 msgctxt "Menu subcategory of Utilities"
 msgid "Clock"
 msgstr "Kellot"
 
 #: ../src/plugins/menu-spec-common.c:195
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Compression"
 msgctxt "Menu subcategory of Utilities"
 msgid "Compression"
 msgstr "Pakkaus"
 
 #: ../src/plugins/menu-spec-common.c:196
-#| msgctxt "Menu subcategory of System"
-#| msgid "File Tools"
 msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
 msgstr "Tiedostotyökalut"
 
 #: ../src/plugins/menu-spec-common.c:197
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Maps"
 msgctxt "Menu subcategory of Utilities"
 msgid "Maps"
 msgstr "Kartat"
 
 #: ../src/plugins/menu-spec-common.c:198
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Spirituality"
 msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
 msgstr "Hengellisyys"
 
 #: ../src/plugins/menu-spec-common.c:199
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Telephony Tools"
 msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
 msgstr "Puhelintyökalut"
 
 #: ../src/plugins/menu-spec-common.c:200
-#| msgctxt "Menu subcategory of Utility"
-#| msgid "Text Editor"
 msgctxt "Menu subcategory of Utilities"
 msgid "Text Editor"
 msgstr "Tekstimuokkaimet"
@@ -2083,19 +1984,16 @@ msgid "Fonts"
 msgstr "Fontit"
 
 #: ../src/plugins/menu-spec-common.c:212
-#| msgid "Codecs"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Codecs"
 msgstr "Koodekit"
 
 #: ../src/plugins/menu-spec-common.c:213
-#| msgid "Input Sources"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Input Sources"
 msgstr "Syötelähteet"
 
 #: ../src/plugins/menu-spec-common.c:214
-#| msgid "Language Packs"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Kielipaketit"
