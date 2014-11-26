@@ -177,7 +177,7 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 				gs_app_set_management_plugin (app, "PackageKit");
 				gs_app_add_source_id (app, pk_package_get_id (package));
 				switch (pk_package_get_info (package)) {
-				case AS_APP_STATE_INSTALLED:
+				case PK_INFO_ENUM_INSTALLED:
 					number_installed++;
 					data = pk_package_get_data (package);
 					if (g_str_has_prefix (data, "installed:")) {
@@ -186,7 +186,7 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 										 data + 10);
 					}
 					break;
-				case AS_APP_STATE_AVAILABLE:
+				case PK_INFO_ENUM_AVAILABLE:
 					number_available++;
 					break;
 				default:
