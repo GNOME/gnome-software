@@ -1,0 +1,2026 @@
+# Romanian translation for gnome-software.
+# Copyright (C) 2014 gnome-software's COPYRIGHT HOLDER
+# This file is distributed under the same license as the gnome-software package.
+# Bogdan Mințoi <mintoi.bogdan@gmail.com>, 2014.
+# Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>, 2014.
+msgid ""
+msgstr ""
+"Project-Id-Version: gnome-software master\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2014-11-10 11:58+0000\n"
+"PO-Revision-Date: 2014-11-30 12:25+0200\n"
+"Last-Translator: Daniel Șerbănescu <daniel [at] serbanescu [dot] dk>\n"
+"Language-Team: Gnome Romanian Translation Team\n"
+"Language: ro\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=3; plural=(n==1 ? 0 : (n==0 || (n%100 > 0 && n%100 < "
+"20)) ? 1 : 2);;\n"
+"X-Generator: Virtaal 0.7.1\n"
+"X-Project-Style: gnome\n"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
+msgid "Application manager for GNOME"
+msgstr "Administrator de aplicații pentru GNOME"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
+msgid ""
+"Software allows you to find and install new applications and system "
+"extensions and remove existing installed applications."
+msgstr ""
+"Aplicații vă permite să gasiți și să instalați programe noi și extensii de "
+"sistem sau să eliminați altele deja instalate."
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
+msgid ""
+"GNOME Software showcases featured and popular applications with useful "
+"descriptions and multiple screenshots per application. Applications can be "
+"found either through browsing the list of categories or by searching. It "
+"also allows you to update your system using an offline update."
+msgstr ""
+"Aplicații GNOME prezintă aplicații recomandate și populare care conțin "
+"descrieri folositoare și capturi de ecran multiple pentru fiecare aplicație. "
+"Acestea pot fi găsite fie prin răsfoirea listei categoriilor fie printr-o "
+"simplă căutare. Vă permite, de asemenea, să actualizați sistemul prin "
+"intermediul unei actualizări în modul deconectat."
+
+#: ../src/app-folder-dialog.ui.h:1
+msgid "Add to Application Folder"
+msgstr "Adaugă la dosarul de aplicații"
+
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
+#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:615
+msgid "_Cancel"
+msgstr "_Anulează"
+
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
+msgid "_Add"
+msgstr "_Adaugă"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is installed
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
+#: ../src/gs-app-tile.c:74 ../src/gs-app-tile.c:77 ../src/gs-feature-tile.c:69
+#: ../src/gs-popular-tile.c:75 ../src/gs-popular-tile.c:78
+#: ../src/popular-tile.ui.h:1
+msgid "Installed"
+msgstr "Instalat"
+
+#. TRANSLATORS: this is the application name
+#. set the window title back to default
+#. TRANSLATORS: this is the main window title
+#: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
+#: ../src/gs-application.c:263 ../src/gs-shell.c:157
+msgid "Software"
+msgstr "Software"
+
+#: ../src/org.gnome.Software.desktop.in.h:2
+msgid "Add, remove or update software on this computer"
+msgstr "Adaugă, elimină sau actualizează software pe acest calculator"
+
+#: ../src/org.gnome.Software.desktop.in.h:3
+msgid ""
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
+"Software;App;Store;"
+msgstr ""
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
+"Software;App;Store;Surse;Instalează;Aplicații;Preferințe;Actualizări;"
+
+#: ../src/gnome-software-local-file.desktop.in.h:1
+msgid "Software Install"
+msgstr ""
+
+#: ../src/gnome-software-local-file.desktop.in.h:2
+msgid "Install selected software on the system"
+msgstr ""
+
+#: ../src/gnome-software.ui.h:1
+msgid "Select All"
+msgstr "Selectează tot"
+
+#: ../src/gnome-software.ui.h:2
+msgid "Select None"
+msgstr "Deselectează tot"
+
+#. vim: set noexpandtab:
+#: ../src/gnome-software.ui.h:4 ../src/gs-sources-dialog.ui.h:2
+#: ../src/gs-update-dialog.ui.h:1
+msgid "Go back"
+msgstr "Precedent"
+
+#. Translators: A label for a button to show all available software.
+#: ../src/gnome-software.ui.h:6
+msgid "_All"
+msgstr "_Tot"
+
+#. Translators: A label for a button to show only software which is already installed.
+#: ../src/gnome-software.ui.h:8
+msgid "_Installed"
+msgstr "_Instalat"
+
+#. Translators: A label for a button to show only updates which are available to install.
+#: ../src/gnome-software.ui.h:10
+msgid "_Updates"
+msgstr "Act_ualizări"
+
+#: ../src/gnome-software.ui.h:11
+msgid "Restart & _Install"
+msgstr "Repornește și _instalează"
+
+#: ../src/gnome-software.ui.h:12
+msgid "Select"
+msgstr "Selectează"
+
+#: ../src/gnome-software.ui.h:13
+msgid "Check for updates"
+msgstr "Caută actualizări"
+
+#: ../src/gs-app-folder-dialog.c:325
+msgid "Folder Name"
+msgstr "Nume dosar"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:261
+msgid "About Software"
+msgstr "Despre Aplicații"
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:266
+msgid "A nice way to manage the software on your system."
+msgstr "Un mod plăcut de a administra aplicații pentru sistemul dumneavoastră."
+
+#: ../src/gs-application.c:270
+msgid "translator-credits"
+msgstr "Bogdan Mințoi <mintoi.bogdan@gmail.com> 2014"
+
+#: ../src/gs-application.c:537
+msgid "Enter GApplication service mode"
+msgstr ""
+
+#. TRANSLATORS: this is a command line option
+#: ../src/gs-application.c:540
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr ""
+
+#: ../src/gs-application.c:540
+msgid "MODE"
+msgstr ""
+
+#: ../src/gs-application.c:542
+msgid "Search for applications"
+msgstr "Căutați aplicații"
+
+#: ../src/gs-application.c:542
+msgid "SEARCH"
+msgstr "CAUTĂ"
+
+#: ../src/gs-application.c:544
+msgid "Show application details"
+msgstr "Arată detaliile aplicației"
+
+#: ../src/gs-application.c:544
+msgid "ID"
+msgstr "ID"
+
+#: ../src/gs-application.c:546
+msgid "Open a local package file"
+msgstr ""
+
+#: ../src/gs-application.c:546
+msgid "FILENAME"
+msgstr ""
+
+#: ../src/gs-application.c:548
+msgid "Show verbose debugging information"
+msgstr ""
+
+#: ../src/gs-application.c:550
+msgid "Show profiling information for the service"
+msgstr ""
+
+#: ../src/gs-application.c:552
+msgid "Prefer local file sources to AppStream"
+msgstr ""
+
+#. TRANSLATORS: this is a label that describes an application
+#. * that has been queued for installation
+#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:201
+#: ../src/gs-shell-details.ui.h:4
+msgid "Pending"
+msgstr "În așteptare"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being installed
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being installing
+#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
+#: ../src/gs-app-tile.c:83 ../src/gs-app-tile.c:86
+msgid "Installing"
+msgstr "Se instalează"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * shows the status of an application being erased
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user the application is being removed
+#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
+#: ../src/gs-app-tile.c:92 ../src/gs-app-tile.c:95
+msgid "Removing"
+msgstr "Se elimină"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#: ../src/gs-app-row.c:191
+msgid "Visit website"
+msgstr "Vizitați portalul web"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows to cancel a queued install of the application
+#: ../src/gs-app-row.c:198
+msgid "Cancel"
+msgstr "Anulează"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed
+#: ../src/gs-app-row.c:208
+msgid "Install"
+msgstr "Instalează"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily removed
+#. TRANSLATORS: this is button text to remove the application
+#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1133
+#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:165
+msgid "Remove"
+msgstr "Elimină"
+
+#. TRANSLATORS: this is the small blue label on the tile
+#. * that tells the user there is an update for the installed
+#. * application available
+#: ../src/gs-app-tile.c:101 ../src/gs-app-tile.c:105
+#: ../src/gs-feature-tile.c:74 ../src/gs-popular-tile.c:84
+#: ../src/gs-popular-tile.c:88
+msgid "Updates"
+msgstr "Actualizări"
+
+#. TRANSLATORS: this is where all applications that don't
+#. * fit in other groups are put
+#: ../src/gs-category.c:207
+msgid "Other"
+msgstr "Altele"
+
+#. vim: set noexpandtab:
+#: ../src/gs-first-run-dialog.ui.h:1
+msgid "Welcome"
+msgstr "Bine ați venit"
+
+#: ../src/gs-first-run-dialog.ui.h:2
+msgid "Welcome to Software"
+msgstr "Bine ați venit la Aplicații"
+
+#: ../src/gs-first-run-dialog.ui.h:3
+msgid ""
+"Software lets you install all the software you need, all from one place. See "
+"our recommendations, browse the categories, or search for the applications "
+"you want."
+msgstr ""
+"Aplicații vă permite să instalați toate programele de care aveți nevoie, "
+"dintr-un singur loc. Vedeți recomandările noastre, aruncați o privire în "
+"categorii, sau pur și simplu căutați aplicația pe care o doriți."
+
+#: ../src/gs-first-run-dialog.ui.h:4
+msgid "_Let’s Go Shopping"
+msgstr "Să pornim _la cumpărături"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was removed
+#: ../src/gs-history-dialog.c:82
+msgctxt "app status"
+msgid "Removed"
+msgstr "Eliminat"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was installed
+#: ../src/gs-history-dialog.c:88
+msgctxt "app status"
+msgid "Installed"
+msgstr "Instalat"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing the application was updated
+#: ../src/gs-history-dialog.c:93
+msgctxt "app status"
+msgid "Updated"
+msgstr "Actualizat"
+
+#. TRANSLATORS: this is the status in the history UI,
+#. * where we are showing that something happened to the
+#. * application but we don't know what
+#: ../src/gs-history-dialog.c:99
+msgctxt "app status"
+msgid "Unknown"
+msgstr "Necunoscut"
+
+#. vim: set noexpandtab:
+#: ../src/gs-history-dialog.ui.h:1
+msgid "History"
+msgstr "Istoric"
+
+#. TRANSLATORS: this is when the offline update failed
+#: ../src/gs-offline-updates.c:53
+msgid "Failed To Update"
+msgstr "Actualizarea a eșuat"
+
+#. TRANSLATORS: the transaction could not be completed
+#. * as a previous transaction was unfinished
+#: ../src/gs-offline-updates.c:59
+msgid "A previous update was unfinished."
+msgstr "O actualizare precedentă nu a fost completată."
+
+#. TRANSLATORS: the package manager needed to download
+#. * something with no network available
+#: ../src/gs-offline-updates.c:69
+msgid "Network access was required but not available."
+msgstr "Accesul la rețea a fost necesar, dar nu este disponibil."
+
+#. TRANSLATORS: if the package is not signed correctly
+#. *
+#: ../src/gs-offline-updates.c:78
+msgid "An update was not signed in the correct way."
+msgstr "O actualizare nu a fost semnată corespunzător."
+
+#. TRANSLATORS: the transaction failed in a way the user
+#. * probably cannot comprehend. Package management systems
+#. * really are teh suck.
+#: ../src/gs-offline-updates.c:88
+msgid "The update could not be completed."
+msgstr "Actualizarea nu a putut fi completată."
+
+#. TRANSLATORS: the user aborted the update manually
+#: ../src/gs-offline-updates.c:93
+msgid "The update was cancelled."
+msgstr "Actualizarea a fost anulată."
+
+#. TRANSLATORS: the user must have updated manually after
+#. * the updates were prepared
+#: ../src/gs-offline-updates.c:99
+msgid "An offline update was requested but no packages required updating."
+msgstr ""
+"O actualizare în modul deconectat a fost cerută dar niciun pachet nu "
+"necesită a fi actualizat."
+
+#. TRANSLATORS: we ran out of disk space
+#: ../src/gs-offline-updates.c:103
+msgid "No space was left on the drive."
+msgstr "Nu mai este spațiu liber pe disc."
+
+#. TRANSLATORS: the update process failed in a general
+#. * way, usually this message will come from source distros
+#. * like gentoo
+#: ../src/gs-offline-updates.c:111
+msgid "An update failed to install correctly."
+msgstr "O actualizare nu a fost instalată corect."
+
+#. TRANSLATORS: We didn't handle the error type
+#: ../src/gs-offline-updates.c:116
+msgid "The offline update failed in an unexpected way."
+msgstr "Actualizarea în modul deconectat a eșuat într-un mod neașteptat."
+
+#. TRANSLATORS: these are geeky messages from the
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: ../src/gs-offline-updates.c:125
+#, fuzzy
+msgid "Detailed errors from the package manager follow:"
+msgstr "Erorile detaliate ale administratorului de pachete:"
+
+#. TRANSLATORS: this is a group of updates that are not
+#. * packages and are not shown in the main list
+#: ../src/gs-plugin-loader.c:927
+msgid "OS Updates"
+msgstr "Actualizări SO"
+
+#. TRANSLATORS: this is a longer description of the
+#. * "OS Updates" string
+#: ../src/gs-plugin-loader.c:932
+msgid "Includes performance, stability and security improvements."
+msgstr "Include îmbunătățiri de performanță, stabilitate și securitate."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-plugin-loader.c:1536
+#, c-format
+msgid "No addon codecs are available for the %s format."
+msgstr "Niciun codec suplimentar disponibil pentru formatul %s."
+
+#: ../src/gs-plugin-loader.c:1539
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a codec that can "
+"play this format can be found on the website."
+msgstr ""
+"Informații despre %s, precum și opțiuni despre cum să obțineți codecul "
+"necesar redării acestui format pot fi găsite pe pagina web."
+
+#. TRANSLATORS: this is when we try to download a screenshot and
+#. * we get back 404
+#: ../src/gs-screenshot-image.c:254
+msgid "Screenshot not found"
+msgstr "Nu s-a găsit captura de ecran"
+
+#. TRANSLATORS: possibly image file corrupt or not an image
+#: ../src/gs-screenshot-image.c:272
+msgid "Failed to load image"
+msgstr "Imaginea nu a putut fi încărcată"
+
+#. TRANSLATORS: this is when we request a screenshot size that
+#. * the generator did not create or the parser did not add
+#: ../src/gs-screenshot-image.c:413
+msgid "Screenshot size not found"
+msgstr ""
+
+#. TRANSLATORS: this is when we try create the cache directory
+#. * but we were out of space or permission was denied
+#: ../src/gs-screenshot-image.c:432
+msgid "Could not create cache"
+msgstr "Nu s-a putut creea memoria tampon"
+
+#. TRANSLATORS: this is when we try to download a screenshot
+#. * that was not a valid URL
+#: ../src/gs-screenshot-image.c:462
+msgid "Screenshot not valid"
+msgstr "Captură de ecran nevalidă"
+
+#. TRANSLATORS: this is when networking is not available
+#: ../src/gs-screenshot-image.c:468
+msgid "Screenshot not available"
+msgstr "Captură de ecran indisponibilă"
+
+#: ../src/gs-screenshot-image.c:522
+msgid "Screenshot"
+msgstr "Captură de ecran"
+
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gs-shell-details.c:175 ../src/gs-shell-details.ui.h:2
+msgid "_Install"
+msgstr "_Instalează"
+
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-shell-details.c:186
+msgid "_Installing"
+msgstr "Se _instalează"
+
+#. TRANSLATORS: button text in the header when an application can be erased
+#: ../src/gs-shell-details.c:212 ../src/gs-shell-details.ui.h:3
+msgid "_Remove"
+msgstr "_Elimină"
+
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-shell-details.c:219
+msgid "_Removing"
+msgstr "Se _elimină"
+
+#. TRANSLATORS: this is where the licence is not known
+#: ../src/gs-shell-details.c:597
+msgctxt "license"
+msgid "Unknown"
+msgstr "Necunoscută"
+
+#. TRANSLATORS: this is where the version is not known
+#: ../src/gs-shell-details.c:610
+msgctxt "version"
+msgid "Unknown"
+msgstr "Necunoscută"
+
+#. TRANSLATORS: this is where the size is being worked out
+#: ../src/gs-shell-details.c:616
+msgctxt "size"
+msgid "Calculating…"
+msgstr "Se calculează…"
+
+#. TRANSLATORS: this is where the size is not known
+#: ../src/gs-shell-details.c:619
+msgctxt "size"
+msgid "Unknown"
+msgstr "Necunoscută"
+
+#. TRANSLATORS: this is where the updated date is not known
+#: ../src/gs-shell-details.c:631
+msgctxt "updated"
+msgid "Never"
+msgstr "Niciodată"
+
+#. TRANSLATORS: this is the application isn't in any
+#. * defined menu category
+#: ../src/gs-shell-details.c:646
+msgctxt "menu category"
+msgid "None"
+msgstr "Nespecificat"
+
+#. TRANSLATORS: this is where we don't know the origin of the
+#. * application
+#: ../src/gs-shell-details.c:656
+msgctxt "origin"
+msgid "Unknown"
+msgstr "Necunoscută"
+
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-shell-details.c:1118 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:150
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Sigur doriți să eliminați %s?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-shell-details.c:1130 ../src/gs-shell-installed.c:179
+#: ../src/gs-shell-search.c:162
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr ""
+"Aplicația %s va fi eliminată, și va fi necesar să o reinstalați pentru a o "
+"utiliza din nou."
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-details.ui.h:1
+msgid "Details page"
+msgstr "Pagina de detalii"
+
+#: ../src/gs-shell-details.ui.h:5
+msgid "Software Source Included"
+msgstr "Sursă de aplicații inclusă"
+
+#: ../src/gs-shell-details.ui.h:6
+msgid ""
+"This application includes a software source which provides updates, as well "
+"as access to other software."
+msgstr ""
+
+#: ../src/gs-shell-details.ui.h:7
+msgid "No Software Source Included"
+msgstr "Nicio sursă de aplicații inclusă"
+
+#: ../src/gs-shell-details.ui.h:8
+msgid ""
+"This application does not include a software source. It will not be updated "
+"with new versions."
+msgstr ""
+"Acest program nu include o sursă de aplicații. Ca urmare, nu va fi "
+"actualizată la versiuni noi."
+
+#: ../src/gs-shell-details.ui.h:9
+msgid ""
+"This software is already provided by your distribution and should not be "
+"replaced."
+msgstr ""
+"Această aplicație este deja furnizată de distribuția dumneavoastră și nu ar "
+"trebui înlocuită."
+
+#. Translators: a repository file used for installing software has been discovered.
+#: ../src/gs-shell-details.ui.h:11
+msgid "Software Source Identified"
+msgstr "Sursă de software identificată"
+
+#: ../src/gs-shell-details.ui.h:12
+msgid ""
+"Adding this software source will give you access to additional software and "
+"upgrades."
+msgstr ""
+"Adăugarea acestei surse de aplicații vă va oferi acces la actualizări și "
+"aplicații adiționale."
+
+#: ../src/gs-shell-details.ui.h:13
+msgid "Only use software sources that you trust."
+msgstr "Utilizați doar surse de aplicații de încredere."
+
+#: ../src/gs-shell-details.ui.h:14
+msgid "Internet Only Application"
+msgstr ""
+
+#: ../src/gs-shell-details.ui.h:15
+msgid ""
+"This application can only be used when there is an active internet "
+"connection."
+msgstr ""
+"Această aplicație poate fi utilizată doar când este prezentă o conexiune "
+"activă de internet."
+
+#: ../src/gs-shell-details.ui.h:16
+msgid "_Website"
+msgstr "Pagină _Web"
+
+#: ../src/gs-shell-details.ui.h:17
+msgid "_History"
+msgstr "_Istoric"
+
+#. Translators: A label for a button to execute the selected application.
+#: ../src/gs-shell-details.ui.h:19
+msgid "_Launch"
+msgstr "_Lansează"
+
+#: ../src/gs-shell-details.ui.h:20
+msgid "Details"
+msgstr "Detalii"
+
+#: ../src/gs-shell-details.ui.h:21 ../src/gs-sources-dialog.ui.h:9
+msgid "Version"
+msgstr "Versiune"
+
+#: ../src/gs-shell-details.ui.h:22
+msgid "Updated"
+msgstr "Actualizat"
+
+#: ../src/gs-shell-details.ui.h:23
+msgid "Category"
+msgstr "Categorie"
+
+#: ../src/gs-shell-details.ui.h:24
+msgid "Source"
+msgstr "Sursă"
+
+#: ../src/gs-shell-details.ui.h:25
+msgid "License"
+msgstr "Licență"
+
+#: ../src/gs-shell-details.ui.h:26
+msgid "Size"
+msgstr "Dimensiune"
+
+#: ../src/gs-shell-details.ui.h:27
+msgid "Developer"
+msgstr "Dezvoltator"
+
+#. TRANSLATORS: This is the header dividing the normal
+#. * applications and the addons
+#. TRANSLATORS: this is the main category for Add-ons
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:527
+#: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
+msgid "Add-ons"
+msgstr "Suplimente"
+
+#: ../src/gs-shell-details.ui.h:29
+msgid "Selected add-ons will be installed with the application."
+msgstr "Suplimentele alese vor fi instalate împreună cu aplicația."
+
+#. TRANSLATORS: This is the header dividing the normal
+#. * applications and the system ones
+#: ../src/gs-shell-installed.c:517
+msgid "System Applications"
+msgstr "Aplicații de sistem"
+
+#: ../src/gs-shell-installed.c:623
+msgid "Click on items to select them"
+msgstr "Clic pe elemente pentru a le selecta"
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-installed.ui.h:1
+msgid "Installed page"
+msgstr ""
+
+#: ../src/gs-shell-installed.ui.h:2
+msgid "_Add to Folder…"
+msgstr ""
+
+#: ../src/gs-shell-installed.ui.h:3
+msgid "_Move to Folder…"
+msgstr ""
+
+#: ../src/gs-shell-installed.ui.h:4
+msgid "_Remove from Folder"
+msgstr ""
+
+#. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
+#: ../src/gs-shell-overview.c:334
+#, fuzzy
+#| msgid "System Applications"
+msgid "Recommended Audio Applications"
+msgstr "Aplicații de sistem"
+
+#. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
+#: ../src/gs-shell-overview.c:339
+msgid "Recommended Games"
+msgstr ""
+
+#. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
+#: ../src/gs-shell-overview.c:344
+msgid "Recommended Graphics Applications"
+msgstr ""
+
+#. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
+#: ../src/gs-shell-overview.c:349
+#, fuzzy
+#| msgid "System Applications"
+msgid "Recommended Office Applications"
+msgstr "Aplicații de sistem"
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-overview.ui.h:1
+msgid "Overview page"
+msgstr ""
+
+#: ../src/gs-shell-overview.ui.h:2
+#, fuzzy
+#| msgid "System Applications"
+msgid "Featured Application"
+msgstr "Aplicații de sistem"
+
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
+#: ../src/gs-shell-overview.ui.h:4
+msgid "Editor's Picks"
+msgstr ""
+
+#: ../src/gs-shell-overview.ui.h:5
+msgid "Categories"
+msgstr "Categorii"
+
+#: ../src/gs-shell-overview.ui.h:6
+msgid "No Application Data Found"
+msgstr ""
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-search.ui.h:1
+msgid "Search page"
+msgstr "Caută în pagină"
+
+#: ../src/gs-shell-search.ui.h:2
+msgid "No Application Found"
+msgstr "Nu a fost găsită nicio aplicație"
+
+#. TRANSLATORS: Time in 24h format
+#: ../src/gs-shell-updates.c:144
+msgid "%R"
+msgstr "%R"
+
+#. TRANSLATORS: Time in 12h format
+#: ../src/gs-shell-updates.c:147
+msgid "%l:%M %p"
+msgstr "%l:%M %p"
+
+#. TRANSLATORS: This is the word "Yesterday" followed by a
+#. time string in 24h format. i.e. "Yesterday, 14:30"
+#: ../src/gs-shell-updates.c:153
+msgid "Yesterday, %R"
+msgstr "Ieri, %R"
+
+#. TRANSLATORS: This is the word "Yesterday" followed by a
+#. time string in 12h format. i.e. "Yesterday, 2:30 PM"
+#: ../src/gs-shell-updates.c:157
+msgid "Yesterday, %l:%M %p"
+msgstr "Ieri, %l:%M %p"
+
+#: ../src/gs-shell-updates.c:160
+msgid "Two days ago"
+msgstr "Acum două zile"
+
+#: ../src/gs-shell-updates.c:162
+msgid "Three days ago"
+msgstr "Acum trei zile"
+
+#: ../src/gs-shell-updates.c:164
+msgid "Four days ago"
+msgstr "Acum patru zile"
+
+#: ../src/gs-shell-updates.c:166
+msgid "Five days ago"
+msgstr "Acum cinci zile"
+
+#: ../src/gs-shell-updates.c:168
+msgid "Six days ago"
+msgstr "Acum șase zile"
+
+#: ../src/gs-shell-updates.c:170
+msgid "One week ago"
+msgstr "Acum o săptămână"
+
+#: ../src/gs-shell-updates.c:172
+msgid "Two weeks ago"
+msgstr "Acum două săptămâni"
+
+#. TRANSLATORS: This is the date string with: day number, month name, year.
+#. i.e. "25 May 2012"
+#: ../src/gs-shell-updates.c:176
+msgid "%e %B %Y"
+msgstr "%e %B %Y"
+
+#. TRANSLATORS: the updates are being downloaded
+#: ../src/gs-shell-updates.c:195
+msgid "Downloading new updates…"
+msgstr "Se descarcă noile actualizări…"
+
+#. TRANSLATORS: the update panel is doing *something* vague
+#: ../src/gs-shell-updates.c:199
+#, fuzzy
+msgid "Looking for new updates…"
+msgstr "Se verifică dacă sunt actualizări noi…"
+
+#. TRANSLATORS: the updates panel is starting up
+#: ../src/gs-shell-updates.c:253
+msgid "Setting up updates…"
+msgstr ""
+
+#. TRANSLATORS: the updates panel is starting up
+#: ../src/gs-shell-updates.c:254 ../src/gs-shell-updates.c:261
+msgid "(This could take a while)"
+msgstr "(Acest lucru ar putea dura ceva timp)"
+
+#. TRANSLATORS: this is when the updates panel is starting up
+#: ../src/gs-shell-updates.c:267
+msgid "Checking for updates…"
+msgstr "Verific după actualizări…"
+
+#. TRANSLATORS: This is the time when we last checked for updates
+#: ../src/gs-shell-updates.c:401
+#, c-format
+msgid "Last checked: %s"
+msgstr "Ultima verificare: %s"
+
+#. TRANSLATORS: can't do updates check
+#: ../src/gs-shell-updates.c:787
+msgid "No Network"
+msgstr "Nicio rețea"
+
+#. TRANSLATORS: we need network
+#. * to do the updates check
+#: ../src/gs-shell-updates.c:791
+msgid "Internet access is required to check for updates."
+msgstr ""
+"Este necesară o conexiune la internet pentru a putea verifica dacă există "
+"actualizări."
+
+#. TRANSLATORS: this is a link to the
+#. * control-center network panel
+#: ../src/gs-shell-updates.c:795
+msgid "Network Settings"
+msgstr "Setări de rețea"
+
+#. TRANSLATORS: this is to explain that downloading updates may cost money
+#: ../src/gs-shell-updates.c:814
+msgid "Charges may apply"
+msgstr "Se pot aplica taxe"
+
+#. TRANSLATORS: we need network
+#. * to do the updates check
+#: ../src/gs-shell-updates.c:818
+msgid ""
+"Checking for updates while using mobile broadband could cause you to incur "
+"charges."
+msgstr ""
+
+#. TRANSLATORS: this is a link to the
+#. * control-center network panel
+#: ../src/gs-shell-updates.c:822
+msgid "Check Anyway"
+msgstr "Verifică oricum"
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-updates.ui.h:1
+msgid "Updates page"
+msgstr ""
+
+#: ../src/gs-shell-updates.ui.h:2
+msgid "Software is up to date"
+msgstr "Aplicațiile sunt actualizate"
+
+#: ../src/gs-shell-updates.ui.h:3
+msgid ""
+"Checking for updates when using mobile broadband could cause you to incur "
+"charges"
+msgstr ""
+"Verificarea de actualizări când folosiți o conexiune mobilă de bandă largă "
+"poate să conducă la suportarea unor taxe"
+
+#: ../src/gs-shell-updates.ui.h:4
+msgid "_Check Anyway"
+msgstr "Verifi_că oricum"
+
+#: ../src/gs-shell-updates.ui.h:5
+msgid "Go online to check for updates"
+msgstr ""
+
+#: ../src/gs-shell-updates.ui.h:6
+msgid "_Network Settings"
+msgstr "Preferi_nțe de rețea"
+
+#. TRANSLATORS: this source has no apps installed from it
+#: ../src/gs-sources-dialog.c:91
+msgid "No software installed"
+msgstr ""
+
+#. TRANSLATORS: this source has some apps installed from it
+#: ../src/gs-sources-dialog.c:94
+#, c-format
+msgid "%i application installed"
+msgid_plural "%i applications installed"
+msgstr[0] "%i aplicație instalată"
+msgstr[1] "%i aplicații instalate"
+msgstr[2] "%i de aplicații instalate"
+
+#. TRANSLATORS: this source has some apps installed from it
+#: ../src/gs-sources-dialog.c:99
+#, c-format
+msgid "%i add-on installed"
+msgid_plural "%i add-ons installed"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#. TRANSLATORS: this source has some apps and addons installed from it
+#: ../src/gs-sources-dialog.c:104
+#, c-format
+msgid "%i application and %i add-ons installed"
+msgid_plural "%i applications and %i add-ons installed"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: ../src/gs-sources-dialog.c:300 ../src/gs-sources-dialog.ui.h:13
+msgid "Remove Source"
+msgstr "Elimină sursa"
+
+#: ../src/gs-sources-dialog.c:315
+msgid "Removing…"
+msgstr "Se elimină…"
+
+#. vim: set noexpandtab:
+#: ../src/gs-sources-dialog.ui.h:1
+msgid "Software Sources"
+msgstr "Surse de aplicații"
+
+#: ../src/gs-sources-dialog.ui.h:3
+msgid "No sources found."
+msgstr "Nicio sursă găsită."
+
+#: ../src/gs-sources-dialog.ui.h:4
+msgid "Software sources give you access to additional software."
+msgstr "Sursele de aplicații vă oferă acces la programe suplimentare."
+
+#: ../src/gs-sources-dialog.ui.h:5
+msgid ""
+"Removing a source will also remove any software you have installed from it."
+msgstr ""
+"Eliminarea unei surse conduce implicit la eliminarea aplicațiilor instalate "
+"prin intermediul acesteia."
+
+#: ../src/gs-sources-dialog.ui.h:6
+msgid "No software installed from this source"
+msgstr "Nicio aplicație instalată prin intermediul acestei surse"
+
+#: ../src/gs-sources-dialog.ui.h:7
+msgid "Installed from this Source"
+msgstr "Instalate prin intermediul acestei surse"
+
+#: ../src/gs-sources-dialog.ui.h:8
+msgid "Source Details"
+msgstr "Detalii despre sursă"
+
+#: ../src/gs-sources-dialog.ui.h:10
+msgid "Last Checked"
+msgstr "Ultima verificare"
+
+#: ../src/gs-sources-dialog.ui.h:11
+msgid "Added"
+msgstr "Adăugat"
+
+#: ../src/gs-sources-dialog.ui.h:12
+msgid "Website"
+msgstr "Portal web"
+
+#. TRANSLATORS: this is where the packager did not write a
+#. * description for the update
+#: ../src/gs-update-dialog.c:115
+msgid "No update description available."
+msgstr ""
+
+#. TRANSLATORS: this is the title of the installed updates dialog window
+#: ../src/gs-update-dialog.c:175
+msgid "Installed Updates"
+msgstr "Actualizări instalate"
+
+#. TRANSLATORS: this is the subtitle of the installed updates dialog window
+#: ../src/gs-update-dialog.c:189
+#, c-format
+msgid "Installed on %s"
+msgstr "Instalate la data de %s"
+
+#: ../src/gs-update-monitor.c:98
+msgid "Software Updates Available"
+msgstr "Sunt disponibile actualizări"
+
+#: ../src/gs-update-monitor.c:99
+msgid "Important OS and application updates are ready to be installed"
+msgstr "Actualizări importante pentru SO și aplicații sunt gata de instalare"
+
+#: ../src/gs-update-monitor.c:102
+msgid "View"
+msgstr "Vizualizare"
+
+#: ../src/gs-update-monitor.c:103
+msgid "Not Now"
+msgstr "Nu acum"
+
+#: ../src/gs-update-monitor.c:144
+msgid "Software Update Installed"
+msgid_plural "Software Updates Installed"
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#. TRANSLATORS: message when we've done offline updates
+#: ../src/gs-update-monitor.c:148
+msgid "An important OS update has been installed."
+msgid_plural "Important OS updates have been installed."
+msgstr[0] ""
+msgstr[1] ""
+msgstr[2] ""
+
+#: ../src/gs-update-monitor.c:154
+msgid "Software Updates Failed"
+msgstr ""
+
+#. TRANSLATORS: message when we offline updates have failed
+#: ../src/gs-update-monitor.c:156
+msgid "An important OS update failed to be installed."
+msgstr ""
+
+#: ../src/gs-update-monitor.c:165
+msgid "Review"
+msgstr "Recenzie"
+
+#: ../src/gs-update-monitor.c:167
+msgid "Show Details"
+msgstr "Arată detalii"
+
+#: ../src/gs-update-monitor.c:168
+msgid "OK"
+msgstr "OK"
+
+#. vim: set noexpandtab:
+#: ../src/gs-star-widget.ui.h:1
+msgid "One Star"
+msgstr "O stea"
+
+#: ../src/gs-star-widget.ui.h:2
+msgid "Two Stars"
+msgstr "Două stele"
+
+#: ../src/gs-star-widget.ui.h:3
+msgid "Three Stars"
+msgstr "Trei stele"
+
+#: ../src/gs-star-widget.ui.h:4
+msgid "Four Stars"
+msgstr "Patru stele"
+
+#: ../src/gs-star-widget.ui.h:5
+msgid "Five Stars"
+msgstr "Cinci stele"
+
+#. TRANSLATORS: this is the summary of a notification that an application
+#. * has been successfully installed
+#: ../src/gs-utils.c:135
+#, c-format
+msgid "%s is now installed"
+msgstr "%s s-a instalat"
+
+#. TRANSLATORS: this is button that opens the newly installed application
+#: ../src/gs-utils.c:139
+msgid "Launch"
+msgstr "Lansează"
+
+#: ../src/gs-utils.c:163
+msgid "Sorry, this did not work"
+msgstr ""
+
+#. TRANSLATORS: this is when the install fails
+#: ../src/gs-utils.c:167
+#, c-format
+msgid "Installation of %s failed."
+msgstr "Instalarea %s a eșuat."
+
+#. TRANSLATORS: this is when the remove fails
+#: ../src/gs-utils.c:172
+#, c-format
+msgid "Removal of %s failed."
+msgstr "Eliminarea %s a eșuat."
+
+#: ../src/plugins/gs-plugin-appstream.c:225
+#, c-format
+msgid "No AppStream data found"
+msgstr ""
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Conjunctive AND Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 and MIT and BSD-2-Clause"
+#: ../src/plugins/gs-plugin-appstream.c:503
+msgid " and "
+msgstr ""
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Disjunctive OR Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 or MIT"
+#: ../src/plugins/gs-plugin-appstream.c:511
+msgid " or "
+msgstr ""
+
+#. TRANSLATORS: this is when a webapp has no comment
+#: ../src/plugins/gs-plugin-epiphany.c:143
+#, c-format
+msgid "Web app"
+msgstr "Aplicație web"
+
+#. TRANSLATORS: this is the licence of the web-app
+#: ../src/plugins/gs-plugin-epiphany.c:151
+msgid "Proprietary"
+msgstr "Proprietară"
+
+#: ../src/plugins/gs-plugin-hardcoded-categories.c:160
+msgid "Featured"
+msgstr "Recomandate"
+
+#. TRANSLATORS: this is the menu spec main category for Audio
+#: ../src/plugins/menu-spec-common.c:30
+msgid "Audio"
+msgstr "Audio"
+
+#: ../src/plugins/menu-spec-common.c:31
+msgctxt "Menu subcategory of Audio"
+msgid "Editing"
+msgstr "Editare"
+
+#: ../src/plugins/menu-spec-common.c:32
+msgctxt "Menu subcategory of Audio"
+msgid "Databases"
+msgstr "Baze de date"
+
+#: ../src/plugins/menu-spec-common.c:33
+msgctxt "Menu subcategory of Audio"
+msgid "Disc Burning"
+msgstr "Creeare de discuri"
+
+#: ../src/plugins/menu-spec-common.c:34
+msgctxt "Menu subcategory of Audio"
+msgid "Ham Radio"
+msgstr "Radioamatorism"
+
+#: ../src/plugins/menu-spec-common.c:35
+msgctxt "Menu subcategory of Audio"
+msgid "MIDI"
+msgstr "MIDI"
+
+#: ../src/plugins/menu-spec-common.c:36
+msgctxt "Menu subcategory of Audio"
+msgid "Mixer"
+msgstr "Mixer"
+
+#: ../src/plugins/menu-spec-common.c:37
+msgctxt "Menu subcategory of Audio"
+msgid "Music"
+msgstr "Muzică"
+
+#: ../src/plugins/menu-spec-common.c:38
+msgctxt "Menu subcategory of Audio"
+msgid "Players"
+msgstr "Instrumente de redare"
+
+#: ../src/plugins/menu-spec-common.c:39
+msgctxt "Menu subcategory of Audio"
+msgid "Recorders"
+msgstr "Instrumente de înregistrare"
+
+#: ../src/plugins/menu-spec-common.c:40
+msgctxt "Menu subcategory of Audio"
+msgid "Sequencers"
+msgstr "Instrumente de secvențiere"
+
+#: ../src/plugins/menu-spec-common.c:41
+msgctxt "Menu subcategory of Audio"
+msgid "Tuners"
+msgstr "Tunere"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/menu-spec-common.c:43
+msgid "Development Tools"
+msgstr "Instrumente de dezvoltare"
+
+#: ../src/plugins/menu-spec-common.c:44
+msgctxt "Menu subcategory of Development Tools"
+msgid "Building"
+msgstr ""
+
+#: ../src/plugins/menu-spec-common.c:45
+msgctxt "Menu subcategory of Development Tools"
+msgid "Databases"
+msgstr "Baze de date"
+
+#: ../src/plugins/menu-spec-common.c:46
+msgctxt "Menu subcategory of Development Tools"
+msgid "Debuggers"
+msgstr "Depanatoare"
+
+#: ../src/plugins/menu-spec-common.c:47
+msgctxt "Menu subcategory of Development Tools"
+msgid "GUI Designers"
+msgstr "Instrumente de proiectare GUI"
+
+#: ../src/plugins/menu-spec-common.c:48
+msgctxt "Menu subcategory of Development Tools"
+msgid "IDE"
+msgstr "Medii de dezvoltare integrate"
+
+#: ../src/plugins/menu-spec-common.c:49
+msgctxt "Menu subcategory of Development Tools"
+msgid "Profiling"
+msgstr "Profilare"
+
+#: ../src/plugins/menu-spec-common.c:50
+msgctxt "Menu subcategory of Development Tools"
+msgid "Project Management"
+msgstr "Administrare de proiecte"
+
+#: ../src/plugins/menu-spec-common.c:51
+msgctxt "Menu subcategory of Development Tools"
+msgid "Revision Control"
+msgstr "Control de revizie"
+
+#: ../src/plugins/menu-spec-common.c:52
+msgctxt "Menu subcategory of Development Tools"
+msgid "Translation"
+msgstr "Traducere"
+
+#: ../src/plugins/menu-spec-common.c:53
+msgctxt "Menu subcategory of Development Tools"
+msgid "Web Development"
+msgstr "Dezvoltare web"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/menu-spec-common.c:55
+msgid "Education"
+msgstr "Educație"
+
+#: ../src/plugins/menu-spec-common.c:56
+msgctxt "Menu subcategory of Education"
+msgid "Art"
+msgstr "Artă"
+
+#: ../src/plugins/menu-spec-common.c:57
+msgctxt "Menu subcategory of Education"
+msgid "Artificial Intelligence"
+msgstr "Inteligență artificială"
+
+#: ../src/plugins/menu-spec-common.c:58
+msgctxt "Menu subcategory of Education"
+msgid "Astronomy"
+msgstr "Astronomie"
+
+#: ../src/plugins/menu-spec-common.c:59
+msgctxt "Menu subcategory of Education"
+msgid "Biology"
+msgstr "Biologie"
+
+#: ../src/plugins/menu-spec-common.c:60
+msgctxt "Menu subcategory of Education"
+msgid "Chemistry"
+msgstr "Chimie"
+
+#: ../src/plugins/menu-spec-common.c:61
+msgctxt "Menu subcategory of Education"
+msgid "Computer Science"
+msgstr "Informatică"
+
+#: ../src/plugins/menu-spec-common.c:62
+msgctxt "Menu subcategory of Education"
+msgid "Construction"
+msgstr "Construcții"
+
+#: ../src/plugins/menu-spec-common.c:63
+msgctxt "Menu subcategory of Education"
+msgid "Data Visualization"
+msgstr "Vizualizare de date"
+
+#: ../src/plugins/menu-spec-common.c:64
+msgctxt "Menu subcategory of Education"
+msgid "Economy"
+msgstr "Economie"
+
+#: ../src/plugins/menu-spec-common.c:65
+msgctxt "Menu subcategory of Education"
+msgid "Electricity"
+msgstr "Electrică"
+
+#: ../src/plugins/menu-spec-common.c:66
+msgctxt "Menu subcategory of Education"
+msgid "Electronics"
+msgstr "Electronică"
+
+#: ../src/plugins/menu-spec-common.c:67
+msgctxt "Menu subcategory of Education"
+msgid "Engineering"
+msgstr "Inginerie"
+
+#: ../src/plugins/menu-spec-common.c:68
+msgctxt "Menu subcategory of Education"
+msgid "Geography"
+msgstr "Geografie"
+
+#: ../src/plugins/menu-spec-common.c:69
+msgctxt "Menu subcategory of Education"
+msgid "Geology"
+msgstr "Geologie"
+
+#: ../src/plugins/menu-spec-common.c:70
+msgctxt "Menu subcategory of Education"
+msgid "Geoscience"
+msgstr "Geoștiință"
+
+#: ../src/plugins/menu-spec-common.c:71
+msgctxt "Menu subcategory of Education"
+msgid "History"
+msgstr "Istorie"
+
+#: ../src/plugins/menu-spec-common.c:72
+msgctxt "Menu subcategory of Education"
+msgid "Humanities"
+msgstr "Umanitate"
+
+#: ../src/plugins/menu-spec-common.c:73
+msgctxt "Menu subcategory of Education"
+msgid "Image Processing"
+msgstr "Procesare de imagini"
+
+#: ../src/plugins/menu-spec-common.c:74
+msgctxt "Menu subcategory of Education"
+msgid "Languages"
+msgstr "Limbi"
+
+#: ../src/plugins/menu-spec-common.c:75
+msgctxt "Menu subcategory of Education"
+msgid "Literature"
+msgstr "Literatură"
+
+#: ../src/plugins/menu-spec-common.c:76
+msgctxt "Menu subcategory of Education"
+msgid "Maps"
+msgstr "Hărți"
+
+#: ../src/plugins/menu-spec-common.c:77
+msgctxt "Menu subcategory of Education"
+msgid "Math"
+msgstr "Matematică"
+
+#: ../src/plugins/menu-spec-common.c:78
+msgctxt "Menu subcategory of Education"
+msgid "Medical"
+msgstr "Medicină"
+
+#: ../src/plugins/menu-spec-common.c:79
+msgctxt "Menu subcategory of Education"
+msgid "Music"
+msgstr "Muzică"
+
+#: ../src/plugins/menu-spec-common.c:80
+msgctxt "Menu subcategory of Education"
+msgid "Numerical Analysis"
+msgstr "Analiză numerică"
+
+#: ../src/plugins/menu-spec-common.c:81
+msgctxt "Menu subcategory of Education"
+msgid "Parallel Computing"
+msgstr "Calcul paralel"
+
+#: ../src/plugins/menu-spec-common.c:82
+msgctxt "Menu subcategory of Education"
+msgid "Physics"
+msgstr "Fizică"
+
+#: ../src/plugins/menu-spec-common.c:83
+msgctxt "Menu subcategory of Education"
+msgid "Robotics"
+msgstr "Robotică"
+
+#: ../src/plugins/menu-spec-common.c:84
+msgctxt "Menu subcategory of Education"
+msgid "Spirituality"
+msgstr "Spiritualitate"
+
+#: ../src/plugins/menu-spec-common.c:85
+msgctxt "Menu subcategory of Education"
+msgid "Sports"
+msgstr "Sport"
+
+#. TRANSLATORS: this is the menu spec main category for Games
+#: ../src/plugins/menu-spec-common.c:87
+msgid "Games"
+msgstr "Jocuri"
+
+#: ../src/plugins/menu-spec-common.c:88
+msgctxt "Menu subcategory of Games"
+msgid "Action"
+msgstr "Acțiune"
+
+#: ../src/plugins/menu-spec-common.c:89
+msgctxt "Menu subcategory of Games"
+msgid "Adventure"
+msgstr "Aventură"
+
+#: ../src/plugins/menu-spec-common.c:90
+msgctxt "Menu subcategory of Games"
+msgid "Arcade"
+msgstr "Arcadă"
+
+#: ../src/plugins/menu-spec-common.c:91
+msgctxt "Menu subcategory of Games"
+msgid "Blocks"
+msgstr "Blocuri"
+
+#: ../src/plugins/menu-spec-common.c:92
+msgctxt "Menu subcategory of Games"
+msgid "Board"
+msgstr "Tablă"
+
+#: ../src/plugins/menu-spec-common.c:93
+msgctxt "Menu subcategory of Games"
+msgid "Card"
+msgstr "Cărți"
+
+#: ../src/plugins/menu-spec-common.c:94
+msgctxt "Menu subcategory of Games"
+msgid "Emulators"
+msgstr "Emulatoare"
+
+#: ../src/plugins/menu-spec-common.c:95
+msgctxt "Menu subcategory of Games"
+msgid "Kids"
+msgstr "Copii"
+
+#: ../src/plugins/menu-spec-common.c:96
+msgctxt "Menu subcategory of Games"
+msgid "Logic"
+msgstr "Logică"
+
+#: ../src/plugins/menu-spec-common.c:97
+msgctxt "Menu subcategory of Games"
+msgid "Role Playing"
+msgstr "Pe roluri"
+
+#: ../src/plugins/menu-spec-common.c:98
+msgctxt "Menu subcategory of Games"
+msgid "Shooter"
+msgstr "Împușcături"
+
+#: ../src/plugins/menu-spec-common.c:99
+msgctxt "Menu subcategory of Games"
+msgid "Simulation"
+msgstr "Simulare"
+
+#: ../src/plugins/menu-spec-common.c:100
+msgctxt "Menu subcategory of Games"
+msgid "Sports"
+msgstr "Sport"
+
+#: ../src/plugins/menu-spec-common.c:101
+msgctxt "Menu subcategory of Games"
+msgid "Strategy"
+msgstr "Strategie"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/menu-spec-common.c:103
+msgid "Graphics"
+msgstr "Grafică"
+
+#: ../src/plugins/menu-spec-common.c:104
+msgctxt "Menu subcategory of Graphics"
+msgid "2D Graphics"
+msgstr "Grafică 2D"
+
+#: ../src/plugins/menu-spec-common.c:105
+msgctxt "Menu subcategory of Graphics"
+msgid "3D Graphics"
+msgstr "Grafică 3D"
+
+#: ../src/plugins/menu-spec-common.c:106
+msgctxt "Menu subcategory of Graphics"
+msgid "OCR"
+msgstr "OCR"
+
+#: ../src/plugins/menu-spec-common.c:107
+msgctxt "Menu subcategory of Graphics"
+msgid "Photography"
+msgstr "Fotografie"
+
+#: ../src/plugins/menu-spec-common.c:108
+msgctxt "Menu subcategory of Graphics"
+msgid "Publishing"
+msgstr "Publicare"
+
+#: ../src/plugins/menu-spec-common.c:109
+msgctxt "Menu subcategory of Graphics"
+msgid "Raster Graphics"
+msgstr "Grafică raster"
+
+#: ../src/plugins/menu-spec-common.c:110
+msgctxt "Menu subcategory of Graphics"
+msgid "Scanning"
+msgstr "Scanare"
+
+#: ../src/plugins/menu-spec-common.c:111
+msgctxt "Menu subcategory of Graphics"
+msgid "Vector Graphics"
+msgstr "Grafică vectorială"
+
+#: ../src/plugins/menu-spec-common.c:112
+msgctxt "Menu subcategory of Graphics"
+msgid "Viewer"
+msgstr "Vizualizator"
+
+#. TRANSLATORS: this is the menu spec main category for Network
+#: ../src/plugins/menu-spec-common.c:114
+msgid "Internet"
+msgstr "Internet"
+
+#: ../src/plugins/menu-spec-common.c:115
+msgctxt "Menu subcategory of Internet"
+msgid "Chat"
+msgstr "Conversație"
+
+#: ../src/plugins/menu-spec-common.c:116
+msgctxt "Menu subcategory of Internet"
+msgid "Dialup"
+msgstr "Dialup"
+
+#: ../src/plugins/menu-spec-common.c:117
+msgctxt "Menu subcategory of Internet"
+msgid "Email"
+msgstr "Poștă electronică"
+
+#: ../src/plugins/menu-spec-common.c:118
+msgctxt "Menu subcategory of Internet"
+msgid "Feed"
+msgstr "Fluxuri"
+
+#: ../src/plugins/menu-spec-common.c:119
+msgctxt "Menu subcategory of Internet"
+msgid "File Transfer"
+msgstr "Transfer de fișiere"
+
+#: ../src/plugins/menu-spec-common.c:120
+msgctxt "Menu subcategory of Internet"
+msgid "Ham Radio"
+msgstr "Radioamatorism"
+
+#: ../src/plugins/menu-spec-common.c:121
+msgctxt "Menu subcategory of Internet"
+msgid "Instant Messaging"
+msgstr "Mesagerie instantă"
+
+#: ../src/plugins/menu-spec-common.c:122
+msgctxt "Menu subcategory of Internet"
+msgid "IRC Clients"
+msgstr "Clienți de IRC"
+
+#: ../src/plugins/menu-spec-common.c:123
+msgctxt "Menu subcategory of Internet"
+msgid "Monitor"
+msgstr "Monitor"
+
+#: ../src/plugins/menu-spec-common.c:124
+msgctxt "Menu subcategory of Internet"
+msgid "News"
+msgstr "Știri"
+
+#: ../src/plugins/menu-spec-common.c:125
+msgctxt "Menu subcategory of Internet"
+msgid "P2P"
+msgstr "P2P"
+
+#: ../src/plugins/menu-spec-common.c:126
+msgctxt "Menu subcategory of Internet"
+msgid "Remote Access"
+msgstr "Acces la distanță"
+
+#: ../src/plugins/menu-spec-common.c:127
+msgctxt "Menu subcategory of Internet"
+msgid "Telephony"
+msgstr "Telefonie"
+
+#: ../src/plugins/menu-spec-common.c:128
+msgctxt "Menu subcategory of Internet"
+msgid "Video Conference"
+msgstr "Conferință video"
+
+#: ../src/plugins/menu-spec-common.c:129
+msgctxt "Menu subcategory of Internet"
+msgid "Web Browser"
+msgstr "Navigator web"
+
+#: ../src/plugins/menu-spec-common.c:130
+msgctxt "Menu subcategory of Internet"
+msgid "Web Development"
+msgstr "Dezvoltare web"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/menu-spec-common.c:132
+msgid "Office"
+msgstr "Birou"
+
+#: ../src/plugins/menu-spec-common.c:133
+msgctxt "Menu subcategory of Office"
+msgid "Calendar"
+msgstr "Calendar"
+
+#: ../src/plugins/menu-spec-common.c:134
+msgctxt "Menu subcategory of Office"
+msgid "Chart"
+msgstr "Grafic"
+
+#: ../src/plugins/menu-spec-common.c:135
+msgctxt "Menu subcategory of Office"
+msgid "Contact Management"
+msgstr "Administrare de contacte"
+
+#: ../src/plugins/menu-spec-common.c:136
+msgctxt "Menu subcategory of Office"
+msgid "Database"
+msgstr "Bază de date"
+
+#: ../src/plugins/menu-spec-common.c:137
+msgctxt "Menu subcategory of Office"
+msgid "Dictionary"
+msgstr "Dicționar"
+
+#: ../src/plugins/menu-spec-common.c:138
+msgctxt "Menu subcategory of Office"
+msgid "Email"
+msgstr "Poștă electronică"
+
+#: ../src/plugins/menu-spec-common.c:139
+msgctxt "Menu subcategory of Office"
+msgid "Finance"
+msgstr "Finanțe"
+
+#: ../src/plugins/menu-spec-common.c:140
+msgctxt "Menu subcategory of Office"
+msgid "Flow Chart"
+msgstr "Diagramă"
+
+#: ../src/plugins/menu-spec-common.c:141
+msgctxt "Menu subcategory of Office"
+msgid "PDA"
+msgstr "PDA"
+
+#: ../src/plugins/menu-spec-common.c:142
+msgctxt "Menu subcategory of Office"
+msgid "Photography"
+msgstr "Fotografie"
+
+#: ../src/plugins/menu-spec-common.c:143
+msgctxt "Menu subcategory of Office"
+msgid "Presentation"
+msgstr "Prezentare"
+
+#: ../src/plugins/menu-spec-common.c:144
+msgctxt "Menu subcategory of Office"
+msgid "Project Management"
+msgstr "Administrare de proiecte"
+
+#: ../src/plugins/menu-spec-common.c:145
+msgctxt "Menu subcategory of Office"
+msgid "Publishing"
+msgstr "Publicare"
+
+#: ../src/plugins/menu-spec-common.c:146
+msgctxt "Menu subcategory of Office"
+msgid "Spreadsheet"
+msgstr "Calcul tabelar"
+
+#: ../src/plugins/menu-spec-common.c:147
+msgctxt "Menu subcategory of Office"
+msgid "Viewer"
+msgstr "Vizualizator"
+
+#: ../src/plugins/menu-spec-common.c:148
+msgctxt "Menu subcategory of Office"
+msgid "Word Processor"
+msgstr "Procesare de text"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/menu-spec-common.c:150
+msgid "Science"
+msgstr "Știință"
+
+#: ../src/plugins/menu-spec-common.c:151
+msgctxt "Menu subcategory of Science"
+msgid "Art"
+msgstr "Artă"
+
+#: ../src/plugins/menu-spec-common.c:152
+msgctxt "Menu subcategory of Science"
+msgid "Artificial Intelligence"
+msgstr "Inteligență artificială"
+
+#: ../src/plugins/menu-spec-common.c:153
+msgctxt "Menu subcategory of Science"
+msgid "Astronomy"
+msgstr "Astronomie"
+
+#: ../src/plugins/menu-spec-common.c:154
+msgctxt "Menu subcategory of Science"
+msgid "Biology"
+msgstr "Biologie"
+
+#: ../src/plugins/menu-spec-common.c:155
+msgctxt "Menu subcategory of Science"
+msgid "Chemistry"
+msgstr "Chimie"
+
+#: ../src/plugins/menu-spec-common.c:156
+msgctxt "Menu subcategory of Science"
+msgid "Computer Science"
+msgstr "Informatică"
+
+#: ../src/plugins/menu-spec-common.c:157
+msgctxt "Menu subcategory of Science"
+msgid "Construction"
+msgstr "Construcții"
+
+#: ../src/plugins/menu-spec-common.c:158
+msgctxt "Menu subcategory of Science"
+msgid "Data Visualization"
+msgstr "Vizualizare de date"
+
+#: ../src/plugins/menu-spec-common.c:159
+msgctxt "Menu subcategory of Science"
+msgid "Economy"
+msgstr "Economie"
+
+#: ../src/plugins/menu-spec-common.c:160
+msgctxt "Menu subcategory of Science"
+msgid "Electricity"
+msgstr "Electrică"
+
+#: ../src/plugins/menu-spec-common.c:161
+msgctxt "Menu subcategory of Science"
+msgid "Electronics"
+msgstr "Electronică"
+
+#: ../src/plugins/menu-spec-common.c:162
+msgctxt "Menu subcategory of Science"
+msgid "Engineering"
+msgstr "Inginerie"
+
+#: ../src/plugins/menu-spec-common.c:163
+msgctxt "Menu subcategory of Science"
+msgid "Geography"
+msgstr "Geografie"
+
+#: ../src/plugins/menu-spec-common.c:164
+msgctxt "Menu subcategory of Science"
+msgid "Geology"
+msgstr "Geologie"
+
+#: ../src/plugins/menu-spec-common.c:165
+msgctxt "Menu subcategory of Science"
+msgid "Geoscience"
+msgstr "Geoștiință"
+
+#: ../src/plugins/menu-spec-common.c:166
+msgctxt "Menu subcategory of Science"
+msgid "History"
+msgstr "Istorie"
+
+#: ../src/plugins/menu-spec-common.c:167
+msgctxt "Menu subcategory of Science"
+msgid "Humanities"
+msgstr "Umanitate"
+
+#: ../src/plugins/menu-spec-common.c:168
+msgctxt "Menu subcategory of Science"
+msgid "Image Processing"
+msgstr "Procesare de imagini"
+
+#: ../src/plugins/menu-spec-common.c:169
+msgctxt "Menu subcategory of Science"
+msgid "Languages"
+msgstr "Limbi"
+
+#: ../src/plugins/menu-spec-common.c:170
+msgctxt "Menu subcategory of Science"
+msgid "Literature"
+msgstr "Literatură"
+
+#: ../src/plugins/menu-spec-common.c:171
+msgctxt "Menu subcategory of Science"
+msgid "Maps"
+msgstr "Hărți"
+
+#: ../src/plugins/menu-spec-common.c:172
+msgctxt "Menu subcategory of Science"
+msgid "Math"
+msgstr "Matematică"
+
+#: ../src/plugins/menu-spec-common.c:173
+msgctxt "Menu subcategory of Science"
+msgid "Medical"
+msgstr "Medical"
+
+#: ../src/plugins/menu-spec-common.c:174
+msgctxt "Menu subcategory of Science"
+msgid "Numerical Analysis"
+msgstr "Analiză numerică"
+
+#: ../src/plugins/menu-spec-common.c:175
+msgctxt "Menu subcategory of Science"
+msgid "Parallel Computing"
+msgstr "Calcul paralel"
+
+#: ../src/plugins/menu-spec-common.c:176
+msgctxt "Menu subcategory of Science"
+msgid "Physics"
+msgstr "Fizică"
+
+#: ../src/plugins/menu-spec-common.c:177
+msgctxt "Menu subcategory of Science"
+msgid "Robotics"
+msgstr "Robotică"
+
+#: ../src/plugins/menu-spec-common.c:178
+msgctxt "Menu subcategory of Science"
+msgid "Spirituality"
+msgstr "Spiritualitate"
+
+#: ../src/plugins/menu-spec-common.c:179
+msgctxt "Menu subcategory of Science"
+msgid "Sports"
+msgstr "Sport"
+
+#. TRANSLATORS: this is the menu spec main category for System
+#: ../src/plugins/menu-spec-common.c:181
+msgid "System"
+msgstr "Sistem"
+
+#: ../src/plugins/menu-spec-common.c:182
+msgctxt "Menu subcategory of System"
+msgid "Emulator"
+msgstr "Emulator"
+
+#: ../src/plugins/menu-spec-common.c:183
+msgctxt "Menu subcategory of System"
+msgid "File Manager"
+msgstr "Administrator de fișiere"
+
+#: ../src/plugins/menu-spec-common.c:184
+msgctxt "Menu subcategory of System"
+msgid "File System"
+msgstr "Sistem de fișiere"
+
+#: ../src/plugins/menu-spec-common.c:185
+msgctxt "Menu subcategory of System"
+msgid "File Tools"
+msgstr "Instrumente de fișiere"
+
+#: ../src/plugins/menu-spec-common.c:186
+msgctxt "Menu subcategory of System"
+msgid "Monitor"
+msgstr "Monitor"
+
+#: ../src/plugins/menu-spec-common.c:187
+msgctxt "Menu subcategory of System"
+msgid "Security"
+msgstr "Securitate"
+
+#: ../src/plugins/menu-spec-common.c:188
+msgctxt "Menu subcategory of System"
+msgid "Terminal Emulator"
+msgstr "Emulator de terminal"
+
+#. TRANSLATORS: this is the menu spec main category for Utility
+#: ../src/plugins/menu-spec-common.c:190
+msgid "Utilities"
+msgstr "Utilități"
+
+#: ../src/plugins/menu-spec-common.c:191
+msgctxt "Menu subcategory of Utilities"
+msgid "Accessibility"
+msgstr "Accesibilitate"
+
+#: ../src/plugins/menu-spec-common.c:192
+msgctxt "Menu subcategory of Utilities"
+msgid "Archiving"
+msgstr "Arhivare"
+
+#: ../src/plugins/menu-spec-common.c:193
+msgctxt "Menu subcategory of Utilities"
+msgid "Calculator"
+msgstr "Calculator"
+
+#: ../src/plugins/menu-spec-common.c:194
+msgctxt "Menu subcategory of Utilities"
+msgid "Clock"
+msgstr "Ceas"
+
+#: ../src/plugins/menu-spec-common.c:195
+msgctxt "Menu subcategory of Utilities"
+msgid "Compression"
+msgstr "Comprimare"
+
+#: ../src/plugins/menu-spec-common.c:196
+msgctxt "Menu subcategory of Utilities"
+msgid "File Tools"
+msgstr "Instrumente pentru fișiere"
+
+#: ../src/plugins/menu-spec-common.c:197
+msgctxt "Menu subcategory of Utilities"
+msgid "Maps"
+msgstr "Hărți"
+
+#: ../src/plugins/menu-spec-common.c:198
+msgctxt "Menu subcategory of Utilities"
+msgid "Spirituality"
+msgstr "Spiritualitate"
+
+#: ../src/plugins/menu-spec-common.c:199
+msgctxt "Menu subcategory of Utilities"
+msgid "Telephony Tools"
+msgstr "Instrumente de telefonie"
+
+#: ../src/plugins/menu-spec-common.c:200
+msgctxt "Menu subcategory of Utilities"
+msgid "Text Editor"
+msgstr "Editor de text"
+
+#. TRANSLATORS: this is the menu spec main category for Video
+#: ../src/plugins/menu-spec-common.c:202
+msgid "Video"
+msgstr "Video"
+
+#: ../src/plugins/menu-spec-common.c:203
+msgctxt "Menu subcategory of Video"
+msgid "Editing"
+msgstr "Editare"
+
+#: ../src/plugins/menu-spec-common.c:204
+msgctxt "Menu subcategory of Video"
+msgid "Database"
+msgstr "Bază de date"
+
+#: ../src/plugins/menu-spec-common.c:205
+msgctxt "Menu subcategory of Video"
+msgid "Disc Burning"
+msgstr "Creeare de discuri"
+
+#: ../src/plugins/menu-spec-common.c:206
+msgctxt "Menu subcategory of Video"
+msgid "Players"
+msgstr "Instrumente de redare"
+
+#: ../src/plugins/menu-spec-common.c:207
+msgctxt "Menu subcategory of Video"
+msgid "Recorders"
+msgstr "Instrumente de înregistrare"
+
+#: ../src/plugins/menu-spec-common.c:208
+msgctxt "Menu subcategory of Video"
+msgid "TV"
+msgstr "TV"
+
+#: ../src/plugins/menu-spec-common.c:211
+msgctxt "Menu subcategory of Add-ons"
+msgid "Fonts"
+msgstr "Fonturi"
+
+#: ../src/plugins/menu-spec-common.c:212
+msgctxt "Menu subcategory of Add-ons"
+msgid "Codecs"
+msgstr "Codecuri"
+
+#: ../src/plugins/menu-spec-common.c:213
+msgctxt "Menu subcategory of Add-ons"
+msgid "Input Sources"
+msgstr "Surse de intrare"
+
+#: ../src/plugins/menu-spec-common.c:214
+msgctxt "Menu subcategory of Add-ons"
+msgid "Language Packs"
+msgstr "Pachete de limbă"
+
+#: ../src/menus.ui.h:1
+msgid "_Software Sources"
+msgstr "_Surse software"
+
+#: ../src/menus.ui.h:2
+msgid "_About"
+msgstr "_Despre"
+
+#: ../src/menus.ui.h:3
+msgid "_Quit"
+msgstr "_Ieșire"
+
+#~ msgid "Set the specified debugging level"
+#~ msgstr "Alege nivelul de depanare specificat"
+
+#~ msgid "Picks"
+#~ msgstr "Selecții"
