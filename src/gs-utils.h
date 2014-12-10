@@ -45,10 +45,6 @@ guint	 gs_string_replace		(GString	*string,
 					 const gchar	*replace);
 gboolean gs_mkdir_parent		(const gchar	*path,
 					 GError		**error);
-GdkPixbuf *gs_pixbuf_load		(const gchar	*icon_name,
-					 const gchar	*icon_path,
-					 guint		 icon_size,
-					 GError		**error);
 void     gs_reboot                      (GCallback	  reboot_failed);
 
 void	gs_image_set_from_pixbuf_with_scale	(GtkImage		*image,

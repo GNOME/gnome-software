@@ -1515,6 +1515,7 @@ gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 static gboolean
 gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 {
+	AsIcon *icon;
 	GPtrArray *keywords;
 	GString *tmp;
 	const gchar *keyword;
@@ -1542,9 +1543,13 @@ gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 	gs_app_set_summary_missing (app, tmp->str);
 	gs_app_set_kind (app, GS_APP_KIND_MISSING);
 	gs_app_set_size (app, GS_APP_SIZE_MISSING);
-	gs_app_set_icon (app, "dialog-question-symbolic");
+	icon = as_icon_new ();
+	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+	as_icon_set_name (icon, "dialog-question-symbolic", -1);
+	gs_app_set_icon (app, icon);
 	gs_app_load_icon (app, 1, NULL);
 	g_string_free (tmp, TRUE);
+	g_object_unref (icon);
 	return TRUE;
 }
 

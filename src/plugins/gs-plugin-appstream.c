@@ -256,22 +256,51 @@ out:
 static void
 gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
-	GError *error = NULL;
 	AsIcon *icon;
+	GError *error = NULL;
 	gboolean ret;
+	gchar *fn = NULL;
+	gchar *path = NULL;
 
 	icon = as_app_get_icon_default (item);
 	switch (as_icon_get_kind (icon)) {
 	case AS_ICON_KIND_REMOTE:
-		gs_app_set_icon (app, as_icon_get_name (icon));
+		gs_app_set_icon (app, icon);
+		path = g_build_filename (g_get_user_data_dir (),
+					 "gnome-software",
+					 "icons",
+					 NULL);
+		fn = g_build_filename (path, as_icon_get_name (icon), NULL);
+		as_icon_set_filename (icon, fn);
+		as_icon_set_prefix (icon, path);
+		if (g_file_test (fn, G_FILE_TEST_EXISTS)) {
+			as_icon_set_kind (icon, AS_ICON_KIND_LOCAL);
+			ret = gs_app_load_icon (app, plugin->scale, &error);
+			if (!ret) {
+				g_warning ("failed to load icon %s: %s",
+					   as_icon_get_name (icon),
+					   error->message);
+				g_error_free (error);
+				goto out;
+			}
+		}
 		break;
 	case AS_ICON_KIND_STOCK:
 	case AS_ICON_KIND_LOCAL:
-		gs_app_set_icon (app, as_icon_get_name (icon));
+		gs_app_set_icon (app, icon);
+
+		/* does not exist, so try to find using the icon theme */
+		if (as_icon_get_kind (icon) == AS_ICON_KIND_LOCAL &&
+		    as_icon_get_filename (icon) == NULL)
+			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+
+		/* load */
 		ret = gs_app_load_icon (app, plugin->scale, &error);
 		if (!ret) {
-			g_warning ("failed to load stock icon %s: %s",
-				   as_icon_get_name (icon), error->message);
+			g_warning ("failed to load %s icon %s: %s",
+				   as_icon_kind_to_string (as_icon_get_kind (icon)),
+				   as_icon_get_name (icon),
+				   error->message);
 			g_error_free (error);
 			return;
 		}
@@ -298,6 +327,9 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		g_warning ("icon kind unknown for %s", as_app_get_id (item));
 		break;
 	}
+out:
+	g_free (path);
+	g_free (fn);
 }
 
 /**

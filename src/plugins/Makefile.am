@@ -36,6 +36,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_fedora_tagger_ratings.la		\
 	libgs_plugin_fedora_tagger_usage.la		\
 	libgs_plugin_epiphany.la			\
+	libgs_plugin_icons.la				\
 	libgs_plugin_systemd-updates.la			\
 	libgs_plugin_packagekit-refine.la		\
 	libgs_plugin_packagekit-refresh.la		\
@@ -62,6 +63,11 @@ libgs_plugin_epiphany_la_SOURCES = gs-plugin-epiphany.c
 libgs_plugin_epiphany_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS)
 libgs_plugin_epiphany_la_LDFLAGS = -module -avoid-version
 libgs_plugin_epiphany_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_icons_la_SOURCES = gs-plugin-icons.c
+libgs_plugin_icons_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS)
+libgs_plugin_icons_la_LDFLAGS = -module -avoid-version
+libgs_plugin_icons_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_self_test_la_SOURCES = gs-plugin-self-test.c
 libgs_plugin_self_test_la_LIBADD = $(GS_PLUGIN_LIBS)

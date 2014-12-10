@@ -194,12 +194,9 @@ void		 gs_app_set_management_plugin	(GsApp		*app,
 GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
 void		 gs_app_set_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);
-const gchar	*gs_app_get_icon		(GsApp		*app);
+AsIcon		*gs_app_get_icon		(GsApp		*app);
 void		 gs_app_set_icon		(GsApp		*app,
-						 const gchar	*icon);
-const gchar	*gs_app_get_icon_path		(GsApp		*app);
-void		 gs_app_set_icon_path		(GsApp		*app,
-						 const gchar	*icon_path);
+						 AsIcon		*icon);
 gboolean	 gs_app_load_icon		(GsApp		*app,
 						 gint		 scale,
 						 GError		**error);
