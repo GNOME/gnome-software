@@ -189,6 +189,15 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 				case PK_INFO_ENUM_AVAILABLE:
 					number_available++;
 					break;
+#if PK_CHECK_VERSION(1,0,4)
+				case PK_INFO_ENUM_UNAVAILABLE:
+					data = pk_package_get_data (package);
+					gs_plugin_packagekit_set_origin (plugin, app, data);
+					gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+					gs_app_set_size (app, GS_APP_SIZE_MISSING);
+					number_available++;
+					break;
+#endif
 				default:
 					/* should we expect anything else? */
 					break;
