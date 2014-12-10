@@ -710,7 +710,8 @@ gs_plugin_refine (GsPlugin *plugin,
 				gs_app_set_rating_kind (app, GS_APP_RATING_KIND_SYSTEM);
 				if (confidence > 50 && rating > 80) {
 					g_debug ("%s is popular [confidence %i]",
-						 gs_app_get_id (app), confidence);
+						 gs_app_get_source_default (app),
+						 confidence);
 					gs_app_add_kudo (app, GS_APP_KUDO_POPULAR);
 				}
 			}
