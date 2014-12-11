@@ -275,6 +275,28 @@ out:
 }
 
 /**
+ * gs_plugin_app_source_enable:
+ */
+static gboolean
+gs_plugin_app_source_enable (GsPlugin *plugin,
+			     GsApp *app,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	_cleanup_object_unref_ PkResults *results = NULL;
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	results = pk_client_repo_enable (PK_CLIENT (plugin->priv->task),
+					 gs_app_get_origin (app),
+					 TRUE,
+					 cancellable,
+					 gs_plugin_packagekit_progress_cb, plugin,
+					 error);
+	return results != NULL;
+}
+
+/**
  * gs_plugin_app_install:
  */
 gboolean
@@ -284,18 +306,53 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	GPtrArray *addons;
-	GPtrArray *array_package_ids = NULL;
 	GPtrArray *source_ids;
-	PkError *error_code = NULL;
-	PkResults *results = NULL;
 	const gchar *package_id;
-	gboolean ret = TRUE;
-	gchar **package_ids = NULL;
 	guint i, j;
+	_cleanup_object_unref_ PkError *error_code = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array_package_ids = NULL;
+	_cleanup_strv_free_ gchar **package_ids = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
-		goto out;
+		return TRUE;
+
+	/* we enable the repo */
+	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
+
+		/* get everything up front we need */
+		source_ids = gs_app_get_source_ids (app);
+		package_ids = g_new0 (gchar *, 2);
+		package_ids[0] = g_strdup (g_ptr_array_index (source_ids, 0));
+
+		/* enable the source */
+		if (!gs_plugin_app_source_enable (plugin, app, cancellable, error))
+			return FALSE;
+
+		/* FIXME: this is a hack, to allow PK time to re-initialize
+		 * everything in order to match an actual result. The root cause
+		 * is probably some kind of hard-to-debug race in the daemon. */
+		g_usleep (G_USEC_PER_SEC * 3);
+
+		/* actually install the package */
+		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		results = pk_task_install_packages_sync (plugin->priv->task,
+							 package_ids,
+							 cancellable,
+							 gs_plugin_packagekit_progress_cb, plugin,
+							 error);
+		if (results == NULL) {
+			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+			return FALSE;
+		}
+
+		/* no longer valid */
+		gs_app_clear_source_ids (app);
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		return TRUE;
+	}
 
 	/* get the list of available package ids to install */
 	switch (gs_app_get_state (app)) {
@@ -303,12 +360,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 	case AS_APP_STATE_UPDATABLE:
 		source_ids = gs_app_get_source_ids (app);
 		if (source_ids->len == 0) {
-			ret = FALSE;
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					     "installing not available");
-			goto out;
+			return FALSE;
 		}
 		array_package_ids = g_ptr_array_new_with_free_func (g_free);
 		for (i = 0; i < source_ids->len; i++) {
@@ -336,12 +392,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 		g_ptr_array_add (array_package_ids, NULL);
 
 		if (array_package_ids->len == 0) {
-			ret = FALSE;
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					     "no packages to install");
-			goto out;
+			return FALSE;
 		}
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		addons = gs_app_get_addons (app);
@@ -355,20 +410,17 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 cancellable,
 							 gs_plugin_packagekit_progress_cb, plugin,
 							 error);
-		if (results == NULL) {
-			ret = FALSE;
-			goto out;
-		}
+		if (results == NULL)
+			return FALSE;
 		break;
 	case AS_APP_STATE_AVAILABLE_LOCAL:
 		package_id = gs_app_get_metadata_item (app, "PackageKit::local-filename");
 		if (package_id == NULL) {
-			ret = FALSE;
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					     "local package, but no filename");
-			goto out;
+			return FALSE;
 		}
 		package_ids = g_strsplit (package_id, "\t", -1);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
@@ -377,19 +429,16 @@ gs_plugin_app_install (GsPlugin *plugin,
 						      cancellable,
 						      gs_plugin_packagekit_progress_cb, plugin,
 						      error);
-		if (results == NULL) {
-			ret = FALSE;
-			goto out;
-		}
+		if (results == NULL)
+			return FALSE;
 		break;
 	default:
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "do not know how to install app in state %s",
 			     as_app_state_to_string (gs_app_get_state (app)));
-		goto out;
+		return FALSE;
 	}
 
 	/* no longer valid */
@@ -398,24 +447,15 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
 	if (error_code != NULL) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "failed to install package: %s, %s",
 			     pk_error_enum_to_string (pk_error_get_code (error_code)),
 			     pk_error_get_details (error_code));
-		goto out;
+		return FALSE;
 	}
-out:
-	g_strfreev (package_ids);
-	if (error_code != NULL)
-		g_object_unref (error_code);
-	if (array_package_ids != NULL)
-		g_ptr_array_unref (array_package_ids);
-	if (results != NULL)
-		g_object_unref (results);
-	return ret;
+	return TRUE;
 }
 
 /**
