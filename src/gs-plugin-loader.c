@@ -27,6 +27,8 @@
 #include "gs-plugin.h"
 #include "gs-profile.h"
 
+#define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */
+
 static void	gs_plugin_loader_finalize	(GObject	*object);
 
 struct GsPluginLoaderPrivate
@@ -47,6 +49,7 @@ struct GsPluginLoaderPrivate
 	gint			 scale;
 
 	GList			*queued_installs;
+	guint			 updates_changed_id;
 	gboolean		 online; 
 };
 
@@ -2549,10 +2552,10 @@ gs_plugin_loader_status_update_cb (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_loader_updates_changed_cb:
+ * gs_plugin_loader_updates_changed_delay_cb:
  */
-static void
-gs_plugin_loader_updates_changed_cb (GsPlugin *plugin, gpointer user_data)
+static gboolean
+gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 {
 	GList *apps;
 	GList *l;
@@ -2575,6 +2578,23 @@ gs_plugin_loader_updates_changed_cb (GsPlugin *plugin, gpointer user_data)
 	/* notify shells */
 	g_debug ("updates-changed");
 	g_signal_emit (plugin_loader, signals[SIGNAL_UPDATES_CHANGED], 0);
+	plugin_loader->priv->updates_changed_id = 0;
+	return FALSE;
+}
+
+/**
+ * gs_plugin_loader_updates_changed_cb:
+ */
+static void
+gs_plugin_loader_updates_changed_cb (GsPlugin *plugin, gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+	if (plugin_loader->priv->updates_changed_id != 0)
+		return;
+	plugin_loader->priv->updates_changed_id =
+		g_timeout_add_seconds (GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
+				       gs_plugin_loader_updates_changed_delay_cb,
+				       plugin_loader);
 }
 
 /**
@@ -2936,6 +2956,9 @@ gs_plugin_loader_finalize (GObject *object)
 	plugin_loader = GS_PLUGIN_LOADER (object);
 
 	g_return_if_fail (plugin_loader->priv != NULL);
+
+	if (plugin_loader->priv->updates_changed_id != 0)
+		g_source_remove (plugin_loader->priv->updates_changed_id);
 
 	/* application stop */
 	gs_profile_stop (plugin_loader->priv->profile, "GsPluginLoader");
