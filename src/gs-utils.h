@@ -39,6 +39,9 @@ void	 gs_app_notify_failed_modal	(GsApp		*app,
 					 GtkWindow	*parent_window,
 					 GsPluginLoaderAction action,
 					 const GError	*error);
+GtkResponseType
+	gs_app_notify_unavailable	(GsApp		*app,
+					 GtkWindow	*parent);
 
 guint	 gs_string_replace		(GString	*string,
 					 const gchar	*search,

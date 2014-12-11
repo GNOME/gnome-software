@@ -219,6 +219,32 @@ gs_shell_search_show_missing_url (GsApp *app)
 }
 
 /**
+ * gs_shell_search_install_unavailable_app:
+ **/
+static void
+gs_shell_search_install_unavailable_app (GsShellSearch *shell_search, GsApp *app)
+{
+	GsShellSearchPrivate *priv = shell_search->priv;
+	GtkResponseType response;
+	GsShellSearchHelper *helper;
+
+	/* get confirmation */
+	response = gs_app_notify_unavailable (app, gs_shell_get_window (priv->shell));
+	if (response == GTK_RESPONSE_OK) {
+		g_debug ("installing %s", gs_app_get_id (app));
+		helper = g_new0 (GsShellSearchHelper, 1);
+		helper->shell_search = g_object_ref (shell_search);
+		helper->app = g_object_ref (app);
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+						   app,
+						   GS_PLUGIN_LOADER_ACTION_INSTALL,
+						   priv->cancellable,
+						   gs_shell_search_app_installed_cb,
+						   helper);
+	}
+}
+
+/**
  * gs_shell_search_app_row_clicked_cb:
  **/
 static void
@@ -231,8 +257,13 @@ gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
 		gs_shell_search_app_install (shell_search, app);
 	else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
 		gs_shell_search_app_remove (shell_search, app);
-	else if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE)
+	else if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
+		if (gs_app_get_url (app, AS_URL_KIND_MISSING) == NULL) {
+			gs_shell_search_install_unavailable_app (shell_search, app);
+			return;
+		}
 		gs_shell_search_show_missing_url (app);
+	}
 }
 
 /**

@@ -186,9 +186,16 @@ gs_app_row_refresh (GsAppRow *app_row)
 	switch (gs_app_get_state (app_row->priv->app)) {
 	case AS_APP_STATE_UNAVAILABLE:
 		gtk_widget_set_visible (priv->button, TRUE);
-		/* TRANSLATORS: this is a button next to the search results that
-		 * allows the application to be easily installed */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
+		if (gs_app_get_url (app_row->priv->app, AS_URL_KIND_MISSING) != NULL) {
+			/* TRANSLATORS: this is a button next to the search results that
+			 * allows the application to be easily installed */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
+		} else {
+			/* TRANSLATORS: this is a button next to the search results that
+			 * allows the application to be easily installed.
+			 * The ellipsis indicates that further steps are required */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install…"));
+		}
 		break;
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 		gtk_widget_set_visible (priv->label, TRUE);

@@ -189,8 +189,19 @@ gs_shell_details_switch_to (GsShellDetails *shell_details)
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_REMOVING:
 	case AS_APP_STATE_UPDATABLE:
-	case AS_APP_STATE_UNAVAILABLE:
 		gtk_widget_set_visible (priv->button_install, FALSE);
+		break;
+	case AS_APP_STATE_UNAVAILABLE:
+		if (gs_app_get_url (priv->app, AS_URL_KIND_MISSING) != NULL) {
+			gtk_widget_set_visible (priv->button_install, FALSE);
+		} else {
+			gtk_widget_set_visible (priv->button_install, TRUE);
+			/* TRANSLATORS: this is a button that allows the apps to
+			 * be installed.
+			 * The ellipsis indicates that further steps are required,
+			 * e.g. enabling software sources or the like */
+			gtk_button_set_label (GTK_BUTTON (priv->button_install), _("_Install…"));
+		}
 		break;
 	default:
 		g_warning ("App unexpectedly in state %s",
@@ -1182,6 +1193,14 @@ gs_shell_details_app_install (GsShellDetails *shell_details, GsApp *app)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GsShellDetailsHelper *helper;
+	GtkResponseType response;
+
+	/* probably non-free */
+	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
+		response = gs_app_notify_unavailable (app, gs_shell_get_window (priv->shell));
+		if (response != GTK_RESPONSE_OK)
+			return;
+	}
 
 	helper = g_new0 (GsShellDetailsHelper, 1);
 	helper->shell_details = g_object_ref (shell_details);
