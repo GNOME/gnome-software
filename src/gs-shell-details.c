@@ -906,8 +906,25 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 							    res,
 							    &error);
 	if (priv->app == NULL) {
+		GtkWidget *dialog;
+
+		dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+		                                 GTK_DIALOG_MODAL |
+		                                 GTK_DIALOG_DESTROY_WITH_PARENT,
+		                                 GTK_MESSAGE_ERROR,
+		                                 GTK_BUTTONS_CLOSE,
+		                                 _("Sorry, this did not work"));
+		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+		                                          "%s", error->message);
+		g_signal_connect (dialog, "response",
+		                  G_CALLBACK (gtk_widget_destroy), NULL);
+		gtk_window_present (GTK_WINDOW (dialog));
+
 		g_warning ("failed to convert to GsApp: %s", error->message);
 		g_error_free (error);
+
+		/* Switch away from the details view that failed to load */
+		gs_shell_set_mode (priv->shell, GS_SHELL_MODE_OVERVIEW);
 		return;
 	}
 
