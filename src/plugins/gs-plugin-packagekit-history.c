@@ -189,7 +189,6 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 				     G_DBUS_ERROR_UNKNOWN_METHOD)) {
 			g_debug ("No history available as PackageKit is too old: %s",
 				 error_local->message);
-			g_error_free (error_local);
 
 			/* just set this to something non-zero so we don't keep
 			 * trying to call GetPackageHistory */
@@ -202,13 +201,16 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 					    G_IO_ERROR_TIMED_OUT)) {
 			g_debug ("No history as PackageKit took too long: %s",
 				 error_local->message);
-			g_error_free (error_local);
 			for (l = list; l != NULL; l = l->next) {
 				app = GS_APP (l->data);
 				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			}
 		}
-		g_propagate_error (error, error_local);
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to get history: %s",
+			     error_local->message);
 		return FALSE;
 	}
 
