@@ -8,9 +8,9 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2014-09-07 18:29+0300\n"
-"PO-Revision-Date: 2014-09-07 20:29+0300\n"
-"Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
+"POT-Creation-Date: 2014-12-12 11:54+0200\n"
+"PO-Revision-Date: 2014-12-12 12:13+0200\n"
+"Last-Translator: Yosef Or Boczko <yoseforb@gnome.org>\n"
 "Language-Team: עברית <>\n"
 "Language: Hebrew\n"
 "MIME-Version: 1.0\n"
@@ -44,7 +44,7 @@ msgid "Add to Application Folder"
 msgstr "הוספה לתיקיית יישומים"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:603
+#: ../src/gs-shell-details.c:236 ../src/gs-shell-installed.c:615
 msgid "_Cancel"
 msgstr "_ביטול"
 
@@ -55,8 +55,8 @@ msgstr "_הוספה"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
 #: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
-#: ../src/gs-app-tile.c:72 ../src/gs-app-tile.c:75 ../src/gs-feature-tile.c:66
-#: ../src/gs-popular-tile.c:73 ../src/gs-popular-tile.c:76
+#: ../src/gs-app-tile.c:74 ../src/gs-app-tile.c:77 ../src/gs-feature-tile.c:69
+#: ../src/gs-popular-tile.c:75 ../src/gs-popular-tile.c:78
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "מותקן"
@@ -65,7 +65,7 @@ msgstr "מותקן"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:265 ../src/gs-shell.c:156
+#: ../src/gs-application.c:263 ../src/gs-shell.c:157
 msgid "Software"
 msgstr "תכנה"
 
@@ -134,74 +134,74 @@ msgid "Folder Name"
 msgstr "שם תיקייה"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:263
+#: ../src/gs-application.c:261
 msgid "About Software"
 msgstr "על אודות תכנה"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:268
+#: ../src/gs-application.c:266
 msgid "A nice way to manage the software on your system."
 msgstr "דרך נוחה לנהל את התכנה במחשבך"
 
-#: ../src/gs-application.c:272
+#: ../src/gs-application.c:270
 msgid "translator-credits"
 msgstr ""
 "Elad Alfassa <elad@fedoraproject.org>\n"
 "ירון שהרבני <sh.yaron@gmail.com>\n"
 "יוסף אור בוצ׳קו <yoseforb@gnome.org>"
 
-#: ../src/gs-application.c:531
+#: ../src/gs-application.c:537
 msgid "Enter GApplication service mode"
 msgstr "Enter GApplication service mode"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:540
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:540
 msgid "MODE"
 msgstr "MODE"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:542
 msgid "Search for applications"
 msgstr "Search for applications"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:542
 msgid "SEARCH"
 msgstr "SEARCH"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:544
 msgid "Show application details"
 msgstr "Show application details"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:544
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:546
 msgid "Open a local package file"
 msgstr "Open a local package file"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:546
 msgid "FILENAME"
 msgstr "FILENAME"
 
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:548
 msgid "Show verbose debugging information"
 msgstr "Show verbose debugging information"
 
-#: ../src/gs-application.c:544
+#: ../src/gs-application.c:550
 msgid "Show profiling information for the service"
 msgstr "Show profiling information for the service"
 
-#: ../src/gs-application.c:546
+#: ../src/gs-application.c:552
 msgid "Prefer local file sources to AppStream"
 msgstr "Prefer local file sources to AppStream"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:201
+#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:208
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "בהמתנה"
@@ -210,8 +210,8 @@ msgstr "בהמתנה"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
-#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
-#: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
+#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:235
+#: ../src/gs-app-tile.c:83 ../src/gs-app-tile.c:86
 msgid "Installing"
 msgstr "בהתקנה"
 
@@ -219,43 +219,51 @@ msgstr "בהתקנה"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
-#: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
+#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:244
+#: ../src/gs-app-tile.c:92 ../src/gs-app-tile.c:95
 msgid "Removing"
 msgstr "בהסרה"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:191
+#: ../src/gs-app-row.c:192
 msgid "Visit website"
 msgstr "אתר התכנית"
 
 #. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed.
+#. * The ellipsis indicates that further steps are required
+#: ../src/gs-app-row.c:197
+msgid "Install…"
+msgstr "התקנה…"
+
+#. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:198
+#: ../src/gs-app-row.c:205
 msgid "Cancel"
 msgstr "ביטול"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:208
+#. TRANSLATORS: this is button text to enable the repo and install the app
+#: ../src/gs-app-row.c:215 ../src/gs-utils.c:246
 msgid "Install"
 msgstr "התקנה"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1128
-#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:164
+#: ../src/gs-app-row.c:224 ../src/gs-shell-details.c:1153
+#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:165
 msgid "Remove"
 msgstr "הסרה"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:99 ../src/gs-app-tile.c:103
-#: ../src/gs-feature-tile.c:71 ../src/gs-popular-tile.c:82
-#: ../src/gs-popular-tile.c:86
+#: ../src/gs-app-tile.c:101 ../src/gs-app-tile.c:105
+#: ../src/gs-feature-tile.c:74 ../src/gs-popular-tile.c:84
+#: ../src/gs-popular-tile.c:88
 msgid "Updates"
 msgstr "עדכונים"
 
@@ -322,90 +330,90 @@ msgid "History"
 msgstr "היסטוריה"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:254
+#: ../src/gs-offline-updates.c:53
 msgid "Failed To Update"
 msgstr "ארע כשל בעדכון"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:260
+#: ../src/gs-offline-updates.c:59
 msgid "A previous update was unfinished."
 msgstr "עדכון קודם לא הסתיים."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:270
+#: ../src/gs-offline-updates.c:69
 msgid "Network access was required but not available."
 msgstr "דרושה גישה לרשת אך זו אינה זמינה."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:279
+#: ../src/gs-offline-updates.c:78
 msgid "An update was not signed in the correct way."
 msgstr "עדכון לא נחתם בדרך הנכונה."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:289
+#: ../src/gs-offline-updates.c:88
 msgid "The update could not be completed."
 msgstr "לא ניתן להשלים את העדכון."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:294
+#: ../src/gs-offline-updates.c:93
 msgid "The update was cancelled."
 msgstr "העדכון בוטל."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:300
+#: ../src/gs-offline-updates.c:99
 msgid "An offline update was requested but no packages required updating."
 msgstr "היה דרוש עדכון במצב לא מקוון אך אין חבילות הדורשות עדכון."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:304
+#: ../src/gs-offline-updates.c:103
 msgid "No space was left on the drive."
 msgstr "לא נשאר מקום על ההתקן."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:312
+#: ../src/gs-offline-updates.c:111
 msgid "An update failed to install correctly."
 msgstr "ארע כשל בהתקנת עדכון כראוי."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:317
+#: ../src/gs-offline-updates.c:116
 msgid "The offline update failed in an unexpected way."
 msgstr "העדכון הלא מקוון נכשל בדרך בלתי צפויה."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:326
+#: ../src/gs-offline-updates.c:125
 msgid "Detailed errors from the package manager follow:"
 msgstr "להלן שגיאות מפורטות ממנהל החבילות:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:900
+#: ../src/gs-plugin-loader.c:930
 msgid "OS Updates"
 msgstr "עדכונים למערכת ההפעלה"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:905
+#: ../src/gs-plugin-loader.c:935
 msgid "Includes performance, stability and security improvements."
 msgstr "לרבות שיפורי ביצועים, יציבות ואבטחה."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1503
+#: ../src/gs-plugin-loader.c:1540
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "לא זמינים מקודדים עבור התבנית %s."
 
-#: ../src/gs-plugin-loader.c:1506
+#: ../src/gs-plugin-loader.c:1543
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -416,39 +424,39 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:208
+#: ../src/gs-screenshot-image.c:254
 msgid "Screenshot not found"
 msgstr "לא נמצא צילום מסך"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:226
+#: ../src/gs-screenshot-image.c:272
 msgid "Failed to load image"
 msgstr "ארע כשל בטעינת התמונה"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:354
+#: ../src/gs-screenshot-image.c:413
 msgid "Screenshot size not found"
 msgstr "גודל צילום מסך לא נמצא"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:373
+#: ../src/gs-screenshot-image.c:432
 msgid "Could not create cache"
 msgstr "לא ניתן ליצור מטמון"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:390
+#: ../src/gs-screenshot-image.c:462
 msgid "Screenshot not valid"
 msgstr "צילום מסך לא תקף"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:396
+#: ../src/gs-screenshot-image.c:468
 msgid "Screenshot not available"
 msgstr "לא זמין צילום מסך"
 
-#: ../src/gs-screenshot-image.c:454
+#: ../src/gs-screenshot-image.c:522
 msgid "Screenshot"
 msgstr "צילום מסך"
 
@@ -464,71 +472,79 @@ msgstr "_התקנה"
 msgid "_Installing"
 msgstr "_בהתקנה"
 
+#. TRANSLATORS: this is a button that allows the apps to
+#. * be installed.
+#. * The ellipsis indicates that further steps are required,
+#. * e.g. enabling software sources or the like
+#: ../src/gs-shell-details.c:203
+msgid "_Install…"
+msgstr "_התקנה…"
+
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:212 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:223 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "ה_סרה"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:219
+#: ../src/gs-shell-details.c:230
 msgid "_Removing"
 msgstr "_בהסרה"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:584
+#: ../src/gs-shell-details.c:617
 msgctxt "license"
 msgid "Unknown"
 msgstr "לא ידוע"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:597
+#: ../src/gs-shell-details.c:630
 msgctxt "version"
 msgid "Unknown"
 msgstr "לא ידוע"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:603
+#: ../src/gs-shell-details.c:636
 msgctxt "size"
 msgid "Calculating…"
 msgstr "מחשב…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:606
+#: ../src/gs-shell-details.c:639
 msgctxt "size"
 msgid "Unknown"
 msgstr "לא ידוע"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:618
+#: ../src/gs-shell-details.c:651
 msgctxt "updated"
 msgid "Never"
 msgstr "לעולם לא"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:633
+#: ../src/gs-shell-details.c:666
 msgctxt "menu category"
 msgid "None"
 msgstr "ללא"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:643
+#: ../src/gs-shell-details.c:676
 msgctxt "origin"
 msgid "Unknown"
 msgstr "לא ידוע"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1113 ../src/gs-shell-installed.c:167
-#: ../src/gs-shell-search.c:149
+#: ../src/gs-shell-details.c:1138 ../src/gs-shell-installed.c:167
+#: ../src/gs-shell-search.c:150
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "האם אכן ברצונך להסיר את %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1125 ../src/gs-shell-installed.c:179
-#: ../src/gs-shell-search.c:161
+#: ../src/gs-shell-details.c:1150 ../src/gs-shell-installed.c:179
+#: ../src/gs-shell-search.c:162
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "‏%s יוסר, ויהיה צורך להתקין אותו כדי להשתמש בו שוב."
@@ -637,7 +653,7 @@ msgstr "מפתח"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:515
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:527
 #: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "תוספים"
@@ -648,11 +664,11 @@ msgstr "התוספים הנבחרים יותקנו עם היישום."
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:505
+#: ../src/gs-shell-installed.c:517
 msgid "System Applications"
 msgstr "יישומי מערכת"
 
-#: ../src/gs-shell-installed.c:611
+#: ../src/gs-shell-installed.c:623
 msgid "Click on items to select them"
 msgstr "יש ללחוץ על פריטים כדי לבחור אותם"
 
@@ -674,22 +690,22 @@ msgid "_Remove from Folder"
 msgstr "_הסרה מתיקייה"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:315
+#: ../src/gs-shell-overview.c:334
 msgid "Recommended Audio Applications"
 msgstr "יישומי שמע מומלתים"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:320
+#: ../src/gs-shell-overview.c:339
 msgid "Recommended Games"
 msgstr "משחקים מומלצים"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:325
+#: ../src/gs-shell-overview.c:344
 msgid "Recommended Graphics Applications"
 msgstr "יישומי גרפיקה מומלצים"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:330
+#: ../src/gs-shell-overview.c:349
 msgid "Recommended Office Applications"
 msgstr "יישומים משרדיים מומלצים"
 
@@ -725,117 +741,117 @@ msgid "No Application Found"
 msgstr "לא נמצאו יישומים"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:146
+#: ../src/gs-shell-updates.c:144
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:149
+#: ../src/gs-shell-updates.c:147
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:155
+#: ../src/gs-shell-updates.c:153
 msgid "Yesterday, %R"
 msgstr "אתמול, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:159
+#: ../src/gs-shell-updates.c:157
 msgid "Yesterday, %l:%M %p"
 msgstr "אתמול, %l:%M %p"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:160
 msgid "Two days ago"
 msgstr "לפני יומיים"
 
-#: ../src/gs-shell-updates.c:164
+#: ../src/gs-shell-updates.c:162
 msgid "Three days ago"
 msgstr "לפני שלושה ימים"
 
-#: ../src/gs-shell-updates.c:166
+#: ../src/gs-shell-updates.c:164
 msgid "Four days ago"
 msgstr "לפני ארבעה ימים"
 
-#: ../src/gs-shell-updates.c:168
+#: ../src/gs-shell-updates.c:166
 msgid "Five days ago"
 msgstr "לפני חמישה ימים"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:168
 msgid "Six days ago"
 msgstr "לפני שישה ימים"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:170
 msgid "One week ago"
 msgstr "לפני שבוע"
 
-#: ../src/gs-shell-updates.c:174
+#: ../src/gs-shell-updates.c:172
 msgid "Two weeks ago"
 msgstr "לפני שבועיים"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:178
+#: ../src/gs-shell-updates.c:176
 msgid "%e %B %Y"
 msgstr "‏%e ב%B ‏%Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:197
+#: ../src/gs-shell-updates.c:195
 msgid "Downloading new updates…"
 msgstr "מוריד עדכונים חדשים…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:201
+#: ../src/gs-shell-updates.c:199
 msgid "Looking for new updates…"
 msgstr "מחפש עדכונים חדשים…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:255
+#: ../src/gs-shell-updates.c:253
 msgid "Setting up updates…"
 msgstr "מגדיר עדכונים…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:256 ../src/gs-shell-updates.c:263
+#: ../src/gs-shell-updates.c:254 ../src/gs-shell-updates.c:261
 msgid "(This could take a while)"
 msgstr "(פעולה זו יכולה לקחת קצת זמן)"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:269
+#: ../src/gs-shell-updates.c:267
 msgid "Checking for updates…"
 msgstr "בודק אם יש עדכונים…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:403
+#: ../src/gs-shell-updates.c:401
 #, c-format
 msgid "Last checked: %s"
 msgstr "בדיקה אחרונה: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:781
+#: ../src/gs-shell-updates.c:787
 msgid "No Network"
 msgstr "אין רשת"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:785
+#: ../src/gs-shell-updates.c:791
 msgid "Internet access is required to check for updates."
 msgstr "דרושה גישה לרשת כדי לבדוק אם יש עדכונים."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:789
+#: ../src/gs-shell-updates.c:795
 msgid "Network Settings"
 msgstr "הגדרות רשת"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:808
+#: ../src/gs-shell-updates.c:814
 msgid "Charges may apply"
 msgstr "עשויים לחול חיובים"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:812
+#: ../src/gs-shell-updates.c:818
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -843,7 +859,7 @@ msgstr "בדיקה עבור עדכונים בשימוש פס רחב נייד י�
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:816
+#: ../src/gs-shell-updates.c:822
 msgid "Check Anyway"
 msgstr "בדיקה בכל מקרה"
 
@@ -906,11 +922,11 @@ msgstr[0] "הותקנו יישום אחד ותוסף אחד"
 msgstr[1] "הותקנו %i יישומים ו־%i תוספים"
 msgstr[2] "הותקנו שני יישומים ושני תוספים"
 
-#: ../src/gs-sources-dialog.c:296 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:300 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "הסרת מקור"
 
-#: ../src/gs-sources-dialog.c:311
+#: ../src/gs-sources-dialog.c:315
 msgid "Removing…"
 msgstr "בהסרה…"
 
@@ -958,34 +974,34 @@ msgstr "אתר אינטרנט"
 
 #. TRANSLATORS: this is where the packager did not write a
 #. * description for the update
-#: ../src/gs-update-dialog.c:107
+#: ../src/gs-update-dialog.c:115
 msgid "No update description available."
 msgstr "אין תיאור זמין לעדכון."
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:167
+#: ../src/gs-update-dialog.c:175
 msgid "Installed Updates"
 msgstr "עדכונים מותקנים"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:180
+#: ../src/gs-update-dialog.c:189
 #, c-format
 msgid "Installed on %s"
 msgstr "מותקן על %s"
 
-#: ../src/gs-update-monitor.c:99
+#: ../src/gs-update-monitor.c:98
 msgid "Software Updates Available"
 msgstr "עדכוני תכנה זמינים"
 
-#: ../src/gs-update-monitor.c:100
+#: ../src/gs-update-monitor.c:99
 msgid "Important OS and application updates are ready to be installed"
 msgstr "עדכוני מערכת ויישומים חשובים מוכנים להתקנה"
 
-#: ../src/gs-update-monitor.c:103
+#: ../src/gs-update-monitor.c:102
 msgid "View"
 msgstr "הצגה"
 
-#: ../src/gs-update-monitor.c:104
+#: ../src/gs-update-monitor.c:103
 msgid "Not Now"
 msgstr "לא עכשיו"
 
@@ -1004,24 +1020,24 @@ msgstr[0] "הותקן עדכון מערכת חשוב"
 msgstr[1] "הותקנו עדכונים מערכת חשובים"
 msgstr[2] "הותקנו עדכונים מערכת חשובים"
 
-#: ../src/gs-update-monitor.c:153
+#: ../src/gs-update-monitor.c:154
 msgid "Software Updates Failed"
 msgstr "ארע כשל בעדכון התכנות"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:155
+#: ../src/gs-update-monitor.c:156
 msgid "An important OS update failed to be installed."
 msgstr "ארע כשל בהתקנת עדכונים מערכת חשובים."
 
-#: ../src/gs-update-monitor.c:164
+#: ../src/gs-update-monitor.c:165
 msgid "Review"
 msgstr "סקירה"
 
-#: ../src/gs-update-monitor.c:166
+#: ../src/gs-update-monitor.c:167
 msgid "Show Details"
 msgstr "הצגת פרטים"
 
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:168
 msgid "OK"
 msgstr "אישור"
 
@@ -1048,33 +1064,89 @@ msgstr "חמישה כוכבים"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:131
+#: ../src/gs-utils.c:135
 #, c-format
 msgid "%s is now installed"
 msgstr "היישום %s הותקן"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:135
+#: ../src/gs-utils.c:139
 msgid "Launch"
 msgstr "הפעלה"
 
-#: ../src/gs-utils.c:159
+#: ../src/gs-utils.c:163
 msgid "Sorry, this did not work"
 msgstr "זה לא עבד, עמך הסליחה"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:163
+#: ../src/gs-utils.c:167
 #, c-format
 msgid "Installation of %s failed."
 msgstr "התקנת %s נכשלה."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:168
+#: ../src/gs-utils.c:172
 #, c-format
 msgid "Removal of %s failed."
 msgstr "מחיקת %s נכשלה."
 
-#: ../src/plugins/gs-plugin-appstream.c:162
+#. TRANSLATORS: window title, nonfree in this
+#. * case refers to Free and Open Source
+#: ../src/gs-utils.c:213
+msgid "You're About to Install Non-Free Software"
+msgstr "הנך על סף התקנת תכנה לא חופשית"
+
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. Application name, e.g. "Firefox"
+#. * 2. Start of hypertext e.g. <a>
+#. * 3. End of hypertext e.g. </a>
+#: ../src/gs-utils.c:227
+#, c-format
+msgid "%s is not %sfree and open source software%s."
+msgstr "‏%s אינה %sתכנה חופשית וקוד פתוח%s."
+
+#. TRANSLATORS: Laws are geographical, urgh...
+#: ../src/gs-utils.c:234
+msgid ""
+"Depending on your country of residence, installing it could make you liable "
+"to prosecution."
+msgstr "בהתאם לארץ מגוריך, התקנה זו עשויה לחשוף אותך לתביעה."
+
+#. TRANSLATORS: ...and you need to ask for advice
+#: ../src/gs-utils.c:239
+msgid "If you are uncertain about this, you should obtain legal advice."
+msgstr "אם אין ברצונך לסמוך על כך, כדאי לך לקבל ייעוץ משפטי."
+
+#. TRANSLATORS: this is button text to not ask about non-free content again
+#: ../src/gs-utils.c:244
+msgid "Don't Warn Again"
+msgstr "לא להזהיר שוב"
+
+#. TRANSLATORS: window title, additional in this
+#. * case means not-currently-enabled
+#: ../src/gs-utils.c:271
+msgid "Enable Additional Software Source?"
+msgstr "לאפשר מקורות תכנה נוספים?"
+
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. Application name, e.g. "Firefox"
+#. * 2. Software source name, e.g. fedora-optional
+#: ../src/gs-utils.c:284
+#, c-format
+msgid "%s is provided by %s."
+msgstr "‏%s מסופק על ידי %s."
+
+#. TRANSLATORS: once the source is enabled it stays enabled
+#: ../src/gs-utils.c:290
+msgid "Do you want to enable it?"
+msgstr "האם אכן ברצונך לאפשר זאת?"
+
+#. TRANSLATORS: this is button text to enable the repo and install the app
+#: ../src/gs-utils.c:294
+msgid "Enable"
+msgstr "לאפשר"
+
+#: ../src/plugins/gs-plugin-appstream.c:219
 #, c-format
 msgid "No AppStream data found"
 msgstr "לא נמצאו נתוני AppStream"
@@ -1083,7 +1155,7 @@ msgstr "לא נמצאו נתוני AppStream"
 #. * be considered a "Conjunctive AND Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#: ../src/plugins/gs-plugin-appstream.c:305
+#: ../src/plugins/gs-plugin-appstream.c:424
 msgid " and "
 msgstr " וגם "
 
@@ -1091,20 +1163,9 @@ msgstr " וגם "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/plugins/gs-plugin-appstream.c:313
+#: ../src/plugins/gs-plugin-appstream.c:432
 msgid " or "
 msgstr " או "
-
-#. TRANSLATORS: this is when a webapp has no comment
-#: ../src/plugins/gs-plugin-epiphany.c:143
-#, c-format
-msgid "Web app"
-msgstr "יישום רשת"
-
-#. TRANSLATORS: this is the licence of the web-app
-#: ../src/plugins/gs-plugin-epiphany.c:151
-msgid "Proprietary"
-msgstr "קנייני"
 
 #: ../src/plugins/gs-plugin-hardcoded-categories.c:160
 msgid "Featured"
@@ -1986,6 +2047,12 @@ msgstr "על _אודות"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "י_ציאה"
+
+#~ msgid "Web app"
+#~ msgstr "יישום רשת"
+
+#~ msgid "Proprietary"
+#~ msgstr "קנייני"
 
 #~ msgid "Set the specified debugging level"
 #~ msgstr "Set the specified debugging level"
