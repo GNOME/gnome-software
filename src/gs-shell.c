@@ -470,6 +470,10 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 	GsShellPrivate *priv = shell->priv;
 	BackEntry *entry;
 
+	/* When the window is closed, reset the initial mode to overview */
+	priv->mode = GS_SHELL_MODE_OVERVIEW;
+
+	/* ... and clear any remaining entries in the back button stack */
 	while ((entry = g_queue_pop_head (priv->back_entry_stack)) != NULL) {
 		free_back_entry (entry);
 	}
