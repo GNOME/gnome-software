@@ -108,13 +108,13 @@ gs_plugin_destroy (GsPlugin *plugin)
 static gchar *
 gs_plugin_parse_json (const gchar *data, gsize data_len, const gchar *key)
 {
-	GString *string;
 	gchar *key_full;
 	gchar *value = NULL;
-	gchar **split;
 	guint i;
 	gchar *tmp;
 	guint len;
+	_cleanup_string_free_ GString *string = NULL;
+	_cleanup_strv_free_ gchar **split = NULL;
 
 	/* format the key to match what JSON returns */
 	key_full = g_strdup_printf ("\"%s\":", key);
@@ -144,8 +144,6 @@ gs_plugin_parse_json (const gchar *data, gsize data_len, const gchar *key)
 			value = g_strndup (tmp, len);
 		}
 	}
-	g_strfreev (split);
-	g_string_free (string, TRUE);
 	return value;
 }
 
@@ -156,11 +154,9 @@ gs_plugin_parse_json (const gchar *data, gsize data_len, const gchar *key)
 static gboolean
 gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
 {
-	gboolean ret = TRUE;
-
 	/* already set up */
 	if (plugin->priv->session != NULL)
-		goto out;
+		return TRUE;
 
 	/* set up a session */
 	plugin->priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
@@ -168,18 +164,16 @@ gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
 								    SOUP_SESSION_TIMEOUT, 5000,
 								    NULL);
 	if (plugin->priv->session == NULL) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "%s: failed to setup networking",
 			     plugin->name);
-		goto out;
+		return FALSE;
 	}
 	soup_session_add_feature_by_type (plugin->priv->session,
 					  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
-out:
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -191,11 +185,11 @@ gs_plugin_app_set_rating_pkg (GsPlugin *plugin,
 			      gint rating,
 			      GError **error)
 {
-	SoupMessage *msg = NULL;
-	gchar *data = NULL;
-	gchar *error_msg = NULL;
-	gchar *uri = NULL;
 	guint status_code;
+	_cleanup_free_ gchar *data = NULL;
+	_cleanup_free_ gchar *error_msg = NULL;
+	_cleanup_free_ gchar *uri = NULL;
+	_cleanup_object_unref_ SoupMessage *msg = NULL;
 
 	/* create the PUT data */
 	uri = g_strdup_printf ("%s/api/v1/rating/%s/",
@@ -220,12 +214,6 @@ gs_plugin_app_set_rating_pkg (GsPlugin *plugin,
 	} else {
 		g_debug ("Got response: %s", msg->response_body->data);
 	}
-
-	g_free (error_msg);
-	g_free (data);
-	g_free (uri);
-	if (msg != NULL)
-		g_object_unref (msg);
 	return TRUE;
 }
 
@@ -240,20 +228,19 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 {
 	GPtrArray *sources;
 	const gchar *pkgname;
-	gboolean ret = TRUE;
+	gboolean ret;
 	guint i;
 
 	/* get the package name */
 	sources = gs_app_get_sources (app);
 	if (sources->len == 0) {
 		g_warning ("no pkgname for %s", gs_app_get_id (app));
-		goto out;
+		return TRUE;
 	}
 
 	/* ensure networking is set up */
-	ret = gs_plugin_setup_networking (plugin, error);
-	if (!ret)
-		goto out;
+	if (!gs_plugin_setup_networking (plugin, error))
+		return FALSE;
 
 	/* set rating for each package */
 	for (i = 0; i < sources->len; i++) {
@@ -263,10 +250,9 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 						    gs_app_get_rating (app),
 						    error);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
-out:
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -307,10 +293,9 @@ gs_plugin_fedora_tagger_add (GsPlugin *plugin,
 			     FedoraTaggerItem *item,
 			     GError **error)
 {
-	gboolean ret = TRUE;
-	gchar *error_msg = NULL;
-	gchar *statement = NULL;
+	char *error_msg = NULL;
 	gint rc;
+	_cleanup_free_ gchar *statement = NULL;
 
 	/* insert the entry */
 	statement = g_strdup_printf ("INSERT OR REPLACE INTO ratings (pkgname, rating, "
@@ -326,12 +311,9 @@ gs_plugin_fedora_tagger_add (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "SQL error: %s", error_msg);
 		sqlite3_free (error_msg);
-		ret = FALSE;
-		goto out;
+		return FALSE;
 	}
-out:
-	g_free (statement);
-	return ret;
+	return TRUE;
 
 }
 
@@ -343,10 +325,9 @@ gs_plugin_fedora_tagger_set_timestamp (GsPlugin *plugin,
 				       const gchar *type,
 				       GError **error)
 {
-	gboolean ret = TRUE;
-	gchar *error_msg = NULL;
-	gchar *statement = NULL;
+	char *error_msg = NULL;
 	gint rc;
+	_cleanup_free_ gchar *statement = NULL;
 
 	/* insert the entry */
 	statement = g_strdup_printf ("INSERT OR REPLACE INTO timestamps (key, value) "
@@ -360,13 +341,9 @@ gs_plugin_fedora_tagger_set_timestamp (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "SQL error: %s", error_msg);
 		sqlite3_free (error_msg);
-		ret = FALSE;
-		goto out;
+		return FALSE;
 	}
-out:
-	g_free (statement);
-	return ret;
-
+	return TRUE;
 }
 
 /**
@@ -376,16 +353,13 @@ static gboolean
 gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 {
 	FedoraTaggerItem *item;
-	GPtrArray *items = NULL;
-	SoupMessage *msg = NULL;
-	gboolean ret = TRUE;
-	gchar *error_msg = NULL;
-	gchar **fields;
-	gchar **split = NULL;
-	gchar *uri = NULL;
 	gdouble count_sum = 0;
 	guint i;
 	guint status_code;
+	_cleanup_free_ gchar *uri = NULL;
+	_cleanup_free_ SoupMessage *msg = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *items = NULL;
+	_cleanup_strv_free_ gchar **split = NULL;
 
 	/* create the GET data */
 	uri = g_strdup_printf ("%s/api/v1/rating/dump/",
@@ -393,26 +367,25 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 
 	/* ensure networking is set up */
-	ret = gs_plugin_setup_networking (plugin, error);
-	if (!ret)
-		goto out;
+	if (!gs_plugin_setup_networking (plugin, error))
+		return FALSE;
 
 	/* set sync request */
 	status_code = soup_session_send_message (plugin->priv->session, msg);
 	if (status_code != SOUP_STATUS_OK) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "Failed to download fedora-tagger dump: %s",
 			     soup_status_get_phrase (status_code));
-		goto out;
+		return FALSE;
 	}
 
 	/* process the tab-delimited data */
 	items = g_ptr_array_new_with_free_func ((GDestroyNotify) fedora_tagger_item_free);
 	split = g_strsplit (msg->response_body->data, "\n", -1);
 	for (i = 0; split[i] != NULL; i++) {
+		_cleanup_strv_free_ gchar **fields = NULL;
 		if (split[i][0] == '\0' ||
 		    split[i][0] == '#')
 			continue;
@@ -429,17 +402,15 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 				   "'pkgname\trating\tvote_count\tuser_count' and got '%s'",
 				   split[i]);
 		}
-		g_strfreev (fields);
 	}
 
 	/* no suitable data? */
 	if (items->len == 0) {
-		ret = FALSE;
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_FAILED,
 				     "Failed to get data from fedora-tagger");
-		goto out;
+		return FALSE;
 	}
 
 	/* calculate confidence */
@@ -448,12 +419,11 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 		count_sum += item->vote_count;
 	}
 	if (count_sum == 0) {
-		ret = FALSE;
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_FAILED,
 				     "Failed to get vote count in fedora-tagger");
-		goto out;
+		return FALSE;
 	}
 	count_sum /= (gdouble) items->len;
 	g_debug ("fedora-tagger vote_count average is %.2f", count_sum);
@@ -468,24 +438,12 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 		g_debug ("adding %s: %.1f%% [%.1f] {%.1f%%}",
 			 item->pkgname, item->rating,
 			 item->vote_count, item->confidence);
-		ret = gs_plugin_fedora_tagger_add (plugin, item, error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_fedora_tagger_add (plugin, item, error))
+			return FALSE;
 	}
 
 	/* reset the timestamp */
-	ret = gs_plugin_fedora_tagger_set_timestamp (plugin, "mtime", error);
-	if (!ret)
-		goto out;
-out:
-	g_free (error_msg);
-	g_free (uri);
-	g_strfreev (split);
-	if (items != NULL)
-		g_ptr_array_unref (items);
-	if (msg != NULL)
-		g_object_unref (msg);
-	return ret;
+	return gs_plugin_fedora_tagger_set_timestamp (plugin, "mtime", error);
 }
 
 /**
@@ -494,28 +452,25 @@ out:
 static gboolean
 gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 {
-	GError *error_local = NULL;
 	const gchar *statement;
-	gboolean ret = TRUE;
 	gboolean rebuild_ratings = FALSE;
-	gchar *error_msg = NULL;
+	char *error_msg = NULL;
 	gint rc;
 	gint64 mtime = 0;
 	gint64 now;
+	_cleanup_error_free_ GError *error_local = NULL;
 
 	g_debug ("trying to open database '%s'", plugin->priv->db_path);
-	ret = gs_mkdir_parent (plugin->priv->db_path, error);
-	if (!ret)
-		goto out;
+	if (!gs_mkdir_parent (plugin->priv->db_path, error))
+		return FALSE;
 	rc = sqlite3_open (plugin->priv->db_path, &plugin->priv->db);
 	if (rc != SQLITE_OK) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "Can't open fedora-tagger database: %s",
 			     sqlite3_errmsg (plugin->priv->db));
-		goto out;
+		return FALSE;
 	}
 
 	/* we don't need to keep doing fsync */
@@ -556,9 +511,8 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 		sqlite3_exec (plugin->priv->db, statement, NULL, NULL, NULL);
 
 		/* reset the timestamp */
-		ret = gs_plugin_fedora_tagger_set_timestamp (plugin, "ctime", error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_fedora_tagger_set_timestamp (plugin, "ctime", error))
+			return FALSE;
 	}
 
 	/* no data */
@@ -569,23 +523,20 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 		if (!gs_plugin_fedora_tagger_download (plugin, &error_local)) {
 			g_warning ("Failed to get fedora-tagger data: %s",
 				   error_local->message);
-			g_error_free (error_local);
-			goto out;
+			return TRUE;
 		}
 	} else if (now - mtime > GS_PLUGIN_FEDORA_TAGGER_AGE_MAX) {
 		g_debug ("fedora-tagger data was %" G_GINT64_FORMAT
 			 " days old, so regetting",
 			 (now - mtime) / ( 60 * 60 * 24));
-		ret = gs_plugin_fedora_tagger_download (plugin, error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_fedora_tagger_download (plugin, error))
+			return FALSE;
 	} else {
 		g_debug ("fedora-tagger data %" G_GINT64_FORMAT
 			 " days old, so no need to redownload",
 			 (now - mtime) / ( 60 * 60 * 24));
 	}
-out:
-	return ret;
+	return TRUE;
 }
 
 typedef struct {
@@ -619,10 +570,9 @@ gs_plugin_resolve_app (GsPlugin *plugin,
 		       GError **error)
 {
 	FedoraTaggerHelper helper;
-	gboolean ret = TRUE;
 	gchar *error_msg = NULL;
-	gchar *statement;
 	gint rc;
+	_cleanup_free_ gchar *statement = NULL;
 
 	/* default values */
 	helper.rating = -1;
@@ -642,8 +592,7 @@ gs_plugin_resolve_app (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "SQL error: %s", error_msg);
 		sqlite3_free (error_msg);
-		ret = FALSE;
-		goto out;
+		return FALSE;
 	}
 
 	/* success */
@@ -651,9 +600,7 @@ gs_plugin_resolve_app (GsPlugin *plugin,
 		*rating = helper.rating;
 	if (confidence != NULL)
 		*confidence = helper.confidence;
-out:
-	g_free (statement);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -670,21 +617,21 @@ gs_plugin_refine (GsPlugin *plugin,
 	GPtrArray *sources;
 	GsApp *app;
 	const gchar *pkgname;
-	gboolean ret = TRUE;
+	gboolean ret;
 	gint rating;
 	gint confidence;
 	guint i;
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) == 0)
-		goto out;
+		return TRUE;
 
 	/* already loaded */
 	if (g_once_init_enter (&plugin->priv->loaded)) {
 		ret = gs_plugin_fedora_tagger_load_db (plugin, error);
 		g_once_init_leave (&plugin->priv->loaded, TRUE);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 
 	/* add any missing ratings data */
@@ -701,7 +648,7 @@ gs_plugin_refine (GsPlugin *plugin,
 						     &confidence,
 						     error);
 			if (!ret)
-				goto out;
+				return FALSE;
 			if (rating != -1) {
 				g_debug ("fedora-tagger setting rating on %s to %i%% [%i]",
 					 pkgname, rating, confidence);
@@ -717,6 +664,5 @@ gs_plugin_refine (GsPlugin *plugin,
 			}
 		}
 	}
-out:
-	return ret;
+	return TRUE;
 }

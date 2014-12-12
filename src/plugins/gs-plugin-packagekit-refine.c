@@ -160,7 +160,6 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 	PkPackage *package;
 	const gchar *data;
 	const gchar *pkgname;
-	gchar *tmp;
 	guint i, j;
 	guint number_available = 0;
 	guint number_installed = 0;
@@ -232,10 +231,10 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 	} else if (number_installed + number_available < sources->len) {
+		_cleanup_free_ gchar *tmp = NULL;
 		/* we have less packages returned than source packages */
 		tmp = gs_app_to_string (app);
 		g_debug ("Failed to find all packages for:\n%s", tmp);
-		g_free (tmp);
 		gs_app_set_kind (app, GS_APP_KIND_UNKNOWN);
 		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 	}
@@ -251,16 +250,15 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				       GError **error)
 {
 	GList *l;
-	GPtrArray *array = NULL;
-	GPtrArray *package_ids = NULL;
-	GPtrArray *packages = NULL;
 	GPtrArray *sources;
 	GsApp *app;
-	PkError *error_code = NULL;
-	PkResults *results = NULL;
 	const gchar *pkgname;
-	gboolean ret = TRUE;
 	guint i;
+	_cleanup_object_unref_ PkError *error_code = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *package_ids = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *packages = NULL;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (l = list; l != NULL; l = l->next) {
@@ -280,22 +278,19 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				     cancellable,
 				     gs_plugin_packagekit_progress_cb, plugin,
 				     error);
-	if (results == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (results == NULL)
+		return FALSE;
 
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
 	if (error_code != NULL) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "failed to resolve: %s, %s",
 			     pk_error_enum_to_string (pk_error_get_code (error_code)),
 			     pk_error_get_details (error_code));
-		goto out;
+		return FALSE;
 	}
 
 	/* get results */
@@ -304,18 +299,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		gs_plugin_packagekit_resolve_packages_app (plugin, packages, app);
 	}
-out:
-	if (package_ids != NULL)
-		g_ptr_array_unref (package_ids);
-	if (packages != NULL)
-		g_ptr_array_unref (packages);
-	if (error_code != NULL)
-		g_object_unref (error_code);
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (results != NULL)
-		g_object_unref (results);
-	return ret;
+	return TRUE;
 }
 
 static gboolean
@@ -326,12 +310,10 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 					  GError **error)
 {
 	const gchar *to_array[] = { NULL, NULL };
-	gboolean ret = TRUE;
-	GPtrArray *array = NULL;
-	GPtrArray *packages = NULL;
-	PkError *error_code = NULL;
-	PkPackage *package;
-	PkResults *results = NULL;
+	_cleanup_object_unref_ PkError *error_code = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *packages = NULL;
 
 	to_array[0] = filename;
 	results = pk_client_search_files (plugin->priv->client,
@@ -340,27 +322,25 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 					  cancellable,
 					  gs_plugin_packagekit_progress_cb, plugin,
 					  error);
-	if (results == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (results == NULL)
+		return FALSE;
 
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
 	if (error_code != NULL) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "failed to search files: %s, %s",
 			     pk_error_enum_to_string (pk_error_get_code (error_code)),
 			     pk_error_get_details (error_code));
-		goto out;
+		return FALSE;
 	}
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
 	if (packages->len == 1) {
+		PkPackage *package;
 		package = g_ptr_array_index (packages, 0);
 		gs_app_add_source_id (app, pk_package_get_id (package));
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -369,16 +349,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 		g_warning ("Failed to find one package for %s, %s, [%d]",
 			   gs_app_get_id (app), filename, packages->len);
 	}
-out:
-	if (packages != NULL)
-		g_ptr_array_unref (packages);
-	if (error_code != NULL)
-		g_object_unref (error_code);
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (results != NULL)
-		g_object_unref (results);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -391,15 +362,14 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 					   GError **error)
 {
 	const gchar *package_id;
-	gboolean ret = TRUE;
-	const gchar **package_ids;
 	GList *l;
-	GPtrArray *array = NULL;
 	GsApp *app;
 	guint i = 0;
 	guint size;
-	PkResults *results = NULL;
 	PkUpdateDetail *update_detail;
+	_cleanup_free_ const gchar **package_ids = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
 
 	size = g_list_length (list);
 	package_ids = g_new0 (const gchar *, size + 1);
@@ -415,10 +385,8 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, plugin,
 					       error);
-	if (results == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (results == NULL)
+		return FALSE;
 
 	/* set the update details for the update */
 	array = pk_results_get_update_detail_array (results);
@@ -434,13 +402,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 			break;
 		}
 	}
-out:
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (results != NULL)
-		g_object_unref (results);
-	g_free (package_ids);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -464,9 +426,9 @@ gs_pk_format_desc (const gchar *text)
 static gboolean
 gs_pk_compare_ids (const gchar *package_id1, const gchar *package_id2)
 {
-	gchar **split1;
-	gchar **split2;
 	gboolean ret;
+	_cleanup_strv_free_ gchar **split1 = NULL;
+	_cleanup_strv_free_ gchar **split2 = NULL;
 
 	split1 = pk_package_id_split (package_id1);
 	split2 = pk_package_id_split (package_id2);
@@ -476,8 +438,6 @@ gs_pk_compare_ids (const gchar *package_id1, const gchar *package_id2)
 			  split2[PK_PACKAGE_ID_VERSION]) == 0 &&
 	       g_strcmp0 (split1[PK_PACKAGE_ID_ARCH],
 			  split2[PK_PACKAGE_ID_ARCH]) == 0);
-	g_strfreev (split1);
-	g_strfreev (split2);
 	return ret;
 }
 
@@ -492,7 +452,6 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	GPtrArray *source_ids;
 	PkDetails *details;
 	const gchar *package_id;
-	gchar *desc;
 	guint i;
 	guint j;
 	guint64 size = 0;
@@ -501,6 +460,7 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	for (j = 0; j < source_ids->len; j++) {
 		package_id = g_ptr_array_index (source_ids, j);
 		for (i = 0; i < array->len; i++) {
+			_cleanup_free_ gchar *desc = NULL;
 			/* right package? */
 			details = g_ptr_array_index (array, i);
 			if (!gs_pk_compare_ids (package_id,
@@ -524,7 +484,6 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 					    GS_APP_QUALITY_LOWEST,
 					    pk_details_get_summary (details));
 #endif
-			g_free (desc);
 			break;
 		}
 	}
@@ -544,14 +503,13 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				     GError **error)
 {
 	GList *l;
-	GPtrArray *array = NULL;
-	GPtrArray *package_ids;
 	GPtrArray *source_ids;
 	GsApp *app;
-	PkResults *results = NULL;
 	const gchar *package_id;
-	gboolean ret = TRUE;
 	guint i;
+	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *package_ids = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (l = list; l != NULL; l = l->next) {
@@ -570,10 +528,8 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, plugin,
 					 error);
-	if (results == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (results == NULL)
+		return FALSE;
 
 	/* set the update details for the update */
 	array = pk_results_get_details_array (results);
@@ -581,13 +537,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		gs_plugin_packagekit_refine_details_app (plugin, array, app);
 	}
-out:
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (results != NULL)
-		g_object_unref (results);
-	g_ptr_array_unref (package_ids);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -617,9 +567,9 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 				  GError **error)
 {
 	GList *l;
-	GList *list_tmp = NULL;
 	GsApp *app;
 	gboolean ret = TRUE;
+	_cleanup_list_free_ GList *list_tmp = NULL;
 
 	gs_profile_start (plugin->profile, "packagekit-refine[source->licence]");
 	for (l = list; l != NULL; l = l->next) {
@@ -642,7 +592,6 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 		goto out;
 out:
 	gs_profile_stop (plugin->profile, "packagekit-refine[source->licence]");
-	g_list_free (list_tmp);
 	return ret;
 }
 
@@ -654,11 +603,10 @@ gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
 				      GCancellable *cancellable,
 				      GError **error)
 {
-	GPtrArray *array = NULL;
 	PkRepoDetail *rd;
-	PkResults *results;
-	gboolean ret = TRUE;
 	guint i;
+	_cleanup_object_unref_ PkResults *results = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
 
 	/* ask PK for the repo details */
 	results = pk_client_get_repo_list (plugin->priv->client,
@@ -666,10 +614,8 @@ gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
 					   cancellable,
 					   gs_plugin_packagekit_progress_cb, plugin,
 					   error);
-	if (results == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (results == NULL)
+		return FALSE;
 	array = pk_results_get_repo_detail_array (results);
 	for (i = 0; i < array->len; i++) {
 		rd = g_ptr_array_index (array, i);
@@ -679,12 +625,7 @@ gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
 				     g_strdup (pk_repo_detail_get_description (rd)));
 #endif
 	}
-out:
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (results != NULL)
-		g_object_unref (results);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -753,13 +694,13 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GError **error)
 {
 	GList *l;
-	GList *resolve_all = NULL;
-	GList *updatedetails_all = NULL;
 	GPtrArray *sources;
 	GsApp *app;
 	const gchar *profile_id = NULL;
 	const gchar *tmp;
 	gboolean ret = TRUE;
+	_cleanup_list_free_ GList *resolve_all = NULL;
+	_cleanup_list_free_ GList *updatedetails_all = NULL;
 
 	/* get the repo_id -> repo_name mapping set up */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) > 0 &&
@@ -857,7 +798,5 @@ gs_plugin_refine (GsPlugin *plugin,
 out:
 	if (profile_id != NULL)
 		gs_profile_stop (plugin->profile, profile_id);
-	g_list_free (resolve_all);
-	g_list_free (updatedetails_all);
 	return ret;
 }

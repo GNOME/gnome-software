@@ -25,6 +25,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "gs-cleanup.h"
 #include "gs-sources-dialog.h"
 #include "gs-utils.h"
 
@@ -53,10 +54,10 @@ add_source (GtkListBox *listbox, GsApp *app)
 	GtkWidget *box;
 	GtkStyleContext *context;
 	GPtrArray *related;
-	gchar *text;
 	guint cnt_addon = 0;
 	guint cnt_apps = 0;
 	guint i;
+	_cleanup_free_ gchar *text = NULL;
 
 	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
 	gtk_widget_set_margin_top (box, 12);
@@ -107,7 +108,6 @@ add_source (GtkListBox *listbox, GsApp *app)
 					cnt_apps, cnt_addon);
 	}
 	widget = gtk_label_new (text);
-	g_free (text);
 	gtk_widget_set_halign (widget, GTK_ALIGN_START);
 	gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
 
@@ -123,14 +123,14 @@ add_source (GtkListBox *listbox, GsApp *app)
 
 static void
 get_sources_cb (GsPluginLoader *plugin_loader,
-                GAsyncResult *res,
-                GsSourcesDialog *dialog)
+		GAsyncResult *res,
+		GsSourcesDialog *dialog)
 {
-	GError *error = NULL;
 	GList *l;
 	GList *list;
 	GsApp *app;
 	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
+	_cleanup_error_free_ GError *error = NULL;
 
 	/* show results */
 	gs_stop_spinner (GTK_SPINNER (priv->spinner));
@@ -143,13 +143,12 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
 			g_debug ("no sources to show");
 		} else if (g_error_matches (error,
-		                            G_IO_ERROR,
-		                            G_IO_ERROR_CANCELLED)) {
+					    G_IO_ERROR,
+					    G_IO_ERROR_CANCELLED)) {
 			g_debug ("get sources cancelled");
 		} else {
 			g_warning ("failed to get sources: %s", error->message);
 		}
-		g_error_free (error);
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "empty");
 		goto out;
 	}
@@ -186,8 +185,8 @@ reload_sources (GsSourcesDialog *dialog)
 
 static void
 list_header_func (GtkListBoxRow *row,
-                  GtkListBoxRow *before,
-                  gpointer user_data)
+		  GtkListBoxRow *before,
+		  gpointer user_data)
 {
 	GtkWidget *header = NULL;
 	if (before != NULL)
@@ -197,8 +196,8 @@ list_header_func (GtkListBoxRow *row,
 
 static gint
 list_sort_func (GtkListBoxRow *a,
-                GtkListBoxRow *b,
-                gpointer user_data)
+		GtkListBoxRow *b,
+		gpointer user_data)
 {
 	return a < b;
 }
@@ -226,8 +225,8 @@ add_app (GtkListBox *listbox, GsApp *app)
 
 static void
 list_row_activated_cb (GtkListBox *list_box,
-                       GtkListBoxRow *row,
-                       GsSourcesDialog *dialog)
+		       GtkListBoxRow *row,
+		       GsSourcesDialog *dialog)
 {
 	GPtrArray *related;
 	GsApp *app;
@@ -276,21 +275,16 @@ back_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 
 static void
 app_removed_cb (GObject *source,
-                GAsyncResult *res,
-                gpointer user_data)
+		GAsyncResult *res,
+		gpointer user_data)
 {
-	GError *error = NULL;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
 	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
-	gboolean ret;
+	_cleanup_error_free_ GError *error = NULL;
 
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-						  res,
-						  &error);
-	if (!ret) {
+	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to remove: %s", error->message);
-		g_error_free (error);
 	} else {
 		reload_sources (dialog);
 	}
@@ -412,10 +406,10 @@ gs_sources_dialog_new (GtkWindow *parent, GsPluginLoader *plugin_loader)
 	GsSourcesDialog *dialog;
 
 	dialog = g_object_new (GS_TYPE_SOURCES_DIALOG,
-	                       "use-header-bar", TRUE,
+			       "use-header-bar", TRUE,
 			       "transient-for", parent,
 			       "modal", TRUE,
-	                       NULL);
+			       NULL);
 	set_plugin_loader (dialog, plugin_loader);
 	reload_sources (dialog);
 

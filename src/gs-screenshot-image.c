@@ -29,6 +29,7 @@
 #include <libgnome-desktop/gnome-bg.h>
 #include <libgnome-desktop/gnome-desktop-thumbnail.h>
 
+#include "gs-cleanup.h"
 #include "gs-screenshot-image.h"
 #include "gs-utils.h"
 
@@ -89,11 +90,10 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 static GdkPixbuf *
 gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 {
-	GdkPixbuf *pixbuf;
-	GnomeBG *bg;
-	GnomeDesktopThumbnailFactory *factory;
-	GSettings *settings;
 	GsScreenshotImagePrivate *priv;
+	_cleanup_object_unref_ GnomeBG *bg = NULL;
+	_cleanup_object_unref_ GnomeDesktopThumbnailFactory *factory = NULL;
+	_cleanup_object_unref_ GSettings *settings = NULL;
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
@@ -101,11 +101,9 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 	bg = gnome_bg_new ();
 	settings = g_settings_new ("org.gnome.desktop.background");
 	gnome_bg_load_from_preferences (bg, settings);
-	pixbuf = gnome_bg_create_thumbnail (bg, factory, gdk_screen_get_default (), priv->width, priv->height);
-	g_object_unref (bg);
-	g_object_unref (factory);
-	g_object_unref (settings);
-	return pixbuf;
+	return gnome_bg_create_thumbnail (bg, factory,
+					  gdk_screen_get_default (),
+					  priv->width, priv->height);
 }
 
 /**
@@ -114,8 +112,7 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 static gboolean
 gs_screenshot_image_use_desktop_background (GdkPixbuf *pixbuf)
 {
-	AsImage *im;
-	gboolean ret;
+	_cleanup_object_unref_ AsImage *im = NULL;
 
 	/* nothing to show, means no background mode */
 	if (pixbuf == NULL)
@@ -124,9 +121,7 @@ gs_screenshot_image_use_desktop_background (GdkPixbuf *pixbuf)
 	/* use a temp AsImage */
 	im = as_image_new ();
 	as_image_set_pixbuf (im, pixbuf);
-	ret = (as_image_get_alpha_flags (im) & AS_IMAGE_ALPHA_FLAG_INTERNAL) > 0;
-	g_object_unref (im);
-	return ret;
+	return (as_image_get_alpha_flags (im) & AS_IMAGE_ALPHA_FLAG_INTERNAL) > 0;
 }
 
 /**
@@ -135,9 +130,9 @@ gs_screenshot_image_use_desktop_background (GdkPixbuf *pixbuf)
 static void
 as_screenshot_show_image (GsScreenshotImage *ssimg)
 {
-	GdkPixbuf *pixbuf_bg = NULL;
-	GdkPixbuf *pixbuf = NULL;
 	GsScreenshotImagePrivate *priv;
+	_cleanup_object_unref_ GdkPixbuf *pixbuf_bg = NULL;
+	_cleanup_object_unref_ GdkPixbuf *pixbuf = NULL;
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
@@ -185,10 +180,6 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 		priv->current_image = "image1";
 	}
 
-	if (pixbuf != NULL)
-		g_object_unref (pixbuf);
-	if (pixbuf_bg != NULL)
-		g_object_unref (pixbuf_bg);
 	gtk_widget_show (GTK_WIDGET (ssimg));
 }
 
@@ -199,24 +190,22 @@ static void
 gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 				  const gchar *filename_thumb)
 {
-	AsImage *im;
-	GdkPixbuf *pb = NULL;
 	GsScreenshotImagePrivate *priv;
-	gboolean ret;
+	_cleanup_object_unref_ AsImage *im = NULL;
+	_cleanup_object_unref_ GdkPixbuf *pb = NULL;
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
 	/* create an helper which can do the blurring for us */
 	im = as_image_new ();
-	ret = as_image_load_filename (im, filename_thumb, NULL);
-	if (!ret)
-		goto out;
+	if (!as_image_load_filename (im, filename_thumb, NULL))
+		return;
 	pb = as_image_save_pixbuf (im,
 				   priv->width * priv->scale,
 				   priv->height * priv->scale,
 				   AS_IMAGE_SAVE_FLAG_BLUR);
 	if (pb == NULL)
-		goto out;
+		return;
 
 	if (g_strcmp0 (priv->current_image, "image1") == 0) {
 		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image1),
@@ -225,11 +214,6 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image2),
 						     pb, priv->scale);
 	}
-out:
-	if (im != NULL)
-		g_object_unref (im);
-	if (pb != NULL)
-		g_object_unref (pb);
 }
 
 /**
@@ -240,20 +224,20 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 				 SoupMessage *msg,
 				 gpointer user_data)
 {
-	AsImage *im = NULL;
 	GsScreenshotImagePrivate *priv;
-	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
-	GError *error = NULL;
-	GdkPixbuf *pixbuf = NULL;
-	GInputStream *stream = NULL;
 	gboolean ret;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_object_unref_ AsImage *im = NULL;
+	_cleanup_object_unref_ GdkPixbuf *pixbuf = NULL;
+	_cleanup_object_unref_ GInputStream *stream = NULL;
+	_cleanup_object_unref_ GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
 
 	if (msg->status_code != SOUP_STATUS_OK) {
 		/* TRANSLATORS: this is when we try to download a screenshot and
 		 * we get back 404 */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not found"));
 		gtk_widget_hide (GTK_WIDGET (ssimg));
-		goto out;
+		return;
 	}
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
@@ -263,14 +247,14 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 						      msg->response_body->length,
 						      NULL);
 	if (stream == NULL)
-		goto out;
+		return;
 
 	/* load the image */
 	pixbuf = gdk_pixbuf_new_from_stream (stream, NULL, NULL);
 	if (pixbuf == NULL) {
 		/* TRANSLATORS: possibly image file corrupt or not an image */
 		gs_screenshot_image_set_error (ssimg, _("Failed to load image"));
-		goto out;
+		return;
 	}
 
 	/* is image size destination size unknown or exactly the correct size */
@@ -283,8 +267,7 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 					   &error);
 		if (!ret) {
 			gs_screenshot_image_set_error (ssimg, error->message);
-			g_error_free (error);
-			goto out;
+			return;
 		}
 	} else {
 		/* save to file, using the same code as the AppStream builder
@@ -296,21 +279,12 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 					      AS_IMAGE_SAVE_FLAG_PAD_16_9, &error);
 		if (!ret) {
 			gs_screenshot_image_set_error (ssimg, error->message);
-			g_error_free (error);
-			goto out;
+			return;
 		}
 	}
 
 	/* got image, so show */
 	as_screenshot_show_image (ssimg);
-out:
-	if (stream != NULL)
-		g_object_unref (stream);
-	if (pixbuf != NULL)
-		g_object_unref (pixbuf);
-	if (im != NULL)
-		g_object_unref (im);
-	g_object_unref (ssimg);
 }
 
 /**
@@ -377,11 +351,11 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	SoupMessage *msg = NULL;
 	SoupURI *base_uri = NULL;
 	const gchar *url;
-	gchar *basename = NULL;
-	gchar *cachedir = NULL;
-	gchar *cachedir2 = NULL;
-	gchar *sizedir = NULL;
 	gint rc;
+	_cleanup_free_ gchar *basename = NULL;
+	_cleanup_free_ gchar *cachedir2 = NULL;
+	_cleanup_free_ gchar *cachedir = NULL;
+	_cleanup_free_ gchar *sizedir = NULL;
 
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
 
@@ -411,7 +385,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		/* TRANSLATORS: this is when we request a screenshot size that
 		 * the generator did not create or the parser did not add */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot size not found"));
-		goto out;
+		return;
 	}
 	url = as_image_get_url (im);
 	basename = g_path_get_basename (url);
@@ -430,14 +404,14 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		/* TRANSLATORS: this is when we try create the cache directory
 		 * but we were out of space or permission was denied */
 		gs_screenshot_image_set_error (ssimg, _("Could not create cache"));
-		goto out;
+		return;
 	}
 
 	/* does local file already exist */
 	priv->filename = g_build_filename (cachedir, basename, NULL);
 	if (g_file_test (priv->filename, G_FILE_TEST_EXISTS)) {
 		as_screenshot_show_image (ssimg);
-		goto out;
+		return;
 	}
 
 	/* can we load a blurred smaller version of this straight away */
@@ -460,26 +434,22 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		/* TRANSLATORS: this is when we try to download a screenshot
 		 * that was not a valid URL */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not valid"));
-		goto out;
+		soup_uri_free (base_uri);
+		return;
 	}
 	msg = soup_message_new_from_uri (SOUP_METHOD_GET, base_uri);
 	if (msg == NULL) {
 		/* TRANSLATORS: this is when networking is not available */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not available"));
-		goto out;
+		soup_uri_free (base_uri);
+		return;
 	}
 
 	/* send async */
 	soup_session_queue_message (priv->session, msg,
 				    gs_screenshot_image_complete_cb,
 				    g_object_ref (ssimg));
-out:
-	g_free (basename);
-	g_free (sizedir);
-	g_free (cachedir);
-	g_free (cachedir2);
-	if (base_uri != NULL)
-		soup_uri_free (base_uri);
+	soup_uri_free (base_uri);
 }
 
 /**

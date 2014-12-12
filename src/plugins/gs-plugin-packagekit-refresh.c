@@ -106,17 +106,16 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	gboolean ret = TRUE;
-	gchar **package_ids = NULL;
 	PkBitfield filter;
 	PkBitfield transaction_flags;
-	PkPackageSack *sack = NULL;
-	PkResults *results2 = NULL;
-	PkResults *results = NULL;
+	_cleanup_strv_free_ gchar **package_ids = NULL;
+	_cleanup_object_unref_ PkPackageSack *sack = NULL;
+	_cleanup_object_unref_ PkResults *results2 = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
 
 	/* not us */
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
-		goto out;
+		return TRUE;
 
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -129,15 +128,13 @@ gs_plugin_refresh (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, plugin,
 					 error);
-	if (results == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (results == NULL)
+		return FALSE;
 
 	/* download all the updates */
 	sack = pk_results_get_package_sack (results);
 	if (pk_package_sack_get_size (sack) == 0)
-		goto out;
+		return TRUE;
 	package_ids = pk_package_sack_get_ids (sack);
 	transaction_flags = pk_bitfield_value (PK_TRANSACTION_FLAG_ENUM_ONLY_DOWNLOAD);
 	results2 = pk_client_update_packages (PK_CLIENT (plugin->priv->task),
@@ -146,19 +143,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 					      cancellable,
 					      gs_plugin_packagekit_progress_cb, plugin,
 					      error);
-	if (results2 == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-out:
-	g_strfreev (package_ids);
-	if (sack != NULL)
-		g_object_unref (sack);
-	if (results2 != NULL)
-		g_object_unref (results2);
-	if (results != NULL)
-		g_object_unref (results);
-	return ret;
+	return results2 != NULL;
 }
 
 /**
@@ -173,7 +158,7 @@ static void
 gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
 {
 	gchar *nl;
-	gchar *tmp;
+	_cleanup_free_ gchar *tmp = NULL;
 
 	/* look for newline */
 	tmp = g_strdup (text);
@@ -181,16 +166,14 @@ gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
 	if (nl == NULL) {
 		if (strlen (text) < 40) {
 			gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, text);
-			goto out;
+			return;
 		}
 		gs_app_set_description (app, GS_APP_QUALITY_LOWEST, text);
-		goto out;
+		return;
 	}
 	*nl = '\0';
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, tmp);
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, nl + 1);
-out:
-	g_free (tmp);
 }
 
 /**
@@ -204,14 +187,13 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			   GError **error)
 {
 	const gchar *package_id;
-	gboolean ret = TRUE;
-	gchar *basename = NULL;
-	gchar **files;
-	gchar **split = NULL;
-	GPtrArray *array = NULL;
-	GsApp *app = NULL;
 	PkDetails *item;
 	PkResults *results = NULL;
+	_cleanup_free_ gchar *basename = NULL;
+	_cleanup_strv_free_ gchar **files = NULL;
+	_cleanup_strv_free_ gchar **split = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	_cleanup_object_unref_ GsApp *app = NULL;
 
 	/* get details */
 	files = g_strsplit (filename, "\t", -1);
@@ -228,29 +210,25 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "GetDetailsLocal() not supported");
 #endif
-	if (results == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (results == NULL)
+		return FALSE;
 
 	/* get results */
 	array = pk_results_get_details_array (results);
 	if (array->len == 0) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "no details for %s", filename);
-		goto out;
+		return FALSE;
 	}
 	if (array->len > 1) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "too many details [%i] for %s",
 			     array->len, filename);
-		goto out;
+		return FALSE;
 	}
 
 	/* create application */
@@ -280,14 +258,5 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_size (app, pk_details_get_size (item));
 	gs_app_set_licence (app, pk_details_get_license (item));
 	gs_plugin_add_app (list, app);
-out:
-	if (app != NULL)
-		g_object_unref (app);
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (basename != NULL)
-		g_free (basename);
-	g_strfreev (split);
-	g_strfreev (files);
-	return ret;
+	return TRUE;
 }

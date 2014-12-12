@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-tile.h"
+#include "gs-cleanup.h"
 #include "gs-star-widget.h"
 #include "gs-utils.h"
 
@@ -60,10 +61,10 @@ app_state_changed_idle (gpointer user_data)
 	GsAppTilePrivate *priv;
 	GtkWidget *label;
 	gboolean installed;
-	gchar *name;
+	_cleanup_free_ gchar *name = NULL;
 
-        priv = gs_app_tile_get_instance_private (tile);
-        accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
+	priv = gs_app_tile_get_instance_private (tile);
+	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
 	label = gtk_bin_get_child (GTK_BIN (priv->eventbox));
 	switch (gs_app_get_state (priv->app)) {
@@ -104,13 +105,13 @@ app_state_changed_idle (gpointer user_data)
 		 * application available */
 		gtk_label_set_label (GTK_LABEL (label), _("Updates"));
 		break;
-        case AS_APP_STATE_QUEUED_FOR_INSTALL:
-        case AS_APP_STATE_AVAILABLE:
-        default:
+	case AS_APP_STATE_QUEUED_FOR_INSTALL:
+	case AS_APP_STATE_AVAILABLE:
+	default:
 		installed = FALSE;
 		name = g_strdup (gs_app_get_name (priv->app));
-                break;
-        }
+		break;
+	}
 
 	gtk_widget_set_visible (priv->eventbox, installed);
 
@@ -118,7 +119,6 @@ app_state_changed_idle (gpointer user_data)
 		atk_object_set_name (accessible, name);
 		atk_object_set_description (accessible, gs_app_get_summary (priv->app));
 	}
-	g_free (name);
 
 	g_object_unref (tile);
 	return G_SOURCE_REMOVE;
@@ -163,9 +163,9 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "content");
 
-        g_signal_connect (priv->app, "notify::state",
-                          G_CALLBACK (app_state_changed), tile);
-        app_state_changed (priv->app, NULL, tile);
+	g_signal_connect (priv->app, "notify::state",
+			  G_CALLBACK (app_state_changed), tile);
+	app_state_changed (priv->app, NULL, tile);
 
 	gs_image_set_from_pixbuf (GTK_IMAGE (priv->image), gs_app_get_pixbuf (app));
 	gtk_label_set_label (GTK_LABEL (priv->name), gs_app_get_name (app));
@@ -212,9 +212,9 @@ gs_app_tile_class_init (GsAppTileClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, image);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, name);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, summary);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, eventbox);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, stack);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, stars);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, eventbox);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, stack);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppTile, stars);
 }
 
 GtkWidget *

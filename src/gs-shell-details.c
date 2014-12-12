@@ -29,6 +29,7 @@
 
 #include "gs-utils.h"
 
+#include "gs-cleanup.h"
 #include "gs-shell-details.h"
 #include "gs-app-addon-row.h"
 #include "gs-history-dialog.h"
@@ -316,14 +317,13 @@ gs_shell_details_screenshot_selected_cb (GtkListBox *list,
 	GsScreenshotImage *ssmain;
 	GsScreenshotImage *ssthumb;
 	AsScreenshot *ss;
-	GList *children;
+	_cleanup_list_free_ GList *children = NULL;
 
 	if (row == NULL)
 		return;
 
 	children = gtk_container_get_children (GTK_CONTAINER (priv->box_details_screenshot_main));
 	ssmain = GS_SCREENSHOT_IMAGE (children->data);
-	g_list_free (children);
 
 	ssthumb = GS_SCREENSHOT_IMAGE (gtk_bin_get_child (GTK_BIN (row)));
 	ss = gs_screenshot_image_get_screenshot (ssthumb);
@@ -446,17 +446,13 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 static void
 gs_shell_details_website_cb (GtkWidget *widget, GsShellDetails *shell_details)
 {
-	GError *error = NULL;
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	const gchar *url;
-	gboolean ret;
+	_cleanup_error_free_ GError *error = NULL;
 
 	url = gs_app_get_url (priv->app, AS_URL_KIND_HOMEPAGE);
-	ret = gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error);
-	if (!ret) {
-		g_warning ("spawn of '%s' failed", url);
-		g_error_free (error);
-	}
+	if (!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error))
+		g_warning ("spawn of '%s' failed: %s", url, error->message);
 }
 
 /**
@@ -468,13 +464,13 @@ gs_shell_details_set_description (GsShellDetails *shell_details, const gchar *tm
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkStyleContext *style_context;
 	GtkWidget *para;
-	gchar **split = NULL;
 	guint i;
+	_cleanup_strv_free_ gchar **split = NULL;
 
 	/* does the description exist? */
 	gtk_widget_set_visible (priv->box_details_description, tmp != NULL);
 	if (tmp == NULL)
-		goto out;
+		return;
 
 	/* add each paragraph as a new GtkLabel which lets us get the 24px
 	 * paragraph spacing */
@@ -498,8 +494,6 @@ gs_shell_details_set_description (GsShellDetails *shell_details, const gchar *tm
 
 		gtk_box_pack_start (GTK_BOX (priv->box_details_description), para, FALSE, FALSE, 0);
 	}
-out:
-	g_strfreev (split);
 }
 
 /**
@@ -508,13 +502,13 @@ out:
 static gboolean
 gs_shell_details_is_addon_id_kind (GsApp *app)
 {
-        AsIdKind id_kind;
-        id_kind = gs_app_get_id_kind (app);
-        if (id_kind == AS_ID_KIND_DESKTOP)
-                return FALSE;
-        if (id_kind == AS_ID_KIND_WEB_APP)
-                return FALSE;
-        return TRUE;
+	AsIdKind id_kind;
+	id_kind = gs_app_get_id_kind (app);
+	if (id_kind == AS_ID_KIND_DESKTOP)
+		return FALSE;
+	if (id_kind == AS_ID_KIND_WEB_APP)
+		return FALSE;
+	return TRUE;
 }
 
 /**
@@ -523,15 +517,14 @@ gs_shell_details_is_addon_id_kind (GsApp *app)
 static void
 gs_shell_details_refresh_all (GsShellDetails *shell_details)
 {
-	GError *error = NULL;
 	GPtrArray *history;
 	GdkPixbuf *pixbuf = NULL;
 	GList *addons;
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GtkWidget *widget;
 	const gchar *tmp;
-	gchar *size;
 	guint64 updated;
+	_cleanup_error_free_ GError *error = NULL;
 
 	/* change widgets */
 	tmp = gs_app_get_name (priv->app);
@@ -638,9 +631,9 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		/* TRANSLATORS: this is where the size is not known */
 		gtk_label_set_label (GTK_LABEL (priv->label_details_size_value), C_("size", "Unknown"));
 	} else {
+		_cleanup_free_ gchar *size = NULL;
 		size = g_format_size (gs_app_get_size (priv->app));
 		gtk_label_set_label (GTK_LABEL (priv->label_details_size_value), size);
-		g_free (size);
 	}
 
 	/* set the updated date */
@@ -651,11 +644,11 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		gtk_label_set_label (GTK_LABEL (priv->label_details_updated_value), C_("updated", "Never"));
 	} else {
 		GDateTime *dt;
+		_cleanup_free_ gchar *updated_str = NULL;
 		dt = g_date_time_new_from_unix_utc (updated);
-		size = g_date_time_format (dt, "%x");
+		updated_str = g_date_time_format (dt, "%x");
 		g_date_time_unref (dt);
-		gtk_label_set_label (GTK_LABEL (priv->label_details_updated_value), size);
-		g_free (size);
+		gtk_label_set_label (GTK_LABEL (priv->label_details_updated_value), updated_str);
 	}
 
 	/* set the category */
@@ -816,8 +809,8 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 
 static void
 list_header_func (GtkListBoxRow *row,
-                  GtkListBoxRow *before,
-                  gpointer user_data)
+		  GtkListBoxRow *before,
+		  gpointer user_data)
 {
 	GtkWidget *header = NULL;
 	if (before != NULL)
@@ -827,14 +820,14 @@ list_header_func (GtkListBoxRow *row,
 
 static gint
 list_sort_func (GtkListBoxRow *a,
-                GtkListBoxRow *b,
-                gpointer user_data)
+		GtkListBoxRow *b,
+		gpointer user_data)
 {
 	GsApp *a1 = gs_app_addon_row_get_addon (GS_APP_ADDON_ROW (a));
 	GsApp *a2 = gs_app_addon_row_get_addon (GS_APP_ADDON_ROW (b));
 
 	return g_strcmp0 (gs_app_get_name (a1),
-	                  gs_app_get_name (a2));
+			  gs_app_get_name (a2));
 }
 
 static void gs_shell_details_addon_selected_cb (GsAppAddonRow *row, GParamSpec *pspec, GsShellDetails *shell_details);
@@ -853,19 +846,19 @@ gs_shell_details_refresh_addons (GsShellDetails *shell_details)
 		GsApp *addon;
 		GtkWidget *row;
 
-	        addon = g_ptr_array_index (addons, i);
+		addon = g_ptr_array_index (addons, i);
 		if (gs_app_get_state (addon) == AS_APP_STATE_UNAVAILABLE)
 			continue;
 
-	        row = gs_app_addon_row_new ();
+		row = gs_app_addon_row_new ();
 
-	        gs_app_addon_row_set_addon (GS_APP_ADDON_ROW (row), addon);
-	        gtk_container_add (GTK_CONTAINER (priv->list_box_addons), row);
-	        gtk_widget_show (row);
+		gs_app_addon_row_set_addon (GS_APP_ADDON_ROW (row), addon);
+		gtk_container_add (GTK_CONTAINER (priv->list_box_addons), row);
+		gtk_widget_show (row);
 
-	        g_signal_connect (row, "notify::selected",
-	                          G_CALLBACK (gs_shell_details_addon_selected_cb),
-	                          shell_details);
+		g_signal_connect (row, "notify::selected",
+				  G_CALLBACK (gs_shell_details_addon_selected_cb),
+				  shell_details);
 	}
 }
 
@@ -877,12 +870,12 @@ gs_shell_details_app_refine_cb (GObject *source,
 				GAsyncResult *res,
 				gpointer user_data)
 {
-	GError *error = NULL;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	gboolean ret;
-	gchar *app_dump;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_free_ gchar *app_dump = NULL;
 
 	ret = gs_plugin_loader_app_refine_finish (plugin_loader,
 						  res,
@@ -891,14 +884,12 @@ gs_shell_details_app_refine_cb (GObject *source,
 		g_warning ("failed to refine %s: %s",
 			   gs_app_get_id (priv->app),
 			   error->message);
-		g_error_free (error);
 		return;
 	}
 
 	/* show some debugging */
 	app_dump = gs_app_to_string (priv->app);
 	g_debug ("%s", app_dump);
-	g_free (app_dump);
 
 	gs_shell_details_refresh_screenshots (shell_details);
 	gs_shell_details_refresh_addons (shell_details);
@@ -914,11 +905,11 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 				     GAsyncResult *res,
 				     gpointer user_data)
 {
-	gchar *tmp;
-	GError *error = NULL;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
 	GsShellDetailsPrivate *priv = shell_details->priv;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_free_ gchar *tmp = NULL;
 
 	if (priv->app != NULL)
 		g_object_unref (priv->app);
@@ -927,7 +918,6 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 							    &error);
 	if (priv->app == NULL) {
 		g_warning ("failed to convert to GsApp: %s", error->message);
-		g_error_free (error);
 		return;
 	}
 
@@ -945,7 +935,6 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 	/* print what we've got */
 	tmp = gs_app_to_string (priv->app);
 	g_debug ("%s", tmp);
-	g_free (tmp);
 
 	/* change widgets */
 	gs_shell_details_switch_to (shell_details);
@@ -1055,10 +1044,10 @@ gs_shell_details_app_installed_cb (GObject *source,
 				   GAsyncResult *res,
 				   gpointer user_data)
 {
-	GError *error = NULL;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetailsHelper *helper = (GsShellDetailsHelper *) user_data;
 	gboolean ret;
+	_cleanup_error_free_ GError *error = NULL;
 
 	ret = gs_plugin_loader_app_action_finish (plugin_loader,
 						  res,
@@ -1071,7 +1060,6 @@ gs_shell_details_app_installed_cb (GObject *source,
 					    gs_shell_get_window (helper->shell_details->priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_INSTALL,
 					    error);
-		g_error_free (error);
 		return;
 	}
 
@@ -1093,7 +1081,7 @@ gs_shell_details_app_removed_cb (GObject *source,
 				 GAsyncResult *res,
 				 gpointer user_data)
 {
-	GError *error = NULL;
+	_cleanup_error_free_ GError *error = NULL;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetailsHelper *helper = (GsShellDetailsHelper *) user_data;
 	gboolean ret;
@@ -1109,7 +1097,6 @@ gs_shell_details_app_removed_cb (GObject *source,
 					    gs_shell_get_window (helper->shell_details->priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_REMOVE,
 					    error);
-		g_error_free (error);
 		return;
 	}
 
@@ -1127,9 +1114,9 @@ gs_shell_details_app_remove (GsShellDetails *shell_details, GsApp *app)
 {
 	GsShellDetailsHelper *helper;
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	GString *markup;
 	GtkResponseType response;
 	GtkWidget *dialog;
+	_cleanup_string_free_ GString *markup = NULL;
 
 	markup = g_string_new ("");
 	g_string_append_printf (markup,
@@ -1220,7 +1207,8 @@ static void
 gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	GList *addons, *l;
+	GList *l;
+	_cleanup_list_free_ GList *addons = NULL;
 
 	/* Mark ticked addons to be installed together with the app */
 	addons = gtk_container_get_children (GTK_CONTAINER (priv->list_box_addons));
@@ -1232,7 +1220,6 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell
 				gs_app_set_to_be_installed (addon, TRUE);
 		}
 	}
-	g_list_free (addons);
 
 	gs_shell_details_app_install (shell_details, priv->app);
 }
@@ -1242,8 +1229,8 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell
  **/
 static void
 gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
-                                    GParamSpec *pspec,
-                                    GsShellDetails *shell_details)
+				    GParamSpec *pspec,
+				    GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
 	GsApp *addon;
@@ -1272,11 +1259,11 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 static void
 gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
 {
-	GAppInfo *appinfo;
-	GAppLaunchContext *context;
-	GError *error = NULL;
 	GdkDisplay *display;
 	const gchar *desktop_id;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_object_unref_ GAppInfo *appinfo = NULL;
+	_cleanup_object_unref_ GAppLaunchContext *context = NULL;
 
 	desktop_id = gs_app_get_id (shell_details->priv->app);
 	display = gdk_display_get_default ();
@@ -1286,13 +1273,8 @@ gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *shell_
 		return;
 	}
 	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
-	if (!g_app_info_launch (appinfo, NULL, context, &error)) {
+	if (!g_app_info_launch (appinfo, NULL, context, &error))
 		g_warning ("launching %s failed: %s", desktop_id, error->message);
-		g_error_free (error);
-	}
-
-	g_object_unref (appinfo);
-	g_object_unref (context);
 }
 
 /**
@@ -1317,20 +1299,14 @@ gs_shell_details_app_set_ratings_cb (GObject *source,
 				GAsyncResult *res,
 				gpointer user_data)
 {
-	GError *error = NULL;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	gboolean ret;
+	_cleanup_error_free_ GError *error = NULL;
 
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-						  res,
-						  &error);
-	if (!ret) {
+	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to set rating %s: %s",
-			   gs_app_get_id (priv->app),
-			   error->message);
-		g_error_free (error);
+			   gs_app_get_id (priv->app), error->message);
 	}
 }
 
@@ -1411,8 +1387,8 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	g_signal_connect (priv->history_dialog, "delete-event",
 			  G_CALLBACK (gtk_widget_hide_on_delete), shell_details);
 
-        adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_details));
-        gtk_container_set_focus_vadjustment (GTK_CONTAINER (priv->box_details), adj);
+	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_details));
+	gtk_container_set_focus_vadjustment (GTK_CONTAINER (priv->box_details), adj);
 }
 
 /**
@@ -1490,11 +1466,11 @@ gs_shell_details_init (GsShellDetails *shell_details)
 	}
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_addons),
-	                              list_header_func,
-	                              shell_details, NULL);
+				      list_header_func,
+				      shell_details, NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_addons),
-	                            list_sort_func,
-	                            shell_details, NULL);
+				    list_sort_func,
+				    shell_details, NULL);
 }
 
 /**

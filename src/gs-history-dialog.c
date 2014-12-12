@@ -57,7 +57,6 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 {
 	GsHistoryDialogPrivate *priv = gs_history_dialog_get_instance_private (dialog);
 	const gchar *tmp;
-	gchar *date_str;
 	GDateTime *datetime;
 	GPtrArray *history;
 	GtkBox *box;
@@ -70,6 +69,7 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 	history = gs_app_get_history (app);
 	g_ptr_array_sort (history, history_sort_cb);
 	for (i = 0; i < history->len; i++) {
+		_cleanup_free_ gchar *date_str = NULL;
 		app = g_ptr_array_index (history, i);
 		box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 
@@ -101,12 +101,12 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 		}
 		widget = gtk_label_new (tmp);
 		g_object_set (widget,
-		              "margin-start", 20,
-		              "margin-end", 20,
-		              "margin-top", 6,
-		              "margin-bottom", 6,
-		              "xalign", 0.0,
-		              NULL);
+			      "margin-start", 20,
+			      "margin-end", 20,
+			      "margin-top", 6,
+			      "margin-bottom", 6,
+			      "xalign", 0.0,
+			      NULL);
 		gtk_size_group_add_widget (priv->sizegroup_state, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
 
@@ -120,26 +120,25 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 		}
 		widget = gtk_label_new (date_str);
 		g_object_set (widget,
-		              "margin-start", 20,
-		              "margin-end", 20,
-		              "margin-top", 6,
-		              "margin-bottom", 6,
-		              "xalign", 0.0,
-		              NULL);
+			      "margin-start", 20,
+			      "margin-end", 20,
+			      "margin-top", 6,
+			      "margin-bottom", 6,
+			      "xalign", 0.0,
+			      NULL);
 		gtk_size_group_add_widget (priv->sizegroup_timestamp, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
-		g_free (date_str);
 		g_date_time_unref (datetime);
 
 		/* add the version */
 		widget = gtk_label_new (gs_app_get_version (app));
 		g_object_set (widget,
-		              "margin-start", 20,
-		              "margin-end", 20,
-		              "margin-top", 6,
-		              "margin-bottom", 6,
-		              "xalign", 1.0,
-		              NULL);
+			      "margin-start", 20,
+			      "margin-end", 20,
+			      "margin-top", 6,
+			      "margin-bottom", 6,
+			      "xalign", 1.0,
+			      NULL);
 		gtk_size_group_add_widget (priv->sizegroup_version, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
 
@@ -150,8 +149,8 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 
 static void
 update_header_func (GtkListBoxRow *row,
-                    GtkListBoxRow *before,
-                    gpointer user_data)
+		    GtkListBoxRow *before,
+		    gpointer user_data)
 {
 	GtkWidget *header;
 
@@ -215,9 +214,9 @@ gs_history_dialog_init (GsHistoryDialog *dialog)
 	priv->sizegroup_version = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box),
-	                              update_header_func,
-	                              dialog,
-	                              NULL);
+				      update_header_func,
+				      dialog,
+				      NULL);
 
 	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (priv->scrolledwindow));
 	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow);
@@ -242,8 +241,8 @@ GtkWidget *
 gs_history_dialog_new (void)
 {
 	return GTK_WIDGET (g_object_new (GS_TYPE_HISTORY_DIALOG,
-	                                 "use-header-bar", TRUE,
-	                                 NULL));
+					 "use-header-bar", TRUE,
+					 NULL));
 }
 
 /* vim: set noexpandtab: */

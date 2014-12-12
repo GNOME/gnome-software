@@ -25,6 +25,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gs-cleanup.h"
 #include "gs-utils.h"
 #include "gs-shell.h"
 #include "gs-shell-details.h"
@@ -271,9 +272,8 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 
 	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category, FALSE);
 
-	if (entry->focus) {
+	if (entry->focus != NULL)
 		gtk_widget_grab_focus (entry->focus);
-	}
 
 	free_back_entry (entry);
 }
@@ -370,7 +370,8 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 	gboolean preedit_changed;
 	guint preedit_change_id;
 	gboolean res;
-	gchar *old_text, *new_text;
+	_cleanup_free_ gchar *old_text = NULL;
+	_cleanup_free_ gchar *new_text = NULL;
 
 	if (gs_shell_get_mode (shell) != GS_SHELL_MODE_OVERVIEW &&
 	    gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
@@ -398,9 +399,6 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 	if ((res && g_strcmp0 (new_text, old_text) != 0) ||
 	    preedit_changed)
 		handled = GDK_EVENT_STOP;
-
-	g_free (old_text);
-	g_free (new_text);
 
 	/* We set "editable" so the text in the  entry won't get selected on focus */
 	g_object_set (entry, "editable", FALSE, NULL);
@@ -533,7 +531,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 					   GS_DATA G_DIR_SEPARATOR_S "icons");
 
 	g_signal_connect (priv->main_window, "delete-event",
-	                  G_CALLBACK (main_window_closed_cb), shell);
+			  G_CALLBACK (main_window_closed_cb), shell);
 
 	/* fix up the header bar */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
@@ -660,13 +658,13 @@ gs_shell_get_mode_string (GsShell *shell)
 
 static void
 gs_shell_get_installed_updates_cb (GsPluginLoader *plugin_loader,
-                                   GAsyncResult *res,
-                                   GsShell *shell)
+				   GAsyncResult *res,
+				   GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
-	GError *error = NULL;
 	GList *list;
 	GtkWidget *dialog;
+	_cleanup_error_free_ GError *error = NULL;
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
@@ -676,13 +674,12 @@ gs_shell_get_installed_updates_cb (GsPluginLoader *plugin_loader,
 				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
 			g_debug ("no updates to show");
 		} else if (g_error_matches (error,
-		                            G_IO_ERROR,
-		                            G_IO_ERROR_CANCELLED)) {
+					    G_IO_ERROR,
+					    G_IO_ERROR_CANCELLED)) {
 			g_debug ("get updates cancelled");
 		} else {
 			g_warning ("failed to get updates: %s", error->message);
 		}
-		g_error_free (error);
 		goto out;
 	}
 
@@ -704,15 +701,15 @@ gs_shell_show_installed_updates (GsShell *shell)
 	guint64 refine_flags;
 
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
-	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-	               GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+		       GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
 
 	gs_plugin_loader_get_updates_async (priv->plugin_loader,
-	                                    refine_flags,
-	                                    priv->cancellable,
-	                                    (GAsyncReadyCallback) gs_shell_get_installed_updates_cb,
-	                                    shell);
+					    refine_flags,
+					    priv->cancellable,
+					    (GAsyncReadyCallback) gs_shell_get_installed_updates_cb,
+					    shell);
 }
 
 void
@@ -771,7 +768,7 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 
 	/* ignore next "search-changed" signal to avoid getting a callback
-         * after 150 ms and messing up the state */
+	 * after 150 ms and messing up the state */
 	priv->ignore_next_search_changed_signal = TRUE;
 	gtk_entry_set_text (GTK_ENTRY (widget), search);
 
@@ -782,11 +779,9 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 void
 gs_shell_show_details (GsShell *shell, const gchar *id)
 {
-	GsApp *app;
-
+	_cleanup_object_unref_ GsApp *app = NULL;
 	app = gs_app_new (id);
 	gs_shell_show_app (shell, app);
-	g_object_unref (app);
 }
 
 /**

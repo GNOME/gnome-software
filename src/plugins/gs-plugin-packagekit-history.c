@@ -82,9 +82,9 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 {
 	const gchar *version;
 	gboolean ret;
-	GsApp *history;
 	guint64 timestamp;
 	PkInfoEnum info_enum;
+	_cleanup_object_unref_ GsApp *history = NULL;
 
 	/* create new history item with same ID as parent */
 	history = gs_app_new (gs_app_get_id (app));
@@ -105,15 +105,9 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 		gs_app_set_state (history, AS_APP_STATE_UPDATABLE);
 		break;
 	default:
-		ret = FALSE;
-		break;
-	}
-
-	/* we have nothing useful to show for this item */
-	if (!ret) {
 		g_debug ("ignoring history kind: %s",
 			 pk_info_enum_to_string (info_enum));
-		goto out;
+		return;
 	}
 
 	/* set the history time and date */
@@ -131,8 +125,6 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 
 	/* use the last event as approximation of the package timestamp */
 	gs_app_set_install_date (app, timestamp);
-out:
-	g_object_unref (history);
 }
 
 /**
@@ -141,13 +133,10 @@ out:
 static gboolean
 gs_plugin_load (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	gboolean ret = TRUE;
 	plugin->priv->connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
 						   cancellable,
 						   error);
-	if (plugin->priv->connection == NULL)
-		ret = FALSE;
-	return ret;
+	return plugin->priv->connection != NULL;
 }
 
 static gboolean
@@ -156,24 +145,23 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	const gchar **package_names = NULL;
-	gboolean ret = TRUE;
+	gboolean ret;
 	GError *error_local = NULL;
 	GList *l;
 	GsApp *app;
-	GsApp *app_dummy;
 	guint i = 0;
 	GVariantIter iter;
-	GVariant *result = NULL;
-	GVariant *tuple = NULL;
 	GVariant *value;
+	_cleanup_free_ const gchar **package_names = NULL;
+	_cleanup_variant_unref_ GVariant *result = NULL;
+	_cleanup_variant_unref_ GVariant *tuple = NULL;
 
 	/* already loaded */
 	if (g_once_init_enter (&plugin->priv->loaded)) {
 		ret = gs_plugin_load (plugin, cancellable, error);
 		g_once_init_leave (&plugin->priv->loaded, TRUE);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 
 	/* get an array of package names */
@@ -219,11 +207,9 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 				app = GS_APP (l->data);
 				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			}
-		} else {
-			ret = FALSE;
-			g_propagate_error (error, error_local);
 		}
-		goto out;
+		g_propagate_error (error, error_local);
+		return FALSE;
 	}
 
 	/* get any results */
@@ -238,13 +224,13 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			/* make up a fake entry as we know this package was at
 			 * least installed at some point in time */
 			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+				_cleanup_object_unref_ GsApp *app_dummy = NULL;
 				app_dummy = gs_app_new (gs_app_get_id (app));
 				gs_app_set_install_date (app_dummy, GS_APP_INSTALL_DATE_UNKNOWN);
 				gs_app_set_kind (app_dummy, GS_APP_KIND_PACKAGE);
 				gs_app_set_state (app_dummy, AS_APP_STATE_INSTALLED);
 				gs_app_set_version (app_dummy, gs_app_get_version (app));
 				gs_app_add_history (app, app_dummy);
-				g_object_unref (app_dummy);
 			}
 			gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			continue;
@@ -257,16 +243,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			g_variant_unref (value);
 		}
 	}
-
-	/* success */
-	ret = TRUE;
-out:
-	g_free (package_names);
-	if (tuple != NULL)
-		g_variant_unref (tuple);
-	if (result != NULL)
-		g_variant_unref (result);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -279,14 +256,14 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	gboolean ret = TRUE;
+	gboolean ret;
 	GList *l;
-	GList *packages = NULL;
 	GsApp *app;
 	GPtrArray *sources;
+	_cleanup_list_free_ GList *packages = NULL;
 
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) == 0)
-		goto out;
+		return TRUE;
 
 	/* add any missing history data */
 	for (l = *list; l != NULL; l = l->next) {
@@ -304,9 +281,7 @@ gs_plugin_refine (GsPlugin *plugin,
 						   cancellable,
 						   error);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
-out:
-	g_list_free (packages);
-	return ret;
+	return TRUE;
 }

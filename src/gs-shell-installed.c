@@ -26,6 +26,7 @@
 #include <glib/gi18n.h>
 #include <appstream-glib.h>
 
+#include "gs-cleanup.h"
 #include "gs-shell.h"
 #include "gs-shell-installed.h"
 #include "gs-app.h"
@@ -75,8 +76,8 @@ gs_shell_installed_invalidate (GsShellInstalled *shell_installed)
 
 static void
 gs_shell_installed_app_row_activated_cb (GtkListBox *list_box,
-                                         GtkListBoxRow *row,
-                                         GsShellInstalled *shell_installed)
+					 GtkListBoxRow *row,
+					 GsShellInstalled *shell_installed)
 {
 	if (shell_installed->priv->selection_mode) {
 		gboolean selected;
@@ -111,12 +112,12 @@ gs_shell_installed_app_removed_cb (GObject *source,
 				   GAsyncResult *res,
 				   gpointer user_data)
 {
-	GError *error = NULL;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellInstalledHelper *helper = (GsShellInstalledHelper *) user_data;
 	GsShellInstalledPrivate *priv = helper->shell_installed->priv;
 	GsApp *app;
 	gboolean ret;
+	_cleanup_error_free_ GError *error = NULL;
 
 	ret = gs_plugin_loader_app_action_finish (plugin_loader,
 						  res,
@@ -124,20 +125,18 @@ gs_shell_installed_app_removed_cb (GObject *source,
 	if (!ret) {
 		app = gs_app_row_get_app (helper->app_row);
 		g_warning ("failed to remove %s: %s",
-			   gs_app_get_id (app),
-			   error->message);
+			   gs_app_get_id (app), error->message);
 		gs_app_notify_failed_modal (app,
 					    gs_shell_get_window (priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_REMOVE,
 					    error);
-		g_error_free (error);
 	} else {
 		/* remove from the list */
 		app = gs_app_row_get_app (helper->app_row);
 		g_debug ("removed %s", gs_app_get_id (app));
 		gs_app_row_unreveal (helper->app_row);
 		g_signal_connect (helper->app_row, "unrevealed",
-		                  G_CALLBACK (row_unrevealed), NULL);
+				  G_CALLBACK (row_unrevealed), NULL);
 	}
 
 	g_object_unref (helper->app_row);
@@ -154,10 +153,10 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 {
 	GsApp *app;
 	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GString *markup;
 	GtkResponseType response;
 	GtkWidget *dialog;
 	GsShellInstalledHelper *helper;
+	_cleanup_string_free_ GString *markup = NULL;
 
 	markup = g_string_new ("");
 	app = gs_app_row_get_app (app_row);
@@ -196,7 +195,6 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 						   gs_shell_installed_app_removed_cb,
 						   helper);
 	}
-	g_string_free (markup, TRUE);
 	gtk_widget_destroy (dialog);
 }
 
@@ -242,11 +240,11 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 	gs_app_row_set_app (GS_APP_ROW (app_row), app);
 	gtk_container_add (GTK_CONTAINER (priv->list_box_install), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-	                            priv->sizegroup_image,
-	                            priv->sizegroup_name);
+				    priv->sizegroup_image,
+				    priv->sizegroup_name);
 
 	gs_app_row_set_selectable (GS_APP_ROW (app_row),
-	                           priv->selection_mode);
+				   priv->selection_mode);
 
 	gtk_widget_show (app_row);
 }
@@ -259,13 +257,13 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 				     GAsyncResult *res,
 				     gpointer user_data)
 {
-	GError *error = NULL;
 	GList *l;
 	GList *list;
 	GsApp *app;
 	GsShellInstalled *shell_installed = GS_SHELL_INSTALLED (user_data);
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	_cleanup_error_free_ GError *error = NULL;
 
 	gs_stop_spinner (GTK_SPINNER (priv->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_install), "view");
@@ -279,7 +277,6 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	if (list == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get installed apps: %s", error->message);
-		g_error_free (error);
 		goto out;
 	}
 	for (l = list; l != NULL; l = l->next) {
@@ -388,7 +385,7 @@ static gchar *
 gs_shell_installed_get_app_sort_key (GsApp *app)
 {
 	GString *key;
-	gchar *casefolded_name;
+	_cleanup_free_ gchar *casefolded_name = NULL;
 
 	key = g_string_sized_new (64);
 
@@ -433,7 +430,6 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 	/* finally, sort by short name */
 	casefolded_name = g_utf8_casefold (gs_app_get_name (app), -1);
 	g_string_append (key, casefolded_name);
-	g_free (casefolded_name);
 
 	return g_string_free (key, FALSE);
 }
@@ -447,14 +443,13 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 			      gpointer user_data)
 {
 	GsApp *a1, *a2;
-	gchar *key1 = NULL;
-	gchar *key2 = NULL;
-	gint retval = 0;
+	_cleanup_free_ gchar *key1 = NULL;
+	_cleanup_free_ gchar *key2 = NULL;
 
 	/* check valid */
 	if (!GTK_IS_BIN(a) || !GTK_IS_BIN(b)) {
 		g_warning ("GtkListBoxRow not valid");
-		goto out;
+		return 0;
 	}
 
 	a1 = gs_app_row_get_app (GS_APP_ROW (a));
@@ -463,11 +458,7 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 	key2 = gs_shell_installed_get_app_sort_key (a2);
 
 	/* compare the keys according to the algorithm above */
-	retval = g_strcmp0 (key1, key2);
-out:
-	g_free (key1);
-	g_free (key2);
-	return retval;
+	return g_strcmp0 (key1, key2);
 }
 
 /**
@@ -516,12 +507,12 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 		 * applications and the system ones */
 		header = gtk_label_new (_("System Applications"));
 		g_object_set (header,
-		              "xalign", 0.0,
-		              NULL);
+			      "xalign", 0.0,
+			      NULL);
 		context = gtk_widget_get_style_context (header);
 		gtk_style_context_add_class (context, "header-label");
 	} else if (!gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (before))) &&
-	           gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (row)))) {
+		   gs_shell_installed_is_addon_id_kind (gs_app_row_get_app (GS_APP_ROW (row)))) {
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the addons */
 		header = gtk_label_new (_("Add-ons"));
@@ -538,11 +529,12 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 
 static gboolean
 gs_shell_installed_has_app (GsShellInstalled *shell_installed,
-                            GsApp *app)
+			    GsApp *app)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GList *children, *l;
+	GList *l;
 	gboolean ret = FALSE;
+	_cleanup_list_free_ GList *children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
 	for (l = children; l; l = l->next) {
@@ -552,8 +544,6 @@ gs_shell_installed_has_app (GsShellInstalled *shell_installed,
 			break;
 		}
 	}
-	g_list_free (children);
-
 	return ret;
 }
 
@@ -564,11 +554,10 @@ static void
 gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 					    GsShellInstalled *shell_installed)
 {
-	GPtrArray *pending;
 	GsApp *app;
 	GtkWidget *widget;
-	gchar *label;
 	guint i;
+	_cleanup_ptrarray_unref_ GPtrArray *pending = NULL;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (shell_installed->priv->builder,
 						     "button_installed_counter"));
@@ -576,10 +565,10 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	if (pending->len == 0) {
 		gtk_widget_hide (widget);
 	} else {
+		_cleanup_free_ gchar *label = NULL;
 		gtk_widget_show (widget);
 		label = g_strdup_printf ("%d", pending->len);
 		gtk_label_set_label (GTK_LABEL (widget), label);
-		g_free (label);
 	}
 	for (i = 0; i < pending->len; i++) {
 		app = GS_APP (g_ptr_array_index (pending, i));
@@ -587,18 +576,17 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 		if (gs_shell_installed_has_app (shell_installed, app) == FALSE)
 			gs_shell_installed_add_app (shell_installed, app);
 	}
-
-	g_ptr_array_unref (pending);
 }
 
 static void
 set_selection_mode (GsShellInstalled *shell_installed, gboolean selection_mode)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GList *children, *l;
+	GList *l;
 	GtkWidget *header;
 	GtkWidget *widget;
 	GtkStyleContext *context;
+	_cleanup_list_free_ GList *children = NULL;
 	
 	if (priv->selection_mode == selection_mode)
 		return;
@@ -642,9 +630,8 @@ set_selection_mode (GsShellInstalled *shell_installed, gboolean selection_mode)
 	for (l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		gs_app_row_set_selectable (app_row,
-		                           priv->selection_mode);
+					   priv->selection_mode);
 	}
-	g_list_free (children);
 
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->bottom_install), priv->selection_mode);
 }
@@ -661,7 +648,8 @@ static GList *
 get_selected_apps (GsShellInstalled *shell_installed)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GList *children, *l, *list;
+	GList *l, *list;
+	_cleanup_list_free_ GList *children = NULL;
 
 	list = NULL;
 	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
@@ -671,8 +659,6 @@ get_selected_apps (GsShellInstalled *shell_installed)
 			list = g_list_prepend (list, gs_app_row_get_app (app_row));
 		}
 	}
-	g_list_free (children);
-
 	return list;
 }
 
@@ -680,10 +666,11 @@ static void
 selection_changed (GsShellInstalled *shell_installed)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GsFolders *folders;
-	GList *apps, *l;
+	GList *l;
 	GsApp *app;
 	gboolean has_folders, has_nonfolders;
+	_cleanup_list_free_ GList *apps = NULL;
+	_cleanup_object_unref_ GsFolders *folders = NULL;
 
 	folders = gs_folders_get ();
 	has_folders = has_nonfolders = FALSE;
@@ -698,8 +685,6 @@ selection_changed (GsShellInstalled *shell_installed)
 			has_nonfolders = TRUE;
 		}
 	}
-	g_list_free (apps);
-	g_object_unref (folders);
 
 	gtk_widget_set_visible (priv->button_folder_add, has_nonfolders);
 	gtk_widget_set_visible (priv->button_folder_move, has_folders && !has_nonfolders);
@@ -718,12 +703,11 @@ show_folder_dialog (GtkButton *button, GsShellInstalled *shell_installed)
 {
 	GtkWidget *toplevel;
 	GtkWidget *dialog;
-	GList *apps;
+	_cleanup_list_free_ GList *apps = NULL;
 
 	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (button));
 	apps = get_selected_apps (shell_installed);
 	dialog = gs_app_folder_dialog_new (GTK_WINDOW (toplevel), apps);
-	g_list_free (apps);
 	gtk_window_present (GTK_WINDOW (dialog));
 	g_signal_connect_swapped (dialog, "delete-event",
 				  G_CALLBACK (folder_dialog_done), shell_installed);
@@ -732,9 +716,10 @@ show_folder_dialog (GtkButton *button, GsShellInstalled *shell_installed)
 static void
 remove_folders (GtkButton *button, GsShellInstalled *shell_installed)
 {
-	GList *apps, *l;
-	GsFolders *folders;
+	GList *l;
 	GsApp *app;
+	_cleanup_list_free_ GList *apps = NULL;
+	_cleanup_object_unref_ GsFolders *folders = NULL;
 
 	folders = gs_folders_get ();
 	apps = get_selected_apps (shell_installed);
@@ -745,10 +730,8 @@ remove_folders (GtkButton *button, GsShellInstalled *shell_installed)
 					   gs_app_get_categories (app),
 					   NULL);
 	}
-	g_list_free (apps);
 
 	gs_folders_save (folders);
-	g_object_unref (folders);
 
 	set_selection_mode (shell_installed, FALSE);
 }
@@ -757,28 +740,28 @@ static void
 select_all_cb (GtkMenuItem *item, GsShellInstalled *shell_installed)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GList *children, *l;
+	GList *l;
+	_cleanup_list_free_ GList *children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
 	for (l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		gs_app_row_set_selected (app_row, TRUE);
 	}
-	g_list_free (children);
 }
 
 static void
 select_none_cb (GtkMenuItem *item, GsShellInstalled *shell_installed)
 {
 	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GList *children, *l;
+	GList *l;
+	_cleanup_list_free_ GList *children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
 	for (l = children; l; l = l->next) {
 		GsAppRow *app_row = GS_APP_ROW (l->data);
 		gs_app_row_set_selected (app_row, FALSE);
 	}
-	g_list_free (children);
 }
 
 /**

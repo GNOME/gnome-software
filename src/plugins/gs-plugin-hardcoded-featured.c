@@ -41,28 +41,21 @@ gs_plugin_add_featured_app (GList **list,
 			    const gchar *id,
 			    GError **error)
 {
-	GsApp *app = NULL;
-	gboolean ret = TRUE;
-	gchar *background = NULL;
-	gchar *stroke_color = NULL;
-	gchar *text_color = NULL;
-	gchar *text_shadow = NULL;
+	_cleanup_free_ gchar *background = NULL;
+	_cleanup_free_ gchar *stroke_color = NULL;
+	_cleanup_free_ gchar *text_color = NULL;
+	_cleanup_free_ gchar *text_shadow = NULL;
+	_cleanup_object_unref_ GsApp *app = NULL;
 
 	background = g_key_file_get_string (kf, id, "background", error);
-	if (background == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (background == NULL)
+		return FALSE;
 	stroke_color = g_key_file_get_string (kf, id, "stroke", error);
-	if (stroke_color == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (stroke_color == NULL)
+		return FALSE;
 	text_color = g_key_file_get_string (kf, id, "text", error);
-	if (text_color == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (text_color == NULL)
+		return FALSE;
 
 	/* optional */
 	text_shadow = g_key_file_get_string (kf, id, "text-shadow", NULL);
@@ -76,14 +69,7 @@ gs_plugin_add_featured_app (GList **list,
 	if (text_shadow != NULL)
 		gs_app_set_metadata (app, "Featured::text-shadow", text_shadow);
 	gs_plugin_add_app (list, app);
-out:
-	if (app != NULL)
-		g_object_unref (app);
-	g_free (background);
-	g_free (stroke_color);
-	g_free (text_color);
-	g_free (text_shadow);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -95,27 +81,19 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-	GKeyFile *kf;
-	gboolean ret = TRUE;
-	gchar **apps = NULL;
-	gchar *path;
 	guint i;
+	_cleanup_free_ gchar *path = NULL;
+	_cleanup_keyfile_unref_ GKeyFile *kf = NULL;
+	_cleanup_strv_free_ gchar **apps = NULL;
 
 	path = g_build_filename (DATADIR, "gnome-software", "featured.ini", NULL);
 	kf = g_key_file_new ();
-	ret = g_key_file_load_from_file (kf, path, 0, error);
-	if (!ret)
-		goto out;
+	if (!g_key_file_load_from_file (kf, path, 0, error))
+		return FALSE;
 	apps = g_key_file_get_groups (kf, NULL);
 	for (i = 0; apps[i]; i++) {
-		ret = gs_plugin_add_featured_app (list, kf, apps[i], error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_add_featured_app (list, kf, apps[i], error))
+			return FALSE;
 	}
-out:
-	if (kf != NULL)
-		g_key_file_unref (kf);
-	g_free (path);
-	g_strfreev (apps);
-	return ret;
+	return TRUE;
 }

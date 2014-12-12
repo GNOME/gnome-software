@@ -24,6 +24,7 @@
 #include <glib/gi18n.h>
 #include <packagekit-glib2/packagekit.h>
 
+#include "gs-cleanup.h"
 #include "gs-shell.h"
 #include "gs-shell-updates.h"
 #include "gs-utils.h"
@@ -105,9 +106,9 @@ time_next_midnight (void)
 
 	now = g_date_time_new_now_local ();
 	since_midnight = g_date_time_get_hour (now) * G_TIME_SPAN_HOUR +
-	                 g_date_time_get_minute (now) * G_TIME_SPAN_MINUTE +
-	                 g_date_time_get_second (now) * G_TIME_SPAN_SECOND +
-	                 g_date_time_get_microsecond (now);
+			 g_date_time_get_minute (now) * G_TIME_SPAN_MINUTE +
+			 g_date_time_get_second (now) * G_TIME_SPAN_SECOND +
+			 g_date_time_get_microsecond (now);
 	next_midnight = g_date_time_add (now, G_TIME_SPAN_DAY - since_midnight);
 	g_date_time_unref (now);
 
@@ -205,11 +206,12 @@ gs_shell_updates_get_state_string (GsPluginStatus status)
 static void
 gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 {
-	gchar *tmp;
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
 	PkNetworkEnum network_state;
 	gboolean is_free_connection;
+	_cleanup_free_ gchar *checked_str = NULL;
+	_cleanup_free_ gchar *spinner_str = NULL;
 
 	if (gs_shell_get_mode (shell_updates->priv->shell) != GS_SHELL_MODE_UPDATES)
 		return;
@@ -248,19 +250,17 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	/* spinner text */
 	switch (priv->state) {
 	case GS_SHELL_UPDATES_STATE_STARTUP:
-		tmp = g_strdup_printf ("%s\n%s",
+		spinner_str = g_strdup_printf ("%s\n%s",
 				       /* TRANSLATORS: the updates panel is starting up */
 				       _("Setting up updates…"),
 				       _("(This could take a while)"));
-		gtk_label_set_label (GTK_LABEL (priv->label_updates_spinner), tmp);
-		g_free (tmp);
+		gtk_label_set_label (GTK_LABEL (priv->label_updates_spinner), spinner_str);
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
-		tmp = g_strdup_printf ("%s\n%s",
+		spinner_str = g_strdup_printf ("%s\n%s",
 				       gs_shell_updates_get_state_string (priv->last_status),
 				       /* TRANSLATORS: the updates panel is starting up */
 				       _("(This could take a while)"));
-		gtk_label_set_label (GTK_LABEL (priv->label_updates_spinner), tmp);
-		g_free (tmp);
+		gtk_label_set_label (GTK_LABEL (priv->label_updates_spinner), spinner_str);
 		break;
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
 		/* TRANSLATORS: this is when the updates panel is starting up */
@@ -393,18 +393,16 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 
 	/* last checked label */
 	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (priv->stack_updates)), "uptodate") == 0) {
-		tmp = gs_shell_updates_last_checked_time_string (shell_updates);
-		if (tmp != NULL) {
-			gchar *last_checked;
+		checked_str = gs_shell_updates_last_checked_time_string (shell_updates);
+		if (checked_str != NULL) {
+			_cleanup_free_ gchar *last_checked = NULL;
 
 			/* TRANSLATORS: This is the time when we last checked for updates */
-			last_checked = g_strdup_printf (_("Last checked: %s"), tmp);
+			last_checked = g_strdup_printf (_("Last checked: %s"), checked_str);
 			gtk_label_set_label (GTK_LABEL (priv->label_updates_last_checked),
-			                     last_checked);
-			g_free (last_checked);
+					     last_checked);
 		}
-		gtk_widget_set_visible (priv->label_updates_last_checked, tmp != NULL);
-		g_free (tmp);
+		gtk_widget_set_visible (priv->label_updates_last_checked, checked_str != NULL);
 	}
 }
 
@@ -438,11 +436,11 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 				 GAsyncResult *res,
 				 GsShellUpdates *shell_updates)
 {
-	GError *error = NULL;
 	GList *l;
 	GList *list;
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *widget;
+	_cleanup_error_free_ GError *error = NULL;
 
 	priv->cache_valid = TRUE;
 
@@ -450,22 +448,21 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 	for (l = list; l != NULL; l = l->next) {
 		gs_update_list_add_app (GS_UPDATE_LIST (priv->list_box_updates),
-		                        GS_APP (l->data));
+					GS_APP (l->data));
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates_counter"));
 	if (list != NULL) {
-		gchar *text;
+		_cleanup_free_ gchar *text = NULL;
 		text = g_strdup_printf ("%d", g_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
-		g_free (text);
 		gtk_widget_show (widget);
 	} else {
 		gtk_widget_hide (widget);
 	}
 
 	if (list != NULL &&
-            gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES)
+	    gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_UPDATES)
 		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "needs-attention");
 	else
 		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
@@ -481,11 +478,10 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 			if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 				g_warning ("failed to get updates: %s", error->message);
 			gtk_label_set_label (GTK_LABEL (priv->label_updates_failed),
-			                     error->message);
+					     error->message);
 			gs_shell_updates_set_state (shell_updates,
 						    GS_SHELL_UPDATES_STATE_FAILED);
 		}
-		g_error_free (error);
 	} else {
 		gs_shell_updates_set_state (shell_updates,
 					    GS_SHELL_UPDATES_STATE_HAS_UPDATES);
@@ -607,10 +603,10 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 			     GAsyncResult *res,
 			     GsShellUpdates *shell_updates)
 {
-	GError *error = NULL;
 	gboolean ret;
 	GDateTime *now;
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
+	_cleanup_error_free_ GError *error = NULL;
 
 	/* get the results */
 	ret = gs_plugin_loader_refresh_finish (plugin_loader, res, &error);
@@ -636,17 +632,16 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 		}
 		g_warning ("failed to refresh: %s", error->message);
 		gtk_label_set_label (GTK_LABEL (priv->label_updates_failed),
-		                     error->message);
+				     error->message);
 		gs_shell_updates_set_state (shell_updates,
 					    GS_SHELL_UPDATES_STATE_FAILED);
-		g_error_free (error);
 		return;
 	}
 
 	/* update the last checked timestamp */
 	now = g_date_time_new_now_local ();
 	g_settings_set (priv->settings, "check-timestamp", "x",
-	                g_date_time_to_unix (now));
+			g_date_time_to_unix (now));
 	g_date_time_unref (now);
 
 	/* get the new list */
@@ -688,14 +683,9 @@ gs_shell_updates_get_new_updates (GsShellUpdates *shell_updates)
 static void
 gs_shell_updates_show_network_settings (GsShellUpdates *shell_updates)
 {
-	gboolean ret;
-	GError *error = NULL;
-
-	ret = g_spawn_command_line_async ("gnome-control-center network", &error);
-	if (!ret) {
+	_cleanup_error_free_ GError *error = NULL;
+	if (!g_spawn_command_line_async ("gnome-control-center network", &error))
 		g_warning ("Failed to open the control center: %s", error->message);
-		g_error_free (error);
-	}
 }
 
 /**
@@ -791,7 +781,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 							  _("Internet access is required to check for updates."));
 		gtk_dialog_add_button (GTK_DIALOG (dialog),
 				       /* TRANSLATORS: this is a link to the
-				        * control-center network panel */
+					* control-center network panel */
 				       _("Network Settings"),
 				       GTK_RESPONSE_REJECT);
 		g_signal_connect (dialog, "response",
@@ -818,7 +808,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 							  _("Checking for updates while using mobile broadband could cause you to incur charges."));
 		gtk_dialog_add_button (GTK_DIALOG (dialog),
 				       /* TRANSLATORS: this is a link to the
-				        * control-center network panel */
+					* control-center network panel */
 				       _("Check Anyway"),
 				       GTK_RESPONSE_ACCEPT);
 		g_signal_connect (dialog, "response",
@@ -844,22 +834,18 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 static void
 gs_offline_updates_cancel (void)
 {
-	GError *error = NULL;
-	if (!pk_offline_cancel (NULL, &error)) {
+	_cleanup_error_free_ GError *error = NULL;
+	if (!pk_offline_cancel (NULL, &error))
 		g_warning ("failed to cancel the offline update: %s", error->message);
-		g_error_free (error);
-		return;
-	}
 }
 
 static void
 gs_shell_updates_button_update_all_cb (GtkButton      *button,
 				       GsShellUpdates *updates)
 {
-	GError *error = NULL;
+	_cleanup_error_free_ GError *error = NULL;
 	if (!pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT, NULL, &error)) {
 		g_warning ("failed to trigger an offline update: %s", error->message);
-		g_error_free (error);
 		return;
 	}
 	gs_reboot (gs_offline_updates_cancel);
@@ -873,17 +859,13 @@ gs_shell_updates_get_properties_cb (GObject *source,
 				    GAsyncResult *res,
 				    gpointer user_data)
 {
-	gboolean ret;
-	GError *error = NULL;
 	GsShellUpdates *shell_updates = GS_SHELL_UPDATES (user_data);
 	PkControl *control = PK_CONTROL (source);
+	_cleanup_error_free_ GError *error = NULL;
 
 	/* get result */
-	ret = pk_control_get_properties_finish (control, res, &error);
-	if (!ret) {
+	if (!pk_control_get_properties_finish (control, res, &error))
 		g_warning ("failed to get properties: %s", error->message);
-		g_error_free (error);
-	}
 	gs_shell_updates_update_ui_state (shell_updates);
 }
 

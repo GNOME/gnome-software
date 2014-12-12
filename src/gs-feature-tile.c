@@ -24,6 +24,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "gs-cleanup.h"
 #include "gs-feature-tile.h"
 
 struct _GsFeatureTilePrivate
@@ -52,41 +53,40 @@ gs_feature_tile_get_app (GsFeatureTile *tile)
 static gboolean
 app_state_changed_idle (gpointer user_data)
 {
-        GsFeatureTile *tile = GS_FEATURE_TILE (user_data);
-        GsFeatureTilePrivate *priv;
-        AtkObject *accessible;
-        gchar *name;
+	GsFeatureTile *tile = GS_FEATURE_TILE (user_data);
+	GsFeatureTilePrivate *priv;
+	AtkObject *accessible;
+	_cleanup_free_ gchar *name = NULL;
 
-        priv = gs_feature_tile_get_instance_private (tile);
-        accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
+	priv = gs_feature_tile_get_instance_private (tile);
+	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
-        switch (gs_app_get_state (priv->app)) {
-        case AS_APP_STATE_INSTALLED:
-        case AS_APP_STATE_INSTALLING:
-        case AS_APP_STATE_REMOVING:
-                name = g_strdup_printf ("%s (%s)",
-                                        gs_app_get_name (priv->app),
-                                        _("Installed"));
-                break;
-        case AS_APP_STATE_UPDATABLE:
-                name = g_strdup_printf ("%s (%s)",
-                                        gs_app_get_name (priv->app),
-                                        _("Updates"));
-                break;
-        case AS_APP_STATE_AVAILABLE:
-        default:
-                name = g_strdup (gs_app_get_name (priv->app));
-                break;
-        }
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_REMOVING:
+		name = g_strdup_printf ("%s (%s)",
+					gs_app_get_name (priv->app),
+					_("Installed"));
+		break;
+	case AS_APP_STATE_UPDATABLE:
+		name = g_strdup_printf ("%s (%s)",
+					gs_app_get_name (priv->app),
+					_("Updates"));
+		break;
+	case AS_APP_STATE_AVAILABLE:
+	default:
+		name = g_strdup (gs_app_get_name (priv->app));
+		break;
+	}
 
-        if (GTK_IS_ACCESSIBLE (accessible)) {
-                atk_object_set_name (accessible, name);
-                atk_object_set_description (accessible, gs_app_get_summary (priv->app));
-        }
-        g_free (name);
+	if (GTK_IS_ACCESSIBLE (accessible)) {
+		atk_object_set_name (accessible, name);
+		atk_object_set_description (accessible, gs_app_get_summary (priv->app));
+	}
 
-        g_object_unref (tile);
-        return G_SOURCE_REMOVE;
+	g_object_unref (tile);
+	return G_SOURCE_REMOVE;
 }
 
 static void
@@ -99,12 +99,11 @@ void
 gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 {
 	GsFeatureTilePrivate *priv;
-	GString *data = NULL;
 	const gchar *background;
 	const gchar *stroke_color;
 	const gchar *text_color;
 	const gchar *text_shadow;
-	gchar *tmp;
+	_cleanup_string_free_ GString *data = NULL;
 
 	g_return_if_fail (GS_IS_FEATURE_TILE (tile));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
@@ -122,9 +121,9 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "content");
 
-        g_signal_connect (priv->app, "notify::state",
-                          G_CALLBACK (app_state_changed), tile);
-        app_state_changed (priv->app, NULL, tile);
+	g_signal_connect (priv->app, "notify::state",
+			  G_CALLBACK (app_state_changed), tile);
+	app_state_changed (priv->app, NULL, tile);
 
 	gtk_label_set_label (GTK_LABEL (priv->title), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (priv->subtitle), gs_app_get_summary (app));
@@ -132,11 +131,11 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	/* check the app has the featured data */
 	text_color = gs_app_get_metadata_item (app, "Featured::text-color");
 	if (text_color == NULL) {
+		_cleanup_free_ gchar *tmp = NULL;
 		tmp = gs_app_to_string (app);
 		g_warning ("%s has no featured data: %s",
 			   gs_app_get_id (app), tmp);
-		g_free (tmp);
-		goto out;
+		return;
 	}
 	background = gs_app_get_metadata_item (app, "Featured::background");
 	stroke_color = gs_app_get_metadata_item (app, "Featured::stroke-color");
@@ -156,15 +155,12 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	g_string_append (data, "}\n");
 	g_string_append (data, ".button.featured-tile:hover {\n");
 	g_string_append (data, "  background: linear-gradient(to bottom,\n");
-	g_string_append (data, "                              alpha(#fff,0.16),\n");
+	g_string_append (data, "			      alpha(#fff,0.16),\n");
 	g_string_append_printf (data,
-				"                              alpha(#aaa,0.16)), %s;\n",
+				"			      alpha(#aaa,0.16)), %s;\n",
 				background);
 	g_string_append (data, "}\n");
 	gtk_css_provider_load_from_data (priv->provider, data->str, -1, NULL);
-out:
-	if (data != NULL)
-		g_string_free (data, TRUE);
 }
 
 static void

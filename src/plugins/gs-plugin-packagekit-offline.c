@@ -44,18 +44,16 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GCancellable *cancellable,
 				  GError **error)
 {
-	gboolean ret = TRUE;
-	gchar **package_ids = NULL;
-	gchar *error_details = NULL;
-	gchar *packages = NULL;
-	gchar **split;
-	GKeyFile *key_file = NULL;
-	GsApp *app;
+	gboolean ret;
 	guint i;
+	_cleanup_strv_free_ gchar **package_ids = NULL;
+	_cleanup_free_ gchar *error_details = NULL;
+	_cleanup_free_ gchar *packages = NULL;
+	_cleanup_keyfile_unref_ GKeyFile *key_file = NULL;
 
 	/* was any offline update attempted */
 	if (!g_file_test (PK_OFFLINE_UPDATE_RESULTS_FILENAME, G_FILE_TEST_EXISTS))
-		goto out;
+		return TRUE;
 
 	/* open the file */
 	key_file = g_key_file_new ();
@@ -64,7 +62,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 					 G_KEY_FILE_NONE,
 					 error);
 	if (!ret)
-		goto out;
+		return FALSE;
 
 	/* only return results if successful */
 	ret = g_key_file_get_boolean (key_file,
@@ -77,12 +75,12 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 						       "ErrorDetails",
 						       error);
 		if (error_details == NULL)
-			goto out;
+			return FALSE;
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_FAILED,
 				     error_details);
-		goto out;
+		return FALSE;
 	}
 
 	/* get list of package-ids */
@@ -91,16 +89,17 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 					  "Packages",
 					  NULL);
 	if (packages == NULL) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "No 'Packages' in %s",
 			     PK_OFFLINE_UPDATE_RESULTS_FILENAME);
-		goto out;
+		return FALSE;
 	}
 	package_ids = g_strsplit (packages, ",", -1);
 	for (i = 0; package_ids[i] != NULL; i++) {
+		_cleanup_object_unref_ GsApp *app = NULL;
+		_cleanup_strv_free_ gchar **split = NULL;
 		app = gs_app_new (NULL);
 		split = g_strsplit (package_ids[i], ";", 4);
 		gs_app_add_source (app, split[0]);
@@ -110,13 +109,6 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 		gs_plugin_add_app (list, app);
-		g_strfreev (split);
 	}
-out:
-	g_free (error_details);
-	g_free (packages);
-	g_strfreev (package_ids);
-	if (key_file != NULL)
-		g_key_file_free (key_file);
-	return ret;
+	return TRUE;
 }

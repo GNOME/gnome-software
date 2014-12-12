@@ -24,10 +24,11 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "gs-cleanup.h"
 #include "gs-folders.h"
 #include "gs-app-folder-dialog.h"
 
-typedef struct _GsAppFolderDialogPrivate        GsAppFolderDialogPrivate;
+typedef struct _GsAppFolderDialogPrivate	GsAppFolderDialogPrivate;
 struct _GsAppFolderDialogPrivate
 {
 	GList		 *apps;
@@ -39,8 +40,8 @@ struct _GsAppFolderDialogPrivate
 	GtkSizeGroup     *rows;
 	GtkSizeGroup     *labels;
 	GtkListBoxRow	 *new_folder_button;
-	GtkWidget        *new_folder_popover;
-	GtkWidget        *new_folder_entry;
+	GtkWidget	*new_folder_popover;
+	GtkWidget	*new_folder_entry;
 	GtkListBoxRow	 *selected_row;
 };
 
@@ -114,8 +115,8 @@ new_folder_cb (GsAppFolderDialog *dialog)
 
 static void
 update_header_func (GtkListBoxRow  *row,
-                    GtkListBoxRow  *before,
-                    gpointer    user_data)
+		    GtkListBoxRow  *before,
+		    gpointer    user_data)
 {
   GtkWidget *current;
 
@@ -162,7 +163,7 @@ gs_app_folder_dialog_class_init (GsAppFolderDialogClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, header);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, cancel_button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, done_button);
-        gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, app_folder_list);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, app_folder_list);
 }
 
 static GtkWidget *
@@ -177,11 +178,11 @@ create_row (GsAppFolderDialog *dialog, const gchar *folder)
 	box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0);
 	label = gtk_label_new (gs_folders_get_folder_name (priv->folders, folder));
 	g_object_set (label,
-                      "margin-start", 20,
-                      "margin-end", 20,
-                      "margin-top", 10,
-                      "margin-bottom", 10,
-                      NULL);
+		      "margin-start", 20,
+		      "margin-end", 20,
+		      "margin-top", 10,
+		      "margin-bottom", 10,
+		      NULL);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 	gtk_widget_set_valign (label, GTK_ALIGN_START);
 	gtk_container_add (GTK_CONTAINER (box), label);
@@ -215,15 +216,14 @@ static void
 populate_list (GsAppFolderDialog *dialog)
 {
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
-	gchar **folders;
 	guint i;
+	_cleanup_free_ gchar **folders = NULL;
 
 	folders = gs_folders_get_nonempty_folders (priv->folders);
 	for (i = 0; folders[i]; i++) {
 		gtk_list_box_insert (GTK_LIST_BOX (priv->app_folder_list), 
-                                     create_row (dialog, folders[i]), -1);
+				     create_row (dialog, folders[i]), -1);
 	}
-	g_free (folders);
 }
 
 static void
@@ -292,8 +292,8 @@ add_folder_add (GtkButton *button, GsAppFolderDialog *dialog)
 				     row,
 				     gtk_list_box_row_get_index (priv->new_folder_button));
 		select_row (GTK_LIST_BOX (priv->app_folder_list),
-                            GTK_LIST_BOX_ROW (row),
-                            dialog);
+			    GTK_LIST_BOX_ROW (row),
+			    dialog);
 	}
 }
 
@@ -309,8 +309,8 @@ static void
 create_folder_name_popover (GsAppFolderDialog *dialog)
 {
 	GsAppFolderDialogPrivate *priv = PRIVATE (dialog);
-	gchar *title;
 	GtkWidget *grid, *label, *button;
+	_cleanup_free_ gchar *title = NULL;
 
 	priv->new_folder_popover = gtk_popover_new (GTK_WIDGET (priv->new_folder_button));
 	gtk_popover_set_position (GTK_POPOVER (priv->new_folder_popover), GTK_POS_TOP);
@@ -324,7 +324,6 @@ create_folder_name_popover (GsAppFolderDialog *dialog)
 
 	title = g_strdup_printf ("<b>%s</b>", _("Folder Name"));
 	label = gtk_label_new (title);
-        g_free (title);
 	gtk_label_set_use_markup (GTK_LABEL (label), TRUE);
 	gtk_widget_set_halign (label, GTK_ALIGN_CENTER);
 	gtk_grid_attach (GTK_GRID (grid), label, 0, 0, 2, 1);
@@ -385,7 +384,7 @@ gs_app_folder_dialog_new (GtkWindow *parent, GList *apps)
 			       "transient-for", parent,
 			       "modal", TRUE,
 			       NULL);
-        set_apps (dialog, apps);
+	set_apps (dialog, apps);
 	populate_list (dialog);
  	add_new_folder_row (dialog);
 

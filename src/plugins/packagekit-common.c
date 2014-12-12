@@ -92,26 +92,23 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 				  GError **error)
 {
 	const gchar *package_id;
-	gboolean ret = TRUE;
-	GHashTable *installed = NULL;
-	GPtrArray *array = NULL;
-	GPtrArray *array_filtered = NULL;
-	GsApp *app;
 	guint i;
-	PkError *error_code = NULL;
 	PkPackage *package;
+	_cleanup_hashtable_unref_ GHashTable *installed = NULL;
+	_cleanup_object_unref_ PkError *error_code = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array_filtered = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
 
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
 	if (error_code != NULL) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "failed to get-packages: %s, %s",
 			     pk_error_enum_to_string (pk_error_get_code (error_code)),
 			     pk_error_get_details (error_code));
-		goto out;
+		return FALSE;
 	}
 
 	/* add all installed packages to a hash */
@@ -142,6 +139,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 
 	/* process packages */
 	for (i = 0; i < array_filtered->len; i++) {
+		_cleanup_object_unref_ GsApp *app = NULL;
 		package = g_ptr_array_index (array_filtered, i);
 
 		app = gs_app_new (NULL);
@@ -169,16 +167,6 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 		}
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 		gs_plugin_add_app (list, app);
-		g_object_unref (app);
 	}
-out:
-	if (installed != NULL)
-		g_hash_table_unref (installed);
-	if (error_code != NULL)
-		g_object_unref (error_code);
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (array_filtered != NULL)
-		g_ptr_array_unref (array_filtered);
-	return ret;
+	return TRUE;
 }

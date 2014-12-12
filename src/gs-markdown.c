@@ -24,6 +24,7 @@
 #include <string.h>
 #include <glib.h>
 
+#include "gs-cleanup.h"
 #include "gs-markdown.h"
 
 /*******************************************************************************
@@ -102,29 +103,26 @@ gs_markdown_to_text_line_is_rule (const gchar *line)
 	guint i;
 	guint len;
 	guint count = 0;
-	gchar *copy = NULL;
-	gboolean ret = FALSE;
+	_cleanup_free_ gchar *copy = NULL;
 
 	len = strlen (line);
 	if (len == 0)
-		goto out;
+		return FALSE;
 
 	/* replace non-rule chars with ~ */
 	copy = g_strdup (line);
 	g_strcanon (copy, "-*_ ", '~');
 	for (i = 0; i < len; i++) {
 		if (copy[i] == '~')
-			goto out;
+			return FALSE;
 		if (copy[i] != ' ')
 			count++;
 	}
 
 	/* if we matched, return true */
 	if (count >= 3)
-		ret = TRUE;
-out:
-	g_free (copy);
-	return ret;
+		return TRUE;
+	return FALSE;
 }
 
 /**
@@ -206,25 +204,20 @@ gs_markdown_to_text_line_is_blank (const gchar *line)
 {
 	guint i;
 	guint len;
-	gboolean ret = FALSE;
 
 	/* a line with no characters is blank by definition */
 	len = strlen (line);
-	if (len == 0) {
-		ret = TRUE;
-		goto out;
-	}
+	if (len == 0)
+		return TRUE;
 
 	/* find if there are only space chars */
 	for (i = 0; i < len; i++) {
 		if (line[i] != ' ' && line[i] != '\t')
-			goto out;
+			return FALSE;
 	}
 
 	/* if we matched, return true */
-	ret = TRUE;
-out:
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -235,14 +228,9 @@ gs_markdown_replace (const gchar *haystack,
 		     const gchar *needle,
 		     const gchar *replace)
 {
-	gchar *new;
-	gchar **split;
-
+	_cleanup_strv_free_ gchar **split = NULL;
 	split = g_strsplit (haystack, needle, -1);
-	new = g_strjoinv (replace, split);
-	g_strfreev (split);
-
-	return new;
+	return g_strjoinv (replace, split);
 }
 
 /**
@@ -287,14 +275,12 @@ gs_markdown_to_text_line_formatter (const gchar *line,
 	gchar *start = NULL;
 	gchar *middle = NULL;
 	gchar *end = NULL;
-	gchar *copy = NULL;
-	gchar *data = NULL;
-	gchar *temp;
+	_cleanup_free_ gchar *copy = NULL;
 
 	/* needed to know for shifts */
 	len = strlen (formatter);
 	if (len == 0)
-		goto out;
+		return NULL;
 
 	/* find sections */
 	copy = g_strdup (line);
@@ -312,17 +298,14 @@ gs_markdown_to_text_line_formatter (const gchar *line,
 
 	/* if we found, replace and keep looking for the same string */
 	if (start != NULL && middle != NULL && end != NULL) {
+		_cleanup_free_ gchar *temp = NULL;
 		temp = g_strdup_printf ("%s%s%s%s%s", start, left, middle, right, end);
 		/* recursive */
-		data = gs_markdown_to_text_line_formatter (temp, formatter, left, right);
-		g_free (temp);
-	} else {
-		/* not found, keep return as-is */
-		data = g_strdup (line);
+		return gs_markdown_to_text_line_formatter (temp, formatter, left, right);
 	}
-out:
-	g_free (copy);
-	return data;
+
+	/* not found, keep return as-is */
+	return g_strdup (line);
 }
 
 /**
@@ -391,16 +374,14 @@ gs_markdown_to_text_line_format (GsMarkdown *self, const gchar *line)
 	GString *string;
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
 	gboolean mode = FALSE;
-	gchar **codes = NULL;
 	gchar *text;
 	guint i;
+	_cleanup_strv_free_ gchar **codes = NULL;
 
 	/* optimise the trivial case where we don't have any code tags */
 	text = strstr (line, "`");
-	if (text == NULL) {
-		text = gs_markdown_to_text_line_format_sections (self, line);
-		goto out;
-	}
+	if (text == NULL)
+		return gs_markdown_to_text_line_format_sections (self, line);
 
 	/* we want to parse the code sections without formatting */
 	codes = g_strsplit (line, "`", -1);
@@ -419,10 +400,7 @@ gs_markdown_to_text_line_format (GsMarkdown *self, const gchar *line)
 			mode = FALSE;
 		}
 	}
-	text = g_string_free (string, FALSE);
-out:
-	g_strfreev (codes);
-	return text;
+	return g_string_free (string, FALSE);
 }
 
 /**
@@ -431,7 +409,7 @@ out:
 static gboolean
 gs_markdown_add_pending (GsMarkdown *self, const gchar *line)
 {
-	gchar *copy;
+	_cleanup_free_ gchar *copy = NULL;
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
 
 	/* would put us over the limit */
@@ -445,8 +423,6 @@ gs_markdown_add_pending (GsMarkdown *self, const gchar *line)
 
 	/* append */
 	g_string_append_printf (priv->pending, "%s ", copy);
-
-	g_free (copy);
 	return TRUE;
 }
 
@@ -456,15 +432,12 @@ gs_markdown_add_pending (GsMarkdown *self, const gchar *line)
 static gboolean
 gs_markdown_add_pending_header (GsMarkdown *self, const gchar *line)
 {
-	gchar *copy;
-	gboolean ret;
+	_cleanup_free_ gchar *copy = NULL;
 
 	/* strip trailing # */
 	copy = g_strdup (line);
 	g_strdelimit (copy, "#", ' ');
-	ret = gs_markdown_add_pending (self, copy);
-	g_free (copy);
-	return ret;
+	return gs_markdown_add_pending (self, copy);
 }
 
 /**
@@ -480,14 +453,13 @@ gs_markdown_count_chars_in_word (const gchar *text, gchar find)
 	/* get length */
 	len = strlen (text);
 	if (len == 0)
-		goto out;
+		return 0;
 
 	/* find matching chars */
 	for (i = 0; i < len; i++) {
 		if (text[i] == find)
 			count++;
 	}
-out:
 	return count;
 }
 
@@ -542,8 +514,8 @@ gs_markdown_word_auto_format_code (const gchar *text)
 {
 	guint i;
 	gchar *temp;
-	gchar **words;
 	gboolean ret = FALSE;
+	_cleanup_strv_free_ gchar **words = NULL;
 
 	/* split sentence up with space */
 	words = g_strsplit (text, " ", -1);
@@ -559,16 +531,11 @@ gs_markdown_word_auto_format_code (const gchar *text)
 	}
 
 	/* no replacements, so just return a copy */
-	if (!ret) {
-		temp = g_strdup (text);
-		goto out;
-	}
+	if (!ret)
+		return g_strdup (text);
 
 	/* join the array back into a string */
-	temp = g_strjoinv (" ", words);
-out:
-	g_strfreev (words);
-	return temp;
+	return g_strjoinv (" ", words);
 }
 
 /**
@@ -594,8 +561,8 @@ gs_markdown_word_auto_format_urls (const gchar *text)
 {
 	guint i;
 	gchar *temp;
-	gchar **words;
 	gboolean ret = FALSE;
+	_cleanup_strv_free_ gchar **words = NULL;
 
 	/* split sentence up with space */
 	words = g_strsplit (text, " ", -1);
@@ -612,16 +579,11 @@ gs_markdown_word_auto_format_urls (const gchar *text)
 	}
 
 	/* no replacements, so just return a copy */
-	if (!ret) {
-		temp = g_strdup (text);
-		goto out;
-	}
+	if (!ret)
+		return g_strdup (text);
 
 	/* join the array back into a string */
-	temp = g_strjoinv (" ", words);
-out:
-	g_strfreev (words);
-	return temp;
+	return g_strjoinv (" ", words);
 }
 
 /**
@@ -630,9 +592,9 @@ out:
 static void
 gs_markdown_flush_pending (GsMarkdown *self)
 {
-	gchar *copy;
-	gchar *temp;
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
+	_cleanup_free_ gchar *copy = NULL;
+	_cleanup_free_ gchar *temp = NULL;
 
 	/* no data yet */
 	if (priv->mode == GS_MARKDOWN_MODE_UNKNOWN)
@@ -704,8 +666,6 @@ gs_markdown_flush_pending (GsMarkdown *self)
 
 	/* clear */
 	g_string_truncate (priv->pending, 0);
-	g_free (copy);
-	g_free (temp);
 }
 
 /**
@@ -939,10 +899,10 @@ gs_markdown_parse (GsMarkdown *self, const gchar *markdown)
 {
 	GsMarkdownPrivate *priv = gs_markdown_get_instance_private (self);
 	gboolean ret;
-	gchar **lines;
 	gchar *temp;
 	guint i;
 	guint len;
+	_cleanup_strv_free_ gchar **lines = NULL;
 
 	g_return_val_if_fail (GS_IS_MARKDOWN (self), NULL);
 
@@ -962,7 +922,6 @@ gs_markdown_parse (GsMarkdown *self, const gchar *markdown)
 		if (!ret)
 			break;
 	}
-	g_strfreev (lines);
 	gs_markdown_flush_pending (self);
 
 	/* remove trailing \n */

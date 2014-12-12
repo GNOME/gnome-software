@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 #include <packagekit-glib2/packagekit.h>
 
+#include "gs-cleanup.h"
 #include "gs-dbus-helper.h"
 #include "gs-resources.h"
 
@@ -67,8 +68,8 @@ gs_dbus_helper_task_free (GsDbusHelperTask *dtask)
 static void
 gs_dbus_helper_task_set_interaction (GsDbusHelperTask *dtask, const gchar *interaction)
 {
-	gchar **interactions;
 	guint i;
+	_cleanup_strv_free_ gchar **interactions = NULL;
 
 	interactions = g_strsplit (interaction, ",", -1);
 	for (i = 0; interactions[i] != NULL; i++) {
@@ -97,7 +98,6 @@ gs_dbus_helper_task_set_interaction (GsDbusHelperTask *dtask, const gchar *inter
 		else if (g_strcmp0 (interactions[i], "hide-confirm-deps") == 0)
 			dtask->show_confirm_deps = FALSE;
 	}
-	g_strfreev (interactions);
 }
 
 /**
@@ -114,12 +114,12 @@ gs_dbus_helper_progress_cb (PkProgress *progress, PkProgressType type, gpointer 
 static void
 gs_dbus_helper_query_is_installed_cb (GObject *source, GAsyncResult *res, gpointer data)
 {
-	GError *error = NULL;
-	GPtrArray *array = NULL;
 	GsDbusHelperTask *dtask = (GsDbusHelperTask *) data;
 	PkClient *client = PK_CLIENT (source);
-	PkError *error_code = NULL;
-	PkResults *results = NULL;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_object_unref_ PkError *error_code = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
 
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);
@@ -129,7 +129,6 @@ gs_dbus_helper_query_is_installed_cb (GObject *source, GAsyncResult *res, gpoint
 						       G_IO_ERROR_INVALID_ARGUMENT,
 						       "failed to resolve: %s",
 						       error->message);
-		g_error_free (error);
 		goto out;
 	}
 
@@ -150,12 +149,6 @@ gs_dbus_helper_query_is_installed_cb (GObject *source, GAsyncResult *res, gpoint
 					       g_variant_new ("(b)", array->len > 0));
 out:
 	gs_dbus_helper_task_free (dtask);
-	if (error_code != NULL)
-		g_object_unref (error_code);
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (results != NULL)
-		g_object_unref (results);
 }
 
 /**
@@ -164,14 +157,14 @@ out:
 static void
 gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointer data)
 {
-	GError *error = NULL;
-	GPtrArray *array = NULL;
+	_cleanup_error_free_ GError *error = NULL;
 	GsDbusHelperTask *dtask = (GsDbusHelperTask *) data;
 	PkClient *client = PK_CLIENT (source);
-	PkError *error_code = NULL;
 	PkInfoEnum info;
 	PkPackage *item;
-	PkResults *results = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	_cleanup_object_unref_ PkError *error_code = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
 
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);
@@ -181,8 +174,7 @@ gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointe
 						       G_IO_ERROR_INVALID_ARGUMENT,
 						       "failed to search: %s",
 						       error->message);
-		g_error_free (error);
-		goto out;
+		return;
 	}
 
 	/* check error code */
@@ -193,7 +185,7 @@ gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointe
 						       G_IO_ERROR_INVALID_ARGUMENT,
 						       "failed to search: %s",
 						       pk_error_get_details (error_code));
-		goto out;
+		return;
 	}
 
 	/* get results */
@@ -204,7 +196,7 @@ gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointe
 						       G_IO_ERROR,
 						       G_IO_ERROR_INVALID_ARGUMENT,
 						       "failed to find any packages");
-		goto out;
+		return;
 	}
 
 	/* get first item */
@@ -214,13 +206,6 @@ gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointe
 					       g_variant_new ("(bs)",
 							      info == PK_INFO_ENUM_INSTALLED,
 							      pk_package_get_name (item)));
-out:
-	if (error_code != NULL)
-		g_object_unref (error_code);
-	if (array != NULL)
-		g_ptr_array_unref (array);
-	if (results != NULL)
-		g_object_unref (results);
 }
 
 static void
@@ -229,7 +214,7 @@ gs_dbus_helper_handle_method_call_query (GsDbusHelper *dbus_helper,
 					 GVariant *parameters,
 					 GDBusMethodInvocation *invocation)
 {
-	gchar **names;
+	_cleanup_strv_free_ gchar **names = NULL;
 	const gchar *name;
 	const gchar *interaction;
 	GsDbusHelperTask *dtask;
@@ -246,7 +231,6 @@ gs_dbus_helper_handle_method_call_query (GsDbusHelper *dbus_helper,
 					 names, NULL,
 					 gs_dbus_helper_progress_cb, dtask,
 					 gs_dbus_helper_query_is_installed_cb, dtask);
-		g_strfreev (names);
 	} else if (g_strcmp0 (method_name, "SearchFile") == 0) {
 		g_variant_get (parameters, "(&s&s)",
 			       &name, &interaction);
@@ -259,7 +243,6 @@ gs_dbus_helper_handle_method_call_query (GsDbusHelper *dbus_helper,
 					      names, NULL,
 					      gs_dbus_helper_progress_cb, dtask,
 					      gs_dbus_helper_query_search_file_cb, dtask);
-		g_strfreev (names);
 	} else {
 		g_dbus_method_invocation_return_error (invocation,
 						       G_IO_ERROR,
@@ -359,7 +342,7 @@ gs_dbus_helper_name_lost_cb (GDBusConnection *connection,
 static void
 gs_dbus_helper_init (GsDbusHelper *dbus_helper)
 {
-	GBytes *data;
+	_cleanup_bytes_unref_ GBytes *data = NULL;
 	const gchar *xml;
 
 	dbus_helper->task = pk_task_new ();
@@ -373,7 +356,6 @@ gs_dbus_helper_init (GsDbusHelper *dbus_helper)
 	xml = g_bytes_get_data (data, NULL);
 	dbus_helper->introspection = g_dbus_node_info_new_for_xml (xml, NULL);
 	g_assert (dbus_helper->introspection != NULL);
-	g_bytes_unref (data);
 
 	/* own session daemon */
 	dbus_helper->owner_id = g_bus_own_name (G_BUS_TYPE_SESSION,

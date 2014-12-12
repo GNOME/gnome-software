@@ -71,11 +71,11 @@ gs_plugin_refine_app_category (GsPlugin *plugin,
 			continue;
 		ret = gs_app_has_category (app, tmp + 2);
 		if (ret) {
-			tmp = g_strdup_printf ("%s → %s",
+			_cleanup_free_ gchar *str = NULL;
+			str = g_strdup_printf ("%s → %s",
 					       gettext (cat->text),
 					       gettext (msdata[i].text));
-			gs_app_set_menu_path (app, tmp);
-			g_free (tmp);
+			gs_app_set_menu_path (app, str);
 			break;
 		}
 	}
@@ -121,22 +121,19 @@ gs_plugin_refine (GsPlugin *plugin,
 {
 	GList *l;
 	GsApp *app;
-	gboolean ret;
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH) == 0)
-		goto out;
+		return TRUE;
 
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_menu_path (app) == NULL) {
-			ret = gs_plugin_refine_app (plugin, app);
-			if (!ret) {
+			if (!gs_plugin_refine_app (plugin, app)) {
 				/* don't keep searching for this */
 				gs_app_set_menu_path (app, "");
 			}
 		}
 	}
-out:
 	return TRUE;
 }

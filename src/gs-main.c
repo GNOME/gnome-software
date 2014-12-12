@@ -28,14 +28,15 @@
 #include <locale.h>
 
 #include "gs-application.h"
+#include "gs-cleanup.h"
 #include "gs-profile.h"
 
 int
 main (int argc, char **argv)
 {
 	int status = 0;
-	GsApplication *application;
-	GsProfile *profile;
+	_cleanup_object_unref_ GsApplication *application = NULL;
+	_cleanup_object_unref_ GsProfile *profile = NULL;
 
 	setlocale (LC_ALL, "");
 
@@ -47,9 +48,7 @@ main (int argc, char **argv)
 	gs_profile_start (profile, "GsMain");
 	application = gs_application_new ();
 	status = g_application_run (G_APPLICATION (application), argc, argv);
-	g_object_unref (application);
 	gs_profile_stop (profile, "GsMain");
-	g_object_unref (profile);
 
 	return status;
 }

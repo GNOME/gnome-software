@@ -26,6 +26,7 @@
 #include <packagekit-glib2/packagekit.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 
+#include "gs-cleanup.h"
 #include "gs-proxy-settings.h"
 
 struct _GsProxySettings {
@@ -48,21 +49,20 @@ static gchar *
 get_proxy_http (GsProxySettings *proxy_settings)
 {
 	gboolean ret;
-	gchar *host = NULL;
-	gchar *password = NULL;
-	gchar *proxy = NULL;
-	gchar *username = NULL;
 	GString *string = NULL;
 	guint port;
 	GDesktopProxyMode proxy_mode;
+	_cleanup_free_ gchar *host = NULL;
+	_cleanup_free_ gchar *password = NULL;
+	_cleanup_free_ gchar *username = NULL;
 
 	proxy_mode = g_settings_get_enum (proxy_settings->settings, "mode");
 	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
-		goto out;
+		return NULL;
 
 	host = g_settings_get_string (proxy_settings->settings_http, "host");
 	if (host == NULL)
-		goto out;
+		return NULL;
 
 	port = g_settings_get_int (proxy_settings->settings_http, "port");
 
@@ -70,10 +70,10 @@ get_proxy_http (GsProxySettings *proxy_settings)
 				      "use-authentication");
 	if (ret) {
 		username = g_settings_get_string (proxy_settings->settings_http,
-                                                  "authentication-user");
+						  "authentication-user");
 		password = g_settings_get_string (proxy_settings->settings_http,
 						  "authentication-password");
-        }
+	}
 
 	/* make PackageKit proxy string */
 	string = g_string_new (host);
@@ -85,67 +85,50 @@ get_proxy_http (GsProxySettings *proxy_settings)
 		g_string_append_printf (string, "@%s", username);
 	else if (password != NULL)
 		g_string_append_printf (string, "@:%s", password);
-	proxy = g_string_free (string, FALSE);
-
-out:
-	g_free (host);
-	g_free (username);
-	g_free (password);
-
-	return proxy;
+	return g_string_free (string, FALSE);
 }
 
 static gchar *
 get_proxy_ftp (GsProxySettings *proxy_settings)
 {
-	gchar *host = NULL;
-	gchar *proxy = NULL;
 	GString *string = NULL;
 	guint port;
 	GDesktopProxyMode proxy_mode;
+	_cleanup_free_ gchar *host = NULL;
 
 	proxy_mode = g_settings_get_enum (proxy_settings->settings, "mode");
 	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
-		goto out;
+		return NULL;
 
 	host = g_settings_get_string (proxy_settings->settings_ftp, "host");
 	if (host == NULL)
-		goto out;
+		return NULL;
 	port = g_settings_get_int (proxy_settings->settings_ftp, "port");
 	if (port == 0)
-		goto out;
+		return NULL;
 
 	/* make PackageKit proxy string */
 	string = g_string_new (host);
 	if (port > 0)
 		g_string_append_printf (string, ":%i", port);
-	proxy = g_string_free (string, FALSE);
-
-out:
-	g_free (host);
-
-        return proxy;
+	return g_string_free (string, FALSE);
 }
 
 static void
 set_proxy_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 {
-	gboolean ret;
-	GError *error = NULL;
-
-	ret = pk_control_set_proxy_finish (PK_CONTROL (object), res, &error);
-	if (!ret) {
+	_cleanup_error_free_ GError *error = NULL;
+	if (!pk_control_set_proxy_finish (PK_CONTROL (object), res, &error)) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to set proxies: %s", error->message);
-		g_error_free (error);
 	}
 }
 
 static void
 reload_proxy_settings (GsProxySettings *proxy_settings)
 {
-	gchar *proxy_http;
-	gchar *proxy_ftp;
+	_cleanup_free_ gchar *proxy_http = NULL;
+	_cleanup_free_ gchar *proxy_ftp = NULL;
 
 	proxy_http = get_proxy_http (proxy_settings);
 	proxy_ftp = get_proxy_ftp (proxy_settings);
@@ -158,8 +141,6 @@ reload_proxy_settings (GsProxySettings *proxy_settings)
 				    proxy_settings->cancellable,
 				    set_proxy_cb,
 				    proxy_settings);
-	g_free (proxy_http);
-	g_free (proxy_ftp);
 }
 
 static void

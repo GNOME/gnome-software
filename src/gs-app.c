@@ -47,6 +47,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-cleanup.h"
 #include "gs-utils.h"
 
 static void	gs_app_finalize	(GObject	*object);
@@ -320,7 +321,7 @@ notify_idle_cb (gpointer data)
 	AppNotifyData *notify_data = data;
 
 	g_object_notify (G_OBJECT (notify_data->app),
-	                 notify_data->property_name);
+			 notify_data->property_name);
 
 	g_object_unref (notify_data->app);
 	g_free (notify_data->property_name);
@@ -812,7 +813,7 @@ gs_app_set_icon (GsApp *app, AsIcon *icon)
 }
 
 static GtkIconTheme *icon_theme_singleton;
-static GMutex        icon_theme_lock;
+static GMutex	icon_theme_lock;
 static GHashTable   *icon_theme_paths;
 
 /**
@@ -852,8 +853,7 @@ gboolean
 gs_app_load_icon (GsApp *app, gint scale, GError **error)
 {
 	AsIcon *icon;
-	GdkPixbuf *pixbuf = NULL;
-	gboolean ret = TRUE;
+	_cleanup_object_unref_ GdkPixbuf *pixbuf = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	g_return_val_if_fail (app->priv->icon != NULL, FALSE);
@@ -894,15 +894,10 @@ gs_app_load_icon (GsApp *app, gint scale, GError **error)
 			     as_icon_kind_to_string (as_icon_get_kind (icon)));
 		break;
 	}
-	if (pixbuf == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (pixbuf == NULL)
+		return FALSE;
 	gs_app_set_pixbuf (app, pixbuf);
-out:
-	if (pixbuf != NULL)
-		g_object_unref (pixbuf);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -2072,9 +2067,9 @@ gs_app_init (GsApp *app)
 						     g_free,
 						     g_free);
 	app->priv->addons_hash = g_hash_table_new_full (g_str_hash,
-	                                                g_str_equal,
-	                                                g_free,
-	                                                NULL);
+							g_str_equal,
+							g_free,
+							NULL);
 	app->priv->related_hash = g_hash_table_new_full (g_str_hash,
 							 g_str_equal,
 							 g_free,

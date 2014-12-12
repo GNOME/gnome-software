@@ -29,6 +29,7 @@
 
 #include "gs-app.h"
 #include "gs-app-row.h"
+#include "gs-cleanup.h"
 
 struct _GsUpdateListPrivate
 {
@@ -40,7 +41,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsUpdateList, gs_update_list, GTK_TYPE_LIST_BOX)
 
 void
 gs_update_list_add_app (GsUpdateList *update_list,
-                        GsApp        *app)
+			GsApp	*app)
 {
 	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
 	GtkWidget *app_row;
@@ -50,8 +51,8 @@ gs_update_list_add_app (GsUpdateList *update_list,
 	gs_app_row_set_app (GS_APP_ROW (app_row), app);
 	gtk_container_add (GTK_CONTAINER (update_list), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-	                            priv->sizegroup_image,
-	                            priv->sizegroup_name);
+				    priv->sizegroup_image,
+				    priv->sizegroup_name);
 	gtk_widget_show (app_row);
 }
 
@@ -69,8 +70,8 @@ is_addon_id_kind (GsApp *app)
 
 static void
 list_header_func (GtkListBoxRow *row,
-                  GtkListBoxRow *before,
-                  gpointer user_data)
+		  GtkListBoxRow *before,
+		  gpointer user_data)
 {
 	GtkStyleContext *context;
 	GtkWidget *header;
@@ -87,8 +88,8 @@ list_header_func (GtkListBoxRow *row,
 		 * applications and the addons */
 		header = gtk_label_new (_("Add-ons"));
 		g_object_set (header,
-		              "xalign", 0.0,
-		              NULL);
+			      "xalign", 0.0,
+			      NULL);
 		context = gtk_widget_get_style_context (header);
 		gtk_style_context_add_class (context, "header-label");
 	} else {
@@ -126,7 +127,7 @@ get_app_sort_key (GsApp *app)
 
 	/* sort by install date */
 	g_string_append_printf (key, "%09" G_GUINT64_FORMAT ":",
-	                        G_MAXUINT64 - gs_app_get_install_date (app));
+				G_MAXUINT64 - gs_app_get_install_date (app));
 
 	/* finally, sort by short name */
 	g_string_append (key, gs_app_get_name (app));
@@ -135,22 +136,16 @@ get_app_sort_key (GsApp *app)
 
 static gint
 list_sort_func (GtkListBoxRow *a,
-                GtkListBoxRow *b,
-                gpointer user_data)
+		GtkListBoxRow *b,
+		gpointer user_data)
 {
 	GsApp *a1 = gs_app_row_get_app (GS_APP_ROW (a));
 	GsApp *a2 = gs_app_row_get_app (GS_APP_ROW (b));
-	gchar *key1 = get_app_sort_key (a1);
-	gchar *key2 = get_app_sort_key (a2);
-	gint retval;
+	_cleanup_free_ gchar *key1 = get_app_sort_key (a1);
+	_cleanup_free_ gchar *key2 = get_app_sort_key (a2);
 
 	/* compare the keys according to the algorithm above */
-	retval = g_strcmp0 (key1, key2);
-
-	g_free (key1);
-	g_free (key2);
-
-	return retval;
+	return g_strcmp0 (key1, key2);
 }
 
 static void
@@ -174,11 +169,11 @@ gs_update_list_init (GsUpdateList *update_list)
 	priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (update_list),
-	                              list_header_func,
-	                              update_list, NULL);
+				      list_header_func,
+				      update_list, NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (update_list),
-	                            list_sort_func,
-	                            update_list, NULL);
+				    list_sort_func,
+				    update_list, NULL);
 }
 
 static void

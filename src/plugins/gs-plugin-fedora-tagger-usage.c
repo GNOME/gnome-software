@@ -50,7 +50,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	GSettings *settings;
+	_cleanup_object_unref_ GSettings *settings = NULL;
 
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 
@@ -60,17 +60,15 @@ gs_plugin_initialize (GsPlugin *plugin)
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_debug ("disabling '%s' as 'send-software-usage-stats' "
 			 "disabled in GSettings", plugin->name);
-		goto out;
+		return;
 	}
 
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_debug ("disabling '%s' as we're not Fedora", plugin->name);
-		goto out;
+		return;
 	}
-out:
-	g_object_unref (settings);
 }
 
 /**
@@ -101,11 +99,9 @@ gs_plugin_destroy (GsPlugin *plugin)
 static gboolean
 gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
 {
-	gboolean ret = TRUE;
-
 	/* already set up */
 	if (plugin->priv->session != NULL)
-		goto out;
+		return TRUE;
 
 	/* set up a session */
 	plugin->priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
@@ -113,18 +109,16 @@ gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
 								    SOUP_SESSION_TIMEOUT, 5000,
 								    NULL);
 	if (plugin->priv->session == NULL) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "%s: failed to setup networking",
 			     plugin->name);
-		goto out;
+		return FALSE;
 	}
 	soup_session_add_feature_by_type (plugin->priv->session,
 					  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
-out:
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -136,11 +130,10 @@ gs_plugin_app_set_usage_pkg (GsPlugin *plugin,
 			     gboolean is_install,
 			     GError **error)
 {
-	SoupMessage *msg = NULL;
-	gchar *data = NULL;
-	gchar *error_msg = NULL;
-	gchar *uri = NULL;
 	guint status_code;
+	_cleanup_free_ gchar *data = NULL;
+	_cleanup_free_ gchar *uri = NULL;
+	_cleanup_object_unref_ SoupMessage *msg = NULL;
 
 	/* create the PUT data */
 	uri = g_strdup_printf ("%s/api/v1/usage/%s/",
@@ -165,12 +158,6 @@ gs_plugin_app_set_usage_pkg (GsPlugin *plugin,
 	} else {
 		g_debug ("Got response: %s", msg->response_body->data);
 	}
-
-	g_free (error_msg);
-	g_free (data);
-	g_free (uri);
-	if (msg != NULL)
-		g_object_unref (msg);
 	return TRUE;
 }
 
@@ -185,18 +172,17 @@ gs_plugin_app_set_usage_app (GsPlugin *plugin,
 {
 	GPtrArray *sources;
 	const gchar *pkgname;
-	gboolean ret = TRUE;
+	gboolean ret;
 	guint i;
 
 	/* get the package name */
 	sources = gs_app_get_sources (app);
 	if (sources->len == 0)
-		goto out;
+		return TRUE;
 
 	/* ensure networking is set up */
-	ret = gs_plugin_setup_networking (plugin, error);
-	if (!ret)
-		goto out;
+	if (!gs_plugin_setup_networking (plugin, error))
+		return FALSE;
 
 	/* tell fedora-tagger about this package */
 	for (i = 0; i < sources->len; i++) {
@@ -206,10 +192,9 @@ gs_plugin_app_set_usage_app (GsPlugin *plugin,
 						   is_install,
 						   error);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
-out:
-	return ret;
+	return TRUE;
 }
 
 /**

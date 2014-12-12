@@ -54,9 +54,8 @@ static GString *
 gs_app_addon_row_get_summary (GsAppAddonRow *row)
 {
 	GsAppAddonRowPrivate *priv = row->priv;
-	GString *str = NULL;
 	const gchar *tmp = NULL;
-	gchar *escaped;
+	_cleanup_free_ gchar *escaped = NULL;
 
 	/* try all these things in order */
 	if (gs_app_get_kind (priv->app) == GS_APP_KIND_MISSING)
@@ -67,17 +66,14 @@ gs_app_addon_row_get_summary (GsAppAddonRow *row)
 		tmp = gs_app_get_description (priv->app);
 
 	escaped = g_markup_escape_text (tmp, -1);
-	str = g_string_new (escaped);
-	g_free (escaped);
-
-	return str;
+	return g_string_new (escaped);
 }
 
 void
 gs_app_addon_row_refresh (GsAppAddonRow *row)
 {
 	GsAppAddonRowPrivate *priv = row->priv;
-	GString *str;
+	_cleanup_string_free_ GString *str = NULL;
 
 	if (row->priv->app == NULL)
 		return;
@@ -86,10 +82,8 @@ gs_app_addon_row_refresh (GsAppAddonRow *row)
 	str = gs_app_addon_row_get_summary (row);
 	gs_string_replace (str, "\n", " ");
 	gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
-	g_string_free (str, TRUE);
-
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
-	                     gs_app_get_name (priv->app));
+			     gs_app_get_name (priv->app));
 
 	/* update the state label */
 	switch (gs_app_get_state (row->priv->app)) {
@@ -166,8 +160,8 @@ gs_app_addon_row_refresh_idle (gpointer user_data)
 
 static void
 gs_app_addon_row_notify_props_changed_cb (GsApp *app,
-                                          GParamSpec *pspec,
-                                          GsAppAddonRow *row)
+					  GParamSpec *pspec,
+					  GsAppAddonRow *row)
 {
 	g_idle_add (gs_app_addon_row_refresh_idle, g_object_ref (row));
 }
@@ -181,8 +175,8 @@ gs_app_addon_row_set_addon (GsAppAddonRow *row, GsApp *app)
 	row->priv->app = g_object_ref (app);
 
 	g_signal_connect_object (row->priv->app, "notify::state",
-	                         G_CALLBACK (gs_app_addon_row_notify_props_changed_cb),
-	                         row, 0);
+				 G_CALLBACK (gs_app_addon_row_notify_props_changed_cb),
+				 row, 0);
 	gs_app_addon_row_refresh (row);
 }
 
@@ -243,7 +237,7 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 	widget_class->destroy = gs_app_addon_row_destroy;
 
 	pspec = g_param_spec_boolean ("selected", NULL, NULL,
-	                              FALSE, G_PARAM_READWRITE);
+				      FALSE, G_PARAM_READWRITE);
 	g_object_class_install_property (object_class, PROP_SELECTED, pspec);
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-addon-row.ui");
@@ -273,7 +267,7 @@ gs_app_addon_row_init (GsAppAddonRow *row)
 	gtk_widget_init_template (GTK_WIDGET (row));
 
 	g_signal_connect (priv->checkbox, "toggled",
-	                  G_CALLBACK (checkbox_toggled), row);
+			  G_CALLBACK (checkbox_toggled), row);
 }
 
 void

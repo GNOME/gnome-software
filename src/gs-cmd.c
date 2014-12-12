@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 #include <locale.h>
 
+#include "gs-cleanup.h"
 #include "gs-profile.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
@@ -39,20 +40,19 @@ gs_cmd_show_results_apps (GList *list)
 	GPtrArray *related;
 	GsApp *app;
 	GsApp *app_rel;
-	gchar *tmp;
 	guint i;
 
 	for (l = list; l != NULL; l = l->next) {
+		_cleanup_free_ gchar *tmp = NULL;
 		app = GS_APP (l->data);
 		tmp = gs_app_to_string (app);
 		g_print ("%s\n", tmp);
-		g_free (tmp);
 		related = gs_app_get_related (app);
 		for (i = 0; i < related->len; i++) {
+			_cleanup_free_ gchar *tmp_rel = NULL;
 			app_rel = GS_APP (g_ptr_array_index (related, i));
-			tmp = gs_app_to_string (app_rel);
-			g_print ("\t%s\n", tmp);
-			g_free (tmp);
+			tmp_rel = gs_app_to_string (app_rel);
+			g_print ("\t%s\n", tmp_rel);
 		}
 	}
 }
@@ -82,20 +82,19 @@ gs_cmd_show_results_categories (GList *list)
 	GList *subcats;
 	GsCategory *cat;
 	GsCategory *parent;
-	gchar *id;
-	gchar *tmp;
 
 	for (l = list; l != NULL; l = l->next) {
+		_cleanup_free_ gchar *tmp = NULL;
 		cat = GS_CATEGORY (l->data);
 		parent = gs_category_get_parent (cat);
 		if (parent != NULL){
+			_cleanup_free_ gchar *id = NULL;
 			id = g_strdup_printf ("%s/%s",
 					      gs_category_get_id (parent),
 					      gs_category_get_id (cat));
 			tmp = gs_cmd_pad_spaces (id, 32);
 			g_print ("%s : %s\n",
 				 tmp, gs_category_get_name (cat));
-			g_free (id);
 		} else {
 			tmp = gs_cmd_pad_spaces (gs_category_get_id (cat), 32);
 			g_print ("%s : %s\n",
@@ -103,7 +102,6 @@ gs_cmd_show_results_categories (GList *list)
 			subcats = gs_category_get_subcategories (cat);
 			gs_cmd_show_results_categories (subcats);
 		}
-		g_free (tmp);
 	}
 }
 
@@ -153,48 +151,41 @@ static guint64
 gs_cmd_parse_refine_flags (const gchar *extra, GError **error)
 {
 	GsPluginRefineFlags tmp;
-	gchar **split = NULL;
 	guint i;
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
+	_cleanup_strv_free_ gchar **split = NULL;
 
 	if (extra == NULL)
-		goto out;
+		return GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 
 	split = g_strsplit (extra, ",", -1);
 	for (i = 0; split[i] != NULL; i++) {
 		tmp = gs_cmd_refine_flag_from_string (split[i], error);
-		if (tmp == 0) {
-			refine_flags = G_MAXUINT64;
-			goto out;
-		}
+		if (tmp == 0)
+			return G_MAXUINT64;
 		refine_flags |= tmp;
 	}
-out:
-	g_strfreev (split);
 	return refine_flags;
 }
 
 int
 main (int argc, char **argv)
 {
-	GError *error = NULL;
 	GList *list = NULL;
 	GList *categories = NULL;
 	GOptionContext *context;
-	GsApp *app = NULL;
-	GsCategory *parent = NULL;
-	GsCategory *category = NULL;
-	GsPluginLoader *plugin_loader = NULL;
-	GsProfile *profile = NULL;
 	gboolean prefer_local = FALSE;
 	gboolean ret;
 	gboolean show_results = FALSE;
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
-	gchar *refine_flags_str = NULL;
-	gchar **split = NULL;
 	gint i;
 	gint repeat = 1;
 	int status = 0;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_free_ gchar *refine_flags_str = NULL;
+	_cleanup_object_unref_ GsApp *app = NULL;
+	_cleanup_object_unref_ GsPluginLoader *plugin_loader = NULL;
+	_cleanup_object_unref_ GsProfile *profile = NULL;
 	const GOptionEntry options[] = {
 		{ "show-results", '\0', 0, G_OPTION_ARG_NONE, &show_results,
 		  "Show the results for the action", NULL },
@@ -223,7 +214,6 @@ main (int argc, char **argv)
 	ret = g_option_context_parse (context, &argc, &argv, &error);
 	if (!ret) {
 		g_print ("Failed to parse options: %s\n", error->message);
-		g_error_free (error);
 		goto out;
 	}
 
@@ -235,7 +225,6 @@ main (int argc, char **argv)
 	refine_flags = gs_cmd_parse_refine_flags (refine_flags_str, &error);
 	if (refine_flags == G_MAXUINT64) {
 		g_print ("Flag unknown: %s\n", error->message);
-		g_error_free (error);
 		goto out;
 	}
 
@@ -248,7 +237,6 @@ main (int argc, char **argv)
 	ret = gs_plugin_loader_setup (plugin_loader, &error);
 	if (!ret) {
 		g_print ("Failed to setup plugins: %s\n", error->message);
-		g_error_free (error);
 		goto out;
 	}
 	gs_plugin_loader_dump_state (plugin_loader);
@@ -365,13 +353,15 @@ main (int argc, char **argv)
 			}
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "get-category-apps") == 0) {
+		_cleanup_object_unref_ GsCategory *category = NULL;
+		_cleanup_strv_free_ gchar **split = NULL;
 		split = g_strsplit (argv[2], "/", 2);
 		if (g_strv_length (split) == 1) {
 			category = gs_category_new (NULL, split[0], NULL);
 		} else {
+			_cleanup_object_unref_ GsCategory *parent = NULL;
 			parent = gs_category_new (NULL, split[0], NULL);
 			category = gs_category_new (parent, split[1], NULL);
-			g_object_unref (parent);
 		}
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
@@ -398,7 +388,6 @@ main (int argc, char **argv)
 	}
 	if (!ret) {
 		g_print ("Failed: %s\n", error->message);
-		g_error_free (error);
 		goto out;
 	}
 
@@ -410,17 +399,7 @@ out:
 	gs_profile_stop (profile, "GsCmd");
 	gs_profile_dump (profile);
 	g_option_context_free (context);
-	g_free (refine_flags_str);
-	g_strfreev (split);
 	gs_plugin_list_free (list);
-	if (app != NULL)
-		g_object_unref (app);
-	if (category != NULL)
-		g_object_unref (category);
-	if (plugin_loader != NULL)
-		g_object_unref (plugin_loader);
-	if (profile != NULL)
-		g_object_unref (profile);
 	return status;
 }
 

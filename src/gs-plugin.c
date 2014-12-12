@@ -23,6 +23,7 @@
 
 #include <glib.h>
 
+#include "gs-cleanup.h"
 #include "gs-plugin.h"
 
 #define GS_PLUGIN_OS_RELEASE_FN		"/etc/os-release"
@@ -65,30 +66,21 @@ gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
 gboolean
 gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
 {
-	GError *error = NULL;
-	gboolean ret;
-	gchar *data = NULL;
-	gchar *search = NULL;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_free_ gchar *data = NULL;
+	_cleanup_free_ gchar *search = NULL;
 
 	/* check that we are running on Fedora */
-	ret = g_file_get_contents (GS_PLUGIN_OS_RELEASE_FN,
-				   &data, NULL, &error);
-	if (!ret) {
+	if (!g_file_get_contents (GS_PLUGIN_OS_RELEASE_FN, &data, NULL, &error)) {
 		g_warning ("%s could not be read: %s",
 			   GS_PLUGIN_OS_RELEASE_FN,
 			   error->message);
-		g_error_free (error);
-		goto out;
+		return FALSE;
 	}
 	search = g_strdup_printf ("ID=%s\n", distro_id);
-	if (g_strstr_len (data, -1, search) == NULL) {
-		ret = FALSE;
-		goto out;
-	}
-out:
-	g_free (data);
-	g_free (search);
-	return ret;
+	if (g_strstr_len (data, -1, search) == NULL)
+		return FALSE;
+	return TRUE;
 }
 
 /**
@@ -146,12 +138,11 @@ gs_plugin_list_randomize_cb (gconstpointer a, gconstpointer b, gpointer user_dat
 {
 	const gchar *k1;
 	const gchar *k2;
-	gchar *key;
+	_cleanup_free_ gchar *key = NULL;
 
 	key = g_strdup_printf ("Plugin::sort-key[%p]", user_data);
 	k1 = gs_app_get_metadata_item (GS_APP (a), key);
 	k2 = gs_app_get_metadata_item (GS_APP (b), key);
-	g_free (key);
 	return g_strcmp0 (k1, k2);
 }
 
@@ -167,8 +158,8 @@ gs_plugin_list_randomize (GList **list)
 	GList *l;
 	GRand *rand;
 	GsApp *app;
-	gchar *key;
 	gchar sort_key[] = { '\0', '\0', '\0', '\0' };
+	_cleanup_free_ gchar *key = NULL;
 
 	key = g_strdup_printf ("Plugin::sort-key[%p]", list);
 	rand = g_rand_new ();
@@ -186,7 +177,6 @@ gs_plugin_list_randomize (GList **list)
 		app = GS_APP (l->data);
 		gs_app_set_metadata (app, key, NULL);
 	}
-	g_free (key);
 	g_rand_free (rand);
 	g_date_time_unref (date);
 }
@@ -197,12 +187,12 @@ gs_plugin_list_randomize (GList **list)
 void
 gs_plugin_list_filter_duplicates (GList **list)
 {
-	GHashTable *hash;
 	GList *l;
 	GList *new = NULL;
 	GsApp *app;
 	GsApp *found;
 	const gchar *id;
+	_cleanup_hashtable_unref_ GHashTable *hash = NULL;
 
 	g_return_if_fail (list != NULL);
 
@@ -224,7 +214,6 @@ gs_plugin_list_filter_duplicates (GList **list)
 		}
 		g_debug ("ignoring duplicate %s", id);
 	}
-	g_hash_table_unref (hash);
 
 	/* replace the list */
 	gs_plugin_list_free (*list);

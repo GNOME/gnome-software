@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-row.h"
+#include "gs-cleanup.h"
 #include "gs-star-widget.h"
 #include "gs-markdown.h"
 #include "gs-utils.h"
@@ -75,24 +76,22 @@ static guint signals [SIGNAL_LAST] = { 0 };
 static GString *
 gs_app_row_get_description (GsAppRow *app_row)
 {
-	GString *str = NULL;
 	GsAppRowPrivate *priv = app_row->priv;
-	GsMarkdown *markdown = NULL;
 	const gchar *tmp = NULL;
-	gchar *escaped = NULL;
+	_cleanup_free_ gchar *escaped = NULL;
 
 	/* convert the markdown update description into PangoMarkup */
 	if (priv->show_update &&
 	    gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE) {
 		tmp = gs_app_get_update_details (priv->app);
 		if (tmp != NULL && tmp[0] != '\0') {
+			_cleanup_object_unref_ GsMarkdown *markdown = NULL;
 			markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 			gs_markdown_set_smart_quoting (markdown, FALSE);
 			gs_markdown_set_autocode (markdown, FALSE);
 			gs_markdown_set_autolinkify (markdown, FALSE);
 			escaped = gs_markdown_parse (markdown, tmp);
-			str = g_string_new (escaped);
-			goto out;
+			return g_string_new (escaped);
 		}
 	}
 
@@ -106,12 +105,7 @@ gs_app_row_get_description (GsAppRow *app_row)
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_name (priv->app);
 	escaped = g_markup_escape_text (tmp, -1);
-	str = g_string_new (escaped);
-out:
-	if (markdown != NULL)
-		g_object_unref (markdown);
-	g_free (escaped);
-	return str;
+	return g_string_new (escaped);
 }
 
 /**
@@ -123,8 +117,6 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GsAppRowPrivate *priv = app_row->priv;
 	GtkStyleContext *context;
 	GString *str = NULL;
-	GsFolders *folders;
-	const gchar *folder;
 
 	if (app_row->priv->app == NULL)
 		return;
@@ -163,13 +155,14 @@ gs_app_row_refresh (GsAppRow *app_row)
 	if (priv->show_update) {
 		gtk_widget_hide (priv->folder_label);
 	} else {
+		_cleanup_object_unref_ GsFolders *folders = NULL;
+		const gchar *folder;
 		folders = gs_folders_get ();
 		folder = gs_folders_get_app_folder (folders, gs_app_get_id (priv->app), gs_app_get_categories (priv->app));
 		if (folder)
 			folder = gs_folders_get_folder_name (folders, folder);
 		gtk_label_set_label (GTK_LABEL (priv->folder_label), folder);
 		gtk_widget_set_visible (priv->folder_label, folder != NULL);
-		g_object_unref (folders);
 	}
 
 	if (gs_app_get_pixbuf (priv->app))
@@ -321,8 +314,8 @@ gs_app_row_refresh_idle_cb (gpointer user_data)
  **/
 static void
 gs_app_row_notify_props_changed_cb (GsApp *app,
-                                    GParamSpec *pspec,
-                                    GsAppRow *app_row)
+				    GParamSpec *pspec,
+				    GsAppRow *app_row)
 {
 	GsAppRowPrivate *priv = app_row->priv;
 	if (priv->pending_refresh_id > 0)
@@ -374,13 +367,13 @@ gs_app_row_set_property (GObject *object, guint prop_id, const GValue *value, GP
 {
 	GsAppRow *app_row = GS_APP_ROW (object);
 
-        switch (prop_id) {
-        case PROP_SELECTED:
+	switch (prop_id) {
+	case PROP_SELECTED:
 		gs_app_row_set_selected (app_row, g_value_get_boolean (value));
 		break;
-        default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
-                break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
 	}
 }
 
@@ -389,12 +382,12 @@ gs_app_row_get_property (GObject *object, guint prop_id, GValue *value, GParamSp
 {
 	GsAppRow *app_row = GS_APP_ROW (object);
 
-        switch (prop_id) {
-        case PROP_SELECTED:
+	switch (prop_id) {
+	case PROP_SELECTED:
 		g_value_set_boolean (value, gs_app_row_get_selected (app_row));
 		break;
-        default:
-                G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
        		break;
 	}
 }
@@ -478,8 +471,8 @@ gs_app_row_init (GsAppRow *app_row)
 
 void
 gs_app_row_set_size_groups (GsAppRow *app_row,
-                            GtkSizeGroup *image,
-                            GtkSizeGroup *name)
+			    GtkSizeGroup *image,
+			    GtkSizeGroup *name)
 {
 	gtk_size_group_add_widget (image, app_row->priv->image);
 	gtk_size_group_add_widget (name, app_row->priv->name_box);

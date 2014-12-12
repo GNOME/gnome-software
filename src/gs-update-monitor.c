@@ -27,6 +27,7 @@
 #include <packagekit-glib2/packagekit.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 
+#include "gs-cleanup.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
 #include "gs-offline-updates.h"
@@ -41,7 +42,7 @@ struct _GsUpdateMonitor {
 	guint		 start_hourly_checks_id;
 	GDateTime	*check_timestamp;
 	GDateTime	*install_timestamp;
-	gboolean         refresh_cache_due;
+	gboolean	 refresh_cache_due;
 	gboolean	 get_updates_due;
 	gboolean	 network_available;
 	gchar		**pending_downloads;
@@ -77,9 +78,9 @@ reenable_offline_update_notification (gpointer data)
 static void
 notify_offline_update_available (GsUpdateMonitor *monitor)
 {
-	GNotification *n;
 	const gchar *title;
 	const gchar *body;
+	_cleanup_object_unref_ GNotification *n = NULL;
 
 	if (!g_file_query_exists (monitor->offline_update_file, NULL))
 		return;
@@ -103,13 +104,12 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	g_notification_add_button (n, _("Not Now"), "app.nop");
 	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
 	g_application_send_notification (monitor->application, "updates-available", n);
-	g_object_unref (n);
 }
 
 static void
 offline_update_monitor_cb (GFileMonitor      *file_monitor,
-			   GFile             *file,
-			   GFile             *other_file,
+			   GFile	     *file,
+			   GFile	     *other_file,
 			   GFileMonitorEvent  event_type,
 			   GsUpdateMonitor   *monitor)
 {
@@ -131,9 +131,9 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 {
 	const gchar *message;
 	const gchar *title;
-	GNotification *notification;
-	GIcon *icon;
-	PkResults *results;
+	_cleanup_object_unref_ GIcon *icon = NULL;
+	_cleanup_object_unref_ GNotification *notification = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
 
 	results = pk_offline_get_results (NULL);
 	if (results == NULL)
@@ -160,7 +160,6 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 	g_notification_set_body (notification, message);
 	icon = g_themed_icon_new ("gnome-software-symbolic");
 	g_notification_set_icon (notification, icon);
-	g_object_unref (icon);
 	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS)
 		g_notification_add_button_with_target (notification, _("Review"), "app.set-mode", "s", "updated");
 	else
@@ -168,8 +167,6 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 	g_notification_add_button (notification, _("OK"), "app.clear-offline-updates");
 
 	g_application_send_notification (monitor->application, "offline-updates", notification);
-	g_object_unref (notification);
-	g_object_unref (results);
 }
 
 static gboolean
@@ -180,7 +177,7 @@ check_offline_update_cb (gpointer user_data)
 	guint64 time_update_completed;
 
 	g_settings_get (monitor->settings,
-	                "install-timestamp", "x", &time_last_notified);
+			"install-timestamp", "x", &time_last_notified);
 
 	time_update_completed = pk_offline_get_results_mtime (NULL);
 	if (time_update_completed > 0) {
@@ -188,14 +185,14 @@ check_offline_update_cb (gpointer user_data)
 			show_installed_updates_notification (monitor);
 
 		g_settings_set (monitor->settings,
-		                "install-timestamp", "x", time_update_completed);
+				"install-timestamp", "x", time_update_completed);
 	}
 
 	start_monitoring_offline_updates (monitor);
 
-        monitor->check_offline_update_id = 0;
+	monitor->check_offline_update_id = 0;
 
-        return G_SOURCE_REMOVE;
+	return G_SOURCE_REMOVE;
 }
 
 static gboolean
@@ -249,33 +246,27 @@ package_download_finished_cb (GObject *object,
 			      gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
-	PkResults *results;
-	GError *error = NULL;
-	PkError *error_code;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_object_unref_ PkError *error_code = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
 
 	results = pk_client_generic_finish (PK_CLIENT (object), res, &error);
 	if (results == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to download: %s", error->message);
-		}
-		g_error_free (error);
 		return;
 	}
 
-        error_code = pk_results_get_error_code (results);
-        if (error_code != NULL) {
-                g_warning ("failed to download: %s, %s",
-                           pk_error_enum_to_string (pk_error_get_code (error_code)),
-                           pk_error_get_details (error_code));
-		g_object_unref (error_code);
-		g_object_unref (results);
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		g_warning ("failed to download: %s, %s",
+			   pk_error_enum_to_string (pk_error_get_code (error_code)),
+			   pk_error_get_details (error_code));
 		return;
 	}
 
 	g_debug ("Downloaded updates");
-
 	g_clear_pointer (&monitor->pending_downloads, g_strfreev);
-	g_object_unref (results);
 }
 
 static void
@@ -303,19 +294,17 @@ get_updates_finished_cb (GObject *object,
 			 gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
-	PkResults *results;
-	PkError *error_code;
-	GError *error = NULL;
-	GPtrArray *packages;
 	guint i;
 	PkPackage *pkg;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_object_unref_ PkError *error_code = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *packages = NULL;
 
 	results = pk_client_generic_finish (PK_CLIENT (object), res, &error);
 	if (results == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get updates: %s", error->message);
-		}
-		g_error_free (error);
 		return;
 	}
 
@@ -324,8 +313,6 @@ get_updates_finished_cb (GObject *object,
 		g_warning ("failed to get updates: %s, %s",
 			   pk_error_enum_to_string (pk_error_get_code (error_code)),
 			   pk_error_get_details (error_code));
-		g_object_unref (error_code);
-		g_object_unref (results);
 		return;
 	}
 
@@ -348,9 +335,6 @@ get_updates_finished_cb (GObject *object,
 
 		download_updates (monitor);
 	}
-
-	g_ptr_array_unref (packages);
-	g_object_unref (results);
 }
 
 static void
@@ -378,16 +362,14 @@ refresh_cache_finished_cb (GObject *object,
 			   gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
-	PkResults *results;
-	PkError *error_code;
-	GError *error = NULL;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_object_unref_ PkError *error_code = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
 
 	results = pk_client_generic_finish (PK_CLIENT (object), res, &error);
 	if (results == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to refresh the cache: %s", error->message);
-		}
-		g_error_free (error);
 		return;
 	}
 
@@ -396,14 +378,10 @@ refresh_cache_finished_cb (GObject *object,
 		g_warning ("failed to refresh the cache: %s, %s",
 			   pk_error_enum_to_string (pk_error_get_code (error_code)),
 			   pk_error_get_details (error_code));
-		g_object_unref (error_code);
-		g_object_unref (results);
 		return;
 	}
 
 	monitor->refresh_cache_due = FALSE;
-
-	g_object_unref (results);
 
 	get_updates (monitor);
 }
@@ -418,7 +396,6 @@ refresh_cache (GsUpdateMonitor *monitor)
 		return;
 
 	g_debug ("Refreshing cache");
-
 	pk_client_refresh_cache_async (PK_CLIENT (monitor->task),
 				       TRUE,
 				       monitor->cancellable,
@@ -547,7 +524,7 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 		      "only-download", TRUE,
 		      NULL);
 
-        monitor->network_available = FALSE;
+	monitor->network_available = FALSE;
 	monitor->control = pk_control_new ();
 	g_signal_connect (monitor->control, "notify::network-state",
 			  G_CALLBACK (notify_network_state_cb), monitor);
@@ -604,9 +581,9 @@ remove_stale_notifications (GsUpdateMonitor *monitor)
 		g_debug ("Withdrawing stale notifications");
 
 		g_application_withdraw_notification (monitor->application,
-		                                     "updates-available");
+						     "updates-available");
 		g_application_withdraw_notification (monitor->application,
-		                                     "offline-updates");
+						     "offline-updates");
 	}
 }
 

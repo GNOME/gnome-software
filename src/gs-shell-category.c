@@ -25,6 +25,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gs-cleanup.h"
 #include "gs-utils.h"
 #include "gs-app-tile.h"
 #include "gs-shell-category.h"
@@ -87,7 +88,6 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 			       GAsyncResult *res,
 			       gpointer user_data)
 {
-	GError *error = NULL;
 	gint i = 0;
 	GList *l;
 	GList *list;
@@ -96,15 +96,14 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 	GsShellCategory *shell = GS_SHELL_CATEGORY (user_data);
 	GsShellCategoryPrivate *priv = shell->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	_cleanup_error_free_ GError *error = NULL;
 
 	list = gs_plugin_loader_get_category_apps_finish (plugin_loader,
 							  res,
 							  &error);
 	if (list == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get apps for category apps: %s", error->message);
-		}
-		g_error_free (error);
 		goto out;
 	}
 	gtk_grid_remove_column (GTK_GRID (priv->category_detail_grid), 1);
@@ -186,7 +185,9 @@ filter_selected (GtkListBox *filters, GtkListBoxRow *row, gpointer data)
 }
 
 static void
-gs_shell_category_create_filter_list (GsShellCategory *shell, GsCategory *category, GsCategory *subcategory)
+gs_shell_category_create_filter_list (GsShellCategory *shell,
+				      GsCategory *category,
+				      GsCategory *subcategory)
 {
 	GsShellCategoryPrivate *priv = shell->priv;
 	GtkWidget *row;
@@ -368,9 +369,7 @@ GsShellCategory *
 gs_shell_category_new (void)
 {
 	GsShellCategory *shell;
-
 	shell = g_object_new (GS_TYPE_SHELL_CATEGORY, NULL);
-
 	return shell;
 }
 

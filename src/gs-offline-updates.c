@@ -24,6 +24,7 @@
 #include <glib/gi18n.h>
 #include <packagekit-glib2/packagekit.h>
 
+#include "gs-cleanup.h"
 #include "gs-offline-updates.h"
 #include "gs-utils.h"
 
@@ -32,22 +33,22 @@ gs_offline_updates_show_error (void)
 {
 	const gchar *title;
 	gboolean show_geeky = FALSE;
-	GString *msg;
 	GtkWidget *dialog;
-	GError *error = NULL;
-	PkResults *results = NULL;
-	PkError *pk_error = NULL;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_object_unref_ PkError *pk_error = NULL;
+	_cleanup_object_unref_ PkResults *results = NULL;
+	_cleanup_string_free_ GString *msg = NULL;
 
 	results = pk_offline_get_results (NULL);
 	if (results == NULL)
-		goto out;
+		return;
 	pk_error = pk_results_get_error_code (results);
 	if (pk_error == NULL)
-		goto out;
+		return;
 
 	/* can this happen in reality? */
 	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS)
-		goto out;
+		return;
 
 	/* TRANSLATORS: this is when the offline update failed */
 	title = _("Failed To Update");
@@ -140,14 +141,7 @@ gs_offline_updates_show_error (void)
 	if (!pk_offline_clear_results (NULL, &error)) {
 		g_warning ("Failure clearing offline update message: %s",
 			   error->message);
-		g_error_free (error);
 	}
-	g_string_free (msg, TRUE);
-out:
-	if (pk_error != NULL)
-		g_object_unref (pk_error);
-	if (results != NULL)
-		g_object_unref (results);
 }
 
 /* vim: set noexpandtab: */

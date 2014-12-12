@@ -24,6 +24,7 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "gs-cleanup.h"
 #include "gs-popular-tile.h"
 #include "gs-star-widget.h"
 #include "gs-utils.h"
@@ -59,7 +60,7 @@ app_state_changed_idle (gpointer user_data)
 	GsPopularTilePrivate *priv;
 	GtkWidget *label;
 	gboolean installed;
-	gchar *name;
+	_cleanup_free_ gchar *name = NULL;
 
 	priv = gs_popular_tile_get_instance_private (tile);
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
@@ -100,7 +101,6 @@ app_state_changed_idle (gpointer user_data)
 		atk_object_set_name (accessible, name);
 		atk_object_set_description (accessible, gs_app_get_summary (priv->app));
 	}
-	g_free (name);
 
 	g_object_unref (tile);
 	return G_SOURCE_REMOVE;
@@ -132,12 +132,12 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 
 	if (gs_app_get_rating_kind (priv->app) == GS_APP_RATING_KIND_USER) {
 		gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
-		                           GS_APP_RATING_KIND_USER,
-		                           gs_app_get_rating (priv->app));
+					   GS_APP_RATING_KIND_USER,
+					   gs_app_get_rating (priv->app));
 	} else {
 		gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
-		                           GS_APP_RATING_KIND_KUDOS,
-		                           gs_app_get_kudos_percentage (priv->app));
+					   GS_APP_RATING_KIND_KUDOS,
+					   gs_app_get_kudos_percentage (priv->app));
 	}
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "content");
 

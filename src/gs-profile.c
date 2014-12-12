@@ -23,6 +23,7 @@
 
 #include <glib/gi18n.h>
 
+#include "gs-cleanup.h"
 #include "gs-profile.h"
 
 static void	gs_profile_finalize	(GObject	*object);
@@ -82,7 +83,7 @@ gs_profile_start (GsProfile *profile, const gchar *id)
 {
 	GThread *self;
 	GsProfileItem *item;
-	gchar *id_thr;
+	_cleanup_free_ gchar *id_thr = NULL;
 
 	g_return_if_fail (GS_IS_PROFILE (profile));
 	g_return_if_fail (id != NULL);
@@ -115,7 +116,6 @@ gs_profile_start (GsProfile *profile, const gchar *id)
 out:
 	/* unlock */
 	g_mutex_unlock (&profile->priv->mutex);
-	g_free (id_thr);
 }
 
 /**
@@ -126,8 +126,8 @@ gs_profile_stop (GsProfile *profile, const gchar *id)
 {
 	GThread *self;
 	GsProfileItem *item;
-	gchar *id_thr;
 	gdouble elapsed_ms;
+	_cleanup_free_ gchar *id_thr = NULL;
 
 	g_return_if_fail (GS_IS_PROFILE (profile));
 	g_return_if_fail (id != NULL);
@@ -164,7 +164,6 @@ gs_profile_stop (GsProfile *profile, const gchar *id)
 out:
 	/* unlock */
 	g_mutex_unlock (&profile->priv->mutex);
-	g_free (id_thr);
 }
 
 /**

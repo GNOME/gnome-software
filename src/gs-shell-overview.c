@@ -23,6 +23,7 @@
 
 #include <glib/gi18n.h>
 
+#include "gs-cleanup.h"
 #include "gs-shell.h"
 #include "gs-shell-overview.h"
 #include "gs-app.h"
@@ -100,12 +101,12 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
 	GsShellOverviewPrivate *priv = shell->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GError *error = NULL;
 	GList *l;
 	GList *list;
 	GsApp *app;
 	gint i;
 	GtkWidget *tile;
+	_cleanup_error_free_ GError *error = NULL;
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
@@ -114,7 +115,6 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	if (list == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get popular apps: %s", error->message);
-		g_error_free (error);
 		goto out;
 	}
 
@@ -142,25 +142,24 @@ out:
 
 static void
 gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
-                                           GAsyncResult *res,
-                                           gpointer user_data)
+					   GAsyncResult *res,
+					   gpointer user_data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
 	GsShellOverviewPrivate *priv = shell->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GError *error = NULL;
 	GList *l;
 	GList *list;
 	GsApp *app;
 	gint i;
 	GtkWidget *tile;
+	_cleanup_error_free_ GError *error = NULL;
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get recommended applications: %s", error->message);
-		g_error_free (error);
 		gtk_widget_hide (priv->popular_rotating_heading);
 		gtk_widget_hide (priv->box_popular_rotating);
 		goto out;
@@ -216,8 +215,8 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *tile;
 	GList *list;
-	GError *error = NULL;
 	GsApp *app;
+	_cleanup_error_free_ GError *error = NULL;
 
 	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
 
@@ -226,7 +225,6 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	if (list == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get featured apps: %s", error->message);
-		g_error_free (error);
 		goto out;
 	}
 
@@ -271,19 +269,18 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
 	GsShellOverviewPrivate *priv = shell->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GError *error = NULL;
 	gint i;
 	GList *l;
 	GList *list;
 	GsCategory *cat;
 	GtkWidget *tile;
 	gboolean has_category = FALSE;
+	_cleanup_error_free_ GError *error = NULL;
 
 	list = gs_plugin_loader_get_categories_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get categories: %s", error->message);
-		g_error_free (error);
 		goto out;
 	}
 	gs_container_remove_all (GTK_CONTAINER (priv->grid_categories));

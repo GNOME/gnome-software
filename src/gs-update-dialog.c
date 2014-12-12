@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 #include <packagekit-glib2/packagekit.h>
 
+#include "gs-cleanup.h"
 #include "gs-update-dialog.h"
 #include "gs-app-row.h"
 #include "gs-markdown.h"
@@ -90,21 +91,19 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 {
 	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GsAppKind kind;
-	GsMarkdown *markdown;
-	gchar *tmp;
-	gchar *update_desc;
 	const gchar *update_details;
+	_cleanup_free_ gchar *update_desc = NULL;
 
 	/* set window title */
 	kind = gs_app_get_kind (app);
 	if (kind == GS_APP_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (dialog), gs_app_get_name (app));
 	} else {
+		_cleanup_free_ gchar *tmp = NULL;
 		tmp = g_strdup_printf ("%s %s",
-		                       gs_app_get_source_default (app),
-		                       gs_app_get_update_version (app));
+				       gs_app_get_source_default (app),
+				       gs_app_get_update_version (app));
 		gtk_window_set_title (GTK_WINDOW (dialog), tmp);
-		g_free (tmp);
 	}
 
 	/* get the update description */
@@ -114,11 +113,11 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 		 * description for the update */
 		update_desc = g_strdup (_("No update description available."));
 	} else {
+		_cleanup_object_unref_ GsMarkdown *markdown = NULL;
 		markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 		gs_markdown_set_smart_quoting (markdown, FALSE);
 		gs_markdown_set_autocode (markdown, TRUE);
 		update_desc = gs_markdown_parse (markdown, update_details);
-		g_object_unref (markdown);
 	}
 
 	/* set update header */
@@ -127,7 +126,6 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	gs_image_set_from_pixbuf (GTK_IMAGE (priv->image_icon), gs_app_get_pixbuf (app));
 	gtk_label_set_label (GTK_LABEL (priv->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (priv->label_summary), gs_app_get_summary (app));
-	g_free (update_desc);
 
 	/* show the back button if needed */
 	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
@@ -135,8 +133,8 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 
 static void
 row_activated_cb (GtkListBox *list_box,
-                  GtkListBoxRow *row,
-                  GsUpdateDialog *dialog)
+		  GtkListBoxRow *row,
+		  GsUpdateDialog *dialog)
 {
 	GsApp *app;
 
@@ -151,8 +149,8 @@ row_activated_cb (GtkListBox *list_box,
 
 static void
 installed_updates_row_activated_cb (GtkListBox *list_box,
-                                    GtkListBoxRow *row,
-                                    GsUpdateDialog *dialog)
+				    GtkListBoxRow *row,
+				    GsUpdateDialog *dialog)
 {
 	GsApp *app;
 
@@ -178,8 +176,8 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 	if (time_updates_installed > 0) {
 		GDateTime *date;
 		GtkWidget *header;
-		gchar *date_str;
-		gchar *subtitle;
+		_cleanup_free_ gchar *date_str = NULL;
+		_cleanup_free_ gchar *subtitle = NULL;
 
 		date = g_date_time_new_from_unix_utc (time_updates_installed);
 		date_str = g_date_time_format (date, "%x");
@@ -189,8 +187,6 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 		subtitle = g_strdup_printf (_("Installed on %s"), date_str);
 		header = gtk_dialog_get_header_bar (GTK_DIALOG (dialog));
 		gtk_header_bar_set_subtitle (GTK_HEADER_BAR (header), subtitle);
-
-		g_free (date_str);
 	}
 
 	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
@@ -199,7 +195,7 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_installed_updates));
 	for (l = installed_updates; l != NULL; l = l->next) {
 		gs_update_list_add_app (GS_UPDATE_LIST (priv->list_box_installed_updates),
-		                        GS_APP (l->data));
+					GS_APP (l->data));
 	}
 }
 
@@ -228,33 +224,33 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 			app_related = g_ptr_array_index (related, i);
 			row = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 12);
 			g_object_set_data_full (G_OBJECT (row),
-			                        "app",
-			                        g_object_ref (app_related),
-			                        g_object_unref);
+						"app",
+						g_object_ref (app_related),
+						g_object_unref);
 			sort = gs_app_get_source_default (app_related);
 			g_object_set_data_full (G_OBJECT (row),
-			                        "sort",
-			                        g_strdup (sort),
-			                        g_free);
+						"sort",
+						g_strdup (sort),
+						g_free);
 			label = gtk_label_new (gs_app_get_source_default (app_related));
 			g_object_set (label,
-			              "margin-start", 20,
-			              "margin-end", 20,
-			              "margin-top", 6,
-			              "margin-bottom", 6,
-			              "xalign", 0.0,
-			              NULL);
+				      "margin-start", 20,
+				      "margin-end", 20,
+				      "margin-top", 6,
+				      "margin-bottom", 6,
+				      "xalign", 0.0,
+				      NULL);
 			gtk_widget_set_halign (label, GTK_ALIGN_START);
 			gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 			gtk_box_pack_start (GTK_BOX (row), label, TRUE, TRUE, 0);
 			label = gtk_label_new (gs_app_get_update_version (app_related));
 			g_object_set (label,
-			              "margin-start", 20,
-			              "margin-end", 20,
-			              "margin-top", 6,
-			              "margin-bottom", 6,
-			              "xalign", 1.0,
-			              NULL);
+				      "margin-start", 20,
+				      "margin-end", 20,
+				      "margin-top", 6,
+				      "margin-bottom", 6,
+				      "xalign", 1.0,
+				      NULL);
 			gtk_widget_set_halign (label, GTK_ALIGN_END);
 			gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 			gtk_box_pack_start (GTK_BOX (row), label, FALSE, FALSE, 0);
@@ -269,8 +265,8 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 
 static void
 list_header_func (GtkListBoxRow *row,
-                  GtkListBoxRow *before,
-                  gpointer user_data)
+		  GtkListBoxRow *before,
+		  gpointer user_data)
 {
 	GtkWidget *header = NULL;
 	if (before != NULL)
@@ -280,8 +276,8 @@ list_header_func (GtkListBoxRow *row,
 
 static gint
 os_updates_sort_func (GtkListBoxRow *a,
-                      GtkListBoxRow *b,
-                      gpointer user_data)
+		      GtkListBoxRow *b,
+		      gpointer user_data)
 {
 	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
 	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
@@ -361,20 +357,20 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 	priv->back_entry_stack = g_queue_new ();
 
 	g_signal_connect (GTK_LIST_BOX (priv->list_box), "row-activated",
-	                  G_CALLBACK (row_activated_cb), dialog);
+			  G_CALLBACK (row_activated_cb), dialog);
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box),
-	                              list_header_func,
-	                              dialog, NULL);
+				      list_header_func,
+				      dialog, NULL);
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box),
-	                            os_updates_sort_func,
-	                            dialog, NULL);
+				    os_updates_sort_func,
+				    dialog, NULL);
 
 	g_signal_connect (GTK_LIST_BOX (priv->list_box_installed_updates), "row-activated",
 			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
 
 	g_signal_connect (priv->button_back, "clicked",
-	                  G_CALLBACK (button_back_cb),
-	                  dialog);
+			  G_CALLBACK (button_back_cb),
+			  dialog);
 
 	g_signal_connect_after (dialog, "show", G_CALLBACK (unset_focus), NULL);
 
@@ -414,8 +410,8 @@ GtkWidget *
 gs_update_dialog_new (void)
 {
 	return GTK_WIDGET (g_object_new (GS_TYPE_UPDATE_DIALOG,
-	                                 "use-header-bar", TRUE,
-	                                 NULL));
+					 "use-header-bar", TRUE,
+					 NULL));
 }
 
 /* vim: set noexpandtab: */

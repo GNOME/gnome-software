@@ -26,6 +26,7 @@
 #include <errno.h>
 
 #include "gs-app.h"
+#include "gs-cleanup.h"
 #include "gs-utils.h"
 #include "gs-plugin.h"
 
@@ -127,8 +128,8 @@ gs_grab_focus_when_mapped (GtkWidget *widget)
 void
 gs_app_notify_installed (GsApp *app)
 {
-	gchar *summary;
-	GNotification *n;
+	_cleanup_free_ gchar *summary = NULL;
+	_cleanup_object_unref_ GNotification *n = NULL;
 
 	/* TRANSLATORS: this is the summary of a notification that an application
 	 * has been successfully installed */
@@ -143,8 +144,6 @@ gs_app_notify_installed (GsApp *app)
 	g_notification_set_default_action_and_target  (n, "app.details", "(ss)",
 						       gs_app_get_id (app), "");
 	g_application_send_notification (g_application_get_default (), "installed", n);
-	g_object_unref (n);
-	g_free (summary);
 }
 
 /**
@@ -157,8 +156,8 @@ gs_app_notify_failed_modal (GsApp *app,
 			    const GError *error)
 {
 	GtkWidget *dialog;
-	gchar *title;
-	gchar *msg;
+	const gchar *title;
+	_cleanup_free_ gchar *msg = NULL;
 
 	title = _("Sorry, this did not work");
 	switch (action) {
@@ -352,39 +351,34 @@ out:
 gboolean
 gs_mkdir_parent (const gchar *path, GError **error)
 {
-	gboolean ret = TRUE;
-	gchar *parent;
+	_cleanup_free_ gchar *parent = NULL;
 
 	parent = g_path_get_dirname (path);
 	if (g_mkdir_with_parents (parent, 0755) == -1) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "Failed to create '%s': %s",
 			     parent, g_strerror (errno));
+		return FALSE;
 	}
-
-	g_free (parent);
-	return ret;
+	return TRUE;
 }
 
 static void
 reboot_done (GObject *source, GAsyncResult *res, gpointer data)
 {
 	GCallback reboot_failed = data;
-	GVariant *ret;
-	GError *error = NULL;
+	_cleanup_variant_unref_ GVariant *ret = NULL;
+	_cleanup_error_free_ GError *error = NULL;
 
 	ret = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
-	if (ret) {
-		g_variant_unref (ret);
+	if (ret)
 		return;
-	}
 
-	if (error) {
-		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s", error->message);
-		g_error_free (error);
+	if (error != NULL) {
+		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
+			   error->message);
 	}
 
 	reboot_failed ();
@@ -393,7 +387,7 @@ reboot_done (GObject *source, GAsyncResult *res, gpointer data)
 void
 gs_reboot (GCallback reboot_failed)
 {
-	GDBusConnection *bus;
+	_cleanup_object_unref_ GDBusConnection *bus = NULL;
 
 	g_debug ("calling org.gnome.SessionManager.Reboot");
 
@@ -410,7 +404,6 @@ gs_reboot (GCallback reboot_failed)
 				NULL,
 				reboot_done,
 				reboot_failed);
-	g_object_unref (bus);
 }
 
 /**

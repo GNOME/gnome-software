@@ -67,8 +67,8 @@ GtkWidget *
 gs_first_run_dialog_new (void)
 {
 	return GTK_WIDGET (g_object_new (GS_TYPE_FIRST_RUN_DIALOG,
-	                                 "use-header-bar", TRUE,
-	                                 NULL));
+					 "use-header-bar", TRUE,
+					 NULL));
 }
 
 /* vim: set noexpandtab: */

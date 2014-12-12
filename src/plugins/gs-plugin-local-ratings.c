@@ -88,23 +88,20 @@ gs_plugin_local_ratings_load_db (GsPlugin *plugin,
 				 GError **error)
 {
 	const gchar *statement;
-	gboolean ret = TRUE;
 	gchar *error_msg = NULL;
 	gint rc;
 
 	g_debug ("trying to open database '%s'", plugin->priv->db_path);
-	ret = gs_mkdir_parent (plugin->priv->db_path, error);
-	if (!ret)
-		goto out;
+	if (!gs_mkdir_parent (plugin->priv->db_path, error))
+		return FALSE;
 	rc = sqlite3_open (plugin->priv->db_path, &plugin->priv->db);
 	if (rc != SQLITE_OK) {
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "Can't open transaction database: %s",
 			     sqlite3_errmsg (plugin->priv->db));
-		goto out;
+		return FALSE;
 	}
 
 	/* we don't need to keep doing fsync */
@@ -120,10 +117,7 @@ gs_plugin_local_ratings_load_db (GsPlugin *plugin,
 			    "rating INTEGER DEFAULT 0);";
 		sqlite3_exec (plugin->priv->db, statement, NULL, NULL, NULL);
 	}
-
-	/* success */
-out:
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -143,8 +137,8 @@ gs_plugin_local_ratings_sqlite_cb (void *data, gint argc, gchar **argv, gchar **
 static gint
 gs_plugin_local_find_app (GsPlugin *plugin, const gchar *app_id)
 {
-	gchar *statement;
 	gint rating = -1;
+	_cleanup_free_ gchar *statement = NULL;
 
 	statement = g_strdup_printf ("SELECT rating FROM ratings WHERE app_id = '%s'", app_id);
 	sqlite3_exec (plugin->priv->db,
@@ -152,7 +146,6 @@ gs_plugin_local_find_app (GsPlugin *plugin, const gchar *app_id)
 		      gs_plugin_local_ratings_sqlite_cb,
 		      &rating,
 		      NULL);
-	g_free (statement);
 	return rating;
 }
 
@@ -165,10 +158,10 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
-	gboolean ret = TRUE;
-	gchar *error_msg = NULL;
-	gchar *statement = NULL;
+	char *error_msg = NULL;
+	gboolean ret;
 	gint rc;
+	_cleanup_free_ gchar *statement = NULL;
 
 	/* already loaded */
 	if (g_once_init_enter (&plugin->priv->loaded)) {
@@ -176,7 +169,7 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 		g_once_init_leave (&plugin->priv->loaded, TRUE);
 
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 
 	/* insert the entry */
@@ -191,12 +184,9 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "SQL error: %s", error_msg);
 		sqlite3_free (error_msg);
-		ret = FALSE;
-		goto out;
+		return FALSE;
 	}
-out:
-	g_free (statement);
-	return ret;
+	return TRUE;
 
 }
 
@@ -210,22 +200,21 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	gboolean ret = TRUE;
+	gboolean ret;
 	gint rating;
 	GList *l;
 	GsApp *app;
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) == 0)
-		goto out;
+		return TRUE;
 
 	/* already loaded */
 	if (g_once_init_enter (&plugin->priv->loaded)) {
 		ret = gs_plugin_local_ratings_load_db (plugin, error);
 		g_once_init_leave (&plugin->priv->loaded, TRUE);
-
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 
 	/* add any missing ratings data */
@@ -244,6 +233,5 @@ gs_plugin_refine (GsPlugin *plugin,
 				gs_app_add_kudo (app, GS_APP_KUDO_POPULAR);
 		}
 	}
-out:
-	return ret;
+	return TRUE;
 }

@@ -32,6 +32,7 @@
 
 #include "gs-dbus-helper.h"
 #include "gs-box.h"
+#include "gs-cleanup.h"
 #include "gs-first-run-dialog.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
@@ -88,8 +89,8 @@ gs_application_init (GsApplication *application)
 
 static void
 download_updates_setting_changed (GSettings     *settings,
-                                  const gchar   *key,
-                                  GsApplication *app)
+				  const gchar   *key,
+				  GsApplication *app)
 {
 	if (g_settings_get_boolean (settings, key)) {
 		g_debug ("Enabling update monitor");
@@ -104,10 +105,10 @@ static void
 gs_application_monitor_updates (GsApplication *app)
 {
 	g_signal_connect (app->settings, "changed::download-updates",
-	                  G_CALLBACK (download_updates_setting_changed), app);
+			  G_CALLBACK (download_updates_setting_changed), app);
 	download_updates_setting_changed (app->settings,
-	                                  "download-updates",
-	                                  app);
+					  "download-updates",
+					  app);
 }
 
 static void
@@ -135,7 +136,7 @@ static void
 gs_application_initialize_plugins (GsApplication *app)
 {
 	static gboolean initialized = FALSE;
-	GError *error = NULL;
+	_cleanup_error_free_ GError *error = NULL;
 
 	if (initialized)
 		return;
@@ -181,8 +182,8 @@ static void
 gs_application_initialize_ui (GsApplication *app)
 {
 	static gboolean initialized = FALSE;
-	GFile *file;
 	gchar *theme;
+	_cleanup_object_unref_ GFile *file = NULL;
 
 	if (initialized)
 		return;
@@ -204,7 +205,6 @@ gs_application_initialize_ui (GsApplication *app)
 		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style.css");
 	}
 	gtk_css_provider_load_from_file (app->provider, file, NULL);
-	g_object_unref (file);
 
 	gs_application_initialize_plugins (app);
 
@@ -243,9 +243,9 @@ about_activated (GSimpleAction *action,
 	};
 	const gchar *copyright = "Copyright \xc2\xa9 2013 Richard Hughes, Matthias Clasen";
 	GtkIconTheme *icon_theme;
-	GdkPixbuf *logo;
 	GList *windows;
 	GtkWindow *parent = NULL;
+	_cleanup_object_unref_ GdkPixbuf *logo = NULL;
 
 	gs_application_initialize_ui (app);
 
@@ -270,8 +270,6 @@ about_activated (GSimpleAction *action,
 			       "translator-credits", _("translator-credits"),
 			       "version", VERSION,
 			       NULL);
-
-	g_object_unref (logo);
 }
 
 static void
@@ -406,9 +404,9 @@ launch_activated (GSimpleAction *action,
 {
 	const gchar *desktop_id;
 	GdkDisplay *display;
-	GAppInfo *appinfo;
-	GAppLaunchContext *context;
-	GError *error = NULL;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_object_unref_ GAppInfo *appinfo = NULL;
+	_cleanup_object_unref_ GAppLaunchContext *context = NULL;
 
 	desktop_id = g_variant_get_string (parameter, NULL);
 	display = gdk_display_get_default ();
@@ -421,11 +419,7 @@ launch_activated (GSimpleAction *action,
 	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
 	if (!g_app_info_launch (appinfo, NULL, context, &error)) {
 		g_warning ("launching %s failed: %s", desktop_id, error->message);
-		g_error_free (error);
 	}
-
-	g_object_unref (appinfo);
-	g_object_unref (context);
 }
 
 static void
@@ -433,11 +427,10 @@ clear_offline_updates (GSimpleAction *action,
 		       GVariant      *parameter,
 		       gpointer       data)
 {
-	GError *error = NULL;
+	_cleanup_error_free_ GError *error = NULL;
 	if (!pk_offline_clear_results (NULL, &error)) {
 		g_warning ("Failure clearing offline update message: %s",
 			   error->message);
-		g_error_free (error);
 	}
 }
 
@@ -459,8 +452,8 @@ static GActionEntry actions[] = {
 	{ "details", details_activated, "(ss)", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
-        { "clear-offline-updates", clear_offline_updates, NULL, NULL, NULL },
-        { "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
+	{ "clear-offline-updates", clear_offline_updates, NULL, NULL, NULL },
+	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
 
@@ -521,10 +514,9 @@ static gboolean
 gs_application_local_command_line (GApplication *app, gchar ***args, gint *status)
 {
 	GOptionContext *context;
-        gboolean gapplication_service = FALSE;
+	gboolean gapplication_service = FALSE;
 	gchar *mode = NULL;
 	gchar *search = NULL;
-	gchar *local_filename = NULL;
 	gchar *id = NULL;
 	gboolean activate_ui = TRUE;
 	gboolean prefer_local = FALSE;
@@ -532,9 +524,10 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 	gboolean profile = FALSE;
 	gboolean verbose = FALSE;
 	gint argc;
+	_cleanup_free_ gchar *local_filename = NULL;
 	const GOptionEntry options[] = {
-                { "gapplication-service", '\0', 0, G_OPTION_ARG_NONE, &gapplication_service,
-                   _("Enter GApplication service mode"), NULL }, 
+		{ "gapplication-service", '\0', 0, G_OPTION_ARG_NONE, &gapplication_service,
+		   _("Enter GApplication service mode"), NULL }, 
 		{ "mode", '\0', 0, G_OPTION_ARG_STRING, &mode,
 		  /* TRANSLATORS: this is a command line option */
 		  _("Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"), _("MODE") },
@@ -553,7 +546,7 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 		{ "version", 0, 0, G_OPTION_ARG_NONE, &version, NULL, NULL },
 		{ NULL}
 	};
-	GError *error = NULL;
+	_cleanup_error_free_ GError *error = NULL;
 
 	context = g_option_context_new ("");
 	g_option_context_add_main_entries (context, options, NULL);
@@ -561,7 +554,6 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 	argc = g_strv_length (*args);
 	if (!g_option_context_parse (context, &argc, args, &error)) {
 		g_printerr ("%s\n", error->message);
-		g_error_free (error);
 		*status = 1;
 		goto out;
 	}
@@ -589,7 +581,6 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 
 	if (!g_application_register (app, NULL, &error)) {
 		g_printerr ("%s\n", error->message);
-		g_error_free (error);
 		*status = 1;
 		goto out;
 	}
@@ -625,7 +616,6 @@ gs_application_local_command_line (GApplication *app, gchar ***args, gint *statu
 
 out:
 	g_option_context_free (context);
-	g_free (local_filename);
 	return TRUE;
 }
 

@@ -24,6 +24,7 @@
 #include <string.h>
 #include <glib.h>
 
+#include "gs-cleanup.h"
 #include "gs-moduleset.h"
 
 typedef struct {
@@ -235,8 +236,8 @@ gs_moduleset_parse_filename (GsModuleset *moduleset, const gchar *filename, GErr
 		NULL };
 	GMarkupParseContext *ctx;
 	gboolean ret;
-	gchar *data = NULL;
 	gsize data_len;
+	_cleanup_free_ gchar *data = NULL;
 
 	g_return_val_if_fail (GS_IS_MODULESET (moduleset), FALSE);
 
@@ -252,7 +253,6 @@ gs_moduleset_parse_filename (GsModuleset *moduleset, const gchar *filename, GErr
 		goto out;
 out:
 	g_markup_parse_context_free (ctx);
-	g_free (data);
 	return ret;
 }
 
@@ -262,30 +262,22 @@ out:
 gboolean
 gs_moduleset_parse_path (GsModuleset *moduleset, const gchar *path, GError **error)
 {
-	GDir *dir;
-	gboolean ret = TRUE;
 	const gchar *filename;
-	gchar *tmp;
+	_cleanup_dir_close_ GDir *dir = NULL;
 
 	/* search all the files in the path */
 	dir = g_dir_open (path, 0, error);
-	if (dir == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (dir == NULL)
+		return FALSE;
 	while ((filename = g_dir_read_name (dir)) != NULL) {
+		_cleanup_free_ gchar *tmp = NULL;
 		if (!g_str_has_suffix (filename, ".xml"))
 			continue;
 		tmp = g_build_filename (path, filename, NULL);
-		ret = gs_moduleset_parse_filename (moduleset, tmp, error);
-		g_free (tmp);
-		if (!ret)
-			goto out;
+		if (!gs_moduleset_parse_filename (moduleset, tmp, error))
+			return FALSE;
 	}
-out:
-	if (dir != NULL)
-		g_dir_close (dir);
-	return ret;
+	return TRUE;
 }
 
 static void

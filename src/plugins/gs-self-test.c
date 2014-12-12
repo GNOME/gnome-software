@@ -26,6 +26,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-cleanup.h"
 #include "gs-moduleset.h"
 
 static void
@@ -34,7 +35,7 @@ moduleset_func (void)
 	gboolean ret;
 	gchar **data;
 	GError *error = NULL;
-	GsModuleset *ms;
+	_cleanup_object_unref_ GsModuleset *ms = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test ("./moduleset-test.xml", G_FILE_TEST_EXISTS))
@@ -62,8 +63,6 @@ moduleset_func (void)
 	g_assert_cmpint (g_strv_length (data), ==, 1);
 	g_assert_cmpstr (data[0], ==, "gnome-shell.desktop");
 	g_assert_cmpstr (data[1], ==, NULL);
-
-	g_object_unref (ms);
 }
 
 int

@@ -27,6 +27,7 @@
 #include <glib/gstdio.h>
 
 #include "gs-app.h"
+#include "gs-cleanup.h"
 #include "gs-markdown.h"
 #include "gs-plugin.h"
 #include "gs-plugin-loader.h"
@@ -36,10 +37,10 @@
 static void
 gs_markdown_func (void)
 {
-	GsMarkdown *md;
 	gchar *text;
 	const gchar *markdown;
 	const gchar *markdown_expected;
+	_cleanup_object_unref_ GsMarkdown *md = NULL;
 
 	/* get GsMarkdown object */
 	md = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
@@ -211,8 +212,6 @@ gs_markdown_func (void)
 	text = gs_markdown_parse (md, markdown);
 	g_assert_cmpstr (text, ==, markdown_expected);
 	g_free (text);
-
-	g_object_unref (md);
 }
 
 static gboolean
@@ -277,23 +276,20 @@ gs_plugin_func (void)
 static void
 gs_app_subsume_func (void)
 {
-	GsApp *new;
-	GsApp *old;
+	_cleanup_object_unref_ GsApp *new = NULL;
+	_cleanup_object_unref_ GsApp *old = NULL;
 
 	new = gs_app_new ("xxx.desktop");
 	old = gs_app_new ("yyy.desktop");
 	gs_app_set_metadata (old, "foo", "bar");
 	gs_app_subsume (new, old);
 	g_assert_cmpstr (gs_app_get_metadata_item (new, "foo"), ==, "bar");
-
-	g_object_unref (new);
-	g_object_unref (old);
 }
 
 static void
 gs_app_func (void)
 {
-	GsApp *app;
+	_cleanup_object_unref_ GsApp *app = NULL;
 
 	app = gs_app_new ("gnome-software");
 	g_assert (GS_IS_APP (app));
@@ -316,8 +312,6 @@ gs_app_func (void)
 	g_assert_cmpstr (gs_app_get_name (app), ==, "dave");
 	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, "hugh");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "hugh");
-
-	g_object_unref (app);
 }
 
 static guint _status_changed_cnt = 0;
@@ -334,9 +328,9 @@ gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 static void
 gs_plugin_loader_dedupe_func (void)
 {
-	GsApp *app1;
-	GsApp *app2;
-	GsPluginLoader *loader;
+	_cleanup_object_unref_ GsApp *app1 = NULL;
+	_cleanup_object_unref_ GsApp *app2 = NULL;
+	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
 
 	loader = gs_plugin_loader_new ();
 
@@ -354,11 +348,6 @@ gs_plugin_loader_dedupe_func (void)
 	app2 = gs_plugin_loader_dedupe (loader, app2);
 	g_assert_cmpstr (gs_app_get_id (app2), ==, "app1");
 	g_assert_cmpstr (gs_app_get_description (app2), ==, "description");
-
-	g_object_unref (app1);
-	g_object_unref (app2);
-
-	g_object_unref (loader);
 }
 
 static void
@@ -369,7 +358,7 @@ gs_plugin_loader_func (void)
 	GList *list;
 	GList *l;
 	GsApp *app;
-	GsPluginLoader *loader;
+	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
@@ -501,18 +490,16 @@ gs_plugin_loader_func (void)
 	g_assert (ret);
 	g_assert_cmpint (gs_app_get_rating (app), ==, 35);
 	g_object_unref (app);
-
-	g_object_unref (loader);
 }
 
 static void
 gs_plugin_loader_refine_func (void)
 {
 	GError *error = NULL;
-	GsApp *app;
-	GsPluginLoader *loader;
 	const gchar *url;
 	gboolean ret;
+	_cleanup_object_unref_ GsApp *app = NULL;
+	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
@@ -546,9 +533,6 @@ gs_plugin_loader_refine_func (void)
 	g_assert_cmpstr (gs_app_get_description (app), !=, NULL);
 	url = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
 	g_assert_cmpstr (url, ==, "http://www.gimp.org/");
-
-	g_object_unref (app);
-	g_object_unref (loader);
 }
 
 static void
@@ -563,8 +547,8 @@ gs_plugin_loader_empty_func (void)
 	GList *subcats;
 	GsCategory *category;
 	GsCategory *sub;
-	GsPluginLoader *loader;
 	guint empty_subcats_cnt = 0;
+	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
@@ -639,17 +623,16 @@ gs_plugin_loader_empty_func (void)
 	g_assert_cmpint (empty_subcats_cnt, ==, 0);
 
 	gs_plugin_list_free (list);
-	g_object_unref (loader);
 }
 
 static void
 gs_plugin_loader_webapps_func (void)
 {
-	GsPluginLoader *loader;
-	GsApp *app;
-	gchar *path;
 	gboolean ret;
 	GError *error = NULL;
+	_cleanup_free_ gchar *path = NULL;
+	_cleanup_object_unref_ GsApp *app = NULL;
+	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
@@ -696,9 +679,6 @@ gs_plugin_loader_webapps_func (void)
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UNAVAILABLE);
 
 	g_unlink (path);
-	g_free (path);
-	g_object_unref (app);
-	g_object_unref (loader);
 }
 
 int

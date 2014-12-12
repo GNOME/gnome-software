@@ -29,6 +29,7 @@
 
 #include "gs-plugin-loader-sync.h"
 
+#include "gs-cleanup.h"
 #include "gs-shell-search-provider-generated.h"
 #include "gs-shell-search-provider.h"
 
@@ -110,10 +111,10 @@ search_done_cb (GObject *source,
 static void
 execute_search (GsShellSearchProvider  *self,
 		GDBusMethodInvocation  *invocation,
-		gchar                 **terms)
+		gchar		 **terms)
 {
 	PendingSearch *pending_search;
-	gchar *string;
+	_cleanup_free_ gchar *string = NULL;
 
 	string = g_strjoinv (" ", terms);
 
@@ -138,14 +139,13 @@ execute_search (GsShellSearchProvider  *self,
 				       string, 0, self->cancellable,
 				       search_done_cb,
 				       pending_search);
-	g_free (string);
 }
 
 static gboolean
-handle_get_initial_result_set (GsShellSearchProvider2        *skeleton,
-                               GDBusMethodInvocation         *invocation,
-                               gchar                        **terms,
-                               gpointer                       user_data)
+handle_get_initial_result_set (GsShellSearchProvider2	*skeleton,
+			       GDBusMethodInvocation	 *invocation,
+			       gchar			**terms,
+			       gpointer		       user_data)
 {
 	GsShellSearchProvider *self = user_data;
 
@@ -155,11 +155,11 @@ handle_get_initial_result_set (GsShellSearchProvider2        *skeleton,
 }
 
 static gboolean
-handle_get_subsearch_result_set (GsShellSearchProvider2        *skeleton,
-                                 GDBusMethodInvocation         *invocation,
-                                 gchar                        **previous_results,
-                                 gchar                        **terms,
-                                 gpointer                       user_data)
+handle_get_subsearch_result_set (GsShellSearchProvider2	*skeleton,
+				 GDBusMethodInvocation	 *invocation,
+				 gchar			**previous_results,
+				 gchar			**terms,
+				 gpointer		       user_data)
 {
 	GsShellSearchProvider *self = user_data;
 
@@ -169,10 +169,10 @@ handle_get_subsearch_result_set (GsShellSearchProvider2        *skeleton,
 }
 
 static gboolean
-handle_get_result_metas (GsShellSearchProvider2        *skeleton,
-                         GDBusMethodInvocation         *invocation,
-                         gchar                        **results,
-                         gpointer                       user_data)
+handle_get_result_metas (GsShellSearchProvider2	*skeleton,
+			 GDBusMethodInvocation	 *invocation,
+			 gchar			**results,
+			 gpointer		       user_data)
 {
 	GsShellSearchProvider *self = user_data;
 	GVariantBuilder meta;
@@ -185,7 +185,7 @@ handle_get_result_metas (GsShellSearchProvider2        *skeleton,
 	g_debug ("****** GetResultMetas");
 
 	for (i = 0; results[i]; i++) {
-		GsApp *app;
+		_cleanup_object_unref_ GsApp *app = NULL;
 
 		if (g_hash_table_lookup (self->metas_cache, results[i]))
 			continue;
@@ -213,7 +213,6 @@ handle_get_result_metas (GsShellSearchProvider2        *skeleton,
 		g_variant_builder_add (&meta, "{sv}", "description", g_variant_new_string (gs_app_get_summary (app)));
 		meta_variant = g_variant_builder_end (&meta);
 		g_hash_table_insert (self->metas_cache, g_strdup (gs_app_get_id (app)), g_variant_ref_sink (meta_variant));
-		g_object_unref (app);
 
 	}
 
@@ -232,39 +231,36 @@ handle_get_result_metas (GsShellSearchProvider2        *skeleton,
 
 static gboolean
 handle_activate_result (GsShellSearchProvider2 	     *skeleton,
-                        GDBusMethodInvocation        *invocation,
-                        gchar                        *result,
-                        gchar                       **terms,
-                        guint32                       timestamp,
-                        gpointer                      user_data)
+			GDBusMethodInvocation	*invocation,
+			gchar			*result,
+			gchar		       **terms,
+			guint32		       timestamp,
+			gpointer		      user_data)
 {
 	GApplication *app = g_application_get_default ();
-	gchar *string;
+	_cleanup_free_ gchar *string = NULL;
 
 	string = g_strjoinv (" ", terms);
 
 	g_action_group_activate_action (G_ACTION_GROUP (app), "details",
-                                  	g_variant_new ("(ss)", result, string));
+				  	g_variant_new ("(ss)", result, string));
 
-	g_free (string);
 	gs_shell_search_provider2_complete_activate_result (skeleton, invocation);
 	return TRUE;
 }
 
 static gboolean
 handle_launch_search (GsShellSearchProvider2 	   *skeleton,
-                      GDBusMethodInvocation        *invocation,
-                      gchar                       **terms,
-                      guint32                       timestamp,
-                      gpointer                      user_data)
+		      GDBusMethodInvocation	*invocation,
+		      gchar		       **terms,
+		      guint32		       timestamp,
+		      gpointer		      user_data)
 {
 	GApplication *app = g_application_get_default ();
-	gchar *string = g_strjoinv (" ", terms);
+	_cleanup_free_ gchar *string = g_strjoinv (" ", terms);
 
 	g_action_group_activate_action (G_ACTION_GROUP (app), "search",
-                                  	g_variant_new ("s", string));
-
-	g_free (string);
+				  	g_variant_new ("s", string));
 
 	gs_shell_search_provider2_complete_launch_search (skeleton, invocation);
 	return TRUE;
@@ -272,24 +268,24 @@ handle_launch_search (GsShellSearchProvider2 	   *skeleton,
 
 static void
 search_provider_name_acquired_cb (GDBusConnection *connection,
-                                  const gchar     *name,
-                                  gpointer         user_data)
+				  const gchar     *name,
+				  gpointer	 user_data)
 {
 	g_debug ("Search provider name acquired: %s", name);
 }
 
 static void
 search_provider_name_lost_cb (GDBusConnection *connection,
-                              const gchar     *name,
-                              gpointer         user_data)
+			      const gchar     *name,
+			      gpointer	 user_data)
 {
 	g_debug ("Search provider name lost: %s", name);
 }
 
 static void
 search_provider_bus_acquired_cb (GDBusConnection *connection,
-                                 const gchar *name,
-                                 gpointer user_data)
+				 const gchar *name,
+				 gpointer user_data)
 {
 	GsShellSearchProvider *self = user_data;
 
