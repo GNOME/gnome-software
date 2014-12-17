@@ -665,14 +665,24 @@ gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 {
 	/* hide the QT versions in preference to the GTK ones */
 	if (g_strcmp0 (gs_app_get_id (app), "transmission-qt.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "nntpgrab_qt.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "nntpgrab_server_qt.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "hotot-qt.desktop") == 0) {
 		g_debug ("removing QT version of %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
 
+	/* hide the KDE version in preference to the GTK one */
+	if (g_strcmp0 (gs_app_get_id (app), "qalculate_kde.desktop") == 0) {
+		g_debug ("removing KDE version of %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
+
 	/* hide the KDE version in preference to the Qt one */
-	if (g_strcmp0 (gs_app_get_id (app), "kid3.desktop") == 0) {
+	if (g_strcmp0 (gs_app_get_id (app), "kid3.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "kchmviewer.desktop") == 0) {
 		g_debug ("removing KDE version of %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
