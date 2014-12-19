@@ -7,44 +7,22 @@
     <property name="type-hint">dialog</property>
     <property name="modal">True</property>
     <property name="resizable">True</property>
-    <child type="titlebar">
-      <object class="GtkHeaderBar" id="header">
+    <property name="use_header_bar">1</property>
+    <child type="action">
+      <object class="GtkButton" id="cancel_button">
         <property name="visible">True</property>
-        <property name="has-subtitle">False</property>
-        <child type="title">
-          <object class="GtkLabel" id="title">
-            <property name="visible">True</property>
-            <property name="label" translatable="yes">Add to Application Folder</property>
-            <style>
-              <class name="title"/>
-            </style>
-          </object>
-        </child>
-        <child>
-          <object class="GtkButton" id="cancel_button">
-            <property name="visible">True</property>
-            <property name="use_underline">True</property>
-            <property name="label" translatable="yes">_Cancel</property>
-          </object>
-          <packing>
-            <property name="pack_type">start</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkButton" id="done_button">
-            <property name="visible">True</property>
-            <property name="sensitive">False</property>
-            <property name="use_underline">True</property>
-            <property name="label" translatable="yes">_Add</property>
-            <property name="receives_default">True</property>
-            <style>
-              <class name="suggested-action"/>
-            </style>
-          </object>
-          <packing>
-            <property name="pack_type">end</property>
-          </packing>
-        </child>
+        <property name="use_underline">True</property>
+        <property name="label" translatable="yes">_Cancel</property>
+      </object>
+    </child>
+    <child type="action">
+      <object class="GtkButton" id="done_button">
+        <property name="visible">True</property>
+        <property name="sensitive">False</property>
+        <property name="use_underline">True</property>
+        <property name="label" translatable="yes">_Add</property>
+        <property name="can_default">True</property>
+        <property name="receives_default">True</property>
       </object>
     </child>
     <child internal-child="vbox">
@@ -85,5 +63,9 @@
         </child>
       </object>
     </child>
+    <action-widgets>
+      <action-widget response="cancel">cancel_button</action-widget>
+      <action-widget response="apply" default="true">done_button</action-widget>
+    </action-widgets>
   </template>
 </interface>
