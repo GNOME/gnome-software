@@ -1353,7 +1353,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	GPtrArray *array;
 	gboolean ret = TRUE;
 	guint i;
-	_cleanup_keyfile_unref_ GHashTable *ignore_apps = NULL;
+	_cleanup_hashtable_unref_ GHashTable *ignore_apps = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
