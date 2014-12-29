@@ -42,6 +42,7 @@ struct _GsScreenshotImagePrivate
 	GtkWidget	*image2;
 	GtkWidget	*label_error;
 	SoupSession	*session;
+	SoupMessage	*message;
 	gchar		*cachedir;
 	gchar		*filename;
 	const gchar	*current_image;
@@ -232,6 +233,9 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	_cleanup_object_unref_ GInputStream *stream = NULL;
 	_cleanup_object_unref_ GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
 
+	if (msg->status_code == SOUP_STATUS_CANCELLED)
+		goto out;
+
 	if (msg->status_code != SOUP_STATUS_OK) {
 		/* TRANSLATORS: this is when we try to download a screenshot and
 		 * we get back 404 */
@@ -348,7 +352,6 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 {
 	AsImage *im = NULL;
 	GsScreenshotImagePrivate *priv;
-	SoupMessage *msg = NULL;
 	SoupURI *base_uri = NULL;
 	const gchar *url;
 	gint rc;
@@ -437,8 +440,17 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		soup_uri_free (base_uri);
 		return;
 	}
-	msg = soup_message_new_from_uri (SOUP_METHOD_GET, base_uri);
-	if (msg == NULL) {
+
+	/* cancel any previous messages */
+	if (priv->message != NULL) {
+		soup_session_cancel_message (priv->session,
+		                             priv->message,
+		                             SOUP_STATUS_CANCELLED);
+		g_clear_object (&priv->message);
+	}
+
+	priv->message = soup_message_new_from_uri (SOUP_METHOD_GET, base_uri);
+	if (priv->message == NULL) {
 		/* TRANSLATORS: this is when networking is not available */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not available"));
 		soup_uri_free (base_uri);
@@ -446,7 +458,8 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* send async */
-	soup_session_queue_message (priv->session, msg,
+	soup_session_queue_message (priv->session,
+				    g_object_ref (priv->message) /* transfer full */,
 				    gs_screenshot_image_complete_cb,
 				    g_object_ref (ssimg));
 	soup_uri_free (base_uri);
@@ -463,6 +476,12 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 
 	priv = gs_screenshot_image_get_instance_private (ssimg);
 
+	if (priv->message != NULL) {
+		soup_session_cancel_message (priv->session,
+		                             priv->message,
+		                             SOUP_STATUS_CANCELLED);
+		g_clear_object (&priv->message);
+	}
 	g_clear_object (&priv->screenshot);
 	g_free (priv->cachedir);
 	priv->cachedir = NULL;
