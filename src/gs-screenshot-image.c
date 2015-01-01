@@ -234,7 +234,7 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	_cleanup_object_unref_ GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
 
 	if (msg->status_code == SOUP_STATUS_CANCELLED)
-		goto out;
+		return;
 
 	if (msg->status_code != SOUP_STATUS_OK) {
 		/* TRANSLATORS: this is when we try to download a screenshot and
