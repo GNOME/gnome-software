@@ -1642,6 +1642,13 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 					 "no search results to show");
 		goto out;
 	}
+	if (g_list_length (state->list) > 500) {
+		g_task_return_new_error (task,
+					 GS_PLUGIN_LOADER_ERROR,
+					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+					 "To many search results returned");
+		goto out;
+	}
 
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
