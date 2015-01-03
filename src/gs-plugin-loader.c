@@ -1581,7 +1581,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	_cleanup_strv_free_ gchar **values = NULL;
 
 	/* run each plugin */
-	values = g_str_tokenize_and_fold (state->value, NULL, NULL);
+	values = g_strsplit (state->value, " ", -1);
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
 		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
 		if (!plugin->enabled)
