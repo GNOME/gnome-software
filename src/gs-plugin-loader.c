@@ -1646,7 +1646,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "To many search results returned");
+					 "Too many search results returned");
 		goto out;
 	}
 
