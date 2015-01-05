@@ -268,6 +268,8 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 	GsShellPrivate *priv = shell->priv;
 	BackEntry *entry;
 
+	g_return_if_fail (!g_queue_is_empty (priv->back_entry_stack));
+
 	entry = g_queue_pop_head (priv->back_entry_stack);
 
 	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category, FALSE);
