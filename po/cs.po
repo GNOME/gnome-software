@@ -1,15 +1,15 @@
 # Czech translation for gnome-software.
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
-# Marek Černocký <marek@manet.cz>, 2013, 2014.
+# Marek Černocký <marek@manet.cz>, 2013, 2014, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-09-08 07:39+0000\n"
-"PO-Revision-Date: 2014-09-08 11:59+0200\n"
+"POT-Creation-Date: 2015-01-07 20:35+0000\n"
+"PO-Revision-Date: 2015-01-07 22:55+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -47,20 +47,20 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Přidání do složky aplikací"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:603
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:336
+#: ../src/gs-shell-details.c:237 ../src/gs-shell-installed.c:603
 msgid "_Cancel"
 msgstr "_Zrušit"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:341
 msgid "_Add"
 msgstr "Přid_at"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
-#: ../src/gs-app-tile.c:72 ../src/gs-app-tile.c:75 ../src/gs-feature-tile.c:66
-#: ../src/gs-popular-tile.c:73 ../src/gs-popular-tile.c:76
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:75
+#: ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:70
+#: ../src/gs-popular-tile.c:76 ../src/gs-popular-tile.c:79
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Nainstalováno"
@@ -69,7 +69,7 @@ msgstr "Nainstalováno"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:265 ../src/gs-shell.c:156
+#: ../src/gs-application.c:263 ../src/gs-shell.c:158
 msgid "Software"
 msgstr "Software"
 
@@ -139,73 +139,73 @@ msgid "Folder Name"
 msgstr "Název složky"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:263
+#: ../src/gs-application.c:261
 msgid "About Software"
 msgstr "O aplikaci Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:268
+#: ../src/gs-application.c:266
 msgid "A nice way to manage the software on your system."
 msgstr "Elegantní způsob správy softwaru ve vašem počítači."
 
-#: ../src/gs-application.c:272
+#: ../src/gs-application.c:270
 msgid "translator-credits"
 msgstr "Marek Černocký <marek@manet.cz>"
 
-#: ../src/gs-application.c:531
+#: ../src/gs-application.c:530
 msgid "Enter GApplication service mode"
 msgstr "Vstoupit do servisního režimu GApplication"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:533
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Režim spuštění: buď „updates“ (aktualizace), „updated“ (aktualizované), "
 "„installed“ (nainstalované) nebo „overview“ (přehled)"
 
-#: ../src/gs-application.c:534
+#: ../src/gs-application.c:533
 msgid "MODE"
 msgstr "REŽIM"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:535
 msgid "Search for applications"
 msgstr "Hledat aplikaci"
 
-#: ../src/gs-application.c:536
+#: ../src/gs-application.c:535
 msgid "SEARCH"
 msgstr "HLEDAT"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:537
 msgid "Show application details"
 msgstr "Zobrazit informace o aplikaci"
 
-#: ../src/gs-application.c:538
+#: ../src/gs-application.c:537
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:539
 msgid "Open a local package file"
 msgstr "Otevřít místní soubor s balíčkem"
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:539
 msgid "FILENAME"
 msgstr "NÁZEV_SOUBORU"
 
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:541
 msgid "Show verbose debugging information"
 msgstr "Zobrazovat podrobné ladicí informace"
 
-#: ../src/gs-application.c:544
+#: ../src/gs-application.c:543
 msgid "Show profiling information for the service"
 msgstr "Zobrazit profilovací informace pro službu"
 
-#: ../src/gs-application.c:546
+#: ../src/gs-application.c:545
 msgid "Prefer local file sources to AppStream"
 msgstr "Upřednostnit zdroje v místních souborech před zdroji on-line"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:201
+#: ../src/gs-app-addon-row.c:92 ../src/gs-app-row.c:201
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Čeká na zpracování"
@@ -214,8 +214,8 @@ msgstr "Čeká na zpracování"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
-#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
-#: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:228
+#: ../src/gs-app-tile.c:84 ../src/gs-app-tile.c:87
 msgid "Installing"
 msgstr "Instaluje se"
 
@@ -223,16 +223,24 @@ msgstr "Instaluje se"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
-#: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:237
+#: ../src/gs-app-tile.c:93 ../src/gs-app-tile.c:96
 msgid "Removing"
 msgstr "Odebírá se"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:191
+#: ../src/gs-app-row.c:185
 msgid "Visit website"
 msgstr "Navštívit webové stránky"
+
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed.
+#. * The ellipsis indicates that further steps are required
+#: ../src/gs-app-row.c:190
+#| msgid "Install"
+msgid "Install…"
+msgstr "Instalovat…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
@@ -242,24 +250,25 @@ msgstr "Zrušit"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:208
+#. TRANSLATORS: this is button text to enable the repo and install the app
+#: ../src/gs-app-row.c:208 ../src/gs-utils.c:245
 msgid "Install"
 msgstr "Instalovat"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1128
-#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:164
+#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1157
+#: ../src/gs-shell-installed.c:181 ../src/gs-shell-search.c:162
 msgid "Remove"
 msgstr "Odebrat"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:99 ../src/gs-app-tile.c:103
-#: ../src/gs-feature-tile.c:71 ../src/gs-popular-tile.c:82
-#: ../src/gs-popular-tile.c:86
+#: ../src/gs-app-tile.c:102 ../src/gs-app-tile.c:106
+#: ../src/gs-feature-tile.c:75 ../src/gs-popular-tile.c:85
+#: ../src/gs-popular-tile.c:89
 msgid "Updates"
 msgstr "Aktualizace"
 
@@ -327,92 +336,92 @@ msgid "History"
 msgstr "Historie"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:254
+#: ../src/gs-offline-updates.c:54
 msgid "Failed To Update"
 msgstr "Aktualizace selhala"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:260
+#: ../src/gs-offline-updates.c:60
 msgid "A previous update was unfinished."
 msgstr "Předchozí aktualizace nebyla dokončena."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:270
+#: ../src/gs-offline-updates.c:70
 msgid "Network access was required but not available."
 msgstr "Byl požadován přístup k síti, ale nebyl k dispozici."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:279
+#: ../src/gs-offline-updates.c:79
 msgid "An update was not signed in the correct way."
 msgstr "Některá aktualizace nebyla podepsaná korektním způsobem."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:289
+#: ../src/gs-offline-updates.c:89
 msgid "The update could not be completed."
 msgstr "Aktualizace nemohla být dokončena."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:294
+#: ../src/gs-offline-updates.c:94
 msgid "The update was cancelled."
 msgstr "Aktualizace byla zrušena."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:300
+#: ../src/gs-offline-updates.c:100
 msgid "An offline update was requested but no packages required updating."
 msgstr ""
 "Byla požadována aktualizace off-line, ale žádný balíček nevyžaduje "
 "aktualizaci."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:304
+#: ../src/gs-offline-updates.c:104
 msgid "No space was left on the drive."
 msgstr "Na disku nezůstalo žádné místo."
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:312
+#: ../src/gs-offline-updates.c:112
 msgid "An update failed to install correctly."
 msgstr "Aktualizaci se nezdařilo nainstalovat správně."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:317
+#: ../src/gs-offline-updates.c:117
 msgid "The offline update failed in an unexpected way."
 msgstr "Aktualizace off-line selhala neočekávaným způsobem."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:326
+#: ../src/gs-offline-updates.c:126
 msgid "Detailed errors from the package manager follow:"
 msgstr "Dále jsou uvedeny podrobnosti o chybě získané od správy balíčků:"
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:900
+#: ../src/gs-plugin-loader.c:929
 msgid "OS Updates"
 msgstr "Aktualizace OS"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:905
+#: ../src/gs-plugin-loader.c:934
 msgid "Includes performance, stability and security improvements."
 msgstr "Zahrnuje zdokonalení výkonu, stability a bezpečnosti."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1503
+#: ../src/gs-plugin-loader.c:1519
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Pro formát %s nejsou k dispozici žádné dodatečné kodeky."
 
-#: ../src/gs-plugin-loader.c:1506
+#: ../src/gs-plugin-loader.c:1522
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -423,119 +432,132 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:208
+#: ../src/gs-screenshot-image.c:242
 msgid "Screenshot not found"
 msgstr "Snímek nebyl nalezen"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:226
+#: ../src/gs-screenshot-image.c:260
 msgid "Failed to load image"
 msgstr "Selhalo načtení obrázku"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:354
+#: ../src/gs-screenshot-image.c:390
 msgid "Screenshot size not found"
 msgstr "Velikost snímku nebyla nalezena"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:373
+#: ../src/gs-screenshot-image.c:409
 msgid "Could not create cache"
 msgstr "Nelze vytvoři mezipaměť"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:390
+#: ../src/gs-screenshot-image.c:439
 msgid "Screenshot not valid"
 msgstr "Snímek není platný"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:396
+#: ../src/gs-screenshot-image.c:455
 msgid "Screenshot not available"
 msgstr "Snímek není k dispozici"
 
-#: ../src/gs-screenshot-image.c:454
+#: ../src/gs-screenshot-image.c:511
 msgid "Screenshot"
 msgstr "Snímek"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:175 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:176 ../src/gs-shell-details.ui.h:2
 msgid "_Install"
 msgstr "_Instalovat"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:186
+#: ../src/gs-shell-details.c:187
 msgid "_Installing"
 msgstr "_Instaluje se"
 
+#. TRANSLATORS: this is a button that allows the apps to
+#. * be installed.
+#. * The ellipsis indicates that further steps are required,
+#. * e.g. enabling software sources or the like
+#: ../src/gs-shell-details.c:204
+#| msgid "_Install"
+msgid "_Install…"
+msgstr "_Instalovat…"
+
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:212 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:224 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "Odeb_rat"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:219
+#: ../src/gs-shell-details.c:231
 msgid "_Removing"
 msgstr "Odebí_rá se"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:584
+#: ../src/gs-shell-details.c:610
 msgctxt "license"
 msgid "Unknown"
 msgstr "Neznámá"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:597
+#: ../src/gs-shell-details.c:623
 msgctxt "version"
 msgid "Unknown"
 msgstr "Neznámá"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:603
+#: ../src/gs-shell-details.c:629
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Vypočítává se…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:606
+#: ../src/gs-shell-details.c:632
 msgctxt "size"
 msgid "Unknown"
 msgstr "Neznámá"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:618
+#: ../src/gs-shell-details.c:644
 msgctxt "updated"
 msgid "Never"
 msgstr "Nikdy"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:633
+#: ../src/gs-shell-details.c:659
 msgctxt "menu category"
 msgid "None"
 msgstr "Žádná"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:643
+#: ../src/gs-shell-details.c:669
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Neznámý"
 
+#: ../src/gs-shell-details.c:927 ../src/gs-utils.c:162
+msgid "Sorry, this did not work"
+msgstr "Toto bohužel nefunguje"
+
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1113 ../src/gs-shell-installed.c:167
-#: ../src/gs-shell-search.c:149
+#: ../src/gs-shell-details.c:1142 ../src/gs-shell-installed.c:166
+#: ../src/gs-shell-search.c:147
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Opravdu chcete odebrat %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1125 ../src/gs-shell-installed.c:179
-#: ../src/gs-shell-search.c:161
+#: ../src/gs-shell-details.c:1154 ../src/gs-shell-installed.c:178
+#: ../src/gs-shell-search.c:159
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -654,8 +676,8 @@ msgstr "Vývojář"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:515
-#: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:518
+#: ../src/gs-update-list.c:89 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Doplňky"
 
@@ -665,7 +687,7 @@ msgstr "Vybrané doplňky budou nainstalovány spolu s aplikací."
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:505
+#: ../src/gs-shell-installed.c:508
 msgid "System Applications"
 msgstr "Systémové aplikace"
 
@@ -691,22 +713,22 @@ msgid "_Remove from Folder"
 msgstr "Odeb_rat ze složky"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:315
+#: ../src/gs-shell-overview.c:331
 msgid "Recommended Audio Applications"
 msgstr "Doporučené zvukové aplikace"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:320
+#: ../src/gs-shell-overview.c:336
 msgid "Recommended Games"
 msgstr "Doporučené hry"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:325
+#: ../src/gs-shell-overview.c:341
 msgid "Recommended Graphics Applications"
 msgstr "Doporučené grafické aplikace"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:330
+#: ../src/gs-shell-overview.c:346
 msgid "Recommended Office Applications"
 msgstr "Doporučené kancelářské aplikace"
 
@@ -742,68 +764,68 @@ msgid "No Application Found"
 msgstr "Žádná aplikace nebyla nalezena"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:146
+#: ../src/gs-shell-updates.c:145
 msgid "%R"
 msgstr "%k∶%M"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:149
+#: ../src/gs-shell-updates.c:148
 msgid "%l:%M %p"
 msgstr "%l∶%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:155
+#: ../src/gs-shell-updates.c:154
 msgid "Yesterday, %R"
 msgstr "Včera %k∶%M"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:159
+#: ../src/gs-shell-updates.c:158
 msgid "Yesterday, %l:%M %p"
 msgstr "Včera %l∶%M %p"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:161
 msgid "Two days ago"
 msgstr "Před dvěma dny"
 
-#: ../src/gs-shell-updates.c:164
+#: ../src/gs-shell-updates.c:163
 msgid "Three days ago"
 msgstr "Před třemi dny"
 
-#: ../src/gs-shell-updates.c:166
+#: ../src/gs-shell-updates.c:165
 msgid "Four days ago"
 msgstr "Před čtyřmi dny"
 
-#: ../src/gs-shell-updates.c:168
+#: ../src/gs-shell-updates.c:167
 msgid "Five days ago"
 msgstr "Před pěti dny"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:169
 msgid "Six days ago"
 msgstr "Před šesti dny"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:171
 msgid "One week ago"
 msgstr "Před jedním týdnem"
 
-#: ../src/gs-shell-updates.c:174
+#: ../src/gs-shell-updates.c:173
 msgid "Two weeks ago"
 msgstr "Před dvěma týdny"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:178
+#: ../src/gs-shell-updates.c:177
 msgid "%e %B %Y"
 msgstr "%e. %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:197
+#: ../src/gs-shell-updates.c:196
 msgid "Downloading new updates…"
 msgstr "Stahují se nové aktualizace…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:201
+#: ../src/gs-shell-updates.c:200
 msgid "Looking for new updates…"
 msgstr "Vyhledávají se nové aktualizace…"
 
@@ -813,46 +835,46 @@ msgid "Setting up updates…"
 msgstr "Nastavují se aktualizace…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:256 ../src/gs-shell-updates.c:263
+#: ../src/gs-shell-updates.c:256 ../src/gs-shell-updates.c:262
 msgid "(This could take a while)"
 msgstr "(může to chvilku trvat)"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:269
+#: ../src/gs-shell-updates.c:267
 msgid "Checking for updates…"
 msgstr "Kontrolují se aktualizace…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:403
+#: ../src/gs-shell-updates.c:401
 #, c-format
 msgid "Last checked: %s"
 msgstr "Poslední kontrola: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:781
+#: ../src/gs-shell-updates.c:777
 msgid "No Network"
 msgstr "Žádné připojení k síti"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:785
+#: ../src/gs-shell-updates.c:781
 msgid "Internet access is required to check for updates."
 msgstr "Přístup k internetu je nezbytný pro kontrolu aktualizací."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:789
+#: ../src/gs-shell-updates.c:785
 msgid "Network Settings"
 msgstr "Nastavení sítě"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:808
+#: ../src/gs-shell-updates.c:804
 msgid "Charges may apply"
 msgstr "Možnost zpoplatnění"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:812
+#: ../src/gs-shell-updates.c:808
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -862,7 +884,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:816
+#: ../src/gs-shell-updates.c:812
 msgid "Check Anyway"
 msgstr "Přesto zkontrolovat"
 
@@ -896,12 +918,12 @@ msgid "_Network Settings"
 msgstr "_Nastavení sítě"
 
 #. TRANSLATORS: this source has no apps installed from it
-#: ../src/gs-sources-dialog.c:91
+#: ../src/gs-sources-dialog.c:92
 msgid "No software installed"
 msgstr "Není nainstalován žádný software"
 
 #. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:94
+#: ../src/gs-sources-dialog.c:95
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
@@ -910,7 +932,7 @@ msgstr[1] "Nainstalovány %i aplikace"
 msgstr[2] "Nainstalováno %i aplikací"
 
 #. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:99
+#: ../src/gs-sources-dialog.c:100
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
@@ -919,7 +941,7 @@ msgstr[1] "Nainstalovány %i doplňky"
 msgstr[2] "Nainstalováno %i doplňků"
 
 #. TRANSLATORS: this source has some apps and addons installed from it
-#: ../src/gs-sources-dialog.c:104
+#: ../src/gs-sources-dialog.c:105
 #, c-format
 msgid "%i application and %i add-ons installed"
 msgid_plural "%i applications and %i add-ons installed"
@@ -927,11 +949,11 @@ msgstr[0] "Nainstalována %i aplikace a %i doplňky"
 msgstr[1] "Nainstalovány %i aplikace a %i doplňky"
 msgstr[2] "Nainstalováno %i aplikací a %i doplňků"
 
-#: ../src/gs-sources-dialog.c:296 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:294 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "Odebrat zdroj"
 
-#: ../src/gs-sources-dialog.c:311
+#: ../src/gs-sources-dialog.c:309
 msgid "Removing…"
 msgstr "Odebírá se…"
 
@@ -981,17 +1003,17 @@ msgstr "Webové stránky"
 
 #. TRANSLATORS: this is where the packager did not write a
 #. * description for the update
-#: ../src/gs-update-dialog.c:107
+#: ../src/gs-update-dialog.c:114
 msgid "No update description available."
 msgstr "Není k dispozici žádný popis aktualizace."
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:167
+#: ../src/gs-update-dialog.c:173
 msgid "Installed Updates"
 msgstr "Instalované aktualizace"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:180
+#: ../src/gs-update-dialog.c:187
 #, c-format
 msgid "Installed on %s"
 msgstr "Nainstalováno %s"
@@ -1027,12 +1049,12 @@ msgstr[0] "Důležitá aktualizace OS byla nainstalována."
 msgstr[1] "Důležité aktualizace OS byly nainstalovány."
 msgstr[2] "Důležité aktualizace OS byly nainstalovány."
 
-#: ../src/gs-update-monitor.c:153
+#: ../src/gs-update-monitor.c:154
 msgid "Software Updates Failed"
 msgstr "Aktualizace softwaru selhaly"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:155
+#: ../src/gs-update-monitor.c:156
 msgid "An important OS update failed to be installed."
 msgstr "Selhala instalace důležité aktualizace OS."
 
@@ -1071,33 +1093,89 @@ msgstr "Pět hvězdiček"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:131
+#: ../src/gs-utils.c:136
 #, c-format
 msgid "%s is now installed"
 msgstr "Aplikace %s je nyní nainstalována"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:135
+#: ../src/gs-utils.c:140
 msgid "Launch"
 msgstr "Spustit"
 
-#: ../src/gs-utils.c:159
-msgid "Sorry, this did not work"
-msgstr "Toto bohužel nefunguje"
-
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:163
+#: ../src/gs-utils.c:166
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Instalace aplikace %s selhala."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:168
+#: ../src/gs-utils.c:171
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Odebrání aplikace %s selhalo."
 
-#: ../src/plugins/gs-plugin-appstream.c:162
+#. TRANSLATORS: window title, nonfree in this
+#. * case refers to Free and Open Source
+#: ../src/gs-utils.c:212
+msgid "You're About to Install Non-Free Software"
+msgstr "Chystáte se nainstalovat nesvobodný software"
+
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. Application name, e.g. "Firefox"
+#. * 2. Start of hypertext e.g. <a>
+#. * 3. End of hypertext e.g. </a>
+#: ../src/gs-utils.c:226
+#, c-format
+msgid "%s is not %sfree and open source software%s."
+msgstr "%s není %ssvobodný software s otevřeným kódem%s."
+
+#. TRANSLATORS: Laws are geographical, urgh...
+#: ../src/gs-utils.c:233
+msgid ""
+"Depending on your country of residence, installing it could make you liable "
+"to prosecution."
+msgstr ""
+"V závislosti na zemi vašeho pobytu, může být jeho instalace i trestně "
+"postihována."
+
+#. TRANSLATORS: ...and you need to ask for advice
+#: ../src/gs-utils.c:238
+msgid "If you are uncertain about this, you should obtain legal advice."
+msgstr "Pokud si nejste jisti, měli byste se poradit s právníkem."
+
+#. TRANSLATORS: this is button text to not ask about non-free content again
+#: ../src/gs-utils.c:243
+msgid "Don't Warn Again"
+msgstr "Příště nevarovat"
+
+#. TRANSLATORS: window title, additional in this
+#. * case means not-currently-enabled
+#: ../src/gs-utils.c:270
+#| msgid "Software Sources"
+msgid "Enable Additional Software Source?"
+msgstr "Povolit dodatečné zdroje softwaru?"
+
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. Application name, e.g. "Firefox"
+#. * 2. Software source name, e.g. fedora-optional
+#: ../src/gs-utils.c:283
+#, c-format
+msgid "%s is provided by %s."
+msgstr "%s je poskytován ze zdroje %s."
+
+#. TRANSLATORS: once the source is enabled it stays enabled
+#: ../src/gs-utils.c:289
+#| msgid "Are you sure you want to remove %s?"
+msgid "Do you want to enable it?"
+msgstr "Opravdu jej chcete povolit?"
+
+#. TRANSLATORS: this is button text to enable the repo and install the app
+#: ../src/gs-utils.c:293
+msgid "Enable"
+msgstr "Povolit"
+
+#: ../src/plugins/gs-plugin-appstream.c:218
 #, c-format
 msgid "No AppStream data found"
 msgstr "Nebyla nalezena žádná data AppStream"
@@ -1106,7 +1184,7 @@ msgstr "Nebyla nalezena žádná data AppStream"
 #. * be considered a "Conjunctive AND Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#: ../src/plugins/gs-plugin-appstream.c:305
+#: ../src/plugins/gs-plugin-appstream.c:409
 msgid " and "
 msgstr " a "
 
@@ -1114,20 +1192,9 @@ msgstr " a "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/plugins/gs-plugin-appstream.c:313
+#: ../src/plugins/gs-plugin-appstream.c:417
 msgid " or "
 msgstr " nebo "
-
-#. TRANSLATORS: this is when a webapp has no comment
-#: ../src/plugins/gs-plugin-epiphany.c:143
-#, c-format
-msgid "Web app"
-msgstr "Webová aplikace"
-
-#. TRANSLATORS: this is the licence of the web-app
-#: ../src/plugins/gs-plugin-epiphany.c:151
-msgid "Proprietary"
-msgstr "Soukromá"
 
 #: ../src/plugins/gs-plugin-hardcoded-categories.c:160
 msgid "Featured"
@@ -2009,3 +2076,9 @@ msgstr "O _aplikaci"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "U_končit"
+
+#~ msgid "Web app"
+#~ msgstr "Webová aplikace"
+
+#~ msgid "Proprietary"
+#~ msgstr "Soukromá"
