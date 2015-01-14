@@ -1561,6 +1561,30 @@ gs_plugin_loader_convert_unavailable (GList *list, const gchar *search)
 }
 
 /**
+ * gs_plugin_loader_search_tokenize_keywords:
+ **/
+static gchar **
+gs_plugin_loader_search_tokenize_keywords (const gchar *value)
+{
+	gchar **values = NULL;
+	guint i;
+	guint idx = 0;
+	_cleanup_strv_free_ gchar **tmp = NULL;
+
+	/* only add keywords that are long enough */
+	tmp = g_strsplit (value, " ", -1);
+	values = g_new0 (gchar *, g_strv_length (tmp) + 1);
+	for (i = 0; tmp[i] != NULL; i++) {
+		if (strlen (tmp[i]) < 3)
+			continue;
+		values[idx++] = g_utf8_casefold (tmp[i], -1);
+	}
+	if (idx == 0)
+		return NULL;
+	return values;
+}
+
+/**
  * gs_plugin_loader_search_thread_cb:
  **/
 static void
@@ -1581,7 +1605,14 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	_cleanup_strv_free_ gchar **values = NULL;
 
 	/* run each plugin */
-	values = g_strsplit (state->value, " ", -1);
+	values = gs_plugin_loader_search_tokenize_keywords (state->value);
+	if (values == NULL) {
+		g_task_return_new_error (task,
+					 GS_PLUGIN_LOADER_ERROR,
+					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+					 "no valid search terms");
+		goto out;
+	}
 	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
 		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
 		if (!plugin->enabled)
