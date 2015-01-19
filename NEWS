@@ -1,3 +1,38 @@
+Version 3.15.4
+~~~~~~~~~~~~~~
+Released: 2015-01-19
+
+* Translations:
+ - Added Romanian Translation (Daniel Șerbănescu)
+ - Add Esperanto translation (Kristjan SCHMIDT)
+ - Updated Basque language (Inaki Larranaga Murgoitio)
+ - Updated Brazilian Portuguese translation (Rafael Ferreira)
+ - Updated Czech translation (Marek Černocký)
+ - Updated Finnish translation (Jiri Grönroos)
+ - Updated Greek translation (Dimitris Spingos)
+ - Updated Hebrew translation (Yosef Or Boczko)
+ - Updated Hungarian translation (Balázs Úr)
+ - Updated Kazakh translation (Baurzhan Muftakhidinov)
+ - Updated Spanish translation (Daniel Mustieles)
+ - Updated Turkish translation (Muhammet Kara)
+
+* New Features:
+ - Add support for unavailable packages (Richard Hughes)
+ - Use new API from libappstream-glib for tokenizing the search string (Richard Hughes)
+
+* Bugfix:
+ - Add some more prefer-GTK rules for applications that ship both (Richard Hughes)
+ - Delay the updates-changed notification for a few seconds (Richard Hughes)
+ - Do case-insensitive searching of suitable keywords (Richard Hughes)
+ - Fix a crash in the screenshot loader (Kalev Lember)
+ - Fix a crash when clicking the back button (Kalev Lember)
+ - Fix color of add button on add to app folder dialog (Michael Catanzaro)
+ - Fix searching for keyworks with special chars (Richard Hughes)
+ - Make sure back button always leads back to overview (Kalev Lember)
+ - Show an error message when we fail to load details about a local file (Kalev Lember)
+ - Update Inkscape featured splash (Jakub Steiner)
+ - Use an AsIcon internally to simplify a lot of complex code (Richard Hughes)
+
 Version 3.15.2
 ~~~~~~~~~~~~~~
 Released: 2014-11-24
