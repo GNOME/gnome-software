@@ -743,7 +743,9 @@ gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 static gboolean
 gs_plugin_loader_get_app_has_appdata (GsApp *app, gpointer user_data)
 {
-	if (gs_app_get_description (app) != NULL)
+	if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE)
+		return TRUE;
+	if (gs_app_get_kudos (app) & GS_APP_KUDO_APPDATA_DESCRIPTION)
 		return TRUE;
 	g_debug ("removing app with no AppData %s", gs_app_get_id (app));
 	return FALSE;
