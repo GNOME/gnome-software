@@ -10,7 +10,8 @@ Released: 2015-xx-xx
 * New Features:
 * Bugfix:
 
-git log --format=" - %s (%an)" GNOME_SOFTWARE_3_15_4.. | grep -i -v trivial | grep -v Merge | uniq > NEWS.new
+git log --format="%s" GNOME_SOFTWARE_3_15_4.. | grep -i -v trivial | grep -v Merge | uniq
+Add any user visible changes into data/appdata/org.gnome.Software.appdata.xml.in
 
 3. Commit changes in gnome-software git:
 

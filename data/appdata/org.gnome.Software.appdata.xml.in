@@ -26,6 +26,43 @@
     <screenshot width="1200" height="675">https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-updates.png</screenshot>
     <screenshot width="1200" height="675">https://git.gnome.org/browse/gnome-software/plain/data/appdata/ss-updates-details.png</screenshot>
   </screenshots>
+  <!--
+   Validate with `appstream-util validate *.appdata.xml`
+   Use `date -d "2010-10-02" "+%s"` to get the timestamp.
+  -->
+  <releases>
+    <release version="3.15.4" timestamp="1421625600">
+      <description>
+        <p>This unstable release adds the following features:</p>
+        <ul>
+          <li>Fix searching with very small search terms</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Do case-insensitive searching of suitable keywords</li>
+          <li>Fix a crash in the screenshot loader</li>
+          <li>Fix a crash when clicking the back button</li>
+          <li>Fix searching for keyworks with special chars</li>
+          <li>Show an error message when we fail to load details about a local file</li>
+        </ul>
+      </description>
+    </release>
+    <release version="3.15.2" timestamp="1416787200">
+      <description>
+        <p>This unstable release adds the following features:</p>
+        <ul>
+          <li>Show a blurred low-resolution screenshot while loading the HiDPI one</li>
+        </ul>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Do not show a random white line above the star rating widget</li>
+          <li>Do not show empty app boxes if no popular results are available</li>
+          <li>Do not try to download local web-app icons</li>
+          <li>Use blue stars for the user-ratings rather than gold</li>
+        </ul>
+      </description>
+    </release>
+  </releases>
   <url type="homepage">https://wiki.gnome.org/Design/Apps/Software</url>
   <updatecontact>richard_at_hughsie.com</updatecontact>
   <compulsory_for_desktop>GNOME</compulsory_for_desktop>

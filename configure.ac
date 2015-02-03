@@ -66,6 +66,7 @@ PKG_CHECK_MODULES(SQLITE, sqlite3)
 PKG_CHECK_MODULES(SOUP, libsoup-2.4)
 PKG_CHECK_MODULES(GSETTINGS_DESKTOP_SCHEMAS, gsettings-desktop-schemas >= 3.11.5)
 PKG_CHECK_MODULES(GNOME_DESKTOP, gnome-desktop-3.0)
+AC_PATH_PROG(APPSTREAM_UTIL, [appstream-util], [unfound])
 AC_ARG_ENABLE(man,
               [AS_HELP_STRING([--enable-man],
                               [generate man pages [default=auto]])],,
