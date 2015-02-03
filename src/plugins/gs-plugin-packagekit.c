@@ -25,6 +25,7 @@
 #include <packagekit-glib2/packagekit.h>
 #include <glib/gi18n.h>
 
+#include "gs-cleanup.h"
 #include <gs-plugin.h>
 
 #include "packagekit-common.h"

@@ -27,6 +27,7 @@
 #include <glib/gi18n.h>
 #include <libsoup/soup.h>
 
+#include "gs-cleanup.h"
 #include <gs-plugin.h>
 #include <gs-utils.h>
 

@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-addon-row.h"
+#include "gs-cleanup.h"
 #include "gs-utils.h"
 
 struct _GsAppAddonRowPrivate

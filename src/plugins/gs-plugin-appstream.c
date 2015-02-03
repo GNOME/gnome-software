@@ -24,6 +24,7 @@
 #include <locale.h>
 #include <appstream-glib.h>
 
+#include "gs-cleanup.h"
 #include <gs-plugin.h>
 #include <gs-plugin-loader.h>
 

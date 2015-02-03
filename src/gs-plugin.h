@@ -29,7 +29,6 @@
 
 #include "gs-app.h"
 #include "gs-category.h"
-#include "gs-cleanup.h"
 #include "gs-profile.h"
 
 G_BEGIN_DECLS

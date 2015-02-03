@@ -24,6 +24,7 @@
 #include <gs-plugin.h>
 #include <glib/gi18n.h>
 
+#include "gs-cleanup.h"
 #include "menu-spec-common.h"
 
 /**

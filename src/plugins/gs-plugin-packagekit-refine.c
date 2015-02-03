@@ -24,6 +24,7 @@
 #define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
 #include <packagekit-glib2/packagekit.h>
 
+#include "gs-cleanup.h"
 #include <gs-plugin.h>
 #include <gs-utils.h>
 #include <glib/gi18n.h>
