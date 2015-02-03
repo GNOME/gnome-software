@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-01-07 20:35+0000\n"
-"PO-Revision-Date: 2015-01-07 22:55+0100\n"
+"POT-Creation-Date: 2015-02-03 10:10+0000\n"
+"PO-Revision-Date: 2015-02-03 19:30+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -20,10 +20,14 @@ msgstr ""
 "X-Generator: Gtranslator 2.91.6\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
+msgid "GNOME Software"
+msgstr "Software GNOME"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
 msgid "Application manager for GNOME"
 msgstr "Správa aplikací pro GNOME"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
 msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
@@ -31,7 +35,7 @@ msgstr ""
 "Aplikace Software umožňuje vyhledávat a instalovat aplikace a systémová "
 "rozšíření a odebírat stávající nainstalované aplikace."
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:4
 msgid ""
 "GNOME Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
@@ -238,7 +242,6 @@ msgstr "Navštívit webové stránky"
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
 #: ../src/gs-app-row.c:190
-#| msgid "Install"
 msgid "Install…"
 msgstr "Instalovat…"
 
@@ -404,24 +407,24 @@ msgstr "Dále jsou uvedeny podrobnosti o chybě získané od správy balíčků:
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:929
+#: ../src/gs-plugin-loader.c:932
 msgid "OS Updates"
 msgstr "Aktualizace OS"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:934
+#: ../src/gs-plugin-loader.c:937
 msgid "Includes performance, stability and security improvements."
 msgstr "Zahrnuje zdokonalení výkonu, stability a bezpečnosti."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1519
+#: ../src/gs-plugin-loader.c:1522
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Pro formát %s nejsou k dispozici žádné dodatečné kodeky."
 
-#: ../src/gs-plugin-loader.c:1522
+#: ../src/gs-plugin-loader.c:1525
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -485,7 +488,6 @@ msgstr "_Instaluje se"
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
 #: ../src/gs-shell-details.c:204
-#| msgid "_Install"
 msgid "_Install…"
 msgstr "_Instalovat…"
 
@@ -1152,7 +1154,6 @@ msgstr "Příště nevarovat"
 #. TRANSLATORS: window title, additional in this
 #. * case means not-currently-enabled
 #: ../src/gs-utils.c:270
-#| msgid "Software Sources"
 msgid "Enable Additional Software Source?"
 msgstr "Povolit dodatečné zdroje softwaru?"
 
@@ -1166,7 +1167,6 @@ msgstr "%s je poskytován ze zdroje %s."
 
 #. TRANSLATORS: once the source is enabled it stays enabled
 #: ../src/gs-utils.c:289
-#| msgid "Are you sure you want to remove %s?"
 msgid "Do you want to enable it?"
 msgstr "Opravdu jej chcete povolit?"
 
@@ -2076,9 +2076,3 @@ msgstr "O _aplikaci"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "U_končit"
-
-#~ msgid "Web app"
-#~ msgstr "Webová aplikace"
-
-#~ msgid "Proprietary"
-#~ msgstr "Soukromá"
