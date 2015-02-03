@@ -23,6 +23,7 @@
 #define __GS_CLEANUP_H__
 
 #include <gio/gio.h>
+#include "gs-plugin.h"
 
 G_BEGIN_DECLS
 
@@ -65,6 +66,7 @@ GS_DEFINE_CLEANUP_FUNCTIONt(GString*, gs_local_free_string, g_string_free)
 
 GS_DEFINE_CLEANUP_FUNCTION(char**, gs_local_strfreev, g_strfreev)
 GS_DEFINE_CLEANUP_FUNCTION(GList*, gs_local_free_list, g_list_free)
+GS_DEFINE_CLEANUP_FUNCTION(GList*, gs_local_free_plugin_list, gs_plugin_list_free)
 GS_DEFINE_CLEANUP_FUNCTION(void*, gs_local_free, g_free)
 
 #define _cleanup_dir_close_ __attribute__ ((cleanup(gs_local_dir_close)))
@@ -73,6 +75,7 @@ GS_DEFINE_CLEANUP_FUNCTION(void*, gs_local_free, g_free)
 #define _cleanup_checksum_free_ __attribute__ ((cleanup(gs_local_checksum_free)))
 #define _cleanup_error_free_ __attribute__ ((cleanup(gs_local_free_error)))
 #define _cleanup_list_free_ __attribute__ ((cleanup(gs_local_free_list)))
+#define _cleanup_plugin_list_free_ __attribute__ ((cleanup(gs_local_free_plugin_list)))
 #define _cleanup_string_free_ __attribute__ ((cleanup(gs_local_free_string)))
 #define _cleanup_strv_free_ __attribute__ ((cleanup(gs_local_strfreev)))
 #define _cleanup_variant_iter_free_ __attribute__ ((cleanup(gs_local_variant_iter_free)))
