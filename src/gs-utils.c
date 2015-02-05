@@ -308,6 +308,17 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	return gs_app_notify_unavailable_other (app, parent);
 }
 
+void
+gs_app_show_url (GsApp *app, AsUrlKind kind)
+{
+	const gchar *url;
+	_cleanup_error_free_ GError *error = NULL;
+
+	url = gs_app_get_url (app, kind);
+	if (!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error))
+		g_warning ("spawn of '%s' failed", url);
+}
+
 guint
 gs_string_replace (GString *string, const gchar *search, const gchar *replace)
 {

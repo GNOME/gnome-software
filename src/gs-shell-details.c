@@ -447,12 +447,8 @@ static void
 gs_shell_details_website_cb (GtkWidget *widget, GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
-	const gchar *url;
-	_cleanup_error_free_ GError *error = NULL;
 
-	url = gs_app_get_url (priv->app, AS_URL_KIND_HOMEPAGE);
-	if (!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error))
-		g_warning ("spawn of '%s' failed: %s", url, error->message);
+	gs_app_show_url (priv->app, AS_URL_KIND_HOMEPAGE);
 }
 
 /**

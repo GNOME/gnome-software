@@ -42,6 +42,8 @@ void	 gs_app_notify_failed_modal	(GsApp		*app,
 GtkResponseType
 	gs_app_notify_unavailable	(GsApp		*app,
 					 GtkWindow	*parent);
+void	 gs_app_show_url		(GsApp		*app,
+					 AsUrlKind	 kind);
 
 guint	 gs_string_replace		(GString	*string,
 					 const gchar	*search,

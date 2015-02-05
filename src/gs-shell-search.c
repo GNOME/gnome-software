@@ -197,20 +197,6 @@ gs_shell_search_app_install (GsShellSearch *shell_search, GsApp *app)
 }
 
 /**
- * gs_shell_search_show_missing_url:
- **/
-static void
-gs_shell_search_show_missing_url (GsApp *app)
-{
-	const gchar *url;
-	_cleanup_error_free_ GError *error = NULL;
-
-	url = gs_app_get_url (app, AS_URL_KIND_MISSING);
-	if (!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error))
-		g_warning ("spawn of '%s' failed", url);
-}
-
-/**
  * gs_shell_search_install_unavailable_app:
  **/
 static void
@@ -254,7 +240,7 @@ gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
 			gs_shell_search_install_unavailable_app (shell_search, app);
 			return;
 		}
-		gs_shell_search_show_missing_url (app);
+		gs_app_show_url (app, AS_URL_KIND_MISSING);
 	}
 }
 
