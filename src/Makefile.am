@@ -89,6 +89,7 @@ bin_PROGRAMS =						\
 	gnome-software
 
 gnome_software_SOURCES =				\
+	$(packagekit_built_sources)			\
 	gs-cleanup.h					\
 	gs-resources.c					\
 	gs-resources.h					\
@@ -183,6 +184,14 @@ gnome_software_CFLAGS =					\
 	-DLIBEXECDIR=\"$(libexecdir)\"			\
 	$(WARN_CFLAGS)
 
+packagekit_built_sources = gs-packagekit-generated.c gs-packagekit-generated.h
+$(packagekit_built_sources): Makefile.am org.freedesktop.PackageKit.xml
+	$(AM_V_GEN) gdbus-codegen				\
+		--interface-prefix org.freedesktop.		\
+		--c-namespace Gs				\
+		--generate-c-code gs-packagekit-generated	\
+		$(srcdir)/org.freedesktop.PackageKit.xml
+
 gs-shell-search-provider-generated.h gs-shell-search-provider-generated.c: Makefile.am $(srcdir)/shell-search-provider-dbus-interfaces.xml
 	$(AM_V_GEN) gdbus-codegen \
 	 	--interface-prefix org.gnome. \
@@ -197,6 +206,7 @@ gs-resources.h: gnome-software.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) -
 	$(AM_V_GEN) $(GLIB_COMPILE_RESOURCES) --sourcedir=$(srcdir) --target=$@ --generate-header --c-name gs $(srcdir)/gnome-software.gresource.xml
 
 BUILT_SOURCES =						\
+	$(packagekit_built_sources)			\
 	gs-shell-search-provider-generated.c		\
 	gs-shell-search-provider-generated.h		\
 	gs-resources.c					\

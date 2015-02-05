@@ -27,14 +27,15 @@
 
 #include "gs-cleanup.h"
 #include "gs-dbus-helper.h"
+#include "gs-packagekit-generated.h"
 #include "gs-resources.h"
 
 struct _GsDbusHelper {
 	GObject			 parent;
 	GCancellable		*cancellable;
-	GDBusNodeInfo		*introspection;
+	GDBusInterfaceSkeleton	*query_interface;
 	PkTask			*task;
-	guint			 owner_id;
+	guint			 dbus_own_name_id;
 };
 
 struct _GsDbusHelperClass {
@@ -45,6 +46,7 @@ G_DEFINE_TYPE (GsDbusHelper, gs_dbus_helper, G_TYPE_OBJECT)
 
 typedef struct {
 	GDBusMethodInvocation	*invocation;
+	GsDbusHelper		*dbus_helper;
 	gboolean		 show_confirm_deps;
 	gboolean		 show_confirm_install;
 	gboolean		 show_confirm_search;
@@ -59,6 +61,9 @@ typedef struct {
 static void
 gs_dbus_helper_task_free (GsDbusHelperTask *dtask)
 {
+	if (dtask->dbus_helper != NULL)
+		g_object_unref (dtask->dbus_helper);
+
 	g_free (dtask);
 }
 
@@ -145,8 +150,9 @@ gs_dbus_helper_query_is_installed_cb (GObject *source, GAsyncResult *res, gpoint
 
 	/* get results */
 	array = pk_results_get_package_array (results);
-	g_dbus_method_invocation_return_value (dtask->invocation,
-					       g_variant_new ("(b)", array->len > 0));
+	gs_package_kit_query_complete_is_installed (GS_PACKAGE_KIT_QUERY (dtask->dbus_helper->query_interface),
+	                                            dtask->invocation,
+	                                            array->len > 0);
 out:
 	gs_dbus_helper_task_free (dtask);
 }
@@ -202,125 +208,64 @@ gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointe
 	/* get first item */
 	item = g_ptr_array_index (array, 0);
 	info = pk_package_get_info (item);
-	g_dbus_method_invocation_return_value (dtask->invocation,
-					       g_variant_new ("(bs)",
-							      info == PK_INFO_ENUM_INSTALLED,
-							      pk_package_get_name (item)));
+	gs_package_kit_query_complete_search_file (GS_PACKAGE_KIT_QUERY (dtask->dbus_helper->query_interface),
+	                                           dtask->invocation,
+	                                           info == PK_INFO_ENUM_INSTALLED,
+	                                           pk_package_get_name (item));
 }
 
-static void
-gs_dbus_helper_handle_method_call_query (GsDbusHelper *dbus_helper,
-					 const gchar *method_name,
-					 GVariant *parameters,
-					 GDBusMethodInvocation *invocation)
+static gboolean
+handle_query_search_file (GsPackageKitQuery	 *skeleton,
+                          GDBusMethodInvocation	 *invocation,
+                          const gchar		 *file_name,
+                          const gchar		 *interaction,
+                          gpointer		  user_data)
 {
-	_cleanup_strv_free_ gchar **names = NULL;
-	const gchar *name;
-	const gchar *interaction;
+	GsDbusHelper *dbus_helper = user_data;
 	GsDbusHelperTask *dtask;
+	_cleanup_strv_free_ gchar **names = NULL;
 
-	if (g_strcmp0 (method_name, "IsInstalled") == 0) {
-		g_variant_get (parameters, "(&s&s)",
-			       &name, &interaction);
-		dtask = g_new0 (GsDbusHelperTask, 1);
-		dtask->invocation = invocation;
-		gs_dbus_helper_task_set_interaction (dtask, interaction);
-		names = g_strsplit (name, "|", 1);
-		pk_client_resolve_async (PK_CLIENT (dbus_helper->task),
-					 pk_bitfield_value (PK_FILTER_ENUM_INSTALLED),
-					 names, NULL,
-					 gs_dbus_helper_progress_cb, dtask,
-					 gs_dbus_helper_query_is_installed_cb, dtask);
-	} else if (g_strcmp0 (method_name, "SearchFile") == 0) {
-		g_variant_get (parameters, "(&s&s)",
-			       &name, &interaction);
-		dtask = g_new0 (GsDbusHelperTask, 1);
-		dtask->invocation = invocation;
-		gs_dbus_helper_task_set_interaction (dtask, interaction);
-		names = g_strsplit (name, "&", -1);
-		pk_client_search_files_async (PK_CLIENT (dbus_helper->task),
-					      pk_bitfield_value (PK_FILTER_ENUM_NEWEST),
-					      names, NULL,
-					      gs_dbus_helper_progress_cb, dtask,
-					      gs_dbus_helper_query_search_file_cb, dtask);
-	} else {
-		g_dbus_method_invocation_return_error (invocation,
-						       G_IO_ERROR,
-						       G_IO_ERROR_INVALID_ARGUMENT,
-						       "method %s not implemented "
-						       "by gnome-software",
-						       method_name);
-	}
+	g_debug ("****** SearchFile");
+
+	dtask = g_new0 (GsDbusHelperTask, 1);
+	dtask->dbus_helper = g_object_ref (dbus_helper);
+	dtask->invocation = invocation;
+	gs_dbus_helper_task_set_interaction (dtask, interaction);
+	names = g_strsplit (file_name, "&", -1);
+	pk_client_search_files_async (PK_CLIENT (dbus_helper->task),
+	                              pk_bitfield_value (PK_FILTER_ENUM_NEWEST),
+	                              names, NULL,
+	                              gs_dbus_helper_progress_cb, dtask,
+	                              gs_dbus_helper_query_search_file_cb, dtask);
+
+	return TRUE;
 }
 
-static void
-gs_dbus_helper_handle_method_call_modify (GsDbusHelper *dbus_helper,
-					  const gchar *method_name,
-					  GVariant *parameters,
-					  GDBusMethodInvocation *invocation)
+static gboolean
+handle_query_is_installed (GsPackageKitQuery	 *skeleton,
+                           GDBusMethodInvocation *invocation,
+                           const gchar		 *package_name,
+                           const gchar		 *interaction,
+                           gpointer		  user_data)
 {
-	g_dbus_method_invocation_return_error (invocation,
-					       G_IO_ERROR,
-					       G_IO_ERROR_INVALID_ARGUMENT,
-					       "method %s not implemented by gnome-software",
-					       method_name);
-}
+	GsDbusHelper *dbus_helper = user_data;
+	GsDbusHelperTask *dtask;
+	_cleanup_strv_free_ gchar **names = NULL;
 
-static void
-gs_dbus_helper_handle_method_call (GDBusConnection *connection,
-				   const gchar *sender,
-				   const gchar *object_path,
-				   const gchar *interface_name,
-				   const gchar *method_name,
-				   GVariant *parameters,
-				   GDBusMethodInvocation *invocation,
-				   gpointer user_data)
-{
-	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (user_data);
-	if (g_strcmp0 (interface_name, "org.freedesktop.PackageKit.Query") == 0) {
-		gs_dbus_helper_handle_method_call_query (dbus_helper,
-							 method_name,
-							 parameters,
-							 invocation);
-	} else if (g_strcmp0 (interface_name, "org.freedesktop.PackageKit.Modify") == 0) {
-		gs_dbus_helper_handle_method_call_modify (dbus_helper,
-							  method_name,
-							  parameters,
-							  invocation);
-	} else {
-		g_dbus_method_invocation_return_error (invocation,
-						       G_IO_ERROR,
-						       G_IO_ERROR_FAILED_HANDLED,
-						       "Interface not handled");
-	}
-}
+	g_debug ("****** IsInstalled");
 
-static const GDBusInterfaceVTable interface_vtable =
-{
-	gs_dbus_helper_handle_method_call,
-	NULL,
-	NULL
-};
+	dtask = g_new0 (GsDbusHelperTask, 1);
+	dtask->dbus_helper = g_object_ref (dbus_helper);
+	dtask->invocation = invocation;
+	gs_dbus_helper_task_set_interaction (dtask, interaction);
+	names = g_strsplit (package_name, "|", 1);
+	pk_client_resolve_async (PK_CLIENT (dbus_helper->task),
+	                         pk_bitfield_value (PK_FILTER_ENUM_INSTALLED),
+	                         names, NULL,
+	                         gs_dbus_helper_progress_cb, dtask,
+	                         gs_dbus_helper_query_is_installed_cb, dtask);
 
-static void
-gs_dbus_helper_bus_acquired_cb (GDBusConnection *connection,
-				const gchar *name,
-				gpointer user_data)
-{
-	guint id;
-	guint i;
-	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (user_data);
-
-	for (i = 0; dbus_helper->introspection->interfaces[i] != NULL; i++) {
-		id = g_dbus_connection_register_object (connection,
-							"/org/freedesktop/PackageKit",
-							dbus_helper->introspection->interfaces[i],
-							&interface_vtable,
-							dbus_helper,  /* user_data */
-							NULL,  /* user_data_free_func */
-							NULL); /* GError** */
-		g_assert (id > 0);
-	}
+	return TRUE;
 }
 
 static void
@@ -340,54 +285,86 @@ gs_dbus_helper_name_lost_cb (GDBusConnection *connection,
 }
 
 static void
-gs_dbus_helper_init (GsDbusHelper *dbus_helper)
+bus_gotten_cb (GObject      *source_object,
+               GAsyncResult *res,
+               gpointer      user_data)
 {
-	_cleanup_bytes_unref_ GBytes *data = NULL;
-	const gchar *xml;
+	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (user_data);
+	_cleanup_object_unref_ GDBusConnection *connection = NULL;
+	_cleanup_error_free_ GError *error = NULL;
 
-	dbus_helper->task = pk_task_new ();
-	dbus_helper->cancellable = g_cancellable_new ();
+	connection = g_bus_get_finish (res, &error);
+	if (connection == NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("Could not get session bus: %s", error->message);
+		return;
+	}
 
-	/* load introspection */
-	data = g_resource_lookup_data (gs_get_resource (),
-				       "/org/gnome/Software/org.freedesktop.PackageKit.xml",
-				       G_RESOURCE_LOOKUP_FLAGS_NONE,
-				       NULL);
-	xml = g_bytes_get_data (data, NULL);
-	dbus_helper->introspection = g_dbus_node_info_new_for_xml (xml, NULL);
-	g_assert (dbus_helper->introspection != NULL);
+	dbus_helper->query_interface = G_DBUS_INTERFACE_SKELETON (gs_package_kit_query_skeleton_new ());
 
-	/* own session daemon */
-	dbus_helper->owner_id = g_bus_own_name (G_BUS_TYPE_SESSION,
-						"org.freedesktop.PackageKit2",
-						G_BUS_NAME_OWNER_FLAGS_NONE,
-						gs_dbus_helper_bus_acquired_cb,
-						gs_dbus_helper_name_acquired_cb,
-						gs_dbus_helper_name_lost_cb,
-						dbus_helper,
-						NULL);
+	g_signal_connect (dbus_helper->query_interface, "handle-is-installed",
+	                  G_CALLBACK (handle_query_is_installed), dbus_helper);
+	g_signal_connect (dbus_helper->query_interface, "handle-search-file",
+	                  G_CALLBACK (handle_query_search_file), dbus_helper);
+
+	if (!g_dbus_interface_skeleton_export (dbus_helper->query_interface,
+	                                       connection,
+	                                       "/org/freedesktop/PackageKit",
+	                                       &error)) {
+	        g_warning ("Could not export dbus interface: %s", error->message);
+	        return;
+	}
+
+	dbus_helper->dbus_own_name_id = g_bus_own_name_on_connection (connection,
+	                                                              "org.freedesktop.PackageKit2",
+	                                                              G_BUS_NAME_OWNER_FLAGS_NONE,
+	                                                              gs_dbus_helper_name_acquired_cb,
+	                                                              gs_dbus_helper_name_lost_cb,
+	                                                              NULL, NULL);
 }
 
 static void
-gs_dbus_helper_finalize (GObject *object)
+gs_dbus_helper_init (GsDbusHelper *dbus_helper)
+{
+	dbus_helper->task = pk_task_new ();
+	dbus_helper->cancellable = g_cancellable_new ();
+
+	g_bus_get (G_BUS_TYPE_SESSION,
+	           dbus_helper->cancellable,
+	           (GAsyncReadyCallback) bus_gotten_cb,
+	           dbus_helper);
+}
+
+static void
+gs_dbus_helper_dispose (GObject *object)
 {
 	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (object);
 
-	g_cancellable_cancel (dbus_helper->cancellable);
-	g_bus_unown_name (dbus_helper->owner_id);
+	if (dbus_helper->cancellable != NULL) {
+		g_cancellable_cancel (dbus_helper->cancellable);
+		g_clear_object (&dbus_helper->cancellable);
+	}
 
-	g_dbus_node_info_unref (dbus_helper->introspection);
-	g_clear_object (&dbus_helper->cancellable);
+	if (dbus_helper->dbus_own_name_id != 0) {
+		g_bus_unown_name (dbus_helper->dbus_own_name_id);
+		dbus_helper->dbus_own_name_id = 0;
+	}
+
+	if (dbus_helper->query_interface != NULL) {
+		g_dbus_interface_skeleton_unexport (dbus_helper->query_interface);
+		g_clear_object (&dbus_helper->query_interface);
+	}
+
 	g_clear_object (&dbus_helper->task);
 
-	G_OBJECT_CLASS (gs_dbus_helper_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_dbus_helper_parent_class)->dispose (object);
 }
 
 static void
 gs_dbus_helper_class_init (GsDbusHelperClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	object_class->finalize = gs_dbus_helper_finalize;
+	object_class->dispose = gs_dbus_helper_dispose;
 }
 
 GsDbusHelper *
