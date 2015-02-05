@@ -3,7 +3,7 @@ AC_PREREQ(2.63)
 
 AC_INIT([gnome-software],[3.15.5],[http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-software])
 AC_CONFIG_SRCDIR(src)
-AM_INIT_AUTOMAKE([1.11 no-dist-gzip dist-xz tar-ustar serial-tests])
+AM_INIT_AUTOMAKE([1.11 no-dist-gzip dist-xz tar-ustar serial-tests foreign])
 AC_CONFIG_HEADERS([config.h])
 AC_CONFIG_MACRO_DIR([m4])
 

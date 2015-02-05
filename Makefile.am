@@ -22,7 +22,6 @@ MAINTAINERCLEANFILES =					\
 	config.sub					\
 	configure					\
 	depcomp						\
-	INSTALL						\
 	install-sh					\
 	ltmain.sh					\
 	Makefile.in					\
@@ -36,7 +35,6 @@ EXTRA_DIST =						\
 	autogen.sh					\
 	config.h					\
 	COPYING						\
-	INSTALL						\
 	MAINTAINERS					\
 	NEWS						\
 	README
