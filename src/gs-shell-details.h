@@ -27,6 +27,7 @@
 
 #include "gs-app.h"
 #include "gs-shell.h"
+#include "gs-page.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
@@ -42,13 +43,13 @@ typedef struct GsShellDetailsPrivate GsShellDetailsPrivate;
 
 typedef struct
 {
-	 GtkBin				 parent;
+	 GsPage				 parent;
 	 GsShellDetailsPrivate		*priv;
 } GsShellDetails;
 
 typedef struct
 {
-	GtkBinClass			 parent_class;
+	GsPageClass			 parent_class;
 } GsShellDetailsClass;
 
 GType		 gs_shell_details_get_type	(void);

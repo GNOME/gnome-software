@@ -92,7 +92,7 @@ struct GsShellDetailsPrivate
 	GtkWidget		*stack_details;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellDetails, gs_shell_details, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellDetails, gs_shell_details, GS_TYPE_PAGE)
 
 /**
  * gs_shell_details_set_state:
@@ -1044,136 +1044,6 @@ gs_shell_details_get_app (GsShellDetails *shell_details)
 	return shell_details->priv->app;
 }
 
-typedef struct {
-	GsShellDetails	*shell_details;
-	GsApp		*app;
-} GsShellDetailsHelper;
-
-/**
- * gs_shell_details_app_installed_cb:
- **/
-static void
-gs_shell_details_app_installed_cb (GObject *source,
-				   GAsyncResult *res,
-				   gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellDetailsHelper *helper = (GsShellDetailsHelper *) user_data;
-	gboolean ret;
-	_cleanup_error_free_ GError *error = NULL;
-
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-						  res,
-						  &error);
-	if (!ret) {
-		g_warning ("failed to install %s: %s",
-			   gs_app_get_id (helper->app),
-			   error->message);
-		gs_app_notify_failed_modal (helper->app,
-					    gs_shell_get_window (helper->shell_details->priv->shell),
-					    GS_PLUGIN_LOADER_ACTION_INSTALL,
-					    error);
-		return;
-	}
-
-	/* only show this if the window is not active */
-	if (gs_app_get_state (helper->app) != AS_APP_STATE_QUEUED_FOR_INSTALL &&
-	    !gs_shell_is_active (helper->shell_details->priv->shell))
-		gs_app_notify_installed (helper->app);
-	gs_shell_details_reload (helper->shell_details);
-	g_object_unref (helper->shell_details);
-	g_object_unref (helper->app);
-	g_free (helper);
-}
-
-/**
- * gs_shell_details_app_removed_cb:
- **/
-static void
-gs_shell_details_app_removed_cb (GObject *source,
-				 GAsyncResult *res,
-				 gpointer user_data)
-{
-	_cleanup_error_free_ GError *error = NULL;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellDetailsHelper *helper = (GsShellDetailsHelper *) user_data;
-	gboolean ret;
-
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-						  res,
-						  &error);
-	if (!ret) {
-		g_warning ("failed to remove %s: %s",
-			   gs_app_get_id (helper->app),
-			   error->message);
-		gs_app_notify_failed_modal (helper->app,
-					    gs_shell_get_window (helper->shell_details->priv->shell),
-					    GS_PLUGIN_LOADER_ACTION_REMOVE,
-					    error);
-		return;
-	}
-
-	gs_shell_details_reload (helper->shell_details);
-	g_object_unref (helper->shell_details);
-	g_object_unref (helper->app);
-	g_free (helper);
-}
-
-/**
- * gs_shell_details_app_remove
- **/
-static void
-gs_shell_details_app_remove (GsShellDetails *shell_details, GsApp *app)
-{
-	GsShellDetailsHelper *helper;
-	GsShellDetailsPrivate *priv = shell_details->priv;
-	GtkResponseType response;
-	GtkWidget *dialog;
-	_cleanup_string_free_ GString *markup = NULL;
-
-	markup = g_string_new ("");
-	g_string_append_printf (markup,
-				/* TRANSLATORS: this is a prompt message, and
-				 * '%s' is an application summary, e.g. 'GNOME Clocks' */
-				_("Are you sure you want to remove %s?"),
-				gs_app_get_name (app));
-	g_string_prepend (markup, "<b>");
-	g_string_append (markup, "</b>");
-	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
-					 GTK_DIALOG_MODAL,
-					 GTK_MESSAGE_QUESTION,
-					 GTK_BUTTONS_CANCEL,
-					 NULL);
-	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), markup->str);
-	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
-						    /* TRANSLATORS: longer dialog text */
-						    _("%s will be removed, and you will have to install it to use it again."),
-						    gs_app_get_name (app));
-	/* TRANSLATORS: this is button text to remove the application */
-	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
-	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
-		response = gtk_dialog_run (GTK_DIALOG (dialog));
-	else
-		response = GTK_RESPONSE_OK; /* pending install */
-	if (response == GTK_RESPONSE_OK) {
-		g_debug ("remove %s", gs_app_get_id (app));
-		helper = g_new0 (GsShellDetailsHelper, 1);
-		helper->shell_details = g_object_ref (shell_details);
-		helper->app = g_object_ref (app);
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-						   app,
-						   GS_PLUGIN_LOADER_ACTION_REMOVE,
-						   priv->cancellable,
-						   gs_shell_details_app_removed_cb,
-						   helper);
-	}
-	g_string_free (markup, TRUE);
-	gtk_widget_destroy (dialog);
-
-	gs_shell_details_refresh_addons (shell_details);
-	gs_shell_details_refresh_all (shell_details);
-}
-
 /**
  * gs_shell_details_app_remove_button_cb:
  **/
@@ -1182,35 +1052,7 @@ gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *shell_
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
 
-	gs_shell_details_app_remove (shell_details, priv->app);
-}
-
-/**
- * gs_shell_details_app_install:
- **/
-static void
-gs_shell_details_app_install (GsShellDetails *shell_details, GsApp *app)
-{
-	GsShellDetailsPrivate *priv = shell_details->priv;
-	GsShellDetailsHelper *helper;
-	GtkResponseType response;
-
-	/* probably non-free */
-	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
-		response = gs_app_notify_unavailable (app, gs_shell_get_window (priv->shell));
-		if (response != GTK_RESPONSE_OK)
-			return;
-	}
-
-	helper = g_new0 (GsShellDetailsHelper, 1);
-	helper->shell_details = g_object_ref (shell_details);
-	helper->app = g_object_ref (app);
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-					   app,
-					   GS_PLUGIN_LOADER_ACTION_INSTALL,
-					   priv->cancellable,
-					   gs_shell_details_app_installed_cb,
-					   helper);
+	gs_page_remove_app (GS_PAGE (shell_details), priv->app);
 }
 
 /**
@@ -1234,7 +1076,7 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *shell
 		}
 	}
 
-	gs_shell_details_app_install (shell_details, priv->app);
+	gs_page_install_app (GS_PAGE (shell_details), priv->app);
 }
 
 /**
@@ -1256,10 +1098,15 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 	switch (gs_app_get_state (priv->app)) {
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_UPDATABLE:
-		if (gs_app_addon_row_get_selected (row))
-			gs_shell_details_app_install (shell_details, addon);
-		else
-			gs_shell_details_app_remove (shell_details, addon);
+		if (gs_app_addon_row_get_selected (row)) {
+			gs_page_install_app (GS_PAGE (shell_details), addon);
+		} else {
+			gs_page_remove_app (GS_PAGE (shell_details), addon);
+			/* make sure the addon checkboxes are synced if the
+			 * user clicks cancel in the remove confirmation dialog */
+			gs_shell_details_refresh_addons (shell_details);
+			gs_shell_details_refresh_all (shell_details);
+		}
 		break;
 	default:
 		break;
@@ -1348,6 +1195,18 @@ gs_shell_details_rating_changed_cb (GsStarWidget *star,
 					   shell_details);
 }
 
+static void
+gs_shell_details_app_installed (GsPage *page, GsApp *app)
+{
+	gs_shell_details_reload (GS_SHELL_DETAILS (page));
+}
+
+static void
+gs_shell_details_app_removed (GsPage *page, GsApp *app)
+{
+	gs_shell_details_reload (GS_SHELL_DETAILS (page));
+}
+
 /**
  * gs_shell_details_setup:
  */
@@ -1402,6 +1261,12 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_details));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (priv->box_details), adj);
+
+	/* chain up */
+	gs_page_setup (GS_PAGE (shell_details),
+	               shell,
+	               plugin_loader,
+	               cancellable);
 }
 
 /**
@@ -1411,9 +1276,12 @@ static void
 gs_shell_details_class_init (GsShellDetailsClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->finalize = gs_shell_details_finalize;
+	page_class->app_installed = gs_shell_details_app_installed;
+	page_class->app_removed = gs_shell_details_app_removed;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-details.ui");
 

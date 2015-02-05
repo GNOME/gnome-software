@@ -25,6 +25,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-page.h"
 #include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
@@ -41,13 +42,13 @@ typedef struct GsShellSearchPrivate GsShellSearchPrivate;
 
 typedef struct
 {
-	 GtkBin				 parent;
+	 GsPage				 parent;
 	 GsShellSearchPrivate		*priv;
 } GsShellSearch;
 
 typedef struct
 {
-	GtkBinClass			 parent_class;
+	GsPageClass			 parent_class;
 } GsShellSearchClass;
 
 GType		 gs_shell_search_get_type	(void);

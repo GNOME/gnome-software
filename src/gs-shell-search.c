@@ -51,7 +51,7 @@ struct GsShellSearchPrivate
 	GtkWidget		*stack_search;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellSearch, gs_shell_search, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellSearch, gs_shell_search, GS_TYPE_PAGE)
 
 static void
 gs_shell_search_app_row_activated_cb (GtkListBox *list_box,
@@ -61,165 +61,6 @@ gs_shell_search_app_row_activated_cb (GtkListBox *list_box,
 	GsApp *app;
 	app = gs_app_row_get_app (GS_APP_ROW (row));
 	gs_shell_show_app (shell_search->priv->shell, app);
-}
-
-typedef struct {
-	GsApp			*app;
-	GsShellSearch		*shell_search;
-} GsShellSearchHelper;
-
-static void
-gs_shell_search_app_installed_cb (GObject *source,
-				  GAsyncResult *res,
-				  gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellSearchHelper *helper = (GsShellSearchHelper *) user_data;
-	gboolean ret;
-	_cleanup_error_free_ GError *error = NULL;
-
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-						  res,
-						  &error);
-	if (!ret) {
-		g_warning ("failed to install %s: %s",
-			   gs_app_get_id (helper->app),
-			   error->message);
-		gs_app_notify_failed_modal (helper->app,
-					    gs_shell_get_window (helper->shell_search->priv->shell),
-					    GS_PLUGIN_LOADER_ACTION_INSTALL,
-					    error);
-	} else {
-		/* only show this if the window is not active */
-		if (!gs_shell_is_active (helper->shell_search->priv->shell))
-			gs_app_notify_installed (helper->app);
-	}
-	gs_shell_search_reload (helper->shell_search);
-	g_object_unref (helper->app);
-	g_object_unref (helper->shell_search);
-	g_free (helper);
-}
-
-/**
- * gs_shell_search_finished_func:
- **/
-static void
-gs_shell_search_app_removed_cb (GObject *source,
-				GAsyncResult *res,
-				gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellSearchHelper *helper = (GsShellSearchHelper *) user_data;
-	gboolean ret;
-	_cleanup_error_free_ GError *error = NULL;
-
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-						  res,
-						  &error);
-	if (!ret) {
-		g_warning ("failed to remove: %s", error->message);
-		gs_app_notify_failed_modal (helper->app,
-					    gs_shell_get_window (helper->shell_search->priv->shell),
-					    GS_PLUGIN_LOADER_ACTION_REMOVE,
-					    error);
-	}
-	gs_shell_search_reload (helper->shell_search);
-	g_object_unref (helper->app);
-	g_object_unref (helper->shell_search);
-	g_free (helper);
-}
-
-/**
- * gs_shell_search_app_remove:
- **/
-static void
-gs_shell_search_app_remove (GsShellSearch *shell_search, GsApp *app)
-{
-	GsShellSearchPrivate *priv = shell_search->priv;
-	GtkResponseType response;
-	GtkWidget *dialog;
-	_cleanup_string_free_ GString *markup = NULL;
-
-	markup = g_string_new ("");
-	g_string_append_printf (markup,
-				/* TRANSLATORS: this is a prompt message, and
-				 * '%s' is an application summary, e.g. 'GNOME Clocks' */
-				_("Are you sure you want to remove %s?"),
-				gs_app_get_name (app));
-	g_string_prepend (markup, "<b>");
-	g_string_append (markup, "</b>");
-	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
-					 GTK_DIALOG_MODAL,
-					 GTK_MESSAGE_QUESTION,
-					 GTK_BUTTONS_CANCEL,
-					 NULL);
-	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), markup->str);
-	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
-						    /* TRANSLATORS: longer dialog text */
-						    _("%s will be removed, and you will have to install it to use it again."),
-						    gs_app_get_name (app));
-	/* TRANSLATORS: this is button text to remove the application */
-	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_OK) {
-		GsShellSearchHelper *helper;
-		g_debug ("remove %s", gs_app_get_id (app));
-		helper = g_new0 (GsShellSearchHelper, 1);
-		helper->app = g_object_ref (app);
-		helper->shell_search = g_object_ref (shell_search);
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-						   app,
-						   GS_PLUGIN_LOADER_ACTION_REMOVE,
-						   priv->cancellable,
-						   gs_shell_search_app_removed_cb,
-						   helper);
-	}
-	gtk_widget_destroy (dialog);
-}
-
-/**
- * gs_shell_search_app_install:
- **/
-static void
-gs_shell_search_app_install (GsShellSearch *shell_search, GsApp *app)
-{
-	GsShellSearchPrivate *priv = shell_search->priv;
-	GsShellSearchHelper *helper;
-	helper = g_new0 (GsShellSearchHelper, 1);
-	helper->app = g_object_ref (app);
-	helper->shell_search = g_object_ref (shell_search);
-	gs_plugin_loader_app_action_async (priv->plugin_loader,
-					   app,
-					   GS_PLUGIN_LOADER_ACTION_INSTALL,
-					   priv->cancellable,
-					   gs_shell_search_app_installed_cb,
-					   helper);
-}
-
-/**
- * gs_shell_search_install_unavailable_app:
- **/
-static void
-gs_shell_search_install_unavailable_app (GsShellSearch *shell_search, GsApp *app)
-{
-	GsShellSearchPrivate *priv = shell_search->priv;
-	GtkResponseType response;
-	GsShellSearchHelper *helper;
-
-	/* get confirmation */
-	response = gs_app_notify_unavailable (app, gs_shell_get_window (priv->shell));
-	if (response == GTK_RESPONSE_OK) {
-		g_debug ("installing %s", gs_app_get_id (app));
-		helper = g_new0 (GsShellSearchHelper, 1);
-		helper->shell_search = g_object_ref (shell_search);
-		helper->app = g_object_ref (app);
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-						   app,
-						   GS_PLUGIN_LOADER_ACTION_INSTALL,
-						   priv->cancellable,
-						   gs_shell_search_app_installed_cb,
-						   helper);
-	}
 }
 
 /**
@@ -232,12 +73,12 @@ gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
 	GsApp *app;
 	app = gs_app_row_get_app (app_row);
 	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
-		gs_shell_search_app_install (shell_search, app);
+		gs_page_install_app (GS_PAGE (shell_search), app);
 	else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
-		gs_shell_search_app_remove (shell_search, app);
+		gs_page_remove_app (GS_PAGE (shell_search), app);
 	else if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
 		if (gs_app_get_url (app, AS_URL_KIND_MISSING) == NULL) {
-			gs_shell_search_install_unavailable_app (shell_search, app);
+			gs_page_install_app (GS_PAGE (shell_search), app);
 			return;
 		}
 		gs_app_show_url (app, AS_URL_KIND_MISSING);
@@ -512,6 +353,18 @@ gs_shell_search_cancel_cb (GCancellable *cancellable,
 		g_cancellable_cancel (priv->search_cancellable);
 }
 
+static void
+gs_shell_search_app_installed (GsPage *page, GsApp *app)
+{
+	gs_shell_search_reload (GS_SHELL_SEARCH (page));
+}
+
+static void
+gs_shell_search_app_removed (GsPage *page, GsApp *app)
+{
+	gs_shell_search_reload (GS_SHELL_SEARCH (page));
+}
+
 /**
  * gs_shell_search_setup:
  */
@@ -545,6 +398,12 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_search),
 				    gs_shell_search_sort_func,
 				    shell_search, NULL);
+
+	/* chain up */
+	gs_page_setup (GS_PAGE (shell_search),
+	               shell,
+	               plugin_loader,
+	               cancellable);
 }
 
 /**
@@ -554,9 +413,12 @@ static void
 gs_shell_search_class_init (GsShellSearchClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->finalize = gs_shell_search_finalize;
+	page_class->app_installed = gs_shell_search_app_installed;
+	page_class->app_removed = gs_shell_search_app_removed;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-search.ui");
 

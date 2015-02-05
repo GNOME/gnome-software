@@ -45,7 +45,7 @@ struct GsShellCategoryPrivate {
 	GtkWidget	*scrolledwindow_filter;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellCategory, gs_shell_category, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellCategory, gs_shell_category, GS_TYPE_PAGE)
 
 /**
  * gs_shell_category_reload:
@@ -363,6 +363,12 @@ gs_shell_category_setup (GsShellCategory *shell_category,
 
 	g_signal_connect (priv->listbox_filter, "key-press-event",
 			  G_CALLBACK (key_event), shell_category);
+
+	/* chain up */
+	gs_page_setup (GS_PAGE (shell_category),
+	               shell,
+	               plugin_loader,
+	               cancellable);
 }
 
 GsShellCategory *

@@ -25,6 +25,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-page.h"
 #include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
@@ -41,13 +42,13 @@ typedef struct GsShellUpdatesPrivate GsShellUpdatesPrivate;
 
 typedef struct
 {
-	 GtkBin			 parent;
+	 GsPage			 parent;
 	 GsShellUpdatesPrivate	*priv;
 } GsShellUpdates;
 
 typedef struct
 {
-	GtkBinClass		 parent_class;
+	GsPageClass		 parent_class;
 } GsShellUpdatesClass;
 
 GType		 gs_shell_updates_get_type	(void);

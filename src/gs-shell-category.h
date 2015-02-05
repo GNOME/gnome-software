@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-category.h"
+#include "gs-page.h"
 #include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
@@ -42,13 +43,13 @@ typedef struct GsShellCategoryPrivate GsShellCategoryPrivate;
 
 typedef struct
 {
-	 GtkBin				 parent;
+	 GsPage				 parent;
 	 GsShellCategoryPrivate		*priv;
 } GsShellCategory;
 
 typedef struct
 {
-	GtkBinClass			 parent_class;
+	GsPageClass			 parent_class;
 } GsShellCategoryClass;
 
 GType		 gs_shell_category_get_type	(void);

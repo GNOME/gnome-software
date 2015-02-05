@@ -62,7 +62,7 @@ struct GsShellOverviewPrivate
 	GtkWidget		*stack_overview;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellOverview, gs_shell_overview, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellOverview, gs_shell_overview, GS_TYPE_PAGE)
 
 enum {
 	SIGNAL_REFRESHED,
@@ -475,6 +475,12 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 		tile = gs_popular_tile_new (NULL);
 		gtk_box_pack_start (GTK_BOX (priv->box_popular_rotating), tile, TRUE, TRUE, 0);
 	}
+
+	/* chain up */
+	gs_page_setup (GS_PAGE (shell_overview),
+	               shell,
+	               plugin_loader,
+	               cancellable);
 }
 
 static void

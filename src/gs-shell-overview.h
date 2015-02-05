@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-page.h"
 #include "gs-shell.h"
 #include "gs-plugin-loader.h"
 
@@ -42,13 +43,13 @@ typedef struct GsShellOverviewPrivate GsShellOverviewPrivate;
 
 typedef struct
 {
-	 GtkBin			 parent;
+	 GsPage			 parent;
 	 GsShellOverviewPrivate	*priv;
 } GsShellOverview;
 
 typedef struct
 {
-	GtkBinClass		 parent_class;
+	GsPageClass		 parent_class;
 
 	void	(*refreshed)	(GsShellOverview *shell);
 } GsShellOverviewClass;

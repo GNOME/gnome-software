@@ -25,6 +25,7 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
+#include "gs-page.h"
 #include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
@@ -40,13 +41,13 @@ typedef struct GsShellInstalledPrivate GsShellInstalledPrivate;
 
 typedef struct
 {
-	 GtkBin				 parent;
+	 GsPage				 parent;
 	 GsShellInstalledPrivate	*priv;
 } GsShellInstalled;
 
 typedef struct
 {
-	GtkBinClass			 parent_class;
+	GsPageClass			 parent_class;
 } GsShellInstalledClass;
 
 GType		 gs_shell_installed_get_type	(void);

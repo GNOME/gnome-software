@@ -59,7 +59,7 @@ struct GsShellInstalledPrivate
 	GtkWidget		*stack_install;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellInstalled, gs_shell_installed, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellInstalled, gs_shell_installed, GS_TYPE_PAGE)
 
 static void gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 							GsShellInstalled *shell_installed);
@@ -90,11 +90,6 @@ gs_shell_installed_app_row_activated_cb (GtkListBox *list_box,
 	}
 }
 
-typedef struct {
-	GsAppRow		*app_row;
-	GsShellInstalled	*shell_installed;
-} GsShellInstalledHelper;
-
 static void
 row_unrevealed (GObject *row, GParamSpec *pspec, gpointer data)
 {
@@ -104,44 +99,23 @@ row_unrevealed (GObject *row, GParamSpec *pspec, gpointer data)
 	gtk_container_remove (GTK_CONTAINER (list), GTK_WIDGET (row));
 }
 
-/**
- * gs_shell_installed_app_removed_cb:
- **/
 static void
-gs_shell_installed_app_removed_cb (GObject *source,
-				   GAsyncResult *res,
-				   gpointer user_data)
+gs_shell_installed_app_removed (GsPage *page, GsApp *app)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellInstalledHelper *helper = (GsShellInstalledHelper *) user_data;
-	GsShellInstalledPrivate *priv = helper->shell_installed->priv;
-	GsApp *app;
-	gboolean ret;
-	_cleanup_error_free_ GError *error = NULL;
+	GsShellInstalled *shell_installed = GS_SHELL_INSTALLED (page);
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+	GList *l;
+	_cleanup_list_free_ GList *children = NULL;
 
-	ret = gs_plugin_loader_app_action_finish (plugin_loader,
-						  res,
-						  &error);
-	if (!ret) {
-		app = gs_app_row_get_app (helper->app_row);
-		g_warning ("failed to remove %s: %s",
-			   gs_app_get_id (app), error->message);
-		gs_app_notify_failed_modal (app,
-					    gs_shell_get_window (priv->shell),
-					    GS_PLUGIN_LOADER_ACTION_REMOVE,
-					    error);
-	} else {
-		/* remove from the list */
-		app = gs_app_row_get_app (helper->app_row);
-		g_debug ("removed %s", gs_app_get_id (app));
-		gs_app_row_unreveal (helper->app_row);
-		g_signal_connect (helper->app_row, "unrevealed",
-				  G_CALLBACK (row_unrevealed), NULL);
+	children = gtk_container_get_children (GTK_CONTAINER (priv->list_box_install));
+	for (l = children; l; l = l->next) {
+		GsAppRow *app_row = GS_APP_ROW (l->data);
+		if (gs_app_row_get_app (app_row) == app) {
+			gs_app_row_unreveal (app_row);
+			g_signal_connect (app_row, "unrevealed",
+			                  G_CALLBACK (row_unrevealed), NULL);
+		}
 	}
-
-	g_object_unref (helper->app_row);
-	g_object_unref (helper->shell_installed);
-	g_free (helper);
 }
 
 /**
@@ -152,50 +126,9 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 				  GsShellInstalled *shell_installed)
 {
 	GsApp *app;
-	GsShellInstalledPrivate *priv = shell_installed->priv;
-	GtkResponseType response;
-	GtkWidget *dialog;
-	GsShellInstalledHelper *helper;
-	_cleanup_string_free_ GString *markup = NULL;
 
-	markup = g_string_new ("");
 	app = gs_app_row_get_app (app_row);
-	g_string_append_printf (markup,
-				/* TRANSLATORS: this is a prompt message, and
-				 * '%s' is an application summary, e.g. 'GNOME Clocks' */
-				_("Are you sure you want to remove %s?"),
-				gs_app_get_name (app));
-	g_string_prepend (markup, "<b>");
-	g_string_append (markup, "</b>");
-	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
-					 GTK_DIALOG_MODAL,
-					 GTK_MESSAGE_QUESTION,
-					 GTK_BUTTONS_CANCEL,
-					 NULL);
-	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), markup->str);
-	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
-						    /* TRANSLATORS: longer dialog text */
-						    _("%s will be removed, and you will have to install it to use it again."),
-						    gs_app_get_name (app));
-	/* TRANSLATORS: this is button text to remove the application */
-	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
-	if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
-		response = GTK_RESPONSE_OK; /* pending install */
-	else
-		response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_OK) {
-		g_debug ("removing %s", gs_app_get_id (app));
-		helper = g_new0 (GsShellInstalledHelper, 1);
-		helper->shell_installed = g_object_ref (shell_installed);
-		helper->app_row = g_object_ref (app_row);
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-						   app,
-						   GS_PLUGIN_LOADER_ACTION_REMOVE,
-						   priv->cancellable,
-						   gs_shell_installed_app_removed_cb,
-						   helper);
-	}
-	gtk_widget_destroy (dialog);
+	gs_page_remove_app (GS_PAGE (shell_installed), app);
 }
 
 static gboolean
@@ -821,6 +754,12 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "select_none_menuitem"));
 	g_signal_connect (widget, "activate",
 			  G_CALLBACK (select_none_cb), shell_installed);
+
+	/* chain up */
+	gs_page_setup (GS_PAGE (shell_installed),
+	               shell,
+	               plugin_loader,
+	               cancellable);
 }
 
 /**
@@ -830,9 +769,11 @@ static void
 gs_shell_installed_class_init (GsShellInstalledClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->finalize = gs_shell_installed_finalize;
+	page_class->app_removed = gs_shell_installed_app_removed;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-installed.ui");
 

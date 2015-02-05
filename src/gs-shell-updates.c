@@ -86,7 +86,7 @@ enum {
 	COLUMN_UPDATE_LAST
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellUpdates, gs_shell_updates, GTK_TYPE_BIN)
+G_DEFINE_TYPE_WITH_PRIVATE (GsShellUpdates, gs_shell_updates, GS_TYPE_PAGE)
 
 /**
  * gs_shell_updates_invalidate:
@@ -934,6 +934,12 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	pk_control_get_properties_async (priv->control, cancellable,
 					 gs_shell_updates_get_properties_cb,
 					 shell_updates);
+
+	/* chain up */
+	gs_page_setup (GS_PAGE (shell_updates),
+	               shell,
+	               plugin_loader,
+	               cancellable);
 }
 
 /**

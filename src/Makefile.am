@@ -123,6 +123,8 @@ gnome_software_SOURCES =				\
 	gs-history-dialog.h				\
 	gs-box.h					\
 	gs-box.c					\
+	gs-page.c					\
+	gs-page.h					\
 	gs-plugin.c					\
 	gs-plugin.h					\
 	gs-profile.c					\
