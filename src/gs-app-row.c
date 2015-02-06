@@ -209,8 +209,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 		break;
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_INSTALLED:
-		if (gs_app_get_kind (app_row->priv->app) != GS_APP_KIND_SYSTEM &&
-		    !app_row->priv->show_update)
+		if (gs_app_get_kind (app_row->priv->app) != GS_APP_KIND_SYSTEM)
 			gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily removed */
