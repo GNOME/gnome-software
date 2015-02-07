@@ -2121,6 +2121,7 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	GPtrArray *addons;
 	gboolean ret;
 	guint i;
+	_cleanup_list_free_ GList *list = NULL;
 
 	/* add to list */
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
@@ -2146,7 +2147,20 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 				}
 			}
 		}
-		g_task_return_boolean (task, TRUE);
+
+		/* refine again to make sure we pick up new source id */
+		list = g_list_prepend (list, state->app);
+		ret = gs_plugin_loader_run_refine (plugin_loader,
+						   state->function_name,
+						   &list,
+						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN,
+						   cancellable,
+						   &error);
+		if (ret) {
+			g_task_return_boolean (task, TRUE);
+		} else {
+			g_task_return_error (task, error);
+		}
 	} else {
 		gs_app_set_state (state->app, state->state_failure);
 		addons = gs_app_get_addons (state->app);
