@@ -781,12 +781,44 @@ gs_app_set_project_group (GsApp *app, const gchar *project_group)
 }
 
 /**
+ * gs_app_is_addon_id_kind
+ **/
+static gboolean
+gs_app_is_addon_id_kind (GsApp *app)
+{
+	AsIdKind id_kind;
+	id_kind = gs_app_get_id_kind (app);
+	if (id_kind == AS_ID_KIND_DESKTOP)
+		return FALSE;
+	if (id_kind == AS_ID_KIND_WEB_APP)
+		return FALSE;
+	return TRUE;
+}
+
+/**
  * gs_app_get_pixbuf:
  */
 GdkPixbuf *
 gs_app_get_pixbuf (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	if (app->priv->pixbuf == NULL && gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL) {
+		const gchar *icon_name;
+
+		if (gs_app_get_kind (app) == GS_APP_KIND_SOURCE)
+			icon_name = "x-package-repository";
+		else if (gs_app_is_addon_id_kind (app))
+			icon_name = "application-x-addon";
+		else
+			icon_name = "application-x-executable";
+		app->priv->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		                                              icon_name, 96,
+		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
+		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
+		                                              NULL);
+	}
+
 	return app->priv->pixbuf;
 }
 
