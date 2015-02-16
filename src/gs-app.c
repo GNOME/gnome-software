@@ -819,6 +819,14 @@ gs_app_get_pixbuf (GsApp *app)
 		                                              NULL);
 	}
 
+	if (app->priv->pixbuf == NULL && gs_app_get_kind (app) == GS_APP_KIND_MISSING) {
+		app->priv->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		                                              "dialog-question-symbolic", 96,
+		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
+		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
+		                                              NULL);
+	}
+
 	return app->priv->pixbuf;
 }
 
