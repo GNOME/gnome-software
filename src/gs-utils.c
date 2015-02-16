@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2015 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -188,113 +188,11 @@ gs_app_notify_failed_modal (GsApp *app,
 	gtk_window_present (GTK_WINDOW (dialog));
 }
 
-/**
- * gs_app_notify_unavailable_nonfree:
- **/
-static GtkResponseType
-gs_app_notify_unavailable_nonfree (GsApp *app, GtkWindow *parent)
-{
-	GtkResponseType response;
-	GtkWidget *dialog;
-	_cleanup_object_unref_ GSettings *settings = NULL;
-	_cleanup_string_free_ GString *body = NULL;
-	_cleanup_string_free_ GString *title = NULL;
-
-	/* check if the user has already dismissed */
-	settings = g_settings_new ("org.gnome.software");
-	if (!g_settings_get_boolean (settings, "prompt-for-nonfree"))
-		return GTK_RESPONSE_OK;
-
-	title = g_string_new ("");
-	g_string_append_printf (title, "<b>%s</b>",
-				/* TRANSLATORS: window title, nonfree in this
-				 * case refers to Free and Open Source */
-				_("You're About to Install Non-Free Software"));
-	dialog = gtk_message_dialog_new (parent,
-					 GTK_DIALOG_MODAL,
-					 GTK_MESSAGE_QUESTION,
-					 GTK_BUTTONS_CANCEL,
-					 NULL);
-	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), title->str);
-
-	body = g_string_new ("");
-	g_string_append_printf (body,
-				/* TRANSLATORS: the replacements are as follows:
-				 * 1. Application name, e.g. "Firefox"
-				 * 2. Start of hypertext e.g. <a>
-				 * 3. End of hypertext e.g. </a> */
-				_("%s is not %sfree and open source software%s."),
-				gs_app_get_name (app),
-				"<a href=\"http://en.wikipedia.org/wiki/Free_and_open-source_software\">",
-				"</a>");
-	g_string_append (body, " ");
-	g_string_append (body,
-			/* TRANSLATORS: Laws are geographical, urgh... */
-			_("Depending on your country of residence, "
-			  "installing it could make you liable to prosecution."));
-	g_string_append (body, "\n");
-	g_string_append (body,
-			/* TRANSLATORS: ...and you need to ask for advice */
-			_("If you are uncertain about this, "
-			  "you should obtain legal advice."));
-
-	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog), "%s", body->str);
-	/* TRANSLATORS: this is button text to not ask about non-free content again */
-	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Don't Warn Again"), GTK_RESPONSE_YES);
-	/* TRANSLATORS: this is button text to enable the repo and install the app */
-	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Install"), GTK_RESPONSE_OK);
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_YES) {
-		response = GTK_RESPONSE_OK;
-		g_settings_set_boolean (settings, "prompt-for-nonfree", FALSE);
-	}
-	gtk_widget_destroy (dialog);
-	return response;
-}
-
-/**
- * gs_app_notify_unavailable_other:
- **/
-static GtkResponseType
-gs_app_notify_unavailable_other (GsApp *app, GtkWindow *parent)
-{
-	GtkResponseType response;
-	GtkWidget *dialog;
-	_cleanup_string_free_ GString *body = NULL;
-	_cleanup_string_free_ GString *title = NULL;
-
-	title = g_string_new ("");
-	g_string_append_printf (title, "<b>%s</b>",
-				/* TRANSLATORS: window title, additional in this
-				 * case means not-currently-enabled */
-				_("Enable Additional Software Source?"));
-	dialog = gtk_message_dialog_new (parent,
-					 GTK_DIALOG_MODAL,
-					 GTK_MESSAGE_QUESTION,
-					 GTK_BUTTONS_CANCEL,
-					 NULL);
-	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), title->str);
-
-	body = g_string_new ("");
-	g_string_append_printf (body,
-				/* TRANSLATORS: the replacements are as follows:
-				 * 1. Application name, e.g. "Firefox"
-				 * 2. Software source name, e.g. fedora-optional */
-				_("%s is provided by %s."),
-				gs_app_get_name (app),
-				gs_app_get_origin (app));
-	g_string_append (body, "\n");
-	g_string_append (body,
-			/* TRANSLATORS: once the source is enabled it stays enabled */
-			_("Do you want to enable it?"));
-
-	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog), "%s", body->str);
-	/* TRANSLATORS: this is button text to enable the repo and install the app */
-	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Enable"), GTK_RESPONSE_OK);
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	gtk_widget_destroy (dialog);
-	return response;
-}
+typedef enum {
+	GS_APP_LICENCE_FREE		= 0,
+	GS_APP_LICENCE_NONFREE		= 1,
+	GS_APP_LICENCE_PATENT_CONCERN	= 2
+} GsAppLicenceHint;
 
 /**
  * gs_app_notify_unavailable:
@@ -302,10 +200,134 @@ gs_app_notify_unavailable_other (GsApp *app, GtkWindow *parent)
 GtkResponseType
 gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 {
+	GsAppLicenceHint hint = GS_APP_LICENCE_FREE;
+	GtkResponseType response;
+	GtkWidget *dialog;
+	const gchar *licence;
+	gboolean already_enabled = FALSE;	/* FIXME */
+	guint i;
+	struct {
+		const gchar	*str;
+		GsAppLicenceHint hint;
+	} keywords[] = {
+		{ "NonFree",		GS_APP_LICENCE_NONFREE },
+		{ "PatentConcern",	GS_APP_LICENCE_PATENT_CONCERN },
+		{ "Proprietary",	GS_APP_LICENCE_NONFREE },
+		{ NULL, 0 }
+	};
+	_cleanup_free_ gchar *origin_url = NULL;
+	_cleanup_object_unref_ GSettings *settings = NULL;
+	_cleanup_string_free_ GString *body = NULL;
+	_cleanup_string_free_ GString *title = NULL;
+
 	/* this is very crude */
-	if (g_strstr_len (gs_app_get_licence (app), -1, "Proprietary") != NULL)
-		return gs_app_notify_unavailable_nonfree (app, parent);
-	return gs_app_notify_unavailable_other (app, parent);
+	licence = gs_app_get_licence (app);
+	if (licence != NULL) {
+		for (i = 0; keywords[i].str != NULL; i++) {
+			if (g_strstr_len (licence, -1, keywords[i].str) != NULL)
+				hint |= keywords[i].hint;
+		}
+	} else {
+		/* use the worst-case assumption */
+		hint = GS_APP_LICENCE_NONFREE | GS_APP_LICENCE_PATENT_CONCERN;
+	}
+
+	/* check if the user has already dismissed */
+	settings = g_settings_new ("org.gnome.software");
+	if (!g_settings_get_boolean (settings, "prompt-for-nonfree"))
+		return GTK_RESPONSE_OK;
+
+	title = g_string_new ("");
+	if (already_enabled) {
+		g_string_append_printf (title, "<b>%s</b>",
+					/* TRANSLATORS: window title */
+					_("Install Third-Party Software?"));
+	} else {
+		g_string_append_printf (title, "<b>%s</b>",
+					/* TRANSLATORS: window title */
+					_("Enable Third-Party Software Source?"));
+	}
+	dialog = gtk_message_dialog_new (parent,
+					 GTK_DIALOG_MODAL,
+					 GTK_MESSAGE_QUESTION,
+					 GTK_BUTTONS_CANCEL,
+					 NULL);
+	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), title->str);
+
+	/* FIXME: get the URL somehow... */
+	origin_url = g_strdup_printf ("<a href=\"\">%s>/a>", gs_app_get_origin (app));
+	body = g_string_new ("");
+	if (hint & GS_APP_LICENCE_NONFREE) {
+		g_string_append_printf (body,
+					/* TRANSLATORS: the replacements are as follows:
+					 * 1. Application name, e.g. "Firefox"
+					 * 2. Start of hypertext e.g. <a>
+					 * 3. End of hypertext e.g. </a>
+					 * 4. Software source name, e.g. fedora-optional
+					 */
+					_("%s is not %sfree and open source "
+					  "software%s, and is provided by “%s”."),
+					gs_app_get_name (app),
+					origin_url,
+					"<a href=\"http://en.wikipedia.org/wiki/Free_and_open-source_software\">",
+					"</a>");
+	} else {
+		g_string_append_printf (body,
+					/* TRANSLATORS: the replacements are as follows:
+					 * 1. Application name, e.g. "Firefox"
+					 * 2. Software source name, e.g. fedora-optional */
+					_("%s is provided by “%s”."),
+					gs_app_get_name (app),
+					origin_url);
+	}
+
+	/* tell the use what needs to be done */
+	if (!already_enabled) {
+		g_string_append (body, " ");
+		g_string_append (body,
+				/* TRANSLATORS: a software source is a repo */
+				_("This software source must be "
+				  "enabled to continue installation."));
+	}
+
+	/* be aware of patent clauses */
+	if (hint & GS_APP_LICENCE_PATENT_CONCERN) {
+		g_string_append (body, "\n\n");
+		if (gs_app_get_id_kind (app) != AS_ID_KIND_CODEC) {
+			g_string_append_printf (body,
+						/* TRANSLATORS: Laws are geographical, urgh... */
+						_("It may be illegal to install "
+						  "or use %s in some countries."),
+						gs_app_get_name (app));
+		} else {
+			g_string_append (body,
+					/* TRANSLATORS: Laws are geographical, urgh... */
+					_("It may be illegal to install or use "
+					  "this codec in some countries."));
+		}
+	}
+
+	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog), "%s", body->str);
+	/* TRANSLATORS: this is button text to not ask about non-free content again */
+	if (0) gtk_dialog_add_button (GTK_DIALOG (dialog), _("Don't Warn Again"), GTK_RESPONSE_YES);
+	if (already_enabled) {
+		gtk_dialog_add_button (GTK_DIALOG (dialog),
+				       /* TRANSLATORS: button text */
+				       _("Install"),
+				       GTK_RESPONSE_OK);
+	} else {
+		gtk_dialog_add_button (GTK_DIALOG (dialog),
+				       /* TRANSLATORS: button text */
+				       _("Enable and Install"),
+				       GTK_RESPONSE_OK);
+	}
+	response = gtk_dialog_run (GTK_DIALOG (dialog));
+	if (response == GTK_RESPONSE_YES) {
+		response = GTK_RESPONSE_OK;
+		g_settings_set_boolean (settings, "prompt-for-nonfree", FALSE);
+	}
+	gtk_widget_destroy (dialog);
+	return response;
 }
 
 void
