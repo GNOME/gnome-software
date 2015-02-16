@@ -173,6 +173,13 @@ gs_app_row_refresh (GsAppRow *app_row)
 	if (gs_app_get_pixbuf (priv->app))
 		gs_image_set_from_pixbuf (GTK_IMAGE (priv->image),
 					  gs_app_get_pixbuf (priv->app));
+
+	context = gtk_widget_get_style_context (priv->image);
+	if (gs_app_get_kind (priv->app) == GS_APP_KIND_MISSING)
+		gtk_style_context_add_class (context, "dimmer-label");
+	else
+		gtk_style_context_remove_class (context, "dimmer-label");
+
 	gtk_widget_set_visible (priv->button, FALSE);
 	gtk_widget_set_sensitive (priv->button, TRUE);
 	gtk_widget_set_visible (priv->spinner, FALSE);
