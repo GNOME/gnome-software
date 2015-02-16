@@ -569,3 +569,65 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	}
 	return TRUE;
 }
+
+/**
+ * gs_plugin_add_search_files:
+ */
+gboolean
+gs_plugin_add_search_files (GsPlugin *plugin,
+                            gchar **search,
+                            GList **list,
+                            GCancellable *cancellable,
+                            GError **error)
+{
+	PkBitfield filter;
+	_cleanup_object_unref_ PkResults *results = NULL;
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+					 PK_FILTER_ENUM_ARCH,
+					 -1);
+	results = pk_client_search_files (PK_CLIENT (plugin->priv->task),
+	                                  filter,
+	                                  search,
+	                                  cancellable,
+	                                  gs_plugin_packagekit_progress_cb, plugin,
+	                                  error);
+	if (results == NULL)
+		return FALSE;
+
+	/* add results */
+	return gs_plugin_packagekit_add_results (plugin, list, results, error);
+}
+
+/**
+ * gs_plugin_add_search_what_provides:
+ */
+gboolean
+gs_plugin_add_search_what_provides (GsPlugin *plugin,
+                                    gchar **search,
+                                    GList **list,
+                                    GCancellable *cancellable,
+                                    GError **error)
+{
+	PkBitfield filter;
+	_cleanup_object_unref_ PkResults *results = NULL;
+
+	/* do sync call */
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
+					 PK_FILTER_ENUM_ARCH,
+					 -1);
+	results = pk_client_what_provides (PK_CLIENT (plugin->priv->task),
+	                                   filter,
+	                                   search,
+	                                   cancellable,
+	                                   gs_plugin_packagekit_progress_cb, plugin,
+	                                   error);
+	if (results == NULL)
+		return FALSE;
+
+	/* add results */
+	return gs_plugin_packagekit_add_results (plugin, list, results, error);
+}

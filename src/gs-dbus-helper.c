@@ -21,7 +21,9 @@
 
 #include "config.h"
 
+#include <gio/gdesktopappinfo.h>
 #include <gio/gio.h>
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <packagekit-glib2/packagekit.h>
 
@@ -29,11 +31,13 @@
 #include "gs-dbus-helper.h"
 #include "gs-packagekit-generated.h"
 #include "gs-resources.h"
+#include "gs-shell-extras.h"
 
 struct _GsDbusHelper {
 	GObject			 parent;
 	GCancellable		*cancellable;
 	GDBusInterfaceSkeleton	*query_interface;
+	GDBusInterfaceSkeleton	*modify_interface;
 	PkTask			*task;
 	guint			 dbus_own_name_id;
 };
@@ -269,6 +273,208 @@ handle_query_is_installed (GsPackageKitQuery	 *skeleton,
 }
 
 static void
+notify_search_resources (GsShellExtrasMode   mode,
+                         const gchar        *desktop_id,
+                         gchar             **resources)
+{
+	const gchar *app_name = NULL;
+	const gchar *mode_string;
+	const gchar *title = NULL;
+	_cleanup_free_ gchar *body = NULL;
+	_cleanup_object_unref_ GDesktopAppInfo *app_info = NULL;
+	_cleanup_object_unref_ GNotification *n = NULL;
+
+	if (desktop_id != NULL) {
+		app_info = g_desktop_app_info_new (desktop_id);
+		if (app_info != NULL)
+			app_name = g_app_info_get_name (G_APP_INFO (app_info));
+	}
+
+	if (app_name == NULL) {
+		/* TRANSLATORS: this is a what we use in notifications if the app's name is unknown */
+		app_name = _("An application");
+	}
+
+	switch (mode) {
+	case GS_SHELL_EXTRAS_MODE_INSTALL_MIME_TYPES:
+		/* TRANSLATORS: this is a notification displayed when an app needs additional MIME types. */
+		body = g_strdup_printf (_("%s is requesting additional file format support."), app_name);
+		/* TRANSLATORS: notification title */
+		title = _("Additional MIME Types Required");
+		break;
+	case GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES:
+		/* TRANSLATORS: this is a notification displayed when an app needs additional fonts. */
+		body = g_strdup_printf (_("%s is requesting additional fonts."), app_name);
+		/* TRANSLATORS: notification title */
+		title = _("Additional Fonts Required");
+		break;
+	case GS_SHELL_EXTRAS_MODE_INSTALL_GSTREAMER_RESOURCES:
+		/* TRANSLATORS: this is a notification displayed when an app needs additional codecs. */
+		body = g_strdup_printf (_("%s is requesting additional multimedia codecs."), app_name);
+		/* TRANSLATORS: notification title */
+		title = _("Additional Multimedia Codecs Required");
+		break;
+	case GS_SHELL_EXTRAS_MODE_INSTALL_PRINTER_DRIVERS:
+		/* TRANSLATORS: this is a notification displayed when an app needs additional printer drivers. */
+		body = g_strdup_printf (_("%s is requesting additional printer drivers."), app_name);
+		/* TRANSLATORS: notification title */
+		title = _("Additional Printer Drivers Required");
+		break;
+	default:
+		/* TRANSLATORS: this is a notification displayed when an app wants to install additional packages. */
+		body = g_strdup_printf (_("%s is requesting additional packages."), app_name);
+		/* TRANSLATORS: notification title */
+		title = _("Additional Packages Required");
+		break;
+	}
+
+	mode_string = gs_shell_extras_mode_to_string (mode);
+
+	n = g_notification_new (title);
+	g_notification_set_body (n, body);
+	/* TRANSLATORS: this is a button that launches gnome-software */
+	g_notification_add_button_with_target (n, _("Find in Software"), "app.install-resources", "(s^as)", mode_string, resources);
+	g_notification_set_default_action_and_target (n, "app.install-resources", "(s^as)", mode_string, resources);
+	g_application_send_notification (g_application_get_default (), "install-resources", n);
+}
+
+static gboolean
+handle_modify_install_package_files (GsPackageKitModify		 *object,
+                                     GDBusMethodInvocation	 *invocation,
+                                     guint			  arg_xid,
+                                     gchar			**arg_files,
+                                     const gchar		 *arg_interaction,
+                                     gpointer			  user_data)
+{
+	g_debug ("****** Modify.InstallPackageFiles");
+
+	notify_search_resources (GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_FILES, NULL, arg_files);
+	gs_package_kit_modify_complete_install_package_files (object, invocation);
+
+	return TRUE;
+}
+
+static gboolean
+handle_modify_install_provide_files (GsPackageKitModify		 *object,
+                                     GDBusMethodInvocation	 *invocation,
+                                     guint			  arg_xid,
+                                     gchar			**arg_files,
+                                     const gchar		 *arg_interaction,
+                                     gpointer			  user_data)
+{
+	g_debug ("****** Modify.InstallProvideFiles");
+
+	notify_search_resources (GS_SHELL_EXTRAS_MODE_INSTALL_PROVIDE_FILES, NULL, arg_files);
+	gs_package_kit_modify_complete_install_provide_files (object, invocation);
+
+	return TRUE;
+}
+
+static gboolean
+handle_modify_install_package_names (GsPackageKitModify		 *object,
+                                     GDBusMethodInvocation	 *invocation,
+                                     guint			  arg_xid,
+                                     gchar			**arg_package_names,
+                                     const gchar		 *arg_interaction,
+                                     gpointer			  user_data)
+{
+	g_debug ("****** Modify.InstallPackageNames");
+
+	notify_search_resources (GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_NAMES, NULL, arg_package_names);
+	gs_package_kit_modify_complete_install_package_names (object, invocation);
+
+	return TRUE;
+}
+
+static gboolean
+handle_modify_install_mime_types (GsPackageKitModify    *object,
+                                  GDBusMethodInvocation *invocation,
+                                  guint                  arg_xid,
+                                  gchar                **arg_mime_types,
+                                  const gchar           *arg_interaction,
+                                  gpointer               user_data)
+{
+	g_debug ("****** Modify.InstallMimeTypes");
+
+	notify_search_resources (GS_SHELL_EXTRAS_MODE_INSTALL_MIME_TYPES, NULL, arg_mime_types);
+	gs_package_kit_modify_complete_install_mime_types (object, invocation);
+
+	return TRUE;
+}
+
+static gboolean
+handle_modify_install_fontconfig_resources (GsPackageKitModify		 *object,
+                                            GDBusMethodInvocation	 *invocation,
+                                            guint			  arg_xid,
+                                            gchar			**arg_resources,
+                                            const gchar			 *arg_interaction,
+                                            gpointer			  user_data)
+{
+	g_debug ("****** Modify.InstallFontconfigResources");
+
+	notify_search_resources (GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES, NULL, arg_resources);
+	gs_package_kit_modify_complete_install_fontconfig_resources (object, invocation);
+
+	return TRUE;
+}
+
+static gboolean
+handle_modify_install_gstreamer_resources (GsPackageKitModify	 *object,
+                                           GDBusMethodInvocation *invocation,
+                                           guint		  arg_xid,
+                                           gchar		**arg_resources,
+                                           const gchar		 *arg_interaction,
+                                           gpointer		  user_data)
+{
+	g_debug ("****** Modify.InstallGStreamerResources");
+
+	notify_search_resources (GS_SHELL_EXTRAS_MODE_INSTALL_GSTREAMER_RESOURCES, NULL, arg_resources);
+	gs_package_kit_modify_complete_install_gstreamer_resources (object, invocation);
+
+	return TRUE;
+}
+
+static gboolean
+handle_modify_install_resources (GsPackageKitModify	 *object,
+                                 GDBusMethodInvocation	 *invocation,
+                                 guint			  arg_xid,
+                                 const gchar		 *arg_type,
+                                 gchar			**arg_resources,
+                                 const gchar		 *arg_interaction,
+                                 gpointer		  user_data)
+{
+	gboolean ret;
+
+	g_debug ("****** Modify.InstallResources");
+
+	if (g_strcmp0 (arg_type, "plasma-service") == 0) {
+		notify_search_resources (GS_SHELL_EXTRAS_MODE_INSTALL_PLASMA_RESOURCES, NULL, arg_resources);
+		ret = TRUE;
+	} else {
+		ret = FALSE;
+	}
+	gs_package_kit_modify_complete_install_resources (object, invocation);
+
+	return ret;
+}
+
+static gboolean
+handle_modify_install_printer_drivers (GsPackageKitModify	 *object,
+                                       GDBusMethodInvocation	 *invocation,
+                                       guint			  arg_xid,
+                                       gchar			**arg_device_ids,
+                                       const gchar		 *arg_interaction,
+                                       gpointer			  user_data)
+{
+	g_debug ("****** Modify.InstallPrinterDrivers");
+
+	notify_search_resources (GS_SHELL_EXTRAS_MODE_INSTALL_PRINTER_DRIVERS, NULL, arg_device_ids);
+	gs_package_kit_modify_complete_install_printer_drivers (object, invocation);
+
+	return TRUE;
+}
+
+static void
 gs_dbus_helper_name_acquired_cb (GDBusConnection *connection,
 				 const gchar *name,
 				 gpointer user_data)
@@ -300,6 +506,7 @@ bus_gotten_cb (GObject      *source_object,
 		return;
 	}
 
+	/* Query interface */
 	dbus_helper->query_interface = G_DBUS_INTERFACE_SKELETON (gs_package_kit_query_skeleton_new ());
 
 	g_signal_connect (dbus_helper->query_interface, "handle-is-installed",
@@ -308,6 +515,34 @@ bus_gotten_cb (GObject      *source_object,
 	                  G_CALLBACK (handle_query_search_file), dbus_helper);
 
 	if (!g_dbus_interface_skeleton_export (dbus_helper->query_interface,
+	                                       connection,
+	                                       "/org/freedesktop/PackageKit",
+	                                       &error)) {
+	        g_warning ("Could not export dbus interface: %s", error->message);
+	        return;
+	}
+
+	/* Modify interface */
+	dbus_helper->modify_interface = G_DBUS_INTERFACE_SKELETON (gs_package_kit_modify_skeleton_new ());
+
+	g_signal_connect (dbus_helper->modify_interface, "handle-install-package-files",
+	                  G_CALLBACK (handle_modify_install_package_files), dbus_helper);
+	g_signal_connect (dbus_helper->modify_interface, "handle-install-provide-files",
+	                  G_CALLBACK (handle_modify_install_provide_files), dbus_helper);
+	g_signal_connect (dbus_helper->modify_interface, "handle-install-package-names",
+	                  G_CALLBACK (handle_modify_install_package_names), dbus_helper);
+	g_signal_connect (dbus_helper->modify_interface, "handle-install-mime-types",
+	                  G_CALLBACK (handle_modify_install_mime_types), dbus_helper);
+	g_signal_connect (dbus_helper->modify_interface, "handle-install-fontconfig-resources",
+	                  G_CALLBACK (handle_modify_install_fontconfig_resources), dbus_helper);
+	g_signal_connect (dbus_helper->modify_interface, "handle-install-gstreamer-resources",
+	                  G_CALLBACK (handle_modify_install_gstreamer_resources), dbus_helper);
+	g_signal_connect (dbus_helper->modify_interface, "handle-install-resources",
+	                  G_CALLBACK (handle_modify_install_resources), dbus_helper);
+	g_signal_connect (dbus_helper->modify_interface, "handle-install-printer-drivers",
+	                  G_CALLBACK (handle_modify_install_printer_drivers), dbus_helper);
+
+	if (!g_dbus_interface_skeleton_export (dbus_helper->modify_interface,
 	                                       connection,
 	                                       "/org/freedesktop/PackageKit",
 	                                       &error)) {
@@ -353,6 +588,11 @@ gs_dbus_helper_dispose (GObject *object)
 	if (dbus_helper->query_interface != NULL) {
 		g_dbus_interface_skeleton_unexport (dbus_helper->query_interface);
 		g_clear_object (&dbus_helper->query_interface);
+	}
+
+	if (dbus_helper->modify_interface != NULL) {
+		g_dbus_interface_skeleton_unexport (dbus_helper->modify_interface);
+		g_clear_object (&dbus_helper->modify_interface);
 	}
 
 	g_clear_object (&dbus_helper->task);

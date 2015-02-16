@@ -442,6 +442,29 @@ show_offline_updates_error (GSimpleAction *action,
 	gs_offline_updates_show_error ();
 }
 
+static void
+install_resources_activated (GSimpleAction *action,
+                             GVariant      *parameter,
+                             gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	GList *windows;
+	GtkWindow *window = NULL;
+	const gchar *mode;
+	gchar **resources;
+
+	g_variant_get (parameter, "(&s^as)", &mode, &resources);
+
+	windows = gtk_application_get_windows (GTK_APPLICATION (app));
+	if (windows) {
+		window = windows->data;
+		gtk_window_present (window);
+	}
+	gs_application_initialize_ui (app);
+
+	gs_shell_show_extras_search (app->shell, mode, resources);
+}
+
 static GActionEntry actions[] = {
 	{ "about", about_activated, NULL, NULL, NULL },
 	{ "sources", sources_activated, NULL, NULL, NULL },
@@ -454,6 +477,7 @@ static GActionEntry actions[] = {
 	{ "launch", launch_activated, "s", NULL, NULL },
 	{ "clear-offline-updates", clear_offline_updates, NULL, NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
+	{ "install-resources", install_resources_activated, "(sas)", NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
 

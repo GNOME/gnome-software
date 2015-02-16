@@ -146,6 +146,24 @@ void		 gs_plugin_loader_search_async		(GsPluginLoader	*plugin_loader,
 GList		*gs_plugin_loader_search_finish		(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
+void		 gs_plugin_loader_search_files_async	(GsPluginLoader	*plugin_loader,
+							 const gchar	*value,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GList		*gs_plugin_loader_search_files_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
+void		 gs_plugin_loader_search_what_provides_async (GsPluginLoader	*plugin_loader,
+							 const gchar	*value,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GList		*gs_plugin_loader_search_what_provides_finish (GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
 void		 gs_plugin_loader_filename_to_app_async	(GsPluginLoader	*plugin_loader,
 							 const gchar	*filename,
 							 GsPluginRefineFlags flags,

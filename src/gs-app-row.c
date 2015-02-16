@@ -48,6 +48,7 @@ struct _GsAppRowPrivate
 	GtkWidget	*label;
 	GtkWidget	*checkbox;
 	gboolean	 colorful;
+	gboolean	 show_codec;
 	gboolean	 show_update;
 	gboolean	 selectable;
 	guint		 pending_refresh_id;
@@ -157,7 +158,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 				     gs_app_get_version_ui (priv->app));
 	}
 
-	if (priv->show_update) {
+	if (priv->show_update || priv->show_codec) {
 		gtk_widget_hide (priv->folder_label);
 	} else {
 		_cleanup_object_unref_ GsFolders *folders = NULL;
@@ -494,6 +495,12 @@ gs_app_row_set_colorful (GsAppRow *app_row,
 			    gboolean     colorful)
 {
 	app_row->priv->colorful = colorful;
+}
+
+void
+gs_app_row_set_show_codec (GsAppRow *app_row, gboolean show_codec)
+{
+	app_row->priv->show_codec = show_codec;
 }
 
 /**

@@ -34,6 +34,7 @@
 #include "gs-shell-overview.h"
 #include "gs-shell-updates.h"
 #include "gs-shell-category.h"
+#include "gs-shell-extras.h"
 #include "gs-sources-dialog.h"
 #include "gs-update-dialog.h"
 
@@ -44,6 +45,7 @@ static const gchar *page_name[] = {
 	"updates",
 	"details",
 	"category",
+	"extras",
 };
 
 static void	gs_shell_finalize	(GObject	*object);
@@ -67,6 +69,7 @@ struct GsShellPrivate
 	GsShellUpdates		*shell_updates;
 	GsShellDetails		*shell_details;
 	GsShellCategory		*shell_category;
+	GsShellExtras		*shell_extras;
 	GtkBuilder		*builder;
 	GtkWindow		*main_window;
 	GQueue			*back_entry_stack;
@@ -112,7 +115,7 @@ gs_shell_activate (GsShell *shell)
 	gtk_window_present (priv->main_window);
 }
 
-static void
+void
 gs_shell_change_mode (GsShell *shell,
 		      GsShellMode mode,
 		      GsApp *app,
@@ -206,6 +209,9 @@ gs_shell_change_mode (GsShell *shell,
 		gs_shell_category_set_category (priv->shell_category,
 						GS_CATEGORY (data));
 		gs_shell_category_switch_to (priv->shell_category);
+		break;
+	case GS_SHELL_MODE_EXTRAS:
+		gs_shell_extras_switch_to (priv->shell_extras, scroll_up);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -492,6 +498,7 @@ gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
 	gs_shell_category_reload (priv->shell_category);
+	gs_shell_extras_reload (priv->shell_extras);
 	gs_shell_details_reload (priv->shell_details);
 	gs_shell_installed_reload (priv->shell_installed);
 	gs_shell_overview_reload (priv->shell_overview);
@@ -605,6 +612,12 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				priv->cancellable);
 	priv->shell_category = GS_SHELL_CATEGORY (gtk_builder_get_object (priv->builder, "shell_category"));
 	gs_shell_category_setup (priv->shell_category,
+				 shell,
+				 priv->plugin_loader,
+				 priv->builder,
+				 priv->cancellable);
+	priv->shell_extras = GS_SHELL_EXTRAS (gtk_builder_get_object (priv->builder, "shell_extras"));
+	gs_shell_extras_setup (priv->shell_extras,
 				 shell,
 				 priv->plugin_loader,
 				 priv->builder,
@@ -744,6 +757,16 @@ gs_shell_show_category (GsShell *shell, GsCategory *category)
 {
 	save_back_entry (shell);
 	gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category, TRUE);
+}
+
+void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **resources)
+{
+	GsShellPrivate *priv = shell->priv;
+
+	save_back_entry (shell);
+	gs_shell_extras_search (priv->shell_extras, mode, resources);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_EXTRAS, NULL, NULL, TRUE);
+	gs_shell_activate (shell);
 }
 
 void

@@ -37,6 +37,7 @@ UI_FILES =						\
 	gs-first-run-dialog.ui				\
 	gs-history-dialog.ui				\
 	gs-shell-category.ui				\
+	gs-shell-extras.ui				\
 	gs-shell-details.ui				\
 	gs-shell-installed.ui				\
 	gs-shell-overview.ui				\
@@ -139,6 +140,8 @@ gnome_software_SOURCES =				\
 	gs-shell-details.h				\
 	gs-shell-category.c				\
 	gs-shell-category.h				\
+	gs-shell-extras.c				\
+	gs-shell-extras.h				\
 	gs-shell-installed.c				\
 	gs-shell-installed.h				\
 	gs-shell-overview.c				\

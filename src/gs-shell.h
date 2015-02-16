@@ -60,6 +60,7 @@ typedef enum {
 	GS_SHELL_MODE_UPDATES,
 	GS_SHELL_MODE_DETAILS,
 	GS_SHELL_MODE_CATEGORY,
+	GS_SHELL_MODE_EXTRAS,
 	GS_SHELL_MODE_LAST
 } GsShellMode;
 
@@ -69,6 +70,11 @@ GsShell		*gs_shell_new			(void);
 void		 gs_shell_activate		(GsShell	*shell);
 void		 gs_shell_refresh		(GsShell	*shell,
 						 GCancellable	*cancellable);
+void		 gs_shell_change_mode		(GsShell	*shell,
+						 GsShellMode	 mode,
+						 GsApp		*app,
+						 gpointer	 data,
+						 gboolean	 scroll_up);
 void		 gs_shell_set_mode		(GsShell	*shell,
 						 GsShellMode	 mode);
 GsShellMode	 gs_shell_get_mode		(GsShell	*shell);
@@ -88,6 +94,9 @@ void		 gs_shell_show_search_result	(GsShell	*shell,
 						 const gchar    *search);
 void		 gs_shell_show_details		(GsShell	*shell,
 						 const gchar	*id);
+void		 gs_shell_show_extras_search	(GsShell	*shell,
+						 const gchar	*mode,
+						 gchar		**resources);
 void		 gs_shell_setup			(GsShell	*shell,
 						 GsPluginLoader	*plugin_loader,
 						 GCancellable	*cancellable);
