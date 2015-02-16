@@ -91,6 +91,7 @@ bin_PROGRAMS =						\
 
 gnome_software_SOURCES =				\
 	$(packagekit_built_sources)			\
+	$(packagekit_modify2_built_sources)		\
 	gs-cleanup.h					\
 	gs-resources.c					\
 	gs-resources.h					\
@@ -199,6 +200,14 @@ $(packagekit_built_sources): Makefile.am org.freedesktop.PackageKit.xml
 		--generate-c-code gs-packagekit-generated	\
 		$(srcdir)/org.freedesktop.PackageKit.xml
 
+packagekit_modify2_built_sources = gs-packagekit-modify2-generated.c gs-packagekit-modify2-generated.h
+$(packagekit_modify2_built_sources): Makefile.am org.freedesktop.PackageKit.Modify2.xml
+	$(AM_V_GEN) gdbus-codegen					\
+		--interface-prefix org.freedesktop.			\
+		--c-namespace Gs					\
+		--generate-c-code gs-packagekit-modify2-generated	\
+		$(srcdir)/org.freedesktop.PackageKit.Modify2.xml
+
 gs-shell-search-provider-generated.h gs-shell-search-provider-generated.c: Makefile.am $(srcdir)/shell-search-provider-dbus-interfaces.xml
 	$(AM_V_GEN) gdbus-codegen \
 	 	--interface-prefix org.gnome. \
@@ -214,6 +223,7 @@ gs-resources.h: gnome-software.gresource.xml $(shell $(GLIB_COMPILE_RESOURCES) -
 
 BUILT_SOURCES =						\
 	$(packagekit_built_sources)			\
+	$(packagekit_modify2_built_sources)		\
 	gs-shell-search-provider-generated.c		\
 	gs-shell-search-provider-generated.h		\
 	gs-resources.c					\
@@ -251,6 +261,7 @@ TESTS = gs-self-test
 EXTRA_DIST =						\
 	shell-search-provider-dbus-interfaces.xml	\
 	org.freedesktop.PackageKit.xml			\
+	org.freedesktop.PackageKit.Modify2.xml		\
 	gnome-software.gresource.xml			\
 	gnome-software.xml				\
 	gtk-style.css					\

@@ -30,6 +30,10 @@
 #include <gio/gdesktopappinfo.h>
 #include <packagekit-glib2/packagekit.h>
 
+#ifdef GDK_WINDOWING_X11
+#include <gtk/gtkx.h>
+#endif
+
 #include "gs-dbus-helper.h"
 #include "gs-box.h"
 #include "gs-cleanup.h"
@@ -451,9 +455,16 @@ install_resources_activated (GSimpleAction *action,
 	GList *windows;
 	GtkWindow *window = NULL;
 	const gchar *mode;
+	const gchar *startup_id;
 	gchar **resources;
 
-	g_variant_get (parameter, "(&s^as)", &mode, &resources);
+	g_variant_get (parameter, "(&s^as&s)", &mode, &resources, &startup_id);
+
+#ifdef GDK_WINDOWING_X11
+	if (startup_id != NULL && startup_id[0] != '\0')
+		gdk_x11_display_set_startup_notification_id (gdk_display_get_default (),
+		                                             startup_id);
+#endif
 
 	windows = gtk_application_get_windows (GTK_APPLICATION (app));
 	if (windows) {
@@ -477,7 +488,7 @@ static GActionEntry actions[] = {
 	{ "launch", launch_activated, "s", NULL, NULL },
 	{ "clear-offline-updates", clear_offline_updates, NULL, NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
-	{ "install-resources", install_resources_activated, "(sas)", NULL, NULL },
+	{ "install-resources", install_resources_activated, "(sass)", NULL, NULL },
 	{ "nop", NULL, NULL, NULL }
 };
 
