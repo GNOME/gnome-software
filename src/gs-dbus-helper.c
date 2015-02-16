@@ -551,7 +551,7 @@ bus_gotten_cb (GObject      *source_object,
 	}
 
 	dbus_helper->dbus_own_name_id = g_bus_own_name_on_connection (connection,
-	                                                              "org.freedesktop.PackageKit2",
+	                                                              "org.freedesktop.PackageKit",
 	                                                              G_BUS_NAME_OWNER_FLAGS_NONE,
 	                                                              gs_dbus_helper_name_acquired_cb,
 	                                                              gs_dbus_helper_name_lost_cb,
