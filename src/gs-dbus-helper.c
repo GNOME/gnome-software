@@ -685,6 +685,7 @@ bus_gotten_cb (GObject      *source_object,
 {
 	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (user_data);
 	_cleanup_object_unref_ GDBusConnection *connection = NULL;
+	_cleanup_object_unref_ GDesktopAppInfo *app_info = NULL;
 	_cleanup_error_free_ GError *error = NULL;
 
 	connection = g_bus_get_finish (res, &error);
@@ -757,6 +758,16 @@ bus_gotten_cb (GObject      *source_object,
 	                  G_CALLBACK (handle_modify2_install_resources), dbus_helper);
 	g_signal_connect (dbus_helper->modify2_interface, "handle-install-printer-drivers",
 	                  G_CALLBACK (handle_modify2_install_printer_drivers), dbus_helper);
+
+	/* Look up our own localized name and export it as a property on the bus */
+	app_info = g_desktop_app_info_new ("org.gnome.Software.desktop");
+	if (app_info != NULL) {
+		const gchar *app_name = g_app_info_get_name (G_APP_INFO (app_info));
+		if (app_name != NULL)
+			g_object_set (G_OBJECT (dbus_helper->modify2_interface),
+			              "display-name", app_name,
+			              NULL);
+	}
 
 	if (!g_dbus_interface_skeleton_export (dbus_helper->modify2_interface,
 	                                       connection,
