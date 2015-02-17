@@ -811,6 +811,11 @@ gs_dbus_helper_dispose (GObject *object)
 		g_clear_object (&dbus_helper->modify_interface);
 	}
 
+	if (dbus_helper->modify2_interface != NULL) {
+		g_dbus_interface_skeleton_unexport (dbus_helper->modify2_interface);
+		g_clear_object (&dbus_helper->modify2_interface);
+	}
+
 	g_clear_object (&dbus_helper->task);
 
 	G_OBJECT_CLASS (gs_dbus_helper_parent_class)->dispose (object);
