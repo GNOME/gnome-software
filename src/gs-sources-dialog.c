@@ -90,16 +90,6 @@ add_source (GtkListBox *listbox, GsApp *app)
 		}
 	}
 
-	/* TRANSLATORS: This string is used to construct the 'X applications
-	   and y add-ons installed' sentence, describing a software source. */
-	apps_text = g_strdup_printf (ngettext ("%i application",
-	                                       "%i applications",
-	                                       cnt_apps), cnt_apps);
-	/* TRANSLATORS: This string is used to construct the 'X applications
-	   and y add-ons installed' sentence, describing a software source. */
-	addons_text = g_strdup_printf (ngettext ("%i add-on",
-	                                         "%i add-ons",
-	                                         cnt_addon), cnt_addon);
 	if (cnt_apps == 0 && cnt_addon == 0) {
 		/* TRANSLATORS: This string describes a software source that
 		   has no software installed from it. */
@@ -107,20 +97,32 @@ add_source (GtkListBox *listbox, GsApp *app)
 	} else if (cnt_addon == 0) {
 		/* TRANSLATORS: This string is used to construct the 'X applications
 		   installed' sentence, describing a software source. */
-		text = g_strdup_printf (ngettext ("%s installed",
-		                                  "%s installed",
-		                                  cnt_apps),
-		                                  apps_text);
+		text = g_strdup_printf (ngettext ("%i application installed",
+						  "%i applications installed",
+						  cnt_apps), cnt_apps);
 	} else if (cnt_apps == 0) {
 		/* TRANSLATORS: This string is used to construct the 'X add-ons
 		   installed' sentence, describing a software source. */
-		text = g_strdup_printf (ngettext ("%s installed",
-		                                  "%s installed",
-		                                  cnt_addon),
-		                                  addons_text);
+		text = g_strdup_printf (ngettext ("%i add-on installed",
+						  "%i add-ons installed",
+						  cnt_addon), cnt_addon);
 	} else {
 		/* TRANSLATORS: This string is used to construct the 'X applications
-		   and y add-ons installed' sentence, describing a software source. */
+		   and y add-ons installed' sentence, describing a software source.
+		   The correct form here depends on the number of applications. */
+		apps_text = g_strdup_printf (ngettext ("%i application",
+						       "%i applications",
+						       cnt_apps), cnt_apps);
+		/* TRANSLATORS: This string is used to construct the 'X applications
+		   and y add-ons installed' sentence, describing a software source.
+		   The correct form here depends on the number of add-ons. */
+		addons_text = g_strdup_printf (ngettext ("%i add-on",
+		                                         "%i add-ons",
+		                                         cnt_addon), cnt_addon);
+		/* TRANSLATORS: This string is used to construct the 'X applications
+		   and y add-ons installed' sentence, describing a software source.
+		   The correct form here depends on the total number of
+		   applications and add-ons. */
 		text = g_strdup_printf (ngettext ("%s and %s installed",
 		                                  "%s and %s installed",
 		                                  cnt_apps + cnt_addon),
