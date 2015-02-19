@@ -375,7 +375,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 					      priv->width * 2,
 					      priv->height * 2);
 		if (im != NULL)
-			priv->scale *= 2;
+			priv->scale = as_image_get_width (im) / priv->width;
 	}
 
 	/* fallback to LoDPI if it exists */
