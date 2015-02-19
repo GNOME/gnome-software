@@ -721,6 +721,8 @@ gs_shell_extras_load (GsShellExtras *shell_extras, GPtrArray *array_search_data)
 void
 gs_shell_extras_reload (GsShellExtras *shell_extras)
 {
+	GsShellExtrasPrivate *priv = shell_extras->priv;
+
 	if (priv->array_search_data != NULL)
 		gs_shell_extras_load (shell_extras, NULL);
 }
