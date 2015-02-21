@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-02-18 08:43+0000\n"
-"PO-Revision-Date: 2015-02-18 10:54+0100\n"
+"POT-Creation-Date: 2015-02-20 20:48+0000\n"
+"PO-Revision-Date: 2015-02-21 09:11+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: Slovak <gnome-sk-list@gnome.org>\n"
 "Language: sk\n"
@@ -751,7 +751,7 @@ msgstr[2] ""
 msgid "Failed to find any search results"
 msgstr "Zlyhalo nájdenie akýchkoľvek výsledkov hľadania"
 
-#: ../src/gs-shell-extras.c:801
+#: ../src/gs-shell-extras.c:804
 #, c-format
 msgid "%s file format"
 msgstr "Formát súboru %s"
@@ -1211,13 +1211,39 @@ msgstr "Zistenie dostupných aplikácií vyžaduje funkčné pripojenie"
 msgid "_Network Settings"
 msgstr "_Nastavenia siete"
 
+#. TRANSLATORS: This string describes a software source that
+#. has no software installed from it.
+#: ../src/gs-sources-dialog.c:96
+msgid "No software installed"
+msgstr "Nebol nainštalovaný žiadny softvér"
+
+# * https://bugzilla.gnome.org/show_bug.cgi?id=726990
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:100
+#, c-format
+msgid "%i application installed"
+msgid_plural "%i applications installed"
+msgstr[0] "Bolo nainštalovaných %i aplikácií"
+msgstr[1] "Bola nainštalovaná %i aplikácia"
+msgstr[2] "Boli nainštalované %i aplikácie"
+
+#. TRANSLATORS: This string is used to construct the 'X add-ons
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:106
+#, c-format
+msgid "%i add-on installed"
+msgid_plural "%i add-ons installed"
+msgstr[0] "Bolo nainštalovaných %i doplnkov"
+msgstr[1] "Bol nainštalovaný %i doplnok"
+msgstr[2] "Boli nainštalované %i doplnky"
+
 # cmdline description
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:95
+#. The correct form here depends on the number of applications.
+#: ../src/gs-sources-dialog.c:113
 #, c-format
-#| msgid "%i application installed"
-#| msgid_plural "%i applications installed"
 msgid "%i application"
 msgid_plural "%i applications"
 msgstr[0] "%i aplikácií"
@@ -1226,52 +1252,33 @@ msgstr[2] "%i aplikácie"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:100
+#. The correct form here depends on the number of add-ons.
+#: ../src/gs-sources-dialog.c:119
 #, c-format
-#| msgid "%i add-on installed"
-#| msgid_plural "%i add-ons installed"
 msgid "%i add-on"
 msgid_plural "%i add-ons"
 msgstr[0] "%i doplnkov"
 msgstr[1] "%i doplnok"
 msgstr[2] "%i doplnky"
 
-#. TRANSLATORS: This string describes a software source that
-#. has no software installed from it.
-#: ../src/gs-sources-dialog.c:106
-msgid "No software installed"
-msgstr "Nebol nainštalovaný žiadny softvér"
-
-#. TRANSLATORS: This string is used to construct the 'X applications
-#. installed' sentence, describing a software source.
-#. TRANSLATORS: This string is used to construct the 'X add-ons
-#. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:110 ../src/gs-sources-dialog.c:117
-#, c-format
-#| msgid "%s is now installed"
-msgid "%s installed"
-msgid_plural "%s installed"
-msgstr[0] "%s bolo nainštalovaných"
-msgstr[1] "%s bol nainštalovaný"
-msgstr[2] "%s boli nainštalované"
-
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:124
+#. The correct form here depends on the total number of
+#. applications and add-ons.
+#: ../src/gs-sources-dialog.c:126
 #, c-format
-#| msgid "%s is now installed"
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
-msgstr[0] "%s a %s bolo nainštalovaných"
-msgstr[1] "%s a %s bol nainštalovaný"
-msgstr[2] "%s a %s boli nainštalované"
+msgstr[0] "Bolo nainštalovaných %s a %s"
+msgstr[1] "Bol nainštalovaný %s a %s"
+msgstr[2] "Boli nainštalované %s a %s "
 
 # GtkButton
-#: ../src/gs-sources-dialog.c:313 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:315 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "Odstrániť zdroj"
 
-#: ../src/gs-sources-dialog.c:328
+#: ../src/gs-sources-dialog.c:330
 msgid "Removing…"
 msgstr "Odstraňuje sa…"
 
@@ -2395,12 +2402,12 @@ msgstr "_O programe"
 msgid "_Quit"
 msgstr "_Ukončiť"
 
-# * https://bugzilla.gnome.org/show_bug.cgi?id=726990
-#~ msgid "%i application and %i add-ons installed"
-#~ msgid_plural "%i applications and %i add-ons installed"
-#~ msgstr[0] "Bolo nainštalovaných %i aplikácií a %i doplnkov"
-#~ msgstr[1] "Bola nainštalovaná %i aplikácia a %i doplnkov"
-#~ msgstr[2] "Boli nainštalované %i aplikácie a %i doplnkov"
+#~| msgid "%s is now installed"
+#~ msgid "%s installed"
+#~ msgid_plural "%s installed"
+#~ msgstr[0] "%s bolo nainštalovaných"
+#~ msgstr[1] "%s bol nainštalovaný"
+#~ msgstr[2] "%s boli nainštalované"
 
 #~ msgid "You're About to Install Non-Free Software"
 #~ msgstr "Chystáte sa nainštalovať neslobodný softvér"
