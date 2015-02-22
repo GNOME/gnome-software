@@ -7,8 +7,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-19 10:11+0100\n"
-"PO-Revision-Date: 2015-02-19 10:23+0200\n"
+"POT-Creation-Date: 2015-02-22 02:21+0100\n"
+"PO-Revision-Date: 2015-02-22 02:22+0200\n"
 "Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
 "Language-Team: gnome-l10n-gl@gnome.org\n"
 "Language: gl\n"
@@ -720,7 +720,7 @@ msgstr[1] ""
 msgid "Failed to find any search results"
 msgstr "Produciuse un fallo ao buscar calquera resultado de busca"
 
-#: ../src/gs-shell-extras.c:801
+#: ../src/gs-shell-extras.c:804
 #, c-format
 msgid "%s file format"
 msgstr "Formato de ficheiro %s"
@@ -1162,9 +1162,34 @@ msgstr "Conectarse para comprobar as actualizacións"
 msgid "_Network Settings"
 msgstr "Preferencias da _rede"
 
+#. TRANSLATORS: This string describes a software source that
+#. has no software installed from it.
+#: ../src/gs-sources-dialog.c:96
+msgid "No software installed"
+msgstr "Non hai software instalado"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:100
+#, c-format
+msgid "%i application installed"
+msgid_plural "%i applications installed"
+msgstr[0] "%i aplicativo instalado"
+msgstr[1] "%i aplicativos instalados"
+
+#. TRANSLATORS: This string is used to construct the 'X add-ons
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:106
+#, c-format
+msgid "%i add-on installed"
+msgid_plural "%i add-ons installed"
+msgstr[0] "%i engadido instalado"
+msgstr[1] "%i engadidos instalados"
+
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:95
+#. The correct form here depends on the number of applications.
+#: ../src/gs-sources-dialog.c:113
 #, c-format
 msgid "%i application"
 msgid_plural "%i applications"
@@ -1173,44 +1198,30 @@ msgstr[1] "%i aplicativos"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:100
+#. The correct form here depends on the number of add-ons.
+#: ../src/gs-sources-dialog.c:119
 #, c-format
 msgid "%i add-on"
 msgid_plural "%i add-ons"
 msgstr[0] "%i engadido"
 msgstr[1] "%i engadidos"
 
-#. TRANSLATORS: This string describes a software source that
-#. has no software installed from it.
-#: ../src/gs-sources-dialog.c:106
-msgid "No software installed"
-msgstr "Non hai software instalado"
-
-#. TRANSLATORS: This string is used to construct the 'X applications
-#. installed' sentence, describing a software source.
-#. TRANSLATORS: This string is used to construct the 'X add-ons
-#. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:110 ../src/gs-sources-dialog.c:117
-#, c-format
-msgid "%s installed"
-msgid_plural "%s installed"
-msgstr[0] "%s instalado"
-msgstr[1] "%s instalados"
-
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:124
+#. The correct form here depends on the total number of
+#. applications and add-ons.
+#: ../src/gs-sources-dialog.c:126
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
 msgstr[0] "%s e %s instalado"
 msgstr[1] "%s e %s instalados"
 
-#: ../src/gs-sources-dialog.c:313 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:315 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "Retirar orixe"
 
-#: ../src/gs-sources-dialog.c:328
+#: ../src/gs-sources-dialog.c:330
 msgid "Removing…"
 msgstr "Retirando…"
 
@@ -2324,10 +2335,10 @@ msgstr "_Sobre"
 msgid "_Quit"
 msgstr "_Saír"
 
-#~ msgid "%i application and %i add-ons installed"
-#~ msgid_plural "%i applications and %i add-ons installed"
-#~ msgstr[0] "%i aplicativo e %i engadido instalados"
-#~ msgstr[1] "%i aplicativos e %i engadidos instalados"
+#~ msgid "%s installed"
+#~ msgid_plural "%s installed"
+#~ msgstr[0] "%s instalado"
+#~ msgstr[1] "%s instalados"
 
 #~ msgid "Web app"
 #~ msgstr "Aplicativo web"
