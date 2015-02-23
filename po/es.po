@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-02-18 08:43+0000\n"
-"PO-Revision-Date: 2015-02-18 11:43+0100\n"
+"POT-Creation-Date: 2015-02-23 08:40+0000\n"
+"PO-Revision-Date: 2015-02-23 19:03+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -283,7 +283,6 @@ msgstr "Otros"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: ../src/gs-dbus-helper.c:312
-#| msgid "System Applications"
 msgid "An application"
 msgstr "Una aplicación"
 
@@ -591,7 +590,6 @@ msgstr "en la página web"
 #. * addon, but it can't be listed for some reason
 #: ../src/gs-shell-extras.c:321
 #, c-format
-#| msgid "No addon codecs are available for the %s format."
 msgid "No applications are available that provide the file %s."
 msgstr "No hay aplicaciones disponibles que proporcionen el archivo %s."
 
@@ -600,9 +598,6 @@ msgstr "No hay aplicaciones disponibles que proporcionen el archivo %s."
 #: ../src/gs-shell-extras.c:325 ../src/gs-shell-extras.c:336
 #: ../src/gs-shell-extras.c:347
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get a codec that can "
-#| "play this format can be found on the website."
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
 "might be found %s."
@@ -614,7 +609,6 @@ msgstr ""
 #. * addon, but it can't be listed for some reason
 #: ../src/gs-shell-extras.c:332 ../src/gs-shell-extras.c:354
 #, c-format
-#| msgid "No addon codecs are available for the %s format."
 msgid "No applications are available for %s support."
 msgstr "No hay aplicaciones disponibles para soportar %s."
 
@@ -629,9 +623,6 @@ msgstr "%s no está disponible"
 #. * hyperlink with the "on the website" text
 #: ../src/gs-shell-extras.c:358
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get a codec that can "
-#| "play this format can be found on the website."
 msgid ""
 "Information about %s, as well as options for how to get an application that "
 "can support this format might be found %s."
@@ -643,7 +634,6 @@ msgstr ""
 #. * addon, but it can't be listed for some reason
 #: ../src/gs-shell-extras.c:365
 #, c-format
-#| msgid "No addon codecs are available for the %s format."
 msgid "No addon fonts are available for %s support."
 msgstr "No hay complemento de tipografías disponibles para soportar %s."
 
@@ -651,9 +641,6 @@ msgstr "No hay complemento de tipografías disponibles para soportar %s."
 #. * hyperlink with the "on the website" text
 #: ../src/gs-shell-extras.c:369
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get a codec that can "
-#| "play this format can be found on the website."
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
 "might be found %s."
@@ -665,9 +652,6 @@ msgstr ""
 #. * hyperlink with the "on the website" text
 #: ../src/gs-shell-extras.c:380
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get a codec that can "
-#| "play this format can be found on the website."
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
 "play this format might be found %s."
@@ -679,7 +663,6 @@ msgstr ""
 #. * addon, but it can't be listed for some reason
 #: ../src/gs-shell-extras.c:387
 #, c-format
-#| msgid "No addon codecs are available for the %s format."
 msgid "No Plasma resources are available for %s support."
 msgstr "No hay recursos de Plasma disponibles para soportar %s."
 
@@ -687,9 +670,6 @@ msgstr "No hay recursos de Plasma disponibles para soportar %s."
 #. * hyperlink with the "on the website" text
 #: ../src/gs-shell-extras.c:391
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get a codec that can "
-#| "play this format can be found on the website."
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
 "resources might be found %s."
@@ -708,9 +688,6 @@ msgstr "No hay controladores de impresora disponibles para %s."
 #. * hyperlink with the "on the website" text
 #: ../src/gs-shell-extras.c:402
 #, c-format
-#| msgid ""
-#| "Information about %s, as well as options for how to get a codec that can "
-#| "play this format can be found on the website."
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
 "supports this printer might be found %s."
@@ -743,7 +720,7 @@ msgstr[1] ""
 msgid "Failed to find any search results"
 msgstr "Falló al buscar cualquier resultado de búsqueda"
 
-#: ../src/gs-shell-extras.c:801
+#: ../src/gs-shell-extras.c:804
 #, c-format
 msgid "%s file format"
 msgstr "formato de archivo %s"
@@ -1185,11 +1162,37 @@ msgstr "Conectarse para comprobar si hay actualizaciones"
 msgid "_Network Settings"
 msgstr "Configuración de la _red"
 
+#. TRANSLATORS: This string describes a software source that
+#. has no software installed from it.
+#: ../src/gs-sources-dialog.c:96
+msgid "No software installed"
+msgstr "No hay software instalado"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:100
+#, c-format
+msgid "%i application installed"
+msgid_plural "%i applications installed"
+msgstr[0] "%i aplicación instalada"
+msgstr[1] "%i aplicaciones instaladas"
+
+#. TRANSLATORS: This string is used to construct the 'X add-ons
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:106
+#, c-format
+#| msgid "%i application installed"
+#| msgid_plural "%i applications installed"
+msgid "%i add-on installed"
+msgid_plural "%i add-ons installed"
+msgstr[0] "%i complemento instalado"
+msgstr[1] "%i complementos instalados"
+
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:95
+#. The correct form here depends on the number of applications.
+#: ../src/gs-sources-dialog.c:113
 #, c-format
-#| msgid "System Applications"
 msgid "%i application"
 msgid_plural "%i applications"
 msgstr[0] "%i aplicación"
@@ -1197,48 +1200,30 @@ msgstr[1] "%i aplicaciones"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:100
+#. The correct form here depends on the number of add-ons.
+#: ../src/gs-sources-dialog.c:119
 #, c-format
-#| msgid "%i add-on installed"
-#| msgid_plural "%i add-ons installed"
 msgid "%i add-on"
 msgid_plural "%i add-ons"
 msgstr[0] "%i complemento"
 msgstr[1] "%i complementos"
 
-#. TRANSLATORS: This string describes a software source that
-#. has no software installed from it.
-#: ../src/gs-sources-dialog.c:106
-msgid "No software installed"
-msgstr "No hay software instalado"
-
-#. TRANSLATORS: This string is used to construct the 'X applications
-#. installed' sentence, describing a software source.
-#. TRANSLATORS: This string is used to construct the 'X add-ons
-#. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:110 ../src/gs-sources-dialog.c:117
-#, c-format
-#| msgid "%s is now installed"
-msgid "%s installed"
-msgid_plural "%s installed"
-msgstr[0] "%s instalada"
-msgstr[1] "%s instaladas"
-
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:124
+#. The correct form here depends on the total number of
+#. applications and add-ons.
+#: ../src/gs-sources-dialog.c:126
 #, c-format
-#| msgid "%s is now installed"
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
 msgstr[0] "%s y %s instalado"
 msgstr[1] "%s y %s instalados"
 
-#: ../src/gs-sources-dialog.c:313 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:315 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "Quitar fuente"
 
-#: ../src/gs-sources-dialog.c:328
+#: ../src/gs-sources-dialog.c:330
 msgid "Removing…"
 msgstr "Quitando…"
 
@@ -1407,7 +1392,6 @@ msgstr "¿Instalar software de terceros?"
 
 #. TRANSLATORS: window title
 #: ../src/gs-utils.c:248
-#| msgid "Enable Additional Software Source?"
 msgid "Enable Third-Party Software Source?"
 msgstr "¿Activar la fuente de software de terceros?"
 
@@ -1419,7 +1403,6 @@ msgstr "¿Activar la fuente de software de terceros?"
 #.
 #: ../src/gs-utils.c:268
 #, c-format
-#| msgid "%s is not %sfree and open source software%s."
 msgid "%s is not %sfree and open source software%s, and is provided by “%s”."
 msgstr "%s no es %ssoftware libre y abierto%s, y lo proporciona «%s»."
 
@@ -2352,10 +2335,11 @@ msgstr "_Acerca de"
 msgid "_Quit"
 msgstr "_Salir"
 
-#~ msgid "%i application installed"
-#~ msgid_plural "%i applications installed"
-#~ msgstr[0] "%i aplicación instalada"
-#~ msgstr[1] "%i aplicaciones instaladas"
+#~| msgid "%s is now installed"
+#~ msgid "%s installed"
+#~ msgid_plural "%s installed"
+#~ msgstr[0] "%s instalada"
+#~ msgstr[1] "%s instaladas"
 
 #~ msgid "%i application and %i add-ons installed"
 #~ msgid_plural "%i applications and %i add-ons installed"
