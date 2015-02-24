@@ -465,7 +465,7 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 			/* right package? */
 			details = g_ptr_array_index (array, i);
 			if (!gs_pk_compare_ids (package_id,
-						pk_details_get_package_id (details)) != 0) {
+						pk_details_get_package_id (details))) {
 				continue;
 			}
 			if (gs_app_get_licence (app) == NULL)
