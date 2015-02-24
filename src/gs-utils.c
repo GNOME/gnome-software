@@ -261,16 +261,13 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
 					 * 1. Application name, e.g. "Firefox"
-					 * 2. Start of hypertext e.g. <a>
-					 * 3. End of hypertext e.g. </a>
-					 * 4. Software source name, e.g. fedora-optional
+					 * 2. Software source name, e.g. fedora-optional
 					 */
-					_("%s is not %sfree and open source "
-					  "software%s, and is provided by “%s”."),
+					_("%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-source_software\">"
+					  "free and open source software</a>, "
+					  "and is provided by “%s”."),
 					gs_app_get_name (app),
-					origin_url,
-					"<a href=\"http://en.wikipedia.org/wiki/Free_and_open-source_software\">",
-					"</a>");
+					origin_url);
 	} else {
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
