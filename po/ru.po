@@ -3,16 +3,17 @@
 # This file is distributed under the same license as the gnome-software package.
 # Stas Solovey <whats_up@tut.by>, 2013, 2014, 2015.
 # Yuri Myasoedov <ymyasoedov@yandex.ru>, 2014, 2015.
+# Ivan Komaritsyn <vantu5z@mail.ru>, 2015.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-02-17 17:37+0000\n"
-"PO-Revision-Date: 2015-02-17 20:34+0300\n"
-"Last-Translator: Yuri Myasoedov <ymyasoedov@yandex.ru>\n"
-"Language-Team: русский <gnome-cyr@gnome.org>\n"
+"POT-Creation-Date: 2015-02-20 08:41+0000\n"
+"PO-Revision-Date: 2015-02-20 13:52+0300\n"
+"Last-Translator: Ivan Komaritsyn <vantu5z@mail.ru>\n"
+"Language-Team: Русский <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -734,7 +735,7 @@ msgstr[2] ""
 msgid "Failed to find any search results"
 msgstr "Не удалось получить результаты поиска"
 
-#: ../src/gs-shell-extras.c:801
+#: ../src/gs-shell-extras.c:804
 #, c-format
 msgid "%s file format"
 msgstr "Формат файла %s"
@@ -1182,12 +1183,40 @@ msgstr "Чтобы проверить обновления, подключите
 msgid "_Network Settings"
 msgstr "Параметры с_ети"
 
+#. TRANSLATORS: This string describes a software source that
+#. has no software installed from it.
+#: ../src/gs-sources-dialog.c:96
+msgid "No software installed"
+msgstr "Нет установленных приложений"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:100
+#, c-format
+msgid "%i application installed"
+msgid_plural "%i applications installed"
+msgstr[0] "%i приложение установлено"
+msgstr[1] "%i приложения установлено"
+msgstr[2] "%i приложений установлено"
+
+#. TRANSLATORS: This string is used to construct the 'X add-ons
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:106
+#, c-format
+#| msgid "%i application installed"
+#| msgid_plural "%i applications installed"
+msgid "%i add-on installed"
+msgid_plural "%i add-ons installed"
+msgstr[0] "%i дополнение установлено"
+msgstr[1] "%i дополнения установлено"
+msgstr[2] "%i дополнений установлено"
+
 # Приложению требуется …
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:95
+#. The correct form here depends on the number of applications.
+#: ../src/gs-sources-dialog.c:113
 #, c-format
-#| msgid "An application"
 msgid "%i application"
 msgid_plural "%i applications"
 msgstr[0] "%i приложение"
@@ -1196,51 +1225,32 @@ msgstr[2] "%i приложений"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:100
+#. The correct form here depends on the number of add-ons.
+#: ../src/gs-sources-dialog.c:119
 #, c-format
-#| msgid "%i add-on installed"
-#| msgid_plural "%i add-ons installed"
 msgid "%i add-on"
 msgid_plural "%i add-ons"
 msgstr[0] "%i дополнение"
 msgstr[1] "%i дополнения"
 msgstr[2] "%i дополнений"
 
-#. TRANSLATORS: This string describes a software source that
-#. has no software installed from it.
-#: ../src/gs-sources-dialog.c:106
-msgid "No software installed"
-msgstr "Нет установленных приложений"
-
-#. TRANSLATORS: This string is used to construct the 'X applications
-#. installed' sentence, describing a software source.
-#. TRANSLATORS: This string is used to construct the 'X add-ons
-#. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:110 ../src/gs-sources-dialog.c:117
-#, c-format
-#| msgid "%s is now installed"
-msgid "%s installed"
-msgid_plural "%s installed"
-msgstr[0] "%s установлено"
-msgstr[1] "%s установлено"
-msgstr[2] "%s установлено"
-
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:124
+#. The correct form here depends on the total number of
+#. applications and add-ons.
+#: ../src/gs-sources-dialog.c:126
 #, c-format
-#| msgid "%s is now installed"
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
 msgstr[0] "%s и %s установлено"
 msgstr[1] "%s и %s установлено"
 msgstr[2] "%s и %s установлено"
 
-#: ../src/gs-sources-dialog.c:313 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:315 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "Удалить источник"
 
-#: ../src/gs-sources-dialog.c:328
+#: ../src/gs-sources-dialog.c:330
 msgid "Removing…"
 msgstr "Удаление…"
 
@@ -2355,11 +2365,12 @@ msgstr "_О приложении"
 msgid "_Quit"
 msgstr "_Завершить"
 
-#~ msgid "%i application installed"
-#~ msgid_plural "%i applications installed"
-#~ msgstr[0] "%i приложение установлено"
-#~ msgstr[1] "%i приложения установлено"
-#~ msgstr[2] "%i приложений установлено"
+#~| msgid "%s is now installed"
+#~ msgid "%s installed"
+#~ msgid_plural "%s installed"
+#~ msgstr[0] "%s установлено"
+#~ msgstr[1] "%s установлено"
+#~ msgstr[2] "%s установлено"
 
 #~ msgid "%i application and %i add-ons installed"
 #~ msgid_plural "%i applications and %i add-ons installed"
