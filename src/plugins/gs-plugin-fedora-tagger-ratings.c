@@ -358,7 +358,7 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	guint i;
 	guint status_code;
 	_cleanup_free_ gchar *uri = NULL;
-	_cleanup_free_ SoupMessage *msg = NULL;
+	_cleanup_object_unref_ SoupMessage *msg = NULL;
 	_cleanup_ptrarray_unref_ GPtrArray *items = NULL;
 	_cleanup_strv_free_ gchar **split = NULL;
 
