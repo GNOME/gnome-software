@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-16 23:44+0200\n"
-"PO-Revision-Date: 2015-02-17 00:05+0200\n"
+"POT-Creation-Date: 2015-02-24 12:50+0200\n"
+"PO-Revision-Date: 2015-02-24 12:55+0200\n"
 "Last-Translator: Yosef Or Boczko <yoseforb@gmail.com>\n"
 "Language-Team: עברית <>\n"
 "Language: Hebrew\n"
@@ -704,7 +704,7 @@ msgstr[2] "למרבה הצער, %s אשר חיפשת לא נמצא. יש לרא�
 msgid "Failed to find any search results"
 msgstr "ארע כשל במציאת כל תוצאת חיפוש"
 
-#: ../src/gs-shell-extras.c:801
+#: ../src/gs-shell-extras.c:804
 #, c-format
 msgid "%s file format"
 msgstr "%s תבנית קובץ"
@@ -1133,13 +1133,15 @@ msgstr "מעבר למצב מקוון כדי לבדוק אם יש עדכונים"
 msgid "_Network Settings"
 msgstr "הגדרות _רשת"
 
-#. TRANSLATORS: this source has no apps installed from it
-#: ../src/gs-sources-dialog.c:92
+#. TRANSLATORS: This string describes a software source that
+#. has no software installed from it.
+#: ../src/gs-sources-dialog.c:96
 msgid "No software installed"
 msgstr "לא הותקנו תכנות"
 
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:95
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:100
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
@@ -1147,8 +1149,9 @@ msgstr[0] "הותקן יישום אחד"
 msgstr[1] "הותקנו %i יישומים"
 msgstr[2] "הותקנו שני יישומים"
 
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:100
+#. TRANSLATORS: This string is used to construct the 'X add-ons
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:106
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
@@ -1156,20 +1159,45 @@ msgstr[0] "הותקן תוסף אחד"
 msgstr[1] "התוקנו %i תוספים"
 msgstr[2] "התוקנו שני תוספים"
 
-#. TRANSLATORS: this source has some apps and addons installed from it
-#: ../src/gs-sources-dialog.c:105
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the number of applications.
+#: ../src/gs-sources-dialog.c:113
 #, c-format
-msgid "%i application and %i add-ons installed"
-msgid_plural "%i applications and %i add-ons installed"
-msgstr[0] "הותקנו יישום אחד ותוסף אחד"
-msgstr[1] "הותקנו %i יישומים ו־%i תוספים"
-msgstr[2] "הותקנו שני יישומים ושני תוספים"
+msgid "%i application"
+msgid_plural "%i applications"
+msgstr[0] "יישום אחד"
+msgstr[1] "%i יישומים"
+msgstr[2] "שני יישומים"
 
-#: ../src/gs-sources-dialog.c:294 ../src/gs-sources-dialog.ui.h:13
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the number of add-ons.
+#: ../src/gs-sources-dialog.c:119
+#, c-format
+msgid "%i add-on"
+msgid_plural "%i add-ons"
+msgstr[0] "תוסף אחד"
+msgstr[1] "־%i תוספים"
+msgstr[2] "שני תוספים"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the total number of
+#. applications and add-ons.
+#: ../src/gs-sources-dialog.c:126
+#, c-format
+msgid "%s and %s installed"
+msgid_plural "%s and %s installed"
+msgstr[0] "%s ו%s הותקנו"
+msgstr[1] "%s ו%s הותקנו"
+msgstr[2] "%s ו%s הותקנו"
+
+#: ../src/gs-sources-dialog.c:315 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "הסרת מקור"
 
-#: ../src/gs-sources-dialog.c:309
+#: ../src/gs-sources-dialog.c:330
 msgid "Removing…"
 msgstr "בהסרה…"
 
@@ -2277,6 +2305,12 @@ msgstr "על _אודות"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "י_ציאה"
+
+#~ msgid "%i application and %i add-ons installed"
+#~ msgid_plural "%i applications and %i add-ons installed"
+#~ msgstr[0] "הותקנו יישום אחד ותוסף אחד"
+#~ msgstr[1] "הותקנו %i יישומים ו־%i תוספים"
+#~ msgstr[2] "הותקנו שני יישומים ושני תוספים"
 
 #~ msgid "You're About to Install Non-Free Software"
 #~ msgstr "הנך על סף התקנת תכנה לא חופשית"
