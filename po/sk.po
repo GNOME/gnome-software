@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-02-20 20:48+0000\n"
-"PO-Revision-Date: 2015-02-21 09:11+0100\n"
+"POT-Creation-Date: 2015-02-26 08:47+0000\n"
+"PO-Revision-Date: 2015-02-26 12:16+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: Slovak <gnome-sk-list@gnome.org>\n"
 "Language: sk\n"
@@ -273,7 +273,7 @@ msgstr "Zrušiť"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:221 ../src/gs-utils.c:316
+#: ../src/gs-app-row.c:221 ../src/gs-utils.c:313
 msgid "Install"
 msgstr "Inštalovať"
 
@@ -1458,32 +1458,33 @@ msgstr "Povoliť zdroj softvéru tretích strán?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
-#. * 2. Start of hypertext e.g. <a>
-#. * 3. End of hypertext e.g. </a>
-#. * 4. Software source name, e.g. fedora-optional
+#. * 2. Software source name, e.g. fedora-optional
 #.
-#: ../src/gs-utils.c:268
+#: ../src/gs-utils.c:266
 #, c-format
-msgid "%s is not %sfree and open source software%s, and is provided by “%s”."
+msgid ""
+"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">free and open source software</a>, and is provided by “%s”."
 msgstr ""
-"%s nie je %sslobodný softvér s otvoreným zdrojom%s a je poskytovaný zdrojom "
-"„%s“."
+"%s nie je <a href=\"https://sk.wikipedia.org/wiki/"
+"Free_and_Open_Source_Software\">slobodný softvér s otvoreným zdrojom</a> a je "
+"poskytovaný zdrojom „%s“."
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:279
+#: ../src/gs-utils.c:276
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s je poskytovaný zdrojom „%s“."
 
 #. TRANSLATORS: a software source is a repo
-#: ../src/gs-utils.c:289
+#: ../src/gs-utils.c:286
 msgid "This software source must be enabled to continue installation."
 msgstr "Pre pokračovanie v inštalácii musí byť tento zdroj softvéru povolený."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:299
+#: ../src/gs-utils.c:296
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
@@ -1491,19 +1492,19 @@ msgstr ""
 "protizákonná."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:305
+#: ../src/gs-utils.c:302
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Inštalácia alebo používanie tohto kodeku môže byť v niektorých krajinách "
 "protizákonná."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:312
+#: ../src/gs-utils.c:309
 msgid "Don't Warn Again"
 msgstr "Neupozorňovať ma znovu"
 
 #. TRANSLATORS: button text
-#: ../src/gs-utils.c:321
+#: ../src/gs-utils.c:318
 msgid "Enable and Install"
 msgstr "Povoliť a inštalovať"
 
