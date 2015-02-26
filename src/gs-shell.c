@@ -228,14 +228,14 @@ save_back_entry (GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
 	BackEntry *entry;
-	GtkWidget *focus;
 
 	entry = g_new0 (BackEntry, 1);
 	entry->mode = priv->mode;
 
-	focus = gtk_window_get_focus (priv->main_window);
-	if (focus != NULL)
-		entry->focus = g_object_ref (focus);
+	entry->focus = gtk_window_get_focus (priv->main_window);
+	if (entry->focus != NULL)
+		g_object_add_weak_pointer (G_OBJECT (entry->focus),
+					   (gpointer *) &entry->focus);
 
 	if (priv->mode == GS_SHELL_MODE_CATEGORY) {
 		entry->category = gs_shell_category_get_category (priv->shell_category);
@@ -252,7 +252,9 @@ save_back_entry (GsShell *shell)
 static void
 free_back_entry (BackEntry *entry)
 {
-	g_clear_object (&entry->focus);
+	if (entry->focus)
+		g_object_remove_weak_pointer(G_OBJECT (entry->focus),
+					     (gpointer *) &entry->focus);
 	g_clear_object (&entry->category);
 	g_clear_object (&entry->app);
 	g_free (entry);
