@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-02-23 08:40+0000\n"
-"PO-Revision-Date: 2015-02-23 19:03+0100\n"
+"POT-Creation-Date: 2015-02-26 08:47+0000\n"
+"PO-Revision-Date: 2015-02-26 18:56+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -255,7 +255,7 @@ msgstr "Cancelar"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:221 ../src/gs-utils.c:316
+#: ../src/gs-app-row.c:221 ../src/gs-utils.c:313
 msgid "Install"
 msgstr "Instalar"
 
@@ -1181,8 +1181,6 @@ msgstr[1] "%i aplicaciones instaladas"
 #. installed' sentence, describing a software source.
 #: ../src/gs-sources-dialog.c:106
 #, c-format
-#| msgid "%i application installed"
-#| msgid_plural "%i applications installed"
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
 msgstr[0] "%i complemento instalado"
@@ -1397,47 +1395,51 @@ msgstr "¿Activar la fuente de software de terceros?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
-#. * 2. Start of hypertext e.g. <a>
-#. * 3. End of hypertext e.g. </a>
-#. * 4. Software source name, e.g. fedora-optional
+#. * 2. Software source name, e.g. fedora-optional
 #.
-#: ../src/gs-utils.c:268
+#: ../src/gs-utils.c:266
 #, c-format
-msgid "%s is not %sfree and open source software%s, and is provided by “%s”."
-msgstr "%s no es %ssoftware libre y abierto%s, y lo proporciona «%s»."
+#| msgid ""
+#| "%s is not %sfree and open source software%s, and is provided by “%s”."
+msgid ""
+"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">free and open source software</a>, and is provided by “%s”."
+msgstr ""
+"%s no es <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">software libre</a>, lo proporciona «%s»."
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:279
+#: ../src/gs-utils.c:276
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s proporcionado por «%s»."
 
 #. TRANSLATORS: a software source is a repo
-#: ../src/gs-utils.c:289
+#: ../src/gs-utils.c:286
 msgid "This software source must be enabled to continue installation."
 msgstr ""
 "Esta fuente de software debe estar activada para continuar la instalación."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:299
+#: ../src/gs-utils.c:296
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "Puede ser ilegal instalar o usar %s en algunos países."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:305
+#: ../src/gs-utils.c:302
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr "Puede ser ilegal instalar o usar este codificador en algunos países."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:312
+#: ../src/gs-utils.c:309
 msgid "Don't Warn Again"
 msgstr "No advertir otra vez"
 
 #. TRANSLATORS: button text
-#: ../src/gs-utils.c:321
+#: ../src/gs-utils.c:318
 msgid "Enable and Install"
 msgstr "Activar e instalar"
 
