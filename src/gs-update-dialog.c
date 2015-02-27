@@ -61,16 +61,15 @@ save_back_entry (GsUpdateDialog *dialog)
 {
 	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	BackEntry *entry;
-	GtkWidget *focus;
 
 	entry = g_slice_new0 (BackEntry);
 	entry->stack_page = g_strdup (gtk_stack_get_visible_child_name (GTK_STACK (priv->stack)));
 	entry->title = g_strdup (gtk_window_get_title (GTK_WINDOW (dialog)));
-	entry->focus = g_object_ref (gtk_window_get_focus (GTK_WINDOW (dialog)));
 
-	focus = gtk_window_get_focus (GTK_WINDOW (dialog));
-	if (focus != NULL)
-		entry->focus = g_object_ref (focus);
+	entry->focus = gtk_window_get_focus (GTK_WINDOW (dialog));
+	if (entry->focus != NULL)
+		g_object_add_weak_pointer (G_OBJECT (entry->focus),
+		                           (gpointer *) &entry->focus);
 
 	g_queue_push_head (priv->back_entry_stack, entry);
 }
@@ -79,7 +78,8 @@ static void
 back_entry_free (BackEntry *entry)
 {
 	if (entry->focus != NULL)
-		g_object_unref (entry->focus);
+		g_object_remove_weak_pointer (G_OBJECT (entry->focus),
+		                              (gpointer *) &entry->focus);
 	g_free (entry->stack_page);
 	g_free (entry->title);
 	g_slice_free (BackEntry, entry);
