@@ -259,9 +259,9 @@ save_back_entry (GsShell *shell)
 static void
 free_back_entry (BackEntry *entry)
 {
-	if (entry->focus)
-		g_object_remove_weak_pointer(G_OBJECT (entry->focus),
-					     (gpointer *) &entry->focus);
+	if (entry->focus != NULL)
+		g_object_remove_weak_pointer (G_OBJECT (entry->focus),
+		                              (gpointer *) &entry->focus);
 	g_clear_object (&entry->category);
 	g_clear_object (&entry->app);
 	g_free (entry);
