@@ -1415,6 +1415,7 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
 		gs_plugin_list_filter (&state->list, gs_plugin_loader_featured_debug, NULL);
 	} else {
 		gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+		gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		gs_plugin_list_randomize (&state->list);
 	}
 	if (state->list == NULL) {
