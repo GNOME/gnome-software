@@ -422,7 +422,7 @@ build_no_results_label (GsShellExtras *shell_extras)
 {
 	GsShellExtrasPrivate *priv = shell_extras->priv;
 	GList *l;
-	GsApp *app;
+	GsApp *app = NULL;
 	guint num;
 	_cleanup_free_ gchar *codec_titles = NULL;
 	_cleanup_free_ gchar *url = NULL;
@@ -1020,7 +1020,7 @@ row_activated_cb (GtkListBox *list_box,
 static gchar *
 get_app_sort_key (GsApp *app)
 {
-	_cleanup_string_free_ GString *key;
+	_cleanup_string_free_ GString *key = NULL;
 
 	key = g_string_sized_new (64);
 
