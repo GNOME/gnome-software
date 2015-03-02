@@ -28,9 +28,23 @@
   </screenshots>
   <!--
    Validate with `appstream-util validate *.appdata.xml`
-   Use `date -d "2010-10-02" "+%s"` to get the timestamp.
   -->
   <releases>
+    <release version="3.15.91" timestamp="1425309931">
+      <description>
+        <p>This unstable release adds the following features:</p>
+        <ul>
+          <li>Enable kinetic scrolling in updates dialog</li>
+        </ul>
+        <p>This release fixes the following bug:</p>
+        <ul>
+          <li>Always ensure that the back entry focus widget is valid</li>
+          <li>Don't show small screenshots on HiDPI hardware</li>
+          <li>Fix a crash when starting GNOME Software for the first time</li>
+          <li>Only show compatible projects when getting the featured list</li>
+        </ul>
+      </description>
+    </release>
     <release version="3.15.90" timestamp="1424116753">
       <description>
         <p>This unstable release adds the following features:</p>
