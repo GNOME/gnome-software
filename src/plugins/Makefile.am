@@ -9,6 +9,7 @@ AM_CPPFLAGS =						\
 	$(PACKAGEKIT_CFLAGS)				\
 	$(SOUP_CFLAGS)					\
 	$(SQLITE_CFLAGS)				\
+	$(FWUPD_CFLAGS)					\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
 	-DGS_MODULESETDIR=\"$(datadir)/gnome-software/modulesets.d\" \
@@ -42,6 +43,10 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_packagekit-offline.la		\
 	libgs_plugin_packagekit-history.la		\
 	libgs_plugin_packagekit.la
+
+if HAVE_FIRMWARE
+plugin_LTLIBRARIES += libgs_plugin_fwupd.la
+endif
 
 libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
 libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
@@ -141,6 +146,13 @@ libgs_plugin_systemd_updates_la_SOURCES = gs-plugin-systemd-updates.c
 libgs_plugin_systemd_updates_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_systemd_updates_la_LDFLAGS = -module -avoid-version
 libgs_plugin_systemd_updates_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+if HAVE_FIRMWARE
+libgs_plugin_fwupd_la_SOURCES = gs-plugin-fwupd.c
+libgs_plugin_fwupd_la_LIBADD = $(GS_PLUGIN_LIBS) $(FWUPD_LIBS)
+libgs_plugin_fwupd_la_LDFLAGS = -module -avoid-version
+libgs_plugin_fwupd_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+endif
 
 libgs_plugin_packagekit_history_la_SOURCES = gs-plugin-packagekit-history.c
 libgs_plugin_packagekit_history_la_LIBADD = $(GS_PLUGIN_LIBS)

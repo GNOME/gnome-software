@@ -31,6 +31,7 @@
 struct GsPluginPrivate {
 	GFileMonitor		*monitor;
 	gsize			 done_init;
+	gboolean		 is_triggered;
 };
 
 /**
@@ -141,5 +142,22 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 		gs_plugin_add_app (list, app);
 	}
+	return TRUE;
+}
+
+/**
+ * gs_plugin_app_upgrade:
+ */
+gboolean
+gs_plugin_app_upgrade (GsPlugin *plugin,
+		       GsApp *app,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	if (plugin->priv->is_triggered)
+		return TRUE;
+	if (!pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT, NULL, error))
+		return FALSE;
+	plugin->priv->is_triggered = TRUE;
 	return TRUE;
 }

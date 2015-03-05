@@ -239,6 +239,10 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_app_upgrade			(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
 							 guint		 cache_age,
 							 GsPluginRefreshFlags flags,

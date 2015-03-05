@@ -835,16 +835,45 @@ gs_offline_updates_cancel (void)
 		g_warning ("failed to cancel the offline update: %s", error->message);
 }
 
+/**
+ * gs_shell_updates_upgrade_cb:
+ **/
 static void
-gs_shell_updates_button_update_all_cb (GtkButton      *button,
-				       GsShellUpdates *updates)
+gs_shell_updates_upgrade_cb (GsPluginLoader *plugin_loader,
+			     GAsyncResult *res,
+			     GsShellUpdates *shell_updates)
 {
 	_cleanup_error_free_ GError *error = NULL;
-	if (!pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT, NULL, &error)) {
-		g_warning ("failed to trigger an offline update: %s", error->message);
+
+	/* get the results */
+	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+		g_warning ("Failed to upgrade: %s", error->message);
 		return;
 	}
 	gs_reboot (gs_offline_updates_cancel);
+}
+
+static void
+gs_shell_updates_button_update_all_cb (GtkButton      *button,
+				       GsShellUpdates *shell_updates)
+{
+	GsApp *app;
+	GsShellUpdatesPrivate *priv = shell_updates->priv;
+	guint i;
+	_cleanup_error_free_ GError *error = NULL;
+	_cleanup_ptrarray_unref_ GPtrArray *apps = NULL;
+
+	/* do the upgrade action? */
+	apps = gs_update_list_get_apps (GS_UPDATE_LIST (priv->list_box_updates));
+	for (i = 0; i < apps->len; i++) {
+		app = g_ptr_array_index (apps, i);
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+						   app,
+						   GS_PLUGIN_LOADER_ACTION_UPGRADE,
+						   priv->cancellable,
+						   (GAsyncReadyCallback) gs_shell_updates_upgrade_cb,
+						   shell_updates);
+	}
 }
 
 /**

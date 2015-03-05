@@ -741,7 +741,12 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 	switch (gs_app_get_kind (priv->app)) {
 	case GS_APP_KIND_NORMAL:
 	case GS_APP_KIND_SYSTEM:
-		gtk_widget_set_visible (priv->infobar_details_app_norepo, tmp == NULL && gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL);
+		if (gs_app_get_id_kind (priv->app) == AS_ID_KIND_FIRMWARE) {
+			gtk_widget_set_visible (priv->infobar_details_app_norepo, FALSE);
+		} else {
+			gtk_widget_set_visible (priv->infobar_details_app_norepo,
+						tmp == NULL && gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL);
+		}
 		break;
 	default:
 		gtk_widget_set_visible (priv->infobar_details_app_norepo, FALSE);

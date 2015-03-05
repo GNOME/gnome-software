@@ -56,6 +56,23 @@ gs_update_list_add_app (GsUpdateList *update_list,
 	gtk_widget_show (app_row);
 }
 
+GPtrArray *
+gs_update_list_get_apps (GsUpdateList *update_list)
+{
+	GList *l;
+	GPtrArray *apps;
+	GsAppRow *app_row;
+	_cleanup_list_free_ GList *children = NULL;
+
+	apps = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	children = gtk_container_get_children (GTK_CONTAINER (update_list));
+	for (l = children; l != NULL; l = l->next) {
+		app_row = GS_APP_ROW (l->data);
+		g_ptr_array_add (apps, g_object_ref (gs_app_row_get_app (app_row)));
+	}
+	return apps;
+}
+
 static gboolean
 is_addon_id_kind (GsApp *app)
 {
@@ -64,6 +81,8 @@ is_addon_id_kind (GsApp *app)
 	if (id_kind == AS_ID_KIND_DESKTOP)
 		return FALSE;
 	if (id_kind == AS_ID_KIND_WEB_APP)
+		return FALSE;
+	if (id_kind == AS_ID_KIND_FIRMWARE)
 		return FALSE;
 	return TRUE;
 }
@@ -117,11 +136,14 @@ get_app_sort_key (GsApp *app)
 
 	/* sort desktop files, then addons */
 	switch (gs_app_get_id_kind (app)) {
-	case AS_ID_KIND_DESKTOP:
+	case AS_ID_KIND_FIRMWARE:
 		g_string_append (key, "1:");
 		break;
-	default:
+	case AS_ID_KIND_DESKTOP:
 		g_string_append (key, "2:");
+		break;
+	default:
+		g_string_append (key, "3:");
 		break;
 	}
 
