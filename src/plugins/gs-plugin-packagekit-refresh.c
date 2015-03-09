@@ -178,6 +178,48 @@ gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
 }
 
 /**
+ * gs_plugin_packagekit_refresh_content_type_matches:
+ */
+static gboolean
+gs_plugin_packagekit_refresh_content_type_matches (const gchar *filename,
+						   gboolean *matches,
+						   GCancellable *cancellable,
+						   GError **error)
+{
+	const gchar *tmp;
+	guint i;
+	_cleanup_object_unref_ GFile *file = NULL;
+	_cleanup_object_unref_ GFileInfo *info = NULL;
+	const gchar *mimetypes[] = {
+		"application/x-app-package",
+		"application/x-deb",
+		"application/x-redhat-package-manager",
+		"application/x-rpm",
+		NULL };
+
+	/* get content type */
+	file = g_file_new_for_path (filename);
+	info = g_file_query_info (file,
+				  G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+				  G_FILE_QUERY_INFO_NONE,
+				  cancellable,
+				  error);
+	if (info == NULL)
+		return FALSE;
+	tmp = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
+
+	/* match any */
+	*matches = FALSE;
+	for (i = 0; mimetypes[i] != NULL; i++) {
+		if (g_strcmp0 (tmp, mimetypes[i]) == 0) {
+			*matches = TRUE;
+			break;
+		}
+	}
+	return TRUE;
+}
+
+/**
  * gs_plugin_filename_to_app:
  */
 gboolean
@@ -188,6 +230,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			   GError **error)
 {
 	const gchar *package_id;
+	gboolean supported;
 	PkDetails *item;
 	PkResults *results = NULL;
 	_cleanup_free_ gchar *basename = NULL;
@@ -195,6 +238,15 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	_cleanup_strv_free_ gchar **split = NULL;
 	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
 	_cleanup_object_unref_ GsApp *app = NULL;
+
+	/* does this match any of the mimetypes we support */
+	if (!gs_plugin_packagekit_refresh_content_type_matches (filename,
+								&supported,
+								cancellable,
+								error))
+		return FALSE;
+	if (!supported)
+		return TRUE;
 
 	/* get details */
 	files = g_strsplit (filename, "\t", -1);
