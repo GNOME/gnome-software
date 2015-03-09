@@ -8,8 +8,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software 3.15.x\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2015-02-16 18:15+0100\n"
-"PO-Revision-Date: 2015-02-16 18:21+0100\n"
+"POT-Creation-Date: 2015-03-09 19:53+0100\n"
+"PO-Revision-Date: 2015-03-09 20:10+0100\n"
 "Last-Translator: Kjartan Maraas <kmaraas@gnome.org>\n"
 "Language-Team: Norwegian bokmål <i18n-nb@lister.ping.uio.no>\n"
 "Language: \n"
@@ -251,8 +251,8 @@ msgstr "Avbryt"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#. TRANSLATORS: this is button text to enable the repo and install the app
-#: ../src/gs-app-row.c:221 ../src/gs-utils.c:245
+#. TRANSLATORS: button text
+#: ../src/gs-app-row.c:221 ../src/gs-utils.c:313
 msgid "Install"
 msgstr "Installer"
 
@@ -277,6 +277,71 @@ msgstr "Oppdateringer"
 #: ../src/gs-category.c:207
 msgid "Other"
 msgstr "Andre"
+
+#. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
+#: ../src/gs-dbus-helper.c:312
+msgid "An application"
+msgstr "Et program"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
+#: ../src/gs-dbus-helper.c:318
+#, c-format
+msgid "%s is requesting additional file format support."
+msgstr "%s ber om støtte for flere filformater."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:320
+msgid "Additional MIME Types Required"
+msgstr "Flere MIME-typer kreves"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
+#: ../src/gs-dbus-helper.c:324
+#, c-format
+msgid "%s is requesting additional fonts."
+msgstr "%s forespør flere skrifter."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:326
+msgid "Additional Fonts Required"
+msgstr "Ekstra skrifter kreves"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
+#: ../src/gs-dbus-helper.c:330
+#, c-format
+msgid "%s is requesting additional multimedia codecs."
+msgstr "%s ber om flere mulimediekodeker."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:332
+msgid "Additional Multimedia Codecs Required"
+msgstr "Flere multimediekodeker kreves"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
+#: ../src/gs-dbus-helper.c:336
+#, c-format
+msgid "%s is requesting additional printer drivers."
+msgstr "%s ber om flere skriverdrivere."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:338
+msgid "Additional Printer Drivers Required"
+msgstr "Flere skriverdrivere kreves"
+
+#. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
+#: ../src/gs-dbus-helper.c:342
+#, c-format
+msgid "%s is requesting additional packages."
+msgstr "%s ber om flere pakker."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:344
+msgid "Additional Packages Required"
+msgstr "Flere pakker kreves"
+
+#. TRANSLATORS: this is a button that launches gnome-software
+#: ../src/gs-dbus-helper.c:353
+msgid "Find in Software"
+msgstr "Finn i programvare"
 
 #. vim: set noexpandtab:
 #: ../src/gs-first-run-dialog.ui.h:1
@@ -429,12 +494,12 @@ msgstr "Inneholder forbedringer for ytelse, stabilitet og sikkerhet."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1521 ../src/gs-shell-extras.c:376
+#: ../src/gs-plugin-loader.c:1522 ../src/gs-shell-extras.c:376
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Ingen tilleggskodeker tilgjengelig for formatet %s."
 
-#: ../src/gs-plugin-loader.c:1524
+#: ../src/gs-plugin-loader.c:1525
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -533,7 +598,9 @@ msgstr "Fant ingen programmer som inneholder filen %s."
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
 "might be found %s."
-msgstr "Informasjon om %s, og alternativer for å få tak i manglende programmer kan finnes %s."
+msgstr ""
+"Informasjon om %s, og alternativer for å få tak i manglende programmer kan "
+"finnes %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -556,7 +623,9 @@ msgstr "%s er ikke tilgjengelig"
 msgid ""
 "Information about %s, as well as options for how to get an application that "
 "can support this format might be found %s."
-msgstr "Informasjon om %s og alternativer for å få tak i programmer som støtter dette formatet kan finnes %s."
+msgstr ""
+"Informasjon om %s og alternativer for å få tak i programmer som støtter "
+"dette formatet kan finnes %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -572,7 +641,9 @@ msgstr "Ingen ekstra skrifter er tilgjengelig for å støtte %s."
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
 "might be found %s."
-msgstr "Informasjon om %s og alternativer for å få tak i ekstra skrifter kan finnes %s."
+msgstr ""
+"Informasjon om %s og alternativer for å få tak i ekstra skrifter kan finnes "
+"%s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -581,7 +652,9 @@ msgstr "Informasjon om %s og alternativer for å få tak i ekstra skrifter kan f
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
 "play this format might be found %s."
-msgstr "Informasjon om %s og alternativer for å få tak i en kodek som kan spille av dette formatet kan finnes %s."
+msgstr ""
+"Informasjon om %s og alternativer for å få tak i en kodek som kan spille av "
+"dette formatet kan finnes %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -597,7 +670,9 @@ msgstr "Ingen Plasma-ressurser er tilgjengelig for å støtte %s."
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
 "resources might be found %s."
-msgstr "Informasjon om %s og alternativer for å få tak i ekstra Plasma-ressurser kan finnes %s."
+msgstr ""
+"Informasjon om %s og alternativer for å få tak i ekstra Plasma-ressurser kan "
+"finnes %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -613,7 +688,9 @@ msgstr "Ingen skriverdrivere er tilgjengelig for %s."
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
 "supports this printer might be found %s."
-msgstr "Informasjon om %s og alternativer for å få tak i en driver som støtter denne skriveren kan finnes %s."
+msgstr ""
+"Informasjon om %s og alternativer for å få tak i en driver som støtter denne "
+"skriveren kan finnes %s."
 
 #: ../src/gs-shell-extras.c:448
 msgid "this website"
@@ -636,7 +713,7 @@ msgstr[1] "Fant ikke %s du søkte etter. Vennligst se %s for mer informasjon."
 msgid "Failed to find any search results"
 msgstr "Klarte ikke å finne noen søkeresultater"
 
-#: ../src/gs-shell-extras.c:801
+#: ../src/gs-shell-extras.c:804
 #, c-format
 msgid "%s file format"
 msgstr "%s filformat"
@@ -1077,40 +1154,66 @@ msgstr "Gå på nettet for å se etter oppdateringer"
 msgid "_Network Settings"
 msgstr "Innstillinger for _nettverk"
 
-#. TRANSLATORS: this source has no apps installed from it
-#: ../src/gs-sources-dialog.c:92
+#. TRANSLATORS: This string describes a software source that
+#. has no software installed from it.
+#: ../src/gs-sources-dialog.c:96
 msgid "No software installed"
 msgstr "Ingen programvare installert"
 
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:95
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:100
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
 msgstr[0] "%i program installert"
 msgstr[1] "%i programmer installert"
 
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:100
+#. TRANSLATORS: This string is used to construct the 'X add-ons
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:106
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
 msgstr[0] "%i tillegg installert"
 msgstr[1] "%i tillegg installert"
 
-#. TRANSLATORS: this source has some apps and addons installed from it
-#: ../src/gs-sources-dialog.c:105
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the number of applications.
+#: ../src/gs-sources-dialog.c:113
 #, c-format
-msgid "%i application and %i add-ons installed"
-msgid_plural "%i applications and %i add-ons installed"
-msgstr[0] "%i program og %i tillegg installert"
-msgstr[1] "%i programmer og %i tillegg installert"
+msgid "%i application"
+msgid_plural "%i applications"
+msgstr[0] "%i program"
+msgstr[1] "%i programmer"
 
-#: ../src/gs-sources-dialog.c:294 ../src/gs-sources-dialog.ui.h:13
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the number of add-ons.
+#: ../src/gs-sources-dialog.c:119
+#, c-format
+msgid "%i add-on"
+msgid_plural "%i add-ons"
+msgstr[0] "%i tillegg"
+msgstr[1] "%i tillegg"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the total number of
+#. applications and add-ons.
+#: ../src/gs-sources-dialog.c:126
+#, c-format
+msgid "%s and %s installed"
+msgid_plural "%s and %s installed"
+msgstr[0] "%s og %s er nå installert"
+msgstr[1] "%s og %s er nå installert"
+
+#: ../src/gs-sources-dialog.c:315 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "Fjern kilde"
 
-#: ../src/gs-sources-dialog.c:309
+#: ../src/gs-sources-dialog.c:330
 msgid "Removing…"
 msgstr "Fjerner …"
 
@@ -1270,63 +1373,60 @@ msgstr "Installering av %s feilet."
 msgid "Removal of %s failed."
 msgstr "Fjerning av %s feilet."
 
-#. TRANSLATORS: window title, nonfree in this
-#. * case refers to Free and Open Source
-#: ../src/gs-utils.c:212
-msgid "You're About to Install Non-Free Software"
-msgstr "Du er i ferd med å installere proprietær programvare"
+#. TRANSLATORS: window title
+#: ../src/gs-utils.c:244
+msgid "Install Third-Party Software?"
+msgstr "Installer tredjepartsprogramvare?"
 
-#. TRANSLATORS: the replacements are as follows:
-#. * 1. Application name, e.g. "Firefox"
-#. * 2. Start of hypertext e.g. <a>
-#. * 3. End of hypertext e.g. </a>
-#: ../src/gs-utils.c:226
-#, c-format
-msgid "%s is not %sfree and open source software%s."
-msgstr "%s er ikke %sfri og åpen kildekode programvare%s."
-
-#. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:233
-msgid ""
-"Depending on your country of residence, installing it could make you liable "
-"to prosecution."
-msgstr ""
-"Avhengig av hvor du bor kan dette medføre at du står i fare for å bli "
-"saksøkt."
-
-#. TRANSLATORS: ...and you need to ask for advice
-#: ../src/gs-utils.c:238
-msgid "If you are uncertain about this, you should obtain legal advice."
-msgstr "Hvis du er usikker om dette bør du be om juridisk rådgivning."
-
-#. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:243
-msgid "Don't Warn Again"
-msgstr "Ikke varsle igjen"
-
-#. TRANSLATORS: window title, additional in this
-#. * case means not-currently-enabled
-#: ../src/gs-utils.c:270
-msgid "Enable Additional Software Source?"
-msgstr "Slå på ekstra programvarekilde?"
+#. TRANSLATORS: window title
+#: ../src/gs-utils.c:248
+msgid "Enable Third-Party Software Source?"
+msgstr "Slå på tredjeparts programvarekilde?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:283
+#.
+#: ../src/gs-utils.c:266
 #, c-format
-msgid "%s is provided by %s."
+msgid ""
+"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">free and open source software</a>, and is provided by “%s”."
+msgstr "%s er ikke <a href=\"https://en.wikipedia.org/Wiki/Free_and_open-source_software</a>, og tilbys av «%s»."
+
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. Application name, e.g. "Firefox"
+#. * 2. Software source name, e.g. fedora-optional
+#: ../src/gs-utils.c:276
+#, c-format
+msgid "%s is provided by “%s”."
 msgstr "%s tilbys av %s."
 
-#. TRANSLATORS: once the source is enabled it stays enabled
-#: ../src/gs-utils.c:289
-msgid "Do you want to enable it?"
-msgstr "Vil du slå den på?"
+#. TRANSLATORS: a software source is a repo
+#: ../src/gs-utils.c:286
+msgid "This software source must be enabled to continue installation."
+msgstr "Denne programvaren må slås på for å fortsette installasjonen."
 
-#. TRANSLATORS: this is button text to enable the repo and install the app
-#: ../src/gs-utils.c:293
-msgid "Enable"
-msgstr "Slå på"
+#. TRANSLATORS: Laws are geographical, urgh...
+#: ../src/gs-utils.c:296
+#, c-format
+msgid "It may be illegal to install or use %s in some countries."
+msgstr "Det kan være ulovlig å installere eller bruke %s i noen land."
+
+#. TRANSLATORS: Laws are geographical, urgh...
+#: ../src/gs-utils.c:302
+msgid "It may be illegal to install or use this codec in some countries."
+msgstr "Det kan være ulovlig å installere eller bruke denne kodeken i noen land."
+
+#. TRANSLATORS: this is button text to not ask about non-free content again
+#: ../src/gs-utils.c:309
+msgid "Don't Warn Again"
+msgstr "Ikke varsle igjen"
+
+#. TRANSLATORS: button text
+#: ../src/gs-utils.c:318
+msgid "Enable and Install"
+msgstr "Slå på og installer"
 
 #: ../src/plugins/gs-plugin-appstream.c:219
 #, c-format
