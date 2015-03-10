@@ -183,11 +183,24 @@ gs_application_show_first_run_dialog (GsApplication *app)
 }
 
 static void
+theme_changed (GtkSettings *settings, GParamSpec *pspec, GsApplication *app)
+{
+	_cleanup_object_unref_ GFile *file = NULL;
+	_cleanup_free_ gchar *theme = NULL;
+
+	g_object_get (settings, "gtk-theme-name", &theme, NULL);
+	if (g_strcmp0 (theme, "HighContrast") == 0) {
+		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style-hc.css");
+	} else {
+		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style.css");
+	}
+	gtk_css_provider_load_from_file (app->provider, file, NULL);
+}
+
+static void
 gs_application_initialize_ui (GsApplication *app)
 {
 	static gboolean initialized = FALSE;
-	gchar *theme;
-	_cleanup_object_unref_ GFile *file = NULL;
 
 	if (initialized)
 		return;
@@ -202,13 +215,10 @@ gs_application_initialize_ui (GsApplication *app)
 	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
 						   GTK_STYLE_PROVIDER (app->provider),
 						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	g_object_get (gtk_settings_get_default (), "gtk-theme-name", &theme, NULL);
-	if (g_strcmp0 (theme, "HighContrast") == 0) {
-		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style-hc.css");
-	} else {
-		file = g_file_new_for_uri ("resource:///org/gnome/Software/gtk-style.css");
-	}
-	gtk_css_provider_load_from_file (app->provider, file, NULL);
+
+	g_signal_connect (gtk_settings_get_default (), "notify::gtk-theme-name",
+			  G_CALLBACK (theme_changed), app);
+	theme_changed (gtk_settings_get_default (), NULL, app);
 
 	gs_application_initialize_plugins (app);
 
