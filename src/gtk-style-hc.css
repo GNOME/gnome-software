@@ -10,15 +10,77 @@
 	background-color: @theme_selected_bg_color;
 	border-radius: 0;
 	color: @theme_selected_fg_color;
+	text-shadow: none;
 }
 
-@keyframes throbbing {
-        0% { background-image: linear-gradient(to bottom, transparent, transparent); }
+.index-title-alignment-software {
+	font-weight: bold;
+	font-size: 14px;
 }
 
 .needs-attention {
-        background-image: linear-gradient(to bottom, @theme_button_active_bg, @theme_button_active_bg);
-        animation: throbbing linear 1s infinite alternate;
+	background-image: none;
+	background-color: shade(@theme_selected_bg_color, 1.1);
+	border-radius: 1px;
+}
+
+.screenshot-image, .screenshot-image-thumb {
+	background-image: none;
+	background-color: shade(@theme_bg_color, 0.9);
+}
+.screenshot-image { border-radius: 5px; }
+.screenshot-image-thumb { border-radius: 3px; }
+
+.app-tile-label {
+	font-size: 10px;
+}
+
+.view.tile {
+	padding: 0;
+	background-image: none;
+	background-color: mix(@theme_base_color,@theme_bg_color,0.3);
+}
+
+.view.tile:hover {
+	background-color: @theme_base_color;
+}
+
+.view.tile:active {
+	border-color: @theme_selected_bg_color;
+	box-shadow: none;
+	color: @theme_selected_bg_color;
+}
+
+.view.tile:backdrop {
+	box-shadow: none;
+	border-color: @unfocused_borders;
+}
+
+/* The rest of the featured-tile CSS is loaded at runtime in gs-feature-tile.c */
+.button.featured-tile {
+	all: unset;
+	padding: 0;
+	border-radius: 0;
+	border-width: 1px;
+	border-image: none;
+}
+
+.application-details-infobar.info {
+	background-color: #d3d7cf;
+	color: @theme_fg_color;
+	border-color: darker(#d3d7cf);
+	border-style: solid;
+	border-width: 1px;
+	text-shadow: none;
+}
+
+.application-details-infobar.warning {
+	background-color: #fcaf3e;
+	color: @theme_fg_color;
+	border-color: darker(#fcaf3e);
+	border-style: solid;
+	border-width: 1px;
+	text-shadow: none;
 }
 
 .application-details-title {
@@ -26,27 +88,89 @@
 	font-size: 14px;
 }
 
+.application-details-summary {
+}
+
+.application-details-description {
+}
+
+.error-label {
+	text-shadow: none;
+}
+
 .folder-label {
-        background-color: #999999;
-        border-radius: 5px;
-        padding: 5px;
-        color: white;
+	font-size: 9px;
+	background-color: #999999;
+	border-radius: 4px;
+	padding: 4px 8px;
+	color: white;
 }
 
 .header-label {
 	font-size: 11px;
 	padding: 6px;
 	background-image: none;
-	background-color: #ffffff;
+	background-color: #babdb6;
 	border-color: #000000;
 }
 
+.image-list {
+	background-color: transparent;
+}
+
+GtkBox.star {
+	background-color: transparent;
+	background-image: none;
+}
+
+.button.star {
+	-GtkWidget-focus-padding: 0;
+	background-color: transparent;
+	background-image: none;
+	border-image: none;
+	border-radius: 0;
+	border-width: 0px;
+	padding: 0;
+	box-shadow: none;
+	outline-offset: -1px;
+}
+
+.star {
+	color: #000000;
+}
+
+.star-user {
+	color: @theme_selected_bg_color;
+}
+
 .counter-label {
-    text-shadow: none;
-    color: @theme_selected_fg_color;
-    background-color: @theme_highlight_color;
-    font-size: smaller;
-    font-weight: bold;
-    border-radius: 4px;
-    padding: 0px 4px;
+	text-shadow: none;
+	color: @theme_selected_fg_color;
+	background-color: mix(@theme_selected_bg_color, @theme_selected_fg_color, 0.3);
+	font-size: smaller;
+	border-radius: 4px;
+	padding: 0px 4px;
+}
+
+.category-sidebar {
+	border-radius: 0;
+	border-bottom-width: 0;
+	border-top-width: 0;
+}
+
+.category-sidebar GtkListBoxRow {
+	padding-left: 6px;
+	animation: none;
+	transition: none;
+}
+
+.category-sidebar GtkListBoxRow:dir(rtl) {
+	padding-right: 6px;
+	animation: none;
+	transition: none;
+}
+
+.dimmer-label {
+	opacity: 0.25;
+	text-shadow: none;
 }
