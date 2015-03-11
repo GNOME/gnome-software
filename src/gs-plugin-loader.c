@@ -2462,7 +2462,20 @@ gs_plugin_loader_get_state_for_app (GsPluginLoader *plugin_loader, GsApp *app)
 GPtrArray *
 gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 {
-	return g_ptr_array_ref (plugin_loader->priv->pending_apps);
+	GsPluginLoaderPrivate *priv = plugin_loader->priv;
+	GPtrArray *array;
+	guint i;
+
+	array = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+
+	g_mutex_lock (&priv->pending_apps_mutex);
+	for (i = 0; i < priv->pending_apps->len; i++) {
+		GsApp *app = g_ptr_array_index (priv->pending_apps, i);
+		g_ptr_array_add (array, g_object_ref (app));
+	}
+	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+
+	return array;
 }
 
 /**
