@@ -45,6 +45,7 @@
 
 #include <string.h>
 #include <gtk/gtk.h>
+#include <glib/gi18n.h>
 
 #include "gs-app.h"
 #include "gs-cleanup.h"
@@ -1225,9 +1226,63 @@ gs_app_get_licence (GsApp *app)
 void
 gs_app_set_licence (GsApp *app, const gchar *licence)
 {
+	GString *urld;
+	guint i;
+	_cleanup_strv_free_ gchar **tokens = NULL;
+
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* tokenize the license string and URLify any SPDX IDs */
+	urld = g_string_sized_new (strlen (licence) + 1);
+	tokens = as_utils_spdx_license_tokenize (licence);
+	for (i = 0; tokens[i] != NULL; i++) {
+
+		/* translated join */
+		if (g_strcmp0 (tokens[i], "&") == 0) {
+			/* TRANSLATORS: This is how we join the licences and can
+			 * be considered a "Conjunctive AND Operator" according
+			 * to the SPDX specification. For example:
+			 * "LGPL-2.1 and MIT and BSD-2-Clause" */
+			g_string_append (urld, _(" and "));
+			continue;
+		}
+		if (g_strcmp0 (tokens[i], "|") == 0) {
+			/* TRANSLATORS: This is how we join the licences and can
+			 * be considered a "Disjunctive OR Operator" according
+			 * to the SPDX specification. For example:
+			 * "LGPL-2.1 or MIT" */
+			g_string_append (urld, _(" or "));
+			continue;
+		}
+
+		/* legacy literal text */
+		if (g_str_has_prefix (tokens[i], "#")) {
+			g_string_append (urld, tokens[i] + 1);
+			continue;
+		}
+
+		/* SPDX value */
+		if (g_str_has_prefix (tokens[i], "@")) {
+			g_string_append_printf (urld,
+						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
+						tokens[i] + 1, tokens[i] + 1);
+			continue;
+		}
+
+		/* new SPDX value the extractor didn't know about */
+		if (as_utils_is_spdx_license_id (tokens[i])) {
+			g_string_append_printf (urld,
+						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
+						tokens[i], tokens[i]);
+			continue;
+		}
+
+		/* unknown value */
+		g_string_append (urld, tokens[i]);
+	}
+
 	g_free (app->priv->licence);
-	app->priv->licence = g_strdup (licence);
+	app->priv->licence = g_string_free (urld, FALSE);
 }
 
 /**

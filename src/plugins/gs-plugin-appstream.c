@@ -387,67 +387,6 @@ gs_plugin_refine_add_screenshots (GsApp *app, AsApp *item)
 }
 
 /**
- * gs_plugin_appstream_set_license:
- */
-static void
-gs_plugin_appstream_set_license (GsApp *app, const gchar *license_string)
-{
-	guint i;
-	_cleanup_string_free_ GString *urld = NULL;
-	_cleanup_strv_free_ gchar **tokens = NULL;
-
-	/* tokenize the license string and URLify any SPDX IDs */
-	urld = g_string_sized_new (strlen (license_string) + 1);
-	tokens = as_utils_spdx_license_tokenize (license_string);
-	for (i = 0; tokens[i] != NULL; i++) {
-
-		/* translated join */
-		if (g_strcmp0 (tokens[i], "&") == 0) {
-			/* TRANSLATORS: This is how we join the licences and can
-			 * be considered a "Conjunctive AND Operator" according
-			 * to the SPDX specification. For example:
-			 * "LGPL-2.1 and MIT and BSD-2-Clause" */
-			g_string_append (urld, _(" and "));
-			continue;
-		}
-		if (g_strcmp0 (tokens[i], "|") == 0) {
-			/* TRANSLATORS: This is how we join the licences and can
-			 * be considered a "Disjunctive OR Operator" according
-			 * to the SPDX specification. For example:
-			 * "LGPL-2.1 or MIT" */
-			g_string_append (urld, _(" or "));
-			continue;
-		}
-
-		/* legacy literal text */
-		if (g_str_has_prefix (tokens[i], "#")) {
-			g_string_append (urld, tokens[i] + 1);
-			continue;
-		}
-
-		/* SPDX value */
-		if (g_str_has_prefix (tokens[i], "@")) {
-			g_string_append_printf (urld,
-						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
-						tokens[i] + 1, tokens[i] + 1);
-			continue;
-		}
-
-		/* new SPDX value the extractor didn't know about */
-		if (as_utils_is_spdx_license_id (tokens[i])) {
-			g_string_append_printf (urld,
-						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
-						tokens[i], tokens[i]);
-			continue;
-		}
-
-		/* unknown value */
-		g_string_append (urld, tokens[i]);
-	}
-	gs_app_set_licence (app, urld->str);
-}
-
-/**
  * gs_plugin_appstream_is_recent_release:
  */
 static gboolean
@@ -593,7 +532,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 
 	/* set licence */
 	if (as_app_get_project_license (item) != NULL && gs_app_get_licence (app) == NULL)
-		gs_plugin_appstream_set_license (app, as_app_get_project_license (item));
+		gs_app_set_licence (app, as_app_get_project_license (item));
 
 	/* set keywords */
 	if (as_app_get_keywords (item, NULL) != NULL &&
