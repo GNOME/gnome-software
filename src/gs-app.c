@@ -620,7 +620,7 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality < app->priv->name_quality)
+	if (quality <= app->priv->name_quality)
 		return;
 	app->priv->name_quality = quality;
 
@@ -1149,7 +1149,7 @@ gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality < app->priv->summary_quality)
+	if (quality <= app->priv->summary_quality)
 		return;
 	app->priv->summary_quality = quality;
 
@@ -1179,7 +1179,7 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality < app->priv->description_quality)
+	if (quality <= app->priv->description_quality)
 		return;
 	app->priv->description_quality = quality;
 
