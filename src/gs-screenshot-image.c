@@ -143,8 +143,8 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	} else {
 		/* this is always going to have alpha */
 		pixbuf = gdk_pixbuf_new_from_file_at_scale (priv->filename,
-							    priv->width,
-							    priv->height,
+							    priv->width * priv->scale,
+							    priv->height * priv->scale,
 							    FALSE, NULL);
 		if (pixbuf != NULL) {
 			if (gs_screenshot_image_use_desktop_background (pixbuf)) {
@@ -368,18 +368,15 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	g_return_if_fail (priv->width != 0);
 	g_return_if_fail (priv->height != 0);
 
-	/* load the HiDPI image if it exists */
-	priv->scale = 1;
-	if (gtk_widget_get_scale_factor (GTK_WIDGET (ssimg)) > 1) {
-		im = as_screenshot_get_image (priv->screenshot,
-					      priv->width * 2,
-					      priv->height * 2);
-		if (im != NULL)
-			priv->scale = as_image_get_width (im) / priv->width;
-	}
+	/* load an image according to the scale factor */
+	priv->scale = gtk_widget_get_scale_factor (GTK_WIDGET (ssimg));
+	im = as_screenshot_get_image (priv->screenshot,
+				      priv->width * priv->scale,
+				      priv->height * priv->scale);
 
-	/* fallback to LoDPI if it exists */
-	if (im == NULL) {
+	/* if we've failed to load a HiDPI image, fallback to LoDPI */
+	if (im == NULL && priv->scale > 1) {
+		priv->scale = 1;
 		im = as_screenshot_get_image (priv->screenshot,
 					      priv->width,
 					      priv->height);
