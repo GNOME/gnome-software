@@ -28,14 +28,14 @@ try:
     installed_button = app.child('Installed')
     updates_button = app.child('Updates')
     back_button = app.child('Go back')
-    install_button = app.child(roleName='frame', name='Software', recursive=False).child(roleName='panel', name='', recursive=False).child(roleName='push button', name='Install')
-    remove_button = app.child(roleName='frame', name='Software', recursive=False).child(roleName='panel', name='', recursive=False).child(roleName='push button', name='Remove')
 
     overview_page = app.child('Overview page')
     installed_page = app.child('Installed page')
     updates_page = app.child('Updates page')
     search_page = app.child('Search page')
     details_page = app.child('Details page')
+    install_button = details_page.child('Install')
+    remove_button = details_page.child('Remove')
 
     search_page_listbox = search_page.child(roleName='list box')
 
