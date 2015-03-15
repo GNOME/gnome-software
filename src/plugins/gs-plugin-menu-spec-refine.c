@@ -52,7 +52,7 @@ gs_plugin_get_deps (GsPlugin *plugin)
 /**
  * gs_plugin_refine_app_category:
  */
-static gboolean
+static void
 gs_plugin_refine_app_category (GsPlugin *plugin,
 			       GsApp *app,
 			       const MenuSpecData *cat)
@@ -80,7 +80,10 @@ gs_plugin_refine_app_category (GsPlugin *plugin,
 			break;
 		}
 	}
-	return ret;
+
+	/* if we've failed to find a matching sub-level category, just show the top-level */
+	if (!ret)
+		gs_app_set_menu_path (app, gettext (cat->text));
 }
 
 /**
@@ -102,8 +105,8 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app)
 			continue;
 		ret = gs_app_has_category (app, msdata[i].path);
 		if (ret) {
-			ret = gs_plugin_refine_app_category (plugin, app,
-							     &msdata[i]);
+			gs_plugin_refine_app_category (plugin, app,
+			                               &msdata[i]);
 			break;
 		}
 	}
