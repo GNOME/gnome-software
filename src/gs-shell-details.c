@@ -611,11 +611,10 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		/* TRANSLATORS: this is where the updated date is not known */
 		gtk_label_set_label (GTK_LABEL (priv->label_details_updated_value), C_("updated", "Never"));
 	} else {
-		GDateTime *dt;
+		_cleanup_date_time_unref_ GDateTime *dt = NULL;
 		_cleanup_free_ gchar *updated_str = NULL;
 		dt = g_date_time_new_from_unix_utc (updated);
 		updated_str = g_date_time_format (dt, "%x");
-		g_date_time_unref (dt);
 		gtk_label_set_label (GTK_LABEL (priv->label_details_updated_value), updated_str);
 	}
 

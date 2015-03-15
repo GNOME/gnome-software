@@ -317,9 +317,9 @@ out:
 static void
 gs_shell_overview_load (GsShellOverview *shell_overview)
 {
-	GDateTime *date;
 	GsShellOverviewPrivate *priv = shell_overview->priv;
 	const gchar *category_of_day;
+	_cleanup_date_time_unref_ GDateTime *date = NULL;
 
 	priv->empty = TRUE;
 
@@ -349,7 +349,6 @@ gs_shell_overview_load (GsShellOverview *shell_overview)
 		g_assert_not_reached ();
 		break;
 	}
-	g_date_time_unref (date);
 
 	if (!priv->loading_featured) {
 		priv->loading_featured = TRUE;

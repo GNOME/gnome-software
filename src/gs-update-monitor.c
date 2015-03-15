@@ -214,10 +214,10 @@ has_important_updates (GPtrArray *packages)
 static gboolean
 no_updates_for_a_week (GsUpdateMonitor *monitor)
 {
-	GDateTime *last_update;
-	GDateTime *now;
 	GTimeSpan d;
 	gint64 tmp;
+	_cleanup_date_time_unref_ GDateTime *last_update = NULL;
+	_cleanup_date_time_unref_ GDateTime *now = NULL;
 
 	g_settings_get (monitor->settings, "install-timestamp", "x", &tmp);
 	if (tmp == 0)
@@ -231,8 +231,6 @@ no_updates_for_a_week (GsUpdateMonitor *monitor)
 
 	now = g_date_time_new_now_local ();
 	d = g_date_time_difference (now, last_update);
-	g_date_time_unref (last_update);
-	g_date_time_unref (now);
 
 	if (d >= 7 * G_TIME_SPAN_DAY)
 		return TRUE;
@@ -412,15 +410,14 @@ check_updates (GsUpdateMonitor *monitor)
 		return;
 
 	if (monitor->check_timestamp != NULL) {
-		GDateTime *now;
 		gint now_year, now_month, now_day, now_hour;
 		gint year, month, day;
+		_cleanup_date_time_unref_ GDateTime *now = NULL;
 
 		now = g_date_time_new_now_local ();
 
 		g_date_time_get_ymd (now, &now_year, &now_month, &now_day);
 		now_hour = g_date_time_get_hour (now);
-		g_date_time_unref (now);
 
 		g_date_time_get_ymd (monitor->check_timestamp, &year, &month, &day);
 

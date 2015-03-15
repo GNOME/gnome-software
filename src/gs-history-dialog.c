@@ -58,7 +58,6 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 {
 	GsHistoryDialogPrivate *priv = gs_history_dialog_get_instance_private (dialog);
 	const gchar *tmp;
-	GDateTime *datetime;
 	GPtrArray *history;
 	GtkBox *box;
 	GtkWidget *widget;
@@ -70,6 +69,7 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 	history = gs_app_get_history (app);
 	g_ptr_array_sort (history, history_sort_cb);
 	for (i = 0; i < history->len; i++) {
+		_cleanup_date_time_unref_ GDateTime *datetime = NULL;
 		_cleanup_free_ gchar *date_str = NULL;
 		app = g_ptr_array_index (history, i);
 		box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
@@ -129,7 +129,6 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 			      NULL);
 		gtk_size_group_add_widget (priv->sizegroup_timestamp, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
-		g_date_time_unref (datetime);
 
 		/* add the version */
 		widget = gtk_label_new (gs_app_get_version (app));

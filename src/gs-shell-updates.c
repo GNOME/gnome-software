@@ -100,9 +100,9 @@ gs_shell_updates_invalidate (GsShellUpdates *shell_updates)
 static GDateTime *
 time_next_midnight (void)
 {
-	GDateTime *now;
 	GDateTime *next_midnight;
 	GTimeSpan since_midnight;
+	_cleanup_date_time_unref_ GDateTime *now = NULL;
 
 	now = g_date_time_new_now_local ();
 	since_midnight = g_date_time_get_hour (now) * G_TIME_SPAN_HOUR +
@@ -110,7 +110,6 @@ time_next_midnight (void)
 			 g_date_time_get_second (now) * G_TIME_SPAN_SECOND +
 			 g_date_time_get_microsecond (now);
 	next_midnight = g_date_time_add (now, G_TIME_SPAN_DAY - since_midnight);
-	g_date_time_unref (now);
 
 	return next_midnight;
 }
@@ -120,13 +119,13 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *shell_updates)
 {
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GDesktopClockFormat clock_format;
-	GDateTime *last_checked;
-	GDateTime *midnight;
 	const gchar *format_string;
 	gchar *time_string;
 	gboolean use_24h_time;
 	gint64 tmp;
 	gint days_ago;
+	_cleanup_date_time_unref_ GDateTime *last_checked = NULL;
+	_cleanup_date_time_unref_ GDateTime *midnight = NULL;
 
 	g_settings_get (priv->settings, "check-timestamp", "x", &tmp);
 	if (tmp == 0)
@@ -178,9 +177,6 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *shell_updates)
 	}
 
 	time_string = g_date_time_format (last_checked, format_string);
-
-	g_date_time_unref (last_checked);
-	g_date_time_unref (midnight);
 
 	return time_string;
 }
@@ -604,8 +600,8 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 			     GsShellUpdates *shell_updates)
 {
 	gboolean ret;
-	GDateTime *now;
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
+	_cleanup_date_time_unref_ GDateTime *now = NULL;
 	_cleanup_error_free_ GError *error = NULL;
 
 	/* get the results */
@@ -642,7 +638,6 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 	now = g_date_time_new_now_local ();
 	g_settings_set (priv->settings, "check-timestamp", "x",
 			g_date_time_to_unix (now));
-	g_date_time_unref (now);
 
 	/* get the new list */
 	gs_shell_updates_invalidate (shell_updates);

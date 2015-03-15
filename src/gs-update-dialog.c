@@ -174,14 +174,13 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 
 	time_updates_installed = pk_offline_get_results_mtime (NULL);
 	if (time_updates_installed > 0) {
-		GDateTime *date;
 		GtkWidget *header;
+		_cleanup_date_time_unref_ GDateTime *date = NULL;
 		_cleanup_free_ gchar *date_str = NULL;
 		_cleanup_free_ gchar *subtitle = NULL;
 
 		date = g_date_time_new_from_unix_utc (time_updates_installed);
 		date_str = g_date_time_format (date, "%x");
-		g_date_time_unref (date);
 
 		/* TRANSLATORS: this is the subtitle of the installed updates dialog window */
 		subtitle = g_strdup_printf (_("Installed on %s"), date_str);

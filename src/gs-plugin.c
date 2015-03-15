@@ -154,11 +154,11 @@ gs_plugin_list_randomize_cb (gconstpointer a, gconstpointer b, gpointer user_dat
 void
 gs_plugin_list_randomize (GList **list)
 {
-	GDateTime *date;
 	GList *l;
 	GRand *rand;
 	GsApp *app;
 	gchar sort_key[] = { '\0', '\0', '\0', '\0' };
+	_cleanup_date_time_unref_ GDateTime *date = NULL;
 	_cleanup_free_ gchar *key = NULL;
 
 	key = g_strdup_printf ("Plugin::sort-key[%p]", list);
@@ -178,7 +178,6 @@ gs_plugin_list_randomize (GList **list)
 		gs_app_set_metadata (app, key, NULL);
 	}
 	g_rand_free (rand);
-	g_date_time_unref (date);
 }
 
 /**
