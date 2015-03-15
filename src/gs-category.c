@@ -188,6 +188,9 @@ gs_category_finalize (GObject *object)
 	GsCategory *category = GS_CATEGORY (object);
 	GsCategoryPrivate *priv = category->priv;
 
+	if (priv->parent != NULL)
+		g_object_remove_weak_pointer (G_OBJECT (priv->parent),
+		                              (gpointer *) &priv->parent);
 	g_free (priv->id);
 	g_free (priv->name);
 	g_list_free_full (priv->subcategories, g_object_unref);
@@ -209,6 +212,9 @@ gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
 
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
 	category->priv->parent = parent;
+	if (category->priv->parent != NULL)
+		g_object_add_weak_pointer (G_OBJECT (category->priv->parent),
+		                           (gpointer *) &category->priv->parent);
 	category->priv->id = g_strdup (id);
 	category->priv->name = g_strdup (name);
 	return GS_CATEGORY (category);
