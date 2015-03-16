@@ -1307,7 +1307,6 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (state->list == NULL) {
