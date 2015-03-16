@@ -72,6 +72,21 @@ enum {
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
+typedef struct {
+        GsCategory	*category;
+        GsShellOverview	*shell_overview;
+} LoadData;
+
+static void
+load_data_free (LoadData *data)
+{
+        if (data->category != NULL)
+                g_object_unref (data->category);
+        if (data->shell_overview != NULL)
+                g_object_unref (data->shell_overview);
+        g_slice_free (LoadData, data);
+}
+
 /**
  * gs_shell_overview_invalidate:
  **/
@@ -157,7 +172,8 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 					   GAsyncResult *res,
 					   gpointer user_data)
 {
-	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
+	LoadData *load_data = (LoadData *) user_data;
+	GsShellOverview *shell = load_data->shell_overview;
 	GsShellOverviewPrivate *priv = shell->priv;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GList *l;
@@ -168,7 +184,7 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 	_cleanup_error_free_ GError *error = NULL;
 
 	/* get popular apps */
-	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_get_category_apps_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get recommended applications: %s", error->message);
@@ -200,6 +216,7 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 
 out:
 	gs_plugin_list_free (list);
+	load_data_free (load_data);
 	priv->loading_popular_rotating = FALSE;
 	priv->refresh_count--;
 	if (priv->refresh_count == 0) {
@@ -382,8 +399,6 @@ gs_shell_overview_load (GsShellOverview *shell_overview)
 		priv->loading_popular = TRUE;
 		gs_plugin_loader_get_popular_async (priv->plugin_loader,
 						    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						    NULL,
-						    category_of_day,
 						    priv->cancellable,
 						    gs_shell_overview_get_popular_cb,
 						    shell_overview);
@@ -391,14 +406,24 @@ gs_shell_overview_load (GsShellOverview *shell_overview)
 	}
 
 	if (!priv->loading_popular_rotating) {
+		LoadData *load_data;
+		_cleanup_object_unref_ GsCategory *category = NULL;
+		_cleanup_object_unref_ GsCategory *featured_category = NULL;
+
+		category = gs_category_new (NULL, category_of_day, NULL);
+		featured_category = gs_category_new (category, "featured", NULL);
+
+		load_data = g_slice_new0 (LoadData);
+		load_data->category = g_object_ref (category);
+		load_data->shell_overview = g_object_ref (shell_overview);
+
 		priv->loading_popular_rotating = TRUE;
-		gs_plugin_loader_get_popular_async (priv->plugin_loader,
-						    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-						    category_of_day,
-						    NULL,
-						    priv->cancellable,
-						    gs_shell_overview_get_popular_rotating_cb,
-						    shell_overview);
+		gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
+		                                          featured_category,
+		                                          GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+		                                          priv->cancellable,
+		                                          gs_shell_overview_get_popular_rotating_cb,
+		                                          load_data);
 		priv->refresh_count++;
 	}
 

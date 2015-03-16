@@ -104,8 +104,6 @@ GList		*gs_plugin_loader_get_sources_finish	(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 void		 gs_plugin_loader_get_popular_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
-							 const gchar	*category,
-							 const gchar	*category_exclude,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);

@@ -3,14 +3,16 @@
   <module type="pkgname">gtk3</module>
 </moduleset>
 
+<!-- Apps for the "Editor's Picks" list -->
 <moduleset name="popular">
-  <!-- Apps for the "Editor's Picks" list -->
   <module type="application">bijiben.desktop</module>
   <module type="application">geary.desktop</module>
   <module type="application">org.gnome.Maps.desktop</module>
   <module type="application">pdfmod.desktop</module>
+</moduleset>
 
-  <!-- Apps that show up as featured in their respective categories -->
+<!-- Apps that show up as featured in their respective categories -->
+<moduleset name="featured">
   <module type="application" category="Audio">banshee.desktop</module>
   <module type="application" category="Audio">brasero.desktop</module>
   <module type="application" category="Audio">rhythmbox.desktop</module>
@@ -51,8 +53,8 @@
   <module type="application" category="Video">org.gnome.Totem.desktop</module>
 </moduleset>
 
+<!-- Unremovable system apps -->
 <moduleset name="system">
-  <!-- Unremovable system apps -->
   <module type="application">empathy.desktop</module>
   <module type="application">eog.desktop</module>
   <module type="application">epiphany.desktop</module>

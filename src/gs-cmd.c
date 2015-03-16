@@ -318,8 +318,6 @@ main (int argc, char **argv)
 			list = gs_plugin_loader_get_popular (plugin_loader,
 							     refine_flags,
 							     NULL,
-							     NULL,
-							     NULL,
 							     &error);
 			if (list == NULL) {
 				ret = FALSE;

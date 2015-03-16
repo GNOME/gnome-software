@@ -73,14 +73,118 @@ gs_moduleset_get_modules (GsModuleset *moduleset,
 		entry = g_ptr_array_index (priv->array, i);
 		if (entry->module_kind != module_kind)
 			continue;
-		if (g_strcmp0 (entry->name, name) != 0)
+		if (name && g_strcmp0 (entry->name, name) != 0)
 			continue;
-		if (g_strcmp0 (entry->category, category) != 0)
+		if (category && g_strcmp0 (entry->category, category) != 0)
 			continue;
 		data[idx++] = g_strdup (entry->id);
 	}
 
 	return data;
+}
+
+/**
+ * gs_moduleset_get_core_packages:
+ **/
+gchar **
+gs_moduleset_get_core_packages (GsModuleset *moduleset)
+{
+	return gs_moduleset_get_modules (moduleset,
+	                                 GS_MODULESET_MODULE_KIND_PACKAGE,
+	                                 "core",
+	                                 NULL);
+}
+
+/**
+ * gs_moduleset_get_system_apps:
+ **/
+gchar **
+gs_moduleset_get_system_apps (GsModuleset *moduleset)
+{
+	return gs_moduleset_get_modules (moduleset,
+	                                 GS_MODULESET_MODULE_KIND_APPLICATION,
+	                                 "system",
+	                                 NULL);
+}
+
+/**
+ * gs_moduleset_get_popular_apps:
+ **/
+gchar **
+gs_moduleset_get_popular_apps (GsModuleset *moduleset)
+{
+	return gs_moduleset_get_modules (moduleset,
+	                                 GS_MODULESET_MODULE_KIND_APPLICATION,
+	                                 "popular",
+	                                 NULL);
+}
+
+/**
+ * gs_moduleset_get_featured_apps:
+ **/
+gchar **
+gs_moduleset_get_featured_apps (GsModuleset *moduleset,
+                                const gchar *category)
+{
+	return gs_moduleset_get_modules (moduleset,
+	                                 GS_MODULESET_MODULE_KIND_APPLICATION,
+	                                 "featured",
+	                                 category);
+}
+
+/**
+ * gs_moduleset_get_categories:
+ **/
+gchar **
+gs_moduleset_get_featured_categories (GsModuleset *moduleset)
+{
+	GsModulesetPrivate *priv = gs_moduleset_get_instance_private (moduleset);
+	GsModulesetEntry *entry;
+	guint i;
+	_cleanup_hashtable_unref_ GHashTable *categories_hash = NULL;
+
+	g_return_val_if_fail (GS_IS_MODULESET (moduleset), NULL);
+
+	categories_hash = g_hash_table_new (g_str_hash, g_str_equal);
+	for (i = 0; i < priv->array->len; i++) {
+		entry = g_ptr_array_index (priv->array, i);
+		if (g_strcmp0 (entry->name, "featured") != 0)
+			continue;
+		if (entry->category == NULL)
+			continue;
+		g_hash_table_insert (categories_hash, g_strdup (entry->category), GINT_TO_POINTER (1));
+	}
+
+	return (gchar **) g_hash_table_get_keys_as_array (categories_hash, NULL);
+}
+
+/**
+ * gs_moduleset_get_n_featured:
+ **/
+guint
+gs_moduleset_get_n_featured (GsModuleset *moduleset,
+                             const gchar *category)
+{
+	GsModulesetPrivate *priv = gs_moduleset_get_instance_private (moduleset);
+	GsModulesetEntry *entry;
+	guint i;
+	guint cnt;
+
+	g_return_val_if_fail (GS_IS_MODULESET (moduleset), NULL);
+
+	cnt = 0;
+	for (i = 0; i < priv->array->len; i++) {
+		entry = g_ptr_array_index (priv->array, i);
+		if (entry->module_kind != GS_MODULESET_MODULE_KIND_APPLICATION)
+			continue;
+		if (g_strcmp0 (entry->name, "featured") != 0)
+			continue;
+		if (g_strcmp0 (entry->category, category) != 0)
+			continue;
+		cnt++;
+	}
+
+	return cnt;
 }
 
 /**

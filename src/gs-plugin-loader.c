@@ -444,130 +444,6 @@ out:
 }
 
 /**
- * gs_plugin_loader_run_popular_plugin:
- **/
-static gboolean
-gs_plugin_loader_run_popular_plugin (GsPluginLoader *plugin_loader,
-				     GsPlugin *plugin,
-				     const gchar *function_name,
-				     GList **list,
-				     const gchar *category,
-				     const gchar *category_exclude,
-				     GCancellable *cancellable,
-				     GError **error)
-{
-	GsPluginPopularFunc plugin_func = NULL;
-	gboolean exists;
-	gboolean ret = TRUE;
-	_cleanup_free_ gchar *profile_id = NULL;
-
-	/* get symbol */
-	exists = g_module_symbol (plugin->module,
-				  function_name,
-				  (gpointer *) &plugin_func);
-	if (!exists)
-		goto out;
-
-	/* run function */
-	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-				      plugin->name, function_name);
-	gs_profile_start (plugin_loader->priv->profile, profile_id);
-	g_assert (error == NULL || *error == NULL);
-	ret = plugin_func (plugin, list, category, category_exclude, cancellable, error);
-	if (!ret)
-		goto out;
-out:
-	if (profile_id != NULL) {
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
-	}
-	return ret;
-}
-
-/**
- * gs_plugin_loader_run_popular:
- **/
-static GList *
-gs_plugin_loader_run_popular (GsPluginLoader *plugin_loader,
-			      const gchar *function_name,
-			      GsPluginRefineFlags flags,
-			      const gchar *category,
-			      const gchar *category_exclude,
-			      GCancellable *cancellable,
-			      GError **error)
-{
-	gboolean ret = TRUE;
-	GList *list = NULL;
-	GsPlugin *plugin;
-	guint i;
-	_cleanup_free_ gchar *profile_id_parent = NULL;
-
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (function_name != NULL, NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
-	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), NULL);
-
-	/* profile */
-	profile_id_parent = g_strdup_printf ("GsPlugin::*(%s)",
-					     function_name);
-	gs_profile_start (plugin_loader->priv->profile, profile_id_parent);
-
-	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
-		if (!plugin->enabled)
-			continue;
-		ret = g_cancellable_set_error_if_cancelled (cancellable, error);
-		if (ret) {
-			ret = FALSE;
-			goto out;
-		}
-		ret = gs_plugin_loader_run_popular_plugin (plugin_loader,
-							   plugin,
-							   function_name,
-							   &list,
-							   category,
-							   category_exclude,
-							   cancellable,
-							   error);
-		if (!ret)
-			goto out;
-	}
-
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, list);
-
-	/* run refine() on each one */
-	ret = gs_plugin_loader_run_refine (plugin_loader,
-					   function_name,
-					   &list,
-					   flags,
-					   cancellable,
-					   error);
-	if (!ret)
-		goto out;
-
-	/* filter package list */
-	gs_plugin_list_filter_duplicates (&list);
-
-	/* no results */
-	if (list == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-			     "no results to show");
-		goto out;
-	}
-out:
-	gs_profile_stop (plugin_loader->priv->profile, profile_id_parent);
-	if (!ret) {
-		gs_plugin_list_free (list);
-		list = NULL;
-	}
-	return list;
-}
-
-/**
  * gs_plugin_loader_get_app_str:
  **/
 static const gchar *
@@ -854,8 +730,6 @@ typedef struct {
 	GsPluginRefineFlags		 flags;
 	gchar				*value;
 	gchar				*filename;
-	gchar				*popular_category;
-	gchar				*popular_category_exclude;
 	guint				 cache_age;
 	GsCategory			*category;
 	GsApp				*app;
@@ -874,8 +748,6 @@ gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
 		g_object_unref (state->app);
 
 	g_free (state->filename);
-	g_free (state->popular_category);
-	g_free (state->popular_category_exclude);
 	g_free (state->value);
 	gs_plugin_list_free (state->list);
 	g_slice_free (GsPluginLoaderAsyncState, state);
@@ -1293,11 +1165,9 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 	GError *error = NULL;
 
 	/* do things that would block */
-	state->list = gs_plugin_loader_run_popular (plugin_loader,
+	state->list = gs_plugin_loader_run_results (plugin_loader,
 						    "gs_plugin_add_popular",
 						    state->flags,
-						    state->popular_category,
-						    state->popular_category_exclude,
 						    cancellable,
 						    &error);
 	if (error != NULL) {
@@ -1327,8 +1197,6 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 void
 gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 				    GsPluginRefineFlags flags,
-				    const gchar *category,
-				    const gchar *category_exclude,
 				    GCancellable *cancellable,
 				    GAsyncReadyCallback callback,
 				    gpointer user_data)
@@ -1342,8 +1210,6 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
-	state->popular_category = g_strdup (category);
-	state->popular_category_exclude = g_strdup (category_exclude);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);

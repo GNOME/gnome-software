@@ -146,8 +146,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
 		       GList **list,
-		       const gchar *category,
-		       const gchar *category_exclude,
 		       GCancellable *cancellable,
 		       GError **error)
 {

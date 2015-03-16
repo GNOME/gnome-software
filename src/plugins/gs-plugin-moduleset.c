@@ -51,6 +51,7 @@ const gchar **
 gs_plugin_get_deps (GsPlugin *plugin)
 {
 	static const gchar *deps[] = {
+		"menu-spec-categories",	/* featured subcat added to existing categories */
 		"packagekit",		/* pkgname */
 		NULL };
 	return deps;
@@ -95,14 +96,107 @@ out:
 	return ret;
 }
 
+gboolean
+gs_plugin_add_categories (GsPlugin *plugin,
+                          GList **list,
+                          GCancellable *cancellable,
+                          GError **error)
+{
+	GList *l;
+	GsCategory *parent;
+	const gchar *id;
+	guint i;
+	_cleanup_strv_free_ gchar **categories = NULL;
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		gboolean ret = gs_plugin_startup (plugin, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			return FALSE;
+	}
+
+	categories = gs_moduleset_get_featured_categories (plugin->priv->moduleset);
+	if (categories == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "No moduleset data found");
+		return FALSE;
+	}
+
+	for (i = 0; categories[i]; i++) {
+		for (l = *list; l; l = l->next) {
+			parent = l->data;
+			id = gs_category_get_id (parent);
+			if (g_strcmp0 (categories[i], id) == 0) {
+				guint size;
+				_cleanup_object_unref_ GsCategory *cat = NULL;
+
+				cat = gs_category_new (parent, "featured", _("Featured"));
+				gs_category_add_subcategory (parent, cat);
+				size = gs_moduleset_get_n_featured (plugin->priv->moduleset, id);
+				gs_category_set_size (cat, size);
+				break;
+			}
+		}
+	}
+
+	return TRUE;
+}
+
+gboolean
+gs_plugin_add_category_apps (GsPlugin *plugin,
+			     GsCategory *category,
+			     GList **list,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	GsCategory *parent;
+	guint i;
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		gboolean ret = gs_plugin_startup (plugin, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			return FALSE;
+	}
+
+	/* Populate the "featured" subcategory */
+	if (g_strcmp0 (gs_category_get_id (category), "featured") == 0) {
+		_cleanup_strv_free_ gchar **apps = NULL;
+
+		parent = gs_category_get_parent (category);
+		if (parent != NULL) {
+			apps = gs_moduleset_get_featured_apps (plugin->priv->moduleset,
+			                                       gs_category_get_id (parent));
+		}
+		if (apps == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "No moduleset data found");
+			return FALSE;
+		}
+
+		/* just add all */
+		for (i = 0; apps[i]; i++) {
+			_cleanup_object_unref_ GsApp *app = NULL;
+			app = gs_app_new (apps[i]);
+			gs_plugin_add_app (list, app);
+		}
+	}
+
+	return TRUE;
+}
+
 /**
  * gs_plugin_add_popular:
  */
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
 		       GList **list,
-		       const gchar *category,
-		       const gchar *category_exclude,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -121,10 +215,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	if (g_getenv ("GNOME_SOFTWARE_POPULAR")) {
 		apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
 	} else {
-		apps = gs_moduleset_get_modules (plugin->priv->moduleset,
-						 GS_MODULESET_MODULE_KIND_APPLICATION,
-						 "popular",
-						 category);
+		apps = gs_moduleset_get_popular_apps (plugin->priv->moduleset);
 	}
 	if (apps == NULL) {
 		g_set_error (error,
@@ -139,7 +230,6 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		_cleanup_object_unref_ GsApp *app = NULL;
 		app = gs_app_new (apps[i]);
 		gs_plugin_add_app (list, app);
-		gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
 	}
 	return TRUE;
 }
@@ -158,8 +248,10 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	gboolean ret = TRUE;
 	guint i;
-	_cleanup_strv_free_ gchar **apps = NULL;
-	_cleanup_strv_free_ gchar **pkgs = NULL;
+	_cleanup_strv_free_ gchar **featured_apps = NULL;
+	_cleanup_strv_free_ gchar **popular_apps = NULL;
+	_cleanup_strv_free_ gchar **system_apps = NULL;
+	_cleanup_strv_free_ gchar **core_pkgs = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -169,21 +261,14 @@ gs_plugin_refine (GsPlugin *plugin,
 			return FALSE;
 	}
 
-	/* just mark each one as core */
-	apps = gs_moduleset_get_modules (plugin->priv->moduleset,
-					 GS_MODULESET_MODULE_KIND_APPLICATION,
-					 "system",
-					 NULL);
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		for (i = 0; apps[i] != NULL; i++) {
-			if (g_strcmp0 (apps[i], gs_app_get_id (app)) == 0) {
-				gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
-				break;
-			}
-		}
-	}
-	if (apps == NULL) {
+	featured_apps = gs_moduleset_get_featured_apps (plugin->priv->moduleset, NULL);
+	popular_apps = gs_moduleset_get_popular_apps (plugin->priv->moduleset);
+	system_apps = gs_moduleset_get_system_apps (plugin->priv->moduleset);
+	core_pkgs = gs_moduleset_get_core_packages (plugin->priv->moduleset);
+	if (featured_apps == NULL &&
+	    popular_apps == NULL &&
+	    system_apps == NULL &&
+	    core_pkgs == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -191,20 +276,42 @@ gs_plugin_refine (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* just mark each one as core */
-	pkgs = gs_moduleset_get_modules (plugin->priv->moduleset,
-					 GS_MODULESET_MODULE_KIND_PACKAGE,
-					 "core",
-					 NULL);
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		for (i = 0; pkgs[i] != NULL; i++) {
-			if (g_strcmp0 (pkgs[i], gs_app_get_source_default (app)) == 0) {
+
+		/* add a kudo to featured apps */
+		for (i = 0; featured_apps[i] != NULL; i++) {
+			if (g_strcmp0 (featured_apps[i], gs_app_get_id (app)) == 0) {
+				gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
+				break;
+			}
+		}
+
+		/* add a kudo to popular apps */
+		for (i = 0; popular_apps[i] != NULL; i++) {
+			if (g_strcmp0 (popular_apps[i], gs_app_get_id (app)) == 0) {
+				gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
+				break;
+			}
+		}
+
+		/* mark each one as system */
+		for (i = 0; system_apps[i] != NULL; i++) {
+			if (g_strcmp0 (system_apps[i], gs_app_get_id (app)) == 0) {
+				gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
+				break;
+			}
+		}
+
+		/* mark each one as core */
+		for (i = 0; core_pkgs[i] != NULL; i++) {
+			if (g_strcmp0 (core_pkgs[i], gs_app_get_source_default (app)) == 0) {
 				gs_app_set_kind (app, GS_APP_KIND_CORE);
 				break;
 			}
 		}
 	}
+
 	return TRUE;
 }
 

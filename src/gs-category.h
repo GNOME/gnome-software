@@ -62,6 +62,8 @@ GList		*gs_category_get_subcategories	(GsCategory	*category);
 void		 gs_category_add_subcategory	(GsCategory	*category,
 						 GsCategory	*subcategory);
 guint		 gs_category_get_size		(GsCategory	*category);
+void		 gs_category_set_size		(GsCategory	*category,
+						 guint		 size);
 void		 gs_category_increment_size	(GsCategory	*category);
 
 G_END_DECLS

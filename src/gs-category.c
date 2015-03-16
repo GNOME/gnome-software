@@ -55,6 +55,16 @@ gs_category_get_size (GsCategory *category)
 }
 
 /**
+ * gs_category_set_size:
+ **/
+void
+gs_category_set_size (GsCategory *category, guint size)
+{
+	g_return_val_if_fail (GS_IS_CATEGORY (category), 0);
+	category->priv->size = size;
+}
+
+/**
  * gs_category_increment_size:
  *
  * Adds one to the size count if an application is available

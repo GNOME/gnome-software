@@ -53,6 +53,14 @@ gchar		**gs_moduleset_get_modules		(GsModuleset		*moduleset,
 							 GsModulesetModuleKind	 module_kind,
 							 const gchar		*name,
 							 const gchar		*category);
+gchar		**gs_moduleset_get_core_packages	(GsModuleset		*moduleset);
+gchar		**gs_moduleset_get_system_apps		(GsModuleset		*moduleset);
+gchar		**gs_moduleset_get_popular_apps		(GsModuleset		*moduleset);
+gchar		**gs_moduleset_get_featured_apps	(GsModuleset		*moduleset,
+							 const gchar		*category);
+gchar		**gs_moduleset_get_featured_categories	(GsModuleset		*moduleset);
+guint		 gs_moduleset_get_n_featured		(GsModuleset		*moduleset,
+							 const gchar		*category);
 gboolean	 gs_moduleset_parse_filename		(GsModuleset		*moduleset,
 							 const gchar		*filename,
 							 GError			**error);
