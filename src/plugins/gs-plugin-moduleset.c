@@ -51,7 +51,6 @@ const gchar **
 gs_plugin_get_deps (GsPlugin *plugin)
 {
 	static const gchar *deps[] = {
-		"appstream",		/* requires id */
 		"packagekit",		/* pkgname */
 		NULL };
 	return deps;
