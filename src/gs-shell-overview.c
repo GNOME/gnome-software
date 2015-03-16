@@ -48,6 +48,7 @@ struct GsShellOverviewPrivate
 	gboolean		 loading_popular_rotating;
 	gboolean		 loading_categories;
 	gboolean		 empty;
+	gchar			*category_of_day;
 
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
@@ -90,6 +91,14 @@ popular_tile_clicked (GsPopularTile *tile, gpointer data)
 	gs_shell_show_app (shell->priv->shell, app);
 }
 
+static gboolean
+filter_category (GsApp *app, gpointer user_data)
+{
+	const gchar *category = (const gchar *) user_data;
+
+	return !gs_app_has_category (app, category);
+}
+
 /**
  * gs_shell_overview_get_popular_cb:
  **/
@@ -117,6 +126,9 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 			g_warning ("failed to get popular apps: %s", error->message);
 		goto out;
 	}
+	/* Don't show apps from the category that's currently featured as the category of the day */
+	gs_plugin_list_filter (&list, filter_category, priv->category_of_day);
+	gs_plugin_list_randomize (&list);
 
 	gs_container_remove_all (GTK_CONTAINER (priv->box_popular));
 
@@ -169,6 +181,7 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 		gtk_widget_hide (priv->box_popular_rotating);
 		goto out;
 	}
+	gs_plugin_list_randomize (&list);
 
 	gtk_widget_show (priv->popular_rotating_heading);
 	gtk_widget_show (priv->box_popular_rotating);
@@ -227,6 +240,9 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 			g_warning ("failed to get featured apps: %s", error->message);
 		goto out;
 	}
+	/* Don't show apps from the category that's currently featured as the category of the day */
+	gs_plugin_list_filter (&list, filter_category, priv->category_of_day);
+	gs_plugin_list_randomize (&list);
 
 	/* at the moment, we only care about the first app */
 	app = GS_APP (list->data);
@@ -349,6 +365,8 @@ gs_shell_overview_load (GsShellOverview *shell_overview)
 		g_assert_not_reached ();
 		break;
 	}
+	g_free (priv->category_of_day);
+	priv->category_of_day = g_strdup (category_of_day);
 
 	if (!priv->loading_featured) {
 		priv->loading_featured = TRUE;
@@ -499,6 +517,7 @@ gs_shell_overview_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
+	g_free (priv->category_of_day);
 
 	G_OBJECT_CLASS (gs_shell_overview_parent_class)->finalize (object);
 }

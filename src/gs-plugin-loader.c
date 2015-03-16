@@ -1317,9 +1317,6 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 		return;
 	}
 
-	/* shuffle around the list */
-	gs_plugin_list_randomize (&state->list);
-
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 }
@@ -1417,7 +1414,6 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
 	} else {
 		gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
 		gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-		gs_plugin_list_randomize (&state->list);
 	}
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
