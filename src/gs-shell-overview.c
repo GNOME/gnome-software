@@ -152,7 +152,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (popular_tile_clicked), shell);
-		gtk_box_pack_start (GTK_BOX (priv->box_popular), tile, TRUE, TRUE, 0);
+		gtk_container_add (GTK_CONTAINER (priv->box_popular), tile);
 	}
 
 	priv->empty = FALSE;
@@ -209,7 +209,7 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (popular_tile_clicked), shell);
-		gtk_box_pack_start (GTK_BOX (priv->box_popular_rotating), tile, TRUE, TRUE, 0);
+		gtk_container_add (GTK_CONTAINER (priv->box_popular_rotating), tile);
 	}
 
 	priv->empty = FALSE;
@@ -512,10 +512,10 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 
 	for (i = 0; i < N_TILES; i++) {
 		tile = gs_popular_tile_new (NULL);
-		gtk_box_pack_start (GTK_BOX (priv->box_popular), tile, TRUE, TRUE, 0);
+		gtk_container_add (GTK_CONTAINER (priv->box_popular), tile);
 
 		tile = gs_popular_tile_new (NULL);
-		gtk_box_pack_start (GTK_BOX (priv->box_popular_rotating), tile, TRUE, TRUE, 0);
+		gtk_container_add (GTK_CONTAINER (priv->box_popular_rotating), tile);
 	}
 
 	/* chain up */
