@@ -140,6 +140,7 @@ gs_shell_search_get_search_cb (GObject *source_object,
 		gs_shell_show_details (priv->shell, priv->appid_to_show);
 		g_clear_pointer (&priv->appid_to_show, g_free);
 	}
+	g_list_free_full (list, g_object_unref);
 }
 
 /**
