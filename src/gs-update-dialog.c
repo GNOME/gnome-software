@@ -91,6 +91,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 {
 	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GsAppKind kind;
+	const GdkPixbuf *pixbuf;
 	const gchar *update_details;
 	_cleanup_free_ gchar *update_desc = NULL;
 
@@ -123,9 +124,12 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	/* set update header */
 	gtk_widget_set_visible (priv->box_header, kind == GS_APP_KIND_NORMAL || kind == GS_APP_KIND_SYSTEM);
 	gtk_label_set_markup (GTK_LABEL (priv->label_details), update_desc);
-	gs_image_set_from_pixbuf (GTK_IMAGE (priv->image_icon), gs_app_get_pixbuf (app));
 	gtk_label_set_label (GTK_LABEL (priv->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (priv->label_summary), gs_app_get_summary (app));
+
+	pixbuf = gs_app_get_pixbuf (app);
+	if (pixbuf != NULL)
+		gs_image_set_from_pixbuf (GTK_IMAGE (priv->image_icon), pixbuf);
 
 	/* show the back button if needed */
 	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
