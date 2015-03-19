@@ -257,7 +257,6 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	guint i;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
 	_cleanup_ptrarray_unref_ GPtrArray *package_ids = NULL;
 	_cleanup_ptrarray_unref_ GPtrArray *packages = NULL;
 
@@ -313,7 +312,6 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	const gchar *to_array[] = { NULL, NULL };
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
 	_cleanup_ptrarray_unref_ GPtrArray *packages = NULL;
 
 	to_array[0] = filename;

@@ -300,7 +300,6 @@ create_missing_app (SearchData *search_data)
 	GsShellExtras *shell_extras = search_data->shell_extras;
 	GsApp *app;
 	GString *summary_missing;
-	_cleanup_free_ gchar *description = NULL;
 	_cleanup_free_ gchar *name = NULL;
 	_cleanup_free_ gchar *url = NULL;
 

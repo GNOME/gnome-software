@@ -31,7 +31,6 @@
 
 struct _GsHistoryDialogPrivate
 {
-	GsApp		*app;
 	GtkSizeGroup	*sizegroup_state;
 	GtkSizeGroup	*sizegroup_timestamp;
 	GtkSizeGroup	*sizegroup_version;
@@ -194,9 +193,6 @@ gs_history_dialog_finalize (GObject *object)
 	g_object_unref (priv->sizegroup_state);
 	g_object_unref (priv->sizegroup_timestamp);
 	g_object_unref (priv->sizegroup_version);
-
-	if (priv->app != NULL)
-		g_object_unref (priv->app);
 
 	G_OBJECT_CLASS (gs_history_dialog_parent_class)->finalize (object);
 }

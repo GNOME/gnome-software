@@ -505,7 +505,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	guint cnt = 0;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
 	_cleanup_strv_free_ gchar **package_ids = NULL;
 
 	/* only process this app if was created by this plugin */
