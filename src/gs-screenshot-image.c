@@ -263,8 +263,8 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 
 	/* is image size destination size unknown or exactly the correct size */
 	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT ||
-	    (priv->width == (guint) gdk_pixbuf_get_width (pixbuf) &&
-	     priv->height == (guint) gdk_pixbuf_get_height (pixbuf))) {
+	    (priv->width * priv->scale == (guint) gdk_pixbuf_get_width (pixbuf) &&
+	     priv->height * priv->scale == (guint) gdk_pixbuf_get_height (pixbuf))) {
 		ret = g_file_set_contents (priv->filename,
 					   msg->response_body->data,
 					   msg->response_body->length,
@@ -279,7 +279,8 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		im = as_image_new ();
 		as_image_set_pixbuf (im, pixbuf);
 		ret = as_image_save_filename (im, priv->filename,
-					      priv->width, priv->height,
+					      priv->width * priv->scale,
+					      priv->height * priv->scale,
 					      AS_IMAGE_SAVE_FLAG_PAD_16_9, &error);
 		if (!ret) {
 			gs_screenshot_image_set_error (ssimg, error->message);
@@ -392,7 +393,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT) {
 		sizedir = g_strdup ("unknown");
 	} else {
-		sizedir = g_strdup_printf ("%ux%u", priv->width, priv->height);
+		sizedir = g_strdup_printf ("%ux%u", priv->width * priv->scale, priv->height * priv->scale);
 	}
 	cachedir = g_build_filename (priv->cachedir,
 				     "gnome-software",
