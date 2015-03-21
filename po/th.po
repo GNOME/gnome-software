@@ -8,21 +8,26 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-01-23 08:35+0000\n"
-"PO-Revision-Date: 2015-02-02 15:33+0700\n"
+"POT-Creation-Date: 2015-03-15 21:46+0000\n"
+"PO-Revision-Date: 2015-03-21 17:52+0700\n"
 "Last-Translator: Akom Chotiphantawanon <knight2000@gmail.com>\n"
 "Language-Team: Thai <thai-l10n@googlegroups.com>\n"
 "Language: th\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: Plural-Forms: nplurals=1; plural=0;\n"
+"Plural-Forms: nplurals=1; plural=0;\n"
+"X-Generator: Gtranslator 2.91.6\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
+msgid "GNOME Software"
+msgstr "\"ซอฟต์แวร์\" ของ GNOME"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
 msgid "Application manager for GNOME"
 msgstr "เครื่องมือจัดการโปรแกรมสำหรับ GNOME"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
 msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
@@ -30,7 +35,7 @@ msgstr ""
 "\"ซอฟต์แวร์\" ช่วยคุณหาและติดตั้งโปรแกรมและส่วนขยายของระบบเพิ่มเติม "
 "และถอดถอนโปรแกรมที่ติดตั้งแล้ว"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:4
 msgid ""
 "GNOME Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
@@ -47,7 +52,7 @@ msgid "Add to Application Folder"
 msgstr "เพิ่มเข้าโฟลเดอร์โปรแกรม"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:336
-#: ../src/gs-shell-details.c:237 ../src/gs-shell-installed.c:603
+#: ../src/gs-shell-details.c:237 ../src/gs-shell-installed.c:536
 msgid "_Cancel"
 msgstr "_ยกเลิก"
 
@@ -57,7 +62,7 @@ msgstr "เ_พิ่ม"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:75
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:98 ../src/gs-app-tile.c:75
 #: ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:70
 #: ../src/gs-popular-tile.c:76 ../src/gs-popular-tile.c:79
 #: ../src/popular-tile.ui.h:1
@@ -68,7 +73,7 @@ msgstr "ติดตั้งอยู่"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:263 ../src/gs-shell.c:158
+#: ../src/gs-application.c:277 ../src/gs-shell.c:161
 msgid "Software"
 msgstr "ซอฟต์แวร์"
 
@@ -137,73 +142,73 @@ msgid "Folder Name"
 msgstr "ชื่อโฟลเดอร์"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:261
+#: ../src/gs-application.c:275
 msgid "About Software"
 msgstr "เกี่ยวกับ \"ซอฟต์แวร์\""
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:266
+#: ../src/gs-application.c:280
 msgid "A nice way to manage the software on your system."
 msgstr "วิธีที่ดีในการจัดการซอฟต์แวร์ในระบบของคุณ"
 
-#: ../src/gs-application.c:270
+#: ../src/gs-application.c:284
 msgid "translator-credits"
 msgstr "Akom Chotiphantawanon"
 
-#: ../src/gs-application.c:530
+#: ../src/gs-application.c:575
 msgid "Enter GApplication service mode"
 msgstr "เข้าโหมดบริการ GApplication"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:533
+#: ../src/gs-application.c:578
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "โหมดเริ่มทำงาน: เป็นค่า ‘updates’ (รายการปรับรุ่น), ‘updated’ (รายการปรับรุ่นแล้ว), "
 "‘installed’ (รายการติดตั้งแล้ว) หรือ ‘overview’ (ภาพรวม) อย่างใดอย่างหนึ่ง"
 
-#: ../src/gs-application.c:533
+#: ../src/gs-application.c:578
 msgid "MODE"
 msgstr "โหมด"
 
-#: ../src/gs-application.c:535
+#: ../src/gs-application.c:580
 msgid "Search for applications"
 msgstr "ค้นหาโปรแกรม"
 
-#: ../src/gs-application.c:535
+#: ../src/gs-application.c:580
 msgid "SEARCH"
 msgstr "คำค้น"
 
-#: ../src/gs-application.c:537
+#: ../src/gs-application.c:582
 msgid "Show application details"
 msgstr "แสดงรายละเอียดของโปรแกรม"
 
-#: ../src/gs-application.c:537
+#: ../src/gs-application.c:582
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:539
+#: ../src/gs-application.c:584
 msgid "Open a local package file"
 msgstr "เปิดแฟ้มแพกเกจในเครื่อง"
 
-#: ../src/gs-application.c:539
+#: ../src/gs-application.c:584
 msgid "FILENAME"
 msgstr "ชื่อแฟ้ม"
 
-#: ../src/gs-application.c:541
+#: ../src/gs-application.c:586
 msgid "Show verbose debugging information"
 msgstr "แสดงข้อมูลดีบั๊กโดยละเอียด"
 
-#: ../src/gs-application.c:543
+#: ../src/gs-application.c:588
 msgid "Show profiling information for the service"
 msgstr "แสดงข้อมูลการวัดประสิทธิภาพของบริการ"
 
-#: ../src/gs-application.c:545
+#: ../src/gs-application.c:590
 msgid "Prefer local file sources to AppStream"
 msgstr "พยายามใช้แหล่งแฟ้มในเครื่องก่อนใช้ AppStream"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:92 ../src/gs-app-row.c:201
+#: ../src/gs-app-addon-row.c:93 ../src/gs-app-row.c:214
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "รอติดตั้ง"
@@ -212,7 +217,7 @@ msgstr "รอติดตั้ง"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:228
+#: ../src/gs-app-addon-row.c:102 ../src/gs-app-row.c:240
 #: ../src/gs-app-tile.c:84 ../src/gs-app-tile.c:87
 msgid "Installing"
 msgstr "กำลังติดตั้ง"
@@ -221,42 +226,58 @@ msgstr "กำลังติดตั้ง"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:237
+#: ../src/gs-app-addon-row.c:106 ../src/gs-app-row.c:249
 #: ../src/gs-app-tile.c:93 ../src/gs-app-tile.c:96
 msgid "Removing"
 msgstr "กำลังถอดถอน"
 
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Conjunctive AND Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 and MIT and BSD-2-Clause"
+#. TRANSLATORS: separator for a list of items
+#: ../src/gs-app.c:1246 ../src/gs-shell-extras.c:144
+msgid " and "
+msgstr " และ "
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Disjunctive OR Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 or MIT"
+#: ../src/gs-app.c:1254
+msgid " or "
+msgstr " หรือ "
+
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:185
+#: ../src/gs-app-row.c:198
 msgid "Visit website"
 msgstr "เยี่ยมชมเว็บไซต์"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:190
+#: ../src/gs-app-row.c:203
 msgid "Install…"
 msgstr "ติดตั้ง…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:198
+#: ../src/gs-app-row.c:211
 msgid "Cancel"
 msgstr "ยกเลิก"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#. TRANSLATORS: this is button text to enable the repo and install the app
-#: ../src/gs-app-row.c:208 ../src/gs-utils.c:245
+#. TRANSLATORS: button text
+#: ../src/gs-app-row.c:221 ../src/gs-utils.c:313
 msgid "Install"
 msgstr "ติดตั้ง"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1157
-#: ../src/gs-shell-installed.c:181 ../src/gs-shell-search.c:162
+#: ../src/gs-app-row.c:229 ../src/gs-page.c:176
 msgid "Remove"
 msgstr "ถอดถอน"
 
@@ -271,9 +292,74 @@ msgstr "มีรุ่นใหม่"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:207
+#: ../src/gs-category.c:210
 msgid "Other"
 msgstr "อื่นๆ"
+
+#. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
+#: ../src/gs-dbus-helper.c:312
+msgid "An application"
+msgstr "มีโปรแกรมหนึ่ง"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
+#: ../src/gs-dbus-helper.c:318
+#, c-format
+msgid "%s is requesting additional file format support."
+msgstr "%s ร้องขอการรองรับฟอร์แมตแฟ้มเพิ่มเติม"
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:320
+msgid "Additional MIME Types Required"
+msgstr "ต้องการชนิด MIME เพิ่มเติม"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
+#: ../src/gs-dbus-helper.c:324
+#, c-format
+msgid "%s is requesting additional fonts."
+msgstr "%s ร้องขอแบบอักษรเพิ่มเติม"
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:326
+msgid "Additional Fonts Required"
+msgstr "ต้องการแบบอักษรเพิ่มเติม"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
+#: ../src/gs-dbus-helper.c:330
+#, c-format
+msgid "%s is requesting additional multimedia codecs."
+msgstr "%s ร้องขอตัวอ่าน-ลงรหัสสื่อผสมเพิ่มเติม"
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:332
+msgid "Additional Multimedia Codecs Required"
+msgstr "ต้องการตัวอ่าน-ลงรหัสสื่อผสมเพิ่มเติม"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
+#: ../src/gs-dbus-helper.c:336
+#, c-format
+msgid "%s is requesting additional printer drivers."
+msgstr "%s ร้องขอไดรเวอร์เครื่องพิมพ์เพิ่มเติม"
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:338
+msgid "Additional Printer Drivers Required"
+msgstr "ต้องการไดรเวอร์เครื่องพิมพ์เพิ่มเติม"
+
+#. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
+#: ../src/gs-dbus-helper.c:342
+#, c-format
+msgid "%s is requesting additional packages."
+msgstr "%s ร้องขอแพกเกจเพิ่มเติม"
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:344
+msgid "Additional Packages Required"
+msgstr "ต้องการแพกเกจเพิ่มเติม"
+
+#. TRANSLATORS: this is a button that launches gnome-software
+#: ../src/gs-dbus-helper.c:353
+msgid "Find in Software"
+msgstr "หาใน \"ซอฟต์แวร์\""
 
 #. vim: set noexpandtab:
 #: ../src/gs-first-run-dialog.ui.h:1
@@ -299,21 +385,21 @@ msgstr "ไ_ปช็อปกันเลย"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
-#: ../src/gs-history-dialog.c:82
+#: ../src/gs-history-dialog.c:83
 msgctxt "app status"
 msgid "Removed"
 msgstr "ถอดถอนแล้ว"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was installed
-#: ../src/gs-history-dialog.c:88
+#: ../src/gs-history-dialog.c:89
 msgctxt "app status"
 msgid "Installed"
 msgstr "ติดตั้งอยู่"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gs-history-dialog.c:93
+#: ../src/gs-history-dialog.c:94
 msgctxt "app status"
 msgid "Updated"
 msgstr "ปรับรุ่นแล้ว"
@@ -321,7 +407,7 @@ msgstr "ปรับรุ่นแล้ว"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-history-dialog.c:99
+#: ../src/gs-history-dialog.c:100
 msgctxt "app status"
 msgid "Unknown"
 msgstr "ไม่ทราบ"
@@ -396,26 +482,39 @@ msgstr "ปรับรุ่นแบบออฟไลน์ไม่สำเ
 msgid "Detailed errors from the package manager follow:"
 msgstr "รายละเอียดข้อผิดพลาดจากโปรแกรมจัดการแพกเกจคือ:"
 
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:161
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "คุณแน่ใจหรือไม่ว่าต้องการถอดถอน %s?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-page.c:173
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr "%s จะถูกถอดถอน และคุณจะต้องติดตั้งโปรแกรมดังกล่าวใหม่หากต้องการใช้งานอีกครั้ง"
+
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:930
+#: ../src/gs-plugin-loader.c:933
 msgid "OS Updates"
 msgstr "ปรับรุ่น OS"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:935
+#: ../src/gs-plugin-loader.c:938
 msgid "Includes performance, stability and security improvements."
 msgstr "มีการปรับปรุงประสิทธิภาพ เสถียรภาพ และการรักษาความปลอดภัย"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1520
+#: ../src/gs-plugin-loader.c:1524 ../src/gs-shell-extras.c:376
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "ไม่มีส่วนเสริมของตัวอ่าน-ลงรหัสสำหรับรูปแบบ %s"
 
-#: ../src/gs-plugin-loader.c:1523
+#: ../src/gs-plugin-loader.c:1527
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -436,30 +535,186 @@ msgstr "โหลดภาพไม่สำเร็จ"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:390
+#: ../src/gs-screenshot-image.c:387
 msgid "Screenshot size not found"
 msgstr "ไม่พบขนาดภาพหน้าจอ"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:409
+#: ../src/gs-screenshot-image.c:406
 msgid "Could not create cache"
 msgstr "ไม่สามารถสร้างแคชได้"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:439
+#: ../src/gs-screenshot-image.c:436
 msgid "Screenshot not valid"
 msgstr "ภาพหน้าจอไม่ถูกต้อง"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:455
+#: ../src/gs-screenshot-image.c:452
 msgid "Screenshot not available"
 msgstr "ไม่มีภาพหน้าจอ"
 
-#: ../src/gs-screenshot-image.c:511
+#: ../src/gs-screenshot-image.c:508
 msgid "Screenshot"
 msgstr "ภาพหน้าจอ"
+
+#. TRANSLATORS: separator for a list of items
+#: ../src/gs-shell-extras.c:147
+msgid ", "
+msgstr ", "
+
+#. TRANSLATORS: Application window title for codec installation. %s will be replaced by actual codec name(s)
+#: ../src/gs-shell-extras.c:170
+#, c-format
+msgid "Available software for %s"
+msgid_plural "Available software for %s"
+msgstr[0] "ซอฟต์แวร์ที่มีสำหรับ %s"
+
+#: ../src/gs-shell-extras.c:211
+msgid "Unable to Find Requested Software"
+msgstr "ไม่สามารถหาซอฟต์แวร์ที่ร้องขอ"
+
+#. TRANSLATORS: This string is used for codecs that weren't found
+#: ../src/gs-shell-extras.c:310
+#, c-format
+msgid "%s not found"
+msgstr "ไม่พบ %s"
+
+#. TRANSLATORS: hyperlink title
+#: ../src/gs-shell-extras.c:314
+msgid "on the website"
+msgstr "ที่เว็บไซต์"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:321
+#, c-format
+msgid "No applications are available that provide the file %s."
+msgstr "ไม่มีโปรแกรมที่จัดเตรียมแฟ้ม %s"
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:325 ../src/gs-shell-extras.c:336
+#: ../src/gs-shell-extras.c:347
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get missing applications "
+"might be found %s."
+msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับโปรแกรมที่ขาดได้ %s"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:332 ../src/gs-shell-extras.c:354
+#, c-format
+msgid "No applications are available for %s support."
+msgstr "ไม่มีโปรแกรมสำหรับรองรับ %s"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:343
+#, c-format
+msgid "%s is not available."
+msgstr "ไม่มี %s"
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:358
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get an application that "
+"can support this format might be found %s."
+msgstr ""
+"อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับโปรแกรมที่สามารถรองรับฟอร์แมตนี้ได้ %s"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:365
+#, c-format
+msgid "No addon fonts are available for %s support."
+msgstr "ไม่มีแบบอักษรส่วนเสริมสำหรับรองรับ %s"
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:369
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get additional fonts "
+"might be found %s."
+msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับแบบอักษรเพิ่มเติมได้ %s"
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:380
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a codec that can "
+"play this format might be found %s."
+msgstr ""
+"อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับตัวอ่าน-ลงรหัสที่สามารถเล่นฟอร์แมตนี้ได้ %s"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:387
+#, c-format
+msgid "No Plasma resources are available for %s support."
+msgstr "ไม่มีทรัพยากรพลาสมาสำหรับรองรับ %s"
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:391
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get additional Plasma "
+"resources might be found %s."
+msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับทรัพยากรพลาสมาเพิ่มเติมได้ %s"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:398
+#, c-format
+msgid "No printer drivers are available for %s."
+msgstr "ไม่มีไดรเวอร์เครื่องพิมพ์สำหรับ %s"
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:402
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a driver that "
+"supports this printer might be found %s."
+msgstr "อ่านข้อมูลเกี่ยวกับ %s รวมทั้งตัวเลือกต่างๆ สำหรับการรับไดรเวอร์ที่รองรับเครื่องพิมพ์นี้ได้ %s"
+
+#: ../src/gs-shell-extras.c:448
+msgid "this website"
+msgstr "เว็บไซต์นี้"
+
+#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
+#: ../src/gs-shell-extras.c:452
+#, c-format
+msgid ""
+"Unfortunately, the %s you were searching for could not be found. Please see "
+"%s for more information."
+msgid_plural ""
+"Unfortunately, the %s you were searching for could not be found. Please see "
+"%s for more information."
+msgstr[0] "น่าเสียดายที่ไม่พบ %s ที่คุณค้นหา กรุณาอ่านข้อมูลเพิ่มเติมที่ %s"
+
+#: ../src/gs-shell-extras.c:534 ../src/gs-shell-extras.c:583
+#: ../src/gs-shell-extras.c:634
+msgid "Failed to find any search results"
+msgstr "ไม่พบผลการค้นหาใดๆ"
+
+#: ../src/gs-shell-extras.c:804
+#, c-format
+msgid "%s file format"
+msgstr "ฟอร์แมตแฟ้ม %s"
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-extras.ui.h:1
+msgid "Codecs page"
+msgstr "หน้าของตัวอ่าน-ลงรหัส"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
@@ -492,67 +747,52 @@ msgid "_Removing"
 msgstr "กำลัง_ถอดถอน"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:610
+#: ../src/gs-shell-details.c:578
 msgctxt "license"
 msgid "Unknown"
 msgstr "ไม่ทราบ"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:623
+#: ../src/gs-shell-details.c:591
 msgctxt "version"
 msgid "Unknown"
 msgstr "ไม่ทราบ"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:629
+#: ../src/gs-shell-details.c:597
 msgctxt "size"
 msgid "Calculating…"
 msgstr "กำลังคำนวณ…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:632
+#: ../src/gs-shell-details.c:600
 msgctxt "size"
 msgid "Unknown"
 msgstr "ไม่ทราบ"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:644
+#: ../src/gs-shell-details.c:612
 msgctxt "updated"
 msgid "Never"
 msgstr "ไม่เคย"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:659
+#: ../src/gs-shell-details.c:626
 msgctxt "menu category"
 msgid "None"
 msgstr "ไม่มี"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:669
+#: ../src/gs-shell-details.c:636
 msgctxt "origin"
 msgid "Unknown"
 msgstr "ไม่ทราบ"
 
-#: ../src/gs-shell-details.c:927 ../src/gs-utils.c:162
+#: ../src/gs-shell-details.c:894 ../src/gs-utils.c:162
 msgid "Sorry, this did not work"
 msgstr "ขออภัย ทำงานล้มเหลว"
-
-#. TRANSLATORS: this is a prompt message, and
-#. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1142 ../src/gs-shell-installed.c:166
-#: ../src/gs-shell-search.c:147
-#, c-format
-msgid "Are you sure you want to remove %s?"
-msgstr "คุณแน่ใจหรือไม่ว่าต้องการถอดถอน %s?"
-
-#. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1154 ../src/gs-shell-installed.c:178
-#: ../src/gs-shell-search.c:159
-#, c-format
-msgid "%s will be removed, and you will have to install it to use it again."
-msgstr "%s จะถูกถอดถอน และคุณจะต้องติดตั้งโปรแกรมดังกล่าวใหม่หากต้องการใช้งานอีกครั้ง"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-details.ui.h:1
@@ -659,7 +899,7 @@ msgstr "ผู้พัฒนา"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:518
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:451
 #: ../src/gs-update-list.c:89 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "ส่วนเสริม"
@@ -670,11 +910,11 @@ msgstr "ส่วนเสริมที่เลือกจะถูกติ
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:508
+#: ../src/gs-shell-installed.c:441
 msgid "System Applications"
 msgstr "โปรแกรมระบบ"
 
-#: ../src/gs-shell-installed.c:611
+#: ../src/gs-shell-installed.c:544
 msgid "Click on items to select them"
 msgstr "คลิกที่รายการที่จะเลือก"
 
@@ -747,117 +987,117 @@ msgid "No Application Found"
 msgstr "ไม่พบโปรแกรม"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:145
+#: ../src/gs-shell-updates.c:144
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:148
+#: ../src/gs-shell-updates.c:147
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:154
+#: ../src/gs-shell-updates.c:153
 msgid "Yesterday, %R"
 msgstr "เมื่อวาน %R น."
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:158
+#: ../src/gs-shell-updates.c:157
 msgid "Yesterday, %l:%M %p"
 msgstr "เมื่อวาน %l:%M %p"
 
-#: ../src/gs-shell-updates.c:161
+#: ../src/gs-shell-updates.c:160
 msgid "Two days ago"
 msgstr "สองวันก่อน"
 
-#: ../src/gs-shell-updates.c:163
+#: ../src/gs-shell-updates.c:162
 msgid "Three days ago"
 msgstr "สามวันก่อน"
 
-#: ../src/gs-shell-updates.c:165
+#: ../src/gs-shell-updates.c:164
 msgid "Four days ago"
 msgstr "สี่วันก่อน"
 
-#: ../src/gs-shell-updates.c:167
+#: ../src/gs-shell-updates.c:166
 msgid "Five days ago"
 msgstr "ห้าวันก่อน"
 
-#: ../src/gs-shell-updates.c:169
+#: ../src/gs-shell-updates.c:168
 msgid "Six days ago"
 msgstr "หกวันก่อน"
 
-#: ../src/gs-shell-updates.c:171
+#: ../src/gs-shell-updates.c:170
 msgid "One week ago"
 msgstr "หนึ่งสัปดาห์ที่แล้ว"
 
-#: ../src/gs-shell-updates.c:173
+#: ../src/gs-shell-updates.c:172
 msgid "Two weeks ago"
 msgstr "สองสัปดาห์ที่แล้ว"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:177
+#: ../src/gs-shell-updates.c:176
 msgid "%e %B %Y"
 msgstr "%e %B %Ey"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:196
+#: ../src/gs-shell-updates.c:192
 msgid "Downloading new updates…"
 msgstr "กำลังดาวน์โหลดการปรับรุ่นรายการใหม่…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:200
+#: ../src/gs-shell-updates.c:196
 msgid "Looking for new updates…"
 msgstr "กำลังค้นหารายการปรับรุ่นใหม่…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:255
+#: ../src/gs-shell-updates.c:251
 msgid "Setting up updates…"
 msgstr "กำลังตั้งค่ารายการปรับรุ่น…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:256 ../src/gs-shell-updates.c:262
+#: ../src/gs-shell-updates.c:252 ../src/gs-shell-updates.c:258
 msgid "(This could take a while)"
 msgstr "(อาจใช้เวลาสักครู่)"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:267
+#: ../src/gs-shell-updates.c:263
 msgid "Checking for updates…"
 msgstr "กำลังตรวจสอบการปรับรุ่น…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:401
+#: ../src/gs-shell-updates.c:397
 #, c-format
 msgid "Last checked: %s"
 msgstr "ตรวจสอบล่าสุด: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:777
+#: ../src/gs-shell-updates.c:772
 msgid "No Network"
 msgstr "ไม่มีเครือข่าย"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:781
+#: ../src/gs-shell-updates.c:776
 msgid "Internet access is required to check for updates."
 msgstr "จำเป็นต้องเข้าถึงอินเทอร์เน็ตเพื่อตรวจสอบการปรับรุ่น"
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:785
+#: ../src/gs-shell-updates.c:780
 msgid "Network Settings"
 msgstr "ตั้งค่าเครือข่าย"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:804
+#: ../src/gs-shell-updates.c:799
 msgid "Charges may apply"
 msgstr "อาจมีค่าใช้จ่าย"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:808
+#: ../src/gs-shell-updates.c:803
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -865,7 +1105,7 @@ msgstr "การตรวจสอบการปรับรุ่นขณะ
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:812
+#: ../src/gs-shell-updates.c:807
 msgid "Check Anyway"
 msgstr "ตรวจสอบต่อไป"
 
@@ -896,37 +1136,61 @@ msgstr "ออนไลน์เพื่อตรวจสอบการปร
 msgid "_Network Settings"
 msgstr "ตั้งค่าเ_ครือข่าย"
 
-#. TRANSLATORS: this source has no apps installed from it
-#: ../src/gs-sources-dialog.c:92
+#. TRANSLATORS: This string describes a software source that
+#. has no software installed from it.
+#: ../src/gs-sources-dialog.c:96
 msgid "No software installed"
 msgstr "ไม่มีซอฟต์แวร์ที่ติดตั้งไว้"
 
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:95
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:100
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
 msgstr[0] "มีโปรแกรมติดตั้งไว้ %i รายการ"
 
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:100
+#. TRANSLATORS: This string is used to construct the 'X add-ons
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:106
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
 msgstr[0] "มีส่วนเสริมติดตั้งไว้ %i รายการ"
 
-#. TRANSLATORS: this source has some apps and addons installed from it
-#: ../src/gs-sources-dialog.c:105
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the number of applications.
+#: ../src/gs-sources-dialog.c:113
 #, c-format
-msgid "%i application and %i add-ons installed"
-msgid_plural "%i applications and %i add-ons installed"
-msgstr[0] "มีโปรแกรม %i รายการ และส่วนเสริม %i รายการติดตั้งไว้"
+msgid "%i application"
+msgid_plural "%i applications"
+msgstr[0] "โปรแกรม %i รายการ"
 
-#: ../src/gs-sources-dialog.c:294 ../src/gs-sources-dialog.ui.h:13
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the number of add-ons.
+#: ../src/gs-sources-dialog.c:119
+#, c-format
+msgid "%i add-on"
+msgid_plural "%i add-ons"
+msgstr[0] "ส่วนเสริม %i รายการ"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the total number of
+#. applications and add-ons.
+#: ../src/gs-sources-dialog.c:126
+#, c-format
+msgid "%s and %s installed"
+msgid_plural "%s and %s installed"
+msgstr[0] "ติดตั้ง %s และ %s เสร็จแล้ว"
+
+#: ../src/gs-sources-dialog.c:315 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "ลบแหล่ง"
 
-#: ../src/gs-sources-dialog.c:309
+#: ../src/gs-sources-dialog.c:330
 msgid "Removing…"
 msgstr "กำลังถอดถอน…"
 
@@ -984,7 +1248,7 @@ msgid "Installed Updates"
 msgstr "รายการปรับรุ่นที่ติดตั้งแล้ว"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:187
+#: ../src/gs-update-dialog.c:186
 #, c-format
 msgid "Installed on %s"
 msgstr "ติดตั้งเมื่อ %s"
@@ -1082,84 +1346,69 @@ msgstr "ติดตั้ง %s ไม่สำเร็จ"
 msgid "Removal of %s failed."
 msgstr "ถอดถอน %s ไม่สำเร็จ"
 
-#. TRANSLATORS: window title, nonfree in this
-#. * case refers to Free and Open Source
-#: ../src/gs-utils.c:212
-msgid "You're About to Install Non-Free Software"
-msgstr "คุณกำลังติดตั้งซอฟต์แวร์ที่ไม่ใช่ซอฟต์แวร์เสรี"
+#. TRANSLATORS: window title
+#: ../src/gs-utils.c:244
+msgid "Install Third-Party Software?"
+msgstr "ติดตั้งซอฟต์แวร์ของบุคคลที่สามหรือไม่?"
 
-#. TRANSLATORS: the replacements are as follows:
-#. * 1. Application name, e.g. "Firefox"
-#. * 2. Start of hypertext e.g. <a>
-#. * 3. End of hypertext e.g. </a>
-#: ../src/gs-utils.c:226
-#, c-format
-msgid "%s is not %sfree and open source software%s."
-msgstr "%s ไม่ใช่ %sซอฟต์แวร์เสรีและโอเพนซอร์ส%s"
-
-#. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:233
-msgid ""
-"Depending on your country of residence, installing it could make you liable "
-"to prosecution."
-msgstr "ขึ้นอยู่กับประเทศที่คุณอาศัยอยู่ การติดตั้งอาจทำให้คุณต้องรับผิดชอบการฟ้องร้องคดีอาญา"
-
-#. TRANSLATORS: ...and you need to ask for advice
-#: ../src/gs-utils.c:238
-msgid "If you are uncertain about this, you should obtain legal advice."
-msgstr "ถ้าคุณไม่แน่ใจเกี่ยวกับเรื่องนี้ คุณก็ควรขอคำปรึกษาทางกฎหมาย"
-
-#. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:243
-msgid "Don't Warn Again"
-msgstr "ไม่ต้องเตือนอีก"
-
-#. TRANSLATORS: window title, additional in this
-#. * case means not-currently-enabled
-#: ../src/gs-utils.c:270
-msgid "Enable Additional Software Source?"
-msgstr "เปิดใช้แหล่งซอฟต์แวร์เพิ่มเติมหรือไม่?"
+#. TRANSLATORS: window title
+#: ../src/gs-utils.c:248
+msgid "Enable Third-Party Software Source?"
+msgstr "เปิดใช้แหล่งซอฟต์แวร์ของบุคคลที่สามหรือไม่?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:283
+#.
+#: ../src/gs-utils.c:266
 #, c-format
-msgid "%s is provided by %s."
-msgstr "%s จัดเตรียมโดย %s"
+msgid ""
+"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">free and open source software</a>, and is provided by “%s”."
+msgstr ""
+"%s ไม่ใช่ <a href=\"https://en.wikipedia.org/wiki/Free_and_open-source_software"
+"\">ซอฟต์แวร์เสรีและโอเพนซอร์ส</a> และจัดเตรียมโดย “%s”"
 
-#. TRANSLATORS: once the source is enabled it stays enabled
-#: ../src/gs-utils.c:289
-msgid "Do you want to enable it?"
-msgstr "คุณต้องการเปิดใช้หรือไม่?"
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. Application name, e.g. "Firefox"
+#. * 2. Software source name, e.g. fedora-optional
+#: ../src/gs-utils.c:276
+#, c-format
+msgid "%s is provided by “%s”."
+msgstr "%s จัดเตรียมโดย “%s”"
 
-#. TRANSLATORS: this is button text to enable the repo and install the app
-#: ../src/gs-utils.c:293
-msgid "Enable"
-msgstr "เปิดใช้"
+#. TRANSLATORS: a software source is a repo
+#: ../src/gs-utils.c:286
+msgid "This software source must be enabled to continue installation."
+msgstr "แหล่งซอฟต์แวร์นี้ต้องเปิดใช้ก่อนที่จะติดตั้งต่อไป"
 
-#: ../src/plugins/gs-plugin-appstream.c:218
+#. TRANSLATORS: Laws are geographical, urgh...
+#: ../src/gs-utils.c:296
+#, c-format
+msgid "It may be illegal to install or use %s in some countries."
+msgstr "อาจจะผิดกฎหมายที่จะติดตั้งหรือใช้ %s ในบางประเทศ"
+
+#. TRANSLATORS: Laws are geographical, urgh...
+#: ../src/gs-utils.c:302
+msgid "It may be illegal to install or use this codec in some countries."
+msgstr "อาจจะผิดกฎหมายที่จะติดตั้งหรือใช้ตัวอ่าน-ลงรหัสนี้ในบางประเทศ"
+
+#. TRANSLATORS: this is button text to not ask about non-free content again
+#: ../src/gs-utils.c:309
+msgid "Don't Warn Again"
+msgstr "ไม่ต้องเตือนอีก"
+
+#. TRANSLATORS: button text
+#: ../src/gs-utils.c:318
+msgid "Enable and Install"
+msgstr "เปิดใช้และติดตั้ง"
+
+#: ../src/plugins/gs-plugin-appstream.c:219
 #, c-format
 msgid "No AppStream data found"
 msgstr "ไม่พบข้อมูล AppStream"
 
-#. TRANSLATORS: This is how we join the licences and can
-#. * be considered a "Conjunctive AND Operator" according
-#. * to the SPDX specification. For example:
-#. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#: ../src/plugins/gs-plugin-appstream.c:409
-msgid " and "
-msgstr " และ "
-
-#. TRANSLATORS: This is how we join the licences and can
-#. * be considered a "Disjunctive OR Operator" according
-#. * to the SPDX specification. For example:
-#. * "LGPL-2.1 or MIT"
-#: ../src/plugins/gs-plugin-appstream.c:417
-msgid " or "
-msgstr " หรือ "
-
-#: ../src/plugins/gs-plugin-hardcoded-categories.c:160
+#: ../src/plugins/gs-plugin-hardcoded-categories.c:161
 msgid "Featured"
 msgstr "เด่น"
 
@@ -2039,6 +2288,30 @@ msgstr "เ_กี่ยวกับ"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "_ออก"
+
+#~ msgid "%i application and %i add-ons installed"
+#~ msgid_plural "%i applications and %i add-ons installed"
+#~ msgstr[0] "มีโปรแกรม %i รายการ และส่วนเสริม %i รายการติดตั้งไว้"
+
+#~ msgid "You're About to Install Non-Free Software"
+#~ msgstr "คุณกำลังติดตั้งซอฟต์แวร์ที่ไม่ใช่ซอฟต์แวร์เสรี"
+
+#~ msgid "%s is not %sfree and open source software%s."
+#~ msgstr "%s ไม่ใช่ %sซอฟต์แวร์เสรีและโอเพนซอร์ส%s"
+
+#~ msgid ""
+#~ "Depending on your country of residence, installing it could make you "
+#~ "liable to prosecution."
+#~ msgstr "ขึ้นอยู่กับประเทศที่คุณอาศัยอยู่ การติดตั้งอาจทำให้คุณต้องรับผิดชอบการฟ้องร้องคดีอาญา"
+
+#~ msgid "If you are uncertain about this, you should obtain legal advice."
+#~ msgstr "ถ้าคุณไม่แน่ใจเกี่ยวกับเรื่องนี้ คุณก็ควรขอคำปรึกษาทางกฎหมาย"
+
+#~ msgid "Do you want to enable it?"
+#~ msgstr "คุณต้องการเปิดใช้หรือไม่?"
+
+#~ msgid "Enable"
+#~ msgstr "เปิดใช้"
 
 #~ msgid "Web app"
 #~ msgstr "โปรแกรมบนเว็บ"
