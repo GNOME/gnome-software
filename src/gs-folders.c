@@ -391,14 +391,14 @@ gs_folders_remove_folder (GsFolders *folders, const gchar *id)
 		return;
 
 	g_hash_table_iter_init (&iter, folders->priv->apps);
-	while (g_hash_table_iter_next (&iter, NULL, (gpointer*)folder)) {
+	while (g_hash_table_iter_next (&iter, NULL, (gpointer*)&folder)) {
 		if (folder && g_strcmp0 (id, folder->id) == 0) {
 			g_hash_table_iter_remove (&iter);
 		}
 	}
 
 	g_hash_table_iter_init (&iter, folders->priv->categories);
-	while (g_hash_table_iter_next (&iter, NULL, (gpointer*)folder)) {
+	while (g_hash_table_iter_next (&iter, NULL, (gpointer*)&folder)) {
 		if (folder && g_strcmp0 (id, folder->id) == 0) {
 			g_hash_table_iter_remove (&iter);
 		}

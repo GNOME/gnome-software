@@ -481,6 +481,8 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		case AS_APP_SOURCE_KIND_APPDATA:
 		case AS_APP_SOURCE_KIND_DESKTOP:
 			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+			break;
 		case AS_APP_SOURCE_KIND_METAINFO:
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 			break;
