@@ -89,9 +89,6 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	ret = gs_moduleset_parse_path (plugin->priv->moduleset,
 				       GS_MODULESETDIR,
 				       error);
-	if (!ret)
-		goto out;
-out:
 	gs_profile_stop (plugin->profile, "moduleset::startup");
 	return ret;
 }

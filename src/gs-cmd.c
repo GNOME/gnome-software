@@ -339,8 +339,8 @@ main (int argc, char **argv)
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "get-categories") == 0) {
 		for (i = 0; i < repeat; i++) {
-			if (list != NULL)
-				gs_plugin_list_free (list);
+			if (categories != NULL)
+				gs_plugin_list_free (categories);
 			categories = gs_plugin_loader_get_categories (plugin_loader,
 								      refine_flags,
 								      NULL,
@@ -398,6 +398,7 @@ out:
 	gs_profile_dump (profile);
 	g_option_context_free (context);
 	gs_plugin_list_free (list);
+	gs_plugin_list_free (categories);
 	return status;
 }
 
