@@ -60,7 +60,7 @@ gs_category_get_size (GsCategory *category)
 void
 gs_category_set_size (GsCategory *category, guint size)
 {
-	g_return_val_if_fail (GS_IS_CATEGORY (category), 0);
+	g_return_if_fail (GS_IS_CATEGORY (category));
 	category->priv->size = size;
 }
 
