@@ -98,6 +98,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
+	g_object_unref (app);
 
 	/* add an OS update */
 	app = gs_app_new ("libvirt-glib-devel;0.0.1;noarch;fedora");
@@ -106,6 +107,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
+	g_object_unref (app);
 
 	/* add a second OS update */
 	app = gs_app_new ("gnome-boxes-libs;0.0.1;i386;updates-testing");
@@ -114,6 +116,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
+	g_object_unref (app);
 
 	return TRUE;
 }
