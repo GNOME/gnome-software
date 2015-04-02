@@ -262,9 +262,9 @@ gs_plugin_refine (GsPlugin *plugin,
 	popular_apps = gs_moduleset_get_popular_apps (plugin->priv->moduleset);
 	system_apps = gs_moduleset_get_system_apps (plugin->priv->moduleset);
 	core_pkgs = gs_moduleset_get_core_packages (plugin->priv->moduleset);
-	if (featured_apps == NULL &&
-	    popular_apps == NULL &&
-	    system_apps == NULL &&
+	if (featured_apps == NULL ||
+	    popular_apps == NULL ||
+	    system_apps == NULL ||
 	    core_pkgs == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
