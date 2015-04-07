@@ -28,12 +28,21 @@
 #include "gs-offline-updates.h"
 #include "gs-utils.h"
 
+static void
+gs_offline_updates_label_allocate_cb (GtkWidget *label,
+				      GdkRectangle *allocation, gpointer data)
+{
+	GtkScrolledWindow *sw = GTK_SCROLLED_WINDOW (data);
+	gtk_scrolled_window_set_min_content_height (
+			sw, MIN (allocation->height, 300));
+}
+
 void
 gs_offline_updates_show_error (void)
 {
 	const gchar *title;
 	gboolean show_geeky = FALSE;
-	GtkWidget *dialog;
+	GtkWidget *dialog, *message_area, *sw, *label;
 	_cleanup_error_free_ GError *error = NULL;
 	_cleanup_object_unref_ PkError *pk_error = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
@@ -131,8 +140,21 @@ gs_offline_updates_show_error (void)
 					 GTK_MESSAGE_INFO,
 					 GTK_BUTTONS_CLOSE,
 					 "%s", title);
-	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-						  "%s", msg->str);
+
+	message_area = gtk_message_dialog_get_message_area (GTK_MESSAGE_DIALOG (dialog));
+	g_assert (GTK_IS_BOX (message_area));
+	sw = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
+					GTK_POLICY_NEVER, GTK_POLICY_AUTOMATIC);
+	gtk_widget_set_visible (sw, TRUE);
+
+	label = gtk_label_new (msg->str);
+	gtk_widget_set_visible (label, TRUE);
+	g_signal_connect (label, "size-allocate",
+			G_CALLBACK (gs_offline_updates_label_allocate_cb), sw);
+	gtk_container_add (GTK_CONTAINER (sw), label);
+	gtk_container_add (GTK_CONTAINER (message_area), sw);
+
 	g_signal_connect_swapped (dialog, "response",
 				  G_CALLBACK (gtk_widget_destroy),
 				  dialog);
