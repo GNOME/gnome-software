@@ -2,15 +2,14 @@
 # Copyright (C) 2014 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
 #
-# Iñaki Larrañaga Murgoitio <dooteo@zundan.com>, 2014, 2015.
 #
+# Iñaki Larrañaga Murgoitio <dooteo@zundan.com>, 2014, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
-"software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-03-23 21:16+0100\n"
-"PO-Revision-Date: 2015-03-23 21:42+0100\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2015-04-11 11:50+0200\n"
+"PO-Revision-Date: 2015-04-11 11:52+0200\n"
 "Last-Translator: Iñaki Larrañaga Murgoitio <dooteo@zundan.com>\n"
 "Language-Team: Basque <librezale@librezale.org>\n"
 "Language: eu\n"
@@ -294,7 +293,7 @@ msgstr "Eguneraketak"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:210
+#: ../src/gs-category.c:220
 msgid "Other"
 msgstr "Bestelakoa"
 
@@ -503,25 +502,25 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:933
+#: ../src/gs-plugin-loader.c:805
 msgid "OS Updates"
 msgstr "SEren eguneraketak"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:938
+#: ../src/gs-plugin-loader.c:810
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "Errendimenduaren, egonkortasunaren eta segurtasunaren hobekuntzak ditu."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1524 ../src/gs-shell-extras.c:375
+#: ../src/gs-plugin-loader.c:1385 ../src/gs-shell-extras.c:375
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Ez dago '%s' formatuaren kodek gehigarririk eskuragarri."
 
-#: ../src/gs-plugin-loader.c:1527
+#: ../src/gs-plugin-loader.c:1388
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -543,28 +542,28 @@ msgstr "Huts egin du irudia kargatzean"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:387
+#: ../src/gs-screenshot-image.c:388
 msgid "Screenshot size not found"
 msgstr "Ez da pantaila-argazkiaren tamaina aurkitu"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:406
+#: ../src/gs-screenshot-image.c:407
 msgid "Could not create cache"
 msgstr "Ezin izan da cachea sortu"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:436
+#: ../src/gs-screenshot-image.c:437
 msgid "Screenshot not valid"
 msgstr "Ez da baliozko pantaila-argazkia"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:452
+#: ../src/gs-screenshot-image.c:453
 msgid "Screenshot not available"
 msgstr "Pantaila-argazkia ez dago eskuragarri"
 
-#: ../src/gs-screenshot-image.c:508
+#: ../src/gs-screenshot-image.c:509
 msgid "Screenshot"
 msgstr "Pantaila-argazkia"
 
@@ -637,8 +636,8 @@ msgid ""
 "Information about %s, as well as options for how to get an application that "
 "can support this format might be found %s."
 msgstr ""
-"Bai '%s' buruzko informazioa bai formatu hau onartzen duen aplikazioa "
-"nola lor daitekeen buruzko aukerak '%s'(e)n aurki ditzakezu. "
+"Bai '%s' buruzko informazioa bai formatu hau onartzen duen aplikazioa nola "
+"lor daitekeen buruzko aukerak '%s'(e)n aurki ditzakezu. "
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -685,8 +684,7 @@ msgid ""
 "resources might be found %s."
 msgstr ""
 "Bai '%s' buruzko informazioa bai Plasma baliabide gehigarriak nola lor "
-"daitezkeen "
-"buruzko aukerak '%s'(e)n aurki ditzakezu."
+"daitezkeen buruzko aukerak '%s'(e)n aurki ditzakezu."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -704,8 +702,7 @@ msgid ""
 "supports this printer might be found %s."
 msgstr ""
 "Bai '%s' buruzko informazioa bai inprimagailu hau onartzen duen "
-"kontrolatzailea "
-"nola lor daitekeen buruzko aukerak '%s'(e)n aurki ditzakezu. "
+"kontrolatzailea nola lor daitekeen buruzko aukerak '%s'(e)n aurki ditzakezu. "
 
 #: ../src/gs-shell-extras.c:447
 msgid "this website"
@@ -721,11 +718,9 @@ msgid_plural ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
 "%s for more information."
 msgstr[0] ""
-"Zoritxarrez, ezin izan da '%s' aurkitu. Ikus '%s' xehetasun "
-"gehiagorako."
+"Zoritxarrez, ezin izan da '%s' aurkitu. Ikus '%s' xehetasun gehiagorako."
 msgstr[1] ""
-"Zoritxarrez, ezin izan da '%s' aurkitu. Ikus '%s' xehetasun "
-"gehiagorako."
+"Zoritxarrez, ezin izan da '%s' aurkitu. Ikus '%s' xehetasun gehiagorako."
 
 #: ../src/gs-shell-extras.c:533 ../src/gs-shell-extras.c:582
 #: ../src/gs-shell-extras.c:633
@@ -902,7 +897,7 @@ msgstr "_Abiarazi"
 msgid "Details"
 msgstr "Xehetasunak"
 
-#: ../src/gs-shell-details.ui.h:21 ../src/gs-sources-dialog.ui.h:9
+#: ../src/gs-shell-details.ui.h:21 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
 msgstr "Bertsioa"
 
@@ -970,22 +965,22 @@ msgid "_Remove from Folder"
 msgstr "_Kendu karpetatik"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:331
+#: ../src/gs-shell-overview.c:364
 msgid "Recommended Audio Applications"
 msgstr "Gomendatutako audio aplikazioak"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:336
+#: ../src/gs-shell-overview.c:369
 msgid "Recommended Games"
 msgstr "Gomendatutako jokoak"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:341
+#: ../src/gs-shell-overview.c:374
 msgid "Recommended Graphics Applications"
 msgstr "Gomendatutako grafikoen aplikazioak"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:346
+#: ../src/gs-shell-overview.c:379
 msgid "Recommended Office Applications"
 msgstr "Gomendatutako bulegotikako aplikazioak"
 
@@ -1092,46 +1087,46 @@ msgid "Setting up updates…"
 msgstr "Eguneraketak konfiguratzen…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:252 ../src/gs-shell-updates.c:258
+#: ../src/gs-shell-updates.c:252 ../src/gs-shell-updates.c:259
 msgid "(This could take a while)"
 msgstr "(denbora bat beharko du)"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:263
+#: ../src/gs-shell-updates.c:264
 msgid "Checking for updates…"
 msgstr "Eguneraketak egiaztatzen…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:397
+#: ../src/gs-shell-updates.c:398
 #, c-format
 msgid "Last checked: %s"
 msgstr "Azken egiaztaketa: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:772
+#: ../src/gs-shell-updates.c:773
 msgid "No Network"
 msgstr "Ez dago sarerik"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:776
+#: ../src/gs-shell-updates.c:777
 msgid "Internet access is required to check for updates."
 msgstr "Interneterako sarbidetza behar da eguneraketak egiaztatzeko."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:780
+#: ../src/gs-shell-updates.c:781
 msgid "Network Settings"
 msgstr "Sarearen ezarpenak"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:799
+#: ../src/gs-shell-updates.c:800
 msgid "Charges may apply"
 msgstr "Gastu gehigarriak sor ditzake"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:803
+#: ../src/gs-shell-updates.c:804
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1141,7 +1136,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:807
+#: ../src/gs-shell-updates.c:808
 msgid "Check Anyway"
 msgstr "Egiaztatu dena den"
 
@@ -1176,13 +1171,13 @@ msgstr "_Sarearen ezarpenak"
 
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
-#: ../src/gs-sources-dialog.c:96
+#: ../src/gs-sources-dialog.c:98
 msgid "No software installed"
 msgstr "Ez dago softwarerik instalatuta"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:100
+#: ../src/gs-sources-dialog.c:102
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
@@ -1191,7 +1186,7 @@ msgstr[1] "%i aplikazio instalatuta"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:106
+#: ../src/gs-sources-dialog.c:108
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
@@ -1201,7 +1196,7 @@ msgstr[1] "%i gehigarri instalatuta"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
-#: ../src/gs-sources-dialog.c:113
+#: ../src/gs-sources-dialog.c:115
 #, c-format
 msgid "%i application"
 msgid_plural "%i applications"
@@ -1211,31 +1206,49 @@ msgstr[1] "%i aplikazio"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
-#: ../src/gs-sources-dialog.c:119
+#: ../src/gs-sources-dialog.c:121
 #, c-format
 msgid "%i add-on"
 msgid_plural "%i add-ons"
-msgstr[0] "Gehigarri %i"
+msgstr[0] "gehigarri %i"
 msgstr[1] "%i gehigarri"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: ../src/gs-sources-dialog.c:126
+#: ../src/gs-sources-dialog.c:128
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
-msgstr[0] "'%s' eta '%s' instalatuta"
-msgstr[1] "'%s' eta '%s' instalatuta"
+msgstr[0] "%s eta %s instalatuta"
+msgstr[1] "%s eta %s instalatuta"
 
-#: ../src/gs-sources-dialog.c:315 ../src/gs-sources-dialog.ui.h:13
+#: ../src/gs-sources-dialog.c:322 ../src/gs-sources-dialog.ui.h:12
 msgid "Remove Source"
 msgstr "Kendu iturburua"
 
-#: ../src/gs-sources-dialog.c:330
+#: ../src/gs-sources-dialog.c:337
 msgid "Removing…"
 msgstr "Kentzen…"
+
+#. TRANSLATORS: this is the fallback text we use if we can't
+#. figure out the name of the operating system
+#: ../src/gs-sources-dialog.c:376
+msgid "the operating system"
+msgstr "sistema eragilea"
+
+#. TRANSLATORS: This is the text displayed in the Software Sources
+#. dialog when no OS-provided software sources are enabled. %s gets
+#. replaced by the name of the actual distro, e.g. Fedora.
+#: ../src/gs-sources-dialog.c:439
+#, c-format
+msgid ""
+"Software sources can be downloaded from the internet. They give you access "
+"to additional software that is not provided by %s."
+msgstr ""
+"Softwareen iturburuak internetetik deskarga daitezke. '%s'(e)k hornitzen "
+"ez dituen software gehigarriak atzitzea eskaintzen dizkizu."
 
 #. vim: set noexpandtab:
 #: ../src/gs-sources-dialog.ui.h:1
@@ -1243,39 +1256,35 @@ msgid "Software Sources"
 msgstr "Softwareen iturburuak"
 
 #: ../src/gs-sources-dialog.ui.h:3
-msgid "No sources found."
-msgstr "Ez da iturbururik aurkitu."
-
-#: ../src/gs-sources-dialog.ui.h:4
 msgid "Software sources give you access to additional software."
 msgstr "Softwareen iturburuek software gehigarriak atzitzea eskaintzen dizute."
 
-#: ../src/gs-sources-dialog.ui.h:5
+#: ../src/gs-sources-dialog.ui.h:4
 msgid ""
 "Removing a source will also remove any software you have installed from it."
 msgstr "Iturburu bat kentzean hortik instalatutako edozer software kentzen da."
 
-#: ../src/gs-sources-dialog.ui.h:6
+#: ../src/gs-sources-dialog.ui.h:5
 msgid "No software installed from this source"
 msgstr "Ez da iturburu honetako softwarerik instalatu"
 
-#: ../src/gs-sources-dialog.ui.h:7
+#: ../src/gs-sources-dialog.ui.h:6
 msgid "Installed from this Source"
 msgstr "Iturburu honetatik instalatuta"
 
-#: ../src/gs-sources-dialog.ui.h:8
+#: ../src/gs-sources-dialog.ui.h:7
 msgid "Source Details"
 msgstr "Iturburuaren xehetasunak"
 
-#: ../src/gs-sources-dialog.ui.h:10
+#: ../src/gs-sources-dialog.ui.h:9
 msgid "Last Checked"
 msgstr "Azken egiaztaketa"
 
-#: ../src/gs-sources-dialog.ui.h:11
+#: ../src/gs-sources-dialog.ui.h:10
 msgid "Added"
 msgstr "Gehituta"
 
-#: ../src/gs-sources-dialog.ui.h:12
+#: ../src/gs-sources-dialog.ui.h:11
 msgid "Website"
 msgstr "Webgunea"
 
@@ -1457,7 +1466,7 @@ msgstr "Gaitu eta instalatu"
 msgid "No AppStream data found"
 msgstr "Ez da AppStream-ren daturik aurkitu"
 
-#: ../src/plugins/gs-plugin-hardcoded-categories.c:161
+#: ../src/plugins/gs-plugin-moduleset.c:133
 msgid "Featured"
 msgstr "Nabarmendua"
 
@@ -2337,6 +2346,9 @@ msgstr "Honi _buruz"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "I_rten"
+
+#~ msgid "No sources found."
+#~ msgstr "Ez da iturbururik aurkitu."
 
 #~ msgid "%i application and %i add-ons installed"
 #~ msgid_plural "%i applications and %i add-ons installed"
