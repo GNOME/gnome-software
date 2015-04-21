@@ -1,15 +1,15 @@
 # Esperanto translation for gnome-software.
 # Copyright (C) 2014 Free Software Foundation, Inc.
 # This file is distributed under the same license as the gnome-software package.
-# Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>, 2014.
-#
+# Daniel PUENTES <blatberk@openmailbox.org>, 2015.
+# Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>, 2014, 2015.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2014-11-30 20:33+0000\n"
-"PO-Revision-Date: 2014-12-01 01:11+0100\n"
+"POT-Creation-Date: 2015-04-14 16:48+0000\n"
+"PO-Revision-Date: 2015-04-21 22:50+0200\n"
 "Last-Translator: Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>\n"
 "Language-Team: Esperanto <gnome-l10n-eo@lists.launchpad.net>\n"
 "Language: eo\n"
@@ -17,18 +17,24 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: Virtaal 0.7.1\n"
+"X-Project-Style: gnome\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
+msgid "GNOME Software"
+msgstr "GNOME-Programaro"
+
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
 msgid "Application manager for GNOME"
 msgstr "Aplikaĵo-administrilo por GNOME"
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
 msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
 msgstr ""
 
-#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:3
+#: ../data/appdata/org.gnome.Software.appdata.xml.in.h:4
 msgid ""
 "GNOME Software showcases featured and popular applications with useful "
 "descriptions and multiple screenshots per application. Applications can be "
@@ -40,20 +46,20 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Aldoni al dosierujo de aplikaĵoj"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:337
-#: ../src/gs-shell-details.c:225 ../src/gs-shell-installed.c:615
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:336
+#: ../src/gs-shell-details.c:237 ../src/gs-shell-installed.c:536
 msgid "_Cancel"
 msgstr "_Nuligi"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:342
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:341
 msgid "_Add"
 msgstr "_Aldoni"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:103
-#: ../src/gs-app-tile.c:74 ../src/gs-app-tile.c:77 ../src/gs-feature-tile.c:69
-#: ../src/gs-popular-tile.c:75 ../src/gs-popular-tile.c:78
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:98 ../src/gs-app-tile.c:75
+#: ../src/gs-app-tile.c:78 ../src/gs-feature-tile.c:70
+#: ../src/gs-popular-tile.c:76 ../src/gs-popular-tile.c:79
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Intsalite"
@@ -62,7 +68,7 @@ msgstr "Intsalite"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:263 ../src/gs-shell.c:157
+#: ../src/gs-application.c:277 ../src/gs-shell.c:161
 msgid "Software"
 msgstr "Programaro"
 
@@ -78,11 +84,11 @@ msgstr ""
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
 msgid "Software Install"
-msgstr ""
+msgstr "Instalado de programaro"
 
 #: ../src/gnome-software-local-file.desktop.in.h:2
 msgid "Install selected software on the system"
-msgstr ""
+msgstr "Instali elektitan programaron en la sistemo"
 
 #: ../src/gnome-software.ui.h:1
 msgid "Select All"
@@ -130,71 +136,71 @@ msgid "Folder Name"
 msgstr "Doseruja nomo"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:261
+#: ../src/gs-application.c:275
 msgid "About Software"
 msgstr "Pri Programaro"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:266
+#: ../src/gs-application.c:280
 msgid "A nice way to manage the software on your system."
 msgstr "Estas bona maniero por administri la programaron sur via sistemo."
 
-#: ../src/gs-application.c:270
+#: ../src/gs-application.c:284
 msgid "translator-credits"
-msgstr "Kristjan SCHMIDT <kristjan.schmidt@googlemail.com>"
+msgstr "Kristjan SCHMIDT, Daniel PUENTES"
 
-#: ../src/gs-application.c:537
+#: ../src/gs-application.c:575
 msgid "Enter GApplication service mode"
 msgstr ""
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:578
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 
-#: ../src/gs-application.c:540
+#: ../src/gs-application.c:578
 msgid "MODE"
 msgstr "REĜIMO"
 
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:580
 msgid "Search for applications"
-msgstr ""
+msgstr "Serĉi aplikaĵojn"
 
-#: ../src/gs-application.c:542
+#: ../src/gs-application.c:580
 msgid "SEARCH"
 msgstr "SERĈI"
 
-#: ../src/gs-application.c:544
+#: ../src/gs-application.c:582
 msgid "Show application details"
-msgstr ""
+msgstr "Montri detalojn de aplikaĵo"
 
-#: ../src/gs-application.c:544
+#: ../src/gs-application.c:582
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:546
+#: ../src/gs-application.c:584
 msgid "Open a local package file"
-msgstr ""
+msgstr "Malfermi lokan pakaĵon"
 
-#: ../src/gs-application.c:546
+#: ../src/gs-application.c:584
 msgid "FILENAME"
 msgstr "DOSIERNOMO"
 
-#: ../src/gs-application.c:548
+#: ../src/gs-application.c:586
 msgid "Show verbose debugging information"
 msgstr ""
 
-#: ../src/gs-application.c:550
+#: ../src/gs-application.c:588
 msgid "Show profiling information for the service"
 msgstr ""
 
-#: ../src/gs-application.c:552
+#: ../src/gs-application.c:590
 msgid "Prefer local file sources to AppStream"
 msgstr ""
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:98 ../src/gs-app-row.c:201
+#: ../src/gs-app-addon-row.c:93 ../src/gs-app-row.c:214
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Atendante"
@@ -203,8 +209,8 @@ msgstr "Atendante"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installing
-#: ../src/gs-app-addon-row.c:107 ../src/gs-app-row.c:228
-#: ../src/gs-app-tile.c:83 ../src/gs-app-tile.c:86
+#: ../src/gs-app-addon-row.c:102 ../src/gs-app-row.c:240
+#: ../src/gs-app-tile.c:84 ../src/gs-app-tile.c:87
 msgid "Installing"
 msgstr "Instalante"
 
@@ -212,51 +218,140 @@ msgstr "Instalante"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:111 ../src/gs-app-row.c:237
-#: ../src/gs-app-tile.c:92 ../src/gs-app-tile.c:95
+#: ../src/gs-app-addon-row.c:106 ../src/gs-app-row.c:249
+#: ../src/gs-app-tile.c:93 ../src/gs-app-tile.c:96
 msgid "Removing"
 msgstr "Forigante"
 
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Conjunctive AND Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 and MIT and BSD-2-Clause"
+#. TRANSLATORS: separator for a list of items
+#: ../src/gs-app.c:1246 ../src/gs-shell-extras.c:144
+msgid " and "
+msgstr " kaj "
+
+#. TRANSLATORS: This is how we join the licences and can
+#. * be considered a "Disjunctive OR Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 or MIT"
+#: ../src/gs-app.c:1254
+msgid " or "
+msgstr " aŭ "
+
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:191
+#: ../src/gs-app-row.c:198
 msgid "Visit website"
 msgstr "Viziti la retpaĝaron"
 
 #. TRANSLATORS: this is a button next to the search results that
+#. * allows the application to be easily installed.
+#. * The ellipsis indicates that further steps are required
+#: ../src/gs-app-row.c:203
+msgid "Install…"
+msgstr "Instali…"
+
+#. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:198
+#: ../src/gs-app-row.c:211
 msgid "Cancel"
 msgstr "Nuligi"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:208
+#. TRANSLATORS: button text
+#: ../src/gs-app-row.c:221 ../src/gs-utils.c:313
 msgid "Install"
 msgstr "Instali"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:217 ../src/gs-shell-details.c:1133
-#: ../src/gs-shell-installed.c:182 ../src/gs-shell-search.c:165
+#: ../src/gs-app-row.c:229 ../src/gs-page.c:176
 msgid "Remove"
 msgstr "Forigi"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user there is an update for the installed
 #. * application available
-#: ../src/gs-app-tile.c:101 ../src/gs-app-tile.c:105
-#: ../src/gs-feature-tile.c:74 ../src/gs-popular-tile.c:84
-#: ../src/gs-popular-tile.c:88
+#: ../src/gs-app-tile.c:102 ../src/gs-app-tile.c:106
+#: ../src/gs-feature-tile.c:75 ../src/gs-popular-tile.c:85
+#: ../src/gs-popular-tile.c:89
 msgid "Updates"
 msgstr "Ĝisdatigoj"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:207
+#: ../src/gs-category.c:210
 msgid "Other"
 msgstr "Alia"
+
+#. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
+#: ../src/gs-dbus-helper.c:312
+msgid "An application"
+msgstr "Aplikaĵo"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
+#: ../src/gs-dbus-helper.c:318
+#, c-format
+msgid "%s is requesting additional file format support."
+msgstr "%s petas aldonan subtenon de dosierformo."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:320
+msgid "Additional MIME Types Required"
+msgstr "Necesas aldonaj MIME-provizantoj"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
+#: ../src/gs-dbus-helper.c:324
+#, c-format
+msgid "%s is requesting additional fonts."
+msgstr "%s petas aldonajn tiparojn."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:326
+msgid "Additional Fonts Required"
+msgstr "Necesas aldonaj tiparoj"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
+#: ../src/gs-dbus-helper.c:330
+#, c-format
+msgid "%s is requesting additional multimedia codecs."
+msgstr "%s petas aldonajn plurmediajn kodekojn."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:332
+msgid "Additional Multimedia Codecs Required"
+msgstr "Necesas aldonaj plurmediaj kodekoj"
+
+#. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
+#: ../src/gs-dbus-helper.c:336
+#, c-format
+msgid "%s is requesting additional printer drivers."
+msgstr "%s petas aldonajn presilajn pelilojn."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:338
+msgid "Additional Printer Drivers Required"
+msgstr "Necesas aldonaj presilaj peliloj"
+
+#. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
+#: ../src/gs-dbus-helper.c:342
+#, c-format
+msgid "%s is requesting additional packages."
+msgstr "%s petas aldonajn pakaĵojn."
+
+#. TRANSLATORS: notification title
+#: ../src/gs-dbus-helper.c:344
+msgid "Additional Packages Required"
+msgstr "Necesas aldonaj pakaĵoj"
+
+#. TRANSLATORS: this is a button that launches gnome-software
+#: ../src/gs-dbus-helper.c:353
+msgid "Find in Software"
+msgstr "Serĉi en Programaro"
 
 #. vim: set noexpandtab:
 #: ../src/gs-first-run-dialog.ui.h:1
@@ -273,6 +368,8 @@ msgid ""
 "our recommendations, browse the categories, or search for the applications "
 "you want."
 msgstr ""
+"Programaro permesas al vi facile instali la programaron kiun vi bezonas. "
+"Vidu niajn rekomendojn, esploru la kategoriojn, aŭ serĉu la aplikaĵojn."
 
 #: ../src/gs-first-run-dialog.ui.h:4
 msgid "_Let’s Go Shopping"
@@ -313,219 +410,399 @@ msgid "History"
 msgstr "Historio"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:53
+#: ../src/gs-offline-updates.c:63
 msgid "Failed To Update"
-msgstr ""
+msgstr "Malsukcesis ĝisdatigi"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:59
+#: ../src/gs-offline-updates.c:69
 msgid "A previous update was unfinished."
-msgstr ""
+msgstr "Antaŭa ĝisdatigo malsukcesis."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:69
+#: ../src/gs-offline-updates.c:79
 msgid "Network access was required but not available."
-msgstr ""
+msgstr "Necesas retaliro, sed ĝi ne disponeblas."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:78
+#: ../src/gs-offline-updates.c:88
 msgid "An update was not signed in the correct way."
-msgstr ""
+msgstr "Ĝisdatigo ne estis korekte subskribita."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:88
+#: ../src/gs-offline-updates.c:98
 msgid "The update could not be completed."
-msgstr ""
+msgstr "Malsukcesis fini la ĝisdatigon."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:93
+#: ../src/gs-offline-updates.c:103
 msgid "The update was cancelled."
-msgstr ""
+msgstr "La ĝisdatigo estis nuligita."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:99
+#: ../src/gs-offline-updates.c:109
 msgid "An offline update was requested but no packages required updating."
-msgstr ""
+msgstr "Oni petis eksterretan ĝisdatigon, sed neniu pakaĵo bezonas ĝin."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:103
+#: ../src/gs-offline-updates.c:113
 msgid "No space was left on the drive."
 msgstr ""
 
 #. TRANSLATORS: the update process failed in a general
 #. * way, usually this message will come from source distros
 #. * like gentoo
-#: ../src/gs-offline-updates.c:111
+#: ../src/gs-offline-updates.c:121
 msgid "An update failed to install correctly."
-msgstr ""
+msgstr "Malsukcesis instali ĝisdatigon korekte."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:116
+#: ../src/gs-offline-updates.c:126
 msgid "The offline update failed in an unexpected way."
-msgstr ""
+msgstr "Malsukcesis eksterrete ĝisdatigi pro nekonataj kialoj."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:125
+#: ../src/gs-offline-updates.c:135
 msgid "Detailed errors from the package manager follow:"
-msgstr ""
+msgstr "Jen detalaj eraroj de la pakaĵo-administrilo:"
+
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:161
+#, c-format
+msgid "Are you sure you want to remove %s?"
+msgstr "Ĉu vi certe volas forigi na %s?"
+
+#. TRANSLATORS: longer dialog text
+#: ../src/gs-page.c:173
+#, c-format
+msgid "%s will be removed, and you will have to install it to use it again."
+msgstr "%s estos forigita, kaj se vi bezonas ĝin vi devos reinstali ĝin."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:927
+#: ../src/gs-plugin-loader.c:933
 msgid "OS Updates"
-msgstr ""
+msgstr "Operaciumaj ĝisdatigoj"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:932
+#: ../src/gs-plugin-loader.c:938
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1536
+#: ../src/gs-plugin-loader.c:1524 ../src/gs-shell-extras.c:375
 #, c-format
 msgid "No addon codecs are available for the %s format."
-msgstr ""
+msgstr "Ne disponeblas kodekoj por la dosierformo %s."
 
-#: ../src/gs-plugin-loader.c:1539
+#: ../src/gs-plugin-loader.c:1527
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
 "play this format can be found on the website."
 msgstr ""
+"En la retejo oni povas trovi informon pri %s, kaj ankaŭ opciojn por akiri "
+"ĝustan kodekon por tiu ĉi dosierformo."
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:254
+#: ../src/gs-screenshot-image.c:242
 msgid "Screenshot not found"
-msgstr ""
+msgstr "Ne trovis ekrankopion"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:272
+#: ../src/gs-screenshot-image.c:260
 msgid "Failed to load image"
-msgstr ""
+msgstr "Malsukcesis ŝarĝi bildon"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:413
+#: ../src/gs-screenshot-image.c:388
 msgid "Screenshot size not found"
-msgstr ""
+msgstr "Grando de ekrankopio ne trovita"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:432
+#: ../src/gs-screenshot-image.c:407
 msgid "Could not create cache"
-msgstr ""
+msgstr "Malsukcesis krei kaŝmemoron"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:462
+#: ../src/gs-screenshot-image.c:437
 msgid "Screenshot not valid"
-msgstr ""
+msgstr "Nevalida ekrankopio"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:468
+#: ../src/gs-screenshot-image.c:453
 msgid "Screenshot not available"
+msgstr "Ekrankopio ne disponeblas"
+
+#: ../src/gs-screenshot-image.c:509
+msgid "Screenshot"
+msgstr "Ekrankopio"
+
+#. TRANSLATORS: separator for a list of items
+#: ../src/gs-shell-extras.c:147
+msgid ", "
+msgstr ", "
+
+#. TRANSLATORS: Application window title for codec installation. %s will be replaced by actual codec name(s)
+#: ../src/gs-shell-extras.c:170
+#, c-format
+msgid "Available software for %s"
+msgid_plural "Available software for %s"
+msgstr[0] "Disponebla programaro por %s"
+msgstr[1] "Disponeblaj programaroj por %s"
+
+#: ../src/gs-shell-extras.c:211
+msgid "Unable to Find Requested Software"
+msgstr "Ne eblas trovi la petitan programaron"
+
+#. TRANSLATORS: This string is used for codecs that weren't found
+#: ../src/gs-shell-extras.c:309
+#, c-format
+msgid "%s not found"
+msgstr "%s ne trovita"
+
+#. TRANSLATORS: hyperlink title
+#: ../src/gs-shell-extras.c:313
+msgid "on the website"
+msgstr "en la retejo"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:320
+#, c-format
+msgid "No applications are available that provide the file %s."
 msgstr ""
 
-#: ../src/gs-screenshot-image.c:522
-msgid "Screenshot"
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:324 ../src/gs-shell-extras.c:335
+#: ../src/gs-shell-extras.c:346
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get missing applications "
+"might be found %s."
 msgstr ""
+"Informon pri %s, kaj ankaŭ opciojn por akiri mankantajn aplikaĵojn, oni "
+"povas trovi %s."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:331 ../src/gs-shell-extras.c:353
+#, c-format
+msgid "No applications are available for %s support."
+msgstr ""
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:342
+#, c-format
+msgid "%s is not available."
+msgstr "%s ne estas disponebla."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:357
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get an application that "
+"can support this format might be found %s."
+msgstr ""
+"Informon pri %s, kaj ankaŭ opciojn por akiri ĝustan aplikaĵon por tiu ĉi "
+"dosierformo, oni povas trovi %s."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:364
+#, c-format
+msgid "No addon fonts are available for %s support."
+msgstr ""
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:368
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get additional fonts "
+"might be found %s."
+msgstr ""
+"Informon pri %s, kaj ankaŭ opciojn por akiri kromajn tiparojn, oni povas "
+"trovi %s."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:379
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a codec that can "
+"play this format might be found %s."
+msgstr ""
+"Informon pri %s, kaj ankaŭ opciojn por akiri ĝustan kodekon por tiu ĉi "
+"dosierformo, oni povas trovi %s."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:386
+#, c-format
+msgid "No Plasma resources are available for %s support."
+msgstr ""
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:390
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get additional Plasma "
+"resources might be found %s."
+msgstr ""
+"Informon pri %s, kaj ankaŭ opciojn por akiri kromajn Plasma-risurcojn, oni "
+"povas trovi %s."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:397
+#, c-format
+msgid "No printer drivers are available for %s."
+msgstr ""
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:401
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a driver that "
+"supports this printer might be found %s."
+msgstr ""
+"Informon pri %s, kaj ankaŭ opciojn por akiri ĝustan pelilon por tiu ĉi "
+"presilo, oni povas trovi %s."
+
+#: ../src/gs-shell-extras.c:447
+msgid "this website"
+msgstr "tiu ĉi retejo"
+
+#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
+#: ../src/gs-shell-extras.c:451
+#, c-format
+msgid ""
+"Unfortunately, the %s you were searching for could not be found. Please see "
+"%s for more information."
+msgid_plural ""
+"Unfortunately, the %s you were searching for could not be found. Please see "
+"%s for more information."
+msgstr[0] ""
+msgstr[1] ""
+
+#: ../src/gs-shell-extras.c:533 ../src/gs-shell-extras.c:582
+#: ../src/gs-shell-extras.c:633
+msgid "Failed to find any search results"
+msgstr ""
+
+#: ../src/gs-shell-extras.c:803
+#, c-format
+msgid "%s file format"
+msgstr ""
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-extras.ui.h:1
+msgid "Codecs page"
+msgstr "Paĝo de kodekoj"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:175 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:176 ../src/gs-shell-details.ui.h:2
 msgid "_Install"
 msgstr "_Instali"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:186
+#: ../src/gs-shell-details.c:187
 msgid "_Installing"
 msgstr "_Instalado"
 
+#. TRANSLATORS: this is a button that allows the apps to
+#. * be installed.
+#. * The ellipsis indicates that further steps are required,
+#. * e.g. enabling software sources or the like
+#: ../src/gs-shell-details.c:204
+msgid "_Install…"
+msgstr "_Instali…"
+
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:212 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:224 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "Fo_rigi"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:219
+#: ../src/gs-shell-details.c:231
 msgid "_Removing"
 msgstr "_Forigado"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:597
+#: ../src/gs-shell-details.c:578
 msgctxt "license"
 msgid "Unknown"
-msgstr "Nekonate"
+msgstr "Nekonata"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:610
+#: ../src/gs-shell-details.c:591
 msgctxt "version"
 msgid "Unknown"
-msgstr ""
+msgstr "Nekonata"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:616
+#: ../src/gs-shell-details.c:597
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Kalkulante…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:619
+#: ../src/gs-shell-details.c:600
 msgctxt "size"
 msgid "Unknown"
-msgstr "Nekonate"
+msgstr "Nekonata"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:631
+#: ../src/gs-shell-details.c:612
 msgctxt "updated"
 msgid "Never"
 msgstr "Neniam"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:646
+#: ../src/gs-shell-details.c:626
 msgctxt "menu category"
 msgid "None"
 msgstr "Neniu"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:656
+#: ../src/gs-shell-details.c:636
 msgctxt "origin"
 msgid "Unknown"
-msgstr "Nekonate"
+msgstr "Nekonata"
 
-#. TRANSLATORS: this is a prompt message, and
-#. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-shell-details.c:1118 ../src/gs-shell-installed.c:167
-#: ../src/gs-shell-search.c:150
-#, c-format
-msgid "Are you sure you want to remove %s?"
-msgstr "Ĉu vi certe volas forigi na %s?"
-
-#. TRANSLATORS: longer dialog text
-#: ../src/gs-shell-details.c:1130 ../src/gs-shell-installed.c:179
-#: ../src/gs-shell-search.c:162
-#, c-format
-msgid "%s will be removed, and you will have to install it to use it again."
-msgstr ""
+#: ../src/gs-shell-details.c:894 ../src/gs-utils.c:162
+msgid "Sorry, this did not work"
+msgstr "Pardonu, tio ne funkcias"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-details.ui.h:1
 msgid "Details page"
-msgstr ""
+msgstr "Paĝo de detaloj"
 
 #: ../src/gs-shell-details.ui.h:5
 msgid "Software Source Included"
@@ -628,8 +905,8 @@ msgstr "Programistoj"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:527
-#: ../src/gs-update-list.c:88 ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:451
+#: ../src/gs-update-list.c:89 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Aldonaĵo"
 
@@ -639,11 +916,11 @@ msgstr ""
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:517
+#: ../src/gs-shell-installed.c:441
 msgid "System Applications"
-msgstr ""
+msgstr "Aplikaĵoj de sistemo"
 
-#: ../src/gs-shell-installed.c:623
+#: ../src/gs-shell-installed.c:544
 msgid "Click on items to select them"
 msgstr "Klaki sur elementoj por elekti ilin"
 
@@ -665,29 +942,29 @@ msgid "_Remove from Folder"
 msgstr "Fo_rigi de dosierujo"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:334
+#: ../src/gs-shell-overview.c:331
 msgid "Recommended Audio Applications"
 msgstr "Rekomenditaj son-aplikaĵoj"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:339
+#: ../src/gs-shell-overview.c:336
 msgid "Recommended Games"
 msgstr "Rekomenditaj ludoj"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:344
+#: ../src/gs-shell-overview.c:341
 msgid "Recommended Graphics Applications"
 msgstr "Rekomenditaj grafik-aplikaĵoj"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:349
+#: ../src/gs-shell-overview.c:346
 msgid "Recommended Office Applications"
 msgstr "Rekomenditaj oficejo-aplikaĵoj"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-overview.ui.h:1
 msgid "Overview page"
-msgstr ""
+msgstr "Superrigarda paĝo"
 
 #: ../src/gs-shell-overview.ui.h:2
 msgid "Featured Application"
@@ -709,11 +986,11 @@ msgstr ""
 #. vim: set noexpandtab:
 #: ../src/gs-shell-search.ui.h:1
 msgid "Search page"
-msgstr ""
+msgstr "Serĉa paĝo"
 
 #: ../src/gs-shell-search.ui.h:2
 msgid "No Application Found"
-msgstr ""
+msgstr "Neniu aplikaĵo trovita"
 
 #. TRANSLATORS: Time in 24h format
 #: ../src/gs-shell-updates.c:144
@@ -772,61 +1049,61 @@ msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:195
+#: ../src/gs-shell-updates.c:192
 msgid "Downloading new updates…"
-msgstr ""
+msgstr "Elŝutante novajn ĝisdatigojn…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:199
+#: ../src/gs-shell-updates.c:196
 msgid "Looking for new updates…"
-msgstr "Ŝerĉante novajn ĝisdatigojn…"
+msgstr "Serĉante novajn ĝisdatigojn…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:253
+#: ../src/gs-shell-updates.c:251
 msgid "Setting up updates…"
-msgstr ""
+msgstr "Agordante ĝisdatigojn…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:254 ../src/gs-shell-updates.c:261
+#: ../src/gs-shell-updates.c:252 ../src/gs-shell-updates.c:258
 msgid "(This could take a while)"
-msgstr ""
+msgstr "(Ĉi tio povas esti longdaŭra)"
 
 #. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:267
+#: ../src/gs-shell-updates.c:263
 msgid "Checking for updates…"
-msgstr "Kontrolante pri ĝisdatigoj…"
+msgstr "Kontrolante ĝisdatigojn…"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:401
+#: ../src/gs-shell-updates.c:397
 #, c-format
 msgid "Last checked: %s"
 msgstr ""
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:787
+#: ../src/gs-shell-updates.c:772
 msgid "No Network"
 msgstr "Neniu reto"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:791
+#: ../src/gs-shell-updates.c:776
 msgid "Internet access is required to check for updates."
 msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:795
+#: ../src/gs-shell-updates.c:780
 msgid "Network Settings"
-msgstr ""
+msgstr "Retagordoj"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:814
+#: ../src/gs-shell-updates.c:799
 msgid "Charges may apply"
 msgstr ""
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:818
+#: ../src/gs-shell-updates.c:803
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -834,14 +1111,14 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:822
+#: ../src/gs-shell-updates.c:807
 msgid "Check Anyway"
 msgstr "Kontroli ĉiukaze"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-updates.ui.h:1
 msgid "Updates page"
-msgstr ""
+msgstr "Paĝo de ĝisdatigoj"
 
 #: ../src/gs-shell-updates.ui.h:2
 msgid "Software is up to date"
@@ -863,53 +1140,102 @@ msgstr ""
 
 #: ../src/gs-shell-updates.ui.h:6
 msgid "_Network Settings"
-msgstr ""
+msgstr "_Retagordoj"
 
-#. TRANSLATORS: this source has no apps installed from it
-#: ../src/gs-sources-dialog.c:91
+#. TRANSLATORS: This string describes a software source that
+#. has no software installed from it.
+#: ../src/gs-sources-dialog.c:96
 msgid "No software installed"
 msgstr ""
 
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:94
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:100
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
 msgstr[0] ""
 msgstr[1] ""
 
-#. TRANSLATORS: this source has some apps installed from it
-#: ../src/gs-sources-dialog.c:99
+#. TRANSLATORS: This string is used to construct the 'X add-ons
+#. installed' sentence, describing a software source.
+#: ../src/gs-sources-dialog.c:106
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
 msgstr[0] ""
 msgstr[1] ""
 
-#. TRANSLATORS: this source has some apps and addons installed from it
-#: ../src/gs-sources-dialog.c:104
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the number of applications.
+#: ../src/gs-sources-dialog.c:113
 #, c-format
-msgid "%i application and %i add-ons installed"
-msgid_plural "%i applications and %i add-ons installed"
-msgstr[0] ""
-msgstr[1] ""
+msgid "%i application"
+msgid_plural "%i applications"
+msgstr[0] "%i aplikaĵo"
+msgstr[1] "%i aplikaĵoj"
 
-#: ../src/gs-sources-dialog.c:300 ../src/gs-sources-dialog.ui.h:13
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the number of add-ons.
+#: ../src/gs-sources-dialog.c:119
+#, c-format
+#| msgid "Add-ons"
+msgid "%i add-on"
+msgid_plural "%i add-ons"
+msgstr[0] "%i aldonaĵo"
+msgstr[1] "%i aldonaĵoj"
+
+#. TRANSLATORS: This string is used to construct the 'X applications
+#. and y add-ons installed' sentence, describing a software source.
+#. The correct form here depends on the total number of
+#. applications and add-ons.
+#: ../src/gs-sources-dialog.c:126
+#, c-format
+#| msgid "%s is now installed"
+msgid "%s and %s installed"
+msgid_plural "%s and %s installed"
+msgstr[0] "%s kaj %s estas instalitaj"
+msgstr[1] "%s kaj %s estas instalitaj"
+
+#: ../src/gs-sources-dialog.c:315 ../src/gs-sources-dialog.ui.h:13
 msgid "Remove Source"
 msgstr "Forigi fonton"
 
-#: ../src/gs-sources-dialog.c:315
+#: ../src/gs-sources-dialog.c:330
 msgid "Removing…"
 msgstr "Forigante…"
+
+#. TRANSLATORS: this is the fallback text we use if we can't
+#. figure out the name of the operating system
+#: ../src/gs-sources-dialog.c:376
+msgid "the operating system"
+msgstr ""
+
+#. TRANSLATORS: This is the text displayed in the Software Sources
+#. dialog when no OS-provided software sources are enabled. %s gets
+#. replaced by the name of the actual distro, e.g. Fedora.
+#: ../src/gs-sources-dialog.c:439
+#, fuzzy, c-format
+#| msgid ""
+#| "Adding this software source will give you access to additional software "
+#| "and upgrades."
+msgid ""
+"Software sources can be downloaded from the internet. They give you access "
+"to additional software that is not provided by %s."
+msgstr ""
+"Aldono de tiu programar-fonto donos al vi aliron al kromaj programaroj kaj "
+"promociaĵoj de %s."
 
 #. vim: set noexpandtab:
 #: ../src/gs-sources-dialog.ui.h:1
 msgid "Software Sources"
-msgstr ""
+msgstr "Programaraj fontoj"
 
 #: ../src/gs-sources-dialog.ui.h:3
 msgid "No sources found."
-msgstr "Ne trovis fonton."
+msgstr "Neniu fonto trovita."
 
 #: ../src/gs-sources-dialog.ui.h:4
 msgid "Software sources give you access to additional software."
@@ -930,7 +1256,7 @@ msgstr "Instalite de tiu fonto"
 
 #: ../src/gs-sources-dialog.ui.h:8
 msgid "Source Details"
-msgstr ""
+msgstr "Detaloj de fonto"
 
 #: ../src/gs-sources-dialog.ui.h:10
 msgid "Last Checked"
@@ -951,29 +1277,29 @@ msgid "No update description available."
 msgstr ""
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:175
+#: ../src/gs-update-dialog.c:177
 msgid "Installed Updates"
 msgstr "Instalitaj ĝisdatigoj"
 
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:189
+#: ../src/gs-update-dialog.c:190
 #, c-format
 msgid "Installed on %s"
 msgstr ""
 
-#: ../src/gs-update-monitor.c:98
-msgid "Software Updates Available"
-msgstr ""
-
 #: ../src/gs-update-monitor.c:99
+msgid "Software Updates Available"
+msgstr "Programara ĝisdatigo disponeblas"
+
+#: ../src/gs-update-monitor.c:100
 msgid "Important OS and application updates are ready to be installed"
 msgstr ""
 
-#: ../src/gs-update-monitor.c:102
+#: ../src/gs-update-monitor.c:103
 msgid "View"
 msgstr "Vido"
 
-#: ../src/gs-update-monitor.c:103
+#: ../src/gs-update-monitor.c:104
 msgid "Not Now"
 msgstr "Ne nun"
 
@@ -999,15 +1325,15 @@ msgstr ""
 msgid "An important OS update failed to be installed."
 msgstr "Instalado de grava ĝisdatigo por la operaciumo malsukcesis."
 
-#: ../src/gs-update-monitor.c:165
+#: ../src/gs-update-monitor.c:164
 msgid "Review"
-msgstr ""
+msgstr "Recenzo"
+
+#: ../src/gs-update-monitor.c:166
+msgid "Show Details"
+msgstr "Montri detalojn"
 
 #: ../src/gs-update-monitor.c:167
-msgid "Show Details"
-msgstr ""
-
-#: ../src/gs-update-monitor.c:168
 msgid "OK"
 msgstr "Akcepti"
 
@@ -1034,67 +1360,91 @@ msgstr "Kvin steloj"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:135
+#: ../src/gs-utils.c:136
 #, c-format
 msgid "%s is now installed"
 msgstr "%s nun estas instalita"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:139
+#: ../src/gs-utils.c:140
 msgid "Launch"
 msgstr "Lanĉi"
 
-#: ../src/gs-utils.c:163
-msgid "Sorry, this did not work"
-msgstr "Pardonu, tio ne funkcias"
-
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:167
+#: ../src/gs-utils.c:166
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Instalado de %s malsukcesis."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:172
+#: ../src/gs-utils.c:171
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Forigo de %s malsukcesis."
 
-#: ../src/plugins/gs-plugin-appstream.c:225
+#. TRANSLATORS: window title
+#: ../src/gs-utils.c:244
+msgid "Install Third-Party Software?"
+msgstr "Ĉu instali programaron de ekstera liveranto?"
+
+#. TRANSLATORS: window title
+#: ../src/gs-utils.c:248
+msgid "Enable Third-Party Software Source?"
+msgstr "Ĉu enŝalti fonton de ekstera liveranto?"
+
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. Application name, e.g. "Firefox"
+#. * 2. Software source name, e.g. fedora-optional
+#.
+#: ../src/gs-utils.c:266
+#, c-format
+msgid ""
+"%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
+"source_software\">free and open source software</a>, and is provided by “%s”."
+msgstr ""
+
+#. TRANSLATORS: the replacements are as follows:
+#. * 1. Application name, e.g. "Firefox"
+#. * 2. Software source name, e.g. fedora-optional
+#: ../src/gs-utils.c:276
+#, c-format
+msgid "%s is provided by “%s”."
+msgstr ""
+
+#. TRANSLATORS: a software source is a repo
+#: ../src/gs-utils.c:286
+msgid "This software source must be enabled to continue installation."
+msgstr ""
+
+#. TRANSLATORS: Laws are geographical, urgh...
+#: ../src/gs-utils.c:296
+#, c-format
+msgid "It may be illegal to install or use %s in some countries."
+msgstr ""
+
+#. TRANSLATORS: Laws are geographical, urgh...
+#: ../src/gs-utils.c:302
+msgid "It may be illegal to install or use this codec in some countries."
+msgstr ""
+
+#. TRANSLATORS: this is button text to not ask about non-free content again
+#: ../src/gs-utils.c:309
+msgid "Don't Warn Again"
+msgstr "Ne averti denove"
+
+#. TRANSLATORS: button text
+#: ../src/gs-utils.c:318
+msgid "Enable and Install"
+msgstr "Enŝalti kaj instali"
+
+#: ../src/plugins/gs-plugin-appstream.c:219
 #, c-format
 msgid "No AppStream data found"
 msgstr ""
 
-#. TRANSLATORS: This is how we join the licences and can
-#. * be considered a "Conjunctive AND Operator" according
-#. * to the SPDX specification. For example:
-#. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#: ../src/plugins/gs-plugin-appstream.c:503
-msgid " and "
-msgstr " kaj "
-
-#. TRANSLATORS: This is how we join the licences and can
-#. * be considered a "Disjunctive OR Operator" according
-#. * to the SPDX specification. For example:
-#. * "LGPL-2.1 or MIT"
-#: ../src/plugins/gs-plugin-appstream.c:511
-msgid " or "
-msgstr " aŭ "
-
-#. TRANSLATORS: this is when a webapp has no comment
-#: ../src/plugins/gs-plugin-epiphany.c:143
-#, c-format
-msgid "Web app"
-msgstr ""
-
-#. TRANSLATORS: this is the licence of the web-app
-#: ../src/plugins/gs-plugin-epiphany.c:151
-msgid "Proprietary"
-msgstr "Mallibere"
-
-#: ../src/plugins/gs-plugin-hardcoded-categories.c:160
+#: ../src/plugins/gs-plugin-hardcoded-categories.c:161
 msgid "Featured"
-msgstr ""
+msgstr "Elstaranta"
 
 #. TRANSLATORS: this is the menu spec main category for Audio
 #: ../src/plugins/menu-spec-common.c:30
@@ -1114,12 +1464,12 @@ msgstr "Datumbazoj"
 #: ../src/plugins/menu-spec-common.c:33
 msgctxt "Menu subcategory of Audio"
 msgid "Disc Burning"
-msgstr ""
+msgstr "Diska registrado"
 
 #: ../src/plugins/menu-spec-common.c:34
 msgctxt "Menu subcategory of Audio"
 msgid "Ham Radio"
-msgstr ""
+msgstr "Amatora radio"
 
 #: ../src/plugins/menu-spec-common.c:35
 msgctxt "Menu subcategory of Audio"
@@ -1129,7 +1479,7 @@ msgstr "MIDI"
 #: ../src/plugins/menu-spec-common.c:36
 msgctxt "Menu subcategory of Audio"
 msgid "Mixer"
-msgstr ""
+msgstr "Miksilo"
 
 #: ../src/plugins/menu-spec-common.c:37
 msgctxt "Menu subcategory of Audio"
@@ -1149,12 +1499,12 @@ msgstr "Registriloj"
 #: ../src/plugins/menu-spec-common.c:40
 msgctxt "Menu subcategory of Audio"
 msgid "Sequencers"
-msgstr ""
+msgstr "Sekvenciloj"
 
 #: ../src/plugins/menu-spec-common.c:41
 msgctxt "Menu subcategory of Audio"
 msgid "Tuners"
-msgstr ""
+msgstr "Agordiloj"
 
 #. TRANSLATORS: this is the menu spec main category for Development
 #: ../src/plugins/menu-spec-common.c:43
@@ -1179,27 +1529,27 @@ msgstr "Sencimigiloj"
 #: ../src/plugins/menu-spec-common.c:47
 msgctxt "Menu subcategory of Development Tools"
 msgid "GUI Designers"
-msgstr ""
+msgstr "GUI-desegniloj"
 
 #: ../src/plugins/menu-spec-common.c:48
 msgctxt "Menu subcategory of Development Tools"
 msgid "IDE"
-msgstr ""
+msgstr "Programada ĉirkaŭaĵo"
 
 #: ../src/plugins/menu-spec-common.c:49
 msgctxt "Menu subcategory of Development Tools"
 msgid "Profiling"
-msgstr ""
+msgstr "Profilado"
 
 #: ../src/plugins/menu-spec-common.c:50
 msgctxt "Menu subcategory of Development Tools"
 msgid "Project Management"
-msgstr ""
+msgstr "Projekto-administrado"
 
 #: ../src/plugins/menu-spec-common.c:51
 msgctxt "Menu subcategory of Development Tools"
 msgid "Revision Control"
-msgstr ""
+msgstr "Revizio-kontrolo"
 
 #: ../src/plugins/menu-spec-common.c:52
 msgctxt "Menu subcategory of Development Tools"
@@ -1209,7 +1559,7 @@ msgstr "Traduko"
 #: ../src/plugins/menu-spec-common.c:53
 msgctxt "Menu subcategory of Development Tools"
 msgid "Web Development"
-msgstr ""
+msgstr "Reta disvolvo"
 
 #. TRANSLATORS: this is the menu spec main category for Education
 #: ../src/plugins/menu-spec-common.c:55
@@ -1289,7 +1639,7 @@ msgstr "Geologio"
 #: ../src/plugins/menu-spec-common.c:70
 msgctxt "Menu subcategory of Education"
 msgid "Geoscience"
-msgstr ""
+msgstr "Terscienco"
 
 #: ../src/plugins/menu-spec-common.c:71
 msgctxt "Menu subcategory of Education"
@@ -1299,12 +1649,12 @@ msgstr "Historio"
 #: ../src/plugins/menu-spec-common.c:72
 msgctxt "Menu subcategory of Education"
 msgid "Humanities"
-msgstr ""
+msgstr "Homsciencoj"
 
 #: ../src/plugins/menu-spec-common.c:73
 msgctxt "Menu subcategory of Education"
 msgid "Image Processing"
-msgstr ""
+msgstr "Bilda prilaborado"
 
 #: ../src/plugins/menu-spec-common.c:74
 msgctxt "Menu subcategory of Education"
@@ -1329,7 +1679,7 @@ msgstr "Matematiko"
 #: ../src/plugins/menu-spec-common.c:78
 msgctxt "Menu subcategory of Education"
 msgid "Medical"
-msgstr ""
+msgstr "Medicina"
 
 #: ../src/plugins/menu-spec-common.c:79
 msgctxt "Menu subcategory of Education"
@@ -1339,32 +1689,32 @@ msgstr "Muziko"
 #: ../src/plugins/menu-spec-common.c:80
 msgctxt "Menu subcategory of Education"
 msgid "Numerical Analysis"
-msgstr ""
+msgstr "Nombra analitiko"
 
 #: ../src/plugins/menu-spec-common.c:81
 msgctxt "Menu subcategory of Education"
 msgid "Parallel Computing"
-msgstr ""
+msgstr "Paralela komputado"
 
 #: ../src/plugins/menu-spec-common.c:82
 msgctxt "Menu subcategory of Education"
 msgid "Physics"
-msgstr ""
+msgstr "Fiziko"
 
 #: ../src/plugins/menu-spec-common.c:83
 msgctxt "Menu subcategory of Education"
 msgid "Robotics"
-msgstr ""
+msgstr "Robotiko"
 
 #: ../src/plugins/menu-spec-common.c:84
 msgctxt "Menu subcategory of Education"
 msgid "Spirituality"
-msgstr ""
+msgstr "Spiriteco"
 
 #: ../src/plugins/menu-spec-common.c:85
 msgctxt "Menu subcategory of Education"
 msgid "Sports"
-msgstr "Sporto"
+msgstr "Sportoj"
 
 #. TRANSLATORS: this is the menu spec main category for Games
 #: ../src/plugins/menu-spec-common.c:87
@@ -1382,9 +1732,10 @@ msgid "Adventure"
 msgstr "Aventuro"
 
 #: ../src/plugins/menu-spec-common.c:90
+#, fuzzy
 msgctxt "Menu subcategory of Games"
 msgid "Arcade"
-msgstr ""
+msgstr "Puzlo"
 
 #: ../src/plugins/menu-spec-common.c:91
 msgctxt "Menu subcategory of Games"
@@ -1394,12 +1745,12 @@ msgstr "Blokoj"
 #: ../src/plugins/menu-spec-common.c:92
 msgctxt "Menu subcategory of Games"
 msgid "Board"
-msgstr ""
+msgstr "Tabulo"
 
 #: ../src/plugins/menu-spec-common.c:93
 msgctxt "Menu subcategory of Games"
 msgid "Card"
-msgstr ""
+msgstr "Karto"
 
 #: ../src/plugins/menu-spec-common.c:94
 msgctxt "Menu subcategory of Games"
@@ -1419,17 +1770,17 @@ msgstr "Logiko"
 #: ../src/plugins/menu-spec-common.c:97
 msgctxt "Menu subcategory of Games"
 msgid "Role Playing"
-msgstr ""
+msgstr "Rolludo"
 
 #: ../src/plugins/menu-spec-common.c:98
 msgctxt "Menu subcategory of Games"
 msgid "Shooter"
-msgstr ""
+msgstr "Pafado"
 
 #: ../src/plugins/menu-spec-common.c:99
 msgctxt "Menu subcategory of Games"
 msgid "Simulation"
-msgstr ""
+msgstr "Simulado"
 
 #: ../src/plugins/menu-spec-common.c:100
 msgctxt "Menu subcategory of Games"
@@ -1444,17 +1795,17 @@ msgstr "Strategio"
 #. TRANSLATORS: this is the menu spec main category for Graphics
 #: ../src/plugins/menu-spec-common.c:103
 msgid "Graphics"
-msgstr "Grafikaĵoj"
+msgstr "Grafiko"
 
 #: ../src/plugins/menu-spec-common.c:104
 msgctxt "Menu subcategory of Graphics"
 msgid "2D Graphics"
-msgstr "2D-grafikaĵoj"
+msgstr "2D-grafiko"
 
 #: ../src/plugins/menu-spec-common.c:105
 msgctxt "Menu subcategory of Graphics"
 msgid "3D Graphics"
-msgstr "3D-grafikaĵoj"
+msgstr "3D-grafiko"
 
 #: ../src/plugins/menu-spec-common.c:106
 msgctxt "Menu subcategory of Graphics"
@@ -1464,17 +1815,17 @@ msgstr ""
 #: ../src/plugins/menu-spec-common.c:107
 msgctxt "Menu subcategory of Graphics"
 msgid "Photography"
-msgstr ""
+msgstr "Fotografio"
 
 #: ../src/plugins/menu-spec-common.c:108
 msgctxt "Menu subcategory of Graphics"
 msgid "Publishing"
-msgstr ""
+msgstr "Eldonado"
 
 #: ../src/plugins/menu-spec-common.c:109
 msgctxt "Menu subcategory of Graphics"
 msgid "Raster Graphics"
-msgstr "Rekomenditaj grafikaĵoj"
+msgstr "Rastruma grafiko"
 
 #: ../src/plugins/menu-spec-common.c:110
 msgctxt "Menu subcategory of Graphics"
@@ -1484,12 +1835,12 @@ msgstr "Skanado"
 #: ../src/plugins/menu-spec-common.c:111
 msgctxt "Menu subcategory of Graphics"
 msgid "Vector Graphics"
-msgstr ""
+msgstr "Vektora grafiko"
 
 #: ../src/plugins/menu-spec-common.c:112
 msgctxt "Menu subcategory of Graphics"
 msgid "Viewer"
-msgstr ""
+msgstr "Vidigilo"
 
 #. TRANSLATORS: this is the menu spec main category for Network
 #: ../src/plugins/menu-spec-common.c:114
@@ -1502,9 +1853,10 @@ msgid "Chat"
 msgstr "Babilejo"
 
 #: ../src/plugins/menu-spec-common.c:116
+#, fuzzy
 msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
-msgstr ""
+msgstr "Telefonkonversacio"
 
 #: ../src/plugins/menu-spec-common.c:117
 msgctxt "Menu subcategory of Internet"
@@ -1514,7 +1866,7 @@ msgstr "Retpoŝto"
 #: ../src/plugins/menu-spec-common.c:118
 msgctxt "Menu subcategory of Internet"
 msgid "Feed"
-msgstr ""
+msgstr "Abonrilato"
 
 #: ../src/plugins/menu-spec-common.c:119
 msgctxt "Menu subcategory of Internet"
@@ -1524,7 +1876,7 @@ msgstr "Dosiertransigo"
 #: ../src/plugins/menu-spec-common.c:120
 msgctxt "Menu subcategory of Internet"
 msgid "Ham Radio"
-msgstr ""
+msgstr "Amatora radio"
 
 #: ../src/plugins/menu-spec-common.c:121
 msgctxt "Menu subcategory of Internet"
@@ -1534,7 +1886,7 @@ msgstr "Tujmesaĝado"
 #: ../src/plugins/menu-spec-common.c:122
 msgctxt "Menu subcategory of Internet"
 msgid "IRC Clients"
-msgstr ""
+msgstr "IRC-klientoj"
 
 #: ../src/plugins/menu-spec-common.c:123
 msgctxt "Menu subcategory of Internet"
@@ -1559,12 +1911,12 @@ msgstr "Defora aliro"
 #: ../src/plugins/menu-spec-common.c:127
 msgctxt "Menu subcategory of Internet"
 msgid "Telephony"
-msgstr "Telefonado"
+msgstr "Telefonio"
 
 #: ../src/plugins/menu-spec-common.c:128
 msgctxt "Menu subcategory of Internet"
 msgid "Video Conference"
-msgstr ""
+msgstr "Video-konferenco"
 
 #: ../src/plugins/menu-spec-common.c:129
 msgctxt "Menu subcategory of Internet"
@@ -1574,7 +1926,7 @@ msgstr "Retumilo"
 #: ../src/plugins/menu-spec-common.c:130
 msgctxt "Menu subcategory of Internet"
 msgid "Web Development"
-msgstr ""
+msgstr "Reta disvolvo"
 
 #. TRANSLATORS: this is the menu spec main category for Office
 #: ../src/plugins/menu-spec-common.c:132
@@ -1619,17 +1971,17 @@ msgstr "Financo"
 #: ../src/plugins/menu-spec-common.c:140
 msgctxt "Menu subcategory of Office"
 msgid "Flow Chart"
-msgstr ""
+msgstr "Fludiagramo"
 
 #: ../src/plugins/menu-spec-common.c:141
 msgctxt "Menu subcategory of Office"
 msgid "PDA"
-msgstr ""
+msgstr "Poŝkomputilo"
 
 #: ../src/plugins/menu-spec-common.c:142
 msgctxt "Menu subcategory of Office"
 msgid "Photography"
-msgstr ""
+msgstr "Fotografio"
 
 #: ../src/plugins/menu-spec-common.c:143
 msgctxt "Menu subcategory of Office"
@@ -1639,27 +1991,27 @@ msgstr "Prezentado"
 #: ../src/plugins/menu-spec-common.c:144
 msgctxt "Menu subcategory of Office"
 msgid "Project Management"
-msgstr ""
+msgstr "Projekto-administrado"
 
 #: ../src/plugins/menu-spec-common.c:145
 msgctxt "Menu subcategory of Office"
 msgid "Publishing"
-msgstr ""
+msgstr "Eldonado"
 
 #: ../src/plugins/menu-spec-common.c:146
 msgctxt "Menu subcategory of Office"
 msgid "Spreadsheet"
-msgstr "Kalkultabelo"
+msgstr "Tabelkalkulilo"
 
 #: ../src/plugins/menu-spec-common.c:147
 msgctxt "Menu subcategory of Office"
 msgid "Viewer"
-msgstr ""
+msgstr "Vidigilo"
 
 #: ../src/plugins/menu-spec-common.c:148
 msgctxt "Menu subcategory of Office"
 msgid "Word Processor"
-msgstr ""
+msgstr "Dokumentoredaktilo"
 
 #. TRANSLATORS: this is the menu spec main category for Science
 #: ../src/plugins/menu-spec-common.c:150
@@ -1739,7 +2091,7 @@ msgstr "Geologio"
 #: ../src/plugins/menu-spec-common.c:165
 msgctxt "Menu subcategory of Science"
 msgid "Geoscience"
-msgstr ""
+msgstr "Terscienco"
 
 #: ../src/plugins/menu-spec-common.c:166
 msgctxt "Menu subcategory of Science"
@@ -1749,12 +2101,12 @@ msgstr "Historio"
 #: ../src/plugins/menu-spec-common.c:167
 msgctxt "Menu subcategory of Science"
 msgid "Humanities"
-msgstr ""
+msgstr "Homsciencoj"
 
 #: ../src/plugins/menu-spec-common.c:168
 msgctxt "Menu subcategory of Science"
 msgid "Image Processing"
-msgstr ""
+msgstr "Bilda prilaborado"
 
 #: ../src/plugins/menu-spec-common.c:169
 msgctxt "Menu subcategory of Science"
@@ -1779,37 +2131,37 @@ msgstr "Matematiko"
 #: ../src/plugins/menu-spec-common.c:173
 msgctxt "Menu subcategory of Science"
 msgid "Medical"
-msgstr ""
+msgstr "Medicina"
 
 #: ../src/plugins/menu-spec-common.c:174
 msgctxt "Menu subcategory of Science"
 msgid "Numerical Analysis"
-msgstr ""
+msgstr "Nombra analitiko"
 
 #: ../src/plugins/menu-spec-common.c:175
 msgctxt "Menu subcategory of Science"
 msgid "Parallel Computing"
-msgstr ""
+msgstr "Paralela komputado"
 
 #: ../src/plugins/menu-spec-common.c:176
 msgctxt "Menu subcategory of Science"
 msgid "Physics"
-msgstr ""
+msgstr "Fiziko"
 
 #: ../src/plugins/menu-spec-common.c:177
 msgctxt "Menu subcategory of Science"
 msgid "Robotics"
-msgstr ""
+msgstr "Robotiko"
 
 #: ../src/plugins/menu-spec-common.c:178
 msgctxt "Menu subcategory of Science"
 msgid "Spirituality"
-msgstr ""
+msgstr "Spiriteco"
 
 #: ../src/plugins/menu-spec-common.c:179
 msgctxt "Menu subcategory of Science"
 msgid "Sports"
-msgstr "Sporto"
+msgstr "Sportoj"
 
 #. TRANSLATORS: this is the menu spec main category for System
 #: ../src/plugins/menu-spec-common.c:181
@@ -1834,7 +2186,7 @@ msgstr "Dosiersistemo"
 #: ../src/plugins/menu-spec-common.c:185
 msgctxt "Menu subcategory of System"
 msgid "File Tools"
-msgstr ""
+msgstr "Iloj por dosieroj"
 
 #: ../src/plugins/menu-spec-common.c:186
 msgctxt "Menu subcategory of System"
@@ -1849,7 +2201,7 @@ msgstr "Sekureco"
 #: ../src/plugins/menu-spec-common.c:188
 msgctxt "Menu subcategory of System"
 msgid "Terminal Emulator"
-msgstr ""
+msgstr "Terminalimitilo"
 
 #. TRANSLATORS: this is the menu spec main category for Utility
 #: ../src/plugins/menu-spec-common.c:190
@@ -1884,7 +2236,7 @@ msgstr "Densigo"
 #: ../src/plugins/menu-spec-common.c:196
 msgctxt "Menu subcategory of Utilities"
 msgid "File Tools"
-msgstr ""
+msgstr "Iloj por dosieroj"
 
 #: ../src/plugins/menu-spec-common.c:197
 msgctxt "Menu subcategory of Utilities"
@@ -1894,12 +2246,12 @@ msgstr "Mapoj"
 #: ../src/plugins/menu-spec-common.c:198
 msgctxt "Menu subcategory of Utilities"
 msgid "Spirituality"
-msgstr ""
+msgstr "Spiriteco"
 
 #: ../src/plugins/menu-spec-common.c:199
 msgctxt "Menu subcategory of Utilities"
 msgid "Telephony Tools"
-msgstr ""
+msgstr "Telefoniaj iloj"
 
 #: ../src/plugins/menu-spec-common.c:200
 msgctxt "Menu subcategory of Utilities"
@@ -1924,7 +2276,7 @@ msgstr "Datumbazo"
 #: ../src/plugins/menu-spec-common.c:205
 msgctxt "Menu subcategory of Video"
 msgid "Disc Burning"
-msgstr ""
+msgstr "Diska registrado"
 
 #: ../src/plugins/menu-spec-common.c:206
 msgctxt "Menu subcategory of Video"
@@ -1939,7 +2291,7 @@ msgstr "Registriloj"
 #: ../src/plugins/menu-spec-common.c:208
 msgctxt "Menu subcategory of Video"
 msgid "TV"
-msgstr ""
+msgstr "Televido"
 
 #: ../src/plugins/menu-spec-common.c:211
 msgctxt "Menu subcategory of Add-ons"
@@ -1959,7 +2311,7 @@ msgstr "Enigaj fontoj"
 #: ../src/plugins/menu-spec-common.c:214
 msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
-msgstr ""
+msgstr "Lingvo-pakaĵoj"
 
 #: ../src/menus.ui.h:1
 msgid "_Software Sources"
@@ -1972,3 +2324,6 @@ msgstr "_Pri"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "Ĉ_esi"
+
+#~ msgid "Proprietary"
+#~ msgstr "Mallibere"
