@@ -100,8 +100,8 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	body = _("Important OS and application updates are ready to be installed");
 	n = g_notification_new (title);
 	g_notification_set_body (n, body);
-	g_notification_add_button_with_target (n, _("View"), "app.set-mode", "s", "updates");
 	g_notification_add_button (n, _("Not Now"), "app.nop");
+	g_notification_add_button_with_target (n, _("View"), "app.set-mode", "s", "updates");
 	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
 	g_application_send_notification (monitor->application, "updates-available", n);
 }
