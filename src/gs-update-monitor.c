@@ -160,10 +160,13 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 	g_notification_set_body (notification, message);
 	icon = g_themed_icon_new ("gnome-software-symbolic");
 	g_notification_set_icon (notification, icon);
-	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS)
+	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS) {
 		g_notification_add_button_with_target (notification, _("Review"), "app.set-mode", "s", "updated");
-	else
+		g_notification_set_default_action_and_target (notification, "app.set-mode", "s", "updated");
+	} else {
 		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
+		g_notification_set_default_action (notification, "app.show-offline-update-error");
+	}
 	g_notification_add_button (notification, _("OK"), "app.clear-offline-updates");
 
 	g_application_send_notification (monitor->application, "offline-updates", notification);
