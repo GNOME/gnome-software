@@ -828,6 +828,12 @@ gs_app_get_pixbuf (GsApp *app)
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);
 
+	} else if (app->priv->pixbuf == NULL && gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
+		app->priv->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		                                              "application-x-addon", 64,
+		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
+		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
+		                                              NULL);
 	} else if (app->priv->pixbuf == NULL && gs_app_get_kind (app) == GS_APP_KIND_MISSING) {
 		app->priv->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
 		                                              "dialog-question-symbolic", 16,
