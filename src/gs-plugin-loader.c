@@ -66,6 +66,34 @@ enum {
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
+/* async state */
+typedef struct {
+	const gchar			*function_name;
+	GList				*list;
+	GsPluginRefineFlags		 flags;
+	gchar				*value;
+	gchar				*filename;
+	guint				 cache_age;
+	GsCategory			*category;
+	GsApp				*app;
+	AsAppState			 state_success;
+	AsAppState			 state_failure;
+} GsPluginLoaderAsyncState;
+
+static void
+gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
+{
+	if (state->category != NULL)
+		g_object_unref (state->category);
+	if (state->app != NULL)
+		g_object_unref (state->app);
+
+	g_free (state->filename);
+	g_free (state->value);
+	gs_plugin_list_free (state->list);
+	g_slice_free (GsPluginLoaderAsyncState, state);
+}
+
 /**
  * gs_plugin_loader_error_quark:
  * Return value: Our personal error quark.
@@ -719,38 +747,6 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 		return FALSE;
 	}
 	return TRUE;
-}
-
-/******************************************************************************/
-
-/* async state */
-typedef struct {
-	const gchar			*function_name;
-	GList				*list;
-	GsPluginRefineFlags		 flags;
-	gchar				*value;
-	gchar				*filename;
-	guint				 cache_age;
-	GsCategory			*category;
-	GsApp				*app;
-	AsAppState			 state_success;
-	AsAppState			 state_failure;
-} GsPluginLoaderAsyncState;
-
-/******************************************************************************/
-
-static void
-gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
-{
-	if (state->category != NULL)
-		g_object_unref (state->category);
-	if (state->app != NULL)
-		g_object_unref (state->app);
-
-	g_free (state->filename);
-	g_free (state->value);
-	gs_plugin_list_free (state->list);
-	g_slice_free (GsPluginLoaderAsyncState, state);
 }
 
 /******************************************************************************/
