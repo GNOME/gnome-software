@@ -686,7 +686,9 @@ gs_shell_extras_load (GsShellExtras *shell_extras, GPtrArray *array_search_data)
 			gs_plugin_loader_search_files_async (priv->plugin_loader,
 			                                     search_data->search_filename,
 			                                     GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
+			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA,
 			                                     priv->search_cancellable,
 			                                     search_files_cb,
 			                                     search_data);
@@ -695,7 +697,9 @@ gs_shell_extras_load (GsShellExtras *shell_extras, GPtrArray *array_search_data)
 			gs_plugin_loader_filename_to_app_async (priv->plugin_loader,
 			                                        search_data->package_filename,
 			                                        GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-			                                        GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+			                                        GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+			                                        GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
+			                                        GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA,
 			                                        priv->search_cancellable,
 			                                        filename_to_app_cb,
 			                                        search_data);
@@ -708,7 +712,9 @@ gs_shell_extras_load (GsShellExtras *shell_extras, GPtrArray *array_search_data)
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
+			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA,
 			                                             priv->search_cancellable,
 			                                             get_search_what_provides_cb,
 			                                             search_data);
