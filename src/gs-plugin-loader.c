@@ -1636,7 +1636,8 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
+	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA) == 0) &&
+	    g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
 		gs_plugin_list_filter (&state->list,
 				       gs_plugin_loader_get_app_has_appdata,
 				       plugin_loader);
@@ -1803,7 +1804,8 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
+	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA) == 0) &&
+	    g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
 		gs_plugin_list_filter (&state->list,
 				       gs_plugin_loader_get_app_has_appdata,
 				       plugin_loader);
@@ -1970,7 +1972,8 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
+	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA) == 0) &&
+	    g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
 		gs_plugin_list_filter (&state->list,
 				       gs_plugin_loader_get_app_has_appdata,
 				       plugin_loader);
