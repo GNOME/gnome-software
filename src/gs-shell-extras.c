@@ -918,7 +918,7 @@ gs_shell_extras_search_printer_drivers (GsShellExtras *shell_extras, gchar **dev
 		tag = g_strconcat (mfg, ";", mdl, ";", NULL);
 
 		search_data = g_slice_new0 (SearchData);
-		search_data->title = g_strdup (tag);
+		search_data->title = g_strdup_printf ("%s %s", mfg, mdl);
 		search_data->search = g_ascii_strdown (tag, -1);
 
 		/* Replace spaces with underscores */
