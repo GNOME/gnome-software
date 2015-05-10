@@ -632,6 +632,8 @@ gs_plugin_loader_get_app_str (GsApp *app)
 static gboolean
 gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 {
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) user_data;
+
 	/* don't show unknown state */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
 		g_debug ("app invalid as state unknown %s",
@@ -662,8 +664,9 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show unconverted packages in the application view */
-	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE ||
-	    gs_app_get_kind (app) == GS_APP_KIND_CORE) {
+	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) == 0) &&
+	    (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE ||
+	     gs_app_get_kind (app) == GS_APP_KIND_CORE)) {
 //		g_debug ("app invalid as only a %s: %s",
 //			 gs_app_kind_to_string (gs_app_get_kind (app)),
 //			 gs_plugin_loader_get_app_str (app));
@@ -997,7 +1000,7 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 
 	/* remove any packages that are not proper applications or
 	 * OS updates */
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
@@ -1198,7 +1201,7 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
 	state->list = g_list_concat (state->list, g_list_copy_deep (plugin_loader->priv->queued_installs, (GCopyFunc)g_object_ref, NULL));
 
 	/* filter package list */
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
@@ -1302,7 +1305,7 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 	}
 
 	/* filter package list */
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
@@ -1412,7 +1415,7 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
 	if (g_getenv ("GNOME_SOFTWARE_FEATURED") != NULL) {
 		gs_plugin_list_filter (&state->list, gs_plugin_loader_featured_debug, NULL);
 	} else {
-		gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+		gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 		gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 		gs_plugin_list_randomize (&state->list);
 	}
@@ -1630,7 +1633,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
@@ -1796,7 +1799,7 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
@@ -1963,7 +1966,7 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
@@ -2251,7 +2254,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_system, NULL);
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
