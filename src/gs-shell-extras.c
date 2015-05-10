@@ -915,17 +915,16 @@ gs_shell_extras_search_printer_drivers (GsShellExtras *shell_extras, gchar **dev
 			continue;
 		}
 
-		tag = g_strconcat (mfg, ";", mdl, ";", NULL);
+		tag = g_strdup_printf ("%s;%s;", mfg, mdl);
+
+		/* Replace spaces with underscores */
+		for (p = tag; *p != '\0'; p++)
+			if (*p == ' ')
+				*p = '_';
 
 		search_data = g_slice_new0 (SearchData);
 		search_data->title = g_strdup_printf ("%s %s", mfg, mdl);
 		search_data->search = g_ascii_strdown (tag, -1);
-
-		/* Replace spaces with underscores */
-		for (p = search_data->search; *p != '\0'; p++)
-			if (*p == ' ')
-				*p = '_';
-
 		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_HARDWARE);
 		search_data->shell_extras = g_object_ref (shell_extras);
 		g_ptr_array_add (array_search_data, search_data);
