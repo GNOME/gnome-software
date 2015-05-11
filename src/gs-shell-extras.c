@@ -676,6 +676,9 @@ gs_shell_extras_load (GsShellExtras *shell_extras, GPtrArray *array_search_data)
 	/* remove old entries */
 	gs_container_remove_all (GTK_CONTAINER (priv->list_box_results));
 
+	/* set state as loading */
+	priv->state = GS_SHELL_EXTRAS_STATE_LOADING;
+
 	/* start new searches, separate one for each codec */
 	for (i = 0; i < priv->array_search_data->len; i++) {
 		SearchData *search_data;
