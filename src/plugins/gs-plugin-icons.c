@@ -177,7 +177,7 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 		return TRUE;
 
 	/* create runtime dir and download */
-	if (!gs_mkdir_parent (as_icon_get_prefix (ic), error))
+	if (!gs_mkdir_parent (as_icon_get_filename (ic), error))
 		return FALSE;
 	if (!gs_plugin_icons_download (plugin,
 				       as_icon_get_url (ic),
