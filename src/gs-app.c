@@ -1818,7 +1818,12 @@ gs_app_get_kudos (GsApp *app)
 guint
 gs_app_get_kudos_weight (GsApp *app)
 {
-	guint32 tmp = APP_PRIV (app)->kudos;
+	GsAppPrivate *priv = APP_PRIV (app);
+	guint32 tmp;
+
+	g_return_val_if_fail (GS_IS_APP (app), 0);
+
+	tmp = priv->kudos;
 	tmp = tmp - ((tmp >> 1) & 0x55555555);
 	tmp = (tmp & 0x33333333) + ((tmp >> 2) & 0x33333333);
 	return (((tmp + (tmp >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
@@ -1875,6 +1880,9 @@ gboolean
 gs_app_get_to_be_installed (GsApp *app)
 {
 	GsAppPrivate *priv = APP_PRIV (app);
+
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
 	return priv->to_be_installed;
 }
 
@@ -1885,6 +1893,9 @@ void
 gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
 {
 	GsAppPrivate *priv = APP_PRIV (app);
+
+	g_return_if_fail (GS_IS_APP (app));
+
 	priv->to_be_installed = to_be_installed;
 }
 
@@ -1970,6 +1981,9 @@ void
 gs_app_set_search_sort_key (GsApp *app, guint match_value)
 {
 	gchar md_value[4];
+
+	g_return_if_fail (GS_IS_APP (app));
+
 	g_snprintf (md_value, 4, "%03i", match_value);
 	gs_app_set_metadata (app, "SearchMatch", md_value);
 }
@@ -1980,6 +1994,7 @@ gs_app_set_search_sort_key (GsApp *app, guint match_value)
 const gchar *
 gs_app_get_search_sort_key (GsApp *app)
 {
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	return gs_app_get_metadata_item (app, "SearchMatch");
 }
 
