@@ -437,18 +437,6 @@ launch_activated (GSimpleAction *action,
 }
 
 static void
-clear_offline_updates (GSimpleAction *action,
-		       GVariant      *parameter,
-		       gpointer       data)
-{
-	_cleanup_error_free_ GError *error = NULL;
-	if (!pk_offline_clear_results (NULL, &error)) {
-		g_warning ("Failure clearing offline update message: %s",
-			   error->message);
-	}
-}
-
-static void
 show_offline_updates_error (GSimpleAction *action,
 			    GVariant      *parameter,
 			    gpointer       data)
@@ -496,7 +484,6 @@ static GActionEntry actions[] = {
 	{ "details", details_activated, "(ss)", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
-	{ "clear-offline-updates", clear_offline_updates, NULL, NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
 	{ "install-resources", install_resources_activated, "(sass)", NULL, NULL },
 	{ "nop", NULL, NULL, NULL }

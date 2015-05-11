@@ -167,7 +167,6 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
 		g_notification_set_default_action (notification, "app.show-offline-update-error");
 	}
-	g_notification_add_button (notification, _("OK"), "app.clear-offline-updates");
 
 	g_application_send_notification (monitor->application, "offline-updates", notification);
 }
