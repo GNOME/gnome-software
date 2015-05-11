@@ -41,7 +41,6 @@ typedef struct GsAppPrivate GsAppPrivate;
 typedef struct
 {
 	 GObject		 parent;
-	 GsAppPrivate		*priv;
 } GsApp;
 
 typedef struct
