@@ -450,6 +450,9 @@ install_resources_activated (GSimpleAction *action,
                              gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
+#ifdef GDK_WINDOWING_X11
+	GdkDisplay *display;
+#endif
 	GList *windows;
 	GtkWindow *window = NULL;
 	const gchar *mode;
@@ -459,9 +462,13 @@ install_resources_activated (GSimpleAction *action,
 	g_variant_get (parameter, "(&s^as&s)", &mode, &resources, &startup_id);
 
 #ifdef GDK_WINDOWING_X11
-	if (startup_id != NULL && startup_id[0] != '\0')
-		gdk_x11_display_set_startup_notification_id (gdk_display_get_default (),
-		                                             startup_id);
+	display = gdk_display_get_default ();
+
+	if (GDK_IS_X11_DISPLAY (display)) {
+		if (startup_id != NULL && startup_id[0] != '\0')
+			gdk_x11_display_set_startup_notification_id (display,
+			                                             startup_id);
+	}
 #endif
 
 	windows = gtk_application_get_windows (GTK_APPLICATION (app));
