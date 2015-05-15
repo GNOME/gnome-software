@@ -367,8 +367,9 @@ gs_shell_details_refresh_screenshots (GsShellDetails *shell_details)
 							  g_get_user_cache_dir ());
 			gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 			gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
-						      G_MAXUINT,
-						      G_MAXUINT);
+						      640,
+						      48);
+			gs_screenshot_image_set_use_desktop_background (GS_SCREENSHOT_IMAGE (ssimg), FALSE);
 			gs_screenshot_image_load_async (GS_SCREENSHOT_IMAGE (ssimg), NULL);
 			gtk_box_pack_start (GTK_BOX (priv->box_details_screenshot_main), ssimg, FALSE, FALSE, 0);
 			gtk_widget_set_visible (ssimg, TRUE);
