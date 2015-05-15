@@ -62,6 +62,9 @@ void		 gs_screenshot_image_set_cachedir	(GsScreenshotImage	*ssimg,
 void		 gs_screenshot_image_set_size		(GsScreenshotImage	*ssimg,
 							 guint			 width,
 							 guint			 height);
+void		 gs_screenshot_image_set_use_desktop_background
+							(GsScreenshotImage	*ssimg,
+							 gboolean		 use_desktop_background);
 void		 gs_screenshot_image_load_async		(GsScreenshotImage	*ssimg,
 							 GCancellable		*cancellable);
 
