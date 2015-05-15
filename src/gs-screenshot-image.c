@@ -45,6 +45,7 @@ struct _GsScreenshotImagePrivate
 	gchar		*cachedir;
 	gchar		*filename;
 	const gchar	*current_image;
+	gboolean	 use_desktop_background;
 	guint		 width;
 	guint		 height;
 	gint		 scale;
@@ -113,13 +114,17 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
  * gs_screenshot_image_use_desktop_background:
  **/
 static gboolean
-gs_screenshot_image_use_desktop_background (GdkPixbuf *pixbuf)
+gs_screenshot_image_use_desktop_background (GsScreenshotImage *ssimg, GdkPixbuf *pixbuf)
 {
+	GsScreenshotImagePrivate *priv = gs_screenshot_image_get_instance_private (ssimg);
 	AsImage *im;
 	gboolean ret;
 
 	/* nothing to show, means no background mode */
 	if (pixbuf == NULL)
+		return FALSE;
+	/* background mode explicitly disabled */
+	if (!priv->use_desktop_background)
 		return FALSE;
 
 	/* use a temp AsImage */
@@ -152,7 +157,7 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 							    priv->height * priv->scale,
 							    FALSE, NULL);
 		if (pixbuf != NULL) {
-			if (gs_screenshot_image_use_desktop_background (pixbuf)) {
+			if (gs_screenshot_image_use_desktop_background (ssimg, pixbuf)) {
 				pixbuf_bg = gs_screenshot_image_get_desktop_pixbuf (ssimg);
 				if (pixbuf_bg == NULL) {
 					pixbuf_bg = g_object_ref (pixbuf);
@@ -331,6 +336,18 @@ gs_screenshot_image_set_size (GsScreenshotImage *ssimg,
 }
 
 /**
+ * gs_screenshot_image_set_use_desktop_background:
+ **/
+void
+gs_screenshot_image_set_use_desktop_background (GsScreenshotImage *ssimg,
+                                                gboolean use_desktop_background)
+{
+	GsScreenshotImagePrivate *priv = gs_screenshot_image_get_instance_private (ssimg);
+	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
+	priv->use_desktop_background = use_desktop_background;
+}
+
+/**
  * gs_screenshot_image_load_async:
  **/
 void
@@ -474,6 +491,7 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 	AtkObject *accessible;
 
 	ssimg->priv = gs_screenshot_image_get_instance_private (ssimg);
+	ssimg->priv->use_desktop_background = TRUE;
 
 	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
