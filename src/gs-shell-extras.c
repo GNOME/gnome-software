@@ -26,6 +26,7 @@
 #include "gs-app.h"
 #include "gs-app-row.h"
 #include "gs-cleanup.h"
+#include "gs-language.h"
 #include "gs-markdown.h"
 #include "gs-shell.h"
 #include "gs-utils.h"
@@ -61,6 +62,7 @@ struct GsShellExtrasPrivate
 	GtkSizeGroup		 *sizegroup_name;
 	GPtrArray		 *array_search_data;
 	GsShellExtrasMode	  mode;
+	GsLanguage		 *language;
 	GsVendor		 *vendor;
 	guint			  pending_search_cnt;
 
@@ -819,6 +821,45 @@ gs_shell_extras_search_mime_types (GsShellExtras *shell_extras, gchar **mime_typ
 	gs_shell_extras_load (shell_extras, array_search_data);
 }
 
+static gchar *
+font_tag_to_lang (const gchar *tag)
+{
+	if (g_str_has_prefix (tag, ":lang="))
+		return g_strdup (tag + 6);
+
+	return NULL;
+}
+
+static gchar *
+gs_shell_extras_font_tag_to_localised_name (GsShellExtras *shell_extras, const gchar *tag)
+{
+	GsShellExtrasPrivate *priv = shell_extras->priv;
+	gchar *name;
+	_cleanup_free_ gchar *lang = NULL;
+	_cleanup_free_ gchar *language = NULL;
+
+	/* use fontconfig to get the language code */
+	lang = font_tag_to_lang (tag);
+	if (lang == NULL) {
+		g_warning ("Could not parse language tag '%s'", tag);
+		return NULL;
+	}
+
+	/* convert to localisable name */
+	language = gs_language_iso639_to_language (priv->language, lang);
+	if (language == NULL) {
+		g_warning ("Could not match language code '%s' to an ISO639 language", lang);
+		return NULL;
+	}
+
+	/* get translation, or return untranslated string */
+	name = g_strdup (dgettext("iso_639", language));
+	if (name == NULL)
+		name = g_strdup (language);
+
+	return name;
+}
+
 static void
 gs_shell_extras_search_fontconfig_resources (GsShellExtras *shell_extras, gchar **resources)
 {
@@ -830,7 +871,7 @@ gs_shell_extras_search_fontconfig_resources (GsShellExtras *shell_extras, gchar 
 		SearchData *search_data;
 
 		search_data = g_slice_new0 (SearchData);
-		search_data->title = g_strdup (resources[i]); // XXX: Parse
+		search_data->title = gs_shell_extras_font_tag_to_localised_name (shell_extras, resources[i]);
 		search_data->search = g_strdup (resources[i]);
 		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_FONT);
 		search_data->shell_extras = g_object_ref (shell_extras);
@@ -1131,6 +1172,7 @@ gs_shell_extras_finalize (GObject *object)
 
 	g_object_unref (priv->sizegroup_image);
 	g_object_unref (priv->sizegroup_name);
+	g_object_unref (priv->language);
 	g_object_unref (priv->vendor);
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
@@ -1143,6 +1185,8 @@ gs_shell_extras_finalize (GObject *object)
 static void
 gs_shell_extras_init (GsShellExtras *shell_extras)
 {
+	_cleanup_error_free_ GError *error = NULL;
+
 	gtk_widget_init_template (GTK_WIDGET (shell_extras));
 
 	shell_extras->priv = gs_shell_extras_get_instance_private (shell_extras);
@@ -1150,6 +1194,12 @@ gs_shell_extras_init (GsShellExtras *shell_extras)
 	shell_extras->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_extras->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_extras->priv->vendor = gs_vendor_new ();
+
+	/* map ISO639 to language names */
+	shell_extras->priv->language = gs_language_new ();
+	gs_language_populate (shell_extras->priv->language, &error);
+	if (error != NULL)
+		g_warning ("Failed to map ISO639 to language names: %s", error->message);
 }
 
 static void
