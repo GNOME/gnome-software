@@ -125,6 +125,8 @@ gnome_software_SOURCES =				\
 	gs-history-dialog.h				\
 	gs-box.h					\
 	gs-box.c					\
+	gs-language.c					\
+	gs-language.h					\
 	gs-page.c					\
 	gs-page.h					\
 	gs-plugin.c					\
