@@ -168,11 +168,25 @@ build_title (GsShellExtras *shell_extras)
 	g_ptr_array_add (title_array, NULL);
 
 	titles = build_comma_separated_list ((gchar **) title_array->pdata);
-	/* TRANSLATORS: Application window title for codec installation. %s will be replaced by actual codec name(s) */
-	return g_strdup_printf (ngettext ("Available software for %s",
-	                                  "Available software for %s",
-	                                  priv->array_search_data->len),
-	                        titles);
+
+	switch (shell_extras->priv->mode) {
+	case GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES:
+		/* TRANSLATORS: Application window title for fonts installation.
+		   %s will be replaced by name of the language we're searching for. */
+		return g_strdup_printf (ngettext ("Available fonts for the %s language",
+		                                  "Available fonts for the %s language",
+		                                  priv->array_search_data->len),
+		                        titles);
+		break;
+	default:
+		/* TRANSLATORS: Application window title for codec installation.
+		   %s will be replaced by actual codec name(s) */
+		return g_strdup_printf (ngettext ("Available software for %s",
+		                                  "Available software for %s",
+		                                  priv->array_search_data->len),
+		                        titles);
+		break;
+	}
 }
 
 static void
@@ -363,7 +377,7 @@ create_missing_app (SearchData *search_data)
 	case GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
-		g_string_append_printf (summary_missing, _("No addon fonts are available for %s support."), search_data->title);
+		g_string_append_printf (summary_missing, _("No fonts are available for the %s language support."), search_data->title);
 		g_string_append (summary_missing, "\n");
 		/* TRANSLATORS: first %s is the codec name, and second %s is a
                  * hyperlink with the "on the website" text */
