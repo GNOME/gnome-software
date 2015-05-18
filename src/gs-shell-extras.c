@@ -1199,7 +1199,7 @@ gs_shell_extras_init (GsShellExtras *shell_extras)
 	shell_extras->priv->language = gs_language_new ();
 	gs_language_populate (shell_extras->priv->language, &error);
 	if (error != NULL)
-		g_warning ("Failed to map ISO639 to language names: %s", error->message);
+		g_error ("Failed to map ISO639 to language names: %s", error->message);
 }
 
 static void
