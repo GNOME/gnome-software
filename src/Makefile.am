@@ -50,7 +50,12 @@ UI_FILES =						\
 	popular-tile.ui
 
 dbusservicedir = $(datadir)/dbus-1/services
-dbusservice_DATA = org.gnome.Software.service
+dbusservice_DATA =					\
+	org.freedesktop.PackageKit.service		\
+	org.gnome.Software.service
+
+org.freedesktop.PackageKit.service: org.freedesktop.PackageKit.service.in Makefile
+	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $<> $@
 
 org.gnome.Software.service: org.gnome.Software.service.in Makefile
 	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $<> $@
@@ -271,6 +276,7 @@ EXTRA_DIST =						\
 	gtk-style.css					\
 	gtk-style-hc.css				\
 	$(desktop_in_files)				\
+	org.freedesktop.PackageKit.service.in		\
 	org.gnome.Software.service.in			\
 	gnome-software-service.desktop.in		\
 	$(searchprovider_DATA)				\
@@ -310,6 +316,7 @@ DISTCLEANFILES =					\
 	gnome-software-local-file.desktop		\
 	gnome-software-service.desktop			\
 	org.gnome.Software.desktop			\
+	org.freedesktop.PackageKit.service		\
 	org.gnome.Software.service
 
 -include $(top_srcdir)/git.mk
