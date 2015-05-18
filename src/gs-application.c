@@ -245,6 +245,20 @@ gs_application_initialize_ui (GsApplication *app)
 }
 
 static void
+initialize_ui_and_present_window (GsApplication *app)
+{
+	GList *windows;
+	GtkWindow *window;
+
+	gs_application_initialize_ui (app);
+	windows = gtk_application_get_windows (GTK_APPLICATION (app));
+	if (windows) {
+		window = windows->data;
+		gtk_window_present (window);
+	}
+}
+
+static void
 sources_activated (GSimpleAction *action,
 		   GVariant      *parameter,
 		   gpointer       app)
@@ -338,15 +352,8 @@ set_mode_activated (GSimpleAction *action,
 {
 	GsApplication *app = GS_APPLICATION (data);
 	const gchar *mode;
-	GList *windows;
-	GtkWindow *window = NULL;
 
-	gs_application_initialize_ui (app);
-	windows = gtk_application_get_windows (GTK_APPLICATION (app));
-	if (windows) {
-		window = windows->data;
-		gtk_window_present (window);
-	}
+	initialize_ui_and_present_window (app);
 
 	mode = g_variant_get_string (parameter, NULL);
 	if (g_strcmp0 (mode, "updates") == 0) {
@@ -370,15 +377,8 @@ search_activated (GSimpleAction *action,
 {
 	GsApplication *app = GS_APPLICATION (data);
 	const gchar *search;
-	GList *windows;
-	GtkWindow *window = NULL;
 
-	gs_application_initialize_ui (app);
-	windows = gtk_application_get_windows (GTK_APPLICATION (app));
-	if (windows) {
-		window = windows->data;
-		gtk_window_present (window);
-	}
+	initialize_ui_and_present_window (app);
 
 	search = g_variant_get_string (parameter, NULL);
 	gs_shell_show_search (app->shell, search);
@@ -390,17 +390,10 @@ details_activated (GSimpleAction *action,
 		   gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
-	GList *windows;
-	GtkWindow *window = NULL;
 	const gchar *id;
 	const gchar *search;
 
-	windows = gtk_application_get_windows (GTK_APPLICATION (app));
-	if (windows) {
-		window = windows->data;
-		gtk_window_present (window);
-	}
-	gs_application_initialize_ui (app);
+	initialize_ui_and_present_window (app);
 
 	g_variant_get (parameter, "(&s&s)", &id, &search);
 	if (search != NULL && search[0] != '\0')
