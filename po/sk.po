@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-05-13 08:08+0000\n"
-"PO-Revision-Date: 2015-05-13 10:55+0100\n"
+"POT-Creation-Date: 2015-05-18 20:11+0000\n"
+"PO-Revision-Date: 2015-05-19 09:05+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: Slovak <gnome-sk-list@gnome.org>\n"
 "Language: sk\n"
@@ -166,61 +166,61 @@ msgid "translator-credits"
 msgstr "Dušan Kazik <prescott66@gmail.com>"
 
 # GsAppFolderDialog title, GtkLabel
-#: ../src/gs-application.c:562
+#: ../src/gs-application.c:569
 msgid "Enter GApplication service mode"
 msgstr "Vstúpi do servisného režimu GApplication"
 
 # cmdline description
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:565
+#: ../src/gs-application.c:572
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Režim spustenia: buď „updates“ (aktualizácie), „updated“ (aktualizované), "
 "„installed“ (nainštalované) alebo „overview“ (prehľad)"
 
-#: ../src/gs-application.c:565
+#: ../src/gs-application.c:572
 msgid "MODE"
 msgstr "REŽIM"
 
 # cmdline description
-#: ../src/gs-application.c:567
+#: ../src/gs-application.c:574
 msgid "Search for applications"
 msgstr "Vyhľadá aplikácie"
 
-#: ../src/gs-application.c:567
+#: ../src/gs-application.c:574
 msgid "SEARCH"
 msgstr "HĽADANIE"
 
 # cmdline description
-#: ../src/gs-application.c:569
+#: ../src/gs-application.c:576
 msgid "Show application details"
 msgstr "Zobrazí podrobnosti o aplikácii"
 
-#: ../src/gs-application.c:569
+#: ../src/gs-application.c:576
 msgid "ID"
 msgstr "IDENTIFIKÁTOR"
 
 # DK:cmd desc
-#: ../src/gs-application.c:571
+#: ../src/gs-application.c:578
 msgid "Open a local package file"
 msgstr "Otvorí miestny súbor balíka"
 
-#: ../src/gs-application.c:571
+#: ../src/gs-application.c:578
 msgid "FILENAME"
 msgstr "NÁZOV_SÚBORU"
 
 # DK:cmd desc
-#: ../src/gs-application.c:573
+#: ../src/gs-application.c:580
 msgid "Show verbose debugging information"
 msgstr "Vypíše podrobné ladiace informácie"
 
 # cmdline description
-#: ../src/gs-application.c:575
+#: ../src/gs-application.c:582
 msgid "Show profiling information for the service"
 msgstr "Zobrazí profilovacie informácie pre službu"
 
 # DK:cmd desc
-#: ../src/gs-application.c:577
+#: ../src/gs-application.c:584
 msgid "Prefer local file sources to AppStream"
 msgstr "Budú sa preferovať miestne zdroje súborov pre AppStream"
 
@@ -254,7 +254,7 @@ msgstr "Odstraňuje sa"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1262 ../src/gs-shell-extras.c:144
+#: ../src/gs-app.c:1262 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " a "
 
@@ -556,7 +556,7 @@ msgstr "Zahŕňa vylepšenia výkonu, stability a zvýšenia bezpečnosti."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1384 ../src/gs-shell-extras.c:375
+#: ../src/gs-plugin-loader.c:1384 ../src/gs-shell-extras.c:391
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nie sú dostupné žiadne doplnky s kodekmi pre formát %s."
@@ -572,50 +572,61 @@ msgstr ""
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:242
+#: ../src/gs-screenshot-image.c:247
 msgid "Screenshot not found"
 msgstr "Snímka obrazovky sa nenašla"
 
 # title
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:260
+#: ../src/gs-screenshot-image.c:265
 msgid "Failed to load image"
 msgstr "Zlyhalo načítanie obrázka"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:388
+#: ../src/gs-screenshot-image.c:405
 msgid "Screenshot size not found"
 msgstr "Veľkosť snímky obrazovky sa nenašla"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:407
+#: ../src/gs-screenshot-image.c:424
 msgid "Could not create cache"
 msgstr "Nepodarilo sa vytvoriť vyrovnávacia pamäť"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:437
+#: ../src/gs-screenshot-image.c:454
 msgid "Screenshot not valid"
 msgstr "Snímka obrazovky nie je platná"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:453
+#: ../src/gs-screenshot-image.c:470
 msgid "Screenshot not available"
 msgstr "Snímka obrazovky nie je dostupná"
 
-#: ../src/gs-screenshot-image.c:509
+#: ../src/gs-screenshot-image.c:527
 msgid "Screenshot"
 msgstr "Snímka obrazovky"
 
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:147
+#: ../src/gs-shell-extras.c:149
 msgid ", "
 msgstr ", "
 
-#. TRANSLATORS: Application window title for codec installation. %s will be replaced by actual codec name(s)
-#: ../src/gs-shell-extras.c:170
+#. TRANSLATORS: Application window title for fonts installation.
+#. %s will be replaced by name of the language we're searching for.
+#: ../src/gs-shell-extras.c:176
+#, c-format
+msgid "Available fonts for the %s script"
+msgid_plural "Available fonts for the %s script"
+msgstr[0] "Dostupné písma pre skript jazyka %s"
+msgstr[1] "Dostupné písma pre skript jazyka %s"
+msgstr[2] "Dostupné písma pre skript jazyka %s"
+
+#. TRANSLATORS: Application window title for codec installation.
+#. %s will be replaced by actual codec name(s)
+#: ../src/gs-shell-extras.c:184
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
@@ -623,32 +634,32 @@ msgstr[0] "Dostupný softvér pre kodeky %s"
 msgstr[1] "Dostupný softvér pre kodek %s"
 msgstr[2] "Dostupný softvér pre kodeky %s"
 
-#: ../src/gs-shell-extras.c:211
+#: ../src/gs-shell-extras.c:227
 msgid "Unable to Find Requested Software"
 msgstr "Nepodarilo sa nájsť požadovaný softvér"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: ../src/gs-shell-extras.c:309
+#: ../src/gs-shell-extras.c:325
 #, c-format
 msgid "%s not found"
 msgstr "Kodek %s sa nenašiel"
 
 #. TRANSLATORS: hyperlink title
-#: ../src/gs-shell-extras.c:313
+#: ../src/gs-shell-extras.c:329
 msgid "on the website"
 msgstr "na webovej stránke"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:320
+#: ../src/gs-shell-extras.c:336
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Nie sú dostupné žiadne aplikácie, ktoré poskytujú súbor %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:324 ../src/gs-shell-extras.c:335
-#: ../src/gs-shell-extras.c:346
+#: ../src/gs-shell-extras.c:340 ../src/gs-shell-extras.c:351
+#: ../src/gs-shell-extras.c:362
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -659,21 +670,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:331 ../src/gs-shell-extras.c:353
+#: ../src/gs-shell-extras.c:347 ../src/gs-shell-extras.c:369
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "Nie sú dostupné žiadne aplikácie s podporou pre %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:342
+#: ../src/gs-shell-extras.c:358
 #, c-format
 msgid "%s is not available."
 msgstr "Doplnok %s nie je dostupný."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:357
+#: ../src/gs-shell-extras.c:373
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -684,14 +695,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:364
+#: ../src/gs-shell-extras.c:380
 #, c-format
-msgid "No addon fonts are available for %s support."
-msgstr "Nie sú dostupné žiadne doplnky s písmami s podporou pre %s."
+msgid "No fonts are available for the %s script support."
+msgstr "Nie sú dostupné žiadne písma s podporou skriptov v jazyku %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:368
+#: ../src/gs-shell-extras.c:384
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -702,7 +713,7 @@ msgstr ""
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:379
+#: ../src/gs-shell-extras.c:395
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can play "
@@ -713,14 +724,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:386
+#: ../src/gs-shell-extras.c:402
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "Nie sú dostupné žiadne zdroje prostredia Plasma s podporou %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:390
+#: ../src/gs-shell-extras.c:406
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -731,14 +742,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:397
+#: ../src/gs-shell-extras.c:413
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "Nie sú dostupné žiadne ovládače tlačiarne pre %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:401
+#: ../src/gs-shell-extras.c:417
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -747,12 +758,12 @@ msgstr ""
 "Informácie o kodeku %s, ako aj o možnostiach získania ovládača s podporou "
 "tejto tlačiarne môžete nájsť %s."
 
-#: ../src/gs-shell-extras.c:447
+#: ../src/gs-shell-extras.c:463
 msgid "this website"
 msgstr "túto webovú stránku"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: ../src/gs-shell-extras.c:451
+#: ../src/gs-shell-extras.c:467
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -770,12 +781,12 @@ msgstr[2] ""
 "Bohužiaľ, nepodarilo sa nájsť kodeky %s, ktoré ste hľadali. Prosím, pre viac "
 "informácií navštívte %s."
 
-#: ../src/gs-shell-extras.c:533 ../src/gs-shell-extras.c:582
-#: ../src/gs-shell-extras.c:633
+#: ../src/gs-shell-extras.c:549 ../src/gs-shell-extras.c:598
+#: ../src/gs-shell-extras.c:649
 msgid "Failed to find any search results"
 msgstr "Zlyhalo nájdenie akýchkoľvek výsledkov hľadania"
 
-#: ../src/gs-shell-extras.c:812
+#: ../src/gs-shell-extras.c:828
 #, c-format
 msgid "%s file format"
 msgstr "Formát súboru %s"
@@ -819,50 +830,50 @@ msgid "_Removing"
 msgstr "O_dstraňuje sa"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:578
+#: ../src/gs-shell-details.c:579
 msgctxt "license"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:591
+#: ../src/gs-shell-details.c:592
 msgctxt "version"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:597
+#: ../src/gs-shell-details.c:598
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Vypočítava sa…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:600
+#: ../src/gs-shell-details.c:601
 msgctxt "size"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:612
+#: ../src/gs-shell-details.c:613
 msgctxt "updated"
 msgid "Never"
 msgstr "Nikdy"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:626
+#: ../src/gs-shell-details.c:627
 msgctxt "menu category"
 msgid "None"
 msgstr "Žiadna"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:636
+#: ../src/gs-shell-details.c:637
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Neznámy"
 
-#: ../src/gs-shell-details.c:899 ../src/gs-utils.c:162
+#: ../src/gs-shell-details.c:900 ../src/gs-utils.c:162
 msgid "Sorry, this did not work"
 msgstr "Prepáčte, toto nefungovalo"
 
