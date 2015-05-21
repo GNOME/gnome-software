@@ -34,6 +34,7 @@
 #include "gs-markdown.h"
 #include "gs-update-dialog.h"
 #include "gs-update-list.h"
+#include "gs-application.h"
 
 #include <gdesktop-enums.h>
 #include <langinfo.h>
@@ -46,6 +47,7 @@ typedef enum {
 	GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES,
 	GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES,
 	GS_SHELL_UPDATES_STATE_NO_UPDATES,
+	GS_SHELL_UPDATES_STATE_MANAGED,
 	GS_SHELL_UPDATES_STATE_HAS_UPDATES,
 	GS_SHELL_UPDATES_STATE_FAILED,
 	GS_SHELL_UPDATES_STATE_LAST,
@@ -234,6 +236,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 		break;
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
+	case GS_SHELL_UPDATES_STATE_MANAGED:
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_FAILED:
 		gs_stop_spinner (GTK_SPINNER (priv->spinner_updates));
@@ -265,6 +268,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 		break;
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
+	case GS_SHELL_UPDATES_STATE_MANAGED:
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_FAILED:
 		break;
@@ -283,6 +287,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
+	case GS_SHELL_UPDATES_STATE_MANAGED:
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_STARTUP:
 	case GS_SHELL_UPDATES_STATE_FAILED:
@@ -306,6 +311,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 		break;
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
 	case GS_SHELL_UPDATES_STATE_STARTUP:
+	case GS_SHELL_UPDATES_STATE_MANAGED:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
 		gtk_widget_hide (widget);
 		break;
@@ -339,6 +345,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
+	case GS_SHELL_UPDATES_STATE_MANAGED:
 	case GS_SHELL_UPDATES_STATE_FAILED:
 		gtk_widget_hide (widget);
 		break;
@@ -380,6 +387,9 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_updates), "view");
 		break;
+	case GS_SHELL_UPDATES_STATE_MANAGED:
+		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_updates), "managed");
+		break;
 	case GS_SHELL_UPDATES_STATE_FAILED:
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_updates), "failed");
 		break;
@@ -411,6 +421,8 @@ gs_shell_updates_set_state (GsShellUpdates *shell_updates,
 			    GsShellUpdatesState state)
 {
 	shell_updates->priv->state = state;
+	if (gs_updates_are_managed ())
+		shell_updates->priv->state = GS_SHELL_UPDATES_STATE_MANAGED;
 	gs_shell_updates_update_ui_state (shell_updates);
 }
 
@@ -449,7 +461,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates_counter"));
-	if (list != NULL) {
+	if (list != NULL && !gs_updates_are_managed ()) {
 		_cleanup_free_ gchar *text = NULL;
 		text = g_strdup_printf ("%d", g_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
@@ -879,6 +891,32 @@ gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
 	gs_shell_updates_update_ui_state (shell_updates);
 }
 
+static void
+on_permission_changed (GPermission *permission,
+                       GParamSpec  *pspec,
+                       gpointer     data)
+{
+        GsShellUpdates *shell_updates = data;
+        GsShellUpdatesPrivate *priv = shell_updates->priv;
+
+	if (gs_updates_are_managed()) {
+		gs_shell_updates_set_state (shell_updates, GS_SHELL_UPDATES_STATE_MANAGED);
+	}
+	else if (priv->state == GS_SHELL_UPDATES_STATE_MANAGED) {
+		gs_shell_updates_set_state (shell_updates, GS_SHELL_UPDATES_STATE_NO_UPDATES);
+	}
+}
+
+static void
+gs_shell_updates_monitor_permission (GsShellUpdates *shell_updates)
+{
+        GPermission *permission;
+
+        permission = gs_offline_updates_permission_get ();
+        g_signal_connect (permission, "notify",
+                          G_CALLBACK (on_permission_changed), shell_updates);
+}
+
 void
 gs_shell_updates_setup (GsShellUpdates *shell_updates,
 			GsShell *shell,
@@ -921,6 +959,8 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 	g_signal_connect (priv->button_updates_offline, "clicked",
 			  G_CALLBACK (gs_shell_updates_button_network_settings_cb),
 			  shell_updates);
+
+	gs_shell_updates_monitor_permission (shell_updates);
 
 	g_signal_connect (priv->control, "notify::network-state",
 			  G_CALLBACK (gs_shell_updates_notify_network_state_cb),
