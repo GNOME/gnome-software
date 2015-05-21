@@ -8,6 +8,7 @@ AM_CPPFLAGS =						\
 	$(SOUP_CFLAGS)					\
 	$(PACKAGEKIT_CFLAGS)				\
 	$(GNOME_DESKTOP_CFLAGS)				\
+	$(POLKIT_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DGS_MODULESETDIR=\"$(datadir)/gnome-software/modulesets.d\" \
@@ -195,6 +196,7 @@ gnome_software_LDADD =					\
 	$(SOUP_LIBS)					\
 	$(PACKAGEKIT_LIBS)				\
 	$(GNOME_DESKTOP_LIBS)				\
+	$(POLKIT_LIBS)					\
 	-lm
 
 gnome_software_CFLAGS =					\

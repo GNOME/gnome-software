@@ -23,6 +23,7 @@
 
 #include <glib/gi18n.h>
 #include <packagekit-glib2/packagekit.h>
+#include <polkit/polkit.h>
 #include <pango/pango-font.h>
 
 #include "gs-cleanup.h"
@@ -299,5 +300,31 @@ gs_offline_updates_show_error (void)
 			   error->message);
 	}
 }
+
+GPermission *
+gs_offline_updates_permission_get (void)
+{
+	static GPermission *permission;
+
+	if (!permission)
+		permission = polkit_permission_new_sync ("org.freedesktop.packagekit.trigger-offline-update",
+                                                         NULL, NULL, NULL);
+
+	return permission;
+}
+
+gboolean
+gs_updates_are_managed (void)
+{
+	GPermission *permission;
+	gboolean managed;
+
+	permission = gs_offline_updates_permission_get ();
+	managed = !g_permission_get_allowed (permission) &&
+                  !g_permission_get_can_acquire (permission);
+
+	return managed;
+}
+
 
 /* vim: set noexpandtab: */

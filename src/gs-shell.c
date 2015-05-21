@@ -37,6 +37,7 @@
 #include "gs-shell-extras.h"
 #include "gs-sources-dialog.h"
 #include "gs-update-dialog.h"
+#include "gs-offline-updates.h"
 
 static const gchar *page_name[] = {
 	"overview",
@@ -172,6 +173,8 @@ gs_shell_change_mode (GsShell *shell,
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_UPDATES);
+	gtk_widget_set_visible (widget, !gs_updates_are_managed() || mode == GS_SHELL_MODE_UPDATES);
+
 	priv->ignore_primary_buttons = FALSE;
 
 	/* switch page */
@@ -517,6 +520,29 @@ gs_shell_main_window_mapped_cb (GtkWidget *widget, GsShell *shell)
 				    gtk_widget_get_scale_factor (widget));
 }
 
+static void
+on_permission_changed (GPermission *permission,
+                       GParamSpec  *pspec,
+                       gpointer     data)
+{
+        GsShell *shell = data;
+	GsShellPrivate *priv = shell->priv;
+	GtkWidget *widget;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
+	gtk_widget_set_visible (widget, !gs_updates_are_managed() || priv->mode == GS_SHELL_MODE_UPDATES);
+}
+
+static void
+gs_shell_monitor_permission (GsShell *shell)
+{
+        GPermission *permission;
+
+        permission = gs_offline_updates_permission_get ();
+        g_signal_connect (permission, "notify",
+                          G_CALLBACK (on_permission_changed), shell);
+}
+
 /**
  * gs_shell_setup:
  */
@@ -532,6 +558,8 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_signal_connect (priv->plugin_loader, "updates-changed",
 			  G_CALLBACK (gs_shell_updates_changed_cb), shell);
 	priv->cancellable = g_object_ref (cancellable);
+
+	gs_shell_monitor_permission (shell);
 
 	/* get UI */
 	priv->builder = gtk_builder_new_from_resource ("/org/gnome/Software/gnome-software.ui");
