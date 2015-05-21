@@ -27,6 +27,7 @@
 #include <stdlib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
 #include <packagekit-glib2/packagekit.h>
 
@@ -41,6 +42,7 @@
 #include "gs-shell-search-provider.h"
 #include "gs-offline-updates.h"
 #include "gs-folders.h"
+#include "gs-utils.h"
 
 
 struct _GsApplication {
@@ -91,13 +93,35 @@ download_updates_setting_changed (GSettings     *settings,
                                   const gchar   *key,
                                   GsApplication *app)
 {
-	if (g_settings_get_boolean (settings, key)) {
+	if (!gs_updates_are_managed () &&
+	    g_settings_get_boolean (settings, key)) {
 		g_debug ("Enabling update monitor");
 		app->update_monitor = gs_update_monitor_new (app);
 	} else {
 		g_debug ("Disabling update monitor");
 		g_clear_object (&app->update_monitor);
 	}
+}
+
+static void
+on_permission_changed (GPermission *permission,
+                       GParamSpec  *pspec,
+                       gpointer     data)
+{
+	GsApplication *app = data;
+
+	if (app->settings)
+		download_updates_setting_changed (app->settings, "download-updates", app);
+}
+
+static void
+gs_application_monitor_permission (GsApplication *app)
+{
+	GPermission *permission;
+
+	permission = gs_offline_updates_permission_get ();
+	g_signal_connect (permission, "notify",
+			  G_CALLBACK (on_permission_changed), app);
 }
 
 static void
@@ -478,6 +502,7 @@ gs_application_startup (GApplication *application)
 	GS_APPLICATION (application)->proxy_settings = gs_proxy_settings_new ();
 	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
 	GS_APPLICATION (application)->settings = g_settings_new ("org.gnome.software");
+	gs_application_monitor_permission (GS_APPLICATION (application));
 	gs_application_monitor_updates (GS_APPLICATION (application));
 	gs_application_provide_search (GS_APPLICATION (application));
 	gs_application_monitor_network (GS_APPLICATION (application));
