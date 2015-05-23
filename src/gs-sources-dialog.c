@@ -228,6 +228,7 @@ add_app (GtkListBox *listbox, GsApp *app)
 {
 	GtkWidget *box;
 	GtkWidget *widget;
+	GtkWidget *row;
 
 	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 6);
 	gtk_widget_set_margin_top (box, 12);
@@ -242,6 +243,9 @@ add_app (GtkListBox *listbox, GsApp *app)
 	gtk_list_box_prepend (listbox, box);
 	gtk_widget_show (widget);
 	gtk_widget_show (box);
+
+	row = gtk_widget_get_parent (box);
+	gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 }
 
 static void
