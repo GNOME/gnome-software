@@ -95,7 +95,7 @@ add_source (GtkListBox *listbox, GsApp *app)
 	if (cnt_apps == 0 && cnt_addon == 0) {
 		/* TRANSLATORS: This string describes a software source that
 		   has no software installed from it. */
-		text = g_strdup (_("No software installed"));
+		text = g_strdup (_("No applications or addons installed; other software might still be"));
 	} else if (cnt_addon == 0) {
 		/* TRANSLATORS: This string is used to construct the 'X applications
 		   installed' sentence, describing a software source. */
