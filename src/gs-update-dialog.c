@@ -188,6 +188,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 				     GS_PLUGIN_LOADER_ERROR,
 				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
 			g_debug ("no installed updates to show");
+			gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "empty");
 			return;
 		} else if (g_error_matches (error,
 					    G_IO_ERROR,
@@ -198,6 +199,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		}
 
 		g_warning ("failed to get installed updates: %s", error->message);
+		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "empty");
 		return;
 	}
 
