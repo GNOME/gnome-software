@@ -75,6 +75,7 @@ start_spinning (gpointer data)
 void
 gs_stop_spinner (GtkSpinner *spinner)
 {
+	g_object_set_data (G_OBJECT (spinner), "start-timeout", NULL);
 	gtk_spinner_stop (spinner);
 }
 
