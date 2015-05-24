@@ -570,7 +570,7 @@ show_update_details (GsApp *app, GsShellUpdates *shell_updates)
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 	GtkWidget *dialog;
 
-	dialog = gs_update_dialog_new ();
+	dialog = gs_update_dialog_new (priv->plugin_loader);
 	gs_update_dialog_show_update_details (GS_UPDATE_DIALOG (dialog), app);
 
 	gtk_window_set_transient_for (GTK_WINDOW (dialog), gs_shell_get_window (priv->shell));

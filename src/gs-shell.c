@@ -677,60 +677,17 @@ gs_shell_get_mode_string (GsShell *shell)
 	return page_name[priv->mode];
 }
 
-static void
-gs_shell_get_installed_updates_cb (GsPluginLoader *plugin_loader,
-				   GAsyncResult *res,
-				   GsShell *shell)
-{
-	GsShellPrivate *priv = shell->priv;
-	GList *list;
-	GtkWidget *dialog;
-	_cleanup_error_free_ GError *error = NULL;
-
-	/* get the results */
-	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
-	if (list == NULL) {
-		if (g_error_matches (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
-			g_debug ("no updates to show");
-		} else if (g_error_matches (error,
-					    G_IO_ERROR,
-					    G_IO_ERROR_CANCELLED)) {
-			g_debug ("get updates cancelled");
-		} else {
-			g_warning ("failed to get updates: %s", error->message);
-		}
-		goto out;
-	}
-
-	dialog = gs_update_dialog_new ();
-	gs_update_dialog_show_installed_updates (GS_UPDATE_DIALOG (dialog), list);
-
-	gtk_window_set_transient_for (GTK_WINDOW (dialog), priv->main_window);
-	gtk_window_present (GTK_WINDOW (dialog));
-
-out:
-	gs_plugin_list_free (list);
-}
-
-
 void
 gs_shell_show_installed_updates (GsShell *shell)
 {
 	GsShellPrivate *priv = shell->priv;
-	guint64 refine_flags;
+	GtkWidget *dialog;
 
-	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
-		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
-		       GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
+	dialog = gs_update_dialog_new (priv->plugin_loader);
+	gs_update_dialog_show_installed_updates (GS_UPDATE_DIALOG (dialog));
 
-	gs_plugin_loader_get_updates_async (priv->plugin_loader,
-					    refine_flags,
-					    priv->cancellable,
-					    (GAsyncReadyCallback) gs_shell_get_installed_updates_cb,
-					    shell);
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), priv->main_window);
+	gtk_window_present (GTK_WINDOW (dialog));
 }
 
 void

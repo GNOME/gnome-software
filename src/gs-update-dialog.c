@@ -42,6 +42,8 @@ typedef struct {
 struct _GsUpdateDialogPrivate
 {
 	GQueue		*back_entry_stack;
+	GCancellable	*cancellable;
+	GsPluginLoader	*plugin_loader;
 	GtkWidget	*box_header;
 	GtkWidget	*button_back;
 	GtkWidget	*image_icon;
@@ -52,6 +54,7 @@ struct _GsUpdateDialogPrivate
 	GtkWidget	*list_box_installed_updates;
 	GtkWidget	*scrolledwindow;
 	GtkWidget	*scrolledwindow_details;
+	GtkWidget	*spinner;
 	GtkWidget	*stack;
 };
 
@@ -166,11 +169,52 @@ installed_updates_row_activated_cb (GtkListBox *list_box,
 	gs_update_dialog_show_update_details (dialog, app);
 }
 
-void
-gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installed_updates)
+static void
+get_installed_updates_cb (GsPluginLoader *plugin_loader,
+                          GAsyncResult *res,
+                          GsUpdateDialog *dialog)
 {
 	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GList *l;
+	_cleanup_plugin_list_free_ GList *list = NULL;
+	_cleanup_error_free_ GError *error = NULL;
+
+	gs_stop_spinner (GTK_SPINNER (priv->spinner));
+
+	/* get the results */
+	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		if (g_error_matches (error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
+			g_debug ("no installed updates to show");
+			return;
+		} else if (g_error_matches (error,
+					    G_IO_ERROR,
+					    G_IO_ERROR_CANCELLED)) {
+			/* This should only ever happen while the dialog is being closed */
+			g_debug ("get installed updates cancelled");
+			return;
+		}
+
+		g_warning ("failed to get installed updates: %s", error->message);
+		return;
+	}
+
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "installed-updates-list");
+
+	gs_container_remove_all (GTK_CONTAINER (priv->list_box_installed_updates));
+	for (l = list; l != NULL; l = l->next) {
+		gs_update_list_add_app (GS_UPDATE_LIST (priv->list_box_installed_updates),
+					GS_APP (l->data));
+	}
+}
+
+void
+gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
+{
+	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
+	guint64 refine_flags;
 	guint64 time_updates_installed;
 
 	/* TRANSLATORS: this is the title of the installed updates dialog window */
@@ -193,13 +237,19 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 	}
 
 	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "installed-updates-list");
+	gs_start_spinner (GTK_SPINNER (priv->spinner));
+	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "spinner");
 
-	gs_container_remove_all (GTK_CONTAINER (priv->list_box_installed_updates));
-	for (l = installed_updates; l != NULL; l = l->next) {
-		gs_update_list_add_app (GS_UPDATE_LIST (priv->list_box_installed_updates),
-					GS_APP (l->data));
-	}
+	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
+	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+	               GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
+
+	gs_plugin_loader_get_updates_async (priv->plugin_loader,
+	                                    refine_flags,
+	                                    priv->cancellable,
+	                                    (GAsyncReadyCallback) get_installed_updates_cb,
+	                                    dialog);
 }
 
 void
@@ -336,6 +386,14 @@ unset_focus (GtkWidget *widget)
 }
 
 static void
+set_plugin_loader (GsUpdateDialog *dialog, GsPluginLoader *plugin_loader)
+{
+	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
+
+	priv->plugin_loader = g_object_ref (plugin_loader);
+}
+
+static void
 gs_update_dialog_finalize (GObject *object)
 {
 	GsUpdateDialog *dialog = GS_UPDATE_DIALOG (object);
@@ -345,6 +403,13 @@ gs_update_dialog_finalize (GObject *object)
 		g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) back_entry_free);
 		priv->back_entry_stack = NULL;
 	}
+
+	if (priv->cancellable != NULL) {
+		g_cancellable_cancel (priv->cancellable);
+		g_clear_object (&priv->cancellable);
+	}
+
+	g_clear_object (&priv->plugin_loader);
 
 	G_OBJECT_CLASS (gs_update_dialog_parent_class)->finalize (object);
 }
@@ -358,6 +423,7 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
 	priv->back_entry_stack = g_queue_new ();
+	priv->cancellable = g_cancellable_new ();
 
 	g_signal_connect (GTK_LIST_BOX (priv->list_box), "row-activated",
 			  G_CALLBACK (row_activated_cb), dialog);
@@ -406,15 +472,21 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, list_box_installed_updates);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, scrolledwindow);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, scrolledwindow_details);
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, stack);
 }
 
 GtkWidget *
-gs_update_dialog_new (void)
+gs_update_dialog_new (GsPluginLoader *plugin_loader)
 {
-	return GTK_WIDGET (g_object_new (GS_TYPE_UPDATE_DIALOG,
-					 "use-header-bar", TRUE,
-					 NULL));
+	GsUpdateDialog *dialog;
+
+	dialog = g_object_new (GS_TYPE_UPDATE_DIALOG,
+	                       "use-header-bar", TRUE,
+	                       NULL);
+	set_plugin_loader (dialog, plugin_loader);
+
+	return GTK_WIDGET (dialog);
 }
 
 /* vim: set noexpandtab: */

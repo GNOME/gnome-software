@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-plugin-loader.h"
 
 #define GS_TYPE_UPDATE_DIALOG		(gs_update_dialog_get_type())
 #define GS_UPDATE_DIALOG(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_UPDATE_DIALOG, GsUpdateDialog))
@@ -50,9 +51,8 @@ struct _GsUpdateDialogClass
 };
 
 GType		 gs_update_dialog_get_type			(void);
-GtkWidget	*gs_update_dialog_new				(void);
-void		 gs_update_dialog_show_installed_updates	(GsUpdateDialog		*dialog,
-								 GList			*installed_updates);
+GtkWidget	*gs_update_dialog_new				(GsPluginLoader		*plugin_loader);
+void		 gs_update_dialog_show_installed_updates	(GsUpdateDialog		*dialog);
 void		 gs_update_dialog_show_update_details		(GsUpdateDialog		*dialog,
 								 GsApp			*app);
 
