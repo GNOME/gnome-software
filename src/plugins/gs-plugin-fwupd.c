@@ -415,6 +415,10 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				     FWUPD_ERROR,
 				     FWUPD_ERROR_NOTHING_TO_DO))
 			return TRUE;
+		if (g_error_matches (error_local,
+				     FWUPD_ERROR,
+				     FWUPD_ERROR_NOT_FOUND))
+			return TRUE;
 		g_set_error_literal (error,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_FAILED,
