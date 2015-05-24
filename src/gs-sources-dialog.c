@@ -80,6 +80,7 @@ add_source (GtkListBox *listbox, GsApp *app)
 		case AS_ID_KIND_FONT:
 		case AS_ID_KIND_CODEC:
 		case AS_ID_KIND_INPUT_METHOD:
+		case AS_ID_KIND_ADDON:
 			cnt_addon++;
 			break;
 		default:
