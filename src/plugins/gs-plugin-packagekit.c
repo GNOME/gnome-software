@@ -222,7 +222,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		return FALSE;
 	hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	array = pk_results_get_repo_detail_array (results);
-#if PK_CHECK_VERSION(0,9,1)
 	for (i = 0; i < array->len; i++) {
 		_cleanup_object_unref_ GsApp *app = NULL;
 		rd = g_ptr_array_index (array, i);
@@ -242,7 +241,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 				     g_strdup (id),
 				     (gpointer) app);
 	}
-#endif
 
 	/* get every application on the system and add it as a related package
 	 * if it matches */
@@ -464,7 +462,6 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-#if PK_CHECK_VERSION(0,9,1)
 	_cleanup_error_free_ GError *error_local = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 
@@ -485,9 +482,6 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 						     cancellable, error);
 	}
 	return TRUE;
-#else
-	return gs_plugin_app_source_disable (plugin, app, cancellable, error);
-#endif
 }
 
 /**

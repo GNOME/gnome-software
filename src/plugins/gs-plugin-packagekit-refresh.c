@@ -251,18 +251,11 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	/* get details */
 	files = g_strsplit (filename, "\t", -1);
 	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), G_MAXUINT);
-#if PK_CHECK_VERSION(0,9,1)
 	results = pk_client_get_details_local (PK_CLIENT (plugin->priv->task),
 					       files,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, plugin,
 					       error);
-#else
-	g_set_error_literal (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "GetDetailsLocal() not supported");
-#endif
 	if (results == NULL)
 		return FALSE;
 
@@ -293,12 +286,10 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_management_plugin (app, "PackageKit");
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
-#if PK_CHECK_VERSION(0,9,1)
 	if (pk_details_get_summary (item))
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
 				 pk_details_get_summary (item));
 	else
-#endif
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
 	gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
 	gs_app_set_metadata (app, "PackageKit::local-filename", filename);

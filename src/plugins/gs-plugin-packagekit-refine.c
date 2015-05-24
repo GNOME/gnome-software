@@ -208,11 +208,9 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 				gs_app_set_name (app,
 						 GS_APP_QUALITY_LOWEST,
 						 pk_package_get_name (package));
-#if PK_CHECK_VERSION(0,9,1)
 				gs_app_set_summary (app,
 						    GS_APP_QUALITY_LOWEST,
 						    pk_package_get_summary (package));
-#endif
 			}
 		}
 	}
@@ -478,11 +476,9 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 			gs_app_set_description (app,
 						GS_APP_QUALITY_LOWEST,
 						desc);
-#if PK_CHECK_VERSION(0,9,1)
 			gs_app_set_summary (app,
 					    GS_APP_QUALITY_LOWEST,
 					    pk_details_get_summary (details));
-#endif
 			break;
 		}
 	}
@@ -618,11 +614,9 @@ gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
 	array = pk_results_get_repo_detail_array (results);
 	for (i = 0; i < array->len; i++) {
 		rd = g_ptr_array_index (array, i);
-#if PK_CHECK_VERSION(0,9,1)
 		g_hash_table_insert (plugin->priv->sources,
 				     g_strdup (pk_repo_detail_get_id (rd)),
 				     g_strdup (pk_repo_detail_get_description (rd)));
-#endif
 	}
 	return TRUE;
 }
