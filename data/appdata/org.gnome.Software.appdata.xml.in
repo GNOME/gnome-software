@@ -30,6 +30,25 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.17.1" timestamp="1432590395">
+      <description>
+        <p>This is the first unstable release in the 3.17 development series, with a number of new features:</p>
+        <ul>
+          <li>Support getting firmware updates through the fwupd daemon</li>
+          <li>Use a smaller number of tiles on the front page on small monitors</li>
+          <li>Rework internal modulesets, making it easier to edit the list of featured apps</li>
+          <li>Revert back to using a hand-picked list of featured apps</li>
+          <li>Several improvements to the sources dialog</li>
+          <li>Show better human readable names when searching for font scripts</li>
+          <li>Show a spinner while loading the data for the update history dialog</li>
+        </ul>
+        <p>New dependencies:</p>
+        <ul>
+          <li>iso-codes</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release version="3.16.2" timestamp="1431345463">
       <description>
         <p>This release fixes the following bugs:</p>
