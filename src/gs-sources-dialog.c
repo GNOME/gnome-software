@@ -119,7 +119,7 @@ add_source (GtkListBox *listbox, GsApp *app)
 
 	g_object_set_data_full (G_OBJECT (box),
 	                        "sort",
-	                        g_strdup (gs_app_get_name (app)),
+	                        g_utf8_casefold (gs_app_get_name (app), -1),
 	                        g_free);
 
 	gtk_list_box_prepend (listbox, box);
@@ -229,14 +229,14 @@ add_app (GtkListBox *listbox, GsApp *app)
 	gtk_widget_set_halign (widget, GTK_ALIGN_START);
 	gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
 
+	g_object_set_data_full (G_OBJECT (box),
+	                        "sort",
+	                        g_utf8_casefold (gs_app_get_name (app), -1),
+	                        g_free);
+
 	gtk_list_box_prepend (listbox, box);
 	gtk_widget_show (widget);
 	gtk_widget_show (box);
-
-	g_object_set_data_full (G_OBJECT (box),
-	                        "sort",
-	                        g_strdup (gs_app_get_name (app)),
-	                        g_free);
 
 	row = gtk_widget_get_parent (box);
 	gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
