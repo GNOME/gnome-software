@@ -49,7 +49,6 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsSourcesDialog, gs_sources_dialog, GTK_TYPE_DIALOG)
 static void
 add_source (GtkListBox *listbox, GsApp *app)
 {
-	GsApp *app_tmp;
 	GtkWidget *widget;
 	GtkWidget *box;
 	GtkStyleContext *context;
@@ -74,7 +73,7 @@ add_source (GtkListBox *listbox, GsApp *app)
 
 	/* split up the types */
 	for (i = 0; i < related->len; i++) {
-		app_tmp = g_ptr_array_index (related, i);
+		GsApp *app_tmp = g_ptr_array_index (related, i);
 		switch (gs_app_get_id_kind (app_tmp)) {
 		case AS_ID_KIND_WEB_APP:
 		case AS_ID_KIND_DESKTOP:
@@ -269,11 +268,11 @@ list_row_activated_cb (GtkListBox *list_box,
 					 "GsShell::app"));
 	related = gs_app_get_related (app);
 	for (i = 0; i < related->len; i++) {
-		app = g_ptr_array_index (related, i);
-		switch (gs_app_get_kind (app)) {
+		GsApp *app_tmp = g_ptr_array_index (related, i);
+		switch (gs_app_get_kind (app_tmp)) {
 		case GS_APP_KIND_NORMAL:
 		case GS_APP_KIND_SYSTEM:
-			add_app (GTK_LIST_BOX (priv->listbox_apps), app);
+			add_app (GTK_LIST_BOX (priv->listbox_apps), app_tmp);
 			cnt_apps++;
 			break;
 		default:
@@ -340,6 +339,7 @@ remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 
 	/* remove source */
 	app = GS_APP (g_object_get_data (G_OBJECT (priv->stack), "GsShell::app"));
+	g_debug ("removing source '%s'", gs_app_get_name (app));
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 					   app,
 					   GS_PLUGIN_LOADER_ACTION_REMOVE,
