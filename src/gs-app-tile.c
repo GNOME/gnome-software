@@ -83,7 +83,7 @@ app_state_changed_idle (gpointer user_data)
 					gs_app_get_name (priv->app),
 					_("Installing"));
 		/* TRANSLATORS: this is the small blue label on the tile
-		 * that tells the user the application is being installing */
+		 * that tells the user the application is being installed */
 		gtk_label_set_label (GTK_LABEL (label), _("Installing"));
 		break;
 	case AS_APP_STATE_REMOVING:
