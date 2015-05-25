@@ -348,11 +348,20 @@ remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 }
 
 static void
+updates_changed_cb (GsPluginLoader *plugin_loader,
+                    GsSourcesDialog *dialog)
+{
+	reload_sources (dialog);
+}
+
+static void
 set_plugin_loader (GsSourcesDialog *dialog, GsPluginLoader *plugin_loader)
 {
 	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
+	g_signal_connect (priv->plugin_loader, "updates-changed",
+	                  G_CALLBACK (updates_changed_cb), dialog);
 }
 
 static void
