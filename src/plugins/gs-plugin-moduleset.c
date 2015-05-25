@@ -52,7 +52,7 @@ gs_plugin_get_deps (GsPlugin *plugin)
 {
 	static const gchar *deps[] = {
 		"menu-spec-categories",	/* featured subcat added to existing categories */
-		"packagekit",		/* pkgname */
+		"appstream",		/* need app id */
 		NULL };
 	return deps;
 }

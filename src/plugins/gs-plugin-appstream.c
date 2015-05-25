@@ -107,7 +107,7 @@ const gchar **
 gs_plugin_get_deps (GsPlugin *plugin)
 {
 	static const gchar *deps[] = {
-		"moduleset",	/* need category list */
+		"menu-spec-categories",	/* need category list */
 		NULL };
 	return deps;
 }
