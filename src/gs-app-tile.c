@@ -69,6 +69,7 @@ app_state_changed_idle (gpointer user_data)
 	label = gtk_bin_get_child (GTK_BIN (priv->eventbox));
 	switch (gs_app_get_state (priv->app)) {
 	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (priv->app),
@@ -94,16 +95,6 @@ app_state_changed_idle (gpointer user_data)
 		/* TRANSLATORS: this is the small blue label on the tile
 		 * that tells the user the application is being removed */
 		gtk_label_set_label (GTK_LABEL (label), _("Removing"));
-		break;
-	case AS_APP_STATE_UPDATABLE:
-		installed = TRUE;
-		name = g_strdup_printf ("%s (%s)",
-					gs_app_get_name (priv->app),
-					_("Updates"));
-		/* TRANSLATORS: this is the small blue label on the tile
-		 * that tells the user there is an update for the installed
-		 * application available */
-		gtk_label_set_label (GTK_LABEL (label), _("Updates"));
 		break;
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
 	case AS_APP_STATE_AVAILABLE:

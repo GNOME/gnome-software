@@ -65,14 +65,10 @@ app_state_changed_idle (gpointer user_data)
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_INSTALLING:
 	case AS_APP_STATE_REMOVING:
-		name = g_strdup_printf ("%s (%s)",
-					gs_app_get_name (priv->app),
-					_("Installed"));
-		break;
 	case AS_APP_STATE_UPDATABLE:
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (priv->app),
-					_("Updates"));
+					_("Installed"));
 		break;
 	case AS_APP_STATE_AVAILABLE:
 	default:

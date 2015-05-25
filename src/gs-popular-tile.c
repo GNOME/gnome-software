@@ -70,6 +70,7 @@ app_state_changed_idle (gpointer user_data)
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_INSTALLING:
 	case AS_APP_STATE_REMOVING:
+	case AS_APP_STATE_UPDATABLE:
 		installed = TRUE;
 		name = g_strdup_printf ("%s (%s)",
 					gs_app_get_name (priv->app),
@@ -77,16 +78,6 @@ app_state_changed_idle (gpointer user_data)
 		/* TRANSLATORS: this is the small blue label on the tile
 		 * that tells the user the application is installed */
 		gtk_label_set_label (GTK_LABEL (label), _("Installed"));
-		break;
-	case AS_APP_STATE_UPDATABLE:
-		installed = TRUE;
-		name = g_strdup_printf ("%s (%s)",
-					gs_app_get_name (priv->app),
-					_("Updates"));
-		/* TRANSLATORS: this is the small blue label on the tile
-		 * that tells the user there is an update for the installed
-		 * application available */
-		gtk_label_set_label (GTK_LABEL (label), _("Updates"));
 		break;
 	case AS_APP_STATE_AVAILABLE:
 	default:
