@@ -117,6 +117,11 @@ add_source (GtkListBox *listbox, GsApp *app)
 				g_object_ref (app),
 				(GDestroyNotify) g_object_unref);
 
+	g_object_set_data_full (G_OBJECT (box),
+	                        "sort",
+	                        g_strdup (gs_app_get_name (app)),
+	                        g_free);
+
 	gtk_list_box_prepend (listbox, box);
 	gtk_widget_show_all (box);
 }
@@ -200,7 +205,11 @@ list_sort_func (GtkListBoxRow *a,
                 GtkListBoxRow *b,
                 gpointer user_data)
 {
-	return a < b;
+	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
+	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
+	const gchar *key1 = g_object_get_data (o1, "sort");
+	const gchar *key2 = g_object_get_data (o2, "sort");
+	return g_strcmp0 (key1, key2);
 }
 
 static void
@@ -223,6 +232,11 @@ add_app (GtkListBox *listbox, GsApp *app)
 	gtk_list_box_prepend (listbox, box);
 	gtk_widget_show (widget);
 	gtk_widget_show (box);
+
+	g_object_set_data_full (G_OBJECT (box),
+	                        "sort",
+	                        g_strdup (gs_app_get_name (app)),
+	                        g_free);
 
 	row = gtk_widget_get_parent (box);
 	gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
