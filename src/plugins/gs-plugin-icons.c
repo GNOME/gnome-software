@@ -88,10 +88,9 @@ gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
 		return TRUE;
 
 	/* set up a session */
-	plugin->priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
-								    "gnome-software",
-								    SOUP_SESSION_TIMEOUT, 5000,
-								    NULL);
+	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+	                                                       "gnome-software",
+	                                                       NULL);
 	if (plugin->priv->session == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -100,8 +99,6 @@ gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
 			     plugin->name);
 		return FALSE;
 	}
-	soup_session_add_feature_by_type (plugin->priv->session,
-					  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
 	return TRUE;
 }
 

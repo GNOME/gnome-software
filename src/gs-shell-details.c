@@ -1314,14 +1314,9 @@ gs_shell_details_init (GsShellDetails *shell_details)
 	priv = shell_details->priv;
 
 	/* setup networking */
-	priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
-							    "gnome-software",
-							    SOUP_SESSION_TIMEOUT, 5000,
-							    NULL);
-	if (priv->session != NULL) {
-		soup_session_add_feature_by_type (priv->session,
-						  SOUP_TYPE_PROXY_RESOLVER_DEFAULT);
-	}
+	priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+	                                               "gnome-software",
+	                                               NULL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_addons),
 				      list_header_func,
