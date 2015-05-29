@@ -2585,11 +2585,6 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 		state->state_success = AS_APP_STATE_UNKNOWN;
 		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
-	case GS_PLUGIN_LOADER_ACTION_UPGRADE:
-		state->function_name = "gs_plugin_app_upgrade";
-		state->state_success = AS_APP_STATE_UNKNOWN;
-		state->state_failure = AS_APP_STATE_UNKNOWN;
-		break;
 	default:
 		g_assert_not_reached ();
 		break;
@@ -3560,6 +3555,105 @@ gs_plugin_loader_filename_to_app_finish (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
 
 	return g_task_propagate_pointer (G_TASK (res), error);
+}
+
+/******************************************************************************/
+
+/**
+ * gs_plugin_loader_offline_update_thread_cb:
+ **/
+static void
+gs_plugin_loader_offline_update_thread_cb (GTask *task,
+                                           gpointer object,
+                                           gpointer task_data,
+                                           GCancellable *cancellable)
+{
+	const gchar *function_name = "gs_plugin_offline_update";
+	gboolean ret = TRUE;
+	GError *error = NULL;
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPlugin *plugin;
+	GsPluginOfflineUpdateFunc plugin_func = NULL;
+	guint i;
+	_cleanup_free_ gchar *profile_id = NULL;
+
+	/* run each plugin */
+	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
+		ret = g_task_return_error_if_cancelled (task);
+		if (ret)
+			goto out;
+		ret = g_module_symbol (plugin->module,
+		                       function_name,
+		                       (gpointer *) &plugin_func);
+		if (!ret)
+			continue;
+		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
+		                              plugin->name, function_name);
+		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		ret = plugin_func (plugin, state->list, cancellable, &error);
+		if (!ret) {
+			g_task_return_error (task, error);
+			goto out;
+		}
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		g_clear_pointer (&profile_id, g_free);
+	}
+
+	g_task_return_boolean (task, TRUE);
+out:
+	if (profile_id != NULL)
+		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+}
+
+/**
+ * gs_plugin_loader_offline_update_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_offline_update()
+ * function.
+ **/
+void
+gs_plugin_loader_offline_update_async (GsPluginLoader *plugin_loader,
+                                       GList *apps,
+                                       GCancellable *cancellable,
+                                       GAsyncReadyCallback callback,
+                                       gpointer user_data)
+{
+	GsPluginLoaderAsyncState *state;
+	_cleanup_object_unref_ GTask *task = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->list = g_list_copy_deep (apps, (GCopyFunc) g_object_ref, NULL);
+
+	/* run in a thread */
+	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
+	g_task_set_return_on_cancel (task, TRUE);
+	g_task_run_in_thread (task, gs_plugin_loader_offline_update_thread_cb);
+}
+
+/**
+ * gs_plugin_loader_offline_update_finish:
+ **/
+gboolean
+gs_plugin_loader_offline_update_finish (GsPluginLoader *plugin_loader,
+                                        GAsyncResult *res,
+                                        GError **error)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (G_IS_TASK (res), NULL);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	return g_task_propagate_boolean (G_TASK (res), error);
 }
 
 /******************************************************************************/

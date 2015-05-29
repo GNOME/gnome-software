@@ -673,7 +673,7 @@ gs_plugin_fwupd_upgrade (GsPlugin *plugin,
 /**
  * gs_plugin_app_upgrade:
  */
-gboolean
+static gboolean
 gs_plugin_app_upgrade (GsPlugin *plugin,
 		       GsApp *app,
 		       GCancellable *cancellable,
@@ -701,6 +701,26 @@ gs_plugin_app_upgrade (GsPlugin *plugin,
 				      cancellable, error))
 		return FALSE;
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	return TRUE;
+}
+
+/**
+ * gs_plugin_offline_update:
+ */
+gboolean
+gs_plugin_offline_update (GsPlugin *plugin,
+                          GList *apps,
+                          GCancellable *cancellable,
+                          GError **error)
+{
+	GList *l;
+
+	for (l = apps; l != NULL; l = l->next) {
+		gboolean ret = gs_plugin_app_upgrade (plugin, GS_APP (l->data), cancellable, error);
+		if (!ret)
+			return FALSE;
+	}
+
 	return TRUE;
 }
 

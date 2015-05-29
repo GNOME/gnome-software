@@ -67,7 +67,6 @@ typedef enum {
 	GS_PLUGIN_LOADER_ACTION_INSTALL,
 	GS_PLUGIN_LOADER_ACTION_REMOVE,
 	GS_PLUGIN_LOADER_ACTION_SET_RATING,
-	GS_PLUGIN_LOADER_ACTION_UPGRADE,
 	GS_PLUGIN_LOADER_ACTION_LAST
 } GsPluginLoaderAction;
 
@@ -170,6 +169,14 @@ void		 gs_plugin_loader_filename_to_app_async	(GsPluginLoader	*plugin_loader,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
 GsApp		*gs_plugin_loader_filename_to_app_finish(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
+void		 gs_plugin_loader_offline_update_async	(GsPluginLoader	*plugin_loader,
+							 GList		*apps,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+gboolean	 gs_plugin_loader_offline_update_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
 gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,

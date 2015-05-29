@@ -56,19 +56,17 @@ gs_update_list_add_app (GsUpdateList *update_list,
 	gtk_widget_show (app_row);
 }
 
-GPtrArray *
+GList *
 gs_update_list_get_apps (GsUpdateList *update_list)
 {
+	GList *apps = NULL;
 	GList *l;
-	GPtrArray *apps;
-	GsAppRow *app_row;
 	_cleanup_list_free_ GList *children = NULL;
 
-	apps = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	children = gtk_container_get_children (GTK_CONTAINER (update_list));
 	for (l = children; l != NULL; l = l->next) {
-		app_row = GS_APP_ROW (l->data);
-		g_ptr_array_add (apps, g_object_ref (gs_app_row_get_app (app_row)));
+		GsAppRow *app_row = GS_APP_ROW (l->data);
+		apps = g_list_prepend (apps, gs_app_row_get_app (app_row));
 	}
 	return apps;
 }
