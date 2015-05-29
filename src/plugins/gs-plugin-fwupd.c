@@ -682,6 +682,10 @@ gs_plugin_app_upgrade (GsPlugin *plugin,
 	const gchar *device_id;
 	const gchar *filename;
 
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "fwupd") != 0)
+		return TRUE;
+
 	filename = gs_app_get_source_id_default (app);
 	device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
 	if (filename == NULL || device_id == NULL) {
