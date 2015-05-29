@@ -2356,13 +2356,15 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 		}
 	} else {
-		gs_app_set_state (state->app, state->state_failure);
-		addons = gs_app_get_addons (state->app);
-		for (i = 0; i < addons->len; i++) {
-			GsApp *addon = g_ptr_array_index (addons, i);
-			if (gs_app_get_to_be_installed (addon)) {
-				gs_app_set_state (addon, state->state_failure);
-				gs_app_set_to_be_installed (addon, FALSE);
+		if (state->state_failure != AS_APP_STATE_UNKNOWN) {
+			gs_app_set_state (state->app, state->state_failure);
+			addons = gs_app_get_addons (state->app);
+			for (i = 0; i < addons->len; i++) {
+				GsApp *addon = g_ptr_array_index (addons, i);
+				if (gs_app_get_to_be_installed (addon)) {
+					gs_app_set_state (addon, state->state_failure);
+					gs_app_set_to_be_installed (addon, FALSE);
+				}
 			}
 		}
 		g_task_return_error (task, error);
