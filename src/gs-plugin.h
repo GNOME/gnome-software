@@ -229,10 +229,6 @@ gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_plugin_app_update			(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
 gboolean	 gs_plugin_app_remove			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
