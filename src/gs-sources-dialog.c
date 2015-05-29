@@ -385,7 +385,10 @@ gs_sources_dialog_dispose (GObject *object)
 	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (object);
 	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
 
-	g_clear_object (&priv->plugin_loader);
+	if (priv->plugin_loader != NULL) {
+		g_signal_handlers_disconnect_by_func (priv->plugin_loader, updates_changed_cb, dialog);
+		g_clear_object (&priv->plugin_loader);
+	}
 
 	if (priv->cancellable != NULL) {
 		g_cancellable_cancel (priv->cancellable);
