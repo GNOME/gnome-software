@@ -1472,7 +1472,8 @@ gs_shell_details_init (GsShellDetails *shell_details)
 	/* setup networking */
 	priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
 							    "gnome-software",
-							    SOUP_SESSION_TIMEOUT, 5000,
+							    SOUP_SESSION_TIMEOUT, 60,
+							    SOUP_SESSION_IDLE_TIMEOUT, 60,
 							    NULL);
 	if (priv->session != NULL) {
 		soup_session_add_feature_by_type (priv->session,

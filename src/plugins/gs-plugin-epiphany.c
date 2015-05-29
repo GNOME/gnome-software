@@ -522,7 +522,8 @@ gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
 	/* set up a session */
 	plugin->priv->session = soup_session_sync_new_with_options (SOUP_SESSION_USER_AGENT,
 								    "gnome-software",
-								    SOUP_SESSION_TIMEOUT, 5000,
+								    SOUP_SESSION_TIMEOUT, 60,
+								    SOUP_SESSION_IDLE_TIMEOUT, 60,
 								    NULL);
 	if (plugin->priv->session == NULL) {
 		ret = FALSE;
