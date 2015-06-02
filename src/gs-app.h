@@ -257,6 +257,10 @@ void		 gs_app_set_search_sort_key	(GsApp		*app,
 						 guint		 match_value);
 const gchar	*gs_app_get_search_sort_key	(GsApp		*app);
 
+AsBundle	*gs_app_get_bundle		(GsApp		*app);
+void		 gs_app_set_bundle		(GsApp		*app,
+						 AsBundle	*bundle);
+
 G_END_DECLS
 
 #endif /* __GS_APP_H */

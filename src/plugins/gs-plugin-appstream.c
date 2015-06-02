@@ -656,6 +656,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 			break;
 		}
 	}
+
+	/* set default bundle (if any) */
+	gs_app_set_bundle (app,
+			as_app_get_bundle_default (item));
+
 	return TRUE;
 }
 

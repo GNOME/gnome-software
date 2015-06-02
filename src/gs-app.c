@@ -97,6 +97,7 @@ struct GsAppPrivate
 	guint64			 install_date;
 	guint64			 kudos;
 	gboolean		 to_be_installed;
+	AsBundle		*bundle;
 };
 
 enum {
@@ -1928,6 +1929,30 @@ gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
 }
 
 /**
+ * gs_app_set_bundle:
+ */
+void
+gs_app_set_bundle (GsApp *app, AsBundle *bundle)
+{
+	g_return_if_fail (GS_IS_APP (app));
+
+	/* set default bundle */
+	g_clear_object (&APP_PRIV (app)->bundle);
+	if (bundle != NULL)
+		APP_PRIV (app)->bundle = g_object_ref (bundle);
+}
+
+/**
+ * gs_app_get_bundle:
+ */
+AsBundle*
+gs_app_get_bundle (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return APP_PRIV (app)->bundle;
+}
+
+/**
  * gs_app_subsume:
  *
  * Imports all the useful data from @other into @app.
@@ -2180,6 +2205,8 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (priv->categories);
 	if (priv->keywords != NULL)
 		g_ptr_array_unref (priv->keywords);
+	if (priv->bundle)
+		g_object_unref (priv->bundle);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
