@@ -175,6 +175,9 @@ gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
 	gchar *nl;
 	gchar *tmp;
 
+	if (text == NULL || text[0] == '\0')
+		return;
+
 	/* look for newline */
 	tmp = g_strdup (text);
 	nl = g_strstr_len (tmp, -1, "\n");
