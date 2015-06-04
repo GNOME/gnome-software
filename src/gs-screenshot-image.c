@@ -206,15 +206,16 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 				 SoupMessage *msg,
 				 gpointer user_data)
 {
-	AsImage *im = NULL;
-	GsScreenshotImagePrivate *priv;
 	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
+	GsScreenshotImagePrivate *priv = gs_screenshot_image_get_instance_private (ssimg);
+	AsImage *im = NULL;
 	GError *error = NULL;
 	GdkPixbuf *pixbuf = NULL;
 	GInputStream *stream = NULL;
 	gboolean ret;
 
-	if (msg->status_code == SOUP_STATUS_CANCELLED)
+	/* return immediately if the message was cancelled or if we're in destruction */
+	if (msg->status_code == SOUP_STATUS_CANCELLED || priv->session == NULL)
 		goto out;
 
 	if (msg->status_code != SOUP_STATUS_OK) {
@@ -224,8 +225,6 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		gtk_widget_hide (GTK_WIDGET (ssimg));
 		goto out;
 	}
-
-	priv = gs_screenshot_image_get_instance_private (ssimg);
 
 	/* create a buffer with the data */
 	stream = g_memory_input_stream_new_from_data (msg->response_body->data,
