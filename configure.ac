@@ -89,13 +89,29 @@ AC_ARG_ENABLE(dogtail,
 AM_CONDITIONAL(ENABLE_DOGTAIL, test "$enable_dogtail" != no)
 
 # fwupd
-AC_ARG_ENABLE(firmware, AS_HELP_STRING([--enable-firmware],[enable firmware support]),
-              enable_firmware=$enableval,enable_firmware=yes)
-if test x$enable_firmware = xyes; then
-  PKG_CHECK_MODULES(FWUPD, fwupd)
-  AC_DEFINE(HAVE_FIRMWARE,1,[Build firmware support])
-fi
-AM_CONDITIONAL(HAVE_FIRMWARE, test x$enable_firmware = xyes)
+AC_ARG_ENABLE(firmware,
+              [AS_HELP_STRING([--enable-firmware],
+                              [enable firmware support [default=auto]])],,
+              enable_firmware=maybe)
+
+AS_IF([test "x$enable_firmware" != "xno"], [
+    PKG_CHECK_MODULES(FWUPD,
+                      [fwupd],
+                      [have_firmware=yes],
+                      [have_firmware=no])
+], [
+    have_firmware=no
+])
+
+AS_IF([test "x$have_firmware" = "xyes"], [
+    AC_DEFINE(HAVE_FIRMWARE,1,[Build firmware support])
+], [
+    AS_IF([test "x$enable_firmware" = "xyes"], [
+          AC_MSG_ERROR([Firmware support requested but 'fwupd' was not found])
+    ])
+])
+
+AM_CONDITIONAL(HAVE_FIRMWARE, test x$have_firmware = xyes)
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
@@ -141,5 +157,6 @@ echo "
         cflags:                    ${CFLAGS}
         cppflags:                  ${CPPFLAGS}
         Dogtail:                   ${enable_dogtail}
+        Firmware support:          ${have_firmware}
 "
 
