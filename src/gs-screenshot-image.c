@@ -497,11 +497,10 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 		g_clear_object (&priv->message);
 	}
 	g_clear_object (&priv->screenshot);
-	g_free (priv->cachedir);
-	priv->cachedir = NULL;
-	g_free (priv->filename);
-	priv->filename = NULL;
 	g_clear_object (&priv->session);
+
+	g_clear_pointer (&priv->cachedir, g_free);
+	g_clear_pointer (&priv->filename, g_free);
 
 	GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->destroy (widget);
 }
