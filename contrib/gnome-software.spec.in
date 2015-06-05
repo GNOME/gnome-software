@@ -92,6 +92,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/glib-2.0/schemas/org.gnome.software.gschema.xml
 %dir %{_datadir}/gnome-software/modulesets.d
 %{_datadir}/gnome-software/modulesets.d/*.xml
+%{_datadir}/dbus-1/services/org.freedesktop.PackageKit.service
 
 %changelog
 * #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#
