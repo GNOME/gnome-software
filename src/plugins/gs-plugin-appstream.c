@@ -35,6 +35,7 @@
 
 struct GsPluginPrivate {
 	AsStore			*store;
+	GMutex			 store_mutex;
 	gchar			*locale;
 	gsize			 done_init;
 	gboolean		 has_hi_dpi_support;
@@ -91,6 +92,7 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	g_mutex_init (&plugin->priv->store_mutex);
 	plugin->priv->store = as_store_new ();
 	g_signal_connect (plugin->priv->store, "changed",
 			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
@@ -123,6 +125,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_free (plugin->priv->locale);
 	g_object_unref (plugin->priv->store);
+	g_mutex_clear (&plugin->priv->store_mutex);
 }
 
 #if AS_CHECK_VERSION(0,3,2)
@@ -845,6 +848,8 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	gboolean ret = TRUE;
 	AsApp *item = NULL;
 
+	g_mutex_lock (&plugin->priv->store_mutex);
+
 	/* find anything that matches the ID */
 	id = gs_app_get_id (app);
 	if (id == NULL)
@@ -858,6 +863,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	if (!ret)
 		goto out;
 out:
+	g_mutex_unlock (&plugin->priv->store_mutex);
 	*found = (item != NULL);
 	return ret;
 }
@@ -875,6 +881,8 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	const gchar *pkgname;
 	gboolean ret = TRUE;
 	guint i;
+
+	g_mutex_lock (&plugin->priv->store_mutex);
 
 	/* find anything that matches the ID */
 	sources = gs_app_get_sources (app);
@@ -895,6 +903,7 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	if (!ret)
 		goto out;
 out:
+	g_mutex_unlock (&plugin->priv->store_mutex);
 	return ret;
 }
 
@@ -970,6 +979,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 
 	/* get the two search terms */
 	gs_profile_start (plugin->profile, "appstream::add-category-apps");
+	g_mutex_lock (&plugin->priv->store_mutex);
 	search_id1 = gs_category_get_id (category);
 	parent = gs_category_get_parent (category);
 	if (parent != NULL)
@@ -1001,6 +1011,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		g_object_unref (app);
 	}
 out:
+	g_mutex_unlock (&plugin->priv->store_mutex);
 	gs_profile_stop (plugin->profile, "appstream::add-category-apps");
 	return ret;
 }
@@ -1107,6 +1118,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 
 	/* search categories for the search term */
 	gs_profile_start (plugin->profile, "appstream::search");
+	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		if (g_cancellable_set_error_if_cancelled (cancellable, error))
@@ -1118,6 +1130,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 			goto out;
 	}
 out:
+	g_mutex_unlock (&plugin->priv->store_mutex);
 	gs_profile_stop (plugin->profile, "appstream::search");
 	return ret;
 }
@@ -1147,6 +1160,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 	/* search categories for the search term */
 	gs_profile_start (plugin->profile, "appstream::add_installed");
+	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
@@ -1160,6 +1174,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		}
 	}
 out:
+	g_mutex_unlock (&plugin->priv->store_mutex);
 	gs_profile_stop (plugin->profile, "appstream::add_installed");
 	return ret;
 }
@@ -1234,6 +1249,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 
 	/* find out how many packages are in each category */
 	gs_profile_start (plugin->profile, "appstream::add-categories");
+	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		app = g_ptr_array_index (array, i);
@@ -1243,6 +1259,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			continue;
 		gs_plugin_add_categories_for_app (*list, app);
 	}
+	g_mutex_unlock (&plugin->priv->store_mutex);
 	gs_profile_stop (plugin->profile, "appstream::add-categories");
 	return ret;
 }
@@ -1506,6 +1523,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 			return FALSE;
 	}
 	gs_profile_start (plugin->profile, "appstream::add_popular");
+	g_mutex_lock (&plugin->priv->store_mutex);
 
 	/* get already installed applications */
 	ignore_apps = g_hash_table_new (g_str_hash, g_str_equal);
@@ -1546,6 +1564,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	}
 
 out:
+	g_mutex_unlock (&plugin->priv->store_mutex);
 	gs_profile_stop (plugin->profile, "appstream::add_popular");
 	if (ignore_apps != NULL)
 		g_hash_table_unref (ignore_apps);
