@@ -918,7 +918,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 
 	gs_profile_start (plugin->profile, "appstream::refine");
@@ -965,7 +965,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 
 	/* get the two search terms */
@@ -1102,7 +1102,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 
 	/* search categories for the search term */
@@ -1142,7 +1142,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 
 	/* search categories for the search term */
@@ -1229,7 +1229,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 
 	/* find out how many packages are in each category */
@@ -1243,7 +1243,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			continue;
 		gs_plugin_add_categories_for_app (*list, app);
 	}
-out:
 	gs_profile_stop (plugin->profile, "appstream::add-categories");
 	return ret;
 }
@@ -1504,7 +1503,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		ret = gs_plugin_startup (plugin, error);
 		g_once_init_leave (&plugin->priv->done_init, TRUE);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
 	gs_profile_start (plugin->profile, "appstream::add_popular");
 
