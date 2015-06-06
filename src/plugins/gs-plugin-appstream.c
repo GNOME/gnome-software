@@ -187,6 +187,8 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	guint i;
 	_cleanup_hashtable_unref_ GHashTable *origins = NULL;
 
+	g_mutex_lock (&plugin->priv->store_mutex);
+
 	/* clear all existing applications if the store was invalidated */
 	as_store_remove_all (plugin->priv->store);
 
@@ -247,6 +249,7 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 		}
 	}
 out:
+	g_mutex_unlock (&plugin->priv->store_mutex);
 	gs_profile_stop (plugin->profile, "appstream::startup");
 	return ret;
 }
