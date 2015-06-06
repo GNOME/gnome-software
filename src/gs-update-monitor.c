@@ -554,12 +554,18 @@ gs_update_monitor_finalize (GObject *object)
 		g_source_remove (monitor->reenable_offline_update_id);
 		monitor->reenable_offline_update_id = 0;
 	}
+	if (monitor->control != NULL) {
+		g_signal_handlers_disconnect_by_func (monitor->control, notify_network_state_cb, monitor);
+		g_clear_object (&monitor->control);
+	}
+	if (monitor->offline_update_monitor != NULL) {
+		g_signal_handlers_disconnect_by_func (monitor->offline_update_monitor, offline_update_monitor_cb, monitor);
+		g_clear_object (&monitor->offline_update_monitor);
+	}
 	g_clear_pointer (&monitor->pending_downloads, g_strfreev);
 	g_clear_pointer (&monitor->check_timestamp, g_date_time_unref);
 	g_clear_object (&monitor->task);
-	g_clear_object (&monitor->control);
 	g_clear_object (&monitor->offline_update_file);
-	g_clear_object (&monitor->offline_update_monitor);
 	g_clear_object (&monitor->settings);
 	g_application_release (monitor->application);
 
