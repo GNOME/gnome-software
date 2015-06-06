@@ -187,6 +187,7 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	guint i;
 	_cleanup_hashtable_unref_ GHashTable *origins = NULL;
 
+	gs_profile_start (plugin->profile, "appstream::startup");
 	g_mutex_lock (&plugin->priv->store_mutex);
 
 	/* clear all existing applications if the store was invalidated */
@@ -199,7 +200,6 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 		*tmp = '\0';
 
 	/* Parse the XML */
-	gs_profile_start (plugin->profile, "appstream::startup");
 	if (g_getenv ("GNOME_SOFTWARE_PREFER_LOCAL") != NULL) {
 		as_store_set_add_flags (plugin->priv->store,
 					AS_STORE_ADD_FLAG_PREFER_LOCAL);
