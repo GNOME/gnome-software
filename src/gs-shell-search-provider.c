@@ -336,9 +336,16 @@ search_provider_dispose (GObject *obj)
 
 	g_clear_object (&self->object_manager);
 	g_clear_object (&self->plugin_loader);
-	g_application_release (g_application_get_default ());
 
 	G_OBJECT_CLASS (gs_shell_search_provider_parent_class)->dispose (obj);
+}
+
+static void
+search_provider_finalize (GObject *obj)
+{
+	g_application_release (g_application_get_default ());
+
+	G_OBJECT_CLASS (gs_shell_search_provider_parent_class)->finalize (obj);
 }
 
 static void
@@ -363,6 +370,7 @@ gs_shell_search_provider_class_init (GsShellSearchProviderClass *klass)
 	GObjectClass *oclass = G_OBJECT_CLASS (klass);
 
 	oclass->dispose = search_provider_dispose;
+	oclass->finalize = search_provider_finalize;
 }
 
 GsShellSearchProvider *
