@@ -25,8 +25,6 @@
 
 #include "gs-vendor.h"
 
-static void     gs_vendor_finalize	(GObject          *object);
-
 #define GS_VENDOR_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_VENDOR, GsVendorPrivate))
 
 struct GsVendorPrivate
@@ -35,18 +33,6 @@ struct GsVendorPrivate
 };
 
 G_DEFINE_TYPE (GsVendor, gs_vendor, G_TYPE_OBJECT)
-
-/**
- * gs_vendor_class_init:
- * @klass: The GsVendorClass
- **/
-static void
-gs_vendor_class_init (GsVendorClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	object_class->finalize = gs_vendor_finalize;
-	g_type_class_add_private (klass, sizeof (GsVendorPrivate));
-}
 
 /**
  * gs_vendor_type_to_string:
@@ -141,6 +127,18 @@ gs_vendor_finalize (GObject *object)
 	g_key_file_free (vendor->priv->file);
 
 	G_OBJECT_CLASS (gs_vendor_parent_class)->finalize (object);
+}
+
+/**
+ * gs_vendor_class_init:
+ * @klass: The GsVendorClass
+ **/
+static void
+gs_vendor_class_init (GsVendorClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->finalize = gs_vendor_finalize;
+	g_type_class_add_private (klass, sizeof (GsVendorPrivate));
 }
 
 /**

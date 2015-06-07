@@ -31,8 +31,6 @@
 
 #define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */
 
-static void	gs_plugin_loader_finalize	(GObject	*object);
-
 struct GsPluginLoaderPrivate
 {
 	GPtrArray		*plugins;
@@ -3054,6 +3052,45 @@ gs_plugin_loader_plugin_free (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_loader_finalize:
+ * @object: The object to finalize
+ **/
+static void
+gs_plugin_loader_finalize (GObject *object)
+{
+	GsPluginLoader *plugin_loader;
+
+	g_return_if_fail (object != NULL);
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (object));
+
+	plugin_loader = GS_PLUGIN_LOADER (object);
+
+	g_return_if_fail (plugin_loader->priv != NULL);
+
+	if (plugin_loader->priv->updates_changed_id != 0)
+		g_source_remove (plugin_loader->priv->updates_changed_id);
+
+	/* application stop */
+	gs_profile_stop (plugin_loader->priv->profile, "GsPluginLoader");
+
+	/* run the plugins */
+	gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
+
+	g_object_unref (plugin_loader->priv->settings);
+	g_object_unref (plugin_loader->priv->profile);
+	g_strfreev (plugin_loader->priv->compatible_projects);
+	g_hash_table_unref (plugin_loader->priv->app_cache);
+	g_ptr_array_unref (plugin_loader->priv->pending_apps);
+	g_ptr_array_unref (plugin_loader->priv->plugins);
+	g_free (plugin_loader->priv->location);
+
+	g_mutex_clear (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_clear (&plugin_loader->priv->app_cache_mutex);
+
+	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->finalize (object);
+}
+
+/**
  * gs_plugin_loader_class_init:
  * @klass: The GsPluginLoaderClass
  **/
@@ -3123,45 +3160,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	for (i = 0; projects[i] != NULL; i++)
 		g_debug ("compatible-project: %s", projects[i]);
 	plugin_loader->priv->compatible_projects = projects;
-}
-
-/**
- * gs_plugin_loader_finalize:
- * @object: The object to finalize
- **/
-static void
-gs_plugin_loader_finalize (GObject *object)
-{
-	GsPluginLoader *plugin_loader;
-
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (object));
-
-	plugin_loader = GS_PLUGIN_LOADER (object);
-
-	g_return_if_fail (plugin_loader->priv != NULL);
-
-	if (plugin_loader->priv->updates_changed_id != 0)
-		g_source_remove (plugin_loader->priv->updates_changed_id);
-
-	/* application stop */
-	gs_profile_stop (plugin_loader->priv->profile, "GsPluginLoader");
-
-	/* run the plugins */
-	gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
-
-	g_object_unref (plugin_loader->priv->settings);
-	g_object_unref (plugin_loader->priv->profile);
-	g_strfreev (plugin_loader->priv->compatible_projects);
-	g_hash_table_unref (plugin_loader->priv->app_cache);
-	g_ptr_array_unref (plugin_loader->priv->pending_apps);
-	g_ptr_array_unref (plugin_loader->priv->plugins);
-	g_free (plugin_loader->priv->location);
-
-	g_mutex_clear (&plugin_loader->priv->pending_apps_mutex);
-	g_mutex_clear (&plugin_loader->priv->app_cache_mutex);
-
-	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->finalize (object);
 }
 
 /**

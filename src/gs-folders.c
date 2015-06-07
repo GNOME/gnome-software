@@ -31,8 +31,6 @@
 #define APP_FOLDER_SCHEMA       "org.gnome.desktop.app-folders"
 #define APP_FOLDER_CHILD_SCHEMA "org.gnome.desktop.app-folders.folder"
 
-static void	gs_folders_finalize	(GObject	*object);
-
 /* We are loading folders from a settings with type
  * a{sas}, which maps folder ids to list of app ids.
  *
@@ -167,13 +165,6 @@ gs_folder_free (GsFolder *folder)
 }
 
 static void
-gs_folders_class_init (GsFoldersClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	object_class->finalize = gs_folders_finalize;
-}
-
-static void
 load (GsFolders *folders)
 {
 	GsFolder *folder;
@@ -284,15 +275,6 @@ clear (GsFolders *folders)
 }
 
 static void
-gs_folders_init (GsFolders *folders)
-{
-	folders->priv = gs_folders_get_instance_private (folders);
-
-	folders->priv->settings = g_settings_new (APP_FOLDER_SCHEMA);
-	load (folders);
-}
-
-static void
 gs_folders_finalize (GObject *object)
 {
 	GsFolders *folders = GS_FOLDERS (object);
@@ -301,6 +283,22 @@ gs_folders_finalize (GObject *object)
 	g_object_unref (folders->priv->settings);
 
 	G_OBJECT_CLASS (gs_folders_parent_class)->finalize (object);
+}
+
+static void
+gs_folders_class_init (GsFoldersClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->finalize = gs_folders_finalize;
+}
+
+static void
+gs_folders_init (GsFolders *folders)
+{
+	folders->priv = gs_folders_get_instance_private (folders);
+
+	folders->priv->settings = g_settings_new (APP_FOLDER_SCHEMA);
+	load (folders);
 }
 
 static GsFolders *

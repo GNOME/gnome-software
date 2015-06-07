@@ -26,8 +26,6 @@
 #include "gs-cleanup.h"
 #include "gs-profile.h"
 
-static void	gs_profile_finalize	(GObject	*object);
-
 struct GsProfilePrivate
 {
 	GPtrArray	*current;
@@ -255,6 +253,22 @@ gs_profile_dump (GsProfile *profile)
 }
 
 /**
+ * gs_profile_finalize:
+ **/
+static void
+gs_profile_finalize (GObject *object)
+{
+	GsProfile *profile = GS_PROFILE (object);
+	GsProfilePrivate *priv = profile->priv;
+
+	g_ptr_array_foreach (priv->current, (GFunc) gs_profile_item_free, NULL);
+	g_ptr_array_unref (priv->current);
+	g_ptr_array_unref (priv->archived);
+
+	G_OBJECT_CLASS (gs_profile_parent_class)->finalize (object);
+}
+
+/**
  * gs_profile_class_init:
  **/
 static void
@@ -275,22 +289,6 @@ gs_profile_init (GsProfile *profile)
 	profile->priv->unthreaded = g_thread_self ();
 	profile->priv->archived = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_profile_item_free);
 	g_mutex_init (&profile->priv->mutex);
-}
-
-/**
- * gs_profile_finalize:
- **/
-static void
-gs_profile_finalize (GObject *object)
-{
-	GsProfile *profile = GS_PROFILE (object);
-	GsProfilePrivate *priv = profile->priv;
-
-	g_ptr_array_foreach (priv->current, (GFunc) gs_profile_item_free, NULL);
-	g_ptr_array_unref (priv->current);
-	g_ptr_array_unref (priv->archived);
-
-	G_OBJECT_CLASS (gs_profile_parent_class)->finalize (object);
 }
 
 /**

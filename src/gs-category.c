@@ -26,8 +26,6 @@
 
 #include "gs-category.h"
 
-static void	gs_category_finalize	(GObject	*object);
-
 struct GsCategoryPrivate
 {
 	gchar		*id;
@@ -180,19 +178,6 @@ gs_category_sort_subcategories (GsCategory *category)
 }
 
 static void
-gs_category_class_init (GsCategoryClass *klass)
-{
-	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	object_class->finalize = gs_category_finalize;
-}
-
-static void
-gs_category_init (GsCategory *category)
-{
-	category->priv = gs_category_get_instance_private (category);
-}
-
-static void
 gs_category_finalize (GObject *object)
 {
 	GsCategory *category = GS_CATEGORY (object);
@@ -206,6 +191,19 @@ gs_category_finalize (GObject *object)
 	g_list_free_full (priv->subcategories, g_object_unref);
 
 	G_OBJECT_CLASS (gs_category_parent_class)->finalize (object);
+}
+
+static void
+gs_category_class_init (GsCategoryClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->finalize = gs_category_finalize;
+}
+
+static void
+gs_category_init (GsCategory *category)
+{
+	category->priv = gs_category_get_instance_private (category);
 }
 
 GsCategory *

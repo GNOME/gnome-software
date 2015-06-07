@@ -51,8 +51,6 @@
 #include "gs-cleanup.h"
 #include "gs-utils.h"
 
-static void	gs_app_finalize	(GObject	*object);
-
 struct GsAppPrivate
 {
 	gchar			*id;
@@ -2090,6 +2088,54 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 }
 
 /**
+ * gs_app_finalize:
+ * @object: The object to finalize
+ **/
+static void
+gs_app_finalize (GObject *object)
+{
+	GsApp *app = GS_APP (object);
+	GsAppPrivate *priv = APP_PRIV (app);
+
+	g_free (priv->id);
+	g_free (priv->name);
+	g_hash_table_unref (priv->urls);
+	g_free (priv->licence);
+	g_free (priv->menu_path);
+	g_free (priv->origin);
+	g_ptr_array_unref (priv->sources);
+	g_ptr_array_unref (priv->source_ids);
+	g_free (priv->project_group);
+	g_free (priv->version);
+	g_free (priv->version_ui);
+	g_free (priv->summary);
+	g_free (priv->summary_missing);
+	g_free (priv->description);
+	g_ptr_array_unref (priv->screenshots);
+	g_free (priv->update_version);
+	g_free (priv->update_version_ui);
+	g_free (priv->update_details);
+	g_free (priv->management_plugin);
+	g_hash_table_unref (priv->metadata);
+	g_hash_table_unref (priv->addons_hash);
+	g_ptr_array_unref (priv->addons);
+	g_hash_table_unref (priv->related_hash);
+	g_ptr_array_unref (priv->related);
+	g_ptr_array_unref (priv->history);
+	if (priv->icon != NULL)
+		g_object_unref (priv->icon);
+	if (priv->pixbuf != NULL)
+		g_object_unref (priv->pixbuf);
+	if (priv->featured_pixbuf != NULL)
+		g_object_unref (priv->featured_pixbuf);
+	g_ptr_array_unref (priv->categories);
+	if (priv->keywords != NULL)
+		g_ptr_array_unref (priv->keywords);
+
+	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
+}
+
+/**
  * gs_app_class_init:
  * @klass: The GsAppClass
  **/
@@ -2207,54 +2253,6 @@ gs_app_init (GsApp *app)
 	                                    g_str_equal,
 	                                    g_free,
 	                                    g_free);
-}
-
-/**
- * gs_app_finalize:
- * @object: The object to finalize
- **/
-static void
-gs_app_finalize (GObject *object)
-{
-	GsApp *app = GS_APP (object);
-	GsAppPrivate *priv = APP_PRIV (app);
-
-	g_free (priv->id);
-	g_free (priv->name);
-	g_hash_table_unref (priv->urls);
-	g_free (priv->licence);
-	g_free (priv->menu_path);
-	g_free (priv->origin);
-	g_ptr_array_unref (priv->sources);
-	g_ptr_array_unref (priv->source_ids);
-	g_free (priv->project_group);
-	g_free (priv->version);
-	g_free (priv->version_ui);
-	g_free (priv->summary);
-	g_free (priv->summary_missing);
-	g_free (priv->description);
-	g_ptr_array_unref (priv->screenshots);
-	g_free (priv->update_version);
-	g_free (priv->update_version_ui);
-	g_free (priv->update_details);
-	g_free (priv->management_plugin);
-	g_hash_table_unref (priv->metadata);
-	g_hash_table_unref (priv->addons_hash);
-	g_ptr_array_unref (priv->addons);
-	g_hash_table_unref (priv->related_hash);
-	g_ptr_array_unref (priv->related);
-	g_ptr_array_unref (priv->history);
-	if (priv->icon != NULL)
-		g_object_unref (priv->icon);
-	if (priv->pixbuf != NULL)
-		g_object_unref (priv->pixbuf);
-	if (priv->featured_pixbuf != NULL)
-		g_object_unref (priv->featured_pixbuf);
-	g_ptr_array_unref (priv->categories);
-	if (priv->keywords != NULL)
-		g_ptr_array_unref (priv->keywords);
-
-	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
 
 /**

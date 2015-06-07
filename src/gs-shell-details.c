@@ -36,8 +36,6 @@
 #include "gs-screenshot-image.h"
 #include "gs-star-widget.h"
 
-static void	gs_shell_details_finalize	(GObject	*object);
-
 typedef enum {
 	GS_SHELL_DETAILS_STATE_LOADING,
 	GS_SHELL_DETAILS_STATE_READY
@@ -1247,6 +1245,26 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 }
 
 /**
+ * gs_shell_details_finalize:
+ **/
+static void
+gs_shell_details_finalize (GObject *object)
+{
+	GsShellDetails *shell_details = GS_SHELL_DETAILS (object);
+	GsShellDetailsPrivate *priv = shell_details->priv;
+
+	g_object_unref (priv->builder);
+	g_object_unref (priv->plugin_loader);
+	g_object_unref (priv->cancellable);
+	if (priv->app != NULL)
+		g_object_unref (priv->app);
+	if (priv->session != NULL)
+		g_object_unref (priv->session);
+
+	G_OBJECT_CLASS (gs_shell_details_parent_class)->finalize (object);
+}
+
+/**
  * gs_shell_details_class_init:
  **/
 static void
@@ -1324,26 +1342,6 @@ gs_shell_details_init (GsShellDetails *shell_details)
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_addons),
 				    list_sort_func,
 				    shell_details, NULL);
-}
-
-/**
- * gs_shell_details_finalize:
- **/
-static void
-gs_shell_details_finalize (GObject *object)
-{
-	GsShellDetails *shell_details = GS_SHELL_DETAILS (object);
-	GsShellDetailsPrivate *priv = shell_details->priv;
-
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
-	if (priv->app != NULL)
-		g_object_unref (priv->app);
-	if (priv->session != NULL)
-		g_object_unref (priv->session);
-
-	G_OBJECT_CLASS (gs_shell_details_parent_class)->finalize (object);
 }
 
 /**

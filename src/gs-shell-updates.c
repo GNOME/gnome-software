@@ -38,8 +38,6 @@
 #include <gdesktop-enums.h>
 #include <langinfo.h>
 
-static void	gs_shell_updates_finalize	(GObject	*object);
-
 typedef enum {
 	GS_SHELL_UPDATES_STATE_STARTUP,
 	GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES,
@@ -962,6 +960,30 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 }
 
 /**
+ * gs_shell_updates_finalize:
+ **/
+static void
+gs_shell_updates_finalize (GObject *object)
+{
+	GsShellUpdates *shell_updates = GS_SHELL_UPDATES (object);
+	GsShellUpdatesPrivate *priv = shell_updates->priv;
+
+	if (priv->cancellable_refresh != NULL) {
+		g_cancellable_cancel (priv->cancellable_refresh);
+		g_object_unref (priv->cancellable_refresh);
+	}
+
+	g_object_unref (priv->builder);
+	g_object_unref (priv->plugin_loader);
+	g_object_unref (priv->cancellable);
+	g_object_unref (priv->control);
+	g_object_unref (priv->settings);
+	g_object_unref (priv->desktop_settings);
+
+	G_OBJECT_CLASS (gs_shell_updates_parent_class)->finalize (object);
+}
+
+/**
  * gs_shell_updates_class_init:
  **/
 static void
@@ -1004,30 +1026,6 @@ gs_shell_updates_init (GsShellUpdates *shell_updates)
 	ampm = nl_langinfo (AM_STR);
 	if (ampm != NULL && *ampm != '\0')
 		shell_updates->priv->ampm_available = TRUE;
-}
-
-/**
- * gs_shell_updates_finalize:
- **/
-static void
-gs_shell_updates_finalize (GObject *object)
-{
-	GsShellUpdates *shell_updates = GS_SHELL_UPDATES (object);
-	GsShellUpdatesPrivate *priv = shell_updates->priv;
-
-	if (priv->cancellable_refresh != NULL) {
-		g_cancellable_cancel (priv->cancellable_refresh);
-		g_object_unref (priv->cancellable_refresh);
-	}
-
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
-	g_object_unref (priv->control);
-	g_object_unref (priv->settings);
-	g_object_unref (priv->desktop_settings);
-
-	G_OBJECT_CLASS (gs_shell_updates_parent_class)->finalize (object);
 }
 
 /**

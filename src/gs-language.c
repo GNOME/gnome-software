@@ -26,8 +26,6 @@
 
 #include "gs-language.h"
 
-static void     gs_language_finalize	(GObject	  *object);
-
 #define GS_LANGUAGE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_LANGUAGE, GsLanguagePrivate))
 
 struct GsLanguagePrivate

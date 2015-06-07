@@ -35,8 +35,6 @@
 #include "gs-app-folder-dialog.h"
 #include "gs-folders.h"
 
-static void	gs_shell_installed_finalize	(GObject	*object);
-
 struct GsShellInstalledPrivate
 {
 	GsPluginLoader		*plugin_loader;
@@ -763,6 +761,25 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 }
 
 /**
+ * gs_shell_installed_finalize:
+ **/
+static void
+gs_shell_installed_finalize (GObject *object)
+{
+	GsShellInstalled *shell_installed = GS_SHELL_INSTALLED (object);
+	GsShellInstalledPrivate *priv = shell_installed->priv;
+
+	g_object_unref (priv->sizegroup_image);
+	g_object_unref (priv->sizegroup_name);
+
+	g_object_unref (priv->builder);
+	g_object_unref (priv->plugin_loader);
+	g_object_unref (priv->cancellable);
+
+	G_OBJECT_CLASS (gs_shell_installed_parent_class)->finalize (object);
+}
+
+/**
  * gs_shell_installed_class_init:
  **/
 static void
@@ -798,25 +815,6 @@ gs_shell_installed_init (GsShellInstalled *shell_installed)
 	shell_installed->priv = gs_shell_installed_get_instance_private (shell_installed);
 	shell_installed->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_installed->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-}
-
-/**
- * gs_shell_installed_finalize:
- **/
-static void
-gs_shell_installed_finalize (GObject *object)
-{
-	GsShellInstalled *shell_installed = GS_SHELL_INSTALLED (object);
-	GsShellInstalledPrivate *priv = shell_installed->priv;
-
-	g_object_unref (priv->sizegroup_image);
-	g_object_unref (priv->sizegroup_name);
-
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
-
-	G_OBJECT_CLASS (gs_shell_installed_parent_class)->finalize (object);
 }
 
 /**

@@ -31,8 +31,6 @@
 #include "gs-utils.h"
 #include "gs-app-row.h"
 
-static void	gs_shell_search_finalize	(GObject	*object);
-
 struct GsShellSearchPrivate
 {
 	GsPluginLoader		*plugin_loader;
@@ -408,6 +406,31 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 }
 
 /**
+ * gs_shell_search_finalize:
+ **/
+static void
+gs_shell_search_finalize (GObject *object)
+{
+	GsShellSearch *shell_search = GS_SHELL_SEARCH (object);
+	GsShellSearchPrivate *priv = shell_search->priv;
+
+	g_object_unref (priv->sizegroup_image);
+	g_object_unref (priv->sizegroup_name);
+
+	g_object_unref (priv->builder);
+	g_object_unref (priv->plugin_loader);
+	g_object_unref (priv->cancellable);
+
+	if (priv->search_cancellable != NULL)
+		g_object_unref (priv->search_cancellable);
+
+	g_free (priv->appid_to_show);
+	g_free (priv->value);
+
+	G_OBJECT_CLASS (gs_shell_search_parent_class)->finalize (object);
+}
+
+/**
  * gs_shell_search_class_init:
  **/
 static void
@@ -440,31 +463,6 @@ gs_shell_search_init (GsShellSearch *shell_search)
 	shell_search->priv = gs_shell_search_get_instance_private (shell_search);
 	shell_search->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_search->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-}
-
-/**
- * gs_shell_search_finalize:
- **/
-static void
-gs_shell_search_finalize (GObject *object)
-{
-	GsShellSearch *shell_search = GS_SHELL_SEARCH (object);
-	GsShellSearchPrivate *priv = shell_search->priv;
-
-	g_object_unref (priv->sizegroup_image);
-	g_object_unref (priv->sizegroup_name);
-
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
-
-	if (priv->search_cancellable != NULL)
-		g_object_unref (priv->search_cancellable);
-
-	g_free (priv->appid_to_show);
-	g_free (priv->value);
-
-	G_OBJECT_CLASS (gs_shell_search_parent_class)->finalize (object);
 }
 
 /**

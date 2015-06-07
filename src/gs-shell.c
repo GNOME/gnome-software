@@ -48,8 +48,6 @@ static const gchar *page_name[] = {
 	"extras",
 };
 
-static void	gs_shell_finalize	(GObject	*object);
-
 typedef struct {
 	GsShellMode	 mode;
 	GtkWidget	*focus;
@@ -773,6 +771,23 @@ gs_shell_show_details (GsShell *shell, const gchar *id)
 }
 
 /**
+ * gs_shell_finalize:
+ **/
+static void
+gs_shell_finalize (GObject *object)
+{
+	GsShell *shell = GS_SHELL (object);
+	GsShellPrivate *priv = shell->priv;
+
+	g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) free_back_entry);
+	g_object_unref (priv->builder);
+	g_object_unref (priv->cancellable);
+	g_object_unref (priv->plugin_loader);
+
+	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
+}
+
+/**
  * gs_shell_class_init:
  **/
 static void
@@ -798,23 +813,6 @@ gs_shell_init (GsShell *shell)
 	shell->priv = gs_shell_get_instance_private (shell);
 	shell->priv->back_entry_stack = g_queue_new ();
 	shell->priv->ignore_primary_buttons = FALSE;
-}
-
-/**
- * gs_shell_finalize:
- **/
-static void
-gs_shell_finalize (GObject *object)
-{
-	GsShell *shell = GS_SHELL (object);
-	GsShellPrivate *priv = shell->priv;
-
-	g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) free_back_entry);
-	g_object_unref (priv->builder);
-	g_object_unref (priv->cancellable);
-	g_object_unref (priv->plugin_loader);
-
-	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
 }
 
 /**
