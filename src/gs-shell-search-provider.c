@@ -329,10 +329,13 @@ search_provider_dispose (GObject *obj)
 		g_clear_object (&self->cancellable);
 	}
 
+	if (self->metas_cache != NULL) {
+		g_hash_table_destroy (self->metas_cache);
+		self->metas_cache = NULL;
+	}
+
 	g_clear_object (&self->object_manager);
 	g_clear_object (&self->plugin_loader);
-	g_clear_object (&self->cancellable);
-	g_hash_table_destroy (self->metas_cache);
 	g_application_release (g_application_get_default ());
 
 	G_OBJECT_CLASS (gs_shell_search_provider_parent_class)->dispose (obj);
