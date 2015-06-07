@@ -534,17 +534,17 @@ gs_shell_overview_init (GsShellOverview *shell)
 }
 
 static void
-gs_shell_overview_finalize (GObject *object)
+gs_shell_overview_dispose (GObject *object)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (object);
 	GsShellOverviewPrivate *priv = shell->priv;
 
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
+	g_clear_object (&priv->builder);
+	g_clear_object (&priv->plugin_loader);
+	g_clear_object (&priv->cancellable);
 	g_free (priv->category_of_day);
 
-	G_OBJECT_CLASS (gs_shell_overview_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_shell_overview_parent_class)->dispose (object);
 }
 
 static void
@@ -568,7 +568,7 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_shell_overview_finalize;
+	object_class->dispose = gs_shell_overview_dispose;
 	klass->refreshed = gs_shell_overview_refreshed;
 
 	signals [SIGNAL_REFRESHED] =

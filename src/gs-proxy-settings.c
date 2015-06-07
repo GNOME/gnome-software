@@ -161,26 +161,28 @@ gs_proxy_settings_init (GsProxySettings *proxy_settings)
 }
 
 static void
-gs_proxy_settings_finalize (GObject *object)
+gs_proxy_settings_dispose (GObject *object)
 {
 	GsProxySettings *proxy_settings = GS_PROXY_SETTINGS (object);
 
-	g_cancellable_cancel (proxy_settings->cancellable);
+	if (proxy_settings->cancellable != NULL) {
+		g_cancellable_cancel (proxy_settings->cancellable);
+		g_clear_object (&proxy_settings->cancellable);
+	}
 
-	g_clear_object (&proxy_settings->cancellable);
 	g_clear_object (&proxy_settings->control);
 	g_clear_object (&proxy_settings->settings);
 	g_clear_object (&proxy_settings->settings_http);
 	g_clear_object (&proxy_settings->settings_ftp);
 
-	G_OBJECT_CLASS (gs_proxy_settings_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_proxy_settings_parent_class)->dispose (object);
 }
 
 static void
 gs_proxy_settings_class_init (GsProxySettingsClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	object_class->finalize = gs_proxy_settings_finalize;
+	object_class->dispose = gs_proxy_settings_dispose;
 }
 
 GsProxySettings *

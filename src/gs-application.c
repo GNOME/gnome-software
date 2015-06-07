@@ -526,7 +526,7 @@ gs_application_activate (GApplication *application)
 }
 
 static void
-gs_application_finalize (GObject *object)
+gs_application_dispose (GObject *object)
 {
 	GsApplication *app = GS_APPLICATION (object);
 
@@ -546,7 +546,7 @@ gs_application_finalize (GObject *object)
 	g_clear_object (&app->dbus_helper);
 	g_clear_object (&app->settings);
 
-	G_OBJECT_CLASS (gs_application_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_application_parent_class)->dispose (object);
 }
 
 static gboolean
@@ -661,7 +661,7 @@ out:
 static void
 gs_application_class_init (GsApplicationClass *class)
 {
-	G_OBJECT_CLASS (class)->finalize = gs_application_finalize;
+	G_OBJECT_CLASS (class)->dispose = gs_application_dispose;
 	G_APPLICATION_CLASS (class)->startup = gs_application_startup;
 	G_APPLICATION_CLASS (class)->activate = gs_application_activate;
 	G_APPLICATION_CLASS (class)->local_command_line = gs_application_local_command_line;

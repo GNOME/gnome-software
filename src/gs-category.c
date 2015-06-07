@@ -178,6 +178,20 @@ gs_category_sort_subcategories (GsCategory *category)
 }
 
 static void
+gs_category_dispose (GObject *object)
+{
+	GsCategory *category = GS_CATEGORY (object);
+	GsCategoryPrivate *priv = category->priv;
+
+	if (priv->subcategories != NULL) {
+		g_list_free_full (priv->subcategories, g_object_unref);
+		priv->subcategories = NULL;
+	}
+
+	G_OBJECT_CLASS (gs_category_parent_class)->dispose (object);
+}
+
+static void
 gs_category_finalize (GObject *object)
 {
 	GsCategory *category = GS_CATEGORY (object);
@@ -188,7 +202,6 @@ gs_category_finalize (GObject *object)
 		                              (gpointer *) &priv->parent);
 	g_free (priv->id);
 	g_free (priv->name);
-	g_list_free_full (priv->subcategories, g_object_unref);
 
 	G_OBJECT_CLASS (gs_category_parent_class)->finalize (object);
 }
@@ -197,6 +210,7 @@ static void
 gs_category_class_init (GsCategoryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->dispose = gs_category_dispose;
 	object_class->finalize = gs_category_finalize;
 }
 

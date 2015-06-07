@@ -396,7 +396,7 @@ set_plugin_loader (GsUpdateDialog *dialog, GsPluginLoader *plugin_loader)
 }
 
 static void
-gs_update_dialog_finalize (GObject *object)
+gs_update_dialog_dispose (GObject *object)
 {
 	GsUpdateDialog *dialog = GS_UPDATE_DIALOG (object);
 	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
@@ -413,7 +413,7 @@ gs_update_dialog_finalize (GObject *object)
 
 	g_clear_object (&priv->plugin_loader);
 
-	G_OBJECT_CLASS (gs_update_dialog_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_update_dialog_parent_class)->dispose (object);
 }
 
 static void
@@ -460,7 +460,7 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_update_dialog_finalize;
+	object_class->dispose = gs_update_dialog_dispose;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-update-dialog.ui");
 

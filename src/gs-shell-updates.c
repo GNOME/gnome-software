@@ -960,27 +960,27 @@ gs_shell_updates_setup (GsShellUpdates *shell_updates,
 }
 
 /**
- * gs_shell_updates_finalize:
+ * gs_shell_updates_dispose:
  **/
 static void
-gs_shell_updates_finalize (GObject *object)
+gs_shell_updates_dispose (GObject *object)
 {
 	GsShellUpdates *shell_updates = GS_SHELL_UPDATES (object);
 	GsShellUpdatesPrivate *priv = shell_updates->priv;
 
 	if (priv->cancellable_refresh != NULL) {
 		g_cancellable_cancel (priv->cancellable_refresh);
-		g_object_unref (priv->cancellable_refresh);
+		g_clear_object (&priv->cancellable_refresh);
 	}
 
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
-	g_object_unref (priv->control);
-	g_object_unref (priv->settings);
-	g_object_unref (priv->desktop_settings);
+	g_clear_object (&priv->builder);
+	g_clear_object (&priv->plugin_loader);
+	g_clear_object (&priv->cancellable);
+	g_clear_object (&priv->control);
+	g_clear_object (&priv->settings);
+	g_clear_object (&priv->desktop_settings);
 
-	G_OBJECT_CLASS (gs_shell_updates_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_shell_updates_parent_class)->dispose (object);
 }
 
 /**
@@ -992,7 +992,7 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_shell_updates_finalize;
+	object_class->dispose = gs_shell_updates_dispose;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-updates.ui");
 

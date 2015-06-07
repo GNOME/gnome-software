@@ -169,7 +169,7 @@ list_sort_func (GtkListBoxRow *a,
 }
 
 static void
-gs_update_list_finalize (GObject *object)
+gs_update_list_dispose (GObject *object)
 {
 	GsUpdateList *update_list = GS_UPDATE_LIST (object);
 	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
@@ -177,7 +177,7 @@ gs_update_list_finalize (GObject *object)
 	g_clear_object (&priv->sizegroup_image);
 	g_clear_object (&priv->sizegroup_name);
 
-	G_OBJECT_CLASS (gs_update_list_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_update_list_parent_class)->dispose (object);
 }
 
 static void
@@ -201,7 +201,7 @@ gs_update_list_class_init (GsUpdateListClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
-	object_class->finalize = gs_update_list_finalize;
+	object_class->dispose = gs_update_list_dispose;
 }
 
 GtkWidget *

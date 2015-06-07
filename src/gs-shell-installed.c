@@ -761,22 +761,22 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 }
 
 /**
- * gs_shell_installed_finalize:
+ * gs_shell_installed_dispose:
  **/
 static void
-gs_shell_installed_finalize (GObject *object)
+gs_shell_installed_dispose (GObject *object)
 {
 	GsShellInstalled *shell_installed = GS_SHELL_INSTALLED (object);
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 
-	g_object_unref (priv->sizegroup_image);
-	g_object_unref (priv->sizegroup_name);
+	g_clear_object (&priv->sizegroup_image);
+	g_clear_object (&priv->sizegroup_name);
 
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
+	g_clear_object (&priv->builder);
+	g_clear_object (&priv->plugin_loader);
+	g_clear_object (&priv->cancellable);
 
-	G_OBJECT_CLASS (gs_shell_installed_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_shell_installed_parent_class)->dispose (object);
 }
 
 /**
@@ -789,7 +789,7 @@ gs_shell_installed_class_init (GsShellInstalledClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_shell_installed_finalize;
+	object_class->dispose = gs_shell_installed_dispose;
 	page_class->app_removed = gs_shell_installed_app_removed;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-installed.ui");

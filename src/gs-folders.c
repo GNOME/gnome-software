@@ -275,12 +275,21 @@ clear (GsFolders *folders)
 }
 
 static void
+gs_folders_dispose (GObject *object)
+{
+	GsFolders *folders = GS_FOLDERS (object);
+
+	g_clear_object (&folders->priv->settings);
+
+	G_OBJECT_CLASS (gs_folders_parent_class)->dispose (object);
+}
+
+static void
 gs_folders_finalize (GObject *object)
 {
 	GsFolders *folders = GS_FOLDERS (object);
 
 	clear (folders);
-	g_object_unref (folders->priv->settings);
 
 	G_OBJECT_CLASS (gs_folders_parent_class)->finalize (object);
 }
@@ -289,6 +298,7 @@ static void
 gs_folders_class_init (GsFoldersClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->dispose = gs_folders_dispose;
 	object_class->finalize = gs_folders_finalize;
 }
 

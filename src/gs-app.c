@@ -2088,6 +2088,28 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 }
 
 /**
+ * gs_app_dispose:
+ * @object: The object to dispose
+ **/
+static void
+gs_app_dispose (GObject *object)
+{
+	GsApp *app = GS_APP (object);
+	GsAppPrivate *priv = APP_PRIV (app);
+
+	g_clear_object (&priv->featured_pixbuf);
+	g_clear_object (&priv->icon);
+	g_clear_object (&priv->pixbuf);
+
+	g_clear_pointer (&priv->addons, g_ptr_array_unref);
+	g_clear_pointer (&priv->history, g_ptr_array_unref);
+	g_clear_pointer (&priv->related, g_ptr_array_unref);
+	g_clear_pointer (&priv->screenshots, g_ptr_array_unref);
+
+	G_OBJECT_CLASS (gs_app_parent_class)->dispose (object);
+}
+
+/**
  * gs_app_finalize:
  * @object: The object to finalize
  **/
@@ -2111,23 +2133,13 @@ gs_app_finalize (GObject *object)
 	g_free (priv->summary);
 	g_free (priv->summary_missing);
 	g_free (priv->description);
-	g_ptr_array_unref (priv->screenshots);
 	g_free (priv->update_version);
 	g_free (priv->update_version_ui);
 	g_free (priv->update_details);
 	g_free (priv->management_plugin);
 	g_hash_table_unref (priv->metadata);
 	g_hash_table_unref (priv->addons_hash);
-	g_ptr_array_unref (priv->addons);
 	g_hash_table_unref (priv->related_hash);
-	g_ptr_array_unref (priv->related);
-	g_ptr_array_unref (priv->history);
-	if (priv->icon != NULL)
-		g_object_unref (priv->icon);
-	if (priv->pixbuf != NULL)
-		g_object_unref (priv->pixbuf);
-	if (priv->featured_pixbuf != NULL)
-		g_object_unref (priv->featured_pixbuf);
 	g_ptr_array_unref (priv->categories);
 	if (priv->keywords != NULL)
 		g_ptr_array_unref (priv->keywords);
@@ -2144,6 +2156,7 @@ gs_app_class_init (GsAppClass *klass)
 {
 	GParamSpec *pspec;
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->dispose = gs_app_dispose;
 	object_class->finalize = gs_app_finalize;
 	object_class->get_property = gs_app_get_property;
 	object_class->set_property = gs_app_set_property;

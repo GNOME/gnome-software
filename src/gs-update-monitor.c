@@ -530,7 +530,7 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 }
 
 static void
-gs_update_monitor_finalize (GObject *object)
+gs_update_monitor_dispose (GObject *object)
 {
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (object);
 
@@ -567,6 +567,15 @@ gs_update_monitor_finalize (GObject *object)
 	g_clear_object (&monitor->task);
 	g_clear_object (&monitor->offline_update_file);
 	g_clear_object (&monitor->settings);
+
+	G_OBJECT_CLASS (gs_update_monitor_parent_class)->dispose (object);
+}
+
+static void
+gs_update_monitor_finalize (GObject *object)
+{
+	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (object);
+
 	g_application_release (monitor->application);
 
 	G_OBJECT_CLASS (gs_update_monitor_parent_class)->finalize (object);
@@ -576,6 +585,7 @@ static void
 gs_update_monitor_class_init (GsUpdateMonitorClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->dispose = gs_update_monitor_dispose;
 	object_class->finalize = gs_update_monitor_finalize;
 }
 

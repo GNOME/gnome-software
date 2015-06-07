@@ -3052,6 +3052,32 @@ gs_plugin_loader_plugin_free (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_loader_dispose:
+ * @object: The object to dispose
+ **/
+static void
+gs_plugin_loader_dispose (GObject *object)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+
+	if (plugin_loader->priv->updates_changed_id != 0) {
+		g_source_remove (plugin_loader->priv->updates_changed_id);
+		plugin_loader->priv->updates_changed_id = 0;
+	}
+	if (plugin_loader->priv->profile != NULL) {
+		gs_profile_stop (plugin_loader->priv->profile, "GsPluginLoader");
+		g_clear_object (&plugin_loader->priv->profile);
+	}
+
+	g_clear_object (&plugin_loader->priv->settings);
+	g_clear_pointer (&plugin_loader->priv->app_cache, g_hash_table_unref);
+	g_clear_pointer (&plugin_loader->priv->pending_apps, g_ptr_array_unref);
+	g_clear_pointer (&plugin_loader->priv->plugins, g_ptr_array_unref);
+
+	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
+}
+
+/**
  * gs_plugin_loader_finalize:
  * @object: The object to finalize
  **/
@@ -3067,21 +3093,10 @@ gs_plugin_loader_finalize (GObject *object)
 
 	g_return_if_fail (plugin_loader->priv != NULL);
 
-	if (plugin_loader->priv->updates_changed_id != 0)
-		g_source_remove (plugin_loader->priv->updates_changed_id);
-
-	/* application stop */
-	gs_profile_stop (plugin_loader->priv->profile, "GsPluginLoader");
-
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
 
-	g_object_unref (plugin_loader->priv->settings);
-	g_object_unref (plugin_loader->priv->profile);
 	g_strfreev (plugin_loader->priv->compatible_projects);
-	g_hash_table_unref (plugin_loader->priv->app_cache);
-	g_ptr_array_unref (plugin_loader->priv->pending_apps);
-	g_ptr_array_unref (plugin_loader->priv->plugins);
 	g_free (plugin_loader->priv->location);
 
 	g_mutex_clear (&plugin_loader->priv->pending_apps_mutex);
@@ -3099,6 +3114,7 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 
+	object_class->dispose = gs_plugin_loader_dispose;
 	object_class->finalize = gs_plugin_loader_finalize;
 
 	signals [SIGNAL_STATUS_CHANGED] =

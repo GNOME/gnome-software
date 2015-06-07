@@ -406,28 +406,26 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 }
 
 /**
- * gs_shell_search_finalize:
+ * gs_shell_search_dispose:
  **/
 static void
-gs_shell_search_finalize (GObject *object)
+gs_shell_search_dispose (GObject *object)
 {
 	GsShellSearch *shell_search = GS_SHELL_SEARCH (object);
 	GsShellSearchPrivate *priv = shell_search->priv;
 
-	g_object_unref (priv->sizegroup_image);
-	g_object_unref (priv->sizegroup_name);
+	g_clear_object (&priv->sizegroup_image);
+	g_clear_object (&priv->sizegroup_name);
 
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
-
-	if (priv->search_cancellable != NULL)
-		g_object_unref (priv->search_cancellable);
+	g_clear_object (&priv->builder);
+	g_clear_object (&priv->plugin_loader);
+	g_clear_object (&priv->cancellable);
+	g_clear_object (&priv->search_cancellable);
 
 	g_free (priv->appid_to_show);
 	g_free (priv->value);
 
-	G_OBJECT_CLASS (gs_shell_search_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_shell_search_parent_class)->dispose (object);
 }
 
 /**
@@ -440,7 +438,7 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_shell_search_finalize;
+	object_class->dispose = gs_shell_search_dispose;
 	page_class->app_installed = gs_shell_search_app_installed;
 	page_class->app_removed = gs_shell_search_app_removed;
 

@@ -185,16 +185,16 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 }
 
 static void
-gs_history_dialog_finalize (GObject *object)
+gs_history_dialog_dispose (GObject *object)
 {
 	GsHistoryDialog *dialog = GS_HISTORY_DIALOG (object);
 	GsHistoryDialogPrivate *priv = gs_history_dialog_get_instance_private (dialog);
 
-	g_object_unref (priv->sizegroup_state);
-	g_object_unref (priv->sizegroup_timestamp);
-	g_object_unref (priv->sizegroup_version);
+	g_clear_object (&priv->sizegroup_state);
+	g_clear_object (&priv->sizegroup_timestamp);
+	g_clear_object (&priv->sizegroup_version);
 
-	G_OBJECT_CLASS (gs_history_dialog_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_history_dialog_parent_class)->dispose (object);
 }
 
 static void
@@ -225,7 +225,7 @@ gs_history_dialog_class_init (GsHistoryDialogClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_history_dialog_finalize;
+	object_class->dispose = gs_history_dialog_dispose;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-history-dialog.ui");
 

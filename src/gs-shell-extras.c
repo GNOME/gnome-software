@@ -1173,26 +1173,27 @@ gs_shell_extras_setup (GsShellExtras *shell_extras,
 }
 
 static void
-gs_shell_extras_finalize (GObject *object)
+gs_shell_extras_dispose (GObject *object)
 {
 	GsShellExtras *shell_extras = GS_SHELL_EXTRAS (object);
 	GsShellExtrasPrivate *priv = shell_extras->priv;
 
 	if (priv->search_cancellable != NULL) {
 		g_cancellable_cancel (priv->search_cancellable);
-		g_object_unref (priv->search_cancellable);
+		g_clear_object (&priv->search_cancellable);
 	}
 
-	g_object_unref (priv->sizegroup_image);
-	g_object_unref (priv->sizegroup_name);
-	g_object_unref (priv->language);
-	g_object_unref (priv->vendor);
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
-	g_ptr_array_unref (priv->array_search_data);
+	g_clear_object (&priv->sizegroup_image);
+	g_clear_object (&priv->sizegroup_name);
+	g_clear_object (&priv->language);
+	g_clear_object (&priv->vendor);
+	g_clear_object (&priv->builder);
+	g_clear_object (&priv->plugin_loader);
+	g_clear_object (&priv->cancellable);
 
-	G_OBJECT_CLASS (gs_shell_extras_parent_class)->finalize (object);
+	g_clear_pointer (&priv->array_search_data, g_ptr_array_unref);
+
+	G_OBJECT_CLASS (gs_shell_extras_parent_class)->dispose (object);
 }
 
 static void
@@ -1221,7 +1222,7 @@ gs_shell_extras_class_init (GsShellExtrasClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_shell_extras_finalize;
+	object_class->dispose = gs_shell_extras_dispose;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-extras.ui");
 

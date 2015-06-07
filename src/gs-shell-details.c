@@ -1245,23 +1245,21 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 }
 
 /**
- * gs_shell_details_finalize:
+ * gs_shell_details_dispose:
  **/
 static void
-gs_shell_details_finalize (GObject *object)
+gs_shell_details_dispose (GObject *object)
 {
 	GsShellDetails *shell_details = GS_SHELL_DETAILS (object);
 	GsShellDetailsPrivate *priv = shell_details->priv;
 
-	g_object_unref (priv->builder);
-	g_object_unref (priv->plugin_loader);
-	g_object_unref (priv->cancellable);
-	if (priv->app != NULL)
-		g_object_unref (priv->app);
-	if (priv->session != NULL)
-		g_object_unref (priv->session);
+	g_clear_object (&priv->builder);
+	g_clear_object (&priv->plugin_loader);
+	g_clear_object (&priv->cancellable);
+	g_clear_object (&priv->app);
+	g_clear_object (&priv->session);
 
-	G_OBJECT_CLASS (gs_shell_details_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_shell_details_parent_class)->dispose (object);
 }
 
 /**
@@ -1274,7 +1272,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_shell_details_finalize;
+	object_class->dispose = gs_shell_details_dispose;
 	page_class->app_installed = gs_shell_details_app_installed;
 	page_class->app_removed = gs_shell_details_app_removed;
 

@@ -280,7 +280,7 @@ gs_shell_category_init (GsShellCategory *shell)
 }
 
 static void
-gs_shell_category_finalize (GObject *object)
+gs_shell_category_dispose (GObject *object)
 {
 	GsShellCategory *shell = GS_SHELL_CATEGORY (object);
 	GsShellCategoryPrivate *priv = shell->priv;
@@ -296,7 +296,7 @@ gs_shell_category_finalize (GObject *object)
 	g_clear_object (&priv->col0_placeholder);
 	g_clear_object (&priv->col1_placeholder);
 
-	G_OBJECT_CLASS (gs_shell_category_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_shell_category_parent_class)->dispose (object);
 }
 
 static void
@@ -305,7 +305,7 @@ gs_shell_category_class_init (GsShellCategoryClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
-	object_class->finalize = gs_shell_category_finalize;
+	object_class->dispose = gs_shell_category_dispose;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-category.ui");
 

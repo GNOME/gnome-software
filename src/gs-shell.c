@@ -771,20 +771,23 @@ gs_shell_show_details (GsShell *shell, const gchar *id)
 }
 
 /**
- * gs_shell_finalize:
+ * gs_shell_dispose:
  **/
 static void
-gs_shell_finalize (GObject *object)
+gs_shell_dispose (GObject *object)
 {
 	GsShell *shell = GS_SHELL (object);
 	GsShellPrivate *priv = shell->priv;
 
-	g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) free_back_entry);
-	g_object_unref (priv->builder);
-	g_object_unref (priv->cancellable);
-	g_object_unref (priv->plugin_loader);
+	if (priv->back_entry_stack != NULL) {
+		g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) free_back_entry);
+		priv->back_entry_stack = NULL;
+	}
+	g_clear_object (&priv->builder);
+	g_clear_object (&priv->cancellable);
+	g_clear_object (&priv->plugin_loader);
 
-	G_OBJECT_CLASS (gs_shell_parent_class)->finalize (object);
+	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
 
 /**
@@ -794,7 +797,7 @@ static void
 gs_shell_class_init (GsShellClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	object_class->finalize = gs_shell_finalize;
+	object_class->dispose = gs_shell_dispose;
 
        signals [SIGNAL_LOADED] =
 		g_signal_new ("loaded",
