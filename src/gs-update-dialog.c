@@ -203,6 +203,17 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog, GList *installe
 	}
 }
 
+static void
+unset_focus (GtkWidget *widget)
+{
+	GtkWidget *focus;
+
+	focus = gtk_window_get_focus (GTK_WINDOW (widget));
+	if (GTK_IS_LABEL (focus))
+		gtk_label_select_region (GTK_LABEL (focus), 0, 0);
+	gtk_window_set_focus (GTK_WINDOW (widget), NULL);
+}
+
 void
 gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 {
@@ -215,6 +226,10 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 
 	/* set update header */
 	set_updates_description_ui (dialog, app);
+
+	/* workaround a gtk+ issue where the dialog comes up with a label selected,
+	 * https://bugzilla.gnome.org/show_bug.cgi?id=734033 */
+	unset_focus (GTK_WIDGET (dialog));
 
 	/* set update description */
 	if (kind == GS_APP_KIND_OS_UPDATE) {
@@ -323,17 +338,6 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 			gtk_frame_set_shadow_type (GTK_FRAME (frame), GTK_SHADOW_IN);
 		gtk_scrolled_window_set_shadow_type (swin, GTK_SHADOW_NONE);
 	}
-}
-
-static void
-unset_focus (GtkWidget *widget)
-{
-	GtkWidget *focus;
-
-	focus = gtk_window_get_focus (GTK_WINDOW (widget));
-	if (GTK_IS_LABEL (focus))
-		gtk_label_select_region (GTK_LABEL (focus), 0, 0);
-	gtk_window_set_focus (GTK_WINDOW (widget), NULL);
 }
 
 static void
