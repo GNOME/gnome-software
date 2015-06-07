@@ -32,7 +32,6 @@ struct _GsAppFolderDialogPrivate
 {
 	GList		 *apps;
 	GsFolders	 *folders;
-	GtkWidget	 *header;
 	GtkWidget	 *cancel_button;
 	GtkWidget 	 *done_button;
 	GtkWidget	 *app_folder_list;
@@ -159,7 +158,6 @@ gs_app_folder_dialog_class_init (GsAppFolderDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/app-folder-dialog.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, header);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, cancel_button);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, done_button);
         gtk_widget_class_bind_template_child_private (widget_class, GsAppFolderDialog, app_folder_list);
