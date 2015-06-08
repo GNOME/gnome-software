@@ -74,28 +74,36 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
 				  gpointer user_data)
 {
-	GsPluginStatus plugin_status;
-	PkStatusEnum status;
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 
-	if (type != PK_PROGRESS_TYPE_STATUS)
-		return;
-	g_object_get (progress,
-		      "status", &status,
-		      NULL);
+	if (type == PK_PROGRESS_TYPE_STATUS) {
+		GsPluginStatus plugin_status;
+		PkStatusEnum status;
+		g_object_get (progress,
+			      "status", &status,
+			      NULL);
 
-	/* profile */
-	if (status == PK_STATUS_ENUM_SETUP) {
-		gs_profile_start (plugin->profile,
-				  "packagekit-refine::transaction");
-	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		gs_profile_stop (plugin->profile,
-				 "packagekit-refine::transaction");
+		/* profile */
+		if (status == PK_STATUS_ENUM_SETUP) {
+			gs_profile_start (plugin->profile,
+					  "packagekit-refine::transaction");
+		} else if (status == PK_STATUS_ENUM_FINISHED) {
+			gs_profile_stop (plugin->profile,
+					 "packagekit-refine::transaction");
+		}
+
+		plugin_status = packagekit_status_enum_to_plugin_status (status);
+		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
+			gs_plugin_status_update (plugin, NULL, plugin_status);
+
+	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
+		gint percentage;
+		g_object_get (progress,
+			      "percentage", &percentage,
+			      NULL);
+		if (percentage > 0 && percentage <= 100)
+			gs_plugin_progress_update (plugin, NULL, percentage);
 	}
-
-	plugin_status = packagekit_status_enum_to_plugin_status (status);
-	if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-		gs_plugin_status_update (plugin, NULL, plugin_status);
 }
 
 /**

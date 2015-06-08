@@ -52,6 +52,9 @@ typedef struct
 	void			(*status_changed)	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
+	void			(*progress_changed)	(GsPluginLoader	*plugin_loader,
+							 GsApp		*app,
+							 guint		 percentage);
 	void			(*pending_apps_changed)	(GsPluginLoader	*plugin_loader);
 	void			(*updates_changed)	(GsPluginLoader	*plugin_loader);
 } GsPluginLoaderClass;

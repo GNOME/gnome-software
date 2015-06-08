@@ -130,6 +130,9 @@ void		 gs_app_set_id_kind		(GsApp		*app,
 AsAppState	 gs_app_get_state		(GsApp		*app);
 void		 gs_app_set_state		(GsApp		*app,
 						 AsAppState	 state);
+guint		 gs_app_get_progress		(GsApp		*app);
+void		 gs_app_set_progress		(GsApp		*app,
+						 guint		 percentage);
 const gchar	*gs_app_get_name		(GsApp		*app);
 void		 gs_app_set_name		(GsApp		*app,
 						 GsAppQuality	 quality,

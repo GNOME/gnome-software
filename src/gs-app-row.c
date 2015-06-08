@@ -44,6 +44,7 @@ struct _GsAppRowPrivate
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
 	GtkWidget	*button;
+	GtkCssProvider	*button_css_provider;
 	GtkWidget	*spinner;
 	GtkWidget	*label;
 	GtkWidget	*checkbox;
@@ -111,6 +112,20 @@ gs_app_row_get_description (GsAppRow *app_row)
 }
 
 /**
+ * gs_app_row_get_button_css:
+ **/
+static gchar *
+gs_app_row_get_button_css (gint percentage)
+{
+	if (percentage == 0)
+		return g_strdup ("* { background: @theme_bg_color; }");
+	else if (percentage == 100)
+		return g_strdup ("* { background: @theme_selected_bg_color; }");
+	else
+		return g_strdup_printf ("* { background: linear-gradient(to right, @theme_selected_bg_color %d%%, @theme_bg_color %d%%); }", percentage, percentage + 1);
+}
+
+/**
  * gs_app_row_refresh:
  **/
 void
@@ -119,9 +134,16 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GsAppRowPrivate *priv = app_row->priv;
 	GtkStyleContext *context;
 	GString *str = NULL;
+	_cleanup_free_ gchar *button_css = NULL;
 
 	if (app_row->priv->app == NULL)
 		return;
+
+	/* do a fill bar for the current progress */
+	if (gs_app_get_progress (priv->app) > 0) {
+		button_css = gs_app_row_get_button_css (gs_app_get_progress (priv->app));
+		gtk_css_provider_load_from_data (priv->button_css_provider, button_css, -1, NULL);
+	}
 
 	/* join the lines*/
 	str = gs_app_row_get_description (app_row);
@@ -350,6 +372,9 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 	g_signal_connect_object (app_row->priv->app, "notify::rating",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
+	g_signal_connect_object (app_row->priv->app, "notify::progress",
+				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
+				 app_row, 0);
 	gs_app_row_refresh (app_row);
 }
 
@@ -474,6 +499,10 @@ gs_app_row_init (GsAppRow *app_row)
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 
 	priv->colorful = TRUE;
+	priv->button_css_provider = gtk_css_provider_new ();
+	gtk_style_context_add_provider (gtk_widget_get_style_context (priv->button),
+					GTK_STYLE_PROVIDER (priv->button_css_provider),
+					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	g_signal_connect (priv->button, "clicked",
 			  G_CALLBACK (button_clicked), app_row);

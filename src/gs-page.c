@@ -43,6 +43,7 @@ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
 typedef struct {
 	GsApp		*app;
 	GsPage		*page;
+	guint		 progress_id;
 } InstallRemoveData;
 
 static void
@@ -66,6 +67,9 @@ gs_page_app_installed_cb (GObject *source,
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
 	_cleanup_error_free_ GError *error = NULL;
+
+	/* no longer update this application */
+	g_signal_handler_disconnect (plugin_loader, data->progress_id);
 
 	ret = gs_plugin_loader_app_action_finish (plugin_loader,
 	                                          res,
@@ -121,6 +125,18 @@ gs_page_app_removed_cb (GObject *source,
 	install_remove_data_free (data);
 }
 
+static void
+gs_page_app_progress_changed_cb (GsPluginLoader *loader,
+				 GsApp *app,
+				 guint percentage,
+				 InstallRemoveData *data)
+{
+	/* some plugins can't map the progress to a specific package */
+	if (app == NULL)
+		app = data->app;
+	gs_app_set_progress (app, percentage);
+}
+
 void
 gs_page_install_app (GsPage *page, GsApp *app)
 {
@@ -138,6 +154,10 @@ gs_page_install_app (GsPage *page, GsApp *app)
 	data = g_slice_new0 (InstallRemoveData);
 	data->app = g_object_ref (app);
 	data->page = g_object_ref (page);
+	data->progress_id =
+		g_signal_connect (priv->plugin_loader, "progress-changed",
+				  G_CALLBACK (gs_page_app_progress_changed_cb),
+				  data);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   GS_PLUGIN_LOADER_ACTION_INSTALL,
