@@ -85,6 +85,7 @@ struct GsAppPrivate
 	GsAppKind		 kind;
 	AsIdKind		 id_kind;
 	AsAppState		 state;
+	guint			 progress;
 	GHashTable		*metadata;
 	GdkPixbuf		*pixbuf;
 	GdkPixbuf		*featured_pixbuf;
@@ -108,6 +109,7 @@ enum {
 	PROP_RATING,
 	PROP_KIND,
 	PROP_STATE,
+	PROP_PROGRESS,
 	PROP_INSTALL_DATE,
 	PROP_LAST
 };
@@ -180,6 +182,8 @@ gs_app_to_string (GsApp *app)
 	}
 	g_string_append_printf (str, "\tstate:\t%s\n",
 				as_app_state_to_string (priv->state));
+	if (priv->progress > 0)
+		g_string_append_printf (str, "\tprogress:\t%i%%\n", priv->progress);
 	if (priv->id != NULL)
 		g_string_append_printf (str, "\tid:\t%s\n", priv->id);
 	if ((priv->kudos & GS_APP_KUDO_MY_LANGUAGE) > 0)
@@ -377,6 +381,16 @@ gs_app_get_state (GsApp *app)
 }
 
 /**
+ * gs_app_get_progress:
+ */
+guint
+gs_app_get_progress (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), 0);
+	return APP_PRIV (app)->progress;
+}
+
+/**
  * gs_app_set_state_internal:
  */
 static gboolean
@@ -474,6 +488,22 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		APP_PRIV (app)->install_date = 0;
 
 	return TRUE;
+}
+
+/**
+ * gs_app_set_progress:
+ *
+ * This sets the progress completion of the application.
+ */
+void
+gs_app_set_progress (GsApp *app, guint percentage)
+{
+	GsAppPrivate *priv = APP_PRIV (app);
+	g_return_if_fail (GS_IS_APP (app));
+	if (priv->progress == percentage)
+		return;
+	priv->progress = percentage;
+	gs_app_queue_notify (app, "progress");
 }
 
 /**
@@ -2030,6 +2060,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_STATE:
 		g_value_set_uint (value, priv->state);
 		break;
+	case PROP_PROGRESS:
+		g_value_set_uint (value, priv->progress);
+		break;
 	case PROP_INSTALL_DATE:
 		g_value_set_uint64 (value, priv->install_date);
 		break;
@@ -2046,6 +2079,7 @@ static void
 gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
 	GsApp *app = GS_APP (object);
+	GsAppPrivate *priv = APP_PRIV (app);
 
 	switch (prop_id) {
 	case PROP_ID:
@@ -2077,6 +2111,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_STATE:
 		gs_app_set_state_internal (app, g_value_get_uint (value));
+		break;
+	case PROP_PROGRESS:
+		priv->progress = g_value_get_uint (value);
 		break;
 	case PROP_INSTALL_DATE:
 		gs_app_set_install_date (app, g_value_get_uint64 (value));
@@ -2225,6 +2262,13 @@ gs_app_class_init (GsAppClass *klass)
 				   AS_APP_STATE_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_STATE, pspec);
+
+	/**
+	 * GsApp:progress:
+	 */
+	pspec = g_param_spec_uint ("progress", NULL, NULL, 0, 100, 0,
+				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_PROGRESS, pspec);
 
 	pspec = g_param_spec_uint64 ("install-date", NULL, NULL,
 				     0, G_MAXUINT64, 0,

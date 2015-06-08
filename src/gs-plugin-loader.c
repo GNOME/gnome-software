@@ -57,6 +57,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
 enum {
 	SIGNAL_STATUS_CHANGED,
+	SIGNAL_PROGRESS_CHANGED,
 	SIGNAL_PENDING_APPS_CHANGED,
 	SIGNAL_UPDATES_CHANGED,
 	SIGNAL_LAST
@@ -2739,6 +2740,26 @@ gs_plugin_loader_status_update_cb (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_loader_progress_update_cb:
+ */
+static void
+gs_plugin_loader_progress_update_cb (GsPlugin *plugin,
+				     GsApp *app,
+				     guint percentage,
+				     gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+
+	/* new, or an app, so emit */
+	g_debug ("emitting %i%%(%s)",
+		 percentage,
+		 app != NULL ? gs_app_get_id (app) : "<general>");
+	g_signal_emit (plugin_loader,
+		       signals[SIGNAL_PROGRESS_CHANGED],
+		       0, app, percentage);
+}
+
+/**
  * gs_plugin_loader_updates_changed_delay_cb:
  */
 static gboolean
@@ -2829,6 +2850,8 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->name = g_strdup (plugin_name ());
 	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
 	plugin->status_update_user_data = plugin_loader;
+	plugin->progress_update_fn = gs_plugin_loader_progress_update_cb;
+	plugin->progress_update_user_data = plugin_loader;
 	plugin->updates_changed_fn = gs_plugin_loader_updates_changed_cb;
 	plugin->updates_changed_user_data = plugin_loader;
 	plugin->profile = g_object_ref (plugin_loader->priv->profile);
@@ -3121,6 +3144,12 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 		g_signal_new ("status-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (GsPluginLoaderClass, status_changed),
+			      NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
+	signals [SIGNAL_PROGRESS_CHANGED] =
+		g_signal_new ("progress-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginLoaderClass, progress_changed),
 			      NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 2, G_TYPE_POINTER, G_TYPE_UINT);
 	signals [SIGNAL_PENDING_APPS_CHANGED] =

@@ -52,6 +52,10 @@ typedef void (*GsPluginStatusUpdate)	(GsPlugin	*plugin,
 					 GsApp		*app,
 					 GsPluginStatus	 status,
 					 gpointer	 user_data);
+typedef void (*GsPluginProgressUpdate)	(GsPlugin	*plugin,
+					 GsApp		*app,
+					 guint		 percentage,
+					 gpointer	 user_data);
 typedef void (*GsPluginUpdatesChanged)	(GsPlugin	*plugin,
 					 gpointer	 user_data);
 
@@ -70,6 +74,8 @@ struct GsPlugin {
 	gint			 scale;
 	GsPluginStatusUpdate	 status_update_fn;
 	gpointer		 status_update_user_data;
+	GsPluginProgressUpdate	 progress_update_fn;
+	gpointer		 progress_update_user_data;
 	GsPluginUpdatesChanged	 updates_changed_fn;
 	gpointer		 updates_changed_user_data;
 	GsProfile		*profile;
@@ -173,6 +179,9 @@ void		 gs_plugin_list_randomize		(GList		**list);
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
+void		 gs_plugin_progress_update		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 guint		 percentage);
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
 gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
