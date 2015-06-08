@@ -118,11 +118,11 @@ static gchar *
 gs_app_row_get_button_css (gint percentage)
 {
 	if (percentage == 0)
-		return g_strdup ("* { background: @theme_bg_color; }");
+		return g_strdup (".button.install-progress { background: @theme_bg_color; }");
 	else if (percentage == 100)
-		return g_strdup ("* { background: @theme_selected_bg_color; }");
+		return g_strdup (".button.install-progress { background: @theme_selected_bg_color; }");
 	else
-		return g_strdup_printf ("* { background: linear-gradient(to right, @theme_selected_bg_color %d%%, @theme_bg_color %d%%); }", percentage, percentage + 1);
+		return g_strdup_printf (".button.install-progress { background: linear-gradient(to right, @theme_selected_bg_color %d%%, @theme_bg_color %d%%); }", percentage, percentage + 1);
 }
 
 /**
@@ -140,9 +140,16 @@ gs_app_row_refresh (GsAppRow *app_row)
 		return;
 
 	/* do a fill bar for the current progress */
-	if (gs_app_get_progress (priv->app) > 0) {
+	context = gtk_widget_get_style_context (priv->button);
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_INSTALLING:
 		button_css = gs_app_row_get_button_css (gs_app_get_progress (priv->app));
 		gtk_css_provider_load_from_data (priv->button_css_provider, button_css, -1, NULL);
+		gtk_style_context_add_class (context, "install-progress");
+		break;
+	default:
+		gtk_style_context_remove_class (context, "install-progress");
+		break;
 	}
 
 	/* join the lines*/
