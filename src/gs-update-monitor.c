@@ -131,7 +131,6 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 {
 	const gchar *message;
 	const gchar *title;
-	_cleanup_object_unref_ GIcon *icon = NULL;
 	_cleanup_object_unref_ GNotification *notification = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 
@@ -158,8 +157,6 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 
 	notification = g_notification_new (title);
 	g_notification_set_body (notification, message);
-	icon = g_themed_icon_new ("gnome-software-symbolic");
-	g_notification_set_icon (notification, icon);
 	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS) {
 		g_notification_add_button_with_target (notification, _("Review"), "app.set-mode", "s", "updated");
 		g_notification_set_default_action_and_target (notification, "app.set-mode", "s", "updated");
