@@ -260,8 +260,6 @@ gs_app_row_refresh (GsAppRow *app_row)
 			gtk_style_context_add_class (context, "destructive-action");
 		break;
 	case AS_APP_STATE_INSTALLING:
-		gtk_spinner_start (GTK_SPINNER (priv->spinner));
-		gtk_widget_set_visible (priv->spinner, TRUE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		gtk_widget_set_sensitive (priv->button, FALSE);
 		/* TRANSLATORS: this is a button next to the search results that
