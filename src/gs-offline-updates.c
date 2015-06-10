@@ -24,17 +24,10 @@
 #include <glib/gi18n.h>
 #include <packagekit-glib2/packagekit.h>
 #include <polkit/polkit.h>
-#include <pango/pango-font.h>
 
 #include "gs-cleanup.h"
 #include "gs-offline-updates.h"
 #include "gs-utils.h"
-
-static void
-expander_cb (GtkExpander *expander, GParamSpec *pspec, GtkWindow *dialog)
-{
-	gtk_window_set_resizable (dialog, gtk_expander_get_expanded (expander));
-}
 
 static void
 do_not_expand (GtkWidget *child, gpointer data)
@@ -175,6 +168,67 @@ prepare_details (PkError *pk_error)
 		return NULL;
 }
 
+static gboolean
+unset_focus (GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+	if (GTK_IS_WINDOW (widget))
+		gtk_window_set_focus(GTK_WINDOW (widget), NULL);
+	return FALSE;
+}
+
+/**
+ * A temporary workaround for https://bugzilla.gnome.org/show_bug.cgi?id=406159
+ * Creates and applies some tags which make the text smaller and add some
+ * margins at each side of the text. Eventually this should be achieved
+ * with some API or CSS attributes which are not yet implemented.
+ * Thanks Matthias Clasen for hints and inspiration.
+ */
+static void
+tmp_apply_tags (GtkTextBuffer *buffer)
+{
+	GtkTextIter start, end, line;
+	gint line_count;
+
+	gtk_text_buffer_create_tag (buffer, "big_gap_before_line",
+				    "pixels_above_lines", 16, NULL);
+
+	gtk_text_buffer_create_tag (buffer, "big_gap_after_line",
+				    "pixels_below_lines", 16, NULL);
+
+	gtk_text_buffer_create_tag (buffer, "wide_margins",
+				    "left_margin", 16, "right_margin", 16,
+				    NULL);
+
+	gtk_text_buffer_create_tag (buffer, "small",
+				    "scale", PANGO_SCALE_SMALL, NULL);
+
+	/* Apply to whole text */
+	gtk_text_buffer_get_bounds (buffer, &start, &end);
+	gtk_text_buffer_apply_tag_by_name (buffer, "small", &start, &end);
+	gtk_text_buffer_apply_tag_by_name (buffer, "wide_margins", &start, &end);
+
+	line_count = gtk_text_buffer_get_line_count (buffer);
+	if (line_count <= 1) {
+		/* Apply to the one and only paragraph */
+		gtk_text_buffer_apply_tag_by_name (buffer,
+						   "big_gap_before_line", &start, &end);
+		gtk_text_buffer_apply_tag_by_name (buffer,
+						   "big_gap_after_line", &start, &end);
+	} else {
+		/* Apply to the first paragraph */
+		gtk_text_buffer_get_iter_at_line (buffer, &line, 1);
+		gtk_text_buffer_apply_tag_by_name (buffer,
+						   "big_gap_before_line", &start, &line);
+		/* Is second paragraph the last paragraph? */
+		if (line_count > 2)
+			gtk_text_buffer_get_iter_at_line (buffer,
+							  &line, line_count - 1);
+		/* Apply to the last paragraph */
+		gtk_text_buffer_apply_tag_by_name (buffer,
+						   "big_gap_after_line", &line, &end);
+	}
+}
+
 /**
  * insert_details_widget:
  * @dialog: the message dialog where the widget will be inserted
@@ -188,14 +242,15 @@ static void
 insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 {
 	GtkWidget *message_area, *sw, *label;
-	GtkWidget *box, *expander;
-	PangoFontMetrics *metrics;
-	int lineheight;
+	GtkWidget *box, *tv;
+	GtkTextBuffer *buffer;
+	GList *children;
 	_cleanup_string_free_ GString *msg = NULL;
 
 	if (!details)
 		return;
 	g_return_if_fail (dialog != NULL);
+	gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
 
 	msg = g_string_new ("");
 	g_string_append_printf (msg, "%s\n\n%s",
@@ -214,42 +269,40 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	/* make the labels not expand */
 	gtk_container_foreach (GTK_CONTAINER (message_area), do_not_expand, NULL);
 
-	/* TODO: In 3.18 the label will be "Details:" (":" appended) */
-	expander = gtk_expander_new (_("Details"));
-	gtk_widget_set_visible (expander, TRUE);
+	/* Find the secondary label and set its width_chars.   */
+	/* Otherwise the label will tend to expand vertically. */
+	children = gtk_container_get_children (GTK_CONTAINER (message_area));
+	if (children && children->next && GTK_IS_LABEL (children->next->data)) {
+		gtk_label_set_width_chars (GTK_LABEL (children->next->data), 40);
+	}
+
+	label = gtk_label_new (_("Details"));
+	gtk_widget_set_halign (label, GTK_ALIGN_START);
+	gtk_widget_set_visible (label, TRUE);
+	gtk_box_pack_start (GTK_BOX (message_area), label, FALSE, FALSE, 0);
+
 	sw = gtk_scrolled_window_new (NULL, NULL);
 	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
 					     GTK_SHADOW_IN);
 	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
 					GTK_POLICY_NEVER,
 					GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (sw), 150);
 	gtk_widget_set_visible (sw, TRUE);
 
-	label = gtk_label_new (msg->str);
-	gtk_label_set_selectable (GTK_LABEL (label), TRUE);
-	gtk_label_set_line_wrap (GTK_LABEL (label), TRUE);
-	gtk_label_set_line_wrap_mode (GTK_LABEL (label), GTK_WRAP_WORD);
-	gtk_widget_set_halign (label, GTK_ALIGN_START);
-	gtk_widget_set_valign (label, GTK_ALIGN_START);
-	gtk_label_set_xalign (GTK_LABEL (label), 0.0);
-	gtk_widget_set_visible (label, TRUE);
+	tv = gtk_text_view_new ();
+	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+	gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
+	gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD);
+	gtk_text_view_set_monospace (GTK_TEXT_VIEW (tv), TRUE);
+	gtk_text_buffer_set_text (buffer, msg->str, -1);
+	tmp_apply_tags (buffer);
+	gtk_widget_set_visible (tv, TRUE);
 
-	/* Setup the minimum size of the text label */
-	gtk_label_set_width_chars (GTK_LABEL (label), 50);
-	metrics = pango_context_get_metrics (
-			gtk_widget_get_pango_context (label), NULL, NULL);
-	lineheight = PANGO_PIXELS_CEIL (
-			pango_font_metrics_get_ascent (metrics)
-			+ pango_font_metrics_get_descent (metrics));
-	pango_font_metrics_unref (metrics);
-	gtk_scrolled_window_set_min_content_height(GTK_SCROLLED_WINDOW (sw),
-						   5 * lineheight);
+	gtk_container_add (GTK_CONTAINER (sw), tv);
+	gtk_box_pack_end (GTK_BOX (message_area), sw, TRUE, TRUE, 0);
 
-	gtk_container_add (GTK_CONTAINER (sw), label);
-	gtk_container_add (GTK_CONTAINER (expander), sw);
-	gtk_box_pack_end (GTK_BOX (message_area), expander, TRUE, TRUE, 0);
-	g_signal_connect (expander, "notify::expanded",
-			  G_CALLBACK (expander_cb), dialog);
+	g_signal_connect (dialog, "map-event", G_CALLBACK (unset_focus), NULL);
 }
 
 void
