@@ -463,7 +463,12 @@ show_offline_updates_error (GSimpleAction *action,
 			    GVariant      *parameter,
 			    gpointer       data)
 {
-	gs_offline_updates_show_error ();
+	GsApplication *app = GS_APPLICATION (data);
+
+	initialize_ui_and_present_window (app);
+
+	gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
+	gs_offline_updates_show_error (app->shell);
 }
 
 static GActionEntry actions[] = {
