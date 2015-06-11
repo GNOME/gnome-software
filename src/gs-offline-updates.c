@@ -253,7 +253,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 }
 
 void
-gs_offline_updates_show_error (void)
+gs_offline_updates_show_error (GsShell *shell)
 {
 	const gchar *title;
 	const gchar *secondary;
@@ -279,7 +279,7 @@ gs_offline_updates_show_error (void)
 	secondary = prepare_secondary_text (pk_error);
 	geeky = prepare_details (pk_error);
 
-	dialog = gtk_message_dialog_new_with_markup (NULL,
+	dialog = gtk_message_dialog_new_with_markup (gs_shell_get_window (shell),
 					 0,
 					 GTK_MESSAGE_INFO,
 					 GTK_BUTTONS_CLOSE,

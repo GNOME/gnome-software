@@ -24,9 +24,11 @@
 
 #include <gtk/gtk.h>
 
+#include "gs-shell.h"
+
 G_BEGIN_DECLS
 
-void     gs_offline_updates_show_error		(void);
+void     gs_offline_updates_show_error		(GsShell *shell);
 
 GPermission 	*gs_offline_updates_permission_get 	(void);
 gboolean         gs_updates_are_managed 		(void);
