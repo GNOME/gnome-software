@@ -1988,6 +1988,13 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 	for (l = state->list; l != NULL; l = l->next)
 		gs_category_sort_subcategories (GS_CATEGORY (l->data));
 
+	/* only show apps with AppData */
+	if (g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
+		gs_plugin_list_filter (&state->list,
+				       gs_plugin_loader_get_app_has_appdata,
+				       plugin_loader);
+	}
+
 	/* success */
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
