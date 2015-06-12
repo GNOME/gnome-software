@@ -54,7 +54,8 @@ prepare_secondary_text (PkError *pk_error)
 	case PK_ERROR_ENUM_CANNOT_FETCH_SOURCES:
 		/* TRANSLATORS: the package manager needed to download
 		 * something with no network available */
-		return _("Network access was required but not available.");
+		return _("Internet access was required but wasn’t available. "
+			 "Please make sure that you have internet access and try again.");
 		break;
 	case PK_ERROR_ENUM_BAD_GPG_SIGNATURE:
 	case PK_ERROR_ENUM_CANNOT_UPDATE_REPO_UNSIGNED:
@@ -63,7 +64,8 @@ prepare_secondary_text (PkError *pk_error)
 	case PK_ERROR_ENUM_PACKAGE_CORRUPT:
 		/* TRANSLATORS: if the package is not signed correctly
 		 *  */
-		return _("An update was not signed in the correct way.");
+		return _("There were security issues with the update. "
+			 "Please consult your software provider for more details.");
 		break;
 	case PK_ERROR_ENUM_DEP_RESOLUTION_FAILED:
 	case PK_ERROR_ENUM_FILE_CONFLICTS:
@@ -72,7 +74,8 @@ prepare_secondary_text (PkError *pk_error)
 		/* TRANSLATORS: the transaction failed in a way the user
 		 * probably cannot comprehend. Package management systems
 		 * really are teh suck.*/
-		return _("The update could not be completed.");
+		return _("The update couldn’t be installed; this is often a problem with the update itself. "
+			 "Please wait for another update and try again.");
 		break;
 	case PK_ERROR_ENUM_TRANSACTION_CANCELLED:
 		/* TRANSLATORS: the user aborted the update manually */
@@ -82,11 +85,11 @@ prepare_secondary_text (PkError *pk_error)
 	case PK_ERROR_ENUM_UPDATE_NOT_FOUND:
 		/* TRANSLATORS: the user must have updated manually after
 		 * the updates were prepared */
-		return _("An offline update was requested but no packages required updating.");
+		return _("The system was already up to date.");
 		break;
 	case PK_ERROR_ENUM_NO_SPACE_ON_DEVICE:
 		/* TRANSLATORS: we ran out of disk space */
-		return _("No space was left on the drive.");
+		return _("There wasn’t enough disk space. Please free up some space and try again.");
 		break;
 	case PK_ERROR_ENUM_PACKAGE_FAILED_TO_BUILD:
 	case PK_ERROR_ENUM_PACKAGE_FAILED_TO_INSTALL:
@@ -94,11 +97,14 @@ prepare_secondary_text (PkError *pk_error)
 		/* TRANSLATORS: the update process failed in a general
 		 * way, usually this message will come from source distros
 		 * like gentoo */
-		return _("An update failed to install correctly.");
+		return _("The update couldn’t be installed; this is often a problem with the update itself. "
+			 "Please wait for another update and try again.");
 		break;
 	default:
 		/* TRANSLATORS: We didn't handle the error type */
-		return _("The offline update failed in an unexpected way.");
+		return _("We’re sorry: the update failed to install. "
+			 "Please wait for another update and try again. "
+			 "If the problem persists, contact your software provider.");
 		break;
 	}
 }
