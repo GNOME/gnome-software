@@ -122,7 +122,6 @@ static Featured featured[] = {
 	{ "Network", "mozilla-thunderbird.desktop" },
 	{ "Network", "firefox.desktop" },
 	{ "Network", "transmission-gtk.desktop" },
-	{ "Network", "xchat.desktop" },
 	{ "Network", "org.gnome.Polari.desktop" }, // id ?
 	{ "Network", "vinagre.desktop" },
 	{ "Network", "epiphany.desktop" },
