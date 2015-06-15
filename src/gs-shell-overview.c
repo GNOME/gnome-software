@@ -252,9 +252,11 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 		goto out;
 
-	/* Don't show apps from the category that's currently featured as the category of the day */
-	gs_plugin_list_filter (&list, filter_category, priv->category_of_day);
-	gs_plugin_list_randomize (&list);
+	if (g_getenv ("GNOME_SOFTWARE_FEATURED") == NULL) {
+		/* Don't show apps from the category that's currently featured as the category of the day */
+		gs_plugin_list_filter (&list, filter_category, priv->category_of_day);
+		gs_plugin_list_randomize (&list);
+	}
 
 	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
 	gtk_widget_set_visible (priv->featured_heading, list != NULL);
