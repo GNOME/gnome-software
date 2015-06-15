@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-06-08 20:17+0000\n"
-"PO-Revision-Date: 2015-06-09 \n"
+"POT-Creation-Date: 2015-06-14 14:08+0000\n"
+"PO-Revision-Date: 2015-06-15 \n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -74,7 +74,7 @@ msgstr "Instalado"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:301 ../src/gs-shell.c:160
+#: ../src/gs-application.c:315 ../src/gs-shell.c:160
 msgid "Software"
 msgstr "Software"
 
@@ -144,67 +144,67 @@ msgid "Folder Name"
 msgstr "Nombre de la carpeta"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:299
+#: ../src/gs-application.c:313
 msgid "About Software"
 msgstr "Acerca de Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:304
+#: ../src/gs-application.c:318
 msgid "A nice way to manage the software on your system."
 msgstr "Una buena manera de gestionar el software en su sistema."
 
-#: ../src/gs-application.c:308
+#: ../src/gs-application.c:322
 msgid "translator-credits"
 msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013, 2014"
 
-#: ../src/gs-application.c:594
+#: ../src/gs-application.c:585
 msgid "Enter GApplication service mode"
 msgstr "Entrar en modo de servicio de GApplication"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:597
+#: ../src/gs-application.c:588
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Modo de inicio, puede ser «actualizaciones», «actualizados», «instalados» o "
 "«vista general»"
 
-#: ../src/gs-application.c:597
+#: ../src/gs-application.c:588
 msgid "MODE"
 msgstr "MODO"
 
-#: ../src/gs-application.c:599
+#: ../src/gs-application.c:590
 msgid "Search for applications"
 msgstr "Buscar aplicaciones"
 
-#: ../src/gs-application.c:599
+#: ../src/gs-application.c:590
 msgid "SEARCH"
 msgstr "BUSCAR"
 
-#: ../src/gs-application.c:601
+#: ../src/gs-application.c:592
 msgid "Show application details"
 msgstr "Mostrar los detalles de la aplicación"
 
-#: ../src/gs-application.c:601
+#: ../src/gs-application.c:592
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:603
+#: ../src/gs-application.c:594
 msgid "Open a local package file"
 msgstr "Abrir un archivo de paquete local"
 
-#: ../src/gs-application.c:603
+#: ../src/gs-application.c:594
 msgid "FILENAME"
 msgstr "ARCHIVO"
 
-#: ../src/gs-application.c:605
+#: ../src/gs-application.c:596
 msgid "Show verbose debugging information"
 msgstr "Mostrar información de depuración detallada"
 
-#: ../src/gs-application.c:607
+#: ../src/gs-application.c:598
 msgid "Show profiling information for the service"
 msgstr "Mostrar información del perfil para el servicio"
 
-#: ../src/gs-application.c:609
+#: ../src/gs-application.c:600
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferir las fuentes de archivos locales a las de AppStream"
 
@@ -219,7 +219,7 @@ msgstr "Pendiente"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:102 ../src/gs-app-row.c:269
+#: ../src/gs-app-addon-row.c:102 ../src/gs-app-row.c:267
 #: ../src/gs-app-tile.c:85 ../src/gs-app-tile.c:88
 msgid "Installing"
 msgstr "Instalando"
@@ -228,7 +228,7 @@ msgstr "Instalando"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:106 ../src/gs-app-row.c:278
+#: ../src/gs-app-addon-row.c:106 ../src/gs-app-row.c:276
 #: ../src/gs-app-tile.c:94 ../src/gs-app-tile.c:97
 msgid "Removing"
 msgstr "Quitando"
@@ -423,73 +423,85 @@ msgstr "Histórico"
 
 #. TRANSLATORS: the transaction could not be completed
 #. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:55
+#: ../src/gs-offline-updates.c:48
 msgid "A previous update was unfinished."
 msgstr "La actualización anterior no ha terminado."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-offline-updates.c:64
-msgid "Network access was required but not available."
-msgstr "Se necesita acceso a la red, pero no está disponible."
+#: ../src/gs-offline-updates.c:57
+msgid ""
+"Internet access was required but wasn’t available. Please make sure that you "
+"have internet access and try again."
+msgstr ""
+"La conexión a Internet no está disponible. Asegúrese de que tiene acceso a "
+"Internet e inténtelo de nuevo."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
-#: ../src/gs-offline-updates.c:73
-msgid "An update was not signed in the correct way."
-msgstr "Una actualización no se ha firmado de la manera correcta."
+#: ../src/gs-offline-updates.c:67
+msgid ""
+"There were security issues with the update. Please consult your software "
+"provider for more details."
+msgstr ""
+"Ha ocurrido un problema de seguridad con la actualización. Consulte a su "
+"proveedor de software para obtener más detalles."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
 #. * really are teh suck.
-#: ../src/gs-offline-updates.c:82
-msgid "The update could not be completed."
-msgstr "No se pudo completar la actualización."
+#. TRANSLATORS: the update process failed in a general
+#. * way, usually this message will come from source distros
+#. * like gentoo
+#: ../src/gs-offline-updates.c:77 ../src/gs-offline-updates.c:100
+msgid ""
+"The update couldn’t be installed; this is often a problem with the update "
+"itself. Please wait for another update and try again."
+msgstr ""
+"La actualización no pudo instalarse; normalmente esto indica un problema con "
+"la propia actualización. Espere a otra actualización e inténtelo de nuevo."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:86
+#: ../src/gs-offline-updates.c:82
 msgid "The update was cancelled."
 msgstr "Se canceló la actualización."
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-offline-updates.c:92
-msgid "An offline update was requested but no packages required updating."
-msgstr ""
-"Se ha solicitado una actualización en modo desconectado, pero no hay "
-"paquetes que necesiten actualizarse."
+#: ../src/gs-offline-updates.c:88
+msgid "The system was already up to date."
+msgstr "El sistema ya estaba actualizado."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:96
-msgid "No space was left on the drive."
-msgstr "No queda espacio en el disco"
-
-#. TRANSLATORS: the update process failed in a general
-#. * way, usually this message will come from source distros
-#. * like gentoo
-#: ../src/gs-offline-updates.c:104
-msgid "An update failed to install correctly."
-msgstr "Una actualización no se ha instalado correctamente."
+#: ../src/gs-offline-updates.c:92
+msgid ""
+"There wasn’t enough disk space. Please free up some space and try again."
+msgstr ""
+"No hay suficiente espacio en disco. Libere algo de espacio e inténtelo de "
+"nuevo."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:108
-msgid "The offline update failed in an unexpected way."
-msgstr "La actualización en modo desconectado ha fallado de manera imprevista."
+#: ../src/gs-offline-updates.c:105
+msgid ""
+"We’re sorry: the update failed to install. Please wait for another update "
+"and try again. If the problem persists, contact your software provider."
+msgstr ""
+"La actualización no pudo instalarse. Espere a otra actualización e inténtelo "
+"de nuevo. Si el problema persiste, contacte a su proveedor de software."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:205
+#: ../src/gs-offline-updates.c:266
 msgid "Detailed errors from the package manager follow:"
 msgstr "Detalles del gestor de paquetes:"
 
-#. TODO: In 3.18 the label will be "Details:" (":" appended)
-#: ../src/gs-offline-updates.c:218 ../src/gs-shell-details.ui.h:20
+#: ../src/gs-offline-updates.c:285 ../src/gs-shell-details.ui.h:20
 msgid "Details"
 msgstr "Detalles"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:278
+#: ../src/gs-offline-updates.c:337
 msgid "Failed To Update"
 msgstr "Falló al actualizar"
 
@@ -1346,33 +1358,33 @@ msgstr "Ahora no"
 msgid "View"
 msgstr "Ver"
 
-#: ../src/gs-update-monitor.c:144
+#: ../src/gs-update-monitor.c:143
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Actualización de software instalada"
 msgstr[1] "Actualizaciones de software instaladas"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:148
+#: ../src/gs-update-monitor.c:147
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Se ha instalado una actualización del sistema operativo importante."
 msgstr[1] "Se han instalado actualizaciones del sistema operativo importantes."
 
-#: ../src/gs-update-monitor.c:154
+#: ../src/gs-update-monitor.c:153
 msgid "Software Updates Failed"
 msgstr "Falló la actualización de software"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:156
+#: ../src/gs-update-monitor.c:155
 msgid "An important OS update failed to be installed."
 msgstr "Falló al instalar una actualización importante del sistema operativo."
 
-#: ../src/gs-update-monitor.c:164
+#: ../src/gs-update-monitor.c:161
 msgid "Review"
 msgstr "Revisión"
 
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:164
 msgid "Show Details"
 msgstr "Mostrar detalles"
 
@@ -2364,6 +2376,30 @@ msgstr "_Acerca de"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "_Salir"
+
+#~ msgid "Network access was required but not available."
+#~ msgstr "Se necesita acceso a la red, pero no está disponible."
+
+#~ msgid "An update was not signed in the correct way."
+#~ msgstr "Una actualización no se ha firmado de la manera correcta."
+
+#~ msgid "The update could not be completed."
+#~ msgstr "No se pudo completar la actualización."
+
+#~ msgid "An offline update was requested but no packages required updating."
+#~ msgstr ""
+#~ "Se ha solicitado una actualización en modo desconectado, pero no hay "
+#~ "paquetes que necesiten actualizarse."
+
+#~ msgid "No space was left on the drive."
+#~ msgstr "No queda espacio en el disco"
+
+#~ msgid "An update failed to install correctly."
+#~ msgstr "Una actualización no se ha instalado correctamente."
+
+#~ msgid "The offline update failed in an unexpected way."
+#~ msgstr ""
+#~ "La actualización en modo desconectado ha fallado de manera imprevista."
 
 #~ msgid "Updates"
 #~ msgstr "Actualizaciones"
