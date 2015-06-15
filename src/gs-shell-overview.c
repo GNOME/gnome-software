@@ -248,18 +248,20 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GsApp *app;
 	_cleanup_error_free_ GError *error = NULL;
 
-	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
-
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
-	gtk_widget_set_visible (priv->featured_heading, list != NULL);
-	if (list == NULL) {
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("failed to get featured apps: %s", error->message);
+	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 		goto out;
-	}
+
 	/* Don't show apps from the category that's currently featured as the category of the day */
 	gs_plugin_list_filter (&list, filter_category, priv->category_of_day);
 	gs_plugin_list_randomize (&list);
+
+	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
+	gtk_widget_set_visible (priv->featured_heading, list != NULL);
+	if (list == NULL) {
+		g_warning ("failed to get featured apps: %s", error ? error->message : "no apps to show");
+		goto out;
+	}
 
 	/* at the moment, we only care about the first app */
 	app = GS_APP (list->data);
