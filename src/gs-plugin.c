@@ -161,6 +161,8 @@ gs_plugin_list_randomize (GList **list)
 	_cleanup_date_time_unref_ GDateTime *date = NULL;
 	_cleanup_free_ gchar *key = NULL;
 
+	g_return_if_fail (list != NULL);
+
 	key = g_strdup_printf ("Plugin::sort-key[%p]", list);
 	rand = g_rand_new ();
 	date = g_date_time_new_now_utc ();
