@@ -14,10 +14,10 @@ dist_resources_DATA =					\
 	featured-gnome-sudoku.png			\
 	featured-inkscape.png				\
 	featured-mypaint.png				\
+	featured-polari.svg				\
 	featured-transmission.png			\
 	featured-weather.png				\
 	featured-weather-bg.png				\
-	featured-xchat.png				\
 	featured.ini
 
 @GSETTINGS_RULES@
