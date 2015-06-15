@@ -709,6 +709,11 @@ gs_shell_details_refresh_all (GsShellDetails *shell_details)
 		break;
 	}
 
+	/* don't show the launch button if the app doesn't have a desktop ID */
+	tmp = gs_app_get_id (priv->app);
+	if (tmp == NULL)
+		gtk_widget_set_visible (priv->button_details_launch, FALSE);
+
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (priv->app);
 	switch (gs_app_get_id_kind (priv->app)) {
@@ -1269,12 +1274,16 @@ gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *shell_
 	const gchar *desktop_id;
 
 	desktop_id = gs_app_get_id (shell_details->priv->app);
-	display = gdk_display_get_default ();
+	if (desktop_id == NULL) {
+		g_warning ("no such desktop file: %s", desktop_id);
+		return;
+	}
 	appinfo = G_APP_INFO (g_desktop_app_info_new (desktop_id));
 	if (appinfo == NULL) {
 		g_warning ("no such desktop file: %s", desktop_id);
 		return;
 	}
+	display = gdk_display_get_default ();
 	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
 	if (!g_app_info_launch (appinfo, NULL, context, &error)) {
 		g_warning ("launching %s failed: %s", desktop_id, error->message);
