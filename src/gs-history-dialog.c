@@ -59,6 +59,7 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 	const gchar *tmp;
 	GPtrArray *history;
 	GtkBox *box;
+	GtkWidget *row;
 	GtkWidget *widget;
 	guint64 timestamp;
 	guint i;
@@ -143,6 +144,9 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 
 		gtk_widget_show_all (GTK_WIDGET (box));
 		gtk_list_box_insert (GTK_LIST_BOX (priv->list_box), GTK_WIDGET (box), -1);
+
+		row = gtk_widget_get_parent (GTK_WIDGET (box));
+		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
 	}
 }
 
