@@ -419,7 +419,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* download file */
 	g_debug ("downloading %s to %s", url, priv->filename);
 	base_uri = soup_uri_new (url);
-	if (base_uri == NULL) {
+	if (base_uri == NULL || !SOUP_URI_VALID_FOR_HTTP (base_uri)) {
 		/* TRANSLATORS: this is when we try to download a screenshot
 		 * that was not a valid URL */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not valid"));
