@@ -257,6 +257,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *shell_updates)
 				       _("(This could take a while)"));
 		gtk_label_set_label (GTK_LABEL (priv->label_updates_spinner), tmp);
 		g_free (tmp);
+		break;
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 		tmp = g_strdup_printf ("%s\n%s",
 				       gs_shell_updates_get_state_string (priv->last_status),
