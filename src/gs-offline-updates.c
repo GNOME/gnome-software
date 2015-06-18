@@ -245,6 +245,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	GtkTextBuffer *buffer;
 	GList *children;
 	GString *msg;
+	PangoFontDescription *font_desc;
 
 	if (!details)
 		return;
@@ -293,10 +294,14 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
 	gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
 	gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD);
-	gtk_text_view_set_monospace (GTK_TEXT_VIEW (tv), TRUE);
 	gtk_text_buffer_set_text (buffer, msg->str, -1);
 	tmp_apply_tags (buffer);
 	gtk_widget_set_visible (tv, TRUE);
+
+	/* Make the textview monospaced */
+	font_desc = pango_font_description_from_string ("monospace");
+	gtk_widget_override_font (tv, font_desc);
+	pango_font_description_free (font_desc);
 
 	gtk_container_add (GTK_CONTAINER (sw), tv);
 	gtk_box_pack_end (GTK_BOX (message_area), sw, TRUE, TRUE, 0);
