@@ -1,3 +1,23 @@
+Version 3.14.6
+~~~~~~~~~~~~~~
+Released: 2015-06-18
+
+* Bugfix:
+ - Show a better UI for offline update failure dialog (Rafal Luzynski)
+ - Several improvements to the sources dialog (Kalev Lember)
+ - Fix a frequent crash in appstream plugin (Kalev Lember)
+ - Fix a critical warning when opening the app folder dialog (Kalev Lember)
+ - Fix a possible crash when changing the download-updates option in gsettings (Kalev Lember)
+ - Fix a possible crash when dealing with apps that have no desktop ID associated (Kalev Lember)
+ - Fix a crash with invalid screenshot URLs in appstream data (Kalev Lember)
+ - Fix an issue that caused "Source: Unknown" to be shown on the details page
+   even though the source info was available (Kalev Lember)
+ - Update the styling of the history and sources dialogs to make sure
+   unclickable rows don't appear clickable (Matthias Clasen, Kalev Lember)
+ - Correct the desktop file name for gnome-chess (Kalev Lember)
+ - Hide updates UI on managed systems (Matthias Clasen)
+ - Workaround text coming up as selected in the updates dialog (Kalev Lember)
+
 Version 3.14.5
 ~~~~~~~~~~~~~~
 Released: 2015-06-06
