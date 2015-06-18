@@ -648,6 +648,21 @@ gs_plugin_refine_requires_update_details (GsApp *app, GsPluginRefineFlags flags)
 }
 
 /**
+ * gs_plugin_refine_requires_origin:
+ */
+static gboolean
+gs_plugin_refine_requires_origin (GsApp *app, GsPluginRefineFlags flags)
+{
+	const gchar *tmp;
+	tmp = gs_app_get_origin (app);
+	if (tmp != NULL)
+		return FALSE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) > 0)
+		return TRUE;
+	return FALSE;
+}
+
+/**
  * gs_plugin_refine_requires_package_id:
  */
 static gboolean
@@ -670,8 +685,6 @@ gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) > 0)
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) > 0)
-		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) > 0)
 		return TRUE;
 	return FALSE;
 }
@@ -717,6 +730,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN ||
 		    gs_plugin_refine_requires_package_id (app, flags) ||
+		    gs_plugin_refine_requires_origin (app, flags) ||
 		    gs_plugin_refine_requires_version (app, flags)) {
 			resolve_all = g_list_prepend (resolve_all, app);
 		}
