@@ -318,7 +318,6 @@ gs_offline_updates_show_error (GsShell *shell)
 	const gchar *secondary;
 	const gchar *geeky;
 	GtkWidget *dialog;
-	_cleanup_error_free_ GError *error = NULL;
 	_cleanup_object_unref_ PkError *pk_error = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 
@@ -353,11 +352,6 @@ gs_offline_updates_show_error (GsShell *shell)
 				  G_CALLBACK (gtk_widget_destroy),
 				  dialog);
 	gtk_widget_show (dialog);
-
-	if (!pk_offline_clear_results (NULL, &error)) {
-		g_warning ("Failure clearing offline update message: %s",
-			   error->message);
-	}
 }
 
 GPermission *
