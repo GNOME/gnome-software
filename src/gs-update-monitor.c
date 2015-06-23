@@ -119,7 +119,6 @@ offline_update_monitor_cb (GFileMonitor      *file_monitor,
 static void
 start_monitoring_offline_updates (GsUpdateMonitor *monitor)
 {
-	monitor->offline_update_file = g_file_new_for_path ("/var/lib/PackageKit/prepared-update");
 	monitor->offline_update_monitor = g_file_monitor_file (monitor->offline_update_file, 0, NULL, NULL);
 
 	g_signal_connect (monitor->offline_update_monitor, "changed",
@@ -502,6 +501,7 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 {
 	gint64 tmp;
 
+	monitor->offline_update_file = g_file_new_for_path ("/var/lib/PackageKit/prepared-update");
 	monitor->check_offline_update_id = 
 		g_timeout_add_seconds (15, check_offline_update_cb, monitor);
 
@@ -589,11 +589,14 @@ gs_update_monitor_class_init (GsUpdateMonitorClass *klass)
 static void
 remove_stale_notifications (GsUpdateMonitor *monitor)
 {
-	if (pk_offline_get_results_mtime (NULL) > 0) {
-		g_debug ("Withdrawing stale notifications");
-
+	if (!g_file_query_exists (monitor->offline_update_file, NULL)) {
+		g_debug ("Withdrawing stale updates-available notification");
 		g_application_withdraw_notification (monitor->application,
 						     "updates-available");
+	}
+
+	if (pk_offline_get_results_mtime (NULL) == 0) {
+		g_debug ("Withdrawing stale offline-updates notification");
 		g_application_withdraw_notification (monitor->application,
 						     "offline-updates");
 	}
