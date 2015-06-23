@@ -510,7 +510,7 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 
 	monitor->offline_update_file = g_file_new_for_path ("/var/lib/PackageKit/prepared-update");
 	monitor->check_offline_update_id = 
-		g_timeout_add_seconds (15, check_offline_update_cb, monitor);
+		g_timeout_add_seconds (5, check_offline_update_cb, monitor);
 
 	monitor->settings = g_settings_new ("org.gnome.software");
 	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
