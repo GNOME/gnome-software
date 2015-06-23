@@ -3415,7 +3415,7 @@ gs_plugin_loader_refresh_thread_cb (GTask *task,
 /**
  * gs_plugin_loader_refresh_async:
  *
- * This method calls all plugins that implement the gs_plugin_refine()
+ * This method calls all plugins that implement the gs_plugin_refresh()
  * function.
  **/
 void
