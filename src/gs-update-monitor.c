@@ -113,6 +113,13 @@ offline_update_monitor_cb (GFileMonitor      *file_monitor,
 			   GFileMonitorEvent  event_type,
 			   GsUpdateMonitor   *monitor)
 {
+	if (!g_file_query_exists (monitor->offline_update_file, NULL)) {
+		g_debug ("prepared update removed; withdrawing updates-available notification");
+		g_application_withdraw_notification (monitor->application,
+						     "updates-available");
+		return;
+	}
+
 	notify_offline_update_available (monitor);
 }
 
