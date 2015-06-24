@@ -816,19 +816,6 @@ gs_plugin_loader_add_os_update_item (GList *list)
 		gs_app_add_related (app_os, app_tmp);
 	}
 
-	/* load icon */
-	pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-					   "software-update-available-symbolic",
-					   64,
-					   GTK_ICON_LOOKUP_USE_BUILTIN |
-					   GTK_ICON_LOOKUP_FORCE_SIZE,
-					   &error);
-	if (pixbuf == NULL) {
-		g_warning ("Failed to find software-update-available-symbolic: %s",
-			   error->message);
-	} else {
-		gs_app_set_pixbuf (app_os, pixbuf);
-	}
 	return g_list_prepend (list, app_os);
 }
 
