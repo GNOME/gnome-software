@@ -827,6 +827,40 @@ gs_app_is_addon_id_kind (GsApp *app)
 	return TRUE;
 }
 
+static GtkIconTheme	*icon_theme_singleton;
+static GMutex		 icon_theme_lock;
+static GHashTable	*icon_theme_paths;
+
+/**
+ * icon_theme_get:
+ */
+static GtkIconTheme *
+icon_theme_get (void)
+{
+	if (icon_theme_singleton == NULL)
+		icon_theme_singleton = gtk_icon_theme_new ();
+
+	return icon_theme_singleton;
+}
+
+/**
+ * icon_theme_add_path:
+ */
+static void
+icon_theme_add_path (const gchar *path)
+{
+	if (path == NULL)
+		return;
+
+	if (icon_theme_paths == NULL)
+		icon_theme_paths = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+
+	if (!g_hash_table_contains (icon_theme_paths, path)) {
+		gtk_icon_theme_prepend_search_path (icon_theme_get (), path);
+		g_hash_table_add (icon_theme_paths, g_strdup (path));
+	}
+}
+
 /**
  * gs_app_get_pixbuf:
  */
@@ -904,40 +938,6 @@ gs_app_set_icon (GsApp *app, AsIcon *icon)
 	g_clear_object (&APP_PRIV (app)->icon);
 	if (icon != NULL)
 		APP_PRIV (app)->icon = g_object_ref (icon);
-}
-
-static GtkIconTheme *icon_theme_singleton;
-static GMutex	icon_theme_lock;
-static GHashTable   *icon_theme_paths;
-
-/**
- * icon_theme_get:
- */
-static GtkIconTheme *
-icon_theme_get (void)
-{
-	if (icon_theme_singleton == NULL)
-		icon_theme_singleton = gtk_icon_theme_new ();
-
-	return icon_theme_singleton;
-}
-
-/**
- * icon_theme_add_path:
- */
-static void
-icon_theme_add_path (const gchar *path)
-{
-	if (path == NULL)
-		return;
-
-	if (icon_theme_paths == NULL)
-		icon_theme_paths = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-
-	if (!g_hash_table_contains (icon_theme_paths, path)) {
-		gtk_icon_theme_prepend_search_path (icon_theme_get (), path);
-		g_hash_table_add (icon_theme_paths, g_strdup (path));
-	}
 }
 
 /**
