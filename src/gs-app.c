@@ -869,11 +869,12 @@ gs_app_get_pixbuf (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
+	g_mutex_lock (&icon_theme_lock);
 	/* has an icon */
 	if (APP_PRIV (app)->pixbuf == NULL &&
 	    APP_PRIV (app)->icon != NULL &&
 	    as_icon_get_kind (APP_PRIV (app)->icon) == AS_ICON_KIND_STOCK) {
-		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 							      as_icon_get_name (APP_PRIV (app)->icon), 64,
 							      GTK_ICON_LOOKUP_USE_BUILTIN |
 							      GTK_ICON_LOOKUP_FORCE_SIZE,
@@ -887,31 +888,32 @@ gs_app_get_pixbuf (GsApp *app)
 			icon_name = "application-x-addon";
 		else
 			icon_name = "application-x-executable";
-		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 		                                              icon_name, 96,
 		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);
 
 	} else if (APP_PRIV (app)->pixbuf == NULL && gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
-		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 		                                              "application-x-addon", 64,
 		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);
 	} else if (APP_PRIV (app)->pixbuf == NULL && gs_app_get_kind (app) == GS_APP_KIND_OS_UPDATE) {
-		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 		                                              "software-update-available-symbolic", 64,
 		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);
 	} else if (APP_PRIV (app)->pixbuf == NULL && gs_app_get_kind (app) == GS_APP_KIND_MISSING) {
-		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
+		APP_PRIV (app)->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 		                                              "dialog-question-symbolic", 16,
 		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);
 	}
+	g_mutex_unlock (&icon_theme_lock);
 
 	return APP_PRIV (app)->pixbuf;
 }
