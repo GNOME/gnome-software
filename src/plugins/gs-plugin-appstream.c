@@ -580,6 +580,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	    gs_app_get_project_group (app) == NULL)
 		gs_app_set_project_group (app, as_app_get_project_group (item));
 
+	/* set default bundle (if any) */
+	if (as_app_get_bundle_default (item) != NULL &&
+	    gs_app_get_bundle (app) == NULL)
+		gs_app_set_bundle (app, as_app_get_bundle_default (item));
+
 	/* this is a core application for the desktop and cannot be removed */
 	if (as_app_has_compulsory_for_desktop (item, "GNOME") &&
 	    gs_app_get_kind (app) == GS_APP_KIND_NORMAL)
@@ -656,10 +661,6 @@ gs_plugin_refine_item (GsPlugin *plugin,
 			break;
 		}
 	}
-
-	/* set default bundle (if any) */
-	gs_app_set_bundle (app,
-			as_app_get_bundle_default (item));
 
 	return TRUE;
 }

@@ -2159,6 +2159,7 @@ gs_app_dispose (GObject *object)
 	GsApp *app = GS_APP (object);
 	GsAppPrivate *priv = APP_PRIV (app);
 
+	g_clear_object (&priv->bundle);
 	g_clear_object (&priv->featured_pixbuf);
 	g_clear_object (&priv->icon);
 	g_clear_object (&priv->pixbuf);
@@ -2205,8 +2206,6 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (priv->categories);
 	if (priv->keywords != NULL)
 		g_ptr_array_unref (priv->keywords);
-	if (priv->bundle)
-		g_object_unref (priv->bundle);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
