@@ -41,6 +41,8 @@ struct GsPluginPrivate {
 	GPtrArray		*to_ignore;
 	SoupSession		*session;
 	gchar			*cachedir;
+	gchar			*lvfs_sig_fn;
+	gchar			*lvfs_sig_hash;
 };
 
 /**
@@ -65,6 +67,9 @@ gs_plugin_fwupd_setup_networking (GsPlugin *plugin, GError **error)
 			     plugin->name);
 		return FALSE;
 	}
+	/* this disables the double-compression of the firmware.xml.gz file */
+	soup_session_remove_feature_by_type (plugin->priv->session,
+					     SOUP_TYPE_CONTENT_DECODER);
 	return TRUE;
 }
 
@@ -96,6 +101,8 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_free (plugin->priv->cachedir);
+	g_free (plugin->priv->lvfs_sig_fn);
+	g_free (plugin->priv->lvfs_sig_hash);
 	g_object_unref (plugin->priv->store);
 	g_ptr_array_unref (plugin->priv->to_download);
 	g_ptr_array_unref (plugin->priv->to_ignore);
@@ -126,7 +133,9 @@ static gboolean
 gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	gint rc;
+	gsize len;
 	_cleanup_error_free_ GError *error_local = NULL;
+	_cleanup_free_ gchar *data = NULL;
 	_cleanup_object_unref_ GDBusConnection *conn = NULL;
 
 	/* register D-Bus errors */
@@ -162,6 +171,18 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				     GS_PLUGIN_ERROR_FAILED,
 				     "Could not create firmware cache");
 		return FALSE;
+	}
+
+	/* get the hash of the previously downloaded file */
+	plugin->priv->lvfs_sig_fn = g_build_filename (plugin->priv->cachedir,
+						      "firmware.xml.gz.asc",
+						      NULL);
+	if (g_file_test (plugin->priv->lvfs_sig_fn, G_FILE_TEST_EXISTS)) {
+		if (!g_file_get_contents (plugin->priv->lvfs_sig_fn,
+					  &data, &len, error))
+			return FALSE;
+		plugin->priv->lvfs_sig_hash =
+			g_compute_checksum_for_data (G_CHECKSUM_SHA1, (guchar *) data, len);
 	}
 
 	/* only load firmware from the system */
@@ -535,6 +556,172 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_fwupd_update_lvfs_metadata:
+ */
+static gboolean
+gs_plugin_fwupd_update_lvfs_metadata (const gchar *data_fn, const gchar *sig_fn, GError **error)
+{
+	GVariant *body;
+	gint fd_sig;
+	gint fd_data;
+	gint retval;
+	_cleanup_object_unref_ GDBusConnection *conn = NULL;
+	_cleanup_object_unref_ GDBusMessage *message = NULL;
+	_cleanup_object_unref_ GDBusMessage *request = NULL;
+	_cleanup_object_unref_ GUnixFDList *fd_list = NULL;
+
+	conn = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, error);
+	if (conn == NULL)
+		return FALSE;
+
+	/* open files */
+	fd_data = open (data_fn, O_RDONLY);
+	if (fd_data < 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to open %s",
+			     data_fn);
+		return FALSE;
+	}
+	fd_sig = open (sig_fn, O_RDONLY);
+	if (fd_sig < 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to open %s",
+			     sig_fn);
+		return FALSE;
+	}
+
+	/* set out of band file descriptor */
+	fd_list = g_unix_fd_list_new ();
+	retval = g_unix_fd_list_append (fd_list, fd_data, NULL);
+	retval = g_unix_fd_list_append (fd_list, fd_sig, NULL);
+	g_assert (retval != -1);
+	request = g_dbus_message_new_method_call (FWUPD_DBUS_SERVICE,
+						  FWUPD_DBUS_PATH,
+						  FWUPD_DBUS_INTERFACE,
+						  "UpdateMetadata");
+	g_dbus_message_set_unix_fd_list (request, fd_list);
+
+	/* g_unix_fd_list_append did a dup() already */
+	close (fd_data);
+	close (fd_sig);
+
+	/* send message */
+	body = g_variant_new ("(hh)", 0, 1);
+	g_dbus_message_set_body (request, body);
+	message = g_dbus_connection_send_message_with_reply_sync (conn,
+								  request,
+								  G_DBUS_SEND_MESSAGE_FLAGS_NONE,
+								  -1,
+								  NULL,
+								  NULL,
+								  error);
+	if (message == NULL) {
+		g_dbus_error_strip_remote_error (*error);
+		return FALSE;
+	}
+	if (g_dbus_message_to_gerror (message, error)) {
+		g_dbus_error_strip_remote_error (*error);
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
+/**
+ * gs_plugin_fwupd_check_lvfs_metadata:
+ */
+static gboolean
+gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
+				     guint cache_age,
+				     GCancellable *cancellable,
+				     GError **error)
+{
+	const gchar *url_data = "https://beta-lvfs.rhcloud.com/downloads/firmware.xml.gz";
+	guint status_code;
+	_cleanup_error_free_ GError *error_local = NULL;
+	_cleanup_free_ gchar *basename_data = NULL;
+	_cleanup_free_ gchar *cache_fn_data = NULL;
+	_cleanup_free_ gchar *checksum = NULL;
+	_cleanup_free_ gchar *url_sig = NULL;
+	_cleanup_object_unref_ SoupMessage *msg_data = NULL;
+	_cleanup_object_unref_ SoupMessage *msg_sig = NULL;
+
+	/* download the signature first, it's smaller */
+	url_sig = g_strdup_printf ("%s.asc", url_data);
+	msg_sig = soup_message_new (SOUP_METHOD_GET, url_sig);
+	status_code = soup_session_send_message (plugin->priv->session, msg_sig);
+	if (status_code != SOUP_STATUS_OK) {
+		g_warning ("Failed to download %s, ignoring: %s",
+			   url_sig, soup_status_get_phrase (status_code));
+		return TRUE;
+	}
+
+	/* is the signature hash the same as we had before? */
+	checksum = g_compute_checksum_for_data (G_CHECKSUM_SHA1,
+						(const guchar *) msg_sig->response_body->data,
+						msg_sig->response_body->length);
+	if (g_strcmp0 (checksum, plugin->priv->lvfs_sig_hash) == 0) {
+		g_debug ("signature of %s is unchanged", url_sig);
+		return TRUE;
+	}
+
+	/* save to a file */
+	g_debug ("saving new LVFS signature to %s:", plugin->priv->lvfs_sig_fn);
+	if (!g_file_set_contents (plugin->priv->lvfs_sig_fn,
+				  msg_sig->response_body->data,
+				  msg_sig->response_body->length,
+				  &error_local)) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to save firmware: %s",
+			     error_local->message);
+		return FALSE;
+	}
+
+	/* save the new checksum so we don't downoad the payload unless it's changed */
+	g_free (plugin->priv->lvfs_sig_hash);
+	plugin->priv->lvfs_sig_hash = g_strdup (checksum);
+
+	/* download the payload */
+	msg_data = soup_message_new (SOUP_METHOD_GET, url_data);
+	status_code = soup_session_send_message (plugin->priv->session, msg_data);
+	if (status_code != SOUP_STATUS_OK) {
+		g_warning ("Failed to download %s, ignoring: %s",
+			   url_data, soup_status_get_phrase (status_code));
+		return TRUE;
+	}
+
+	/* save to a file */
+	basename_data = g_path_get_basename (url_data);
+	cache_fn_data = g_build_filename (plugin->priv->cachedir, basename_data, NULL);
+	g_debug ("saving new LVFS data to %s:", cache_fn_data);
+	if (!g_file_set_contents (cache_fn_data,
+				  msg_data->response_body->data,
+				  msg_data->response_body->length,
+				  &error_local)) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to save firmware: %s",
+			     error_local->message);
+		return FALSE;
+	}
+
+	/* phew, lets send all this to fwupd */
+	if (!gs_plugin_fwupd_update_lvfs_metadata (cache_fn_data,
+						   plugin->priv->lvfs_sig_fn,
+						   error))
+		return FALSE;
+
+	return TRUE;
+}
+
+/**
  * gs_plugin_refresh:
  */
 gboolean
@@ -545,10 +732,23 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	const gchar *tmp;
+	gboolean ret;
 	guint i;
+
+	/* set up plugin */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, cancellable, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			return FALSE;
+	}
 
 	/* ensure networking is set up */
 	if (!gs_plugin_fwupd_setup_networking (plugin, error))
+		return FALSE;
+
+	/* get the metadata and signature file */
+	if (!gs_plugin_fwupd_check_lvfs_metadata (plugin, cache_age, cancellable, error))
 		return FALSE;
 
 	/* download the files to the cachedir */
