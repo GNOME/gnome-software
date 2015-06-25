@@ -3075,6 +3075,10 @@ gs_plugin_loader_dispose (GObject *object)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 
+	if (plugin_loader->priv->plugins != NULL) {
+		gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
+		g_clear_pointer (&plugin_loader->priv->plugins, g_ptr_array_unref);
+	}
 	if (plugin_loader->priv->updates_changed_id != 0) {
 		g_source_remove (plugin_loader->priv->updates_changed_id);
 		plugin_loader->priv->updates_changed_id = 0;
@@ -3087,7 +3091,6 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&plugin_loader->priv->settings);
 	g_clear_pointer (&plugin_loader->priv->app_cache, g_hash_table_unref);
 	g_clear_pointer (&plugin_loader->priv->pending_apps, g_ptr_array_unref);
-	g_clear_pointer (&plugin_loader->priv->plugins, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
 }
@@ -3107,9 +3110,6 @@ gs_plugin_loader_finalize (GObject *object)
 	plugin_loader = GS_PLUGIN_LOADER (object);
 
 	g_return_if_fail (plugin_loader->priv != NULL);
-
-	/* run the plugins */
-	gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
 
 	g_strfreev (plugin_loader->priv->compatible_projects);
 	g_free (plugin_loader->priv->location);
