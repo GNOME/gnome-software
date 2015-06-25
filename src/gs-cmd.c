@@ -374,6 +374,10 @@ main (int argc, char **argv)
 				break;
 			}
 		}
+	} else if (argc == 2 && g_strcmp0 (argv[1], "refresh") == 0) {
+		ret = gs_plugin_loader_refresh (plugin_loader, 0,
+						GS_PLUGIN_REFRESH_FLAGS_UPDATES,
+						NULL, &error);
 	} else {
 		ret = FALSE;
 		g_set_error_literal (&error,
@@ -382,7 +386,7 @@ main (int argc, char **argv)
 				     "Did not recognise option, use 'installed', "
 				     "'updates', 'popular', 'get-categories', "
 				     "'get-category-apps', 'filename-to-app', "
-				     "'sources', or 'search'");
+				     "'sources', 'refresh' or 'search'");
 	}
 	if (!ret) {
 		g_print ("Failed: %s\n", error->message);
