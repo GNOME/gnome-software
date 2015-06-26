@@ -1040,6 +1040,7 @@ gs_plugin_add_categories_for_app (GList *list, AsApp *app)
 			if (category == NULL) {
 				category = gs_category_new (parent, "other", NULL);
 				gs_category_add_subcategory (parent, category);
+				g_object_unref (category);
 			}
 			as_app_add_category (app, gs_category_get_id (category), -1);
 			gs_category_increment_size (category);
