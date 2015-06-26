@@ -48,7 +48,6 @@ struct GsShellDetailsPrivate
 	GCancellable		*cancellable;
 	GsApp			*app;
 	GsShell			*shell;
-	GtkWidget		*history_dialog;
 	GtkWidget		*star;
 	SoupSession		*session;
 
@@ -1128,11 +1127,13 @@ static void
 gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *shell_details)
 {
 	GsShellDetailsPrivate *priv = shell_details->priv;
+	GtkWidget *dialog;
 
-	gs_history_dialog_set_app (GS_HISTORY_DIALOG (priv->history_dialog), priv->app);
+	dialog = gs_history_dialog_new ();
+	gs_history_dialog_set_app (GS_HISTORY_DIALOG (dialog), priv->app);
 
-	gtk_window_set_transient_for (GTK_WINDOW (priv->history_dialog), gs_shell_get_window (priv->shell));
-	gtk_window_present (GTK_WINDOW (priv->history_dialog));
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), gs_shell_get_window (priv->shell));
+	gtk_window_present (GTK_WINDOW (dialog));
 }
 
 /**
@@ -1237,11 +1238,6 @@ gs_shell_details_setup (GsShellDetails *shell_details,
 	g_signal_connect (priv->button_details_website, "clicked",
 			  G_CALLBACK (gs_shell_details_website_cb),
 			  shell_details);
-
-	/* setup history window */
-	priv->history_dialog = gs_history_dialog_new ();
-	g_signal_connect (priv->history_dialog, "delete-event",
-			  G_CALLBACK (gtk_widget_hide_on_delete), shell_details);
 
 	adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_details));
 	gtk_container_set_focus_vadjustment (GTK_CONTAINER (priv->box_details), adj);
