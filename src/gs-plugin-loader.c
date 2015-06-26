@@ -48,7 +48,6 @@ struct GsPluginLoaderPrivate
 	gchar			**compatible_projects;
 	gint			 scale;
 
-	GList			*queued_installs;
 	guint			 updates_changed_id;
 	gboolean		 online; 
 };
@@ -1055,8 +1054,6 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
 		g_task_return_error (task, error);
 		return;
 	}
-
-	state->list = g_list_concat (state->list, g_list_copy_deep (plugin_loader->priv->queued_installs, (GCopyFunc)g_object_ref, NULL));
 
 	/* filter package list */
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
