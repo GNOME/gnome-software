@@ -180,8 +180,9 @@ gs_shell_category_create_filter_list (GsShellCategory *shell,
 {
 	GsShellCategoryPrivate *priv = shell->priv;
 	GtkWidget *row;
-	GList *list, *l;
+	GList *l;
 	GsCategory *s;
+	_cleanup_list_free_ GList *list = NULL;
 
 	gs_container_remove_all (GTK_CONTAINER (priv->category_detail_grid));
 
@@ -206,7 +207,6 @@ gs_shell_category_create_filter_list (GsShellCategory *shell,
 		if (subcategory == s)
 			gtk_list_box_select_row (GTK_LIST_BOX (priv->listbox_filter), GTK_LIST_BOX_ROW (gtk_widget_get_parent (row)));
 	}
-	g_list_free (list);
 }
 
 void
@@ -215,8 +215,8 @@ gs_shell_category_set_category (GsShellCategory *shell, GsCategory *category)
 	GsShellCategoryPrivate *priv = shell->priv;
 	GsCategory *sub;
 	GsCategory *selected = NULL;
-	GList *list;
 	GList *l;
+	_cleanup_list_free_ GList *list = NULL;
 
 	/* this means we've come from the app-view -> back */
 	if (priv->category == category)
@@ -242,7 +242,6 @@ gs_shell_category_set_category (GsShellCategory *shell, GsCategory *category)
 
 	/* find apps in this group */
 	gs_shell_category_create_filter_list (shell, category, selected);
-	g_list_free (list);
 }
 
 GsCategory *
