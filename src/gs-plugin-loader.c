@@ -703,6 +703,7 @@ gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 	if (g_strcmp0 (gs_app_get_id (app), "transmission-qt.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "nntpgrab_qt.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "gimagereader-qt4.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "gimagereader-qt5.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "nntpgrab_server_qt.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "hotot-qt.desktop") == 0) {
 		g_debug ("removing QT version of %s",
