@@ -60,14 +60,10 @@ gs_shell_category_switch_to (GsShellCategory *shell)
 {
 	GsShellCategoryPrivate *priv = shell->priv;
 	GtkWidget *widget;
-	GsCategory *category;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	gtk_widget_show (widget);
-	category = priv->category;
-	if (gs_category_get_parent (category))
-		category = gs_category_get_parent (category);
-	gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (category));
+	gtk_label_set_label (GTK_LABEL (widget), gs_category_get_name (priv->category));
 }
 
 static void
@@ -126,12 +122,13 @@ out:
 }
 
 static void
-gs_shell_category_populate_filtered (GsShellCategory *shell)
+gs_shell_category_populate_filtered (GsShellCategory *shell, GsCategory *subcategory)
 {
 	GsShellCategoryPrivate *priv = shell->priv;
-	GsCategory *parent;
 	GtkWidget *tile;
 	guint i;
+
+	g_assert (subcategory != NULL);
 
 	if (priv->cancellable != NULL) {
 		g_cancellable_cancel (priv->cancellable);
@@ -139,20 +136,14 @@ gs_shell_category_populate_filtered (GsShellCategory *shell)
 	}
 	priv->cancellable = g_cancellable_new ();
 
-	parent = gs_category_get_parent (priv->category);
-	if (parent == NULL) {
-		g_debug ("search using %s",
-			 gs_category_get_id (priv->category));
-	} else {
-		g_debug ("search using %s/%s",
-			 gs_category_get_id (parent),
-			 gs_category_get_id (priv->category));
-	}
+	g_debug ("search using %s/%s",
+	         gs_category_get_id (priv->category),
+	         gs_category_get_id (subcategory));
 
 	gtk_grid_remove_column (GTK_GRID (priv->category_detail_grid), 1);
 	gtk_grid_remove_column (GTK_GRID (priv->category_detail_grid), 0);
 
-	for (i = 0; i < MIN (30, gs_category_get_size (priv->category)); i++) {
+	for (i = 0; i < MIN (30, gs_category_get_size (subcategory)); i++) {
 		tile = gs_app_tile_new (NULL);
 		gtk_grid_attach (GTK_GRID (priv->category_detail_grid), tile, (i % 2), i / 2, 1, 1);
 	}
@@ -161,7 +152,7 @@ gs_shell_category_populate_filtered (GsShellCategory *shell)
 	gtk_grid_attach (GTK_GRID (priv->category_detail_grid), priv->col1_placeholder, 1, 0, 1, 1);
 
 	gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
-						  priv->category,
+						  subcategory,
 						  GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 						  priv->cancellable,
@@ -179,9 +170,7 @@ filter_selected (GtkListBox *filters, GtkListBoxRow *row, gpointer data)
 		return;
 
 	category = g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), "category");
-	g_clear_object (&shell->priv->category);
-	shell->priv->category = g_object_ref (category);
-	gs_shell_category_populate_filtered (shell);
+	gs_shell_category_populate_filtered (shell, category);
 }
 
 static void
@@ -230,8 +219,12 @@ gs_shell_category_set_category (GsShellCategory *shell, GsCategory *category)
 	GList *l;
 
 	/* this means we've come from the app-view -> back */
-	if (gs_category_get_parent (category) != NULL)
+	if (priv->category == category)
 		return;
+
+	/* save this */
+	g_clear_object (&priv->category);
+	priv->category = g_object_ref (category);
 
 	/* select favourites by default */
 	list = gs_category_get_subcategories (category);
@@ -246,10 +239,6 @@ gs_shell_category_set_category (GsShellCategory *shell, GsCategory *category)
 	/* okay, no favourites, so just select the first entry */
 	if (selected == NULL && list != NULL)
 		selected = GS_CATEGORY (list->data);
-
-	/* save this */
-	g_clear_object (&priv->category);
-	priv->category = g_object_ref (selected);
 
 	/* find apps in this group */
 	gs_shell_category_create_filter_list (shell, category, selected);
