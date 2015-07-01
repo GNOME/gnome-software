@@ -925,6 +925,9 @@ gs_app_get_ui_version (const gchar *version, guint64 flags)
 		f = g_strstr_len (new, -1, ".fc");
 		if (f != NULL)
 			*f= '\0';
+		f = g_strstr_len (new, -1, ".el");
+		if (f != NULL)
+			*f= '\0';
 	}
 
 	/* then remove any release */
