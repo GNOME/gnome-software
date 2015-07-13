@@ -71,18 +71,27 @@ static gboolean
 gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
 	LiPkgInfo *pki;
-	GError *local_error = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	/* sanity check */
+	if (gs_app_get_source_default (app) == NULL)
+		return TRUE;
 
 	pki = li_manager_get_software_by_pkid (plugin->priv->mgr,
 						gs_app_get_source_default (app),
-						&local_error);
-	if (local_error != NULL) {
-		g_propagate_error (error, local_error);
+						&error_local);
+	if (error_local != NULL) {
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Unable to refine metadata: %s",
+				     error_local->message);
 		return FALSE;
 	}
 
-	if (pki == NULL)
+	if (pki == NULL) {
 		return TRUE;
+	}
 
 	if (li_pkg_info_has_flag (pki, LI_PACKAGE_FLAG_INSTALLED))
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -125,6 +134,49 @@ gs_plugin_refine (GsPlugin *plugin,
 }
 
 /**
+ * GsPluginHelper:
+ * Helper structure for Limba callbacks.
+ */
+typedef struct {
+	GsApp		*app;
+	GsPlugin	*plugin;
+} GsPluginHelper;
+
+/**
+ * gs_plugin_installer_progress_cb:
+ */
+static void
+gs_plugin_installer_progress_cb (LiInstaller *inst, guint percentage, const gchar *id, gpointer user_data)
+{
+	GsPluginHelper *helper = (GsPluginHelper *) user_data;
+	if (helper->app == NULL)
+		return;
+
+	/* we only catch the main progress */
+	if (id != NULL)
+		return;
+
+	gs_plugin_progress_update (helper->plugin, helper->app, percentage);
+}
+
+/**
+ * gs_plugin_manager_progress_cb:
+ */
+static void
+gs_plugin_manager_progress_cb (LiManager *mgr, guint percentage, const gchar *id, gpointer user_data)
+{
+	GsPluginHelper *helper = (GsPluginHelper *) user_data;
+	if (helper->app == NULL)
+		return;
+
+	/* we only catch the main progress */
+	if (id != NULL)
+		return;
+
+	gs_plugin_progress_update (helper->plugin, helper->app, percentage);
+}
+
+/**
  * gs_plugin_app_remove:
  */
 gboolean
@@ -134,7 +186,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 			GError **error)
 {
 	g_autoptr(LiManager) mgr = NULL;
-	GError *local_error = NULL;
+	GsPluginHelper helper;
+	g_autoptr(GError) error_local = NULL;
 
 	/* not us */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "Limba") != 0)
@@ -142,13 +195,25 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	mgr = li_manager_new ();
 
+	/* set up progress forwarding */
+	helper.app = app;
+	helper.plugin = plugin;
+	g_signal_connect (mgr,
+			  "progress",
+			  G_CALLBACK (gs_plugin_manager_progress_cb),
+			  &helper);
+
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	li_manager_remove_software (mgr,
 				    gs_app_get_source_default (app),
-				    &local_error);
-	if (local_error != NULL) {
+				    &error_local);
+	if (error_local != NULL) {
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-		g_propagate_error (error, local_error);
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Failed to remove software: %s",
+				     error_local->message);
 		return FALSE;
 	}
 
@@ -167,7 +232,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 			GError **error)
 {
 	g_autoptr(LiInstaller) inst = NULL;
-	GError *local_error = NULL;
+	GsPluginHelper helper;
+	g_autoptr(GError) error_local = NULL;
 
 	/* not us */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "Limba") != 0)
@@ -177,18 +243,34 @@ gs_plugin_app_install (GsPlugin *plugin,
 	inst = li_installer_new ();
 	li_installer_open_remote (inst,
 				  gs_app_get_source_default (app),
-				  &local_error);
-	if (local_error != NULL) {
-		g_propagate_error (error, local_error);
+				  &error_local);
+	if (error_local != NULL) {
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Failed to install software: %s",
+				     error_local->message);
 		return FALSE;
 	}
 
+	/* set up progress forwarding */
+	helper.app = app;
+	helper.plugin = plugin;
+	g_signal_connect (inst,
+			  "progress",
+			  G_CALLBACK (gs_plugin_installer_progress_cb),
+			  &helper);
+
 	/* install software */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	li_installer_install (inst, &local_error);
-	if (local_error != NULL) {
-		g_propagate_error (error, local_error);
+	li_installer_install (inst, &error_local);
+	if (error_local != NULL) {
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Failed to install software: %s",
+				     error_local->message);
 		return FALSE;
 	}
 
