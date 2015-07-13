@@ -154,6 +154,7 @@ gs_shell_category_populate_filtered (GsShellCategory *shell, GsCategory *subcate
 	gs_plugin_loader_get_category_apps_async (priv->plugin_loader,
 						  subcategory,
 						  GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
 						  priv->cancellable,
 						  gs_shell_category_get_apps_cb,
