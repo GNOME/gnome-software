@@ -29,6 +29,7 @@
 #include "gs-cleanup.h"
 #include "gs-star-widget.h"
 #include "gs-markdown.h"
+#include "gs-progress-button.h"
 #include "gs-utils.h"
 #include "gs-folders.h"
 
@@ -44,7 +45,6 @@ struct _GsAppRowPrivate
 	GtkWidget	*description_label;
 	GtkWidget	*button_box;
 	GtkWidget	*button;
-	GtkCssProvider	*button_css_provider;
 	GtkWidget	*spinner;
 	GtkWidget	*label;
 	GtkWidget	*checkbox;
@@ -112,20 +112,6 @@ gs_app_row_get_description (GsAppRow *app_row)
 }
 
 /**
- * gs_app_row_get_button_css:
- **/
-static gchar *
-gs_app_row_get_button_css (gint percentage)
-{
-	if (percentage == 0)
-		return g_strdup (".button.install-progress { background: @theme_bg_color; }");
-	else if (percentage == 100)
-		return g_strdup (".button.install-progress { background: @theme_selected_bg_color; }");
-	else
-		return g_strdup_printf (".button.install-progress { background: linear-gradient(to right, @theme_selected_bg_color %d%%, @theme_bg_color %d%%); }", percentage, percentage + 1);
-}
-
-/**
  * gs_app_row_refresh:
  **/
 void
@@ -134,21 +120,19 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GsAppRowPrivate *priv = app_row->priv;
 	GtkStyleContext *context;
 	GString *str = NULL;
-	_cleanup_free_ gchar *button_css = NULL;
 
 	if (app_row->priv->app == NULL)
 		return;
 
 	/* do a fill bar for the current progress */
-	context = gtk_widget_get_style_context (priv->button);
 	switch (gs_app_get_state (priv->app)) {
 	case AS_APP_STATE_INSTALLING:
-		button_css = gs_app_row_get_button_css (gs_app_get_progress (priv->app));
-		gtk_css_provider_load_from_data (priv->button_css_provider, button_css, -1, NULL);
-		gtk_style_context_add_class (context, "install-progress");
+		gs_progress_button_set_progress (GS_PROGRESS_BUTTON (priv->button),
+		                                 gs_app_get_progress (priv->app));
+		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (priv->button), TRUE);
 		break;
 	default:
-		gtk_style_context_remove_class (context, "install-progress");
+		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (priv->button), FALSE);
 		break;
 	}
 
@@ -504,10 +488,6 @@ gs_app_row_init (GsAppRow *app_row)
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 
 	priv->colorful = TRUE;
-	priv->button_css_provider = gtk_css_provider_new ();
-	gtk_style_context_add_provider (gtk_widget_get_style_context (priv->button),
-					GTK_STYLE_PROVIDER (priv->button_css_provider),
-					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 
 	g_signal_connect (priv->button, "clicked",
 			  G_CALLBACK (button_clicked), app_row);
