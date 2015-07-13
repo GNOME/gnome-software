@@ -10,6 +10,7 @@ AM_CPPFLAGS =						\
 	$(SOUP_CFLAGS)					\
 	$(SQLITE_CFLAGS)				\
 	$(FWUPD_CFLAGS)					\
+	$(LIMBA_CFLAGS)					\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
 	-DGS_MODULESETDIR=\"$(datadir)/gnome-software/modulesets.d\" \
@@ -48,6 +49,10 @@ if HAVE_FIRMWARE
 plugin_LTLIBRARIES += libgs_plugin_fwupd.la
 endif
 
+if HAVE_LIMBA
+plugin_LTLIBRARIES += libgs_plugin_limba.la
+endif
+
 libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
 libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
@@ -83,6 +88,13 @@ libgs_plugin_appstream_la_SOURCES =			\
 libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS) $(APPSTREAM_LIBS)
 libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
 libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+if HAVE_LIMBA
+libgs_plugin_limba_la_SOURCES = gs-plugin-limba.c
+libgs_plugin_limba_la_LIBADD = $(GS_PLUGIN_LIBS) $(LIMBA_LIBS)
+libgs_plugin_limba_la_LDFLAGS = -module -avoid-version
+libgs_plugin_limba_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+endif
 
 libgs_plugin_moduleset_la_SOURCES =			\
 	gs-moduleset.c					\

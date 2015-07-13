@@ -114,6 +114,29 @@ AS_IF([test "x$have_firmware" = "xyes"], [
 
 AM_CONDITIONAL(HAVE_FIRMWARE, test x$have_firmware = xyes)
 
+# Limba
+AC_ARG_ENABLE(limba,
+              [AS_HELP_STRING([--enable-limba],
+                              [enable Limba support [default=auto]])],,
+              enable_limba=maybe)
+AS_IF([test "x$enable_limba" != "xno"], [
+    PKG_CHECK_MODULES(LIMBA,
+                      limba >= 0.4.2,
+                      [have_limba=yes],
+                      [have_limba=no])
+], [
+    have_limba=no
+])
+
+AS_IF([test "x$have_limba" = "xyes"], [
+    AC_DEFINE(HAVE_LIMBA, 1, [Build Limba support])
+], [
+    AS_IF([test "x$enable_limba" = "xyes"], [
+          AC_MSG_ERROR([Limba support requested but 'limba>=0.4.2' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_LIMBA, test x$enable_limba = xyes)
+
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
 GS_PLUGIN_API_VERSION=8
