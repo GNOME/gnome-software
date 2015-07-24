@@ -334,6 +334,44 @@ profile_activated (GSimpleAction *action,
 }
 
 static void
+offline_updates_cancel (void)
+{
+	_cleanup_error_free_ GError *error = NULL;
+	if (!pk_offline_cancel (NULL, &error))
+		g_warning ("failed to cancel the offline update: %s", error->message);
+}
+
+/**
+ * offline_update_cb:
+ **/
+static void
+offline_update_cb (GsPluginLoader *plugin_loader,
+		   GAsyncResult *res,
+		   GsApplication *app)
+{
+	_cleanup_error_free_ GError *error = NULL;
+	if (!gs_plugin_loader_offline_update_finish (plugin_loader, res, &error)) {
+		g_warning ("Failed to trigger offline update: %s", error->message);
+		return;
+	}
+	gs_reboot (offline_updates_cancel);
+}
+
+static void
+reboot_and_install (GSimpleAction *action,
+		    GVariant      *parameter,
+		    gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	gs_application_initialize_plugins (app);
+	gs_plugin_loader_offline_update_async (app->plugin_loader,
+	                                       NULL,
+	                                       app->cancellable,
+	                                       (GAsyncReadyCallback) offline_update_cb,
+	                                       app);
+}
+
+static void
 quit_activated (GSimpleAction *action,
 		GVariant      *parameter,
 		gpointer       app)
@@ -501,6 +539,7 @@ static GActionEntry actions[] = {
 	{ "sources", sources_activated, NULL, NULL, NULL },
 	{ "quit", quit_activated, NULL, NULL, NULL },
 	{ "profile", profile_activated, NULL, NULL, NULL },
+	{ "reboot-and-install", reboot_and_install, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },

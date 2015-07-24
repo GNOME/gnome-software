@@ -80,6 +80,8 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 {
 	const gchar *title;
 	const gchar *body;
+	guint64 elapsed_security = 0;
+	guint64 security_timestamp = 0;
 	_cleanup_object_unref_ GNotification *n = NULL;
 
 	if (!g_file_query_exists (monitor->offline_update_file, NULL))
@@ -96,14 +98,35 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	/* rate limit update notifications to once per hour */
 	monitor->reenable_offline_update_id = g_timeout_add_seconds (3600, reenable_offline_update_notification, monitor);
 
-	title = _("Software Updates Available");
-	body = _("Important OS and application updates are ready to be installed");
-	n = g_notification_new (title);
-	g_notification_set_body (n, body);
-	g_notification_add_button (n, _("Not Now"), "app.nop");
-	g_notification_add_button_with_target (n, _("View"), "app.set-mode", "s", "updates");
-	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
-	g_application_send_notification (monitor->application, "updates-available", n);
+	/* get time in days since we saw the first unapplied security update */
+	g_settings_get (monitor->settings,
+			"security-timestamp", "x", &security_timestamp);
+	if (security_timestamp > 0) {
+		elapsed_security = g_get_monotonic_time () - security_timestamp;
+		elapsed_security /= G_USEC_PER_SEC;
+		elapsed_security /= 60 * 60 * 24;
+	}
+
+	/* only show the scary warning after the user has ignored
+	 * security updates for a full day */
+	if (elapsed_security > 1) {
+		title = _("Security Updates Pending");
+		body = _("It is recommended that you install important updates now");
+		n = g_notification_new (title);
+		g_notification_set_body (n, body);
+		g_notification_add_button (n, _("Restart & Install"), "app.reboot-and-install");
+		g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
+		g_application_send_notification (monitor->application, "updates-available", n);
+	} else {
+		title = _("Software Updates Available");
+		body = _("Important OS and application updates are ready to be installed");
+		n = g_notification_new (title);
+		g_notification_set_body (n, body);
+		g_notification_add_button (n, _("Not Now"), "app.nop");
+		g_notification_add_button_with_target (n, _("View"), "app.set-mode", "s", "updates");
+		g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
+		g_application_send_notification (monitor->application, "updates-available", n);
+	}
 }
 
 static void
@@ -297,6 +320,8 @@ get_updates_finished_cb (GObject *object,
 			 gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
+	guint64 security_timestamp = 0;
+	guint64 security_timestamp_old = 0;
 	guint i;
 	PkPackage *pkg;
 	_cleanup_error_free_ GError *error = NULL;
@@ -322,7 +347,21 @@ get_updates_finished_cb (GObject *object,
 	/* we succeeded */
 	monitor->get_updates_due = FALSE;
 
+	/* find security updates, or clear timestamp if there are now none */
 	packages = pk_results_get_package_array (results);
+	g_settings_get (monitor->settings,
+			"security-timestamp", "x", &security_timestamp_old);
+	for (i = 0; i < packages->len; i++) {
+		pkg = (PkPackage *)g_ptr_array_index (packages, i);
+		if (pk_package_get_info (pkg) == PK_INFO_ENUM_SECURITY) {
+			security_timestamp = g_get_monotonic_time ();
+			break;
+		}
+	}
+	if (security_timestamp_old != security_timestamp) {
+		g_settings_set (monitor->settings,
+				"security-timestamp", "x", security_timestamp);
+	}
 
 	g_debug ("Got %d updates", packages->len);
 
