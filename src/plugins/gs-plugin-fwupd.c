@@ -37,7 +37,6 @@ struct GsPluginPrivate {
 	gsize			 done_init;
 	GDBusProxy		*proxy;
 	GPtrArray		*to_download;
-	AsStore			*store;
 	GPtrArray		*to_ignore;
 	SoupSession		*session;
 	gchar			*cachedir;
@@ -89,7 +88,6 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->store = as_store_new ();
 	plugin->priv->to_download = g_ptr_array_new_with_free_func (g_free);
 	plugin->priv->to_ignore = g_ptr_array_new_with_free_func (g_free);
 }
@@ -103,7 +101,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (plugin->priv->cachedir);
 	g_free (plugin->priv->lvfs_sig_fn);
 	g_free (plugin->priv->lvfs_sig_hash);
-	g_object_unref (plugin->priv->store);
 	g_ptr_array_unref (plugin->priv->to_download);
 	g_ptr_array_unref (plugin->priv->to_ignore);
 	if (plugin->priv->proxy != NULL)
@@ -185,13 +182,6 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			g_compute_checksum_for_data (G_CHECKSUM_SHA1, (guchar *) data, len);
 	}
 
-	/* only load firmware from the system */
-	as_store_add_filter (plugin->priv->store, AS_ID_KIND_FIRMWARE);
-	if (!as_store_load (plugin->priv->store,
-			    AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM,
-			    cancellable, error))
-		return FALSE;
-
 	return TRUE;
 }
 
@@ -233,114 +223,93 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 }
 
 /**
- * gs_plugin_fwupd_add_device:
+ * gs_plugin_add_update_app:
  */
 static gboolean
-gs_plugin_fwupd_add_device (GsPlugin *plugin,
-			    const gchar *device_id,
-			    const gchar *guid,
-			    const gchar *version,
-			    GList **list,
-			    GError **error)
+gs_plugin_add_update_app (GsPlugin *plugin,
+			  GList **list,
+			  const gchar *id,
+			  GVariantIter *iter_device,
+			  GError **error)
 {
-	AsApp *item;
-	AsRelease *rel;
-	GPtrArray *releases;
-	const gchar *tmp;
-	guint i;
+	FwupdDeviceFlags flags = 0;
+	GVariant *variant;
+	const gchar *key;
+	_cleanup_error_free_ GError *error_local = NULL;
 	_cleanup_free_ gchar *basename = NULL;
 	_cleanup_free_ gchar *checksum = NULL;
-	_cleanup_free_ gchar *checksum2 = NULL;
+	_cleanup_free_ gchar *display_name = NULL;
 	_cleanup_free_ gchar *filename_cache = NULL;
-	_cleanup_free_ gchar *update_location = NULL;
+	_cleanup_free_ gchar *guid = NULL;
+	_cleanup_free_ gchar *update_desc = NULL;
+	_cleanup_free_ gchar *update_hash = NULL;
+	_cleanup_free_ gchar *update_uri = NULL;
 	_cleanup_free_ gchar *update_version = NULL;
+	_cleanup_free_ gchar *vendor = NULL;
+	_cleanup_free_ gchar *version = NULL;
 	_cleanup_object_unref_ AsIcon *icon = NULL;
 	_cleanup_object_unref_ GsApp *app = NULL;
-	_cleanup_string_free_ GString *update_desc = NULL;
 
-	/* find the device */
-	item = as_store_get_app_by_id (plugin->priv->store, guid);
-	if (item == NULL) {
+	while (g_variant_iter_next (iter_device, "{&sv}", &key, &variant)) {
+		if (g_strcmp0 (key, "Guid") == 0) {
+			guid = g_variant_dup_string (variant, NULL);
+		} else if (g_strcmp0 (key, "Version") == 0) {
+			version = g_variant_dup_string (variant, NULL);
+		} else if (g_strcmp0 (key, "UpdateVersion") == 0) {
+			update_version = g_variant_dup_string (variant, NULL);
+		} else if (g_strcmp0 (key, "UpdateHash") == 0) {
+			update_hash = g_variant_dup_string (variant, NULL);
+		} else if (g_strcmp0 (key, "UpdateUri") == 0) {
+			update_uri = g_variant_dup_string (variant, NULL);
+		} else if (g_strcmp0 (key, "UpdateDescription") == 0) {
+			update_desc = g_variant_dup_string (variant, NULL);
+		} else if (g_strcmp0 (key, "Vendor") == 0) {
+			vendor = g_variant_dup_string (variant, NULL);
+		} else if (g_strcmp0 (key, "DisplayName") == 0) {
+			display_name = g_variant_dup_string (variant, NULL);
+		} else if (g_strcmp0 (key, "Flags") == 0) {
+			flags = g_variant_get_uint64 (variant);
+		} else {
+			g_debug ("%s has unused key %s", id, key);
+		}
+		g_variant_unref (variant);
+	}
+
+	/* offline unsupported */
+	if ((flags & FU_DEVICE_FLAG_ALLOW_OFFLINE) == 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "device id %s not found in metadata",
-			     guid);
+			     "%s [%s] cannot be updated offline",
+			     display_name, guid);
 		return FALSE;
 	}
 
-	/* are any releases newer than what we have here */
-	g_debug ("device id %s found in metadata", guid);
-	update_desc = g_string_new ("");
-	releases = as_app_get_releases (item);
-	for (i = 0; i < releases->len; i++) {
-		_cleanup_free_ gchar *md = NULL;
-
-		/* check if actually newer */
-		rel = g_ptr_array_index (releases, i);
-		if (as_utils_vercmp (as_release_get_version (rel), version) <= 0)
-			continue;
-
-		/* get checksum */
-		tmp = as_release_get_checksum (rel, G_CHECKSUM_SHA1);
-		if (tmp == NULL) {
-			g_warning ("%s [%s] has no checksum, ignoring as unsafe",
-				   as_app_get_id (item),
-				   as_release_get_version (rel));
-			continue;
-		}
-
-		/* get the update text, if it exists */
-		if (update_version == NULL) {
-			checksum = g_strdup (tmp);
-			tmp = as_release_get_version (rel);
-			if (g_strstr_len (tmp, -1, ".") != NULL) {
-				update_version = g_strdup (tmp);
-			} else {
-				GDateTime *dt;
-				dt = g_date_time_new_from_unix_utc (as_release_get_timestamp (rel));
-				update_version = g_strdup_printf ("0.0.%s-%04i%02i%02i",
-								  tmp,
-								  g_date_time_get_year (dt),
-								  g_date_time_get_month (dt),
-								  g_date_time_get_day_of_month (dt));
-				g_date_time_unref (dt);
-			}
-			update_location = g_strdup (as_release_get_location_default (rel));
-		}
-		tmp = as_release_get_description (rel, NULL);
-		if (tmp == NULL)
-			continue;
-		md = as_markup_convert (tmp, -1,
-					AS_MARKUP_CONVERT_FORMAT_MARKDOWN,
-					NULL);
-		if (md != NULL)
-			g_string_append_printf (update_desc, "%s\n", md);
-	}
-
-	/* no updates for this hardware */
-	if (update_version == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "no updates available");
+	/* some missing */
+	if (guid == NULL || version == NULL || update_version == NULL)
+		return TRUE;
+	if (update_hash == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "%s [%s] (%s) has no checksum, ignoring as unsafe",
+			     display_name, guid, update_version);
 		return FALSE;
 	}
-
-	/* nowhere to download the update from */
-	if (update_location == NULL) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "no location available for firmware");
+	if (update_uri == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "no location available for %s [%s]",
+			     display_name, guid);
 		return FALSE;
 	}
 
 	/* does the firmware already exist in the cache? */
-	basename = g_path_get_basename (update_location);
+	basename = g_path_get_basename (update_uri);
 	filename_cache = g_build_filename (plugin->priv->cachedir, basename, NULL);
 	if (!g_file_test (filename_cache, G_FILE_TEST_EXISTS)) {
-		gs_plugin_fwupd_add_required_location (plugin, update_location);
+		gs_plugin_fwupd_add_required_location (plugin, update_uri);
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -350,38 +319,42 @@ gs_plugin_fwupd_add_device (GsPlugin *plugin,
 	}
 
 	/* does the checksum match */
-	checksum2 = gs_plugin_fwupd_get_file_checksum (filename_cache,
-						       G_CHECKSUM_SHA1,
-						       error);
-	if (checksum2 == NULL)
+	checksum = gs_plugin_fwupd_get_file_checksum (filename_cache,
+						      G_CHECKSUM_SHA1,
+						      error);
+	if (checksum == NULL)
 		return FALSE;
-	if (g_strcmp0 (checksum, checksum2) != 0) {
+	if (g_strcmp0 (update_hash, checksum) != 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "%s does not match checksum, expected %s, got %s",
-			     filename_cache, checksum, checksum2);
+			     filename_cache, update_hash, checksum);
 		g_unlink (filename_cache);
 		return FALSE;
 	}
-
-	/* remove trailing newline */
-	if (update_desc->len > 0)
-		g_string_truncate (update_desc, update_desc->len - 1);
 
 	/* actually addd the application */
 	app = gs_app_new (guid);
 	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 	gs_app_set_id_kind (app, AS_ID_KIND_FIRMWARE);
-	gs_app_set_update_details (app, update_desc->str);
+	gs_app_set_version (app, version);
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, display_name);
 	gs_app_set_update_version (app, update_version);
 	gs_app_add_source_id (app, filename_cache);
-	gs_app_add_source (app, as_app_get_name (item, NULL));
 	gs_app_add_category (app, "System");
 	gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
-	gs_app_set_metadata (app, "fwupd::DeviceID", device_id);
+	gs_app_set_origin (app, vendor);
+	gs_app_set_metadata (app, "fwupd::DeviceID", id);
 	gs_app_set_metadata (app, "DataDir::desktop-icon", "application-x-firmware");
+	if (update_desc != NULL) {
+		_cleanup_free_ gchar *md = NULL;
+		md = as_markup_convert (update_desc, -1,
+					AS_MARKUP_CONVERT_FORMAT_MARKDOWN,
+					NULL);
+		gs_app_set_update_details (app, md);
+	}
 	gs_plugin_add_app (list, app);
 
 	/* create icon */
@@ -499,7 +472,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	if (plugin->priv->proxy == NULL)
 		return TRUE;
 	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
-				      "GetDevices",
+				      "GetUpdates",
 				      NULL,
 				      G_DBUS_CALL_FLAGS_NONE,
 				      -1,
@@ -520,35 +493,11 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	/* parse */
 	g_variant_get (val, "(a{sa{sv}})", &iter);
 	while (g_variant_iter_next (iter, "{&sa{sv}}", &id, &iter_device)) {
-		GVariant *variant;
-		const gchar *key;
-		_cleanup_free_ gchar *guid = NULL;
-		_cleanup_free_ gchar *version = NULL;
-
-		while (g_variant_iter_next (iter_device, "{&sv}", &key, &variant)) {
-			g_debug ("%s has key %s", id, key);
-			if (g_strcmp0 (key, "Guid") == 0) {
-				guid = g_variant_dup_string (variant, NULL);
-			} else if (g_strcmp0 (key, "Version") == 0) {
-				version = g_variant_dup_string (variant, NULL);
-			}
-			g_variant_unref (variant);
-		}
-
-		/* we got all we needed */
-		if (guid != NULL && version != NULL) {
-			_cleanup_error_free_ GError *error_local2 = NULL;
-			if (!gs_plugin_fwupd_add_device (plugin,
-							 id,
-							 guid,
-							 version,
-							 list,
-							 &error_local2)) {
-				g_debug ("cannot add device %s: %s",
-					 id, error_local2->message);
-			}
-		}
-
+		_cleanup_error_free_ GError *error_local2 = NULL;
+		if (!gs_plugin_add_update_app (plugin, list,
+					       id, iter_device,
+					       &error_local2))
+			g_debug ("%s", error_local2->message);
 		g_variant_iter_free (iter_device);
 	}
 
@@ -842,7 +791,7 @@ gs_plugin_fwupd_upgrade (GsPlugin *plugin,
 	request = g_dbus_message_new_method_call (FWUPD_DBUS_SERVICE,
 						  FWUPD_DBUS_PATH,
 						  FWUPD_DBUS_INTERFACE,
-						  "Update");
+						  "Install");
 	g_dbus_message_set_unix_fd_list (request, fd_list);
 
 	/* g_unix_fd_list_append did a dup() already */
