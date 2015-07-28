@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-06-29 08:05+0000\n"
-"PO-Revision-Date: 2015-06-29 12:57+0100\n"
+"POT-Creation-Date: 2015-07-28 12:52+0000\n"
+"PO-Revision-Date: 2015-07-28 16:18+0200\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: Slovak <gnome-sk-list@gnome.org>\n"
 "Language: sk\n"
@@ -17,7 +17,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n==1) ? 1 : (n>=2 && n<=4) ? 2 : 0;\n"
-"X-Generator: Poedit 1.8.1\n"
+"X-Generator: Poedit 1.8.2\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
@@ -166,61 +166,61 @@ msgid "translator-credits"
 msgstr "Dušan Kazik <prescott66@gmail.com>"
 
 # GsAppFolderDialog title, GtkLabel
-#: ../src/gs-application.c:585
+#: ../src/gs-application.c:624
 msgid "Enter GApplication service mode"
 msgstr "Vstúpi do servisného režimu GApplication"
 
 # cmdline description
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:588
+#: ../src/gs-application.c:627
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Režim spustenia: buď „updates“ (aktualizácie), „updated“ (aktualizované), "
 "„installed“ (nainštalované) alebo „overview“ (prehľad)"
 
-#: ../src/gs-application.c:588
+#: ../src/gs-application.c:627
 msgid "MODE"
 msgstr "REŽIM"
 
 # cmdline description
-#: ../src/gs-application.c:590
+#: ../src/gs-application.c:629
 msgid "Search for applications"
 msgstr "Vyhľadá aplikácie"
 
-#: ../src/gs-application.c:590
+#: ../src/gs-application.c:629
 msgid "SEARCH"
 msgstr "HĽADANIE"
 
 # cmdline description
-#: ../src/gs-application.c:592
+#: ../src/gs-application.c:631
 msgid "Show application details"
 msgstr "Zobrazí podrobnosti o aplikácii"
 
-#: ../src/gs-application.c:592
+#: ../src/gs-application.c:631
 msgid "ID"
 msgstr "IDENTIFIKÁTOR"
 
 # DK:cmd desc
-#: ../src/gs-application.c:594
+#: ../src/gs-application.c:633
 msgid "Open a local package file"
 msgstr "Otvorí miestny súbor balíka"
 
-#: ../src/gs-application.c:594
+#: ../src/gs-application.c:633
 msgid "FILENAME"
 msgstr "NÁZOV_SÚBORU"
 
 # DK:cmd desc
-#: ../src/gs-application.c:596
+#: ../src/gs-application.c:635
 msgid "Show verbose debugging information"
 msgstr "Vypíše podrobné ladiace informácie"
 
 # cmdline description
-#: ../src/gs-application.c:598
+#: ../src/gs-application.c:637
 msgid "Show profiling information for the service"
 msgstr "Zobrazí profilovacie informácie pre službu"
 
 # DK:cmd desc
-#: ../src/gs-application.c:600
+#: ../src/gs-application.c:639
 msgid "Prefer local file sources to AppStream"
 msgstr "Budú sa preferovať miestne zdroje súborov pre AppStream"
 
@@ -254,7 +254,7 @@ msgstr "Odstraňuje sa"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1299 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1302 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " a "
 
@@ -262,7 +262,7 @@ msgstr " a "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1307
+#: ../src/gs-app.c:1310
 msgid " or "
 msgstr " alebo "
 
@@ -547,24 +547,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:802
+#: ../src/gs-plugin-loader.c:803
 msgid "OS Updates"
 msgstr "Aktualizácie operačného systému"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:807
+#: ../src/gs-plugin-loader.c:808
 msgid "Includes performance, stability and security improvements."
 msgstr "Zahŕňa vylepšenia výkonu, stability a zvýšenia bezpečnosti."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1367 ../src/gs-shell-extras.c:391
+#: ../src/gs-plugin-loader.c:1368 ../src/gs-shell-extras.c:391
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Nie sú dostupné žiadne doplnky s kodekmi pre formát %s."
 
-#: ../src/gs-plugin-loader.c:1370
+#: ../src/gs-plugin-loader.c:1371
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can play "
@@ -1380,18 +1380,18 @@ msgstr "Webová stránka"
 
 #. TRANSLATORS: this is where the packager did not write a
 #. * description for the update
-#: ../src/gs-update-dialog.c:118
+#: ../src/gs-update-dialog.c:121
 msgid "No update description available."
 msgstr "Nie je poskytnutý žiadny popis aktualizácie."
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:223
+#: ../src/gs-update-dialog.c:226
 msgid "Installed Updates"
 msgstr "Nainštalované aktualizácie"
 
 # DK: %s=dátum
 #. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:236
+#: ../src/gs-update-dialog.c:239
 #, c-format
 msgid "Installed on %s"
 msgstr "Nainštalovaný dňa %s"
@@ -1400,25 +1400,37 @@ msgstr "Nainštalovaný dňa %s"
 msgid "No updates have been installed on this system."
 msgstr "V tomto počítači neboli nainštalované žiadne aktualizácie."
 
-#: ../src/gs-update-monitor.c:99
+#: ../src/gs-update-monitor.c:113
+msgid "Security Updates Pending"
+msgstr "Čakajúce bezpečnostné aktualizácie"
+
+#: ../src/gs-update-monitor.c:114
+msgid "It is recommended that you install important updates now"
+msgstr "Odporúča sa, aby ste bezpečnostné aktualizácie nainštalovali ihneď"
+
+#: ../src/gs-update-monitor.c:117
+msgid "Restart & Install"
+msgstr "Reštartovať a inštalovať"
+
+#: ../src/gs-update-monitor.c:121
 msgid "Software Updates Available"
 msgstr "Sú dostupné aktualizácie softvéru"
 
-#: ../src/gs-update-monitor.c:100
+#: ../src/gs-update-monitor.c:122
 msgid "Important OS and application updates are ready to be installed"
 msgstr ""
 "Dôležité aktualizácie operačného systému a aplikácií sú pripravené na "
 "inštaláciu"
 
-#: ../src/gs-update-monitor.c:103
+#: ../src/gs-update-monitor.c:125
 msgid "Not Now"
 msgstr "Teraz nie"
 
-#: ../src/gs-update-monitor.c:104
+#: ../src/gs-update-monitor.c:126
 msgid "View"
 msgstr "Zobraziť"
 
-#: ../src/gs-update-monitor.c:149
+#: ../src/gs-update-monitor.c:172
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Aktualizácie softvéru boli nainštalované"
@@ -1426,7 +1438,7 @@ msgstr[1] "Aktualizácia softvéru bola nainštalovaná"
 msgstr[2] "Aktualizácie softvéru boli nainštalované"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:153
+#: ../src/gs-update-monitor.c:176
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Dôležité aktualizácie operačného systému boli nainštalované."
@@ -1434,20 +1446,20 @@ msgstr[1] "Dôležitá aktualizácia operačného systému bola nainštalovaná.
 msgstr[2] "Dôležité aktualizácie operačného systému boli nainštalované."
 
 # title
-#: ../src/gs-update-monitor.c:159
+#: ../src/gs-update-monitor.c:182
 msgid "Software Updates Failed"
 msgstr "Zlyhanie aktualizácií softvéru"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:161
+#: ../src/gs-update-monitor.c:184
 msgid "An important OS update failed to be installed."
 msgstr "Zlyhala inštalácia dôležitej aktualizácie operačného systému."
 
-#: ../src/gs-update-monitor.c:167
+#: ../src/gs-update-monitor.c:190
 msgid "Review"
 msgstr "Prezrieť"
 
-#: ../src/gs-update-monitor.c:170
+#: ../src/gs-update-monitor.c:193
 msgid "Show Details"
 msgstr "Zobraziť podrobnosti"
 
@@ -1559,7 +1571,7 @@ msgstr "Neupozorňovať ma znovu"
 msgid "Enable and Install"
 msgstr "Povoliť a inštalovať"
 
-#: ../src/plugins/gs-plugin-appstream.c:224
+#: ../src/plugins/gs-plugin-appstream.c:227
 #, c-format
 msgid "No AppStream data found"
 msgstr "Nenašli sa žiadne údaje toku AppStream"
