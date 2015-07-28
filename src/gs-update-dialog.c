@@ -102,12 +102,15 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	kind = gs_app_get_kind (app);
 	if (kind == GS_APP_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (dialog), gs_app_get_name (app));
-	} else {
+	} else if (gs_app_get_source_default (app) != NULL) {
 		_cleanup_free_ gchar *tmp = NULL;
 		tmp = g_strdup_printf ("%s %s",
 				       gs_app_get_source_default (app),
 				       gs_app_get_update_version (app));
 		gtk_window_set_title (GTK_WINDOW (dialog), tmp);
+	} else {
+		gtk_window_set_title (GTK_WINDOW (dialog),
+				      gs_app_get_update_version (app));
 	}
 
 	/* get the update description */
