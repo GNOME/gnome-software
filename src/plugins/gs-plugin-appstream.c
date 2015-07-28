@@ -91,6 +91,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	g_mutex_init (&plugin->priv->store_mutex);
 	plugin->priv->store = as_store_new ();
+	as_store_set_watch_flags (plugin->priv->store,
+				  AS_STORE_WATCH_FLAG_ADDED |
+				  AS_STORE_WATCH_FLAG_REMOVED);
 	g_signal_connect (plugin->priv->store, "changed",
 			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
 			  plugin);
