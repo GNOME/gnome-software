@@ -66,6 +66,11 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (plugin->priv->task);
 }
 
+typedef struct {
+	GsApp		*app;
+	GsPlugin	*plugin;
+} ProgressData;
+
 /**
  * gs_plugin_packagekit_progress_cb:
  **/
@@ -74,7 +79,8 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
 				  gpointer user_data)
 {
-	GsPlugin *plugin = GS_PLUGIN (user_data);
+	ProgressData *data = (ProgressData *) user_data;
+	GsPlugin *plugin = data->plugin;
 
 	if (type == PK_PROGRESS_TYPE_STATUS) {
 		GsPluginStatus plugin_status;
@@ -102,7 +108,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 			      "percentage", &percentage,
 			      NULL);
 		if (percentage >= 0 && percentage <= 100)
-			gs_plugin_progress_update (plugin, NULL, percentage);
+			gs_plugin_progress_update (plugin, data->app, percentage);
 	}
 }
 
@@ -116,7 +122,11 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GError **error)
 {
 	PkBitfield filter;
+	ProgressData data;
 	_cleanup_object_unref_ PkResults *results = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -131,7 +141,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
 					  filter,
 					  cancellable,
-					  gs_plugin_packagekit_progress_cb, plugin,
+					  gs_plugin_packagekit_progress_cb, &data,
 					  error);
 	if (results == NULL)
 		return FALSE;
@@ -154,9 +164,13 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	GsApp *app;
 	GsApp *app_tmp;
 	PkBitfield filter;
+	ProgressData data;
 	const gchar *id;
 	gboolean ret = TRUE;
 	_cleanup_object_unref_ PkResults *results = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	gs_profile_start (plugin->profile, "packagekit::add-sources-related");
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
@@ -167,7 +181,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
 					   filter,
 					   cancellable,
-					   gs_plugin_packagekit_progress_cb, plugin,
+					   gs_plugin_packagekit_progress_cb, &data,
 					   error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -210,11 +224,15 @@ gs_plugin_add_sources (GsPlugin *plugin,
 {
 	PkBitfield filter;
 	PkRepoDetail *rd;
+	ProgressData data;
 	const gchar *id;
 	guint i;
 	_cleanup_hashtable_unref_ GHashTable *hash = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
@@ -224,7 +242,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	results = pk_client_get_repo_list (PK_CLIENT(plugin->priv->task),
 					   filter,
 					   cancellable,
-					   gs_plugin_packagekit_progress_cb, plugin,
+					   gs_plugin_packagekit_progress_cb, &data,
 					   error);
 	if (results == NULL)
 		return FALSE;
@@ -264,7 +282,11 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	ProgressData data;
 	_cleanup_object_unref_ PkResults *results = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -272,7 +294,7 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 					 gs_app_get_origin (app),
 					 TRUE,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
+					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
 	return results != NULL;
 }
@@ -288,12 +310,16 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	GPtrArray *addons;
 	GPtrArray *source_ids;
+	ProgressData data;
 	const gchar *package_id;
 	guint i, j;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 	_cleanup_ptrarray_unref_ GPtrArray *array_package_ids = NULL;
 	_cleanup_strv_free_ gchar **package_ids = NULL;
+
+	data.app = app;
+	data.plugin = plugin;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
@@ -322,7 +348,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		results = pk_task_install_packages_sync (plugin->priv->task,
 							 package_ids,
 							 cancellable,
-							 gs_plugin_packagekit_progress_cb, plugin,
+							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
 		if (results == NULL) {
 			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -389,7 +415,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		results = pk_task_install_packages_sync (plugin->priv->task,
 							 (gchar **) array_package_ids->pdata,
 							 cancellable,
-							 gs_plugin_packagekit_progress_cb, plugin,
+							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
 		if (results == NULL)
 			return FALSE;
@@ -408,7 +434,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		results = pk_task_install_files_sync (plugin->priv->task,
 						      package_ids,
 						      cancellable,
-						      gs_plugin_packagekit_progress_cb, plugin,
+						      gs_plugin_packagekit_progress_cb, &data,
 						      error);
 		if (results == NULL)
 			return FALSE;
@@ -448,7 +474,11 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 			      GCancellable *cancellable,
 			      GError **error)
 {
+	ProgressData data;
 	_cleanup_object_unref_ PkResults *results = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -456,7 +486,7 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 					 gs_app_get_id (app),
 					 FALSE,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
+					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
 	return results != NULL;
 }
@@ -470,8 +500,12 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	ProgressData data;
 	_cleanup_error_free_ GError *error_local = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -480,7 +514,7 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 					 gs_app_get_id (app),
 					 TRUE,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
+					 gs_plugin_packagekit_progress_cb, &data,
 					 &error_local);
 	if (results == NULL) {
 		/* fall back to disabling it */
@@ -503,11 +537,15 @@ gs_plugin_app_remove (GsPlugin *plugin,
 {
 	const gchar *package_id;
 	GPtrArray *source_ids;
+	ProgressData data;
 	guint i;
 	guint cnt = 0;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 	_cleanup_strv_free_ gchar **package_ids = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
@@ -549,7 +587,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 						package_ids,
 						TRUE, FALSE,
 						cancellable,
-						gs_plugin_packagekit_progress_cb, plugin,
+						gs_plugin_packagekit_progress_cb, &data,
 						error);
 	if (results == NULL)
 		return FALSE;
@@ -582,7 +620,11 @@ gs_plugin_add_search_files (GsPlugin *plugin,
                             GError **error)
 {
 	PkBitfield filter;
+	ProgressData data;
 	_cleanup_object_unref_ PkResults *results = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -593,7 +635,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 	                                  filter,
 	                                  search,
 	                                  cancellable,
-	                                  gs_plugin_packagekit_progress_cb, plugin,
+	                                  gs_plugin_packagekit_progress_cb, &data,
 	                                  error);
 	if (results == NULL)
 		return FALSE;
@@ -613,7 +655,11 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
                                     GError **error)
 {
 	PkBitfield filter;
+	ProgressData data;
 	_cleanup_object_unref_ PkResults *results = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -624,7 +670,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	                                   filter,
 	                                   search,
 	                                   cancellable,
-	                                   gs_plugin_packagekit_progress_cb, plugin,
+	                                   gs_plugin_packagekit_progress_cb, &data,
 	                                   error);
 	if (results == NULL)
 		return FALSE;
