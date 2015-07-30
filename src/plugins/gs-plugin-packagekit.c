@@ -101,7 +101,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		g_object_get (progress,
 			      "percentage", &percentage,
 			      NULL);
-		if (percentage > 0 && percentage <= 100)
+		if (percentage >= 0 && percentage <= 100)
 			gs_plugin_progress_update (plugin, NULL, percentage);
 	}
 }
