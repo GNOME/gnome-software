@@ -350,9 +350,15 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	gs_app_set_metadata (app, "DataDir::desktop-icon", "application-x-firmware");
 	if (update_desc != NULL) {
 		_cleanup_free_ gchar *md = NULL;
+#if AS_CHECK_VERSION(0,5,0)
+		md = as_markup_convert (update_desc,
+					AS_MARKUP_CONVERT_FORMAT_MARKDOWN,
+					NULL);
+#else
 		md = as_markup_convert (update_desc, -1,
 					AS_MARKUP_CONVERT_FORMAT_MARKDOWN,
 					NULL);
+#endif
 		gs_app_set_update_details (app, md);
 	}
 	gs_plugin_add_app (list, app);
@@ -360,7 +366,11 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	/* create icon */
 	icon = as_icon_new ();
 	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+#if AS_CHECK_VERSION(0,5,0)
+	as_icon_set_name (icon, "application-x-firmware");
+#else
 	as_icon_set_name (icon, "application-x-firmware", -1);
+#endif
 	gs_app_set_icon (app, icon);
 
 	return TRUE;
@@ -1052,8 +1062,13 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 					    g_variant_get_string (variant, NULL));
 		} else if (g_strcmp0 (key, "Description") == 0) {
 			_cleanup_free_ gchar *tmp = NULL;
+#if AS_CHECK_VERSION(0,5,0)
+			tmp = as_markup_convert (g_variant_get_string (variant, NULL),
+						 AS_MARKUP_CONVERT_FORMAT_SIMPLE, NULL);
+#else
 			tmp = as_markup_convert (g_variant_get_string (variant, NULL), -1,
 						 AS_MARKUP_CONVERT_FORMAT_SIMPLE, NULL);
+#endif
 			if (tmp != NULL)
 				gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, tmp);
 		} else if (g_strcmp0 (key, "UrlHomepage") == 0) {
@@ -1070,7 +1085,11 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	/* create icon */
 	icon = as_icon_new ();
 	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+#if AS_CHECK_VERSION(0,5,0)
+	as_icon_set_name (icon, "application-x-firmware");
+#else
 	as_icon_set_name (icon, "application-x-firmware", -1);
+#endif
 	gs_app_set_icon (app, icon);
 
 	gs_plugin_add_app (list, app);

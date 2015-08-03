@@ -239,7 +239,11 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 		if (*perc < 10) {
 			g_debug ("Adding keyword '%s' to %s",
 				 origin, as_app_get_id (app));
+#if AS_CHECK_VERSION(0,5,0)
+			as_app_add_keyword (app, NULL, origin);
+#else
 			as_app_add_keyword (app, NULL, origin, -1);
+#endif
 		}
 	}
 
@@ -558,7 +562,11 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	tmp = as_app_get_description (item, NULL);
 	if (tmp != NULL) {
 		_cleanup_free_ gchar *from_xml = NULL;
+#if AS_CHECK_VERSION(0,5,0)
+		from_xml = as_markup_convert_simple (tmp, error);
+#else
 		from_xml = as_markup_convert_simple (tmp, -1, error);
+#endif
 		if (from_xml == NULL) {
 			g_prefix_error (error, "trying to parse '%s': ", tmp);
 			return FALSE;
@@ -1045,7 +1053,11 @@ gs_plugin_add_categories_for_app (GList *list, AsApp *app)
 				gs_category_add_subcategory (parent, category);
 				g_object_unref (category);
 			}
+#if AS_CHECK_VERSION(0,5,0)
+			as_app_add_category (app, gs_category_get_id (category));
+#else
 			as_app_add_category (app, gs_category_get_id (category), -1);
+#endif
 			gs_category_increment_size (category);
 		}
 	}
