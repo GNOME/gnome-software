@@ -52,10 +52,6 @@ typedef void (*GsPluginStatusUpdate)	(GsPlugin	*plugin,
 					 GsApp		*app,
 					 GsPluginStatus	 status,
 					 gpointer	 user_data);
-typedef void (*GsPluginProgressUpdate)	(GsPlugin	*plugin,
-					 GsApp		*app,
-					 guint		 percentage,
-					 gpointer	 user_data);
 typedef void (*GsPluginUpdatesChanged)	(GsPlugin	*plugin,
 					 gpointer	 user_data);
 
@@ -74,8 +70,6 @@ struct GsPlugin {
 	gint			 scale;
 	GsPluginStatusUpdate	 status_update_fn;
 	gpointer		 status_update_user_data;
-	GsPluginProgressUpdate	 progress_update_fn;
-	gpointer		 progress_update_user_data;
 	GsPluginUpdatesChanged	 updates_changed_fn;
 	gpointer		 updates_changed_user_data;
 	GsProfile		*profile;

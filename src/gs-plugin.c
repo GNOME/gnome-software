@@ -280,13 +280,8 @@ gs_plugin_progress_update_cb (gpointer user_data)
 {
 	GsPluginStatusHelper *helper = (GsPluginStatusHelper *) user_data;
 
-	/* call back into the loader */
-	helper->plugin->progress_update_fn (helper->plugin,
-					    helper->app,
-					    helper->percentage,
-					    helper->plugin->progress_update_user_data);
-	if (helper->app != NULL)
-		g_object_unref (helper->app);
+	gs_app_set_progress (helper->app, helper->percentage);
+	g_object_unref (helper->app);
 	g_slice_free (GsPluginStatusHelper, helper);
 	return FALSE;
 }
@@ -299,11 +294,13 @@ gs_plugin_progress_update (GsPlugin *plugin, GsApp *app, guint percentage)
 {
 	GsPluginStatusHelper *helper;
 
+	if (app == NULL)
+		return;
+
 	helper = g_slice_new0 (GsPluginStatusHelper);
 	helper->plugin = plugin;
 	helper->percentage = percentage;
-	if (app != NULL)
-		helper->app = g_object_ref (app);
+	helper->app = g_object_ref (app);
 	g_idle_add (gs_plugin_progress_update_cb, helper);
 }
 
