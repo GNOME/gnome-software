@@ -33,6 +33,7 @@
 #include "gs-app-addon-row.h"
 #include "gs-history-dialog.h"
 #include "gs-screenshot-image.h"
+#include "gs-progress-button.h"
 #include "gs-star-widget.h"
 
 static void	gs_shell_details_finalize	(GObject	*object);
@@ -238,6 +239,16 @@ gs_shell_details_switch_to (GsShellDetails *shell_details)
 		}
 	}
 
+	/* do a fill bar for the current progress */
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_INSTALLING:
+		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (priv->button_install), TRUE);
+		break;
+	default:
+		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (priv->button_install), FALSE);
+		break;
+	}
+
 	/* spinner */
 	if (kind == GS_APP_KIND_SYSTEM) {
 		gtk_widget_set_visible (priv->spinner_install_remove, FALSE);
@@ -251,10 +262,10 @@ gs_shell_details_switch_to (GsShellDetails *shell_details)
 		case AS_APP_STATE_UPDATABLE:
 		case AS_APP_STATE_UNAVAILABLE:
 		case AS_APP_STATE_AVAILABLE_LOCAL:
+		case AS_APP_STATE_INSTALLING:
 			gtk_widget_set_visible (priv->spinner_install_remove, FALSE);
 			gtk_spinner_stop (GTK_SPINNER (priv->spinner_install_remove));
 			break;
-		case AS_APP_STATE_INSTALLING:
 		case AS_APP_STATE_REMOVING:
 			gtk_spinner_start (GTK_SPINNER (priv->spinner_install_remove));
 			gtk_widget_set_visible (priv->spinner_install_remove, TRUE);
@@ -270,6 +281,27 @@ gs_shell_details_switch_to (GsShellDetails *shell_details)
 	gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 
 	gs_grab_focus_when_mapped (priv->scrolledwindow_details);
+}
+
+static gboolean
+gs_shell_details_refresh_progress_idle (gpointer user_data)
+{
+	GsShellDetails *shell_details = GS_SHELL_DETAILS (user_data);
+	GsShellDetailsPrivate *priv = shell_details->priv;
+
+	gs_progress_button_set_progress (GS_PROGRESS_BUTTON (priv->button_install),
+	                                 gs_app_get_progress (priv->app));
+
+	g_object_unref (shell_details);
+	return G_SOURCE_REMOVE;
+}
+
+static void
+gs_shell_details_progress_changed_cb (GsApp *app,
+                                      GParamSpec *pspec,
+                                      GsShellDetails *shell_details)
+{
+	g_idle_add (gs_shell_details_refresh_progress_idle, g_object_ref (shell_details));
 }
 
 static gboolean
@@ -1032,6 +1064,9 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 				 shell_details, 0);
 	g_signal_connect_object (priv->app, "notify::licence",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 shell_details, 0);
+	g_signal_connect_object (priv->app, "notify::progress",
+				 G_CALLBACK (gs_shell_details_progress_changed_cb),
 				 shell_details, 0);
 	gs_shell_details_load (shell_details);
 

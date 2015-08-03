@@ -65,6 +65,11 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (plugin->priv->task);
 }
 
+typedef struct {
+	GsApp		*app;
+	GsPlugin	*plugin;
+} ProgressData;
+
 /**
  * gs_plugin_packagekit_progress_cb:
  **/
@@ -73,28 +78,37 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
 				  gpointer user_data)
 {
-	GsPluginStatus plugin_status;
-	PkStatusEnum status;
-	GsPlugin *plugin = GS_PLUGIN (user_data);
+	ProgressData *data = (ProgressData *) user_data;
+	GsPlugin *plugin = data->plugin;
 
-	if (type != PK_PROGRESS_TYPE_STATUS)
-		return;
-	g_object_get (progress,
-		      "status", &status,
-		      NULL);
+	if (type == PK_PROGRESS_TYPE_STATUS) {
+		GsPluginStatus plugin_status;
+		PkStatusEnum status;
+		g_object_get (progress,
+			      "status", &status,
+			      NULL);
 
-	/* profile */
-	if (status == PK_STATUS_ENUM_SETUP) {
-		gs_profile_start (plugin->profile,
-				  "packagekit-refine::transaction");
-	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		gs_profile_stop (plugin->profile,
-				 "packagekit-refine::transaction");
+		/* profile */
+		if (status == PK_STATUS_ENUM_SETUP) {
+			gs_profile_start (plugin->profile,
+					  "packagekit-refine::transaction");
+		} else if (status == PK_STATUS_ENUM_FINISHED) {
+			gs_profile_stop (plugin->profile,
+					 "packagekit-refine::transaction");
+		}
+
+		plugin_status = packagekit_status_enum_to_plugin_status (status);
+		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
+			gs_plugin_status_update (plugin, NULL, plugin_status);
+
+	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
+		gint percentage;
+		g_object_get (progress,
+			      "percentage", &percentage,
+			      NULL);
+		if (percentage >= 0 && percentage <= 100)
+			gs_plugin_progress_update (plugin, data->app, percentage);
 	}
-
-	plugin_status = packagekit_status_enum_to_plugin_status (status);
-	if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-		gs_plugin_status_update (plugin, NULL, plugin_status);
 }
 
 /**
@@ -108,7 +122,11 @@ gs_plugin_add_installed (GsPlugin *plugin,
 {
 	gboolean ret = TRUE;
 	PkBitfield filter;
+	ProgressData data;
 	PkResults *results;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -123,7 +141,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
 					  filter,
 					  cancellable,
-					  gs_plugin_packagekit_progress_cb, plugin,
+					  gs_plugin_packagekit_progress_cb, &data,
 					  error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -155,9 +173,13 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	GsApp *app_tmp;
 	PkBitfield filter;
 	PkResults *results = NULL;
+	ProgressData data;
 	const gchar *id;
 	gboolean ret = TRUE;
 	gchar **split;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	gs_profile_start (plugin->profile, "packagekit::add-sources-related");
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
@@ -168,7 +190,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
 					   filter,
 					   cancellable,
-					   gs_plugin_packagekit_progress_cb, plugin,
+					   gs_plugin_packagekit_progress_cb, &data,
 					   error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -216,10 +238,14 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	PkBitfield filter;
 	PkRepoDetail *rd;
 	PkResults *results;
+	ProgressData data;
 	const gchar *id;
 	gboolean ret = TRUE;
 	guint i;
 	GHashTable *hash = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
@@ -229,7 +255,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	results = pk_client_get_repo_list (PK_CLIENT(plugin->priv->task),
 					   filter,
 					   cancellable,
-					   gs_plugin_packagekit_progress_cb, plugin,
+					   gs_plugin_packagekit_progress_cb, &data,
 					   error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -288,10 +314,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 	GPtrArray *source_ids;
 	PkError *error_code = NULL;
 	PkResults *results = NULL;
+	ProgressData data;
 	const gchar *package_id;
 	gboolean ret = TRUE;
 	gchar **package_ids = NULL;
 	guint i, j;
+
+	data.app = app;
+	data.plugin = plugin;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
@@ -353,7 +383,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		results = pk_task_install_packages_sync (plugin->priv->task,
 							 (gchar **) array_package_ids->pdata,
 							 cancellable,
-							 gs_plugin_packagekit_progress_cb, plugin,
+							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
 		if (results == NULL) {
 			ret = FALSE;
@@ -375,7 +405,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		results = pk_task_install_files_sync (plugin->priv->task,
 						      package_ids,
 						      cancellable,
-						      gs_plugin_packagekit_progress_cb, plugin,
+						      gs_plugin_packagekit_progress_cb, &data,
 						      error);
 		if (results == NULL) {
 			ret = FALSE;
@@ -429,6 +459,10 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 {
 	gboolean ret = TRUE;
 	PkResults *results;
+	ProgressData data;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -436,7 +470,7 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 					 gs_app_get_id (app),
 					 FALSE,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
+					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
 	if (results == NULL) {
 		ret = FALSE;
@@ -460,7 +494,11 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 	gboolean ret = TRUE;
 #if PK_CHECK_VERSION(0,9,1)
 	PkResults *results;
+	ProgressData data;
 	GError *error_local = NULL;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -469,7 +507,7 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 					 gs_app_get_id (app),
 					 TRUE,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
+					 gs_plugin_packagekit_progress_cb, &data,
 					 &error_local);
 	if (results == NULL) {
 		/* fall back to disabling it */
@@ -506,9 +544,13 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GPtrArray *array = NULL;
 	PkError *error_code = NULL;
 	PkResults *results = NULL;
+	ProgressData data;
 	GPtrArray *source_ids;
 	guint i;
 	guint cnt = 0;
+
+	data.app = NULL;
+	data.plugin = plugin;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
@@ -555,7 +597,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 						package_ids,
 						TRUE, FALSE,
 						cancellable,
-						gs_plugin_packagekit_progress_cb, plugin,
+						gs_plugin_packagekit_progress_cb, &data,
 						error);
 	if (results == NULL) {
 		ret = FALSE;

@@ -173,6 +173,9 @@ void		 gs_plugin_list_randomize		(GList		**list);
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
+void		 gs_plugin_progress_update		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 guint		 percentage);
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
 gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,

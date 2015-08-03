@@ -28,6 +28,7 @@
 #include "gs-app-row.h"
 #include "gs-star-widget.h"
 #include "gs-markdown.h"
+#include "gs-progress-button.h"
 #include "gs-utils.h"
 #include "gs-folders.h"
 
@@ -129,6 +130,18 @@ gs_app_row_refresh (GsAppRow *app_row)
 	if (app_row->priv->app == NULL)
 		return;
 
+	/* do a fill bar for the current progress */
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_INSTALLING:
+		gs_progress_button_set_progress (GS_PROGRESS_BUTTON (priv->button),
+		                                 gs_app_get_progress (priv->app));
+		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (priv->button), TRUE);
+		break;
+	default:
+		gs_progress_button_set_show_progress (GS_PROGRESS_BUTTON (priv->button), FALSE);
+		break;
+	}
+
 	/* join the lines*/
 	str = gs_app_row_get_description (app_row);
 	gs_string_replace (str, "\n", " ");
@@ -219,8 +232,6 @@ gs_app_row_refresh (GsAppRow *app_row)
 			gtk_style_context_add_class (context, "destructive-action");
 		break;
 	case AS_APP_STATE_INSTALLING:
-		gtk_spinner_start (GTK_SPINNER (priv->spinner));
-		gtk_widget_set_visible (priv->spinner, TRUE);
 		gtk_widget_set_visible (priv->button, TRUE);
 		gtk_widget_set_sensitive (priv->button, FALSE);
 		/* TRANSLATORS: this is a button next to the search results that
@@ -336,6 +347,9 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
 	g_signal_connect_object (app_row->priv->app, "notify::rating",
+				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
+				 app_row, 0);
+	g_signal_connect_object (app_row->priv->app, "notify::progress",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
 	gs_app_row_refresh (app_row);

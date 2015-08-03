@@ -125,6 +125,8 @@ gnome_software_SOURCES =				\
 	gs-plugin.h					\
 	gs-profile.c					\
 	gs-profile.h					\
+	gs-progress-button.c				\
+	gs-progress-button.h				\
 	gs-screenshot-image.c				\
 	gs-screenshot-image.h				\
 	gs-shell.c					\
