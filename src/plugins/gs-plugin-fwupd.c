@@ -599,15 +599,28 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 				     GCancellable *cancellable,
 				     GError **error)
 {
-	const gchar *url_data = "https://beta-lvfs.rhcloud.com/downloads/firmware.xml.gz";
 	guint status_code;
 	_cleanup_error_free_ GError *error_local = NULL;
 	_cleanup_free_ gchar *basename_data = NULL;
 	_cleanup_free_ gchar *cache_fn_data = NULL;
 	_cleanup_free_ gchar *checksum = NULL;
+	_cleanup_free_ gchar *config_fn = NULL;
+	_cleanup_free_ gchar *url_data = NULL;
 	_cleanup_free_ gchar *url_sig = NULL;
+	_cleanup_keyfile_unref_ GKeyFile *config = NULL;
 	_cleanup_object_unref_ SoupMessage *msg_data = NULL;
 	_cleanup_object_unref_ SoupMessage *msg_sig = NULL;
+
+	/* read config file */
+	config = g_key_file_new ();
+	config_fn = g_build_filename (SYSCONFDIR, "fwupd.conf", NULL);
+	if (!g_key_file_load_from_file (config, config_fn, G_KEY_FILE_NONE, error))
+		return FALSE;
+
+	/* download the signature */
+	url_data = g_key_file_get_string (config, "fwupd", "DownloadURI", error);
+	if (url_data == NULL)
+		return FALSE;
 
 	/* download the signature first, it's smaller */
 	url_sig = g_strdup_printf ("%s.asc", url_data);
