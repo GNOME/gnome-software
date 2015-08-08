@@ -78,7 +78,7 @@ gs_page_app_installed_cb (GObject *source,
 		                            gs_shell_get_window (priv->shell),
 		                            GS_PLUGIN_LOADER_ACTION_INSTALL,
 		                            error);
-		return;
+		goto out;
 	}
 
 	/* only show this if the window is not active */
@@ -89,6 +89,7 @@ gs_page_app_installed_cb (GObject *source,
 	if (GS_PAGE_GET_CLASS (page)->app_installed != NULL)
 		GS_PAGE_GET_CLASS (page)->app_installed (page, data->app);
 
+out:
 	install_remove_data_free (data);
 }
 
@@ -113,11 +114,13 @@ gs_page_app_removed_cb (GObject *source,
 		                            gs_shell_get_window (priv->shell),
 		                            GS_PLUGIN_LOADER_ACTION_REMOVE,
 		                            error);
+		goto out;
 	}
 
 	if (GS_PAGE_GET_CLASS (page)->app_removed != NULL)
 		GS_PAGE_GET_CLASS (page)->app_removed (page, data->app);
 
+out:
 	install_remove_data_free (data);
 }
 
