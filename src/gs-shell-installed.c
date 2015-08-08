@@ -132,11 +132,11 @@ gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 static gboolean
 gs_shell_installed_invalidate_sort_idle (gpointer user_data)
 {
-	GsShellInstalled *shell = GS_SHELL_INSTALLED (user_data);
+	GsAppRow *app_row = user_data;
 
-	gtk_list_box_invalidate_sort (GTK_LIST_BOX (shell->priv->list_box_install));
+	gtk_list_box_row_changed (GTK_LIST_BOX_ROW (app_row));
 
-	g_object_unref (shell);
+	g_object_unref (app_row);
 	return G_SOURCE_REMOVE;
 }
 
@@ -146,9 +146,9 @@ gs_shell_installed_invalidate_sort_idle (gpointer user_data)
 static void
 gs_shell_installed_notify_state_changed_cb (GsApp *app,
 					    GParamSpec *pspec,
-					    GsShellInstalled *shell)
+					    GsAppRow *app_row)
 {
-	g_idle_add (gs_shell_installed_invalidate_sort_idle, g_object_ref (shell));
+	g_idle_add (gs_shell_installed_invalidate_sort_idle, g_object_ref (app_row));
 }
 
 static void selection_changed (GsShellInstalled *shell);
@@ -165,7 +165,7 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 			  G_CALLBACK (gs_shell_installed_app_remove_cb), shell);
 	g_signal_connect_object (app, "notify::state",
 				 G_CALLBACK (gs_shell_installed_notify_state_changed_cb),
-				 shell, 0);
+				 app_row, 0);
 	g_signal_connect_swapped (app_row, "notify::selected",
 			 	  G_CALLBACK (selection_changed), shell);
 	gs_app_row_set_app (GS_APP_ROW (app_row), app);
