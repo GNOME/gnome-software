@@ -281,8 +281,6 @@ gs_shell_installed_switch_to (GsShellInstalled *shell_installed, gboolean scroll
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
 	gtk_widget_show (widget);
 
-	gtk_list_box_invalidate_sort (GTK_LIST_BOX (priv->list_box_install));
-
 	if (scroll_up) {
 		GtkAdjustment *adj;
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_install));
