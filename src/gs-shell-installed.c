@@ -40,6 +40,7 @@ struct GsShellInstalledPrivate
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
+	GListStore		*installed_apps;
 	GtkSizeGroup		*sizegroup_image;
 	GtkSizeGroup		*sizegroup_name;
 	gboolean		 cache_valid;
@@ -152,11 +153,42 @@ gs_shell_installed_notify_state_changed_cb (GsApp *app,
 }
 
 static void selection_changed (GsShellInstalled *shell);
+static gchar *gs_shell_installed_get_app_sort_key (GsApp *app);
+
+static gint
+app_sort_func (GsApp *app1,
+               GsApp *app2,
+               gpointer user_data)
+{
+	_cleanup_free_ gchar *key1 = NULL;
+	_cleanup_free_ gchar *key2 = NULL;
+
+	key1 = gs_shell_installed_get_app_sort_key (app1);
+	key2 = gs_shell_installed_get_app_sort_key (app2);
+
+	/* compare the keys according to the algorithm above */
+	return g_strcmp0 (key1, key2);
+}
 
 static void
 gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 {
 	GsShellInstalledPrivate *priv = shell->priv;
+
+	g_list_store_insert_sorted (priv->installed_apps,
+	                            app,
+	                            (GCompareDataFunc) app_sort_func,
+	                            NULL);
+}
+
+static GtkWidget *
+create_app_row (gpointer item,
+                gpointer user_data)
+
+{
+	GsShellInstalled *shell = user_data;
+	GsShellInstalledPrivate *priv = shell->priv;
+	GsApp *app = item;
 	GtkWidget *app_row;
 
 	app_row = gs_app_row_new ();
@@ -169,7 +201,6 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 	g_signal_connect_swapped (app_row, "notify::selected",
 			 	  G_CALLBACK (selection_changed), shell);
 	gs_app_row_set_app (GS_APP_ROW (app_row), app);
-	gtk_container_add (GTK_CONTAINER (priv->list_box_install), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    priv->sizegroup_image,
 				    priv->sizegroup_name);
@@ -178,6 +209,7 @@ gs_shell_installed_add_app (GsShellInstalled *shell, GsApp *app)
 				   priv->selection_mode);
 
 	gtk_widget_show (app_row);
+	return app_row;
 }
 
 /**
@@ -232,7 +264,7 @@ gs_shell_installed_load (GsShellInstalled *shell_installed)
 	priv->waiting = TRUE;
 
 	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (priv->list_box_install));
+	g_list_store_remove_all (priv->installed_apps);
 
 	/* get popular apps */
 	gs_plugin_loader_get_installed_async (priv->plugin_loader,
@@ -361,33 +393,6 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 	g_string_append (key, casefolded_name);
 
 	return g_string_free (key, FALSE);
-}
-
-/**
- * gs_shell_installed_sort_func:
- **/
-static gint
-gs_shell_installed_sort_func (GtkListBoxRow *a,
-			      GtkListBoxRow *b,
-			      gpointer user_data)
-{
-	GsApp *a1, *a2;
-	_cleanup_free_ gchar *key1 = NULL;
-	_cleanup_free_ gchar *key2 = NULL;
-
-	/* check valid */
-	if (!GTK_IS_BIN(a) || !GTK_IS_BIN(b)) {
-		g_warning ("GtkListBoxRow not valid");
-		return 0;
-	}
-
-	a1 = gs_app_row_get_app (GS_APP_ROW (a));
-	a2 = gs_app_row_get_app (GS_APP_ROW (b));
-	key1 = gs_shell_installed_get_app_sort_key (a1);
-	key2 = gs_shell_installed_get_app_sort_key (a2);
-
-	/* compare the keys according to the algorithm above */
-	return g_strcmp0 (key1, key2);
 }
 
 /**
@@ -723,9 +728,10 @@ gs_shell_installed_setup (GsShellInstalled *shell_installed,
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_install),
 				      gs_shell_installed_list_header_func,
 				      shell_installed, NULL);
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_install),
-				    gs_shell_installed_sort_func,
-				    shell_installed, NULL);
+	gtk_list_box_bind_model (GTK_LIST_BOX (priv->list_box_install),
+	                         G_LIST_MODEL (priv->installed_apps),
+	                         create_app_row,
+	                         shell_installed, NULL);
 
 	g_signal_connect (priv->button_folder_add, "clicked",
 			  G_CALLBACK (show_folder_dialog), shell_installed);
@@ -767,6 +773,7 @@ gs_shell_installed_dispose (GObject *object)
 	GsShellInstalled *shell_installed = GS_SHELL_INSTALLED (object);
 	GsShellInstalledPrivate *priv = shell_installed->priv;
 
+	g_clear_object (&priv->installed_apps);
 	g_clear_object (&priv->sizegroup_image);
 	g_clear_object (&priv->sizegroup_name);
 
@@ -811,6 +818,7 @@ gs_shell_installed_init (GsShellInstalled *shell_installed)
 	gtk_widget_init_template (GTK_WIDGET (shell_installed));
 
 	shell_installed->priv = gs_shell_installed_get_instance_private (shell_installed);
+	shell_installed->priv->installed_apps = g_list_store_new (GS_TYPE_APP);
 	shell_installed->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	shell_installed->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
