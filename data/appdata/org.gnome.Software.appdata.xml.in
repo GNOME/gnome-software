@@ -30,6 +30,30 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.17.3" timestamp="1439370225">
+      <description>
+        <p>This is an unstable release in the 3.17 development series, with the following improvements:</p>
+        <ul>
+          <li>Add basic support for Limba bundles</li>
+          <li>Automatically download new firmware metadata from LVFS</li>
+          <li>Hide updates UI on managed systems</li>
+          <li>Show a new notification when security updates remain unapplied</li>
+          <li>Show installation progress when installing applications</li>
+          <li>Use some new applications to the picked category</li>
+        </ul>
+        <p>Bugs fixed in this release:</p>
+        <ul>
+          <li>Do not show applications that are not available when searching by category</li>
+          <li>Don't crash when launching an app that has no desktop ID</li>
+          <li>Don't show applications without AppData in the category view</li>
+          <li>Fix a possible race and crash when loading icons</li>
+          <li>Fix locking in the AppStream code to fix several crashes</li>
+          <li>Use better error messages on offline update failure</li>
+          <li>Withdraw the notification when prepared update gets invalidated</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release version="3.17.2" timestamp="1433526589">
       <description>
         <p>This is an unstable release in the 3.17 development series, with the following improvements:</p>
