@@ -73,9 +73,11 @@ gs_plugin_refine_app_category (GsPlugin *plugin,
 		ret = gs_app_has_category (app, tmp + 2);
 		if (ret) {
 			_cleanup_free_ gchar *str = NULL;
+			_cleanup_free_ gchar *msgctxt = NULL;
+			msgctxt = g_strdup_printf ("Menu subcategory of %s", cat->text);
 			str = g_strdup_printf ("%s → %s",
 					       gettext (cat->text),
-					       gettext (msdata[i].text));
+					       g_dpgettext2 (GETTEXT_PACKAGE, msgctxt, msdata[i].text));
 			gs_app_set_menu_path (app, str);
 			break;
 		}
