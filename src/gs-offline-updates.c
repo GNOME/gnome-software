@@ -183,59 +183,6 @@ unset_focus (GtkWidget *widget, GdkEvent *event, gpointer data)
 }
 
 /**
- * A temporary workaround for https://bugzilla.gnome.org/show_bug.cgi?id=406159
- * Creates and applies some tags which make the text smaller and add some
- * margins at each side of the text. Eventually this should be achieved
- * with some API or CSS attributes which are not yet implemented.
- * Thanks Matthias Clasen for hints and inspiration.
- */
-static void
-tmp_apply_tags (GtkTextBuffer *buffer)
-{
-	GtkTextIter start, end, line;
-	gint line_count;
-
-	gtk_text_buffer_create_tag (buffer, "big_gap_before_line",
-				    "pixels_above_lines", 16, NULL);
-
-	gtk_text_buffer_create_tag (buffer, "big_gap_after_line",
-				    "pixels_below_lines", 16, NULL);
-
-	gtk_text_buffer_create_tag (buffer, "wide_margins",
-				    "left_margin", 16, "right_margin", 16,
-				    NULL);
-
-	gtk_text_buffer_create_tag (buffer, "small",
-				    "scale", PANGO_SCALE_SMALL, NULL);
-
-	/* Apply to whole text */
-	gtk_text_buffer_get_bounds (buffer, &start, &end);
-	gtk_text_buffer_apply_tag_by_name (buffer, "small", &start, &end);
-	gtk_text_buffer_apply_tag_by_name (buffer, "wide_margins", &start, &end);
-
-	line_count = gtk_text_buffer_get_line_count (buffer);
-	if (line_count <= 1) {
-		/* Apply to the one and only paragraph */
-		gtk_text_buffer_apply_tag_by_name (buffer,
-						   "big_gap_before_line", &start, &end);
-		gtk_text_buffer_apply_tag_by_name (buffer,
-						   "big_gap_after_line", &start, &end);
-	} else {
-		/* Apply to the first paragraph */
-		gtk_text_buffer_get_iter_at_line (buffer, &line, 1);
-		gtk_text_buffer_apply_tag_by_name (buffer,
-						   "big_gap_before_line", &start, &line);
-		/* Is second paragraph the last paragraph? */
-		if (line_count > 2)
-			gtk_text_buffer_get_iter_at_line (buffer,
-							  &line, line_count - 1);
-		/* Apply to the last paragraph */
-		gtk_text_buffer_apply_tag_by_name (buffer,
-						   "big_gap_after_line", &line, &end);
-	}
-}
-
-/**
  * insert_details_widget:
  * @dialog: the message dialog where the widget will be inserted
  * @details: (allow-none): the detailed message text to display
@@ -300,9 +247,9 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
 	gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
 	gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD);
-	gtk_text_view_set_monospace (GTK_TEXT_VIEW (tv), TRUE);
+	gtk_style_context_add_class (gtk_widget_get_style_context (tv),
+	                             "update-failed-details");
 	gtk_text_buffer_set_text (buffer, msg->str, -1);
-	tmp_apply_tags (buffer);
 	gtk_widget_set_visible (tv, TRUE);
 
 	gtk_container_add (GTK_CONTAINER (sw), tv);
