@@ -172,7 +172,7 @@ build_title (GsShellExtras *shell_extras)
 	switch (shell_extras->priv->mode) {
 	case GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES:
 		/* TRANSLATORS: Application window title for fonts installation.
-		   %s will be replaced by name of the language we're searching for. */
+		   %s will be replaced by name of the script we're searching for. */
 		return g_strdup_printf (ngettext ("Available fonts for the %s script",
 		                                  "Available fonts for the %s scripts",
 		                                  priv->array_search_data->len),
