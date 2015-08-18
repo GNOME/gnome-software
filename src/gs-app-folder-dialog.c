@@ -37,7 +37,6 @@ struct _GsAppFolderDialogPrivate
 	GtkWidget 	 *done_button;
 	GtkWidget	 *app_folder_list;
 	GtkSizeGroup     *rows;
-	GtkSizeGroup     *labels;
 	GtkListBoxRow	 *new_folder_button;
 	GtkWidget	*new_folder_popover;
 	GtkWidget	*new_folder_entry;
@@ -59,7 +58,6 @@ gs_app_folder_dialog_destroy (GtkWidget *widget)
 
 	g_clear_object (&priv->folders);
 	g_clear_object (&priv->rows);
-	g_clear_object (&priv->labels);
 
 	GTK_WIDGET_CLASS (gs_app_folder_dialog_parent_class)->destroy (widget);
 }
@@ -144,7 +142,6 @@ gs_app_folder_dialog_init (GsAppFolderDialog *dialog)
 	g_signal_connect_swapped (priv->done_button, "clicked",
 				  G_CALLBACK (done_cb), dialog);
 	priv->rows = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
-	priv->labels = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->app_folder_list),
 				      update_header_func, NULL, NULL);
@@ -182,10 +179,14 @@ create_row (GsAppFolderDialog *dialog, const gchar *folder)
 		      "margin-bottom", 10,
 		      NULL);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
-	gtk_widget_set_valign (label, GTK_ALIGN_START);
-	gtk_container_add (GTK_CONTAINER (box), label);
+	gtk_widget_set_halign (label, GTK_ALIGN_START);
+	gtk_box_pack_start (GTK_BOX (box), label, TRUE, TRUE, 0);
 	image = gtk_image_new_from_icon_name ("object-select-symbolic", GTK_ICON_SIZE_MENU);
 	gtk_widget_set_no_show_all (image, TRUE);
+	gtk_widget_set_valign (image, GTK_ALIGN_CENTER);
+	gtk_widget_set_halign (image, GTK_ALIGN_END);
+	gtk_widget_set_margin_start (image, 20);
+	gtk_widget_set_margin_end (image, 20);
 	gtk_container_add (GTK_CONTAINER (box), image);
 
 	row = gtk_list_box_row_new ();
@@ -196,7 +197,6 @@ create_row (GsAppFolderDialog *dialog, const gchar *folder)
 	g_object_set_data (G_OBJECT (row), "image", image);
 	g_object_set_data_full (G_OBJECT (row), "folder", g_strdup (folder), g_free);
 
-	gtk_size_group_add_widget (priv->labels, label);
 	gtk_size_group_add_widget (priv->rows, row);
 
 	return row;	
