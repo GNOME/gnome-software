@@ -408,13 +408,10 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 	g_signal_handler_disconnect (entry, preedit_change_id);
 
 	if ((res && g_strcmp0 (new_text, old_text) != 0) ||
-	    preedit_changed)
+	    preedit_changed) {
+		gtk_entry_grab_focus_without_selecting (GTK_ENTRY (entry));
 		handled = GDK_EVENT_STOP;
-
-	/* We set "editable" so the text in the  entry won't get selected on focus */
-	g_object_set (entry, "editable", FALSE, NULL);
-	gtk_widget_grab_focus (entry);
-	g_object_set (entry, "editable", TRUE, NULL);
+	}
 
 	return handled;
 }
