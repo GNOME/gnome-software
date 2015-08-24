@@ -472,6 +472,24 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 }
 
 static gboolean
+window_button_press_event (GtkWidget *win, GdkEventButton *event, GsShell *shell)
+{
+	GsShellPrivate *priv = shell->priv;
+	GtkWidget *button;
+
+	/* Mouse hardware back button is 8 */
+	if (event->button != 8)
+		return GDK_EVENT_PROPAGATE;
+
+	button = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));
+	if (!gtk_widget_is_visible (button) || !gtk_widget_is_sensitive (button))
+		return GDK_EVENT_PROPAGATE;
+
+	gtk_widget_activate (button);
+	return GDK_EVENT_STOP;
+}
+
+static gboolean
 main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 {
 	GsShell *shell = user_data;
@@ -581,6 +599,9 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	/* global keynav */
 	g_signal_connect_after (priv->main_window, "key_press_event",
 				G_CALLBACK (window_key_press_event), shell);
+	/* mouse hardware back button */
+	g_signal_connect_after (priv->main_window, "button_press_event",
+				G_CALLBACK (window_button_press_event), shell);
 
 	/* setup buttons */
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_back"));

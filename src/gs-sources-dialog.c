@@ -369,6 +369,49 @@ remove_button_cb (GtkWidget *widget, GsSourcesDialog *dialog)
 					   dialog);
 }
 
+static gboolean
+key_press_event (GsSourcesDialog *dialog, GdkEventKey *event)
+{
+	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
+	GdkKeymap *keymap;
+	GdkModifierType state;
+	gboolean is_rtl;
+
+	if (!gtk_widget_is_visible (priv->button_back) || !gtk_widget_is_sensitive (priv->button_back))
+		return GDK_EVENT_PROPAGATE;
+
+	state = event->state;
+	keymap = gdk_keymap_get_default ();
+	gdk_keymap_add_virtual_modifiers (keymap, &state);
+	state = state & gtk_accelerator_get_default_mod_mask ();
+	is_rtl = gtk_widget_get_direction (priv->button_back) == GTK_TEXT_DIR_RTL;
+
+	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
+	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
+	    event->keyval == GDK_KEY_Back) {
+		gtk_widget_activate (priv->button_back);
+		return GDK_EVENT_STOP;
+	}
+
+	return GDK_EVENT_PROPAGATE;
+}
+
+static gboolean
+button_press_event (GsSourcesDialog *dialog, GdkEventButton *event)
+{
+	GsSourcesDialogPrivate *priv = gs_sources_dialog_get_instance_private (dialog);
+
+	/* Mouse hardware back button is 8 */
+	if (event->button != 8)
+		return GDK_EVENT_PROPAGATE;
+
+	if (!gtk_widget_is_visible (priv->button_back) || !gtk_widget_is_sensitive (priv->button_back))
+		return GDK_EVENT_PROPAGATE;
+
+	gtk_widget_activate (priv->button_back);
+	return GDK_EVENT_STOP;
+}
+
 static gchar *
 get_os_name (void)
 {
@@ -475,6 +518,12 @@ gs_sources_dialog_init (GsSourcesDialog *dialog)
 			  G_CALLBACK (back_button_cb), dialog);
 	g_signal_connect (priv->button_remove, "clicked",
 			  G_CALLBACK (remove_button_cb), dialog);
+
+	/* global keynav and mouse back button */
+	g_signal_connect (dialog, "key-press-event",
+			  G_CALLBACK (key_press_event), NULL);
+	g_signal_connect (dialog, "button-press-event",
+			  G_CALLBACK (button_press_event), NULL);
 }
 
 static void

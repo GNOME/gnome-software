@@ -394,6 +394,49 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 	}
 }
 
+static gboolean
+key_press_event (GsUpdateDialog *dialog, GdkEventKey *event)
+{
+	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
+	GdkKeymap *keymap;
+	GdkModifierType state;
+	gboolean is_rtl;
+
+	if (!gtk_widget_is_visible (priv->button_back) || !gtk_widget_is_sensitive (priv->button_back))
+		return GDK_EVENT_PROPAGATE;
+
+	state = event->state;
+	keymap = gdk_keymap_get_default ();
+	gdk_keymap_add_virtual_modifiers (keymap, &state);
+	state = state & gtk_accelerator_get_default_mod_mask ();
+	is_rtl = gtk_widget_get_direction (priv->button_back) == GTK_TEXT_DIR_RTL;
+
+	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
+	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
+	    event->keyval == GDK_KEY_Back) {
+		gtk_widget_activate (priv->button_back);
+		return GDK_EVENT_STOP;
+	}
+
+	return GDK_EVENT_PROPAGATE;
+}
+
+static gboolean
+button_press_event (GsUpdateDialog *dialog, GdkEventButton *event)
+{
+	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
+
+	/* Mouse hardware back button is 8 */
+	if (event->button != 8)
+		return GDK_EVENT_PROPAGATE;
+
+	if (!gtk_widget_is_visible (priv->button_back) || !gtk_widget_is_sensitive (priv->button_back))
+		return GDK_EVENT_PROPAGATE;
+
+	gtk_widget_activate (priv->button_back);
+	return GDK_EVENT_STOP;
+}
+
 static void
 set_plugin_loader (GsUpdateDialog *dialog, GsPluginLoader *plugin_loader)
 {
@@ -455,6 +498,12 @@ gs_update_dialog_init (GsUpdateDialog *dialog)
 	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (priv->scrolledwindow_details));
 	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow_details);
 	g_signal_connect (scrollbar, "unmap", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow_details);
+
+	/* global keynav and mouse back button */
+	g_signal_connect (dialog, "key-press-event",
+			  G_CALLBACK (key_press_event), NULL);
+	g_signal_connect (dialog, "button-press-event",
+			  G_CALLBACK (button_press_event), NULL);
 }
 
 static void
