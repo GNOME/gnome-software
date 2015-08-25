@@ -1,7 +1,7 @@
 # Spanish translation for gnome-software.
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
-# 
+#
 # Daniel Mustieles <daniel.mustieles@gmail.com>, 2013, 2014, 2015., 2015.
 #
 msgid ""
@@ -9,10 +9,10 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-08-18 08:28+0000\n"
-"PO-Revision-Date: 2015-08-18 13:54+0200\n"
+"POT-Creation-Date: 2015-08-24 20:15+0000\n"
+"PO-Revision-Date: 2015-08-25 \n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
-"Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
+"Language-Team: Spanish <gnome-es-list@gnome.org>\n"
 "Language: es\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
@@ -493,16 +493,16 @@ msgstr ""
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:266
+#: ../src/gs-offline-updates.c:213
 msgid "Detailed errors from the package manager follow:"
 msgstr "Detalles del gestor de paquetes:"
 
-#: ../src/gs-offline-updates.c:285 ../src/gs-shell-details.ui.h:20
+#: ../src/gs-offline-updates.c:232 ../src/gs-shell-details.ui.h:20
 msgid "Details"
 msgstr "Detalles"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:336
+#: ../src/gs-offline-updates.c:283
 msgid "Failed To Update"
 msgstr "Falló al actualizar"
 
@@ -591,11 +591,9 @@ msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
-#. %s will be replaced by name of the language we're searching for.
+#. %s will be replaced by name of the script we're searching for.
 #: ../src/gs-shell-extras.c:176
 #, c-format
-#| msgid "Available fonts for the %s script"
-#| msgid_plural "Available fonts for the %s script"
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
 msgstr[0] "Tipografías disponibles para el script %s"
@@ -742,11 +740,11 @@ msgstr "esta página web"
 #: ../src/gs-shell-extras.c:467
 #, c-format
 msgid ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
+"Unfortunately, the %s you were searching for could not be found. Please see %"
+"s for more information."
 msgid_plural ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
+"Unfortunately, the %s you were searching for could not be found. Please see %"
+"s for more information."
 msgstr[0] ""
 "El codificador %s que estaba buscando no se ha podido encontrar. Consulte %s "
 "para obtener más información."
@@ -1204,8 +1202,10 @@ msgstr "Las actualizaciones se gestionan automáticamente"
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
 #: ../src/gs-sources-dialog.c:98
-msgid "No software installed"
-msgstr "No hay software instalado"
+msgid "No applications or addons installed; other software might still be"
+msgstr ""
+"No hay aplicaciones ni complementos instalados. Es posible que todavía haya "
+"otro software"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
@@ -2391,6 +2391,9 @@ msgstr "_Acerca de"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "_Salir"
+
+#~ msgid "No software installed"
+#~ msgstr "No hay software instalado"
 
 #~ msgid "Network access was required but not available."
 #~ msgstr "Se necesita acceso a la red, pero no está disponible."
