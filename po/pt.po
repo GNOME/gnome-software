@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-08-01 08:13+0000\n"
-"PO-Revision-Date: 2015-08-01 10:44+0100\n"
+"POT-Creation-Date: 2015-08-24 20:15+0000\n"
+"PO-Revision-Date: 2015-08-25 06:42+0100\n"
 "Last-Translator: Pedro Albuquerque <palbuquerque73@gmail.com>\n"
 "Language-Team: Português <palbuquerque73@gmail.com>\n"
 "Language: pt\n"
@@ -54,7 +54,7 @@ msgid "Add to Application Folder"
 msgstr "Adicionar à pasta da aplicação"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:334
-#: ../src/gs-shell-details.c:235 ../src/gs-shell-installed.c:534
+#: ../src/gs-shell-details.c:235 ../src/gs-shell-installed.c:532
 msgid "_Cancel"
 msgstr "_Cancelar"
 
@@ -284,7 +284,7 @@ msgstr "Instalar"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:242 ../src/gs-page.c:196
+#: ../src/gs-app-row.c:242 ../src/gs-page.c:179
 msgid "Remove"
 msgstr "Remover"
 
@@ -498,52 +498,52 @@ msgstr ""
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-offline-updates.c:266
+#: ../src/gs-offline-updates.c:213
 msgid "Detailed errors from the package manager follow:"
 msgstr "Seguem os erros detalhados do gestor de pacotes:"
 
-#: ../src/gs-offline-updates.c:285 ../src/gs-shell-details.ui.h:20
+#: ../src/gs-offline-updates.c:232 ../src/gs-shell-details.ui.h:20
 msgid "Details"
 msgstr "Detalhes"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:336
+#: ../src/gs-offline-updates.c:283
 msgid "Failed To Update"
 msgstr "Falha ao atualizar"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:181
+#: ../src/gs-page.c:164
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Tem certeza que quer remover %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:193
+#: ../src/gs-page.c:176
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s será removido e para utilizá-lo novamente, terá de o instalar."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:803
+#: ../src/gs-plugin-loader.c:802
 msgid "OS Updates"
 msgstr "Atualizações do SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:808
+#: ../src/gs-plugin-loader.c:807
 msgid "Includes performance, stability and security improvements."
 msgstr "Inclui melhorias de desempenho, estabilidade e segurança."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1368 ../src/gs-shell-extras.c:391
+#: ../src/gs-plugin-loader.c:1367 ../src/gs-shell-extras.c:391
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Não há complementos de codecs disponíveis para o formato %s."
 
-#: ../src/gs-plugin-loader.c:1371
+#: ../src/gs-plugin-loader.c:1370
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -596,13 +596,15 @@ msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
-#. %s will be replaced by name of the language we're searching for.
+#. %s will be replaced by name of the script we're searching for.
 #: ../src/gs-shell-extras.c:176
 #, c-format
+#| msgid "Available fonts for the %s script"
+#| msgid_plural "Available fonts for the %s script"
 msgid "Available fonts for the %s script"
-msgid_plural "Available fonts for the %s script"
+msgid_plural "Available fonts for the %s scripts"
 msgstr[0] "Letras disponíveis para o script %s"
-msgstr[1] "Letras disponíveis para o script %s"
+msgstr[1] "Letras disponíveis para os scripts %s"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
@@ -959,7 +961,7 @@ msgstr "Programador"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:449
+#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:447
 #: ../src/gs-update-list.c:106 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Complementos"
@@ -970,11 +972,11 @@ msgstr "Os complementos selecionados serão instalados com a aplicação."
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:439
+#: ../src/gs-shell-installed.c:437
 msgid "System Applications"
 msgstr "Aplicações de sistema"
 
-#: ../src/gs-shell-installed.c:542
+#: ../src/gs-shell-installed.c:540
 msgid "Click on items to select them"
 msgstr "Clique nos itens para os selecionar"
 
@@ -1205,8 +1207,9 @@ msgstr "As atualizações são geridas automaticamente"
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
 #: ../src/gs-sources-dialog.c:98
-msgid "No software installed"
-msgstr "Nenhuma aplicação instalada"
+msgid "No applications or addons installed; other software might still be"
+msgstr ""
+"Sem aplicações ou extensões instaladas; outro programa pode ainda estar"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
@@ -1352,7 +1355,6 @@ msgid "It is recommended that you install important updates now"
 msgstr "É recomendável que instale atualizações importantes agora"
 
 #: ../src/gs-update-monitor.c:117
-#| msgid "Restart & _Install"
 msgid "Restart & Install"
 msgstr "Reiniciar & _Instalar"
 
@@ -2396,6 +2398,9 @@ msgstr "S_Obre"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "_Sair"
+
+#~ msgid "No software installed"
+#~ msgstr "Nenhuma aplicação instalada"
 
 #~ msgid "Network access was required but not available."
 #~ msgstr "Foi solicitado acesso à rede mas a mesma não está disponível."
