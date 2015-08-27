@@ -264,8 +264,7 @@ gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 			++child_allocation.width; --n_extra_widgets;
 		}
 		if (direction == GTK_TEXT_DIR_RTL) {
-			child_allocation.x = allocation->x + allocation->width
-				- child_allocation.x - child_allocation.width;
+			child_allocation.x = allocation->x + allocation->width - (child_allocation.x - allocation->x) - child_allocation.width;
 		}
 
 		/* Let this child be visible */
