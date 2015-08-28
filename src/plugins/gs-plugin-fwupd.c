@@ -550,6 +550,7 @@ gs_plugin_fwupd_update_lvfs_metadata (const gchar *data_fn, const gchar *sig_fn,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "failed to open %s",
 			     sig_fn);
+		close (fd_data);
 		return FALSE;
 	}
 
