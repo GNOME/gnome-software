@@ -2806,9 +2806,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	}
 
 	/* get plugins this plugin depends on */
-	g_module_symbol (module,
-			 "gs_plugin_get_deps",
-			 (gpointer *) &plugin_deps);
+	(void) g_module_symbol (module,
+	                        "gs_plugin_get_deps",
+	                        (gpointer *) &plugin_deps);
 
 	/* print what we know */
 	plugin = g_slice_new0 (GsPlugin);
