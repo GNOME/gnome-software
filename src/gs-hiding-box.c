@@ -123,10 +123,10 @@ gs_hiding_box_remove (GtkContainer *container, GtkWidget *widget)
 	GList *child;
 	GsHidingBox *box = GS_HIDING_BOX (container);
 
-	for (child = box->priv->children; child; child = child->next) {
+	for (child = box->priv->children; child != NULL; child = child->next) {
 		if (child->data == widget) {
-			gboolean was_visible = gtk_widget_get_visible (widget)
-				&& gtk_widget_get_child_visible (widget);
+			gboolean was_visible = gtk_widget_get_visible (widget) &&
+			                       gtk_widget_get_child_visible (widget);
 
 			gtk_widget_unparent (widget);
 			box->priv->children = g_list_delete_link (box->priv->children, child);
@@ -181,7 +181,7 @@ gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	gtk_widget_set_allocation (widget, allocation);
 
 	nvis_children = 0;
-	for (child = box->priv->children; child; child = child->next) {
+	for (child = box->priv->children; child != NULL; child = child->next) {
 		if (gtk_widget_get_visible (child->data))
 			++nvis_children;
 	}
@@ -196,7 +196,7 @@ gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	size = allocation->width;
 	children_size = -spacing;
 	/* Retrieve desired size for visible children. */
-	for (i = 0, child = private->children; child; child = child->next) {
+	for (i = 0, child = private->children; child != NULL; child = child->next) {
 
 		child_widget = GTK_WIDGET (child->data);
 		if (!gtk_widget_get_visible (child_widget))
@@ -241,7 +241,7 @@ gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 	}
 
 	x = allocation->x;
-	for (i = 0, child = private->children; child; child = child->next) {
+	for (i = 0, child = private->children; child != NULL; child = child->next) {
 
 		child_widget = GTK_WIDGET (child->data);
 		if (!gtk_widget_get_visible (child_widget))
@@ -261,7 +261,8 @@ gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 		child_allocation.width = sizes[i].minimum_size + extra;
 		child_allocation.height = allocation->height;
 		if (n_extra_widgets) {
-			++child_allocation.width; --n_extra_widgets;
+			++child_allocation.width;
+			--n_extra_widgets;
 		}
 		if (direction == GTK_TEXT_DIR_RTL) {
 			child_allocation.x = allocation->x + allocation->width - (child_allocation.x - allocation->x) - child_allocation.width;
@@ -284,11 +285,10 @@ gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 		clip.x = clip.y = 0;
 	}
 
-	for (i = 0, child = private->children; child; child = child->next) {
+	for (i = 0, child = private->children; child != NULL; child = child->next) {
 		child_widget = GTK_WIDGET (child->data);
-		if (gtk_widget_get_visible (child_widget)
-				&& gtk_widget_get_child_visible (child_widget))
-		{
+		if (gtk_widget_get_visible (child_widget) &&
+		    gtk_widget_get_child_visible (child_widget)) {
 			gtk_widget_get_clip (child_widget, &child_clip);
 			gdk_rectangle_union (&child_clip, &clip, &clip);
 		}
@@ -312,7 +312,7 @@ gs_hiding_box_get_preferred_width (GtkWidget *widget, gint *min, gint *nat)
 	gboolean have_min = FALSE;
 
 	m = n = nvis_children = 0;
-	for (child = box->priv->children; child; child = child->next) {
+	for (child = box->priv->children; child != NULL; child = child->next) {
 		if (!gtk_widget_is_visible (child->data))
 			continue;
 
@@ -346,7 +346,7 @@ gs_hiding_box_get_preferred_height (GtkWidget *widget, gint *min, gint *nat)
 
 	GsHidingBox *box = GS_HIDING_BOX (widget);
 	m = n = 0;
-	for (child = box->priv->children; child; child = child->next) {
+	for (child = box->priv->children; child != NULL; child = child->next) {
 		if (!gtk_widget_is_visible (child->data))
 			continue;
 
