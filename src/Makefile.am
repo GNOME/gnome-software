@@ -45,6 +45,7 @@ UI_FILES =						\
 	gs-shell-search.ui				\
 	gs-shell-updates.ui				\
 	gs-sources-dialog.ui				\
+	gs-sources-dialog-row.ui			\
 	gs-star-widget.ui				\
 	gs-update-dialog.ui				\
 	screenshot-image.ui				\
@@ -165,6 +166,8 @@ gnome_software_SOURCES =				\
 	gs-shell-search.h				\
 	gs-sources-dialog.c				\
 	gs-sources-dialog.h				\
+	gs-sources-dialog-row.c				\
+	gs-sources-dialog-row.h				\
 	gs-update-dialog.c				\
 	gs-update-dialog.h				\
 	gs-update-list.c				\

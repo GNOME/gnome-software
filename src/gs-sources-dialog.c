@@ -27,6 +27,7 @@
 
 #include "gs-cleanup.h"
 #include "gs-sources-dialog.h"
+#include "gs-sources-dialog-row.h"
 #include "gs-utils.h"
 
 struct _GsSourcesDialogPrivate
@@ -51,9 +52,7 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsSourcesDialog, gs_sources_dialog, GTK_TYPE_DIALOG)
 static void
 add_source (GtkListBox *listbox, GsApp *app)
 {
-	GtkWidget *widget;
-	GtkWidget *box;
-	GtkStyleContext *context;
+	GtkWidget *row;
 	GPtrArray *related;
 	guint cnt_addon = 0;
 	guint cnt_apps = 0;
@@ -62,15 +61,10 @@ add_source (GtkListBox *listbox, GsApp *app)
 	_cleanup_free_ gchar *apps_text = NULL;
 	_cleanup_free_ gchar *text = NULL;
 
-	box = gtk_box_new (GTK_ORIENTATION_VERTICAL, 0);
-	gtk_widget_set_margin_top (box, 12);
-	gtk_widget_set_margin_start (box, 12);
-	gtk_widget_set_margin_bottom (box, 12);
-	gtk_widget_set_margin_end (box, 12);
+	row = gs_sources_dialog_row_new ();
+	gs_sources_dialog_row_set_name (GS_SOURCES_DIALOG_ROW (row),
+	                                gs_app_get_name (app));
 
-	widget = gtk_label_new (gs_app_get_name (app));
-	gtk_widget_set_halign (widget, GTK_ALIGN_START);
-	gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
 	related = gs_app_get_related (app);
 
 	/* split up the types */
@@ -130,23 +124,20 @@ add_source (GtkListBox *listbox, GsApp *app)
 		                                  cnt_apps + cnt_addon),
 		                                  apps_text, addons_text);
 	}
-	widget = gtk_label_new (text);
-	gtk_widget_set_halign (widget, GTK_ALIGN_START);
-	gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
+	gs_sources_dialog_row_set_description (GS_SOURCES_DIALOG_ROW (row),
+	                                       text);
 
-	context = gtk_widget_get_style_context (widget);
-	gtk_style_context_add_class (context, "dim-label");
-	g_object_set_data_full (G_OBJECT (box), "GsShell::app",
+	g_object_set_data_full (G_OBJECT (row), "GsShell::app",
 				g_object_ref (app),
 				(GDestroyNotify) g_object_unref);
 
-	g_object_set_data_full (G_OBJECT (box),
+	g_object_set_data_full (G_OBJECT (row),
 	                        "sort",
 	                        g_utf8_casefold (gs_app_get_name (app), -1),
 	                        g_free);
 
-	gtk_list_box_prepend (listbox, box);
-	gtk_widget_show_all (box);
+	gtk_list_box_prepend (listbox, row);
+	gtk_widget_show (row);
 }
 
 static void
@@ -232,10 +223,8 @@ list_sort_func (GtkListBoxRow *a,
 		GtkListBoxRow *b,
 		gpointer user_data)
 {
-	GObject *o1 = G_OBJECT (gtk_bin_get_child (GTK_BIN (a)));
-	GObject *o2 = G_OBJECT (gtk_bin_get_child (GTK_BIN (b)));
-	const gchar *key1 = g_object_get_data (o1, "sort");
-	const gchar *key2 = g_object_get_data (o2, "sort");
+	const gchar *key1 = g_object_get_data (G_OBJECT (a), "sort");
+	const gchar *key2 = g_object_get_data (G_OBJECT (b), "sort");
 	return g_strcmp0 (key1, key2);
 }
 
@@ -285,7 +274,7 @@ list_row_activated_cb (GtkListBox *list_box,
 	gtk_widget_show (priv->button_back);
 
 	gs_container_remove_all (GTK_CONTAINER (priv->listbox_apps));
-	app = GS_APP (g_object_get_data (G_OBJECT (gtk_bin_get_child (GTK_BIN (row))), 
+	app = GS_APP (g_object_get_data (G_OBJECT (row),
 					 "GsShell::app"));
 	related = gs_app_get_related (app);
 	for (i = 0; i < related->len; i++) {
