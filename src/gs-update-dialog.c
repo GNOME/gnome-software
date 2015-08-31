@@ -330,9 +330,13 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 			gtk_widget_show_all (row);
 			gtk_list_box_insert (GTK_LIST_BOX (priv->list_box), row, -1);
 		}
+		gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT);
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "os-update-list");
+		gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_NONE);
 	} else {
+		gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT);
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "package-details");
+		gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_NONE);
 	}
 }
 
@@ -367,7 +371,11 @@ button_back_cb (GtkWidget *widget, GsUpdateDialog *dialog)
 
 	/* return to the previous view */
 	entry = g_queue_pop_head (priv->back_entry_stack);
+
+	gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_RIGHT);
 	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), entry->stack_page);
+	gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_NONE);
+
 	gtk_window_set_title (GTK_WINDOW (dialog), entry->title);
 	if (entry->focus)
 		gtk_widget_grab_focus (entry->focus);
