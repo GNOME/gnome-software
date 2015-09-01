@@ -294,19 +294,14 @@ about_activated (GSimpleAction *action,
 		NULL
 	};
 	const gchar *copyright = "Copyright \xc2\xa9 2013 Richard Hughes, Matthias Clasen";
-	GtkIconTheme *icon_theme;
 	GList *windows;
 	GtkWindow *parent = NULL;
-	_cleanup_object_unref_ GdkPixbuf *logo = NULL;
 
 	gs_application_initialize_ui (app);
 
 	windows = gtk_application_get_windows (GTK_APPLICATION (app));
 	if (windows)
 		parent = windows->data;
-
-	icon_theme = gtk_icon_theme_get_default ();
-	logo = gtk_icon_theme_load_icon (icon_theme, "gnome-software", 256, 0, NULL);
 
 	gtk_show_about_dialog (parent,
 			       /* TRANSLATORS: this is the title of the about window */
@@ -318,7 +313,7 @@ about_activated (GSimpleAction *action,
 			       "comments", _("A nice way to manage the software on your system."),
 			       "copyright", copyright,
 			       "license-type", GTK_LICENSE_GPL_2_0,
-			       "logo", logo,
+			       "logo-icon-name", "gnome-software",
 			       "translator-credits", _("translator-credits"),
 			       "version", VERSION,
 			       NULL);
