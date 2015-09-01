@@ -231,9 +231,6 @@ gs_application_initialize_ui (GsApplication *app)
 
 	initialized = TRUE;
 
-	gtk_icon_theme_append_search_path (gtk_icon_theme_get_default (),
-					   DATADIR "/gnome-software/icons/hicolor");
-
 	/* get CSS */
 	app->provider = gtk_css_provider_new ();
 	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
