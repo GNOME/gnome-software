@@ -525,6 +525,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	GList *addons;
 	GtkWidget *widget;
 	const gchar *tmp;
+	gchar **menu_path;
 	guint64 updated;
 	g_autoptr(GError) error = NULL;
 
@@ -640,13 +641,18 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	}
 
 	/* set the category */
-	tmp = gs_app_get_menu_path (self->app);
-	if (tmp == NULL || tmp[0] == '\0') {
+	menu_path = gs_app_get_menu_path (self->app);
+	if (menu_path == NULL || menu_path[0] == NULL || menu_path[0][0] == '\0') {
 		/* TRANSLATORS: this is the application isn't in any
 		 * defined menu category */
 		gtk_label_set_label (GTK_LABEL (self->label_details_category_value), C_("menu category", "None"));
 	} else {
-		gtk_label_set_label (GTK_LABEL (self->label_details_category_value), tmp);
+		g_autofree gchar *path;
+		if (gtk_widget_get_direction (self->label_details_category_value) == GTK_TEXT_DIR_RTL)
+			path = g_strjoinv (" ← ", menu_path);
+		else
+			path = g_strjoinv (" → ", menu_path);
+		gtk_label_set_label (GTK_LABEL (self->label_details_category_value), path);
 	}
 
 	/* set the origin */

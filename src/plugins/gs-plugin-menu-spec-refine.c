@@ -57,6 +57,7 @@ gs_plugin_refine_app_category (GsPlugin *plugin,
 			       GsApp *app,
 			       const MenuSpecData *cat)
 {
+	const gchar *menu_path[] = { NULL, NULL, NULL };
 	const MenuSpecData *msdata;
 	gboolean ret = FALSE;
 	gchar *tmp;
@@ -72,20 +73,16 @@ gs_plugin_refine_app_category (GsPlugin *plugin,
 			continue;
 		ret = gs_app_has_category (app, tmp + 2);
 		if (ret) {
-			g_autofree gchar *str = NULL;
 			g_autofree gchar *msgctxt = NULL;
 			msgctxt = g_strdup_printf ("Menu subcategory of %s", cat->text);
-			str = g_strdup_printf ("%s → %s",
-					       gettext (cat->text),
-					       g_dpgettext2 (GETTEXT_PACKAGE, msgctxt, msdata[i].text));
-			gs_app_set_menu_path (app, str);
+			menu_path[1] = g_dpgettext2 (GETTEXT_PACKAGE, msgctxt, msdata[i].text);
 			break;
 		}
 	}
 
-	/* if we've failed to find a matching sub-level category, just show the top-level */
-	if (!ret)
-		gs_app_set_menu_path (app, gettext (cat->text));
+	/* the top-level category always exists */
+	menu_path[0] = gettext (cat->text);
+	gs_app_set_menu_path (app, (gchar **) menu_path);
 }
 
 /**
@@ -127,6 +124,7 @@ gs_plugin_refine (GsPlugin *plugin,
 {
 	GList *l;
 	GsApp *app;
+	const gchar *EMPTY[] = { "", NULL };
 
 	/* nothing to do here */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH) == 0)
@@ -137,7 +135,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (gs_app_get_menu_path (app) == NULL) {
 			if (!gs_plugin_refine_app (plugin, app)) {
 				/* don't keep searching for this */
-				gs_app_set_menu_path (app, "");
+				gs_app_set_menu_path (app, (gchar **) EMPTY);
 			}
 		}
 	}

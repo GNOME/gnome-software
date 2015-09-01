@@ -74,7 +74,7 @@ struct _GsApp
 	GPtrArray		*keywords;
 	GHashTable		*urls;
 	gchar			*licence;
-	gchar			*menu_path;
+	gchar			**menu_path;
 	gchar			*origin;
 	gchar			*update_version;
 	gchar			*update_version_ui;
@@ -274,8 +274,12 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tlicence:\t%s\n", app->licence);
 	if (app->summary_missing != NULL)
 		g_string_append_printf (str, "\tsummary-missing:\t%s\n", app->summary_missing);
-	if (app->menu_path != NULL && app->menu_path[0] != '\0')
-		g_string_append_printf (str, "\tmenu-path:\t%s\n", app->menu_path);
+	if (app->menu_path != NULL &&
+	    app->menu_path[0] != NULL &&
+	    app->menu_path[0][0] != '\0') {
+		g_autofree gchar *path = g_strjoinv (" → ", app->menu_path);
+		g_string_append_printf (str, "\tmenu-path:\t%s\n", path);
+	}
 	if (app->origin != NULL && app->origin[0] != '\0')
 		g_string_append_printf (str, "\torigin:\t%s\n", app->origin);
 	if (app->rating != -1)
@@ -1358,8 +1362,14 @@ gs_app_set_summary_missing (GsApp *app, const gchar *summary_missing)
 
 /**
  * gs_app_get_menu_path:
+ *
+ * Returns the menu path which is an array of path elements.
+ * The resulting array is an internal structure and must not be
+ * modified or freed.
+ *
+ * Returns: a %NULL-terminated array of strings.
  */
-const gchar *
+gchar **
 gs_app_get_menu_path (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
@@ -1368,13 +1378,17 @@ gs_app_get_menu_path (GsApp *app)
 
 /**
  * gs_app_set_menu_path:
+ * @menu_path: a %NULL-terminated array of strings
+ *
+ * Sets the new menu path. The menu path is an array of path elements.
+ * This function creates a deep copy of the path.
  */
 void
-gs_app_set_menu_path (GsApp *app, const gchar *menu_path)
+gs_app_set_menu_path (GsApp *app, gchar **menu_path)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_free (app->menu_path);
-	app->menu_path = g_strdup (menu_path);
+	g_strfreev (app->menu_path);
+	app->menu_path = g_strdupv (menu_path);
 }
 
 /**
@@ -2180,7 +2194,7 @@ gs_app_finalize (GObject *object)
 	g_free (app->name);
 	g_hash_table_unref (app->urls);
 	g_free (app->licence);
-	g_free (app->menu_path);
+	g_strfreev (app->menu_path);
 	g_free (app->origin);
 	g_ptr_array_unref (app->sources);
 	g_ptr_array_unref (app->source_ids);

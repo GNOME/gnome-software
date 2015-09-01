@@ -158,9 +158,9 @@ void		 gs_app_set_url			(GsApp		*app,
 const gchar	*gs_app_get_licence		(GsApp		*app);
 void		 gs_app_set_licence		(GsApp		*app,
 						 const gchar	*licence);
-const gchar	*gs_app_get_menu_path		(GsApp		*app);
+gchar		**gs_app_get_menu_path		(GsApp		*app);
 void		 gs_app_set_menu_path		(GsApp		*app,
-						 const gchar	*menu_path);
+						 gchar		**menu_path);
 const gchar	*gs_app_get_origin		(GsApp		*app);
 void		 gs_app_set_origin		(GsApp		*app,
 						 const gchar	*origin);
