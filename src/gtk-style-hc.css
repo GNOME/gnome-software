@@ -154,20 +154,15 @@ GtkBox.star {
 
 .category-sidebar {
 	border-radius: 0;
-	border-bottom-width: 0;
-	border-top-width: 0;
+	border-style: none;
 }
 
-.category-sidebar GtkListBoxRow {
-	padding-left: 6px;
-	animation: none;
-	transition: none;
+.category-sidebar:dir(rtl) {
+	border-left-style: solid;
 }
 
-.category-sidebar GtkListBoxRow:dir(rtl) {
-	padding-right: 6px;
-	animation: none;
-	transition: none;
+.category-sidebar:dir(ltr) {
+	border-right-style: solid;
 }
 
 .dimmer-label {
