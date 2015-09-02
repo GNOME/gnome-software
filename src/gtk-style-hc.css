@@ -152,8 +152,9 @@ GtkBox.star {
 	padding: 0px 4px;
 }
 
+.category-sidebar:not(.undershoot):not(.overshoot) { background-color: @theme_base_color; }
+
 .category-sidebar {
-	border-radius: 0;
 	border-style: none;
 }
 
@@ -164,6 +165,7 @@ GtkBox.star {
 .category-sidebar:dir(ltr) {
 	border-right-style: solid;
 }
+
 
 .dimmer-label {
 	opacity: 0.25;

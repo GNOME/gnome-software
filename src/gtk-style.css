@@ -156,8 +156,15 @@ GtkBox.star {
 	padding: 0px 4px;
 }
 
+/* the following two selectors are to color the small gap before the list inside the scrolled window
+   setting a background on the scrolled window affects the undershoot and the overshoot so explicitelly
+   excluding with :not() */
+.category-sidebar:not(.undershoot):not(.overshoot) { background-color: @theme_base_color; }
+
+.category-sidebar:backdrop:not(.undershoot):not(.overshoot) { background-color: @theme_unfocused_base_color; }
+
+/* Superfluous borders removal */
 .category-sidebar {
-	border-radius: 0;
 	border-style: none;
 }
 
