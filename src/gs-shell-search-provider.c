@@ -41,8 +41,6 @@ typedef struct {
 struct _GsShellSearchProvider {
 	GObject parent;
 
-	guint name_owner_id;
-	GDBusObjectManagerServer *object_manager;
 	GsShellSearchProvider2 *skeleton;
 	GsPluginLoader *plugin_loader;
 	GCancellable *cancellable;
@@ -266,63 +264,26 @@ handle_launch_search (GsShellSearchProvider2 	   *skeleton,
 	return TRUE;
 }
 
-static void
-search_provider_name_acquired_cb (GDBusConnection *connection,
-				  const gchar     *name,
-				  gpointer	 user_data)
+gboolean
+gs_shell_search_provider_register (GsShellSearchProvider *self,
+                                   GDBusConnection       *connection,
+                                   GError               **error)
 {
-	g_debug ("Search provider name acquired: %s", name);
+	return g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (self->skeleton),
+	                                         connection,
+	                                         "/org/gnome/Software/SearchProvider", error);
 }
 
-static void
-search_provider_name_lost_cb (GDBusConnection *connection,
-			      const gchar     *name,
-			      gpointer	 user_data)
+void
+gs_shell_search_provider_unregister (GsShellSearchProvider *self)
 {
-	g_debug ("Search provider name lost: %s", name);
-}
-
-static void
-search_provider_bus_acquired_cb (GDBusConnection *connection,
-				 const gchar *name,
-				 gpointer user_data)
-{
-	GsShellSearchProvider *self = user_data;
-
-	self->object_manager = g_dbus_object_manager_server_new ("/org/gnome/Software/SearchProvider");
-	self->skeleton = gs_shell_search_provider2_skeleton_new ();
-
-	g_signal_connect (self->skeleton, "handle-get-initial-result-set",
-			G_CALLBACK (handle_get_initial_result_set), self);
-	g_signal_connect (self->skeleton, "handle-get-subsearch-result-set",
-			G_CALLBACK (handle_get_subsearch_result_set), self);
-	g_signal_connect (self->skeleton, "handle-get-result-metas",
-			G_CALLBACK (handle_get_result_metas), self);
-	g_signal_connect (self->skeleton, "handle-activate-result",
-			G_CALLBACK (handle_activate_result), self);
-	g_signal_connect (self->skeleton, "handle-launch-search",
-			G_CALLBACK (handle_launch_search), self);
-
-	g_dbus_interface_skeleton_export (G_DBUS_INTERFACE_SKELETON (self->skeleton),
-					connection,
-					"/org/gnome/Software/SearchProvider", NULL);
-	g_dbus_object_manager_server_set_connection (self->object_manager, connection);
+	g_dbus_interface_skeleton_unexport (G_DBUS_INTERFACE_SKELETON (self->skeleton));
 }
 
 static void
 search_provider_dispose (GObject *obj)
 {
 	GsShellSearchProvider *self = GS_SHELL_SEARCH_PROVIDER (obj);
-
-	if (self->name_owner_id != 0) {
-		g_bus_unown_name (self->name_owner_id);
-		self->name_owner_id = 0;
-	}
-
-	if (self->skeleton != NULL) {
-		g_dbus_interface_skeleton_unexport (G_DBUS_INTERFACE_SKELETON (self->skeleton));
-		g_clear_object (&self->skeleton);
-	}
 
 	if (self->cancellable != NULL) {
 		g_cancellable_cancel (self->cancellable);
@@ -334,8 +295,8 @@ search_provider_dispose (GObject *obj)
 		self->metas_cache = NULL;
 	}
 
-	g_clear_object (&self->object_manager);
 	g_clear_object (&self->plugin_loader);
+	g_clear_object (&self->skeleton);
 
 	G_OBJECT_CLASS (gs_shell_search_provider_parent_class)->dispose (obj);
 }
@@ -354,14 +315,20 @@ gs_shell_search_provider_init (GsShellSearchProvider *self)
 	self->metas_cache = g_hash_table_new_full (g_str_hash, g_str_equal,
 						   g_free, (GDestroyNotify) g_variant_unref);
 
+	self->skeleton = gs_shell_search_provider2_skeleton_new ();
+
+	g_signal_connect (self->skeleton, "handle-get-initial-result-set",
+			G_CALLBACK (handle_get_initial_result_set), self);
+	g_signal_connect (self->skeleton, "handle-get-subsearch-result-set",
+			G_CALLBACK (handle_get_subsearch_result_set), self);
+	g_signal_connect (self->skeleton, "handle-get-result-metas",
+			G_CALLBACK (handle_get_result_metas), self);
+	g_signal_connect (self->skeleton, "handle-activate-result",
+			G_CALLBACK (handle_activate_result), self);
+	g_signal_connect (self->skeleton, "handle-launch-search",
+			G_CALLBACK (handle_launch_search), self);
+
 	g_application_hold (g_application_get_default ());
-	self->name_owner_id = g_bus_own_name (G_BUS_TYPE_SESSION,
-					"org.gnome.Software.SearchProvider",
-					G_BUS_NAME_OWNER_FLAGS_NONE,
-					search_provider_bus_acquired_cb,
-					search_provider_name_acquired_cb,
-					search_provider_name_lost_cb,
-					self, NULL);
 }
 
 static void

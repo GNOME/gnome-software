@@ -34,6 +34,10 @@ typedef struct _GsShellSearchProvider GsShellSearchProvider;
 typedef GObjectClass GsShellSearchProviderClass;
 
 GType gs_shell_search_provider_get_type (void);
+gboolean gs_shell_search_provider_register (GsShellSearchProvider *self,
+                                            GDBusConnection       *connection,
+                                            GError               **error);
+void gs_shell_search_provider_unregister (GsShellSearchProvider *self);
 GsShellSearchProvider * gs_shell_search_provider_new (void);
 void gs_shell_search_provider_setup (GsShellSearchProvider *provider,
 				     GsPluginLoader *loader);

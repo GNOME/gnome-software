@@ -183,13 +183,30 @@ gs_application_initialize_plugins (GsApplication *app)
 
 }
 
-static void
-gs_application_provide_search (GsApplication *app)
+static gboolean
+gs_application_dbus_register (GApplication    *application,
+                              GDBusConnection *connection,
+                              const gchar     *object_path,
+                              GError         **error)
 {
+	GsApplication *app = GS_APPLICATION (application);
+
 	gs_application_initialize_plugins (app);
 	app->search_provider = gs_shell_search_provider_new ();
 	gs_shell_search_provider_setup (app->search_provider,
 					app->plugin_loader);
+
+	return gs_shell_search_provider_register (app->search_provider, connection, error);
+}
+
+static void
+gs_application_dbus_unregister (GApplication    *application,
+                                GDBusConnection *connection,
+                                const gchar     *object_path)
+{
+	GsApplication *app = GS_APPLICATION (application);
+
+	gs_shell_search_provider_unregister (app->search_provider);
 }
 
 static void
@@ -558,7 +575,6 @@ gs_application_startup (GApplication *application)
 	GS_APPLICATION (application)->settings = g_settings_new ("org.gnome.software");
 	gs_application_monitor_permission (GS_APPLICATION (application));
 	gs_application_monitor_updates (GS_APPLICATION (application));
-	gs_application_provide_search (GS_APPLICATION (application));
 	gs_application_monitor_network (GS_APPLICATION (application));
 	gs_folders_convert ();
 }
@@ -712,6 +728,8 @@ gs_application_class_init (GsApplicationClass *class)
 	G_APPLICATION_CLASS (class)->startup = gs_application_startup;
 	G_APPLICATION_CLASS (class)->activate = gs_application_activate;
 	G_APPLICATION_CLASS (class)->local_command_line = gs_application_local_command_line;
+	G_APPLICATION_CLASS (class)->dbus_register = gs_application_dbus_register;
+	G_APPLICATION_CLASS (class)->dbus_unregister = gs_application_dbus_unregister;
 }
 
 GsApplication *
