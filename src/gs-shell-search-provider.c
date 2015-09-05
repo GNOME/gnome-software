@@ -87,6 +87,7 @@ search_done_cb (GObject *source,
 	if (list == NULL) {
 		g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", NULL));
 		pending_search_free (search);
+		g_application_release (g_application_get_default ());
 		return;	
 	}
 
@@ -104,6 +105,7 @@ search_done_cb (GObject *source,
 
 	g_list_free_full (list, g_object_unref);
 	pending_search_free (search);
+	g_application_release (g_application_get_default ());
 }
 
 static void
@@ -132,6 +134,7 @@ execute_search (GsShellSearchProvider  *self,
 	pending_search->provider = self;
 	pending_search->invocation = g_object_ref (invocation);
 
+	g_application_hold (g_application_get_default ());
 	self->cancellable = g_cancellable_new ();
 	gs_plugin_loader_search_async (self->plugin_loader,
 				       string, 0, self->cancellable,
@@ -302,14 +305,6 @@ search_provider_dispose (GObject *obj)
 }
 
 static void
-search_provider_finalize (GObject *obj)
-{
-	g_application_release (g_application_get_default ());
-
-	G_OBJECT_CLASS (gs_shell_search_provider_parent_class)->finalize (obj);
-}
-
-static void
 gs_shell_search_provider_init (GsShellSearchProvider *self)
 {
 	self->metas_cache = g_hash_table_new_full (g_str_hash, g_str_equal,
@@ -327,8 +322,6 @@ gs_shell_search_provider_init (GsShellSearchProvider *self)
 			G_CALLBACK (handle_activate_result), self);
 	g_signal_connect (self->skeleton, "handle-launch-search",
 			G_CALLBACK (handle_launch_search), self);
-
-	g_application_hold (g_application_get_default ());
 }
 
 static void
@@ -337,7 +330,6 @@ gs_shell_search_provider_class_init (GsShellSearchProviderClass *klass)
 	GObjectClass *oclass = G_OBJECT_CLASS (klass);
 
 	oclass->dispose = search_provider_dispose;
-	oclass->finalize = search_provider_finalize;
 }
 
 GsShellSearchProvider *

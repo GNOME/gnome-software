@@ -206,7 +206,10 @@ gs_application_dbus_unregister (GApplication    *application,
 {
 	GsApplication *app = GS_APPLICATION (application);
 
-	gs_shell_search_provider_unregister (app->search_provider);
+	if (app->search_provider != NULL) {
+		gs_shell_search_provider_unregister (app->search_provider);
+		g_clear_object (&app->search_provider);
+	}
 }
 
 static void
@@ -604,7 +607,6 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->update_monitor);
 	g_clear_object (&app->proxy_settings);
 	g_clear_object (&app->profile);
-	g_clear_object (&app->search_provider);
 	g_clear_object (&app->network_monitor);
 	g_clear_object (&app->dbus_helper);
 	g_clear_object (&app->settings);
@@ -738,6 +740,7 @@ gs_application_new (void)
 	g_set_prgname("org.gnome.Software");
 	return g_object_new (GS_APPLICATION_TYPE,
 			     "application-id", "org.gnome.Software",
+			     "inactivity-timeout", 12000,
 			     NULL);
 }
 
