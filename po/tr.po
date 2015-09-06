@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-08-22 20:14+0000\n"
-"PO-Revision-Date: 2015-08-23 04:14+0300\n"
+"POT-Creation-Date: 2015-09-05 20:14+0000\n"
+"PO-Revision-Date: 2015-09-06 07:12+0300\n"
 "Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -68,7 +68,7 @@ msgstr "_Ekle"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:98 ../src/gs-app-tile.c:76
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:76
 #: ../src/gs-app-tile.c:79 ../src/gs-feature-tile.c:71
 #: ../src/gs-popular-tile.c:77 ../src/gs-popular-tile.c:80
 #: ../src/popular-tile.ui.h:1
@@ -79,7 +79,7 @@ msgstr "Kuruldu"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:315 ../src/gs-shell.c:160
+#: ../src/gs-application.c:324 ../src/gs-shell.c:160
 msgid "Software"
 msgstr "Yazılımlar"
 
@@ -149,73 +149,73 @@ msgid "Folder Name"
 msgstr "Klasör Adı"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:313
+#: ../src/gs-application.c:322
 msgid "About Software"
 msgstr "Yazılımlar Hakkında"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:318
+#: ../src/gs-application.c:327
 msgid "A nice way to manage the software on your system."
 msgstr "Sisteminizdeki yazılımları yönetmenin güzel bir yolu."
 
-#: ../src/gs-application.c:322
+#: ../src/gs-application.c:331
 msgid "translator-credits"
 msgstr "Muhammet Kara <muhammetk@gmail.com>"
 
-#: ../src/gs-application.c:624
+#: ../src/gs-application.c:632
 msgid "Enter GApplication service mode"
 msgstr "GApplication hizmet kipine gir"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:627
+#: ../src/gs-application.c:635
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Başlangıç kipi: ‘updates’ (güncellemeler), ‘updated’ (güncellendi), "
 "‘installed’ (kuruldu) ya da ‘overview’ (genel görünüm)"
 
-#: ../src/gs-application.c:627
+#: ../src/gs-application.c:635
 msgid "MODE"
 msgstr "KİP"
 
-#: ../src/gs-application.c:629
+#: ../src/gs-application.c:637
 msgid "Search for applications"
 msgstr "Uygulamalarda ara"
 
-#: ../src/gs-application.c:629
+#: ../src/gs-application.c:637
 msgid "SEARCH"
 msgstr "ARA"
 
-#: ../src/gs-application.c:631
+#: ../src/gs-application.c:639
 msgid "Show application details"
 msgstr "Uygulama ayrıntılarını göster"
 
-#: ../src/gs-application.c:631
+#: ../src/gs-application.c:639
 msgid "ID"
 msgstr "Kimlik"
 
-#: ../src/gs-application.c:633
+#: ../src/gs-application.c:641
 msgid "Open a local package file"
 msgstr "Yerel paket dosyası aç"
 
-#: ../src/gs-application.c:633
+#: ../src/gs-application.c:641
 msgid "FILENAME"
 msgstr "DOSYAADI"
 
-#: ../src/gs-application.c:635
+#: ../src/gs-application.c:643
 msgid "Show verbose debugging information"
 msgstr "Ayrıntılı hata ayıklama bilgilerini göster"
 
-#: ../src/gs-application.c:637
+#: ../src/gs-application.c:645
 msgid "Show profiling information for the service"
 msgstr "Hizmetin profil oluşturma bilgilerini göster"
 
-#: ../src/gs-application.c:639
+#: ../src/gs-application.c:647
 msgid "Prefer local file sources to AppStream"
 msgstr "AppStream yerine yerel dosya kaynaklarını tercih et."
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:93 ../src/gs-app-row.c:227
+#: ../src/gs-app-addon-row.c:92 ../src/gs-app-row.c:227
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Beklemede"
@@ -224,7 +224,7 @@ msgstr "Beklemede"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:102 ../src/gs-app-row.c:251
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:251
 #: ../src/gs-app-tile.c:85 ../src/gs-app-tile.c:88
 msgid "Installing"
 msgstr "Kuruluyor"
@@ -233,7 +233,7 @@ msgstr "Kuruluyor"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:106 ../src/gs-app-row.c:260
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:260
 #: ../src/gs-app-tile.c:94 ../src/gs-app-tile.c:97
 msgid "Removing"
 msgstr "Kaldırılıyor"
@@ -384,11 +384,11 @@ msgstr "_Hadi Alışverişe Çıkalım"
 
 #. TRANSLATORS: Here are 2 strings the same as in gtk/gtkbox.c
 #. in GTK+ project. Please use the same translation.
-#: ../src/gs-hiding-box.c:402
+#: ../src/gs-hiding-box.c:401
 msgid "Spacing"
 msgstr "Aralama"
 
-#: ../src/gs-hiding-box.c:403
+#: ../src/gs-hiding-box.c:402
 msgid "The amount of space between children"
 msgstr "Altlar arasındaki boşluk miktarı"
 
@@ -598,8 +598,6 @@ msgstr ", "
 #. %s will be replaced by name of the script we're searching for.
 #: ../src/gs-shell-extras.c:176
 #, c-format
-#| msgid "Available fonts for the %s script"
-#| msgid_plural "Available fonts for the %s script"
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
 msgstr[0] "%s betiği/betikleri için kullanılabilir yazı tipleri"
@@ -1203,13 +1201,15 @@ msgstr "Güncellemeler otomatik olarak yüklenir"
 
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
-#: ../src/gs-sources-dialog.c:98
-msgid "No software installed"
-msgstr "Hiçbir yazılım kurulmadı"
+#: ../src/gs-sources-dialog.c:92
+msgid "No applications or addons installed; other software might still be"
+msgstr ""
+"Hiçbir uygulama ya da eklenti kurulmadı; başka yazılımlar halen kurulu "
+"olabilir"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:102
+#: ../src/gs-sources-dialog.c:96
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
@@ -1217,7 +1217,7 @@ msgstr[0] "%i uygulama kuruldu"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:108
+#: ../src/gs-sources-dialog.c:102
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
@@ -1226,7 +1226,7 @@ msgstr[0] "%i eklenti kuruldu"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
-#: ../src/gs-sources-dialog.c:115
+#: ../src/gs-sources-dialog.c:109
 #, c-format
 msgid "%i application"
 msgid_plural "%i applications"
@@ -1235,7 +1235,7 @@ msgstr[0] "%i uygulama"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
-#: ../src/gs-sources-dialog.c:121
+#: ../src/gs-sources-dialog.c:115
 #, c-format
 msgid "%i add-on"
 msgid_plural "%i add-ons"
@@ -1245,30 +1245,30 @@ msgstr[0] "%i eklenti"
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: ../src/gs-sources-dialog.c:128
+#: ../src/gs-sources-dialog.c:122
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
 msgstr[0] "%s ve %s kuruldu"
 
-#: ../src/gs-sources-dialog.c:340 ../src/gs-sources-dialog.ui.h:12
+#: ../src/gs-sources-dialog.c:329 ../src/gs-sources-dialog.ui.h:12
 msgid "Remove Source"
 msgstr "Kaynağı Kaldır"
 
-#: ../src/gs-sources-dialog.c:355
+#: ../src/gs-sources-dialog.c:344
 msgid "Removing…"
 msgstr "Kaldırılıyor…"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:395
+#: ../src/gs-sources-dialog.c:427
 msgid "the operating system"
 msgstr "işletim sistemi"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:470
+#: ../src/gs-sources-dialog.c:502
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -2384,6 +2384,9 @@ msgstr "_Hakkında"
 #: ../src/menus.ui.h:3
 msgid "_Quit"
 msgstr "_Çıkış"
+
+#~ msgid "No software installed"
+#~ msgstr "Hiçbir yazılım kurulmadı"
 
 #~ msgid "Network access was required but not available."
 #~ msgstr "Ağ bağlantısı gerekiyor fakat ağ kullanılabilir değil."
