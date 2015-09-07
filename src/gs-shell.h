@@ -31,27 +31,16 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL		(gs_shell_get_type ())
-#define GS_SHELL(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_SHELL, GsShell))
-#define GS_SHELL_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_SHELL, GsShellClass))
-#define GS_IS_SHELL(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_SHELL))
-#define GS_IS_SHELL_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_SHELL))
-#define GS_SHELL_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_SHELL, GsShellClass))
+#define GS_TYPE_SHELL (gs_shell_get_type ())
 
-typedef struct GsShellPrivate GsShellPrivate;
+G_DECLARE_DERIVABLE_TYPE (GsShell, gs_shell, GS, SHELL, GObject)
 
-typedef struct
-{
-	 GObject		 parent;
-	 GsShellPrivate		*priv;
-} GsShell;
-
-typedef struct
+struct _GsShellClass
 {
 	GObjectClass			 parent_class;
 
 	void (* loaded)		 (GsShell *shell);
-} GsShellClass;
+};
 
 typedef enum {
 	GS_SHELL_MODE_OVERVIEW,
@@ -63,8 +52,6 @@ typedef enum {
 	GS_SHELL_MODE_EXTRAS,
 	GS_SHELL_MODE_LAST
 } GsShellMode;
-
-GType		 gs_shell_get_type		(void);
 
 GsShell		*gs_shell_new			(void);
 void		 gs_shell_activate		(GsShell	*shell);

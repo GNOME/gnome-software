@@ -56,7 +56,7 @@ typedef struct {
 	GsCategory	*category;
 } BackEntry;
 
-struct GsShellPrivate
+typedef struct
 {
 	gboolean		 ignore_primary_buttons;
 	GCancellable		*cancellable;
@@ -73,7 +73,7 @@ struct GsShellPrivate
 	GtkWindow		*main_window;
 	GQueue			*back_entry_stack;
 	gboolean		 ignore_next_search_changed_signal;
-};
+} GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
 
@@ -90,7 +90,7 @@ static guint signals [SIGNAL_LAST] = { 0 };
 gboolean
 gs_shell_is_active (GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	return gtk_window_is_active (priv->main_window);
 }
 
@@ -100,7 +100,7 @@ gs_shell_is_active (GsShell *shell)
 GtkWindow *
 gs_shell_get_window (GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	return priv->main_window;
 }
 
@@ -110,7 +110,7 @@ gs_shell_get_window (GsShell *shell)
 void
 gs_shell_activate (GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	gtk_window_present (priv->main_window);
 }
 
@@ -121,7 +121,7 @@ gs_shell_change_mode (GsShell *shell,
 		      gpointer data,
 		      gboolean scroll_up)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
 	const gchar *text;
 	GtkStyleContext *context;
@@ -234,7 +234,7 @@ gs_shell_overview_button_cb (GtkWidget *widget, GsShell *shell)
 static void
 save_back_entry (GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	BackEntry *entry;
 
 	entry = g_new0 (BackEntry, 1);
@@ -274,7 +274,7 @@ free_back_entry (BackEntry *entry)
 static void
 gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	BackEntry *entry;
 
 	g_return_if_fail (!g_queue_is_empty (priv->back_entry_stack));
@@ -293,11 +293,12 @@ static void
 initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 {
 	GsShell *shell = data;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
 	g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
 
-	gs_shell_updates_reload (shell->priv->shell_updates);
-	gs_shell_installed_reload (shell->priv->shell_installed);
+	gs_shell_updates_reload (priv->shell_updates);
+	gs_shell_installed_reload (priv->shell_installed);
 
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 }
@@ -305,7 +306,7 @@ initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 static void
 gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const gchar *text;
 
 	text = gtk_entry_get_text (entry);
@@ -353,6 +354,7 @@ is_keynav_event (GdkEvent *event, guint keyval)
 static gboolean
 entry_keypress_handler (GtkWidget *widget, GdkEvent *event, GsShell *shell)
 {
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	guint keyval;
 	GtkWidget *entry;
 
@@ -360,7 +362,7 @@ entry_keypress_handler (GtkWidget *widget, GdkEvent *event, GsShell *shell)
 	    keyval != GDK_KEY_Escape)
 		return GDK_EVENT_PROPAGATE;
 
-	entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
+	entry = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	gtk_entry_set_text (GTK_ENTRY (entry), "");
 
 	return GDK_EVENT_STOP;
@@ -375,6 +377,7 @@ preedit_changed_cb (GtkEntry *entry, GtkWidget *popup, gboolean *preedit_changed
 static gboolean
 window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 {
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *entry;
 	guint keyval;
 	gboolean handled;
@@ -394,7 +397,7 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 	    keyval == GDK_KEY_Menu)
 		return GDK_EVENT_PROPAGATE;
 
-	entry = GTK_WIDGET (gtk_builder_get_object (shell->priv->builder, "entry_search"));
+	entry = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 
 	handled = GDK_EVENT_PROPAGATE;
 	preedit_changed = FALSE;
@@ -419,7 +422,7 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 static void
 search_changed_handler (GObject *entry, GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const gchar *text;
 
 	if (priv->ignore_next_search_changed_signal) {
@@ -438,14 +441,14 @@ search_changed_handler (GObject *entry, GsShell *shell)
 		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
 			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 		else
-			gs_shell_search_switch_to (shell->priv->shell_search, text, TRUE);
+			gs_shell_search_switch_to (priv->shell_search, text, TRUE);
 	}
 }
 
 static gboolean
 window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GdkKeymap *keymap;
 	GdkModifierType state;
 	gboolean is_rtl;
@@ -474,7 +477,7 @@ window_key_press_event (GtkWidget *win, GdkEventKey *event, GsShell *shell)
 static gboolean
 window_button_press_event (GtkWidget *win, GdkEventButton *event, GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *button;
 
 	/* Mouse hardware back button is 8 */
@@ -493,7 +496,7 @@ static gboolean
 main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 {
 	GsShell *shell = user_data;
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	BackEntry *entry;
 
 	/* When the window is closed, reset the initial mode to overview */
@@ -514,7 +517,7 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 static void
 gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	gs_shell_category_reload (priv->shell_category);
 	gs_shell_extras_reload (priv->shell_extras);
 	gs_shell_details_reload (priv->shell_details);
@@ -530,7 +533,7 @@ gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 static void
 gs_shell_main_window_mapped_cb (GtkWidget *widget, GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	gs_plugin_loader_set_scale (priv->plugin_loader,
 				    gtk_widget_get_scale_factor (widget));
 }
@@ -541,7 +544,7 @@ on_permission_changed (GPermission *permission,
                        gpointer     data)
 {
         GsShell *shell = data;
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
@@ -564,7 +567,7 @@ gs_shell_monitor_permission (GsShell *shell)
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
 
 	g_return_if_fail (GS_IS_SHELL (shell));
@@ -692,12 +695,13 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 void
 gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	guint matched;
 
 	/* if we're loading a different mode at startup then don't wait for
 	 * the overview page to load before showing content */
 	if (mode != GS_SHELL_MODE_OVERVIEW) {
-		matched = g_signal_handlers_disconnect_by_func (shell->priv->shell_overview,
+		matched = g_signal_handlers_disconnect_by_func (priv->shell_overview,
 								initial_overview_load_done,
 								shell);
 		if (matched > 0)
@@ -709,7 +713,7 @@ gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 GsShellMode
 gs_shell_get_mode (GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
 	return priv->mode;
 }
@@ -717,14 +721,14 @@ gs_shell_get_mode (GsShell *shell)
 const gchar *
 gs_shell_get_mode_string (GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	return page_name[priv->mode];
 }
 
 void
 gs_shell_show_installed_updates (GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *dialog;
 
 	dialog = gs_update_dialog_new (priv->plugin_loader);
@@ -737,7 +741,7 @@ gs_shell_show_installed_updates (GsShell *shell)
 void
 gs_shell_show_sources (GsShell *shell)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *dialog;
 
 	dialog = gs_sources_dialog_new (priv->main_window, priv->plugin_loader);
@@ -764,7 +768,7 @@ gs_shell_show_category (GsShell *shell, GsCategory *category)
 
 void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **resources)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
 	save_back_entry (shell);
 	gs_shell_extras_search (priv->shell_extras, mode, resources);
@@ -775,7 +779,7 @@ void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **res
 void
 gs_shell_show_search (GsShell *shell, const gchar *search)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
@@ -794,7 +798,7 @@ gs_shell_show_filename (GsShell *shell, const gchar *filename)
 void
 gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *search)
 {
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *widget;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
@@ -823,7 +827,7 @@ static void
 gs_shell_dispose (GObject *object)
 {
 	GsShell *shell = GS_SHELL (object);
-	GsShellPrivate *priv = shell->priv;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 
 	if (priv->back_entry_stack != NULL) {
 		g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) free_back_entry);
@@ -859,9 +863,10 @@ gs_shell_class_init (GsShellClass *klass)
 static void
 gs_shell_init (GsShell *shell)
 {
-	shell->priv = gs_shell_get_instance_private (shell);
-	shell->priv->back_entry_stack = g_queue_new ();
-	shell->priv->ignore_primary_buttons = FALSE;
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+
+	priv->back_entry_stack = g_queue_new ();
+	priv->ignore_primary_buttons = FALSE;
 }
 
 /**
