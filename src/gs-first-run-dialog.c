@@ -25,12 +25,14 @@
 
 #include "gs-first-run-dialog.h"
 
-struct _GsFirstRunDialogPrivate
+struct _GsFirstRunDialog
 {
+	GtkDialog	 parent_instance;
+
 	GtkWidget	*button;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsFirstRunDialog, gs_first_run_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsFirstRunDialog, gs_first_run_dialog, GTK_TYPE_DIALOG)
 
 static void
 button_clicked_cb (GtkWidget *widget, GsFirstRunDialog *dialog)
@@ -41,16 +43,15 @@ button_clicked_cb (GtkWidget *widget, GsFirstRunDialog *dialog)
 static void
 gs_first_run_dialog_init (GsFirstRunDialog *dialog)
 {
-	GsFirstRunDialogPrivate *priv = gs_first_run_dialog_get_instance_private (dialog);
 	GtkWidget *button_label;
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	button_label = gtk_bin_get_child (GTK_BIN (priv->button));
+	button_label = gtk_bin_get_child (GTK_BIN (dialog->button));
 	gtk_widget_set_margin_start (button_label, 16);
 	gtk_widget_set_margin_end (button_label, 16);
 
-	g_signal_connect (priv->button, "clicked", G_CALLBACK (button_clicked_cb), dialog);
+	g_signal_connect (dialog->button, "clicked", G_CALLBACK (button_clicked_cb), dialog);
 }
 
 static void
@@ -60,7 +61,7 @@ gs_first_run_dialog_class_init (GsFirstRunDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-first-run-dialog.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsFirstRunDialog, button);
+	gtk_widget_class_bind_template_child (widget_class, GsFirstRunDialog, button);
 }
 
 GtkWidget *

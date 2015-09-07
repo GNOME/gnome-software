@@ -24,31 +24,15 @@
 
 #include <gtk/gtk.h>
 
-#define GS_TYPE_FIRST_RUN_DIALOG		(gs_first_run_dialog_get_type())
-#define GS_FIRST_RUN_DIALOG(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_FIRST_RUN_DIALOG, GsFirstRunDialog))
-#define GS_FIRST_RUN_DIALOG_CLASS(cls)		(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_FIRST_RUN_DIALOG, GsFirstRunDialogClass))
-#define GS_IS_FIRST_RUN_DIALOG(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_FIRST_RUN_DIALOG))
-#define GS_IS_FIRST_RUN_DIALOG_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_FIRST_RUN_DIALOG))
-#define GS_FIRST_RUN_DIALOG_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_FIRST_RUN_DIALOG, GsFirstRunDialogClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsFirstRunDialog		GsFirstRunDialog;
-typedef struct _GsFirstRunDialogClass		GsFirstRunDialogClass;
-typedef struct _GsFirstRunDialogPrivate		GsFirstRunDialogPrivate;
+#define GS_TYPE_FIRST_RUN_DIALOG (gs_first_run_dialog_get_type ())
 
-struct _GsFirstRunDialog
-{
-	GtkDialog	 parent;
-};
+G_DECLARE_FINAL_TYPE (GsFirstRunDialog, gs_first_run_dialog, GS, FIRST_RUN_DIALOG, GtkDialog)
 
-struct _GsFirstRunDialogClass
-{
-	GtkDialogClass	 parent_class;
-};
-
-GType		 gs_first_run_dialog_get_type	(void);
 GtkWidget	*gs_first_run_dialog_new	(void);
+
+G_END_DECLS
 
 #endif /* GS_FIRST_RUN_DIALOG_H */
 
