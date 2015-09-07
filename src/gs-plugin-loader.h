@@ -31,22 +31,11 @@
 G_BEGIN_DECLS
 
 #define GS_TYPE_PLUGIN_LOADER		(gs_plugin_loader_get_type ())
-#define GS_PLUGIN_LOADER(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_PLUGIN_LOADER, GsPluginLoader))
-#define GS_PLUGIN_LOADER_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_PLUGIN_LOADER, GsPluginLoaderClass))
-#define GS_IS_PLUGIN_LOADER(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_PLUGIN_LOADER))
-#define GS_IS_PLUGIN_LOADER_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_PLUGIN_LOADER))
-#define GS_PLUGIN_LOADER_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_PLUGIN_LOADER, GsPluginLoaderClass))
 #define GS_PLUGIN_LOADER_ERROR		(gs_plugin_loader_error_quark ())
 
-typedef struct GsPluginLoaderPrivate GsPluginLoaderPrivate;
+G_DECLARE_DERIVABLE_TYPE (GsPluginLoader, gs_plugin_loader, GS, PLUGIN_LOADER, GObject)
 
-typedef struct
-{
-	 GObject		 parent;
-	 GsPluginLoaderPrivate	*priv;
-} GsPluginLoader;
-
-typedef struct
+struct _GsPluginLoaderClass
 {
 	GObjectClass		 parent_class;
 	void			(*status_changed)	(GsPluginLoader	*plugin_loader,
@@ -54,7 +43,7 @@ typedef struct
 							 GsPluginStatus	 status);
 	void			(*pending_apps_changed)	(GsPluginLoader	*plugin_loader);
 	void			(*updates_changed)	(GsPluginLoader	*plugin_loader);
-} GsPluginLoaderClass;
+};
 
 typedef enum
 {
@@ -75,7 +64,6 @@ typedef void	 (*GsPluginLoaderFinishedFunc)		(GsPluginLoader	*plugin_loader,
 							 gpointer	 user_data);
 
 GQuark		 gs_plugin_loader_error_quark		(void);
-GType		 gs_plugin_loader_get_type		(void);
 
 GsPluginLoader	*gs_plugin_loader_new			(void);
 void		 gs_plugin_loader_get_installed_async	(GsPluginLoader	*plugin_loader,

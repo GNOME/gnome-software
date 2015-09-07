@@ -31,7 +31,7 @@
 
 #define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */
 
-struct GsPluginLoaderPrivate
+typedef struct
 {
 	GPtrArray		*plugins;
 	gchar			*location;
@@ -50,7 +50,7 @@ struct GsPluginLoaderPrivate
 
 	guint			 updates_changed_id;
 	gboolean		 online; 
-};
+} GsPluginLoaderPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPluginLoader, gs_plugin_loader, G_TYPE_OBJECT)
 
@@ -120,13 +120,13 @@ gs_plugin_loader_app_sort_cb (gconstpointer a, gconstpointer b)
 GsApp *
 gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsApp *new_app;
-	GsPluginLoaderPrivate *priv = plugin_loader->priv;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
-	g_mutex_lock (&plugin_loader->priv->app_cache_mutex);
+	g_mutex_lock (&priv->app_cache_mutex);
 
 	/* not yet set */
 	if (gs_app_get_id (app) == NULL) {
@@ -160,7 +160,7 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 	g_object_unref (app);
 	g_object_ref (new_app);
 out:
-	g_mutex_unlock (&plugin_loader->priv->app_cache_mutex);
+	g_mutex_unlock (&priv->app_cache_mutex);
 	return new_app;
 }
 
@@ -187,6 +187,7 @@ gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 				    GCancellable *cancellable,
 				    GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginRefineFunc plugin_func = NULL;
 	const gchar *function_name = "gs_plugin_refine";
 	gboolean exists;
@@ -211,7 +212,7 @@ gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 					      function_name_parent,
 					      function_name);
 	}
-	gs_profile_start (plugin_loader->priv->profile, profile_id);
+	gs_profile_start (priv->profile, profile_id);
 	ret = plugin_func (plugin, list, flags, cancellable, error);
 	if (!ret) {
 		/* check the plugin is well behaved and sets error
@@ -236,7 +237,7 @@ gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 	}
 out:
 	if (profile_id != NULL) {
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 	return ret;
@@ -253,6 +254,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GList *l;
 	GList *addons_list = NULL;
 	GList *related_list = NULL;
@@ -270,8 +272,8 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		g_object_freeze_notify (G_OBJECT (l->data));
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = gs_plugin_loader_run_refine_plugin (plugin_loader,
@@ -361,6 +363,7 @@ gs_plugin_loader_run_results_plugin (GsPluginLoader *plugin_loader,
 				     GCancellable *cancellable,
 				     GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginResultsFunc plugin_func = NULL;
 	gboolean exists;
 	gboolean ret = TRUE;
@@ -376,7 +379,7 @@ gs_plugin_loader_run_results_plugin (GsPluginLoader *plugin_loader,
 	/* run function */
 	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 				      plugin->name, function_name);
-	gs_profile_start (plugin_loader->priv->profile, profile_id);
+	gs_profile_start (priv->profile, profile_id);
 	g_assert (error == NULL || *error == NULL);
 	ret = plugin_func (plugin, list, cancellable, error);
 	if (!ret)
@@ -384,7 +387,7 @@ gs_plugin_loader_run_results_plugin (GsPluginLoader *plugin_loader,
 out:
 	if (profile_id != NULL) {
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 	}
 	return ret;
 }
@@ -399,6 +402,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			      GCancellable *cancellable,
 			      GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	gboolean ret = TRUE;
 	GList *list = NULL;
 	GsPlugin *plugin;
@@ -413,11 +417,11 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	/* profile */
 	profile_id_parent = g_strdup_printf ("GsPlugin::*(%s)",
 					     function_name);
-	gs_profile_start (plugin_loader->priv->profile, profile_id_parent);
+	gs_profile_start (priv->profile, profile_id_parent);
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_cancellable_set_error_if_cancelled (cancellable, error);
@@ -460,7 +464,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		goto out;
 	}
 out:
-	gs_profile_stop (plugin_loader->priv->profile, profile_id_parent);
+	gs_profile_stop (priv->profile, profile_id_parent);
 	if (!ret) {
 		gs_plugin_list_free (list);
 		list = NULL;
@@ -626,7 +630,7 @@ static gboolean
 gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-	GsPluginLoaderPrivate *priv = plugin_loader->priv;
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *tmp;
 	guint i;
 
@@ -668,6 +672,7 @@ gs_plugin_loader_run_action_plugin (GsPluginLoader *plugin_loader,
 				    GCancellable *cancellable,
 				    GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GError *error_local = NULL;
 	GsPluginActionFunc plugin_func = NULL;
 	gboolean exists;
@@ -681,7 +686,7 @@ gs_plugin_loader_run_action_plugin (GsPluginLoader *plugin_loader,
 		goto out;
 	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 				      plugin->name, function_name);
-	gs_profile_start (plugin_loader->priv->profile, profile_id);
+	gs_profile_start (priv->profile, profile_id);
 	ret = plugin_func (plugin, app, cancellable, &error_local);
 	if (!ret) {
 		if (g_error_matches (error_local,
@@ -700,7 +705,7 @@ gs_plugin_loader_run_action_plugin (GsPluginLoader *plugin_loader,
 out:
 	if (profile_id != NULL) {
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 	}
 	return ret;
 }
@@ -715,14 +720,15 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	gboolean ret;
 	gboolean anything_ran = FALSE;
 	GsPlugin *plugin;
 	guint i;
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		if (g_cancellable_set_error_if_cancelled (cancellable, error))
@@ -1412,11 +1418,12 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 				   gpointer task_data,
 				   GCancellable *cancellable)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *function_name = "gs_plugin_add_search";
 	gboolean ret = TRUE;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
@@ -1432,8 +1439,8 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 					 "no valid search terms");
 		goto out;
 	}
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
@@ -1446,14 +1453,14 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 			continue;
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 					      plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		gs_profile_start (priv->profile, profile_id);
 		ret = plugin_func (plugin, values, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 		g_clear_pointer (&profile_id, g_free);
 	}
 
@@ -1481,7 +1488,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA) == 0) &&
-	    g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
+	    g_settings_get_boolean (priv->settings, "require-appdata")) {
 		gs_plugin_list_filter (&state->list,
 				       gs_plugin_loader_get_app_has_appdata,
 				       plugin_loader);
@@ -1505,7 +1512,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 out:
 	if (profile_id != NULL)
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -1584,11 +1591,12 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
                                          gpointer task_data,
                                          GCancellable *cancellable)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *function_name = "gs_plugin_add_search_files";
 	gboolean ret = TRUE;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
@@ -1599,8 +1607,8 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	values[0] = g_strdup (state->value);
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
@@ -1613,14 +1621,14 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 			continue;
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 					      plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		gs_profile_start (priv->profile, profile_id);
 		ret = plugin_func (plugin, values, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 		g_clear_pointer (&profile_id, g_free);
 	}
 
@@ -1649,7 +1657,7 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA) == 0) &&
-	    g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
+	    g_settings_get_boolean (priv->settings, "require-appdata")) {
 		gs_plugin_list_filter (&state->list,
 				       gs_plugin_loader_get_app_has_appdata,
 				       plugin_loader);
@@ -1673,7 +1681,7 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 out:
 	if (profile_id != NULL)
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -1752,11 +1760,12 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
                                                  gpointer task_data,
                                                  GCancellable *cancellable)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *function_name = "gs_plugin_add_search_what_provides";
 	gboolean ret = TRUE;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
@@ -1767,8 +1776,8 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	values[0] = g_strdup (state->value);
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
@@ -1781,14 +1790,14 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 			continue;
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 					      plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		gs_profile_start (priv->profile, profile_id);
 		ret = plugin_func (plugin, values, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 		g_clear_pointer (&profile_id, g_free);
 	}
 
@@ -1817,7 +1826,7 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA) == 0) &&
-	    g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
+	    g_settings_get_boolean (priv->settings, "require-appdata")) {
 		gs_plugin_list_filter (&state->list,
 				       gs_plugin_loader_get_app_has_appdata,
 				       plugin_loader);
@@ -1841,7 +1850,7 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 out:
 	if (profile_id != NULL)
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -1930,11 +1939,12 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 					   gpointer task_data,
 					   GCancellable *cancellable)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *function_name = "gs_plugin_add_categories";
 	gboolean ret = TRUE;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginResultsFunc plugin_func = NULL;
 	GList *l;
@@ -1942,8 +1952,8 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 	_cleanup_free_ gchar *profile_id = NULL;
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
@@ -1956,14 +1966,14 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 			continue;
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 					      plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		gs_profile_start (priv->profile, profile_id);
 		ret = plugin_func (plugin, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 		g_clear_pointer (&profile_id, g_free);
 	}
 
@@ -1985,7 +1995,7 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 out:
 	if (profile_id != NULL)
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -2047,19 +2057,20 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 					      gpointer task_data,
 					      GCancellable *cancellable)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *function_name = "gs_plugin_add_category_apps";
 	gboolean ret = TRUE;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginCategoryFunc plugin_func = NULL;
 	guint i;
 	_cleanup_free_ gchar *profile_id = NULL;
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
@@ -2072,14 +2083,14 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 			continue;
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 					      plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		gs_profile_start (priv->profile, profile_id);
 		ret = plugin_func (plugin, state->category, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 		g_clear_pointer (&profile_id, g_free);
 	}
 
@@ -2104,7 +2115,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (g_settings_get_boolean (plugin_loader->priv->settings, "require-appdata")) {
+	if (g_settings_get_boolean (priv->settings, "require-appdata")) {
 		gs_plugin_list_filter (&state->list,
 				       gs_plugin_loader_get_app_has_appdata,
 				       plugin_loader);
@@ -2124,7 +2135,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 out:
 	if (profile_id != NULL)
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -2298,18 +2309,19 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 				       gpointer task_data,
 				       GCancellable *cancellable)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GPtrArray *addons;
 	gboolean ret;
 	guint i;
 	_cleanup_list_free_ GList *list = NULL;
 
 	/* add to list */
-	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
-	g_ptr_array_add (plugin_loader->priv->pending_apps, g_object_ref (state->app));
-	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_lock (&priv->pending_apps_mutex);
+	g_ptr_array_add (priv->pending_apps, g_object_ref (state->app));
+	g_mutex_unlock (&priv->pending_apps_mutex);
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 
 	/* perform action */
@@ -2360,15 +2372,16 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	}
 
 	/* remove from list */
-	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
-	g_ptr_array_remove (plugin_loader->priv->pending_apps, state->app);
-	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_lock (&priv->pending_apps_mutex);
+	g_ptr_array_remove (priv->pending_apps, state->app);
+	g_mutex_unlock (&priv->pending_apps_mutex);
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
 
 static gboolean
 load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GList *list = NULL;
 	gboolean ret = TRUE;
 	guint i;
@@ -2397,16 +2410,16 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 		app = gs_app_new (names[i]);
 		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
 
-		g_mutex_lock (&plugin_loader->priv->app_cache_mutex);
-		g_hash_table_insert (plugin_loader->priv->app_cache,
+		g_mutex_lock (&priv->app_cache_mutex);
+		g_hash_table_insert (priv->app_cache,
 				     g_strdup (gs_app_get_id (app)),
 				     g_object_ref (app));
-		g_mutex_unlock (&plugin_loader->priv->app_cache_mutex);
+		g_mutex_unlock (&priv->app_cache_mutex);
 
-		g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
-		g_ptr_array_add (plugin_loader->priv->pending_apps,
+		g_mutex_lock (&priv->pending_apps_mutex);
+		g_ptr_array_add (priv->pending_apps,
 				 g_object_ref (app));
-		g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+		g_mutex_unlock (&priv->pending_apps_mutex);
 
 		g_debug ("adding pending app %s", gs_app_get_id (app));
 		gs_plugin_add_app (&list, app);
@@ -2431,6 +2444,7 @@ out:
 static void
 save_install_queue (GsPluginLoader *plugin_loader)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GPtrArray *pending_apps;
 	gboolean ret;
 	gint i;
@@ -2439,8 +2453,8 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	_cleanup_free_ gchar *file = NULL;
 
 	s = g_string_new ("");
-	pending_apps = plugin_loader->priv->pending_apps;
-	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
+	pending_apps = priv->pending_apps;
+	g_mutex_lock (&priv->pending_apps_mutex);
 	for (i = pending_apps->len - 1; i >= 0; i--) {
 		GsApp *app;
 		app = g_ptr_array_index (pending_apps, i);
@@ -2449,7 +2463,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 			g_string_append_c (s, '\n');
 		}
 	}
-	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_unlock (&priv->pending_apps_mutex);
 
 	/* save file */
 	file = g_build_filename (g_get_user_data_dir (),
@@ -2465,14 +2479,15 @@ save_install_queue (GsPluginLoader *plugin_loader)
 static void
 add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GPtrArray *addons;
 	guint i;
 	guint id;
 
 	/* queue the app itself */
-	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
-	g_ptr_array_add (plugin_loader->priv->pending_apps, g_object_ref (app));
-	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_lock (&priv->pending_apps_mutex);
+	g_ptr_array_add (priv->pending_apps, g_object_ref (app));
+	g_mutex_unlock (&priv->pending_apps_mutex);
 
 	gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
 	id = g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
@@ -2491,14 +2506,15 @@ add_app_to_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 static gboolean
 remove_app_from_install_queue (GsPluginLoader *plugin_loader, GsApp *app)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GPtrArray *addons;
 	gboolean ret;
 	guint i;
 	guint id;
 
-	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
-	ret = g_ptr_array_remove (plugin_loader->priv->pending_apps, app);
-	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_lock (&priv->pending_apps_mutex);
+	ret = g_ptr_array_remove (priv->pending_apps, app);
+	g_mutex_unlock (&priv->pending_apps_mutex);
 
 	if (ret) {
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -2531,6 +2547,7 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 				   GAsyncReadyCallback callback,
 				   gpointer user_data)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginLoaderAsyncState *state;
 	_cleanup_object_unref_ GTask *task = NULL;
 
@@ -2547,7 +2564,7 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	}
 
 	if (action == GS_PLUGIN_LOADER_ACTION_INSTALL &&
-	    !plugin_loader->priv->online) {
+	    !priv->online) {
 		add_app_to_install_queue (plugin_loader, app);
 		task = g_task_new (plugin_loader, cancellable, callback, user_data);
 		g_task_return_boolean (task, TRUE);
@@ -2613,12 +2630,12 @@ gs_plugin_loader_app_action_finish (GsPluginLoader *plugin_loader,
 AsAppState
 gs_plugin_loader_get_state_for_app (GsPluginLoader *plugin_loader, GsApp *app)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	AsAppState state = AS_APP_STATE_UNKNOWN;
 	GsApp *tmp;
-	GsPluginLoaderPrivate *priv = plugin_loader->priv;
 	guint i;
 
-	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_lock (&priv->pending_apps_mutex);
 	for (i = 0; i < priv->pending_apps->len; i++) {
 		tmp = g_ptr_array_index (priv->pending_apps, i);
 		if (g_strcmp0 (gs_app_get_id (tmp), gs_app_get_id (app)) == 0) {
@@ -2626,7 +2643,7 @@ gs_plugin_loader_get_state_for_app (GsPluginLoader *plugin_loader, GsApp *app)
 			break;
 		}
 	}
-	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_unlock (&priv->pending_apps_mutex);
 	return state;
 }
 
@@ -2636,7 +2653,7 @@ gs_plugin_loader_get_state_for_app (GsPluginLoader *plugin_loader, GsApp *app)
 GPtrArray *
 gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 {
-	GsPluginLoaderPrivate *priv = plugin_loader->priv;
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GPtrArray *array;
 	guint i;
 
@@ -2647,7 +2664,7 @@ gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 		GsApp *app = g_ptr_array_index (priv->pending_apps, i);
 		g_ptr_array_add (array, g_object_ref (app));
 	}
-	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_unlock (&priv->pending_apps_mutex);
 
 	return array;
 }
@@ -2658,15 +2675,16 @@ gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 static void
 gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	gboolean ret;
 	GsPluginFunc plugin_func = NULL;
 	GsPlugin *plugin;
 	guint i;
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
+	for (i = 0; i < priv->plugins->len; i++) {
 		_cleanup_free_ gchar *profile_id = NULL;
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+		plugin = g_ptr_array_index (priv->plugins, i);
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
@@ -2674,10 +2692,10 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 			continue;
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 					      plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		gs_profile_start (priv->profile, profile_id);
 		plugin_func (plugin);
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 	}
 }
 
@@ -2689,12 +2707,13 @@ gs_plugin_loader_set_enabled (GsPluginLoader *plugin_loader,
 			      const gchar *plugin_name,
 			      gboolean enabled)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	gboolean ret = FALSE;
 	GsPlugin *plugin;
 	guint i;
 
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (g_strcmp0 (plugin->name, plugin_name) == 0) {
 			plugin->enabled = enabled;
 			ret = TRUE;
@@ -2714,16 +2733,17 @@ gs_plugin_loader_status_update_cb (GsPlugin *plugin,
 				   gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
 	/* same as last time */
-	if (app == NULL && status == plugin_loader->priv->status_last)
+	if (app == NULL && status == priv->status_last)
 		return;
 
 	/* new, or an app, so emit */
 	g_debug ("emitting %s(%s)",
 		 gs_plugin_status_to_string (status),
 		 app != NULL ? gs_app_get_id (app) : "<general>");
-	plugin_loader->priv->status_last = status;
+	priv->status_last = status;
 	g_signal_emit (plugin_loader,
 		       signals[SIGNAL_STATUS_CHANGED],
 		       0, app, status);
@@ -2735,14 +2755,15 @@ gs_plugin_loader_status_update_cb (GsPlugin *plugin,
 static gboolean
 gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GList *apps;
 	GList *l;
 	GsApp *app;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 
 	/* no longer know the state of these */
-	g_mutex_lock (&plugin_loader->priv->app_cache_mutex);
-	apps = g_hash_table_get_values (plugin_loader->priv->app_cache);
+	g_mutex_lock (&priv->app_cache_mutex);
+	apps = g_hash_table_get_values (priv->app_cache);
 	for (l = apps; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
@@ -2750,13 +2771,13 @@ gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 	g_list_free (apps);
 
 	/* not valid anymore */
-	g_hash_table_remove_all (plugin_loader->priv->app_cache);
-	g_mutex_unlock (&plugin_loader->priv->app_cache_mutex);
+	g_hash_table_remove_all (priv->app_cache);
+	g_mutex_unlock (&priv->app_cache_mutex);
 
 	/* notify shells */
 	g_debug ("updates-changed");
 	g_signal_emit (plugin_loader, signals[SIGNAL_UPDATES_CHANGED], 0);
-	plugin_loader->priv->updates_changed_id = 0;
+	priv->updates_changed_id = 0;
 	return FALSE;
 }
 
@@ -2767,9 +2788,10 @@ static void
 gs_plugin_loader_updates_changed_cb (GsPlugin *plugin, gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
-	if (plugin_loader->priv->updates_changed_id != 0)
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	if (priv->updates_changed_id != 0)
 		return;
-	plugin_loader->priv->updates_changed_id =
+	priv->updates_changed_id =
 		g_timeout_add_seconds (GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
 				       gs_plugin_loader_updates_changed_delay_cb,
 				       plugin_loader);
@@ -2782,6 +2804,7 @@ static GsPlugin *
 gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *filename)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	gboolean ret;
 	GModule *module;
 	GsPluginGetNameFunc plugin_name = NULL;
@@ -2822,12 +2845,12 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->status_update_user_data = plugin_loader;
 	plugin->updates_changed_fn = gs_plugin_loader_updates_changed_cb;
 	plugin->updates_changed_user_data = plugin_loader;
-	plugin->profile = g_object_ref (plugin_loader->priv->profile);
+	plugin->profile = g_object_ref (priv->profile);
 	plugin->scale = gs_plugin_loader_get_scale (plugin_loader);
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
 
 	/* add to array */
-	g_ptr_array_add (plugin_loader->priv->plugins, plugin);
+	g_ptr_array_add (priv->plugins, plugin);
 	return plugin;
 }
 
@@ -2837,13 +2860,14 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 void
 gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, gint scale)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
 	guint i;
 
 	/* save globally, and update each plugin */
-	plugin_loader->priv->scale = scale;
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	priv->scale = scale;
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		plugin->scale = scale;
 	}
 }
@@ -2854,7 +2878,8 @@ gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, gint scale)
 gint
 gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 {
-	return plugin_loader->priv->scale;
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	return priv->scale;
 }
 
 /**
@@ -2863,19 +2888,20 @@ gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 void
 gs_plugin_loader_set_location (GsPluginLoader *plugin_loader, const gchar *location)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	_cleanup_free_ gchar *filename = NULL;
 
-	g_free (plugin_loader->priv->location);
+	g_free (priv->location);
 
 	/* something non-default specified */
 	if (location != NULL) {
-		plugin_loader->priv->location = g_strdup (location);
+		priv->location = g_strdup (location);
 		return;
 	}
 
 	/* use the default, but this requires a 'make install' */
 	filename = g_strdup_printf ("gs-plugins-%s", GS_PLUGIN_API_VERSION);
-	plugin_loader->priv->location = g_build_filename (LIBDIR, filename, NULL);
+	priv->location = g_build_filename (LIBDIR, filename, NULL);
 }
 
 /**
@@ -2900,7 +2926,7 @@ static GsPlugin *
 gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *plugin_name)
 {
-	GsPluginLoaderPrivate *priv = plugin_loader->priv;
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
 	guint i;
 
@@ -2918,6 +2944,7 @@ gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 gboolean
 gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *filename_tmp;
 	const gdouble dep_increment = 1.f;
 	gboolean changes;
@@ -2929,18 +2956,18 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	guint j;
 	_cleanup_dir_close_ GDir *dir = NULL;
 
-	g_return_val_if_fail (plugin_loader->priv->location != NULL, FALSE);
+	g_return_val_if_fail (priv->location != NULL, FALSE);
 
 	/* search in the plugin directory for plugins */
-	gs_profile_start (plugin_loader->priv->profile, "GsPlugin::setup");
-	dir = g_dir_open (plugin_loader->priv->location, 0, error);
+	gs_profile_start (priv->profile, "GsPlugin::setup");
+	dir = g_dir_open (priv->location, 0, error);
 	if (dir == NULL) {
 		ret = FALSE;
 		goto out;
 	}
 
 	/* try to open each plugin */
-	g_debug ("searching for plugins in %s", plugin_loader->priv->location);
+	g_debug ("searching for plugins in %s", priv->location);
 	do {
 		_cleanup_free_ gchar *filename_plugin = NULL;
 		filename_tmp = g_dir_read_name (dir);
@@ -2948,7 +2975,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 			break;
 		if (!g_str_has_suffix (filename_tmp, ".so"))
 			continue;
-		filename_plugin = g_build_filename (plugin_loader->priv->location,
+		filename_plugin = g_build_filename (priv->location,
 						    filename_tmp,
 						    NULL);
 		gs_plugin_loader_open_plugin (plugin_loader, filename_plugin);
@@ -2957,8 +2984,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	/* order by deps */
 	do {
 		changes = FALSE;
-		for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-			plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+		for (i = 0; i < priv->plugins->len; i++) {
+			plugin = g_ptr_array_index (priv->plugins, i);
 			if (plugin->deps == NULL)
 				continue;
 			for (j = 0; plugin->deps[j] != NULL && !changes; j++) {
@@ -2995,7 +3022,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	} while (changes);
 
 	/* sort by priority */
-	g_ptr_array_sort (plugin_loader->priv->plugins,
+	g_ptr_array_sort (priv->plugins,
 			  gs_plugin_loader_plugin_sort_fn);
 
 	/* run the plugins */
@@ -3006,7 +3033,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	if (!ret)
 		goto out;
 out:
-	gs_profile_stop (plugin_loader->priv->profile, "GsPlugin::setup");
+	gs_profile_stop (priv->profile, "GsPlugin::setup");
 	return ret;
 }
 
@@ -3016,12 +3043,13 @@ out:
 void
 gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
 	guint i;
 
 	/* print what the priorities are */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		g_debug ("[%s]\t%.1f\t->\t%s",
 			 plugin->enabled ? "enabled" : "disabled",
 			 plugin->priority,
@@ -3050,23 +3078,24 @@ static void
 gs_plugin_loader_dispose (GObject *object)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
-	if (plugin_loader->priv->plugins != NULL) {
+	if (priv->plugins != NULL) {
 		gs_plugin_loader_run (plugin_loader, "gs_plugin_destroy");
-		g_clear_pointer (&plugin_loader->priv->plugins, g_ptr_array_unref);
+		g_clear_pointer (&priv->plugins, g_ptr_array_unref);
 	}
-	if (plugin_loader->priv->updates_changed_id != 0) {
-		g_source_remove (plugin_loader->priv->updates_changed_id);
-		plugin_loader->priv->updates_changed_id = 0;
+	if (priv->updates_changed_id != 0) {
+		g_source_remove (priv->updates_changed_id);
+		priv->updates_changed_id = 0;
 	}
-	if (plugin_loader->priv->profile != NULL) {
-		gs_profile_stop (plugin_loader->priv->profile, "GsPluginLoader");
-		g_clear_object (&plugin_loader->priv->profile);
+	if (priv->profile != NULL) {
+		gs_profile_stop (priv->profile, "GsPluginLoader");
+		g_clear_object (&priv->profile);
 	}
 
-	g_clear_object (&plugin_loader->priv->settings);
-	g_clear_pointer (&plugin_loader->priv->app_cache, g_hash_table_unref);
-	g_clear_pointer (&plugin_loader->priv->pending_apps, g_ptr_array_unref);
+	g_clear_object (&priv->settings);
+	g_clear_pointer (&priv->app_cache, g_hash_table_unref);
+	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
 }
@@ -3078,20 +3107,14 @@ gs_plugin_loader_dispose (GObject *object)
 static void
 gs_plugin_loader_finalize (GObject *object)
 {
-	GsPluginLoader *plugin_loader;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
-	g_return_if_fail (object != NULL);
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (object));
+	g_strfreev (priv->compatible_projects);
+	g_free (priv->location);
 
-	plugin_loader = GS_PLUGIN_LOADER (object);
-
-	g_return_if_fail (plugin_loader->priv != NULL);
-
-	g_strfreev (plugin_loader->priv->compatible_projects);
-	g_free (plugin_loader->priv->location);
-
-	g_mutex_clear (&plugin_loader->priv->pending_apps_mutex);
-	g_mutex_clear (&plugin_loader->priv->app_cache_mutex);
+	g_mutex_clear (&priv->pending_apps_mutex);
+	g_mutex_clear (&priv->app_cache_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->finalize (object);
 }
@@ -3134,39 +3157,39 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 static void
 gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *tmp;
 	gchar **projects;
 	guint i;
 
-	plugin_loader->priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	plugin_loader->priv->scale = 1;
-	plugin_loader->priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
-	plugin_loader->priv->status_last = GS_PLUGIN_STATUS_LAST;
-	plugin_loader->priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
-	plugin_loader->priv->profile = gs_profile_new ();
-	plugin_loader->priv->settings = g_settings_new ("org.gnome.software");
-	plugin_loader->priv->app_cache = g_hash_table_new_full (g_str_hash,
+	priv->scale = 1;
+	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
+	priv->status_last = GS_PLUGIN_STATUS_LAST;
+	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	priv->profile = gs_profile_new ();
+	priv->settings = g_settings_new ("org.gnome.software");
+	priv->app_cache = g_hash_table_new_full (g_str_hash,
 								g_str_equal,
 								g_free,
 								(GFreeFunc) g_object_unref);
 
-	g_mutex_init (&plugin_loader->priv->pending_apps_mutex);
-	g_mutex_init (&plugin_loader->priv->app_cache_mutex);
+	g_mutex_init (&priv->pending_apps_mutex);
+	g_mutex_init (&priv->app_cache_mutex);
 
 	/* application start */
-	gs_profile_start (plugin_loader->priv->profile, "GsPluginLoader");
+	gs_profile_start (priv->profile, "GsPluginLoader");
 
 	/* by default we only show project-less apps or compatible projects */
 	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
 	if (tmp == NULL) {
-		projects = g_settings_get_strv (plugin_loader->priv->settings,
+		projects = g_settings_get_strv (priv->settings,
 						"compatible-projects");
 	} else {
 		projects = g_strsplit (tmp, ",", -1);
 	}
 	for (i = 0; projects[i] != NULL; i++)
 		g_debug ("compatible-project: %s", projects[i]);
-	plugin_loader->priv->compatible_projects = projects;
+	priv->compatible_projects = projects;
 }
 
 /**
@@ -3212,28 +3235,29 @@ void
 gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 				     gboolean online)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GList *l;
 	GList *queue = NULL;
 	GsApp *app;
 	guint i;
 
-	if (plugin_loader->priv->online == online)
+	if (priv->online == online)
 		return;
 
 	g_debug ("*** Network status change: %s", online ? "online" : "offline");
 
-	plugin_loader->priv->online = online;
+	priv->online = online;
 
 	if (!online)
 		return;
 
-	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
-	for (i = 0; i < plugin_loader->priv->pending_apps->len; i++) {
-		app = g_ptr_array_index (plugin_loader->priv->pending_apps, i);
+	g_mutex_lock (&priv->pending_apps_mutex);
+	for (i = 0; i < priv->pending_apps->len; i++) {
+		app = g_ptr_array_index (priv->pending_apps, i);
 		if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
 			gs_plugin_add_app (&queue, app);
 	}
-	g_mutex_unlock (&plugin_loader->priv->pending_apps_mutex);
+	g_mutex_unlock (&priv->pending_apps_mutex);
 	for (l = queue; l; l = l->next) {
 		app = l->data;
 		gs_plugin_loader_app_action_async (plugin_loader,
@@ -3259,6 +3283,7 @@ gs_plugin_loader_run_refresh_plugin (GsPluginLoader *plugin_loader,
 				     GCancellable *cancellable,
 				     GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *function_name = "gs_plugin_refresh";
 	gboolean exists;
 	gboolean ret = TRUE;
@@ -3273,7 +3298,7 @@ gs_plugin_loader_run_refresh_plugin (GsPluginLoader *plugin_loader,
 		goto out;
 	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 				      plugin->name, function_name);
-	gs_profile_start (plugin_loader->priv->profile, profile_id);
+	gs_profile_start (priv->profile, profile_id);
 	ret = plugin_func (plugin, cache_age, flags, cancellable, &error_local);
 	if (!ret) {
 		if (g_error_matches (error_local,
@@ -3292,7 +3317,7 @@ gs_plugin_loader_run_refresh_plugin (GsPluginLoader *plugin_loader,
 out:
 	if (profile_id != NULL) {
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 	}
 	return ret;
 }
@@ -3307,14 +3332,15 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 			      GCancellable *cancellable,
 			      GError **error)
 {
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	gboolean anything_ran = FALSE;
 	gboolean ret;
 	GsPlugin *plugin;
 	guint i;
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		if (g_cancellable_set_error_if_cancelled (cancellable, error))
@@ -3430,19 +3456,20 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 					    gpointer task_data,
 					    GCancellable *cancellable)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *function_name = "gs_plugin_filename_to_app";
 	gboolean ret = TRUE;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginFilenameToAppFunc plugin_func = NULL;
 	guint i;
 	_cleanup_free_ gchar *profile_id = NULL;
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
@@ -3455,14 +3482,14 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 			continue;
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 					      plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		gs_profile_start (priv->profile, profile_id);
 		ret = plugin_func (plugin, &state->list, state->filename, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 		g_clear_pointer (&profile_id, g_free);
 	}
 
@@ -3503,7 +3530,7 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 	g_task_return_pointer (task, g_object_ref (state->list->data), (GDestroyNotify) g_object_unref);
 out:
 	if (profile_id != NULL)
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -3573,19 +3600,20 @@ gs_plugin_loader_offline_update_thread_cb (GTask *task,
                                            gpointer task_data,
                                            GCancellable *cancellable)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *function_name = "gs_plugin_offline_update";
 	gboolean ret = TRUE;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPlugin *plugin;
 	GsPluginOfflineUpdateFunc plugin_func = NULL;
 	guint i;
 	_cleanup_free_ gchar *profile_id = NULL;
 
 	/* run each plugin */
-	for (i = 0; i < plugin_loader->priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (plugin_loader->priv->plugins, i);
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
@@ -3598,21 +3626,21 @@ gs_plugin_loader_offline_update_thread_cb (GTask *task,
 			continue;
 		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
 		                              plugin->name, function_name);
-		gs_profile_start (plugin_loader->priv->profile, profile_id);
+		gs_profile_start (priv->profile, profile_id);
 		ret = plugin_func (plugin, state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
 			goto out;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 		g_clear_pointer (&profile_id, g_free);
 	}
 
 	g_task_return_boolean (task, TRUE);
 out:
 	if (profile_id != NULL)
-		gs_profile_stop (plugin_loader->priv->profile, profile_id);
+		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
