@@ -26,27 +26,9 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_PROFILE		(gs_profile_get_type ())
-#define GS_PROFILE(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_PROFILE, GsProfile))
-#define GS_PROFILE_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_PROFILE, GsProfileClass))
-#define GS_IS_PROFILE(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_PROFILE))
-#define GS_IS_PROFILE_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_PROFILE))
-#define GS_PROFILE_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_PROFILE, GsProfileClass))
+#define GS_TYPE_PROFILE	(gs_profile_get_type ())
 
-typedef struct GsProfilePrivate GsProfilePrivate;
-
-typedef struct
-{
-	 GObject		 parent;
-	 GsProfilePrivate	*priv;
-} GsProfile;
-
-typedef struct
-{
-	GObjectClass		 parent_class;
-} GsProfileClass;
-
-GType		 gs_profile_get_type		(void);
+G_DECLARE_FINAL_TYPE (GsProfile, gs_profile, GS, PROFILE, GObject)
 
 GsProfile	*gs_profile_new			(void);
 void		 gs_profile_start		(GsProfile	*profile,
