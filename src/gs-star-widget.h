@@ -26,24 +26,11 @@
 
 #include "gs-app.h"
 
-#define GS_TYPE_STAR_WIDGET		(gs_star_widget_get_type())
-#define GS_STAR_WIDGET(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_STAR_WIDGET, GsStarWidget))
-#define GS_STAR_WIDGET_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_STAR_WIDGET, GsStarWidgetClass))
-#define GS_IS_STAR_WIDGET(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_STAR_WIDGET))
-#define GS_IS_STAR_WIDGET_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_STAR_WIDGET))
-#define GS_STAR_WIDGET_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_STAR_WIDGET, GsStarWidgetClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsStarWidget			GsStarWidget;
-typedef struct _GsStarWidgetClass		GsStarWidgetClass;
-typedef struct _GsStarWidgetPrivate		GsStarWidgetPrivate;
+#define GS_TYPE_STAR_WIDGET (gs_star_widget_get_type ())
 
-struct _GsStarWidget
-{
-	GtkBin		   parent;
-	GsStarWidgetPrivate	*priv;
-};
+G_DECLARE_DERIVABLE_TYPE (GsStarWidget, gs_star_widget, GS, STAR_WIDGET, GtkBin)
 
 struct _GsStarWidgetClass
 {
@@ -52,7 +39,6 @@ struct _GsStarWidgetClass
 	void			(*rating_changed)		(GsStarWidget	*star);
 };
 
-GType		 gs_star_widget_get_type		(void);
 GtkWidget	*gs_star_widget_new			(void);
 gint		 gs_star_widget_get_rating		(GsStarWidget	*star);
 void		 gs_star_widget_set_rating		(GsStarWidget	*star,

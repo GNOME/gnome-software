@@ -26,7 +26,7 @@
 
 #include "gs-star-widget.h"
 
-struct _GsStarWidgetPrivate
+typedef struct
 {
 	GsAppRatingKind	 rating_kind;
 	gint		 rating;
@@ -40,7 +40,7 @@ struct _GsStarWidgetPrivate
 	GtkWidget	*image3;
 	GtkWidget	*image4;
 	GtkWidget	*image5;
-};
+} GsStarWidgetPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsStarWidget, gs_star_widget, GTK_TYPE_BIN)
 
