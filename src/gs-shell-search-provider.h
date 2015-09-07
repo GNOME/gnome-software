@@ -27,13 +27,9 @@
 #include "gs-plugin-loader.h"
 
 #define GS_TYPE_SHELL_SEARCH_PROVIDER gs_shell_search_provider_get_type()
-#define GS_SHELL_SEARCH_PROVIDER(obj) \
-  (G_TYPE_CHECK_INSTANCE_CAST ((obj), GS_TYPE_SHELL_SEARCH_PROVIDER, GsShellSearchProvider))
 
-typedef struct _GsShellSearchProvider GsShellSearchProvider;
-typedef GObjectClass GsShellSearchProviderClass;
+G_DECLARE_FINAL_TYPE (GsShellSearchProvider, gs_shell_search_provider, GS, SHELL_SEARCH_PROVIDER, GObject)
 
-GType gs_shell_search_provider_get_type (void);
 gboolean gs_shell_search_provider_register (GsShellSearchProvider *self,
                                             GDBusConnection       *connection,
                                             GError               **error);
