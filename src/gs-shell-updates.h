@@ -31,33 +31,15 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_UPDATES		(gs_shell_updates_get_type ())
-#define GS_SHELL_UPDATES(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_SHELL_UPDATES, GsShellUpdates))
-#define GS_SHELL_UPDATES_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_SHELL_UPDATES, GsShellUpdatesClass))
-#define GS_IS_SHELL_UPDATES(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_SHELL_UPDATES))
-#define GS_IS_SHELL_UPDATES_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_SHELL_UPDATES))
-#define GS_SHELL_UPDATES_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_SHELL_UPDATES, GsShellUpdatesClass))
+#define GS_TYPE_SHELL_UPDATES (gs_shell_updates_get_type ())
 
-typedef struct GsShellUpdatesPrivate GsShellUpdatesPrivate;
-
-typedef struct
-{
-	 GsPage			 parent;
-	 GsShellUpdatesPrivate	*priv;
-} GsShellUpdates;
-
-typedef struct
-{
-	GsPageClass		 parent_class;
-} GsShellUpdatesClass;
-
-GType		 gs_shell_updates_get_type	(void);
+G_DECLARE_FINAL_TYPE (GsShellUpdates, gs_shell_updates, GS, SHELL_UPDATES, GsPage)
 
 GsShellUpdates	*gs_shell_updates_new		(void);
-void		 gs_shell_updates_switch_to	(GsShellUpdates		*shell_updates,
+void		 gs_shell_updates_switch_to	(GsShellUpdates		*self,
 						 gboolean		 scroll_up);
-void		 gs_shell_updates_reload	(GsShellUpdates		*shell_updates);
-void		 gs_shell_updates_setup		(GsShellUpdates		*shell_updates,
+void		 gs_shell_updates_reload	(GsShellUpdates		*self);
+void		 gs_shell_updates_setup		(GsShellUpdates		*self,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
