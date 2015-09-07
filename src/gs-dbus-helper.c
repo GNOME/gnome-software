@@ -44,10 +44,6 @@ struct _GsDbusHelper {
 	guint			 dbus_own_name_id;
 };
 
-struct _GsDbusHelperClass {
-	GObjectClass	 parent_class;
-};
-
 G_DEFINE_TYPE (GsDbusHelper, gs_dbus_helper, G_TYPE_OBJECT)
 
 typedef struct {

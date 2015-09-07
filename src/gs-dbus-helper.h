@@ -26,17 +26,10 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_DBUS_HELPER		(gs_dbus_helper_get_type ())
-#define GS_DBUS_HELPER(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_DBUS_HELPER, GsDbusHelper))
-#define GS_DBUS_HELPER_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_DBUS_HELPER, GsDbusHelperClass))
-#define GS_IS_DBUS_HELPER(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_DBUS_HELPER))
-#define GS_IS_DBUS_HELPER_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_DBUS_HELPER))
-#define GS_DBUS_HELPER_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_DBUS_HELPER, GsDbusHelperClass))
+#define GS_TYPE_DBUS_HELPER (gs_dbus_helper_get_type ())
 
-typedef struct _GsDbusHelper		GsDbusHelper;
-typedef struct _GsDbusHelperClass	GsDbusHelperClass;
+G_DECLARE_FINAL_TYPE (GsDbusHelper, gs_dbus_helper, GS, DBUS_HELPER, GObject)
 
-GType		 gs_dbus_helper_get_type	(void);
 GsDbusHelper	*gs_dbus_helper_new		(void);
 
 G_END_DECLS
