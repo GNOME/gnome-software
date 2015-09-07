@@ -24,19 +24,12 @@
 
 #include <gtk/gtk.h>
 
-#define GS_TYPE_BOX		(gs_box_get_type())
-#define GS_BOX(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_BOX, GsBox))
-#define GS_BOX_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_BOX, GsBoxClass))
-#define GS_IS_BOX(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_BOX))
-#define GS_IS_BOX_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_BOX))
-#define GS_BOX_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_BOX, GsBoxClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsBox		GsBox;
-typedef struct _GsBoxClass	GsBoxClass;
+#define GS_TYPE_BOX (gs_box_get_type ())
 
-GType		 gs_box_get_type	(void);
+G_DECLARE_FINAL_TYPE (GsBox, gs_box, GS, BOX, GtkContainer)
+
 GtkWidget	*gs_box_new		(void);
 void		 gs_box_add		(GsBox		*box,
 					 GtkWidget	*child,

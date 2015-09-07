@@ -38,10 +38,6 @@ struct _GsBox {
 	gdouble total;
 };
 
-struct _GsBoxClass {
-	GtkContainerClass parent_class;
-};
-
 G_DEFINE_TYPE (GsBox, gs_box, GTK_TYPE_CONTAINER)
 
 enum {
