@@ -27,27 +27,9 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_CATEGORY		(gs_category_get_type ())
-#define GS_CATEGORY(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_CATEGORY, GsCategory))
-#define GS_CATEGORY_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_CATEGORY, GsCategoryClass))
-#define GS_IS_CATEGORY(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_CATEGORY))
-#define GS_IS_CATEGORY_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_CATEGORY))
-#define GS_CATEGORY_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_CATEGORY, GsCategoryClass))
+#define GS_TYPE_CATEGORY (gs_category_get_type ())
 
-typedef struct GsCategoryPrivate GsCategoryPrivate;
-
-typedef struct
-{
-	 GObject		 parent;
-	 GsCategoryPrivate	*priv;
-} GsCategory;
-
-typedef struct
-{
-	GObjectClass		 parent_class;
-} GsCategoryClass;
-
-GType		 gs_category_get_type		(void);
+G_DECLARE_FINAL_TYPE (GsCategory, gs_category, GS, CATEGORY, GObject)
 
 GsCategory	*gs_category_new		(GsCategory	*parent,
 						 const gchar	*id,
