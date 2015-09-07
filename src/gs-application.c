@@ -67,10 +67,6 @@ struct _GsApplication {
 	GSettings       *settings;
 };
 
-struct _GsApplicationClass {
-	GtkApplicationClass parent_class;
-};
-
 G_DEFINE_TYPE (GsApplication, gs_application, GTK_TYPE_APPLICATION);
 
 gboolean

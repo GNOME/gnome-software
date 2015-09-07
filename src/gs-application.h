@@ -25,12 +25,9 @@
 #include <gtk/gtk.h>
 
 #define GS_APPLICATION_TYPE (gs_application_get_type ())
-#define GS_APPLICATION(obj) (G_TYPE_CHECK_INSTANCE_CAST ((obj), GS_APPLICATION_TYPE, GsApplication))
 
-typedef struct _GsApplication		GsApplication;
-typedef struct _GsApplicationClass	GsApplicationClass;
+G_DECLARE_FINAL_TYPE (GsApplication, gs_application, GS, APPLICATION, GtkApplication)
 
-GType		 gs_application_get_type	(void);
 GsApplication	*gs_application_new		(void);
 
 gboolean	 gs_application_has_active_window	(GsApplication *application);
