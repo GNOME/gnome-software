@@ -26,31 +26,12 @@
 
 #include "gs-app.h"
 
-#define GS_TYPE_APP_TILE		(gs_app_tile_get_type())
-#define GS_APP_TILE(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_APP_TILE, GsAppTile))
-#define GS_APP_TILE_CLASS(cls)		(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_APP_TILE, GsAppTileClass))
-#define GS_IS_APP_TILE(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_APP_TILE))
-#define GS_IS_APP_TILE_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_APP_TILE))
-#define GS_APP_TILE_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_APP_TILE, GsAppTileClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsAppTile		GsAppTile;
-typedef struct _GsAppTileClass		GsAppTileClass;
-typedef struct _GsAppTilePrivate	GsAppTilePrivate;
+#define GS_TYPE_APP_TILE (gs_app_tile_get_type ())
 
-struct _GsAppTile
-{
-	GtkButton		 parent;
-	GsAppTilePrivate	*priv;
-};
+G_DECLARE_FINAL_TYPE (GsAppTile, gs_app_tile, GS, APP_TILE, GtkButton)
 
-struct _GsAppTileClass
-{
-	GtkButtonClass		 parent_class;
-};
-
-GType		 gs_app_tile_get_type	(void);
 GtkWidget	*gs_app_tile_new	(GsApp		*app);
 GsApp		*gs_app_tile_get_app    (GsAppTile	*tile);
 void		 gs_app_tile_set_app	(GsAppTile	*tile,
