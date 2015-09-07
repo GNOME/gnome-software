@@ -31,19 +31,20 @@
 #include "gs-app-row.h"
 #include "gs-cleanup.h"
 
-struct _GsUpdateListPrivate
+struct _GsUpdateList
 {
+	GtkListBox	 parent_instance;
+
 	GtkSizeGroup	*sizegroup_image;
 	GtkSizeGroup	*sizegroup_name;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsUpdateList, gs_update_list, GTK_TYPE_LIST_BOX)
+G_DEFINE_TYPE (GsUpdateList, gs_update_list, GTK_TYPE_LIST_BOX)
 
 void
 gs_update_list_add_app (GsUpdateList *update_list,
 			GsApp	*app)
 {
-	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
 	GtkWidget *app_row;
 
 	app_row = gs_app_row_new ();
@@ -51,8 +52,8 @@ gs_update_list_add_app (GsUpdateList *update_list,
 	gs_app_row_set_app (GS_APP_ROW (app_row), app);
 	gtk_container_add (GTK_CONTAINER (update_list), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-				    priv->sizegroup_image,
-				    priv->sizegroup_name);
+				    update_list->sizegroup_image,
+				    update_list->sizegroup_name);
 	gtk_widget_show (app_row);
 }
 
@@ -172,10 +173,9 @@ static void
 gs_update_list_dispose (GObject *object)
 {
 	GsUpdateList *update_list = GS_UPDATE_LIST (object);
-	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
 
-	g_clear_object (&priv->sizegroup_image);
-	g_clear_object (&priv->sizegroup_name);
+	g_clear_object (&update_list->sizegroup_image);
+	g_clear_object (&update_list->sizegroup_name);
 
 	G_OBJECT_CLASS (gs_update_list_parent_class)->dispose (object);
 }
@@ -183,10 +183,8 @@ gs_update_list_dispose (GObject *object)
 static void
 gs_update_list_init (GsUpdateList *update_list)
 {
-	GsUpdateListPrivate *priv = gs_update_list_get_instance_private (update_list);
-
-	priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	update_list->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	update_list->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (update_list),
 				      list_header_func,

@@ -26,30 +26,12 @@
 
 #include "gs-app.h"
 
-#define GS_TYPE_UPDATE_LIST			(gs_update_list_get_type())
-#define GS_UPDATE_LIST(obj)			(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_UPDATE_LIST, GsUpdateList))
-#define GS_UPDATE_LIST_CLASS(cls)		(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_UPDATE_LIST, GsUpdateListClass))
-#define GS_IS_UPDATE_LIST(obj)			(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_UPDATE_LIST))
-#define GS_IS_UPDATE_LIST_CLASS(cls)		(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_UPDATE_LIST))
-#define GS_UPDATE_LIST_GET_CLASS(obj)		(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_UPDATE_LIST, GsUpdateListClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsUpdateList		GsUpdateList;
-typedef struct _GsUpdateListClass	GsUpdateListClass;
-typedef struct _GsUpdateListPrivate	GsUpdateListPrivate;
+#define GS_TYPE_UPDATE_LIST (gs_update_list_get_type ())
 
-struct _GsUpdateList
-{
-	GtkListBox	 parent;
-};
+G_DECLARE_FINAL_TYPE (GsUpdateList, gs_update_list, GS, UPDATE_LIST, GtkListBox)
 
-struct _GsUpdateListClass
-{
-	GtkListBoxClass	 parent_class;
-};
-
-GType		 gs_update_list_get_type	(void);
 GtkWidget	*gs_update_list_new		(void);
 void		 gs_update_list_add_app		(GsUpdateList	*update_list,
 						 GsApp		*app);
