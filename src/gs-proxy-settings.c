@@ -39,10 +39,6 @@ struct _GsProxySettings {
 	GSettings	*settings_ftp;
 };
 
-struct _GsProxySettingsClass {
-	GObjectClass	 parent_class;
-};
-
 G_DEFINE_TYPE (GsProxySettings, gs_proxy_settings, G_TYPE_OBJECT)
 
 static gchar *

@@ -26,17 +26,10 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_PROXY_SETTINGS		(gs_proxy_settings_get_type ())
-#define GS_PROXY_SETTINGS(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_PROXY_SETTINGS, GsProxySettings))
-#define GS_PROXY_SETTINGS_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_PROXY_SETTINGS, GsProxySettingsClass))
-#define GS_IS_PROXY_SETTINGS(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_PROXY_SETTINGS))
-#define GS_IS_PROXY_SETTINGS_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_PROXY_SETTINGS))
-#define GS_PROXY_SETTINGS_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_PROXY_SETTINGS, GsProxySettingsClass))
+#define GS_TYPE_PROXY_SETTINGS (gs_proxy_settings_get_type ())
 
-typedef struct _GsProxySettings		GsProxySettings;
-typedef struct _GsProxySettingsClass	GsProxySettingsClass;
+G_DECLARE_FINAL_TYPE (GsProxySettings, gs_proxy_settings, GS, PROXY_SETTINGS, GObject)
 
-GType		 gs_proxy_settings_get_type	(void);
 GsProxySettings	*gs_proxy_settings_new		(void);
 
 G_END_DECLS
