@@ -24,20 +24,11 @@
 
 #include <glib-object.h>
 
-typedef struct _GsMarkdown	GsMarkdown;
-typedef struct _GsMarkdownClass	GsMarkdownClass;
+G_BEGIN_DECLS
 
-#define GS_TYPE_MARKDOWN	(gs_markdown_get_type ())
-#define GS_MARKDOWN(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_MARKDOWN, GsMarkdown))
-#define GS_IS_MARKDOWN(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_MARKDOWN))
+#define GS_TYPE_MARKDOWN (gs_markdown_get_type ())
 
-struct _GsMarkdown {
-	GObject		 parent_instance;
-};
-
-struct _GsMarkdownClass {
-	GObjectClass	 parent_class;
-};
+G_DECLARE_FINAL_TYPE (GsMarkdown, gs_markdown, GS, MARKDOWN, GObject)
 
 typedef enum {
 	GS_MARKDOWN_OUTPUT_TEXT,
@@ -46,7 +37,6 @@ typedef enum {
 	GS_MARKDOWN_OUTPUT_LAST
 } GsMarkdownOutputKind;
 
-GType		 gs_markdown_get_type			(void);
 GsMarkdown	*gs_markdown_new			(GsMarkdownOutputKind	 output);
 void		 gs_markdown_set_max_lines		(GsMarkdown		*self,
 							 gint			 max_lines);
