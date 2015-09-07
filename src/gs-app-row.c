@@ -80,14 +80,14 @@ gs_app_row_get_description (GsAppRow *app_row)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	const gchar *tmp = NULL;
-	_cleanup_free_ gchar *escaped = NULL;
+	g_autofree gchar *escaped = NULL;
 
 	/* convert the markdown update description into PangoMarkup */
 	if (priv->show_update &&
 	    gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE) {
 		tmp = gs_app_get_update_details (priv->app);
 		if (tmp != NULL && tmp[0] != '\0') {
-			_cleanup_object_unref_ GsMarkdown *markdown = NULL;
+			g_autoptr(GsMarkdown) markdown = NULL;
 			markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 			gs_markdown_set_smart_quoting (markdown, FALSE);
 			gs_markdown_set_autocode (markdown, FALSE);
@@ -174,7 +174,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	if (priv->show_update || priv->show_codec) {
 		gtk_widget_hide (priv->folder_label);
 	} else {
-		_cleanup_object_unref_ GsFolders *folders = NULL;
+		g_autoptr(GsFolders) folders = NULL;
 		const gchar *folder;
 		folders = gs_folders_get ();
 		folder = gs_folders_get_app_folder (folders, gs_app_get_id (priv->app), gs_app_get_categories (priv->app));

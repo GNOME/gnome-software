@@ -46,7 +46,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	_cleanup_free_ gchar *epiphany = NULL;
+	g_autofree gchar *epiphany = NULL;
 
 	/* we can only work with epiphany */
 	epiphany = g_find_program_in_path ("epiphany");
@@ -83,19 +83,19 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	AsIcon *icon;
 	gboolean ret = TRUE;
 	gsize kf_length;
-	_cleanup_error_free_ GError *error_local = NULL;
-	_cleanup_free_ gchar *app_desktop = NULL;
-	_cleanup_free_ gchar *epi_desktop = NULL;
-	_cleanup_free_ gchar *epi_dir = NULL;
-	_cleanup_free_ gchar *epi_icon = NULL;
-	_cleanup_free_ gchar *exec = NULL;
-	_cleanup_free_ gchar *hash = NULL;
-	_cleanup_free_ gchar *id_nonfull = NULL;
-	_cleanup_free_ gchar *kf_data = NULL;
-	_cleanup_free_ gchar *wmclass = NULL;
-	_cleanup_keyfile_unref_ GKeyFile *kf = NULL;
-	_cleanup_object_unref_ GFile *symlink_desktop = NULL;
-	_cleanup_object_unref_ GFile *symlink_icon = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autofree gchar *app_desktop = NULL;
+	g_autofree gchar *epi_desktop = NULL;
+	g_autofree gchar *epi_dir = NULL;
+	g_autofree gchar *epi_icon = NULL;
+	g_autofree gchar *exec = NULL;
+	g_autofree gchar *hash = NULL;
+	g_autofree gchar *id_nonfull = NULL;
+	g_autofree gchar *kf_data = NULL;
+	g_autofree gchar *wmclass = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
+	g_autoptr(GFile) symlink_desktop = NULL;
+	g_autoptr(GFile) symlink_icon = NULL;
 
 	/* only process web apps */
 	if (gs_app_get_id_kind (app) != AS_ID_KIND_WEB_APP)
@@ -209,10 +209,10 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 		      GCancellable *cancellable, GError **error)
 {
 	const gchar *epi_desktop;
-	_cleanup_free_ gchar *basename = NULL;
-	_cleanup_free_ gchar *app_desktop = NULL;
-	_cleanup_object_unref_ GFile *file_epi = NULL;
-	_cleanup_object_unref_ GFile *file_app = NULL;
+	g_autofree gchar *basename = NULL;
+	g_autofree gchar *app_desktop = NULL;
+	g_autoptr(GFile) file_epi = NULL;
+	g_autoptr(GFile) file_app = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "Epiphany") != 0)
@@ -245,9 +245,9 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 static gboolean
 gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
-	_cleanup_free_ gchar *fn = NULL;
-	_cleanup_free_ gchar *hash = NULL;
-	_cleanup_free_ gchar *id_nonfull = NULL;
+	g_autofree gchar *fn = NULL;
+	g_autofree gchar *hash = NULL;
+	g_autofree gchar *id_nonfull = NULL;
 
 	id_nonfull = _gs_app_get_id_nonfull (app);
 	hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, gs_app_get_name (app), -1);

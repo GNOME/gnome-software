@@ -85,7 +85,7 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	gboolean ret;
 	guint64 timestamp;
 	PkInfoEnum info_enum;
-	_cleanup_object_unref_ GsApp *history = NULL;
+	g_autoptr(GsApp) history = NULL;
 
 	/* create new history item with same ID as parent */
 	history = gs_app_new (gs_app_get_id (app));
@@ -153,9 +153,9 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	guint i = 0;
 	GVariantIter iter;
 	GVariant *value;
-	_cleanup_free_ const gchar **package_names = NULL;
-	_cleanup_variant_unref_ GVariant *result = NULL;
-	_cleanup_variant_unref_ GVariant *tuple = NULL;
+	g_autofree const gchar **package_names = NULL;
+	g_autoptr(GVariant) result = NULL;
+	g_autoptr(GVariant) tuple = NULL;
 
 	/* already loaded */
 	if (g_once_init_enter (&plugin->priv->loaded)) {
@@ -227,7 +227,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			/* make up a fake entry as we know this package was at
 			 * least installed at some point in time */
 			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
-				_cleanup_object_unref_ GsApp *app_dummy = NULL;
+				g_autoptr(GsApp) app_dummy = NULL;
 				app_dummy = gs_app_new (gs_app_get_id (app));
 				gs_app_set_install_date (app_dummy, GS_APP_INSTALL_DATE_UNKNOWN);
 				gs_app_set_kind (app_dummy, GS_APP_KIND_PACKAGE);
@@ -263,7 +263,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	GList *l;
 	GsApp *app;
 	GPtrArray *sources;
-	_cleanup_list_free_ GList *packages = NULL;
+	g_autoptr(GList) packages = NULL;
 
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) == 0)
 		return TRUE;

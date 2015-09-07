@@ -129,8 +129,8 @@ gs_grab_focus_when_mapped (GtkWidget *widget)
 void
 gs_app_notify_installed (GsApp *app)
 {
-	_cleanup_free_ gchar *summary = NULL;
-	_cleanup_object_unref_ GNotification *n = NULL;
+	g_autofree gchar *summary = NULL;
+	g_autoptr(GNotification) n = NULL;
 
 	/* TRANSLATORS: this is the summary of a notification that an application
 	 * has been successfully installed */
@@ -158,7 +158,7 @@ gs_app_notify_failed_modal (GsApp *app,
 {
 	GtkWidget *dialog;
 	const gchar *title;
-	_cleanup_free_ gchar *msg = NULL;
+	g_autofree gchar *msg = NULL;
 
 	title = _("Sorry, this did not work");
 	switch (action) {
@@ -216,8 +216,8 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 		{ "Proprietary",	GS_APP_LICENCE_NONFREE },
 		{ NULL, 0 }
 	};
-	_cleanup_free_ gchar *origin_url = NULL;
-	_cleanup_object_unref_ GSettings *settings = NULL;
+	g_autofree gchar *origin_url = NULL;
+	g_autoptr(GSettings) settings = NULL;
 	_cleanup_string_free_ GString *body = NULL;
 	_cleanup_string_free_ GString *title = NULL;
 
@@ -332,7 +332,7 @@ void
 gs_app_show_url (GsApp *app, AsUrlKind kind)
 {
 	const gchar *url;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	url = gs_app_get_url (app, kind);
 	if (!gtk_show_uri (NULL, url, GDK_CURRENT_TIME, &error))
@@ -382,7 +382,7 @@ out:
 gboolean
 gs_mkdir_parent (const gchar *path, GError **error)
 {
-	_cleanup_free_ gchar *parent = NULL;
+	g_autofree gchar *parent = NULL;
 
 	parent = g_path_get_dirname (path);
 	if (g_mkdir_with_parents (parent, 0755) == -1) {
@@ -400,8 +400,8 @@ static void
 reboot_done (GObject *source, GAsyncResult *res, gpointer data)
 {
 	GCallback reboot_failed = data;
-	_cleanup_variant_unref_ GVariant *ret = NULL;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GVariant) ret = NULL;
+	g_autoptr(GError) error = NULL;
 
 	ret = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
 	if (ret)
@@ -418,7 +418,7 @@ reboot_done (GObject *source, GAsyncResult *res, gpointer data)
 void
 gs_reboot (GCallback reboot_failed)
 {
-	_cleanup_object_unref_ GDBusConnection *bus = NULL;
+	g_autoptr(GDBusConnection) bus = NULL;
 
 	g_debug ("calling org.gnome.SessionManager.Reboot");
 

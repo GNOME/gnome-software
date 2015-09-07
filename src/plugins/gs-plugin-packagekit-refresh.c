@@ -109,7 +109,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 {
 	PkBitfield filter;
 	PkBitfield transaction_flags;
-	_cleanup_strv_free_ gchar **package_ids = NULL;
+	g_auto(GStrv) package_ids = NULL;
 	_cleanup_object_unref_ PkPackageSack *sack = NULL;
 	_cleanup_object_unref_ PkResults *results2 = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
@@ -159,7 +159,7 @@ static void
 gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
 {
 	gchar *nl;
-	_cleanup_free_ gchar *tmp = NULL;
+	g_autofree gchar *tmp = NULL;
 
 	if (text == NULL || text[0] == '\0')
 		return;
@@ -191,8 +191,8 @@ gs_plugin_packagekit_refresh_content_type_matches (const gchar *filename,
 {
 	const gchar *tmp;
 	guint i;
-	_cleanup_object_unref_ GFile *file = NULL;
-	_cleanup_object_unref_ GFileInfo *info = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GFileInfo) info = NULL;
 	const gchar *mimetypes[] = {
 		"application/x-app-package",
 		"application/x-deb",
@@ -236,11 +236,11 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gboolean supported;
 	PkDetails *item;
 	PkResults *results = NULL;
-	_cleanup_free_ gchar *basename = NULL;
-	_cleanup_strv_free_ gchar **files = NULL;
-	_cleanup_strv_free_ gchar **split = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
-	_cleanup_object_unref_ GsApp *app = NULL;
+	g_autofree gchar *basename = NULL;
+	g_auto(GStrv) files = NULL;
+	g_auto(GStrv) split = NULL;
+	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GsApp) app = NULL;
 
 	/* does this match any of the mimetypes we support */
 	if (!gs_plugin_packagekit_refresh_content_type_matches (filename,

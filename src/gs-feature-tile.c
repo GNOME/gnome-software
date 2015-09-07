@@ -54,7 +54,7 @@ app_state_changed_idle (gpointer user_data)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (user_data);
 	AtkObject *accessible;
-	_cleanup_free_ gchar *name = NULL;
+	g_autofree gchar *name = NULL;
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
@@ -121,7 +121,7 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	/* check the app has the featured data */
 	text_color = gs_app_get_metadata_item (app, "Featured::text-color");
 	if (text_color == NULL) {
-		_cleanup_free_ gchar *tmp = NULL;
+		g_autofree gchar *tmp = NULL;
 		tmp = gs_app_to_string (app);
 		g_warning ("%s has no featured data: %s",
 			   gs_app_get_id (app), tmp);

@@ -133,7 +133,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	GsApp *app;
 	gint i;
 	GtkWidget *tile;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
@@ -184,7 +184,7 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 	GsApp *app;
 	gint i;
 	GtkWidget *tile;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_category_apps_finish (plugin_loader, res, &error);
@@ -250,7 +250,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GtkWidget *tile;
 	GList *list;
 	GsApp *app;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
 	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
@@ -317,7 +317,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GsCategory *cat;
 	GtkWidget *tile;
 	gboolean has_category = FALSE;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	list = gs_plugin_loader_get_categories_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -361,7 +361,7 @@ gs_shell_overview_load (GsShellOverview *self)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	const gchar *category_of_day;
-	_cleanup_date_time_unref_ GDateTime *date = NULL;
+	g_autoptr(GDateTime) date = NULL;
 
 	priv->empty = TRUE;
 
@@ -416,8 +416,8 @@ gs_shell_overview_load (GsShellOverview *self)
 
 	if (!priv->loading_popular_rotating) {
 		LoadData *load_data;
-		_cleanup_object_unref_ GsCategory *category = NULL;
-		_cleanup_object_unref_ GsCategory *featured_category = NULL;
+		g_autoptr(GsCategory) category = NULL;
+		g_autoptr(GsCategory) featured_category = NULL;
 
 		category = gs_category_new (NULL, category_of_day, NULL);
 		featured_category = gs_category_new (category, "featured", NULL);

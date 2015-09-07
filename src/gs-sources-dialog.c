@@ -59,9 +59,9 @@ add_source (GtkListBox *listbox, GsApp *app)
 	guint cnt_addon = 0;
 	guint cnt_apps = 0;
 	guint i;
-	_cleanup_free_ gchar *addons_text = NULL;
-	_cleanup_free_ gchar *apps_text = NULL;
-	_cleanup_free_ gchar *text = NULL;
+	g_autofree gchar *addons_text = NULL;
+	g_autofree gchar *apps_text = NULL;
+	g_autofree gchar *text = NULL;
 
 	row = gs_sources_dialog_row_new ();
 	gs_sources_dialog_row_set_name (GS_SOURCES_DIALOG_ROW (row),
@@ -150,7 +150,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	GList *l;
 	GList *list;
 	GsApp *app;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	/* show results */
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
@@ -312,7 +312,7 @@ app_removed_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsSourcesDialog *dialog = GS_SOURCES_DIALOG (user_data);
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to remove: %s", error->message);
@@ -397,7 +397,7 @@ static gchar *
 get_os_name (void)
 {
 	gchar *name = NULL;
-	_cleanup_free_ gchar *buffer = NULL;
+	g_autofree gchar *buffer = NULL;
 
 	if (g_file_get_contents ("/etc/os-release", &buffer, NULL, NULL)) {
 		gchar *start, *end;
@@ -458,8 +458,8 @@ gs_sources_dialog_dispose (GObject *object)
 static void
 gs_sources_dialog_init (GsSourcesDialog *dialog)
 {
-	_cleanup_free_ gchar *label_text = NULL;
-	_cleanup_free_ gchar *os_name = NULL;
+	g_autofree gchar *label_text = NULL;
+	g_autofree gchar *os_name = NULL;
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 

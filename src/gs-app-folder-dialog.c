@@ -204,7 +204,7 @@ static void
 populate_list (GsAppFolderDialog *dialog)
 {
 	guint i;
-	_cleanup_free_ gchar **folders = NULL;
+	g_autofree gchar **folders = NULL;
 
 	folders = gs_folders_get_nonempty_folders (dialog->folders);
 	for (i = 0; folders[i]; i++) {
@@ -290,7 +290,7 @@ static void
 create_folder_name_popover (GsAppFolderDialog *dialog)
 {
 	GtkWidget *grid, *label, *button;
-	_cleanup_free_ gchar *title = NULL;
+	g_autofree gchar *title = NULL;
 
 	dialog->new_folder_popover = gtk_popover_new (GTK_WIDGET (dialog->new_folder_button));
 	gtk_popover_set_position (GTK_POPOVER (dialog->new_folder_popover), GTK_POS_TOP);

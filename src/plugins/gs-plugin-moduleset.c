@@ -103,7 +103,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	GsCategory *parent;
 	const gchar *id;
 	guint i;
-	_cleanup_strv_free_ gchar **categories = NULL;
+	g_auto(GStrv) categories = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -128,7 +128,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			id = gs_category_get_id (parent);
 			if (g_strcmp0 (categories[i], id) == 0) {
 				guint size;
-				_cleanup_object_unref_ GsCategory *cat = NULL;
+				g_autoptr(GsCategory) cat = NULL;
 
 				cat = gs_category_new (parent, "featured", _("Featured"));
 				gs_category_add_subcategory (parent, cat);
@@ -162,7 +162,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 
 	/* Populate the "featured" subcategory */
 	if (g_strcmp0 (gs_category_get_id (category), "featured") == 0) {
-		_cleanup_strv_free_ gchar **apps = NULL;
+		g_auto(GStrv) apps = NULL;
 
 		parent = gs_category_get_parent (category);
 		if (parent != NULL) {
@@ -179,7 +179,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 
 		/* just add all */
 		for (i = 0; apps[i]; i++) {
-			_cleanup_object_unref_ GsApp *app = NULL;
+			g_autoptr(GsApp) app = NULL;
 			app = gs_app_new (apps[i]);
 			gs_plugin_add_app (list, app);
 		}
@@ -199,7 +199,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 {
 	gboolean ret = TRUE;
 	guint i;
-	_cleanup_strv_free_ gchar **apps = NULL;
+	g_auto(GStrv) apps = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -224,7 +224,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 
 	/* just add all */
 	for (i = 0; apps[i]; i++) {
-		_cleanup_object_unref_ GsApp *app = NULL;
+		g_autoptr(GsApp) app = NULL;
 		app = gs_app_new (apps[i]);
 		gs_plugin_add_app (list, app);
 	}
@@ -245,10 +245,10 @@ gs_plugin_refine (GsPlugin *plugin,
 	GsApp *app;
 	gboolean ret = TRUE;
 	guint i;
-	_cleanup_strv_free_ gchar **featured_apps = NULL;
-	_cleanup_strv_free_ gchar **popular_apps = NULL;
-	_cleanup_strv_free_ gchar **system_apps = NULL;
-	_cleanup_strv_free_ gchar **core_pkgs = NULL;
+	g_auto(GStrv) featured_apps = NULL;
+	g_auto(GStrv) popular_apps = NULL;
+	g_auto(GStrv) system_apps = NULL;
+	g_auto(GStrv) core_pkgs = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {

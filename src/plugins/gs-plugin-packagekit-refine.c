@@ -230,7 +230,7 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 	} else if (number_installed + number_available < sources->len) {
-		_cleanup_free_ gchar *tmp = NULL;
+		g_autofree gchar *tmp = NULL;
 		/* we have less packages returned than source packages */
 		tmp = gs_app_to_string (app);
 		g_debug ("Failed to find all packages for:\n%s", tmp);
@@ -255,8 +255,8 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	guint i;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *package_ids = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *packages = NULL;
+	g_autoptr(GPtrArray) package_ids = NULL;
+	g_autoptr(GPtrArray) packages = NULL;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (l = list; l != NULL; l = l->next) {
@@ -310,7 +310,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	const gchar *to_array[] = { NULL, NULL };
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *packages = NULL;
+	g_autoptr(GPtrArray) packages = NULL;
 
 	to_array[0] = filename;
 	results = pk_client_search_files (plugin->priv->client,
@@ -364,9 +364,9 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	guint i = 0;
 	guint size;
 	PkUpdateDetail *update_detail;
-	_cleanup_free_ const gchar **package_ids = NULL;
+	g_autofree const gchar **package_ids = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	g_autoptr(GPtrArray) array = NULL;
 
 	size = g_list_length (list);
 	package_ids = g_new0 (const gchar *, size + 1);
@@ -424,8 +424,8 @@ static gboolean
 gs_pk_compare_ids (const gchar *package_id1, const gchar *package_id2)
 {
 	gboolean ret;
-	_cleanup_strv_free_ gchar **split1 = NULL;
-	_cleanup_strv_free_ gchar **split2 = NULL;
+	g_auto(GStrv) split1 = NULL;
+	g_auto(GStrv) split2 = NULL;
 
 	split1 = pk_package_id_split (package_id1);
 	split2 = pk_package_id_split (package_id2);
@@ -457,7 +457,7 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	for (j = 0; j < source_ids->len; j++) {
 		package_id = g_ptr_array_index (source_ids, j);
 		for (i = 0; i < array->len; i++) {
-			_cleanup_free_ gchar *desc = NULL;
+			g_autofree gchar *desc = NULL;
 			/* right package? */
 			details = g_ptr_array_index (array, i);
 			if (!gs_pk_compare_ids (package_id,
@@ -502,8 +502,8 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *package_id;
 	guint i;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *package_ids = NULL;
+	g_autoptr(GPtrArray) array = NULL;
+	g_autoptr(GPtrArray) package_ids = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
@@ -564,7 +564,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	GList *l;
 	GsApp *app;
 	gboolean ret = TRUE;
-	_cleanup_list_free_ GList *list_tmp = NULL;
+	g_autoptr(GList) list_tmp = NULL;
 
 	gs_profile_start (plugin->profile, "packagekit-refine[source->licence]");
 	for (l = list; l != NULL; l = l->next) {
@@ -601,7 +601,7 @@ gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
 	PkRepoDetail *rd;
 	guint i;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	g_autoptr(GPtrArray) array = NULL;
 
 	/* ask PK for the repo details */
 	results = pk_client_get_repo_list (plugin->priv->client,
@@ -705,8 +705,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	const gchar *profile_id = NULL;
 	const gchar *tmp;
 	gboolean ret = TRUE;
-	_cleanup_list_free_ GList *resolve_all = NULL;
-	_cleanup_list_free_ GList *updatedetails_all = NULL;
+	g_autoptr(GList) resolve_all = NULL;
+	g_autoptr(GList) updatedetails_all = NULL;
 
 	/* get the repo_id -> repo_name mapping set up */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) > 0 &&

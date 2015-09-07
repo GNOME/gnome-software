@@ -124,8 +124,8 @@ static gchar *
 lookup_folder_name (const gchar *id)
 {
 	gchar *name = NULL;
-	_cleanup_free_ gchar *file = NULL;
-	_cleanup_keyfile_unref_ GKeyFile *key_file = NULL;
+	g_autofree gchar *file = NULL;
+	g_autoptr(GKeyFile) key_file = NULL;
 
 	file = g_build_filename ("desktop-directories", id, NULL);
 	key_file = g_key_file_new ();
@@ -176,7 +176,7 @@ load (GsFolders *folders)
 	GHashTableIter iter;
 	gchar *app;
 	gchar *category;
-	_cleanup_strv_free_ gchar **ids = NULL;
+	g_auto(GStrv) ids = NULL;
 
 	folders->folders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)gs_folder_free);
 	folders->apps = g_hash_table_new (g_str_hash, g_str_equal);
@@ -185,12 +185,12 @@ load (GsFolders *folders)
 	ids = g_settings_get_strv (folders->settings, "folder-children");
 	g_object_get (folders->settings, "path", &path, NULL);
 	for (i = 0; ids[i]; i++) {
-		_cleanup_free_ gchar **apps = NULL;
-		_cleanup_free_ gchar **categories = NULL;
-		_cleanup_free_ gchar *child_path = NULL;
-		_cleanup_free_ gchar **excluded_apps = NULL;
-		_cleanup_free_ gchar *name = NULL;
-		_cleanup_object_unref_ GSettings *settings = NULL;
+		g_autofree gchar **apps = NULL;
+		g_autofree gchar **categories = NULL;
+		g_autofree gchar *child_path = NULL;
+		g_autofree gchar **excluded_apps = NULL;
+		g_autofree gchar *name = NULL;
+		g_autoptr(GSettings) settings = NULL;
 
 		child_path = g_strconcat (path, "folders/", ids[i], "/", NULL);
 		settings = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
@@ -233,14 +233,14 @@ save (GsFolders *folders)
 	GHashTableIter iter;
 	GsFolder *folder;
 	gpointer keys;
-	_cleanup_free_ gchar *path = NULL;
-	_cleanup_free_ gpointer apps = NULL;
+	g_autofree gchar *path = NULL;
+	g_autofree gpointer apps = NULL;
 
 	g_object_get (folders->settings, "path", &path, NULL);
 	g_hash_table_iter_init (&iter, folders->folders);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&folder)) {
-		_cleanup_free_ gchar *child_path = NULL;
-		_cleanup_object_unref_ GSettings *settings = NULL;
+		g_autofree gchar *child_path = NULL;
+		g_autoptr(GSettings) settings = NULL;
 
 		child_path = g_strconcat (path, "folders/", folder->id, "/", NULL);
 		settings = g_settings_new_with_path (APP_FOLDER_CHILD_SCHEMA, child_path);
@@ -339,7 +339,7 @@ gs_folders_get_nonempty_folders (GsFolders *folders)
 {
 	GHashTableIter iter;
 	GsFolder *folder;
-	_cleanup_hashtable_unref_ GHashTable *tmp = NULL;
+	g_autoptr(GHashTable) tmp = NULL;
 
 	tmp = g_hash_table_new (g_str_hash, g_str_equal);
 
@@ -376,7 +376,7 @@ const gchar *
 gs_folders_add_folder (GsFolders *folders, const gchar *id)
 {
 	GsFolder *folder;
-	_cleanup_free_ gchar *key = NULL;
+	g_autofree gchar *key = NULL;
 
 	key = g_strdup (id);
 	canonicalize_key (key);	
@@ -538,8 +538,8 @@ gs_folders_revert (GsFolders *folders)
 void
 gs_folders_convert (void)
 {
-	_cleanup_object_unref_ GSettings *settings = NULL;
-	_cleanup_strv_free_ gchar **ids = NULL;
+	g_autoptr(GSettings) settings = NULL;
+	g_auto(GStrv) ids = NULL;
 
 	settings = g_settings_new (APP_FOLDER_SCHEMA);
 	ids = g_settings_get_strv (settings, "folder-children");

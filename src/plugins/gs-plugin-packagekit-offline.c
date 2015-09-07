@@ -47,10 +47,10 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 {
 	gboolean ret;
 	guint i;
-	_cleanup_strv_free_ gchar **package_ids = NULL;
-	_cleanup_free_ gchar *error_details = NULL;
-	_cleanup_free_ gchar *packages = NULL;
-	_cleanup_keyfile_unref_ GKeyFile *key_file = NULL;
+	g_auto(GStrv) package_ids = NULL;
+	g_autofree gchar *error_details = NULL;
+	g_autofree gchar *packages = NULL;
+	g_autoptr(GKeyFile) key_file = NULL;
 
 	/* was any offline update attempted */
 	if (!g_file_test (PK_OFFLINE_UPDATE_RESULTS_FILENAME, G_FILE_TEST_EXISTS))
@@ -99,8 +99,8 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	}
 	package_ids = g_strsplit (packages, ",", -1);
 	for (i = 0; package_ids[i] != NULL; i++) {
-		_cleanup_object_unref_ GsApp *app = NULL;
-		_cleanup_strv_free_ gchar **split = NULL;
+		g_autoptr(GsApp) app = NULL;
+		g_auto(GStrv) split = NULL;
 		app = gs_app_new (NULL);
 		split = g_strsplit (package_ids[i], ";", 4);
 		gs_app_add_source (app, split[0]);

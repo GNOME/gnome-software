@@ -104,7 +104,7 @@ gs_shell_installed_app_removed (GsPage *page, GsApp *app)
 {
 	GsShellInstalled *self = GS_SHELL_INSTALLED (page);
 	GList *l;
-	_cleanup_list_free_ GList *children = NULL;
+	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
 	for (l = children; l; l = l->next) {
@@ -193,7 +193,7 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 	GsApp *app;
 	GsShellInstalled *self = GS_SHELL_INSTALLED (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	gs_stop_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "view");
@@ -310,7 +310,7 @@ static gchar *
 gs_shell_installed_get_app_sort_key (GsApp *app)
 {
 	GString *key;
-	_cleanup_free_ gchar *casefolded_name = NULL;
+	g_autofree gchar *casefolded_name = NULL;
 
 	key = g_string_sized_new (64);
 
@@ -368,8 +368,8 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 			      gpointer user_data)
 {
 	GsApp *a1, *a2;
-	_cleanup_free_ gchar *key1 = NULL;
-	_cleanup_free_ gchar *key2 = NULL;
+	g_autofree gchar *key1 = NULL;
+	g_autofree gchar *key2 = NULL;
 
 	/* check valid */
 	if (!GTK_IS_BIN(a) || !GTK_IS_BIN(b)) {
@@ -458,7 +458,7 @@ gs_shell_installed_has_app (GsShellInstalled *self,
 {
 	GList *l;
 	gboolean ret = FALSE;
-	_cleanup_list_free_ GList *children = NULL;
+	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
 	for (l = children; l; l = l->next) {
@@ -481,7 +481,7 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	GsApp *app;
 	GtkWidget *widget;
 	guint i;
-	_cleanup_ptrarray_unref_ GPtrArray *pending = NULL;
+	g_autoptr(GPtrArray) pending = NULL;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
 						     "button_installed_counter"));
@@ -489,7 +489,7 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	if (pending->len == 0) {
 		gtk_widget_hide (widget);
 	} else {
-		_cleanup_free_ gchar *label = NULL;
+		g_autofree gchar *label = NULL;
 		gtk_widget_show (widget);
 		label = g_strdup_printf ("%d", pending->len);
 		gtk_label_set_label (GTK_LABEL (widget), label);
@@ -509,7 +509,7 @@ set_selection_mode (GsShellInstalled *self, gboolean selection_mode)
 	GtkWidget *header;
 	GtkWidget *widget;
 	GtkStyleContext *context;
-	_cleanup_list_free_ GList *children = NULL;
+	g_autoptr(GList) children = NULL;
 	
 	if (self->selection_mode == selection_mode)
 		return;
@@ -569,7 +569,7 @@ static GList *
 get_selected_apps (GsShellInstalled *self)
 {
 	GList *l, *list;
-	_cleanup_list_free_ GList *children = NULL;
+	g_autoptr(GList) children = NULL;
 
 	list = NULL;
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
@@ -588,8 +588,8 @@ selection_changed (GsShellInstalled *self)
 	GList *l;
 	GsApp *app;
 	gboolean has_folders, has_nonfolders;
-	_cleanup_list_free_ GList *apps = NULL;
-	_cleanup_object_unref_ GsFolders *folders = NULL;
+	g_autoptr(GList) apps = NULL;
+	g_autoptr(GsFolders) folders = NULL;
 
 	folders = gs_folders_get ();
 	has_folders = has_nonfolders = FALSE;
@@ -622,7 +622,7 @@ show_folder_dialog (GtkButton *button, GsShellInstalled *self)
 {
 	GtkWidget *toplevel;
 	GtkWidget *dialog;
-	_cleanup_list_free_ GList *apps = NULL;
+	g_autoptr(GList) apps = NULL;
 
 	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (button));
 	apps = get_selected_apps (self);
@@ -637,8 +637,8 @@ remove_folders (GtkButton *button, GsShellInstalled *self)
 {
 	GList *l;
 	GsApp *app;
-	_cleanup_list_free_ GList *apps = NULL;
-	_cleanup_object_unref_ GsFolders *folders = NULL;
+	g_autoptr(GList) apps = NULL;
+	g_autoptr(GsFolders) folders = NULL;
 
 	folders = gs_folders_get ();
 	apps = get_selected_apps (self);
@@ -659,7 +659,7 @@ static void
 select_all_cb (GtkMenuItem *item, GsShellInstalled *self)
 {
 	GList *l;
-	_cleanup_list_free_ GList *children = NULL;
+	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
 	for (l = children; l; l = l->next) {
@@ -672,7 +672,7 @@ static void
 select_none_cb (GtkMenuItem *item, GsShellInstalled *self)
 {
 	GList *l;
-	_cleanup_list_free_ GList *children = NULL;
+	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
 	for (l = children; l; l = l->next) {

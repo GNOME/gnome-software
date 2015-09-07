@@ -35,7 +35,7 @@ moduleset_func (void)
 	gboolean ret;
 	gchar **data;
 	GError *error = NULL;
-	_cleanup_object_unref_ GsModuleset *ms = NULL;
+	g_autoptr(GsModuleset) ms = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test ("./moduleset-test.xml", G_FILE_TEST_EXISTS))

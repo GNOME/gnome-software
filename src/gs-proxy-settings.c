@@ -48,9 +48,9 @@ get_proxy_http (GsProxySettings *proxy_settings)
 	GString *string = NULL;
 	guint port;
 	GDesktopProxyMode proxy_mode;
-	_cleanup_free_ gchar *host = NULL;
-	_cleanup_free_ gchar *password = NULL;
-	_cleanup_free_ gchar *username = NULL;
+	g_autofree gchar *host = NULL;
+	g_autofree gchar *password = NULL;
+	g_autofree gchar *username = NULL;
 
 	proxy_mode = g_settings_get_enum (proxy_settings->settings, "mode");
 	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
@@ -90,7 +90,7 @@ get_proxy_ftp (GsProxySettings *proxy_settings)
 	GString *string = NULL;
 	guint port;
 	GDesktopProxyMode proxy_mode;
-	_cleanup_free_ gchar *host = NULL;
+	g_autofree gchar *host = NULL;
 
 	proxy_mode = g_settings_get_enum (proxy_settings->settings, "mode");
 	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
@@ -113,7 +113,7 @@ get_proxy_ftp (GsProxySettings *proxy_settings)
 static void
 set_proxy_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 {
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	if (!pk_control_set_proxy_finish (PK_CONTROL (object), res, &error)) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to set proxies: %s", error->message);
@@ -123,8 +123,8 @@ set_proxy_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 static void
 reload_proxy_settings (GsProxySettings *proxy_settings)
 {
-	_cleanup_free_ gchar *proxy_http = NULL;
-	_cleanup_free_ gchar *proxy_ftp = NULL;
+	g_autofree gchar *proxy_http = NULL;
+	g_autofree gchar *proxy_ftp = NULL;
 
 	proxy_http = get_proxy_http (proxy_settings);
 	proxy_ftp = get_proxy_ftp (proxy_settings);

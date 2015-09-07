@@ -56,7 +56,7 @@ static GString *
 gs_app_addon_row_get_summary (GsAppAddonRow *row)
 {
 	const gchar *tmp = NULL;
-	_cleanup_free_ gchar *escaped = NULL;
+	g_autofree gchar *escaped = NULL;
 
 	/* try all these things in order */
 	if (gs_app_get_kind (row->app) == GS_APP_KIND_MISSING)

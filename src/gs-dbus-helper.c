@@ -76,7 +76,7 @@ static void
 gs_dbus_helper_task_set_interaction (GsDbusHelperTask *dtask, const gchar *interaction)
 {
 	guint i;
-	_cleanup_strv_free_ gchar **interactions = NULL;
+	g_auto(GStrv) interactions = NULL;
 
 	interactions = g_strsplit (interaction, ",", -1);
 	for (i = 0; interactions[i] != NULL; i++) {
@@ -123,10 +123,10 @@ gs_dbus_helper_query_is_installed_cb (GObject *source, GAsyncResult *res, gpoint
 {
 	GsDbusHelperTask *dtask = (GsDbusHelperTask *) data;
 	PkClient *client = PK_CLIENT (source);
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	g_autoptr(GPtrArray) array = NULL;
 
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);
@@ -165,12 +165,12 @@ out:
 static void
 gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointer data)
 {
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	GsDbusHelperTask *dtask = (GsDbusHelperTask *) data;
 	PkClient *client = PK_CLIENT (source);
 	PkInfoEnum info;
 	PkPackage *item;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	g_autoptr(GPtrArray) array = NULL;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 
@@ -225,7 +225,7 @@ handle_query_search_file (GsPackageKitQuery	 *skeleton,
 {
 	GsDbusHelper *dbus_helper = user_data;
 	GsDbusHelperTask *dtask;
-	_cleanup_strv_free_ gchar **names = NULL;
+	g_auto(GStrv) names = NULL;
 
 	g_debug ("****** SearchFile");
 
@@ -252,7 +252,7 @@ handle_query_is_installed (GsPackageKitQuery	 *skeleton,
 {
 	GsDbusHelper *dbus_helper = user_data;
 	GsDbusHelperTask *dtask;
-	_cleanup_strv_free_ gchar **names = NULL;
+	g_auto(GStrv) names = NULL;
 
 	g_debug ("****** IsInstalled");
 
@@ -293,9 +293,9 @@ notify_search_resources (GsShellExtrasMode   mode,
 	const gchar *app_name = NULL;
 	const gchar *mode_string;
 	const gchar *title = NULL;
-	_cleanup_free_ gchar *body = NULL;
-	_cleanup_object_unref_ GDesktopAppInfo *app_info = NULL;
-	_cleanup_object_unref_ GNotification *n = NULL;
+	g_autofree gchar *body = NULL;
+	g_autoptr(GDesktopAppInfo) app_info = NULL;
+	g_autoptr(GNotification) n = NULL;
 
 	if (desktop_id != NULL) {
 		app_info = g_desktop_app_info_new (desktop_id);
@@ -680,9 +680,9 @@ bus_gotten_cb (GObject      *source_object,
                gpointer      user_data)
 {
 	GsDbusHelper *dbus_helper = GS_DBUS_HELPER (user_data);
-	_cleanup_object_unref_ GDBusConnection *connection = NULL;
-	_cleanup_object_unref_ GDesktopAppInfo *app_info = NULL;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GDBusConnection) connection = NULL;
+	g_autoptr(GDesktopAppInfo) app_info = NULL;
+	g_autoptr(GError) error = NULL;
 
 	connection = g_bus_get_finish (res, &error);
 	if (connection == NULL) {

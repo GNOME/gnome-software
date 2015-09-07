@@ -96,10 +96,10 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 	const gchar *package_id;
 	guint i;
 	PkPackage *package;
-	_cleanup_hashtable_unref_ GHashTable *installed = NULL;
+	g_autoptr(GHashTable) installed = NULL;
 	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array_filtered = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	g_autoptr(GPtrArray) array_filtered = NULL;
+	g_autoptr(GPtrArray) array = NULL;
 
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
@@ -141,7 +141,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 
 	/* process packages */
 	for (i = 0; i < array_filtered->len; i++) {
-		_cleanup_object_unref_ GsApp *app = NULL;
+		g_autoptr(GsApp) app = NULL;
 		package = g_ptr_array_index (array_filtered, i);
 
 		app = gs_app_new (NULL);

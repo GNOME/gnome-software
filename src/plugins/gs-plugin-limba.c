@@ -144,7 +144,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-	_cleanup_object_unref_ LiManager *mgr = NULL;
+	g_autoptr(LiManager) mgr = NULL;
 	AsBundle *bundle;
 	GError *local_error = NULL;
 
@@ -182,7 +182,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-	_cleanup_object_unref_ LiInstaller *inst = NULL;
+	g_autoptr(LiInstaller) inst = NULL;
 	AsBundle *bundle;
 	GError *local_error = NULL;
 

@@ -91,7 +91,7 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 {
 	_cleanup_object_unref_ GnomeBG *bg = NULL;
 	_cleanup_object_unref_ GnomeDesktopThumbnailFactory *factory = NULL;
-	_cleanup_object_unref_ GSettings *settings = NULL;
+	g_autoptr(GSettings) settings = NULL;
 
 	factory = gnome_desktop_thumbnail_factory_new (GNOME_DESKTOP_THUMBNAIL_SIZE_LARGE);
 	bg = gnome_bg_new ();
@@ -129,8 +129,8 @@ gs_screenshot_image_use_desktop_background (GsScreenshotImage *ssimg, GdkPixbuf 
 static void
 as_screenshot_show_image (GsScreenshotImage *ssimg)
 {
-	_cleanup_object_unref_ GdkPixbuf *pixbuf_bg = NULL;
-	_cleanup_object_unref_ GdkPixbuf *pixbuf = NULL;
+	g_autoptr(GdkPixbuf) pixbuf_bg = NULL;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 
 	/* no need to composite */
 	if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT) {
@@ -187,7 +187,7 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 				  const gchar *filename_thumb)
 {
 	_cleanup_object_unref_ AsImage *im = NULL;
-	_cleanup_object_unref_ GdkPixbuf *pb = NULL;
+	g_autoptr(GdkPixbuf) pb = NULL;
 
 	/* create an helper which can do the blurring for us */
 	im = as_image_new ();
@@ -217,12 +217,12 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 				 SoupMessage *msg,
 				 gpointer user_data)
 {
-	_cleanup_object_unref_ GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
+	g_autoptr(GsScreenshotImage) ssimg = GS_SCREENSHOT_IMAGE (user_data);
 	gboolean ret;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	_cleanup_object_unref_ AsImage *im = NULL;
-	_cleanup_object_unref_ GdkPixbuf *pixbuf = NULL;
-	_cleanup_object_unref_ GInputStream *stream = NULL;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GInputStream) stream = NULL;
 
 	/* return immediately if the message was cancelled or if we're in destruction */
 	if (msg->status_code == SOUP_STATUS_CANCELLED || ssimg->session == NULL)
@@ -347,10 +347,10 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	SoupURI *base_uri = NULL;
 	const gchar *url;
 	gint rc;
-	_cleanup_free_ gchar *basename = NULL;
-	_cleanup_free_ gchar *cachedir2 = NULL;
-	_cleanup_free_ gchar *cachedir = NULL;
-	_cleanup_free_ gchar *sizedir = NULL;
+	g_autofree gchar *basename = NULL;
+	g_autofree gchar *cachedir2 = NULL;
+	g_autofree gchar *cachedir = NULL;
+	g_autofree gchar *sizedir = NULL;
 
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
 

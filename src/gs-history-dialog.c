@@ -70,8 +70,8 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 	history = gs_app_get_history (app);
 	g_ptr_array_sort (history, history_sort_cb);
 	for (i = 0; i < history->len; i++) {
-		_cleanup_date_time_unref_ GDateTime *datetime = NULL;
-		_cleanup_free_ gchar *date_str = NULL;
+		g_autoptr(GDateTime) datetime = NULL;
+		g_autofree gchar *date_str = NULL;
 		app = g_ptr_array_index (history, i);
 		box = GTK_BOX (gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 0));
 

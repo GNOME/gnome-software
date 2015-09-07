@@ -83,7 +83,7 @@ gs_profile_start (GsProfile *profile, const gchar *id)
 {
 	GThread *self;
 	GsProfileItem *item;
-	_cleanup_free_ gchar *id_thr = NULL;
+	g_autofree gchar *id_thr = NULL;
 
 	g_return_if_fail (GS_IS_PROFILE (profile));
 	g_return_if_fail (id != NULL);
@@ -127,7 +127,7 @@ gs_profile_stop (GsProfile *profile, const gchar *id)
 	GThread *self;
 	GsProfileItem *item;
 	gdouble elapsed_ms;
-	_cleanup_free_ gchar *id_thr = NULL;
+	g_autofree gchar *id_thr = NULL;
 
 	g_return_if_fail (GS_IS_PROFILE (profile));
 	g_return_if_fail (id != NULL);

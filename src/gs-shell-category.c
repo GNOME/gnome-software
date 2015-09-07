@@ -93,7 +93,7 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 	GtkWidget *tile;
 	GsShellCategory *self = GS_SHELL_CATEGORY (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	list = gs_plugin_loader_get_category_apps_finish (plugin_loader,
 							  res,
@@ -182,7 +182,7 @@ gs_shell_category_create_filter_list (GsShellCategory *self,
 	GtkWidget *row;
 	GList *l;
 	GsCategory *s;
-	_cleanup_list_free_ GList *list = NULL;
+	g_autoptr(GList) list = NULL;
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_grid));
 
@@ -215,7 +215,7 @@ gs_shell_category_set_category (GsShellCategory *self, GsCategory *category)
 	GsCategory *sub;
 	GsCategory *selected = NULL;
 	GList *l;
-	_cleanup_list_free_ GList *list = NULL;
+	g_autoptr(GList) list = NULL;
 
 	/* this means we've come from the app-view -> back */
 	if (self->category == category)

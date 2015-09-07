@@ -156,8 +156,8 @@ static gchar *
 build_title (GsShellExtras *self)
 {
 	guint i;
-	_cleanup_free_ gchar *titles = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *title_array = NULL;
+	g_autofree gchar *titles = NULL;
+	g_autoptr(GPtrArray) title_array = NULL;
 
 	title_array = g_ptr_array_new ();
 	for (i = 0; i < self->array_search_data->len; i++) {
@@ -194,7 +194,7 @@ static void
 gs_shell_extras_update_ui_state (GsShellExtras *self)
 {
 	GtkWidget *widget;
-	_cleanup_free_ gchar *title = NULL;
+	g_autofree gchar *title = NULL;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_EXTRAS)
 		return;
@@ -279,7 +279,7 @@ gs_shell_extras_add_app (GsShellExtras *self, GsApp *app, SearchData *search_dat
 {
 	GtkWidget *app_row;
 	GList *l;
-	_cleanup_list_free_ GList *list = NULL;
+	g_autoptr(GList) list = NULL;
 
 	/* Don't add same app twice */
 	list = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
@@ -315,8 +315,8 @@ create_missing_app (SearchData *search_data)
 	GsShellExtras *self = search_data->self;
 	GsApp *app;
 	GString *summary_missing;
-	_cleanup_free_ gchar *name = NULL;
-	_cleanup_free_ gchar *url = NULL;
+	g_autofree gchar *name = NULL;
+	g_autofree gchar *url = NULL;
 
 	app = gs_app_new ("missing-codec");
 
@@ -437,10 +437,10 @@ build_no_results_label (GsShellExtras *self)
 	GList *l;
 	GsApp *app = NULL;
 	guint num;
-	_cleanup_free_ gchar *codec_titles = NULL;
-	_cleanup_free_ gchar *url = NULL;
-	_cleanup_list_free_ GList *list = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	g_autofree gchar *codec_titles = NULL;
+	g_autofree gchar *url = NULL;
+	g_autoptr(GList) list = NULL;
+	g_autoptr(GPtrArray) array = NULL;
 
 	list = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
 	num = g_list_length (list);
@@ -476,7 +476,7 @@ show_search_results (GsShellExtras *self)
 	GList *l;
 	guint n_children;
 	guint n_missing;
-	_cleanup_list_free_ GList *list = NULL;
+	g_autoptr(GList) list = NULL;
 
 	list = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
 	n_children = g_list_length (list);
@@ -491,7 +491,7 @@ show_search_results (GsShellExtras *self)
 	}
 
 	if (n_children == 0 || n_children == n_missing) {
-		_cleanup_free_ gchar *str = NULL;
+		g_autofree gchar *str = NULL;
 
 		/* no results */
 		g_debug ("extras: failed to find any results, %d", n_missing);
@@ -522,7 +522,7 @@ search_files_cb (GObject *source_object,
 	_cleanup_plugin_list_free_ GList *list = NULL;
 	GList *l;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	list = gs_plugin_loader_search_what_provides_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -539,7 +539,7 @@ search_files_cb (GObject *source_object,
 			app = create_missing_app (search_data);
 			list = g_list_prepend (list, app);
 		} else {
-			_cleanup_free_ gchar *str = NULL;
+			g_autofree gchar *str = NULL;
 
 			g_warning ("failed to find any search results: %s", error->message);
 			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
@@ -573,7 +573,7 @@ filename_to_app_cb (GObject *source_object,
 	GsShellExtras *self = search_data->self;
 	GsApp *app;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	app = gs_plugin_loader_filename_to_app_finish (plugin_loader, res, &error);
 	if (app == NULL) {
@@ -587,7 +587,7 @@ filename_to_app_cb (GObject *source_object,
 			g_debug ("extras: no search result for %s, showing as missing", search_data->title);
 			app = create_missing_app (search_data);
 		} else {
-			_cleanup_free_ gchar *str = NULL;
+			g_autofree gchar *str = NULL;
 
 			g_warning ("failed to find any search results: %s", error->message);
 			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
@@ -620,7 +620,7 @@ get_search_what_provides_cb (GObject *source_object,
 	_cleanup_plugin_list_free_ GList *list = NULL;
 	GList *l;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	list = gs_plugin_loader_search_what_provides_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -637,7 +637,7 @@ get_search_what_provides_cb (GObject *source_object,
 			app = create_missing_app (search_data);
 			list = g_list_prepend (list, app);
 		} else {
-			_cleanup_free_ gchar *str = NULL;
+			g_autofree gchar *str = NULL;
 
 			g_warning ("failed to find any search results: %s", error->message);
 			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
@@ -745,7 +745,7 @@ gs_shell_extras_reload (GsShellExtras *self)
 static void
 gs_shell_extras_search_package_files (GsShellExtras *self, gchar **files)
 {
-	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
+	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
 	for (i = 0; files[i] != NULL; i++) {
@@ -765,7 +765,7 @@ gs_shell_extras_search_package_files (GsShellExtras *self, gchar **files)
 static void
 gs_shell_extras_search_provide_files (GsShellExtras *self, gchar **files)
 {
-	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
+	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
 	for (i = 0; files[i] != NULL; i++) {
@@ -785,7 +785,7 @@ gs_shell_extras_search_provide_files (GsShellExtras *self, gchar **files)
 static void
 gs_shell_extras_search_package_names (GsShellExtras *self, gchar **package_names)
 {
-	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
+	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
 	for (i = 0; package_names[i] != NULL; i++) {
@@ -805,7 +805,7 @@ gs_shell_extras_search_package_names (GsShellExtras *self, gchar **package_names
 static void
 gs_shell_extras_search_mime_types (GsShellExtras *self, gchar **mime_types)
 {
-	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
+	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
 	for (i = 0; mime_types[i] != NULL; i++) {
@@ -835,8 +835,8 @@ static gchar *
 gs_shell_extras_font_tag_to_localised_name (GsShellExtras *self, const gchar *tag)
 {
 	gchar *name;
-	_cleanup_free_ gchar *lang = NULL;
-	_cleanup_free_ gchar *language = NULL;
+	g_autofree gchar *lang = NULL;
+	g_autofree gchar *language = NULL;
 
 	/* use fontconfig to get the language code */
 	lang = font_tag_to_lang (tag);
@@ -863,7 +863,7 @@ gs_shell_extras_font_tag_to_localised_name (GsShellExtras *self, const gchar *ta
 static void
 gs_shell_extras_search_fontconfig_resources (GsShellExtras *self, gchar **resources)
 {
-	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
+	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
 	for (i = 0; resources[i] != NULL; i++) {
@@ -883,12 +883,12 @@ gs_shell_extras_search_fontconfig_resources (GsShellExtras *self, gchar **resour
 static void
 gs_shell_extras_search_gstreamer_resources (GsShellExtras *self, gchar **resources)
 {
-	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
+	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
 	for (i = 0; resources[i] != NULL; i++) {
 		SearchData *search_data;
-		_cleanup_strv_free_ gchar **parts = NULL;
+		g_auto(GStrv) parts = NULL;
 
 		parts = g_strsplit (resources[i], "|", 2);
 
@@ -906,7 +906,7 @@ gs_shell_extras_search_gstreamer_resources (GsShellExtras *self, gchar **resourc
 static void
 gs_shell_extras_search_plasma_resources (GsShellExtras *self, gchar **resources)
 {
-	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
+	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
 	for (i = 0; resources[i] != NULL; i++) {
@@ -926,7 +926,7 @@ gs_shell_extras_search_plasma_resources (GsShellExtras *self, gchar **resources)
 static void
 gs_shell_extras_search_printer_drivers (GsShellExtras *self, gchar **device_ids)
 {
-	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
+	g_autoptr(GPtrArray) array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i, j;
 	guint len;
 
@@ -940,10 +940,10 @@ gs_shell_extras_search_printer_drivers (GsShellExtras *self, gchar **device_ids)
 		SearchData *search_data;
 		gchar *p;
 		guint n_fields;
-		_cleanup_free_ gchar *tag = NULL;
-		_cleanup_free_ gchar *mfg = NULL;
-		_cleanup_free_ gchar *mdl = NULL;
-		_cleanup_strv_free_ gchar **fields = NULL;
+		g_autofree gchar *tag = NULL;
+		g_autofree gchar *mfg = NULL;
+		g_autofree gchar *mdl = NULL;
+		g_auto(GStrv) fields = NULL;
 
 		fields = g_strsplit (device_ids[i], ";", 0);
 		n_fields = g_strv_length (fields);
@@ -1087,8 +1087,8 @@ list_sort_func (GtkListBoxRow *a,
 {
 	GsApp *a1 = gs_app_row_get_app (GS_APP_ROW (a));
 	GsApp *a2 = gs_app_row_get_app (GS_APP_ROW (b));
-	_cleanup_free_ gchar *key1 = get_app_sort_key (a1);
-	_cleanup_free_ gchar *key2 = get_app_sort_key (a2);
+	g_autofree gchar *key1 = get_app_sort_key (a1);
+	g_autofree gchar *key2 = get_app_sort_key (a2);
 
 	/* compare the keys according to the algorithm above */
 	return g_strcmp0 (key1, key2);
@@ -1174,7 +1174,7 @@ gs_shell_extras_dispose (GObject *object)
 static void
 gs_shell_extras_init (GsShellExtras *self)
 {
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 

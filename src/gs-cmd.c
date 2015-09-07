@@ -43,13 +43,13 @@ gs_cmd_show_results_apps (GList *list)
 	guint i;
 
 	for (l = list; l != NULL; l = l->next) {
-		_cleanup_free_ gchar *tmp = NULL;
+		g_autofree gchar *tmp = NULL;
 		app = GS_APP (l->data);
 		tmp = gs_app_to_string (app);
 		g_print ("%s\n", tmp);
 		related = gs_app_get_related (app);
 		for (i = 0; i < related->len; i++) {
-			_cleanup_free_ gchar *tmp_rel = NULL;
+			g_autofree gchar *tmp_rel = NULL;
 			app_rel = GS_APP (g_ptr_array_index (related, i));
 			tmp_rel = gs_app_to_string (app_rel);
 			g_print ("\t%s\n", tmp_rel);
@@ -84,11 +84,11 @@ gs_cmd_show_results_categories (GList *list)
 	GsCategory *parent;
 
 	for (l = list; l != NULL; l = l->next) {
-		_cleanup_free_ gchar *tmp = NULL;
+		g_autofree gchar *tmp = NULL;
 		cat = GS_CATEGORY (l->data);
 		parent = gs_category_get_parent (cat);
 		if (parent != NULL){
-			_cleanup_free_ gchar *id = NULL;
+			g_autofree gchar *id = NULL;
 			id = g_strdup_printf ("%s/%s",
 					      gs_category_get_id (parent),
 					      gs_category_get_id (cat));
@@ -153,7 +153,7 @@ gs_cmd_parse_refine_flags (const gchar *extra, GError **error)
 	GsPluginRefineFlags tmp;
 	guint i;
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
-	_cleanup_strv_free_ gchar **split = NULL;
+	g_auto(GStrv) split = NULL;
 
 	if (extra == NULL)
 		return GS_PLUGIN_REFINE_FLAGS_DEFAULT;
@@ -181,11 +181,11 @@ main (int argc, char **argv)
 	gint i;
 	gint repeat = 1;
 	int status = 0;
-	_cleanup_error_free_ GError *error = NULL;
-	_cleanup_free_ gchar *refine_flags_str = NULL;
-	_cleanup_object_unref_ GsApp *app = NULL;
-	_cleanup_object_unref_ GsPluginLoader *plugin_loader = NULL;
-	_cleanup_object_unref_ GsProfile *profile = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autofree gchar *refine_flags_str = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginLoader) plugin_loader = NULL;
+	g_autoptr(GsProfile) profile = NULL;
 	const GOptionEntry options[] = {
 		{ "show-results", '\0', 0, G_OPTION_ARG_NONE, &show_results,
 		  "Show the results for the action", NULL },
@@ -351,13 +351,13 @@ main (int argc, char **argv)
 			}
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "get-category-apps") == 0) {
-		_cleanup_object_unref_ GsCategory *category = NULL;
-		_cleanup_strv_free_ gchar **split = NULL;
+		g_autoptr(GsCategory) category = NULL;
+		g_auto(GStrv) split = NULL;
 		split = g_strsplit (argv[2], "/", 2);
 		if (g_strv_length (split) == 1) {
 			category = gs_category_new (NULL, split[0], NULL);
 		} else {
-			_cleanup_object_unref_ GsCategory *parent = NULL;
+			g_autoptr(GsCategory) parent = NULL;
 			parent = gs_category_new (NULL, split[0], NULL);
 			category = gs_category_new (parent, split[1], NULL);
 		}

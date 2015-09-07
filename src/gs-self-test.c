@@ -40,7 +40,7 @@ gs_markdown_func (void)
 	gchar *text;
 	const gchar *markdown;
 	const gchar *markdown_expected;
-	_cleanup_object_unref_ GsMarkdown *md = NULL;
+	g_autoptr(GsMarkdown) md = NULL;
 
 	/* get GsMarkdown object */
 	md = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
@@ -276,8 +276,8 @@ gs_plugin_func (void)
 static void
 gs_app_subsume_func (void)
 {
-	_cleanup_object_unref_ GsApp *new = NULL;
-	_cleanup_object_unref_ GsApp *old = NULL;
+	g_autoptr(GsApp) new = NULL;
+	g_autoptr(GsApp) old = NULL;
 
 	new = gs_app_new ("xxx.desktop");
 	old = gs_app_new ("yyy.desktop");
@@ -289,7 +289,7 @@ gs_app_subsume_func (void)
 static void
 gs_app_func (void)
 {
-	_cleanup_object_unref_ GsApp *app = NULL;
+	g_autoptr(GsApp) app = NULL;
 
 	app = gs_app_new ("gnome-software");
 	g_assert (GS_IS_APP (app));
@@ -328,9 +328,9 @@ gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 static void
 gs_plugin_loader_dedupe_func (void)
 {
-	_cleanup_object_unref_ GsApp *app1 = NULL;
-	_cleanup_object_unref_ GsApp *app2 = NULL;
-	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
+	g_autoptr(GsApp) app1 = NULL;
+	g_autoptr(GsApp) app2 = NULL;
+	g_autoptr(GsPluginLoader) loader = NULL;
 
 	loader = gs_plugin_loader_new ();
 
@@ -358,7 +358,7 @@ gs_plugin_loader_func (void)
 	GList *list;
 	GList *l;
 	GsApp *app;
-	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
+	g_autoptr(GsPluginLoader) loader = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
@@ -498,8 +498,8 @@ gs_plugin_loader_refine_func (void)
 	GError *error = NULL;
 	const gchar *url;
 	gboolean ret;
-	_cleanup_object_unref_ GsApp *app = NULL;
-	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginLoader) loader = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
@@ -548,7 +548,7 @@ gs_plugin_loader_empty_func (void)
 	GsCategory *category;
 	GsCategory *sub;
 	guint empty_subcats_cnt = 0;
-	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
+	g_autoptr(GsPluginLoader) loader = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
@@ -630,9 +630,9 @@ gs_plugin_loader_webapps_func (void)
 {
 	gboolean ret;
 	GError *error = NULL;
-	_cleanup_free_ gchar *path = NULL;
-	_cleanup_object_unref_ GsApp *app = NULL;
-	_cleanup_object_unref_ GsPluginLoader *loader = NULL;
+	g_autofree gchar *path = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsPluginLoader) loader = NULL;
 
 	/* not avaiable in make distcheck */
 	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))

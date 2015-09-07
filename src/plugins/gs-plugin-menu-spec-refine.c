@@ -72,8 +72,8 @@ gs_plugin_refine_app_category (GsPlugin *plugin,
 			continue;
 		ret = gs_app_has_category (app, tmp + 2);
 		if (ret) {
-			_cleanup_free_ gchar *str = NULL;
-			_cleanup_free_ gchar *msgctxt = NULL;
+			g_autofree gchar *str = NULL;
+			g_autofree gchar *msgctxt = NULL;
 			msgctxt = g_strdup_printf ("Menu subcategory of %s", cat->text);
 			str = g_strdup_printf ("%s → %s",
 					       gettext (cat->text),

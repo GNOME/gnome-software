@@ -115,7 +115,7 @@ gs_plugin_parse_json (const gchar *data, gsize data_len, const gchar *key)
 	gchar *tmp;
 	guint len;
 	_cleanup_string_free_ GString *string = NULL;
-	_cleanup_strv_free_ gchar **split = NULL;
+	g_auto(GStrv) split = NULL;
 
 	/* format the key to match what JSON returns */
 	key_full = g_strdup_printf ("\"%s\":", key);
@@ -184,9 +184,9 @@ gs_plugin_app_set_rating_pkg (GsPlugin *plugin,
 			      GError **error)
 {
 	guint status_code;
-	_cleanup_free_ gchar *data = NULL;
-	_cleanup_free_ gchar *error_msg = NULL;
-	_cleanup_free_ gchar *uri = NULL;
+	g_autofree gchar *data = NULL;
+	g_autofree gchar *error_msg = NULL;
+	g_autofree gchar *uri = NULL;
 	_cleanup_object_unref_ SoupMessage *msg = NULL;
 
 	/* create the PUT data */
@@ -293,7 +293,7 @@ gs_plugin_fedora_tagger_add (GsPlugin *plugin,
 {
 	char *error_msg = NULL;
 	gint rc;
-	_cleanup_free_ gchar *statement = NULL;
+	g_autofree gchar *statement = NULL;
 
 	/* insert the entry */
 	statement = g_strdup_printf ("INSERT OR REPLACE INTO ratings (pkgname, rating, "
@@ -325,7 +325,7 @@ gs_plugin_fedora_tagger_set_timestamp (GsPlugin *plugin,
 {
 	char *error_msg = NULL;
 	gint rc;
-	_cleanup_free_ gchar *statement = NULL;
+	g_autofree gchar *statement = NULL;
 
 	/* insert the entry */
 	statement = g_strdup_printf ("INSERT OR REPLACE INTO timestamps (key, value) "
@@ -354,10 +354,10 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	gdouble count_sum = 0;
 	guint i;
 	guint status_code;
-	_cleanup_free_ gchar *uri = NULL;
+	g_autofree gchar *uri = NULL;
 	_cleanup_object_unref_ SoupMessage *msg = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *items = NULL;
-	_cleanup_strv_free_ gchar **split = NULL;
+	g_autoptr(GPtrArray) items = NULL;
+	g_auto(GStrv) split = NULL;
 
 	/* create the GET data */
 	uri = g_strdup_printf ("%s/api/v1/rating/dump/",
@@ -383,7 +383,7 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	items = g_ptr_array_new_with_free_func ((GDestroyNotify) fedora_tagger_item_free);
 	split = g_strsplit (msg->response_body->data, "\n", -1);
 	for (i = 0; split[i] != NULL; i++) {
-		_cleanup_strv_free_ gchar **fields = NULL;
+		g_auto(GStrv) fields = NULL;
 		if (split[i][0] == '\0' ||
 		    split[i][0] == '#')
 			continue;
@@ -456,7 +456,7 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 	gint rc;
 	gint64 mtime = 0;
 	gint64 now;
-	_cleanup_error_free_ GError *error_local = NULL;
+	g_autoptr(GError) error_local = NULL;
 
 	g_debug ("trying to open database '%s'", plugin->priv->db_path);
 	if (!gs_mkdir_parent (plugin->priv->db_path, error))
@@ -570,7 +570,7 @@ gs_plugin_resolve_app (GsPlugin *plugin,
 	FedoraTaggerHelper helper;
 	gchar *error_msg = NULL;
 	gint rc;
-	_cleanup_free_ gchar *statement = NULL;
+	g_autofree gchar *statement = NULL;
 
 	/* default values */
 	helper.rating = -1;

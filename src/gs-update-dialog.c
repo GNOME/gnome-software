@@ -96,14 +96,14 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	GsAppKind kind;
 	const GdkPixbuf *pixbuf;
 	const gchar *update_details;
-	_cleanup_free_ gchar *update_desc = NULL;
+	g_autofree gchar *update_desc = NULL;
 
 	/* set window title */
 	kind = gs_app_get_kind (app);
 	if (kind == GS_APP_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (dialog), gs_app_get_name (app));
 	} else if (gs_app_get_source_default (app) != NULL) {
-		_cleanup_free_ gchar *tmp = NULL;
+		g_autofree gchar *tmp = NULL;
 		tmp = g_strdup_printf ("%s %s",
 				       gs_app_get_source_default (app),
 				       gs_app_get_update_version (app));
@@ -120,7 +120,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 		 * description for the update */
 		update_desc = g_strdup (_("No update description available."));
 	} else {
-		_cleanup_object_unref_ GsMarkdown *markdown = NULL;
+		g_autoptr(GsMarkdown) markdown = NULL;
 		markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 		gs_markdown_set_smart_quoting (markdown, FALSE);
 		gs_markdown_set_autocode (markdown, TRUE);
@@ -179,7 +179,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 {
 	GList *l;
 	_cleanup_plugin_list_free_ GList *list = NULL;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
 
@@ -226,9 +226,9 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 	time_updates_installed = pk_offline_get_results_mtime (NULL);
 	if (time_updates_installed > 0) {
 		GtkWidget *header;
-		_cleanup_date_time_unref_ GDateTime *date = NULL;
-		_cleanup_free_ gchar *date_str = NULL;
-		_cleanup_free_ gchar *subtitle = NULL;
+		g_autoptr(GDateTime) date = NULL;
+		g_autofree gchar *date_str = NULL;
+		g_autofree gchar *subtitle = NULL;
 
 		date = g_date_time_new_from_unix_utc (time_updates_installed);
 		date_str = g_date_time_format (date, "%x");

@@ -62,7 +62,7 @@ gs_update_list_get_apps (GsUpdateList *update_list)
 {
 	GList *apps = NULL;
 	GList *l;
-	_cleanup_list_free_ GList *children = NULL;
+	g_autoptr(GList) children = NULL;
 
 	children = gtk_container_get_children (GTK_CONTAINER (update_list));
 	for (l = children; l != NULL; l = l->next) {
@@ -162,8 +162,8 @@ list_sort_func (GtkListBoxRow *a,
 {
 	GsApp *a1 = gs_app_row_get_app (GS_APP_ROW (a));
 	GsApp *a2 = gs_app_row_get_app (GS_APP_ROW (b));
-	_cleanup_free_ gchar *key1 = get_app_sort_key (a1);
-	_cleanup_free_ gchar *key2 = get_app_sort_key (a2);
+	g_autofree gchar *key1 = get_app_sort_key (a1);
+	g_autofree gchar *key2 = get_app_sort_key (a2);
 
 	/* compare the keys according to the algorithm above */
 	return g_strcmp0 (key1, key2);

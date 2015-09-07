@@ -104,7 +104,7 @@ time_next_midnight (void)
 {
 	GDateTime *next_midnight;
 	GTimeSpan since_midnight;
-	_cleanup_date_time_unref_ GDateTime *now = NULL;
+	g_autoptr(GDateTime) now = NULL;
 
 	now = g_date_time_new_now_local ();
 	since_midnight = g_date_time_get_hour (now) * G_TIME_SPAN_HOUR +
@@ -125,8 +125,8 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *self)
 	gboolean use_24h_time;
 	gint64 tmp;
 	gint days_ago;
-	_cleanup_date_time_unref_ GDateTime *last_checked = NULL;
-	_cleanup_date_time_unref_ GDateTime *midnight = NULL;
+	g_autoptr(GDateTime) last_checked = NULL;
+	g_autoptr(GDateTime) midnight = NULL;
 
 	g_settings_get (self->settings, "check-timestamp", "x", &tmp);
 	if (tmp == 0)
@@ -206,8 +206,8 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	GtkWidget *widget;
 	PkNetworkEnum network_state;
 	gboolean is_free_connection;
-	_cleanup_free_ gchar *checked_str = NULL;
-	_cleanup_free_ gchar *spinner_str = NULL;
+	g_autofree gchar *checked_str = NULL;
+	g_autofree gchar *spinner_str = NULL;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
 		return;
@@ -400,7 +400,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (self->stack_updates)), "uptodate") == 0) {
 		checked_str = gs_shell_updates_last_checked_time_string (self);
 		if (checked_str != NULL) {
-			_cleanup_free_ gchar *last_checked = NULL;
+			g_autofree gchar *last_checked = NULL;
 
 			/* TRANSLATORS: This is the time when we last checked for updates */
 			last_checked = g_strdup_printf (_("Last checked: %s"), checked_str);
@@ -446,7 +446,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	GList *l;
 	GList *list;
 	GtkWidget *widget;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	self->cache_valid = TRUE;
 
@@ -459,7 +459,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_updates_counter"));
 	if (list != NULL && !gs_updates_are_managed ()) {
-		_cleanup_free_ gchar *text = NULL;
+		g_autofree gchar *text = NULL;
 		text = g_strdup_printf ("%d", g_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
 		gtk_widget_show (widget);
@@ -607,8 +607,8 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 			     GsShellUpdates *self)
 {
 	gboolean ret;
-	_cleanup_date_time_unref_ GDateTime *now = NULL;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GDateTime) now = NULL;
+	g_autoptr(GError) error = NULL;
 
 	/* get the results */
 	ret = gs_plugin_loader_refresh_finish (plugin_loader, res, &error);
@@ -682,7 +682,7 @@ gs_shell_updates_get_new_updates (GsShellUpdates *self)
 static void
 gs_shell_updates_show_network_settings (GsShellUpdates *self)
 {
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	if (!g_spawn_command_line_async ("gnome-control-center network", &error))
 		g_warning ("Failed to open the control center: %s", error->message);
 }
@@ -830,7 +830,7 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 static void
 gs_offline_updates_cancel (void)
 {
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	if (!pk_offline_cancel (NULL, &error))
 		g_warning ("failed to cancel the offline update: %s", error->message);
 }
@@ -843,7 +843,7 @@ gs_shell_updates_offline_update_cb (GsPluginLoader *plugin_loader,
                                     GAsyncResult *res,
                                     GsShellUpdates *self)
 {
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	/* get the results */
 	if (!gs_plugin_loader_offline_update_finish (plugin_loader, res, &error)) {
@@ -857,8 +857,8 @@ static void
 gs_shell_updates_button_update_all_cb (GtkButton      *button,
 				       GsShellUpdates *self)
 {
-	_cleanup_error_free_ GError *error = NULL;
-	_cleanup_list_free_ GList *apps = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GList) apps = NULL;
 
 	/* do the offline update */
 	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
@@ -879,7 +879,7 @@ gs_shell_updates_get_properties_cb (GObject *source,
 {
 	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
 	PkControl *control = PK_CONTROL (source);
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	/* get result */
 	if (!pk_control_get_properties_finish (control, res, &error))

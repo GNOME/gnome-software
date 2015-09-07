@@ -342,7 +342,7 @@ gs_shell_details_screenshot_selected_cb (GtkListBox *list,
 	GsScreenshotImage *ssmain;
 	GsScreenshotImage *ssthumb;
 	AsScreenshot *ss;
-	_cleanup_list_free_ GList *children = NULL;
+	g_autoptr(GList) children = NULL;
 
 	if (row == NULL)
 		return;
@@ -483,7 +483,7 @@ gs_shell_details_set_description (GsShellDetails *self, const gchar *tmp)
 	GtkStyleContext *style_context;
 	GtkWidget *para;
 	guint i;
-	_cleanup_strv_free_ gchar **split = NULL;
+	g_auto(GStrv) split = NULL;
 
 	/* does the description exist? */
 	gtk_widget_set_visible (self->box_details_description, tmp != NULL);
@@ -526,7 +526,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	GtkWidget *widget;
 	const gchar *tmp;
 	guint64 updated;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	/* change widgets */
 	tmp = gs_app_get_name (self->app);
@@ -620,7 +620,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		/* TRANSLATORS: this is where the size is not known */
 		gtk_label_set_label (GTK_LABEL (self->label_details_size_value), C_("size", "Unknown"));
 	} else {
-		_cleanup_free_ gchar *size = NULL;
+		g_autofree gchar *size = NULL;
 		size = g_format_size (gs_app_get_size (self->app));
 		gtk_label_set_label (GTK_LABEL (self->label_details_size_value), size);
 	}
@@ -632,8 +632,8 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		/* TRANSLATORS: this is where the updated date is not known */
 		gtk_label_set_label (GTK_LABEL (self->label_details_updated_value), C_("updated", "Never"));
 	} else {
-		_cleanup_date_time_unref_ GDateTime *dt = NULL;
-		_cleanup_free_ gchar *updated_str = NULL;
+		g_autoptr(GDateTime) dt = NULL;
+		g_autofree gchar *updated_str = NULL;
 		dt = g_date_time_new_from_unix_utc (updated);
 		updated_str = g_date_time_format (dt, "%x");
 		gtk_label_set_label (GTK_LABEL (self->label_details_updated_value), updated_str);
@@ -870,8 +870,8 @@ gs_shell_details_app_refine_cb (GObject *source,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
 	gboolean ret;
-	_cleanup_error_free_ GError *error = NULL;
-	_cleanup_free_ gchar *app_dump = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autofree gchar *app_dump = NULL;
 
 	ret = gs_plugin_loader_app_refine_finish (plugin_loader,
 						  res,
@@ -903,8 +903,8 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
-	_cleanup_error_free_ GError *error = NULL;
-	_cleanup_free_ gchar *tmp = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autofree gchar *tmp = NULL;
 
 	if (self->app != NULL)
 		g_object_unref (self->app);
@@ -1057,7 +1057,7 @@ static void
 gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
 	GList *l;
-	_cleanup_list_free_ GList *addons = NULL;
+	g_autoptr(GList) addons = NULL;
 
 	/* Mark ticked addons to be installed together with the app */
 	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
@@ -1114,9 +1114,9 @@ gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
 	GdkDisplay *display;
 	const gchar *desktop_id;
-	_cleanup_error_free_ GError *error = NULL;
-	_cleanup_object_unref_ GAppInfo *appinfo = NULL;
-	_cleanup_object_unref_ GAppLaunchContext *context = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GAppInfo) appinfo = NULL;
+	g_autoptr(GAppLaunchContext) context = NULL;
 
 	desktop_id = gs_app_get_id (self->app);
 	if (desktop_id == NULL) {
@@ -1159,7 +1159,7 @@ gs_shell_details_app_set_ratings_cb (GObject *source,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to set rating %s: %s",

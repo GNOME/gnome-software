@@ -65,7 +65,7 @@ gs_page_app_installed_cb (GObject *source,
 	GsPage *page = data->page;
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	ret = gs_plugin_loader_app_action_finish (plugin_loader,
 	                                          res,
@@ -103,7 +103,7 @@ gs_page_app_removed_cb (GObject *source,
 	GsPage *page = data->page;
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	ret = gs_plugin_loader_app_action_finish (plugin_loader,
 	                                          res,

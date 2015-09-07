@@ -141,7 +141,7 @@ gs_moduleset_get_featured_categories (GsModuleset *moduleset)
 	GsModulesetPrivate *priv = gs_moduleset_get_instance_private (moduleset);
 	GsModulesetEntry *entry;
 	guint i;
-	_cleanup_hashtable_unref_ GHashTable *categories_hash = NULL;
+	g_autoptr(GHashTable) categories_hash = NULL;
 
 	g_return_val_if_fail (GS_IS_MODULESET (moduleset), NULL);
 
@@ -341,7 +341,7 @@ gs_moduleset_parse_filename (GsModuleset *moduleset, const gchar *filename, GErr
 	GMarkupParseContext *ctx;
 	gboolean ret;
 	gsize data_len;
-	_cleanup_free_ gchar *data = NULL;
+	g_autofree gchar *data = NULL;
 
 	g_return_val_if_fail (GS_IS_MODULESET (moduleset), FALSE);
 
@@ -367,14 +367,14 @@ gboolean
 gs_moduleset_parse_path (GsModuleset *moduleset, const gchar *path, GError **error)
 {
 	const gchar *filename;
-	_cleanup_dir_close_ GDir *dir = NULL;
+	g_autoptr(GDir) dir = NULL;
 
 	/* search all the files in the path */
 	dir = g_dir_open (path, 0, error);
 	if (dir == NULL)
 		return FALSE;
 	while ((filename = g_dir_read_name (dir)) != NULL) {
-		_cleanup_free_ gchar *tmp = NULL;
+		g_autofree gchar *tmp = NULL;
 		if (!g_str_has_suffix (filename, ".xml"))
 			continue;
 		tmp = g_build_filename (path, filename, NULL);

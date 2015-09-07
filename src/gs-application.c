@@ -182,7 +182,7 @@ static void
 gs_application_initialize_plugins (GsApplication *app)
 {
 	static gboolean initialized = FALSE;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	if (initialized)
 		return;
@@ -247,8 +247,8 @@ gs_application_show_first_run_dialog (GsApplication *app)
 static void
 theme_changed (GtkSettings *settings, GParamSpec *pspec, GsApplication *app)
 {
-	_cleanup_object_unref_ GFile *file = NULL;
-	_cleanup_free_ gchar *theme = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autofree gchar *theme = NULL;
 
 	g_object_get (settings, "gtk-theme-name", &theme, NULL);
 	if (g_strcmp0 (theme, "HighContrast") == 0) {
@@ -366,7 +366,7 @@ profile_activated (GSimpleAction *action,
 static void
 offline_updates_cancel (void)
 {
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	if (!pk_offline_cancel (NULL, &error))
 		g_warning ("failed to cancel the offline update: %s", error->message);
 }
@@ -379,7 +379,7 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 		   GAsyncResult *res,
 		   GsApplication *app)
 {
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	if (!gs_plugin_loader_offline_update_finish (plugin_loader, res, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
@@ -503,9 +503,9 @@ launch_activated (GSimpleAction *action,
 {
 	const gchar *desktop_id;
 	GdkDisplay *display;
-	_cleanup_error_free_ GError *error = NULL;
-	_cleanup_object_unref_ GAppInfo *appinfo = NULL;
-	_cleanup_object_unref_ GAppLaunchContext *context = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GAppInfo) appinfo = NULL;
+	g_autoptr(GAppLaunchContext) context = NULL;
 
 	desktop_id = g_variant_get_string (parameter, NULL);
 	display = gdk_display_get_default ();
@@ -639,7 +639,7 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	const gchar *local_filename;
 	const gchar *mode;
 	const gchar *search;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	if (g_variant_dict_contains (options, "verbose"))
 		g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);

@@ -945,7 +945,7 @@ gboolean
 gs_app_load_icon (GsApp *app, gint scale, GError **error)
 {
 	AsIcon *icon;
-	_cleanup_object_unref_ GdkPixbuf *pixbuf = NULL;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
 
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	g_return_val_if_fail (app->icon != NULL, FALSE);
@@ -1278,7 +1278,7 @@ gs_app_set_licence (GsApp *app, const gchar *licence)
 {
 	GString *urld;
 	guint i;
-	_cleanup_strv_free_ gchar **tokens = NULL;
+	g_auto(GStrv) tokens = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
 

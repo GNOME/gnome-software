@@ -66,9 +66,9 @@ gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
 gboolean
 gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
 {
-	_cleanup_error_free_ GError *error = NULL;
-	_cleanup_free_ gchar *data = NULL;
-	_cleanup_free_ gchar *search = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autofree gchar *data = NULL;
+	g_autofree gchar *search = NULL;
 
 	/* check that we are running on Fedora */
 	if (!g_file_get_contents (GS_PLUGIN_OS_RELEASE_FN, &data, NULL, &error)) {
@@ -138,7 +138,7 @@ gs_plugin_list_randomize_cb (gconstpointer a, gconstpointer b, gpointer user_dat
 {
 	const gchar *k1;
 	const gchar *k2;
-	_cleanup_free_ gchar *key = NULL;
+	g_autofree gchar *key = NULL;
 
 	key = g_strdup_printf ("Plugin::sort-key[%p]", user_data);
 	k1 = gs_app_get_metadata_item (GS_APP (a), key);
@@ -158,8 +158,8 @@ gs_plugin_list_randomize (GList **list)
 	GRand *rand;
 	GsApp *app;
 	gchar sort_key[] = { '\0', '\0', '\0', '\0' };
-	_cleanup_date_time_unref_ GDateTime *date = NULL;
-	_cleanup_free_ gchar *key = NULL;
+	g_autoptr(GDateTime) date = NULL;
+	g_autofree gchar *key = NULL;
 
 	g_return_if_fail (list != NULL);
 
@@ -193,7 +193,7 @@ gs_plugin_list_filter_duplicates (GList **list)
 	GsApp *app;
 	GsApp *found;
 	const gchar *id;
-	_cleanup_hashtable_unref_ GHashTable *hash = NULL;
+	g_autoptr(GHashTable) hash = NULL;
 
 	g_return_if_fail (list != NULL);
 

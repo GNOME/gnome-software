@@ -144,7 +144,7 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 	gdouble perc;
 	guint *cnt;
 	guint i;
-	_cleanup_list_free_ GList *keys = NULL;
+	g_autoptr(GList) keys = NULL;
 
 	/* create a hash table with origin:cnt */
 	origins = g_hash_table_new_full (g_str_hash, g_str_equal,
@@ -188,7 +188,7 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	gchar *tmp;
 	guint *perc;
 	guint i;
-	_cleanup_hashtable_unref_ GHashTable *origins = NULL;
+	g_autoptr(GHashTable) origins = NULL;
 
 	gs_profile_start (plugin->profile, "appstream::startup");
 	g_mutex_lock (&plugin->priv->store_mutex);
@@ -269,9 +269,9 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
 	AsIcon *icon;
 	gboolean ret;
-	_cleanup_error_free_ GError *error = NULL;
-	_cleanup_free_ gchar *fn = NULL;
-	_cleanup_free_ gchar *path = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autofree gchar *fn = NULL;
+	g_autofree gchar *path = NULL;
 
 	icon = as_app_get_icon_default (item);
 	switch (as_icon_get_kind (icon)) {
@@ -354,8 +354,8 @@ gs_plugin_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
 
 	for (i = 0; i < addons->len; i++) {
 		AsApp *as_addon = g_ptr_array_index (addons, i);
-		_cleanup_error_free_ GError *error = NULL;
-		_cleanup_object_unref_ GsApp *addon = NULL;
+		g_autoptr(GError) error = NULL;
+		g_autoptr(GsApp) addon = NULL;
 
 		addon = gs_app_new (as_app_get_id (as_addon));
 
@@ -538,7 +538,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (g_hash_table_size (urls) > 0 &&
 	    gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL) {
 		GList *l;
-		_cleanup_list_free_ GList *keys = NULL;
+		g_autoptr(GList) keys = NULL;
 		keys = g_hash_table_get_keys (urls);
 		for (l = keys; l != NULL; l = l->next) {
 			gs_app_set_url (app,
@@ -561,7 +561,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* set description */
 	tmp = as_app_get_description (item, NULL);
 	if (tmp != NULL) {
-		_cleanup_free_ gchar *from_xml = NULL;
+		g_autofree gchar *from_xml = NULL;
 #if AS_CHECK_VERSION(0,5,0)
 		from_xml = as_markup_convert_simple (tmp, error);
 #else
@@ -832,7 +832,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	/* just look at each app in turn */
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
-		_cleanup_object_unref_ GsApp *app = NULL;
+		g_autoptr(GsApp) app = NULL;
 		item = g_ptr_array_index (array, i);
 		if (as_app_get_id (item) == NULL)
 			continue;
@@ -864,7 +864,7 @@ gs_plugin_add_search_item_add (GsPlugin *plugin,
 			       guint match_value,
 			       GError **error)
 {
-	_cleanup_object_unref_ GsApp *app = NULL;
+	g_autoptr(GsApp) app = NULL;
 	app = gs_app_new (as_app_get_id (item));
 	if (!gs_plugin_refine_item (plugin, app, item, error))
 		return FALSE;
@@ -999,7 +999,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
 		if (as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_APPDATA) {
-			_cleanup_object_unref_ GsApp *app = NULL;
+			g_autoptr(GsApp) app = NULL;
 			app = gs_app_new (as_app_get_id (item));
 			ret = gs_plugin_refine_item (plugin, app, item, error);
 			if (!ret)
@@ -1027,7 +1027,7 @@ gs_plugin_add_categories_for_app (GList *list, AsApp *app)
 
 	/* does it match the main category */
 	for (l = list; l != NULL; l = l->next) {
-		_cleanup_list_free_ GList *children = NULL;
+		g_autoptr(GList) children = NULL;
 		parent = GS_CATEGORY (l->data);
 		if (!as_app_has_category (app, gs_category_get_id (parent)))
 			continue;

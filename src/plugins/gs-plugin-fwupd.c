@@ -131,9 +131,9 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	gint rc;
 	gsize len;
-	_cleanup_error_free_ GError *error_local = NULL;
-	_cleanup_free_ gchar *data = NULL;
-	_cleanup_object_unref_ GDBusConnection *conn = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autofree gchar *data = NULL;
+	g_autoptr(GDBusConnection) conn = NULL;
 
 	/* register D-Bus errors */
 	fwupd_error_quark ();
@@ -215,7 +215,7 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 				   GError **error)
 {
 	gsize len;
-	_cleanup_free_ gchar *data = NULL;
+	g_autofree gchar *data = NULL;
 
 	if (!g_file_get_contents (filename, &data, &len, error))
 		return NULL;
@@ -235,20 +235,20 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	FwupdDeviceFlags flags = 0;
 	GVariant *variant;
 	const gchar *key;
-	_cleanup_error_free_ GError *error_local = NULL;
-	_cleanup_free_ gchar *basename = NULL;
-	_cleanup_free_ gchar *checksum = NULL;
-	_cleanup_free_ gchar *display_name = NULL;
-	_cleanup_free_ gchar *filename_cache = NULL;
-	_cleanup_free_ gchar *guid = NULL;
-	_cleanup_free_ gchar *update_desc = NULL;
-	_cleanup_free_ gchar *update_hash = NULL;
-	_cleanup_free_ gchar *update_uri = NULL;
-	_cleanup_free_ gchar *update_version = NULL;
-	_cleanup_free_ gchar *vendor = NULL;
-	_cleanup_free_ gchar *version = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autofree gchar *basename = NULL;
+	g_autofree gchar *checksum = NULL;
+	g_autofree gchar *display_name = NULL;
+	g_autofree gchar *filename_cache = NULL;
+	g_autofree gchar *guid = NULL;
+	g_autofree gchar *update_desc = NULL;
+	g_autofree gchar *update_hash = NULL;
+	g_autofree gchar *update_uri = NULL;
+	g_autofree gchar *update_version = NULL;
+	g_autofree gchar *vendor = NULL;
+	g_autofree gchar *version = NULL;
 	_cleanup_object_unref_ AsIcon *icon = NULL;
-	_cleanup_object_unref_ GsApp *app = NULL;
+	g_autoptr(GsApp) app = NULL;
 
 	while (g_variant_iter_next (iter_device, "{&sv}", &key, &variant)) {
 		if (g_strcmp0 (key, "Guid") == 0) {
@@ -349,7 +349,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	gs_app_set_metadata (app, "fwupd::DeviceID", id);
 	gs_app_set_metadata (app, "DataDir::desktop-icon", "application-x-firmware");
 	if (update_desc != NULL) {
-		_cleanup_free_ gchar *md = NULL;
+		g_autofree gchar *md = NULL;
 #if AS_CHECK_VERSION(0,5,0)
 		md = as_markup_convert (update_desc,
 					AS_MARKUP_CONVERT_FORMAT_MARKDOWN,
@@ -388,10 +388,10 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	GVariant *variant;
 	const gchar *key;
 	gboolean ret;
-	_cleanup_error_free_ GError *error_local = NULL;
-	_cleanup_object_unref_ GsApp *app = NULL;
-	_cleanup_variant_iter_free_ GVariantIter *iter = NULL;
-	_cleanup_variant_unref_ GVariant *val = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GVariantIter) iter = NULL;
+	g_autoptr(GVariant) val = NULL;
 
 	/* watch the file in case it comes or goes */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -466,9 +466,9 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	const gchar *id;
 	gboolean ret;
 	GVariantIter *iter_device;
-	_cleanup_error_free_ GError *error_local = NULL;
-	_cleanup_variant_iter_free_ GVariantIter *iter = NULL;
-	_cleanup_variant_unref_ GVariant *val = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GVariantIter) iter = NULL;
+	g_autoptr(GVariant) val = NULL;
 
 	/* watch the file in case it comes or goes */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -503,7 +503,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	/* parse */
 	g_variant_get (val, "(a{sa{sv}})", &iter);
 	while (g_variant_iter_next (iter, "{&sa{sv}}", &id, &iter_device)) {
-		_cleanup_error_free_ GError *error_local2 = NULL;
+		g_autoptr(GError) error_local2 = NULL;
 		if (!gs_plugin_add_update_app (plugin, list,
 					       id, iter_device,
 					       &error_local2))
@@ -524,10 +524,10 @@ gs_plugin_fwupd_update_lvfs_metadata (const gchar *data_fn, const gchar *sig_fn,
 	gint fd_sig;
 	gint fd_data;
 	gint retval;
-	_cleanup_object_unref_ GDBusConnection *conn = NULL;
-	_cleanup_object_unref_ GDBusMessage *message = NULL;
-	_cleanup_object_unref_ GDBusMessage *request = NULL;
-	_cleanup_object_unref_ GUnixFDList *fd_list = NULL;
+	g_autoptr(GDBusConnection) conn = NULL;
+	g_autoptr(GDBusMessage) message = NULL;
+	g_autoptr(GDBusMessage) request = NULL;
+	g_autoptr(GUnixFDList) fd_list = NULL;
 
 	conn = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, error);
 	if (conn == NULL)
@@ -601,14 +601,14 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 				     GError **error)
 {
 	guint status_code;
-	_cleanup_error_free_ GError *error_local = NULL;
-	_cleanup_free_ gchar *basename_data = NULL;
-	_cleanup_free_ gchar *cache_fn_data = NULL;
-	_cleanup_free_ gchar *checksum = NULL;
-	_cleanup_free_ gchar *config_fn = NULL;
-	_cleanup_free_ gchar *url_data = NULL;
-	_cleanup_free_ gchar *url_sig = NULL;
-	_cleanup_keyfile_unref_ GKeyFile *config = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_autofree gchar *basename_data = NULL;
+	g_autofree gchar *cache_fn_data = NULL;
+	g_autofree gchar *checksum = NULL;
+	g_autofree gchar *config_fn = NULL;
+	g_autofree gchar *url_data = NULL;
+	g_autofree gchar *url_sig = NULL;
+	g_autoptr(GKeyFile) config = NULL;
 	_cleanup_object_unref_ SoupMessage *msg_data = NULL;
 	_cleanup_object_unref_ SoupMessage *msg_sig = NULL;
 
@@ -731,9 +731,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 	/* download the files to the cachedir */
 	for (i = 0; i < plugin->priv->to_download->len; i++) {
 		guint status_code;
-		_cleanup_error_free_ GError *error_local = NULL;
-		_cleanup_free_ gchar *basename = NULL;
-		_cleanup_free_ gchar *filename_cache = NULL;
+		g_autoptr(GError) error_local = NULL;
+		g_autofree gchar *basename = NULL;
+		g_autofree gchar *filename_cache = NULL;
 		_cleanup_object_unref_ SoupMessage *msg = NULL;
 
 		tmp = g_ptr_array_index (plugin->priv->to_download, i);
@@ -783,10 +783,10 @@ gs_plugin_fwupd_upgrade (GsPlugin *plugin,
 	GVariantBuilder builder;
 	gint fd;
 	gint retval;
-	_cleanup_object_unref_ GDBusConnection *conn = NULL;
-	_cleanup_object_unref_ GDBusMessage *message = NULL;
-	_cleanup_object_unref_ GDBusMessage *request = NULL;
-	_cleanup_object_unref_ GUnixFDList *fd_list = NULL;
+	g_autoptr(GDBusConnection) conn = NULL;
+	g_autoptr(GDBusMessage) message = NULL;
+	g_autoptr(GDBusMessage) request = NULL;
+	g_autoptr(GUnixFDList) fd_list = NULL;
 
 	conn = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, error);
 	if (conn == NULL)
@@ -944,8 +944,8 @@ gs_plugin_fwupd_content_type_matches (const gchar *filename,
 {
 	const gchar *tmp;
 	guint i;
-	_cleanup_object_unref_ GFile *file = NULL;
-	_cleanup_object_unref_ GFileInfo *info = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GFileInfo) info = NULL;
 	const gchar *mimetypes[] = {
 		"application/vnd.ms-cab-compressed",
 		NULL };
@@ -990,12 +990,12 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gint fd;
 	gint retval;
 	_cleanup_object_unref_ AsIcon *icon = NULL;
-	_cleanup_object_unref_ GDBusConnection *conn = NULL;
-	_cleanup_object_unref_ GDBusMessage *message = NULL;
-	_cleanup_object_unref_ GDBusMessage *request = NULL;
-	_cleanup_object_unref_ GsApp *app = NULL;
-	_cleanup_object_unref_ GUnixFDList *fd_list = NULL;
-	_cleanup_variant_iter_free_ GVariantIter *iter = NULL;
+	g_autoptr(GDBusConnection) conn = NULL;
+	g_autoptr(GDBusMessage) message = NULL;
+	g_autoptr(GDBusMessage) request = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GUnixFDList) fd_list = NULL;
+	g_autoptr(GVariantIter) iter = NULL;
 
 	/* does this match any of the mimetypes we support */
 	if (!gs_plugin_fwupd_content_type_matches (filename,
@@ -1079,7 +1079,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
 					    g_variant_get_string (variant, NULL));
 		} else if (g_strcmp0 (key, "Description") == 0) {
-			_cleanup_free_ gchar *tmp = NULL;
+			g_autofree gchar *tmp = NULL;
 #if AS_CHECK_VERSION(0,5,0)
 			tmp = as_markup_convert (g_variant_get_string (variant, NULL),
 						 AS_MARKUP_CONVERT_FORMAT_SIMPLE, NULL);

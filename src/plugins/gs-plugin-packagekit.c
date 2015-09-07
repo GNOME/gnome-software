@@ -194,7 +194,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	if (!ret)
 		goto out;
 	for (l = installed; l != NULL; l = l->next) {
-		_cleanup_strv_free_ gchar **split = NULL;
+		g_auto(GStrv) split = NULL;
 		app = GS_APP (l->data);
 		split = pk_package_id_split (gs_app_get_source_id_default (app));
 		if (g_str_has_prefix (split[PK_PACKAGE_ID_DATA], "installed:")) {
@@ -227,9 +227,9 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	ProgressData data;
 	const gchar *id;
 	guint i;
-	_cleanup_hashtable_unref_ GHashTable *hash = NULL;
+	g_autoptr(GHashTable) hash = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
+	g_autoptr(GPtrArray) array = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;
@@ -249,7 +249,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	array = pk_results_get_repo_detail_array (results);
 	for (i = 0; i < array->len; i++) {
-		_cleanup_object_unref_ GsApp *app = NULL;
+		g_autoptr(GsApp) app = NULL;
 		rd = g_ptr_array_index (array, i);
 		id = pk_repo_detail_get_id (rd);
 		app = gs_app_new (id);
@@ -315,8 +315,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	guint i, j;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *array_package_ids = NULL;
-	_cleanup_strv_free_ gchar **package_ids = NULL;
+	g_autoptr(GPtrArray) array_package_ids = NULL;
+	g_auto(GStrv) package_ids = NULL;
 
 	data.app = app;
 	data.plugin = plugin;
@@ -501,7 +501,7 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 			     GError **error)
 {
 	ProgressData data;
-	_cleanup_error_free_ GError *error_local = NULL;
+	g_autoptr(GError) error_local = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 
 	data.app = NULL;
@@ -542,7 +542,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	guint cnt = 0;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_strv_free_ gchar **package_ids = NULL;
+	g_auto(GStrv) package_ids = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;

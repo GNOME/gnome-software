@@ -109,9 +109,9 @@ static gboolean
 gs_plugin_icons_download (GsPlugin *plugin, const gchar *uri, const gchar *filename, GError **error)
 {
 	guint status_code;
-	_cleanup_object_unref_ GdkPixbuf *pixbuf_new = NULL;
-	_cleanup_object_unref_ GdkPixbuf *pixbuf = NULL;
-	_cleanup_object_unref_ GInputStream *stream = NULL;
+	g_autoptr(GdkPixbuf) pixbuf_new = NULL;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GInputStream) stream = NULL;
 	_cleanup_object_unref_ SoupMessage *msg = NULL;
 
 	/* create the GET data */

@@ -59,7 +59,7 @@ app_state_changed_idle (gpointer user_data)
 	AtkObject *accessible;
 	GtkWidget *label;
 	gboolean installed;
-	_cleanup_free_ gchar *name = NULL;
+	g_autofree gchar *name = NULL;
 
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 

@@ -139,7 +139,7 @@ static gint
 gs_plugin_local_find_app (GsPlugin *plugin, const gchar *app_id)
 {
 	gint rating = -1;
-	_cleanup_free_ gchar *statement = NULL;
+	g_autofree gchar *statement = NULL;
 
 	statement = g_strdup_printf ("SELECT rating FROM ratings WHERE app_id = '%s'", app_id);
 	sqlite3_exec (plugin->priv->db,
@@ -162,7 +162,7 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 	char *error_msg = NULL;
 	gboolean ret;
 	gint rc;
-	_cleanup_free_ gchar *statement = NULL;
+	g_autofree gchar *statement = NULL;
 
 	/* already loaded */
 	if (g_once_init_enter (&plugin->priv->loaded)) {

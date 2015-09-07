@@ -114,7 +114,7 @@ execute_search (GsShellSearchProvider  *self,
 		gchar		 **terms)
 {
 	PendingSearch *pending_search;
-	_cleanup_free_ gchar *string = NULL;
+	g_autofree gchar *string = NULL;
 
 	string = g_strjoinv (" ", terms);
 
@@ -186,7 +186,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 	g_debug ("****** GetResultMetas");
 
 	for (i = 0; results[i]; i++) {
-		_cleanup_object_unref_ GsApp *app = NULL;
+		g_autoptr(GsApp) app = NULL;
 
 		if (g_hash_table_lookup (self->metas_cache, results[i]))
 			continue;
@@ -239,7 +239,7 @@ handle_activate_result (GsShellSearchProvider2 	     *skeleton,
 			gpointer		      user_data)
 {
 	GApplication *app = g_application_get_default ();
-	_cleanup_free_ gchar *string = NULL;
+	g_autofree gchar *string = NULL;
 
 	string = g_strjoinv (" ", terms);
 
@@ -258,7 +258,7 @@ handle_launch_search (GsShellSearchProvider2 	   *skeleton,
 		      gpointer		      user_data)
 {
 	GApplication *app = g_application_get_default ();
-	_cleanup_free_ gchar *string = g_strjoinv (" ", terms);
+	g_autofree gchar *string = g_strjoinv (" ", terms);
 
 	g_action_group_activate_action (G_ACTION_GROUP (app), "search",
 				  	g_variant_new ("s", string));

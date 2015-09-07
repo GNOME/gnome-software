@@ -100,8 +100,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 {
 	gboolean ret;
 	guint i;
-	_cleanup_error_free_ GError *error_local = NULL;
-	_cleanup_strv_free_ gchar **package_ids = NULL;
+	g_autoptr(GError) error_local = NULL;
+	g_auto(GStrv) package_ids = NULL;
 
 	/* watch the file in case it comes or goes */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -129,8 +129,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 
 	/* add them to the new array */
 	for (i = 0; package_ids[i] != NULL; i++) {
-		_cleanup_object_unref_ GsApp *app = NULL;
-		_cleanup_strv_free_ gchar **split = NULL;
+		g_autoptr(GsApp) app = NULL;
+		g_auto(GStrv) split = NULL;
 		app = gs_app_new (NULL);
 		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_add_source_id (app, package_ids[i]);

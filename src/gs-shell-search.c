@@ -99,7 +99,7 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	GsShellSearch *self = GS_SHELL_SEARCH (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *app_row;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 
 	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -301,8 +301,8 @@ gs_shell_search_sort_func (GtkListBoxRow *a,
 {
 	GsApp *a1 = gs_app_row_get_app (GS_APP_ROW (a));
 	GsApp *a2 = gs_app_row_get_app (GS_APP_ROW (b));
-	_cleanup_free_ gchar *key1 = gs_shell_search_get_app_sort_key (a1);
-	_cleanup_free_ gchar *key2 = gs_shell_search_get_app_sort_key (a2);
+	g_autofree gchar *key1 = gs_shell_search_get_app_sort_key (a1);
+	g_autofree gchar *key2 = gs_shell_search_get_app_sort_key (a2);
 
 	/* compare the keys according to the algorithm above */
 	return g_strcmp0 (key2, key1);

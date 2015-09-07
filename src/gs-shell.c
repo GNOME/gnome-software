@@ -384,8 +384,8 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 	gboolean preedit_changed;
 	guint preedit_change_id;
 	gboolean res;
-	_cleanup_free_ gchar *old_text = NULL;
-	_cleanup_free_ gchar *new_text = NULL;
+	g_autofree gchar *old_text = NULL;
+	g_autofree gchar *new_text = NULL;
 
 	if (gs_shell_get_mode (shell) != GS_SHELL_MODE_OVERVIEW &&
 	    gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
@@ -815,7 +815,7 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 void
 gs_shell_show_details (GsShell *shell, const gchar *id)
 {
-	_cleanup_object_unref_ GsApp *app = NULL;
+	g_autoptr(GsApp) app = NULL;
 	app = gs_app_new (id);
 	gs_shell_show_app (shell, app);
 }

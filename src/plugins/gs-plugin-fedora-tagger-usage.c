@@ -51,7 +51,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	_cleanup_object_unref_ GSettings *settings = NULL;
+	g_autoptr(GSettings) settings = NULL;
 
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 
@@ -129,8 +129,8 @@ gs_plugin_app_set_usage_pkg (GsPlugin *plugin,
 			     GError **error)
 {
 	guint status_code;
-	_cleanup_free_ gchar *data = NULL;
-	_cleanup_free_ gchar *uri = NULL;
+	g_autofree gchar *data = NULL;
+	g_autofree gchar *uri = NULL;
 	_cleanup_object_unref_ SoupMessage *msg = NULL;
 
 	/* create the PUT data */

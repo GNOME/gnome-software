@@ -42,11 +42,11 @@ gs_plugin_add_featured_app (GList **list,
 			    const gchar *id,
 			    GError **error)
 {
-	_cleanup_free_ gchar *background = NULL;
-	_cleanup_free_ gchar *stroke_color = NULL;
-	_cleanup_free_ gchar *text_color = NULL;
-	_cleanup_free_ gchar *text_shadow = NULL;
-	_cleanup_object_unref_ GsApp *app = NULL;
+	g_autofree gchar *background = NULL;
+	g_autofree gchar *stroke_color = NULL;
+	g_autofree gchar *text_color = NULL;
+	g_autofree gchar *text_shadow = NULL;
+	g_autoptr(GsApp) app = NULL;
 
 	background = g_key_file_get_string (kf, id, "background", error);
 	if (background == NULL)
@@ -83,9 +83,9 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			GError **error)
 {
 	guint i;
-	_cleanup_free_ gchar *path = NULL;
-	_cleanup_keyfile_unref_ GKeyFile *kf = NULL;
-	_cleanup_strv_free_ gchar **apps = NULL;
+	g_autofree gchar *path = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
+	g_auto(GStrv) apps = NULL;
 
 	path = g_build_filename (DATADIR, "gnome-software", "featured.ini", NULL);
 	kf = g_key_file_new ();

@@ -130,7 +130,7 @@ gs_box_get_preferred_width (GtkWidget *widget, gint *min, gint *nat)
 	gint ms, m, n;
 	GList *l;
 	gint i;
-	_cleanup_free_ gint *cn = NULL;
+	g_autofree gint *cn = NULL;
 
 	n_children = g_list_length (box->children);
 

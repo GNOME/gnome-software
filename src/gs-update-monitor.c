@@ -78,7 +78,7 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 	const gchar *body;
 	guint64 elapsed_security = 0;
 	guint64 security_timestamp = 0;
-	_cleanup_object_unref_ GNotification *n = NULL;
+	g_autoptr(GNotification) n = NULL;
 
 	if (!g_file_query_exists (monitor->offline_update_file, NULL))
 		return;
@@ -156,7 +156,7 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 {
 	const gchar *message;
 	const gchar *title;
-	_cleanup_object_unref_ GNotification *notification = NULL;
+	g_autoptr(GNotification) notification = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 
 	results = pk_offline_get_results (NULL);
@@ -240,8 +240,8 @@ no_updates_for_a_week (GsUpdateMonitor *monitor)
 {
 	GTimeSpan d;
 	gint64 tmp;
-	_cleanup_date_time_unref_ GDateTime *last_update = NULL;
-	_cleanup_date_time_unref_ GDateTime *now = NULL;
+	g_autoptr(GDateTime) last_update = NULL;
+	g_autoptr(GDateTime) now = NULL;
 
 	g_settings_get (monitor->settings, "install-timestamp", "x", &tmp);
 	if (tmp == 0)
@@ -268,7 +268,7 @@ package_download_finished_cb (GObject *object,
 			      gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 
@@ -320,10 +320,10 @@ get_updates_finished_cb (GObject *object,
 	guint64 security_timestamp_old = 0;
 	guint i;
 	PkPackage *pkg;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
-	_cleanup_ptrarray_unref_ GPtrArray *packages = NULL;
+	g_autoptr(GPtrArray) packages = NULL;
 
 	results = pk_client_generic_finish (PK_CLIENT (object), res, &error);
 	if (results == NULL) {
@@ -400,7 +400,7 @@ refresh_cache_finished_cb (GObject *object,
 			   gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
-	_cleanup_error_free_ GError *error = NULL;
+	g_autoptr(GError) error = NULL;
 	_cleanup_object_unref_ PkError *error_code = NULL;
 	_cleanup_object_unref_ PkResults *results = NULL;
 
@@ -452,7 +452,7 @@ check_updates (GsUpdateMonitor *monitor)
 	if (monitor->check_timestamp != NULL) {
 		gint now_year, now_month, now_day, now_hour;
 		gint year, month, day;
-		_cleanup_date_time_unref_ GDateTime *now = NULL;
+		g_autoptr(GDateTime) now = NULL;
 
 		now = g_date_time_new_now_local ();
 

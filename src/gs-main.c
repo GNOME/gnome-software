@@ -35,8 +35,8 @@ int
 main (int argc, char **argv)
 {
 	int status = 0;
-	_cleanup_object_unref_ GsApplication *application = NULL;
-	_cleanup_object_unref_ GsProfile *profile = NULL;
+	g_autoptr(GsApplication) application = NULL;
+	g_autoptr(GsProfile) profile = NULL;
 
 	setlocale (LC_ALL, "");
 
