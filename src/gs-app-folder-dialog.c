@@ -36,10 +36,10 @@ struct _GsAppFolderDialogPrivate
 	GtkWidget	 *cancel_button;
 	GtkWidget 	 *done_button;
 	GtkWidget	 *app_folder_list;
-	GtkSizeGroup     *rows;
+	GtkSizeGroup	 *rows;
 	GtkListBoxRow	 *new_folder_button;
-	GtkWidget	*new_folder_popover;
-	GtkWidget	*new_folder_entry;
+	GtkWidget	 *new_folder_popover;
+	GtkWidget	 *new_folder_entry;
 	GtkListBoxRow	 *selected_row;
 };
 
