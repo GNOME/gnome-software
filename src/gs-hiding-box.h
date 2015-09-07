@@ -24,20 +24,12 @@
 
 #include <gtk/gtk.h>
 
-#define GS_TYPE_HIDING_BOX		(gs_hiding_box_get_type())
-#define GS_HIDING_BOX(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_HIDING_BOX, GsHidingBox))
-#define GS_HIDING_BOX_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_HIDING_BOX, GsHidingBoxClass))
-#define GS_IS_HIDING_BOX(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_HIDING_BOX))
-#define GS_IS_HIDING_BOX_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_HIDING_BOX))
-#define GS_HIDING_BOX_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_HIDING_BOX, GsHidingBoxClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsHidingBox		GsHidingBox;
-typedef struct _GsHidingBoxPrivate	GsHidingBoxPrivate;
-typedef struct _GsHidingBoxClass	GsHidingBoxClass;
+#define GS_TYPE_HIDING_BOX (gs_hiding_box_get_type ())
 
-GType		 gs_hiding_box_get_type		(void);
+G_DECLARE_FINAL_TYPE (GsHidingBox, gs_hiding_box, GS, HIDING_BOX, GtkContainer)
+
 GtkWidget	*gs_hiding_box_new		(void);
 void		 gs_hiding_box_set_spacing	(GsHidingBox	*box,
 						 gint		 spacing);
