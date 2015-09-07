@@ -28,25 +28,9 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_APP		(gs_app_get_type ())
-#define GS_APP(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_APP, GsApp))
-#define GS_APP_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_APP, GsAppClass))
-#define GS_IS_APP(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_APP))
-#define GS_IS_APP_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_APP))
-#define GS_APP_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_APP, GsAppClass))
-#define GS_APP_ERROR		(gs_app_error_quark ())
+#define GS_TYPE_APP (gs_app_get_type ())
 
-typedef struct GsAppPrivate GsAppPrivate;
-
-typedef struct
-{
-	 GObject		 parent;
-} GsApp;
-
-typedef struct
-{
-	GObjectClass		 parent_class;
-} GsAppClass;
+G_DECLARE_FINAL_TYPE (GsApp, gs_app, GS, APP, GObject)
 
 typedef enum {
 	GS_APP_ERROR_FAILED,
@@ -108,7 +92,6 @@ typedef enum {
 #define	GS_APP_KUDOS_WEIGHT_TO_PERCENTAGE(w)	(w * 20)
 
 GQuark		 gs_app_error_quark		(void);
-GType		 gs_app_get_type		(void);
 
 GsApp		*gs_app_new			(const gchar	*id);
 gchar		*gs_app_to_string		(GsApp		*app);
