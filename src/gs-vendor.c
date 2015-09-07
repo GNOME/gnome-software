@@ -25,10 +25,10 @@
 
 #include "gs-vendor.h"
 
-#define GS_VENDOR_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_VENDOR, GsVendorPrivate))
-
-struct GsVendorPrivate
+struct _GsVendor
 {
+	GObject				  parent_instance;
+
 	GKeyFile			 *file;
 };
 
@@ -62,7 +62,7 @@ gs_vendor_get_not_found_url (GsVendor *vendor, GsVendorUrlType type)
 
 	/* get data */
 	key = gs_vendor_type_to_string (type);
-	url = g_key_file_get_string (vendor->priv->file, "PackagesNotFound", key, NULL);
+	url = g_key_file_get_string (vendor->file, "PackagesNotFound", key, NULL);
 
 	/* none is a special value */
 	if (g_strcmp0 (url, "none") == 0) {
@@ -81,7 +81,7 @@ gs_vendor_get_not_found_url (GsVendor *vendor, GsVendorUrlType type)
 	/* get fallback data */
 	g_debug ("using fallback");
 	key = gs_vendor_type_to_string (GS_VENDOR_URL_TYPE_DEFAULT);
-	url = g_key_file_get_string (vendor->priv->file, "PackagesNotFound", key, NULL);
+	url = g_key_file_get_string (vendor->file, "PackagesNotFound", key, NULL);
 
 	/* none is a special value */
 	if (g_strcmp0 (url, "none") == 0) {
@@ -102,10 +102,8 @@ gs_vendor_init (GsVendor *vendor)
 {
 	gboolean ret;
 
-	vendor->priv = GS_VENDOR_GET_PRIVATE (vendor);
-
-	vendor->priv->file = g_key_file_new ();
-	ret = g_key_file_load_from_file (vendor->priv->file, "/etc/PackageKit/Vendor.conf", G_KEY_FILE_NONE, NULL);
+	vendor->file = g_key_file_new ();
+	ret = g_key_file_load_from_file (vendor->file, "/etc/PackageKit/Vendor.conf", G_KEY_FILE_NONE, NULL);
 	if (!ret)
 		g_warning ("file not found");
 }
@@ -117,14 +115,9 @@ gs_vendor_init (GsVendor *vendor)
 static void
 gs_vendor_finalize (GObject *object)
 {
-	GsVendor *vendor;
+	GsVendor *vendor = GS_VENDOR (object);
 
-	g_return_if_fail (PK_IS_VENDOR (object));
-
-	vendor = GS_VENDOR (object);
-	g_return_if_fail (vendor->priv != NULL);
-
-	g_key_file_free (vendor->priv->file);
+	g_key_file_free (vendor->file);
 
 	G_OBJECT_CLASS (gs_vendor_parent_class)->finalize (object);
 }
@@ -138,7 +131,6 @@ gs_vendor_class_init (GsVendorClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_vendor_finalize;
-	g_type_class_add_private (klass, sizeof (GsVendorPrivate));
 }
 
 /**
