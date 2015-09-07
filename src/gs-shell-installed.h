@@ -30,34 +30,16 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_INSTALLED		(gs_shell_installed_get_type ())
-#define GS_SHELL_INSTALLED(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_SHELL_INSTALLED, GsShellInstalled))
-#define GS_SHELL_INSTALLED_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_SHELL_INSTALLED, GsShellInstalledClass))
-#define GS_IS_SHELL_INSTALLED(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_SHELL_INSTALLED))
-#define GS_IS_SHELL_INSTALLED_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_SHELL_INSTALLED))
-#define GS_SHELL_INSTALLED_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_SHELL_INSTALLED, GsShellInstalledClass))
+#define GS_TYPE_SHELL_INSTALLED (gs_shell_installed_get_type ())
 
-typedef struct GsShellInstalledPrivate GsShellInstalledPrivate;
-
-typedef struct
-{
-	 GsPage				 parent;
-	 GsShellInstalledPrivate	*priv;
-} GsShellInstalled;
-
-typedef struct
-{
-	GsPageClass			 parent_class;
-} GsShellInstalledClass;
-
-GType		 gs_shell_installed_get_type	(void);
+G_DECLARE_FINAL_TYPE (GsShellInstalled, gs_shell_installed, GS, SHELL_INSTALLED, GsPage)
 
 GsShellInstalled *gs_shell_installed_new	(void);
-void		 gs_shell_installed_invalidate	(GsShellInstalled	*shell_installed);
-void		 gs_shell_installed_switch_to	(GsShellInstalled	*shell_installed,
+void		 gs_shell_installed_invalidate	(GsShellInstalled	*self);
+void		 gs_shell_installed_switch_to	(GsShellInstalled	*self,
 						 gboolean		scroll_up);
-void		 gs_shell_installed_reload	(GsShellInstalled	*shell_installed);
-void		 gs_shell_installed_setup	(GsShellInstalled	*shell_installed,
+void		 gs_shell_installed_reload	(GsShellInstalled	*self);
+void		 gs_shell_installed_setup	(GsShellInstalled	*self,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
