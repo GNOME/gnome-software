@@ -33,7 +33,7 @@
 #include "gs-utils.h"
 #include "gs-folders.h"
 
-struct _GsAppRowPrivate
+typedef struct
 {
 	GsApp		*app;
 	GtkWidget	*image;
@@ -53,7 +53,7 @@ struct _GsAppRowPrivate
 	gboolean	 show_update;
 	gboolean	 selectable;
 	guint		 pending_refresh_id;
-};
+} GsAppRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppRow, gs_app_row, GTK_TYPE_LIST_BOX_ROW)
 
@@ -78,7 +78,7 @@ static guint signals [SIGNAL_LAST] = { 0 };
 static GString *
 gs_app_row_get_description (GsAppRow *app_row)
 {
-	GsAppRowPrivate *priv = app_row->priv;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	const gchar *tmp = NULL;
 	_cleanup_free_ gchar *escaped = NULL;
 
@@ -117,11 +117,11 @@ gs_app_row_get_description (GsAppRow *app_row)
 void
 gs_app_row_refresh (GsAppRow *app_row)
 {
-	GsAppRowPrivate *priv = app_row->priv;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	GtkStyleContext *context;
 	GString *str = NULL;
 
-	if (app_row->priv->app == NULL)
+	if (priv->app == NULL)
 		return;
 
 	/* do a fill bar for the current progress */
@@ -202,10 +202,10 @@ gs_app_row_refresh (GsAppRow *app_row)
 	context = gtk_widget_get_style_context (priv->button);
 	gtk_style_context_remove_class (context, "destructive-action");
 
-	switch (gs_app_get_state (app_row->priv->app)) {
+	switch (gs_app_get_state (priv->app)) {
 	case AS_APP_STATE_UNAVAILABLE:
 		gtk_widget_set_visible (priv->button, TRUE);
-		if (gs_app_get_url (app_row->priv->app, AS_URL_KIND_MISSING) != NULL) {
+		if (gs_app_get_url (priv->app, AS_URL_KIND_MISSING) != NULL) {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily installed */
 			gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
@@ -235,7 +235,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 		break;
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_INSTALLED:
-		if (gs_app_get_kind (app_row->priv->app) != GS_APP_KIND_SYSTEM)
+		if (gs_app_get_kind (priv->app) != GS_APP_KIND_SYSTEM)
 			gtk_widget_set_visible (priv->button, TRUE);
 		/* TRANSLATORS: this is a button next to the search results that
 		 * allows the application to be easily removed */
@@ -315,8 +315,9 @@ gs_app_row_unreveal (GsAppRow *app_row)
 GsApp *
 gs_app_row_get_app (GsAppRow *app_row)
 {
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	g_return_val_if_fail (GS_IS_APP_ROW (app_row), NULL);
-	return app_row->priv->app;
+	return priv->app;
 }
 
 /**
@@ -326,7 +327,7 @@ static gboolean
 gs_app_row_refresh_idle_cb (gpointer user_data)
 {
 	GsAppRow *app_row = GS_APP_ROW (user_data);
-	GsAppRowPrivate *priv = app_row->priv;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	priv->pending_refresh_id = 0;
 	gs_app_row_refresh (app_row);
 	return FALSE;
@@ -340,7 +341,7 @@ gs_app_row_notify_props_changed_cb (GsApp *app,
 				    GParamSpec *pspec,
 				    GsAppRow *app_row)
 {
-	GsAppRowPrivate *priv = app_row->priv;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	if (priv->pending_refresh_id > 0)
 		return;
 	priv->pending_refresh_id = g_idle_add (gs_app_row_refresh_idle_cb, app_row);
@@ -352,16 +353,17 @@ gs_app_row_notify_props_changed_cb (GsApp *app,
 void
 gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 {
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	g_return_if_fail (GS_IS_APP_ROW (app_row));
 	g_return_if_fail (GS_IS_APP (app));
-	app_row->priv->app = g_object_ref (app);
-	g_signal_connect_object (app_row->priv->app, "notify::state",
+	priv->app = g_object_ref (app);
+	g_signal_connect_object (priv->app, "notify::state",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
-	g_signal_connect_object (app_row->priv->app, "notify::rating",
+	g_signal_connect_object (priv->app, "notify::rating",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
-	g_signal_connect_object (app_row->priv->app, "notify::progress",
+	g_signal_connect_object (priv->app, "notify::progress",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
 	gs_app_row_refresh (app_row);
@@ -374,7 +376,7 @@ static void
 gs_app_row_destroy (GtkWidget *object)
 {
 	GsAppRow *app_row = GS_APP_ROW (object);
-	GsAppRowPrivate *priv = app_row->priv;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	if (priv->app)
 		g_signal_handlers_disconnect_by_func (priv->app, gs_app_row_notify_props_changed_cb, app_row);
@@ -479,10 +481,7 @@ checkbox_toggled (GtkWidget *widget, GsAppRow *app_row)
 static void
 gs_app_row_init (GsAppRow *app_row)
 {
-	GsAppRowPrivate *priv;
-
-	priv = gs_app_row_get_instance_private (app_row);
-	app_row->priv = priv;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	gtk_widget_set_has_window (GTK_WIDGET (app_row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (app_row));
@@ -500,21 +499,27 @@ gs_app_row_set_size_groups (GsAppRow *app_row,
 			    GtkSizeGroup *image,
 			    GtkSizeGroup *name)
 {
-	gtk_size_group_add_widget (image, app_row->priv->image);
-	gtk_size_group_add_widget (name, app_row->priv->name_box);
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	gtk_size_group_add_widget (image, priv->image);
+	gtk_size_group_add_widget (name, priv->name_box);
 }
 
 void
 gs_app_row_set_colorful (GsAppRow *app_row,
 			    gboolean     colorful)
 {
-	app_row->priv->colorful = colorful;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->colorful = colorful;
 }
 
 void
 gs_app_row_set_show_codec (GsAppRow *app_row, gboolean show_codec)
 {
-	app_row->priv->show_codec = show_codec;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->show_codec = show_codec;
 }
 
 /**
@@ -525,25 +530,31 @@ gs_app_row_set_show_codec (GsAppRow *app_row, gboolean show_codec)
 void
 gs_app_row_set_show_update (GsAppRow *app_row, gboolean show_update)
 {
-	app_row->priv->show_update = show_update;
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->show_update = show_update;
 }
 
 void
 gs_app_row_set_selectable (GsAppRow *app_row, gboolean selectable)
 {
-	app_row->priv->selectable = selectable;
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (app_row->priv->checkbox), FALSE);
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	priv->selectable = selectable;
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->checkbox), FALSE);
 	gs_app_row_refresh (app_row);
 }
 
 void
 gs_app_row_set_selected (GsAppRow *app_row, gboolean selected)
 {
-	if (!app_row->priv->selectable)
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	if (!priv->selectable)
 		return;
 
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_row->priv->checkbox)) != selected) {
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (app_row->priv->checkbox), selected);
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->checkbox)) != selected) {
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->checkbox), selected);
 		g_object_notify (G_OBJECT (app_row), "selected");
 	}
 }
@@ -551,10 +562,12 @@ gs_app_row_set_selected (GsAppRow *app_row, gboolean selected)
 gboolean
 gs_app_row_get_selected (GsAppRow *app_row)
 {
-	if (!app_row->priv->selectable)
+	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	if (!priv->selectable)
 		return FALSE;
 
-	return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (app_row->priv->checkbox));
+	return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->checkbox));
 }
 
 GtkWidget *

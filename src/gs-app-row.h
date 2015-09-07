@@ -26,26 +26,11 @@
 
 #include "gs-app.h"
 
-#define GS_TYPE_APP_ROW			(gs_app_row_get_type())
-#define GS_APP_ROW(obj)			(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_APP_ROW, GsAppRow))
-#define GS_APP_ROW_CLASS(cls)		(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_APP_ROW, GsAppRowClass))
-#define GS_IS_APP_ROW(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_APP_ROW))
-#define GS_IS_APP_ROW_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_APP_ROW))
-#define GS_APP_ROW_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_APP_ROW, GsAppRowClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsAppRow		GsAppRow;
-typedef struct _GsAppRowClass		GsAppRowClass;
-typedef struct _GsAppRowPrivate		GsAppRowPrivate;
+#define GS_TYPE_APP_ROW (gs_app_row_get_type ())
 
-struct _GsAppRow
-{
-	GtkListBoxRow		 parent;
-
-	/*< private >*/
-	GsAppRowPrivate		*priv;
-};
+G_DECLARE_DERIVABLE_TYPE (GsAppRow, gs_app_row, GS, APP_ROW, GtkListBoxRow)
 
 struct _GsAppRowClass
 {
@@ -54,7 +39,6 @@ struct _GsAppRowClass
 	void			(*unrevealed)		(GsAppRow	*app_row);
 };
 
-GType		 gs_app_row_get_type			(void);
 GtkWidget	*gs_app_row_new				(void);
 void		 gs_app_row_refresh			(GsAppRow	*app_row);
 void		 gs_app_row_unreveal			(GsAppRow	*app_row);
