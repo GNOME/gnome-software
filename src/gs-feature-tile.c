@@ -27,8 +27,10 @@
 #include "gs-cleanup.h"
 #include "gs-feature-tile.h"
 
-struct _GsFeatureTilePrivate
+struct _GsFeatureTile
 {
+	GtkButton	 parent_instance;
+
 	GsApp		*app;
 	GtkWidget	*image;
 	GtkWidget	*stack;
@@ -37,48 +39,43 @@ struct _GsFeatureTilePrivate
 	GtkCssProvider  *provider;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsFeatureTile, gs_feature_tile, GTK_TYPE_BUTTON)
+G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GTK_TYPE_BUTTON)
 
 GsApp *
 gs_feature_tile_get_app (GsFeatureTile *tile)
 {
-	GsFeatureTilePrivate *priv;
-
 	g_return_val_if_fail (GS_IS_FEATURE_TILE (tile), NULL);
 
-	priv = gs_feature_tile_get_instance_private (tile);
-	return priv->app;
+	return tile->app;
 }
 
 static gboolean
 app_state_changed_idle (gpointer user_data)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (user_data);
-	GsFeatureTilePrivate *priv;
 	AtkObject *accessible;
 	_cleanup_free_ gchar *name = NULL;
 
-	priv = gs_feature_tile_get_instance_private (tile);
 	accessible = gtk_widget_get_accessible (GTK_WIDGET (tile));
 
-	switch (gs_app_get_state (priv->app)) {
+	switch (gs_app_get_state (tile->app)) {
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_INSTALLING:
 	case AS_APP_STATE_REMOVING:
 	case AS_APP_STATE_UPDATABLE:
 		name = g_strdup_printf ("%s (%s)",
-					gs_app_get_name (priv->app),
+					gs_app_get_name (tile->app),
 					_("Installed"));
 		break;
 	case AS_APP_STATE_AVAILABLE:
 	default:
-		name = g_strdup (gs_app_get_name (priv->app));
+		name = g_strdup (gs_app_get_name (tile->app));
 		break;
 	}
 
 	if (GTK_IS_ACCESSIBLE (accessible)) {
 		atk_object_set_name (accessible, name);
-		atk_object_set_description (accessible, gs_app_get_summary (priv->app));
+		atk_object_set_description (accessible, gs_app_get_summary (tile->app));
 	}
 
 	g_object_unref (tile);
@@ -94,7 +91,6 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsFeatureTile *tile)
 void
 gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 {
-	GsFeatureTilePrivate *priv;
 	const gchar *background;
 	const gchar *stroke_color;
 	const gchar *text_color;
@@ -104,25 +100,23 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	g_return_if_fail (GS_IS_FEATURE_TILE (tile));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
-	priv = gs_feature_tile_get_instance_private (tile);
+	if (tile->app)
+		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
 
-	if (priv->app)
-		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, tile);
-
-	g_clear_object (&priv->app);
+	g_clear_object (&tile->app);
 	if (!app)
 		return;
 
-	priv->app = g_object_ref (app);
+	tile->app = g_object_ref (app);
 
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "content");
+	gtk_stack_set_visible_child_name (GTK_STACK (tile->stack), "content");
 
-	g_signal_connect (priv->app, "notify::state",
+	g_signal_connect (tile->app, "notify::state",
 			  G_CALLBACK (app_state_changed), tile);
-	app_state_changed (priv->app, NULL, tile);
+	app_state_changed (tile->app, NULL, tile);
 
-	gtk_label_set_label (GTK_LABEL (priv->title), gs_app_get_name (app));
-	gtk_label_set_label (GTK_LABEL (priv->subtitle), gs_app_get_summary (app));
+	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (app));
+	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
 
 	/* check the app has the featured data */
 	text_color = gs_app_get_metadata_item (app, "Featured::text-color");
@@ -156,22 +150,19 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 				"			      alpha(#aaa,0.16)), %s;\n",
 				background);
 	g_string_append (data, "}\n");
-	gtk_css_provider_load_from_data (priv->provider, data->str, -1, NULL);
+	gtk_css_provider_load_from_data (tile->provider, data->str, -1, NULL);
 }
 
 static void
 gs_feature_tile_destroy (GtkWidget *widget)
 {
 	GsFeatureTile *tile = GS_FEATURE_TILE (widget);
-	GsFeatureTilePrivate *priv;
 
-	priv = gs_feature_tile_get_instance_private (tile);
+	if (tile->app)
+		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
 
-	if (priv->app)
-		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, tile);
-
-	g_clear_object (&priv->app);
-	g_clear_object (&priv->provider);
+	g_clear_object (&tile->app);
+	g_clear_object (&tile->provider);
 
 	GTK_WIDGET_CLASS (gs_feature_tile_parent_class)->destroy (widget);
 }
@@ -179,15 +170,12 @@ gs_feature_tile_destroy (GtkWidget *widget)
 static void
 gs_feature_tile_init (GsFeatureTile *tile)
 {
-	GsFeatureTilePrivate *priv;
-
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (tile));
-	priv = gs_feature_tile_get_instance_private (tile);
 
-	priv->provider = gtk_css_provider_new ();
+	tile->provider = gtk_css_provider_new ();
 	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
-						   GTK_STYLE_PROVIDER (priv->provider),
+						   GTK_STYLE_PROVIDER (tile->provider),
 						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
@@ -200,10 +188,10 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/feature-tile.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, image);
-	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, stack);
-	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, title);
-	gtk_widget_class_bind_template_child_private (widget_class, GsFeatureTile, subtitle);
+	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, image);
+	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, title);
+	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, subtitle);
 }
 
 GtkWidget *
