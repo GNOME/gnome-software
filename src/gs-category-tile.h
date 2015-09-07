@@ -26,31 +26,12 @@
 
 #include "gs-category.h"
 
-#define GS_TYPE_CATEGORY_TILE		(gs_category_tile_get_type())
-#define GS_CATEGORY_TILE(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_CATEGORY_TILE, GsCategoryTile))
-#define GS_CATEGORY_TILE_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_CATEGORY_TILE, GsCategoryTileClass))
-#define GS_IS_CATEGORY_TILE(obj)	(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_CATEGORY_TILE))
-#define GS_IS_CATEGORY_TILE_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_CATEGORY_TILE))
-#define GS_CATEGORY_TILE_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_CATEGORY_TILE, GsCategoryTileClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsCategoryTile			GsCategoryTile;
-typedef struct _GsCategoryTileClass		GsCategoryTileClass;
-typedef struct _GsCategoryTilePrivate		GsCategoryTilePrivate;
+#define GS_TYPE_CATEGORY_TILE (gs_category_tile_get_type ())
 
-struct _GsCategoryTile
-{
-	GtkButton		 parent;
-	GsCategoryTilePrivate	*priv;
-};
+G_DECLARE_FINAL_TYPE (GsCategoryTile, gs_category_tile, GS, CATEGORY_TILE, GtkButton)
 
-struct _GsCategoryTileClass
-{
-	GtkButtonClass		 parent_class;
-};
-
-GType		 gs_category_tile_get_type		(void);
 GtkWidget	*gs_category_tile_new			(GsCategory *cat);
 GsCategory      *gs_category_tile_get_category		(GsCategoryTile	*tile);
 void		 gs_category_tile_set_category		(GsCategoryTile	*tile,
