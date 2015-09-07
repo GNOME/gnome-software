@@ -26,31 +26,12 @@
 
 #include "gs-app.h"
 
-#define GS_TYPE_POPULAR_TILE		(gs_popular_tile_get_type())
-#define GS_POPULAR_TILE(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_POPULAR_TILE, GsPopularTile))
-#define GS_POPULAR_TILE_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_POPULAR_TILE, GsPopularTileClass))
-#define GS_IS_POPULAR_TILE(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_POPULAR_TILE))
-#define GS_IS_POPULAR_TILE_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_POPULAR_TILE))
-#define GS_POPULAR_TILE_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_POPULAR_TILE, GsPopularTileClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsPopularTile			GsPopularTile;
-typedef struct _GsPopularTileClass		GsPopularTileClass;
-typedef struct _GsPopularTilePrivate		GsPopularTilePrivate;
+#define GS_TYPE_POPULAR_TILE (gs_popular_tile_get_type ())
 
-struct _GsPopularTile
-{
-	GtkButton		 parent;
-	GsPopularTilePrivate	*priv;
-};
+G_DECLARE_FINAL_TYPE (GsPopularTile, gs_popular_tile, GS, POPULAR_TILE, GtkButton)
 
-struct _GsPopularTileClass
-{
-	GtkButtonClass		 parent_class;
-};
-
-GType		 gs_popular_tile_get_type		(void);
 GtkWidget	*gs_popular_tile_new			(GsApp		*app);
 GsApp		*gs_popular_tile_get_app		(GsPopularTile	*tile);
 void		 gs_popular_tile_set_app		(GsPopularTile	*tile,
