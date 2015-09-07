@@ -24,30 +24,12 @@
 
 #include <gtk/gtk.h>
 
-#define GS_TYPE_PROGRESS_BUTTON			(gs_progress_button_get_type())
-#define GS_PROGRESS_BUTTON(obj)			(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_PROGRESS_BUTTON, GsProgressButton))
-#define GS_PROGRESS_BUTTON_CLASS(cls)		(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_PROGRESS_BUTTON, GsProgressButtonClass))
-#define GS_IS_PROGRESS_BUTTON(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_PROGRESS_BUTTON))
-#define GS_IS_PROGRESS_BUTTON_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_PROGRESS_BUTTON))
-#define GS_PROGRESS_BUTTON_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_PROGRESS_BUTTON, GsProgressButtonClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsProgressButton		GsProgressButton;
-typedef struct _GsProgressButtonClass		GsProgressButtonClass;
-typedef struct _GsProgressButtonPrivate		GsProgressButtonPrivate;
+#define GS_TYPE_PROGRESS_BUTTON (gs_progress_button_get_type ())
 
-struct _GsProgressButton
-{
-	GtkButton	 parent;
-};
+G_DECLARE_FINAL_TYPE (GsProgressButton, gs_progress_button, GS, PROGRESS_BUTTON, GtkButton)
 
-struct _GsProgressButtonClass
-{
-	GtkButtonClass	 parent_class;
-};
-
-GType		 gs_progress_button_get_type		(void);
 GtkWidget	*gs_progress_button_new			(void);
 void		 gs_progress_button_set_progress	(GsProgressButton	*button,
 							 guint			 percentage);

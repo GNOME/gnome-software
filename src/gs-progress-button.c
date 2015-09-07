@@ -23,17 +23,18 @@
 
 #include "gs-progress-button.h"
 
-struct _GsProgressButtonPrivate
+struct _GsProgressButton
 {
+	GtkButton	 parent_instance;
+
 	GtkCssProvider	*css_provider;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsProgressButton, gs_progress_button, GTK_TYPE_BUTTON)
+G_DEFINE_TYPE (GsProgressButton, gs_progress_button, GTK_TYPE_BUTTON)
 
 void
 gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 {
-	GsProgressButtonPrivate *priv = gs_progress_button_get_instance_private (button);
 	gchar *css;
 
 	if (percentage == 0)
@@ -43,7 +44,7 @@ gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 	else
 		css = g_strdup_printf (".button.install-progress { background: linear-gradient(to right, @theme_selected_bg_color %d%%, @theme_bg_color %d%%); }", percentage, percentage + 1);
 
-	gtk_css_provider_load_from_data (priv->css_provider, css, -1, NULL);
+	gtk_css_provider_load_from_data (button->css_provider, css, -1, NULL);
 	g_free (css);
 }
 
@@ -63,9 +64,8 @@ static void
 gs_progress_button_dispose (GObject *object)
 {
 	GsProgressButton *button = GS_PROGRESS_BUTTON (object);
-	GsProgressButtonPrivate *priv = gs_progress_button_get_instance_private (button);
 
-	g_clear_object (&priv->css_provider);
+	g_clear_object (&button->css_provider);
 
 	G_OBJECT_CLASS (gs_progress_button_parent_class)->dispose (object);
 }
@@ -73,11 +73,9 @@ gs_progress_button_dispose (GObject *object)
 static void
 gs_progress_button_init (GsProgressButton *button)
 {
-	GsProgressButtonPrivate *priv = gs_progress_button_get_instance_private (button);
-
-	priv->css_provider = gtk_css_provider_new ();
+	button->css_provider = gtk_css_provider_new ();
 	gtk_style_context_add_provider (gtk_widget_get_style_context (GTK_WIDGET (button)),
-					GTK_STYLE_PROVIDER (priv->css_provider),
+					GTK_STYLE_PROVIDER (button->css_provider),
 					GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
 }
 
