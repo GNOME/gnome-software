@@ -33,8 +33,10 @@
 #include "gs-screenshot-image.h"
 #include "gs-utils.h"
 
-struct _GsScreenshotImagePrivate
+struct _GsScreenshotImage
 {
+	GtkBin		 parent_instance;
+
 	AsScreenshot	*screenshot;
 	GtkWidget	*stack;
 	GtkWidget	*box_error;
@@ -52,7 +54,7 @@ struct _GsScreenshotImagePrivate
 	gint		 scale;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
+G_DEFINE_TYPE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
 
 /**
  * gs_screenshot_image_get_screenshot:
@@ -60,10 +62,8 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN
 AsScreenshot *
 gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
 {
-	GsScreenshotImagePrivate *priv;
 	g_return_val_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg), NULL);
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-	return priv->screenshot;
+	return ssimg->screenshot;
 }
 
 /**
@@ -72,18 +72,15 @@ gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
 static void
 gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 {
-	GsScreenshotImagePrivate *priv;
 	gint width, height;
 
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "error");
-	gtk_label_set_label (GTK_LABEL (priv->label_error), message);
-	gtk_widget_get_size_request (priv->stack, &width, &height);
+	gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "error");
+	gtk_label_set_label (GTK_LABEL (ssimg->label_error), message);
+	gtk_widget_get_size_request (ssimg->stack, &width, &height);
 	if (width < 200)
-		gtk_widget_hide (priv->label_error);
+		gtk_widget_hide (ssimg->label_error);
 	else
-		gtk_widget_show (priv->label_error);
+		gtk_widget_show (ssimg->label_error);
 }
 
 /**
@@ -92,12 +89,9 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 static GdkPixbuf *
 gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 {
-	GsScreenshotImagePrivate *priv;
 	_cleanup_object_unref_ GnomeBG *bg = NULL;
 	_cleanup_object_unref_ GnomeDesktopThumbnailFactory *factory = NULL;
 	_cleanup_object_unref_ GSettings *settings = NULL;
-
-	priv = gs_screenshot_image_get_instance_private (ssimg);
 
 	factory = gnome_desktop_thumbnail_factory_new (GNOME_DESKTOP_THUMBNAIL_SIZE_LARGE);
 	bg = gnome_bg_new ();
@@ -105,7 +99,7 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 	gnome_bg_load_from_preferences (bg, settings);
 	return gnome_bg_create_thumbnail (bg, factory,
 					  gdk_screen_get_default (),
-					  priv->width, priv->height);
+					  ssimg->width, ssimg->height);
 }
 
 /**
@@ -114,14 +108,13 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 static gboolean
 gs_screenshot_image_use_desktop_background (GsScreenshotImage *ssimg, GdkPixbuf *pixbuf)
 {
-	GsScreenshotImagePrivate *priv = gs_screenshot_image_get_instance_private (ssimg);
 	_cleanup_object_unref_ AsImage *im = NULL;
 
 	/* nothing to show, means no background mode */
 	if (pixbuf == NULL)
 		return FALSE;
 	/* background mode explicitly disabled */
-	if (!priv->use_desktop_background)
+	if (!ssimg->use_desktop_background)
 		return FALSE;
 
 	/* use a temp AsImage */
@@ -136,20 +129,17 @@ gs_screenshot_image_use_desktop_background (GsScreenshotImage *ssimg, GdkPixbuf 
 static void
 as_screenshot_show_image (GsScreenshotImage *ssimg)
 {
-	GsScreenshotImagePrivate *priv;
 	_cleanup_object_unref_ GdkPixbuf *pixbuf_bg = NULL;
 	_cleanup_object_unref_ GdkPixbuf *pixbuf = NULL;
 
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-
 	/* no need to composite */
-	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT) {
-		pixbuf_bg = gdk_pixbuf_new_from_file (priv->filename, NULL);
+	if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT) {
+		pixbuf_bg = gdk_pixbuf_new_from_file (ssimg->filename, NULL);
 	} else {
 		/* this is always going to have alpha */
-		pixbuf = gdk_pixbuf_new_from_file_at_scale (priv->filename,
-							    priv->width * priv->scale,
-							    priv->height * priv->scale,
+		pixbuf = gdk_pixbuf_new_from_file_at_scale (ssimg->filename,
+							    ssimg->width * ssimg->scale,
+							    ssimg->height * ssimg->scale,
 							    FALSE, NULL);
 		if (pixbuf != NULL) {
 			if (gs_screenshot_image_use_desktop_background (ssimg, pixbuf)) {
@@ -159,7 +149,7 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 				} else {
 					gdk_pixbuf_composite (pixbuf, pixbuf_bg,
 							      0, 0,
-							      priv->width, priv->height,
+							      ssimg->width, ssimg->height,
 							      0, 0, 1.0f, 1.0f,
 							      GDK_INTERP_NEAREST, 255);
 				}
@@ -170,20 +160,20 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	}
 
 	/* show icon */
-	if (g_strcmp0 (priv->current_image, "image1") == 0) {
+	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
 		if (pixbuf_bg != NULL) {
-			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image2),
-							     pixbuf_bg, priv->scale);
+			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image2),
+							     pixbuf_bg, ssimg->scale);
 		}
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image2");
-		priv->current_image = "image2";
+		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image2");
+		ssimg->current_image = "image2";
 	} else {
 		if (pixbuf_bg != NULL) {
-			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image1),
-							     pixbuf_bg, priv->scale);
+			gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image1),
+							     pixbuf_bg, ssimg->scale);
 		}
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "image1");
-		priv->current_image = "image1";
+		gtk_stack_set_visible_child_name (GTK_STACK (ssimg->stack), "image1");
+		ssimg->current_image = "image1";
 	}
 
 	gtk_widget_show (GTK_WIDGET (ssimg));
@@ -196,29 +186,26 @@ static void
 gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 				  const gchar *filename_thumb)
 {
-	GsScreenshotImagePrivate *priv;
 	_cleanup_object_unref_ AsImage *im = NULL;
 	_cleanup_object_unref_ GdkPixbuf *pb = NULL;
-
-	priv = gs_screenshot_image_get_instance_private (ssimg);
 
 	/* create an helper which can do the blurring for us */
 	im = as_image_new ();
 	if (!as_image_load_filename (im, filename_thumb, NULL))
 		return;
 	pb = as_image_save_pixbuf (im,
-				   priv->width * priv->scale,
-				   priv->height * priv->scale,
+				   ssimg->width * ssimg->scale,
+				   ssimg->height * ssimg->scale,
 				   AS_IMAGE_SAVE_FLAG_BLUR);
 	if (pb == NULL)
 		return;
 
-	if (g_strcmp0 (priv->current_image, "image1") == 0) {
-		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image1),
-						     pb, priv->scale);
+	if (g_strcmp0 (ssimg->current_image, "image1") == 0) {
+		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image1),
+						     pb, ssimg->scale);
 	} else {
-		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (priv->image2),
-						     pb, priv->scale);
+		gs_image_set_from_pixbuf_with_scale (GTK_IMAGE (ssimg->image2),
+						     pb, ssimg->scale);
 	}
 }
 
@@ -231,7 +218,6 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 				 gpointer user_data)
 {
 	_cleanup_object_unref_ GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (user_data);
-	GsScreenshotImagePrivate *priv = gs_screenshot_image_get_instance_private (ssimg);
 	gboolean ret;
 	_cleanup_error_free_ GError *error = NULL;
 	_cleanup_object_unref_ AsImage *im = NULL;
@@ -239,7 +225,7 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	_cleanup_object_unref_ GInputStream *stream = NULL;
 
 	/* return immediately if the message was cancelled or if we're in destruction */
-	if (msg->status_code == SOUP_STATUS_CANCELLED || priv->session == NULL)
+	if (msg->status_code == SOUP_STATUS_CANCELLED || ssimg->session == NULL)
 		return;
 
 	if (msg->status_code != SOUP_STATUS_OK) {
@@ -266,10 +252,10 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	}
 
 	/* is image size destination size unknown or exactly the correct size */
-	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT ||
-	    (priv->width * priv->scale == (guint) gdk_pixbuf_get_width (pixbuf) &&
-	     priv->height * priv->scale == (guint) gdk_pixbuf_get_height (pixbuf))) {
-		ret = g_file_set_contents (priv->filename,
+	if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT ||
+	    (ssimg->width * ssimg->scale == (guint) gdk_pixbuf_get_width (pixbuf) &&
+	     ssimg->height * ssimg->scale == (guint) gdk_pixbuf_get_height (pixbuf))) {
+		ret = g_file_set_contents (ssimg->filename,
 					   msg->response_body->data,
 					   msg->response_body->length,
 					   &error);
@@ -282,9 +268,9 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 		 * so the preview looks the same */
 		im = as_image_new ();
 		as_image_set_pixbuf (im, pixbuf);
-		ret = as_image_save_filename (im, priv->filename,
-					      priv->width * priv->scale,
-					      priv->height * priv->scale,
+		ret = as_image_save_filename (im, ssimg->filename,
+					      ssimg->width * ssimg->scale,
+					      ssimg->height * ssimg->scale,
 					      AS_IMAGE_SAVE_FLAG_PAD_16_9, &error);
 		if (!ret) {
 			gs_screenshot_image_set_error (ssimg, error->message);
@@ -302,10 +288,8 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 void
 gs_screenshot_image_set_cachedir (GsScreenshotImage *ssimg, const gchar *cachedir)
 {
-	GsScreenshotImagePrivate *priv;
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-	g_free (priv->cachedir);
-	priv->cachedir = g_strdup (cachedir);
+	g_free (ssimg->cachedir);
+	ssimg->cachedir = g_strdup (cachedir);
 }
 
 /**
@@ -315,18 +299,14 @@ void
 gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 				    AsScreenshot *screenshot)
 {
-	GsScreenshotImagePrivate *priv;
-
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
 	g_return_if_fail (AS_IS_SCREENSHOT (screenshot));
 
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-
-	if (priv->screenshot == screenshot)
+	if (ssimg->screenshot == screenshot)
 		return;
-	if (priv->screenshot)
-		g_object_unref (priv->screenshot);
-	priv->screenshot = g_object_ref (screenshot);
+	if (ssimg->screenshot)
+		g_object_unref (ssimg->screenshot);
+	ssimg->screenshot = g_object_ref (screenshot);
 }
 
 /**
@@ -336,16 +316,13 @@ void
 gs_screenshot_image_set_size (GsScreenshotImage *ssimg,
 			      guint width, guint height)
 {
-	GsScreenshotImagePrivate *priv;
-
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
 	g_return_if_fail (width != 0);
 	g_return_if_fail (height != 0);
 
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-	priv->width = width;
-	priv->height = height;
-	gtk_widget_set_size_request (priv->stack, width, height);
+	ssimg->width = width;
+	ssimg->height = height;
+	gtk_widget_set_size_request (ssimg->stack, width, height);
 }
 
 /**
@@ -355,9 +332,8 @@ void
 gs_screenshot_image_set_use_desktop_background (GsScreenshotImage *ssimg,
                                                 gboolean use_desktop_background)
 {
-	GsScreenshotImagePrivate *priv = gs_screenshot_image_get_instance_private (ssimg);
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
-	priv->use_desktop_background = use_desktop_background;
+	ssimg->use_desktop_background = use_desktop_background;
 }
 
 /**
@@ -368,7 +344,6 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 				GCancellable *cancellable)
 {
 	AsImage *im = NULL;
-	GsScreenshotImagePrivate *priv;
 	SoupURI *base_uri = NULL;
 	const gchar *url;
 	gint rc;
@@ -379,24 +354,22 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
 
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-
-	g_return_if_fail (AS_IS_SCREENSHOT (priv->screenshot));
-	g_return_if_fail (priv->width != 0);
-	g_return_if_fail (priv->height != 0);
+	g_return_if_fail (AS_IS_SCREENSHOT (ssimg->screenshot));
+	g_return_if_fail (ssimg->width != 0);
+	g_return_if_fail (ssimg->height != 0);
 
 	/* load an image according to the scale factor */
-	priv->scale = gtk_widget_get_scale_factor (GTK_WIDGET (ssimg));
-	im = as_screenshot_get_image (priv->screenshot,
-				      priv->width * priv->scale,
-				      priv->height * priv->scale);
+	ssimg->scale = gtk_widget_get_scale_factor (GTK_WIDGET (ssimg));
+	im = as_screenshot_get_image (ssimg->screenshot,
+				      ssimg->width * ssimg->scale,
+				      ssimg->height * ssimg->scale);
 
 	/* if we've failed to load a HiDPI image, fallback to LoDPI */
-	if (im == NULL && priv->scale > 1) {
-		priv->scale = 1;
-		im = as_screenshot_get_image (priv->screenshot,
-					      priv->width,
-					      priv->height);
+	if (im == NULL && ssimg->scale > 1) {
+		ssimg->scale = 1;
+		im = as_screenshot_get_image (ssimg->screenshot,
+					      ssimg->width,
+					      ssimg->height);
 	}
 	if (im == NULL) {
 		/* TRANSLATORS: this is when we request a screenshot size that
@@ -406,12 +379,12 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 	url = as_image_get_url (im);
 	basename = g_path_get_basename (url);
-	if (priv->width == G_MAXUINT || priv->height == G_MAXUINT) {
+	if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT) {
 		sizedir = g_strdup ("unknown");
 	} else {
-		sizedir = g_strdup_printf ("%ux%u", priv->width * priv->scale, priv->height * priv->scale);
+		sizedir = g_strdup_printf ("%ux%u", ssimg->width * ssimg->scale, ssimg->height * ssimg->scale);
 	}
-	cachedir = g_build_filename (priv->cachedir,
+	cachedir = g_build_filename (ssimg->cachedir,
 				     "gnome-software",
 				     "screenshots",
 				     sizedir,
@@ -425,16 +398,16 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* does local file already exist */
-	priv->filename = g_build_filename (cachedir, basename, NULL);
-	if (g_file_test (priv->filename, G_FILE_TEST_EXISTS)) {
+	ssimg->filename = g_build_filename (cachedir, basename, NULL);
+	if (g_file_test (ssimg->filename, G_FILE_TEST_EXISTS)) {
 		as_screenshot_show_image (ssimg);
 		return;
 	}
 
 	/* can we load a blurred smaller version of this straight away */
-	if (priv->width > AS_IMAGE_THUMBNAIL_WIDTH &&
-	    priv->height > AS_IMAGE_THUMBNAIL_HEIGHT) {
-		cachedir2 = g_build_filename (priv->cachedir,
+	if (ssimg->width > AS_IMAGE_THUMBNAIL_WIDTH &&
+	    ssimg->height > AS_IMAGE_THUMBNAIL_HEIGHT) {
+		cachedir2 = g_build_filename (ssimg->cachedir,
 					      "gnome-software",
 					      "screenshots",
 					      "112x63",
@@ -445,7 +418,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* download file */
-	g_debug ("downloading %s to %s", url, priv->filename);
+	g_debug ("downloading %s to %s", url, ssimg->filename);
 	base_uri = soup_uri_new (url);
 	if (base_uri == NULL || !SOUP_URI_VALID_FOR_HTTP (base_uri)) {
 		/* TRANSLATORS: this is when we try to download a screenshot
@@ -456,15 +429,15 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* cancel any previous messages */
-	if (priv->message != NULL) {
-		soup_session_cancel_message (priv->session,
-		                             priv->message,
+	if (ssimg->message != NULL) {
+		soup_session_cancel_message (ssimg->session,
+		                             ssimg->message,
 		                             SOUP_STATUS_CANCELLED);
-		g_clear_object (&priv->message);
+		g_clear_object (&ssimg->message);
 	}
 
-	priv->message = soup_message_new_from_uri (SOUP_METHOD_GET, base_uri);
-	if (priv->message == NULL) {
+	ssimg->message = soup_message_new_from_uri (SOUP_METHOD_GET, base_uri);
+	if (ssimg->message == NULL) {
 		/* TRANSLATORS: this is when networking is not available */
 		gs_screenshot_image_set_error (ssimg, _("Screenshot not available"));
 		soup_uri_free (base_uri);
@@ -472,8 +445,8 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* send async */
-	soup_session_queue_message (priv->session,
-				    g_object_ref (priv->message) /* transfer full */,
+	soup_session_queue_message (ssimg->session,
+				    g_object_ref (ssimg->message) /* transfer full */,
 				    gs_screenshot_image_complete_cb,
 				    g_object_ref (ssimg));
 	soup_uri_free (base_uri);
@@ -486,21 +459,18 @@ static void
 gs_screenshot_image_destroy (GtkWidget *widget)
 {
 	GsScreenshotImage *ssimg = GS_SCREENSHOT_IMAGE (widget);
-	GsScreenshotImagePrivate *priv;
 
-	priv = gs_screenshot_image_get_instance_private (ssimg);
-
-	if (priv->message != NULL) {
-		soup_session_cancel_message (priv->session,
-		                             priv->message,
+	if (ssimg->message != NULL) {
+		soup_session_cancel_message (ssimg->session,
+		                             ssimg->message,
 		                             SOUP_STATUS_CANCELLED);
-		g_clear_object (&priv->message);
+		g_clear_object (&ssimg->message);
 	}
-	g_clear_object (&priv->screenshot);
-	g_clear_object (&priv->session);
+	g_clear_object (&ssimg->screenshot);
+	g_clear_object (&ssimg->session);
 
-	g_clear_pointer (&priv->cachedir, g_free);
-	g_clear_pointer (&priv->filename, g_free);
+	g_clear_pointer (&ssimg->cachedir, g_free);
+	g_clear_pointer (&ssimg->filename, g_free);
 
 	GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->destroy (widget);
 }
@@ -513,8 +483,7 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 {
 	AtkObject *accessible;
 
-	ssimg->priv = gs_screenshot_image_get_instance_private (ssimg);
-	ssimg->priv->use_desktop_background = TRUE;
+	ssimg->use_desktop_background = TRUE;
 
 	gtk_widget_set_has_window (GTK_WIDGET (ssimg), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (ssimg));
@@ -561,11 +530,11 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class,
 						     "/org/gnome/Software/screenshot-image.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, stack);
-	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, image1);
-	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, image2);
-	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, box_error);
-	gtk_widget_class_bind_template_child_private (widget_class, GsScreenshotImage, label_error);
+	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, image1);
+	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, image2);
+	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, box_error);
+	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, label_error);
 }
 
 /**
@@ -576,7 +545,7 @@ gs_screenshot_image_new (SoupSession *session)
 {
 	GsScreenshotImage *ssimg;
 	ssimg = g_object_new (GS_TYPE_SCREENSHOT_IMAGE, NULL);
-	ssimg->priv->session = g_object_ref (session);
+	ssimg->session = g_object_ref (session);
 	return GTK_WIDGET (ssimg);
 }
 

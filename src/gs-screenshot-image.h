@@ -27,31 +27,12 @@
 #include <libsoup/soup.h>
 #include <appstream-glib.h>
 
-#define GS_TYPE_SCREENSHOT_IMAGE		(gs_screenshot_image_get_type())
-#define GS_SCREENSHOT_IMAGE(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_SCREENSHOT_IMAGE, GsScreenshotImage))
-#define GS_SCREENSHOT_IMAGE_CLASS(cls)		(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_SCREENSHOT_IMAGE, GsScreenshotImageClass))
-#define GS_IS_SCREENSHOT_IMAGE(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_SCREENSHOT_IMAGE))
-#define GS_IS_SCREENSHOT_IMAGE_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_SCREENSHOT_IMAGE))
-#define GS_SCREENSHOT_IMAGE_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_SCREENSHOT_IMAGE, GsScreenshotImageClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsScreenshotImage		GsScreenshotImage;
-typedef struct _GsScreenshotImageClass		GsScreenshotImageClass;
-typedef struct _GsScreenshotImagePrivate	GsScreenshotImagePrivate;
+#define GS_TYPE_SCREENSHOT_IMAGE (gs_screenshot_image_get_type ())
 
-struct _GsScreenshotImage
-{
-	GtkBin				 parent;
-	GsScreenshotImagePrivate	*priv;
-};
+G_DECLARE_FINAL_TYPE (GsScreenshotImage, gs_screenshot_image, GS, SCREENSHOT_IMAGE, GtkBin)
 
-struct _GsScreenshotImageClass
-{
-	GtkBinClass	 parent_class;
-};
-
-GType		 gs_screenshot_image_get_type		(void);
 GtkWidget	*gs_screenshot_image_new		(SoupSession		*session);
 
 AsScreenshot	*gs_screenshot_image_get_screenshot	(GsScreenshotImage	*ssimg);
