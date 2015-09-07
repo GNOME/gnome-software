@@ -31,12 +31,12 @@
 #include "gs-shell.h"
 #include "gs-utils.h"
 
-struct _GsPagePrivate
+typedef struct
 {
 	GsPluginLoader		*plugin_loader;
 	GCancellable		*cancellable;
 	GsShell			*shell;
-};
+} GsPagePrivate;
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
 

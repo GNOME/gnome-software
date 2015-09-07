@@ -30,16 +30,9 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_PAGE		(gs_page_get_type ())
-#define GS_PAGE(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_PAGE, GsPage))
-#define GS_PAGE_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_PAGE, GsPageClass))
-#define GS_IS_PAGE(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_PAGE))
-#define GS_IS_PAGE_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_PAGE))
-#define GS_PAGE_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_PAGE, GsPageClass))
+#define GS_TYPE_PAGE (gs_page_get_type ())
 
-typedef struct _GsPage		GsPage;
-typedef struct _GsPageClass	GsPageClass;
-typedef struct _GsPagePrivate	GsPagePrivate;
+G_DECLARE_DERIVABLE_TYPE (GsPage, gs_page, GS, PAGE, GtkBin)
 
 struct _GsPageClass
 {
@@ -51,12 +44,6 @@ struct _GsPageClass
 						 GsApp		 *app);
 };
 
-struct _GsPage
-{
-	 GtkBin		 parent;
-};
-
-GType		 gs_page_get_type			(void);
 GsPage		*gs_page_new				(void);
 void		 gs_page_install_app			(GsPage		*page,
 							 GsApp		*app);
