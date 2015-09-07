@@ -32,39 +32,23 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_CATEGORY		(gs_shell_category_get_type ())
-#define GS_SHELL_CATEGORY(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_SHELL_CATEGORY, GsShellCategory))
-#define GS_SHELL_CATEGORY_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_SHELL_CATEGORY, GsShellCategoryClass))
-#define GS_IS_SHELL_CATEGORY(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_SHELL_CATEGORY))
-#define GS_IS_SHELL_CATEGORY_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_SHELL_CATEGORY))
-#define GS_SHELL_CATEGORY_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_SHELL_CATEGORY, GsShellCategoryClass))
+#define GS_TYPE_SHELL_CATEGORY (gs_shell_category_get_type ())
 
-typedef struct GsShellCategoryPrivate GsShellCategoryPrivate;
-
-typedef struct
-{
-	 GsPage				 parent;
-	 GsShellCategoryPrivate		*priv;
-} GsShellCategory;
-
-typedef struct
-{
-	GsPageClass			 parent_class;
-} GsShellCategoryClass;
-
-GType		 gs_shell_category_get_type	(void);
+G_DECLARE_FINAL_TYPE (GsShellCategory, gs_shell_category, GS, SHELL_CATEGORY, GsPage)
 
 GsShellCategory	*gs_shell_category_new		(void);
-void		 gs_shell_category_set_category	(GsShellCategory	*shell_category,
+void		 gs_shell_category_set_category	(GsShellCategory	*self,
 						 GsCategory		*category);
-GsCategory	*gs_shell_category_get_category (GsShellCategory	*shell_category);
-void		 gs_shell_category_switch_to	(GsShellCategory	*shell_category);
-void		 gs_shell_category_reload	(GsShellCategory	*shell_category);
-void		 gs_shell_category_setup	(GsShellCategory	*shell_category,
+GsCategory	*gs_shell_category_get_category (GsShellCategory	*self);
+void		 gs_shell_category_switch_to	(GsShellCategory	*self);
+void		 gs_shell_category_reload	(GsShellCategory	*self);
+void		 gs_shell_category_setup	(GsShellCategory	*self,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);
+
+G_END_DECLS
 
 #endif /* __GS_SHELL_CATEGORY_H */
 
