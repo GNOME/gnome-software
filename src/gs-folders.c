@@ -50,15 +50,17 @@ typedef struct
 	GHashTable *excluded_apps;
 } GsFolder;
 
-struct GsFoldersPrivate
+struct _GsFolders
 {
+	GObject parent_instance;
+
 	GSettings *settings;
 	GHashTable *folders;
 	GHashTable *apps;
 	GHashTable *categories;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsFolders, gs_folders, G_TYPE_OBJECT)
+G_DEFINE_TYPE (GsFolders, gs_folders, G_TYPE_OBJECT)
 
 #if 0
 static void
@@ -92,7 +94,7 @@ dump (GsFolders *folders)
 	GHashTableIter iter;
 	GsFolder *folder;
 
-	g_hash_table_iter_init (&iter, folders->priv->folders);
+	g_hash_table_iter_init (&iter, folders->folders);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&folder)) {
 		g_print ("folder %s\n", folder->id);
 		g_print ("\tname %s\n", folder->name);
@@ -112,9 +114,9 @@ dump (GsFolders *folders)
 	}
 
 	g_print ("app mapping\n");
-	dump_map (folders->priv->apps);
+	dump_map (folders->apps);
 	g_print ("category mapping\n");
-	dump_map (folders->priv->categories);
+	dump_map (folders->categories);
 }
 #endif
 
@@ -176,12 +178,12 @@ load (GsFolders *folders)
 	gchar *category;
 	_cleanup_strv_free_ gchar **ids = NULL;
 
-	folders->priv->folders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)gs_folder_free);
-	folders->priv->apps = g_hash_table_new (g_str_hash, g_str_equal);
-	folders->priv->categories = g_hash_table_new (g_str_hash, g_str_equal);
+	folders->folders = g_hash_table_new_full (g_str_hash, g_str_equal, NULL, (GDestroyNotify)gs_folder_free);
+	folders->apps = g_hash_table_new (g_str_hash, g_str_equal);
+	folders->categories = g_hash_table_new (g_str_hash, g_str_equal);
 
-	ids = g_settings_get_strv (folders->priv->settings, "folder-children");
-	g_object_get (folders->priv->settings, "path", &path, NULL);
+	ids = g_settings_get_strv (folders->settings, "folder-children");
+	g_object_get (folders->settings, "path", &path, NULL);
 	for (i = 0; ids[i]; i++) {
 		_cleanup_free_ gchar **apps = NULL;
 		_cleanup_free_ gchar **categories = NULL;
@@ -212,15 +214,15 @@ load (GsFolders *folders)
 			g_hash_table_add (folder->categories, categories[j]);
 		}
 
-		g_hash_table_insert (folders->priv->folders, (gpointer)folder->id, folder);
+		g_hash_table_insert (folders->folders, (gpointer)folder->id, folder);
 		g_hash_table_iter_init (&iter, folder->apps);
 		while (g_hash_table_iter_next (&iter, (gpointer*)&app, NULL)) {
-			g_hash_table_insert (folders->priv->apps, app, folder);
+			g_hash_table_insert (folders->apps, app, folder);
 		}
 
 		g_hash_table_iter_init (&iter, folder->categories);
 		while (g_hash_table_iter_next (&iter, (gpointer*)&category, NULL)) {
-			g_hash_table_insert (folders->priv->categories, category, folder);
+			g_hash_table_insert (folders->categories, category, folder);
 		}
 	}
 }
@@ -234,8 +236,8 @@ save (GsFolders *folders)
 	_cleanup_free_ gchar *path = NULL;
 	_cleanup_free_ gpointer apps = NULL;
 
-	g_object_get (folders->priv->settings, "path", &path, NULL);
-	g_hash_table_iter_init (&iter, folders->priv->folders);
+	g_object_get (folders->settings, "path", &path, NULL);
+	g_hash_table_iter_init (&iter, folders->folders);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&folder)) {
 		_cleanup_free_ gchar *child_path = NULL;
 		_cleanup_object_unref_ GSettings *settings = NULL;
@@ -258,20 +260,20 @@ save (GsFolders *folders)
 	}
 
 	apps = gs_folders_get_nonempty_folders (folders);
-	g_settings_set_strv (folders->priv->settings, "folder-children",
+	g_settings_set_strv (folders->settings, "folder-children",
 			     (const gchar * const *)apps);
 }
 
 static void
 clear (GsFolders *folders)
 {
-	g_hash_table_unref (folders->priv->apps);
-	g_hash_table_unref (folders->priv->categories);
-	g_hash_table_unref (folders->priv->folders);
+	g_hash_table_unref (folders->apps);
+	g_hash_table_unref (folders->categories);
+	g_hash_table_unref (folders->folders);
 
-	folders->priv->apps = NULL;
-	folders->priv->categories = NULL;
-	folders->priv->folders = NULL;
+	folders->apps = NULL;
+	folders->categories = NULL;
+	folders->folders = NULL;
 }
 
 static void
@@ -279,7 +281,7 @@ gs_folders_dispose (GObject *object)
 {
 	GsFolders *folders = GS_FOLDERS (object);
 
-	g_clear_object (&folders->priv->settings);
+	g_clear_object (&folders->settings);
 
 	G_OBJECT_CLASS (gs_folders_parent_class)->dispose (object);
 }
@@ -305,9 +307,7 @@ gs_folders_class_init (GsFoldersClass *klass)
 static void
 gs_folders_init (GsFolders *folders)
 {
-	folders->priv = gs_folders_get_instance_private (folders);
-
-	folders->priv->settings = g_settings_new (APP_FOLDER_SCHEMA);
+	folders->settings = g_settings_new (APP_FOLDER_SCHEMA);
 	load (folders);
 }
 
@@ -331,7 +331,7 @@ gs_folders_get (void)
 gchar **
 gs_folders_get_folders (GsFolders *folders)
 {
-	return (gchar**) g_hash_table_get_keys_as_array (folders->priv->folders, NULL);
+	return (gchar**) g_hash_table_get_keys_as_array (folders->folders, NULL);
 }
 
 gchar **
@@ -343,12 +343,12 @@ gs_folders_get_nonempty_folders (GsFolders *folders)
 
 	tmp = g_hash_table_new (g_str_hash, g_str_equal);
 
-	g_hash_table_iter_init (&iter, folders->priv->apps);
+	g_hash_table_iter_init (&iter, folders->apps);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&folder)) {
 		g_hash_table_add (tmp, folder->id);
 	}
 
-	g_hash_table_iter_init (&iter, folders->priv->categories);
+	g_hash_table_iter_init (&iter, folders->categories);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer *)&folder)) {
 		g_hash_table_add (tmp, folder->id);
 	}
@@ -380,10 +380,10 @@ gs_folders_add_folder (GsFolders *folders, const gchar *id)
 
 	key = g_strdup (id);
 	canonicalize_key (key);	
-	folder = g_hash_table_lookup (folders->priv->folders, key);
+	folder = g_hash_table_lookup (folders->folders, key);
 	if (!folder) {
 		folder = gs_folder_new (key, id, FALSE);
-		g_hash_table_insert (folders->priv->folders, folder->id, folder);
+		g_hash_table_insert (folders->folders, folder->id, folder);
 	}
 
 	return folder->id;
@@ -398,14 +398,14 @@ gs_folders_remove_folder (GsFolders *folders, const gchar *id)
 	if (id == NULL)
 		return;
 
-	g_hash_table_iter_init (&iter, folders->priv->apps);
+	g_hash_table_iter_init (&iter, folders->apps);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer*)&folder)) {
 		if (folder && g_strcmp0 (id, folder->id) == 0) {
 			g_hash_table_iter_remove (&iter);
 		}
 	}
 
-	g_hash_table_iter_init (&iter, folders->priv->categories);
+	g_hash_table_iter_init (&iter, folders->categories);
 	while (g_hash_table_iter_next (&iter, NULL, (gpointer*)&folder)) {
 		if (folder && g_strcmp0 (id, folder->id) == 0) {
 			g_hash_table_iter_remove (&iter);
@@ -413,7 +413,7 @@ gs_folders_remove_folder (GsFolders *folders, const gchar *id)
 	}
 
 	if (folder != NULL)
-		g_hash_table_remove (folders->priv->folders, folder->id);
+		g_hash_table_remove (folders->folders, folder->id);
 }
 
 const gchar *
@@ -421,7 +421,7 @@ gs_folders_get_folder_name (GsFolders *folders, const gchar *id)
 {
 	GsFolder *folder;
 
-	folder = g_hash_table_lookup (folders->priv->folders, id);
+	folder = g_hash_table_lookup (folders->folders, id);
 
 	if (folder) {
 		if (folder->translated)
@@ -438,7 +438,7 @@ gs_folders_set_folder_name (GsFolders *folders, const gchar *id, const gchar *na
 {
 	GsFolder *folder;
 
-	folder = g_hash_table_lookup (folders->priv->folders, id);
+	folder = g_hash_table_lookup (folders->folders, id);
 	if (folder) {
 		g_free (folder->name);
 		g_free (folder->translated);
@@ -453,10 +453,10 @@ get_app_folder (GsFolders *folders, const gchar *app, GPtrArray *categories)
 	GsFolder *folder;
 	guint i;
 
-	folder = g_hash_table_lookup (folders->priv->apps, app);
+	folder = g_hash_table_lookup (folders->apps, app);
 	if (!folder && categories) {
 		for (i = 0; i < categories->len; i++) {
-			folder = g_hash_table_lookup (folders->priv->categories, g_ptr_array_index (categories, i));
+			folder = g_hash_table_lookup (folders->categories, g_ptr_array_index (categories, i));
 			if (folder) {
 				break;
 			}
@@ -492,7 +492,7 @@ gs_folders_set_app_folder (GsFolders *folders, const gchar *app, GPtrArray *cate
 	folder = get_app_folder (folders, app, categories);
 
 	if (folder) {
-		g_hash_table_remove (folders->priv->apps, app);
+		g_hash_table_remove (folders->apps, app);
 		g_hash_table_remove (folder->apps, app);
 	}
 
@@ -500,17 +500,17 @@ gs_folders_set_app_folder (GsFolders *folders, const gchar *app, GPtrArray *cate
 		gchar *app_id;
 
 		app_id = g_strdup (app);
-		folder = g_hash_table_lookup (folders->priv->folders, id);
+		folder = g_hash_table_lookup (folders->folders, id);
 		g_hash_table_add (folder->apps, app_id);
 		g_hash_table_remove (folder->excluded_apps, app);
-		g_hash_table_insert (folders->priv->apps, app_id, folder);
+		g_hash_table_insert (folders->apps, app_id, folder);
 	} else {
 		guint i;
 		gchar *category;
 
 		for (i = 0; i < categories->len; i++) {
 			category = g_ptr_array_index (categories, i);
-			folder = g_hash_table_lookup (folders->priv->categories, category);
+			folder = g_hash_table_lookup (folders->categories, category);
 			if (folder) {
 				g_hash_table_add (folder->excluded_apps, g_strdup (app));
 			}
