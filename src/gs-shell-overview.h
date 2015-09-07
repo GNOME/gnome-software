@@ -40,20 +40,20 @@ struct _GsShellOverviewClass
 {
 	GsPageClass		 parent_class;
 
-	void	(*refreshed)	(GsShellOverview *shell);
+	void	(*refreshed)	(GsShellOverview *self);
 };
 
 GsShellOverview	*gs_shell_overview_new		(void);
-void		 gs_shell_overview_invalidate	(GsShellOverview	*shell_overview);
-void		 gs_shell_overview_switch_to	(GsShellOverview	*shell_overview,
+void		 gs_shell_overview_invalidate	(GsShellOverview	*self);
+void		 gs_shell_overview_switch_to	(GsShellOverview	*self,
 						 gboolean		scroll_up);
-void		 gs_shell_overview_reload	(GsShellOverview	*shell_overview);
-void		 gs_shell_overview_setup	(GsShellOverview	*shell_overview,
+void		 gs_shell_overview_reload	(GsShellOverview	*self);
+void		 gs_shell_overview_setup	(GsShellOverview	*self,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);
-void		 gs_shell_overview_set_category	(GsShellOverview	*shell_overview,
+void		 gs_shell_overview_set_category	(GsShellOverview	*self,
 						 const gchar		*category);
 
 G_END_DECLS
