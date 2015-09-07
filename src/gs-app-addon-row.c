@@ -29,8 +29,10 @@
 #include "gs-cleanup.h"
 #include "gs-utils.h"
 
-struct _GsAppAddonRowPrivate
+struct _GsAppAddonRow
 {
+	GtkListBoxRow	 parent_instance;
+
 	GsApp		*app;
 	GtkWidget	*name_label;
 	GtkWidget	*description_label;
@@ -38,7 +40,7 @@ struct _GsAppAddonRowPrivate
 	GtkWidget	*checkbox;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsAppAddonRow, gs_app_addon_row, GTK_TYPE_LIST_BOX_ROW)
+G_DEFINE_TYPE (GsAppAddonRow, gs_app_addon_row, GTK_TYPE_LIST_BOX_ROW)
 
 enum {
 	PROP_ZERO,
@@ -53,17 +55,16 @@ enum {
 static GString *
 gs_app_addon_row_get_summary (GsAppAddonRow *row)
 {
-	GsAppAddonRowPrivate *priv = row->priv;
 	const gchar *tmp = NULL;
 	_cleanup_free_ gchar *escaped = NULL;
 
 	/* try all these things in order */
-	if (gs_app_get_kind (priv->app) == GS_APP_KIND_MISSING)
-		tmp = gs_app_get_summary_missing (priv->app);
+	if (gs_app_get_kind (row->app) == GS_APP_KIND_MISSING)
+		tmp = gs_app_get_summary_missing (row->app);
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
-		tmp = gs_app_get_summary (priv->app);
+		tmp = gs_app_get_summary (row->app);
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
-		tmp = gs_app_get_description (priv->app);
+		tmp = gs_app_get_description (row->app);
 
 	escaped = g_markup_escape_text (tmp, -1);
 	return g_string_new (escaped);
@@ -72,70 +73,69 @@ gs_app_addon_row_get_summary (GsAppAddonRow *row)
 void
 gs_app_addon_row_refresh (GsAppAddonRow *row)
 {
-	GsAppAddonRowPrivate *priv = row->priv;
 	_cleanup_string_free_ GString *str = NULL;
 
-	if (row->priv->app == NULL)
+	if (row->app == NULL)
 		return;
 
 	/* join the lines */
 	str = gs_app_addon_row_get_summary (row);
 	gs_string_replace (str, "\n", " ");
-	gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
-	gtk_label_set_label (GTK_LABEL (priv->name_label),
-			     gs_app_get_name (priv->app));
+	gtk_label_set_markup (GTK_LABEL (row->description_label), str->str);
+	gtk_label_set_label (GTK_LABEL (row->name_label),
+			     gs_app_get_name (row->app));
 
 	/* update the state label */
-	switch (gs_app_get_state (row->priv->app)) {
+	switch (gs_app_get_state (row->app)) {
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-		gtk_widget_set_visible (priv->label, TRUE);
-		gtk_label_set_label (GTK_LABEL (priv->label), _("Pending"));
+		gtk_widget_set_visible (row->label, TRUE);
+		gtk_label_set_label (GTK_LABEL (row->label), _("Pending"));
 		break;
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_INSTALLED:
-		gtk_widget_set_visible (priv->label, TRUE);
-		gtk_label_set_label (GTK_LABEL (priv->label), _("Installed"));
+		gtk_widget_set_visible (row->label, TRUE);
+		gtk_label_set_label (GTK_LABEL (row->label), _("Installed"));
 		break;
 	case AS_APP_STATE_INSTALLING:
-		gtk_widget_set_visible (priv->label, TRUE);
-		gtk_label_set_label (GTK_LABEL (priv->label), _("Installing"));
+		gtk_widget_set_visible (row->label, TRUE);
+		gtk_label_set_label (GTK_LABEL (row->label), _("Installing"));
 		break;
 	case AS_APP_STATE_REMOVING:
-		gtk_widget_set_visible (priv->label, TRUE);
-		gtk_label_set_label (GTK_LABEL (priv->label), _("Removing"));
+		gtk_widget_set_visible (row->label, TRUE);
+		gtk_label_set_label (GTK_LABEL (row->label), _("Removing"));
 		break;
 	default:
-		gtk_widget_set_visible (priv->label, FALSE);
+		gtk_widget_set_visible (row->label, FALSE);
 		break;
 	}
 
 	/* update the checkbox */
-	switch (gs_app_get_state (row->priv->app)) {
+	switch (gs_app_get_state (row->app)) {
 	case AS_APP_STATE_QUEUED_FOR_INSTALL:
-		gtk_widget_set_sensitive (priv->checkbox, TRUE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->priv->checkbox), TRUE);
+		gtk_widget_set_sensitive (row->checkbox, TRUE);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
 		break;
 	case AS_APP_STATE_AVAILABLE:
 	case AS_APP_STATE_AVAILABLE_LOCAL:
-		gtk_widget_set_sensitive (priv->checkbox, TRUE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->priv->checkbox), FALSE);
+		gtk_widget_set_sensitive (row->checkbox, TRUE);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
 		break;
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_INSTALLED:
-		gtk_widget_set_sensitive (priv->checkbox, TRUE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->priv->checkbox), TRUE);
+		gtk_widget_set_sensitive (row->checkbox, TRUE);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
 		break;
 	case AS_APP_STATE_INSTALLING:
-		gtk_widget_set_sensitive (priv->checkbox, FALSE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->priv->checkbox), TRUE);
+		gtk_widget_set_sensitive (row->checkbox, FALSE);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), TRUE);
 		break;
 	case AS_APP_STATE_REMOVING:
-		gtk_widget_set_sensitive (priv->checkbox, FALSE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->priv->checkbox), FALSE);
+		gtk_widget_set_sensitive (row->checkbox, FALSE);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
 		break;
 	default:
-		gtk_widget_set_sensitive (priv->checkbox, FALSE);
-		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->priv->checkbox), FALSE);
+		gtk_widget_set_sensitive (row->checkbox, FALSE);
+		gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), FALSE);
 		break;
 	}
 }
@@ -144,7 +144,7 @@ GsApp *
 gs_app_addon_row_get_addon (GsAppAddonRow *row)
 {
 	g_return_val_if_fail (GS_IS_APP_ADDON_ROW (row), NULL);
-	return row->priv->app;
+	return row->app;
 }
 
 static gboolean
@@ -172,9 +172,9 @@ gs_app_addon_row_set_addon (GsAppAddonRow *row, GsApp *app)
 	g_return_if_fail (GS_IS_APP_ADDON_ROW (row));
 	g_return_if_fail (GS_IS_APP (app));
 
-	row->priv->app = g_object_ref (app);
+	row->app = g_object_ref (app);
 
-	g_signal_connect_object (row->priv->app, "notify::state",
+	g_signal_connect_object (row->app, "notify::state",
 				 G_CALLBACK (gs_app_addon_row_notify_props_changed_cb),
 				 row, 0);
 	gs_app_addon_row_refresh (row);
@@ -184,12 +184,11 @@ static void
 gs_app_addon_row_destroy (GtkWidget *object)
 {
 	GsAppAddonRow *row = GS_APP_ADDON_ROW (object);
-	GsAppAddonRowPrivate *priv = row->priv;
 
-	if (priv->app)
-		g_signal_handlers_disconnect_by_func (priv->app, gs_app_addon_row_notify_props_changed_cb, row);
+	if (row->app)
+		g_signal_handlers_disconnect_by_func (row->app, gs_app_addon_row_notify_props_changed_cb, row);
 
-	g_clear_object (&priv->app);
+	g_clear_object (&row->app);
 
 	GTK_WIDGET_CLASS (gs_app_addon_row_parent_class)->destroy (object);
 }
@@ -242,10 +241,10 @@ gs_app_addon_row_class_init (GsAppAddonRowClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-addon-row.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, name_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, description_label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, label);
-	gtk_widget_class_bind_template_child_private (widget_class, GsAppAddonRow, checkbox);
+	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, name_label);
+	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, description_label);
+	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, label);
+	gtk_widget_class_bind_template_child (widget_class, GsAppAddonRow, checkbox);
 }
 
 static void
@@ -257,28 +256,23 @@ checkbox_toggled (GtkWidget *widget, GsAppAddonRow *row)
 static void
 gs_app_addon_row_init (GsAppAddonRow *row)
 {
-	GsAppAddonRowPrivate *priv;
-
-	priv = gs_app_addon_row_get_instance_private (row);
-	row->priv = priv;
-
 	gtk_widget_set_has_window (GTK_WIDGET (row), FALSE);
 	gtk_widget_init_template (GTK_WIDGET (row));
 
-	g_signal_connect (priv->checkbox, "toggled",
+	g_signal_connect (row->checkbox, "toggled",
 			  G_CALLBACK (checkbox_toggled), row);
 }
 
 void
 gs_app_addon_row_set_selected (GsAppAddonRow *row, gboolean selected)
 {
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->priv->checkbox), selected);
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (row->checkbox), selected);
 }
 
 gboolean
 gs_app_addon_row_get_selected (GsAppAddonRow *row)
 {
-	return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (row->priv->checkbox));
+	return gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (row->checkbox));
 }
 
 GtkWidget *

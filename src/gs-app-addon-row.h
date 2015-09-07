@@ -26,33 +26,12 @@
 
 #include "gs-app.h"
 
-#define GS_TYPE_APP_ADDON_ROW		(gs_app_addon_row_get_type())
-#define GS_APP_ADDON_ROW(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_APP_ADDON_ROW, GsAppAddonRow))
-#define GS_APP_ADDON_ROW_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_APP_ADDON_ROW, GsAppAddonRowClass))
-#define GS_IS_APP_ADDON_ROW(obj)	(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_APP_ADDON_ROW))
-#define GS_IS_APP_ADDON_ROW_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_APP_ADDON_ROW))
-#define GS_APP_ADDON_ROW_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_APP_ADDON_ROW, GsAppAddonRowClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsAppAddonRow		GsAppAddonRow;
-typedef struct _GsAppAddonRowClass	GsAppAddonRowClass;
-typedef struct _GsAppAddonRowPrivate	GsAppAddonRowPrivate;
+#define GS_TYPE_APP_ADDON_ROW (gs_app_addon_row_get_type ())
 
-struct _GsAppAddonRow
-{
-	GtkListBoxRow		 parent;
+G_DECLARE_FINAL_TYPE (GsAppAddonRow, gs_app_addon_row, GS, APP_ADDON_ROW, GtkListBoxRow)
 
-	/*< private >*/
-	GsAppAddonRowPrivate	*priv;
-};
-
-struct _GsAppAddonRowClass
-{
-	GtkListBoxRowClass	 parent_class;
-};
-
-GType		 gs_app_addon_row_get_type		(void);
 GtkWidget	*gs_app_addon_row_new			(void);
 void		 gs_app_addon_row_refresh		(GsAppAddonRow	*row);
 void		 gs_app_addon_row_set_selected		(GsAppAddonRow	*row,
