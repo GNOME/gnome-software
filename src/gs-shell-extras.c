@@ -47,11 +47,13 @@ typedef struct {
 	gchar		*search_filename;
 	gchar		*package_filename;
 	gchar		*url_not_found;
-	GsShellExtras	*shell_extras;
+	GsShellExtras	*self;
 } SearchData;
 
-struct GsShellExtrasPrivate
+struct _GsShellExtras
 {
+	GsPage			  parent_instance;
+
 	GsPluginLoader		 *plugin_loader;
 	GtkBuilder		 *builder;
 	GCancellable		 *cancellable;
@@ -74,13 +76,13 @@ struct GsShellExtrasPrivate
 	GtkWidget		 *stack;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellExtras, gs_shell_extras, GS_TYPE_PAGE)
+G_DEFINE_TYPE (GsShellExtras, gs_shell_extras, GS_TYPE_PAGE)
 
 static void
 search_data_free (SearchData *search_data)
 {
-	if (search_data->shell_extras != NULL)
-		g_object_unref (search_data->shell_extras);
+	if (search_data->self != NULL)
+		g_object_unref (search_data->self);
 	g_free (search_data->title);
 	g_free (search_data->search);
 	g_free (search_data->search_filename);
@@ -151,31 +153,30 @@ build_comma_separated_list (gchar **items)
 }
 
 static gchar *
-build_title (GsShellExtras *shell_extras)
+build_title (GsShellExtras *self)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	guint i;
 	_cleanup_free_ gchar *titles = NULL;
 	_cleanup_ptrarray_unref_ GPtrArray *title_array = NULL;
 
 	title_array = g_ptr_array_new ();
-	for (i = 0; i < priv->array_search_data->len; i++) {
+	for (i = 0; i < self->array_search_data->len; i++) {
 		SearchData *search_data;
 
-		search_data = g_ptr_array_index (priv->array_search_data, i);
+		search_data = g_ptr_array_index (self->array_search_data, i);
 		g_ptr_array_add (title_array, search_data->title);
 	}
 	g_ptr_array_add (title_array, NULL);
 
 	titles = build_comma_separated_list ((gchar **) title_array->pdata);
 
-	switch (shell_extras->priv->mode) {
+	switch (self->mode) {
 	case GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES:
 		/* TRANSLATORS: Application window title for fonts installation.
 		   %s will be replaced by name of the script we're searching for. */
 		return g_strdup_printf (ngettext ("Available fonts for the %s script",
 		                                  "Available fonts for the %s scripts",
-		                                  priv->array_search_data->len),
+		                                  self->array_search_data->len),
 		                        titles);
 		break;
 	default:
@@ -183,31 +184,30 @@ build_title (GsShellExtras *shell_extras)
 		   %s will be replaced by actual codec name(s) */
 		return g_strdup_printf (ngettext ("Available software for %s",
 		                                  "Available software for %s",
-		                                  priv->array_search_data->len),
+		                                  self->array_search_data->len),
 		                        titles);
 		break;
 	}
 }
 
 static void
-gs_shell_extras_update_ui_state (GsShellExtras *shell_extras)
+gs_shell_extras_update_ui_state (GsShellExtras *self)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	GtkWidget *widget;
 	_cleanup_free_ gchar *title = NULL;
 
-	if (gs_shell_get_mode (shell_extras->priv->shell) != GS_SHELL_MODE_EXTRAS)
+	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_EXTRAS)
 		return;
 
 	/* main spinner */
-	switch (priv->state) {
+	switch (self->state) {
 	case GS_SHELL_EXTRAS_STATE_LOADING:
-		gs_start_spinner (GTK_SPINNER (priv->spinner));
+		gs_start_spinner (GTK_SPINNER (self->spinner));
 		break;
 	case GS_SHELL_EXTRAS_STATE_READY:
 	case GS_SHELL_EXTRAS_STATE_NO_RESULTS:
 	case GS_SHELL_EXTRAS_STATE_FAILED:
-		gs_stop_spinner (GTK_SPINNER (priv->spinner));
+		gs_stop_spinner (GTK_SPINNER (self->spinner));
 		break;
 	default:
 		g_assert_not_reached ();
@@ -215,11 +215,11 @@ gs_shell_extras_update_ui_state (GsShellExtras *shell_extras)
 	}
 
 	/* headerbar title */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
-	switch (priv->state) {
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
+	switch (self->state) {
 	case GS_SHELL_EXTRAS_STATE_LOADING:
 	case GS_SHELL_EXTRAS_STATE_READY:
-		title = build_title (shell_extras);
+		title = build_title (self);
 		gtk_label_set_label (GTK_LABEL (widget), title);
 		break;
 	case GS_SHELL_EXTRAS_STATE_NO_RESULTS:
@@ -232,18 +232,18 @@ gs_shell_extras_update_ui_state (GsShellExtras *shell_extras)
 	}
 
 	/* stack */
-	switch (priv->state) {
+	switch (self->state) {
 	case GS_SHELL_EXTRAS_STATE_LOADING:
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "spinner");
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack), "spinner");
 		break;
 	case GS_SHELL_EXTRAS_STATE_READY:
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "results");
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack), "results");
 		break;
 	case GS_SHELL_EXTRAS_STATE_NO_RESULTS:
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "no-results");
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack), "no-results");
 		break;
 	case GS_SHELL_EXTRAS_STATE_FAILED:
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "failed");
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack), "failed");
 		break;
 	default:
 		g_assert_not_reached ();
@@ -252,44 +252,43 @@ gs_shell_extras_update_ui_state (GsShellExtras *shell_extras)
 }
 
 static void
-gs_shell_extras_set_state (GsShellExtras *shell_extras,
+gs_shell_extras_set_state (GsShellExtras *self,
 			    GsShellExtrasState state)
 {
-	shell_extras->priv->state = state;
-	gs_shell_extras_update_ui_state (shell_extras);
+	self->state = state;
+	gs_shell_extras_update_ui_state (self);
 }
 
 static void
 app_row_button_clicked_cb (GsAppRow *app_row,
-                           GsShellExtras *shell_extras)
+                           GsShellExtras *self)
 {
 	GsApp *app;
 	app = gs_app_row_get_app (app_row);
 	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE ||
 	    gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL)
-		gs_page_install_app (GS_PAGE (shell_extras), app);
+		gs_page_install_app (GS_PAGE (self), app);
 	else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
-		gs_page_remove_app (GS_PAGE (shell_extras), app);
+		gs_page_remove_app (GS_PAGE (self), app);
 	else
 		g_critical ("extras: app in unexpected state %d", gs_app_get_state (app));
 }
 
 static void
-gs_shell_extras_add_app (GsShellExtras *shell_extras, GsApp *app, SearchData *search_data)
+gs_shell_extras_add_app (GsShellExtras *self, GsApp *app, SearchData *search_data)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	GtkWidget *app_row;
 	GList *l;
 	_cleanup_list_free_ GList *list = NULL;
 
 	/* Don't add same app twice */
-	list = gtk_container_get_children (GTK_CONTAINER (priv->list_box_results));
+	list = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
 	for (l = list; l != NULL; l = l->next) {
 		GsApp *existing_app;
 
 		existing_app = gs_app_row_get_app (GS_APP_ROW (l->data));
 		if (app == existing_app)
-			gtk_container_remove (GTK_CONTAINER (priv->list_box_results),
+			gtk_container_remove (GTK_CONTAINER (self->list_box_results),
 			                      GTK_WIDGET (l->data));
 	}
 
@@ -301,19 +300,19 @@ gs_shell_extras_add_app (GsShellExtras *shell_extras, GsApp *app, SearchData *se
 
 	g_signal_connect (app_row, "button-clicked",
 	                  G_CALLBACK (app_row_button_clicked_cb),
-	                  shell_extras);
+	                  self);
 
-	gtk_container_add (GTK_CONTAINER (priv->list_box_results), app_row);
+	gtk_container_add (GTK_CONTAINER (self->list_box_results), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-				    priv->sizegroup_image,
-				    priv->sizegroup_name);
+				    self->sizegroup_image,
+				    self->sizegroup_name);
 	gtk_widget_show (app_row);
 }
 
 static GsApp *
 create_missing_app (SearchData *search_data)
 {
-	GsShellExtras *shell_extras = search_data->shell_extras;
+	GsShellExtras *self = search_data->self;
 	GsApp *app;
 	GString *summary_missing;
 	_cleanup_free_ gchar *name = NULL;
@@ -329,7 +328,7 @@ create_missing_app (SearchData *search_data)
 	url = g_strdup_printf ("<a href=\"%s\">%s</a>", search_data->url_not_found, _("on the website"));
 
 	summary_missing = g_string_new ("");
-	switch (shell_extras->priv->mode) {
+	switch (self->mode) {
 	case GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_FILES:
 		/* TRANSLATORS: this is when we know about an application or
 		 * addon, but it can't be listed for some reason */
@@ -433,9 +432,8 @@ create_missing_app (SearchData *search_data)
 }
 
 static gchar *
-build_no_results_label (GsShellExtras *shell_extras)
+build_no_results_label (GsShellExtras *self)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	GList *l;
 	GsApp *app = NULL;
 	guint num;
@@ -444,7 +442,7 @@ build_no_results_label (GsShellExtras *shell_extras)
 	_cleanup_list_free_ GList *list = NULL;
 	_cleanup_ptrarray_unref_ GPtrArray *array = NULL;
 
-	list = gtk_container_get_children (GTK_CONTAINER (priv->list_box_results));
+	list = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
 	num = g_list_length (list);
 
 	g_assert (num > 0);
@@ -472,16 +470,15 @@ build_no_results_label (GsShellExtras *shell_extras)
 }
 
 static void
-show_search_results (GsShellExtras *shell_extras)
+show_search_results (GsShellExtras *self)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	GsApp *app;
 	GList *l;
 	guint n_children;
 	guint n_missing;
 	_cleanup_list_free_ GList *list = NULL;
 
-	list = gtk_container_get_children (GTK_CONTAINER (priv->list_box_results));
+	list = gtk_container_get_children (GTK_CONTAINER (self->list_box_results));
 	n_children = g_list_length (list);
 
 	/* count the number of rows with missing codecs */
@@ -498,19 +495,19 @@ show_search_results (GsShellExtras *shell_extras)
 
 		/* no results */
 		g_debug ("extras: failed to find any results, %d", n_missing);
-		str = build_no_results_label (shell_extras);
-		gtk_label_set_label (GTK_LABEL (priv->label_no_results), str);
-		gs_shell_extras_set_state (shell_extras,
+		str = build_no_results_label (self);
+		gtk_label_set_label (GTK_LABEL (self->label_no_results), str);
+		gs_shell_extras_set_state (self,
 		                           GS_SHELL_EXTRAS_STATE_NO_RESULTS);
 	} else if (n_children == 1) {
 		/* switch directly to details view */
 		g_debug ("extras: found one result, showing in details view");
 		app = gs_app_row_get_app (GS_APP_ROW (list->data));
-		gs_shell_change_mode (priv->shell, GS_SHELL_MODE_DETAILS, app, NULL, TRUE);
+		gs_shell_change_mode (self->shell, GS_SHELL_MODE_DETAILS, app, NULL, TRUE);
 	} else {
 		/* show what we got */
 		g_debug ("extras: got %d search results, showing", n_children);
-		gs_shell_extras_set_state (shell_extras,
+		gs_shell_extras_set_state (self,
 		                           GS_SHELL_EXTRAS_STATE_READY);
 	}
 }
@@ -521,8 +518,7 @@ search_files_cb (GObject *source_object,
                  gpointer user_data)
 {
 	SearchData *search_data = (SearchData *) user_data;
-	GsShellExtras *shell_extras = search_data->shell_extras;
-	GsShellExtrasPrivate *priv = shell_extras->priv;
+	GsShellExtras *self = search_data->self;
 	_cleanup_plugin_list_free_ GList *list = NULL;
 	GList *l;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
@@ -547,8 +543,8 @@ search_files_cb (GObject *source_object,
 
 			g_warning ("failed to find any search results: %s", error->message);
 			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
-			gtk_label_set_label (GTK_LABEL (priv->label_failed), str);
-			gs_shell_extras_set_state (shell_extras,
+			gtk_label_set_label (GTK_LABEL (self->label_failed), str);
+			gs_shell_extras_set_state (self,
 						    GS_SHELL_EXTRAS_STATE_FAILED);
 			return;
 		}
@@ -558,14 +554,14 @@ search_files_cb (GObject *source_object,
 		GsApp *app = GS_APP (l->data);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
-		gs_shell_extras_add_app (shell_extras, app, search_data);
+		gs_shell_extras_add_app (self, app, search_data);
 	}
 
-	priv->pending_search_cnt--;
+	self->pending_search_cnt--;
 
 	/* have all searches finished? */
-	if (priv->pending_search_cnt == 0)
-		show_search_results (shell_extras);
+	if (self->pending_search_cnt == 0)
+		show_search_results (self);
 }
 
 static void
@@ -574,8 +570,7 @@ filename_to_app_cb (GObject *source_object,
                     gpointer user_data)
 {
 	SearchData *search_data = (SearchData *) user_data;
-	GsShellExtras *shell_extras = search_data->shell_extras;
-	GsShellExtrasPrivate *priv = shell_extras->priv;
+	GsShellExtras *self = search_data->self;
 	GsApp *app;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	_cleanup_error_free_ GError *error = NULL;
@@ -596,21 +591,21 @@ filename_to_app_cb (GObject *source_object,
 
 			g_warning ("failed to find any search results: %s", error->message);
 			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
-			gtk_label_set_label (GTK_LABEL (priv->label_failed), str);
-			gs_shell_extras_set_state (shell_extras,
+			gtk_label_set_label (GTK_LABEL (self->label_failed), str);
+			gs_shell_extras_set_state (self,
 						    GS_SHELL_EXTRAS_STATE_FAILED);
 			return;
 		}
 	}
 
 	g_debug ("%s\n\n", gs_app_to_string (app));
-	gs_shell_extras_add_app (shell_extras, app, search_data);
+	gs_shell_extras_add_app (self, app, search_data);
 
-	priv->pending_search_cnt--;
+	self->pending_search_cnt--;
 
 	/* have all searches finished? */
-	if (priv->pending_search_cnt == 0)
-		show_search_results (shell_extras);
+	if (self->pending_search_cnt == 0)
+		show_search_results (self);
 
 	g_object_unref (app);
 }
@@ -621,8 +616,7 @@ get_search_what_provides_cb (GObject *source_object,
                              gpointer user_data)
 {
 	SearchData *search_data = (SearchData *) user_data;
-	GsShellExtras *shell_extras = search_data->shell_extras;
-	GsShellExtrasPrivate *priv = shell_extras->priv;
+	GsShellExtras *self = search_data->self;
 	_cleanup_plugin_list_free_ GList *list = NULL;
 	GList *l;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
@@ -647,8 +641,8 @@ get_search_what_provides_cb (GObject *source_object,
 
 			g_warning ("failed to find any search results: %s", error->message);
 			str = g_strdup_printf ("%s: %s", _("Failed to find any search results"), error->message);
-			gtk_label_set_label (GTK_LABEL (priv->label_failed), str);
-			gs_shell_extras_set_state (shell_extras,
+			gtk_label_set_label (GTK_LABEL (self->label_failed), str);
+			gs_shell_extras_set_state (self,
 						    GS_SHELL_EXTRAS_STATE_FAILED);
 			return;
 		}
@@ -658,73 +652,72 @@ get_search_what_provides_cb (GObject *source_object,
 		GsApp *app = GS_APP (l->data);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
-		gs_shell_extras_add_app (shell_extras, app, search_data);
+		gs_shell_extras_add_app (self, app, search_data);
 	}
 
-	priv->pending_search_cnt--;
+	self->pending_search_cnt--;
 
 	/* have all searches finished? */
-	if (priv->pending_search_cnt == 0)
-		show_search_results (shell_extras);
+	if (self->pending_search_cnt == 0)
+		show_search_results (self);
 }
 
 static void
-gs_shell_extras_load (GsShellExtras *shell_extras, GPtrArray *array_search_data)
+gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	guint i;
 
 	/* cancel any pending searches */
-	if (priv->search_cancellable != NULL) {
-		g_cancellable_cancel (priv->search_cancellable);
-		g_object_unref (priv->search_cancellable);
+	if (self->search_cancellable != NULL) {
+		g_cancellable_cancel (self->search_cancellable);
+		g_object_unref (self->search_cancellable);
 	}
-	priv->search_cancellable = g_cancellable_new ();
+	self->search_cancellable = g_cancellable_new ();
 
 	if (array_search_data != NULL) {
-		if (priv->array_search_data != NULL)
-			g_ptr_array_unref (priv->array_search_data);
-		priv->array_search_data = g_ptr_array_ref (array_search_data);
+		if (self->array_search_data != NULL)
+			g_ptr_array_unref (self->array_search_data);
+		self->array_search_data = g_ptr_array_ref (array_search_data);
 	}
 
-	priv->pending_search_cnt = 0;
+	self->pending_search_cnt = 0;
 
 	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (priv->list_box_results));
+	gs_container_remove_all (GTK_CONTAINER (self->list_box_results));
 
 	/* set state as loading */
-	priv->state = GS_SHELL_EXTRAS_STATE_LOADING;
+	self->state = GS_SHELL_EXTRAS_STATE_LOADING;
 
 	/* start new searches, separate one for each codec */
-	for (i = 0; i < priv->array_search_data->len; i++) {
+	for (i = 0; i < self->array_search_data->len; i++) {
 		SearchData *search_data;
 
-		search_data = g_ptr_array_index (priv->array_search_data, i);
+		search_data = g_ptr_array_index (self->array_search_data, i);
 		if (search_data->search_filename != NULL) {
 			g_debug ("searching filename: '%s'", search_data->search_filename);
-			gs_plugin_loader_search_files_async (priv->plugin_loader,
+			gs_plugin_loader_search_files_async (self->plugin_loader,
 			                                     search_data->search_filename,
 			                                     GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
 			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA,
-			                                     priv->search_cancellable,
+			                                     self->search_cancellable,
 			                                     search_files_cb,
 			                                     search_data);
 		} else if (search_data->package_filename != NULL) {
 			g_debug ("resolving filename to app: '%s'", search_data->package_filename);
-			gs_plugin_loader_filename_to_app_async (priv->plugin_loader,
+			gs_plugin_loader_filename_to_app_async (self->plugin_loader,
 			                                        search_data->package_filename,
 			                                        GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 			                                        GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 			                                        GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
 			                                        GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA,
-			                                        priv->search_cancellable,
+			                                        self->search_cancellable,
 			                                        filename_to_app_cb,
 			                                        search_data);
 		} else {
 			g_debug ("searching what provides: '%s'", search_data->search);
-			gs_plugin_loader_search_what_provides_async (priv->plugin_loader,
+			gs_plugin_loader_search_what_provides_async (self->plugin_loader,
 			                                             search_data->search,
 			                                             GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
@@ -734,27 +727,24 @@ gs_shell_extras_load (GsShellExtras *shell_extras, GPtrArray *array_search_data)
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
 			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA,
-			                                             priv->search_cancellable,
+			                                             self->search_cancellable,
 			                                             get_search_what_provides_cb,
 			                                             search_data);
 		}
-		priv->pending_search_cnt++;
+		self->pending_search_cnt++;
 	}
 }
 
 void
-gs_shell_extras_reload (GsShellExtras *shell_extras)
+gs_shell_extras_reload (GsShellExtras *self)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
-
-	if (priv->array_search_data != NULL)
-		gs_shell_extras_load (shell_extras, NULL);
+	if (self->array_search_data != NULL)
+		gs_shell_extras_load (self, NULL);
 }
 
 static void
-gs_shell_extras_search_package_files (GsShellExtras *shell_extras, gchar **files)
+gs_shell_extras_search_package_files (GsShellExtras *self, gchar **files)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
@@ -764,18 +754,17 @@ gs_shell_extras_search_package_files (GsShellExtras *shell_extras, gchar **files
 		search_data = g_slice_new0 (SearchData);
 		search_data->title = g_strdup (files[i]);
 		search_data->package_filename = g_strdup (files[i]);
-		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_DEFAULT);
-		search_data->shell_extras = g_object_ref (shell_extras);
+		search_data->url_not_found = gs_vendor_get_not_found_url (self->vendor, GS_VENDOR_URL_TYPE_DEFAULT);
+		search_data->self = g_object_ref (self);
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (shell_extras, array_search_data);
+	gs_shell_extras_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_provide_files (GsShellExtras *shell_extras, gchar **files)
+gs_shell_extras_search_provide_files (GsShellExtras *self, gchar **files)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
@@ -785,18 +774,17 @@ gs_shell_extras_search_provide_files (GsShellExtras *shell_extras, gchar **files
 		search_data = g_slice_new0 (SearchData);
 		search_data->title = g_strdup (files[i]);
 		search_data->search_filename = g_strdup (files[i]);
-		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_DEFAULT);
-		search_data->shell_extras = g_object_ref (shell_extras);
+		search_data->url_not_found = gs_vendor_get_not_found_url (self->vendor, GS_VENDOR_URL_TYPE_DEFAULT);
+		search_data->self = g_object_ref (self);
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (shell_extras, array_search_data);
+	gs_shell_extras_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_package_names (GsShellExtras *shell_extras, gchar **package_names)
+gs_shell_extras_search_package_names (GsShellExtras *self, gchar **package_names)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
@@ -806,18 +794,17 @@ gs_shell_extras_search_package_names (GsShellExtras *shell_extras, gchar **packa
 		search_data = g_slice_new0 (SearchData);
 		search_data->title = g_strdup (package_names[i]);
 		search_data->search = g_strdup (package_names[i]);
-		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_DEFAULT);
-		search_data->shell_extras = g_object_ref (shell_extras);
+		search_data->url_not_found = gs_vendor_get_not_found_url (self->vendor, GS_VENDOR_URL_TYPE_DEFAULT);
+		search_data->self = g_object_ref (self);
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (shell_extras, array_search_data);
+	gs_shell_extras_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_mime_types (GsShellExtras *shell_extras, gchar **mime_types)
+gs_shell_extras_search_mime_types (GsShellExtras *self, gchar **mime_types)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
@@ -827,12 +814,12 @@ gs_shell_extras_search_mime_types (GsShellExtras *shell_extras, gchar **mime_typ
 		search_data = g_slice_new0 (SearchData);
 		search_data->title = g_strdup_printf (_("%s file format"), mime_types[i]);
 		search_data->search = g_strdup (mime_types[i]);
-		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_MIME);
-		search_data->shell_extras = g_object_ref (shell_extras);
+		search_data->url_not_found = gs_vendor_get_not_found_url (self->vendor, GS_VENDOR_URL_TYPE_MIME);
+		search_data->self = g_object_ref (self);
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (shell_extras, array_search_data);
+	gs_shell_extras_load (self, array_search_data);
 }
 
 static gchar *
@@ -845,9 +832,8 @@ font_tag_to_lang (const gchar *tag)
 }
 
 static gchar *
-gs_shell_extras_font_tag_to_localised_name (GsShellExtras *shell_extras, const gchar *tag)
+gs_shell_extras_font_tag_to_localised_name (GsShellExtras *self, const gchar *tag)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	gchar *name;
 	_cleanup_free_ gchar *lang = NULL;
 	_cleanup_free_ gchar *language = NULL;
@@ -860,7 +846,7 @@ gs_shell_extras_font_tag_to_localised_name (GsShellExtras *shell_extras, const g
 	}
 
 	/* convert to localisable name */
-	language = gs_language_iso639_to_language (priv->language, lang);
+	language = gs_language_iso639_to_language (self->language, lang);
 	if (language == NULL) {
 		g_warning ("Could not match language code '%s' to an ISO639 language", lang);
 		return NULL;
@@ -875,9 +861,8 @@ gs_shell_extras_font_tag_to_localised_name (GsShellExtras *shell_extras, const g
 }
 
 static void
-gs_shell_extras_search_fontconfig_resources (GsShellExtras *shell_extras, gchar **resources)
+gs_shell_extras_search_fontconfig_resources (GsShellExtras *self, gchar **resources)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
@@ -885,20 +870,19 @@ gs_shell_extras_search_fontconfig_resources (GsShellExtras *shell_extras, gchar 
 		SearchData *search_data;
 
 		search_data = g_slice_new0 (SearchData);
-		search_data->title = gs_shell_extras_font_tag_to_localised_name (shell_extras, resources[i]);
+		search_data->title = gs_shell_extras_font_tag_to_localised_name (self, resources[i]);
 		search_data->search = g_strdup (resources[i]);
-		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_FONT);
-		search_data->shell_extras = g_object_ref (shell_extras);
+		search_data->url_not_found = gs_vendor_get_not_found_url (self->vendor, GS_VENDOR_URL_TYPE_FONT);
+		search_data->self = g_object_ref (self);
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (shell_extras, array_search_data);
+	gs_shell_extras_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_gstreamer_resources (GsShellExtras *shell_extras, gchar **resources)
+gs_shell_extras_search_gstreamer_resources (GsShellExtras *self, gchar **resources)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
@@ -911,18 +895,17 @@ gs_shell_extras_search_gstreamer_resources (GsShellExtras *shell_extras, gchar *
 		search_data = g_slice_new0 (SearchData);
 		search_data->title = g_strdup (parts[0]);
 		search_data->search = g_strdup (parts[1]);
-		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_CODEC);
-		search_data->shell_extras = g_object_ref (shell_extras);
+		search_data->url_not_found = gs_vendor_get_not_found_url (self->vendor, GS_VENDOR_URL_TYPE_CODEC);
+		search_data->self = g_object_ref (self);
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (shell_extras, array_search_data);
+	gs_shell_extras_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_plasma_resources (GsShellExtras *shell_extras, gchar **resources)
+gs_shell_extras_search_plasma_resources (GsShellExtras *self, gchar **resources)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i;
 
@@ -932,18 +915,17 @@ gs_shell_extras_search_plasma_resources (GsShellExtras *shell_extras, gchar **re
 		search_data = g_slice_new0 (SearchData);
 		search_data->title = g_strdup (resources[i]);
 		search_data->search = g_strdup (resources[i]);
-		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_DEFAULT);
-		search_data->shell_extras = g_object_ref (shell_extras);
+		search_data->url_not_found = gs_vendor_get_not_found_url (self->vendor, GS_VENDOR_URL_TYPE_DEFAULT);
+		search_data->self = g_object_ref (self);
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (shell_extras, array_search_data);
+	gs_shell_extras_load (self, array_search_data);
 }
 
 static void
-gs_shell_extras_search_printer_drivers (GsShellExtras *shell_extras, gchar **device_ids)
+gs_shell_extras_search_printer_drivers (GsShellExtras *self, gchar **device_ids)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	_cleanup_ptrarray_unref_ GPtrArray *array_search_data = g_ptr_array_new_with_free_func ((GDestroyNotify) search_data_free);
 	guint i, j;
 	guint len;
@@ -989,46 +971,44 @@ gs_shell_extras_search_printer_drivers (GsShellExtras *shell_extras, gchar **dev
 		search_data = g_slice_new0 (SearchData);
 		search_data->title = g_strdup_printf ("%s %s", mfg, mdl);
 		search_data->search = g_ascii_strdown (tag, -1);
-		search_data->url_not_found = gs_vendor_get_not_found_url (priv->vendor, GS_VENDOR_URL_TYPE_HARDWARE);
-		search_data->shell_extras = g_object_ref (shell_extras);
+		search_data->url_not_found = gs_vendor_get_not_found_url (self->vendor, GS_VENDOR_URL_TYPE_HARDWARE);
+		search_data->self = g_object_ref (self);
 		g_ptr_array_add (array_search_data, search_data);
 	}
 
-	gs_shell_extras_load (shell_extras, array_search_data);
+	gs_shell_extras_load (self, array_search_data);
 }
 
 void
-gs_shell_extras_search (GsShellExtras  *shell_extras,
+gs_shell_extras_search (GsShellExtras  *self,
                         const gchar    *mode_str,
                         gchar         **resources)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
-
-	priv->mode = gs_shell_extras_mode_from_string (mode_str);
-	switch (priv->mode) {
+	self->mode = gs_shell_extras_mode_from_string (mode_str);
+	switch (self->mode) {
 	case GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_FILES:
-		gs_shell_extras_search_package_files (shell_extras, resources);
+		gs_shell_extras_search_package_files (self, resources);
 		break;
 	case GS_SHELL_EXTRAS_MODE_INSTALL_PROVIDE_FILES:
-		gs_shell_extras_search_provide_files (shell_extras, resources);
+		gs_shell_extras_search_provide_files (self, resources);
 		break;
 	case GS_SHELL_EXTRAS_MODE_INSTALL_PACKAGE_NAMES:
-		gs_shell_extras_search_package_names (shell_extras, resources);
+		gs_shell_extras_search_package_names (self, resources);
 		break;
 	case GS_SHELL_EXTRAS_MODE_INSTALL_MIME_TYPES:
-		gs_shell_extras_search_mime_types (shell_extras, resources);
+		gs_shell_extras_search_mime_types (self, resources);
 		break;
 	case GS_SHELL_EXTRAS_MODE_INSTALL_FONTCONFIG_RESOURCES:
-		gs_shell_extras_search_fontconfig_resources (shell_extras, resources);
+		gs_shell_extras_search_fontconfig_resources (self, resources);
 		break;
 	case GS_SHELL_EXTRAS_MODE_INSTALL_GSTREAMER_RESOURCES:
-		gs_shell_extras_search_gstreamer_resources (shell_extras, resources);
+		gs_shell_extras_search_gstreamer_resources (self, resources);
 		break;
 	case GS_SHELL_EXTRAS_MODE_INSTALL_PLASMA_RESOURCES:
-		gs_shell_extras_search_plasma_resources (shell_extras, resources);
+		gs_shell_extras_search_plasma_resources (self, resources);
 		break;
 	case GS_SHELL_EXTRAS_MODE_INSTALL_PRINTER_DRIVERS:
-		gs_shell_extras_search_printer_drivers (shell_extras, resources);
+		gs_shell_extras_search_printer_drivers (self, resources);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -1037,36 +1017,34 @@ gs_shell_extras_search (GsShellExtras  *shell_extras,
 }
 
 void
-gs_shell_extras_switch_to (GsShellExtras *shell_extras,
+gs_shell_extras_switch_to (GsShellExtras *self,
 			    gboolean scroll_up)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	GtkWidget *widget;
 
-	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_EXTRAS) {
+	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_EXTRAS) {
 		g_warning ("Called switch_to(codecs) when in mode %s",
-			   gs_shell_get_mode_string (priv->shell));
+			   gs_shell_get_mode_string (self->shell));
 		return;
 	}
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
 	gtk_widget_show (widget);
 
 	if (scroll_up) {
 		GtkAdjustment *adj;
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow));
+		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow));
 		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 	}
 
-	gs_shell_extras_update_ui_state (shell_extras);
+	gs_shell_extras_update_ui_state (self);
 }
 
 static void
 row_activated_cb (GtkListBox *list_box,
                   GtkListBoxRow *row,
-                  GsShellExtras *shell_extras)
+                  GsShellExtras *self)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
 	GsApp *app;
 
 	app = gs_app_row_get_app (GS_APP_ROW (row));
@@ -1075,7 +1053,7 @@ row_activated_cb (GtkListBox *list_box,
 	    gs_app_get_url (app, AS_URL_KIND_MISSING) != NULL) {
 		gs_app_show_url (app, AS_URL_KIND_MISSING);
 	} else {
-		gs_shell_show_app (priv->shell, app);
+		gs_shell_show_app (self->shell, app);
 	}
 }
 
@@ -1140,33 +1118,31 @@ list_header_func (GtkListBoxRow *row,
 }
 
 void
-gs_shell_extras_setup (GsShellExtras *shell_extras,
+gs_shell_extras_setup (GsShellExtras *self,
 			GsShell *shell,
 			GsPluginLoader *plugin_loader,
 			GtkBuilder *builder,
 			GCancellable *cancellable)
 {
-	GsShellExtrasPrivate *priv = shell_extras->priv;
+	g_return_if_fail (GS_IS_SHELL_EXTRAS (self));
 
-	g_return_if_fail (GS_IS_SHELL_EXTRAS (shell_extras));
+	self->shell = shell;
 
-	priv->shell = shell;
+	self->plugin_loader = g_object_ref (plugin_loader);
+	self->builder = g_object_ref (builder);
+	self->cancellable = g_object_ref (cancellable);
 
-	priv->plugin_loader = g_object_ref (plugin_loader);
-	priv->builder = g_object_ref (builder);
-	priv->cancellable = g_object_ref (cancellable);
-
-	g_signal_connect (priv->list_box_results, "row-activated",
-			  G_CALLBACK (row_activated_cb), shell_extras);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_results),
+	g_signal_connect (self->list_box_results, "row-activated",
+			  G_CALLBACK (row_activated_cb), self);
+	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_results),
 				      list_header_func,
-				      shell_extras, NULL);
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_results),
+				      self, NULL);
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_results),
 				    list_sort_func,
-				    shell_extras, NULL);
+				    self, NULL);
 
 	/* chain up */
-	gs_page_setup (GS_PAGE (shell_extras),
+	gs_page_setup (GS_PAGE (self),
 	               shell,
 	               plugin_loader,
 	               cancellable);
@@ -1175,43 +1151,41 @@ gs_shell_extras_setup (GsShellExtras *shell_extras,
 static void
 gs_shell_extras_dispose (GObject *object)
 {
-	GsShellExtras *shell_extras = GS_SHELL_EXTRAS (object);
-	GsShellExtrasPrivate *priv = shell_extras->priv;
+	GsShellExtras *self = GS_SHELL_EXTRAS (object);
 
-	if (priv->search_cancellable != NULL) {
-		g_cancellable_cancel (priv->search_cancellable);
-		g_clear_object (&priv->search_cancellable);
+	if (self->search_cancellable != NULL) {
+		g_cancellable_cancel (self->search_cancellable);
+		g_clear_object (&self->search_cancellable);
 	}
 
-	g_clear_object (&priv->sizegroup_image);
-	g_clear_object (&priv->sizegroup_name);
-	g_clear_object (&priv->language);
-	g_clear_object (&priv->vendor);
-	g_clear_object (&priv->builder);
-	g_clear_object (&priv->plugin_loader);
-	g_clear_object (&priv->cancellable);
+	g_clear_object (&self->sizegroup_image);
+	g_clear_object (&self->sizegroup_name);
+	g_clear_object (&self->language);
+	g_clear_object (&self->vendor);
+	g_clear_object (&self->builder);
+	g_clear_object (&self->plugin_loader);
+	g_clear_object (&self->cancellable);
 
-	g_clear_pointer (&priv->array_search_data, g_ptr_array_unref);
+	g_clear_pointer (&self->array_search_data, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_shell_extras_parent_class)->dispose (object);
 }
 
 static void
-gs_shell_extras_init (GsShellExtras *shell_extras)
+gs_shell_extras_init (GsShellExtras *self)
 {
 	_cleanup_error_free_ GError *error = NULL;
 
-	gtk_widget_init_template (GTK_WIDGET (shell_extras));
+	gtk_widget_init_template (GTK_WIDGET (self));
 
-	shell_extras->priv = gs_shell_extras_get_instance_private (shell_extras);
-	shell_extras->priv->state = GS_SHELL_EXTRAS_STATE_LOADING;
-	shell_extras->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	shell_extras->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	shell_extras->priv->vendor = gs_vendor_new ();
+	self->state = GS_SHELL_EXTRAS_STATE_LOADING;
+	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->vendor = gs_vendor_new ();
 
 	/* map ISO639 to language names */
-	shell_extras->priv->language = gs_language_new ();
-	gs_language_populate (shell_extras->priv->language, &error);
+	self->language = gs_language_new ();
+	gs_language_populate (self->language, &error);
 	if (error != NULL)
 		g_error ("Failed to map ISO639 to language names: %s", error->message);
 }
@@ -1226,20 +1200,20 @@ gs_shell_extras_class_init (GsShellExtrasClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-extras.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellExtras, label_failed);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellExtras, label_no_results);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellExtras, list_box_results);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellExtras, scrolledwindow);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellExtras, spinner);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellExtras, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, label_failed);
+	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, label_no_results);
+	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, list_box_results);
+	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, scrolledwindow);
+	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, spinner);
+	gtk_widget_class_bind_template_child (widget_class, GsShellExtras, stack);
 }
 
 GsShellExtras *
 gs_shell_extras_new (void)
 {
-	GsShellExtras *shell_extras;
-	shell_extras = g_object_new (GS_TYPE_SHELL_EXTRAS, NULL);
-	return GS_SHELL_EXTRAS (shell_extras);
+	GsShellExtras *self;
+	self = g_object_new (GS_TYPE_SHELL_EXTRAS, NULL);
+	return GS_SHELL_EXTRAS (self);
 }
 
 /* vim: set noexpandtab: */

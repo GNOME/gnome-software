@@ -31,25 +31,9 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_EXTRAS		(gs_shell_extras_get_type ())
-#define GS_SHELL_EXTRAS(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_SHELL_EXTRAS, GsShellExtras))
-#define GS_SHELL_EXTRAS_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_SHELL_EXTRAS, GsShellExtrasClass))
-#define GS_IS_SHELL_EXTRAS(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_SHELL_EXTRAS))
-#define GS_IS_SHELL_EXTRAS_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_SHELL_EXTRAS))
-#define GS_SHELL_EXTRAS_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_SHELL_EXTRAS, GsShellExtrasClass))
+#define GS_TYPE_SHELL_EXTRAS (gs_shell_extras_get_type ())
 
-typedef struct GsShellExtrasPrivate GsShellExtrasPrivate;
-
-typedef struct
-{
-	 GsPage			 parent;
-	 GsShellExtrasPrivate	*priv;
-} GsShellExtras;
-
-typedef struct
-{
-	GsPageClass		 parent_class;
-} GsShellExtrasClass;
+G_DECLARE_FINAL_TYPE (GsShellExtras, gs_shell_extras, GS, SHELL_EXTRAS, GsPage)
 
 typedef enum {
 	GS_SHELL_EXTRAS_MODE_UNKNOWN,
@@ -65,15 +49,14 @@ typedef enum {
 } GsShellExtrasMode;
 
 const gchar		*gs_shell_extras_mode_to_string		(GsShellExtrasMode	  mode);
-GType			 gs_shell_extras_get_type		(void);
 GsShellExtras		*gs_shell_extras_new			(void);
-void			 gs_shell_extras_search			(GsShellExtras		 *shell_extras,
+void			 gs_shell_extras_search			(GsShellExtras		 *self,
 								 const gchar 		 *mode,
 								 gchar			**resources);
-void			 gs_shell_extras_switch_to		(GsShellExtras		 *shell_extras,
+void			 gs_shell_extras_switch_to		(GsShellExtras		 *self,
 								 gboolean		  scroll_up);
-void			 gs_shell_extras_reload			(GsShellExtras		 *shell_extras);
-void			 gs_shell_extras_setup			(GsShellExtras		 *shell_extras,
+void			 gs_shell_extras_reload			(GsShellExtras		 *self);
+void			 gs_shell_extras_setup			(GsShellExtras		 *self,
 								 GsShell		 *shell,
 								 GsPluginLoader		 *plugin_loader,
 								 GtkBuilder		 *builder,
