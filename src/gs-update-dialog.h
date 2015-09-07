@@ -27,34 +27,18 @@
 #include "gs-app.h"
 #include "gs-plugin-loader.h"
 
-#define GS_TYPE_UPDATE_DIALOG		(gs_update_dialog_get_type())
-#define GS_UPDATE_DIALOG(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_UPDATE_DIALOG, GsUpdateDialog))
-#define GS_UPDATE_DIALOG_CLASS(cls)	(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_UPDATE_DIALOG, GsUpdateDialogClass))
-#define GS_IS_UPDATE_DIALOG(obj)	(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_UPDATE_DIALOG))
-#define GS_IS_UPDATE_DIALOG_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_UPDATE_DIALOG))
-#define GS_UPDATE_DIALOG_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_UPDATE_DIALOG, GsUpdateDialogClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsUpdateDialog		GsUpdateDialog;
-typedef struct _GsUpdateDialogClass	GsUpdateDialogClass;
-typedef struct _GsUpdateDialogPrivate	GsUpdateDialogPrivate;
+#define GS_TYPE_UPDATE_DIALOG (gs_update_dialog_get_type ())
 
-struct _GsUpdateDialog
-{
-	GtkDialog	 parent;
-};
+G_DECLARE_FINAL_TYPE (GsUpdateDialog, gs_update_dialog, GS, UPDATE_DIALOG, GtkDialog)
 
-struct _GsUpdateDialogClass
-{
-	GtkDialogClass	 parent_class;
-};
-
-GType		 gs_update_dialog_get_type			(void);
 GtkWidget	*gs_update_dialog_new				(GsPluginLoader		*plugin_loader);
 void		 gs_update_dialog_show_installed_updates	(GsUpdateDialog		*dialog);
 void		 gs_update_dialog_show_update_details		(GsUpdateDialog		*dialog,
 								 GsApp			*app);
+
+G_END_DECLS
 
 #endif /* GS_UPDATE_DIALOG_H */
 

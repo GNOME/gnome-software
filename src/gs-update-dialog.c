@@ -39,8 +39,10 @@ typedef struct {
 	GtkWidget	*focus;
 } BackEntry;
 
-struct _GsUpdateDialogPrivate
+struct _GsUpdateDialog
 {
+	GtkDialog	 parent_instance;
+
 	GQueue		*back_entry_stack;
 	GCancellable	*cancellable;
 	GsPluginLoader	*plugin_loader;
@@ -58,16 +60,15 @@ struct _GsUpdateDialogPrivate
 	GtkWidget	*stack;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsUpdateDialog, gs_update_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsUpdateDialog, gs_update_dialog, GTK_TYPE_DIALOG)
 
 static void
 save_back_entry (GsUpdateDialog *dialog)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	BackEntry *entry;
 
 	entry = g_slice_new0 (BackEntry);
-	entry->stack_page = g_strdup (gtk_stack_get_visible_child_name (GTK_STACK (priv->stack)));
+	entry->stack_page = g_strdup (gtk_stack_get_visible_child_name (GTK_STACK (dialog->stack)));
 	entry->title = g_strdup (gtk_window_get_title (GTK_WINDOW (dialog)));
 
 	entry->focus = gtk_window_get_focus (GTK_WINDOW (dialog));
@@ -75,7 +76,7 @@ save_back_entry (GsUpdateDialog *dialog)
 		g_object_add_weak_pointer (G_OBJECT (entry->focus),
 		                           (gpointer *) &entry->focus);
 
-	g_queue_push_head (priv->back_entry_stack, entry);
+	g_queue_push_head (dialog->back_entry_stack, entry);
 }
 
 static void
@@ -92,7 +93,6 @@ back_entry_free (BackEntry *entry)
 static void
 set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GsAppKind kind;
 	const GdkPixbuf *pixbuf;
 	const gchar *update_details;
@@ -128,17 +128,17 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	}
 
 	/* set update header */
-	gtk_widget_set_visible (priv->box_header, kind == GS_APP_KIND_NORMAL || kind == GS_APP_KIND_SYSTEM);
-	gtk_label_set_markup (GTK_LABEL (priv->label_details), update_desc);
-	gtk_label_set_label (GTK_LABEL (priv->label_name), gs_app_get_name (app));
-	gtk_label_set_label (GTK_LABEL (priv->label_summary), gs_app_get_summary (app));
+	gtk_widget_set_visible (dialog->box_header, kind == GS_APP_KIND_NORMAL || kind == GS_APP_KIND_SYSTEM);
+	gtk_label_set_markup (GTK_LABEL (dialog->label_details), update_desc);
+	gtk_label_set_label (GTK_LABEL (dialog->label_name), gs_app_get_name (app));
+	gtk_label_set_label (GTK_LABEL (dialog->label_summary), gs_app_get_summary (app));
 
 	pixbuf = gs_app_get_pixbuf (app);
 	if (pixbuf != NULL)
-		gs_image_set_from_pixbuf (GTK_IMAGE (priv->image_icon), pixbuf);
+		gs_image_set_from_pixbuf (GTK_IMAGE (dialog->image_icon), pixbuf);
 
 	/* show the back button if needed */
-	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
+	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));
 }
 
 static void
@@ -177,12 +177,11 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
                           GAsyncResult *res,
                           GsUpdateDialog *dialog)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GList *l;
 	_cleanup_plugin_list_free_ GList *list = NULL;
 	_cleanup_error_free_ GError *error = NULL;
 
-	gs_stop_spinner (GTK_SPINNER (priv->spinner));
+	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
@@ -191,7 +190,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 				     GS_PLUGIN_LOADER_ERROR,
 				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
 			g_debug ("no installed updates to show");
-			gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "empty");
+			gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
 			return;
 		} else if (g_error_matches (error,
 					    G_IO_ERROR,
@@ -202,15 +201,15 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		}
 
 		g_warning ("failed to get installed updates: %s", error->message);
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "empty");
+		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
 		return;
 	}
 
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "installed-updates-list");
+	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "installed-updates-list");
 
-	gs_container_remove_all (GTK_CONTAINER (priv->list_box_installed_updates));
+	gs_container_remove_all (GTK_CONTAINER (dialog->list_box_installed_updates));
 	for (l = list; l != NULL; l = l->next) {
-		gs_update_list_add_app (GS_UPDATE_LIST (priv->list_box_installed_updates),
+		gs_update_list_add_app (GS_UPDATE_LIST (dialog->list_box_installed_updates),
 					GS_APP (l->data));
 	}
 }
@@ -218,7 +217,6 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 void
 gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	guint64 refine_flags;
 	guint64 time_updates_installed;
 
@@ -241,18 +239,18 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 		gtk_header_bar_set_subtitle (GTK_HEADER_BAR (header), subtitle);
 	}
 
-	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
-	gs_start_spinner (GTK_SPINNER (priv->spinner));
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "spinner");
+	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));
+	gs_start_spinner (GTK_SPINNER (dialog->spinner));
+	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "spinner");
 
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 	               GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 	               GS_PLUGIN_REFINE_FLAGS_USE_HISTORY;
 
-	gs_plugin_loader_get_updates_async (priv->plugin_loader,
+	gs_plugin_loader_get_updates_async (dialog->plugin_loader,
 	                                    refine_flags,
-	                                    priv->cancellable,
+	                                    dialog->cancellable,
 	                                    (GAsyncReadyCallback) get_installed_updates_cb,
 	                                    dialog);
 }
@@ -271,7 +269,6 @@ unset_focus (GtkWidget *widget)
 void
 gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GsApp *app_related;
 	GsAppKind kind;
 	const gchar *sort;
@@ -291,7 +288,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 		guint i;
 		GtkWidget *row, *label;
 
-		gs_container_remove_all (GTK_CONTAINER (priv->list_box));
+		gs_container_remove_all (GTK_CONTAINER (dialog->list_box));
 		related = gs_app_get_related (app);
 		for (i = 0; i < related->len; i++) {
 			app_related = g_ptr_array_index (related, i);
@@ -328,15 +325,15 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 			gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 			gtk_box_pack_start (GTK_BOX (row), label, FALSE, FALSE, 0);
 			gtk_widget_show_all (row);
-			gtk_list_box_insert (GTK_LIST_BOX (priv->list_box), row, -1);
+			gtk_list_box_insert (GTK_LIST_BOX (dialog->list_box), row, -1);
 		}
-		gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT);
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "os-update-list");
-		gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_NONE);
+		gtk_stack_set_transition_type (GTK_STACK (dialog->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT);
+		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "os-update-list");
+		gtk_stack_set_transition_type (GTK_STACK (dialog->stack), GTK_STACK_TRANSITION_TYPE_NONE);
 	} else {
-		gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT);
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), "package-details");
-		gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_NONE);
+		gtk_stack_set_transition_type (GTK_STACK (dialog->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_LEFT);
+		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "package-details");
+		gtk_stack_set_transition_type (GTK_STACK (dialog->stack), GTK_STACK_TRANSITION_TYPE_NONE);
 	}
 }
 
@@ -366,22 +363,21 @@ os_updates_sort_func (GtkListBoxRow *a,
 static void
 button_back_cb (GtkWidget *widget, GsUpdateDialog *dialog)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	BackEntry *entry;
 
 	/* return to the previous view */
-	entry = g_queue_pop_head (priv->back_entry_stack);
+	entry = g_queue_pop_head (dialog->back_entry_stack);
 
-	gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_RIGHT);
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack), entry->stack_page);
-	gtk_stack_set_transition_type (GTK_STACK (priv->stack), GTK_STACK_TRANSITION_TYPE_NONE);
+	gtk_stack_set_transition_type (GTK_STACK (dialog->stack), GTK_STACK_TRANSITION_TYPE_SLIDE_RIGHT);
+	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), entry->stack_page);
+	gtk_stack_set_transition_type (GTK_STACK (dialog->stack), GTK_STACK_TRANSITION_TYPE_NONE);
 
 	gtk_window_set_title (GTK_WINDOW (dialog), entry->title);
 	if (entry->focus)
 		gtk_widget_grab_focus (entry->focus);
 	back_entry_free (entry);
 
-	gtk_widget_set_visible (priv->button_back, !g_queue_is_empty (priv->back_entry_stack));
+	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));
 }
 
 static void
@@ -405,24 +401,23 @@ scrollbar_mapped_cb (GtkWidget *sb, GtkScrolledWindow *swin)
 static gboolean
 key_press_event (GsUpdateDialog *dialog, GdkEventKey *event)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GdkKeymap *keymap;
 	GdkModifierType state;
 	gboolean is_rtl;
 
-	if (!gtk_widget_is_visible (priv->button_back) || !gtk_widget_is_sensitive (priv->button_back))
+	if (!gtk_widget_is_visible (dialog->button_back) || !gtk_widget_is_sensitive (dialog->button_back))
 		return GDK_EVENT_PROPAGATE;
 
 	state = event->state;
 	keymap = gdk_keymap_get_default ();
 	gdk_keymap_add_virtual_modifiers (keymap, &state);
 	state = state & gtk_accelerator_get_default_mod_mask ();
-	is_rtl = gtk_widget_get_direction (priv->button_back) == GTK_TEXT_DIR_RTL;
+	is_rtl = gtk_widget_get_direction (dialog->button_back) == GTK_TEXT_DIR_RTL;
 
 	if ((!is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Left) ||
 	    (is_rtl && state == GDK_MOD1_MASK && event->keyval == GDK_KEY_Right) ||
 	    event->keyval == GDK_KEY_Back) {
-		gtk_widget_activate (priv->button_back);
+		gtk_widget_activate (dialog->button_back);
 		return GDK_EVENT_STOP;
 	}
 
@@ -432,44 +427,39 @@ key_press_event (GsUpdateDialog *dialog, GdkEventKey *event)
 static gboolean
 button_press_event (GsUpdateDialog *dialog, GdkEventButton *event)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
-
 	/* Mouse hardware back button is 8 */
 	if (event->button != 8)
 		return GDK_EVENT_PROPAGATE;
 
-	if (!gtk_widget_is_visible (priv->button_back) || !gtk_widget_is_sensitive (priv->button_back))
+	if (!gtk_widget_is_visible (dialog->button_back) || !gtk_widget_is_sensitive (dialog->button_back))
 		return GDK_EVENT_PROPAGATE;
 
-	gtk_widget_activate (priv->button_back);
+	gtk_widget_activate (dialog->button_back);
 	return GDK_EVENT_STOP;
 }
 
 static void
 set_plugin_loader (GsUpdateDialog *dialog, GsPluginLoader *plugin_loader)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
-
-	priv->plugin_loader = g_object_ref (plugin_loader);
+	dialog->plugin_loader = g_object_ref (plugin_loader);
 }
 
 static void
 gs_update_dialog_dispose (GObject *object)
 {
 	GsUpdateDialog *dialog = GS_UPDATE_DIALOG (object);
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 
-	if (priv->back_entry_stack != NULL) {
-		g_queue_free_full (priv->back_entry_stack, (GDestroyNotify) back_entry_free);
-		priv->back_entry_stack = NULL;
+	if (dialog->back_entry_stack != NULL) {
+		g_queue_free_full (dialog->back_entry_stack, (GDestroyNotify) back_entry_free);
+		dialog->back_entry_stack = NULL;
 	}
 
-	if (priv->cancellable != NULL) {
-		g_cancellable_cancel (priv->cancellable);
-		g_clear_object (&priv->cancellable);
+	if (dialog->cancellable != NULL) {
+		g_cancellable_cancel (dialog->cancellable);
+		g_clear_object (&dialog->cancellable);
 	}
 
-	g_clear_object (&priv->plugin_loader);
+	g_clear_object (&dialog->plugin_loader);
 
 	G_OBJECT_CLASS (gs_update_dialog_parent_class)->dispose (object);
 }
@@ -477,35 +467,34 @@ gs_update_dialog_dispose (GObject *object)
 static void
 gs_update_dialog_init (GsUpdateDialog *dialog)
 {
-	GsUpdateDialogPrivate *priv = gs_update_dialog_get_instance_private (dialog);
 	GtkWidget *scrollbar;
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	priv->back_entry_stack = g_queue_new ();
-	priv->cancellable = g_cancellable_new ();
+	dialog->back_entry_stack = g_queue_new ();
+	dialog->cancellable = g_cancellable_new ();
 
-	g_signal_connect (GTK_LIST_BOX (priv->list_box), "row-activated",
+	g_signal_connect (GTK_LIST_BOX (dialog->list_box), "row-activated",
 			  G_CALLBACK (row_activated_cb), dialog);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box),
+	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->list_box),
 				      list_header_func,
 				      dialog, NULL);
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box),
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (dialog->list_box),
 				    os_updates_sort_func,
 				    dialog, NULL);
 
-	g_signal_connect (GTK_LIST_BOX (priv->list_box_installed_updates), "row-activated",
+	g_signal_connect (GTK_LIST_BOX (dialog->list_box_installed_updates), "row-activated",
 			  G_CALLBACK (installed_updates_row_activated_cb), dialog);
 
-	g_signal_connect (priv->button_back, "clicked",
+	g_signal_connect (dialog->button_back, "clicked",
 			  G_CALLBACK (button_back_cb),
 			  dialog);
 
 	g_signal_connect_after (dialog, "show", G_CALLBACK (unset_focus), NULL);
 
-	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (priv->scrolledwindow_details));
-	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow_details);
-	g_signal_connect (scrollbar, "unmap", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow_details);
+	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (dialog->scrolledwindow_details));
+	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), dialog->scrolledwindow_details);
+	g_signal_connect (scrollbar, "unmap", G_CALLBACK (scrollbar_mapped_cb), dialog->scrolledwindow_details);
 
 	/* global keynav and mouse back button */
 	g_signal_connect (dialog, "key-press-event",
@@ -524,18 +513,18 @@ gs_update_dialog_class_init (GsUpdateDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-update-dialog.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, box_header);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, button_back);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, image_icon);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, label_details);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, label_name);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, label_summary);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, list_box);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, list_box_installed_updates);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, scrolledwindow);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, scrolledwindow_details);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, spinner);
-	gtk_widget_class_bind_template_child_private (widget_class, GsUpdateDialog, stack);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, box_header);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, button_back);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, image_icon);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, label_details);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, label_name);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, label_summary);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, list_box);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, list_box_installed_updates);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, scrolledwindow);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, scrolledwindow_details);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, spinner);
+	gtk_widget_class_bind_template_child (widget_class, GsUpdateDialog, stack);
 }
 
 GtkWidget *
