@@ -26,29 +26,12 @@
 
 #include "gs-app.h"
 
-#define GS_TYPE_APP_FOLDER_DIALOG		(gs_app_folder_dialog_get_type())
-#define GS_APP_FOLDER_DIALOG(obj)		(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_APP_FOLDER_DIALOG, GsAppFolderDialog))
-#define GS_APP_FOLDER_DIALOG_CLASS(cls)		(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_APP_FOLDER_DIALOG, GsAppFolderDialogClass))
-#define GS_IS_APP_FOLDER_DIALOG(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_APP_FOLDER_DIALOG))
-#define GS_IS_APP_FOLDER_DIALOG_CLASS(cls)	(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_APP_FOLDER_DIALOG))
-#define GS_APP_FOLDER_DIALOG_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_APP_FOLDER_DIALOG, GsAppFolderDialogClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsAppFolderDialog		GsAppFolderDialog;
-typedef struct _GsAppFolderDialogClass		GsAppFolderDialogClass;
+#define GS_TYPE_APP_FOLDER_DIALOG (gs_app_folder_dialog_get_type ())
 
-struct _GsAppFolderDialog
-{
-        GtkDialog 	parent;
-};
+G_DECLARE_FINAL_TYPE (GsAppFolderDialog, gs_app_folder_dialog, GS, APP_FOLDER_DIALOG, GtkDialog)
 
-struct _GsAppFolderDialogClass
-{
-        GtkDialogClass      parent_class;
-};
-
-GType		 gs_app_folder_dialog_get_type	(void);
 GtkWidget	*gs_app_folder_dialog_new	(GtkWindow	*parent,
 						 GList		*apps);
 
