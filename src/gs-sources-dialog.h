@@ -27,32 +27,16 @@
 #include "gs-app.h"
 #include "gs-plugin-loader.h"
 
-#define GS_TYPE_SOURCES_DIALOG			(gs_sources_dialog_get_type())
-#define GS_SOURCES_DIALOG(obj)			(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_SOURCES_DIALOG, GsSourcesDialog))
-#define GS_SOURCES_DIALOG_CLASS(cls)		(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_SOURCES_DIALOG, GsSourcesDialogClass))
-#define GS_IS_SOURCES_DIALOG(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_SOURCES_DIALOG))
-#define GS_IS_SOURCES_DIALOG_CLASS(cls)		(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_SOURCES_DIALOG))
-#define GS_SOURCES_DIALOG_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_SOURCES_DIALOG, GsSourcesDialogClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsSourcesDialog		GsSourcesDialog;
-typedef struct _GsSourcesDialogClass	GsSourcesDialogClass;
-typedef struct _GsSourcesDialogPrivate	GsSourcesDialogPrivate;
+#define GS_TYPE_SOURCES_DIALOG (gs_sources_dialog_get_type ())
 
-struct _GsSourcesDialog
-{
-	GtkDialog	 parent;
-};
+G_DECLARE_FINAL_TYPE (GsSourcesDialog, gs_sources_dialog, GS, SOURCES_DIALOG, GtkDialog)
 
-struct _GsSourcesDialogClass
-{
-	GtkDialogClass	 parent_class;
-};
-
-GType		 gs_sources_dialog_get_type	(void);
 GtkWidget	*gs_sources_dialog_new		(GtkWindow	*parent,
 						 GsPluginLoader	*plugin_loader);
+
+G_END_DECLS
 
 #endif /* GS_SOURCES_DIALOG_H */
 
