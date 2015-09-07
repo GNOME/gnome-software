@@ -35,7 +35,7 @@
 
 #define N_TILES 6
 
-struct GsShellOverviewPrivate
+typedef struct
 {
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
@@ -61,7 +61,7 @@ struct GsShellOverviewPrivate
 	GtkWidget		*popular_rotating_heading;
 	GtkWidget		*scrolledwindow_overview;
 	GtkWidget		*stack_overview;
-};
+} GsShellOverviewPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShellOverview, gs_shell_overview, GS_TYPE_PAGE)
 
@@ -93,17 +93,20 @@ load_data_free (LoadData *data)
 void
 gs_shell_overview_invalidate (GsShellOverview *shell_overview)
 {
-	shell_overview->priv->cache_valid = FALSE;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell_overview);
+
+	priv->cache_valid = FALSE;
 }
 
 static void
 popular_tile_clicked (GsPopularTile *tile, gpointer data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (data);
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 	GsApp *app;
 
 	app = gs_popular_tile_get_app (tile);
-	gs_shell_show_app (shell->priv->shell, app);
+	gs_shell_show_app (priv->shell, app);
 }
 
 static gboolean
@@ -123,7 +126,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 				  gpointer user_data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
-	GsShellOverviewPrivate *priv = shell->priv;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GList *l;
 	GList *list;
@@ -174,7 +177,7 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 {
 	LoadData *load_data = (LoadData *) user_data;
 	GsShellOverview *shell = load_data->shell_overview;
-	GsShellOverviewPrivate *priv = shell->priv;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GList *l;
 	GList *list;
@@ -229,10 +232,11 @@ static void
 feature_tile_clicked (GsFeatureTile *tile, gpointer data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (data);
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 	GsApp *app;
 
 	app = gs_feature_tile_get_app (tile);
-	gs_shell_show_app (shell->priv->shell, app);
+	gs_shell_show_app (priv->shell, app);
 }
 
 static void
@@ -241,7 +245,7 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 				   gpointer user_data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
-	GsShellOverviewPrivate *priv = shell->priv;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *tile;
 	GList *list;
@@ -289,10 +293,11 @@ static void
 category_tile_clicked (GsCategoryTile *tile, gpointer data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (data);
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 	GsCategory *category;
 
 	category = gs_category_tile_get_category (tile);
-	gs_shell_show_category (shell->priv->shell, category);
+	gs_shell_show_category (priv->shell, category);
 }
 
 /**
@@ -304,7 +309,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 				     gpointer user_data)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (user_data);
-	GsShellOverviewPrivate *priv = shell->priv;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	gint i;
 	GList *l;
@@ -354,7 +359,7 @@ out:
 static void
 gs_shell_overview_load (GsShellOverview *shell_overview)
 {
-	GsShellOverviewPrivate *priv = shell_overview->priv;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell_overview);
 	const gchar *category_of_day;
 	_cleanup_date_time_unref_ GDateTime *date = NULL;
 
@@ -458,7 +463,7 @@ gs_shell_overview_reload (GsShellOverview *shell_overview)
 void
 gs_shell_overview_switch_to (GsShellOverview *shell, gboolean scroll_up)
 {
-	GsShellOverviewPrivate *priv = shell->priv;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 	GtkWidget *widget;
 	GtkAdjustment *adj;
 
@@ -494,7 +499,7 @@ gs_shell_overview_setup (GsShellOverview *shell_overview,
 			 GtkBuilder *builder,
 			 GCancellable *cancellable)
 {
-	GsShellOverviewPrivate *priv = shell_overview->priv;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell_overview);
 	GtkAdjustment *adj;
 	GtkWidget *tile;
 	gint i;
@@ -533,15 +538,13 @@ static void
 gs_shell_overview_init (GsShellOverview *shell)
 {
 	gtk_widget_init_template (GTK_WIDGET (shell));
-
-	shell->priv = gs_shell_overview_get_instance_private (shell);
 }
 
 static void
 gs_shell_overview_dispose (GObject *object)
 {
 	GsShellOverview *shell = GS_SHELL_OVERVIEW (object);
-	GsShellOverviewPrivate *priv = shell->priv;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 
 	g_clear_object (&priv->builder);
 	g_clear_object (&priv->plugin_loader);
@@ -554,7 +557,7 @@ gs_shell_overview_dispose (GObject *object)
 static void
 gs_shell_overview_refreshed (GsShellOverview *shell)
 {
-	GsShellOverviewPrivate *priv = shell->priv;
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (shell);
 
 	if (priv->empty) {
 		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_overview), "no-results");
