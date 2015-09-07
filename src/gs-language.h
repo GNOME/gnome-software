@@ -26,29 +26,10 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_LANGUAGE		(gs_language_get_type ())
-#define GS_LANGUAGE(o)			(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_LANGUAGE, GsLanguage))
-#define GS_LANGUAGE_CLASS(k)		(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_LANGUAGE, GsLanguageClass))
-#define GS_IS_LANGUAGE(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_LANGUAGE))
-#define GS_IS_LANGUAGE_CLASS(k)		(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_LANGUAGE))
-#define GS_LANGUAGE_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_LANGUAGE, GsLanguageClass))
-#define GS_LANGUAGE_ERROR		(gs_language_error_quark ())
-#define GS_LANGUAGE_TYPE_ERROR		(gs_language_error_get_type ())
+#define GS_TYPE_LANGUAGE (gs_language_get_type ())
 
-typedef struct GsLanguagePrivate GsLanguagePrivate;
+G_DECLARE_FINAL_TYPE (GsLanguage, gs_language, GS, LANGUAGE, GObject)
 
-typedef struct
-{
-	 GObject		 parent;
-	 GsLanguagePrivate	*priv;
-} GsLanguage;
-
-typedef struct
-{
-	GObjectClass	parent_class;
-} GsLanguageClass;
-
-GType		 gs_language_get_type			(void);
 GsLanguage	*gs_language_new			(void);
 gboolean	 gs_language_populate			(GsLanguage	 *language,
 							 GError		**error);

@@ -26,10 +26,10 @@
 
 #include "gs-language.h"
 
-#define GS_LANGUAGE_GET_PRIVATE(o) (G_TYPE_INSTANCE_GET_PRIVATE ((o), GS_TYPE_LANGUAGE, GsLanguagePrivate))
-
-struct GsLanguagePrivate
+struct _GsLanguage
 {
+	GObject			 parent_instance;
+
 	GHashTable		*hash;
 };
 
@@ -69,9 +69,9 @@ gs_language_parser_start_element (GMarkupParseContext *context, const gchar *ele
 
 	/* add both to hash */
 	if (code1 != NULL)
-		g_hash_table_insert (language->priv->hash, g_strdup (code1), g_strdup (name));
+		g_hash_table_insert (language->hash, g_strdup (code1), g_strdup (name));
 	if (code2b != NULL)
-		g_hash_table_insert (language->priv->hash, g_strdup (code2b), g_strdup (name));
+		g_hash_table_insert (language->hash, g_strdup (code2b), g_strdup (name));
 }
 
 /* trivial parser */
@@ -135,7 +135,7 @@ out:
 gchar *
 gs_language_iso639_to_language (GsLanguage *language, const gchar *iso639)
 {
-	return g_strdup (g_hash_table_lookup (language->priv->hash, iso639));
+	return g_strdup (g_hash_table_lookup (language->hash, iso639));
 }
 
 /**
@@ -151,8 +151,7 @@ gs_language_finalize (GObject *object)
 
 	language = GS_LANGUAGE (object);
 
-	g_return_if_fail (language->priv != NULL);
-	g_hash_table_unref (language->priv->hash);
+	g_hash_table_unref (language->hash);
 
 	G_OBJECT_CLASS (gs_language_parent_class)->finalize (object);
 }
@@ -164,8 +163,7 @@ gs_language_finalize (GObject *object)
 static void
 gs_language_init (GsLanguage *language)
 {
-	language->priv = GS_LANGUAGE_GET_PRIVATE (language);
-	language->priv->hash = g_hash_table_new_full (g_str_hash, g_str_equal, (GDestroyNotify) g_free, (GDestroyNotify) g_free);
+	language->hash = g_hash_table_new_full (g_str_hash, g_str_equal, (GDestroyNotify) g_free, (GDestroyNotify) g_free);
 }
 
 /**
@@ -177,7 +175,6 @@ gs_language_class_init (GsLanguageClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->finalize = gs_language_finalize;
-	g_type_class_add_private (klass, sizeof (GsLanguagePrivate));
 }
 
 /**
