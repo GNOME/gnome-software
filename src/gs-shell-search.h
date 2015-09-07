@@ -31,40 +31,24 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_SEARCH		(gs_shell_search_get_type ())
-#define GS_SHELL_SEARCH(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_SHELL_SEARCH, GsShellSearch))
-#define GS_SHELL_SEARCH_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_SHELL_SEARCH, GsShellSearchClass))
-#define GS_IS_SHELL_SEARCH(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_SHELL_SEARCH))
-#define GS_IS_SHELL_SEARCH_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_SHELL_SEARCH))
-#define GS_SHELL_SEARCH_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_SHELL_SEARCH, GsShellSearchClass))
+#define GS_TYPE_SHELL_SEARCH (gs_shell_search_get_type ())
 
-typedef struct GsShellSearchPrivate GsShellSearchPrivate;
-
-typedef struct
-{
-	 GsPage				 parent;
-	 GsShellSearchPrivate		*priv;
-} GsShellSearch;
-
-typedef struct
-{
-	GsPageClass			 parent_class;
-} GsShellSearchClass;
-
-GType		 gs_shell_search_get_type	(void);
+G_DECLARE_FINAL_TYPE (GsShellSearch, gs_shell_search, GS, SHELL_SEARCH, GsPage)
 
 GsShellSearch	*gs_shell_search_new		(void);
-void		 gs_shell_search_set_appid_to_show (GsShellSearch	*shell_search,
+void		 gs_shell_search_set_appid_to_show (GsShellSearch	*self,
 						 const gchar		*appid);
-void		 gs_shell_search_switch_to	(GsShellSearch		*shell_search,
+void		 gs_shell_search_switch_to	(GsShellSearch		*self,
 						 const gchar		*text,
 						 gboolean                scroll_up);
-void		 gs_shell_search_reload		(GsShellSearch		*shell_search);
-void		 gs_shell_search_setup		(GsShellSearch		*shell_search,
+void		 gs_shell_search_reload		(GsShellSearch		*self);
+void		 gs_shell_search_setup		(GsShellSearch		*self,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);
+
+G_END_DECLS
 
 #endif /* __GS_SHELL_SEARCH_H */
 

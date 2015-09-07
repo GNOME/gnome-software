@@ -31,8 +31,10 @@
 #include "gs-utils.h"
 #include "gs-app-row.h"
 
-struct GsShellSearchPrivate
+struct _GsShellSearch
 {
+	GsPage			 parent_instance;
+
 	GsPluginLoader		*plugin_loader;
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
@@ -49,16 +51,16 @@ struct GsShellSearchPrivate
 	GtkWidget		*stack_search;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsShellSearch, gs_shell_search, GS_TYPE_PAGE)
+G_DEFINE_TYPE (GsShellSearch, gs_shell_search, GS_TYPE_PAGE)
 
 static void
 gs_shell_search_app_row_activated_cb (GtkListBox *list_box,
 				      GtkListBoxRow *row,
-				      GsShellSearch *shell_search)
+				      GsShellSearch *self)
 {
 	GsApp *app;
 	app = gs_app_row_get_app (GS_APP_ROW (row));
-	gs_shell_show_app (shell_search->priv->shell, app);
+	gs_shell_show_app (self->shell, app);
 }
 
 /**
@@ -66,17 +68,17 @@ gs_shell_search_app_row_activated_cb (GtkListBox *list_box,
  **/
 static void
 gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
-				    GsShellSearch *shell_search)
+				    GsShellSearch *self)
 {
 	GsApp *app;
 	app = gs_app_row_get_app (app_row);
 	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
-		gs_page_install_app (GS_PAGE (shell_search), app);
+		gs_page_install_app (GS_PAGE (self), app);
 	else if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
-		gs_page_remove_app (GS_PAGE (shell_search), app);
+		gs_page_remove_app (GS_PAGE (self), app);
 	else if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
 		if (gs_app_get_url (app, AS_URL_KIND_MISSING) == NULL) {
-			gs_page_install_app (GS_PAGE (shell_search), app);
+			gs_page_install_app (GS_PAGE (self), app);
 			return;
 		}
 		gs_app_show_url (app, AS_URL_KIND_MISSING);
@@ -94,8 +96,7 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	GList *l;
 	GList *list;
 	GsApp *app;
-	GsShellSearch *shell_search = GS_SHELL_SEARCH (user_data);
-	GsShellSearchPrivate *priv = shell_search->priv;
+	GsShellSearch *self = GS_SHELL_SEARCH (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *app_row;
 	_cleanup_error_free_ GError *error = NULL;
@@ -113,30 +114,30 @@ gs_shell_search_get_search_cb (GObject *source_object,
 		} else {
 			g_warning ("failed to get search apps: %s", error->message);
 		}
-		gs_stop_spinner (GTK_SPINNER (priv->spinner_search));
-		gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "no-results");
+		gs_stop_spinner (GTK_SPINNER (self->spinner_search));
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-results");
 		return;
 	}
 
-	gs_stop_spinner (GTK_SPINNER (priv->spinner_search));
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "results");
+	gs_stop_spinner (GTK_SPINNER (self->spinner_search));
+	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "results");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		app_row = gs_app_row_new ();
 		g_signal_connect (app_row, "button-clicked",
 				  G_CALLBACK (gs_shell_search_app_row_clicked_cb),
-				  shell_search);
+				  self);
 		gs_app_row_set_app (GS_APP_ROW (app_row), app);
-		gtk_container_add (GTK_CONTAINER (priv->list_box_search), app_row);
+		gtk_container_add (GTK_CONTAINER (self->list_box_search), app_row);
 		gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-					    priv->sizegroup_image,
-					    priv->sizegroup_name);
+					    self->sizegroup_image,
+					    self->sizegroup_name);
 		gtk_widget_show (app_row);
 	}
 
-	if (priv->appid_to_show != NULL) {
-		gs_shell_show_details (priv->shell, priv->appid_to_show);
-		g_clear_pointer (&priv->appid_to_show, g_free);
+	if (self->appid_to_show != NULL) {
+		gs_shell_show_details (self->shell, self->appid_to_show);
+		g_clear_pointer (&self->appid_to_show, g_free);
 	}
 	g_list_free_full (list, g_object_unref);
 }
@@ -145,46 +146,43 @@ gs_shell_search_get_search_cb (GObject *source_object,
  * gs_shell_search_load:
  */
 static void
-gs_shell_search_load (GsShellSearch *shell_search)
+gs_shell_search_load (GsShellSearch *self)
 {
-	GsShellSearchPrivate *priv = shell_search->priv;
-
 	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (priv->list_box_search));
+	gs_container_remove_all (GTK_CONTAINER (self->list_box_search));
 
 	/* cancel any pending searches */
-	if (priv->search_cancellable != NULL) {
-		g_cancellable_cancel (priv->search_cancellable);
-		g_object_unref (priv->search_cancellable);
+	if (self->search_cancellable != NULL) {
+		g_cancellable_cancel (self->search_cancellable);
+		g_object_unref (self->search_cancellable);
 	}
-	priv->search_cancellable = g_cancellable_new ();
+	self->search_cancellable = g_cancellable_new ();
 
 	/* search for apps */
-	gs_plugin_loader_search_async (priv->plugin_loader,
-				       priv->value,
+	gs_plugin_loader_search_async (self->plugin_loader,
+				       self->value,
 				       GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
-				       priv->search_cancellable,
+				       self->search_cancellable,
 				       gs_shell_search_get_search_cb,
-				       shell_search);
+				       self);
 
-	gtk_stack_set_visible_child_name (GTK_STACK (priv->stack_search), "spinner");
-	gs_start_spinner (GTK_SPINNER (priv->spinner_search));
+	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "spinner");
+	gs_start_spinner (GTK_SPINNER (self->spinner_search));
 }
 
 /**
  * gs_shell_search_reload:
  */
 void
-gs_shell_search_reload (GsShellSearch *shell_search)
+gs_shell_search_reload (GsShellSearch *self)
 {
-	GsShellSearchPrivate *priv = shell_search->priv;
-	if (priv->value != NULL)
-		gs_shell_search_load (shell_search);
+	if (self->value != NULL)
+		gs_shell_search_load (self);
 }
 
 
@@ -194,45 +192,42 @@ gs_shell_search_reload (GsShellSearch *shell_search)
  * Switch to the specified app id after loading the search results.
  **/
 void
-gs_shell_search_set_appid_to_show (GsShellSearch *shell_search, const gchar *appid)
+gs_shell_search_set_appid_to_show (GsShellSearch *self, const gchar *appid)
 {
-	GsShellSearchPrivate *priv = shell_search->priv;
-
-	g_free (priv->appid_to_show);
-	priv->appid_to_show = g_strdup (appid);
+	g_free (self->appid_to_show);
+	self->appid_to_show = g_strdup (appid);
 }
 
 /**
  * gs_shell_search_switch_to:
  **/
 void
-gs_shell_search_switch_to (GsShellSearch *shell_search, const gchar *value, gboolean scroll_up)
+gs_shell_search_switch_to (GsShellSearch *self, const gchar *value, gboolean scroll_up)
 {
-	GsShellSearchPrivate *priv = shell_search->priv;
 	GtkWidget *widget;
 
-	if (gs_shell_get_mode (priv->shell) != GS_SHELL_MODE_SEARCH) {
+	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_SEARCH) {
 		g_warning ("Called switch_to(search) when in mode %s",
-			   gs_shell_get_mode_string (priv->shell));
+			   gs_shell_get_mode_string (self->shell));
 		return;
 	}
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "search_bar"));
 	gtk_widget_show (widget);
 
 	if (scroll_up) {
 		GtkAdjustment *adj;
-		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_search));
+		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search));
 		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 	}
 
-	g_free (priv->value);
-	priv->value = g_strdup (value);
+	g_free (self->value);
+	self->value = g_strdup (value);
 
-	gs_shell_search_load (shell_search);
+	gs_shell_search_load (self);
 }
 
 /**
@@ -344,12 +339,10 @@ gs_shell_search_list_header_func (GtkListBoxRow *row,
  */
 static void
 gs_shell_search_cancel_cb (GCancellable *cancellable,
-			   GsShellSearch *shell_search)
+			   GsShellSearch *self)
 {
-	GsShellSearchPrivate *priv = shell_search->priv;
-
-	if (priv->search_cancellable != NULL)
-		g_cancellable_cancel (priv->search_cancellable);
+	if (self->search_cancellable != NULL)
+		g_cancellable_cancel (self->search_cancellable);
 }
 
 static void
@@ -368,38 +361,36 @@ gs_shell_search_app_removed (GsPage *page, GsApp *app)
  * gs_shell_search_setup:
  */
 void
-gs_shell_search_setup (GsShellSearch *shell_search,
+gs_shell_search_setup (GsShellSearch *self,
 		       GsShell *shell,
 			  GsPluginLoader *plugin_loader,
 			  GtkBuilder *builder,
 			  GCancellable *cancellable)
 {
-	GsShellSearchPrivate *priv = shell_search->priv;
+	g_return_if_fail (GS_IS_SHELL_SEARCH (self));
 
-	g_return_if_fail (GS_IS_SHELL_SEARCH (shell_search));
-
-	priv->plugin_loader = g_object_ref (plugin_loader);
-	priv->builder = g_object_ref (builder);
-	priv->cancellable = g_object_ref (cancellable);
-	priv->shell = shell;
+	self->plugin_loader = g_object_ref (plugin_loader);
+	self->builder = g_object_ref (builder);
+	self->cancellable = g_object_ref (cancellable);
+	self->shell = shell;
 
 	/* connect the cancellables */
-	g_cancellable_connect (priv->cancellable,
+	g_cancellable_connect (self->cancellable,
 			       G_CALLBACK (gs_shell_search_cancel_cb),
-			       shell_search, NULL);
+			       self, NULL);
 
 	/* setup search */
-	g_signal_connect (priv->list_box_search, "row-activated",
-			  G_CALLBACK (gs_shell_search_app_row_activated_cb), shell_search);
-	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box_search),
+	g_signal_connect (self->list_box_search, "row-activated",
+			  G_CALLBACK (gs_shell_search_app_row_activated_cb), self);
+	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_search),
 				      gs_shell_search_list_header_func,
-				      shell_search, NULL);
-	gtk_list_box_set_sort_func (GTK_LIST_BOX (priv->list_box_search),
+				      self, NULL);
+	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_search),
 				    gs_shell_search_sort_func,
-				    shell_search, NULL);
+				    self, NULL);
 
 	/* chain up */
-	gs_page_setup (GS_PAGE (shell_search),
+	gs_page_setup (GS_PAGE (self),
 	               shell,
 	               plugin_loader,
 	               cancellable);
@@ -411,19 +402,18 @@ gs_shell_search_setup (GsShellSearch *shell_search,
 static void
 gs_shell_search_dispose (GObject *object)
 {
-	GsShellSearch *shell_search = GS_SHELL_SEARCH (object);
-	GsShellSearchPrivate *priv = shell_search->priv;
+	GsShellSearch *self = GS_SHELL_SEARCH (object);
 
-	g_clear_object (&priv->sizegroup_image);
-	g_clear_object (&priv->sizegroup_name);
+	g_clear_object (&self->sizegroup_image);
+	g_clear_object (&self->sizegroup_name);
 
-	g_clear_object (&priv->builder);
-	g_clear_object (&priv->plugin_loader);
-	g_clear_object (&priv->cancellable);
-	g_clear_object (&priv->search_cancellable);
+	g_clear_object (&self->builder);
+	g_clear_object (&self->plugin_loader);
+	g_clear_object (&self->cancellable);
+	g_clear_object (&self->search_cancellable);
 
-	g_free (priv->appid_to_show);
-	g_free (priv->value);
+	g_free (self->appid_to_show);
+	g_free (self->value);
 
 	G_OBJECT_CLASS (gs_shell_search_parent_class)->dispose (object);
 }
@@ -444,23 +434,22 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-search.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, list_box_search);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, scrolledwindow_search);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, spinner_search);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellSearch, stack_search);
+	gtk_widget_class_bind_template_child (widget_class, GsShellSearch, list_box_search);
+	gtk_widget_class_bind_template_child (widget_class, GsShellSearch, scrolledwindow_search);
+	gtk_widget_class_bind_template_child (widget_class, GsShellSearch, spinner_search);
+	gtk_widget_class_bind_template_child (widget_class, GsShellSearch, stack_search);
 }
 
 /**
  * gs_shell_search_init:
  **/
 static void
-gs_shell_search_init (GsShellSearch *shell_search)
+gs_shell_search_init (GsShellSearch *self)
 {
-	gtk_widget_init_template (GTK_WIDGET (shell_search));
+	gtk_widget_init_template (GTK_WIDGET (self));
 
-	shell_search->priv = gs_shell_search_get_instance_private (shell_search);
-	shell_search->priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	shell_search->priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
 /**
@@ -469,9 +458,9 @@ gs_shell_search_init (GsShellSearch *shell_search)
 GsShellSearch *
 gs_shell_search_new (void)
 {
-	GsShellSearch *shell_search;
-	shell_search = g_object_new (GS_TYPE_SHELL_SEARCH, NULL);
-	return GS_SHELL_SEARCH (shell_search);
+	GsShellSearch *self;
+	self = g_object_new (GS_TYPE_SHELL_SEARCH, NULL);
+	return GS_SHELL_SEARCH (self);
 }
 
 /* vim: set noexpandtab: */
