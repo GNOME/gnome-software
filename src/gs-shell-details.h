@@ -32,42 +32,26 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_SHELL_DETAILS		(gs_shell_details_get_type ())
-#define GS_SHELL_DETAILS(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_SHELL_DETAILS, GsShellDetails))
-#define GS_SHELL_DETAILS_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_SHELL_DETAILS, GsShellDetailsClass))
-#define GS_IS_SHELL_DETAILS(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_SHELL_DETAILS))
-#define GS_IS_SHELL_DETAILS_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_SHELL_DETAILS))
-#define GS_SHELL_DETAILS_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_SHELL_DETAILS, GsShellDetailsClass))
+#define GS_TYPE_SHELL_DETAILS (gs_shell_details_get_type ())
 
-typedef struct GsShellDetailsPrivate GsShellDetailsPrivate;
-
-typedef struct
-{
-	 GsPage				 parent;
-	 GsShellDetailsPrivate		*priv;
-} GsShellDetails;
-
-typedef struct
-{
-	GsPageClass			 parent_class;
-} GsShellDetailsClass;
-
-GType		 gs_shell_details_get_type	(void);
+G_DECLARE_FINAL_TYPE (GsShellDetails, gs_shell_details, GS, SHELL_DETAILS, GsPage)
 
 GsShellDetails	*gs_shell_details_new		(void);
-void		 gs_shell_details_invalidate	(GsShellDetails		*shell_details);
-void		 gs_shell_details_set_app	(GsShellDetails		*shell_details,
+void		 gs_shell_details_invalidate	(GsShellDetails		*self);
+void		 gs_shell_details_set_app	(GsShellDetails		*self,
 						 GsApp			*app);
-void		 gs_shell_details_set_filename	(GsShellDetails		*shell_details,
+void		 gs_shell_details_set_filename	(GsShellDetails		*self,
 						 const gchar		*filename);
-GsApp		*gs_shell_details_get_app       (GsShellDetails		*shell_details);
-void		 gs_shell_details_switch_to	(GsShellDetails		*shell_details);
-void		 gs_shell_details_reload	(GsShellDetails		*shell_details);
-void		 gs_shell_details_setup		(GsShellDetails		*shell_details,
+GsApp		*gs_shell_details_get_app       (GsShellDetails		*self);
+void		 gs_shell_details_switch_to	(GsShellDetails		*self);
+void		 gs_shell_details_reload	(GsShellDetails		*self);
+void		 gs_shell_details_setup		(GsShellDetails		*self,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,
 						 GtkBuilder		*builder,
 						 GCancellable		*cancellable);
+
+G_END_DECLS
 
 #endif /* __GS_SHELL_DETAILS_H */
 
