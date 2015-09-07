@@ -29,8 +29,10 @@
 #include "gs-cleanup.h"
 #include "gs-utils.h"
 
-struct _GsHistoryDialogPrivate
+struct _GsHistoryDialog
 {
+	GtkDialog	 parent_instance;
+
 	GtkSizeGroup	*sizegroup_state;
 	GtkSizeGroup	*sizegroup_timestamp;
 	GtkSizeGroup	*sizegroup_version;
@@ -38,7 +40,7 @@ struct _GsHistoryDialogPrivate
 	GtkWidget	*scrolledwindow;
 };
 
-G_DEFINE_TYPE_WITH_PRIVATE (GsHistoryDialog, gs_history_dialog, GTK_TYPE_DIALOG)
+G_DEFINE_TYPE (GsHistoryDialog, gs_history_dialog, GTK_TYPE_DIALOG)
 
 static gint
 history_sort_cb (gconstpointer a, gconstpointer b)
@@ -55,7 +57,6 @@ history_sort_cb (gconstpointer a, gconstpointer b)
 void
 gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 {
-	GsHistoryDialogPrivate *priv = gs_history_dialog_get_instance_private (dialog);
 	const gchar *tmp;
 	GPtrArray *history;
 	GtkBox *box;
@@ -65,7 +66,7 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 	guint i;
 
 	/* add each history package to the dialog */
-	gs_container_remove_all (GTK_CONTAINER (priv->list_box));
+	gs_container_remove_all (GTK_CONTAINER (dialog->list_box));
 	history = gs_app_get_history (app);
 	g_ptr_array_sort (history, history_sort_cb);
 	for (i = 0; i < history->len; i++) {
@@ -108,7 +109,7 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 			      "margin-bottom", 6,
 			      "xalign", 0.0,
 			      NULL);
-		gtk_size_group_add_widget (priv->sizegroup_state, widget);
+		gtk_size_group_add_widget (dialog->sizegroup_state, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
 
 		/* add the timestamp */
@@ -127,7 +128,7 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 			      "margin-bottom", 6,
 			      "xalign", 0.0,
 			      NULL);
-		gtk_size_group_add_widget (priv->sizegroup_timestamp, widget);
+		gtk_size_group_add_widget (dialog->sizegroup_timestamp, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
 
 		/* add the version */
@@ -139,11 +140,11 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 			      "margin-bottom", 6,
 			      "xalign", 1.0,
 			      NULL);
-		gtk_size_group_add_widget (priv->sizegroup_version, widget);
+		gtk_size_group_add_widget (dialog->sizegroup_version, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);
 
 		gtk_widget_show_all (GTK_WIDGET (box));
-		gtk_list_box_insert (GTK_LIST_BOX (priv->list_box), GTK_WIDGET (box), -1);
+		gtk_list_box_insert (GTK_LIST_BOX (dialog->list_box), GTK_WIDGET (box), -1);
 
 		row = gtk_widget_get_parent (GTK_WIDGET (box));
 		gtk_list_box_row_set_activatable (GTK_LIST_BOX_ROW (row), FALSE);
@@ -192,11 +193,10 @@ static void
 gs_history_dialog_dispose (GObject *object)
 {
 	GsHistoryDialog *dialog = GS_HISTORY_DIALOG (object);
-	GsHistoryDialogPrivate *priv = gs_history_dialog_get_instance_private (dialog);
 
-	g_clear_object (&priv->sizegroup_state);
-	g_clear_object (&priv->sizegroup_timestamp);
-	g_clear_object (&priv->sizegroup_version);
+	g_clear_object (&dialog->sizegroup_state);
+	g_clear_object (&dialog->sizegroup_timestamp);
+	g_clear_object (&dialog->sizegroup_version);
 
 	G_OBJECT_CLASS (gs_history_dialog_parent_class)->dispose (object);
 }
@@ -204,23 +204,22 @@ gs_history_dialog_dispose (GObject *object)
 static void
 gs_history_dialog_init (GsHistoryDialog *dialog)
 {
-	GsHistoryDialogPrivate *priv = gs_history_dialog_get_instance_private (dialog);
 	GtkWidget *scrollbar;
 
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	priv->sizegroup_state = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	priv->sizegroup_timestamp = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	priv->sizegroup_version = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	dialog->sizegroup_state = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	dialog->sizegroup_timestamp = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	dialog->sizegroup_version = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
-	gtk_list_box_set_header_func (GTK_LIST_BOX (priv->list_box),
+	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->list_box),
 				      update_header_func,
 				      dialog,
 				      NULL);
 
-	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (priv->scrolledwindow));
-	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow);
-	g_signal_connect (scrollbar, "unmap", G_CALLBACK (scrollbar_mapped_cb), priv->scrolledwindow);
+	scrollbar = gtk_scrolled_window_get_vscrollbar (GTK_SCROLLED_WINDOW (dialog->scrolledwindow));
+	g_signal_connect (scrollbar, "map", G_CALLBACK (scrollbar_mapped_cb), dialog->scrolledwindow);
+	g_signal_connect (scrollbar, "unmap", G_CALLBACK (scrollbar_mapped_cb), dialog->scrolledwindow);
 }
 
 static void
@@ -233,8 +232,8 @@ gs_history_dialog_class_init (GsHistoryDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-history-dialog.ui");
 
-	gtk_widget_class_bind_template_child_private (widget_class, GsHistoryDialog, list_box);
-	gtk_widget_class_bind_template_child_private (widget_class, GsHistoryDialog, scrolledwindow);
+	gtk_widget_class_bind_template_child (widget_class, GsHistoryDialog, list_box);
+	gtk_widget_class_bind_template_child (widget_class, GsHistoryDialog, scrolledwindow);
 }
 
 GtkWidget *

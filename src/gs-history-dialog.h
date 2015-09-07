@@ -26,33 +26,17 @@
 
 #include "gs-app.h"
 
-#define GS_TYPE_HISTORY_DIALOG			(gs_history_dialog_get_type())
-#define GS_HISTORY_DIALOG(obj)			(G_TYPE_CHECK_INSTANCE_CAST((obj), GS_TYPE_HISTORY_DIALOG, GsHistoryDialog))
-#define GS_HISTORY_DIALOG_CLASS(cls)		(G_TYPE_CHECK_CLASS_CAST((cls), GS_TYPE_HISTORY_DIALOG, GsHistoryDialogClass))
-#define GS_IS_HISTORY_DIALOG(obj)		(G_TYPE_CHECK_INSTANCE_TYPE((obj), GS_TYPE_HISTORY_DIALOG))
-#define GS_IS_HISTORY_DIALOG_CLASS(cls)		(G_TYPE_CHECK_CLASS_TYPE((cls), GS_TYPE_HISTORY_DIALOG))
-#define GS_HISTORY_DIALOG_GET_CLASS(obj)	(G_TYPE_INSTANCE_GET_CLASS((obj), GS_TYPE_HISTORY_DIALOG, GsHistoryDialogClass))
-
 G_BEGIN_DECLS
 
-typedef struct _GsHistoryDialog		GsHistoryDialog;
-typedef struct _GsHistoryDialogClass	GsHistoryDialogClass;
-typedef struct _GsHistoryDialogPrivate	GsHistoryDialogPrivate;
+#define GS_TYPE_HISTORY_DIALOG (gs_history_dialog_get_type ())
 
-struct _GsHistoryDialog
-{
-	GtkDialog	 parent;
-};
+G_DECLARE_FINAL_TYPE (GsHistoryDialog, gs_history_dialog, GS, HISTORY_DIALOG, GtkDialog)
 
-struct _GsHistoryDialogClass
-{
-	GtkDialogClass	 parent_class;
-};
-
-GType		 gs_history_dialog_get_type	(void);
 GtkWidget	*gs_history_dialog_new		(void);
 void		 gs_history_dialog_set_app	(GsHistoryDialog	*dialog,
 						 GsApp			*app);
+
+G_END_DECLS
 
 #endif /* GS_HISTORY_DIALOG_H */
 
