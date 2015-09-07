@@ -27,17 +27,10 @@
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_UPDATE_MONITOR		(gs_update_monitor_get_type ())
-#define GS_UPDATE_MONITOR(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_UPDATE_MONITOR, GsUpdateMonitor))
-#define GS_UPDATE_MONITOR_CLASS(k)	(G_TYPE_CHECK_CLASS_CAST((k), GS_TYPE_UPDATE_MONITOR, GsUpdateMonitorClass))
-#define GS_IS_UPDATE_MONITOR(o)		(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_UPDATE_MONITOR))
-#define GS_IS_UPDATE_MONITOR_CLASS(k)	(G_TYPE_CHECK_CLASS_TYPE ((k), GS_TYPE_UPDATE_MONITOR))
-#define GS_UPDATE_MONITOR_GET_CLASS(o)	(G_TYPE_INSTANCE_GET_CLASS ((o), GS_TYPE_UPDATE_MONITOR, GsUpdateMonitorClass))
+#define GS_TYPE_UPDATE_MONITOR (gs_update_monitor_get_type ())
 
-typedef struct _GsUpdateMonitor		GsUpdateMonitor;
-typedef struct _GsUpdateMonitorClass	GsUpdateMonitorClass;
+G_DECLARE_FINAL_TYPE (GsUpdateMonitor, gs_update_monitor, GS, UPDATE_MONITOR, GObject)
 
-GType		 gs_update_monitor_get_type	(void);
 GsUpdateMonitor	*gs_update_monitor_new		(GsApplication *app);
 
 G_END_DECLS

@@ -57,10 +57,6 @@ struct _GsUpdateMonitor {
 	guint		 check_offline_update_id;
 };
 
-struct _GsUpdateMonitorClass {
-	GObjectClass	 parent_class;
-};
-
 G_DEFINE_TYPE (GsUpdateMonitor, gs_update_monitor, G_TYPE_OBJECT)
 
 static gboolean
