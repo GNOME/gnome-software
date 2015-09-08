@@ -223,6 +223,72 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 }
 
 /**
+ * gs_plugin_fwupd_set_app_from_kv:
+ */
+static void
+gs_plugin_fwupd_set_app_from_kv (GsApp *app, const gchar *key, GVariant *val)
+{
+	g_debug ("key %s", key);
+
+	if (g_strcmp0 (key, "Guid") == 0) {
+		gs_app_set_id (app, g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "Version") == 0) {
+		gs_app_set_version (app, g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "Vendor") == 0) {
+		gs_app_set_origin (app, g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "Name") == 0) {
+		gs_app_add_source (app, g_variant_get_string (val, NULL));
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
+				 g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "Summary") == 0) {
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
+				    g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "Description") == 0) {
+		g_autofree gchar *tmp = NULL;
+		tmp = as_markup_convert (g_variant_get_string (val, NULL),
+					 AS_MARKUP_CONVERT_FORMAT_SIMPLE, NULL);
+		if (tmp != NULL)
+			gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, tmp);
+		return;
+	}
+	if (g_strcmp0 (key, "UrlHomepage") == 0) {
+		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
+				g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "License") == 0) {
+		gs_app_set_licence (app, g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "Size") == 0) {
+		gs_app_set_size (app, g_variant_get_uint64 (val));
+		return;
+	}
+	if (g_strcmp0 (key, "UpdateVersion") == 0) {
+		gs_app_set_update_version (app, g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "UpdateDescription") == 0) {
+		g_autofree gchar *tmp = NULL;
+		tmp = as_markup_convert (g_variant_get_string (val, NULL),
+					 AS_MARKUP_CONVERT_FORMAT_SIMPLE, NULL);
+		if (tmp != NULL)
+			gs_app_set_update_details (app, tmp);
+		return;
+	}
+}
+
+/**
  * gs_plugin_add_update_app:
  */
 static gboolean
@@ -238,40 +304,21 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *checksum = NULL;
-	g_autofree gchar *display_name = NULL;
 	g_autofree gchar *filename_cache = NULL;
-	g_autofree gchar *guid = NULL;
-	g_autofree gchar *update_desc = NULL;
 	g_autofree gchar *update_hash = NULL;
 	g_autofree gchar *update_uri = NULL;
-	g_autofree gchar *update_version = NULL;
-	g_autofree gchar *vendor = NULL;
-	g_autofree gchar *version = NULL;
 	g_autoptr(AsIcon) icon = NULL;
 	g_autoptr(GsApp) app = NULL;
 
+	app = gs_app_new (NULL);
 	while (g_variant_iter_next (iter_device, "{&sv}", &key, &variant)) {
-		if (g_strcmp0 (key, "Guid") == 0) {
-			guid = g_variant_dup_string (variant, NULL);
-		} else if (g_strcmp0 (key, "Version") == 0) {
-			version = g_variant_dup_string (variant, NULL);
-		} else if (g_strcmp0 (key, "UpdateVersion") == 0) {
-			update_version = g_variant_dup_string (variant, NULL);
-		} else if (g_strcmp0 (key, "UpdateHash") == 0) {
+		gs_plugin_fwupd_set_app_from_kv (app, key, variant);
+		if (g_strcmp0 (key, "UpdateHash") == 0)
 			update_hash = g_variant_dup_string (variant, NULL);
-		} else if (g_strcmp0 (key, "UpdateUri") == 0) {
+		else if (g_strcmp0 (key, "UpdateUri") == 0)
 			update_uri = g_variant_dup_string (variant, NULL);
-		} else if (g_strcmp0 (key, "UpdateDescription") == 0) {
-			update_desc = g_variant_dup_string (variant, NULL);
-		} else if (g_strcmp0 (key, "Vendor") == 0) {
-			vendor = g_variant_dup_string (variant, NULL);
-		} else if (g_strcmp0 (key, "DisplayName") == 0) {
-			display_name = g_variant_dup_string (variant, NULL);
-		} else if (g_strcmp0 (key, "Flags") == 0) {
+		else if (g_strcmp0 (key, "Flags") == 0)
 			flags = g_variant_get_uint64 (variant);
-		} else {
-			g_debug ("%s has unused key %s", id, key);
-		}
 		g_variant_unref (variant);
 	}
 
@@ -281,19 +328,31 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "%s [%s] cannot be updated offline",
-			     display_name, guid);
+			     gs_app_get_name (app), gs_app_get_id (app));
 		return FALSE;
 	}
 
 	/* some missing */
-	if (guid == NULL || version == NULL || update_version == NULL)
+	if (gs_app_get_id (app) == NULL) {
+		g_warning ("fwupd: No id! for %s!", update_hash);
 		return TRUE;
+	}
+	if (gs_app_get_version (app) == NULL) {
+		g_warning ("fwupd: No version! for %s!", gs_app_get_id (app));
+		return TRUE;
+	}
+	if (gs_app_get_update_version (app) == NULL) {
+		g_warning ("fwupd: No update-version! for %s!", gs_app_get_id (app));
+		return TRUE;
+	}
 	if (update_hash == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "%s [%s] (%s) has no checksum, ignoring as unsafe",
-			     display_name, guid, update_version);
+			     gs_app_get_name (app),
+			     gs_app_get_id (app),
+			     gs_app_get_update_version (app));
 		return FALSE;
 	}
 	if (update_uri == NULL) {
@@ -301,7 +360,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "no location available for %s [%s]",
-			     display_name, guid);
+			     gs_app_get_name (app), gs_app_get_id (app));
 		return FALSE;
 	}
 
@@ -334,27 +393,15 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* actually addd the application */
-	app = gs_app_new (guid);
+	/* actually add the application */
 	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 	gs_app_set_id_kind (app, AS_ID_KIND_FIRMWARE);
-	gs_app_set_version (app, version);
-	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, display_name);
-	gs_app_set_update_version (app, update_version);
 	gs_app_add_source_id (app, filename_cache);
 	gs_app_add_category (app, "System");
 	gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
-	gs_app_set_origin (app, vendor);
 	gs_app_set_metadata (app, "fwupd::DeviceID", id);
 	gs_app_set_metadata (app, "DataDir::desktop-icon", "application-x-firmware");
-	if (update_desc != NULL) {
-		g_autofree gchar *md = NULL;
-		md = as_markup_convert (update_desc,
-					AS_MARKUP_CONVERT_FORMAT_MARKDOWN,
-					NULL);
-		gs_app_set_update_details (app, md);
-	}
 	gs_plugin_add_app (list, app);
 
 	/* create icon */
@@ -424,19 +471,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
 	g_variant_get (val, "(a{sv})", &iter);
 	while (g_variant_iter_next (iter, "{&sv}", &key, &variant)) {
-		g_debug ("key %s", key);
-		if (g_strcmp0 (key, "Guid") == 0) {
-			gs_app_set_id (app, g_variant_get_string (variant, NULL));
-			continue;
-		}
-		if (g_strcmp0 (key, "VersionNew") == 0) {
-			gs_app_set_update_version (app, g_variant_get_string (variant, NULL));
-			continue;
-		}
-		if (g_strcmp0 (key, "Name") == 0) {
-			gs_app_add_source (app, g_variant_get_string (variant, NULL));
-			continue;
-		}
+		gs_plugin_fwupd_set_app_from_kv (app, key, variant);
 		g_variant_unref (variant);
 	}
 	gs_plugin_add_app (list, app);
@@ -1056,32 +1091,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	val = g_dbus_message_get_body (message);
 	g_variant_get (val, "(a{sv})", &iter);
 	while (g_variant_iter_next (iter, "{&sv}", &key, &variant)) {
-		if (g_strcmp0 (key, "Version") == 0) {
-			gs_app_set_version (app, g_variant_get_string (variant, NULL));
-		} else if (g_strcmp0 (key, "Vendor") == 0) {
-			gs_app_set_origin (app, g_variant_get_string (variant, NULL));
-		} else if (g_strcmp0 (key, "Guid") == 0) {
-			gs_app_set_id (app, g_variant_get_string (variant, NULL));
-		} else if (g_strcmp0 (key, "Name") == 0) {
-			gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
-					 g_variant_get_string (variant, NULL));
-		} else if (g_strcmp0 (key, "Summary") == 0) {
-			gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
-					    g_variant_get_string (variant, NULL));
-		} else if (g_strcmp0 (key, "Description") == 0) {
-			g_autofree gchar *tmp = NULL;
-			tmp = as_markup_convert (g_variant_get_string (variant, NULL),
-						 AS_MARKUP_CONVERT_FORMAT_SIMPLE, NULL);
-			if (tmp != NULL)
-				gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, tmp);
-		} else if (g_strcmp0 (key, "UrlHomepage") == 0) {
-			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
-					g_variant_get_string (variant, NULL));
-		} else if (g_strcmp0 (key, "License") == 0) {
-			gs_app_set_licence (app, g_variant_get_string (variant, NULL));
-		} else if (g_strcmp0 (key, "Size") == 0) {
-			gs_app_set_size (app, g_variant_get_uint64 (variant));
-		}
+		gs_plugin_fwupd_set_app_from_kv (app, key, variant);
 		g_variant_unref (variant);
 	}
 
