@@ -29,7 +29,6 @@
 #include <libgnome-desktop/gnome-bg.h>
 #include <libgnome-desktop/gnome-desktop-thumbnail.h>
 
-#include "gs-cleanup.h"
 #include "gs-screenshot-image.h"
 #include "gs-utils.h"
 
@@ -89,8 +88,8 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 static GdkPixbuf *
 gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 {
-	_cleanup_object_unref_ GnomeBG *bg = NULL;
-	_cleanup_object_unref_ GnomeDesktopThumbnailFactory *factory = NULL;
+	g_autoptr(GnomeBG) bg = NULL;
+	g_autoptr(GnomeDesktopThumbnailFactory) factory = NULL;
 	g_autoptr(GSettings) settings = NULL;
 
 	factory = gnome_desktop_thumbnail_factory_new (GNOME_DESKTOP_THUMBNAIL_SIZE_LARGE);
