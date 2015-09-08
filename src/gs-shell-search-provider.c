@@ -29,7 +29,6 @@
 
 #include "gs-plugin-loader-sync.h"
 
-#include "gs-cleanup.h"
 #include "gs-shell-search-provider-generated.h"
 #include "gs-shell-search-provider.h"
 

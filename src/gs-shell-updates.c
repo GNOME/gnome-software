@@ -24,7 +24,6 @@
 #include <glib/gi18n.h>
 #include <packagekit-glib2/packagekit.h>
 
-#include "gs-cleanup.h"
 #include "gs-shell.h"
 #include "gs-shell-updates.h"
 #include "gs-utils.h"

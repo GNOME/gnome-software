@@ -25,7 +25,6 @@
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 
-#include "gs-cleanup.h"
 #include "gs-folders.h"
 
 #define APP_FOLDER_SCHEMA       "org.gnome.desktop.app-folders"

@@ -25,7 +25,6 @@
 #include <gtk/gtk.h>
 #include <locale.h>
 
-#include "gs-cleanup.h"
 #include "gs-profile.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"

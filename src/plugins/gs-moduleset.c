@@ -24,7 +24,6 @@
 #include <string.h>
 #include <glib.h>
 
-#include "gs-cleanup.h"
 #include "gs-moduleset.h"
 
 typedef struct {

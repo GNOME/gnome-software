@@ -24,7 +24,6 @@
 
 #include <glib/gi18n.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 #include <gs-category.h>
 

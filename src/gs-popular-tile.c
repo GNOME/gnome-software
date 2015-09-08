@@ -24,7 +24,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "gs-cleanup.h"
 #include "gs-popular-tile.h"
 #include "gs-star-widget.h"
 #include "gs-utils.h"

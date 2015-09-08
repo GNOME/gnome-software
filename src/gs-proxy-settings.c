@@ -26,7 +26,6 @@
 #include <packagekit-glib2/packagekit.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 
-#include "gs-cleanup.h"
 #include "gs-proxy-settings.h"
 
 struct _GsProxySettings {

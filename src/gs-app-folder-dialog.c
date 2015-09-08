@@ -24,7 +24,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "gs-cleanup.h"
 #include "gs-folders.h"
 #include "gs-app-folder-dialog.h"
 

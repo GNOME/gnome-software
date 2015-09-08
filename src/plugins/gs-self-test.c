@@ -26,7 +26,6 @@
 #include <glib-object.h>
 #include <gtk/gtk.h>
 
-#include "gs-cleanup.h"
 #include "gs-moduleset.h"
 
 static void

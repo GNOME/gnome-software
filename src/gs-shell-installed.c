@@ -26,7 +26,6 @@
 #include <glib/gi18n.h>
 #include <appstream-glib.h>
 
-#include "gs-cleanup.h"
 #include "gs-shell.h"
 #include "gs-shell-installed.h"
 #include "gs-app.h"

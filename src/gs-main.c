@@ -28,7 +28,6 @@
 #include <locale.h>
 
 #include "gs-application.h"
-#include "gs-cleanup.h"
 #include "gs-profile.h"
 
 int

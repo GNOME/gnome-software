@@ -25,7 +25,6 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-tile.h"
-#include "gs-cleanup.h"
 #include "gs-star-widget.h"
 #include "gs-utils.h"
 

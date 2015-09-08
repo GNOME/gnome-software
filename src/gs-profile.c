@@ -23,7 +23,6 @@
 
 #include <glib/gi18n.h>
 
-#include "gs-cleanup.h"
 #include "gs-profile.h"
 
 struct _GsProfile

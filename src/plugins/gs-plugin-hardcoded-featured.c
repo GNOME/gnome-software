@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 
 /**

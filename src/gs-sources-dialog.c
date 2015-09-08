@@ -25,7 +25,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "gs-cleanup.h"
 #include "gs-sources-dialog.h"
 #include "gs-sources-dialog-row.h"
 #include "gs-utils.h"

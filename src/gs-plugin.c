@@ -23,7 +23,6 @@
 
 #include <glib.h>
 
-#include "gs-cleanup.h"
 #include "gs-plugin.h"
 
 #define GS_PLUGIN_OS_RELEASE_FN		"/etc/os-release"

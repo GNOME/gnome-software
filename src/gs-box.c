@@ -25,7 +25,6 @@
 #include <gtk/gtk.h>
 
 #include "gs-box.h"
-#include "gs-cleanup.h"
 
 typedef struct {
 	GtkWidget       *widget;

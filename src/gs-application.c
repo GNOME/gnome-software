@@ -37,7 +37,6 @@
 
 #include "gs-dbus-helper.h"
 #include "gs-box.h"
-#include "gs-cleanup.h"
 #include "gs-first-run-dialog.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"

@@ -26,7 +26,6 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-row.h"
-#include "gs-cleanup.h"
 #include "gs-star-widget.h"
 #include "gs-markdown.h"
 #include "gs-progress-button.h"

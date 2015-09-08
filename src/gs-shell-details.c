@@ -29,7 +29,6 @@
 
 #include "gs-utils.h"
 
-#include "gs-cleanup.h"
 #include "gs-shell-details.h"
 #include "gs-app-addon-row.h"
 #include "gs-history-dialog.h"

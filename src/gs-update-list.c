@@ -29,7 +29,6 @@
 
 #include "gs-app.h"
 #include "gs-app-row.h"
-#include "gs-cleanup.h"
 
 struct _GsUpdateList
 {

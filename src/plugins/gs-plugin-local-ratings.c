@@ -24,7 +24,6 @@
 #include <sqlite3.h>
 #include <stdlib.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 #include <gs-utils.h>
 

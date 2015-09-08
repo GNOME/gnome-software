@@ -24,7 +24,6 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
-#include "gs-cleanup.h"
 #include "gs-shell-search.h"
 #include "gs-shell.h"
 #include "gs-app.h"

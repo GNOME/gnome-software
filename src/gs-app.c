@@ -48,7 +48,6 @@
 #include <glib/gi18n.h>
 
 #include "gs-app.h"
-#include "gs-cleanup.h"
 #include "gs-utils.h"
 
 struct _GsApp

@@ -27,7 +27,6 @@
 #include <glib/gstdio.h>
 
 #include "gs-app.h"
-#include "gs-cleanup.h"
 #include "gs-markdown.h"
 #include "gs-plugin.h"
 #include "gs-plugin-loader.h"
