@@ -108,7 +108,7 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 static gboolean
 gs_screenshot_image_use_desktop_background (GsScreenshotImage *ssimg, GdkPixbuf *pixbuf)
 {
-	_cleanup_object_unref_ AsImage *im = NULL;
+	g_autoptr(AsImage) im = NULL;
 
 	/* nothing to show, means no background mode */
 	if (pixbuf == NULL)
@@ -186,7 +186,7 @@ static void
 gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 				  const gchar *filename_thumb)
 {
-	_cleanup_object_unref_ AsImage *im = NULL;
+	g_autoptr(AsImage) im = NULL;
 	g_autoptr(GdkPixbuf) pb = NULL;
 
 	/* create an helper which can do the blurring for us */
@@ -220,7 +220,7 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	g_autoptr(GsScreenshotImage) ssimg = GS_SCREENSHOT_IMAGE (user_data);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
-	_cleanup_object_unref_ AsImage *im = NULL;
+	g_autoptr(AsImage) im = NULL;
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	g_autoptr(GInputStream) stream = NULL;
 

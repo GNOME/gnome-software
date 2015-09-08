@@ -247,7 +247,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	g_autofree gchar *update_version = NULL;
 	g_autofree gchar *vendor = NULL;
 	g_autofree gchar *version = NULL;
-	_cleanup_object_unref_ AsIcon *icon = NULL;
+	g_autoptr(AsIcon) icon = NULL;
 	g_autoptr(GsApp) app = NULL;
 
 	while (g_variant_iter_next (iter_device, "{&sv}", &key, &variant)) {
@@ -989,7 +989,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gboolean supported;
 	gint fd;
 	gint retval;
-	_cleanup_object_unref_ AsIcon *icon = NULL;
+	g_autoptr(AsIcon) icon = NULL;
 	g_autoptr(GDBusConnection) conn = NULL;
 	g_autoptr(GDBusMessage) message = NULL;
 	g_autoptr(GDBusMessage) request = NULL;
