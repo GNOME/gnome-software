@@ -25,7 +25,6 @@
 #include <packagekit-glib2/packagekit.h>
 #include <glib/gi18n.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 
 #include "packagekit-common.h"
@@ -123,7 +122,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 {
 	PkBitfield filter;
 	ProgressData data;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;
@@ -167,7 +166,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	ProgressData data;
 	const gchar *id;
 	gboolean ret = TRUE;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;
@@ -228,7 +227,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	const gchar *id;
 	guint i;
 	g_autoptr(GHashTable) hash = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
 	data.app = NULL;
@@ -283,7 +282,7 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 			     GError **error)
 {
 	ProgressData data;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;
@@ -313,8 +312,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	ProgressData data;
 	const gchar *package_id;
 	guint i, j;
-	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array_package_ids = NULL;
 	g_auto(GStrv) package_ids = NULL;
 
@@ -475,7 +474,7 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 			      GError **error)
 {
 	ProgressData data;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;
@@ -502,7 +501,7 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 {
 	ProgressData data;
 	g_autoptr(GError) error_local = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;
@@ -540,8 +539,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	ProgressData data;
 	guint i;
 	guint cnt = 0;
-	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(PkResults) results = NULL;
 	g_auto(GStrv) package_ids = NULL;
 
 	data.app = NULL;
@@ -621,7 +620,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 {
 	PkBitfield filter;
 	ProgressData data;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;
@@ -656,7 +655,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 {
 	PkBitfield filter;
 	ProgressData data;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;

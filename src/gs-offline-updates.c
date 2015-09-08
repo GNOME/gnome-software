@@ -265,8 +265,8 @@ gs_offline_updates_show_error (GsShell *shell)
 	const gchar *secondary;
 	const gchar *geeky;
 	GtkWidget *dialog;
-	_cleanup_object_unref_ PkError *pk_error = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) pk_error = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	results = pk_offline_get_results (NULL);
 	if (results == NULL)

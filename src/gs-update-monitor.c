@@ -27,7 +27,6 @@
 #include <packagekit-glib2/packagekit.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 
-#include "gs-cleanup.h"
 #include "gs-update-monitor.h"
 #include "gs-utils.h"
 #include "gs-offline-updates.h"
@@ -157,7 +156,7 @@ show_installed_updates_notification (GsUpdateMonitor *monitor)
 	const gchar *message;
 	const gchar *title;
 	g_autoptr(GNotification) notification = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	results = pk_offline_get_results (NULL);
 	if (results == NULL)
@@ -269,8 +268,8 @@ package_download_finished_cb (GObject *object,
 {
 	GsUpdateMonitor *monitor = data;
 	g_autoptr(GError) error = NULL;
-	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	results = pk_client_generic_finish (PK_CLIENT (object), res, &error);
 	if (results == NULL) {
@@ -321,8 +320,8 @@ get_updates_finished_cb (GObject *object,
 	guint i;
 	PkPackage *pkg;
 	g_autoptr(GError) error = NULL;
-	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 
 	results = pk_client_generic_finish (PK_CLIENT (object), res, &error);
@@ -401,8 +400,8 @@ refresh_cache_finished_cb (GObject *object,
 {
 	GsUpdateMonitor *monitor = data;
 	g_autoptr(GError) error = NULL;
-	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	results = pk_client_generic_finish (PK_CLIENT (object), res, &error);
 	if (results == NULL) {

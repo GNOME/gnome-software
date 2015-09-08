@@ -25,7 +25,6 @@
 #include <packagekit-glib2/packagekit.h>
 #include <glib/gi18n.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 
 #include "packagekit-common.h"
@@ -110,9 +109,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 	PkBitfield filter;
 	PkBitfield transaction_flags;
 	g_auto(GStrv) package_ids = NULL;
-	_cleanup_object_unref_ PkPackageSack *sack = NULL;
-	_cleanup_object_unref_ PkResults *results2 = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkPackageSack) sack = NULL;
+	g_autoptr(PkResults) results2 = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	/* not us */
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)

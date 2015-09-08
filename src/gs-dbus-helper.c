@@ -27,7 +27,6 @@
 #include <gtk/gtk.h>
 #include <packagekit-glib2/packagekit.h>
 
-#include "gs-cleanup.h"
 #include "gs-dbus-helper.h"
 #include "gs-packagekit-generated.h"
 #include "gs-packagekit-modify2-generated.h"
@@ -124,8 +123,8 @@ gs_dbus_helper_query_is_installed_cb (GObject *source, GAsyncResult *res, gpoint
 	GsDbusHelperTask *dtask = (GsDbusHelperTask *) data;
 	PkClient *client = PK_CLIENT (source);
 	g_autoptr(GError) error = NULL;
-	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
 	/* get the results */
@@ -171,8 +170,8 @@ gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointe
 	PkInfoEnum info;
 	PkPackage *item;
 	g_autoptr(GPtrArray) array = NULL;
-	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	/* get the results */
 	results = pk_client_generic_finish (client, res, &error);

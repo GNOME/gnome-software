@@ -24,7 +24,6 @@
 #define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
 #include <packagekit-glib2/packagekit.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 #include <gs-utils.h>
 #include <glib/gi18n.h>
@@ -253,8 +252,8 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *pkgname;
 	guint i;
-	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 
@@ -308,8 +307,8 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 					  GError **error)
 {
 	const gchar *to_array[] = { NULL, NULL };
-	_cleanup_object_unref_ PkError *error_code = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkError) error_code = NULL;
+	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 
 	to_array[0] = filename;
@@ -365,7 +364,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	guint size;
 	PkUpdateDetail *update_detail;
 	g_autofree const gchar **package_ids = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
 	size = g_list_length (list);
@@ -504,7 +503,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	guint i;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	package_ids = g_ptr_array_new_with_free_func (g_free);
 	for (l = list; l != NULL; l = l->next) {
@@ -600,7 +599,7 @@ gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
 {
 	PkRepoDetail *rd;
 	guint i;
-	_cleanup_object_unref_ PkResults *results = NULL;
+	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
 	/* ask PK for the repo details */

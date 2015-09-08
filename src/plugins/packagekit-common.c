@@ -24,7 +24,6 @@
 #define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
 #include <packagekit-glib2/packagekit.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 
 #include "packagekit-common.h"
@@ -97,7 +96,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 	guint i;
 	PkPackage *package;
 	g_autoptr(GHashTable) installed = NULL;
-	_cleanup_object_unref_ PkError *error_code = NULL;
+	g_autoptr(PkError) error_code = NULL;
 	g_autoptr(GPtrArray) array_filtered = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
