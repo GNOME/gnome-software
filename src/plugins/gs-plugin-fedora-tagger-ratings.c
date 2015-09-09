@@ -187,7 +187,7 @@ gs_plugin_app_set_rating_pkg (GsPlugin *plugin,
 	g_autofree gchar *data = NULL;
 	g_autofree gchar *error_msg = NULL;
 	g_autofree gchar *uri = NULL;
-	_cleanup_object_unref_ SoupMessage *msg = NULL;
+	g_autoptr(SoupMessage) msg = NULL;
 
 	/* create the PUT data */
 	uri = g_strdup_printf ("%s/api/v1/rating/%s/",
@@ -355,7 +355,7 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	guint i;
 	guint status_code;
 	g_autofree gchar *uri = NULL;
-	_cleanup_object_unref_ SoupMessage *msg = NULL;
+	g_autoptr(SoupMessage) msg = NULL;
 	g_autoptr(GPtrArray) items = NULL;
 	g_auto(GStrv) split = NULL;
 

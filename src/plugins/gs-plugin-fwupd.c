@@ -31,8 +31,6 @@
 
 #include <gs-plugin.h>
 
-#include "gs-cleanup.h"
-
 struct GsPluginPrivate {
 	gsize			 done_init;
 	GDBusProxy		*proxy;
@@ -634,8 +632,8 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	g_autofree gchar *url_data = NULL;
 	g_autofree gchar *url_sig = NULL;
 	g_autoptr(GKeyFile) config = NULL;
-	_cleanup_object_unref_ SoupMessage *msg_data = NULL;
-	_cleanup_object_unref_ SoupMessage *msg_sig = NULL;
+	g_autoptr(SoupMessage) msg_data = NULL;
+	g_autoptr(SoupMessage) msg_sig = NULL;
 
 	/* read config file */
 	config = g_key_file_new ();
@@ -759,7 +757,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		g_autoptr(GError) error_local = NULL;
 		g_autofree gchar *basename = NULL;
 		g_autofree gchar *filename_cache = NULL;
-		_cleanup_object_unref_ SoupMessage *msg = NULL;
+		g_autoptr(SoupMessage) msg = NULL;
 
 		tmp = g_ptr_array_index (plugin->priv->to_download, i);
 		basename = g_path_get_basename (tmp);

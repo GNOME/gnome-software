@@ -26,7 +26,6 @@
 #include <sqlite3.h>
 #include <stdlib.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 #include <gs-utils.h>
 
@@ -131,7 +130,7 @@ gs_plugin_app_set_usage_pkg (GsPlugin *plugin,
 	guint status_code;
 	g_autofree gchar *data = NULL;
 	g_autofree gchar *uri = NULL;
-	_cleanup_object_unref_ SoupMessage *msg = NULL;
+	g_autoptr(SoupMessage) msg = NULL;
 
 	/* create the PUT data */
 	uri = g_strdup_printf ("%s/api/v1/usage/%s/",

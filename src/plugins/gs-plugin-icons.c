@@ -27,7 +27,6 @@
 #include <glib/gi18n.h>
 #include <libsoup/soup.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 #include <gs-utils.h>
 
@@ -112,7 +111,7 @@ gs_plugin_icons_download (GsPlugin *plugin, const gchar *uri, const gchar *filen
 	g_autoptr(GdkPixbuf) pixbuf_new = NULL;
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
 	g_autoptr(GInputStream) stream = NULL;
-	_cleanup_object_unref_ SoupMessage *msg = NULL;
+	g_autoptr(SoupMessage) msg = NULL;
 
 	/* create the GET data */
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
