@@ -75,7 +75,6 @@ noinst_PROGRAMS =					\
 	gnome-software-cmd
 
 gnome_software_cmd_SOURCES =				\
-	gs-cleanup.h					\
 	gs-app.c					\
 	gs-cmd.c					\
 	gs-utils.c					\
@@ -99,7 +98,6 @@ bin_PROGRAMS =						\
 gnome_software_SOURCES =				\
 	$(packagekit_built_sources)			\
 	$(packagekit_modify2_built_sources)		\
-	gs-cleanup.h					\
 	gs-resources.c					\
 	gs-resources.h					\
 	gs-dbus-helper.c				\

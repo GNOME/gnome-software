@@ -25,7 +25,6 @@
 
 #include "gs-app.h"
 #include "gs-app-row.h"
-#include "gs-cleanup.h"
 #include "gs-language.h"
 #include "gs-markdown.h"
 #include "gs-shell.h"
@@ -519,7 +518,7 @@ search_files_cb (GObject *source_object,
 {
 	SearchData *search_data = (SearchData *) user_data;
 	GsShellExtras *self = search_data->self;
-	_cleanup_plugin_list_free_ GList *list = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	GList *l;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
@@ -617,7 +616,7 @@ get_search_what_provides_cb (GObject *source_object,
 {
 	SearchData *search_data = (SearchData *) user_data;
 	GsShellExtras *self = search_data->self;
-	_cleanup_plugin_list_free_ GList *list = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	GList *l;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;

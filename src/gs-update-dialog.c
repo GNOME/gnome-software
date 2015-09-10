@@ -25,7 +25,6 @@
 #include <gtk/gtk.h>
 #include <packagekit-glib2/packagekit.h>
 
-#include "gs-cleanup.h"
 #include "gs-update-dialog.h"
 #include "gs-app-row.h"
 #include "gs-markdown.h"
@@ -178,7 +177,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
                           GsUpdateDialog *dialog)
 {
 	GList *l;
-	_cleanup_plugin_list_free_ GList *list = NULL;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) error = NULL;
 
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));

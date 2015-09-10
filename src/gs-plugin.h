@@ -48,6 +48,8 @@ typedef enum {
 	GS_PLUGIN_STATUS_LAST
 } GsPluginStatus;
 
+typedef GList GsAppList;
+
 typedef void (*GsPluginStatusUpdate)	(GsPlugin	*plugin,
 					 GsApp		*app,
 					 GsPluginStatus	 status,
@@ -258,6 +260,8 @@ gboolean	 gs_plugin_offline_update		(GsPlugin	*plugin,
 							 GList		*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsAppList, gs_plugin_list_free)
 
 G_END_DECLS
 
