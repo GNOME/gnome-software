@@ -33,19 +33,9 @@ G_BEGIN_DECLS
     func (*(Type*)v); \
   }
 
-#define GS_DEFINE_CLEANUP_FUNCTIONt(Type, name, func) \
-  static inline void name (void *v) \
-  { \
-    if (*(Type*)v) \
-      func (*(Type*)v, TRUE); \
-  }
-
-GS_DEFINE_CLEANUP_FUNCTIONt(GString*, gs_local_free_string, g_string_free)
-
 GS_DEFINE_CLEANUP_FUNCTION(GList*, gs_local_free_plugin_list, gs_plugin_list_free)
 
 #define _cleanup_plugin_list_free_ __attribute__ ((cleanup(gs_local_free_plugin_list)))
-#define _cleanup_string_free_ __attribute__ ((cleanup(gs_local_free_string)))
 
 G_END_DECLS
 

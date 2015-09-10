@@ -26,7 +26,6 @@
 #include <gtk/gtk.h>
 
 #include "gs-app-addon-row.h"
-#include "gs-cleanup.h"
 #include "gs-utils.h"
 
 struct _GsAppAddonRow
@@ -73,7 +72,7 @@ gs_app_addon_row_get_summary (GsAppAddonRow *row)
 void
 gs_app_addon_row_refresh (GsAppAddonRow *row)
 {
-	_cleanup_string_free_ GString *str = NULL;
+	g_autoptr(GString) str = NULL;
 
 	if (row->app == NULL)
 		return;

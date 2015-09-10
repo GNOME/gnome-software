@@ -24,7 +24,6 @@
 #include <glib/gi18n.h>
 #include <appstream-glib.h>
 
-#include "gs-cleanup.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
 #include "gs-profile.h"
@@ -1355,7 +1354,7 @@ gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 	GPtrArray *keywords;
 	const gchar *keyword;
 	guint i;
-	_cleanup_string_free_ GString *tmp = NULL;
+	g_autoptr(GString) tmp = NULL;
 
 	/* is the search string one of the codec keywords */
 	keywords = gs_app_get_keywords (app);
@@ -2449,7 +2448,7 @@ save_install_queue (GsPluginLoader *plugin_loader)
 	gboolean ret;
 	gint i;
 	g_autoptr(GError) error = NULL;
-	_cleanup_string_free_ GString *s = NULL;
+	g_autoptr(GString) s = NULL;
 	g_autofree gchar *file = NULL;
 
 	s = g_string_new ("");

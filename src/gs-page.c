@@ -26,7 +26,6 @@
 
 #include "gs-app.h"
 #include "gs-app-row.h"
-#include "gs-cleanup.h"
 #include "gs-page.h"
 #include "gs-shell.h"
 #include "gs-utils.h"
@@ -155,7 +154,7 @@ gs_page_remove_app (GsPage *page, GsApp *app)
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GtkResponseType response;
 	GtkWidget *dialog;
-	_cleanup_string_free_ GString *markup = NULL;
+	g_autoptr(GString) markup = NULL;
 
 	markup = g_string_new ("");
 	g_string_append_printf (markup,

@@ -1060,7 +1060,7 @@ row_activated_cb (GtkListBox *list_box,
 static gchar *
 get_app_sort_key (GsApp *app)
 {
-	_cleanup_string_free_ GString *key = NULL;
+	g_autoptr(GString) key = NULL;
 
 	key = g_string_sized_new (64);
 

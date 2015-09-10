@@ -25,7 +25,6 @@
 #include <packagekit-glib2/packagekit.h>
 #include <polkit/polkit.h>
 
-#include "gs-cleanup.h"
 #include "gs-offline-updates.h"
 #include "gs-utils.h"
 
@@ -198,7 +197,7 @@ insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
 	GtkWidget *box, *tv;
 	GtkTextBuffer *buffer;
 	GList *children;
-	_cleanup_string_free_ GString *msg = NULL;
+	g_autoptr(GString) msg = NULL;
 
 	if (!details)
 		return;

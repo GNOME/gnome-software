@@ -26,7 +26,6 @@
 #include <errno.h>
 
 #include "gs-app.h"
-#include "gs-cleanup.h"
 #include "gs-utils.h"
 #include "gs-plugin.h"
 
@@ -218,8 +217,8 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	};
 	g_autofree gchar *origin_url = NULL;
 	g_autoptr(GSettings) settings = NULL;
-	_cleanup_string_free_ GString *body = NULL;
-	_cleanup_string_free_ GString *title = NULL;
+	g_autoptr(GString) body = NULL;
+	g_autoptr(GString) title = NULL;
 
 	/* this is very crude */
 	licence = gs_app_get_licence (app);

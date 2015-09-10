@@ -26,7 +26,6 @@
 #include <sqlite3.h>
 #include <stdlib.h>
 
-#include "gs-cleanup.h"
 #include <gs-plugin.h>
 #include <gs-utils.h>
 
@@ -114,7 +113,7 @@ gs_plugin_parse_json (const gchar *data, gsize data_len, const gchar *key)
 	guint i;
 	gchar *tmp;
 	guint len;
-	_cleanup_string_free_ GString *string = NULL;
+	g_autoptr(GString) string = NULL;
 	g_auto(GStrv) split = NULL;
 
 	/* format the key to match what JSON returns */

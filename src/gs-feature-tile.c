@@ -24,7 +24,6 @@
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
-#include "gs-cleanup.h"
 #include "gs-feature-tile.h"
 
 struct _GsFeatureTile
@@ -95,7 +94,7 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	const gchar *stroke_color;
 	const gchar *text_color;
 	const gchar *text_shadow;
-	_cleanup_string_free_ GString *data = NULL;
+	g_autoptr(GString) data = NULL;
 
 	g_return_if_fail (GS_IS_FEATURE_TILE (tile));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
