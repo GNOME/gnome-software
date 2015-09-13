@@ -87,12 +87,12 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 {
 	gint i = 0;
 	GList *l;
-	GList *list;
 	GsApp *app;
 	GtkWidget *tile;
 	GsShellCategory *self = GS_SHELL_CATEGORY (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	list = gs_plugin_loader_get_category_apps_finish (plugin_loader,
 							  res,
@@ -100,7 +100,7 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 	if (list == NULL) {
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get apps for category apps: %s", error->message);
-		goto out;
+		return;
 	}
 	gtk_grid_remove_column (GTK_GRID (self->category_detail_grid), 1);
 	gtk_grid_remove_column (GTK_GRID (self->category_detail_grid), 0);
@@ -115,10 +115,6 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 
 	if (i == 1)
 		gtk_grid_attach (GTK_GRID (self->category_detail_grid), self->col1_placeholder, 1, 0, 1, 1);
-
-out:
-	gs_plugin_list_free (list);
-
 }
 
 static void

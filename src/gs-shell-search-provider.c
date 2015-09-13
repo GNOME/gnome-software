@@ -79,8 +79,9 @@ search_done_cb (GObject *source,
 {
 	PendingSearch *search = user_data;
 	GsShellSearchProvider *self = search->provider;
-	GList *list, *l;
+	GList *l;
 	GVariantBuilder builder;
+	g_autoptr(GsAppList) list = NULL;
 
 	list = gs_plugin_loader_search_finish (self->plugin_loader, res, NULL);
 	if (list == NULL) {
@@ -102,7 +103,6 @@ search_done_cb (GObject *source,
 	}
 	g_dbus_method_invocation_return_value (search->invocation, g_variant_new ("(as)", &builder));
 
-	g_list_free_full (list, g_object_unref);
 	pending_search_free (search);
 	g_application_release (g_application_get_default ());
 }

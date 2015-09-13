@@ -128,11 +128,11 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GList *l;
-	GList *list;
 	GsApp *app;
 	gint i;
 	GtkWidget *tile;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_popular_finish (plugin_loader, res, &error);
@@ -160,7 +160,6 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	priv->empty = FALSE;
 
 out:
-	gs_plugin_list_free (list);
 	priv->loading_popular = FALSE;
 	priv->refresh_count--;
 	if (priv->refresh_count == 0) {
@@ -179,11 +178,11 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GList *l;
-	GList *list;
 	GsApp *app;
 	gint i;
 	GtkWidget *tile;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	/* get popular apps */
 	list = gs_plugin_loader_get_category_apps_finish (plugin_loader, res, &error);
@@ -217,7 +216,6 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 	priv->empty = FALSE;
 
 out:
-	gs_plugin_list_free (list);
 	load_data_free (load_data);
 	priv->loading_popular_rotating = FALSE;
 	priv->refresh_count--;
@@ -247,9 +245,9 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *tile;
-	GList *list;
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	list = gs_plugin_loader_get_featured_finish (plugin_loader, res, &error);
 	if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
@@ -279,7 +277,6 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	priv->empty = FALSE;
 
 out:
-	gs_plugin_list_free (list);
 	priv->loading_featured = FALSE;
 	priv->refresh_count--;
 	if (priv->refresh_count == 0) {
@@ -312,11 +309,11 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	gint i;
 	GList *l;
-	GList *list;
 	GsCategory *cat;
 	GtkWidget *tile;
 	gboolean has_category = FALSE;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	list = gs_plugin_loader_get_categories_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -338,7 +335,6 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		has_category = TRUE;
 	}
 out:
-	gs_plugin_list_free (list);
 	if (has_category) {
 		priv->empty = FALSE;
 	}

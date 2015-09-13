@@ -93,12 +93,12 @@ gs_shell_search_get_search_cb (GObject *source_object,
 				     gpointer user_data)
 {
 	GList *l;
-	GList *list;
 	GsApp *app;
 	GsShellSearch *self = GS_SHELL_SEARCH (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GtkWidget *app_row;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -138,7 +138,6 @@ gs_shell_search_get_search_cb (GObject *source_object,
 		gs_shell_show_details (self->shell, self->appid_to_show);
 		g_clear_pointer (&self->appid_to_show, g_free);
 	}
-	g_list_free_full (list, g_object_unref);
 }
 
 /**

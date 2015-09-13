@@ -542,11 +542,11 @@ gs_plugin_loader_empty_func (void)
 	GList *apps;
 	GList *l;
 	GList *l2;
-	GList *list;
 	GList *subcats;
 	GsCategory *category;
 	GsCategory *sub;
 	guint empty_subcats_cnt = 0;
+	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GsPluginLoader) loader = NULL;
 
 	/* not avaiable in make distcheck */
@@ -620,8 +620,6 @@ gs_plugin_loader_empty_func (void)
 		g_list_free (subcats);
 	}
 	g_assert_cmpint (empty_subcats_cnt, ==, 0);
-
-	gs_plugin_list_free (list);
 }
 
 static void

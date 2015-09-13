@@ -443,9 +443,9 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 				 GsShellUpdates *self)
 {
 	GList *l;
-	GList *list;
 	GtkWidget *widget;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	self->cache_valid = TRUE;
 
@@ -492,7 +492,6 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 					    GS_SHELL_UPDATES_STATE_HAS_UPDATES);
 	}
 
-	gs_plugin_list_free (list);
 	self->in_progress = FALSE;
 }
 

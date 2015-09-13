@@ -255,15 +255,15 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GList *l;
-	GList *addons_list = NULL;
-	GList *related_list = NULL;
 	GPtrArray *addons;
 	GPtrArray *related;
 	GsApp *app;
 	GsPlugin *plugin;
 	gboolean ret = TRUE;
 	guint i;
-	GList *freeze_list;
+	g_autoptr(GsAppList) addons_list = NULL;
+	g_autoptr(GsAppList) freeze_list = NULL;
+	g_autoptr(GsAppList) related_list = NULL;
 
 	/* freeze all apps */
 	freeze_list = gs_plugin_list_copy (*list);
@@ -345,9 +345,6 @@ out:
 	for (l = freeze_list; l != NULL; l = l->next)
 		g_object_thaw_notify (G_OBJECT (l->data));
 
-	gs_plugin_list_free (addons_list);
-	gs_plugin_list_free (related_list);
-	gs_plugin_list_free (freeze_list);
 	return ret;
 }
 
@@ -3236,9 +3233,9 @@ gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GList *l;
-	GList *queue = NULL;
 	GsApp *app;
 	guint i;
+	g_autoptr(GsAppList) queue = NULL;
 
 	if (priv->online == online)
 		return;
@@ -3266,7 +3263,6 @@ gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 						   gs_plugin_loader_app_installed_cb,
 						   g_object_ref (app));
 	}
-	g_list_free_full (queue, g_object_unref);
 }
 
 /******************************************************************************/

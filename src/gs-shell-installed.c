@@ -188,11 +188,11 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 				     gpointer user_data)
 {
 	GList *l;
-	GList *list;
 	GsApp *app;
 	GsShellInstalled *self = GS_SHELL_INSTALLED (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	gs_stop_spinner (GTK_SPINNER (self->spinner_install));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "view");
@@ -213,7 +213,6 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 		gs_shell_installed_add_app (self, app);
 	}
 out:
-	gs_plugin_list_free (list);
 	gs_shell_installed_pending_apps_changed_cb (plugin_loader, self);
 }
 

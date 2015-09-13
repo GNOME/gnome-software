@@ -147,9 +147,9 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		GsSourcesDialog *dialog)
 {
 	GList *l;
-	GList *list;
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
 
 	/* show results */
 	gs_stop_spinner (GTK_SPINNER (dialog->spinner));
@@ -171,7 +171,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
 		gtk_style_context_add_class (gtk_widget_get_style_context (dialog->label_header),
 		                             "dim-label");
-		goto out;
+		return;
 	}
 
 	gtk_style_context_remove_class (gtk_widget_get_style_context (dialog->label_header),
@@ -183,9 +183,6 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		app = GS_APP (l->data);
 		add_source (GTK_LIST_BOX (dialog->listbox), app);
 	}
-out:
-	if (list != NULL)
-		gs_plugin_list_free (list);
 }
 
 static void
