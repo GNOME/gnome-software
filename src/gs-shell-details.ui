@@ -137,7 +137,7 @@
                               <object class="GtkBox" id="box_install_remove">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="spacing">6</property>
+                                <property name="spacing">12</property>
                                 <child>
                                   <object class="GsProgressButton" id="button_install">
                                     <property name="use_underline">True</property>
@@ -166,9 +166,6 @@
                                     <property name="receives_default">True</property>
                                     <property name="halign">start</property>
                                     <property name="valign">start</property>
-                                    <style>
-                                      <class name="destructive-action"/>
-                                    </style>
                                   </object>
                                   <packing>
                                     <property name="expand">False</property>
@@ -195,6 +192,23 @@
                                     <property name="expand">False</property>
                                     <property name="fill">False</property>
                                     <property name="position">3</property>
+                                  </packing>
+                                </child>
+                                <child>
+                                  <object class="GtkButton" id="button_details_launch">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">True</property>
+                                    <property name="receives_default">False</property>
+                                    <property name="use_underline">True</property>
+                                    <property name="label" translatable="yes" comments="Translators: A label for a button to execute the selected application.">_Launch</property>
+                                    <style>
+                                      <class name="suggested-action"/>
+                                    </style>
+                                  </object>
+                                  <packing>
+                                    <property name="expand">False</property>
+                                    <property name="fill">False</property>
+                                    <property name="position">4</property>
                                   </packing>
                                 </child>
                               </object>
@@ -643,23 +657,6 @@
                             <property name="position">1</property>
                           </packing>
                         </child>
-                        <child>
-                          <object class="GtkButton" id="button_details_launch">
-                            <property name="visible">True</property>
-                            <property name="can_focus">True</property>
-                            <property name="receives_default">False</property>
-                            <property name="use_underline">True</property>
-                            <property name="label" translatable="yes" comments="Translators: A label for a button to execute the selected application.">_Launch</property>
-                            <style>
-                              <class name="suggested-action"/>
-                            </style>
-                          </object>
-                          <packing>
-                            <property name="expand">False</property>
-                            <property name="fill">False</property>
-                            <property name="position">2</property>
-                          </packing>
-                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1035,11 +1032,18 @@
       </object>
     </child>
   </template>
+  <object class="GtkSizeGroup" id="sizegroup_install_remove">
+    <property name="ignore_hidden">True</property>
+    <widgets>
+      <widget name="button_install"/>
+      <widget name="button_remove"/>
+      <widget name="button_details_launch"/>
+    </widgets>
+  </object>
   <object class="GtkSizeGroup" id="sizegroup_details_buttons">
     <widgets>
       <widget name="button_details_website"/>
       <widget name="button_history"/>
-      <widget name="button_details_launch"/>
     </widgets>
   </object>
   <object class="GtkSizeGroup" id="sizegroup_details_title">

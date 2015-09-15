@@ -206,6 +206,26 @@ gs_shell_details_switch_to (GsShellDetails *self)
 		g_assert_not_reached ();
 	}
 
+	/* launch button */
+	switch (gs_app_get_state (self->app)) {
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
+		if (gs_app_get_id_kind (self->app) == AS_ID_KIND_DESKTOP ||
+		    gs_app_get_id_kind (self->app) == AS_ID_KIND_WEB_APP) {
+			gtk_widget_set_visible (self->button_details_launch, TRUE);
+		} else {
+			gtk_widget_set_visible (self->button_details_launch, FALSE);
+		}
+		break;
+	default:
+		gtk_widget_set_visible (self->button_details_launch, FALSE);
+		break;
+	}
+
+	/* don't show the launch button if the app doesn't have a desktop ID */
+	if (gs_app_get_id (self->app) == NULL)
+		gtk_widget_set_visible (self->button_details_launch, FALSE);
+
 	/* remove button */
 	if (kind == GS_APP_KIND_SYSTEM) {
 		gtk_widget_set_visible (self->button_remove, FALSE);
@@ -215,7 +235,11 @@ gs_shell_details_switch_to (GsShellDetails *self)
 		case AS_APP_STATE_UPDATABLE:
 			gtk_widget_set_visible (self->button_remove, TRUE);
 			gtk_widget_set_sensitive (self->button_remove, TRUE);
-			gtk_style_context_add_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
+			/* Mark the button as destructive only if Launch is not visible */
+			if (gtk_widget_get_visible (self->button_details_launch))
+				gtk_style_context_remove_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
+			else
+				gtk_style_context_add_class (gtk_widget_get_style_context (self->button_remove), "destructive-action");
 			/* TRANSLATORS: button text in the header when an application can be erased */
 			gtk_button_set_label (GTK_BUTTON (self->button_remove), _("_Remove"));
 			break;
@@ -697,27 +721,6 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	/* only mark the stars as sensitive if the application is installed */
 	gtk_widget_set_sensitive (self->star,
 				  gs_app_get_state (self->app) == AS_APP_STATE_INSTALLED);
-
-	/* only show launch button when the application is installed */
-	switch (gs_app_get_state (self->app)) {
-	case AS_APP_STATE_INSTALLED:
-	case AS_APP_STATE_UPDATABLE:
-		if (gs_app_get_id_kind (self->app) == AS_ID_KIND_DESKTOP ||
-		    gs_app_get_id_kind (self->app) == AS_ID_KIND_WEB_APP) {
-			gtk_widget_set_visible (self->button_details_launch, TRUE);
-		} else {
-			gtk_widget_set_visible (self->button_details_launch, FALSE);
-		}
-		break;
-	default:
-		gtk_widget_set_visible (self->button_details_launch, FALSE);
-		break;
-	}
-
-	/* don't show the launch button if the app doesn't have a desktop ID */
-	tmp = gs_app_get_id (self->app);
-	if (tmp == NULL)
-		gtk_widget_set_visible (self->button_details_launch, FALSE);
 
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (self->app);
