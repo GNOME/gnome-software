@@ -24,16 +24,8 @@
 
 #include <glib-object.h>
 
-typedef struct _GsModuleset		GsModuleset;
-typedef struct _GsModulesetClass	GsModulesetClass;
-
-#define GS_TYPE_MODULESET	(gs_moduleset_get_type ())
-#define GS_MODULESET(o)		(G_TYPE_CHECK_INSTANCE_CAST ((o), GS_TYPE_MODULESET, GsModuleset))
-#define GS_IS_MODULESET(o)	(G_TYPE_CHECK_INSTANCE_TYPE ((o), GS_TYPE_MODULESET))
-
-struct _GsModuleset {
-	GObject		 parent_instance;
-};
+#define GS_TYPE_MODULESET (gs_moduleset_get_type ())
+G_DECLARE_DERIVABLE_TYPE (GsModuleset, gs_moduleset, GS, MODULESET, GObject)
 
 struct _GsModulesetClass {
 	GObjectClass	 parent_class;
@@ -46,7 +38,6 @@ typedef enum {
 	GS_MODULESET_MODULE_KIND_LAST
 } GsModulesetModuleKind;
 
-GType		 gs_moduleset_get_type			(void);
 GsModuleset	*gs_moduleset_new			(void);
 
 gchar		**gs_moduleset_get_modules		(GsModuleset		*moduleset,
