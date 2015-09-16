@@ -644,20 +644,6 @@ gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 }
 
 /**
- * gs_plugin_loader_get_app_has_appdata:
- */
-static gboolean
-gs_plugin_loader_get_app_has_appdata (GsApp *app, gpointer user_data)
-{
-	if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE)
-		return TRUE;
-	if (gs_app_get_kudos (app) & GS_APP_KUDO_APPDATA_DESCRIPTION)
-		return TRUE;
-	g_debug ("removing app with no AppData %s", gs_app_get_id (app));
-	return FALSE;
-}
-
-/**
  * gs_plugin_loader_run_action_plugin:
  **/
 static gboolean
@@ -1483,12 +1469,6 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA) == 0) &&
-	    g_settings_get_boolean (priv->settings, "require-appdata")) {
-		gs_plugin_list_filter (&state->list,
-				       gs_plugin_loader_get_app_has_appdata,
-				       plugin_loader);
-	}
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
@@ -1652,12 +1632,6 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA) == 0) &&
-	    g_settings_get_boolean (priv->settings, "require-appdata")) {
-		gs_plugin_list_filter (&state->list,
-				       gs_plugin_loader_get_app_has_appdata,
-				       plugin_loader);
-	}
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
@@ -1821,12 +1795,6 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA) == 0) &&
-	    g_settings_get_boolean (priv->settings, "require-appdata")) {
-		gs_plugin_list_filter (&state->list,
-				       gs_plugin_loader_get_app_has_appdata,
-				       plugin_loader);
-	}
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
@@ -2111,11 +2079,6 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (g_settings_get_boolean (priv->settings, "require-appdata")) {
-		gs_plugin_list_filter (&state->list,
-				       gs_plugin_loader_get_app_has_appdata,
-				       plugin_loader);
-	}
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,

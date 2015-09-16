@@ -562,7 +562,6 @@ gs_plugin_refine_item (GsPlugin *plugin,
 			g_prefix_error (error, "trying to parse '%s': ", tmp);
 			return FALSE;
 		}
-		gs_app_add_kudo (app, GS_APP_KUDO_APPDATA_DESCRIPTION);
 		gs_app_set_description (app,
 					GS_APP_QUALITY_HIGHEST,
 					from_xml);

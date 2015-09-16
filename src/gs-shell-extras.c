@@ -698,8 +698,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			                                     search_data->search_filename,
 			                                     GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
-			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA,
+			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 			                                     self->search_cancellable,
 			                                     search_files_cb,
 			                                     search_data);
@@ -709,8 +708,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			                                        search_data->package_filename,
 			                                        GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 			                                        GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-			                                        GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
-			                                        GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA,
+			                                        GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 			                                        self->search_cancellable,
 			                                        filename_to_app_cb,
 			                                        search_data);
@@ -724,8 +722,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES |
-			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_NO_APPDATA,
+			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 			                                             self->search_cancellable,
 			                                             get_search_what_provides_cb,
 			                                             search_data);
