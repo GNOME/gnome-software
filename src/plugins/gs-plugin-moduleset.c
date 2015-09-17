@@ -188,6 +188,28 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_moduleset_get_popular:
+ */
+static gchar **
+gs_plugin_moduleset_get_popular (GsPlugin *plugin)
+{
+	g_autoptr(GSettings) settings = NULL;
+	g_auto(GStrv) apps = NULL;
+
+	/* debugging only */
+	if (g_getenv ("GNOME_SOFTWARE_POPULAR"))
+		return g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
+
+	/* are we using a corporate build */
+	settings = g_settings_new ("org.gnome.software");
+	apps = g_settings_get_strv (settings, "popular-overrides");
+	if (g_strv_length (apps) > 0)
+		return g_strdupv (apps);
+
+	return gs_moduleset_get_popular_apps (plugin->priv->moduleset);
+}
+
+/**
  * gs_plugin_add_popular:
  */
 gboolean
@@ -208,11 +230,8 @@ gs_plugin_add_popular (GsPlugin *plugin,
 			return FALSE;
 	}
 
-	if (g_getenv ("GNOME_SOFTWARE_POPULAR")) {
-		apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
-	} else {
-		apps = gs_moduleset_get_popular_apps (plugin->priv->moduleset);
-	}
+	/* get popular apps based on various things */
+	apps = gs_plugin_moduleset_get_popular (plugin);
 	if (apps == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
