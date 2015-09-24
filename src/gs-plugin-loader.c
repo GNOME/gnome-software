@@ -26,7 +26,6 @@
 
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
-#include "gs-profile.h"
 
 #define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */
 
@@ -35,7 +34,7 @@ typedef struct
 	GPtrArray		*plugins;
 	gchar			*location;
 	GsPluginStatus		 status_last;
-	GsProfile		*profile;
+	AsProfile		*profile;
 
 	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
@@ -188,10 +187,10 @@ gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPluginRefineFunc plugin_func = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	const gchar *function_name = "gs_plugin_refine";
 	gboolean exists;
 	gboolean ret = TRUE;
-	g_autofree gchar *profile_id = NULL;
 
 	/* load the symbol */
 	exists = g_module_symbol (plugin->module,
@@ -202,16 +201,17 @@ gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 
 	/* profile the plugin runtime */
 	if (function_name_parent == NULL) {
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name,
-					      function_name);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  function_name);
 	} else {
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s;%s)",
-					      plugin->name,
-					      function_name_parent,
-					      function_name);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s;%s)",
+					  plugin->name,
+					  function_name_parent,
+					  function_name);
 	}
-	gs_profile_start (priv->profile, profile_id);
 	ret = plugin_func (plugin, list, flags, cancellable, error);
 	if (!ret) {
 		/* check the plugin is well behaved and sets error
@@ -235,10 +235,7 @@ gs_plugin_loader_run_refine_plugin (GsPluginLoader *plugin_loader,
 		goto out;
 	}
 out:
-	if (profile_id != NULL) {
-		gs_profile_stop (priv->profile, profile_id);
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-	}
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	return ret;
 }
 
@@ -363,7 +360,7 @@ gs_plugin_loader_run_results_plugin (GsPluginLoader *plugin_loader,
 	GsPluginResultsFunc plugin_func = NULL;
 	gboolean exists;
 	gboolean ret = TRUE;
-	g_autofree gchar *profile_id = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* get symbol */
 	exists = g_module_symbol (plugin->module,
@@ -373,18 +370,15 @@ gs_plugin_loader_run_results_plugin (GsPluginLoader *plugin_loader,
 		goto out;
 
 	/* run function */
-	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-				      plugin->name, function_name);
-	gs_profile_start (priv->profile, profile_id);
+	ptask = as_profile_start (priv->profile,
+				  "GsPlugin::%s(%s)",
+				  plugin->name, function_name);
 	g_assert (error == NULL || *error == NULL);
 	ret = plugin_func (plugin, list, cancellable, error);
 	if (!ret)
 		goto out;
 out:
-	if (profile_id != NULL) {
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-	}
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	return ret;
 }
 
@@ -403,7 +397,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	GList *list = NULL;
 	GsPlugin *plugin;
 	guint i;
-	g_autofree gchar *profile_id_parent = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (function_name != NULL, NULL);
@@ -411,9 +405,7 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	g_return_val_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable), NULL);
 
 	/* profile */
-	profile_id_parent = g_strdup_printf ("GsPlugin::*(%s)",
-					     function_name);
-	gs_profile_start (priv->profile, profile_id_parent);
+	ptask = as_profile_start (priv->profile, "GsPlugin::*(%s)", function_name);
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
@@ -460,7 +452,6 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		goto out;
 	}
 out:
-	gs_profile_stop (priv->profile, profile_id_parent);
 	if (!ret) {
 		gs_plugin_list_free (list);
 		list = NULL;
@@ -659,16 +650,17 @@ gs_plugin_loader_run_action_plugin (GsPluginLoader *plugin_loader,
 	GsPluginActionFunc plugin_func = NULL;
 	gboolean exists;
 	gboolean ret = TRUE;
-	g_autofree gchar *profile_id = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	exists = g_module_symbol (plugin->module,
 				  function_name,
 				  (gpointer *) &plugin_func);
 	if (!exists)
 		goto out;
-	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-				      plugin->name, function_name);
-	gs_profile_start (priv->profile, profile_id);
+	ptask = as_profile_start (priv->profile,
+				  "GsPlugin::%s(%s)",
+				  plugin->name,
+				  function_name);
 	ret = plugin_func (plugin, app, cancellable, &error_local);
 	if (!ret) {
 		if (g_error_matches (error_local,
@@ -685,10 +677,7 @@ gs_plugin_loader_run_action_plugin (GsPluginLoader *plugin_loader,
 		}
 	}
 out:
-	if (profile_id != NULL) {
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-	}
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	return ret;
 }
 
@@ -1409,7 +1398,6 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
-	g_autofree gchar *profile_id = NULL;
 	g_auto(GStrv) values = NULL;
 
 	/* run each plugin */
@@ -1419,31 +1407,31 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no valid search terms");
-		goto out;
+		return;
 	}
 	for (i = 0; i < priv->plugins->len; i++) {
+		g_autoptr(AsProfileTask) ptask = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
 		if (ret)
-			goto out;
+			return;
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name, function_name);
-		gs_profile_start (priv->profile, profile_id);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  function_name);
 		ret = plugin_func (plugin, values, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
-			goto out;
+			return;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* dedupe applications we already know about */
@@ -1458,7 +1446,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 					   &error);
 	if (!ret) {
 		g_task_return_error (task, error);
-		goto out;
+		return;
 	}
 
 	/* convert any unavailables */
@@ -1474,21 +1462,18 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no search results to show");
-		goto out;
+		return;
 	}
 	if (g_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "Too many search results returned");
-		goto out;
+		return;
 	}
 
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
-out:
-	if (profile_id != NULL)
-		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -1576,7 +1561,6 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
-	g_autofree gchar *profile_id = NULL;
 	g_auto(GStrv) values = NULL;
 
 	values = g_new0 (gchar *, 2);
@@ -1584,28 +1568,28 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		g_autoptr(AsProfileTask) ptask = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
 		if (ret)
-			goto out;
+			return;
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name, function_name);
-		gs_profile_start (priv->profile, profile_id);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  function_name);
 		ret = plugin_func (plugin, values, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
-			goto out;
+			return;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* dedupe applications we already know about */
@@ -1620,7 +1604,7 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 					   &error);
 	if (!ret) {
 		g_task_return_error (task, error);
-		goto out;
+		return;
 	}
 
 	/* convert any unavailables */
@@ -1637,21 +1621,18 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no search results to show");
-		goto out;
+		return;
 	}
 	if (g_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "Too many search results returned");
-		goto out;
+		return;
 	}
 
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
-out:
-	if (profile_id != NULL)
-		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -1739,7 +1720,6 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	GsPlugin *plugin;
 	GsPluginSearchFunc plugin_func = NULL;
 	guint i;
-	g_autofree gchar *profile_id = NULL;
 	g_auto(GStrv) values = NULL;
 
 	values = g_new0 (gchar *, 2);
@@ -1747,28 +1727,28 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		g_autoptr(AsProfileTask) ptask = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
 		if (ret)
-			goto out;
+			return;
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name, function_name);
-		gs_profile_start (priv->profile, profile_id);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  function_name);
 		ret = plugin_func (plugin, values, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
-			goto out;
+			return;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* dedupe applications we already know about */
@@ -1783,7 +1763,7 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 					   &error);
 	if (!ret) {
 		g_task_return_error (task, error);
-		goto out;
+		return;
 	}
 
 	/* convert any unavailables */
@@ -1800,21 +1780,18 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no search results to show");
-		goto out;
+		return;
 	}
 	if (g_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "Too many search results returned");
-		goto out;
+		return;
 	}
 
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
-out:
-	if (profile_id != NULL)
-		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -1913,32 +1890,31 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 	GsPluginResultsFunc plugin_func = NULL;
 	GList *l;
 	guint i;
-	g_autofree gchar *profile_id = NULL;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		g_autoptr(AsProfileTask) ptask = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
 		if (ret)
-			goto out;
+			return;
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name, function_name);
-		gs_profile_start (priv->profile, profile_id);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  function_name);
 		ret = plugin_func (plugin, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
-			goto out;
+			return;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* sort by name */
@@ -1952,14 +1928,11 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no categories to show");
-		goto out;
+		return;
 	}
 
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
-out:
-	if (profile_id != NULL)
-		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -2030,32 +2003,31 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	GsPlugin *plugin;
 	GsPluginCategoryFunc plugin_func = NULL;
 	guint i;
-	g_autofree gchar *profile_id = NULL;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		g_autoptr(AsProfileTask) ptask = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
 		if (ret)
-			goto out;
+			return;
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name, function_name);
-		gs_profile_start (priv->profile, profile_id);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  function_name);
 		ret = plugin_func (plugin, state->category, &state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
-			goto out;
+			return;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* dedupe applications we already know about */
@@ -2070,7 +2042,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 					   &error);
 	if (!ret) {
 		g_task_return_error (task, error);
-		goto out;
+		return;
 	}
 
 	/* filter package list */
@@ -2084,7 +2056,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no get_category_apps results to show");
-		goto out;
+		return;
 	}
 
 	/* sort, just in case the UI doesn't do this */
@@ -2092,9 +2064,6 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
-out:
-	if (profile_id != NULL)
-		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -2642,19 +2611,19 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
-		g_autofree gchar *profile_id = NULL;
+		g_autoptr(AsProfileTask) ptask = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name, function_name);
-		gs_profile_start (priv->profile, profile_id);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  function_name);
 		plugin_func (plugin);
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
 	}
 }
 
@@ -2907,23 +2876,21 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	const gchar *filename_tmp;
 	const gdouble dep_increment = 1.f;
 	gboolean changes;
-	gboolean ret = TRUE;
 	GsPlugin *dep;
 	GsPlugin *plugin;
 	guint dep_loop_check = 0;
 	guint i;
 	guint j;
 	g_autoptr(GDir) dir = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	g_return_val_if_fail (priv->location != NULL, FALSE);
 
 	/* search in the plugin directory for plugins */
-	gs_profile_start (priv->profile, "GsPlugin::setup");
+	ptask = as_profile_start_literal (priv->profile, "GsPlugin::setup");
 	dir = g_dir_open (priv->location, 0, error);
-	if (dir == NULL) {
-		ret = FALSE;
-		goto out;
-	}
+	if (dir == NULL)
+		return FALSE;
 
 	/* try to open each plugin */
 	g_debug ("searching for plugins in %s", priv->location);
@@ -2971,12 +2938,11 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 
 		/* check we're not stuck */
 		if (dep_loop_check++ > 100) {
-			ret = FALSE;
 			g_set_error (error,
 				     GS_PLUGIN_LOADER_ERROR,
 				     GS_PLUGIN_LOADER_ERROR_FAILED,
 				     "got stuck in dep loop");
-			goto out;
+			return FALSE;
 		}
 	} while (changes);
 
@@ -2988,12 +2954,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_initialize");
 
 	/* now we can load the install-queue */
-	ret = load_install_queue (plugin_loader, error);
-	if (!ret)
-		goto out;
-out:
-	gs_profile_stop (priv->profile, "GsPlugin::setup");
-	return ret;
+	if (!load_install_queue (plugin_loader, error))
+		return FALSE;
+	return TRUE;
 }
 
 /**
@@ -3047,11 +3010,7 @@ gs_plugin_loader_dispose (GObject *object)
 		g_source_remove (priv->updates_changed_id);
 		priv->updates_changed_id = 0;
 	}
-	if (priv->profile != NULL) {
-		gs_profile_stop (priv->profile, "GsPluginLoader");
-		g_clear_object (&priv->profile);
-	}
-
+	g_clear_object (&priv->profile);
 	g_clear_object (&priv->settings);
 	g_clear_pointer (&priv->app_cache, g_hash_table_unref);
 	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
@@ -3125,7 +3084,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
 	priv->status_last = GS_PLUGIN_STATUS_LAST;
 	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
-	priv->profile = gs_profile_new ();
+	priv->profile = as_profile_new ();
 	priv->settings = g_settings_new ("org.gnome.software");
 	priv->app_cache = g_hash_table_new_full (g_str_hash,
 								g_str_equal,
@@ -3134,9 +3093,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 	g_mutex_init (&priv->pending_apps_mutex);
 	g_mutex_init (&priv->app_cache_mutex);
-
-	/* application start */
-	gs_profile_start (priv->profile, "GsPluginLoader");
 
 	/* by default we only show project-less apps or compatible projects */
 	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
@@ -3247,16 +3203,17 @@ gs_plugin_loader_run_refresh_plugin (GsPluginLoader *plugin_loader,
 	gboolean ret = TRUE;
 	GError *error_local = NULL;
 	GsPluginRefreshFunc plugin_func = NULL;
-	g_autofree gchar *profile_id = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	exists = g_module_symbol (plugin->module,
 				  function_name,
 				  (gpointer *) &plugin_func);
 	if (!exists)
 		goto out;
-	profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-				      plugin->name, function_name);
-	gs_profile_start (priv->profile, profile_id);
+	ptask = as_profile_start (priv->profile,
+				  "GsPlugin::%s(%s)",
+				  plugin->name,
+				  function_name);
 	ret = plugin_func (plugin, cache_age, flags, cancellable, &error_local);
 	if (!ret) {
 		if (g_error_matches (error_local,
@@ -3273,10 +3230,7 @@ gs_plugin_loader_run_refresh_plugin (GsPluginLoader *plugin_loader,
 		}
 	}
 out:
-	if (profile_id != NULL) {
-		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-	}
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	return ret;
 }
 
@@ -3423,32 +3377,31 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 	GsPlugin *plugin;
 	GsPluginFilenameToAppFunc plugin_func = NULL;
 	guint i;
-	g_autofree gchar *profile_id = NULL;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		g_autoptr(AsProfileTask) ptask = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
 		if (ret)
-			goto out;
+			return;
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-					      plugin->name, function_name);
-		gs_profile_start (priv->profile, profile_id);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  function_name);
 		ret = plugin_func (plugin, &state->list, state->filename, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
-			goto out;
+			return;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-		g_clear_pointer (&profile_id, g_free);
 	}
 
 	/* dedupe applications we already know about */
@@ -3463,7 +3416,7 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 					   &error);
 	if (!ret) {
 		g_task_return_error (task, error);
-		goto out;
+		return;
 	}
 
 	/* filter package list */
@@ -3473,7 +3426,7 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no filename_to_app results to show");
-		goto out;
+		return;
 	}
 
 	/* success */
@@ -3483,12 +3436,9 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no application was created for %s",
 					 state->filename);
-		goto out;
+		return;
 	}
 	g_task_return_pointer (task, g_object_ref (state->list->data), (GDestroyNotify) g_object_unref);
-out:
-	if (profile_id != NULL)
-		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**
@@ -3567,38 +3517,34 @@ gs_plugin_loader_offline_update_thread_cb (GTask *task,
 	GsPlugin *plugin;
 	GsPluginOfflineUpdateFunc plugin_func = NULL;
 	guint i;
-	g_autofree gchar *profile_id = NULL;
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		g_autoptr(AsProfileTask) ptask = NULL;
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 		ret = g_task_return_error_if_cancelled (task);
 		if (ret)
-			goto out;
+			return;
 		ret = g_module_symbol (plugin->module,
 		                       function_name,
 		                       (gpointer *) &plugin_func);
 		if (!ret)
 			continue;
-		profile_id = g_strdup_printf ("GsPlugin::%s(%s)",
-		                              plugin->name, function_name);
-		gs_profile_start (priv->profile, profile_id);
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  function_name);
 		ret = plugin_func (plugin, state->list, cancellable, &error);
 		if (!ret) {
 			g_task_return_error (task, error);
-			goto out;
+			return;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-		gs_profile_stop (priv->profile, profile_id);
-		g_clear_pointer (&profile_id, g_free);
 	}
 
 	g_task_return_boolean (task, TRUE);
-out:
-	if (profile_id != NULL)
-		gs_profile_stop (priv->profile, profile_id);
 }
 
 /**

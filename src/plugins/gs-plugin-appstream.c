@@ -188,8 +188,9 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	guint *perc;
 	guint i;
 	g_autoptr(GHashTable) origins = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
-	gs_profile_start (plugin->profile, "appstream::startup");
+	ptask = as_profile_start_literal (plugin->profile, "appstream::startup");
 	g_mutex_lock (&plugin->priv->store_mutex);
 
 	/* clear all existing applications if the store was invalidated */
@@ -252,7 +253,6 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	}
 out:
 	g_mutex_unlock (&plugin->priv->store_mutex);
-	gs_profile_stop (plugin->profile, "appstream::startup");
 	return ret;
 }
 
@@ -750,6 +750,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	gboolean found;
 	GList *l;
 	GsApp *app;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -759,24 +760,19 @@ gs_plugin_refine (GsPlugin *plugin,
 			return FALSE;
 	}
 
-	gs_profile_start (plugin->profile, "appstream::refine");
+	ptask = as_profile_start_literal (plugin->profile, "appstream::refine");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		ret = gs_plugin_refine_from_id (plugin, app, &found, error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_refine_from_id (plugin, app, &found, error))
+			return FALSE;
 		if (!found) {
-			ret = gs_plugin_refine_from_pkgname (plugin, app, error);
-			if (!ret)
-				goto out;
+			if (!gs_plugin_refine_from_pkgname (plugin, app, error))
+				return FALSE;
 		}
 	}
 
 	/* sucess */
-	ret = TRUE;
-out:
-	gs_profile_stop (plugin->profile, "appstream::refine");
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -796,6 +792,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	GsCategory *parent;
 	GPtrArray *array;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -806,7 +803,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	}
 
 	/* get the two search terms */
-	gs_profile_start (plugin->profile, "appstream::add-category-apps");
+	ptask = as_profile_start_literal (plugin->profile, "appstream::add-category-apps");
 	g_mutex_lock (&plugin->priv->store_mutex);
 	search_id1 = gs_category_get_id (category);
 	parent = gs_category_get_parent (category);
@@ -840,7 +837,6 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	}
 out:
 	g_mutex_unlock (&plugin->priv->store_mutex);
-	gs_profile_stop (plugin->profile, "appstream::add-category-apps");
 	return ret;
 }
 
@@ -932,6 +928,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	GPtrArray *array;
 	gboolean ret = TRUE;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -942,7 +939,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	}
 
 	/* search categories for the search term */
-	gs_profile_start (plugin->profile, "appstream::search");
+	ptask = as_profile_start_literal (plugin->profile, "appstream::search");
 	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
@@ -956,7 +953,6 @@ gs_plugin_add_search (GsPlugin *plugin,
 	}
 out:
 	g_mutex_unlock (&plugin->priv->store_mutex);
-	gs_profile_stop (plugin->profile, "appstream::search");
 	return ret;
 }
 
@@ -973,6 +969,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	gboolean ret = TRUE;
 	GPtrArray *array;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -983,7 +980,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	}
 
 	/* search categories for the search term */
-	gs_profile_start (plugin->profile, "appstream::add_installed");
+	ptask = as_profile_start_literal (plugin->profile, "appstream::add_installed");
 	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
@@ -999,7 +996,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	}
 out:
 	g_mutex_unlock (&plugin->priv->store_mutex);
-	gs_profile_stop (plugin->profile, "appstream::add_installed");
 	return ret;
 }
 
@@ -1062,6 +1058,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	GPtrArray *array;
 	gboolean ret = TRUE;
 	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* load XML files */
 	if (g_once_init_enter (&plugin->priv->done_init)) {
@@ -1072,7 +1069,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	}
 
 	/* find out how many packages are in each category */
-	gs_profile_start (plugin->profile, "appstream::add-categories");
+	ptask = as_profile_start_literal (plugin->profile, "appstream::add-categories");
 	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
@@ -1084,6 +1081,5 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		gs_plugin_add_categories_for_app (*list, app);
 	}
 	g_mutex_unlock (&plugin->priv->store_mutex);
-	gs_profile_stop (plugin->profile, "appstream::add-categories");
 	return ret;
 }

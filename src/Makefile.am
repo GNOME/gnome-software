@@ -81,8 +81,7 @@ gnome_software_cmd_SOURCES =				\
 	gs-plugin-loader.c				\
 	gs-plugin-loader-sync.c				\
 	gs-category.c					\
-	gs-plugin.c					\
-	gs-profile.c
+	gs-plugin.c
 
 gnome_software_cmd_LDADD =				\
 	$(APPSTREAM_LIBS)				\
@@ -138,8 +137,6 @@ gnome_software_SOURCES =				\
 	gs-page.h					\
 	gs-plugin.c					\
 	gs-plugin.h					\
-	gs-profile.c					\
-	gs-profile.h					\
 	gs-progress-button.c				\
 	gs-progress-button.h				\
 	gs-screenshot-image.c				\
@@ -259,7 +256,6 @@ gs_self_test_SOURCES =						\
 	gs-plugin-loader-sync.c					\
 	gs-plugin-loader.c					\
 	gs-plugin.c						\
-	gs-profile.c						\
 	gs-utils.c						\
 	gs-self-test.c
 

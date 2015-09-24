@@ -42,7 +42,6 @@
 #include "gs-update-monitor.h"
 #include "gs-proxy-settings.h"
 #include "gs-plugin-loader.h"
-#include "gs-profile.h"
 #include "gs-shell-search-provider.h"
 #include "gs-offline-updates.h"
 #include "gs-folders.h"
@@ -51,7 +50,7 @@
 
 struct _GsApplication {
 	GtkApplication	 parent;
-	GsProfile	*profile;
+	AsProfile	*profile;
 	GCancellable	*cancellable;
 	GtkApplication	*application;
 	GtkCssProvider	*provider;
@@ -107,7 +106,7 @@ gs_application_init (GsApplication *application)
 
 	g_application_add_main_option_entries (G_APPLICATION (application), options);
 
-	application->profile = gs_profile_new ();
+	application->profile = as_profile_new ();
 }
 
 static void
@@ -359,7 +358,7 @@ profile_activated (GSimpleAction *action,
 		   gpointer       data)
 {
 	GsApplication *app = GS_APPLICATION (data);
-	gs_profile_dump (app->profile);
+	as_profile_dump (app->profile);
 }
 
 static void

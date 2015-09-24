@@ -22,20 +22,21 @@
 
 #include "config.h"
 
+#include <appstream-glib.h>
 #include <glib/gi18n.h>
 #include <gio/gio.h>
 #include <gtk/gtk.h>
 #include <locale.h>
 
 #include "gs-application.h"
-#include "gs-profile.h"
 
 int
 main (int argc, char **argv)
 {
 	int status = 0;
 	g_autoptr(GsApplication) application = NULL;
-	g_autoptr(GsProfile) profile = NULL;
+	g_autoptr(AsProfile) profile = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	setlocale (LC_ALL, "");
 
@@ -43,11 +44,10 @@ main (int argc, char **argv)
 	bind_textdomain_codeset (GETTEXT_PACKAGE, "UTF-8");
 	textdomain (GETTEXT_PACKAGE);
 
-	profile = gs_profile_new ();
-	gs_profile_start (profile, "GsMain");
+	profile = as_profile_new ();
+	ptask = as_profile_start_literal (profile, "GsMain");
 	application = gs_application_new ();
 	status = g_application_run (G_APPLICATION (application), argc, argv);
-	gs_profile_stop (profile, "GsMain");
 
 	return status;
 }

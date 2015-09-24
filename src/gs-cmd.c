@@ -21,11 +21,11 @@
 
 #include "config.h"
 
+#include <appstream-glib.h>
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
 #include <locale.h>
 
-#include "gs-profile.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
 
@@ -184,7 +184,8 @@ main (int argc, char **argv)
 	g_autofree gchar *refine_flags_str = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
-	g_autoptr(GsProfile) profile = NULL;
+	g_autoptr(AsProfile) profile = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 	const GOptionEntry options[] = {
 		{ "show-results", '\0', 0, G_OPTION_ARG_NONE, &show_results,
 		  "Show the results for the action", NULL },
@@ -227,8 +228,8 @@ main (int argc, char **argv)
 		goto out;
 	}
 
-	profile = gs_profile_new ();
-	gs_profile_start (profile, "GsCmd");
+	profile = as_profile_new ();
+	ptask = as_profile_start_literal (profile, "GsCmd");
 
 	/* load plugins */
 	plugin_loader = gs_plugin_loader_new ();
@@ -397,8 +398,7 @@ main (int argc, char **argv)
 		gs_cmd_show_results_categories (categories);
 	}
 out:
-	gs_profile_stop (profile, "GsCmd");
-	gs_profile_dump (profile);
+	as_profile_dump (profile);
 	g_option_context_free (context);
 	gs_plugin_list_free (list);
 	gs_plugin_list_free (categories);

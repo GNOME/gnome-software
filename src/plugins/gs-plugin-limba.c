@@ -114,24 +114,21 @@ gs_plugin_refine (GsPlugin *plugin,
 	gboolean ret;
 	GList *l;
 	GsApp *app;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
-	gs_profile_start (plugin->profile, "limba::refine");
+	ptask = as_profile_start_literal (plugin->profile, "limba::refine");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 
 		if (gs_app_get_bundle (app) == NULL)
 			continue;
 
-		ret = gs_plugin_refine_app (plugin, app, error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_refine_app (plugin, app, error))
+			return FALSE;
 	}
 
 	/* sucess */
-	ret = TRUE;
-out:
-	gs_profile_stop (plugin->profile, "limba::refine");
-	return ret;
+	return TRUE;
 }
 
 /**

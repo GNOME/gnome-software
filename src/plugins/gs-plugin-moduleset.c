@@ -81,15 +81,13 @@ gs_plugin_destroy (GsPlugin *plugin)
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GError **error)
 {
-	gboolean ret;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* Parse the XML */
-	gs_profile_start (plugin->profile, "moduleset::startup");
-	ret = gs_moduleset_parse_path (plugin->priv->moduleset,
-				       GS_MODULESETDIR,
-				       error);
-	gs_profile_stop (plugin->profile, "moduleset::startup");
-	return ret;
+	ptask = as_profile_start_literal (plugin->profile, "moduleset::startup");
+	return gs_moduleset_parse_path (plugin->priv->moduleset,
+					GS_MODULESETDIR,
+					error);
 }
 
 gboolean

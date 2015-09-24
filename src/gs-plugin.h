@@ -22,6 +22,7 @@
 #ifndef __GS_PLUGIN_H
 #define __GS_PLUGIN_H
 
+#include <appstream-glib.h>
 #include <glib-object.h>
 #include <gmodule.h>
 #include <gio/gio.h>
@@ -29,7 +30,6 @@
 
 #include "gs-app.h"
 #include "gs-category.h"
-#include "gs-profile.h"
 
 G_BEGIN_DECLS
 
@@ -74,7 +74,7 @@ struct GsPlugin {
 	gpointer		 status_update_user_data;
 	GsPluginUpdatesChanged	 updates_changed_fn;
 	gpointer		 updates_changed_user_data;
-	GsProfile		*profile;
+	AsProfile		*profile;
 };
 
 typedef enum {

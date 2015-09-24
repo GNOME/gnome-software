@@ -31,6 +31,7 @@
 
 struct GsPluginPrivate {
 	PkTask			*task;
+	AsProfileTask		*ptask;
 };
 
 /**
@@ -84,11 +85,10 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	/* profile */
 	if (status == PK_STATUS_ENUM_SETUP) {
-		gs_profile_start (plugin->profile,
-				  "packagekit-refresh::transaction");
+		plugin->priv->ptask = as_profile_start_literal (plugin->profile,
+								"packagekit-refresh::transaction");
 	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		gs_profile_stop (plugin->profile,
-				 "packagekit-refresh::transaction");
+		as_profile_task_free (plugin->priv->ptask);
 	}
 
 	plugin_status = packagekit_status_enum_to_plugin_status (status);

@@ -68,6 +68,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 typedef struct {
 	GsApp		*app;
 	GsPlugin	*plugin;
+	AsProfileTask	*ptask;
 } ProgressData;
 
 /**
@@ -90,11 +91,10 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 		/* profile */
 		if (status == PK_STATUS_ENUM_SETUP) {
-			gs_profile_start (plugin->profile,
-					  "packagekit-refine::transaction");
+			data->ptask = as_profile_start_literal (plugin->profile,
+						"packagekit-refine::transaction");
 		} else if (status == PK_STATUS_ENUM_FINISHED) {
-			gs_profile_stop (plugin->profile,
-					 "packagekit-refine::transaction");
+			as_profile_task_free (data->ptask);
 		}
 
 		plugin_status = packagekit_status_enum_to_plugin_status (status);
@@ -167,11 +167,12 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	const gchar *id;
 	gboolean ret = TRUE;
 	g_autoptr(PkResults) results = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	data.app = NULL;
 	data.plugin = plugin;
 
-	gs_profile_start (plugin->profile, "packagekit::add-sources-related");
+	ptask = as_profile_start_literal (plugin->profile, "packagekit::add-sources-related");
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
 					 PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,
@@ -207,7 +208,6 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 		}
 	}
 out:
-	gs_profile_stop (plugin->profile, "packagekit::add-sources-related");
 	gs_plugin_list_free (installed);
 	return ret;
 }
