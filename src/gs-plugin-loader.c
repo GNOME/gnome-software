@@ -2455,7 +2455,7 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	GPtrArray *addons;
 	gboolean ret;
 	guint i;
-	_cleanup_list_free_ GList *list = NULL;
+	_cleanup_plugin_list_free_ GList *list = NULL;
 
 	/* add to list */
 	g_mutex_lock (&plugin_loader->priv->pending_apps_mutex);
@@ -2483,7 +2483,7 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 		}
 
 		/* refine again to make sure we pick up new source id */
-		list = g_list_prepend (list, state->app);
+		gs_plugin_add_app (&list, state->app);
 		ret = gs_plugin_loader_run_refine (plugin_loader,
 						   state->function_name,
 						   &list,
