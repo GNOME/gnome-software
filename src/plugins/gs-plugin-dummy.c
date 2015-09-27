@@ -130,9 +130,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	GsApp *app;
-
-	app = gs_app_new ("gnome-power-manager");
+	g_autoptr(GsApp) app = gs_app_new ("gnome-power-manager");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Power Manager");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Power Management Program");
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -152,9 +150,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	GsApp *app;
-
-	app = gs_app_new ("gnome-power-manager");
+	g_autoptr(GsApp) app = gs_app_new ("gnome-power-manager");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Power Manager");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Power Management Program");
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -200,8 +196,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
-	GsApp *app;
-	app = gs_app_new ("gnome-boxes");
+	g_autoptr(GsApp) app = gs_app_new ("gnome-boxes");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Boxes");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "View and use virtual machines");
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, "http://www.box.org");
