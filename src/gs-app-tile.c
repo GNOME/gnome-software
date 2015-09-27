@@ -131,10 +131,10 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 	if (tile->app)
 		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
 
-	g_clear_object (&tile->app);
+	g_set_object (&tile->app, app);
 	if (!app)
 		return;
-	tile->app = g_object_ref (app);
+
 	if (gs_app_get_rating_kind (tile->app) == GS_APP_RATING_KIND_USER) {
 		gs_star_widget_set_rating (GS_STAR_WIDGET (tile->stars),
 					   GS_APP_RATING_KIND_USER,
