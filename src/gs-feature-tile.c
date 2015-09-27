@@ -102,11 +102,9 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	if (tile->app)
 		g_signal_handlers_disconnect_by_func (tile->app, app_state_changed, tile);
 
-	g_clear_object (&tile->app);
+	g_set_object (&tile->app, app);
 	if (!app)
 		return;
-
-	tile->app = g_object_ref (app);
 
 	gtk_stack_set_visible_child_name (GTK_STACK (tile->stack), "content");
 

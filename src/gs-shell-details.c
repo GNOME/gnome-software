@@ -911,15 +911,16 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 	g_autoptr(GError) error = NULL;
 	g_autofree gchar *tmp = NULL;
 
-	/* save app */
+	/* disconnect the old handlers */
 	if (self->app != NULL) {
 		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_notify_state_changed_cb, self);
 		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_progress_changed_cb, self);
-		g_object_unref (self->app);
 	}
-	self->app = gs_plugin_loader_filename_to_app_finish(plugin_loader,
-							    res,
-							    &error);
+	/* save app */
+	g_set_object (&self->app,
+		      gs_plugin_loader_filename_to_app_finish(plugin_loader,
+							      res,
+							      &error));
 	if (self->app == NULL) {
 		GtkWidget *dialog;
 
@@ -1021,16 +1022,20 @@ gs_shell_details_reload (GsShellDetails *self)
 void
 gs_shell_details_set_app (GsShellDetails *self, GsApp *app)
 {
+	g_return_if_fail (GS_IS_SHELL_DETAILS (self));
+	g_return_if_fail (GS_IS_APP (app));
+
 	/* get extra details about the app */
 	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_LOADING);
 
-	/* save app */
+	/* disconnect the old handlers */
 	if (self->app != NULL) {
 		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_notify_state_changed_cb, self);
 		g_signal_handlers_disconnect_by_func (self->app, gs_shell_details_progress_changed_cb, self);
-		g_object_unref (self->app);
 	}
-	self->app = g_object_ref (app);
+	/* save app */
+	g_set_object (&self->app, app);
+
 	g_signal_connect_object (self->app, "notify::state",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 self, 0);
