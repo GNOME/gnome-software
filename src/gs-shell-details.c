@@ -916,8 +916,12 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 	_cleanup_error_free_ GError *error = NULL;
 	_cleanup_free_ gchar *tmp = NULL;
 
-	if (priv->app != NULL)
+	/* save app */
+	if (priv->app != NULL) {
+		g_signal_handlers_disconnect_by_func (priv->app, gs_shell_details_notify_state_changed_cb, shell_details);
+		g_signal_handlers_disconnect_by_func (priv->app, gs_shell_details_progress_changed_cb, shell_details);
 		g_object_unref (priv->app);
+	}
 	priv->app = gs_plugin_loader_filename_to_app_finish(plugin_loader,
 							    res,
 							    &error);
@@ -943,7 +947,6 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 		return;
 	}
 
-	/* save app */
 	g_signal_connect_object (priv->app, "notify::state",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 shell_details, 0);
@@ -952,6 +955,9 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 				 shell_details, 0);
 	g_signal_connect_object (priv->app, "notify::licence",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 shell_details, 0);
+	g_signal_connect_object (priv->app, "notify::progress",
+				 G_CALLBACK (gs_shell_details_progress_changed_cb),
 				 shell_details, 0);
 
 	/* print what we've got */
@@ -1029,8 +1035,11 @@ gs_shell_details_set_app (GsShellDetails *shell_details, GsApp *app)
 	gs_shell_details_set_state (shell_details, GS_SHELL_DETAILS_STATE_LOADING);
 
 	/* save app */
-	if (priv->app != NULL)
+	if (priv->app != NULL) {
+		g_signal_handlers_disconnect_by_func (priv->app, gs_shell_details_notify_state_changed_cb, shell_details);
+		g_signal_handlers_disconnect_by_func (priv->app, gs_shell_details_progress_changed_cb, shell_details);
 		g_object_unref (priv->app);
+	}
 	priv->app = g_object_ref (app);
 	g_signal_connect_object (priv->app, "notify::state",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
@@ -1383,8 +1392,11 @@ gs_shell_details_finalize (GObject *object)
 	g_object_unref (priv->builder);
 	g_object_unref (priv->plugin_loader);
 	g_object_unref (priv->cancellable);
-	if (priv->app != NULL)
+	if (priv->app != NULL) {
+		g_signal_handlers_disconnect_by_func (priv->app, gs_shell_details_notify_state_changed_cb, shell_details);
+		g_signal_handlers_disconnect_by_func (priv->app, gs_shell_details_progress_changed_cb, shell_details);
 		g_object_unref (priv->app);
+	}
 	if (priv->session != NULL)
 		g_object_unref (priv->session);
 
