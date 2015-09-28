@@ -224,6 +224,58 @@ gs_plugin_packagekit_refresh_content_type_matches (const gchar *filename,
 }
 
 /**
+ * gs_plugin_packagekit_refresh_guess_app_id:
+ */
+static gboolean
+gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
+					   GsApp *app,
+					   const gchar *filename,
+					   GCancellable *cancellable,
+					   GError **error)
+{
+	PkFiles *item;
+	guint i;
+	guint j;
+	gchar **fns;
+	g_auto(GStrv) files = NULL;
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GPtrArray) array = NULL;
+
+	/* get file list so we can work out ID */
+	files = g_strsplit (filename, "\t", -1);
+	results = pk_client_get_files_local (PK_CLIENT (plugin->priv->task),
+					     files,
+					     cancellable,
+					     gs_plugin_packagekit_progress_cb, plugin,
+					     error);
+	if (results == NULL)
+		return FALSE;
+	array = pk_results_get_files_array (results);
+	if (array->len == 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "no files for %s", filename);
+		return FALSE;
+	}
+
+	/* find the first desktop file */
+	for (i = 0; i < array->len; i++) {
+		item = g_ptr_array_index (array, i);
+		fns = pk_files_get_files (item);
+		for (j = 0; fns[j] != NULL; j++) {
+			if (g_str_has_suffix (fns[j], ".desktop")) {
+				g_autofree gchar *basename;
+				basename = g_path_get_basename (fns[j]);
+				gs_app_set_id (app, basename);
+				break;
+			}
+		}
+	}
+	return TRUE;
+}
+
+/**
  * gs_plugin_filename_to_app:
  */
 gboolean
@@ -305,6 +357,15 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, pk_details_get_url (item));
 	gs_app_set_size (app, pk_details_get_size (item));
 	gs_app_set_licence (app, pk_details_get_license (item));
+
+	/* look for a desktop file so we can use a valid application id */
+	if (!gs_plugin_packagekit_refresh_guess_app_id (plugin,
+							app,
+							filename,
+							cancellable,
+							error))
+		return FALSE;
+
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
