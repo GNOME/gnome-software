@@ -41,7 +41,6 @@
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
 #include "gs-proxy-settings.h"
-#include "gs-plugin-loader.h"
 #include "gs-shell-search-provider.h"
 #include "gs-offline-updates.h"
 #include "gs-folders.h"
@@ -66,6 +65,12 @@ struct _GsApplication {
 };
 
 G_DEFINE_TYPE (GsApplication, gs_application, GTK_TYPE_APPLICATION);
+
+GsPluginLoader *
+gs_application_get_plugin_loader (GsApplication *application)
+{
+	return application->plugin_loader;
+}
 
 gboolean
 gs_application_has_active_window (GsApplication *application)
