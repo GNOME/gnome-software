@@ -355,7 +355,10 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	g_return_if_fail (GS_IS_APP_ROW (app_row));
 	g_return_if_fail (GS_IS_APP (app));
+
+	g_assert (priv->app == NULL);
 	priv->app = g_object_ref (app);
+
 	g_signal_connect_object (priv->app, "notify::state",
 				 G_CALLBACK (gs_app_row_notify_props_changed_cb),
 				 app_row, 0);
