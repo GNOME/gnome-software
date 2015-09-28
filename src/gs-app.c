@@ -214,6 +214,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append (str, "\tkudo:\tperfect-screenshots\n");
 	if ((app->kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
 		g_string_append (str, "\tkudo:\thigh-contrast\n");
+	if ((app->kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
+		g_string_append (str, "\tkudo:\thi-dpi-icon\n");
 	g_string_append_printf (str, "\tkudo-percentage:\t%i\n",
 				gs_app_get_kudos_percentage (app));
 	if (app->name != NULL)
@@ -1933,6 +1935,8 @@ gs_app_get_kudos_percentage (GsApp *app)
 	if ((app->kudos & GS_APP_KUDO_PERFECT_SCREENSHOTS) > 0)
 		percentage += 20;
 	if ((app->kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
+		percentage += 20;
+	if ((app->kudos & GS_APP_KUDO_HI_DPI_ICON) > 0)
 		percentage += 20;
 
 	/* popular apps should be at *least* 50% */

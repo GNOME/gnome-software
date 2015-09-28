@@ -657,6 +657,9 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		case AS_KUDO_KIND_HIGH_CONTRAST:
 			gs_app_add_kudo (app, GS_APP_KUDO_HIGH_CONTRAST);
 			break;
+		case AS_KUDO_KIND_HI_DPI_ICON:
+			gs_app_add_kudo (app, GS_APP_KUDO_HI_DPI_ICON);
+			break;
 		default:
 			g_debug ("no idea how to handle kudo '%s'", tmp);
 			break;
