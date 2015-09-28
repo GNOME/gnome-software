@@ -52,7 +52,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->task = pk_task_new ();
-	pk_client_set_background (PK_CLIENT (plugin->priv->task), FALSE);
 	pk_client_set_interactive (PK_CLIENT (plugin->priv->task), FALSE);
 }
 
@@ -116,6 +115,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 	/* not us */
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
 		return TRUE;
+
+	/* cache age of 0 is user-initiated */
+	pk_client_set_background (PK_CLIENT (plugin->priv->task), cache_age > 0);
 
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
