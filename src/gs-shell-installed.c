@@ -158,7 +158,7 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsApp *app)
 {
 	GtkWidget *app_row;
 
-	app_row = gs_app_row_new ();
+	app_row = gs_app_row_new (app);
 	gs_app_row_set_colorful (GS_APP_ROW (app_row), FALSE);
 	g_signal_connect (app_row, "button-clicked",
 			  G_CALLBACK (gs_shell_installed_app_remove_cb), self);
@@ -167,7 +167,6 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsApp *app)
 				 app_row, 0);
 	g_signal_connect_swapped (app_row, "notify::selected",
 				  G_CALLBACK (selection_changed), self);
-	gs_app_row_set_app (GS_APP_ROW (app_row), app);
 	gtk_container_add (GTK_CONTAINER (self->list_box_install), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 				    self->sizegroup_image,
