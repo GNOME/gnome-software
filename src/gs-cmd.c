@@ -178,6 +178,7 @@ main (int argc, char **argv)
 	gboolean show_results = FALSE;
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	gint i;
+	gint cache_age = 0;
 	gint repeat = 1;
 	int status = 0;
 	g_autoptr(GError) error = NULL;
@@ -192,6 +193,8 @@ main (int argc, char **argv)
 		  "Set any refine flags required for the action", NULL },
 		{ "repeat", '\0', 0, G_OPTION_ARG_INT, &repeat,
 		  "Repeat the action this number of times", NULL },
+		{ "cache-age", '\0', 0, G_OPTION_ARG_INT, &cache_age,
+		  "Use this maximum cache age in seconds", NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
 		  "Prefer local file sources to AppStream", NULL },
 		{ NULL}
@@ -374,7 +377,7 @@ main (int argc, char **argv)
 			}
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "refresh") == 0) {
-		ret = gs_plugin_loader_refresh (plugin_loader, 0,
+		ret = gs_plugin_loader_refresh (plugin_loader, cache_age,
 						GS_PLUGIN_REFRESH_FLAGS_UPDATES,
 						NULL, &error);
 	} else {
