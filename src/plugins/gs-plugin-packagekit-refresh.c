@@ -234,7 +234,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	const gchar *package_id;
 	gboolean supported;
 	PkDetails *item;
-	PkResults *results = NULL;
+	g_autoptr (PkResults) results = NULL;
 	g_autofree gchar *basename = NULL;
 	g_auto(GStrv) files = NULL;
 	g_auto(GStrv) split = NULL;
