@@ -292,6 +292,8 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	packages = pk_results_get_package_array (results);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
+		if (gs_app_get_metadata_item (app, "PackageKit::local-filename") != NULL)
+			continue;
 		gs_plugin_packagekit_resolve_packages_app (plugin, packages, app);
 	}
 	return TRUE;
