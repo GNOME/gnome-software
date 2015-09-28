@@ -93,9 +93,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	as_store_set_watch_flags (plugin->priv->store,
 				  AS_STORE_WATCH_FLAG_ADDED |
 				  AS_STORE_WATCH_FLAG_REMOVED);
-	g_signal_connect (plugin->priv->store, "changed",
-			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
-			  plugin);
 
 	/* AppInstall does not ever give us a long description */
 	if (gs_plugin_check_distro_id (plugin, "debian") ||
@@ -226,6 +223,11 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 			     _("No AppStream data found"));
 		goto out;
 	}
+
+	/* watch for changes */
+	g_signal_connect (plugin->priv->store, "changed",
+			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
+			  plugin);
 
 	/* add search terms for apps not in the main source */
 	origins = gs_plugin_appstream_get_origins_hash (items);
