@@ -88,7 +88,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		plugin->priv->ptask = as_profile_start_literal (plugin->profile,
 								"packagekit-refresh::transaction");
 	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		as_profile_task_free (plugin->priv->ptask);
+		g_clear_pointer (&plugin->priv->ptask, as_profile_task_free);
 	}
 
 	plugin_status = packagekit_status_enum_to_plugin_status (status);
