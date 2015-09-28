@@ -615,6 +615,32 @@ gs_plugin_fwupd_update_lvfs_metadata (const gchar *data_fn, const gchar *sig_fn,
 }
 
 /**
+ * gs_plugin_fwupd_get_file_cache_age:
+ */
+static guint
+gs_plugin_fwupd_get_file_cache_age (const gchar *fn)
+{
+	guint64 now;
+	guint64 mtime;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GFileInfo) info = NULL;
+
+	file = g_file_new_for_path (fn);
+	info = g_file_query_info (file,
+				  G_FILE_ATTRIBUTE_TIME_MODIFIED,
+				  G_FILE_QUERY_INFO_NONE,
+				  NULL,
+				  NULL);
+	if (info == NULL)
+		return G_MAXUINT;
+	mtime = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+	now = (guint64) g_get_real_time () / G_USEC_PER_SEC;
+	if (mtime > now)
+		return G_MAXUINT;
+	return now - mtime;
+}
+
+/**
  * gs_plugin_fwupd_check_lvfs_metadata:
  */
 static gboolean
@@ -644,6 +670,17 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	}
 	if (!g_key_file_load_from_file (config, config_fn, G_KEY_FILE_NONE, error))
 		return FALSE;
+
+	/* check cache age */
+	if (cache_age > 0) {
+		guint tmp;
+		tmp = gs_plugin_fwupd_get_file_cache_age (plugin->priv->lvfs_sig_fn);
+		if (tmp < cache_age) {
+			g_debug ("%s is only %i seconds old, so ignoring refresh",
+				 plugin->priv->lvfs_sig_fn, tmp);
+			return TRUE;
+		}
+	}
 
 	/* download the signature */
 	url_data = g_key_file_get_string (config, "fwupd", "DownloadURI", error);
