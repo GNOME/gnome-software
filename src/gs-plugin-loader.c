@@ -2694,7 +2694,14 @@ gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 	apps = g_hash_table_get_values (priv->app_cache);
 	for (l = apps; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+		switch (gs_app_get_state (app)) {
+		case AS_APP_STATE_INSTALLED:
+		case AS_APP_STATE_UPDATABLE:
+			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+			break;
+		default:
+			break;
+		}
 	}
 	g_list_free (apps);
 
