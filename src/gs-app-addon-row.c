@@ -171,6 +171,7 @@ gs_app_addon_row_set_addon (GsAppAddonRow *row, GsApp *app)
 	g_return_if_fail (GS_IS_APP_ADDON_ROW (row));
 	g_return_if_fail (GS_IS_APP (app));
 
+	g_assert (row->app == NULL);
 	row->app = g_object_ref (app);
 
 	g_signal_connect_object (row->app, "notify::state",
