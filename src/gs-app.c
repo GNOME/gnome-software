@@ -78,6 +78,7 @@ struct _GsApp
 	gchar			*update_version;
 	gchar			*update_version_ui;
 	gchar			*update_details;
+	GsAppUpdateSeverity	 update_severity;
 	gchar			*management_plugin;
 	gint			 rating;
 	gint			 rating_confidence;
@@ -241,6 +242,10 @@ gs_app_to_string (GsApp *app)
 	if (app->update_details != NULL) {
 		g_string_append_printf (str, "\tupdate-details:\t%s\n",
 					app->update_details);
+	}
+	if (app->update_severity != GS_APP_UPDATE_SEVERITY_UNKNOWN) {
+		g_string_append_printf (str, "\tupdate-severity:\t%i\n",
+					app->update_severity);
 	}
 	if (app->summary != NULL)
 		g_string_append_printf (str, "\tsummary:\t%s\n", app->summary);
@@ -1503,6 +1508,26 @@ gs_app_set_update_details (GsApp *app, const gchar *update_details)
 }
 
 /**
+ * gs_app_get_update_severity:
+ */
+GsAppUpdateSeverity
+gs_app_get_update_severity (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), GS_APP_UPDATE_SEVERITY_UNKNOWN);
+	return app->update_severity;
+}
+
+/**
+ * gs_app_set_update_severity:
+ */
+void
+gs_app_set_update_severity (GsApp *app, GsAppUpdateSeverity update_severity)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	app->update_severity = update_severity;
+}
+
+/**
  * gs_app_get_management_plugin:
  */
 const gchar *
@@ -2007,6 +2032,8 @@ gs_app_subsume (GsApp *app, GsApp *other)
 		gs_app_set_description (app, other->description_quality, other->description);
 	if (other->update_details != NULL)
 		gs_app_set_update_details (app, other->update_details);
+	if (other->update_severity != GS_APP_UPDATE_SEVERITY_UNKNOWN)
+		gs_app_set_update_severity (app, other->update_severity);
 	if (other->update_version != NULL)
 		gs_app_set_update_version_internal (app, other->update_version);
 	if (other->pixbuf != NULL)
