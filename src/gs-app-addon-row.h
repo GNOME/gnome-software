@@ -32,14 +32,12 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsAppAddonRow, gs_app_addon_row, GS, APP_ADDON_ROW, GtkListBoxRow)
 
-GtkWidget	*gs_app_addon_row_new			(void);
+GtkWidget	*gs_app_addon_row_new			(GsApp		*app);
 void		 gs_app_addon_row_refresh		(GsAppAddonRow	*row);
 void		 gs_app_addon_row_set_selected		(GsAppAddonRow	*row,
 							 gboolean        selected);
 gboolean	 gs_app_addon_row_get_selected		(GsAppAddonRow	*row);
 GsApp		*gs_app_addon_row_get_addon		(GsAppAddonRow	*row);
-void		 gs_app_addon_row_set_addon		(GsAppAddonRow	*row,
-							 GsApp		*app);
 
 G_END_DECLS
 

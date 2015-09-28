@@ -122,11 +122,10 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "results");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		app_row = gs_app_row_new ();
+		app_row = gs_app_row_new (app);
 		g_signal_connect (app_row, "button-clicked",
 				  G_CALLBACK (gs_shell_search_app_row_clicked_cb),
 				  self);
-		gs_app_row_set_app (GS_APP_ROW (app_row), app);
 		gtk_container_add (GTK_CONTAINER (self->list_box_search), app_row);
 		gs_app_row_set_size_groups (GS_APP_ROW (app_row),
 					    self->sizegroup_image,

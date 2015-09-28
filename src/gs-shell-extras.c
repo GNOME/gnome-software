@@ -291,9 +291,8 @@ gs_shell_extras_add_app (GsShellExtras *self, GsApp *app, SearchData *search_dat
 			                      GTK_WIDGET (l->data));
 	}
 
-	app_row = gs_app_row_new ();
+	app_row = gs_app_row_new (app);
 	gs_app_row_set_show_codec (GS_APP_ROW (app_row), TRUE);
-	gs_app_row_set_app (GS_APP_ROW (app_row), app);
 
 	g_object_set_data_full (G_OBJECT (app_row), "missing-title", g_strdup (search_data->title), g_free);
 

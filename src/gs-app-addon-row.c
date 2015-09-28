@@ -165,13 +165,9 @@ gs_app_addon_row_notify_props_changed_cb (GsApp *app,
 	g_idle_add (gs_app_addon_row_refresh_idle, g_object_ref (row));
 }
 
-void
+static void
 gs_app_addon_row_set_addon (GsAppAddonRow *row, GsApp *app)
 {
-	g_return_if_fail (GS_IS_APP_ADDON_ROW (row));
-	g_return_if_fail (GS_IS_APP (app));
-
-	g_assert (row->app == NULL);
 	row->app = g_object_ref (app);
 
 	g_signal_connect_object (row->app, "notify::state",
@@ -276,9 +272,15 @@ gs_app_addon_row_get_selected (GsAppAddonRow *row)
 }
 
 GtkWidget *
-gs_app_addon_row_new (void)
+gs_app_addon_row_new (GsApp *app)
 {
-	return g_object_new (GS_TYPE_APP_ADDON_ROW, NULL);
+	GtkWidget *row;
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	row = g_object_new (GS_TYPE_APP_ADDON_ROW, NULL);
+	gs_app_addon_row_set_addon (GS_APP_ADDON_ROW (row), app);
+	return row;
 }
 
 /* vim: set noexpandtab: */

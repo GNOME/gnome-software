@@ -349,14 +349,11 @@ gs_app_row_notify_props_changed_cb (GsApp *app,
 /**
  * gs_app_row_set_app:
  **/
-void
+static void
 gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
-	g_return_if_fail (GS_IS_APP_ROW (app_row));
-	g_return_if_fail (GS_IS_APP (app));
 
-	g_assert (priv->app == NULL);
 	priv->app = g_object_ref (app);
 
 	g_signal_connect_object (priv->app, "notify::state",
@@ -514,6 +511,7 @@ gs_app_row_set_colorful (GsAppRow *app_row,
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->colorful = colorful;
+	gs_app_row_refresh (app_row);
 }
 
 void
@@ -522,6 +520,7 @@ gs_app_row_set_show_codec (GsAppRow *app_row, gboolean show_codec)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_codec = show_codec;
+	gs_app_row_refresh (app_row);
 }
 
 /**
@@ -535,6 +534,7 @@ gs_app_row_set_show_update (GsAppRow *app_row, gboolean show_update)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 
 	priv->show_update = show_update;
+	gs_app_row_refresh (app_row);
 }
 
 void
@@ -573,9 +573,15 @@ gs_app_row_get_selected (GsAppRow *app_row)
 }
 
 GtkWidget *
-gs_app_row_new (void)
+gs_app_row_new (GsApp *app)
 {
-	return g_object_new (GS_TYPE_APP_ROW, NULL);
+	GtkWidget *app_row;
+
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+
+	app_row = g_object_new (GS_TYPE_APP_ROW, NULL);
+	gs_app_row_set_app (GS_APP_ROW (app_row), app);
+	return app_row;
 }
 
 /* vim: set noexpandtab: */

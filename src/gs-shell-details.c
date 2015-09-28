@@ -855,9 +855,8 @@ gs_shell_details_refresh_addons (GsShellDetails *self)
 		if (gs_app_get_state (addon) == AS_APP_STATE_UNAVAILABLE)
 			continue;
 
-		row = gs_app_addon_row_new ();
+		row = gs_app_addon_row_new (addon);
 
-		gs_app_addon_row_set_addon (GS_APP_ADDON_ROW (row), addon);
 		gtk_container_add (GTK_CONTAINER (self->list_box_addons), row);
 		gtk_widget_show (row);
 

@@ -39,7 +39,7 @@ struct _GsAppRowClass
 	void			(*unrevealed)		(GsAppRow	*app_row);
 };
 
-GtkWidget	*gs_app_row_new				(void);
+GtkWidget	*gs_app_row_new				(GsApp		*app);
 void		 gs_app_row_refresh			(GsAppRow	*app_row);
 void		 gs_app_row_unreveal			(GsAppRow	*app_row);
 void		 gs_app_row_set_colorful		(GsAppRow	*app_row,
@@ -54,8 +54,6 @@ void		 gs_app_row_set_selected		(GsAppRow	*app_row,
 							 gboolean        selected);
 gboolean	 gs_app_row_get_selected		(GsAppRow	*app_row);
 GsApp		*gs_app_row_get_app			(GsAppRow	*app_row);
-void		 gs_app_row_set_app			(GsAppRow	*app_row,
-							 GsApp		*app);
 void		 gs_app_row_set_size_groups		(GsAppRow	*app_row,
 							 GtkSizeGroup	*image,
 							 GtkSizeGroup	*name);
