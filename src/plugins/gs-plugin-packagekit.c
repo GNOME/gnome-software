@@ -437,6 +437,11 @@ gs_plugin_app_install (GsPlugin *plugin,
 						      error);
 		if (results == NULL)
 			return FALSE;
+
+		/* get the new icon from the package */
+		gs_app_set_metadata (app, "PackageKit::local-filename", NULL);
+		gs_app_set_icon (app, NULL);
+		gs_app_set_pixbuf (app, NULL);
 		break;
 	default:
 		g_set_error (error,
