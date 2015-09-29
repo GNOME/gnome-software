@@ -34,7 +34,6 @@ struct GsPluginPrivate {
 	GMutex			 store_mutex;
 	gchar			*locale;
 	gsize			 done_init;
-	gboolean		 has_hi_dpi_support;
 };
 
 static gboolean gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error);
@@ -241,15 +240,6 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 			g_debug ("Adding keyword '%s' to %s",
 				 origin, as_app_get_id (app));
 			as_app_add_keyword (app, NULL, origin);
-		}
-	}
-
-	/* look for any application with a HiDPI icon kudo */
-	for (i = 0; i < items->len; i++) {
-		app = g_ptr_array_index (items, i);
-		if (as_app_has_kudo_kind (app, AS_KUDO_KIND_HI_DPI_ICON)) {
-			plugin->priv->has_hi_dpi_support = TRUE;
-			break;
 		}
 	}
 out:
