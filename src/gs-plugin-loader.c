@@ -3592,10 +3592,10 @@ gs_plugin_loader_offline_update_finish (GsPluginLoader *plugin_loader,
                                         GAsyncResult *res,
                                         GError **error)
 {
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (G_IS_TASK (res), NULL);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
-	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+	g_return_val_if_fail (G_IS_TASK (res), FALSE);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
 
 	return g_task_propagate_boolean (G_TASK (res), error);
 }
