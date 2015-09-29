@@ -980,7 +980,8 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
-		if (as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_APPDATA) {
+		if (as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_APPDATA ||
+		    as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_DESKTOP) {
 			g_autoptr(GsApp) app = NULL;
 			app = gs_app_new (as_app_get_id (item));
 			ret = gs_plugin_refine_item (plugin, app, item, error);
