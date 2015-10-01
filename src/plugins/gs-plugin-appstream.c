@@ -517,6 +517,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 
 	/* give the desktopdb plugin a fighting chance */
 	if (as_app_get_source_file (item) != NULL &&
+	    as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_DESKTOP &&
 	    gs_app_get_metadata_item (app, "DataDir::desktop-filename") == NULL) {
 		gs_app_set_metadata (app, "DataDir::desktop-filename",
 				     as_app_get_source_file (item));
