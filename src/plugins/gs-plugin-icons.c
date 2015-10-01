@@ -163,6 +163,8 @@ static gboolean
 gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
 	AsIcon *ic;
+	const gchar *fn;
+	gchar *found;
 
 	/* not applicable */
 	ic = gs_app_get_icon (app);
@@ -171,13 +173,16 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	if (as_icon_get_filename (ic) == NULL)
 		return TRUE;
 
+	/* convert filename from jpg to png */
+	fn = as_icon_get_filename (ic);
+	found = g_strstr_len (fn, -1, ".jpg");
+	if (found != NULL)
+		memcpy (found, ".png", 4);
+
 	/* create runtime dir and download */
-	if (!gs_mkdir_parent (as_icon_get_filename (ic), error))
+	if (!gs_mkdir_parent (fn, error))
 		return FALSE;
-	if (!gs_plugin_icons_download (plugin,
-				       as_icon_get_url (ic),
-				       as_icon_get_filename (ic),
-				       error))
+	if (!gs_plugin_icons_download (plugin, as_icon_get_url (ic), fn, error))
 		return FALSE;
 	as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
 	return gs_app_load_icon (app, plugin->scale, error);
