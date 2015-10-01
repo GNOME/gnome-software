@@ -283,6 +283,7 @@ main (int argc, char **argv)
 			if (!ret)
 				break;
 		}
+		gs_plugin_add_app (&list, app);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "filename-to-app") == 0) {
 		app = gs_plugin_loader_filename_to_app (plugin_loader,
 							argv[2],
