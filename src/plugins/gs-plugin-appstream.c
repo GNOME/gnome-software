@@ -612,22 +612,6 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* add kudos */
 	if (as_app_get_language (item, plugin->priv->locale) > 50)
 		gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
-	if (as_app_get_metadata_item (item, "X-Kudo-GTK3") != NULL)
-		gs_app_add_kudo (app, GS_APP_KUDO_MODERN_TOOLKIT);
-	if (as_app_get_metadata_item (item, "X-Kudo-QT5") != NULL)
-		gs_app_add_kudo (app, GS_APP_KUDO_MODERN_TOOLKIT);
-	if (as_app_get_metadata_item (item, "X-Kudo-SearchProvider") != NULL)
-		gs_app_add_kudo (app, GS_APP_KUDO_SEARCH_PROVIDER);
-	if (as_app_get_metadata_item (item, "X-Kudo-InstallsUserDocs") != NULL)
-		gs_app_add_kudo (app, GS_APP_KUDO_INSTALLS_USER_DOCS);
-	if (as_app_get_metadata_item (item, "X-Kudo-UsesNotifications") != NULL)
-		gs_app_add_kudo (app, GS_APP_KUDO_USES_NOTIFICATIONS);
-	if (as_app_get_metadata_item (item, "X-Kudo-UsesAppMenu") != NULL)
-		gs_app_add_kudo (app, GS_APP_KUDO_USES_APP_MENU);
-	if (as_app_get_metadata_item (item, "X-Kudo-Popular") != NULL)
-		gs_app_add_kudo (app, GS_APP_KUDO_POPULAR);
-	if (as_app_get_metadata_item (item, "X-IBus-Symbol") != NULL)
-		gs_app_add_kudo (app, GS_APP_KUDO_IBUS_HAS_SYMBOL);
 
 	/* add new-style kudos */
 	kudos = as_app_get_kudos (item);
