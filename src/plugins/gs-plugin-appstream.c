@@ -453,6 +453,25 @@ gs_plugin_appstream_are_screenshots_perfect (AsApp *app)
 }
 
 /**
+ * gs_plugin_appstream_copy_metadata:
+ */
+static void
+gs_plugin_appstream_copy_metadata (GsApp *app, AsApp *item)
+{
+	GHashTable *hash;
+	GList *l;
+	g_autoptr(GList) keys = NULL;
+
+	hash = as_app_get_metadata (item);
+	keys = g_hash_table_get_keys (hash);
+	for (l = keys; l != NULL; l = l->next) {
+		const gchar *key = l->data;
+		const gchar *value = g_hash_table_lookup (hash, key);
+		gs_app_set_metadata (app, key, value);
+	}
+}
+
+/**
  * gs_plugin_refine_item:
  */
 static gboolean
@@ -589,6 +608,9 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* set id kind */
 	if (gs_app_get_id_kind (app) == AS_ID_KIND_UNKNOWN)
 		gs_app_set_id_kind (app, as_app_get_id_kind (item));
+
+	/* copy all the metadata */
+	gs_plugin_appstream_copy_metadata (app, item);
 
 	/* set package names */
 	pkgnames = as_app_get_pkgnames (item);
