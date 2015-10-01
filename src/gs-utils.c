@@ -459,4 +459,32 @@ gs_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
 	gs_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
 }
 
+/**
+ * gs_utils_get_file_age:
+ *
+ * Returns: The time in seconds since the file was modified
+ */
+guint
+gs_utils_get_file_age (const gchar *fn)
+{
+	guint64 now;
+	guint64 mtime;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GFileInfo) info = NULL;
+
+	file = g_file_new_for_path (fn);
+	info = g_file_query_info (file,
+				  G_FILE_ATTRIBUTE_TIME_MODIFIED,
+				  G_FILE_QUERY_INFO_NONE,
+				  NULL,
+				  NULL);
+	if (info == NULL)
+		return G_MAXUINT;
+	mtime = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
+	now = (guint64) g_get_real_time () / G_USEC_PER_SEC;
+	if (mtime > now)
+		return G_MAXUINT;
+	return now - mtime;
+}
+
 /* vim: set noexpandtab: */
