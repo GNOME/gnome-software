@@ -32,7 +32,6 @@
 
 struct GsPluginPrivate {
 	SoupSession		*session;
-	gsize			 loaded;
 };
 
 /**
