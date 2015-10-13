@@ -397,7 +397,7 @@ refresh_cache (GsUpdateMonitor *monitor)
 
 	g_debug ("Refreshing cache");
 	pk_client_refresh_cache_async (PK_CLIENT (monitor->task),
-				       TRUE,
+				       FALSE,
 				       monitor->cancellable,
 				       NULL, NULL,
 				       refresh_cache_finished_cb,
