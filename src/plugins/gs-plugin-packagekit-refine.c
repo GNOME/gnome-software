@@ -148,6 +148,46 @@ gs_plugin_packagekit_set_origin (GsPlugin *plugin,
 		gs_app_set_origin (app, id);
 }
 
+static void
+gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
+                                                GsApp *app,
+                                                PkPackage *package)
+{
+	const gchar *data;
+
+	gs_app_set_management_plugin (app, "PackageKit");
+	gs_app_add_source (app, pk_package_get_name (package));
+	gs_app_add_source_id (app, pk_package_get_id (package));
+	switch (pk_package_get_info (package)) {
+	case PK_INFO_ENUM_INSTALLED:
+		data = pk_package_get_data (package);
+		if (g_str_has_prefix (data, "installed:")) {
+			gs_plugin_packagekit_set_origin (plugin,
+							 app,
+							 data + 10);
+		}
+		break;
+	case PK_INFO_ENUM_UNAVAILABLE:
+		data = pk_package_get_data (package);
+		gs_plugin_packagekit_set_origin (plugin, app, data);
+		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+		gs_app_set_size (app, GS_APP_SIZE_MISSING);
+		break;
+	default:
+		/* should we expect anything else? */
+		break;
+	}
+	if (gs_app_get_version (app) == NULL)
+		gs_app_set_version (app,
+			pk_package_get_version (package));
+	gs_app_set_name (app,
+			 GS_APP_QUALITY_LOWEST,
+			 pk_package_get_name (package));
+	gs_app_set_summary (app,
+			    GS_APP_QUALITY_LOWEST,
+			    pk_package_get_summary (package));
+}
+
 /**
  * gs_plugin_packagekit_resolve_packages_app:
  **/
@@ -158,7 +198,6 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 {
 	GPtrArray *sources;
 	PkPackage *package;
-	const gchar *data;
 	const gchar *pkgname;
 	guint i, j;
 	guint number_available = 0;
@@ -173,41 +212,21 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 		for (i = 0; i < packages->len; i++) {
 			package = g_ptr_array_index (packages, i);
 			if (g_strcmp0 (pk_package_get_name (package), pkgname) == 0) {
-				gs_app_set_management_plugin (app, "PackageKit");
-				gs_app_add_source_id (app, pk_package_get_id (package));
+				gs_plugin_packagekit_set_metadata_from_package (plugin, app, package);
 				switch (pk_package_get_info (package)) {
 				case PK_INFO_ENUM_INSTALLED:
 					number_installed++;
-					data = pk_package_get_data (package);
-					if (g_str_has_prefix (data, "installed:")) {
-						gs_plugin_packagekit_set_origin (plugin,
-										 app,
-										 data + 10);
-					}
 					break;
 				case PK_INFO_ENUM_AVAILABLE:
 					number_available++;
 					break;
 				case PK_INFO_ENUM_UNAVAILABLE:
-					data = pk_package_get_data (package);
-					gs_plugin_packagekit_set_origin (plugin, app, data);
-					gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
-					gs_app_set_size (app, GS_APP_SIZE_MISSING);
 					number_available++;
 					break;
 				default:
 					/* should we expect anything else? */
 					break;
 				}
-				if (gs_app_get_version (app) == NULL)
-					gs_app_set_version (app,
-						pk_package_get_version (package));
-				gs_app_set_name (app,
-						 GS_APP_QUALITY_LOWEST,
-						 pk_package_get_name (package));
-				gs_app_set_summary (app,
-						    GS_APP_QUALITY_LOWEST,
-						    pk_package_get_summary (package));
 			}
 		}
 	}
@@ -338,10 +357,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	if (packages->len == 1) {
 		PkPackage *package;
 		package = g_ptr_array_index (packages, 0);
-		gs_app_add_source (app, pk_package_get_name (package));
-		gs_app_add_source_id (app, pk_package_get_id (package));
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-		gs_app_set_management_plugin (app, "PackageKit");
+		gs_plugin_packagekit_set_metadata_from_package (plugin, app, package);
 	} else {
 		g_warning ("Failed to find one package for %s, %s, [%d]",
 			   gs_app_get_id (app), filename, packages->len);
