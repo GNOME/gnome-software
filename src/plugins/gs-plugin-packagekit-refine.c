@@ -732,29 +732,6 @@ gs_plugin_refine (GsPlugin *plugin,
 			goto out;
 	}
 
-	/* set the package-id for an installed desktop file */
-	profile_id = "packagekit-refine[desktop-filename->id]";
-	gs_profile_start (plugin->profile, profile_id);
-	for (l = *list; l != NULL; l = l->next) {
-		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
-			continue;
-		app = GS_APP (l->data);
-		if (gs_app_get_source_id_default (app) != NULL)
-			continue;
-		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
-		if (tmp == NULL)
-			continue;
-		ret = gs_plugin_packagekit_refine_from_desktop (plugin,
-								app,
-								tmp,
-								cancellable,
-								error);
-		if (!ret)
-			goto out;
-	}
-	gs_profile_stop (plugin->profile, profile_id);
-	profile_id = NULL;
-
 	/* can we resolve in one go? */
 	profile_id = "packagekit-refine[name->id]";
 	gs_profile_start (plugin->profile, profile_id);
@@ -777,6 +754,29 @@ gs_plugin_refine (GsPlugin *plugin,
 							     resolve_all,
 							     cancellable,
 							     error);
+		if (!ret)
+			goto out;
+	}
+	gs_profile_stop (plugin->profile, profile_id);
+	profile_id = NULL;
+
+	/* set the package-id for an installed desktop file */
+	profile_id = "packagekit-refine[desktop-filename->id]";
+	gs_profile_start (plugin->profile, profile_id);
+	for (l = *list; l != NULL; l = l->next) {
+		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
+			continue;
+		app = GS_APP (l->data);
+		if (gs_app_get_source_id_default (app) != NULL)
+			continue;
+		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
+		if (tmp == NULL)
+			continue;
+		ret = gs_plugin_packagekit_refine_from_desktop (plugin,
+								app,
+								tmp,
+								cancellable,
+								error);
 		if (!ret)
 			goto out;
 	}
