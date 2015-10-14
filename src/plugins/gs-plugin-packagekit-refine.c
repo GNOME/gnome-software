@@ -338,6 +338,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	if (packages->len == 1) {
 		PkPackage *package;
 		package = g_ptr_array_index (packages, 0);
+		gs_app_add_source (app, pk_package_get_name (package));
 		gs_app_add_source_id (app, pk_package_get_id (package));
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_management_plugin (app, "PackageKit");
@@ -777,6 +778,28 @@ gs_plugin_refine (GsPlugin *plugin,
 			goto out;
 	}
 
+	/* set the package-id for an installed desktop file */
+	ptask = as_profile_start_literal (plugin->profile,
+					  "packagekit-refine[desktop-filename->id]");
+	for (l = *list; l != NULL; l = l->next) {
+		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
+			continue;
+		app = GS_APP (l->data);
+		if (gs_app_get_source_id_default (app) != NULL)
+			continue;
+		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
+		if (tmp == NULL)
+			continue;
+		ret = gs_plugin_packagekit_refine_from_desktop (plugin,
+								app,
+								tmp,
+								cancellable,
+								error);
+		if (!ret)
+			goto out;
+	}
+	as_profile_task_free (ptask);
+
 	/* can we resolve in one go? */
 	ptask = as_profile_start_literal (plugin->profile, "packagekit-refine[name->id]");
 	for (l = *list; l != NULL; l = l->next) {
@@ -798,28 +821,6 @@ gs_plugin_refine (GsPlugin *plugin,
 							     resolve_all,
 							     cancellable,
 							     error);
-		if (!ret)
-			goto out;
-	}
-	as_profile_task_free (ptask);
-
-	/* set the package-id for an installed desktop file */
-	ptask = as_profile_start_literal (plugin->profile,
-					  "packagekit-refine[desktop-filename->id]");
-	for (l = *list; l != NULL; l = l->next) {
-		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
-			continue;
-		app = GS_APP (l->data);
-		if (gs_app_get_source_id_default (app) != NULL)
-			continue;
-		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
-		if (tmp == NULL)
-			continue;
-		ret = gs_plugin_packagekit_refine_from_desktop (plugin,
-								app,
-								tmp,
-								cancellable,
-								error);
 		if (!ret)
 			goto out;
 	}
