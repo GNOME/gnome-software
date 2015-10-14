@@ -169,7 +169,7 @@ gs_moduleset_get_n_featured (GsModuleset *moduleset,
 	guint i;
 	guint cnt;
 
-	g_return_val_if_fail (GS_IS_MODULESET (moduleset), NULL);
+	g_return_val_if_fail (GS_IS_MODULESET (moduleset), 0);
 
 	cnt = 0;
 	for (i = 0; i < priv->array->len; i++) {
