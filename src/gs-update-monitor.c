@@ -521,6 +521,7 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 		      "background", TRUE,
 		      "interactive", FALSE,
 		      "only-download", TRUE,
+		      "cache-age", 60 * 60 * 24,
 		      NULL);
 
 	monitor->network_available = FALSE;
