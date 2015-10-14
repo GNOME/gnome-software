@@ -307,47 +307,31 @@
                         <child internal-child="content_area">
                           <object class="GtkBox" id="infobar-content_area1">
                             <property name="can_focus">False</property>
-                            <property name="spacing">16</property>
-                            <property name="halign">center</property>
+                            <property name="spacing">0</property>
+                            <property name="halign">fill</property>
+                            <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkGrid" id="grid_details_app_repo">
+                              <object class="GtkLabel" id="label_header_details_app_repo">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label_header_details_app_repo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Software Source Included</property>
-                                    <attributes>
-                                      <attribute name="weight" value="bold"/>
-                                    </attributes>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_app_repo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">This application includes a software source which provides updates, as well as access to other software.</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
+                                <property name="label" translatable="yes">Software Source Included</property>
+                                <attributes>
+                                  <attribute name="weight" value="bold"/>
+                                </attributes>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_details_app_repo">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">This application includes a software source which provides updates, as well as access to other software.</property>
+                              </object>
                             </child>
                           </object>
                           <packing>
@@ -376,47 +360,31 @@
                         <child internal-child="content_area">
                           <object class="GtkBox" id="infobar-content_area2">
                             <property name="can_focus">False</property>
-                            <property name="spacing">16</property>
-                            <property name="halign">center</property>
+                            <property name="spacing">0</property>
+                            <property name="halign">fill</property>
+                            <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkGrid" id="grid_details_app_norepo">
+                              <object class="GtkLabel" id="label_header_details_app_norepo">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label_header_details_app_norepo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">No Software Source Included</property>
-                                    <attributes>
-                                      <attribute name="weight" value="bold"/>
-                                    </attributes>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_app_norepo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">This application does not include a software source. It will not be updated with new versions.</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
+                                <property name="label" translatable="yes">No Software Source Included</property>
+                                <attributes>
+                                  <attribute name="weight" value="bold"/>
+                                </attributes>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_details_app_norepo">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">This application does not include a software source. It will not be updated with new versions.</property>
+                              </object>
                             </child>
                           </object>
                           <packing>
@@ -445,10 +413,14 @@
                         <child internal-child="content_area">
                           <object class="GtkBox" id="infobar-content_area3">
                             <property name="can_focus">False</property>
-                            <property name="spacing">16</property>
-                            <property name="halign">center</property>
+                            <property name="spacing">0</property>
+                            <property name="halign">fill</property>
+                            <property name="orientation">vertical</property>
                             <child>
                               <object class="GtkLabel" id="label_header_details_package_baseos">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="label" translatable="yes">This software is already provided by your distribution and should not be replaced.</property>
@@ -484,60 +456,41 @@
                         <child internal-child="content_area">
                           <object class="GtkBox" id="infobar-content_area4">
                             <property name="can_focus">False</property>
-                            <property name="spacing">16</property>
-                            <property name="halign">center</property>
+                            <property name="spacing">0</property>
+                            <property name="halign">fill</property>
+                            <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkGrid" id="grid_details_repo">
+                              <object class="GtkLabel" id="label_header_details_repo">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label_header_details_repo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes" comments="Translators: a repository file used for installing software has been discovered.">Software Source Identified</property>
-                                    <attributes>
-                                      <attribute name="weight" value="bold"/>
-                                    </attributes>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_repo">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Adding this software source will give you access to additional software and upgrades.</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_repo2">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Only use software sources that you trust.</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">2</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
+                                <property name="label" translatable="yes" comments="Translators: a repository file used for installing software has been discovered.">Software Source Identified</property>
+                                <attributes>
+                                  <attribute name="weight" value="bold"/>
+                                </attributes>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_details_repo">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Adding this software source will give you access to additional software and upgrades.</property>
+                              </object>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_details_repo2">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Only use software sources that you trust.</property>
+                              </object>
                             </child>
                           </object>
                           <packing>
@@ -566,47 +519,31 @@
                         <child internal-child="content_area">
                           <object class="GtkBox" id="infobar-content_area5">
                             <property name="can_focus">False</property>
-                            <property name="spacing">16</property>
-                            <property name="halign">center</property>
+                            <property name="spacing">0</property>
+                            <property name="halign">fill</property>
+                            <property name="orientation">vertical</property>
                             <child>
-                              <object class="GtkGrid" id="grid_details_webapp">
+                              <object class="GtkLabel" id="label_header_details_webapp">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <child>
-                                  <object class="GtkLabel" id="label_header_details_webapp">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">Internet Only Application</property>
-                                    <attributes>
-                                      <attribute name="weight" value="bold"/>
-                                    </attributes>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">0</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
-                                <child>
-                                  <object class="GtkLabel" id="label_details_webapp">
-                                    <property name="visible">True</property>
-                                    <property name="can_focus">False</property>
-                                    <property name="label" translatable="yes">This application can only be used when there is an active internet connection.</property>
-                                  </object>
-                                  <packing>
-                                    <property name="left_attach">0</property>
-                                    <property name="top_attach">1</property>
-                                    <property name="width">1</property>
-                                    <property name="height">1</property>
-                                  </packing>
-                                </child>
+                                <property name="label" translatable="yes">Internet Only Application</property>
+                                <attributes>
+                                  <attribute name="weight" value="bold"/>
+                                </attributes>
                               </object>
-                              <packing>
-                                <property name="expand">False</property>
-                                <property name="fill">True</property>
-                                <property name="position">0</property>
-                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_details_webapp">
+                                <property name="justify">center</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">30</property>
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">This application can only be used when there is an active internet connection.</property>
+                              </object>
                             </child>
                           </object>
                           <packing>
