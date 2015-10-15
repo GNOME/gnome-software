@@ -2109,7 +2109,7 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 		g_value_set_string (value, app->description);
 		break;
 	case PROP_RATING:
-		g_value_set_uint (value, app->rating);
+		g_value_set_int (value, app->rating);
 		break;
 	case PROP_KIND:
 		g_value_set_uint (value, app->kind);
