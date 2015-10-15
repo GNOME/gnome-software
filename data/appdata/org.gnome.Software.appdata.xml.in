@@ -30,6 +30,37 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.18.2" timestamp="1444908967">
+      <description>
+        <p>This stable release fixes the following bugs:</p>
+        <ul>
+          <li>Fix a regression in 3.18.1 that could lead to the background update monitor never finding any updates</li>
+          <li>Fix an issue with getting package details for apps without AppData</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
+    <release version="3.18.1" timestamp="1444738225">
+      <description>
+        <p>This stable release fixes the following bugs:</p>
+        <ul>
+          <li>Do not force the cache refresh and delete otherwise valid packages</li>
+          <li>Fix several potential crashes when navigating and when installing</li>
+          <li>Get the new application icon for local packages after installation</li>
+          <li>Improve cold start time by only parsing AppStream data once</li>
+          <li>Make sure Characters and Disks show up in Utilities</li>
+          <li>Only download the fwupd metadata signature once per day</li>
+          <li>Show an empty space for no category results</li>
+          <li>Show applications without AppData in the installed panel</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
+    <release version="3.18.0" timestamp="1442827658">
+      <description>
+        <p>This is the first stable release for GNOME 3.18</p>
+      </description>
+    </release>
     <release version="3.17.92" timestamp="1442313469">
       <description>
         <p>This is an unstable release in the 3.17 development series, with the following improvements:</p>
