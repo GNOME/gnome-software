@@ -30,6 +30,17 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.16.6" timestamp="1444990165">
+      <description>
+        <p>This release fixes the following bugs:</p>
+        <ul>
+          <li>Do not force the cache refresh and delete otherwise valid packages when downloading updates</li>
+          <li>Fix several potential crashes when navigating and when installing</li>
+          <li>Prefer the gtk version of gimagereader over the qt5 version</li>
+          <li>Improve failure code path when install or remove fails</li>
+        </ul>
+      </description>
+    </release>
     <release version="3.16.5" timestamp="1438605303">
       <description>
         <p>This release fixes the following bugs:</p>
