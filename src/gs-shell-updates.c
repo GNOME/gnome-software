@@ -260,9 +260,6 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner), spinner_str);
 		break;
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
-		/* TRANSLATORS: this is when the updates panel is starting up */
-		gtk_label_set_label (GTK_LABEL (self->label_updates_spinner), _("Checking for updates…"));
-		break;
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_MANAGED:
