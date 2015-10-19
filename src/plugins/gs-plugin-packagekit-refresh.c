@@ -31,7 +31,6 @@
 
 struct GsPluginPrivate {
 	PkTask			*task;
-	AsProfileTask		*ptask;
 };
 
 /**
@@ -64,6 +63,11 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (plugin->priv->task);
 }
 
+typedef struct {
+	GsPlugin	*plugin;
+	AsProfileTask	*ptask;
+} ProgressData;
+
 /**
  * gs_plugin_packagekit_progress_cb:
  **/
@@ -72,9 +76,10 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
 				  gpointer user_data)
 {
+	ProgressData *data = (ProgressData *) user_data;
+	GsPlugin *plugin = data->plugin;
 	GsPluginStatus plugin_status;
 	PkStatusEnum status;
-	GsPlugin *plugin = GS_PLUGIN (user_data);
 
 	if (type != PK_PROGRESS_TYPE_STATUS)
 		return;
@@ -84,10 +89,10 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	/* profile */
 	if (status == PK_STATUS_ENUM_SETUP) {
-		plugin->priv->ptask = as_profile_start_literal (plugin->profile,
-								"packagekit-refresh::transaction");
+		data->ptask = as_profile_start_literal (plugin->profile,
+							"packagekit-refresh::transaction");
 	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		g_clear_pointer (&plugin->priv->ptask, as_profile_task_free);
+		g_clear_pointer (&data->ptask, as_profile_task_free);
 	}
 
 	plugin_status = packagekit_status_enum_to_plugin_status (status);
@@ -107,6 +112,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 {
 	PkBitfield filter;
 	PkBitfield transaction_flags;
+	ProgressData data;
 	g_auto(GStrv) package_ids = NULL;
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results2 = NULL;
@@ -119,6 +125,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 	/* cache age of 0 is user-initiated */
 	pk_client_set_background (PK_CLIENT (plugin->priv->task), cache_age > 0);
 
+	data.plugin = plugin;
+
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 
@@ -128,7 +136,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	results = pk_client_get_updates (PK_CLIENT (plugin->priv->task),
 					 filter,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
+					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
 	if (results == NULL)
 		return FALSE;
@@ -143,7 +151,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 					      transaction_flags,
 					      package_ids,
 					      cancellable,
-					      gs_plugin_packagekit_progress_cb, plugin,
+					      gs_plugin_packagekit_progress_cb, &data,
 					      error);
 	return results2 != NULL;
 }
@@ -234,6 +242,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					   GError **error)
 {
 	PkFiles *item;
+	ProgressData data;
 	guint i;
 	guint j;
 	gchar **fns;
@@ -241,12 +250,14 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
+	data.plugin = plugin;
+
 	/* get file list so we can work out ID */
 	files = g_strsplit (filename, "\t", -1);
 	results = pk_client_get_files_local (PK_CLIENT (plugin->priv->task),
 					     files,
 					     cancellable,
-					     gs_plugin_packagekit_progress_cb, plugin,
+					     gs_plugin_packagekit_progress_cb, &data,
 					     error);
 	if (results == NULL)
 		return FALSE;
@@ -290,6 +301,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	const gchar *package_id;
 	gboolean supported;
 	PkDetails *item;
+	ProgressData data;
 	g_autoptr (PkResults) results = NULL;
 	g_autofree gchar *basename = NULL;
 	g_auto(GStrv) files = NULL;
@@ -306,13 +318,15 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	if (!supported)
 		return TRUE;
 
+	data.plugin = plugin;
+
 	/* get details */
 	files = g_strsplit (filename, "\t", -1);
 	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), G_MAXUINT);
 	results = pk_client_get_details_local (PK_CLIENT (plugin->priv->task),
 					       files,
 					       cancellable,
-					       gs_plugin_packagekit_progress_cb, plugin,
+					       gs_plugin_packagekit_progress_cb, &data,
 					       error);
 	if (results == NULL)
 		return FALSE;

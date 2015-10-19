@@ -101,6 +101,12 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (plugin->priv->control);
 }
 
+
+typedef struct {
+	GsPlugin	*plugin;
+	AsProfileTask	*ptask;
+} ProgressData;
+
 /**
  * gs_plugin_packagekit_progress_cb:
  **/
@@ -109,9 +115,10 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
 				  gpointer user_data)
 {
+	ProgressData *data = (ProgressData *) user_data;
+	GsPlugin *plugin = data->plugin;
 	GsPluginStatus plugin_status;
 	PkStatusEnum status;
-	GsPlugin *plugin = GS_PLUGIN (user_data);
 
 	if (type != PK_PROGRESS_TYPE_STATUS)
 		return;
@@ -121,10 +128,10 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	/* profile */
 	if (status == PK_STATUS_ENUM_SETUP) {
-		plugin->priv->ptask = as_profile_start_literal (plugin->profile,
+		data->ptask = as_profile_start_literal (plugin->profile,
 								"packagekit-refine::transaction");
 	} else if (status == PK_STATUS_ENUM_FINISHED) {
-		g_clear_pointer (&plugin->priv->ptask, as_profile_task_free);
+		g_clear_pointer (&data->ptask, as_profile_task_free);
 	}
 
 	plugin_status = packagekit_status_enum_to_plugin_status (status);
@@ -269,6 +276,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *pkgname;
 	guint i;
+	ProgressData data;
 	g_autoptr(PkError) error_code = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
@@ -285,12 +293,14 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	}
 	g_ptr_array_add (package_ids, NULL);
 
+	data.plugin = plugin;
+
 	/* resolve them all at once */
 	results = pk_client_resolve (plugin->priv->client,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
 				     (gchar **) package_ids->pdata,
 				     cancellable,
-				     gs_plugin_packagekit_progress_cb, plugin,
+				     gs_plugin_packagekit_progress_cb, &data,
 				     error);
 	if (results == NULL)
 		return FALSE;
@@ -326,16 +336,19 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 					  GError **error)
 {
 	const gchar *to_array[] = { NULL, NULL };
+	ProgressData data;
 	g_autoptr(PkError) error_code = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
+
+	data.plugin = plugin;
 
 	to_array[0] = filename;
 	results = pk_client_search_files (plugin->priv->client,
 					  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 					  (gchar **) to_array,
 					  cancellable,
-					  gs_plugin_packagekit_progress_cb, plugin,
+					  gs_plugin_packagekit_progress_cb, &data,
 					  error);
 	if (results == NULL)
 		return FALSE;
@@ -380,6 +393,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	guint i = 0;
 	guint size;
 	PkUpdateDetail *update_detail;
+	ProgressData data;
 	g_autofree const gchar **package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
@@ -392,11 +406,13 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 		package_ids[i++] = package_id;
 	}
 
+	data.plugin = plugin;
+
 	/* get any update details */
 	results = pk_client_get_update_detail (plugin->priv->client,
 					       (gchar **) package_ids,
 					       cancellable,
-					       gs_plugin_packagekit_progress_cb, plugin,
+					       gs_plugin_packagekit_progress_cb, &data,
 					       error);
 	if (results == NULL)
 		return FALSE;
@@ -518,6 +534,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *package_id;
 	guint i;
+	ProgressData data;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(PkResults) results = NULL;
@@ -533,11 +550,13 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	}
 	g_ptr_array_add (package_ids, NULL);
 
+	data.plugin = plugin;
+
 	/* get any details */
 	results = pk_client_get_details (plugin->priv->client,
 					 (gchar **) package_ids->pdata,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
+					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
 	if (results == NULL)
 		return FALSE;
@@ -564,15 +583,18 @@ gs_plugin_packagekit_refine_update_severity (GsPlugin *plugin,
 	GsApp *app;
 	const gchar *package_id;
 	PkBitfield filter;
+	ProgressData data;
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results = NULL;
+
+	data.plugin = plugin;
 
 	/* get the list of updates */
 	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
 	results = pk_client_get_updates (plugin->priv->client,
 					 filter,
 					 cancellable,
-					 gs_plugin_packagekit_progress_cb, plugin,
+					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
 	if (results == NULL)
 		return FALSE;
@@ -675,15 +697,18 @@ gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
 				      GError **error)
 {
 	PkRepoDetail *rd;
+	ProgressData data;
 	guint i;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
+
+	data.plugin = plugin;
 
 	/* ask PK for the repo details */
 	results = pk_client_get_repo_list (plugin->priv->client,
 					   pk_bitfield_from_enums (PK_FILTER_ENUM_NONE, -1),
 					   cancellable,
-					   gs_plugin_packagekit_progress_cb, plugin,
+					   gs_plugin_packagekit_progress_cb, &data,
 					   error);
 	if (results == NULL)
 		return FALSE;
