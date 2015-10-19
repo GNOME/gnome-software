@@ -783,7 +783,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		if (status_code != SOUP_STATUS_OK) {
 			g_warning ("Failed to download %s, ignoring: %s",
 				   tmp, soup_status_get_phrase (status_code));
-			g_ptr_array_remove (plugin->priv->to_download, (gpointer) tmp);
+			g_ptr_array_remove_index (plugin->priv->to_download, i--);
 			g_ptr_array_add (plugin->priv->to_ignore, g_strdup (tmp));
 			continue;
 		}
