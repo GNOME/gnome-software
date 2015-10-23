@@ -2,12 +2,13 @@
 _Name=Software
 _Comment=Add, remove or update software on this computer
 Icon=gnome-software
-Exec=gnome-software
+Exec=gnome-software %U
 Terminal=false
 Type=Application
 Categories=GNOME;GTK;System;PackageManager;
 _Keywords=Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;Software;App;Store;
 StartupNotify=true
+MimeType=x-scheme-handler/appstream;
 X-GNOME-Bugzilla-Bugzilla=GNOME
 X-GNOME-Bugzilla-Product=gnome-software
 X-GNOME-Bugzilla-Component=gnome-software

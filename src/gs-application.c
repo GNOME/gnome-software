@@ -29,6 +29,7 @@
 #include <gtk/gtk.h>
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
+#include <libsoup/soup.h>
 #include <packagekit-glib2/packagekit.h>
 
 #ifdef GDK_WINDOWING_X11
@@ -694,12 +695,44 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 }
 
 static void
+gs_application_open (GApplication  *application,
+                     GFile        **files,
+                     gint           n_files,
+                     const gchar   *hint)
+{
+	GsApplication *app = GS_APPLICATION (application);
+	gint i;
+
+	for (i = 0; i < n_files; i++) {
+		g_autofree gchar *str = g_file_get_uri (files[i]);
+		g_autoptr(SoupURI) uri = NULL;
+
+		uri = soup_uri_new (str);
+		if (!SOUP_URI_IS_VALID (uri))
+			continue;
+
+		if (g_strcmp0 (soup_uri_get_scheme (uri), "appstream") == 0) {
+			const gchar *path = soup_uri_get_path (uri);
+
+			/* trim any leading slashes */
+			while (*path == '/')
+				path++;
+
+			g_action_group_activate_action (G_ACTION_GROUP (app),
+			                                "details",
+			                                g_variant_new ("(ss)", path, ""));
+		}
+	}
+}
+
+static void
 gs_application_class_init (GsApplicationClass *class)
 {
 	G_OBJECT_CLASS (class)->dispose = gs_application_dispose;
 	G_APPLICATION_CLASS (class)->startup = gs_application_startup;
 	G_APPLICATION_CLASS (class)->activate = gs_application_activate;
 	G_APPLICATION_CLASS (class)->handle_local_options = gs_application_handle_local_options;
+	G_APPLICATION_CLASS (class)->open = gs_application_open;
 	G_APPLICATION_CLASS (class)->dbus_register = gs_application_dbus_register;
 	G_APPLICATION_CLASS (class)->dbus_unregister = gs_application_dbus_unregister;
 }
@@ -710,6 +743,7 @@ gs_application_new (void)
 	g_set_prgname("org.gnome.Software");
 	return g_object_new (GS_APPLICATION_TYPE,
 			     "application-id", "org.gnome.Software",
+			     "flags", G_APPLICATION_HANDLES_OPEN,
 			     "inactivity-timeout", 12000,
 			     NULL);
 }
