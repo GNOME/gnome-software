@@ -265,8 +265,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 		fns = pk_files_get_files (item);
 		for (j = 0; fns[j] != NULL; j++) {
 			if (g_str_has_suffix (fns[j], ".desktop")) {
-				g_autofree gchar *basename;
-				basename = g_path_get_basename (fns[j]);
+				g_autofree gchar *basename = g_path_get_basename (fns[j]);
 				gs_app_set_id (app, basename);
 				gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 				gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);

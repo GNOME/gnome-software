@@ -646,7 +646,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		 * defined menu category */
 		gtk_label_set_label (GTK_LABEL (self->label_details_category_value), C_("menu category", "None"));
 	} else {
-		g_autofree gchar *path;
+		g_autofree gchar *path = NULL;
 		if (gtk_widget_get_direction (self->label_details_category_value) == GTK_TEXT_DIR_RTL)
 			path = g_strjoinv (" ← ", menu_path);
 		else
