@@ -38,7 +38,8 @@
 
 typedef enum {
 	GS_SHELL_DETAILS_STATE_LOADING,
-	GS_SHELL_DETAILS_STATE_READY
+	GS_SHELL_DETAILS_STATE_READY,
+	GS_SHELL_DETAILS_STATE_FAILED
 } GsShellDetailsState;
 
 struct _GsShellDetails
@@ -83,6 +84,7 @@ struct _GsShellDetails
 	GtkWidget		*label_details_size_value;
 	GtkWidget		*label_details_updated_value;
 	GtkWidget		*label_details_version_value;
+	GtkWidget		*label_failed;
 	GtkWidget		*label_pending;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*scrolledwindow_details;
@@ -107,6 +109,7 @@ gs_shell_details_set_state (GsShellDetails *self,
 		gtk_widget_show (self->spinner_details);
 		break;
 	case GS_SHELL_DETAILS_STATE_READY:
+	case GS_SHELL_DETAILS_STATE_FAILED:
 		gs_stop_spinner (GTK_SPINNER (self->spinner_details));
 		gtk_widget_hide (self->spinner_details);
 		break;
@@ -121,6 +124,9 @@ gs_shell_details_set_state (GsShellDetails *self,
 		break;
 	case GS_SHELL_DETAILS_STATE_READY:
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_details), "ready");
+		break;
+	case GS_SHELL_DETAILS_STATE_FAILED:
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_details), "failed");
 		break;
 	default:
 		g_assert_not_reached ();
@@ -887,6 +893,15 @@ gs_shell_details_app_refine_cb (GObject *source,
 		g_warning ("failed to refine %s: %s",
 			   gs_app_get_id (self->app),
 			   error->message);
+	}
+
+	if (gs_app_get_kind (self->app) == GS_APP_KIND_UNKNOWN ||
+	    gs_app_get_state (self->app) == AS_APP_STATE_UNKNOWN) {
+		g_autofree gchar *str = NULL;
+
+		str = g_strdup_printf (_("Could not find '%s'"), gs_app_get_id (self->app));
+		gtk_label_set_text (GTK_LABEL (self->label_failed), str);
+		gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_FAILED);
 		return;
 	}
 
@@ -1346,6 +1361,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_updated_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_version_value);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_pending);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, scrolledwindow_details);
