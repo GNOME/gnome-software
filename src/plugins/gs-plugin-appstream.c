@@ -515,12 +515,20 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		}
 	}
 
-	/* give the desktopdb plugin a fighting chance */
-	if (as_app_get_source_file (item) != NULL &&
-	    as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_DESKTOP &&
-	    gs_app_get_metadata_item (app, "DataDir::desktop-filename") == NULL) {
-		gs_app_set_metadata (app, "DataDir::desktop-filename",
-				     as_app_get_source_file (item));
+	/* allow the PackageKit plugin to match up installed local files
+	 * with packages when the component isn't in the AppStream XML */
+	switch (as_app_get_source_kind (item)) {
+	case AS_APP_SOURCE_KIND_DESKTOP:
+	case AS_APP_SOURCE_KIND_APPDATA:
+	case AS_APP_SOURCE_KIND_METAINFO:
+		if (as_app_get_source_file (item) != NULL &&
+		    gs_app_get_metadata_item (app, "DataDir::desktop-filename") == NULL) {
+			gs_app_set_metadata (app, "DataDir::desktop-filename",
+					     as_app_get_source_file (item));
+		}
+		break;
+	default:
+		break;
 	}
 
 	/* set id */
