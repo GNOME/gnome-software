@@ -25,7 +25,6 @@
 #include <glib/gi18n.h>
 
 #include "gs-app.h"
-#include "gs-app-row.h"
 #include "gs-page.h"
 #include "gs-shell.h"
 #include "gs-utils.h"
