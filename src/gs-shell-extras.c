@@ -55,7 +55,6 @@ struct _GsShellExtras
 
 	GsPluginLoader		 *plugin_loader;
 	GtkBuilder		 *builder;
-	GCancellable		 *cancellable;
 	GCancellable		 *search_cancellable;
 	GsShell			 *shell;
 	GsShellExtrasState	  state;
@@ -1125,7 +1124,6 @@ gs_shell_extras_setup (GsShellExtras *self,
 
 	self->plugin_loader = g_object_ref (plugin_loader);
 	self->builder = g_object_ref (builder);
-	self->cancellable = g_object_ref (cancellable);
 
 	g_signal_connect (self->list_box_results, "row-activated",
 			  G_CALLBACK (row_activated_cb), self);
@@ -1159,7 +1157,6 @@ gs_shell_extras_dispose (GObject *object)
 	g_clear_object (&self->vendor);
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
-	g_clear_object (&self->cancellable);
 
 	g_clear_pointer (&self->array_search_data, g_ptr_array_unref);
 
