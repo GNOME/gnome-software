@@ -797,6 +797,47 @@ gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
 }
 
 /**
+ * gs_plugin_packagekit_refine_distro_upgrade:
+ **/
+static gboolean
+gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
+					    GsApp *app,
+					    GCancellable *cancellable,
+					    GError **error)
+{
+	GList *l;
+	GsApp *app2;
+	ProgressData data;
+	g_autoptr(PkResults) results = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	data.plugin = plugin;
+	data.ptask = NULL;
+
+	/* ask PK to simulate upgrading the system */
+	results = pk_client_upgrade_system (plugin->priv->client,
+					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
+					    gs_app_get_id (app),
+					    PK_UPGRADE_KIND_ENUM_COMPLETE,
+					    cancellable,
+					    gs_plugin_packagekit_progress_cb, &data,
+					    error);
+	if (results == NULL)
+		return FALSE;
+	if (!gs_plugin_packagekit_add_results (plugin, &list, results, error))
+		return FALSE;
+
+	/* add each of these as related applications */
+	for (l = list; l != NULL; l = l->next) {
+		app2 = GS_APP (l->data);
+		if (gs_app_get_state (app2) != AS_APP_STATE_AVAILABLE)
+			continue;
+		gs_app_add_related (app, app2);
+	}
+	return TRUE;
+}
+
+/**
  * gs_plugin_refine:
  */
 gboolean
@@ -814,6 +855,22 @@ gs_plugin_refine (GsPlugin *plugin,
 	g_autoptr(GList) resolve_all = NULL;
 	g_autoptr(GList) updatedetails_all = NULL;
 	AsProfileTask *ptask = NULL;
+
+	/* when we need the cannot-be-upgraded applications, we implement this
+	 * by doing a UpgradeSystem(SIMULATE) which adds the removed packages
+	 * to the related-apps list with a state of %AS_APP_STATE_AVAILABLE */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
+		for (l = *list; l != NULL; l = l->next) {
+			app = GS_APP (l->data);
+			if (gs_app_get_kind (app) != GS_APP_KIND_DISTRO_UPGRADE)
+				continue;
+			if (!gs_plugin_packagekit_refine_distro_upgrade (plugin,
+									 app,
+									 cancellable,
+									 error))
+				return FALSE;
+		}
+	}
 
 	/* get the repo_id -> repo_name mapping set up */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) > 0 &&
