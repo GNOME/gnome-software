@@ -43,6 +43,7 @@ struct _GsUpdateMonitor {
 	guint		 cleanup_notifications_id;	/* at startup */
 	guint		 check_startup_id;		/* 60s after startup */
 	guint		 check_hourly_id;		/* and then every hour */
+	guint		 check_daily_id;		/* every 3rd day */
 	PkControl	*control;			/* network type detection */
 	guint		 notification_blocked_id;	/* rate limit notifications */
 };
@@ -196,6 +197,44 @@ get_updates_finished_cb (GObject *object,
 }
 
 static void
+get_upgrades_finished_cb (GObject *object,
+			  GAsyncResult *res,
+			  gpointer data)
+{
+	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (data);
+	GsApp *app;
+	g_autofree gchar *body = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GNotification) n = NULL;
+	g_autoptr(GsAppList) apps = NULL;
+
+	/* get result */
+	apps = gs_plugin_loader_get_updates_finish (GS_PLUGIN_LOADER (object), res, &error);
+	if (apps == NULL) {
+		g_debug ("no upgrades; withdrawing upgrades-available notification");
+		g_application_withdraw_notification (monitor->application,
+						     "upgrades-available");
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("failed to get upgrades: %s", error->message);
+		return;
+	}
+
+	/* just get the first result : FIXME, do we sort these by date? */
+	app = GS_APP (apps->data);
+
+	/* TRANSLATORS: this is a distro upgrade, the replacement would be the
+	 * distro name, e.g. 'Fedora' */
+	body = g_strdup_printf (_("A new version of %s is available to install"),
+				gs_app_get_name (app));
+
+	/* TRANSLATORS: this is a distro upgrade */
+	n = g_notification_new (_("Software Upgrade Available"));
+	g_notification_set_body (n, body);
+	g_notification_set_default_action_and_target (n, "app.set-mode", "s", "updates");
+	g_application_send_notification (monitor->application, "upgrades-available", n);
+}
+
+static void
 get_updates (GsUpdateMonitor *monitor)
 {
 	/* NOTE: this doesn't actually do any network access, instead it just
@@ -207,6 +246,20 @@ get_updates (GsUpdateMonitor *monitor)
 					    monitor->cancellable,
 					    get_updates_finished_cb,
 					    monitor);
+}
+
+static void
+get_upgrades (GsUpdateMonitor *monitor)
+{
+	/* NOTE: this doesn't actually do any network access, it relies on the
+	 * AppStream data being up to date, either by the appstream-data
+	 * package being up-to-date, or the metadata being auto-downloaded */
+	g_debug ("Getting updates");
+	gs_plugin_loader_get_distro_upgrades_async (monitor->plugin_loader,
+						    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						    monitor->cancellable,
+						    get_upgrades_finished_cb,
+						    monitor);
 }
 
 static void
@@ -293,15 +346,29 @@ check_hourly_cb (gpointer data)
 }
 
 static gboolean
+check_thrice_daily_cb (gpointer data)
+{
+	GsUpdateMonitor *monitor = data;
+
+	g_debug ("Daily upgrades check");
+	get_upgrades (monitor);
+
+	return G_SOURCE_CONTINUE;
+}
+
+static gboolean
 check_updates_on_startup_cb (gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
 
 	g_debug ("First hourly updates check");
 	check_updates (monitor);
+	get_upgrades (monitor);
 
 	monitor->check_hourly_id =
 		g_timeout_add_seconds (3600, check_hourly_cb, monitor);
+	monitor->check_daily_id =
+		g_timeout_add_seconds (3 * 86400, check_thrice_daily_cb, monitor);
 
 	monitor->check_startup_id = 0;
 	return G_SOURCE_REMOVE;
@@ -435,6 +502,10 @@ gs_update_monitor_dispose (GObject *object)
 	if (monitor->check_hourly_id != 0) {
 		g_source_remove (monitor->check_hourly_id);
 		monitor->check_hourly_id = 0;
+	}
+	if (monitor->check_daily_id != 0) {
+		g_source_remove (monitor->check_daily_id);
+		monitor->check_daily_id = 0;
 	}
 	if (monitor->check_startup_id != 0) {
 		g_source_remove (monitor->check_startup_id);
