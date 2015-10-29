@@ -294,6 +294,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	g_ptr_array_add (package_ids, NULL);
 
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* resolve them all at once */
 	results = pk_client_resolve (plugin->priv->client,
@@ -342,6 +343,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	g_autoptr(GPtrArray) packages = NULL;
 
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	to_array[0] = filename;
 	results = pk_client_search_files (plugin->priv->client,
@@ -407,6 +409,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	}
 
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* get any update details */
 	results = pk_client_get_update_detail (plugin->priv->client,
@@ -551,6 +554,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	g_ptr_array_add (package_ids, NULL);
 
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* get any details */
 	results = pk_client_get_details (plugin->priv->client,
@@ -588,6 +592,7 @@ gs_plugin_packagekit_refine_update_severity (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* get the list of updates */
 	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
@@ -703,6 +708,7 @@ gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
 	g_autoptr(GPtrArray) array = NULL;
 
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* ask PK for the repo details */
 	results = pk_client_get_repo_list (plugin->priv->client,
