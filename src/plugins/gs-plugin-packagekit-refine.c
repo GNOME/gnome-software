@@ -797,6 +797,42 @@ gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
 }
 
 /**
+ * gs_plugin_app_upgrade_download:
+ */
+gboolean
+gs_plugin_app_upgrade_download (GsPlugin *plugin,
+				GsApp *app,
+				GCancellable *cancellable,
+				GError **error)
+{
+	ProgressData data;
+	g_autoptr(PkResults) results = NULL;
+
+	data.plugin = plugin;
+	data.ptask = NULL;
+
+	/* check is distro-upgrade */
+	if (gs_app_get_kind (app) != GS_APP_KIND_DISTRO_UPGRADE) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "app %s is not a distro upgrade",
+			     gs_app_get_id (app));
+		return FALSE;
+	}
+
+	/* ask PK to download enough packages to upgrade the system */
+	results = pk_client_upgrade_system (plugin->priv->client,
+					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_ONLY_DOWNLOAD, -1),
+					    gs_app_get_id (app),
+					    PK_UPGRADE_KIND_ENUM_COMPLETE,
+					    cancellable,
+					    gs_plugin_packagekit_progress_cb, &data,
+					    error);
+	return results != NULL;
+}
+
+/**
  * gs_plugin_packagekit_refine_distro_upgrade:
  **/
 static gboolean

@@ -274,6 +274,16 @@ main (int argc, char **argv)
 				break;
 			}
 		}
+	} else if (argc == 3 && g_strcmp0 (argv[1], "action-upgrade-download") == 0) {
+		app = gs_app_new (argv[2]);
+		gs_app_set_kind (app, GS_APP_KIND_DISTRO_UPGRADE);
+		ret = gs_plugin_loader_app_action (plugin_loader,
+						   app,
+						   GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
+						   NULL,
+						   &error);
+		if (ret)
+			gs_plugin_add_app (&list, app);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "refine") == 0) {
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {

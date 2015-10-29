@@ -2602,6 +2602,16 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 		state->state_success = AS_APP_STATE_UNKNOWN;
 		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
+	case GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD:
+		state->function_name = "gs_plugin_app_upgrade_download";
+		state->state_success = AS_APP_STATE_UNKNOWN;
+		state->state_failure = AS_APP_STATE_UNKNOWN;
+		break;
+	case GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER:
+		state->function_name = "gs_plugin_app_upgrade_trigger";
+		state->state_success = AS_APP_STATE_UNKNOWN;
+		state->state_failure = AS_APP_STATE_UNKNOWN;
+		break;
 	default:
 		g_assert_not_reached ();
 		break;
