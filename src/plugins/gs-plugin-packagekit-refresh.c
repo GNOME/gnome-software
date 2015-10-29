@@ -126,6 +126,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	pk_client_set_background (PK_CLIENT (plugin->priv->task), cache_age > 0);
 
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -251,6 +252,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 	g_autoptr(GPtrArray) array = NULL;
 
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* get file list so we can work out ID */
 	files = g_strsplit (filename, "\t", -1);
@@ -318,6 +320,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 		return TRUE;
 
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* get details */
 	files = g_strsplit (filename, "\t", -1);
