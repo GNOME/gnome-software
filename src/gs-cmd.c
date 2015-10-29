@@ -308,6 +308,19 @@ main (int argc, char **argv)
 				break;
 			}
 		}
+	} else if (argc == 2 && g_strcmp0 (argv[1], "upgrades") == 0) {
+		for (i = 0; i < repeat; i++) {
+			if (list != NULL)
+				gs_plugin_list_free (list);
+			list = gs_plugin_loader_get_distro_upgrades (plugin_loader,
+								     refine_flags,
+								     NULL,
+								     &error);
+			if (list == NULL) {
+				ret = FALSE;
+				break;
+			}
+		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "sources") == 0) {
 		list = gs_plugin_loader_get_sources (plugin_loader,
 						     refine_flags,
@@ -402,7 +415,8 @@ main (int argc, char **argv)
 		gs_cmd_show_results_categories (categories);
 	}
 out:
-	as_profile_dump (profile);
+	if (profile != NULL)
+		as_profile_dump (profile);
 	g_option_context_free (context);
 	gs_plugin_list_free (list);
 	gs_plugin_list_free (categories);

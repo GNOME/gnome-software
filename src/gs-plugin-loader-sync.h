@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2007-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2007-2015 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -38,6 +38,10 @@ GList		*gs_plugin_loader_search		(GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable,
 							 GError		**error);
 GList		*gs_plugin_loader_get_updates		(GsPluginLoader	*plugin_loader,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
+GList		*gs_plugin_loader_get_distro_upgrades	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);

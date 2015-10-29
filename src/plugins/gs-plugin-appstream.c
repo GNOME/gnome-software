@@ -750,6 +750,55 @@ out:
 }
 
 /**
+ * gs_plugin_add_distro_upgrades:
+ */
+gboolean
+gs_plugin_add_distro_upgrades (GsPlugin *plugin,
+			       GList **list,
+			       GCancellable *cancellable,
+			       GError **error)
+{
+	AsApp *item;
+	GPtrArray *array;
+	gboolean ret = TRUE;
+	guint i;
+
+	/* load XML files */
+	if (g_once_init_enter (&plugin->priv->done_init)) {
+		ret = gs_plugin_startup (plugin, error);
+		g_once_init_leave (&plugin->priv->done_init, TRUE);
+		if (!ret)
+			return FALSE;
+	}
+
+	/* find any upgrades */
+	g_mutex_lock (&plugin->priv->store_mutex);
+	array = as_store_get_apps (plugin->priv->store);
+	for (i = 0; i < array->len; i++) {
+		g_autoptr(GsApp) app = NULL;
+		item = g_ptr_array_index (array, i);
+
+		// FIXME: AS_ID_KIND_DISTRO_UPGRADE
+		if (as_app_get_id_kind (item) != AS_ID_KIND_UNKNOWN)
+			continue;
+		if (as_app_get_metadata_item (item, "X-IsUpgrade") == NULL)
+			continue;
+
+		/* create */
+		app = gs_app_new (as_app_get_id (item));
+		gs_app_set_kind (app, GS_APP_KIND_DISTRO_UPGRADE);
+		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		ret = gs_plugin_refine_item (plugin, app, item, error);
+		if (!ret)
+			goto out;
+		gs_plugin_add_app (list, app);
+	}
+out:
+	g_mutex_unlock (&plugin->priv->store_mutex);
+	return ret;
+}
+
+/**
  * gs_plugin_refine:
  */
 gboolean

@@ -154,6 +154,8 @@ gs_app_kind_to_string (GsAppKind kind)
 		return "source";
 	if (kind == GS_APP_KIND_CORE)
 		return "core";
+	if (kind == GS_APP_KIND_DISTRO_UPGRADE)
+		return "distro-upgrade";
 	return NULL;
 }
 
