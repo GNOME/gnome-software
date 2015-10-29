@@ -126,6 +126,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 	data.app = NULL;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -171,6 +172,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 
 	data.app = NULL;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	ptask = as_profile_start_literal (plugin->profile, "packagekit::add-sources-related");
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
@@ -232,6 +234,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 	data.app = NULL;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
@@ -286,6 +289,7 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 
 	data.app = NULL;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -319,6 +323,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	data.app = app;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
@@ -483,6 +488,7 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 
 	data.app = NULL;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -510,6 +516,7 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 
 	data.app = NULL;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -550,6 +557,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	data.app = NULL;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
@@ -629,6 +637,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 
 	data.app = NULL;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -664,6 +673,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 
 	data.app = NULL;
 	data.plugin = plugin;
+	data.ptask = NULL;
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
