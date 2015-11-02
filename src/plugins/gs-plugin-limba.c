@@ -111,7 +111,6 @@ gs_plugin_refine (GsPlugin *plugin,
 		GCancellable *cancellable,
 		GError **error)
 {
-	gboolean ret;
 	GList *l;
 	GsApp *app;
 	g_autoptr(AsProfileTask) ptask = NULL;
