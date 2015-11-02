@@ -151,9 +151,9 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	/* check if we can remove this application */
 	if (bundle == NULL)
-		return FALSE;
+		return TRUE;
 	if (as_bundle_get_kind (bundle) != AS_BUNDLE_KIND_LIMBA)
-		return FALSE;
+		return TRUE;
 
 	mgr = li_manager_new ();
 
@@ -189,9 +189,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	/* check if we can install this application */
 	if (bundle == NULL)
-		return FALSE;
+		return TRUE;
 	if (as_bundle_get_kind (bundle) != AS_BUNDLE_KIND_LIMBA)
-		return FALSE;
+		return TRUE;
 
 	/* create new installer and select remote package */
 	inst = li_installer_new ();
