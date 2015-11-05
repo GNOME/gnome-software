@@ -57,9 +57,7 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->db_path = g_build_filename (g_get_home_dir (),
-						  ".local",
-						  "share",
+	plugin->priv->db_path = g_build_filename (g_get_user_data_dir (),
 						  "gnome-software",
 						  "fedora-tagger.db",
 						  NULL);
