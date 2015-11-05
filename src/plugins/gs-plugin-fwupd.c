@@ -50,13 +50,16 @@ struct GsPluginPrivate {
 static gboolean
 gs_plugin_fwupd_setup_networking (GsPlugin *plugin, GError **error)
 {
+	g_autofree gchar *user_agent = NULL;
+
 	/* already set up */
 	if (plugin->priv->session != NULL)
 		return TRUE;
 
 	/* set up a session */
+	user_agent = g_strdup_printf ("%s/%s", PACKAGE_NAME, PACKAGE_VERSION);
 	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-	                                                       "gnome-software",
+	                                                       user_agent,
 	                                                       NULL);
 	if (plugin->priv->session == NULL) {
 		g_set_error (error,
