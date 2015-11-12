@@ -32,7 +32,7 @@
 #include "gs-category-tile.h"
 #include "gs-utils.h"
 
-#define N_TILES 6
+#define N_TILES 8
 
 typedef struct
 {
