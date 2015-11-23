@@ -477,7 +477,7 @@ gs_plugin_fedora_tagger_load_db (GsPlugin *plugin, GError **error)
 	/* create ratings if required */
 	rc = sqlite3_exec (plugin->priv->db,
 			   "SELECT vote_count FROM ratings LIMIT 1",
-			   gs_plugin_fedora_tagger_timestamp_cb, &mtime,
+			   NULL, NULL,
 			   &error_msg);
 	if (rc != SQLITE_OK) {
 		g_debug ("creating table to repair: %s", error_msg);
