@@ -413,6 +413,8 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 			label = gtk_label_new (as_screenshot_get_caption (ss, NULL));
 			g_object_set (label,
 				      "xalign", 0.0,
+				      "max-width-chars", 10,
+				      "wrap", TRUE,
 				      NULL);
 			gtk_box_pack_start (GTK_BOX (self->box_details_screenshot_main), label, FALSE, FALSE, 0);
 			gtk_widget_set_visible (label, TRUE);
@@ -529,7 +531,7 @@ gs_shell_details_set_description (GsShellDetails *self, const gchar *tmp)
 	for (i = 0; split[i] != NULL; i++) {
 		para = gtk_label_new (split[i]);
 		gtk_label_set_line_wrap (GTK_LABEL (para), TRUE);
-		gtk_label_set_max_width_chars (GTK_LABEL (para), 80);
+		gtk_label_set_max_width_chars (GTK_LABEL (para), 40);
 		gtk_label_set_selectable (GTK_LABEL (para), TRUE);
 		gtk_widget_set_visible (para, TRUE);
 		gtk_widget_set_can_focus (para, FALSE);

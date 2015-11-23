@@ -139,6 +139,8 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 			      "margin-top", 6,
 			      "margin-bottom", 6,
 			      "xalign", 1.0,
+			      "ellipsize", PANGO_ELLIPSIZE_END,
+			      "width-chars", 10,
 			      NULL);
 		gtk_size_group_add_widget (dialog->sizegroup_version, widget);
 		gtk_box_pack_start (box, widget, TRUE, TRUE, 0);

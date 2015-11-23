@@ -86,7 +86,7 @@
                             <property name="orientation">vertical</property>
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
-                            <property name="halign">start</property>
+                            <property name="halign">fill</property>
                             <property name="valign">start</property>
                             <property name="margin_start">24</property>
                             <property name="margin_end">24</property>
@@ -95,12 +95,14 @@
                               <object class="GtkLabel" id="application_details_title">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">start</property>
+                                <property name="halign">fill</property>
                                 <property name="valign">start</property>
                                 <property name="hexpand">True</property>
                                 <property name="margin_bottom">4</property>
                                 <property name="xalign">0</property>
                                 <property name="selectable">True</property>
+                                <property name="wrap">True</property>
+                                <property name="max_width_chars">20</property>
                                 <style>
                                   <class name="application-details-title"/>
                                 </style>
@@ -115,7 +117,7 @@
                               <object class="GtkLabel" id="application_details_summary">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="halign">start</property>
+                                <property name="halign">fill</property>
                                 <property name="valign">start</property>
                                 <property name="hexpand">True</property>
                                 <property name="margin_bottom">16</property>
@@ -653,6 +655,7 @@
                             <property name="hexpand">True</property>
                             <property name="xalign">0</property>
                             <property name="label">0.12.3</property>
+                            <property name="ellipsize">end</property>
                             <property name="selectable">True</property>
                             <accessibility>
                               <relation target="label_details_version_title" type="labelled-by"/>
@@ -801,7 +804,7 @@
                             <property name="label">GPL</property>
                             <property name="ellipsize">none</property>
                             <property name="wrap">True</property>
-                            <property name="max-width-chars">40</property>
+                            <property name="max-width-chars">10</property>
                             <property name="selectable">True</property>
                             <accessibility>
                               <relation target="label_details_licence_title" type="labelled-by"/>
@@ -925,6 +928,8 @@
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="xalign">0</property>
+                                <property name="wrap">True</property>
+                                <property name="max-width-chars">40</property>
                                 <property name="label" translatable="yes">Selected add-ons will be installed with the application.</property>
                               </object>
                             </child>

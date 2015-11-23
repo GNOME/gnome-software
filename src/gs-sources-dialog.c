@@ -238,6 +238,7 @@ add_app (GtkListBox *listbox, GsApp *app)
 
 	widget = gtk_label_new (gs_app_get_name (app));
 	gtk_widget_set_halign (widget, GTK_ALIGN_START);
+	gtk_label_set_ellipsize (GTK_LABEL (widget), PANGO_ELLIPSIZE_END);
 	gtk_box_pack_start (GTK_BOX (box), widget, FALSE, FALSE, 0);
 
 	g_object_set_data_full (G_OBJECT (box),

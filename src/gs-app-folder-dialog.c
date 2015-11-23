@@ -168,6 +168,7 @@ create_row (GsAppFolderDialog *dialog, const gchar *folder)
 		      "margin-end", 20,
 		      "margin-top", 10,
 		      "margin-bottom", 10,
+		      "ellipsize", PANGO_ELLIPSIZE_END,
 		      NULL);
 	gtk_widget_set_valign (label, GTK_ALIGN_CENTER);
 	gtk_widget_set_halign (label, GTK_ALIGN_START);
