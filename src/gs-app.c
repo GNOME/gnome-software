@@ -156,6 +156,8 @@ gs_app_kind_to_string (GsAppKind kind)
 		return "core";
 	if (kind == GS_APP_KIND_DISTRO_UPGRADE)
 		return "distro-upgrade";
+	if (kind == GS_APP_KIND_FIRMWARE_UPDATE)
+		return "firmware-update";
 	return NULL;
 }
 

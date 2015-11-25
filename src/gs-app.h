@@ -47,6 +47,7 @@ typedef enum {
 	GS_APP_KIND_SOURCE,		/* src	[ install:1 remove:0 update:0 ] */
 	GS_APP_KIND_CORE,		/* pkg	[ install:0 remove:0 update:1 ] */
 	GS_APP_KIND_DISTRO_UPGRADE,	/* meta	[ install:0 remove:0 update:1 ] */
+	GS_APP_KIND_FIRMWARE_UPDATE,	/* app	[ install:0 remove:0 update:1 ] */
 	GS_APP_KIND_LAST
 } GsAppKind;
 

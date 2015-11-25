@@ -402,7 +402,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	gs_app_set_id_kind (app, AS_ID_KIND_FIRMWARE);
 	gs_app_add_source_id (app, filename_cache);
 	gs_app_add_category (app, "System");
-	gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
+	gs_app_set_kind (app, GS_APP_KIND_FIRMWARE_UPDATE);
 	gs_app_set_metadata (app, "fwupd::DeviceID", id);
 	gs_app_set_metadata (app, "DataDir::desktop-icon", "application-x-firmware");
 	gs_plugin_add_app (list, app);
@@ -1098,7 +1098,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_metadata (app, "DataDir::desktop-icon", "application-x-firmware");
 	gs_app_set_id_kind (app, AS_ID_KIND_FIRMWARE);
 	gs_app_set_management_plugin (app, "fwupd");
-	gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
+	gs_app_set_kind (app, GS_APP_KIND_FIRMWARE_UPDATE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_add_source_id (app, filename);
 	gs_app_add_category (app, "System");
