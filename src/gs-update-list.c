@@ -30,28 +30,50 @@
 #include "gs-app.h"
 #include "gs-app-row.h"
 
-struct _GsUpdateList
+typedef struct
 {
-	GtkListBox	 parent_instance;
-
 	GtkSizeGroup	*sizegroup_image;
 	GtkSizeGroup	*sizegroup_name;
+} GsUpdateListPrivate;
+
+enum {
+	SIGNAL_BUTTON_CLICKED,
+	SIGNAL_LAST
 };
 
-G_DEFINE_TYPE (GsUpdateList, gs_update_list, GTK_TYPE_LIST_BOX)
+static guint signals [SIGNAL_LAST] = { 0 };
+
+G_DEFINE_TYPE_WITH_PRIVATE (GsUpdateList, gs_update_list, GTK_TYPE_LIST_BOX)
+
+#define GET_PRIV(o)	gs_update_list_get_instance_private(o)
+
+/**
+ * gs_update_list_button_clicked_cb:
+ **/
+static void
+gs_update_list_button_clicked_cb (GsAppRow *app_row,
+				  GsUpdateList *update_list)
+{
+	GsApp *app = gs_app_row_get_app (app_row);
+	g_signal_emit (update_list, signals[SIGNAL_BUTTON_CLICKED], 0, app);
+}
 
 void
 gs_update_list_add_app (GsUpdateList *update_list,
 			GsApp	*app)
 {
+	GsUpdateListPrivate *priv = GET_PRIV (update_list);
 	GtkWidget *app_row;
 
 	app_row = gs_app_row_new (app);
 	gs_app_row_set_show_update (GS_APP_ROW (app_row), TRUE);
+	g_signal_connect (app_row, "button-clicked",
+			  G_CALLBACK (gs_update_list_button_clicked_cb),
+			  update_list);
 	gtk_container_add (GTK_CONTAINER (update_list), app_row);
 	gs_app_row_set_size_groups (GS_APP_ROW (app_row),
-				    update_list->sizegroup_image,
-				    update_list->sizegroup_name);
+				    priv->sizegroup_image,
+				    priv->sizegroup_name);
 	gtk_widget_show (app_row);
 }
 
@@ -171,9 +193,10 @@ static void
 gs_update_list_dispose (GObject *object)
 {
 	GsUpdateList *update_list = GS_UPDATE_LIST (object);
+	GsUpdateListPrivate *priv = GET_PRIV (update_list);
 
-	g_clear_object (&update_list->sizegroup_image);
-	g_clear_object (&update_list->sizegroup_name);
+	g_clear_object (&priv->sizegroup_image);
+	g_clear_object (&priv->sizegroup_name);
 
 	G_OBJECT_CLASS (gs_update_list_parent_class)->dispose (object);
 }
@@ -181,8 +204,9 @@ gs_update_list_dispose (GObject *object)
 static void
 gs_update_list_init (GsUpdateList *update_list)
 {
-	update_list->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
-	update_list->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	GsUpdateListPrivate *priv = GET_PRIV (update_list);
+	priv->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+	priv->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (update_list),
 				      list_header_func,
@@ -196,6 +220,13 @@ static void
 gs_update_list_class_init (GsUpdateListClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	signals [SIGNAL_BUTTON_CLICKED] =
+		g_signal_new ("button-clicked",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsUpdateListClass, button_clicked),
+			      NULL, NULL, g_cclosure_marshal_VOID__OBJECT,
+			      G_TYPE_NONE, 1, GS_TYPE_APP);
 
 	object_class->dispose = gs_update_list_dispose;
 }

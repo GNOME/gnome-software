@@ -30,7 +30,14 @@ G_BEGIN_DECLS
 
 #define GS_TYPE_UPDATE_LIST (gs_update_list_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsUpdateList, gs_update_list, GS, UPDATE_LIST, GtkListBox)
+G_DECLARE_DERIVABLE_TYPE (GsUpdateList, gs_update_list, GS, UPDATE_LIST, GtkListBox)
+
+struct _GsUpdateListClass
+{
+	GtkListBoxClass		 parent_class;
+	void			(*button_clicked)	(GsUpdateList	*update_list,
+							 GsApp		*app);
+};
 
 GtkWidget	*gs_update_list_new		(void);
 void		 gs_update_list_add_app		(GsUpdateList	*update_list,
