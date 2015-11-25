@@ -233,44 +233,16 @@ gs_plugin_fwupd_set_app_from_kv (GsApp *app, const gchar *key, GVariant *val)
 {
 	g_debug ("key %s", key);
 
-	if (g_strcmp0 (key, "Guid") == 0) {
+	if (g_strcmp0 (key, "AppstreamId") == 0) {
 		gs_app_set_id (app, g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "Guid") == 0) {
+		gs_app_set_metadata (app, "GUID", g_variant_get_string (val, NULL));
 		return;
 	}
 	if (g_strcmp0 (key, "Version") == 0) {
 		gs_app_set_version (app, g_variant_get_string (val, NULL));
-		return;
-	}
-	if (g_strcmp0 (key, "Vendor") == 0) {
-		gs_app_set_origin (app, g_variant_get_string (val, NULL));
-		return;
-	}
-	if (g_strcmp0 (key, "Name") == 0) {
-		gs_app_add_source (app, g_variant_get_string (val, NULL));
-		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
-				 g_variant_get_string (val, NULL));
-		return;
-	}
-	if (g_strcmp0 (key, "Summary") == 0) {
-		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
-				    g_variant_get_string (val, NULL));
-		return;
-	}
-	if (g_strcmp0 (key, "Description") == 0) {
-		g_autofree gchar *tmp = NULL;
-		tmp = as_markup_convert (g_variant_get_string (val, NULL),
-					 AS_MARKUP_CONVERT_FORMAT_SIMPLE, NULL);
-		if (tmp != NULL)
-			gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, tmp);
-		return;
-	}
-	if (g_strcmp0 (key, "UrlHomepage") == 0) {
-		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
-				g_variant_get_string (val, NULL));
-		return;
-	}
-	if (g_strcmp0 (key, "License") == 0) {
-		gs_app_set_licence (app, g_variant_get_string (val, NULL));
 		return;
 	}
 	if (g_strcmp0 (key, "Size") == 0) {
