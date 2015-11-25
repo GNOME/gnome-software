@@ -607,6 +607,8 @@ gs_plugin_loader_app_is_non_installed (GsApp *app, gpointer user_data)
 		return FALSE;
 	if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE)
 		return FALSE;
+	if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE_LIVE)
+		return FALSE;
 	return TRUE;
 }
 
@@ -2790,6 +2792,7 @@ gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 		switch (gs_app_get_state (app)) {
 		case AS_APP_STATE_INSTALLED:
 		case AS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_UPDATABLE_LIVE:
 			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 			break;
 		default:

@@ -216,6 +216,7 @@ gs_shell_details_switch_to (GsShellDetails *self)
 	switch (gs_app_get_state (self->app)) {
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_get_id_kind (self->app) == AS_ID_KIND_DESKTOP ||
 		    gs_app_get_id_kind (self->app) == AS_ID_KIND_WEB_APP) {
 			gtk_widget_set_visible (self->button_details_launch, TRUE);
@@ -239,6 +240,7 @@ gs_shell_details_switch_to (GsShellDetails *self)
 		switch (state) {
 		case AS_APP_STATE_INSTALLED:
 		case AS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_UPDATABLE_LIVE:
 			gtk_widget_set_visible (self->button_remove, TRUE);
 			gtk_widget_set_sensitive (self->button_remove, TRUE);
 			/* Mark the button as destructive only if Launch is not visible */
@@ -297,6 +299,7 @@ gs_shell_details_switch_to (GsShellDetails *self)
 		case AS_APP_STATE_AVAILABLE:
 		case AS_APP_STATE_QUEUED_FOR_INSTALL:
 		case AS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_UPDATABLE_LIVE:
 		case AS_APP_STATE_UNAVAILABLE:
 		case AS_APP_STATE_AVAILABLE_LOCAL:
 		case AS_APP_STATE_INSTALLING:
@@ -807,6 +810,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	switch (gs_app_get_state (self->app)) {
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE_LIVE:
 		gtk_widget_set_visible (self->label_addons_uninstalled_app, FALSE);
 		break;
 	default:
@@ -1127,6 +1131,7 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 	switch (gs_app_get_state (self->app)) {
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE_LIVE:
 		if (gs_app_addon_row_get_selected (row)) {
 			gs_page_install_app (GS_PAGE (self), addon);
 		} else {

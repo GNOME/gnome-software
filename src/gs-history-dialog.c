@@ -89,6 +89,7 @@ gs_history_dialog_set_app (GsHistoryDialog *dialog, GsApp *app)
 			tmp = C_("app status", "Installed");
 			break;
 		case AS_APP_STATE_UPDATABLE:
+		case AS_APP_STATE_UPDATABLE_LIVE:
 			/* TRANSLATORS: this is the status in the history UI,
 			 * where we are showing the application was updated */
 			tmp = C_("app status", "Updated");

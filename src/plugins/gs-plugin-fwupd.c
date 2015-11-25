@@ -396,9 +396,15 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	/* can be done live */
+	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE) {
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+	} else {
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+	}
+
 	/* actually add the application */
 	gs_app_set_management_plugin (app, "fwupd");
-	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 	gs_app_set_id_kind (app, AS_ID_KIND_FIRMWARE);
 	gs_app_add_source_id (app, filename_cache);
 	gs_app_add_category (app, "System");

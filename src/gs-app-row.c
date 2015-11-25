@@ -83,7 +83,8 @@ gs_app_row_get_description (GsAppRow *app_row)
 
 	/* convert the markdown update description into PangoMarkup */
 	if (priv->show_update &&
-	    gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE) {
+	    (gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE ||
+	     gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE_LIVE)) {
 		tmp = gs_app_get_update_details (priv->app);
 		if (tmp != NULL && tmp[0] != '\0') {
 			g_autoptr(GsMarkdown) markdown = NULL;
@@ -144,7 +145,8 @@ gs_app_row_refresh (GsAppRow *app_row)
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
 			     gs_app_get_name (priv->app));
 	if (priv->show_update &&
-	    gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE) {
+	    (gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE ||
+	     gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE_LIVE)) {
 		gtk_widget_show (priv->version_label);
 		gtk_widget_hide (priv->star);
 		gtk_label_set_label (GTK_LABEL (priv->version_label),
@@ -232,6 +234,12 @@ gs_app_row_refresh (GsAppRow *app_row)
 		 * allows the application to be easily installed */
 		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
 		break;
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		gtk_widget_set_visible (priv->button, TRUE);
+		/* TRANSLATORS: this is a button next to the search results that
+		 * allows the firmware to be easily updated */
+		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
+		break;
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_INSTALLED:
 		if (gs_app_get_kind (priv->app) != GS_APP_KIND_SYSTEM)
@@ -262,7 +270,16 @@ gs_app_row_refresh (GsAppRow *app_row)
 		break;
 	}
 
-	gtk_widget_set_visible (priv->button_box, !priv->show_update);
+	/* hide buttons in the update list, unless the app is live updatable */
+	switch (gs_app_get_state (priv->app)) {
+	case AS_APP_STATE_UPDATABLE_LIVE:
+	case AS_APP_STATE_INSTALLING:
+		gtk_widget_set_visible (priv->button_box, TRUE);
+		break;
+	default:
+		gtk_widget_set_visible (priv->button_box, !priv->show_update);
+		break;
+	}
 
 	if (priv->selectable) {
 		if (gs_app_get_id_kind (priv->app) == AS_ID_KIND_DESKTOP ||
