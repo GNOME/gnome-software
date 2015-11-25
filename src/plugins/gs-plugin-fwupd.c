@@ -793,6 +793,7 @@ static gboolean
 gs_plugin_fwupd_upgrade (GsPlugin *plugin,
 			 const gchar *filename,
 			 const gchar *device_id,
+			 gboolean do_offline,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -815,8 +816,10 @@ gs_plugin_fwupd_upgrade (GsPlugin *plugin,
 			       "reason", g_variant_new_string ("system-update"));
 	g_variant_builder_add (&builder, "{sv}",
 			       "filename", g_variant_new_string (filename));
-	g_variant_builder_add (&builder, "{sv}",
-			       "offline", g_variant_new_boolean (TRUE));
+	if (do_offline) {
+		g_variant_builder_add (&builder, "{sv}",
+				       "offline", g_variant_new_boolean (TRUE));
+	}
 
 	/* open file */
 	fd = open (filename, O_RDONLY);
@@ -891,7 +894,7 @@ gs_plugin_app_upgrade (GsPlugin *plugin,
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!gs_plugin_fwupd_upgrade (plugin, filename, device_id,
+	if (!gs_plugin_fwupd_upgrade (plugin, filename, device_id, TRUE,
 				      cancellable, error))
 		return FALSE;
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -920,6 +923,8 @@ gs_plugin_offline_update (GsPlugin *plugin,
 
 /**
  * gs_plugin_app_install:
+ *
+ * Called when a user double clicks on a .cab file
  */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
@@ -928,6 +933,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	const gchar *filename;
+	gboolean offline = TRUE;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "fwupd") != 0)
@@ -943,11 +949,27 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!gs_plugin_fwupd_upgrade (plugin, filename, FWUPD_DEVICE_ID_ANY,
+	if (gs_app_get_kind (app) == GS_APP_KIND_FIRMWARE_UPDATE)
+		offline = FALSE;
+	if (!gs_plugin_fwupd_upgrade (plugin, filename, FWUPD_DEVICE_ID_ANY, offline,
 				      cancellable, error))
 		return FALSE;
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
+}
+
+/**
+ * gs_plugin_app_update:
+ *
+ * This is only called when updating device firmware live.
+ */
+gboolean
+gs_plugin_app_update (GsPlugin *plugin,
+		      GsApp *app,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	return gs_plugin_app_install (plugin, app, cancellable, error);
 }
 
 /**
