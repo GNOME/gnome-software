@@ -148,6 +148,61 @@ gs_page_install_app (GsPage *page, GsApp *app)
 }
 
 void
+gs_page_update_app (GsPage *page, GsApp *app)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	GtkResponseType response;
+	GtkWidget *dialog;
+	AsScreenshot *ss;
+
+	/* there are no steps required to put the device into DFU mode */
+	if (gs_app_get_screenshots (app)->len == 0) {
+		InstallRemoveData *data;
+		data = g_slice_new0 (InstallRemoveData);
+		data->app = g_object_ref (app);
+		data->page = g_object_ref (page);
+		g_debug ("update %s", gs_app_get_id (app));
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+						   app,
+						   GS_PLUGIN_LOADER_ACTION_UPDATE,
+						   priv->cancellable,
+						   gs_page_app_installed_cb,
+						   data);
+		return;
+	}
+
+	/* tell the user what they have to do */
+	ss = g_ptr_array_index (gs_app_get_screenshots (app), 0);
+	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
+					 GTK_DIALOG_MODAL,
+					 GTK_MESSAGE_INFO,
+					 GTK_BUTTONS_CANCEL,
+					 /* TRANSLATORS: this is a prompt message, and
+					  * '%s' is an application summary, e.g. 'GNOME Clocks' */
+					 _("Prepare %s"),
+					 gs_app_get_name (app));
+	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
+						    "%s", as_screenshot_get_caption (ss, NULL));
+	/* TRANSLATORS: this is button text to update the firware */
+	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Install"), GTK_RESPONSE_OK);
+	response = gtk_dialog_run (GTK_DIALOG (dialog));
+	if (response == GTK_RESPONSE_OK) {
+		InstallRemoveData *data;
+		g_debug ("update %s", gs_app_get_id (app));
+		data = g_slice_new0 (InstallRemoveData);
+		data->app = g_object_ref (app);
+		data->page = g_object_ref (page);
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+						   app,
+						   GS_PLUGIN_LOADER_ACTION_UPDATE,
+						   priv->cancellable,
+						   gs_page_app_installed_cb,
+						   data);
+	}
+	gtk_widget_destroy (dialog);
+}
+
+void
 gs_page_remove_app (GsPage *page, GsApp *app)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);

@@ -594,6 +594,18 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 }
 
 /**
+ * gs_shell_updates_button_clicked_cb:
+ **/
+static void
+gs_shell_updates_button_clicked_cb (GsUpdateList *update_list,
+				    GsApp *app,
+				    GsShellUpdates *self)
+{
+	if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE_LIVE)
+		gs_page_update_app (GS_PAGE (self), app);
+}
+
+/**
  * gs_shell_updates_refresh_cb:
  **/
 static void
@@ -946,6 +958,8 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	/* setup updates */
 	g_signal_connect (self->list_box_updates, "row-activated",
 			  G_CALLBACK (gs_shell_updates_activated_cb), self);
+	g_signal_connect (self->list_box_updates, "button-clicked",
+			  G_CALLBACK (gs_shell_updates_button_clicked_cb), self);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_update_all"));
 	g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), self);

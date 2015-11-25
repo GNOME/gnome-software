@@ -49,6 +49,8 @@ void		 gs_page_install_app			(GsPage		*page,
 							 GsApp		*app);
 void		 gs_page_remove_app			(GsPage		*page,
 							 GsApp		*app);
+void		 gs_page_update_app			(GsPage		*page,
+							 GsApp		*app);
 void		 gs_page_setup				(GsPage		*page,
 							 GsShell	*shell,
 							 GsPluginLoader	*plugin_loader,
