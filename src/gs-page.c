@@ -153,22 +153,15 @@ gs_page_remove_app (GsPage *page, GsApp *app)
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	GtkResponseType response;
 	GtkWidget *dialog;
-	g_autoptr(GString) markup = NULL;
 
-	markup = g_string_new ("");
-	g_string_append_printf (markup,
-	                        /* TRANSLATORS: this is a prompt message, and
-	                         * '%s' is an application summary, e.g. 'GNOME Clocks' */
-	                        _("Are you sure you want to remove %s?"),
-	                        gs_app_get_name (app));
-	g_string_prepend (markup, "<b>");
-	g_string_append (markup, "</b>");
 	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 	                                 GTK_DIALOG_MODAL,
 	                                 GTK_MESSAGE_QUESTION,
 	                                 GTK_BUTTONS_CANCEL,
-	                                 NULL);
-	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), markup->str);
+	                                 /* TRANSLATORS: this is a prompt message, and
+	                                  * '%s' is an application summary, e.g. 'GNOME Clocks' */
+	                                 _("Are you sure you want to remove %s?"),
+	                                 gs_app_get_name (app));
 	gtk_message_dialog_format_secondary_markup (GTK_MESSAGE_DIALOG (dialog),
 	                                            /* TRANSLATORS: longer dialog text */
                                                     _("%s will be removed, and you will have to install it to use it again."),
