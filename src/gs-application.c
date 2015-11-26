@@ -741,7 +741,6 @@ gs_application_class_init (GsApplicationClass *class)
 GsApplication *
 gs_application_new (void)
 {
-	g_set_prgname("org.gnome.Software");
 	return g_object_new (GS_APPLICATION_TYPE,
 			     "application-id", "org.gnome.Software",
 			     "flags", G_APPLICATION_HANDLES_OPEN,
