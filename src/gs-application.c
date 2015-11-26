@@ -106,7 +106,8 @@ gs_application_init (GsApplication *application)
 		  _("Show profiling information for the service"), NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, NULL,
 		  _("Prefer local file sources to AppStream"), NULL },
-		{ "version", 0, 0, G_OPTION_ARG_NONE, NULL, NULL, NULL },
+		{ "version", 0, 0, G_OPTION_ARG_NONE, NULL,
+		  _("Show version number"), NULL },
 		{ NULL }
 	};
 
