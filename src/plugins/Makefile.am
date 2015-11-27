@@ -65,9 +65,9 @@ libgs_plugin_fedora_provenance_la_LDFLAGS = -module -avoid-version
 libgs_plugin_fedora_provenance_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_fedora_tagger_ratings_la_SOURCES = gs-plugin-fedora-tagger-ratings.c
-libgs_plugin_fedora_tagger_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)
+libgs_plugin_fedora_tagger_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)
 libgs_plugin_fedora_tagger_ratings_la_LDFLAGS = -module -avoid-version
-libgs_plugin_fedora_tagger_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+libgs_plugin_fedora_tagger_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(JSON_GLIB_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_fedora_tagger_usage_la_SOURCES = gs-plugin-fedora-tagger-usage.c
 libgs_plugin_fedora_tagger_usage_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)

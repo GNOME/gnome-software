@@ -21,6 +21,7 @@
 
 #include <config.h>
 
+#include <json-glib/json-glib.h>
 #include <libsoup/soup.h>
 #include <string.h>
 #include <sqlite3.h>
@@ -100,50 +101,33 @@ gs_plugin_destroy (GsPlugin *plugin)
 
 /**
  * gs_plugin_parse_json:
- *
- * This is a quick and dirty JSON parser that extracts one line from the
- * JSON formatted data. Sorry JsonGlib, you look awesome, but you're just too
- * heavy for an error message.
  */
 static gchar *
-gs_plugin_parse_json (const gchar *data, gsize data_len, const gchar *key)
+gs_plugin_parse_json (const gchar *data, gsize data_len, const gchar *key, GError **error)
 {
-	gchar *key_full;
+	JsonNode *root;
+	JsonObject *root_object;
+	JsonParser *parser;
+	gboolean ret;
 	gchar *value = NULL;
-	guint i;
-	gchar *tmp;
-	guint len;
-	g_autoptr(GString) string = NULL;
-	g_auto(GStrv) split = NULL;
 
-	/* format the key to match what JSON returns */
-	key_full = g_strdup_printf ("\"%s\":", key);
+	parser = json_parser_new ();
 
-	/* replace escaping with something sane */
-	string = g_string_new_len (data, data_len);
-	gs_string_replace (string, "\\\"", "'");
+	ret = json_parser_load_from_data (parser, data, data_len, error);
+	if (!ret)
+		goto out;
 
-	/* find the line that corresponds to our key */
-	split = g_strsplit (string->str, "\n", -1);
-	for (i = 0; split[i] != NULL; i++) {
-		tmp = g_strchug (split[i]);
-		if (g_str_has_prefix (tmp, key_full)) {
-			tmp += strlen (key_full);
+	root = json_parser_get_root (parser);
+	if (root == NULL)
+		goto out;
 
-			/* remove leading chars */
-			tmp = g_strstrip (tmp);
-			if (tmp[0] == '\"')
-				tmp += 1;
+	root_object = json_node_get_object (root);
+	if (root_object == NULL)
+		goto out;
 
-			/* remove trailing chars */
-			len = strlen (tmp);
-			if (tmp[len-1] == ',')
-				len -= 1;
-			if (tmp[len-1] == '\"')
-				len -= 1;
-			value = g_strndup (tmp, len);
-		}
-	}
+	value = g_strdup (json_object_get_string_member (root_object, key));
+out:
+	g_object_unref (parser);
 	return value;
 }
 
@@ -177,10 +161,15 @@ gs_plugin_app_set_rating_pkg (GsPlugin *plugin,
 		g_debug ("Failed to set rating on fedora-tagger: %s",
 			 soup_status_get_phrase (status_code));
 		if (msg->response_body->data != NULL) {
+			g_autoptr(GError) error_local = NULL;
 			error_msg = gs_plugin_parse_json (msg->response_body->data,
 							  msg->response_body->length,
-							  "error");
-			g_debug ("the error given was: %s", error_msg);
+							  "error",
+							  &error_local);
+			if (error_msg == NULL)
+				g_debug ("failed to parse fedora-tagger response: %s", error_local->message);
+			else
+				g_debug ("the error given was: %s", error_msg);
 		}
 	} else {
 		g_debug ("Got response: %s", msg->response_body->data);
