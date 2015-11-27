@@ -53,6 +53,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_autoptr(GSettings) settings = NULL;
 
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+	                                                       "gnome-software",
+	                                                       NULL);
 
 	/* this is opt-in, and turned off by default */
 	settings = g_settings_new ("org.gnome.desktop.privacy");
@@ -91,31 +94,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	if (plugin->priv->session != NULL)
 		g_object_unref (plugin->priv->session);
-}
-
-/**
- * gs_plugin_setup_networking:
- */
-static gboolean
-gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
-{
-	/* already set up */
-	if (plugin->priv->session != NULL)
-		return TRUE;
-
-	/* set up a session */
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-	                                                       "gnome-software",
-	                                                       NULL);
-	if (plugin->priv->session == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "%s: failed to setup networking",
-			     plugin->name);
-		return FALSE;
-	}
-	return TRUE;
 }
 
 /**
@@ -176,10 +154,6 @@ gs_plugin_app_set_usage_app (GsPlugin *plugin,
 	sources = gs_app_get_sources (app);
 	if (sources->len == 0)
 		return TRUE;
-
-	/* ensure networking is set up */
-	if (!gs_plugin_setup_networking (plugin, error))
-		return FALSE;
 
 	/* tell fedora-tagger about this package */
 	for (i = 0; i < sources->len; i++) {

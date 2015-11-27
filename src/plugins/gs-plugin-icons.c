@@ -50,6 +50,9 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+	                                                       "gnome-software",
+	                                                       NULL);
 }
 
 /**
@@ -76,31 +79,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_setup_networking:
- */
-static gboolean
-gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
-{
-	/* already set up */
-	if (plugin->priv->session != NULL)
-		return TRUE;
-
-	/* set up a session */
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-	                                                       "gnome-software",
-	                                                       NULL);
-	if (plugin->priv->session == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "%s: failed to setup networking",
-			     plugin->name);
-		return FALSE;
-	}
-	return TRUE;
-}
-
-/**
  * gs_plugin_icons_download:
  */
 static gboolean
@@ -121,10 +99,6 @@ gs_plugin_icons_download (GsPlugin *plugin, const gchar *uri, const gchar *filen
 			     "%s is not a valid URL", uri);
 		return FALSE;
 	}
-
-	/* ensure networking is set up */
-	if (!gs_plugin_setup_networking (plugin, error))
-		return FALSE;
 
 	/* set sync request */
 	status_code = soup_session_send_message (plugin->priv->session, msg);

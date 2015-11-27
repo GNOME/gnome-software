@@ -61,6 +61,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 						  "gnome-software",
 						  "fedora-tagger.db",
 						  NULL);
+	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+	                                                       "gnome-software",
+	                                                       NULL);
 
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
@@ -145,32 +148,6 @@ gs_plugin_parse_json (const gchar *data, gsize data_len, const gchar *key)
 	return value;
 }
 
-
-/**
- * gs_plugin_setup_networking:
- */
-static gboolean
-gs_plugin_setup_networking (GsPlugin *plugin, GError **error)
-{
-	/* already set up */
-	if (plugin->priv->session != NULL)
-		return TRUE;
-
-	/* set up a session */
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-	                                                       "gnome-software",
-	                                                       NULL);
-	if (plugin->priv->session == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "%s: failed to setup networking",
-			     plugin->name);
-		return FALSE;
-	}
-	return TRUE;
-}
-
 /**
  * gs_plugin_app_set_rating_pkg:
  */
@@ -232,10 +209,6 @@ gs_plugin_app_set_rating (GsPlugin *plugin,
 		g_warning ("no pkgname for %s", gs_app_get_id (app));
 		return TRUE;
 	}
-
-	/* ensure networking is set up */
-	if (!gs_plugin_setup_networking (plugin, error))
-		return FALSE;
 
 	/* set rating for each package */
 	for (i = 0; i < sources->len; i++) {
@@ -360,10 +333,6 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	uri = g_strdup_printf ("%s/api/v1/rating/dump/",
 			       GS_PLUGIN_FEDORA_TAGGER_SERVER);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
-
-	/* ensure networking is set up */
-	if (!gs_plugin_setup_networking (plugin, error))
-		return FALSE;
 
 	/* set sync request */
 	status_code = soup_session_send_message (plugin->priv->session, msg);

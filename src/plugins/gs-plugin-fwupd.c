@@ -45,37 +45,6 @@ struct GsPluginPrivate {
 };
 
 /**
- * gs_plugin_fwupd_setup_networking:
- */
-static gboolean
-gs_plugin_fwupd_setup_networking (GsPlugin *plugin, GError **error)
-{
-	g_autofree gchar *user_agent = NULL;
-
-	/* already set up */
-	if (plugin->priv->session != NULL)
-		return TRUE;
-
-	/* set up a session */
-	user_agent = g_strdup_printf ("%s/%s", PACKAGE_NAME, PACKAGE_VERSION);
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-	                                                       user_agent,
-	                                                       NULL);
-	if (plugin->priv->session == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "%s: failed to setup networking",
-			     plugin->name);
-		return FALSE;
-	}
-	/* this disables the double-compression of the firmware.xml.gz file */
-	soup_session_remove_feature_by_type (plugin->priv->session,
-					     SOUP_TYPE_CONTENT_DECODER);
-	return TRUE;
-}
-
-/**
  * gs_plugin_get_name:
  */
 const gchar *
@@ -90,9 +59,19 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
+	g_autofree gchar *user_agent = NULL;
+
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->to_download = g_ptr_array_new_with_free_func (g_free);
 	plugin->priv->to_ignore = g_ptr_array_new_with_free_func (g_free);
+
+	user_agent = g_strdup_printf ("%s/%s", PACKAGE_NAME, PACKAGE_VERSION);
+	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
+	                                                       user_agent,
+	                                                       NULL);
+	/* this disables the double-compression of the firmware.xml.gz file */
+	soup_session_remove_feature_by_type (plugin->priv->session,
+					     SOUP_TYPE_CONTENT_DECODER);
 }
 
 /**
@@ -736,10 +715,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	}
 	if (plugin->priv->proxy == NULL)
 		return TRUE;
-
-	/* ensure networking is set up */
-	if (!gs_plugin_fwupd_setup_networking (plugin, error))
-		return FALSE;
 
 	/* get the metadata and signature file */
 	if (!gs_plugin_fwupd_check_lvfs_metadata (plugin, cache_age, cancellable, error))
