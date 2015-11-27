@@ -59,15 +59,10 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	g_autofree gchar *user_agent = NULL;
-
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->to_download = g_ptr_array_new_with_free_func (g_free);
 	plugin->priv->to_ignore = g_ptr_array_new_with_free_func (g_free);
-
-	user_agent = g_strdup_printf ("%s/%s", PACKAGE_NAME, PACKAGE_VERSION);
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-	                                                       user_agent,
+	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 	                                                       NULL);
 	/* this disables the double-compression of the firmware.xml.gz file */
 	soup_session_remove_feature_by_type (plugin->priv->session,

@@ -59,6 +59,7 @@ void	gs_image_set_from_pixbuf_with_scale	(GtkImage		*image,
 						 gint			 scale);
 void	gs_image_set_from_pixbuf		(GtkImage		*image,
 						 const GdkPixbuf	*pixbuf);
+const gchar	 *gs_user_agent			(void);
 
 G_END_DECLS
 

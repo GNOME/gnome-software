@@ -1446,8 +1446,7 @@ gs_shell_details_init (GsShellDetails *self)
 	gtk_widget_init_template (GTK_WIDGET (self));
 
 	/* setup networking */
-	self->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-	                                               "gnome-software",
+	self->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 	                                               NULL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (self->list_box_addons),

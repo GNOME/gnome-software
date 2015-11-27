@@ -53,8 +53,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_autoptr(GSettings) settings = NULL;
 
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-	                                                       "gnome-software",
+	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 	                                                       NULL);
 
 	/* this is opt-in, and turned off by default */

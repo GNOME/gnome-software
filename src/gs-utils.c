@@ -487,4 +487,10 @@ gs_utils_get_file_age (const gchar *fn)
 	return now - mtime;
 }
 
+const gchar *
+gs_user_agent (void)
+{
+	return PACKAGE_NAME "/" PACKAGE_VERSION;
+}
+
 /* vim: set noexpandtab: */

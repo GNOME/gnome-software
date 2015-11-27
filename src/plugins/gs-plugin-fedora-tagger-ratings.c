@@ -61,8 +61,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 						  "gnome-software",
 						  "fedora-tagger.db",
 						  NULL);
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT,
-	                                                       "gnome-software",
+	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
 	                                                       NULL);
 
 	/* check that we are running on Fedora */
