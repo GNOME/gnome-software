@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-11-15 22:13+0000\n"
-"PO-Revision-Date: 2015-11-17 09:48+0100\n"
+"POT-Creation-Date: 2015-12-01 10:16+0000\n"
+"PO-Revision-Date: 2015-12-01 13:05+0100\n"
 "Last-Translator: Daniel Mustieles <daniel.mustieles@gmail.com>\n"
 "Language-Team: Español; Castellano <gnome-es-list@gnome.org>\n"
 "Language: es\n"
@@ -54,20 +54,20 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Añadir a la carpeta de aplicaciones"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:315
-#: ../src/gs-shell-details.c:263 ../src/gs-shell-installed.c:523
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
+#: ../src/gs-shell-details.c:265 ../src/gs-shell-installed.c:523
 msgid "_Cancel"
 msgstr "_Cancelar"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:320
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:321
 msgid "_Add"
 msgstr "_Añadir"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:96 ../src/gs-app-tile.c:72
-#: ../src/gs-app-tile.c:75 ../src/gs-feature-tile.c:67
-#: ../src/gs-popular-tile.c:73 ../src/gs-popular-tile.c:76
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:73
+#: ../src/gs-app-tile.c:76 ../src/gs-feature-tile.c:68
+#: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalado"
@@ -76,7 +76,7 @@ msgstr "Instalado"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:349 ../src/gs-shell.c:159
+#: ../src/gs-application.c:350 ../src/gs-shell.c:159
 msgid "Software"
 msgstr "Software"
 
@@ -141,7 +141,7 @@ msgstr "Seleccionar"
 msgid "Check for updates"
 msgstr "Comprobando si hay actualizaciones"
 
-#: ../src/gs-app-folder-dialog.c:304
+#: ../src/gs-app-folder-dialog.c:305
 msgid "Folder Name"
 msgstr "Nombre de la carpeta"
 
@@ -192,23 +192,27 @@ msgstr "Mostrar información del perfil para el servicio"
 msgid "Prefer local file sources to AppStream"
 msgstr "Preferir las fuentes de archivos locales a las de AppStream"
 
+#: ../src/gs-application.c:110
+msgid "Show version number"
+msgstr "Mostrar el número de versión"
+
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:347
+#: ../src/gs-application.c:348
 msgid "About Software"
 msgstr "Acerca de Software"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:352
+#: ../src/gs-application.c:353
 msgid "A nice way to manage the software on your system."
 msgstr "Una buena manera de gestionar el software en su sistema."
 
-#: ../src/gs-application.c:356
+#: ../src/gs-application.c:357
 msgid "translator-credits"
 msgstr "Daniel Mustieles <daniel.mustieles@gmail.com>, 2013, 2014"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:226
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:237
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Pendiente"
@@ -217,8 +221,8 @@ msgstr "Pendiente"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:100 ../src/gs-app-row.c:250
-#: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:267
+#: ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
 msgid "Installing"
 msgstr "Instalando"
 
@@ -226,8 +230,8 @@ msgstr "Instalando"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:104 ../src/gs-app-row.c:259
-#: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:276
+#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:94
 msgid "Removing"
 msgstr "Quitando"
 
@@ -236,7 +240,7 @@ msgstr "Quitando"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1299 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1308 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " y "
 
@@ -244,40 +248,50 @@ msgstr " y "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1307
+#: ../src/gs-app.c:1316
 msgid " or "
 msgstr " o "
 
+#. TRANSLATORS: during the update the device
+#. * will restart into a special update-only mode
+#: ../src/gs-app-row.c:148
+msgid "Device cannot be used during update."
+msgstr "No se puede usar el dispositivo durante la actualización."
+
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:210
+#: ../src/gs-app-row.c:221
 msgid "Visit website"
 msgstr "Visitar la página web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:215
+#: ../src/gs-app-row.c:226
 msgid "Install…"
 msgstr "Instalar…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:223
+#: ../src/gs-app-row.c:234
 msgid "Cancel"
 msgstr "Cancelar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
+#. TRANSLATORS: this is a button next to the search results that
+#. * allows the firmware to be easily updated
+#. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:233 ../src/gs-utils.c:313
+#: ../src/gs-app-row.c:244 ../src/gs-app-row.c:250 ../src/gs-page.c:187
+#: ../src/gs-utils.c:313
 msgid "Install"
 msgstr "Instalar"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:241 ../src/gs-page.c:177
+#: ../src/gs-app-row.c:258 ../src/gs-page.c:225
 msgid "Remove"
 msgstr "Eliminar"
 
@@ -401,7 +415,7 @@ msgstr "Instalado"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gs-history-dialog.c:94
+#: ../src/gs-history-dialog.c:95
 msgctxt "app status"
 msgid "Updated"
 msgstr "Actualizado"
@@ -409,7 +423,7 @@ msgstr "Actualizado"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-history-dialog.c:100
+#: ../src/gs-history-dialog.c:101
 msgctxt "app status"
 msgid "Unknown"
 msgstr "Desconocido"
@@ -505,37 +519,44 @@ msgstr "Falló al actualizar"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:162
+#: ../src/gs-page.c:182
+#, c-format
+msgid "Prepare %s"
+msgstr "Preparar %s"
+
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:218
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "¿Está seguro de querer quitar %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:174
+#: ../src/gs-page.c:222
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "Se quitará %s y deberá volver a instalarlo para poder usarlo de nuevo."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:779
+#: ../src/gs-plugin-loader.c:781
 msgid "OS Updates"
 msgstr "Actualizaciones del SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:784
+#: ../src/gs-plugin-loader.c:786
 msgid "Includes performance, stability and security improvements."
 msgstr "Incluye mejoras en el rendimiento, la estabilidad y la seguridad."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1427 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1429 ../src/gs-shell-extras.c:387
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "No hay códecs disponibles para el formato %s."
 
-#: ../src/gs-plugin-loader.c:1430
+#: ../src/gs-plugin-loader.c:1432
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -785,65 +806,65 @@ msgid "_Install…"
 msgstr "_Instalar…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:250 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:252 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "_Quitar"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:257
+#: ../src/gs-shell-details.c:259
 msgid "_Removing"
 msgstr "_Quitando"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:629
+#: ../src/gs-shell-details.c:634
 msgctxt "license"
 msgid "Unknown"
 msgstr "Desconocida"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:642
+#: ../src/gs-shell-details.c:647
 msgctxt "version"
 msgid "Unknown"
 msgstr "Desconocida"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:653
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Calculando…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:651
+#: ../src/gs-shell-details.c:656
 msgctxt "size"
 msgid "Unknown"
 msgstr "Desconocido"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:663
+#: ../src/gs-shell-details.c:668
 msgctxt "updated"
 msgid "Never"
 msgstr "Nunca"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:677
+#: ../src/gs-shell-details.c:682
 msgctxt "menu category"
 msgid "None"
 msgstr "Ninguna"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:692
+#: ../src/gs-shell-details.c:697
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconocido"
 
-#: ../src/gs-shell-details.c:902
+#: ../src/gs-shell-details.c:908
 #, c-format
 msgid "Could not find '%s'"
 msgstr "No se pudo encontrar «%s»"
 
-#: ../src/gs-shell-details.c:949 ../src/gs-utils.c:162
+#: ../src/gs-shell-details.c:955 ../src/gs-utils.c:162
 msgid "Sorry, this did not work"
 msgstr "Esto no ha funcionado"
 
@@ -957,7 +978,7 @@ msgstr "Desarrollador"
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
 #: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:440
-#: ../src/gs-update-list.c:105 ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-update-list.c:127 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Complementos"
 
@@ -1126,30 +1147,30 @@ msgid "Last checked: %s"
 msgstr "Comprobada por última vez: %s"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:768
+#: ../src/gs-shell-updates.c:780
 msgid "No Network"
 msgstr "Sin red"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:772
+#: ../src/gs-shell-updates.c:784
 msgid "Internet access is required to check for updates."
 msgstr "Se necesita acceso a Internet para comprobar si hay actualizaciones."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:776
+#: ../src/gs-shell-updates.c:788
 msgid "Network Settings"
 msgstr "Configuración de la red"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:795
+#: ../src/gs-shell-updates.c:807
 msgid "Charges may apply"
 msgstr "Puede conllevar gastos adicionales"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:799
+#: ../src/gs-shell-updates.c:811
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1159,7 +1180,7 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:803
+#: ../src/gs-shell-updates.c:815
 msgid "Check Anyway"
 msgstr "Comprobar de todas formas"
 
@@ -1253,24 +1274,24 @@ msgid_plural "%s and %s installed"
 msgstr[0] "%s y %s instalado"
 msgstr[1] "%s y %s instalados"
 
-#: ../src/gs-sources-dialog.c:321 ../src/gs-sources-dialog.ui.h:12
+#: ../src/gs-sources-dialog.c:322 ../src/gs-sources-dialog.ui.h:12
 msgid "Remove Source"
 msgstr "Quitar fuente"
 
-#: ../src/gs-sources-dialog.c:335
+#: ../src/gs-sources-dialog.c:336
 msgid "Removing…"
 msgstr "Quitando…"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:415
+#: ../src/gs-sources-dialog.c:416
 msgid "the operating system"
 msgstr "el sistema operativo"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:486
+#: ../src/gs-sources-dialog.c:487
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1379,7 +1400,6 @@ msgstr "Hay una versión nueva de %s disponible para instalar"
 
 #. TRANSLATORS: this is a distro upgrade
 #: ../src/gs-update-monitor.c:231
-#| msgid "Software Updates Available"
 msgid "Software Upgrade Available"
 msgstr "Actualización de software disponible"
 
