@@ -91,6 +91,14 @@ struct _GsShellDetails
 	GtkWidget		*spinner_details;
 	GtkWidget		*spinner_install_remove;
 	GtkWidget		*stack_details;
+	GtkWidget		*image_details_kudo_docs;
+	GtkWidget		*image_details_kudo_integration;
+	GtkWidget		*image_details_kudo_translated;
+	GtkWidget		*image_details_kudo_updated;
+	GtkWidget		*label_details_kudo_docs;
+	GtkWidget		*label_details_kudo_integration;
+	GtkWidget		*label_details_kudo_translated;
+	GtkWidget		*label_details_kudo_updated;
 };
 
 G_DEFINE_TYPE (GsShellDetails, gs_shell_details, GS_TYPE_PAGE)
@@ -548,6 +556,18 @@ gs_shell_details_set_description (GsShellDetails *self, const gchar *tmp)
 	}
 }
 
+static void
+gs_shell_details_set_sensitive (GtkWidget *widget, gboolean is_active)
+{
+	GtkStyleContext *style_context;
+	style_context = gtk_widget_get_style_context (widget);
+	if (!is_active) {
+		gtk_style_context_add_class (style_context, "dim-label");
+	} else {
+		gtk_style_context_remove_class (style_context, "dim-label");
+	}
+}
+
 /**
  * gs_shell_details_refresh_all:
  **/
@@ -560,7 +580,9 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	GtkWidget *widget;
 	const gchar *tmp;
 	gchar **menu_path;
+	guint64 kudos;
 	guint64 updated;
+	guint64 user_integration_bf;
 	g_autoptr(GError) error = NULL;
 
 	/* change widgets */
@@ -723,6 +745,35 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		}
 		break;
 	}
+
+	/* set MyLanguage kudo */
+	kudos = gs_app_get_kudos (self->app);
+	gs_shell_details_set_sensitive (self->image_details_kudo_translated,
+					kudos & GS_APP_KUDO_MY_LANGUAGE);
+	gs_shell_details_set_sensitive (self->label_details_kudo_translated,
+					kudos & GS_APP_KUDO_MY_LANGUAGE);
+
+	/* set RecentRelease kudo */
+	gs_shell_details_set_sensitive (self->image_details_kudo_updated,
+					kudos & GS_APP_KUDO_RECENT_RELEASE);
+	gs_shell_details_set_sensitive (self->label_details_kudo_updated,
+					kudos & GS_APP_KUDO_RECENT_RELEASE);
+
+	/* set UserDocs kudo */
+	gs_shell_details_set_sensitive (self->image_details_kudo_docs,
+					kudos & GS_APP_KUDO_INSTALLS_USER_DOCS);
+	gs_shell_details_set_sensitive (self->label_details_kudo_docs,
+					kudos & GS_APP_KUDO_INSTALLS_USER_DOCS);
+
+	/* any of the various integration kudos */
+	user_integration_bf = GS_APP_KUDO_SEARCH_PROVIDER |
+			      GS_APP_KUDO_USES_NOTIFICATIONS |
+			      GS_APP_KUDO_USES_APP_MENU |
+			      GS_APP_KUDO_HIGH_CONTRAST;
+	gs_shell_details_set_sensitive (self->image_details_kudo_integration,
+					kudos & user_integration_bf);
+	gs_shell_details_set_sensitive (self->label_details_kudo_integration,
+					kudos & user_integration_bf);
 
 	/* don't show a missing rating on a local file */
 	if (gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL &&
@@ -1375,6 +1426,14 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_install_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, stack_details);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_docs);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_integration);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_translated);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_updated);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_docs);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_integration);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_translated);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_updated);
 }
 
 /**
