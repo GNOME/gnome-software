@@ -1330,6 +1330,26 @@ gs_app_set_licence (GsApp *app, const gchar *licence, GsAppQuality quality)
 			continue;
 		}
 
+		/* proprietary software */
+		if (g_strcmp0 (tokens[i], "@LicenseRef-proprietary") == 0) {
+			const gchar *url = "https://en.wikipedia.org/wiki/Proprietary_software";
+			g_string_append_printf (urld,
+						"<a href=\"%s\">%s</a>",
+						/* TRANSLATORS: non-free app */
+						url, _("Proprietary"));
+			continue;
+		}
+
+		/* public domain */
+		if (g_strcmp0 (tokens[i], "@LicenseRef-public-domain") == 0) {
+			const gchar *url = "https://en.wikipedia.org/wiki/Public_domain";
+			g_string_append_printf (urld,
+						"<a href=\"%s\">%s</a>",
+						/* TRANSLATORS: see the wikipedia page */
+						url, _("Public domain"));
+			continue;
+		}
+
 		/* SPDX value */
 		if (g_str_has_prefix (tokens[i], "@")) {
 			g_string_append_printf (urld,
