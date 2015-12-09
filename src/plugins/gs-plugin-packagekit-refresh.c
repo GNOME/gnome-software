@@ -374,7 +374,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 					       pk_details_get_description (item));
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, pk_details_get_url (item));
 	gs_app_set_size (app, pk_details_get_size (item));
-	gs_app_set_licence (app, pk_details_get_license (item));
+	gs_app_set_licence (app, pk_details_get_license (item), GS_APP_QUALITY_LOWEST);
 
 	/* look for a desktop file so we can use a valid application id */
 	if (!gs_plugin_packagekit_refresh_guess_app_id (plugin,

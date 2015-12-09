@@ -499,8 +499,11 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 						pk_details_get_package_id (details))) {
 				continue;
 			}
-			if (gs_app_get_licence (app) == NULL)
-				gs_app_set_licence (app, pk_details_get_license (details));
+			if (gs_app_get_licence (app) == NULL) {
+				gs_app_set_licence (app,
+						    pk_details_get_license (details),
+						    GS_APP_QUALITY_LOWEST);
+			}
 			if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL) {
 				gs_app_set_url (app,
 						AS_URL_KIND_HOMEPAGE,

@@ -73,6 +73,7 @@ struct _GsApp
 	GPtrArray		*keywords;
 	GHashTable		*urls;
 	gchar			*licence;
+	GsAppQuality		 licence_quality;
 	gchar			**menu_path;
 	gchar			*origin;
 	gchar			*update_version;
@@ -1286,11 +1287,16 @@ gs_app_get_licence (GsApp *app)
  * gs_app_set_licence:
  */
 void
-gs_app_set_licence (GsApp *app, const gchar *licence)
+gs_app_set_licence (GsApp *app, const gchar *licence, GsAppQuality quality)
 {
 	GString *urld;
 	guint i;
 	g_auto(GStrv) tokens = NULL;
+
+	/* only save this if the data is sufficiently high quality */
+	if (quality <= app->licence_quality)
+		return;
+	app->licence_quality = quality;
 
 	g_return_if_fail (GS_IS_APP (app));
 

@@ -567,7 +567,9 @@ gs_plugin_refine_item (GsPlugin *plugin,
 
 	/* set licence */
 	if (as_app_get_project_license (item) != NULL && gs_app_get_licence (app) == NULL)
-		gs_app_set_licence (app, as_app_get_project_license (item));
+		gs_app_set_licence (app,
+				    as_app_get_project_license (item),
+				    GS_APP_QUALITY_HIGHEST);
 
 	/* set keywords */
 	if (as_app_get_keywords (item, NULL) != NULL &&
