@@ -47,6 +47,10 @@ typedef struct
 	GtkWidget	*spinner;
 	GtkWidget	*label;
 	GtkWidget	*checkbox;
+	GtkWidget	*label_tag_foreign;
+	GtkWidget	*label_tag_warning;
+	GtkWidget	*label_tag_webapp;
+	GtkWidget	*label_tag_nonfree;
 	gboolean	 colorful;
 	gboolean	 show_codec;
 	gboolean	 show_update;
@@ -136,20 +140,30 @@ gs_app_row_refresh (GsAppRow *app_row)
 		break;
 	}
 
-	/* join the lines*/
+	/* join the description lines */
 	str = gs_app_row_get_description (app_row);
 	gs_string_replace (str, "\n", " ");
+	gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
+	g_string_free (str, TRUE);
 
 	/* add warning */
 	if (gs_app_get_kind (priv->app) == GS_APP_KIND_FIRMWARE_UPDATE) {
-		g_string_append_printf (str, "\n\n<span foreground=\"red\" font_weight=\"bold\">%s</span>",
-					/* TRANSLATORS: during the update the device
-					 * will restart into a special update-only mode */
-					_("Device cannot be used during update."));
+		gtk_label_set_text (GTK_LABEL (priv->label_tag_warning),
+				    /* TRANSLATORS: during the update the device
+				     * will restart into a special update-only mode */
+				    _("Device cannot be used during update."));
+		gtk_widget_show (priv->label_tag_warning);
 	}
 
-	gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
-	g_string_free (str, TRUE);
+	/* add tags */
+	gtk_widget_set_visible (priv->label_tag_webapp,
+				gs_app_get_id_kind (priv->app) == AS_ID_KIND_WEB_APP);
+	if (gs_app_get_id_kind (priv->app) != AS_ID_KIND_WEB_APP) {
+		gtk_widget_set_visible (priv->label_tag_nonfree,
+					!gs_app_get_licence_is_free (priv->app));
+		gtk_widget_set_visible (priv->label_tag_foreign,
+					!gs_app_get_provenance (priv->app));
+	}
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
 			     gs_app_get_name (priv->app));
@@ -489,6 +503,10 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, spinner);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, checkbox);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_warning);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_foreign);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_webapp);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_nonfree);
 }
 
 static void
