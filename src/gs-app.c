@@ -102,6 +102,7 @@ struct _GsApp
 	gboolean		 to_be_installed;
 	gboolean		 provenance;
 	AsBundle		*bundle;
+	gboolean		 licence_is_free;
 };
 
 enum {
@@ -1285,6 +1286,36 @@ gs_app_get_licence (GsApp *app)
 }
 
 /**
+ * gs_app_get_licence_is_free:
+ */
+gboolean
+gs_app_get_licence_is_free (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	return app->licence_is_free;
+}
+
+/**
+ * gs_app_get_licence_token_is_nonfree:
+ */
+static gboolean
+gs_app_get_licence_token_is_nonfree (const gchar *token)
+{
+	/* grammar */
+	if (g_strcmp0 (token, "(") == 0)
+		return FALSE;
+	if (g_strcmp0 (token, ")") == 0)
+		return FALSE;
+
+	/* a token, but still nonfree */
+	if (g_strcmp0 (token, "@LicenseRef-proprietary") == 0)
+		return TRUE;
+
+	/* if it has a prefix, assume it is free */
+	return token[0] != '@';
+}
+
+/**
  * gs_app_set_licence:
  */
 void
@@ -1300,6 +1331,9 @@ gs_app_set_licence (GsApp *app, const gchar *licence, GsAppQuality quality)
 	app->licence_quality = quality;
 
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* assume free software until we find an unmatched SPDX token */
+	app->licence_is_free = TRUE;
 
 	/* tokenize the license string and URLify any SPDX IDs */
 	urld = g_string_sized_new (strlen (licence) + 1);
@@ -1322,6 +1356,13 @@ gs_app_set_licence (GsApp *app, const gchar *licence, GsAppQuality quality)
 			 * "LGPL-2.1 or MIT" */
 			g_string_append (urld, _(" or "));
 			continue;
+		}
+
+		/* do the best we can */
+		if (gs_app_get_licence_token_is_nonfree (tokens[i])) {
+			g_debug ("nonfree licence from %s: '%s'",
+				 gs_app_get_id (app), tokens[i]);
+			app->licence_is_free = FALSE;
 		}
 
 		/* legacy literal text */
