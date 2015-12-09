@@ -34,6 +34,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_menu-spec-categories.la		\
 	libgs_plugin_menu-spec-refine.la		\
 	libgs_plugin_local-ratings.la			\
+	libgs_plugin_fedora_provenance.la		\
 	libgs_plugin_fedora_tagger_ratings.la		\
 	libgs_plugin_fedora_tagger_usage.la		\
 	libgs_plugin_epiphany.la			\
@@ -57,6 +58,11 @@ libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
 libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_fedora_provenance_la_SOURCES = gs-plugin-fedora-provenance.c
+libgs_plugin_fedora_provenance_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)
+libgs_plugin_fedora_provenance_la_LDFLAGS = -module -avoid-version
+libgs_plugin_fedora_provenance_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_fedora_tagger_ratings_la_SOURCES = gs-plugin-fedora-tagger-ratings.c
 libgs_plugin_fedora_tagger_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)

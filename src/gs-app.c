@@ -100,6 +100,7 @@ struct _GsApp
 	guint64			 install_date;
 	guint64			 kudos;
 	gboolean		 to_be_installed;
+	gboolean		 provenance;
 	AsBundle		*bundle;
 };
 
@@ -2000,6 +2001,24 @@ gs_app_get_bundle (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	return app->bundle;
+}
+
+/**
+ * gs_app_get_provenance:
+ */
+gboolean
+gs_app_get_provenance (GsApp *app)
+{
+	return app->provenance;
+}
+
+/**
+ * gs_app_set_provenance:
+ */
+void
+gs_app_set_provenance (GsApp *app, gboolean provenance)
+{
+	app->provenance = provenance;
 }
 
 /**

@@ -258,6 +258,10 @@ AsBundle	*gs_app_get_bundle		(GsApp		*app);
 void		 gs_app_set_bundle		(GsApp		*app,
 						 AsBundle	*bundle);
 
+gboolean	 gs_app_get_provenance		(GsApp		*app);
+void		 gs_app_set_provenance		(GsApp		*app,
+						 gboolean	 provenance);
+
 G_END_DECLS
 
 #endif /* __GS_APP_H */
