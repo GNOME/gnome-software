@@ -305,6 +305,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	ProgressData data;
 	g_autoptr (PkResults) results = NULL;
 	g_autofree gchar *basename = NULL;
+	g_autofree gchar *license_spdx = NULL;
 	g_auto(GStrv) files = NULL;
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GPtrArray) array = NULL;
@@ -374,7 +375,8 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 					       pk_details_get_description (item));
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, pk_details_get_url (item));
 	gs_app_set_size (app, pk_details_get_size (item));
-	gs_app_set_licence (app, pk_details_get_license (item), GS_APP_QUALITY_LOWEST);
+	license_spdx = as_utils_license_to_spdx (pk_details_get_license (item));
+	gs_app_set_licence (app, license_spdx, GS_APP_QUALITY_LOWEST);
 
 	/* look for a desktop file so we can use a valid application id */
 	if (!gs_plugin_packagekit_refresh_guess_app_id (plugin,
