@@ -130,7 +130,7 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	text_shadow = gs_app_get_metadata_item (app, "Featured::text-shadow");
 
 	data = g_string_sized_new (1024);
-	g_string_append (data, ".button.featured-tile {\n");
+	g_string_append (data, ".featured-tile {\n");
 	g_string_append_printf (data, "  border-color: %s;\n", stroke_color);
 	if (text_shadow != NULL)
 		g_string_append_printf (data, "  text-shadow: %s;\n", text_shadow);
@@ -141,7 +141,7 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	g_string_append (data, "  outline-offset: 2px;\n");
 	g_string_append_printf (data, "  background: %s;\n", background);
 	g_string_append (data, "}\n");
-	g_string_append (data, ".button.featured-tile:hover {\n");
+	g_string_append (data, ".featured-tile:hover {\n");
 	g_string_append (data, "  background: linear-gradient(to bottom,\n");
 	g_string_append (data, "			      alpha(#fff,0.16),\n");
 	g_string_append_printf (data,

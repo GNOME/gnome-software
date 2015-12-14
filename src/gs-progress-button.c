@@ -38,11 +38,11 @@ gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 	gchar *css;
 
 	if (percentage == 0)
-		css = g_strdup (".button.install-progress { background: @theme_bg_color; }");
+		css = g_strdup (".install-progress { background-size: 0; }");
 	else if (percentage == 100)
-		css = g_strdup (".button.install-progress { background: @theme_selected_bg_color; }");
+		css = g_strdup (".install-progress { background-size: 100%; }");
 	else
-		css = g_strdup_printf (".button.install-progress { background: linear-gradient(to right, @theme_selected_bg_color %d%%, @theme_bg_color %d%%); }", percentage, percentage + 1);
+		css = g_strdup_printf (".install-progress { background-size: %d%%; }", percentage);
 
 	gtk_css_provider_load_from_data (button->css_provider, css, -1, NULL);
 	g_free (css);

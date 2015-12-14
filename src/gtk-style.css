@@ -69,7 +69,7 @@
 }
 
 /* The rest of the featured-tile CSS is loaded at runtime in gs-feature-tile.c */
-.button.featured-tile {
+.featured-tile {
 	all: unset;
 	padding: 0;
 	border-radius: 0;
@@ -107,6 +107,15 @@
 .application-details-description {
 }
 
+.install-progress {
+	background-image: linear-gradient(to top, @theme_selected_bg_color 2px, alpha(@theme_selected_bg_color, 0) 2px);
+	background-repeat: no-repeat;
+	background-position: 0 bottom;
+	transition: none;
+}
+
+.install-progress:dir(rtl) { background-position: 100% bottom; }
+
 .error-label {
 	text-shadow: none;
 }
@@ -131,12 +140,12 @@
 	background-color: transparent;
 }
 
-GtkBox.star {
+box.star {
 	background-color: transparent;
 	background-image: none;
 }
 
-.button.star {
+button.star {
 	-GtkWidget-focus-padding: 0;
 	background-color: transparent;
 	background-image: none;
