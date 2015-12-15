@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-12-06 10:16+0000\n"
-"PO-Revision-Date: 2015-12-06 13:24+0100\n"
+"POT-Creation-Date: 2015-12-15 10:22+0000\n"
+"PO-Revision-Date: 2015-12-15 16:47+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: slovenčina <>\n"
 "Language: sk\n"
@@ -54,7 +54,7 @@ msgid "Add to Application Folder"
 msgstr "Pridanie do priečinka s aplikáciami"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-shell-details.c:265 ../src/gs-shell-installed.c:523
+#: ../src/gs-shell-details.c:273 ../src/gs-shell-installed.c:524
 msgid "_Cancel"
 msgstr "_Zrušiť"
 
@@ -225,7 +225,7 @@ msgstr "Dušan Kazik <prescott66@gmail.com>"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:237
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:251
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Čaká na inštaláciu"
@@ -234,7 +234,7 @@ msgstr "Čaká na inštaláciu"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:267
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:281
 #: ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
 msgid "Installing"
 msgstr "Inštaluje sa"
@@ -243,7 +243,7 @@ msgstr "Inštaluje sa"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:276
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:290
 #: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:94
 msgid "Removing"
 msgstr "Odstraňuje sa"
@@ -253,7 +253,7 @@ msgstr "Odstraňuje sa"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1308 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1349 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " a "
 
@@ -261,19 +261,29 @@ msgstr " a "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1316
+#: ../src/gs-app.c:1357
 msgid " or "
 msgstr " alebo "
 
+#. TRANSLATORS: non-free app
+#: ../src/gs-app.c:1380
+msgid "Proprietary"
+msgstr "Uzavretá"
+
+#. TRANSLATORS: see the wikipedia page
+#: ../src/gs-app.c:1390
+msgid "Public domain"
+msgstr "Verejná doména"
+
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: ../src/gs-app-row.c:148
+#: ../src/gs-app-row.c:154
 msgid "Device cannot be used during update."
 msgstr "Zariadenie nie je možné používať počas aktualizácie."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:221
+#: ../src/gs-app-row.c:235
 msgid "Visit website"
 msgstr "Navštíviť webovú stránku"
 
@@ -281,13 +291,13 @@ msgstr "Navštíviť webovú stránku"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:226
+#: ../src/gs-app-row.c:240
 msgid "Install…"
 msgstr "Inštalovať…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:234
+#: ../src/gs-app-row.c:248
 msgid "Cancel"
 msgstr "Zrušiť"
 
@@ -298,7 +308,7 @@ msgstr "Zrušiť"
 #. * allows the firmware to be easily updated
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:244 ../src/gs-app-row.c:250 ../src/gs-page.c:187
+#: ../src/gs-app-row.c:258 ../src/gs-app-row.c:264 ../src/gs-page.c:187
 #: ../src/gs-utils.c:313
 msgid "Install"
 msgstr "Inštalovať"
@@ -307,9 +317,25 @@ msgstr "Inštalovať"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:258 ../src/gs-page.c:225
+#: ../src/gs-app-row.c:272 ../src/gs-page.c:225
 msgid "Remove"
 msgstr "Odstrániť"
+
+#. vim: set noexpandtab:
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:2
+msgid "3rd party"
+msgstr "od tretej strany"
+
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:4
+msgid "web app"
+msgstr "webová aplikácia"
+
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:6
+msgid "nonfree"
+msgstr "neslobodný"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -819,13 +845,13 @@ msgstr "Stránka s kodekmi"
 # GtkButton
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:178 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:186 ../src/gs-shell-details.ui.h:2
 msgid "_Install"
 msgstr "_Inštalovať"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:189
+#: ../src/gs-shell-details.c:197
 msgid "_Installing"
 msgstr "_Inštaluje sa"
 
@@ -834,71 +860,71 @@ msgstr "_Inštaluje sa"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:206
+#: ../src/gs-shell-details.c:214
 msgid "_Install…"
 msgstr "_Inštalovať…"
 
 # GtkButton
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:252 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:260 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "O_dstrániť"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:259
+#: ../src/gs-shell-details.c:267
 msgid "_Removing"
 msgstr "O_dstraňuje sa"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:634
+#: ../src/gs-shell-details.c:656
 msgctxt "license"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:647
+#: ../src/gs-shell-details.c:669
 msgctxt "version"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:653
+#: ../src/gs-shell-details.c:675
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Vypočítava sa…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:656
+#: ../src/gs-shell-details.c:678
 msgctxt "size"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:668
+#: ../src/gs-shell-details.c:690
 msgctxt "updated"
 msgid "Never"
 msgstr "Nikdy"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:682
+#: ../src/gs-shell-details.c:704
 msgctxt "menu category"
 msgid "None"
 msgstr "Žiadna"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:697
+#: ../src/gs-shell-details.c:719
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Neznámy"
 
-#: ../src/gs-shell-details.c:908
+#: ../src/gs-shell-details.c:959
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nepodarilo sa nájsť „%s“"
 
-#: ../src/gs-shell-details.c:955 ../src/gs-utils.c:162
+#: ../src/gs-shell-details.c:1006 ../src/gs-utils.c:162
 msgid "Sorry, this did not work"
 msgstr "Prepáčte, toto nefungovalo"
 
@@ -982,60 +1008,76 @@ msgstr "_Webová stránka"
 msgid "_History"
 msgstr "_História"
 
+#: ../src/gs-shell-details.ui.h:21
+msgid "Localized in your Language"
+msgstr "Lokalizovaný vo vašom jazyku"
+
+#: ../src/gs-shell-details.ui.h:22
+msgid "Documentation"
+msgstr "Dokumentácia"
+
+#: ../src/gs-shell-details.ui.h:23
+msgid "Release Activity"
+msgstr "Aktivita vydaní"
+
+#: ../src/gs-shell-details.ui.h:24
+msgid "System Integration"
+msgstr "Integrácia do systému"
+
 # GtkLabel
-#: ../src/gs-shell-details.ui.h:21 ../src/gs-sources-dialog.ui.h:8
+#: ../src/gs-shell-details.ui.h:25 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
 msgstr "Verzia"
 
 # GtkLabel
-#: ../src/gs-shell-details.ui.h:22
+#: ../src/gs-shell-details.ui.h:26
 msgid "Updated"
 msgstr "Aktualizované"
 
 # GtkLabel
-#: ../src/gs-shell-details.ui.h:23
+#: ../src/gs-shell-details.ui.h:27
 msgid "Category"
 msgstr "Kategória"
 
-#: ../src/gs-shell-details.ui.h:24
+# GtkLabel
+#: ../src/gs-shell-details.ui.h:28
+msgid "Size"
+msgstr "Veľkosť"
+
+#: ../src/gs-shell-details.ui.h:29
 msgid "Source"
 msgstr "Zdroj"
 
 # GtkLabel
-#: ../src/gs-shell-details.ui.h:25
-msgid "License"
-msgstr "Licencia"
-
-# GtkLabel
-#: ../src/gs-shell-details.ui.h:26
-msgid "Size"
-msgstr "Veľkosť"
-
-# GtkLabel
-#: ../src/gs-shell-details.ui.h:27
+#: ../src/gs-shell-details.ui.h:30
 msgid "Developer"
 msgstr "Vývojár"
+
+# GtkLabel
+#: ../src/gs-shell-details.ui.h:31
+msgid "License"
+msgstr "Licencia"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:440
+#: ../src/gs-shell-details.ui.h:32 ../src/gs-shell-installed.c:441
 #: ../src/gs-update-list.c:127 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Doplnky"
 
-#: ../src/gs-shell-details.ui.h:29
+#: ../src/gs-shell-details.ui.h:33
 msgid "Selected add-ons will be installed with the application."
 msgstr "Vybraté doplnky budú nainštalované spolu s aplikáciou."
 
 # cmdline description
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:430
+#: ../src/gs-shell-installed.c:431
 msgid "System Applications"
 msgstr "Systémové aplikácie"
 
-#: ../src/gs-shell-installed.c:531
+#: ../src/gs-shell-installed.c:532
 msgid "Click on items to select them"
 msgstr "Kliknutím na položky ich vyberiete"
 
@@ -2558,9 +2600,3 @@ msgstr "_Ukončiť"
 
 #~ msgid "Enable"
 #~ msgstr "Povoliť"
-
-#~ msgid "Web app"
-#~ msgstr "Webová aplikácia"
-
-#~ msgid "Proprietary"
-#~ msgstr "Uzavretá"
