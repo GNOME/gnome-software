@@ -35,7 +35,7 @@ G_DEFINE_TYPE (GsProgressButton, gs_progress_button, GTK_TYPE_BUTTON)
 void
 gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 {
-	gchar *css;
+	g_autofree gchar *css = NULL;
 
 	if (percentage == 0)
 		css = g_strdup (".install-progress { background-size: 0; }");
@@ -45,7 +45,6 @@ gs_progress_button_set_progress (GsProgressButton *button, guint percentage)
 		css = g_strdup_printf (".install-progress { background-size: %d%%; }", percentage);
 
 	gtk_css_provider_load_from_data (button->css_provider, css, -1, NULL);
-	g_free (css);
 }
 
 void
