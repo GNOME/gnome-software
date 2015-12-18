@@ -53,20 +53,18 @@
                 <property name="visible">True</property>
                 <property name="preferred-width">860</property>
                 <child>
-                  <object class="GtkBox" id="box_results">
+                  <object class="GtkFrame" id="list_box_results_box">
                     <property name="visible">True</property>
-                    <property name="orientation">vertical</property>
+                    <property name="shadow_type">in</property>
+                    <property name="valign">start</property>
+                    <style>
+                      <class name="top-aligned-frame"/>
+                    </style>
                     <child>
                       <object class="GtkListBox" id="list_box_results">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
                         <property name="selection_mode">none</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator" id="separator_results">
-                        <property name="visible">True</property>
-                        <property name="orientation">horizontal</property>
                       </object>
                     </child>
                   </object>
