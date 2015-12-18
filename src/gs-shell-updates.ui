@@ -60,20 +60,26 @@
               <class name="main-scrolled-software"/>
             </style>
             <child>
-              <object class="GtkBox" id="list_box_updates_box">
+              <object class="GsFixedSizeBin" id="gs_fixed_bin">
                 <property name="visible">True</property>
-                <property name="orientation">vertical</property>
+                <property name="preferred-width">860</property>
                 <child>
-                  <object class="GsUpdateList" id="list_box_updates">
+                  <object class="GtkBox" id="list_box_updates_box">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="selection_mode">none</property>
-                  </object>
-                </child>
-                <child>
-                  <object class="GtkSeparator" id="list_box_updates_separator">
-                    <property name="visible">True</property>
-                    <property name="orientation">horizontal</property>
+                    <property name="orientation">vertical</property>
+                    <child>
+                      <object class="GsUpdateList" id="list_box_updates">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="selection_mode">none</property>
+                      </object>
+                    </child>
+                    <child>
+                      <object class="GtkSeparator" id="list_box_updates_separator">
+                        <property name="visible">True</property>
+                        <property name="orientation">horizontal</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

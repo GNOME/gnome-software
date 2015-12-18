@@ -40,10 +40,16 @@
                   <class name="main-scrolled-software"/>
                 </style>
                 <child>
-                  <object class="GtkListBox" id="list_box_install">
+                  <object class="GsFixedSizeBin" id="gs_fixed_bin">
                     <property name="visible">True</property>
-                    <property name="can_focus">True</property>
-                    <property name="selection_mode">none</property>
+                    <property name="preferred-width">860</property>
+                    <child>
+                      <object class="GtkListBox" id="list_box_install">
+                        <property name="visible">True</property>
+                        <property name="can_focus">True</property>
+                        <property name="selection_mode">none</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>
