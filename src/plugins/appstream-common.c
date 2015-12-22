@@ -275,7 +275,7 @@ gs_appstream_copy_metadata (GsApp *app, AsApp *item)
 gboolean
 gs_appstream_refine_app (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error)
 {
-
+	AsRelease *rel;
 	GHashTable *urls;
 	GPtrArray *pkgnames;
 	GPtrArray *kudos;
@@ -472,6 +472,23 @@ gs_appstream_refine_app (GsPlugin *plugin, GsApp *app, AsApp *item, GError **err
 			g_debug ("no idea how to handle kudo '%s'", tmp);
 			break;
 		}
+	}
+
+	/* is there any update information */
+	rel = as_app_get_release_default (item);
+	if (rel != NULL) {
+		tmp = as_release_get_description (rel, NULL);
+		if (tmp != NULL) {
+			g_autofree gchar *desc = NULL;
+			desc = as_markup_convert (tmp,
+						  AS_MARKUP_CONVERT_FORMAT_MARKDOWN,
+						  error);
+			if (desc == NULL)
+				return FALSE;
+			gs_app_set_update_details (app, desc);
+		}
+		gs_app_set_update_urgency (app, as_release_get_urgency (rel));
+		gs_app_set_update_version (app, as_release_get_version (rel));
 	}
 
 	return TRUE;
