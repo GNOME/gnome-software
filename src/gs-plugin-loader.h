@@ -198,6 +198,14 @@ void		 gs_plugin_loader_app_refine_async	(GsPluginLoader	*plugin_loader,
 gboolean	 gs_plugin_loader_app_refine_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
+void		 gs_plugin_loader_app_launch_async	(GsPluginLoader	*plugin_loader,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+gboolean	 gs_plugin_loader_app_launch_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
 void		 gs_plugin_loader_app_action_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsPluginLoaderAction a,

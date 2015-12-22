@@ -25,6 +25,7 @@
 #include <string.h>
 
 #include <glib/gi18n.h>
+#include <gio/gdesktopappinfo.h>
 #include <libsoup/soup.h>
 
 #include <gs-plugin.h>
@@ -294,4 +295,45 @@ gs_plugin_refine (GsPlugin *plugin,
 			return FALSE;
 	}
 	return TRUE;
+}
+
+/**
+ * gs_plugin_launch:
+ */
+gboolean
+gs_plugin_launch (GsPlugin *plugin,
+		  GsApp *app,
+		  GCancellable *cancellable,
+		  GError **error)
+{
+	GdkDisplay *display;
+	const gchar *desktop_id;
+	g_autoptr(GAppInfo) appinfo = NULL;
+	g_autoptr(GAppLaunchContext) context = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "Epiphany") != 0)
+		return TRUE;
+
+	desktop_id = gs_app_get_id (app);
+	if (desktop_id == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "no such desktop file: %s",
+			     desktop_id);
+		return FALSE;
+	}
+	appinfo = G_APP_INFO (g_desktop_app_info_new (desktop_id));
+	if (appinfo == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "no such desktop file: %s",
+			     desktop_id);
+		return FALSE;
+	}
+	display = gdk_display_get_default ();
+	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
+	return g_app_info_launch (appinfo, NULL, context, error);
 }

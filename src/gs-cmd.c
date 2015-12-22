@@ -298,6 +298,16 @@ main (int argc, char **argv)
 				break;
 		}
 		gs_plugin_add_app (&list, app);
+	} else if (argc == 3 && g_strcmp0 (argv[1], "launch") == 0) {
+		app = gs_app_new (argv[2]);
+		for (i = 0; i < repeat; i++) {
+			ret = gs_plugin_loader_app_launch (plugin_loader,
+							   app,
+							   NULL,
+							   &error);
+			if (!ret)
+				break;
+		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "filename-to-app") == 0) {
 		app = gs_plugin_loader_filename_to_app (plugin_loader,
 							argv[2],
@@ -417,7 +427,7 @@ main (int argc, char **argv)
 				     "Did not recognise option, use 'installed', "
 				     "'updates', 'popular', 'get-categories', "
 				     "'get-category-apps', 'filename-to-app', "
-				     "'sources', 'refresh' or 'search'");
+				     "'sources', 'refresh', 'launch' or 'search'");
 	}
 	if (!ret) {
 		g_print ("Failed: %s\n", error->message);

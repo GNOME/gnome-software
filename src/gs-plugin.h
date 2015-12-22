@@ -143,6 +143,10 @@ typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginLaunchFunc)		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginRefreshFunc	)	(GsPlugin	*plugin,
 							 guint		 cache_age,
 							 GsPluginRefreshFlags flags,
@@ -239,6 +243,10 @@ gboolean	 gs_plugin_add_featured			(GsPlugin	*plugin,
 gboolean	 gs_plugin_refine			(GsPlugin	*plugin,
 							 GList		**list,
 							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
+							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
