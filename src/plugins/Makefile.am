@@ -90,6 +90,8 @@ libgs_plugin_self_test_la_LDFLAGS = -module -avoid-version
 libgs_plugin_self_test_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_appstream_la_SOURCES =			\
+	appstream-common.c				\
+	appstream-common.h				\
 	gs-plugin-appstream.c
 libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS) $(APPSTREAM_LIBS)
 libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
