@@ -259,9 +259,15 @@ gs_app_row_refresh (GsAppRow *app_row)
 		break;
 	case AS_APP_STATE_UPDATABLE_LIVE:
 		gtk_widget_set_visible (priv->button, TRUE);
-		/* TRANSLATORS: this is a button next to the search results that
-		 * allows the firmware to be easily updated */
-		gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
+		if (priv->show_update) {
+			/* TRANSLATORS: this is a button in the updates panel
+			 * that allows the app to be easily updated live */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
+		} else {
+			/* TRANSLATORS: this is a button next to the search
+			 * results that allows the app to be easily updated live */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
+		}
 		break;
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_INSTALLED:
@@ -306,6 +312,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 
 	if (priv->selectable) {
 		if (gs_app_get_id_kind (priv->app) == AS_ID_KIND_DESKTOP ||
+		    gs_app_get_id_kind (priv->app) == AS_ID_KIND_RUNTIME ||
 		    gs_app_get_id_kind (priv->app) == AS_ID_KIND_WEB_APP)
 			gtk_widget_set_visible (priv->checkbox, TRUE);
 		gtk_widget_set_sensitive (priv->button, FALSE);
