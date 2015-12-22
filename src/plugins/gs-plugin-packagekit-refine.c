@@ -582,10 +582,10 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_packagekit_refine_update_severity:
+ * gs_plugin_packagekit_refine_update_urgency:
  */
 static gboolean
-gs_plugin_packagekit_refine_update_severity (GsPlugin *plugin,
+gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 					     GList *list,
 					     GCancellable *cancellable,
 					     GError **error)
@@ -625,19 +625,21 @@ gs_plugin_packagekit_refine_update_severity (GsPlugin *plugin,
 		switch (pk_package_get_info (pkg)) {
 		case PK_INFO_ENUM_AVAILABLE:
 		case PK_INFO_ENUM_NORMAL:
-		case PK_INFO_ENUM_ENHANCEMENT:
-		case PK_INFO_ENUM_BUGFIX:
 		case PK_INFO_ENUM_LOW:
-			gs_app_set_update_severity (app, GS_APP_UPDATE_SEVERITY_NORMAL);
+		case PK_INFO_ENUM_ENHANCEMENT:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_LOW);
+			break;
+		case PK_INFO_ENUM_BUGFIX:
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_MEDIUM);
 			break;
 		case PK_INFO_ENUM_SECURITY:
-			gs_app_set_update_severity (app, GS_APP_UPDATE_SEVERITY_SECURITY);
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_CRITICAL);
 			break;
 		case PK_INFO_ENUM_IMPORTANT:
-			gs_app_set_update_severity (app, GS_APP_UPDATE_SEVERITY_IMPORTANT);
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
 			break;
 		default:
-			gs_app_set_update_severity (app, GS_APP_UPDATE_SEVERITY_UNKNOWN);
+			gs_app_set_update_urgency (app, AS_URGENCY_KIND_UNKNOWN);
 			g_warning ("unhandled info state %s",
 				   pk_info_enum_to_string (pk_package_get_info (pkg)));
 			break;
@@ -1010,7 +1012,7 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* get the update severity */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) > 0) {
-		ret = gs_plugin_packagekit_refine_update_severity (plugin,
+		ret = gs_plugin_packagekit_refine_update_urgency (plugin,
 								   *list,
 								   cancellable,
 								   error);

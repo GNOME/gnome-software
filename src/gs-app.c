@@ -79,7 +79,7 @@ struct _GsApp
 	gchar			*update_version;
 	gchar			*update_version_ui;
 	gchar			*update_details;
-	GsAppUpdateSeverity	 update_severity;
+	AsUrgencyKind		 update_urgency;
 	gchar			*management_plugin;
 	gint			 rating;
 	gint			 rating_confidence;
@@ -252,9 +252,9 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\tupdate-details:\t%s\n",
 					app->update_details);
 	}
-	if (app->update_severity != GS_APP_UPDATE_SEVERITY_UNKNOWN) {
-		g_string_append_printf (str, "\tupdate-severity:\t%i\n",
-					app->update_severity);
+	if (app->update_urgency != AS_URGENCY_KIND_UNKNOWN) {
+		g_string_append_printf (str, "\tupdate-urgency:\t%i\n",
+					app->update_urgency);
 	}
 	if (app->summary != NULL)
 		g_string_append_printf (str, "\tsummary:\t%s\n", app->summary);
@@ -1582,23 +1582,23 @@ gs_app_set_update_details (GsApp *app, const gchar *update_details)
 }
 
 /**
- * gs_app_get_update_severity:
+ * gs_app_get_update_urgency:
  */
-GsAppUpdateSeverity
-gs_app_get_update_severity (GsApp *app)
+AsUrgencyKind
+gs_app_get_update_urgency (GsApp *app)
 {
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_UPDATE_SEVERITY_UNKNOWN);
-	return app->update_severity;
+	g_return_val_if_fail (GS_IS_APP (app), AS_URGENCY_KIND_UNKNOWN);
+	return app->update_urgency;
 }
 
 /**
- * gs_app_set_update_severity:
+ * gs_app_set_update_urgency:
  */
 void
-gs_app_set_update_severity (GsApp *app, GsAppUpdateSeverity update_severity)
+gs_app_set_update_urgency (GsApp *app, AsUrgencyKind update_urgency)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	app->update_severity = update_severity;
+	app->update_urgency = update_urgency;
 }
 
 /**
@@ -2126,8 +2126,8 @@ gs_app_subsume (GsApp *app, GsApp *other)
 		gs_app_set_description (app, other->description_quality, other->description);
 	if (other->update_details != NULL)
 		gs_app_set_update_details (app, other->update_details);
-	if (other->update_severity != GS_APP_UPDATE_SEVERITY_UNKNOWN)
-		gs_app_set_update_severity (app, other->update_severity);
+	if (other->update_urgency != AS_URGENCY_KIND_UNKNOWN)
+		gs_app_set_update_urgency (app, other->update_urgency);
 	if (other->update_version != NULL)
 		gs_app_set_update_version_internal (app, other->update_version);
 	if (other->pixbuf != NULL)

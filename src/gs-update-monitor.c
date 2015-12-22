@@ -114,8 +114,8 @@ has_important_updates (GsAppList *apps)
 
 	for (l = apps; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_update_severity (app) == GS_APP_UPDATE_SEVERITY_SECURITY ||
-		    gs_app_get_update_severity (app) == GS_APP_UPDATE_SEVERITY_IMPORTANT)
+		if (gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL ||
+		    gs_app_get_update_urgency (app) == AS_URGENCY_KIND_HIGH)
 			return TRUE;
 	}
 

@@ -78,14 +78,6 @@ typedef enum {
 	GS_APP_KUDO_LAST
 } GsAppKudo;
 
-typedef enum {
-	GS_APP_UPDATE_SEVERITY_UNKNOWN,
-	GS_APP_UPDATE_SEVERITY_NORMAL,
-	GS_APP_UPDATE_SEVERITY_IMPORTANT,
-	GS_APP_UPDATE_SEVERITY_SECURITY,
-	GS_APP_UPDATE_SEVERITY_LAST
-} GsAppUpdateSeverity;
-
 #define	GS_APP_INSTALL_DATE_UNSET		0
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
 #define	GS_APP_SIZE_UNKNOWN			0
@@ -186,9 +178,9 @@ void		 gs_app_set_update_version	(GsApp		*app,
 const gchar	*gs_app_get_update_details	(GsApp		*app);
 void		 gs_app_set_update_details	(GsApp		*app,
 						 const gchar	*update_details);
-GsAppUpdateSeverity gs_app_get_update_severity	(GsApp		*app);
-void		 gs_app_set_update_severity	(GsApp		*app,
-						 GsAppUpdateSeverity update_severity);
+AsUrgencyKind	 gs_app_get_update_urgency	(GsApp		*app);
+void		 gs_app_set_update_urgency	(GsApp		*app,
+						 AsUrgencyKind	 update_urgency);
 const gchar	*gs_app_get_management_plugin	(GsApp		*app);
 void		 gs_app_set_management_plugin	(GsApp		*app,
 						 const gchar	*management_plugin);
