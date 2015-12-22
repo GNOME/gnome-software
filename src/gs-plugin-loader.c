@@ -21,6 +21,7 @@
 
 #include "config.h"
 
+#include <locale.h>
 #include <glib/gi18n.h>
 #include <appstream-glib.h>
 
@@ -33,6 +34,7 @@ typedef struct
 {
 	GPtrArray		*plugins;
 	gchar			*location;
+	gchar			*locale;
 	GsPluginStatus		 status_last;
 	AsProfile		*profile;
 
@@ -2877,6 +2879,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->priority = 0.f;
 	plugin->deps = plugin_deps != NULL ? plugin_deps (plugin) : NULL;
 	plugin->name = g_strdup (plugin_name ());
+	plugin->locale = priv->locale;
 	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
 	plugin->status_update_user_data = plugin_loader;
 	plugin->updates_changed_fn = gs_plugin_loader_updates_changed_cb;
@@ -3138,6 +3141,7 @@ gs_plugin_loader_finalize (GObject *object)
 
 	g_strfreev (priv->compatible_projects);
 	g_free (priv->location);
+	g_free (priv->locale);
 
 	g_mutex_clear (&priv->pending_apps_mutex);
 	g_mutex_clear (&priv->app_cache_mutex);
@@ -3185,6 +3189,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *tmp;
+	gchar *match;
 	gchar **projects;
 	guint i;
 
@@ -3198,6 +3203,12 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 								g_str_equal,
 								g_free,
 								(GFreeFunc) g_object_unref);
+
+	/* get the locale without the UTF-8 suffix */
+	priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
+	match = g_strstr_len (priv->locale, -1, ".UTF-8");
+	if (match != NULL)
+		*match = '\0';
 
 	g_mutex_init (&priv->pending_apps_mutex);
 	g_mutex_init (&priv->app_cache_mutex);

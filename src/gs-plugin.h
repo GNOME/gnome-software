@@ -70,6 +70,7 @@ struct GsPlugin {
 	GsPluginPrivate		*priv;
 	guint			 pixbuf_size;
 	gint			 scale;
+	const gchar		*locale;
 	GsPluginStatusUpdate	 status_update_fn;
 	gpointer		 status_update_user_data;
 	GsPluginUpdatesChanged	 updates_changed_fn;

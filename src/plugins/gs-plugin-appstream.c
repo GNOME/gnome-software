@@ -21,7 +21,6 @@
 
 #include <config.h>
 #include <glib/gi18n.h>
-#include <locale.h>
 #include <appstream-glib.h>
 
 #include <gs-plugin.h>
@@ -32,7 +31,6 @@
 struct GsPluginPrivate {
 	AsStore			*store;
 	GMutex			 store_mutex;
-	gchar			*locale;
 	gsize			 done_init;
 };
 
@@ -118,7 +116,6 @@ gs_plugin_get_deps (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_free (plugin->priv->locale);
 	g_object_unref (plugin->priv->store);
 	g_mutex_clear (&plugin->priv->store_mutex);
 }
@@ -180,7 +177,6 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	GPtrArray *items;
 	gboolean ret;
 	const gchar *origin;
-	gchar *tmp;
 	guint *perc;
 	guint i;
 	g_autoptr(GHashTable) origins = NULL;
@@ -191,12 +187,6 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 
 	/* clear all existing applications if the store was invalidated */
 	as_store_remove_all (plugin->priv->store);
-
-	/* get the locale without the UTF-8 suffix */
-	plugin->priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
-	tmp = g_strstr_len (plugin->priv->locale, -1, ".UTF-8");
-	if (tmp != NULL)
-		*tmp = '\0';
 
 	/* Parse the XML */
 	if (g_getenv ("GNOME_SOFTWARE_PREFER_LOCAL") != NULL) {
@@ -643,7 +633,7 @@ gs_plugin_refine_item (GsPlugin *plugin,
 		gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
 
 	/* add kudos */
-	if (as_app_get_language (item, plugin->priv->locale) > 50)
+	if (as_app_get_language (item, plugin->locale) > 50)
 		gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 
 	/* add new-style kudos */
