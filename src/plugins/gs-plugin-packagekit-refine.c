@@ -967,6 +967,10 @@ gs_plugin_refine (GsPlugin *plugin,
 		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
 		if (tmp == NULL)
 			continue;
+		if (!g_str_has_prefix (tmp, "/usr/share/")) {
+			g_debug ("ignoring %s due to prefix", tmp);
+			continue;
+		}
 		ret = gs_plugin_packagekit_refine_from_desktop (plugin,
 								app,
 								tmp,
