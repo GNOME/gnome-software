@@ -333,8 +333,11 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 	case AS_ID_KIND_WEB_APP:
 		g_string_append (key, "1:");
 		break;
-	default:
+	case AS_ID_KIND_RUNTIME:
 		g_string_append (key, "2:");
+		break;
+	default:
+		g_string_append (key, "9:");
 		break;
 	}
 

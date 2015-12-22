@@ -105,6 +105,22 @@ AS_IF([test "x$enable_firmware" != "xno"], [
     have_firmware=no
 ])
 
+# xdg-app
+AC_ARG_ENABLE(xdg-app,
+              [AS_HELP_STRING([--enable-xdg-app],
+                              [enable xdg-app support [default=auto]])],,
+              enable_xdg_app=maybe)
+
+AS_IF([test "x$enable_xdg_app" != "xno"], [
+    PKG_CHECK_MODULES(XDG_APP,
+                      [xdg-app >= 0.4.7],
+                      [have_xdg_app=yes],
+                      [have_xdg_app=no])
+], [
+    have_xdg_app=no
+])
+AM_CONDITIONAL(HAVE_XDG_APP, test "$have_xdg_app" != no)
+
 AS_IF([test "x$have_firmware" = "xyes"], [
     AC_DEFINE(HAVE_FIRMWARE,1,[Build firmware support])
 ], [
@@ -183,5 +199,6 @@ echo "
         cppflags:                  ${CPPFLAGS}
         Dogtail:                   ${enable_dogtail}
         Firmware support:          ${have_firmware}
+        XDG-APP support:           ${have_xdg_app}
 "
 

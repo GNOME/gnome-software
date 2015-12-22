@@ -183,6 +183,7 @@ gs_plugin_appstream_startup (GsPlugin *plugin, GError **error)
 			     AS_STORE_LOAD_FLAG_APP_INFO_USER |
 			     AS_STORE_LOAD_FLAG_APPDATA |
 			     AS_STORE_LOAD_FLAG_DESKTOP |
+			     AS_STORE_LOAD_FLAG_XDG_APP_USER |
 			     AS_STORE_LOAD_FLAG_APP_INSTALL,
 			     NULL,
 			     error);

@@ -128,6 +128,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
 		return TRUE;
 
+return TRUE;
+
 	/* cache age of 0 is user-initiated */
 	pk_client_set_background (PK_CLIENT (plugin->priv->task), cache_age > 0);
 

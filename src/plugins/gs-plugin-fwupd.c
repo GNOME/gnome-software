@@ -633,7 +633,9 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	/* check cache age */
 	if (cache_age > 0) {
 		guint tmp;
-		tmp = gs_utils_get_file_age (plugin->priv->lvfs_sig_fn);
+		g_autoptr(GFile) file = NULL;
+		file = g_file_new_for_path (plugin->priv->lvfs_sig_fn);
+		tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
 			g_debug ("%s is only %i seconds old, so ignoring refresh",
 				 plugin->priv->lvfs_sig_fn, tmp);

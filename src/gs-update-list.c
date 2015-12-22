@@ -103,6 +103,8 @@ is_addon_id_kind (GsApp *app)
 		return FALSE;
 	if (id_kind == AS_ID_KIND_FIRMWARE)
 		return FALSE;
+	if (id_kind == AS_ID_KIND_RUNTIME)
+		return FALSE;
 	return TRUE;
 }
 
