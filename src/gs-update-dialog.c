@@ -232,7 +232,10 @@ gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 		date = g_date_time_new_from_unix_utc (time_updates_installed);
 		date_str = g_date_time_format (date, "%x");
 
-		/* TRANSLATORS: this is the subtitle of the installed updates dialog window */
+		/* TRANSLATORS: this is the subtitle of the installed updates dialog window.
+		   %s will be replaced by the date when the updates were installed.
+		   The date format is defined by the locale's preferred date representation
+		   ("%x" in strftime.) */
 		subtitle = g_strdup_printf (_("Installed on %s"), date_str);
 		header = gtk_dialog_get_header_bar (GTK_DIALOG (dialog));
 		gtk_header_bar_set_subtitle (GTK_HEADER_BAR (header), subtitle);
