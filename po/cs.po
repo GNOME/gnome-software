@@ -1,16 +1,17 @@
 # Czech translation for gnome-software.
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
+#
 # Petr Kovar <pknbe@volny.cz>, 2015.
-# Marek Černocký <marek@manet.cz>, 2013, 2014, 2015.
+# Marek Černocký <marek@manet.cz>, 2013, 2014, 2015, 2016.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-12-09 16:29+0000\n"
-"PO-Revision-Date: 2015-12-09 18:30+0100\n"
+"POT-Creation-Date: 2016-01-04 22:22+0000\n"
+"PO-Revision-Date: 2016-01-05 00:38+0100\n"
 "Last-Translator: Marek Černocký <marek@manet.cz>\n"
 "Language-Team: Czech <gnome-cs-list@gnome.org>\n"
 "Language: cs\n"
@@ -220,7 +221,7 @@ msgstr "Čeká na zpracování"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:281
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:287
 #: ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
 msgid "Installing"
 msgstr "Instaluje se"
@@ -229,7 +230,7 @@ msgstr "Instaluje se"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:290
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:296
 #: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:94
 msgid "Removing"
 msgstr "Odebírá se"
@@ -288,21 +289,43 @@ msgstr "Zrušit"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#. TRANSLATORS: this is a button next to the search results that
-#. * allows the firmware to be easily updated
+#. TRANSLATORS: this is a button in the updates panel
+#. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:258 ../src/gs-app-row.c:264 ../src/gs-page.c:187
+#: ../src/gs-app-row.c:258 ../src/gs-app-row.c:265 ../src/gs-page.c:187
 #: ../src/gs-utils.c:313
 msgid "Install"
 msgstr "Instalovat"
 
+#. TRANSLATORS: this is a button next to the search
+#. * results that allows the app to be easily updated live
+#: ../src/gs-app-row.c:269
+msgid "Update"
+msgstr "Aktualizovat"
+
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:272 ../src/gs-page.c:225
+#: ../src/gs-app-row.c:278 ../src/gs-page.c:225
 msgid "Remove"
 msgstr "Odebrat"
+
+#. vim: set noexpandtab:
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:2
+msgid "3rd party"
+msgstr "od třetí strany"
+
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:4
+msgid "web app"
+msgstr "webová aplikace"
+
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:6
+msgid "nonfree"
+msgstr "nesvobodný"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -551,24 +574,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:781
+#: ../src/gs-plugin-loader.c:814
 msgid "OS Updates"
 msgstr "Aktualizace OS"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:786
+#: ../src/gs-plugin-loader.c:819
 msgid "Includes performance, stability and security improvements."
 msgstr "Zahrnuje zdokonalení výkonu, stability a bezpečnosti."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1429 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1462 ../src/gs-shell-extras.c:387
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Pro formát %s nejsou k dispozici žádné dodatečné kodeky."
 
-#: ../src/gs-plugin-loader.c:1432
+#: ../src/gs-plugin-loader.c:1465
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -624,13 +647,11 @@ msgstr ", "
 #. %s will be replaced by name of the script we're searching for.
 #: ../src/gs-shell-extras.c:175
 #, fuzzy, c-format
-#| msgid "Available software for %s"
-#| msgid_plural "Available software for %s"
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
-msgstr[0] "Dostupný software pro %s"
-msgstr[1] "Dostupný software pro %s"
-msgstr[2] "Dostupný software pro %s"
+msgstr[0] "Dostupné fonty pro písmo %s"
+msgstr[1] "Dostupné fonty pro písma %s"
+msgstr[2] "Dostupné fonty pro písma %s"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
@@ -638,9 +659,9 @@ msgstr[2] "Dostupný software pro %s"
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
-msgstr[0] "Dostupný software pro %s"
-msgstr[1] "Dostupný software pro %s"
-msgstr[2] "Dostupný software pro %s"
+msgstr[0] "Dostupný software pro kodek %s"
+msgstr[1] "Dostupný software pro kodeky %s"
+msgstr[2] "Dostupný software pro kodeky %s"
 
 #: ../src/gs-shell-extras.c:225
 msgid "Unable to Find Requested Software"
@@ -705,9 +726,8 @@ msgstr ""
 #. * addon, but it can't be listed for some reason
 #: ../src/gs-shell-extras.c:376
 #, fuzzy, c-format
-#| msgid "No addon fonts are available for %s support."
 msgid "No fonts are available for the %s script support."
-msgstr "Pro podporu %s nejsou k dispozici žádná dodatečná písma."
+msgstr "Pro podporu písma %s nejsou k dispozici žádné fonty."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -806,13 +826,13 @@ msgstr "Stránka kodeků"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:186 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:185 ../src/gs-shell-details.ui.h:2
 msgid "_Install"
 msgstr "_Instalovat"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:197
+#: ../src/gs-shell-details.c:196
 msgid "_Installing"
 msgstr "_Instaluje se"
 
@@ -1050,22 +1070,22 @@ msgstr "Odeb_rat ze složky"
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:367
 msgid "Recommended Audio Applications"
-msgstr "Doporučujem z kategorie zvuk"
+msgstr "Z kategorie zvuk doporučujeme"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:372
 msgid "Recommended Games"
-msgstr "Doporučujeme z her"
+msgstr "Z her doporučujeme"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:377
 msgid "Recommended Graphics Applications"
-msgstr "Doporučujeme z kategorie grafika"
+msgstr "Z kategorie grafika doporučujeme"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:382
 msgid "Recommended Office Applications"
-msgstr "Doporučujeme z kancelářských aplikací"
+msgstr "Z kancelářských aplikací doporučujeme"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-overview.ui.h:1
@@ -1577,7 +1597,7 @@ msgstr "Příště nevarovat"
 msgid "Enable and Install"
 msgstr "Povolit a nainstalovat"
 
-#: ../src/plugins/gs-plugin-appstream.c:223
+#: ../src/plugins/gs-plugin-appstream.c:194
 #, c-format
 msgid "No AppStream data found"
 msgstr "Nebyla nalezena žádná data AppStream"
