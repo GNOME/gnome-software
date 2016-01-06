@@ -253,6 +253,12 @@ gs_plugin_fwupd_set_app_from_kv (GsApp *app, const gchar *key, GVariant *val)
 		gs_app_set_update_version (app, g_variant_get_string (val, NULL));
 		return;
 	}
+	if (g_strcmp0 (key, "License") == 0) {
+		gs_app_set_licence (app,
+				    g_variant_get_string (val, NULL),
+				    GS_APP_QUALITY_NORMAL);
+		return;
+	}
 	if (g_strcmp0 (key, "UpdateDescription") == 0) {
 		g_autofree gchar *tmp = NULL;
 		tmp = as_markup_convert (g_variant_get_string (val, NULL),
