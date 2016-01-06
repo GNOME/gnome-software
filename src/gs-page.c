@@ -147,6 +147,23 @@ gs_page_install_app (GsPage *page, GsApp *app)
 	                                   data);
 }
 
+static void
+gs_page_update_app_real (GsPage *page, GsApp *app)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	InstallRemoveData *data;
+	data = g_slice_new0 (InstallRemoveData);
+	data->app = g_object_ref (app);
+	data->page = g_object_ref (page);
+	g_debug ("update %s", gs_app_get_id (app));
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+					   app,
+					   GS_PLUGIN_LOADER_ACTION_UPDATE,
+					   priv->cancellable,
+					   gs_page_app_installed_cb,
+					   data);
+}
+
 void
 gs_page_update_app (GsPage *page, GsApp *app)
 {
@@ -155,24 +172,24 @@ gs_page_update_app (GsPage *page, GsApp *app)
 	GtkWidget *dialog;
 	AsScreenshot *ss;
 
+	/* non-firmware applications do not have to be prepared */
+	if (gs_app_get_id_kind (app) != AS_ID_KIND_FIRMWARE) {
+		gs_page_update_app_real (page, app);
+		return;
+	}
+
 	/* there are no steps required to put the device into DFU mode */
 	if (gs_app_get_screenshots (app)->len == 0) {
-		InstallRemoveData *data;
-		data = g_slice_new0 (InstallRemoveData);
-		data->app = g_object_ref (app);
-		data->page = g_object_ref (page);
-		g_debug ("update %s", gs_app_get_id (app));
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-						   app,
-						   GS_PLUGIN_LOADER_ACTION_UPDATE,
-						   priv->cancellable,
-						   gs_page_app_installed_cb,
-						   data);
+		gs_page_update_app_real (page, app);
 		return;
 	}
 
 	/* tell the user what they have to do */
 	ss = g_ptr_array_index (gs_app_get_screenshots (app), 0);
+	if (as_screenshot_get_caption (ss, NULL) == NULL) {
+		gs_page_update_app_real (page, app);
+		return;
+	}
 	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 					 GTK_DIALOG_MODAL,
 					 GTK_MESSAGE_INFO,
@@ -186,19 +203,8 @@ gs_page_update_app (GsPage *page, GsApp *app)
 	/* TRANSLATORS: this is button text to update the firware */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Install"), GTK_RESPONSE_OK);
 	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_OK) {
-		InstallRemoveData *data;
-		g_debug ("update %s", gs_app_get_id (app));
-		data = g_slice_new0 (InstallRemoveData);
-		data->app = g_object_ref (app);
-		data->page = g_object_ref (page);
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-						   app,
-						   GS_PLUGIN_LOADER_ACTION_UPDATE,
-						   priv->cancellable,
-						   gs_page_app_installed_cb,
-						   data);
-	}
+	if (response == GTK_RESPONSE_OK)
+		gs_page_update_app_real (page, app);
 	gtk_widget_destroy (dialog);
 }
 
