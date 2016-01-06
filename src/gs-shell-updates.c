@@ -506,6 +506,7 @@ gs_shell_updates_load (GsShellUpdates *self)
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_updates));
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
+		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
 	gs_shell_updates_set_state (self,
 				    GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES);
