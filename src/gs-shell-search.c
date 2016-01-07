@@ -43,6 +43,7 @@ struct _GsShellSearch
 	GsShell			*shell;
 	gchar			*appid_to_show;
 	gchar			*value;
+	gboolean		 only_free;
 
 	GtkWidget		*list_box_search;
 	GtkWidget		*scrolledwindow_search;
@@ -122,6 +123,12 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "results");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
+
+		if (self->only_free && !gs_app_get_licence_is_free (app)) {
+			g_debug ("not showing %s as nonfree", gs_app_get_id (app));
+			continue;
+		}
+
 		app_row = gs_app_row_new (app);
 		g_signal_connect (app_row, "button-clicked",
 				  G_CALLBACK (gs_shell_search_app_row_clicked_cb),
@@ -194,6 +201,15 @@ gs_shell_search_set_appid_to_show (GsShellSearch *self, const gchar *appid)
 {
 	g_free (self->appid_to_show);
 	self->appid_to_show = g_strdup (appid);
+}
+
+/**
+ * gs_shell_search_set_only_free:
+ **/
+void
+gs_shell_search_set_only_free (GsShellSearch *self, gboolean only_free)
+{
+	self->only_free = only_free;
 }
 
 /**

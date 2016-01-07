@@ -560,6 +560,36 @@ gs_shell_monitor_permission (GsShell *shell)
                           G_CALLBACK (on_permission_changed), shell);
 }
 
+static void
+filter_show_popover_cb (GtkButton *button, GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *widget;
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "popover_filter"));
+	gtk_widget_show_all (widget);
+}
+
+static void
+filter_changed_cb (GtkRadioButton *button, GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *widget;
+	const gchar *text;
+	gboolean only_free;
+
+	/* get filters */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "radiobutton_filter_free"));
+	only_free = gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (widget));
+
+	/* re-search */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
+	text = gtk_entry_get_text (GTK_ENTRY (widget));
+	if (text[0] == '\0')
+		return;
+	gs_shell_search_set_only_free (priv->shell_search, only_free);
+	gs_shell_search_switch_to (priv->shell_search, text, TRUE);
+}
+
 /**
  * gs_shell_setup:
  */
@@ -682,6 +712,18 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			  G_CALLBACK (entry_keypress_handler), shell);
 	g_signal_connect (widget, "search-changed",
 			  G_CALLBACK (search_changed_handler), shell);
+
+	/* handle non-free searches */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "radiobutton_filter_everything"));
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), TRUE);
+	g_signal_connect (widget, "toggled",
+			  G_CALLBACK (filter_changed_cb), shell);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "radiobutton_filter_free"));
+	g_signal_connect (widget, "toggled",
+			  G_CALLBACK (filter_changed_cb), shell);
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_filters"));
+	g_signal_connect (widget, "clicked",
+			  G_CALLBACK (filter_show_popover_cb), shell);
 
 	/* load content */
 	g_signal_connect (priv->shell_overview, "refreshed",
