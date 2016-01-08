@@ -34,7 +34,7 @@
 #include "gs-utils.h"
 
 struct GsPluginPrivate {
-	gsize			 done_init;
+	GMutex			 mutex;
 	GDBusProxy		*proxy;
 	GPtrArray		*to_download;
 	GPtrArray		*to_ignore;
@@ -137,6 +137,7 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	g_autoptr(GError) error_local = NULL;
 	g_autofree gchar *data = NULL;
 	g_autoptr(GDBusConnection) conn = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->mutex);
 
 	/* register D-Bus errors */
 	fwupd_error_quark ();
@@ -411,23 +412,20 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 {
 	GVariant *variant;
 	const gchar *key;
-	gboolean ret;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GVariantIter) iter = NULL;
 	g_autoptr(GVariant) val = NULL;
 
-	/* watch the file in case it comes or goes */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
+	/* set up plugin */
+	if (plugin->priv->proxy == NULL) {
+		if (!gs_plugin_startup (plugin, cancellable, error))
 			return FALSE;
 	}
-
-	/* could not connect */
 	if (plugin->priv->proxy == NULL)
 		return TRUE;
+
+	/* get historical updates */
 	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
 				      "GetResults",
 				      g_variant_new ("(s)", FWUPD_DEVICE_ID_ANY),
@@ -476,23 +474,20 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GError **error)
 {
 	const gchar *id;
-	gboolean ret;
 	GVariantIter *iter_device;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GVariantIter) iter = NULL;
 	g_autoptr(GVariant) val = NULL;
 
-	/* watch the file in case it comes or goes */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
+	/* set up plugin */
+	if (plugin->priv->proxy == NULL) {
+		if (!gs_plugin_startup (plugin, cancellable, error))
 			return FALSE;
 	}
-
-	/* could not connect */
 	if (plugin->priv->proxy == NULL)
 		return TRUE;
+
+	/* get current list of updates */
 	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
 				      "GetUpdates",
 				      NULL,
@@ -732,16 +727,15 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	const gchar *tmp;
-	gboolean ret;
 	guint i;
 
 	/* set up plugin */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
+	if (plugin->priv->proxy == NULL) {
+		if (!gs_plugin_startup (plugin, cancellable, error))
 			return FALSE;
 	}
+	if (plugin->priv->proxy == NULL)
+		return TRUE;
 
 	/* ensure networking is set up */
 	if (!gs_plugin_fwupd_setup_networking (plugin, error))
