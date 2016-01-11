@@ -37,7 +37,6 @@
 #endif
 
 #include "gs-dbus-helper.h"
-#include "gs-box.h"
 #include "gs-first-run-dialog.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
@@ -589,8 +588,6 @@ static void
 gs_application_startup (GApplication *application)
 {
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
-
-	g_type_ensure (GS_TYPE_BOX);
 
 	g_action_map_add_action_entries (G_ACTION_MAP (application),
 					 actions, G_N_ELEMENTS (actions),

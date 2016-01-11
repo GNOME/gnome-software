@@ -127,8 +127,6 @@ gnome_software_SOURCES =				\
 	gs-first-run-dialog.h				\
 	gs-history-dialog.c				\
 	gs-history-dialog.h				\
-	gs-box.h					\
-	gs-box.c					\
 	gs-fixed-size-bin.h				\
 	gs-fixed-size-bin.c				\
 	gs-hiding-box.h					\
