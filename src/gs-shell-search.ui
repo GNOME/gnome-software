@@ -84,17 +84,10 @@
                 <property name="preferred-width">860</property>
                 <property name="valign">start</property>
                 <child>
-                  <object class="GtkFrame" id="list_box_frame">
+                  <object class="GtkListBox" id="list_box_search">
                     <property name="visible">True</property>
-                    <property name="shadow_type">in</property>
-                    <property name="valign">start</property>
-                    <child>
-                      <object class="GtkListBox" id="list_box_search">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="selection_mode">none</property>
-                      </object>
-                    </child>
+                    <property name="can_focus">True</property>
+                    <property name="selection_mode">none</property>
                   </object>
                 </child>
               </object>
