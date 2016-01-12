@@ -549,9 +549,9 @@ install_resources_activated (GSimpleAction *action,
 #endif
 	const gchar *mode;
 	const gchar *startup_id;
-	gchar **resources;
+	g_autofree gchar **resources = NULL;
 
-	g_variant_get (parameter, "(&s^as&s)", &mode, &resources, &startup_id);
+	g_variant_get (parameter, "(&s^a&s&s)", &mode, &resources, &startup_id);
 
 #ifdef GDK_WINDOWING_X11
 	display = gdk_display_get_default ();
