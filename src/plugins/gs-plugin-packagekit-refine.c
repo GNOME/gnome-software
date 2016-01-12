@@ -652,15 +652,19 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
  * gs_plugin_refine_app_needs_details:
  */
 static gboolean
-gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsApp *app)
+gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsPluginRefineFlags flags, GsApp *app)
 {
-	if (gs_app_get_licence (app) == NULL)
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0 &&
+	    gs_app_get_licence (app) == NULL)
 		return TRUE;
-	if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0 &&
+	    gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)
 		return TRUE;
-	if (gs_app_get_size (app) == GS_APP_SIZE_UNKNOWN)
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 &&
+	    gs_app_get_size (app) == GS_APP_SIZE_UNKNOWN)
 		return TRUE;
-	if (gs_app_get_description (app) == NULL && plugin->use_pkg_descriptions)
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) > 0 &&
+	    gs_app_get_description (app) == NULL && plugin->use_pkg_descriptions)
 		return TRUE;
 	return FALSE;
 }
@@ -671,6 +675,7 @@ gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsApp *app)
 static gboolean
 gs_plugin_refine_require_details (GsPlugin *plugin,
 				  GList *list,
+				  GsPluginRefineFlags flags,
 				  GCancellable *cancellable,
 				  GError **error)
 {
@@ -687,7 +692,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
-		if (!gs_plugin_refine_app_needs_details (plugin, app))
+		if (!gs_plugin_refine_app_needs_details (plugin, flags, app))
 			continue;
 		list_tmp = g_list_prepend (list_tmp, app);
 	}
@@ -1002,17 +1007,13 @@ gs_plugin_refine (GsPlugin *plugin,
 	as_profile_task_free (ptask);
 
 	/* any important details missing? */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0 ||
-	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0 ||
-	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 ||
-	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) > 0) {
-		ret = gs_plugin_refine_require_details (plugin,
-							*list,
-							cancellable,
-							error);
-		if (!ret)
-			goto out;
-	}
+	ret = gs_plugin_refine_require_details (plugin,
+						*list,
+						flags,
+						cancellable,
+						error);
+	if (!ret)
+		goto out;
 
 	/* get the update severity */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY) > 0) {
