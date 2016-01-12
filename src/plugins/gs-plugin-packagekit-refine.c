@@ -105,6 +105,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 typedef struct {
 	GsPlugin	*plugin;
 	AsProfileTask	*ptask;
+	gchar		*profile_id;
 } ProgressData;
 
 /**
@@ -128,8 +129,12 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	/* profile */
 	if (status == PK_STATUS_ENUM_SETUP) {
-		data->ptask = as_profile_start_literal (plugin->profile,
-								"packagekit-refine::transaction");
+		data->ptask = as_profile_start (plugin->profile,
+						"packagekit-refine::transaction[%s]",
+						data->profile_id);
+		/* this isn't awesome, but saves us handling it in the caller */
+		g_free (data->profile_id);
+		data->profile_id = NULL;
 	} else if (status == PK_STATUS_ENUM_FINISHED) {
 		g_clear_pointer (&data->ptask, as_profile_task_free);
 	}
@@ -295,6 +300,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 
 	data.plugin = plugin;
 	data.ptask = NULL;
+	data.profile_id = NULL;
 
 	/* resolve them all at once */
 	results = pk_client_resolve (plugin->priv->client,
@@ -344,6 +350,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 
 	data.plugin = plugin;
 	data.ptask = NULL;
+	data.profile_id = g_path_get_basename (filename);
 
 	to_array[0] = filename;
 	results = pk_client_search_files (plugin->priv->client,
@@ -410,6 +417,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 
 	data.plugin = plugin;
 	data.ptask = NULL;
+	data.profile_id = NULL;
 
 	/* get any update details */
 	results = pk_client_get_update_detail (plugin->priv->client,
@@ -562,6 +570,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 
 	data.plugin = plugin;
 	data.ptask = NULL;
+	data.profile_id = g_strjoinv (",", (gchar **) package_ids->pdata);
 
 	/* get any details */
 	results = pk_client_get_details (plugin->priv->client,
@@ -600,6 +609,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 
 	data.plugin = plugin;
 	data.ptask = NULL;
+	data.profile_id = NULL;
 
 	/* get the list of updates */
 	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
@@ -723,6 +733,7 @@ gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
 
 	data.plugin = plugin;
 	data.ptask = NULL;
+	data.profile_id = NULL;
 
 	/* ask PK for the repo details */
 	results = pk_client_get_repo_list (plugin->priv->client,
@@ -826,6 +837,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 
 	data.plugin = plugin;
 	data.ptask = NULL;
+	data.profile_id = NULL;
 
 	/* check is distro-upgrade */
 	if (gs_app_get_kind (app) != GS_APP_KIND_DISTRO_UPGRADE) {
@@ -865,6 +877,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 
 	data.plugin = plugin;
 	data.ptask = NULL;
+	data.profile_id = NULL;
 
 	/* ask PK to simulate upgrading the system */
 	results = pk_client_upgrade_system (plugin->priv->client,
