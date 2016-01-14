@@ -30,6 +30,7 @@
 #include "gs-moduleset.h"
 
 struct GsPluginPrivate {
+	GSettings		*settings;
 	GsModuleset		*moduleset;
 	gsize			 done_init;
 };
@@ -57,6 +58,18 @@ gs_plugin_get_deps (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_moduleset_settings_changed_cb:
+ */
+static void
+gs_plugin_moduleset_settings_changed_cb (GSettings *settings,
+					 const gchar *key,
+					 GsPlugin *plugin)
+{
+	if (g_strcmp0 (key, "popular-overrides") == 0)
+		gs_plugin_updates_changed (plugin);
+}
+
+/**
  * gs_plugin_initialize:
  */
 void
@@ -64,6 +77,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->moduleset = gs_moduleset_new ();
+	plugin->priv->settings = g_settings_new ("org.gnome.software");
+	g_signal_connect (plugin->priv->settings, "changed",
+			  G_CALLBACK (gs_plugin_moduleset_settings_changed_cb), plugin);
 }
 
 /**
@@ -73,6 +89,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_object_unref (plugin->priv->moduleset);
+	g_object_unref (plugin->priv->settings);
 }
 
 /**
@@ -191,7 +208,6 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 static gchar **
 gs_plugin_moduleset_get_popular (GsPlugin *plugin)
 {
-	g_autoptr(GSettings) settings = NULL;
 	g_auto(GStrv) apps = NULL;
 
 	/* debugging only */
@@ -199,8 +215,7 @@ gs_plugin_moduleset_get_popular (GsPlugin *plugin)
 		return g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
 
 	/* are we using a corporate build */
-	settings = g_settings_new ("org.gnome.software");
-	apps = g_settings_get_strv (settings, "popular-overrides");
+	apps = g_settings_get_strv (plugin->priv->settings, "popular-overrides");
 	if (g_strv_length (apps) > 0)
 		return g_strdupv (apps);
 
