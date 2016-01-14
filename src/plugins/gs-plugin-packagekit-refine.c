@@ -975,23 +975,36 @@ gs_plugin_refine (GsPlugin *plugin,
 
 	/* set the package-id for an installed desktop file */
 	ptask = as_profile_start_literal (plugin->profile,
-					  "packagekit-refine[desktop-filename->id]");
+					  "packagekit-refine[installed-filename->id]");
 	for (l = *list; l != NULL; l = l->next) {
+		g_autofree gchar *fn = NULL;
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 			continue;
 		app = GS_APP (l->data);
 		if (gs_app_get_source_id_default (app) != NULL)
 			continue;
-		tmp = gs_app_get_metadata_item (app, "DataDir::desktop-filename");
+		tmp = gs_app_get_id (app);
 		if (tmp == NULL)
 			continue;
-		if (!g_str_has_prefix (tmp, "/usr/share/")) {
-			g_debug ("ignoring %s due to prefix", tmp);
+		switch (gs_app_get_id_kind (app)) {
+		case AS_ID_KIND_DESKTOP:
+			fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
+			break;
+		case AS_ID_KIND_ADDON:
+			fn = g_strdup_printf ("/usr/share/appdata/%s.metainfo.xml", tmp);
+			break;
+		default:
+			break;
+		}
+		if (fn == NULL)
+			continue;
+		if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
+			g_debug ("ignoring %s as does not exist", fn);
 			continue;
 		}
 		ret = gs_plugin_packagekit_refine_from_desktop (plugin,
 								app,
-								tmp,
+								fn,
 								cancellable,
 								error);
 		if (!ret)

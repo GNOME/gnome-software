@@ -311,22 +311,6 @@ gs_appstream_refine_app (GsPlugin *plugin, GsApp *app, AsApp *item, GError **err
 		}
 	}
 
-	/* allow the PackageKit plugin to match up installed local files
-	 * with packages when the component isn't in the AppStream XML */
-	switch (as_app_get_source_kind (item)) {
-	case AS_APP_SOURCE_KIND_DESKTOP:
-	case AS_APP_SOURCE_KIND_APPDATA:
-	case AS_APP_SOURCE_KIND_METAINFO:
-		if (as_app_get_source_file (item) != NULL &&
-		    gs_app_get_metadata_item (app, "DataDir::desktop-filename") == NULL) {
-			gs_app_set_metadata (app, "DataDir::desktop-filename",
-					     as_app_get_source_file (item));
-		}
-		break;
-	default:
-		break;
-	}
-
 	/* set id */
 	if (as_app_get_id (item) != NULL && gs_app_get_id (app) == NULL)
 		gs_app_set_id (app, as_app_get_id (item));

@@ -609,21 +609,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	gs_shell_details_set_description (self, tmp);
 
 	/* set the icon */
-	tmp = gs_app_get_metadata_item (self->app, "DataDir::desktop-icon");
-	if (tmp != NULL) {
-		pixbuf = gtk_icon_theme_load_icon (gtk_icon_theme_get_default (),
-						   tmp, 96,
-						   GTK_ICON_LOOKUP_USE_BUILTIN |
-						   GTK_ICON_LOOKUP_FORCE_SIZE,
-						   &error);
-		if (pixbuf == NULL) {
-			g_warning ("Failed to load desktop icon: %s",
-				   error->message);
-			g_clear_error (&error);
-		}
-	}
-	if (pixbuf == NULL)
-		pixbuf = gs_app_get_pixbuf (self->app);
+	pixbuf = gs_app_get_pixbuf (self->app);
 	if (pixbuf != NULL) {
 		gs_image_set_from_pixbuf (GTK_IMAGE (self->application_details_icon), pixbuf);
 		gtk_widget_set_visible (self->application_details_icon, TRUE);
