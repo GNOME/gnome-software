@@ -23,6 +23,14 @@
 
 #include <gs-plugin.h>
 
+/*
+ * SECTION:
+ * Provides some hardcoded static featured applications from the
+ * installed featured.ini file.
+ *
+ * Methods:     | AddFeatured
+ */
+
 /**
  * gs_plugin_get_name:
  */

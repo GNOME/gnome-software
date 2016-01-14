@@ -31,6 +31,13 @@
 #include <gs-plugin.h>
 #include <gs-utils.h>
 
+/*
+ * SECTION:
+ * Uses epiphany to launch web applications.
+ *
+ * If the epiphany binary is not present then it self-disables.
+ */
+
 /**
  * gs_plugin_get_name:
  */

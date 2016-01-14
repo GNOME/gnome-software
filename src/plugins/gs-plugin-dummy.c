@@ -23,6 +23,14 @@
 
 #include <gs-plugin.h>
 
+/*
+ * SECTION:
+ * Provides some dummy data that is useful in self test programs.
+ *
+ * Methods:     | Search, AddUpdates, AddInstalled, AddPopular
+ * Refines:     | [id]->[name], [id]->[summary]
+ */
+
 struct GsPluginPrivate {
 	guint			 dummy;
 };

@@ -26,6 +26,12 @@
 
 #include "menu-spec-common.h"
 
+/*
+ * SECTION:
+ * Adds categories from a hardcoded list based on the the desktop menu
+ * specification.
+ */
+
 /**
  * gs_plugin_get_name:
  */

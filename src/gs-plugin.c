@@ -19,6 +19,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/* Introduction:
+ *
+ * Plugins are modules that are loaded at runtime to provide information
+ * about requests and to service user actions like installing, removing
+ * and updating.
+ * This allows different distributions to pick and choose how the
+ * application installer gathers data.
+ *
+ * Plugins also have a priority system where the largest number gets
+ * run first. That means if one plugin requires some property or
+ * metadata set by another plugin then it **must** depend on the other
+ * plugin to be run in the correct order.
+ *
+ * As a general rule, try to make plugins as small and self-contained
+ * as possible and remember to cache as much data as possible for speed.
+ * Memory is cheap, time less so.
+ */
+
 #include "config.h"
 
 #include <glib.h>

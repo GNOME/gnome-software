@@ -27,6 +27,12 @@
 
 #include <gs-plugin.h>
 
+/*
+ * SECTION:
+ * Add previously downloads apps to the update list and also allow
+ * scheduling the offline update.
+ */
+
 struct GsPluginPrivate {
 	GFileMonitor		*monitor;
 	gsize			 done_init;

@@ -27,8 +27,17 @@
 #include <gs-plugin.h>
 #include <gs-utils.h>
 
+/*
+ * SECTION:
+ * Provides a local SQL database of user-set ratings, useful for
+ * testing or when the user 'overrides' the default rating.
+ *
+ * Methods:     | AppSetRating
+ * Refines:     | [id]->[rating]
+ */
+
 struct GsPluginPrivate {
-	gsize                    loaded;
+	gsize			 loaded;
 	gchar			*db_path;
 	sqlite3			*db;
 };

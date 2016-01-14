@@ -29,6 +29,13 @@
 #include <gs-plugin.h>
 #include <gs-utils.h>
 
+/*
+ * SECTION:
+ * Gets the application usage data using the fedora-tagger service.
+ *
+ * It will self-disable if not run on a Fedora system.
+ */
+
 struct GsPluginPrivate {
 	SoupSession		*session;
 };

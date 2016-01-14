@@ -23,6 +23,14 @@
 
 #include <gs-plugin.h>
 
+/*
+ * SECTION:
+ * Sets the package provanance to TRUE if installed by an official
+ * Fedora repo.
+ *
+ * It will self-disable if not run on a Fedora system.
+ */
+
 /**
  * gs_plugin_get_name:
  */

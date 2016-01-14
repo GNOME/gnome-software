@@ -30,6 +30,13 @@
 #include <gs-plugin.h>
 #include <gs-utils.h>
 
+/*
+ * SECTION:
+ * Gets and sets the application rating using the fedora-tagger service.
+ *
+ * It will self-disable if not run on a Fedora system.
+ */
+
 struct GsPluginPrivate {
 	SoupSession		*session;
 	gchar			*db_path;

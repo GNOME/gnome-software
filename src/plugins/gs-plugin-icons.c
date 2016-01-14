@@ -30,6 +30,14 @@
 #include <gs-plugin.h>
 #include <gs-utils.h>
 
+/*
+ * SECTION:
+ * Loads remote icons and converts them into local cached ones.
+ *
+ * It is provided so that each plugin handling REMOTE icons does not
+ * have to handle the download and caching functionality.
+ */
+
 struct GsPluginPrivate {
 	SoupSession		*session;
 };

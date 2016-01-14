@@ -26,6 +26,12 @@
 
 #include "menu-spec-common.h"
 
+/*
+ * SECTION:
+ * Sets the menu path of the applcation using the Freedesktop menu spec
+ * previously set.
+ */
+
 /**
  * gs_plugin_get_name:
  */

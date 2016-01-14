@@ -33,6 +33,14 @@
 
 #include "gs-utils.h"
 
+/*
+ * SECTION:
+ * Queries for new firmware and schedules it to be installed as required.
+ *
+ * This plugin calls UpdatesChanged() if any updatable devices are
+ * added or removed or if a device has been updated live.
+ */
+
 struct GsPluginPrivate {
 	GMutex			 mutex;
 	GDBusProxy		*proxy;

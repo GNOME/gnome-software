@@ -29,6 +29,12 @@
 
 #include "packagekit-common.h"
 
+/*
+ * SECTION:
+ * Do a PackageKit UpdatePackages(ONLY_DOWNLOAD) method on refresh and
+ * also convert any package files to applications the best we can.
+ */
+
 struct GsPluginPrivate {
 	PkTask			*task;
 };

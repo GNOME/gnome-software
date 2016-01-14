@@ -30,6 +30,15 @@
 
 #include "packagekit-common.h"
 
+/*
+ * SECTION:
+ * Uses the system PackageKit instance to return convert filenames to
+ * package-ids and to also discover update details about a package.
+ *
+ * Requires:    | [id]
+ * Refines:     | [source-id], [installed]
+ */
+
 struct GsPluginPrivate {
 	PkControl		*control;
 	PkClient		*client;

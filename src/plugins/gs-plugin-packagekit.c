@@ -30,6 +30,15 @@
 
 #include "packagekit-common.h"
 
+/*
+ * SECTION:
+ * Uses the system PackageKit instance to return installed packages,
+ * sources and the ability to add and remove packages.
+ *
+ * Requires:    | [source-id]
+ * Refines:     | [source-id], [source], [update-details], [management-plugin]
+ */
+
 struct GsPluginPrivate {
 	PkTask			*task;
 };

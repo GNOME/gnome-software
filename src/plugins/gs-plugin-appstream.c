@@ -28,6 +28,17 @@
 
 #include "appstream-common.h"
 
+/*
+ * SECTION:
+ * Uses offline AppStream data to populate and refine package results.
+ *
+ * This plugin calls UpdatesChanged() if any of the AppStream stores are
+ * changed in any way.
+ *
+ * Methods:     | AddCategory
+ * Refines:     | [source]->[name,summary,pixbuf,id,kind]
+ */
+
 struct GsPluginPrivate {
 	AsStore			*store;
 	GMutex			 store_mutex;

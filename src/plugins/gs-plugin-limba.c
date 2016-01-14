@@ -26,6 +26,11 @@
 #include <appstream-glib.h>
 #include <gs-plugin.h>
 
+/*
+ * SECTION:
+ * Adds and removes limba packages.
+ */
+
 struct GsPluginPrivate {
 	LiManager	*mgr;
 };

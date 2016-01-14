@@ -28,6 +28,11 @@
 
 #define GS_PLUGIN_PACKAGEKIT_HISTORY_TIMEOUT	5000 /* ms */
 
+/*
+ * SECTION:
+ * This returns update history using the system PackageKit instance.
+ */
+
 struct GsPluginPrivate {
 	gsize			 loaded;
 	GDBusConnection		*connection;

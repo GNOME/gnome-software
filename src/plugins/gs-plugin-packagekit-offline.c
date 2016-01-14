@@ -23,6 +23,14 @@
 
 #include <gs-plugin.h>
 
+/*
+ * SECTION:
+ * This adds historical updates to the application history.
+ *
+ * Note: when this is cleared by one user is is unavailable for all
+ * other users.
+ */
+
 /**
  * gs_plugin_get_name:
  */

@@ -29,6 +29,12 @@
 
 #include "gs-moduleset.h"
 
+/*
+ * SECTION:
+ * Set some applications as non-removable system apps and also add
+ * custom featured apps depending on the desktop environment.
+ */
+
 struct GsPluginPrivate {
 	GSettings		*settings;
 	GsModuleset		*moduleset;
