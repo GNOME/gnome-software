@@ -40,6 +40,7 @@
 #include "config.h"
 
 #include <glib.h>
+#include <gio/gdesktopappinfo.h>
 
 #include "gs-plugin.h"
 
@@ -319,6 +320,59 @@ gs_plugin_progress_update (GsPlugin *plugin, GsApp *app, guint percentage)
 	helper->percentage = percentage;
 	helper->app = g_object_ref (app);
 	g_idle_add (gs_plugin_progress_update_cb, helper);
+}
+
+/**
+ * gs_plugin_app_launch_cb:
+ **/
+static gboolean
+gs_plugin_app_launch_cb (gpointer user_data)
+{
+	GAppInfo *appinfo = (GAppInfo *) user_data;
+	GdkDisplay *display;
+	g_autoptr(GAppLaunchContext) context = NULL;
+	g_autoptr(GError) error = NULL;
+
+	display = gdk_display_get_default ();
+	context = G_APP_LAUNCH_CONTEXT (gdk_display_get_app_launch_context (display));
+	if (!g_app_info_launch (appinfo, NULL, context, &error))
+		g_warning ("Failed to launch: %s", error->message);
+
+	return FALSE;
+}
+
+/**
+ * gs_plugin_app_launch:
+ **/
+gboolean
+gs_plugin_app_launch (GsPlugin *plugin, GsApp *app, GError **error)
+{
+	const gchar *desktop_id;
+	g_autoptr(GAppInfo) appinfo = NULL;
+
+	desktop_id = gs_app_get_id (app);
+	if (desktop_id == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "no such desktop file: %s",
+			     desktop_id);
+		return FALSE;
+	}
+	appinfo = G_APP_INFO (g_desktop_app_info_new (desktop_id));
+	if (appinfo == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+			     "no such desktop file: %s",
+			     desktop_id);
+		return FALSE;
+	}
+	g_idle_add_full (G_PRIORITY_DEFAULT,
+			 gs_plugin_app_launch_cb,
+			 g_object_ref (appinfo),
+			 (GDestroyNotify) g_object_unref);
+	return TRUE;
 }
 
 /**

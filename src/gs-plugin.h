@@ -185,6 +185,9 @@ void		 gs_plugin_status_update		(GsPlugin	*plugin,
 void		 gs_plugin_progress_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 guint		 percentage);
+gboolean	 gs_plugin_app_launch			(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GError		**error);
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
 gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
