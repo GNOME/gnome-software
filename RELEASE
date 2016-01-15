@@ -2,13 +2,13 @@ GNOME Software Release Notes
 
 1. Write release entries:
 
-git log --format="%s" GNOME_SOFTWARE_3_17_92.. | grep -i -v trivial | grep -v Merge | uniq
+git log --format="%s" GNOME_SOFTWARE_3_19_4.. | grep -i -v trivial | grep -v Merge | uniq
 Add any user visible changes into data/appdata/org.gnome.Software.appdata.xml.in
 
 3. Commit changes in gnome-software git:
 
-git commit -a -m "Release version 3.19.4"
-git tag -s GNOME_SOFTWARE_3_19_4 -m "==== Version 3.19.4 ===="
+git commit -a -m "Release version 3.19.5"
+git tag -s GNOME_SOFTWARE_3_19_5 -m "==== Version 3.19.5 ===="
 <enter password>
 git push --tags
 git push
