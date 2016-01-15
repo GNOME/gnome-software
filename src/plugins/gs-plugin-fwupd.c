@@ -50,6 +50,7 @@ struct GsPluginPrivate {
 	gchar			*cachedir;
 	gchar			*lvfs_sig_fn;
 	gchar			*lvfs_sig_hash;
+	gchar			*config_fn;
 };
 
 /**
@@ -75,6 +76,16 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* this disables the double-compression of the firmware.xml.gz file */
 	soup_session_remove_feature_by_type (plugin->priv->session,
 					     SOUP_TYPE_CONTENT_DECODER);
+
+	plugin->priv->config_fn = g_build_filename (SYSCONFDIR, "fwupd.conf", NULL);
+	if (!g_file_test (plugin->priv->config_fn, G_FILE_TEST_EXISTS)) {
+		g_free (plugin->priv->config_fn);
+		plugin->priv->config_fn = g_strdup ("/etc/fwupd.conf");
+	}
+	if (!g_file_test (plugin->priv->config_fn, G_FILE_TEST_EXISTS)) {
+		g_debug ("fwupd configuration not found, disabling plugin.");
+		gs_plugin_set_enabled (plugin, FALSE);
+	}
 }
 
 /**
@@ -86,6 +97,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (plugin->priv->cachedir);
 	g_free (plugin->priv->lvfs_sig_fn);
 	g_free (plugin->priv->lvfs_sig_hash);
+	g_free (plugin->priv->config_fn);
 	g_ptr_array_unref (plugin->priv->to_download);
 	g_ptr_array_unref (plugin->priv->to_ignore);
 	if (plugin->priv->proxy != NULL)
@@ -416,6 +428,13 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				      &error_local);
 	if (val == NULL) {
 		if (g_error_matches (error_local,
+				     G_DBUS_ERROR,
+				     G_DBUS_ERROR_SERVICE_UNKNOWN)) {
+			/* the fwupd service might be unavailable, continue in that case */
+			g_debug ("fwupd: Could not get historical updates, service is unknown.");
+			return TRUE;
+		}
+		if (g_error_matches (error_local,
 				     FWUPD_ERROR,
 				     FWUPD_ERROR_NOTHING_TO_DO))
 			return TRUE;
@@ -477,6 +496,13 @@ gs_plugin_add_updates (GsPlugin *plugin,
 				      NULL,
 				      &error_local);
 	if (val == NULL) {
+		if (g_error_matches (error_local,
+				     G_DBUS_ERROR,
+				     G_DBUS_ERROR_SERVICE_UNKNOWN)) {
+			/* the fwupd service might be unavailable, continue in that case */
+			g_debug ("fwupd: Could not get updates, service is unknown.");
+			return TRUE;
+		}
 		if (g_error_matches (error_local,
 				     FWUPD_ERROR,
 				     FWUPD_ERROR_NOTHING_TO_DO))
@@ -593,7 +619,6 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	g_autofree gchar *basename_data = NULL;
 	g_autofree gchar *cache_fn_data = NULL;
 	g_autofree gchar *checksum = NULL;
-	g_autofree gchar *config_fn = NULL;
 	g_autofree gchar *url_data = NULL;
 	g_autofree gchar *url_sig = NULL;
 	g_autoptr(GKeyFile) config = NULL;
@@ -602,12 +627,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 
 	/* read config file */
 	config = g_key_file_new ();
-	config_fn = g_build_filename (SYSCONFDIR, "fwupd.conf", NULL);
-	if (!g_file_test (config_fn, G_FILE_TEST_EXISTS)) {
-		g_free (config_fn);
-		config_fn = g_strdup ("/etc/fwupd.conf");
-	}
-	if (!g_key_file_load_from_file (config, config_fn, G_KEY_FILE_NONE, error))
+	if (!g_key_file_load_from_file (config, plugin->priv->config_fn, G_KEY_FILE_NONE, error))
 		return FALSE;
 
 	/* check cache age */
