@@ -283,6 +283,8 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\turl{homepage}:\t%s\n", tmp);
 	if (app->licence != NULL)
 		g_string_append_printf (str, "\tlicence:\t%s\n", app->licence);
+	if (app->management_plugin != NULL)
+		g_string_append_printf (str, "\tmanagement-plugin:\t%s\n", app->management_plugin);
 	if (app->summary_missing != NULL)
 		g_string_append_printf (str, "\tsummary-missing:\t%s\n", app->summary_missing);
 	if (app->menu_path != NULL &&
