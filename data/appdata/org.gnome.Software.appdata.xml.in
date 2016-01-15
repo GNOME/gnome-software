@@ -30,6 +30,32 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.19.4" timestamp="1452867221">
+      <description>
+        <p>
+          This is an unstable release in the 3.19 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add a link to Wikipedia to explain proprietary and public domain software</li>
+          <li>Allow administrators to override the default popular applications</li>
+          <li>Improve the interface for device firmware updates and some can be done live</li>
+          <li>Make sure Characters and Disks show up in Utilities</li>
+          <li>Show 3rd party applications in the search results</li>
+          <li>Show a nicer installation dialog when installing local files</li>
+          <li>Speed up the application first-start and also speed up switching pages</li>
+          <li>Try to show if an application is free software</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Do not crash on refresh if the fwupd daemon is not available</li>
+          <li>Fix installing web applications</li>
+          <li>Rework several windows to fit better on small screens</li>
+          <li>Use the correct user agent string when downloading firmware</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release version="3.18.3" timestamp="1446724044">
       <description>
         <p>This stable release fixes the following bugs:</p>
