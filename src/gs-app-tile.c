@@ -39,9 +39,15 @@ struct _GsAppTile
 	GtkWidget	*eventbox;
 	GtkWidget	*stack;
 	GtkWidget	*stars;
+	gint		 preferred_width;
 };
 
 G_DEFINE_TYPE (GsAppTile, gs_app_tile, GTK_TYPE_BUTTON)
+
+enum {
+	PROP_0,
+	PROP_PREFERRED_WIDTH
+};
 
 GsApp *
 gs_app_tile_get_app (GsAppTile *tile)
@@ -173,16 +179,109 @@ static void
 gs_app_tile_init (GsAppTile *tile)
 {
 	gtk_widget_set_has_window (GTK_WIDGET (tile), FALSE);
+	tile->preferred_width = -1;
 	gtk_widget_init_template (GTK_WIDGET (tile));
 	gs_star_widget_set_icon_size (GS_STAR_WIDGET (tile->stars), 12);
 }
 
 static void
+gs_app_tile_get_property (GObject *object,
+			  guint prop_id,
+			  GValue *value,
+			  GParamSpec *pspec)
+{
+	GsAppTile *app_tile = GS_APP_TILE (object);
+
+	switch (prop_id) {
+	case PROP_PREFERRED_WIDTH:
+		g_value_set_int (value, app_tile->preferred_width);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_app_tile_set_property (GObject *object,
+			  guint prop_id,
+			  const GValue *value,
+			  GParamSpec *pspec)
+{
+	GsAppTile *app_tile = GS_APP_TILE (object);
+
+	switch (prop_id) {
+	case PROP_PREFERRED_WIDTH:
+		app_tile->preferred_width = g_value_get_int (value);
+		gtk_widget_queue_resize (GTK_WIDGET (app_tile));
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+static void
+gs_app_get_preferred_width (GtkWidget *widget,
+			    gint *min, gint *nat)
+{
+#if GTK_CHECK_VERSION(3,20,0)
+	gint m;
+#else
+	gint m, n;
+#endif
+	GsAppTile *app_tile = GS_APP_TILE (widget);
+
+	if (app_tile->preferred_width < 0) {
+		/* Just retrieve the default values */
+		GTK_WIDGET_CLASS (gs_app_tile_parent_class)->get_preferred_width (widget, min, nat);
+		return;
+	}
+
+/* It's because of some bugs in gtkbutton.c 3.18 and before.
+ * We can remove this when we branch for 3.20 *and* require GTK 3.20. */
+#if GTK_CHECK_VERSION(3,20,0)
+	GTK_WIDGET_CLASS (gs_app_tile_parent_class)->get_preferred_width (widget, &m, NULL);
+#else
+	GTK_WIDGET_CLASS (gs_app_tile_parent_class)->get_preferred_width (widget, &m, &n);
+#endif
+
+	if (min != NULL)
+		*min = m;
+	if (nat != NULL)
+		*nat = MAX (m, app_tile->preferred_width);
+}
+
+static void
 gs_app_tile_class_init (GsAppTileClass *klass)
 {
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
+	object_class->get_property = gs_app_tile_get_property;
+	object_class->set_property = gs_app_tile_set_property;
+
 	widget_class->destroy = gs_app_tile_destroy;
+	widget_class->get_preferred_width = gs_app_get_preferred_width;
+
+	/**
+	 * GsAppTile:preferred-width:
+	 *
+	 * The only purpose of this property is to be retrieved as the
+	 * natural width by gtk_widget_get_preferred_width() fooling the
+	 * parent #GtkFlowBox container and making it switch to more columns
+	 * (children per row) if it is able to place n+1 children in a row
+	 * having this specified width.  If this value is less than a minimum
+	 * width of this app tile then the minimum is returned instead.  Set
+	 * this property to -1 to turn off this feature and return the default
+	 * natural width instead.
+	 */
+	g_object_class_install_property (object_class, PROP_PREFERRED_WIDTH,
+		g_param_spec_int ("preferred-width",
+				  "Preferred width",
+				  "The preferred width of this widget, its only purpose is to trick the parent container",
+				  -1, G_MAXINT, -1,
+				  G_PARAM_READWRITE));
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/app-tile.ui");
 

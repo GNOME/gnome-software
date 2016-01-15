@@ -46,20 +46,28 @@
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
                 <child>
-                  <object class="GtkGrid" id="category_detail_grid">
-                    <property name="margin_start">27</property>
-                    <property name="margin_end">27</property>
-                    <property name="margin_top">24</property>
-                    <property name="margin_bottom">24</property>
-                    <property name="halign">fill</property>
+                  <object class="GsFixedSizeBin" id="gs_fixed_bin">
                     <property name="visible">True</property>
-                    <property name="can_focus">False</property>
-                    <property name="row_spacing">12</property>
-                    <property name="column_spacing">12</property>
-                    <property name="row_homogeneous">True</property>
-                    <property name="column_homogeneous">True</property>
-                    <property name="hexpand">True</property>
-                    <property name="valign">start</property>
+                    <!-- This is 3*420 plus margins, paddings, CSS borders -->
+                    <property name="preferred-width">1338</property>
+                    <child>
+                      <object class="GtkFlowBox" id="category_detail_box">
+                        <property name="margin_start">24</property>
+                        <property name="margin_end">24</property>
+                        <property name="margin_top">21</property>
+                        <property name="margin_bottom">21</property>
+                        <property name="halign">fill</property>
+                        <property name="visible">True</property>
+                        <property name="can_focus">False</property>
+                        <property name="row_spacing">6</property>
+                        <property name="column_spacing">6</property>
+                        <property name="homogeneous">True</property>
+                        <property name="hexpand">True</property>
+                        <property name="valign">start</property>
+                        <property name="min-children-per-line">2</property>
+                        <property name="max-children-per-line">3</property>
+                      </object>
+                    </child>
                   </object>
                 </child>
               </object>

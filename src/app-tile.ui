@@ -4,6 +4,8 @@
   <template class="GsAppTile" parent="GtkButton">
     <property name="visible">True</property>
     <property name="hexpand">True</property>
+    <!-- This is the minimum (sic!) width of a tile when the GtkFlowBox parent container switches to 3 columns -->
+    <property name="preferred-width">270</property>
     <style>
       <class name="view"/>
       <class name="tile"/>
