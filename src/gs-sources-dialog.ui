@@ -150,7 +150,7 @@
                 </child>
                 <child>
                   <object class="GtkLabel" id="label3">
-                    <property name="visible">True</property>
+                    <property name="visible">False</property> <!-- Bug #754315 -->
                     <property name="can_focus">False</property>
                     <property name="xalign">0</property>
                     <property name="label" translatable="yes">Removing a source will also remove any software you have installed from it.</property>
@@ -468,7 +468,7 @@
                 <child>
                   <object class="GtkButton" id="button_remove">
                     <property name="label" translatable="yes">Remove Source</property>
-                    <property name="visible">True</property>
+                    <property name="visible">False</property> <!-- Bug #754315 -->
                     <property name="can_focus">True</property>
                     <property name="receives_default">True</property>
                     <property name="margin_top">12</property>
