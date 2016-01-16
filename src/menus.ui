@@ -1,28 +1,13 @@
 <?xml version="1.0"?>
 <interface>
   <!-- interface-requires gtk+ 3.0 -->
-
-<!--
-
-The Software Sources dialog is too dangerous to display to the user. It has
-uninstalled all of GNOME from my computer silently, without my permission, on
-multiple occasions. A typical user would be unable to recover any personal data
-from the computer, and would never use GNOME ever again after that if s/he is
-reasonable.
-
-https://bugzilla.gnome.org/show_bug.cgi?id=732406 needs to be fixed before
-this dialog is restored.
--->
-  <menu id="unused-hack-menu-to-keep-the-translation">
+  <menu id="app-menu">
     <section>
       <item>
         <attribute name="label" translatable="yes">_Software Sources</attribute>
         <attribute name="action">app.sources</attribute>
       </item>
     </section>
-  </menu>
-
-  <menu id="app-menu">
     <section>
       <item>
         <attribute name="label" translatable="yes">_About</attribute>
