@@ -30,6 +30,7 @@ plugindir = $(libdir)/gs-plugins-${GS_PLUGIN_API_VERSION}
 plugin_LTLIBRARIES =					\
 	libgs_plugin_appstream.la			\
 	libgs_plugin_hardcoded-featured.la		\
+	libgs_plugin_hardcoded-blacklist.la		\
 	libgs_plugin_moduleset.la			\
 	libgs_plugin_menu-spec-categories.la		\
 	libgs_plugin_menu-spec-refine.la		\
@@ -132,6 +133,11 @@ libgs_plugin_hardcoded_featured_la_SOURCES = gs-plugin-hardcoded-featured.c
 libgs_plugin_hardcoded_featured_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_featured_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_featured_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_hardcoded_blacklist_la_SOURCES = gs-plugin-hardcoded-blacklist.c
+libgs_plugin_hardcoded_blacklist_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_hardcoded_blacklist_la_LDFLAGS = -module -avoid-version
+libgs_plugin_hardcoded_blacklist_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_local_ratings_la_SOURCES = gs-plugin-local-ratings.c
 libgs_plugin_local_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)

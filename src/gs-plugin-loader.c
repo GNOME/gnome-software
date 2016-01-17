@@ -542,6 +542,13 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 		return FALSE;
 	}
 
+	/* don't show blacklisted apps */
+	if (gs_app_has_category (app, "Blacklisted")) {
+		g_debug ("app invalid as blacklisted %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
+
 	/* don't show sources */
 	if (gs_app_get_kind (app) == GS_APP_KIND_SOURCE) {
 		g_debug ("app invalid as source %s",
