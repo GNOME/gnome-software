@@ -698,7 +698,9 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	}
 
 	/* set the origin */
-	tmp = gs_app_get_origin (self->app);
+	tmp = gs_app_get_origin_ui (self->app);
+	if (tmp == NULL)
+		tmp = gs_app_get_origin (self->app);
 	if (tmp == NULL || tmp[0] == '\0') {
 		/* TRANSLATORS: this is where we don't know the origin of the
 		 * application */

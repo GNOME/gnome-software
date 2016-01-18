@@ -76,6 +76,7 @@ struct _GsApp
 	GsAppQuality		 licence_quality;
 	gchar			**menu_path;
 	gchar			*origin;
+	gchar			*origin_ui;
 	gchar			*update_version;
 	gchar			*update_version_ui;
 	gchar			*update_details;
@@ -295,6 +296,8 @@ gs_app_to_string (GsApp *app)
 	}
 	if (app->origin != NULL && app->origin[0] != '\0')
 		g_string_append_printf (str, "\torigin:\t%s\n", app->origin);
+	if (app->origin_ui != NULL && app->origin_ui[0] != '\0')
+		g_string_append_printf (str, "\torigin-ui:\t%s\n", app->origin_ui);
 	if (app->rating != -1)
 		g_string_append_printf (str, "\trating:\t%i\n", app->rating);
 	if (app->rating_confidence != -1)
@@ -1482,8 +1485,7 @@ gs_app_get_origin (GsApp *app)
 /**
  * gs_app_set_origin:
  *
- * The origin is the original source of the application to show in the UI,
- * e.g. "Fedora"
+ * The origin is the original source of the application e.g. "fedora-updates"
  */
 void
 gs_app_set_origin (GsApp *app, const gchar *origin)
@@ -1491,6 +1493,30 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
 	g_return_if_fail (GS_IS_APP (app));
 	g_free (app->origin);
 	app->origin = g_strdup (origin);
+}
+
+/**
+ * gs_app_get_origin_ui:
+ */
+const gchar *
+gs_app_get_origin_ui (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->origin_ui;
+}
+
+/**
+ * gs_app_set_origin_ui:
+ *
+ * The origin is the original source of the application to show in the UI,
+ * e.g. "Fedora"
+ */
+void
+gs_app_set_origin_ui (GsApp *app, const gchar *origin_ui)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_free (app->origin_ui);
+	app->origin_ui = g_strdup (origin_ui);
 }
 
 /**

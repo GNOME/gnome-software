@@ -162,11 +162,10 @@ gs_plugin_packagekit_set_origin (GsPlugin *plugin,
 				 const gchar *id)
 {
 	const gchar *name;
+	gs_app_set_origin (app, id);
 	name = g_hash_table_lookup (plugin->priv->sources, id);
 	if (name != NULL)
-		gs_app_set_origin (app, name);
-	else
-		gs_app_set_origin (app, id);
+		gs_app_set_origin_ui (app, name);
 }
 
 static void

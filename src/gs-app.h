@@ -168,6 +168,9 @@ void		 gs_app_set_menu_path		(GsApp		*app,
 const gchar	*gs_app_get_origin		(GsApp		*app);
 void		 gs_app_set_origin		(GsApp		*app,
 						 const gchar	*origin);
+const gchar	*gs_app_get_origin_ui		(GsApp		*app);
+void		 gs_app_set_origin_ui		(GsApp		*app,
+						 const gchar	*origin_ui);
 GPtrArray	*gs_app_get_screenshots		(GsApp		*app);
 void		 gs_app_add_screenshot		(GsApp		*app,
 						 AsScreenshot	*screenshot);

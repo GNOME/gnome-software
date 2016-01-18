@@ -255,7 +255,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	gtk_message_dialog_set_markup (GTK_MESSAGE_DIALOG (dialog), title->str);
 
 	/* FIXME: get the URL somehow... */
-	origin_url = g_strdup_printf ("<a href=\"\">%s>/a>", gs_app_get_origin (app));
+	origin_url = g_strdup_printf ("<a href=\"\">%s</a>", gs_app_get_origin (app));
 	body = g_string_new ("");
 	if (hint & GS_APP_LICENCE_NONFREE) {
 		g_string_append_printf (body,
