@@ -2128,6 +2128,14 @@ gs_app_subsume (GsApp *app, GsApp *other)
 		gs_app_set_description (app, other->description_quality, other->description);
 	if (other->update_details != NULL)
 		gs_app_set_update_details (app, other->update_details);
+	if (other->management_plugin != NULL &&
+	    app->management_plugin != NULL &&
+	    g_strcmp0 (other->management_plugin, app->management_plugin) != 0) {
+		g_warning ("%s changing management plugin %s->%s",
+			   app->id,
+			   app->management_plugin,
+			   other->management_plugin);
+	}
 	if (other->update_urgency != AS_URGENCY_KIND_UNKNOWN)
 		gs_app_set_update_urgency (app, other->update_urgency);
 	if (other->update_version != NULL)
