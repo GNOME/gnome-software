@@ -80,10 +80,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_client_set_background (plugin->priv->client, FALSE);
 	pk_client_set_interactive (plugin->priv->client, FALSE);
 	pk_client_set_cache_age (plugin->priv->client, G_MAXUINT);
-	plugin->priv->sources = g_hash_table_new_full (g_str_hash,
-						       g_str_equal,
-						       g_free,
-						       g_free);
 }
 
 /**
@@ -105,7 +101,6 @@ gs_plugin_get_deps (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_hash_table_unref (plugin->priv->sources);
 	g_object_unref (plugin->priv->client);
 	g_object_unref (plugin->priv->control);
 }
@@ -153,21 +148,6 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		gs_plugin_status_update (plugin, NULL, plugin_status);
 }
 
-/**
- * gs_plugin_packagekit_set_origin:
- **/
-static void
-gs_plugin_packagekit_set_origin (GsPlugin *plugin,
-				 GsApp *app,
-				 const gchar *id)
-{
-	const gchar *name;
-	gs_app_set_origin (app, id);
-	name = g_hash_table_lookup (plugin->priv->sources, id);
-	if (name != NULL)
-		gs_app_set_origin_ui (app, name);
-}
-
 static void
 gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
                                                 GsApp *app,
@@ -181,15 +161,13 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 	switch (pk_package_get_info (package)) {
 	case PK_INFO_ENUM_INSTALLED:
 		data = pk_package_get_data (package);
-		if (g_str_has_prefix (data, "installed:")) {
-			gs_plugin_packagekit_set_origin (plugin,
-							 app,
-							 data + 10);
-		}
+		if (g_str_has_prefix (data, "installed:"))
+			gs_app_set_origin (app, data + 10);
 		break;
 	case PK_INFO_ENUM_UNAVAILABLE:
 		data = pk_package_get_data (package);
-		gs_plugin_packagekit_set_origin (plugin, app, data);
+		if (data != NULL)
+			gs_app_set_origin (app, data);
 		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 		gs_app_set_size (app, GS_APP_SIZE_MISSING);
 		break;
@@ -726,42 +704,6 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_packagekit_get_source_list:
- **/
-static gboolean
-gs_plugin_packagekit_get_source_list (GsPlugin *plugin,
-				      GCancellable *cancellable,
-				      GError **error)
-{
-	PkRepoDetail *rd;
-	ProgressData data;
-	guint i;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GPtrArray) array = NULL;
-
-	data.plugin = plugin;
-	data.ptask = NULL;
-	data.profile_id = NULL;
-
-	/* ask PK for the repo details */
-	results = pk_client_get_repo_list (plugin->priv->client,
-					   pk_bitfield_from_enums (PK_FILTER_ENUM_NONE, -1),
-					   cancellable,
-					   gs_plugin_packagekit_progress_cb, &data,
-					   error);
-	if (results == NULL)
-		return FALSE;
-	array = pk_results_get_repo_detail_array (results);
-	for (i = 0; i < array->len; i++) {
-		rd = g_ptr_array_index (array, i);
-		g_hash_table_insert (plugin->priv->sources,
-				     g_strdup (pk_repo_detail_get_id (rd)),
-				     g_strdup (pk_repo_detail_get_description (rd)));
-	}
-	return TRUE;
-}
-
-/**
  * gs_plugin_refine_requires_version:
  */
 static gboolean
@@ -943,16 +885,6 @@ gs_plugin_refine (GsPlugin *plugin,
 									 error))
 				return FALSE;
 		}
-	}
-
-	/* get the repo_id -> repo_name mapping set up */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) > 0 &&
-	     g_hash_table_size (plugin->priv->sources) == 0) {
-		ret = gs_plugin_packagekit_get_source_list (plugin,
-							    cancellable,
-							    error);
-		if (!ret)
-			goto out;
 	}
 
 	/* can we resolve in one go? */
