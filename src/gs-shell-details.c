@@ -708,9 +708,11 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	}
 	gtk_widget_set_visible (self->label_details_origin_value,
 				gs_app_get_state (self->app) == AS_APP_STATE_INSTALLED ||
+				gs_app_get_state (self->app) == AS_APP_STATE_UPDATABLE ||
 				gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 	gtk_widget_set_visible (self->label_details_origin_title,
 				gs_app_get_state (self->app) == AS_APP_STATE_INSTALLED ||
+				gs_app_get_state (self->app) == AS_APP_STATE_UPDATABLE ||
 				gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* set the rating */
