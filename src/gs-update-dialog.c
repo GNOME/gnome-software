@@ -112,13 +112,17 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 				      gs_app_get_update_version (app));
 	}
 
+	/* this is set unconditionally just in case the output of the
+	 * markdown->PangoMarkup parser is invalid */
+	gtk_label_set_markup (GTK_LABEL (dialog->label_details),
+			      /* TRANSLATORS: this is where the
+			       * packager did not write a
+			       * description for the update */
+			      _("No update description available."));
+
 	/* get the update description */
 	update_details = gs_app_get_update_details (app);
-	if (update_details == NULL || update_details[0] == '\0') {
-		/* TRANSLATORS: this is where the packager did not write a
-		 * description for the update */
-		update_desc = g_strdup (_("No update description available."));
-	} else {
+	if (update_details != NULL) {
 		g_autoptr(GsMarkdown) markdown = NULL;
 		markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
 		gs_markdown_set_smart_quoting (markdown, FALSE);
