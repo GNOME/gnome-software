@@ -133,6 +133,8 @@ gnome_software_SOURCES =				\
 	gs-hiding-box.c					\
 	gs-language.c					\
 	gs-language.h					\
+	gs-os-release.c					\
+	gs-os-release.h					\
 	gs-page.c					\
 	gs-page.h					\
 	gs-plugin.c					\
