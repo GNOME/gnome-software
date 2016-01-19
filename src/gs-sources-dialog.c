@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-sources-dialog.h"
+#include "gs-os-release.h"
 #include "gs-sources-dialog-row.h"
 #include "gs-utils.h"
 
@@ -394,22 +395,8 @@ static gchar *
 get_os_name (void)
 {
 	gchar *name = NULL;
-	g_autofree gchar *buffer = NULL;
 
-	if (g_file_get_contents ("/etc/os-release", &buffer, NULL, NULL)) {
-		gchar *start, *end;
-
-		start = end = NULL;
-		if ((start = strstr (buffer, "NAME=")) != NULL) {
-			start += strlen ("NAME=");
-			end = strchr (start, '\n');
-		}
-
-		if (start != NULL && end != NULL) {
-			name = g_strndup (start, end - start);
-		}
-	}
-
+	name = gs_os_release_get_name (NULL);
 	if (name == NULL) {
 		/* TRANSLATORS: this is the fallback text we use if we can't
 		   figure out the name of the operating system */

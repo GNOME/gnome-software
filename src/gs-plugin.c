@@ -43,8 +43,7 @@
 #include <gio/gdesktopappinfo.h>
 
 #include "gs-plugin.h"
-
-#define GS_PLUGIN_OS_RELEASE_FN		"/etc/os-release"
+#include "gs-os-release.h"
 
 /**
  * gs_plugin_status_to_string:
@@ -85,18 +84,16 @@ gboolean
 gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
 {
 	g_autoptr(GError) error = NULL;
-	g_autofree gchar *data = NULL;
-	g_autofree gchar *search = NULL;
+	g_autofree gchar *id = NULL;
 
 	/* check that we are running on Fedora */
-	if (!g_file_get_contents (GS_PLUGIN_OS_RELEASE_FN, &data, NULL, &error)) {
-		g_warning ("%s could not be read: %s",
-			   GS_PLUGIN_OS_RELEASE_FN,
+	id = gs_os_release_get_id (&error);
+	if (id == NULL) {
+		g_warning ("Could not parse os-release: %s",
 			   error->message);
 		return FALSE;
 	}
-	search = g_strdup_printf ("ID=%s\n", distro_id);
-	if (g_strstr_len (data, -1, search) == NULL)
+	if (g_strcmp0 (id, distro_id) != 0)
 		return FALSE;
 	return TRUE;
 }

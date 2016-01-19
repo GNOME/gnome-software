@@ -78,6 +78,7 @@ gnome_software_cmd_SOURCES =				\
 	gs-app.c					\
 	gs-cmd.c					\
 	gs-utils.c					\
+	gs-os-release.c					\
 	gs-plugin-loader.c				\
 	gs-plugin-loader-sync.c				\
 	gs-category.c					\
