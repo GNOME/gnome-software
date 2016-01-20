@@ -545,10 +545,6 @@ set_selection_mode (GsShellInstalled *self, gboolean selection_mode)
 		gtk_widget_show (widget);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "header_selection_menu_button"));
 		gtk_widget_hide (widget);
-
-		gtk_widget_hide (self->button_folder_add);
-		gtk_widget_hide (self->button_folder_move);
-		gtk_widget_hide (self->button_folder_remove);
 	}
 
 	children = gtk_container_get_children (GTK_CONTAINER (self->list_box_install));
@@ -607,9 +603,9 @@ selection_changed (GsShellInstalled *self)
 		}
 	}
 
-	gtk_widget_set_visible (self->button_folder_add, has_nonfolders);
-	gtk_widget_set_visible (self->button_folder_move, has_folders && !has_nonfolders);
-	gtk_widget_set_visible (self->button_folder_remove, has_folders);
+	gtk_widget_set_sensitive (self->button_folder_add, has_nonfolders);
+	gtk_widget_set_sensitive (self->button_folder_move, has_folders && !has_nonfolders);
+	gtk_widget_set_sensitive (self->button_folder_remove, has_folders);
 }
 
 static gboolean
