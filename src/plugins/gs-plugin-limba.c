@@ -70,28 +70,16 @@ gs_plugin_destroy (GsPlugin *plugin)
 static gboolean
 gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
-	AsBundle *bundle;
 	LiPkgInfo *pki;
 	GError *local_error = NULL;
 
-	bundle = gs_app_get_bundle (app);
-
-	/* check if we should process this application */
-	if (bundle == NULL)
-		return TRUE;
-	if (as_bundle_get_kind (bundle) != AS_BUNDLE_KIND_LIMBA)
-		return TRUE;
-
 	pki = li_manager_get_software_by_pkid (plugin->priv->mgr,
-						as_bundle_get_id (bundle),
+						gs_app_get_source_default (app),
 						&local_error);
 	if (local_error != NULL) {
 		g_propagate_error (error, local_error);
 		return FALSE;
 	}
-
-	/* we will handle installations and removals of this application */
-	gs_app_set_management_plugin (app, "Limba");
 
 	if (pki == NULL)
 		return TRUE;
@@ -124,7 +112,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 
-		if (gs_app_get_bundle (app) == NULL)
+		/* not us */
+		if (g_strcmp0 (gs_app_get_management_plugin (app), "Limba") != 0)
 			continue;
 
 		if (!gs_plugin_refine_app (plugin, app, error))
@@ -145,23 +134,18 @@ gs_plugin_app_remove (GsPlugin *plugin,
 			GError **error)
 {
 	g_autoptr(LiManager) mgr = NULL;
-	AsBundle *bundle;
 	GError *local_error = NULL;
 
-	bundle = gs_app_get_bundle (app);
-
-	/* check if we can remove this application */
-	if (bundle == NULL)
-		return TRUE;
-	if (as_bundle_get_kind (bundle) != AS_BUNDLE_KIND_LIMBA)
+	/* not us */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "Limba") != 0)
 		return TRUE;
 
 	mgr = li_manager_new ();
 
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	li_manager_remove_software (mgr,
-				as_bundle_get_id (bundle),
-				&local_error);
+				    gs_app_get_source_default (app),
+				    &local_error);
 	if (local_error != NULL) {
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		g_propagate_error (error, local_error);
@@ -183,22 +167,17 @@ gs_plugin_app_install (GsPlugin *plugin,
 			GError **error)
 {
 	g_autoptr(LiInstaller) inst = NULL;
-	AsBundle *bundle;
 	GError *local_error = NULL;
 
-	bundle = gs_app_get_bundle (app);
-
-	/* check if we can install this application */
-	if (bundle == NULL)
-		return TRUE;
-	if (as_bundle_get_kind (bundle) != AS_BUNDLE_KIND_LIMBA)
+	/* not us */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "Limba") != 0)
 		return TRUE;
 
 	/* create new installer and select remote package */
 	inst = li_installer_new ();
 	li_installer_open_remote (inst,
-				as_bundle_get_id (bundle),
-				&local_error);
+				  gs_app_get_source_default (app),
+				  &local_error);
 	if (local_error != NULL) {
 		g_propagate_error (error, local_error);
 		return FALSE;

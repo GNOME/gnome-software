@@ -468,6 +468,40 @@ gs_plugin_appstream_copy_metadata (GsApp *app, AsApp *item)
 }
 
 /**
+ * gs_plugin_refine_item_management_plugin:
+ */
+static void
+gs_plugin_refine_item_management_plugin (GsApp *app, AsApp *item)
+{
+	GPtrArray *bundles;
+	const gchar *management_plugin = NULL;
+	guint i;
+
+	/* find the default bundle kind */
+	bundles = as_app_get_bundles (item);
+	for (i = 0; i < bundles->len; i++) {
+		AsBundle *bundle = g_ptr_array_index (bundles, i);
+		if (as_bundle_get_kind (bundle) == AS_BUNDLE_KIND_XDG_APP) {
+			management_plugin = "XgdApp";
+			gs_app_add_source (app, as_bundle_get_id (bundle));
+			break;
+		}
+		if (as_bundle_get_kind (bundle) == AS_BUNDLE_KIND_LIMBA) {
+			management_plugin = "Limba";
+			gs_app_add_source (app, as_bundle_get_id (bundle));
+			break;
+		}
+	}
+
+	/* fall back to PackageKit */
+	if (management_plugin == NULL &&
+	    as_app_get_pkgname_default (item) != NULL)
+		management_plugin = "PackageKit";
+	if (management_plugin != NULL)
+		gs_app_set_management_plugin (app, management_plugin);
+}
+
+/**
  * gs_plugin_refine_item:
  */
 static gboolean
@@ -508,6 +542,9 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 			break;
 		}
 	}
+
+	/* set management plugin automatically */
+	gs_plugin_refine_item_management_plugin (app, item);
 
 	/* set id */
 	if (as_app_get_id (item) != NULL && gs_app_get_id (app) == NULL)
@@ -556,6 +593,12 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 		gs_app_add_kudo (app, GS_APP_KUDO_HAS_KEYWORDS);
 	}
 
+	/* set origin */
+	if (as_app_get_origin (item) != NULL &&
+	    gs_app_get_origin (app) == NULL) {
+		gs_app_set_origin (app, as_app_get_origin (item));
+	}
+
 	/* set description */
 	tmp = as_app_get_description (item, NULL);
 	if (tmp != NULL) {
@@ -583,11 +626,6 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 	if (as_app_get_project_group (item) != NULL &&
 	    gs_app_get_project_group (app) == NULL)
 		gs_app_set_project_group (app, as_app_get_project_group (item));
-
-	/* set default bundle (if any) */
-	if (as_app_get_bundle_default (item) != NULL &&
-	    gs_app_get_bundle (app) == NULL)
-		gs_app_set_bundle (app, as_app_get_bundle_default (item));
 
 	/* this is a core application for the desktop and cannot be removed */
 	if (_as_app_has_compulsory_for_desktop (item, "GNOME") &&
