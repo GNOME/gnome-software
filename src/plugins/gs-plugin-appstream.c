@@ -80,12 +80,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	as_store_set_watch_flags (plugin->priv->store,
 				  AS_STORE_WATCH_FLAG_ADDED |
 				  AS_STORE_WATCH_FLAG_REMOVED);
-
-	/* AppInstall does not ever give us a long description */
-	if (gs_plugin_check_distro_id (plugin, "debian") ||
-	    gs_plugin_check_distro_id (plugin, "ubuntu")) {
-		plugin->use_pkg_descriptions = TRUE;
-	}
 }
 
 /**

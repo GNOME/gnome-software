@@ -432,19 +432,6 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 }
 
 /**
- * gs_pk_format_desc:
- */
-static gchar *
-gs_pk_format_desc (const gchar *text)
-{
-	GString *str;
-	str = g_string_new (text);
-	gs_string_replace (str, "\n", " ");
-	gs_string_replace (str, ".  ", ".\n\n");
-	return g_string_free (str, FALSE);
-}
-
-/**
  * gs_pk_compare_ids:
  *
  * Do not compare the repo. Some backends do not append the origin.
@@ -508,13 +495,6 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 						pk_details_get_url (details));
 			}
 			size += pk_details_get_size (details);
-			desc = gs_pk_format_desc (pk_details_get_description (details));
-			gs_app_set_description (app,
-						GS_APP_QUALITY_LOWEST,
-						desc);
-			gs_app_set_summary (app,
-					    GS_APP_QUALITY_LOWEST,
-					    pk_details_get_summary (details));
 			break;
 		}
 	}
@@ -658,9 +638,6 @@ gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsPluginRefineFlags flags,
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 &&
 	    gs_app_get_size (app) == GS_APP_SIZE_UNKNOWN)
-		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) > 0 &&
-	    gs_app_get_description (app) == NULL && plugin->use_pkg_descriptions)
 		return TRUE;
 	return FALSE;
 }
