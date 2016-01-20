@@ -40,7 +40,7 @@
 struct GsPluginPrivate {
 	AsStore			*store;
 	GMutex			 store_mutex;
-	gsize			 done_init;
+	gboolean		 done_init;
 };
 
 static gboolean gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error);
@@ -60,8 +60,7 @@ gs_plugin_get_name (void)
 static void
 gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 {
-	g_debug ("AppStream metadata changed, reloading cache");
-	plugin->priv->done_init = FALSE;
+	g_debug ("AppStream metadata changed");
 
 	/* this is not strictly true, but it causes all the UI to be reloaded
 	 * which is what we really want */
@@ -152,10 +151,12 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 }
 
 /**
- * gs_plugin_startup:
+ * gs_plugin_appstream_startup:
+ *
+ * This must be called with plugin->priv->store_mutex held.
  */
 static gboolean
-gs_plugin_startup (GsPlugin *plugin, GError **error)
+gs_plugin_appstream_startup (GsPlugin *plugin, GError **error)
 {
 	AsApp *app;
 	GPtrArray *items;
@@ -166,11 +167,11 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 	g_autoptr(GHashTable) origins = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
-	ptask = as_profile_start_literal (plugin->profile, "appstream::startup");
-	g_mutex_lock (&plugin->priv->store_mutex);
+	/* already done */
+	if (plugin->priv->done_init)
+		return TRUE;
 
-	/* clear all existing applications if the store was invalidated */
-	as_store_remove_all (plugin->priv->store);
+	ptask = as_profile_start_literal (plugin->profile, "appstream::startup");
 
 	/* Parse the XML */
 	if (g_getenv ("GNOME_SOFTWARE_PREFER_LOCAL") != NULL) {
@@ -186,16 +187,15 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 			     NULL,
 			     error);
 	if (!ret)
-		goto out;
+		return FALSE;
 	items = as_store_get_apps (plugin->priv->store);
 	if (items->len == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
-		ret = FALSE;
 		g_set_error (error,
 			     GS_PLUGIN_LOADER_ERROR,
 			     GS_PLUGIN_LOADER_ERROR_FAILED,
 			     _("No AppStream data found"));
-		goto out;
+		return FALSE;
 	}
 
 	/* watch for changes */
@@ -217,9 +217,10 @@ gs_plugin_startup (GsPlugin *plugin, GError **error)
 			as_app_add_keyword (app, NULL, origin);
 		}
 	}
-out:
-	g_mutex_unlock (&plugin->priv->store_mutex);
-	return ret;
+
+	/* rely on the store keeping itself updated */
+	plugin->priv->done_init = TRUE;
+	return TRUE;
 }
 
 #define	GS_PLUGIN_APPSTREAM_MAX_SCREENSHOTS	5
@@ -685,27 +686,25 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 			  GError **error)
 {
 	const gchar *id;
-	gboolean ret = TRUE;
 	AsApp *item = NULL;
 
-	g_mutex_lock (&plugin->priv->store_mutex);
+	/* unfound */
+	*found = FALSE;
 
 	/* find anything that matches the ID */
 	id = gs_app_get_id (app);
 	if (id == NULL)
-		goto out;
+		return TRUE;
 	item = as_store_get_app_by_id (plugin->priv->store, id);
 	if (item == NULL)
-		goto out;
+		return TRUE;
 
 	/* set new properties */
-	ret = gs_plugin_refine_item (plugin, app, item, error);
-	if (!ret)
-		goto out;
-out:
-	g_mutex_unlock (&plugin->priv->store_mutex);
-	*found = (item != NULL);
-	return ret;
+	if (!gs_plugin_refine_item (plugin, app, item, error))
+		return FALSE;
+
+	*found = TRUE;
+	return TRUE;
 }
 
 /**
@@ -718,11 +717,8 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 {
 	AsApp *item = NULL;
 	GPtrArray *sources;
-	gboolean ret = TRUE;
 	const gchar *pkgname;
 	guint i;
-
-	g_mutex_lock (&plugin->priv->store_mutex);
 
 	/* find anything that matches the ID */
 	sources = gs_app_get_sources (app);
@@ -736,13 +732,10 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 
 	/* nothing found */
 	if (item == NULL)
-		goto out;
+		return TRUE;
 
 	/* set new properties */
-	ret = gs_plugin_refine_item (plugin, app, item, error);
-out:
-	g_mutex_unlock (&plugin->priv->store_mutex);
-	return ret;
+	return gs_plugin_refine_item (plugin, app, item, error);
 }
 
 /**
@@ -756,19 +749,14 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 {
 	AsApp *item;
 	GPtrArray *array;
-	gboolean ret = TRUE;
 	guint i;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
 
 	/* load XML files */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
-			return FALSE;
-	}
+	if (!gs_plugin_appstream_startup (plugin, error))
+		return FALSE;
 
 	/* find any upgrades */
-	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
@@ -784,14 +772,11 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		app = gs_app_new (as_app_get_id (item));
 		gs_app_set_kind (app, GS_APP_KIND_DISTRO_UPGRADE);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-		ret = gs_plugin_refine_item (plugin, app, item, error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_refine_item (plugin, app, item, error))
+			return FALSE;
 		gs_plugin_add_app (list, app);
 	}
-out:
-	g_mutex_unlock (&plugin->priv->store_mutex);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -804,19 +789,15 @@ gs_plugin_refine (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	gboolean ret;
-	gboolean found;
+	gboolean found = FALSE;
 	GList *l;
 	GsApp *app;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
 
 	/* load XML files */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
-			return FALSE;
-	}
+	if (!gs_plugin_appstream_startup (plugin, error))
+		return FALSE;
 
 	ptask = as_profile_start_literal (plugin->profile, "appstream::refine");
 	for (l = *list; l != NULL; l = l->next) {
@@ -845,24 +826,19 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 {
 	const gchar *search_id1;
 	const gchar *search_id2 = NULL;
-	gboolean ret = TRUE;
 	AsApp *item;
 	GsCategory *parent;
 	GPtrArray *array;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
 
 	/* load XML files */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
-			return FALSE;
-	}
+	if (!gs_plugin_appstream_startup (plugin, error))
+		return FALSE;
 
 	/* get the two search terms */
 	ptask = as_profile_start_literal (plugin->profile, "appstream::add-category-apps");
-	g_mutex_lock (&plugin->priv->store_mutex);
 	search_id1 = gs_category_get_id (category);
 	parent = gs_category_get_parent (category);
 	if (parent != NULL)
@@ -888,14 +864,11 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 
 		/* got a search match, so add all the data we can */
 		app = gs_app_new (as_app_get_id (item));
-		ret = gs_plugin_refine_item (plugin, app, item, error);
-		if (!ret)
-			goto out;
+		if (!gs_plugin_refine_item (plugin, app, item, error))
+			return FALSE;
 		gs_plugin_add_app (list, app);
 	}
-out:
-	g_mutex_unlock (&plugin->priv->store_mutex);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -938,23 +911,22 @@ gs_plugin_add_search_item (GsPlugin *plugin,
 	/* no match */
 	match_value = as_app_search_matches_all (app, values);
 	if (match_value == 0)
-		goto out;
+		return TRUE;
 
 	/* if the app does not extend an application, then just add it */
 	extends = as_app_get_extends (app);
 	if (extends->len == 0) {
-		ret = gs_plugin_add_search_item_add (plugin,
-						     list,
-						     app,
-						     match_value,
-						     error);
-		goto out;
+		return gs_plugin_add_search_item_add (plugin,
+						      list,
+						      app,
+						      match_value,
+						      error);
 	}
 
 	/* add the thing that we extend, not the addon itself */
 	for (i = 0; i < extends->len; i++) {
 		if (g_cancellable_set_error_if_cancelled (cancellable, error))
-			goto out;
+			return FALSE;
 
 		id = g_ptr_array_index (extends, i);
 		item = as_store_get_app_by_id (plugin->priv->store, id);
@@ -966,10 +938,9 @@ gs_plugin_add_search_item (GsPlugin *plugin,
 						     match_value,
 						     error);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
-out:
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -987,31 +958,25 @@ gs_plugin_add_search (GsPlugin *plugin,
 	gboolean ret = TRUE;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
 
 	/* load XML files */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
-			return FALSE;
-	}
+	if (!gs_plugin_appstream_startup (plugin, error))
+		return FALSE;
 
 	/* search categories for the search term */
 	ptask = as_profile_start_literal (plugin->profile, "appstream::search");
-	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		if (g_cancellable_set_error_if_cancelled (cancellable, error))
-			goto out;
+			return FALSE;
 
 		item = g_ptr_array_index (array, i);
 		ret = gs_plugin_add_search_item (plugin, list, item, values, cancellable, error);
 		if (!ret)
-			goto out;
+			return FALSE;
 	}
-out:
-	g_mutex_unlock (&plugin->priv->store_mutex);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -1024,22 +989,17 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GError **error)
 {
 	AsApp *item;
-	gboolean ret = TRUE;
 	GPtrArray *array;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
 
 	/* load XML files */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
-			return FALSE;
-	}
+	if (!gs_plugin_appstream_startup (plugin, error))
+		return FALSE;
 
 	/* search categories for the search term */
 	ptask = as_profile_start_literal (plugin->profile, "appstream::add_installed");
-	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
@@ -1047,15 +1007,12 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		    as_app_get_source_kind (item) == AS_APP_SOURCE_KIND_DESKTOP) {
 			g_autoptr(GsApp) app = NULL;
 			app = gs_app_new (as_app_get_id (item));
-			ret = gs_plugin_refine_item (plugin, app, item, error);
-			if (!ret)
-				goto out;
+			if (!gs_plugin_refine_item (plugin, app, item, error))
+				return FALSE;
 			gs_plugin_add_app (list, app);
 		}
 	}
-out:
-	g_mutex_unlock (&plugin->priv->store_mutex);
-	return ret;
+	return TRUE;
 }
 
 /**
@@ -1115,21 +1072,16 @@ gs_plugin_add_categories (GsPlugin *plugin,
 {
 	AsApp *app;
 	GPtrArray *array;
-	gboolean ret = TRUE;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
 
 	/* load XML files */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
-			return FALSE;
-	}
+	if (!gs_plugin_appstream_startup (plugin, error))
+		return FALSE;
 
 	/* find out how many packages are in each category */
 	ptask = as_profile_start_literal (plugin->profile, "appstream::add-categories");
-	g_mutex_lock (&plugin->priv->store_mutex);
 	array = as_store_get_apps (plugin->priv->store);
 	for (i = 0; i < array->len; i++) {
 		app = g_ptr_array_index (array, i);
@@ -1139,6 +1091,5 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			continue;
 		gs_plugin_add_categories_for_app (*list, app);
 	}
-	g_mutex_unlock (&plugin->priv->store_mutex);
-	return ret;
+	return TRUE;
 }
