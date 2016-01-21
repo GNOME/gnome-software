@@ -126,14 +126,7 @@ G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
  * gs_app_error_quark:
  * Return value: Our personal error quark.
  **/
-GQuark
-gs_app_error_quark (void)
-{
-	static GQuark quark = 0;
-	if (!quark)
-		quark = g_quark_from_static_string ("gs_app_error");
-	return quark;
-}
+G_DEFINE_QUARK (gs-app-error-quark, gs_app_error)
 
 /**
  * gs_app_kind_to_string:

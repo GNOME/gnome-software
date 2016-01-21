@@ -95,14 +95,7 @@ gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
  * gs_plugin_loader_error_quark:
  * Return value: Our personal error quark.
  **/
-GQuark
-gs_plugin_loader_error_quark (void)
-{
-	static GQuark quark = 0;
-	if (!quark)
-		quark = g_quark_from_static_string ("gs_plugin_loader_error");
-	return quark;
-}
+G_DEFINE_QUARK (gs-plugin-loader-error-quark, gs_plugin_loader_error)
 
 /**
  * gs_plugin_loader_app_sort_cb:
