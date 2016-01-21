@@ -115,32 +115,28 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsApp *new_app;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->app_cache_mutex);
 
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
-	g_mutex_lock (&priv->app_cache_mutex);
-
 	/* not yet set */
 	if (gs_app_get_id (app) == NULL) {
-		new_app = app;
-		goto out;
+		return app;
 	}
 
 	/* already exists */
 	new_app = g_hash_table_lookup (priv->app_cache, gs_app_get_id (app));
 	if (new_app == app) {
-		new_app = app;
-		goto out;
+		return app;
 	}
 
 	/* insert new entry */
 	if (new_app == NULL) {
-		new_app = app;
 		g_hash_table_insert (priv->app_cache,
 				     g_strdup (gs_app_get_id (app)),
 				     g_object_ref (app));
-		goto out;
+		return app;
 	}
 
 	/* import all the useful properties */
@@ -152,8 +148,7 @@ gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
 	 */
 	g_object_unref (app);
 	g_object_ref (new_app);
-out:
-	g_mutex_unlock (&priv->app_cache_mutex);
+
 	return new_app;
 }
 

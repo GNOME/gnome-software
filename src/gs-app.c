@@ -882,9 +882,10 @@ icon_theme_add_path (const gchar *path)
 GdkPixbuf *
 gs_app_get_pixbuf (GsApp *app)
 {
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&icon_theme_lock);
+
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
-	g_mutex_lock (&icon_theme_lock);
 	/* has an icon */
 	if (app->pixbuf == NULL &&
 	    app->icon != NULL &&
@@ -928,7 +929,6 @@ gs_app_get_pixbuf (GsApp *app)
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);
 	}
-	g_mutex_unlock (&icon_theme_lock);
 
 	return app->pixbuf;
 }
@@ -983,7 +983,9 @@ gs_app_load_icon (GsApp *app, gint scale, GError **error)
 							   error);
 		break;
 	case AS_ICON_KIND_STOCK:
-		g_mutex_lock (&icon_theme_lock);
+	{
+		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&icon_theme_lock);
+
 		icon_theme_add_path (as_icon_get_prefix (icon));
 		pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 						   as_icon_get_name (icon),
@@ -991,8 +993,8 @@ gs_app_load_icon (GsApp *app, gint scale, GError **error)
 						   GTK_ICON_LOOKUP_USE_BUILTIN |
 						   GTK_ICON_LOOKUP_FORCE_SIZE,
 						   error);
-		g_mutex_unlock (&icon_theme_lock);
 		break;
+	}
 	default:
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
