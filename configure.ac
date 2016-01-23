@@ -184,7 +184,7 @@ AC_ARG_ENABLE(limba,
               enable_limba=maybe)
 AS_IF([test "x$enable_limba" != "xno"], [
     PKG_CHECK_MODULES(LIMBA,
-                      limba >= 0.4.2,
+                      limba >= 0.5.6,
                       [have_limba=yes],
                       [have_limba=no])
 ], [
@@ -194,7 +194,7 @@ AS_IF([test "x$have_limba" = "xyes"], [
     AC_DEFINE(HAVE_LIMBA, 1, [Build Limba support])
 ], [
     AS_IF([test "x$enable_limba" = "xyes"], [
-          AC_MSG_ERROR([Limba support requested but 'limba>=0.4.2' was not found])
+          AC_MSG_ERROR([Limba support requested but 'limba>=0.5.6' was not found])
     ])
 ])
 AM_CONDITIONAL(HAVE_LIMBA, test x$enable_limba = xyes)
@@ -246,6 +246,6 @@ echo "
         PackageKit support:        ${have_packagekit}
         PolicyKit support:         ${have_polkit}
         Firmware support:          ${have_firmware}
+        Limba support:             ${have_limba}
         XDG-APP support:           ${have_xdg_app}
 "
-

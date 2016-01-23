@@ -89,9 +89,8 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 		return FALSE;
 	}
 
-	if (pki == NULL) {
+	if (pki == NULL)
 		return TRUE;
-	}
 
 	if (li_pkg_info_has_flag (pki, LI_PACKAGE_FLAG_INSTALLED))
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
@@ -278,6 +277,21 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	return TRUE;
 }
+
+/**
+ * gs_plugin_add_sources:
+ */
+gboolean
+gs_plugin_add_sources (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	/* TODO: Limba does not expose "simple" API for this yet - add this feature later. */
+
+	return TRUE;
+}
+
 /**
  * gs_plugin_refresh:
  */
@@ -309,3 +323,147 @@ gs_plugin_refresh (GsPlugin *plugin,
 	return TRUE;
 }
 
+/**
+ * gs_plugin_add_updates:
+ */
+gboolean
+gs_plugin_add_updates (GsPlugin *plugin,
+			GList **list,
+			GCancellable *cancellable,
+			GError **error)
+{
+	g_autoptr(GList) updates = NULL;
+	GList *l;
+	g_autoptr(GError) error_local = NULL;
+
+	updates = li_manager_get_update_list (plugin->priv->mgr, &error_local);
+	if (error_local != NULL) {
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Failed to list updates: %s",
+				error_local->message);
+		return FALSE;
+	}
+
+	for (l = updates; l != NULL; l = l->next) {
+		LiPkgInfo *old_pki;
+		LiPkgInfo *new_pki;
+		const gchar *cptkind_str;
+		g_autoptr(GsApp) app = NULL;
+		LiUpdateItem *uitem = LI_UPDATE_ITEM (l->data);
+
+		old_pki = li_update_item_get_installed_pkg (uitem);
+		new_pki = li_update_item_get_available_pkg (uitem);
+
+		cptkind_str = li_pkg_info_get_component_kind (old_pki);
+		if ((cptkind_str != NULL) && (g_strcmp0 (cptkind_str, "desktop") == 0)) {
+			g_autofree gchar *tmp = NULL;
+			/* type=desktop AppStream components result in a Limba bundle name which has the .desktop stripped away.
+			 * We need to re-add it for GNOME Software.
+			 * In any other case, the Limba bundle name equals the AppStream ID of the component it contains */
+			tmp = g_strdup_printf ("%s.desktop", li_pkg_info_get_name (old_pki));
+			app = gs_app_new (tmp);
+			gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+		} else {
+			app = gs_app_new (li_pkg_info_get_name (old_pki));
+		}
+
+		gs_app_set_management_plugin (app, "Limba");
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
+		gs_plugin_add_app (list, app);
+		gs_app_set_name (app,
+				 GS_APP_QUALITY_LOWEST,
+				 li_pkg_info_get_name (old_pki));
+		gs_app_set_summary (app,
+				    GS_APP_QUALITY_LOWEST,
+				    li_pkg_info_get_name (old_pki));
+		gs_app_set_version (app,
+				    li_pkg_info_get_version (old_pki));
+		gs_app_set_update_version (app,
+					   li_pkg_info_get_version (new_pki));
+		gs_app_add_source (app,
+				   li_pkg_info_get_id (old_pki));
+		gs_plugin_add_app (list, app);
+	}
+
+	return TRUE;
+}
+
+/**
+ * gs_plugin_app_update:
+ *
+ * Used only for online-updates.
+ */
+gboolean
+gs_plugin_app_update (GsPlugin *plugin,
+		      GsApp *app,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	GsPluginHelper helper;
+	g_autoptr(LiManager) mgr = NULL;
+	LiUpdateItem *uitem;
+	g_autoptr(GError) error_local = NULL;
+
+	/* check if this update request is for us */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "Limba") != 0)
+		return TRUE;
+
+	/* sanity check */
+	if (gs_app_get_source_default (app) == NULL) {
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Failed to run update: Default source was NULL.");
+		return FALSE;
+	}
+
+	mgr = li_manager_new ();
+
+	/* set up progress forwarding */
+	helper.app = app;
+	helper.plugin = plugin;
+	g_signal_connect (mgr,
+			  "progress",
+			  G_CALLBACK (gs_plugin_manager_progress_cb),
+			  &helper);
+
+	/* find update which matches the ID we have */
+	uitem = li_manager_get_update_for_id (mgr,
+					      gs_app_get_source_default (app),
+					      &error_local);
+	if (error_local != NULL) {
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Failed to find update: %s",
+				error_local->message);
+		return FALSE;
+	}
+
+	if (uitem == NULL) {
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Could not find update for '%s'.",
+				gs_app_get_source_default (app));
+		return FALSE;
+	}
+
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	li_manager_update (mgr, uitem, &error_local);
+	if (error_local != NULL) {
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Software update failed: %s",
+				error_local->message);
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		return FALSE;
+	}
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
+	return TRUE;
+}
