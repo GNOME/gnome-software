@@ -278,3 +278,34 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	return TRUE;
 }
+/**
+ * gs_plugin_refresh:
+ */
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GsPluginRefreshFlags flags,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	g_autoptr(LiManager) mgr = NULL;
+	GError *error_local = NULL;
+
+	/* not us */
+	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
+		return TRUE;
+
+	mgr = li_manager_new ();
+	li_manager_refresh_cache (mgr, &error_local);
+	if (error_local != NULL) {
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Failed to refresh Limba metadata: %s",
+				     error_local->message);
+		return FALSE;
+	}
+
+	return TRUE;
+}
+
