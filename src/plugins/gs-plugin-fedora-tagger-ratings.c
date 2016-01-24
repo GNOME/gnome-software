@@ -64,6 +64,8 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
+	g_autoptr(GSettings) settings = NULL;
+
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->db_path = g_build_filename (g_get_user_data_dir (),
 						  "gnome-software",
@@ -76,6 +78,15 @@ gs_plugin_initialize (GsPlugin *plugin)
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_debug ("disabling '%s' as we're not Fedora", plugin->name);
+		return;
+	}
+
+	/* this is configurable */
+	settings = g_settings_new ("org.gnome.software");
+	if (!g_settings_get_boolean (settings, "show-ratings")) {
+		gs_plugin_set_enabled (plugin, FALSE);
+		g_debug ("disabling '%s' as 'show-ratings' "
+			 "disabled in GSettings", plugin->name);
 		return;
 	}
 }
