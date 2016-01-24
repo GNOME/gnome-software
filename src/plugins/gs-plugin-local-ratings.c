@@ -235,7 +235,6 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (rating != -1) {
 			gs_app_set_rating (app, rating);
 			gs_app_set_rating_confidence (app, 100);
-			gs_app_set_rating_kind (app, GS_APP_RATING_KIND_USER);
 			if (rating > 80)
 				gs_app_add_kudo (app, GS_APP_KUDO_POPULAR);
 		}

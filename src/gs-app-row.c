@@ -182,19 +182,13 @@ gs_app_row_refresh (GsAppRow *app_row)
 	} else {
 		gtk_widget_hide (priv->version_label);
 		if (gs_app_get_kind (priv->app) == GS_APP_KIND_MISSING ||
-		    (gs_app_get_state (priv->app) == AS_APP_STATE_AVAILABLE_LOCAL && gs_app_get_rating (priv->app) < 0))
+		    gs_app_get_rating (priv->app) <= 0) {
 			gtk_widget_hide (priv->star);
-		else
-			gtk_widget_show (priv->star);
-		gtk_widget_set_sensitive (priv->star, FALSE);
-		if (gs_app_get_rating_kind (priv->app) == GS_APP_RATING_KIND_USER) {
-			gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
-						   GS_APP_RATING_KIND_USER,
-						   gs_app_get_rating (priv->app));
 		} else {
+			gtk_widget_show (priv->star);
+			gtk_widget_set_sensitive (priv->star, FALSE);
 			gs_star_widget_set_rating (GS_STAR_WIDGET (priv->star),
-						   GS_APP_RATING_KIND_KUDOS,
-						   gs_app_get_kudos_percentage (priv->app));
+						   gs_app_get_rating (priv->app));
 		}
 		gtk_label_set_label (GTK_LABEL (priv->version_label),
 				     gs_app_get_version_ui (priv->app));

@@ -724,14 +724,12 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		break;
 	default:
 		gtk_widget_set_visible (self->star, TRUE);
-		if (gs_app_get_rating_kind (self->app) == GS_APP_RATING_KIND_USER) {
+		if (gs_app_get_rating (self->app) >= 0) {
+			gtk_widget_set_visible (self->star, TRUE);
 			gs_star_widget_set_rating (GS_STAR_WIDGET (self->star),
-						   GS_APP_RATING_KIND_USER,
 						   gs_app_get_rating (self->app));
 		} else {
-			gs_star_widget_set_rating (GS_STAR_WIDGET (self->star),
-						   GS_APP_RATING_KIND_KUDOS,
-						   gs_app_get_kudos_percentage (self->app));
+			gtk_widget_set_visible (self->star, FALSE);
 		}
 		break;
 	}
@@ -1267,7 +1265,6 @@ gs_shell_details_rating_changed_cb (GsStarWidget *star,
 
 	/* call into the plugins to set the new value */
 	gs_app_set_rating (self->app, rating);
-	gs_app_set_rating_kind (self->app, GS_APP_RATING_KIND_USER);
 	gs_plugin_loader_app_action_async (self->plugin_loader, self->app,
 					   GS_PLUGIN_LOADER_ACTION_SET_RATING,
 					   self->cancellable,

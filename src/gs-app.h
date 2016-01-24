@@ -52,14 +52,6 @@ typedef enum {
 } GsAppKind;
 
 typedef enum {
-	GS_APP_RATING_KIND_UNKNOWN,
-	GS_APP_RATING_KIND_USER,
-	GS_APP_RATING_KIND_SYSTEM,
-	GS_APP_RATING_KIND_KUDOS,
-	GS_APP_RATING_KIND_LAST
-} GsAppRatingKind;
-
-typedef enum {
 	GS_APP_KUDO_MY_LANGUAGE			= 1 << 0,
 	GS_APP_KUDO_RECENT_RELEASE		= 1 << 1,
 	GS_APP_KUDO_FEATURED_RECOMMENDED	= 1 << 2,
@@ -210,9 +202,6 @@ void		 gs_app_set_rating		(GsApp		*app,
 gint		 gs_app_get_rating_confidence	(GsApp		*app);
 void		 gs_app_set_rating_confidence	(GsApp		*app,
 						 gint		 rating_confidence);
-GsAppRatingKind	 gs_app_get_rating_kind		(GsApp		*app);
-void		 gs_app_set_rating_kind		(GsApp		*app,
-						 GsAppRatingKind rating_kind);
 guint64		 gs_app_get_size		(GsApp		*app);
 void		 gs_app_set_size		(GsApp		*app,
 						 guint64	 size);
