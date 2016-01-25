@@ -92,11 +92,10 @@ static const GMarkupParser gs_language_markup_parser =
 gboolean
 gs_language_populate (GsLanguage *language, GError **error)
 {
-	gboolean ret = FALSE;
-	gchar *contents = NULL;
-	gchar *filename;
 	gsize size;
-	GMarkupParseContext *context = NULL;
+	g_autofree gchar *contents = NULL;
+	g_autofree gchar *filename = NULL;
+	g_autoptr(GMarkupParseContext) context = NULL;
 
 	/* find filename */
 	filename = g_build_filename (DATADIR, "xml", "iso-codes", "iso_639.xml", NULL);
@@ -106,27 +105,21 @@ gs_language_populate (GsLanguage *language, GError **error)
 	}
 	if (!g_file_test (filename, G_FILE_TEST_EXISTS)) {
 		g_set_error (error, 1, 0, "cannot find source file : '%s'", filename);
-		goto out;
+		return FALSE;
 	}
 
 	/* get contents */
-	ret = g_file_get_contents (filename, &contents, &size, error);
-	if (!ret)
-		goto out;
+	if (!g_file_get_contents (filename, &contents, &size, error))
+		return FALSE;
 
 	/* create parser */
 	context = g_markup_parse_context_new (&gs_language_markup_parser, G_MARKUP_PREFIX_ERROR_POSITION, language, NULL);
 
 	/* parse data */
-	ret = g_markup_parse_context_parse (context, contents, (gssize) size, error);
-	if (!ret)
-		goto out;
-out:
-	if (context != NULL)
-		g_markup_parse_context_free (context);
-	g_free (filename);
-	g_free (contents);
-	return ret;
+	if (!g_markup_parse_context_parse (context, contents, (gssize) size, error))
+		return FALSE;
+
+	return TRUE;;
 }
 
 /**
