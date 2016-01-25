@@ -1051,12 +1051,12 @@ static gchar *
 gs_app_get_ui_version (const gchar *version, guint64 flags)
 {
 	guint i;
-	gchar *new = NULL;
+	gchar *new;
 	gchar *f;
 
 	/* nothing set */
 	if (version == NULL)
-		goto out;
+		return NULL;
 
 	/* first remove any epoch */
 	for (i = 0; version[i] != '\0'; i++) {
@@ -1095,7 +1095,7 @@ gs_app_get_ui_version (const gchar *version, guint64 flags)
 		if (f != NULL)
 			*f= '\0';
 	}
-out:
+
 	return new;
 }
 
