@@ -336,37 +336,6 @@ out:
 }
 
 /**
- * gs_plugin_loader_run_launch:
- **/
-static gboolean
-gs_plugin_loader_run_launch (GsPluginLoader *plugin_loader,
-			     GsApp *app,
-			     GCancellable *cancellable,
-			     GError **error)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GsPluginLaunchFunc plugin_func = NULL;
-	GsPlugin *plugin;
-	gboolean ret = TRUE;
-	guint i;
-
-	/* run each plugin */
-	for (i = 0; i < priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (priv->plugins, i);
-		if (!plugin->enabled)
-			continue;
-		if (!g_module_symbol (plugin->module,
-				      "gs_plugin_launch",
-				      (gpointer *) &plugin_func))
-			continue;
-		ret = plugin_func (plugin, app, cancellable, error);
-		if (!ret)
-			return FALSE;
-	}
-	return TRUE;
-}
-
-/**
  * gs_plugin_loader_run_results_plugin:
  **/
 static gboolean
@@ -2332,84 +2301,6 @@ gs_plugin_loader_app_refine_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_app_launch_thread_cb:
- **/
-static void
-gs_plugin_loader_app_launch_thread_cb (GTask *task,
-				       gpointer object,
-				       gpointer task_data,
-				       GCancellable *cancellable)
-{
-	GError *error = NULL;
-	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
-	gboolean ret;
-
-	ret = gs_plugin_loader_run_launch (plugin_loader,
-					   state->app,
-					   cancellable,
-					   &error);
-	if (!ret) {
-		g_task_return_error (task, error);
-		return;
-	}
-
-	/* success */
-	g_task_return_boolean (task, TRUE);
-}
-
-/**
- * gs_plugin_loader_app_launch_async:
- *
- * This method calls all plugins that implement the gs_plugin_launch()
- * function.
- **/
-void
-gs_plugin_loader_app_launch_async (GsPluginLoader *plugin_loader,
-				   GsApp *app,
-				   GCancellable *cancellable,
-				   GAsyncReadyCallback callback,
-				   gpointer user_data)
-{
-	GsPluginLoaderAsyncState *state;
-	g_autoptr(GTask) task = NULL;
-
-	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
-	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
-
-	/* save state */
-	state = g_slice_new0 (GsPluginLoaderAsyncState);
-	state->app = g_object_ref (app);
-
-	/* run in a thread */
-	task = g_task_new (plugin_loader, cancellable, callback, user_data);
-	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
-	g_task_run_in_thread (task, gs_plugin_loader_app_launch_thread_cb);
-}
-
-/**
- * gs_plugin_loader_app_launch_finish:
- *
- * Return value: success
- **/
-gboolean
-gs_plugin_loader_app_launch_finish (GsPluginLoader *plugin_loader,
-				    GAsyncResult *res,
-				    GError **error)
-{
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
-	g_return_val_if_fail (G_IS_TASK (res), FALSE);
-	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
-	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
-
-	return g_task_propagate_boolean (G_TASK (res), error);
-}
-
-/******************************************************************************/
-
 static gboolean
 emit_pending_apps_idle (gpointer loader)
 {
@@ -2722,6 +2613,11 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 		break;
 	case GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER:
 		state->function_name = "gs_plugin_app_upgrade_trigger";
+		state->state_success = AS_APP_STATE_UNKNOWN;
+		state->state_failure = AS_APP_STATE_UNKNOWN;
+		break;
+	case GS_PLUGIN_LOADER_ACTION_LAUNCH:
+		state->function_name = "gs_plugin_launch";
 		state->state_success = AS_APP_STATE_UNKNOWN;
 		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;

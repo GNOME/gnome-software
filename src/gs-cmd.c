@@ -301,8 +301,9 @@ main (int argc, char **argv)
 	} else if (argc == 3 && g_strcmp0 (argv[1], "launch") == 0) {
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {
-			ret = gs_plugin_loader_app_launch (plugin_loader,
+			ret = gs_plugin_loader_app_action (plugin_loader,
 							   app,
+							   GS_PLUGIN_LOADER_ACTION_LAUNCH,
 							   NULL,
 							   &error);
 			if (!ret)

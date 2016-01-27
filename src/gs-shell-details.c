@@ -1199,7 +1199,7 @@ gs_shell_details_app_launch_cb (GObject *source,
 {
 	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_app_launch_finish (self->plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_app_action_finish (self->plugin_loader, res, &error)) {
 		g_warning ("failed to launch GsApp: %s", error->message);
 		return;
 	}
@@ -1211,8 +1211,9 @@ gs_shell_details_app_launch_cb (GObject *source,
 static void
 gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
-	gs_plugin_loader_app_launch_async (self->plugin_loader,
+	gs_plugin_loader_app_action_async (self->plugin_loader,
 					   self->app,
+					   GS_PLUGIN_LOADER_ACTION_LAUNCH,
 					   self->cancellable,
 					   gs_shell_details_app_launch_cb,
 					   self);

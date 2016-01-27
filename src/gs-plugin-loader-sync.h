@@ -71,10 +71,6 @@ gboolean	 gs_plugin_loader_app_refine		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_plugin_loader_app_launch		(GsPluginLoader	*plugin_loader,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
 gboolean	 gs_plugin_loader_app_action		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsPluginLoaderAction action,
