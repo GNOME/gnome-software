@@ -30,7 +30,6 @@
 #include <gio/gio.h>
 #include <gio/gdesktopappinfo.h>
 #include <libsoup/soup.h>
-#include <packagekit-glib2/packagekit.h>
 
 #ifdef GDK_WINDOWING_X11
 #include <gtk/gtkx.h>
@@ -365,14 +364,6 @@ profile_activated (GSimpleAction *action,
 	as_profile_dump (app->profile);
 }
 
-static void
-offline_updates_cancel (void)
-{
-	g_autoptr(GError) error = NULL;
-	if (!pk_offline_cancel (NULL, &error))
-		g_warning ("failed to cancel the offline update: %s", error->message);
-}
-
 /**
  * offline_update_cb:
  **/
@@ -386,7 +377,7 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}
-	gs_reboot (offline_updates_cancel);
+	gs_reboot (NULL);
 }
 
 static void

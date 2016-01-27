@@ -411,7 +411,8 @@ reboot_done (GObject *source, GAsyncResult *res, gpointer data)
 			   error->message);
 	}
 
-	reboot_failed ();
+	if (reboot_failed != NULL)
+		reboot_failed ();
 }
 
 void

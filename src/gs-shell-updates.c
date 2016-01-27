@@ -23,7 +23,6 @@
 
 #include <glib/gi18n.h>
 #include <gio/gio.h>
-#include <packagekit-glib2/packagekit.h>
 
 #include "gs-shell.h"
 #include "gs-shell-updates.h"
@@ -814,14 +813,6 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	gs_shell_updates_invalidate (self);
 }
 
-static void
-gs_offline_updates_cancel (void)
-{
-	g_autoptr(GError) error = NULL;
-	if (!pk_offline_cancel (NULL, &error))
-		g_warning ("failed to cancel the offline update: %s", error->message);
-}
-
 /**
  * gs_shell_updates_offline_update_cb:
  **/
@@ -837,7 +828,7 @@ gs_shell_updates_offline_update_cb (GsPluginLoader *plugin_loader,
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}
-	gs_reboot (gs_offline_updates_cancel);
+	gs_reboot (NULL);
 }
 
 static void
