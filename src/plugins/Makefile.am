@@ -47,6 +47,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_packagekit-refresh.la		\
 	libgs_plugin_packagekit-offline.la		\
 	libgs_plugin_packagekit-origin.la		\
+	libgs_plugin_packagekit-proxy.la		\
 	libgs_plugin_packagekit-history.la		\
 	libgs_plugin_packagekit.la
 
@@ -210,6 +211,11 @@ libgs_plugin_packagekit_origin_la_SOURCES = gs-plugin-packagekit-origin.c
 libgs_plugin_packagekit_origin_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_packagekit_origin_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_origin_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_packagekit_proxy_la_SOURCES = gs-plugin-packagekit-proxy.c
+libgs_plugin_packagekit_proxy_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_packagekit_proxy_la_LDFLAGS = -module -avoid-version
+libgs_plugin_packagekit_proxy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 check_PROGRAMS =					\
 	gs-self-test

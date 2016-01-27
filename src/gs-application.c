@@ -40,7 +40,6 @@
 #include "gs-first-run-dialog.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
-#include "gs-proxy-settings.h"
 #include "gs-shell-search-provider.h"
 #include "gs-offline-updates.h"
 #include "gs-folders.h"
@@ -57,7 +56,6 @@ struct _GsApplication {
 	gint		 pending_apps;
 	GsShell		*shell;
 	GsUpdateMonitor *update_monitor;
-	GsProxySettings *proxy_settings;
 	GsDbusHelper	*dbus_helper;
 	GsShellSearchProvider *search_provider;
 	GNetworkMonitor *network_monitor;
@@ -593,7 +591,6 @@ gs_application_startup (GApplication *application)
 					 actions, G_N_ELEMENTS (actions),
 					 application);
 
-	GS_APPLICATION (application)->proxy_settings = gs_proxy_settings_new ();
 	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
 	GS_APPLICATION (application)->settings = g_settings_new ("org.gnome.software");
 	gs_application_monitor_permission (GS_APPLICATION (application));
@@ -625,7 +622,6 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->shell);
 	g_clear_object (&app->provider);
 	g_clear_object (&app->update_monitor);
-	g_clear_object (&app->proxy_settings);
 	g_clear_object (&app->profile);
 	g_clear_object (&app->network_monitor);
 	g_clear_object (&app->dbus_helper);
