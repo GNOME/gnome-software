@@ -117,7 +117,7 @@ download_updates_setting_changed (GSettings     *settings,
 				  const gchar   *key,
 				  GsApplication *app)
 {
-	if (!gs_updates_are_managed () &&
+	if (!gs_update_monitor_is_managed () &&
 	    g_settings_get_boolean (settings, key)) {
 		g_debug ("Enabling update monitor");
 		app->update_monitor = gs_update_monitor_new (app);
@@ -143,7 +143,7 @@ gs_application_monitor_permission (GsApplication *app)
 {
 	GPermission *permission;
 
-	permission = gs_offline_updates_permission_get ();
+	permission = gs_update_monitor_permission_get ();
 	g_signal_connect (permission, "notify",
 			  G_CALLBACK (on_permission_changed), app);
 }

@@ -32,6 +32,8 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsUpdateMonitor, gs_update_monitor, GS, UPDATE_MONITOR, GObject)
 
 GsUpdateMonitor	*gs_update_monitor_new		(GsApplication *app);
+GPermission	*gs_update_monitor_permission_get	(void);
+gboolean	 gs_update_monitor_is_managed		(void);
 
 G_END_DECLS
 

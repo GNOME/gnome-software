@@ -24,6 +24,7 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
+#include <polkit/polkit.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 
 #include "gs-update-monitor.h"
@@ -563,6 +564,31 @@ gs_update_monitor_new (GsApplication *application)
 			  G_CALLBACK (updates_changed_cb), monitor);
 
 	return monitor;
+}
+
+GPermission *
+gs_update_monitor_permission_get (void)
+{
+	static GPermission *permission;
+
+	if (!permission)
+		permission = polkit_permission_new_sync ("org.freedesktop.packagekit.trigger-offline-update",
+                                                         NULL, NULL, NULL);
+
+	return permission;
+}
+
+gboolean
+gs_update_monitor_is_managed (void)
+{
+	GPermission *permission;
+	gboolean managed;
+
+	permission = gs_update_monitor_permission_get ();
+	managed = !g_permission_get_allowed (permission) &&
+                  !g_permission_get_can_acquire (permission);
+
+	return managed;
 }
 
 /* vim: set noexpandtab: */

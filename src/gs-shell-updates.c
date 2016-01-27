@@ -27,12 +27,12 @@
 #include "gs-shell.h"
 #include "gs-shell-updates.h"
 #include "gs-utils.h"
-#include "gs-offline-updates.h"
 #include "gs-app.h"
 #include "gs-app-row.h"
 #include "gs-markdown.h"
 #include "gs-update-dialog.h"
 #include "gs-update-list.h"
+#include "gs-update-monitor.h"
 #include "gs-application.h"
 
 #include <gdesktop-enums.h>
@@ -400,7 +400,7 @@ gs_shell_updates_set_state (GsShellUpdates *self,
 			    GsShellUpdatesState state)
 {
 	self->state = state;
-	if (gs_updates_are_managed ())
+	if (gs_update_monitor_is_managed ())
 		self->state = GS_SHELL_UPDATES_STATE_MANAGED;
 	gs_shell_updates_update_ui_state (self);
 }
@@ -439,7 +439,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_updates_counter"));
-	if (list != NULL && !gs_updates_are_managed ()) {
+	if (list != NULL && !gs_update_monitor_is_managed ()) {
 		g_autofree gchar *text = NULL;
 		text = g_strdup_printf ("%d", g_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
@@ -867,7 +867,7 @@ on_permission_changed (GPermission *permission,
 {
         GsShellUpdates *self = data;
 
-	if (gs_updates_are_managed()) {
+	if (gs_update_monitor_is_managed()) {
 		gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_MANAGED);
 	}
 	else if (self->state == GS_SHELL_UPDATES_STATE_MANAGED) {
@@ -880,7 +880,7 @@ gs_shell_updates_monitor_permission (GsShellUpdates *self)
 {
         GPermission *permission;
 
-        permission = gs_offline_updates_permission_get ();
+        permission = gs_update_monitor_permission_get ();
         g_signal_connect (permission, "notify",
                           G_CALLBACK (on_permission_changed), self);
 }

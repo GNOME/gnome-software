@@ -36,7 +36,7 @@
 #include "gs-shell-extras.h"
 #include "gs-sources-dialog.h"
 #include "gs-update-dialog.h"
-#include "gs-offline-updates.h"
+#include "gs-update-monitor.h"
 
 static const gchar *page_name[] = {
 	"overview",
@@ -172,7 +172,7 @@ gs_shell_change_mode (GsShell *shell,
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
 	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (widget), mode == GS_SHELL_MODE_UPDATES);
-	gtk_widget_set_visible (widget, !gs_updates_are_managed() || mode == GS_SHELL_MODE_UPDATES);
+	gtk_widget_set_visible (widget, !gs_update_monitor_is_managed() || mode == GS_SHELL_MODE_UPDATES);
 
 	priv->ignore_primary_buttons = FALSE;
 
@@ -547,7 +547,7 @@ on_permission_changed (GPermission *permission,
 	GtkWidget *widget;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_updates"));
-	gtk_widget_set_visible (widget, !gs_updates_are_managed() || priv->mode == GS_SHELL_MODE_UPDATES);
+	gtk_widget_set_visible (widget, !gs_update_monitor_is_managed() || priv->mode == GS_SHELL_MODE_UPDATES);
 }
 
 static void
@@ -555,7 +555,7 @@ gs_shell_monitor_permission (GsShell *shell)
 {
         GPermission *permission;
 
-        permission = gs_offline_updates_permission_get ();
+        permission = gs_update_monitor_permission_get ();
         g_signal_connect (permission, "notify",
                           G_CALLBACK (on_permission_changed), shell);
 }
