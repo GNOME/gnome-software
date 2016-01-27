@@ -263,9 +263,11 @@ gs_app_row_refresh (GsAppRow *app_row)
 			 * that allows the app to be easily updated live */
 			gtk_button_set_label (GTK_BUTTON (priv->button), _("Install"));
 		} else {
-			/* TRANSLATORS: this is a button next to the search
-			 * results that allows the app to be easily updated live */
-			gtk_button_set_label (GTK_BUTTON (priv->button), _("Update"));
+			/* TRANSLATORS: this is a button next to the search results that
+			 * allows the application to be easily removed */
+			gtk_button_set_label (GTK_BUTTON (priv->button), _("Remove"));
+			if (priv->colorful)
+				gtk_style_context_add_class (context, "destructive-action");
 		}
 		break;
 	case AS_APP_STATE_UPDATABLE:
