@@ -103,6 +103,16 @@ gs_language_populate (GsLanguage *language, GError **error)
 		g_free (filename);
 		filename = g_build_filename ("/usr", "share", "xml", "iso-codes", "iso_639.xml", NULL);
 	}
+	/* FreeBSD and OpenBSD ports */
+	if (!g_file_test (filename, G_FILE_TEST_EXISTS)) {
+		g_free (filename);
+		filename = g_build_filename ("/usr", "local", "share", "xml", "iso-codes", "iso_639.xml", NULL);
+	}
+	/* NetBSD pkgsrc */
+	if (!g_file_test (filename, G_FILE_TEST_EXISTS)) {
+		g_free (filename);
+		filename = g_build_filename ("/usr", "pkg", "share", "xml", "iso-codes", "iso_639.xml", NULL);
+	}
 	if (!g_file_test (filename, G_FILE_TEST_EXISTS)) {
 		g_set_error (error, 1, 0, "cannot find source file : '%s'", filename);
 		return FALSE;
