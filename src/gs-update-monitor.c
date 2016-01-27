@@ -44,7 +44,7 @@ struct _GsUpdateMonitor {
 	guint		 check_startup_id;		/* 60s after startup */
 	guint		 check_hourly_id;		/* and then every hour */
 	guint		 check_daily_id;		/* every 3rd day */
-	PkControl	*control;			/* network type detection */
+	GNetworkMonitor	*network_monitor;		/* network type detection */
 	guint		 notification_blocked_id;	/* rate limit notifications */
 };
 
@@ -281,15 +281,13 @@ refresh_cache_finished_cb (GObject *object,
 static void
 check_updates (GsUpdateMonitor *monitor)
 {
-	PkNetworkEnum network_state;
 	gint64 tmp;
 	g_autoptr(GDateTime) last_refreshed = NULL;
 	g_autoptr(GDateTime) now_refreshed = NULL;
 
 	/* never refresh when offline or on mobile connections */
-	g_object_get (monitor->control, "network-state", &network_state, NULL);
-	if (network_state == PK_NETWORK_ENUM_OFFLINE ||
-	    network_state == PK_NETWORK_ENUM_MOBILE)
+	if (!g_network_monitor_get_network_available (monitor->network_monitor) ||
+	    g_network_monitor_get_network_metered (monitor->network_monitor))
 		return;
 
 	g_settings_get (monitor->settings, "check-timestamp", "x", &tmp);
@@ -375,8 +373,8 @@ check_updates_on_startup_cb (gpointer data)
 }
 
 static void
-notify_network_state_cb (PkControl *control,
-			 GParamSpec *pspec,
+notify_network_state_cb (GNetworkMonitor *network_monitor,
+			 gboolean active,
 			 GsUpdateMonitor *monitor)
 {
 	check_updates (monitor);
@@ -485,8 +483,8 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 		g_timeout_add_seconds (60, check_updates_on_startup_cb, monitor);
 
 	monitor->cancellable = g_cancellable_new ();
-	monitor->control = pk_control_new ();
-	g_signal_connect (monitor->control, "notify::network-state",
+	monitor->network_monitor = g_network_monitor_get_default ();
+	g_signal_connect (monitor->network_monitor, "network-changed",
 			  G_CALLBACK (notify_network_state_cb), monitor);
 }
 
@@ -519,9 +517,11 @@ gs_update_monitor_dispose (GObject *object)
 		g_source_remove (monitor->cleanup_notifications_id);
 		monitor->cleanup_notifications_id = 0;
 	}
-	if (monitor->control != NULL) {
-		g_signal_handlers_disconnect_by_func (monitor->control, notify_network_state_cb, monitor);
-		g_clear_object (&monitor->control);
+	if (monitor->network_monitor != NULL) {
+		g_signal_handlers_disconnect_by_func (monitor->network_monitor,
+						      notify_network_state_cb,
+						      monitor);
+		monitor->network_monitor = NULL;
 	}
 	g_clear_object (&monitor->settings);
 

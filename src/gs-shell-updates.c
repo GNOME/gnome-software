@@ -22,6 +22,7 @@
 #include "config.h"
 
 #include <glib/gi18n.h>
+#include <gio/gio.h>
 #include <packagekit-glib2/packagekit.h>
 
 #include "gs-shell.h"
@@ -63,7 +64,7 @@ struct _GsShellUpdates
 	gboolean		 cache_valid;
 	gboolean		 in_progress;
 	GsShell			*shell;
-	PkControl		*control;
+	GNetworkMonitor		*network_monitor;
 	GsPluginStatus		 last_status;
 	GsShellUpdatesState	 state;
 	gboolean		 has_agreed_to_mobile_data;
@@ -203,26 +204,11 @@ static void
 gs_shell_updates_update_ui_state (GsShellUpdates *self)
 {
 	GtkWidget *widget;
-	PkNetworkEnum network_state;
-	gboolean is_free_connection;
 	g_autofree gchar *checked_str = NULL;
 	g_autofree gchar *spinner_str = NULL;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
 		return;
-
-	/* get the current network state */
-	g_object_get (self->control, "network-state", &network_state, NULL);
-	switch (network_state) {
-	case PK_NETWORK_ENUM_ONLINE:
-	case PK_NETWORK_ENUM_WIFI:
-	case PK_NETWORK_ENUM_WIRED:
-		is_free_connection = TRUE;
-		break;
-	default:
-		is_free_connection = FALSE;
-		break;
-	}
 
 	/* main spinner */
 	switch (self->state) {
@@ -321,7 +307,8 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_refresh"));
 		gtk_widget_set_visible (widget,
-					is_free_connection || self->has_agreed_to_mobile_data);
+					!g_network_monitor_get_network_metered (self->network_monitor) ||
+					self->has_agreed_to_mobile_data);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -356,26 +343,25 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "spinner");
 		break;
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
+
 		/* check we have a "free" network connection */
-		switch (network_state) {
-		case PK_NETWORK_ENUM_ONLINE:
-		case PK_NETWORK_ENUM_WIFI:
-		case PK_NETWORK_ENUM_WIRED:
+		if (g_network_monitor_get_network_available (self->network_monitor) &&
+		    !g_network_monitor_get_network_metered (self->network_monitor)) {
 			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "uptodate");
-			break;
-		case PK_NETWORK_ENUM_OFFLINE:
-			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "offline");
-			break;
-		case PK_NETWORK_ENUM_MOBILE:
+
+		/* expensive network connection */
+		} else if (g_network_monitor_get_network_metered (self->network_monitor)) {
 			if (self->has_agreed_to_mobile_data) {
 				gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "uptodate");
 			} else {
 				gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "mobile");
 			}
-			break;
-		default:
-			break;
+
+		/* no network connection */
+		} else {
+			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "offline");
 		}
+
 		break;
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
@@ -424,8 +410,8 @@ gs_shell_updates_set_state (GsShellUpdates *self,
  * gs_shell_updates_notify_network_state_cb:
  **/
 static void
-gs_shell_updates_notify_network_state_cb (PkControl *control,
-					  GParamSpec *pspec,
+gs_shell_updates_notify_network_state_cb (GNetworkMonitor *network_monitor,
+					  gboolean available,
 					  GsShellUpdates *self)
 {
 	gs_shell_updates_update_ui_state (self);
@@ -750,7 +736,6 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 				    GsShellUpdates *self)
 {
 	GtkWidget *dialog;
-	PkNetworkEnum network_state;
 
 	/* cancel existing action? */
 	if (self->state == GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES ||
@@ -761,42 +746,15 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 	}
 
 	/* check we have a "free" network connection */
-	g_object_get (self->control,
-		      "network-state", &network_state,
-		      NULL);
-	switch (network_state) {
-	case PK_NETWORK_ENUM_ONLINE:
-	case PK_NETWORK_ENUM_WIFI:
-	case PK_NETWORK_ENUM_WIRED:
+	if (g_network_monitor_get_network_available (self->network_monitor) &&
+	    !g_network_monitor_get_network_metered (self->network_monitor)) {
 		gs_shell_updates_get_new_updates (self);
-		break;
-	case PK_NETWORK_ENUM_OFFLINE:
-		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
-						 GTK_DIALOG_MODAL |
-						 GTK_DIALOG_USE_HEADER_BAR |
-						 GTK_DIALOG_DESTROY_WITH_PARENT,
-						 GTK_MESSAGE_ERROR,
-						 GTK_BUTTONS_CANCEL,
-						 /* TRANSLATORS: can't do updates check */
-						 _("No Network"));
-		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-							  /* TRANSLATORS: we need network
-							   * to do the updates check */
-							  _("Internet access is required to check for updates."));
-		gtk_dialog_add_button (GTK_DIALOG (dialog),
-				       /* TRANSLATORS: this is a link to the
-					* control-center network panel */
-				       _("Network Settings"),
-				       GTK_RESPONSE_REJECT);
-		g_signal_connect (dialog, "response",
-				  G_CALLBACK (gs_shell_updates_refresh_confirm_cb),
-				  self);
-		gtk_window_present (GTK_WINDOW (dialog));
-		break;
-	case PK_NETWORK_ENUM_MOBILE:
+
+	/* expensive network connection */
+	} else if (g_network_monitor_get_network_metered (self->network_monitor)) {
 		if (self->has_agreed_to_mobile_data) {
 			gs_shell_updates_get_new_updates (self);
-			break;
+			return;
 		}
 		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
 						 GTK_DIALOG_MODAL |
@@ -819,9 +777,30 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 				  G_CALLBACK (gs_shell_updates_refresh_confirm_cb),
 				  self);
 		gtk_window_present (GTK_WINDOW (dialog));
-		break;
-	default:
-		g_assert_not_reached ();
+
+	/* no network connection */
+	} else {
+		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
+						 GTK_DIALOG_MODAL |
+						 GTK_DIALOG_USE_HEADER_BAR |
+						 GTK_DIALOG_DESTROY_WITH_PARENT,
+						 GTK_MESSAGE_ERROR,
+						 GTK_BUTTONS_CANCEL,
+						 /* TRANSLATORS: can't do updates check */
+						 _("No Network"));
+		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+							  /* TRANSLATORS: we need network
+							   * to do the updates check */
+							  _("Internet access is required to check for updates."));
+		gtk_dialog_add_button (GTK_DIALOG (dialog),
+				       /* TRANSLATORS: this is a link to the
+					* control-center network panel */
+				       _("Network Settings"),
+				       GTK_RESPONSE_REJECT);
+		g_signal_connect (dialog, "response",
+				  G_CALLBACK (gs_shell_updates_refresh_confirm_cb),
+				  self);
+		gtk_window_present (GTK_WINDOW (dialog));
 	}
 }
 
@@ -875,24 +854,6 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 	                                       self->cancellable,
 	                                       (GAsyncReadyCallback) gs_shell_updates_offline_update_cb,
 	                                       self);
-}
-
-/**
- * gs_shell_updates_get_properties_cb:
- **/
-static void
-gs_shell_updates_get_properties_cb (GObject *source,
-				    GAsyncResult *res,
-				    gpointer user_data)
-{
-	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
-	PkControl *control = PK_CONTROL (source);
-	g_autoptr(GError) error = NULL;
-
-	/* get result */
-	if (!pk_control_get_properties_finish (control, res, &error))
-		g_warning ("failed to get properties: %s", error->message);
-	gs_shell_updates_update_ui_state (self);
 }
 
 /**
@@ -979,14 +940,9 @@ gs_shell_updates_setup (GsShellUpdates *self,
 
 	gs_shell_updates_monitor_permission (self);
 
-	g_signal_connect (self->control, "notify::network-state",
+	g_signal_connect (self->network_monitor, "network-changed",
 			  G_CALLBACK (gs_shell_updates_notify_network_state_cb),
 			  self);
-
-	/* get the initial network state */
-	pk_control_get_properties_async (self->control, cancellable,
-					 gs_shell_updates_get_properties_cb,
-					 self);
 
 	/* chain up */
 	gs_page_setup (GS_PAGE (self),
@@ -1011,7 +967,6 @@ gs_shell_updates_dispose (GObject *object)
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
-	g_clear_object (&self->control);
 	g_clear_object (&self->settings);
 	g_clear_object (&self->desktop_settings);
 
@@ -1052,7 +1007,7 @@ gs_shell_updates_init (GsShellUpdates *self)
 
 	gtk_widget_init_template (GTK_WIDGET (self));
 
-	self->control = pk_control_new ();
+	self->network_monitor = g_network_monitor_get_default ();
 	self->state = GS_SHELL_UPDATES_STATE_STARTUP;
 	self->settings = g_settings_new ("org.gnome.software");
 	self->desktop_settings = g_settings_new ("org.gnome.desktop.interface");
