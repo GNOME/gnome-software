@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2015 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -30,7 +30,6 @@
 #include "gs-update-monitor.h"
 #include "gs-plugin-loader.h"
 #include "gs-utils.h"
-#include "gs-offline-updates.h"
 
 struct _GsUpdateMonitor {
 	GObject		 parent;
@@ -39,6 +38,7 @@ struct _GsUpdateMonitor {
 	GCancellable    *cancellable;
 	GSettings	*settings;
 	GsPluginLoader	*plugin_loader;
+	GError		*last_offline_error;
 
 	guint		 cleanup_notifications_id;	/* at startup */
 	guint		 check_startup_id;		/* 60s after startup */
@@ -411,6 +411,11 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 			g_application_withdraw_notification (monitor->application,
 							     "updates-available");
 		} else {
+			/* save this in case the user clicks the
+			 * 'Show Details' button from the notification below */
+			g_clear_error (&monitor->last_offline_error);
+			monitor->last_offline_error = g_error_copy (error);
+
 			/* TRANSLATORS: title when we offline updates have failed */
 			notification = g_notification_new (_("Software Updates Failed"));
 			/* TRANSLATORS: message when we offline updates have failed */
@@ -471,6 +476,168 @@ cleanup_notifications_cb (gpointer user_data)
 
 	monitor->cleanup_notifications_id = 0;
 	return G_SOURCE_REMOVE;
+}
+
+static void
+do_not_expand (GtkWidget *child, gpointer data)
+{
+	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (child)),
+				 child, "expand", FALSE, "fill", FALSE, NULL);
+}
+
+static gboolean
+unset_focus (GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+	if (GTK_IS_WINDOW (widget))
+		gtk_window_set_focus(GTK_WINDOW (widget), NULL);
+	return FALSE;
+}
+
+/**
+ * insert_details_widget:
+ * @dialog: the message dialog where the widget will be inserted
+ * @details: (allow-none): the detailed message text to display
+ *
+ * Inserts a widget displaying the detailed message into the message dialog.
+ * Does nothing if @details is %NULL so it is safe to call this function
+ * without checking if there is anything to display.
+ */
+static void
+insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
+{
+	GtkWidget *message_area, *sw, *label;
+	GtkWidget *box, *tv;
+	GtkTextBuffer *buffer;
+	GList *children;
+	g_autoptr(GString) msg = NULL;
+
+	if (!details)
+		return;
+	g_return_if_fail (dialog != NULL);
+	gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
+
+	msg = g_string_new ("");
+	g_string_append_printf (msg, "%s\n\n%s",
+				/* TRANSLATORS: these are show_detailed_error messages from the
+				 * package manager no mortal is supposed to understand,
+				 * but google might know what they mean */
+				_("Detailed errors from the package manager follow:"),
+				details);
+
+	message_area = gtk_message_dialog_get_message_area (dialog);
+	g_assert (GTK_IS_BOX (message_area));
+	/* make the hbox expand */
+	box = gtk_widget_get_parent (message_area);
+	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (box)), box,
+				 "expand", TRUE, "fill", TRUE, NULL);
+	/* make the labels not expand */
+	gtk_container_foreach (GTK_CONTAINER (message_area), do_not_expand, NULL);
+
+	/* Find the secondary label and set its width_chars.   */
+	/* Otherwise the label will tend to expand vertically. */
+	children = gtk_container_get_children (GTK_CONTAINER (message_area));
+	if (children && children->next && GTK_IS_LABEL (children->next->data)) {
+		gtk_label_set_width_chars (GTK_LABEL (children->next->data), 40);
+	}
+
+	label = gtk_label_new (_("Details"));
+	gtk_widget_set_halign (label, GTK_ALIGN_START);
+	gtk_widget_set_visible (label, TRUE);
+	gtk_box_pack_start (GTK_BOX (message_area), label, FALSE, FALSE, 0);
+
+	sw = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
+					     GTK_SHADOW_IN);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
+					GTK_POLICY_NEVER,
+					GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (sw), 150);
+	gtk_widget_set_visible (sw, TRUE);
+
+	tv = gtk_text_view_new ();
+	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+	gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
+	gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD);
+	gtk_style_context_add_class (gtk_widget_get_style_context (tv),
+	                             "update-failed-details");
+	gtk_text_buffer_set_text (buffer, msg->str, -1);
+	gtk_widget_set_visible (tv, TRUE);
+
+	gtk_container_add (GTK_CONTAINER (sw), tv);
+	gtk_box_pack_end (GTK_BOX (message_area), sw, TRUE, TRUE, 0);
+
+	g_signal_connect (dialog, "map-event", G_CALLBACK (unset_focus), NULL);
+}
+
+void
+gs_update_monitor_show_error (GsUpdateMonitor *monitor, GsShell *shell)
+{
+	const gchar *title;
+	const gchar *msg;
+	gboolean show_detailed_error;
+	GtkWidget *dialog;
+
+	/* can this happen in reality? */
+	if (monitor->last_offline_error == NULL)
+		return;
+
+	/* TRANSLATORS: this is when the offline update failed */
+	title = _("Failed To Update");
+
+	switch (monitor->last_offline_error->code) {
+	case GS_PLUGIN_ERROR_NOT_SUPPORTED:
+		/* TRANSLATORS: the user must have updated manually after
+		 * the updates were prepared */
+		msg = _("The system was already up to date.");
+		show_detailed_error = TRUE;
+		break;
+	case GS_PLUGIN_ERROR_CANCELLED:
+		/* TRANSLATORS: the user aborted the update manually */
+		msg = _("The update was cancelled.");
+		show_detailed_error = FALSE;
+		break;
+	case GS_PLUGIN_ERROR_NO_NETWORK:
+		/* TRANSLATORS: the package manager needed to download
+		 * something with no network available */
+		msg = _("Internet access was required but wasn’t available. "
+			"Please make sure that you have internet access and try again.");
+		show_detailed_error = FALSE;
+		break;
+	case GS_PLUGIN_ERROR_NO_SECURITY:
+		/* TRANSLATORS: if the package is not signed correctly */
+		msg = _("There were security issues with the update. "
+			"Please consult your software provider for more details.");
+		show_detailed_error = TRUE;
+		break;
+	case GS_PLUGIN_ERROR_NO_SPACE:
+		/* TRANSLATORS: we ran out of disk space */
+		msg = _("There wasn’t enough disk space. Please free up some space and try again.");
+		show_detailed_error = FALSE;
+		break;
+	default:
+		/* TRANSLATORS: We didn't handle the error type */
+		msg = _("We’re sorry: the update failed to install. "
+			"Please wait for another update and try again. "
+			"If the problem persists, contact your software provider.");
+		show_detailed_error = TRUE;
+		break;
+	}
+
+	dialog = gtk_message_dialog_new_with_markup (gs_shell_get_window (shell),
+					 0,
+					 GTK_MESSAGE_INFO,
+					 GTK_BUTTONS_CLOSE,
+					 "<big><b>%s</b></big>", title);
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+						  "%s", msg);
+	if (show_detailed_error) {
+		insert_details_widget (GTK_MESSAGE_DIALOG (dialog),
+				       monitor->last_offline_error->message);
+	}
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy),
+				  dialog);
+	gtk_widget_show (dialog);
 }
 
 static void
@@ -538,6 +705,7 @@ gs_update_monitor_finalize (GObject *object)
 	GsUpdateMonitor *monitor = GS_UPDATE_MONITOR (object);
 
 	g_application_release (monitor->application);
+	g_clear_error (&monitor->last_offline_error);
 
 	G_OBJECT_CLASS (gs_update_monitor_parent_class)->finalize (object);
 }

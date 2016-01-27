@@ -40,7 +40,6 @@
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
 #include "gs-shell-search-provider.h"
-#include "gs-offline-updates.h"
 #include "gs-folders.h"
 #include "gs-utils.h"
 
@@ -524,7 +523,7 @@ show_offline_updates_error (GSimpleAction *action,
 	initialize_ui_and_present_window (app);
 
 	gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
-	gs_offline_updates_show_error (app->shell);
+	gs_update_monitor_show_error (app->update_monitor, app->shell);
 }
 
 static void

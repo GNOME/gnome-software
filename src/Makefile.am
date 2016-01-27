@@ -174,8 +174,6 @@ gnome_software_SOURCES =				\
 	gs-update-monitor.h				\
 	gs-vendor.c					\
 	gs-vendor.h					\
-	gs-offline-updates.c				\
-	gs-offline-updates.h				\
 	gs-plugin-loader.c				\
 	gs-plugin-loader.h				\
 	gs-plugin-loader-sync.c				\

@@ -21,6 +21,9 @@
 
 #include <config.h>
 
+#define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
+#include <packagekit-glib2/packagekit.h>
+
 #include <gs-plugin.h>
 
 /*
@@ -44,6 +47,65 @@ gs_plugin_get_name (void)
 #define PK_OFFLINE_UPDATE_RESULTS_FILENAME	"/var/lib/PackageKit/offline-update-competed"
 
 /**
+ * gs_plugin_packagekit_convert_error:
+ */
+static gboolean
+gs_plugin_packagekit_convert_error (GError **error,
+				    PkErrorEnum error_enum,
+				    const gchar *details)
+{
+	switch (error_enum) {
+	case PK_ERROR_ENUM_PACKAGE_DOWNLOAD_FAILED:
+	case PK_ERROR_ENUM_NO_CACHE:
+	case PK_ERROR_ENUM_NO_NETWORK:
+	case PK_ERROR_ENUM_NO_MORE_MIRRORS_TO_TRY:
+	case PK_ERROR_ENUM_CANNOT_FETCH_SOURCES:
+	case PK_ERROR_ENUM_UNFINISHED_TRANSACTION:
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NO_NETWORK,
+				     details);
+		break;
+	case PK_ERROR_ENUM_BAD_GPG_SIGNATURE:
+	case PK_ERROR_ENUM_CANNOT_UPDATE_REPO_UNSIGNED:
+	case PK_ERROR_ENUM_GPG_FAILURE:
+	case PK_ERROR_ENUM_MISSING_GPG_SIGNATURE:
+	case PK_ERROR_ENUM_PACKAGE_CORRUPT:
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NO_SECURITY,
+				     details);
+		break;
+	case PK_ERROR_ENUM_TRANSACTION_CANCELLED:
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_CANCELLED,
+				     details);
+		break;
+	case PK_ERROR_ENUM_NO_PACKAGES_TO_UPDATE:
+	case PK_ERROR_ENUM_UPDATE_NOT_FOUND:
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     details);
+		break;
+	case PK_ERROR_ENUM_NO_SPACE_ON_DEVICE:
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NO_SPACE,
+				     details);
+		break;
+	default:
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     details);
+		break;
+	}
+	return FALSE;
+}
+
+/**
  * gs_plugin_add_updates_historical:
  */
 gboolean
@@ -56,7 +118,6 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	guint64 mtime;
 	guint i;
 	g_auto(GStrv) package_ids = NULL;
-	g_autofree gchar *error_details = NULL;
 	g_autofree gchar *packages = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GFileInfo) info = NULL;
@@ -92,17 +153,23 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				      "Success",
 				      NULL);
 	if (!ret) {
-		error_details = g_key_file_get_string (key_file,
-						       PK_OFFLINE_UPDATE_RESULTS_GROUP,
-						       "ErrorDetails",
-						       error);
-		if (error_details == NULL)
+		g_autofree gchar *code = NULL;
+		g_autofree gchar *details = NULL;
+		code = g_key_file_get_string (key_file,
+					      PK_OFFLINE_UPDATE_RESULTS_GROUP,
+					      "ErrorCode",
+					      error);
+		if (code == NULL)
 			return FALSE;
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     error_details);
-		return FALSE;
+		details = g_key_file_get_string (key_file,
+						 PK_OFFLINE_UPDATE_RESULTS_GROUP,
+						 "ErrorDetails",
+						 error);
+		if (details == NULL)
+			return FALSE;
+		return gs_plugin_packagekit_convert_error (error,
+							   pk_error_enum_from_string (code),
+							   details);
 	}
 
 	/* get list of package-ids */
