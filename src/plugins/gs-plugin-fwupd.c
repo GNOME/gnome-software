@@ -244,6 +244,10 @@ gs_plugin_fwupd_set_app_from_kv (GsApp *app, const gchar *key, GVariant *val)
 		gs_app_set_size (app, g_variant_get_uint64 (val));
 		return;
 	}
+	if (g_strcmp0 (key, "Created") == 0) {
+		gs_app_set_install_date (app, g_variant_get_uint64 (val));
+		return;
+	}
 	if (g_strcmp0 (key, "UpdateVersion") == 0) {
 		gs_app_set_update_version (app, g_variant_get_string (val, NULL));
 		return;
