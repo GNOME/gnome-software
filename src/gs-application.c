@@ -35,7 +35,10 @@
 #include <gtk/gtkx.h>
 #endif
 
+#ifdef HAVE_PACKAGEKIT
 #include "gs-dbus-helper.h"
+#endif
+
 #include "gs-first-run-dialog.h"
 #include "gs-shell.h"
 #include "gs-update-monitor.h"
@@ -54,7 +57,9 @@ struct _GsApplication {
 	gint		 pending_apps;
 	GsShell		*shell;
 	GsUpdateMonitor *update_monitor;
+#ifdef HAVE_PACKAGEKIT
 	GsDbusHelper	*dbus_helper;
+#endif
 	GsShellSearchProvider *search_provider;
 	GNetworkMonitor *network_monitor;
 	GSettings       *settings;
@@ -581,7 +586,9 @@ gs_application_startup (GApplication *application)
 					 actions, G_N_ELEMENTS (actions),
 					 application);
 
+#ifdef HAVE_PACKAGEKIT
 	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
+#endif
 	GS_APPLICATION (application)->settings = g_settings_new ("org.gnome.software");
 	gs_application_monitor_permission (GS_APPLICATION (application));
 	gs_application_monitor_updates (GS_APPLICATION (application));
@@ -614,7 +621,9 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->update_monitor);
 	g_clear_object (&app->profile);
 	g_clear_object (&app->network_monitor);
+#ifdef HAVE_PACKAGEKIT
 	g_clear_object (&app->dbus_helper);
+#endif
 	g_clear_object (&app->settings);
 
 	G_OBJECT_CLASS (gs_application_parent_class)->dispose (object);

@@ -60,7 +60,6 @@ dnl ---------------------------------------------------------------------------
 dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.18.2 gio-unix-2.0)
-PKG_CHECK_MODULES(PACKAGEKIT, packagekit-glib2 >= 1.0.11)
 PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.5.5)
 PKG_CHECK_MODULES(JSON_GLIB, json-glib-1.0)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
@@ -89,6 +88,22 @@ AC_ARG_ENABLE(dogtail,
                               [test using dogtail [default=yes]])],,
               enable_dogtail=yes)
 AM_CONDITIONAL(ENABLE_DOGTAIL, test "$enable_dogtail" != no)
+
+# PackageKit
+AC_ARG_ENABLE(packagekit,
+              [AS_HELP_STRING([--enable-packagekit],
+                              [enable PackageKit support [default=auto]])],,
+              enable_packagekit=maybe)
+
+AS_IF([test "x$enable_packagekit" != "xno"], [
+    PKG_CHECK_MODULES(PACKAGEKIT,
+                      [packagekit-glib2 >= 1.0.11],
+                      [have_packagekit=yes],
+                      [have_packagekit=no])
+], [
+    have_packagekit=no
+])
+AM_CONDITIONAL(HAVE_PACKAGEKIT, test "$have_packagekit" != no)
 
 # fwupd
 AC_ARG_ENABLE(firmware,
@@ -198,6 +213,7 @@ echo "
         cflags:                    ${CFLAGS}
         cppflags:                  ${CPPFLAGS}
         Dogtail:                   ${enable_dogtail}
+        PackageKit support:        ${have_packagekit}
         Firmware support:          ${have_firmware}
         XDG-APP support:           ${have_xdg_app}
 "
