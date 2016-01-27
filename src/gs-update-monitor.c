@@ -24,7 +24,6 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
-#include <packagekit-glib2/packagekit.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 
 #include "gs-update-monitor.h"
@@ -159,7 +158,6 @@ get_updates_finished_cb (GObject *object,
 	guint64 security_timestamp = 0;
 	guint64 security_timestamp_old = 0;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(PkError) error_code = NULL;
 	g_autoptr(GsAppList) apps = NULL;
 
 	/* get result */
@@ -389,77 +387,82 @@ updates_changed_cb (GsPluginLoader *plugin_loader, GsUpdateMonitor *monitor)
 }
 
 static void
-show_installed_updates_notification (GsUpdateMonitor *monitor, PkResults *results)
+get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 {
+	GsUpdateMonitor *monitor = data;
+	GsApp *app;
 	const gchar *message;
 	const gchar *title;
 	guint64 time_last_notified;
-	guint64 time_update_completed;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) apps = NULL;
 	g_autoptr(GNotification) notification = NULL;
 
-	g_settings_get (monitor->settings,
-			"install-timestamp", "x", &time_last_notified);
+	/* get result */
+	apps = gs_plugin_loader_get_updates_finish (GS_PLUGIN_LOADER (object), res, &error);
+	if (apps == NULL) {
+
+		/* nothing has been updated offline */
+		if (g_error_matches (error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
+			g_debug ("no historical updates; withdrawing notification");
+			g_application_withdraw_notification (monitor->application,
+							     "updates-available");
+		} else {
+			/* TRANSLATORS: title when we offline updates have failed */
+			notification = g_notification_new (_("Software Updates Failed"));
+			/* TRANSLATORS: message when we offline updates have failed */
+			g_notification_set_body (notification, _("An important OS update failed to be installed."));
+			g_application_send_notification (monitor->application, "offline-updates", notification);
+			g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
+			g_notification_set_default_action (notification, "app.show-offline-update-error");
+			g_application_send_notification (monitor->application, "offline-updates", notification);
+		}
+		return;
+	}
 
 	/* have we notified about this before */
-	time_update_completed = pk_offline_get_results_mtime (NULL);
-	if (time_update_completed == 0) {
-		/* FIXME: is this ever going to be true? */
-		g_application_withdraw_notification (monitor->application,
-						     "offline-updates");
-		return;
-	}
-	if (time_last_notified >= time_update_completed)
+	app = GS_APP (apps->data);
+	g_settings_get (monitor->settings,
+			"install-timestamp", "x", &time_last_notified);
+	if (time_last_notified >= gs_app_get_install_date (app))
 		return;
 
-	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS) {
-		GPtrArray *packages;
-		packages = pk_results_get_package_array (results);
-		title = ngettext ("Software Update Installed",
-				  "Software Updates Installed",
-				  packages->len);
-		/* TRANSLATORS: message when we've done offline updates */
-		message = ngettext ("An important OS update has been installed.",
-				    "Important OS updates have been installed.",
-				    packages->len);
-		g_ptr_array_unref (packages);
-	} else {
-
-		title = _("Software Updates Failed");
-		/* TRANSLATORS: message when we offline updates have failed */
-		message = _("An important OS update failed to be installed.");
-	}
+	/* TRANSLATORS: title when we've done offline updates */
+	title = ngettext ("Software Update Installed",
+			  "Software Updates Installed",
+			  g_list_length (apps));
+	/* TRANSLATORS: message when we've done offline updates */
+	message = ngettext ("An important OS update has been installed.",
+			    "Important OS updates have been installed.",
+			    g_list_length (apps));
 
 	notification = g_notification_new (title);
 	g_notification_set_body (notification, message);
-	if (pk_results_get_exit_code (results) == PK_EXIT_ENUM_SUCCESS) {
-		g_notification_add_button_with_target (notification, _("Review"), "app.set-mode", "s", "updated");
-		g_notification_set_default_action_and_target (notification, "app.set-mode", "s", "updated");
-	} else {
-		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
-		g_notification_set_default_action (notification, "app.show-offline-update-error");
-	}
-
+	g_notification_add_button_with_target (notification, _("Review"), "app.set-mode", "s", "updated");
+	g_notification_set_default_action_and_target (notification, "app.set-mode", "s", "updated");
 	g_application_send_notification (monitor->application, "offline-updates", notification);
 
 	/* update the timestamp so we don't show again */
 	g_settings_set (monitor->settings,
-			"install-timestamp", "x", time_update_completed);
+			"install-timestamp", "x", gs_app_get_install_date (app));
+
+
 }
 
 static gboolean
 cleanup_notifications_cb (gpointer user_data)
 {
 	GsUpdateMonitor *monitor = user_data;
-	g_autoptr(PkResults) results = NULL;
 
-	/* only show this at first-boot */
-	results = pk_offline_get_results (NULL);
-	if (results != NULL) {
-		show_installed_updates_notification (monitor, results);
-	} else {
-		g_application_withdraw_notification (monitor->application,
-						     "offline-update");
-	}
+	/* this doesn't do any network access */
+	g_debug ("getting historical updates for fresh session");
+	gs_plugin_loader_get_updates_async (monitor->plugin_loader,
+					    GS_PLUGIN_REFINE_FLAGS_USE_HISTORY,
+					    monitor->cancellable,
+					    get_updates_historical_cb,
+					    monitor);
 
 	/* wait until first check to show */
 	g_application_withdraw_notification (monitor->application,

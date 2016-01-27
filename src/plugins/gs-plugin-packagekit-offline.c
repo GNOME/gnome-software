@@ -53,15 +53,29 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GError **error)
 {
 	gboolean ret;
+	guint64 mtime;
 	guint i;
 	g_auto(GStrv) package_ids = NULL;
 	g_autofree gchar *error_details = NULL;
 	g_autofree gchar *packages = NULL;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GFileInfo) info = NULL;
 	g_autoptr(GKeyFile) key_file = NULL;
 
 	/* was any offline update attempted */
 	if (!g_file_test (PK_OFFLINE_UPDATE_RESULTS_FILENAME, G_FILE_TEST_EXISTS))
 		return TRUE;
+
+	/* get the mtime of the results */
+	file = g_file_new_for_path (PK_OFFLINE_UPDATE_RESULTS_FILENAME);
+	info = g_file_query_info (file,
+				  G_FILE_ATTRIBUTE_TIME_MODIFIED,
+				  G_FILE_QUERY_INFO_NONE,
+				  cancellable,
+				  error);
+	if (info == NULL)
+		return FALSE;
+	mtime = g_file_info_get_attribute_uint64 (info, G_FILE_ATTRIBUTE_TIME_MODIFIED);
 
 	/* open the file */
 	key_file = g_key_file_new ();
@@ -116,6 +130,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		gs_app_add_source_id (app, package_ids[i]);
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
+		gs_app_set_install_date (app, mtime);
 		gs_plugin_add_app (list, app);
 	}
 	return TRUE;
