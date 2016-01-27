@@ -23,7 +23,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <packagekit-glib2/packagekit.h>
 
 #include "gs-update-dialog.h"
 #include "gs-app-row.h"
@@ -181,6 +180,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
                           GsUpdateDialog *dialog)
 {
 	GList *l;
+	guint64 install_date;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) error = NULL;
 
@@ -208,6 +208,26 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
+	/* set the header title using any one of the applications */
+	install_date = gs_app_get_install_date (GS_APP (list->data));
+	if (install_date > 0) {
+		GtkWidget *header;
+		g_autoptr(GDateTime) date = NULL;
+		g_autofree gchar *date_str = NULL;
+		g_autofree gchar *subtitle = NULL;
+
+		date = g_date_time_new_from_unix_utc (install_date);
+		date_str = g_date_time_format (date, "%x");
+
+		/* TRANSLATORS: this is the subtitle of the installed updates dialog window.
+		   %s will be replaced by the date when the updates were installed.
+		   The date format is defined by the locale's preferred date representation
+		   ("%x" in strftime.) */
+		subtitle = g_strdup_printf (_("Installed on %s"), date_str);
+		header = gtk_dialog_get_header_bar (GTK_DIALOG (dialog));
+		gtk_header_bar_set_subtitle (GTK_HEADER_BAR (header), subtitle);
+	}
+
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "installed-updates-list");
 
 	gs_container_remove_all (GTK_CONTAINER (dialog->list_box_installed_updates));
@@ -221,29 +241,9 @@ void
 gs_update_dialog_show_installed_updates (GsUpdateDialog *dialog)
 {
 	guint64 refine_flags;
-	guint64 time_updates_installed;
 
 	/* TRANSLATORS: this is the title of the installed updates dialog window */
 	gtk_window_set_title (GTK_WINDOW (dialog), _("Installed Updates"));
-
-	time_updates_installed = pk_offline_get_results_mtime (NULL);
-	if (time_updates_installed > 0) {
-		GtkWidget *header;
-		g_autoptr(GDateTime) date = NULL;
-		g_autofree gchar *date_str = NULL;
-		g_autofree gchar *subtitle = NULL;
-
-		date = g_date_time_new_from_unix_utc (time_updates_installed);
-		date_str = g_date_time_format (date, "%x");
-
-		/* TRANSLATORS: this is the subtitle of the installed updates dialog window.
-		   %s will be replaced by the date when the updates were installed.
-		   The date format is defined by the locale's preferred date representation
-		   ("%x" in strftime.) */
-		subtitle = g_strdup_printf (_("Installed on %s"), date_str);
-		header = gtk_dialog_get_header_bar (GTK_DIALOG (dialog));
-		gtk_header_bar_set_subtitle (GTK_HEADER_BAR (header), subtitle);
-	}
 
 	gtk_widget_set_visible (dialog->button_back, !g_queue_is_empty (dialog->back_entry_stack));
 	gs_start_spinner (GTK_SPINNER (dialog->spinner));
