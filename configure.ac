@@ -96,7 +96,7 @@ AC_ARG_ENABLE(packagekit,
               enable_packagekit=maybe)
 AS_IF([test "x$enable_packagekit" != "xno"], [
     PKG_CHECK_MODULES(PACKAGEKIT,
-                      [packagekit-glib2 >= 1.0.11],
+                      [packagekit-glib2 >= 1.1.0],
                       [have_packagekit=yes],
                       [have_packagekit=no])
 ], [

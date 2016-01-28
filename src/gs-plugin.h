@@ -288,6 +288,10 @@ gboolean	 gs_plugin_app_upgrade_download		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_app_upgrade_trigger		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_review_submit		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsReview	*review,

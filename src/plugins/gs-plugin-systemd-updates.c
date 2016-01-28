@@ -172,3 +172,15 @@ gs_plugin_offline_update_cancel (GsPlugin *plugin,
 {
 	return pk_offline_cancel (NULL, error);
 }
+
+/**
+ * gs_plugin_app_upgrade_trigger:
+ */
+gboolean
+gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
+                               GsApp *app,
+                               GCancellable *cancellable,
+                               GError **error)
+{
+	return pk_offline_trigger_upgrade (PK_OFFLINE_ACTION_REBOOT, cancellable, error);
+}
