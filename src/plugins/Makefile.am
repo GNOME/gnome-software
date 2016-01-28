@@ -24,12 +24,12 @@ AM_CPPFLAGS =						\
 	-I$(top_srcdir)/src
 
 noinst_LTLIBRARIES =					\
-	libgs_plugin_dummy.la				\
 	libgs_plugin_self_test.la
 
 plugindir = $(libdir)/gs-plugins-${GS_PLUGIN_API_VERSION}
 plugin_LTLIBRARIES =					\
 	libgs_plugin_appstream.la			\
+	libgs_plugin_dummy.la				\
 	libgs_plugin_hardcoded-featured.la		\
 	libgs_plugin_hardcoded-blacklist.la		\
 	libgs_plugin_moduleset.la			\

@@ -31,10 +31,6 @@
  * Refines:     | [id]->[name], [id]->[summary]
  */
 
-struct GsPluginPrivate {
-	guint			 dummy;
-};
-
 /**
  * gs_plugin_get_name:
  */
@@ -54,32 +50,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 		g_debug ("disabling '%s' as not in self test", plugin->name);
 		gs_plugin_set_enabled (plugin, FALSE);
 	}
-
-	/* create private area */
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->dummy = 999;
-}
-
-/**
- * gs_plugin_destroy:
- */
-void
-gs_plugin_destroy (GsPlugin *plugin)
-{
-	plugin->priv->dummy = 0;
-}
-
-/**
- * gs_plugin_add_search:
- */
-gboolean
-gs_plugin_add_search (GsPlugin *plugin,
-		      gchar **values,
-		      GList **list,
-		      GCancellable *cancellable,
-		      GError **error)
-{
-	return TRUE;
 }
 
 /**
@@ -212,6 +182,25 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/gnome-boxes.png", NULL));
 	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+	gs_plugin_add_app (list, app);
+	return TRUE;
+}
+
+/**
+ * gs_plugin_add_distro_upgrades:
+ */
+gboolean
+gs_plugin_add_distro_upgrades (GsPlugin *plugin,
+			       GList **list,
+			       GCancellable *cancellable,
+			       GError **error)
+{
+	g_autoptr(GsApp) app = NULL;
+	app = gs_app_new ("org.fedoraproject.release-24.upgrade");
+	gs_app_set_kind (app, GS_APP_KIND_DISTRO_UPGRADE);
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Fedora");
+	gs_app_set_version (app, "24");
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
