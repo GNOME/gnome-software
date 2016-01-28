@@ -90,7 +90,6 @@ struct _GsApp
 	guint			 progress;
 	GHashTable		*metadata;
 	GdkPixbuf		*pixbuf;
-	GdkPixbuf		*featured_pixbuf;
 	GPtrArray		*addons; /* of GsApp */
 	GHashTable		*addons_hash; /* of "id" */
 	GPtrArray		*related; /* of GsApp */
@@ -292,8 +291,6 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\trating:\t%i\n", app->rating);
 	if (app->pixbuf != NULL)
 		g_string_append_printf (str, "\tpixbuf:\t%p\n", app->pixbuf);
-	if (app->featured_pixbuf != NULL)
-		g_string_append_printf (str, "\tfeatured-pixbuf:\t%p\n", app->featured_pixbuf);
 	if (app->install_date != 0) {
 		g_string_append_printf (str, "\tinstall-date:\t%"
 					G_GUINT64_FORMAT "\n",
@@ -1009,27 +1006,6 @@ gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_set_object (&app->pixbuf, pixbuf);
-}
-
-/**
- * gs_app_get_featured_pixbuf:
- */
-GdkPixbuf *
-gs_app_get_featured_pixbuf (GsApp *app)
-{
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->featured_pixbuf;
-}
-
-/**
- * gs_app_set_featured_pixbuf:
- */
-void
-gs_app_set_featured_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
-{
-	g_return_if_fail (GS_IS_APP (app));
-	g_return_if_fail (app->featured_pixbuf == NULL);
-	app->featured_pixbuf = g_object_ref (pixbuf);
 }
 
 typedef enum {
@@ -2232,7 +2208,6 @@ gs_app_dispose (GObject *object)
 {
 	GsApp *app = GS_APP (object);
 
-	g_clear_object (&app->featured_pixbuf);
 	g_clear_object (&app->icon);
 	g_clear_object (&app->pixbuf);
 
