@@ -33,6 +33,7 @@
 #include "gs-update-dialog.h"
 #include "gs-update-list.h"
 #include "gs-update-monitor.h"
+#include "gs-upgrade-banner.h"
 #include "gs-application.h"
 
 #include <gdesktop-enums.h>
@@ -78,6 +79,7 @@ struct _GsShellUpdates
 	GtkWidget		*scrolledwindow_updates;
 	GtkWidget		*spinner_updates;
 	GtkWidget		*stack_updates;
+	GtkWidget		*upgrade_banner;
 };
 
 enum {
@@ -384,6 +386,13 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 		break;
 	}
 
+	/* upgrade banner */
+	if (gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner)) != NULL) {
+		gtk_widget_show (self->upgrade_banner);
+	} else {
+		gtk_widget_hide (self->upgrade_banner);
+	}
+
 	/* last checked label */
 	if (g_strcmp0 (gtk_stack_get_visible_child_name (GTK_STACK (self->stack_updates)), "uptodate") == 0) {
 		checked_str = gs_shell_updates_last_checked_time_string (self);
@@ -484,6 +493,23 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	self->in_progress = FALSE;
 }
 
+static void
+gs_shell_updates_get_upgrades_cb (GsPluginLoader *plugin_loader,
+                                  GAsyncResult *res,
+                                  GsShellUpdates *self)
+{
+	GList *l;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* get the results */
+	list = gs_plugin_loader_get_distro_upgrades_finish (plugin_loader, res, &error);
+	for (l = list; l != NULL; l = l->next) {
+		gs_upgrade_banner_set_app (GS_UPGRADE_BANNER (self->upgrade_banner),
+		                           GS_APP (l->data));
+	}
+}
+
 /**
  * gs_shell_updates_load:
  */
@@ -507,6 +533,11 @@ gs_shell_updates_load (GsShellUpdates *self)
 					    self->cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
 					    self);
+	gs_plugin_loader_get_distro_upgrades_async (self->plugin_loader,
+	                                            GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+	                                            self->cancellable,
+	                                            (GAsyncReadyCallback) gs_shell_updates_get_upgrades_cb,
+	                                            self);
 }
 
 /**
@@ -917,6 +948,118 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 	                                       self);
 }
 
+static void
+upgrade_download_finished_cb (GObject *source,
+                              GAsyncResult *res,
+                              gpointer user_data)
+{
+	GsShellUpdates *self = (GsShellUpdates *) user_data;
+	g_autoptr(GError) error = NULL;
+
+	if (!gs_plugin_loader_app_action_finish (self->plugin_loader, res, &error)) {
+		g_warning ("failed to download upgrade: %s", error->message);
+		return;
+	}
+}
+
+static void
+gs_shell_updates_download_upgrade_cb (GsUpgradeBanner *upgrade_banner,
+                                      GsShellUpdates *self)
+{
+	GsApp *app;
+
+	app = gs_upgrade_banner_get_app (upgrade_banner);
+	if (app == NULL) {
+		g_warning ("no upgrade available to download");
+		return;
+	}
+
+	gs_plugin_loader_app_action_async (self->plugin_loader,
+					   app,
+					   GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
+					   self->cancellable,
+					   upgrade_download_finished_cb,
+					   self);
+}
+
+static void
+upgrade_reboot_failed_cb (GObject *source,
+                          GAsyncResult *res,
+                          gpointer user_data)
+{
+	GsShellUpdates *self = (GsShellUpdates *) user_data;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GList) apps = NULL;
+	g_autoptr(GVariant) retval = NULL;
+
+	/* get result */
+	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
+	if (retval != NULL)
+		return;
+
+	if (error != NULL) {
+		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
+			   error->message);
+	}
+
+	/* cancel trigger */
+	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
+	gs_plugin_loader_app_action_async (self->plugin_loader,
+					   GS_APP (apps->data),
+					   GS_PLUGIN_LOADER_ACTION_OFFLINE_UPDATE_CANCEL,
+					   self->cancellable,
+					   cancel_trigger_failed_cb,
+					   self);
+}
+
+static void
+upgrade_trigger_finished_cb (GObject *source,
+                             GAsyncResult *res,
+                             gpointer user_data)
+{
+	GsShellUpdates *self = (GsShellUpdates *) user_data;
+	g_autoptr(GDBusConnection) bus = NULL;
+	g_autoptr(GError) error = NULL;
+
+	/* get the results */
+	if (!gs_plugin_loader_offline_update_finish (self->plugin_loader, res, &error)) {
+		g_warning ("Failed to trigger offline update: %s", error->message);
+		return;
+	}
+
+	/* trigger reboot */
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	g_dbus_connection_call (bus,
+				"org.gnome.SessionManager",
+				"/org/gnome/SessionManager",
+				"org.gnome.SessionManager",
+				"Reboot",
+				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+				G_MAXINT, NULL,
+				upgrade_reboot_failed_cb,
+				self);
+}
+
+static void
+gs_shell_updates_install_upgrade_cb (GsUpgradeBanner *upgrade_banner,
+                                     GsShellUpdates *self)
+{
+	GsApp *app;
+
+	app = gs_upgrade_banner_get_app (upgrade_banner);
+	if (app == NULL) {
+		g_warning ("no upgrade available to install");
+		return;
+	}
+
+	gs_plugin_loader_app_action_async (self->plugin_loader,
+					   app,
+					   GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER,
+					   self->cancellable,
+					   upgrade_trigger_finished_cb,
+					   self);
+}
+
 /**
  * gs_shell_updates_status_changed_cb:
  **/
@@ -984,6 +1127,12 @@ gs_shell_updates_setup (GsShellUpdates *self,
 			  G_CALLBACK (gs_shell_updates_activated_cb), self);
 	g_signal_connect (self->list_box_updates, "button-clicked",
 			  G_CALLBACK (gs_shell_updates_button_clicked_cb), self);
+
+	/* setup system upgrades */
+	g_signal_connect (self->upgrade_banner, "download-button-clicked",
+			  G_CALLBACK (gs_shell_updates_download_upgrade_cb), self);
+	g_signal_connect (self->upgrade_banner, "install-button-clicked",
+			  G_CALLBACK (gs_shell_updates_install_upgrade_cb), self);
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_update_all"));
 	g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), self);
@@ -1059,6 +1208,7 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, scrolledwindow_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, spinner_updates);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, stack_updates);
+	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, upgrade_banner);
 }
 
 /**

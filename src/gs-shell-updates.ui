@@ -65,6 +65,13 @@
                     <property name="visible">True</property>
                     <property name="orientation">vertical</property>
                     <child>
+                      <object class="GsUpgradeBanner" id="upgrade_banner">
+                        <property name="visible">False</property>
+                        <property name="hexpand">True</property>
+                        <property name="vexpand">False</property>
+                      </object>
+                    </child>
+                    <child>
                       <object class="GsUpdateList" id="list_box_updates">
                         <property name="visible">True</property>
                         <property name="can_focus">True</property>
@@ -87,20 +94,27 @@
           </packing>
         </child>
         <child>
-          <object class="GtkBox" id="updates_uptodate_box">
+          <object class="GtkBox">
             <property name="visible">True</property>
             <property name="orientation">vertical</property>
             <property name="spacing">48</property>
             <property name="hexpand">True</property>
             <property name="vexpand">True</property>
-            <style>
-              <class name="dim-label"/>
-            </style>
+            <child>
+              <object class="GsUpgradeBanner" id="upgrade_banner_uptodate">
+                <property name="visible">False</property>
+                <property name="hexpand">True</property>
+                <property name="vexpand">True</property>
+              </object>
+            </child>
             <child type="center">
               <object class="GtkBox" id="updates_uptodate_centerbox">
                 <property name="visible">True</property>
                 <property name="orientation">vertical</property>
                 <property name="spacing">12</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
                 <child>
                   <object class="GtkImage" id="image_updates">
                     <property name="visible">True</property>
@@ -127,6 +141,9 @@
                 <property name="can_focus">False</property>
                 <property name="margin_bottom">32</property>
                 <property name="label">Last checked: HH:MM</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
               </object>
               <packing>
                 <property name="pack_type">end</property>
