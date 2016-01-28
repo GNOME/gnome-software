@@ -521,10 +521,10 @@ search_files_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 
-	list = gs_plugin_loader_search_what_provides_finish (plugin_loader, res, &error);
+	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-			g_debug ("extras: search what provides cancelled");
+			g_debug ("extras: search files cancelled");
 			return;
 		}
 		if (g_error_matches (error,
