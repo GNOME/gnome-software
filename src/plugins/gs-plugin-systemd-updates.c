@@ -160,3 +160,15 @@ gs_plugin_offline_update (GsPlugin *plugin,
 {
 	return pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT, cancellable, error);
 }
+
+/**
+ * gs_plugin_offline_update_cancel:
+ */
+gboolean
+gs_plugin_offline_update_cancel (GsPlugin *plugin,
+				 GsApp *app,
+				 GCancellable *cancellable,
+				 GError **error)
+{
+	return pk_offline_cancel (NULL, error);
+}

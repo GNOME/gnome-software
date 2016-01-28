@@ -369,6 +369,49 @@ profile_activated (GSimpleAction *action,
 }
 
 /**
+ * cancel_trigger_failed_cb:
+ **/
+static void
+cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
+{
+	GsApplication *app = GS_APPLICATION (user_data);
+	g_autoptr(GError) error = NULL;
+	if (!gs_plugin_loader_app_action_finish (app->plugin_loader, res, &error)) {
+		g_warning ("failed to cancel trigger: %s", error->message);
+		return;
+	}
+}
+
+/**
+ * reboot_failed_cb:
+ **/
+static void
+reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
+{
+	GsApplication *app = GS_APPLICATION (user_data);
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GVariant) retval = NULL;
+
+	/* get result */
+	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
+	if (retval != NULL)
+		return;
+
+	if (error != NULL) {
+		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
+			   error->message);
+	}
+
+	/* cancel trigger */
+	gs_plugin_loader_app_action_async (app->plugin_loader,
+					   NULL, /* everything! */
+					   GS_PLUGIN_LOADER_ACTION_OFFLINE_UPDATE_CANCEL,
+					   app->cancellable,
+					   cancel_trigger_failed_cb,
+					   app);
+}
+
+/**
  * offline_update_cb:
  **/
 static void
@@ -376,12 +419,24 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 		   GAsyncResult *res,
 		   GsApplication *app)
 {
+	g_autoptr(GDBusConnection) bus = NULL;
 	g_autoptr(GError) error = NULL;
 	if (!gs_plugin_loader_offline_update_finish (plugin_loader, res, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}
-	gs_reboot (NULL);
+
+	/* trigger reboot */
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	g_dbus_connection_call (bus,
+				"org.gnome.SessionManager",
+				"/org/gnome/SessionManager",
+				"org.gnome.SessionManager",
+				"Reboot",
+				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+				G_MAXINT, NULL,
+				reboot_failed_cb,
+				app);
 }
 
 static void

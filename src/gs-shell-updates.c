@@ -814,6 +814,51 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 }
 
 /**
+ * cancel_trigger_failed_cb:
+ **/
+static void
+cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
+{
+	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
+	g_autoptr(GError) error = NULL;
+	if (!gs_plugin_loader_app_action_finish (self->plugin_loader, res, &error)) {
+		g_warning ("failed to cancel trigger: %s", error->message);
+		return;
+	}
+}
+
+/**
+ * gs_shell_updates_reboot_failed_cb:
+ **/
+static void
+gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
+{
+	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GList) apps = NULL;
+	g_autoptr(GVariant) retval = NULL;
+
+	/* get result */
+	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
+	if (retval != NULL)
+		return;
+
+	if (error != NULL) {
+		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
+			   error->message);
+	}
+
+	/* cancel trigger */
+	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
+	gs_plugin_loader_app_action_async (self->plugin_loader,
+					   GS_APP (apps->data),
+					   GS_PLUGIN_LOADER_ACTION_OFFLINE_UPDATE_CANCEL,
+					   self->cancellable,
+					   cancel_trigger_failed_cb,
+					   self);
+}
+
+/**
  * gs_shell_updates_offline_update_cb:
  **/
 static void
@@ -821,6 +866,7 @@ gs_shell_updates_offline_update_cb (GsPluginLoader *plugin_loader,
                                     GAsyncResult *res,
                                     GsShellUpdates *self)
 {
+	g_autoptr(GDBusConnection) bus = NULL;
 	g_autoptr(GError) error = NULL;
 
 	/* get the results */
@@ -828,7 +874,18 @@ gs_shell_updates_offline_update_cb (GsPluginLoader *plugin_loader,
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}
-	gs_reboot (NULL);
+
+	/* trigger reboot */
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	g_dbus_connection_call (bus,
+				"org.gnome.SessionManager",
+				"/org/gnome/SessionManager",
+				"org.gnome.SessionManager",
+				"Reboot",
+				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+				G_MAXINT, NULL,
+				gs_shell_updates_reboot_failed_cb,
+				self);
 }
 
 static void

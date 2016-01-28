@@ -251,6 +251,10 @@ gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_offline_update_cancel	(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,

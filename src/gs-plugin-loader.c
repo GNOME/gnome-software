@@ -2621,6 +2621,11 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 		state->state_success = AS_APP_STATE_UNKNOWN;
 		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
+	case GS_PLUGIN_LOADER_ACTION_OFFLINE_UPDATE_CANCEL:
+		state->function_name = "gs_plugin_offline_update_cancel";
+		state->state_success = AS_APP_STATE_UNKNOWN;
+		state->state_failure = AS_APP_STATE_UNKNOWN;
+		break;
 	default:
 		g_assert_not_reached ();
 		break;

@@ -395,48 +395,6 @@ gs_mkdir_parent (const gchar *path, GError **error)
 	return TRUE;
 }
 
-static void
-reboot_done (GObject *source, GAsyncResult *res, gpointer data)
-{
-	GCallback reboot_failed = data;
-	g_autoptr(GVariant) ret = NULL;
-	g_autoptr(GError) error = NULL;
-
-	ret = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
-	if (ret)
-		return;
-
-	if (error != NULL) {
-		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
-			   error->message);
-	}
-
-	if (reboot_failed != NULL)
-		reboot_failed ();
-}
-
-void
-gs_reboot (GCallback reboot_failed)
-{
-	g_autoptr(GDBusConnection) bus = NULL;
-
-	g_debug ("calling org.gnome.SessionManager.Reboot");
-
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-	g_dbus_connection_call (bus,
-				"org.gnome.SessionManager",
-				"/org/gnome/SessionManager",
-				"org.gnome.SessionManager",
-				"Reboot",
-				NULL,
-				NULL,
-				G_DBUS_CALL_FLAGS_NONE,
-				G_MAXINT,
-				NULL,
-				reboot_done,
-				reboot_failed);
-}
-
 /**
  * gs_image_set_from_pixbuf_with_scale:
  **/

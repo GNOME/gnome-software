@@ -52,7 +52,6 @@ guint	 gs_string_replace		(GString	*string,
 					 const gchar	*replace);
 gboolean gs_mkdir_parent		(const gchar	*path,
 					 GError		**error);
-void     gs_reboot                      (GCallback	  reboot_failed);
 
 void	gs_image_set_from_pixbuf_with_scale	(GtkImage		*image,
 						 const GdkPixbuf	*pixbuf,
