@@ -208,7 +208,7 @@ get_upgrades_finished_cb (GObject *object,
 	g_autoptr(GsAppList) apps = NULL;
 
 	/* get result */
-	apps = gs_plugin_loader_get_updates_finish (GS_PLUGIN_LOADER (object), res, &error);
+	apps = gs_plugin_loader_get_distro_upgrades_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
 		g_debug ("no upgrades; withdrawing upgrades-available notification");
 		g_application_withdraw_notification (monitor->application,
