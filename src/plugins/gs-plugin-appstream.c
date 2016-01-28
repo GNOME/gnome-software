@@ -209,7 +209,7 @@ gs_plugin_appstream_startup (GsPlugin *plugin, GError **error)
 	for (i = 0; i < items->len; i++) {
 		app = g_ptr_array_index (items, i);
 		origin = as_app_get_origin (app);
-		if (origin == NULL)
+		if (origin == NULL || origin[0] == '\0')
 			continue;
 		perc = g_hash_table_lookup (origins, origin);
 		if (*perc < 10) {
