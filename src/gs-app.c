@@ -1895,22 +1895,6 @@ gs_app_get_kudos (GsApp *app)
 }
 
 /**
- * gs_app_get_kudos_weight:
- */
-guint
-gs_app_get_kudos_weight (GsApp *app)
-{
-	guint32 tmp;
-
-	g_return_val_if_fail (GS_IS_APP (app), 0);
-
-	tmp = app->kudos;
-	tmp = tmp - ((tmp >> 1) & 0x55555555);
-	tmp = (tmp & 0x33333333) + ((tmp >> 2) & 0x33333333);
-	return (((tmp + (tmp >> 4)) & 0x0F0F0F0F) * 0x01010101) >> 24;
-}
-
-/**
  * gs_app_get_kudos_percentage:
  */
 guint

@@ -246,7 +246,6 @@ gs_shell_search_get_app_sort_key (GsApp *app)
 	GPtrArray *ss;
 	GString *key;
 	const gchar *desc;
-	gint rating;
 
 	/* sort installed, removing, other */
 	key = g_string_sized_new (64);
@@ -269,8 +268,7 @@ gs_shell_search_get_app_sort_key (GsApp *app)
 	g_string_append_printf (key, "%s:", gs_app_get_search_sort_key (app));
 
 	/* sort by kudos */
-	rating = gs_app_get_kudos_weight (app);
-	g_string_append_printf (key, "%03i:", rating > 0 ? rating : 0);
+	g_string_append_printf (key, "%03i:", gs_app_get_kudos_percentage (app));
 
 	/* sort by length of description */
 	g_string_append_printf (key, "%03" G_GSIZE_FORMAT ":",
