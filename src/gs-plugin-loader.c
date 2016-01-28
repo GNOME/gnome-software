@@ -2653,30 +2653,6 @@ gs_plugin_loader_app_action_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-
-/**
- * gs_plugin_loader_get_state_for_app:
- **/
-AsAppState
-gs_plugin_loader_get_state_for_app (GsPluginLoader *plugin_loader, GsApp *app)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	AsAppState state = AS_APP_STATE_UNKNOWN;
-	GsApp *tmp;
-	guint i;
-
-	g_mutex_lock (&priv->pending_apps_mutex);
-	for (i = 0; i < priv->pending_apps->len; i++) {
-		tmp = g_ptr_array_index (priv->pending_apps, i);
-		if (g_strcmp0 (gs_app_get_id (tmp), gs_app_get_id (app)) == 0) {
-			state = gs_app_get_state (tmp);
-			break;
-		}
-	}
-	g_mutex_unlock (&priv->pending_apps_mutex);
-	return state;
-}
-
 /**
  * gs_plugin_loader_get_pending:
  **/

@@ -217,8 +217,6 @@ void		 gs_plugin_loader_refresh_async		(GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
-AsAppState	 gs_plugin_loader_get_state_for_app	(GsPluginLoader	*plugin_loader,
-							 GsApp		*app);
 GPtrArray	*gs_plugin_loader_get_pending		(GsPluginLoader	*plugin_loader);
 GsApp		*gs_plugin_loader_dedupe		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app);
