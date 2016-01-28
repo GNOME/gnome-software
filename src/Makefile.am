@@ -48,6 +48,7 @@ UI_FILES =						\
 	gs-sources-dialog-row.ui			\
 	gs-star-widget.ui				\
 	gs-update-dialog.ui				\
+	gs-upgrade-banner.ui				\
 	screenshot-image.ui				\
 	popular-tile.ui
 
@@ -168,6 +169,8 @@ gnome_software_SOURCES =				\
 	gs-update-list.h				\
 	gs-update-monitor.c				\
 	gs-update-monitor.h				\
+	gs-upgrade-banner.c				\
+	gs-upgrade-banner.h				\
 	gs-vendor.c					\
 	gs-vendor.h					\
 	gs-plugin-loader.c				\

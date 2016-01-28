@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.10 -->
+  <template class="GsUpgradeBanner" parent="GtkBin">
+    <child>
+      <object class="GtkBox" id="box_upgrades">
+        <property name="visible">True</property>
+        <property name="orientation">vertical</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <style>
+          <class name="upgrade-banner"/>
+        </style>
+        <child>
+          <object class="GtkLabel" id="label_upgrades_title">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="margin_top">42</property>
+            <property name="margin_bottom">8</property>
+            <!-- Just a placeholder; actual label text is set in code -->
+            <property name="label">GNOME 3.20 Now Available</property>
+            <attributes>
+              <attribute name="scale" value="1.8"/>
+            </attributes>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_upgrades_summary">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">A major upgrade, with new features and added polish.</property>
+            <property name="margin_bottom">12</property>
+            <attributes>
+              <attribute name="scale" value="1.2"/>
+            </attributes>
+          </object>
+        </child>
+        <child>
+          <object class="GtkProgressBar" id="progressbar">
+            <property name="visible">True</property>
+            <property name="width_request">480</property>
+            <property name="halign">center</property>
+            <property name="fraction">0.3</property>
+            <property name="margin_top">8</property>
+            <style>
+              <class name="upgrade-progressbar"/>
+            </style>
+          </object>
+          <packing>
+            <property name="expand">False</property>
+            <property name="fill">True</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkBox" id="box_upgrades_buttons">
+            <property name="visible">True</property>
+            <property name="orientation">horizontal</property>
+            <property name="halign">center</property>
+            <property name="spacing">12</property>
+            <property name="margin_top">16</property>
+            <property name="margin_bottom">28</property>
+            <child>
+              <object class="GtkButton" id="button_upgrades_learn_more">
+                <property name="label" translatable="yes">_Learn More</property>
+                <property name="width_request">150</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="relief">none</property>
+                <style>
+                  <class name="upgrade-button"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_upgrades_download">
+                <property name="label" translatable="yes">_Download</property>
+                <property name="width_request">150</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="relief">none</property>
+                <style>
+                  <class name="upgrade-button"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_upgrades_install">
+                <property name="label" translatable="yes">_Install</property>
+                <property name="width_request">150</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="relief">none</property>
+                <style>
+                  <class name="upgrade-button"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+              </packing>
+            </child>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_upgrades_warning">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="label" translatable="yes">It is recommended that you back up your data and files before upgrading.</property>
+            <property name="margin_top">8</property>
+            <property name="margin_bottom">24</property>
+            <attributes>
+              <attribute name="scale" value="0.9"/>
+            </attributes>
+          </object>
+        </child>
+      </object>
+    </child>
+  </template>
+</interface>
