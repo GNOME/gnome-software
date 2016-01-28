@@ -25,6 +25,20 @@
 	border-radius: 1px;
 }
 
+.kudo-pill {
+	color: @theme_selected_fg_color;
+	background-color: shade(@theme_bg_color, 0.4);
+	width: 32px;
+	height: 32px;
+	border-radius: 16px;
+	padding: 8px;
+}
+
+.kudo-pill-active {
+	background-image: none;
+	background-color: shade(@theme_selected_bg_color, 1.1);
+}
+
 .screenshot-image, .screenshot-image-thumb {
 	background-image: none;
 	background-color: shade(@theme_bg_color, 0.9);

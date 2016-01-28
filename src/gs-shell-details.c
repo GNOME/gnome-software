@@ -577,8 +577,10 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	GPtrArray *history;
 	GdkPixbuf *pixbuf = NULL;
 	GList *addons;
+	GtkStyleContext *sc;
 	GtkWidget *widget;
 	const gchar *tmp;
+	gboolean ret;
 	gchar **menu_path;
 	guint64 kudos;
 	guint64 updated;
@@ -736,32 +738,40 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 
 	/* set MyLanguage kudo */
 	kudos = gs_app_get_kudos (self->app);
-	gs_shell_details_set_sensitive (self->image_details_kudo_translated,
-					kudos & GS_APP_KUDO_MY_LANGUAGE);
-	gs_shell_details_set_sensitive (self->label_details_kudo_translated,
-					kudos & GS_APP_KUDO_MY_LANGUAGE);
+	ret = (kudos & GS_APP_KUDO_MY_LANGUAGE) > 0;
+	gs_shell_details_set_sensitive (self->image_details_kudo_translated, ret);
+	gs_shell_details_set_sensitive (self->label_details_kudo_translated, ret);
+	sc = gtk_widget_get_style_context (self->image_details_kudo_translated);
+	ret ? gtk_style_context_add_class (sc, "kudo-pill-active") :
+	      gtk_style_context_remove_class (sc, "kudo-pill-active");
 
 	/* set RecentRelease kudo */
-	gs_shell_details_set_sensitive (self->image_details_kudo_updated,
-					kudos & GS_APP_KUDO_RECENT_RELEASE);
-	gs_shell_details_set_sensitive (self->label_details_kudo_updated,
-					kudos & GS_APP_KUDO_RECENT_RELEASE);
+	ret = (kudos & GS_APP_KUDO_RECENT_RELEASE) > 0;
+	gs_shell_details_set_sensitive (self->image_details_kudo_updated, ret);
+	gs_shell_details_set_sensitive (self->label_details_kudo_updated, ret);
+	sc = gtk_widget_get_style_context (self->image_details_kudo_updated);
+	ret ? gtk_style_context_add_class (sc, "kudo-pill-active") :
+	      gtk_style_context_remove_class (sc, "kudo-pill-active");
 
 	/* set UserDocs kudo */
-	gs_shell_details_set_sensitive (self->image_details_kudo_docs,
-					kudos & GS_APP_KUDO_INSTALLS_USER_DOCS);
-	gs_shell_details_set_sensitive (self->label_details_kudo_docs,
-					kudos & GS_APP_KUDO_INSTALLS_USER_DOCS);
+	ret = (kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0;
+	gs_shell_details_set_sensitive (self->image_details_kudo_docs, ret);
+	gs_shell_details_set_sensitive (self->label_details_kudo_docs, ret);
+	sc = gtk_widget_get_style_context (self->image_details_kudo_docs);
+	ret ? gtk_style_context_add_class (sc, "kudo-pill-active") :
+	      gtk_style_context_remove_class (sc, "kudo-pill-active");
 
 	/* any of the various integration kudos */
 	user_integration_bf = GS_APP_KUDO_SEARCH_PROVIDER |
 			      GS_APP_KUDO_USES_NOTIFICATIONS |
 			      GS_APP_KUDO_USES_APP_MENU |
 			      GS_APP_KUDO_HIGH_CONTRAST;
-	gs_shell_details_set_sensitive (self->image_details_kudo_integration,
-					kudos & user_integration_bf);
-	gs_shell_details_set_sensitive (self->label_details_kudo_integration,
-					kudos & user_integration_bf);
+	ret = (kudos & user_integration_bf) > 0;
+	gs_shell_details_set_sensitive (self->image_details_kudo_integration, ret);
+	gs_shell_details_set_sensitive (self->label_details_kudo_integration, ret);
+	sc = gtk_widget_get_style_context (self->image_details_kudo_integration);
+	ret ? gtk_style_context_add_class (sc, "kudo-pill-active") :
+	      gtk_style_context_remove_class (sc, "kudo-pill-active");
 
 	/* don't show a missing rating on a local file */
 	if (gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL &&
