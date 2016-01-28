@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -83,7 +83,6 @@ struct _GsApp
 	AsUrgencyKind		 update_urgency;
 	gchar			*management_plugin;
 	gint			 rating;
-	gint			 rating_confidence;
 	guint64			 size;
 	GsAppKind		 kind;
 	AsIdKind		 id_kind;
@@ -291,8 +290,6 @@ gs_app_to_string (GsApp *app)
 		g_string_append_printf (str, "\torigin-ui:\t%s\n", app->origin_ui);
 	if (app->rating != -1)
 		g_string_append_printf (str, "\trating:\t%i\n", app->rating);
-	if (app->rating_confidence != -1)
-		g_string_append_printf (str, "\trating-confidence:\t%i\n", app->rating_confidence);
 	if (app->pixbuf != NULL)
 		g_string_append_printf (str, "\tpixbuf:\t%p\n", app->pixbuf);
 	if (app->featured_pixbuf != NULL)
@@ -1664,37 +1661,6 @@ gs_app_set_rating (GsApp *app, gint rating)
 }
 
 /**
- * gs_app_get_rating_confidence:
- * @app:	A #GsApp instance
- *
- * Return value: a predictor from 0 to 100, or -1 for unknown or invalid
- */
-gint
-gs_app_get_rating_confidence (GsApp *app)
-{
-	g_return_val_if_fail (GS_IS_APP (app), -1);
-	return app->rating_confidence;
-}
-
-/**
- * gs_app_set_rating_confidence:
- * @app:	A #GsApp instance
- * @rating_confidence:	a predictor from 0 to 100, or -1 for unknown or invalid
- *
- * This is how confident the rating is statistically valid, expressed as a
- * percentage.
- * Applications with a high confidence typically have a large number of samples
- * and can be trusted, but low confidence could mean that only one person has
- * rated the application.
- */
-void
-gs_app_set_rating_confidence (GsApp *app, gint rating_confidence)
-{
-	g_return_if_fail (GS_IS_APP (app));
-	app->rating_confidence = rating_confidence;
-}
-
-/**
  * gs_app_get_size:
  */
 guint64
@@ -2417,7 +2383,6 @@ static void
 gs_app_init (GsApp *app)
 {
 	app->rating = -1;
-	app->rating_confidence = -1;
 	app->sources = g_ptr_array_new_with_free_func (g_free);
 	app->source_ids = g_ptr_array_new_with_free_func (g_free);
 	app->categories = g_ptr_array_new_with_free_func (g_free);

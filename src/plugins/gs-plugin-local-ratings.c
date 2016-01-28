@@ -245,7 +245,6 @@ gs_plugin_refine (GsPlugin *plugin,
 		rating = gs_plugin_local_find_app (plugin, gs_app_get_id (app));
 		if (rating != -1) {
 			gs_app_set_rating (app, rating);
-			gs_app_set_rating_confidence (app, 100);
 			if (rating > 80)
 				gs_app_add_kudo (app, GS_APP_KUDO_POPULAR);
 		}

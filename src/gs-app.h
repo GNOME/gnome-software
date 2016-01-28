@@ -199,9 +199,6 @@ void		 gs_app_set_metadata		(GsApp		*app,
 gint		 gs_app_get_rating		(GsApp		*app);
 void		 gs_app_set_rating		(GsApp		*app,
 						 gint		 rating);
-gint		 gs_app_get_rating_confidence	(GsApp		*app);
-void		 gs_app_set_rating_confidence	(GsApp		*app,
-						 gint		 rating_confidence);
 guint64		 gs_app_get_size		(GsApp		*app);
 void		 gs_app_set_size		(GsApp		*app,
 						 guint64	 size);

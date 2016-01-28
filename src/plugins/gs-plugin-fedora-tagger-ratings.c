@@ -623,7 +623,6 @@ gs_plugin_refine (GsPlugin *plugin,
 				g_debug ("fedora-tagger setting rating on %s to %i%% [%i]",
 					 pkgname, rating, confidence);
 				gs_app_set_rating (app, rating);
-				gs_app_set_rating_confidence (app, confidence);
 				if (confidence > 50 && rating > 80) {
 					g_debug ("%s is popular [confidence %i]",
 						 gs_app_get_source_default (app),
