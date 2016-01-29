@@ -261,6 +261,7 @@ gs_self_test_SOURCES =						\
 	gs-app.c						\
 	gs-category.c						\
 	gs-markdown.c						\
+	gs-os-release.c						\
 	gs-plugin-loader-sync.c					\
 	gs-plugin-loader.c					\
 	gs-plugin.c						\
