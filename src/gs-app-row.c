@@ -156,18 +156,26 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* add tags */
-	gtk_widget_set_visible (priv->label_tag_webapp,
-				gs_app_get_id_kind (priv->app) == AS_ID_KIND_WEB_APP);
-	switch (gs_app_get_id_kind (priv->app)) {
-	case AS_ID_KIND_WEB_APP:
-	case AS_ID_KIND_UNKNOWN:
-		break;
-	default:
-		gtk_widget_set_visible (priv->label_tag_nonfree,
-					!gs_app_get_licence_is_free (priv->app));
-		gtk_widget_set_visible (priv->label_tag_foreign,
-					!gs_app_get_provenance (priv->app));
-		break;
+	if (priv->show_update) {
+		gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
+		gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
+		gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
+	} else {
+		switch (gs_app_get_id_kind (priv->app)) {
+		case AS_ID_KIND_WEB_APP:
+		case AS_ID_KIND_UNKNOWN:
+			gtk_widget_set_visible (priv->label_tag_webapp, TRUE);
+			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
+			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
+			break;
+		default:
+			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
+			gtk_widget_set_visible (priv->label_tag_nonfree,
+						!gs_app_get_licence_is_free (priv->app));
+			gtk_widget_set_visible (priv->label_tag_foreign,
+						!gs_app_get_provenance (priv->app));
+			break;
+		}
 	}
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
