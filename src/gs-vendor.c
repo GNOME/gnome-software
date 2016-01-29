@@ -34,6 +34,7 @@ struct _GsVendor
 
 G_DEFINE_TYPE (GsVendor, gs_vendor, G_TYPE_OBJECT)
 
+#ifdef HAVE_PACKAGEKIT
 /**
  * gs_vendor_type_to_string:
  **/
@@ -50,6 +51,7 @@ gs_vendor_type_to_string (GsVendorUrlType type)
 		return "HardwareUrl";
 	return "DefaultUrl";
 }
+#endif
 
 /**
  * gs_vendor_get_not_found_url:
@@ -57,6 +59,7 @@ gs_vendor_type_to_string (GsVendorUrlType type)
 gchar *
 gs_vendor_get_not_found_url (GsVendor *vendor, GsVendorUrlType type)
 {
+#ifdef HAVE_PACKAGEKIT
 	const gchar *key;
 	gchar *url = NULL;
 
@@ -91,6 +94,9 @@ gs_vendor_get_not_found_url (GsVendor *vendor, GsVendorUrlType type)
 out:
 	g_debug ("url=%s", url);
 	return url;
+#else
+	return NULL;
+#endif
 }
 
 /**
@@ -100,12 +106,15 @@ out:
 static void
 gs_vendor_init (GsVendor *vendor)
 {
+#ifdef HAVE_PACKAGEKIT
+	const gchar *fn = "/etc/PackageKit/Vendor.conf";
 	gboolean ret;
 
 	vendor->file = g_key_file_new ();
-	ret = g_key_file_load_from_file (vendor->file, "/etc/PackageKit/Vendor.conf", G_KEY_FILE_NONE, NULL);
+	ret = g_key_file_load_from_file (vendor->file, fn, G_KEY_FILE_NONE, NULL);
 	if (!ret)
-		g_warning ("file not found");
+		g_warning ("%s file not found", fn);
+#endif
 }
 
 /**
@@ -117,7 +126,8 @@ gs_vendor_finalize (GObject *object)
 {
 	GsVendor *vendor = GS_VENDOR (object);
 
-	g_key_file_free (vendor->file);
+	if (vendor->file != NULL)
+		g_key_file_free (vendor->file);
 
 	G_OBJECT_CLASS (gs_vendor_parent_class)->finalize (object);
 }
