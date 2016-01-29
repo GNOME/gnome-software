@@ -72,7 +72,6 @@ struct _GsShellDetails
 	GtkWidget		*infobar_details_app_repo;
 	GtkWidget		*infobar_details_package_baseos;
 	GtkWidget		*infobar_details_repo;
-	GtkWidget		*infobar_details_webapp;
 	GtkWidget		*label_addons_uninstalled_app;
 	GtkWidget		*label_details_category_value;
 	GtkWidget		*label_details_developer_title;
@@ -85,6 +84,10 @@ struct _GsShellDetails
 	GtkWidget		*label_details_version_value;
 	GtkWidget		*label_failed;
 	GtkWidget		*label_pending;
+	GtkWidget		*label_details_tag_nonfree;
+	GtkWidget		*label_details_tag_3rdparty;
+	GtkWidget		*label_details_tag_webapp;
+	GtkWidget		*label_details_info_text;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*scrolledwindow_details;
 	GtkWidget		*spinner_details;
@@ -577,7 +580,6 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	GPtrArray *history;
 	GdkPixbuf *pixbuf = NULL;
 	GList *addons;
-	GtkStyleContext *sc;
 	GtkWidget *widget;
 	const gchar *tmp;
 	gboolean ret;
@@ -739,27 +741,18 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	/* set MyLanguage kudo */
 	kudos = gs_app_get_kudos (self->app);
 	ret = (kudos & GS_APP_KUDO_MY_LANGUAGE) > 0;
-	gs_shell_details_set_sensitive (self->image_details_kudo_translated, ret);
+	gtk_widget_set_sensitive (self->image_details_kudo_translated, ret);
 	gs_shell_details_set_sensitive (self->label_details_kudo_translated, ret);
-	sc = gtk_widget_get_style_context (self->image_details_kudo_translated);
-	ret ? gtk_style_context_add_class (sc, "kudo-pill-active") :
-	      gtk_style_context_remove_class (sc, "kudo-pill-active");
 
 	/* set RecentRelease kudo */
 	ret = (kudos & GS_APP_KUDO_RECENT_RELEASE) > 0;
-	gs_shell_details_set_sensitive (self->image_details_kudo_updated, ret);
+	gtk_widget_set_sensitive (self->image_details_kudo_updated, ret);
 	gs_shell_details_set_sensitive (self->label_details_kudo_updated, ret);
-	sc = gtk_widget_get_style_context (self->image_details_kudo_updated);
-	ret ? gtk_style_context_add_class (sc, "kudo-pill-active") :
-	      gtk_style_context_remove_class (sc, "kudo-pill-active");
 
 	/* set UserDocs kudo */
 	ret = (kudos & GS_APP_KUDO_INSTALLS_USER_DOCS) > 0;
-	gs_shell_details_set_sensitive (self->image_details_kudo_docs, ret);
+	gtk_widget_set_sensitive (self->image_details_kudo_docs, ret);
 	gs_shell_details_set_sensitive (self->label_details_kudo_docs, ret);
-	sc = gtk_widget_get_style_context (self->image_details_kudo_docs);
-	ret ? gtk_style_context_add_class (sc, "kudo-pill-active") :
-	      gtk_style_context_remove_class (sc, "kudo-pill-active");
 
 	/* any of the various integration kudos */
 	user_integration_bf = GS_APP_KUDO_SEARCH_PROVIDER |
@@ -767,11 +760,54 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 			      GS_APP_KUDO_USES_APP_MENU |
 			      GS_APP_KUDO_HIGH_CONTRAST;
 	ret = (kudos & user_integration_bf) > 0;
-	gs_shell_details_set_sensitive (self->image_details_kudo_integration, ret);
+	gtk_widget_set_sensitive (self->image_details_kudo_integration, ret);
 	gs_shell_details_set_sensitive (self->label_details_kudo_integration, ret);
-	sc = gtk_widget_get_style_context (self->image_details_kudo_integration);
-	ret ? gtk_style_context_add_class (sc, "kudo-pill-active") :
-	      gtk_style_context_remove_class (sc, "kudo-pill-active");
+
+	/* set the tags buttons */
+	if (gs_app_get_id_kind (self->app) == AS_ID_KIND_WEB_APP) {
+		gtk_widget_set_visible (self->label_details_tag_webapp, TRUE);
+		gtk_widget_set_visible (self->label_details_tag_nonfree, FALSE);
+		gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
+		gtk_widget_set_visible (self->label_details_info_text, TRUE);
+		gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
+				     /* TRANSLATORS: this is the warning box */
+				     _("This application can only be used when there is an active internet connection."));
+	} else {
+		gtk_widget_set_visible (self->label_details_tag_webapp, FALSE);
+		if (gs_app_get_licence_is_free (self->app) &&
+		    !gs_app_get_provenance (self->app)) {
+			/* free and 3rd party */
+			gtk_widget_set_visible (self->label_details_tag_nonfree, FALSE);
+			gtk_widget_set_visible (self->label_details_tag_3rdparty, TRUE);
+			gtk_widget_set_visible (self->label_details_info_text, TRUE);
+			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
+					     /* TRANSLATORS: this is the warning box */
+					     _("This software comes from a 3rd party."));
+		} else if (!gs_app_get_licence_is_free (self->app) &&
+			   !gs_app_get_provenance (self->app)) {
+			/* nonfree and 3rd party */
+			gtk_widget_set_visible (self->label_details_tag_nonfree, TRUE);
+			gtk_widget_set_visible (self->label_details_tag_3rdparty, TRUE);
+			gtk_widget_set_visible (self->label_details_info_text, TRUE);
+			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
+					     /* TRANSLATORS: this is the warning box */
+					     _("This software comes from a 3rd party and may contain non-free components."));
+		} else if (!gs_app_get_licence_is_free (self->app) &&
+			   gs_app_get_provenance (self->app)) {
+			/* nonfree and distro */
+			gtk_widget_set_visible (self->label_details_tag_nonfree, TRUE);
+			gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
+			gtk_widget_set_visible (self->label_details_info_text, TRUE);
+			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
+					     /* TRANSLATORS: this is the warning box */
+					     _("This software may contain non-free components."));
+		} else {
+			/* free and not 3rd party */
+			gtk_widget_set_visible (self->label_details_tag_nonfree, FALSE);
+			gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
+			gtk_widget_set_visible (self->label_details_info_text, FALSE);
+		}
+	}
 
 	/* don't show a missing rating on a local file */
 	if (gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL &&
@@ -844,16 +880,6 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		break;
 	default:
 		gtk_widget_set_visible (self->infobar_details_app_norepo, FALSE);
-		break;
-	}
-
-	/* installing a webapp */
-	switch (gs_app_get_id_kind (self->app)) {
-	case AS_ID_KIND_WEB_APP:
-		gtk_widget_set_visible (self->infobar_details_webapp, TRUE);
-		break;
-	default:
-		gtk_widget_set_visible (self->infobar_details_webapp, FALSE);
 		break;
 	}
 
@@ -1073,6 +1099,7 @@ gs_shell_details_load (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
 					   self->cancellable,
 					   gs_shell_details_app_refine_cb,
@@ -1408,7 +1435,6 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_app_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_package_baseos);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_repo);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_webapp);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_addons_uninstalled_app);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_category_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_title);
@@ -1421,6 +1447,10 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_version_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_pending);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_nonfree);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_3rdparty);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_webapp);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_info_text);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, scrolledwindow_details);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_details);
