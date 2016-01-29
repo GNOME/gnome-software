@@ -757,7 +757,7 @@ gs_update_monitor_is_managed (void)
 
 	permission = gs_update_monitor_permission_get ();
 	if (permission == NULL)
-		return TRUE;
+		return FALSE;
 	managed = !g_permission_get_allowed (permission) &&
                   !g_permission_get_can_acquire (permission);
 
