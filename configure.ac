@@ -66,7 +66,6 @@ PKG_CHECK_MODULES(SQLITE, sqlite3)
 PKG_CHECK_MODULES(SOUP, libsoup-2.4 >= 2.51.92)
 PKG_CHECK_MODULES(GSETTINGS_DESKTOP_SCHEMAS, gsettings-desktop-schemas >= 3.11.5)
 PKG_CHECK_MODULES(GNOME_DESKTOP, gnome-desktop-3.0 >= 3.17.92)
-PKG_CHECK_MODULES(POLKIT, polkit-gobject-1)
 AC_PATH_PROG(APPSTREAM_UTIL, [appstream-util], [unfound])
 AC_ARG_ENABLE(man,
               [AS_HELP_STRING([--enable-man],
@@ -94,7 +93,6 @@ AC_ARG_ENABLE(packagekit,
               [AS_HELP_STRING([--enable-packagekit],
                               [enable PackageKit support [default=auto]])],,
               enable_packagekit=maybe)
-
 AS_IF([test "x$enable_packagekit" != "xno"], [
     PKG_CHECK_MODULES(PACKAGEKIT,
                       [packagekit-glib2 >= 1.0.11],
@@ -103,14 +101,43 @@ AS_IF([test "x$enable_packagekit" != "xno"], [
 ], [
     have_packagekit=no
 ])
+AS_IF([test "x$have_packagekit" = "xyes"], [
+    AC_DEFINE(HAVE_PACKAGEKIT,1,[Build packagekit support])
+], [
+    AS_IF([test "x$enable_packagekit" = "xyes"], [
+          AC_MSG_ERROR([packagekit support requested but 'packagekit-glib2' was not found])
+    ])
+])
 AM_CONDITIONAL(HAVE_PACKAGEKIT, test "$have_packagekit" != no)
+
+# PolicyKit
+AC_ARG_ENABLE(polkit,
+              [AS_HELP_STRING([--enable-polkit],
+                              [enable PolicyKit support [default=auto]])],,
+              enable_polkit=maybe)
+
+AS_IF([test "x$enable_polkit" != "xno"], [
+    PKG_CHECK_MODULES(POLKIT,
+                      [polkit-gobject-1],
+                      [have_polkit=yes],
+                      [have_polkit=no])
+], [
+    have_polkit=no
+])
+AS_IF([test "x$have_polkit" = "xyes"], [
+    AC_DEFINE(HAVE_POLKIT,1,[Build polkit support])
+], [
+    AS_IF([test "x$enable_polkit" = "xyes"], [
+          AC_MSG_ERROR([polkit support requested but 'polkit-gobject-1' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_POLKIT, test "$have_polkit" != no)
 
 # fwupd
 AC_ARG_ENABLE(firmware,
               [AS_HELP_STRING([--enable-firmware],
                               [enable firmware support [default=auto]])],,
               enable_firmware=maybe)
-
 AS_IF([test "x$enable_firmware" != "xno"], [
     PKG_CHECK_MODULES(FWUPD,
                       [fwupd],
@@ -119,13 +146,20 @@ AS_IF([test "x$enable_firmware" != "xno"], [
 ], [
     have_firmware=no
 ])
+AS_IF([test "x$have_firmware" = "xyes"], [
+    AC_DEFINE(HAVE_FIRMWARE,1,[Build firmware support])
+], [
+    AS_IF([test "x$enable_firmware" = "xyes"], [
+          AC_MSG_ERROR([Firmware support requested but 'fwupd' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_FIRMWARE, test x$have_firmware = xyes)
 
 # xdg-app
 AC_ARG_ENABLE(xdg-app,
               [AS_HELP_STRING([--enable-xdg-app],
                               [enable xdg-app support [default=auto]])],,
               enable_xdg_app=maybe)
-
 AS_IF([test "x$enable_xdg_app" != "xno"], [
     PKG_CHECK_MODULES(XDG_APP,
                       [xdg-app >= 0.4.7],
@@ -134,17 +168,14 @@ AS_IF([test "x$enable_xdg_app" != "xno"], [
 ], [
     have_xdg_app=no
 ])
-AM_CONDITIONAL(HAVE_XDG_APP, test "$have_xdg_app" != no)
-
-AS_IF([test "x$have_firmware" = "xyes"], [
-    AC_DEFINE(HAVE_FIRMWARE,1,[Build firmware support])
+AS_IF([test "x$have_xdg_app" = "xyes"], [
+    AC_DEFINE(HAVE_XDG_APP,1,[Build xdg-app support])
 ], [
-    AS_IF([test "x$enable_firmware" = "xyes"], [
-          AC_MSG_ERROR([Firmware support requested but 'fwupd' was not found])
+    AS_IF([test "x$enable_xdg_app" = "xyes"], [
+          AC_MSG_ERROR([xdg-app support requested but 'xdg-app' was not found])
     ])
 ])
-
-AM_CONDITIONAL(HAVE_FIRMWARE, test x$have_firmware = xyes)
+AM_CONDITIONAL(HAVE_XDG_APP, test "$have_xdg_app" != no)
 
 # Limba
 AC_ARG_ENABLE(limba,
@@ -159,7 +190,6 @@ AS_IF([test "x$enable_limba" != "xno"], [
 ], [
     have_limba=no
 ])
-
 AS_IF([test "x$have_limba" = "xyes"], [
     AC_DEFINE(HAVE_LIMBA, 1, [Build Limba support])
 ], [
@@ -214,6 +244,7 @@ echo "
         cppflags:                  ${CPPFLAGS}
         Dogtail:                   ${enable_dogtail}
         PackageKit support:        ${have_packagekit}
+        PolicyKit support:         ${have_polkit}
         Firmware support:          ${have_firmware}
         XDG-APP support:           ${have_xdg_app}
 "

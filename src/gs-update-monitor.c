@@ -24,8 +24,11 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
-#include <polkit/polkit.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
+
+#ifdef HAVE_POLKIT
+#include <polkit/polkit.h>
+#endif
 
 #include "gs-update-monitor.h"
 #include "gs-plugin-loader.h"
@@ -737,12 +740,12 @@ gs_update_monitor_new (GsApplication *application)
 GPermission *
 gs_update_monitor_permission_get (void)
 {
-	static GPermission *permission;
-
-	if (!permission)
+	static GPermission *permission = NULL;
+#ifdef HAVE_POLKIT
+	if (permission == NULL)
 		permission = polkit_permission_new_sync ("org.freedesktop.packagekit.trigger-offline-update",
                                                          NULL, NULL, NULL);
-
+#endif
 	return permission;
 }
 
@@ -753,6 +756,8 @@ gs_update_monitor_is_managed (void)
 	gboolean managed;
 
 	permission = gs_update_monitor_permission_get ();
+	if (permission == NULL)
+		return TRUE;
 	managed = !g_permission_get_allowed (permission) &&
                   !g_permission_get_can_acquire (permission);
 
