@@ -89,8 +89,7 @@ gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
 	/* check that we are running on Fedora */
 	id = gs_os_release_get_id (&error);
 	if (id == NULL) {
-		g_warning ("Could not parse os-release: %s",
-			   error->message);
+		g_debug ("could not parse os-release: %s", error->message);
 		return FALSE;
 	}
 	if (g_strcmp0 (id, distro_id) != 0)

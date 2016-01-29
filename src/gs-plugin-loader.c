@@ -3010,8 +3010,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 				dep = gs_plugin_loader_find_plugin (plugin_loader,
 								    plugin->deps[j]);
 				if (dep == NULL) {
-					g_warning ("cannot find plugin '%s'",
-						   plugin->deps[j]);
+					g_debug ("cannot find plugin '%s'",
+						 plugin->deps[j]);
 					continue;
 				}
 				if (!dep->enabled)
