@@ -2797,6 +2797,8 @@ gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 	g_debug ("updates-changed");
 	g_signal_emit (plugin_loader, signals[SIGNAL_UPDATES_CHANGED], 0);
 	priv->updates_changed_id = 0;
+
+	g_object_unref (plugin_loader);
 	return FALSE;
 }
 
@@ -2813,7 +2815,7 @@ gs_plugin_loader_updates_changed_cb (GsPlugin *plugin, gpointer user_data)
 	priv->updates_changed_id =
 		g_timeout_add_seconds (GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY,
 				       gs_plugin_loader_updates_changed_delay_cb,
-				       plugin_loader);
+				       g_object_ref (plugin_loader));
 }
 
 /**
