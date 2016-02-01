@@ -108,14 +108,30 @@ gs_plugin_ensure_installation (GsPlugin *plugin,
 			       GCancellable *cancellable,
 			       GError **error)
 {
+	g_autofree gchar *install_path = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GFile) install_file = NULL;
+
 	if (plugin->priv->installation != NULL)
 		return TRUE;
+
+	/* If we're running INSIDE the xdg-app environment we'll have the
+	 * env var XDG_DATA_HOME set to "~/.var/app/org.gnome.Software/data"
+	 * so specify the path manually to get the real data */
+	install_path = g_build_filename (g_get_home_dir (),
+					 ".local",
+					 "share",
+					 "xdg-app",
+					 NULL);
+	install_file = g_file_new_for_path (install_path);
 
 	/* FIXME: this should default to system-wide, but we need a permissions
 	 * helper to elevate privs */
 	ptask = as_profile_start_literal (plugin->profile, "xdg-app::ensure-origin");
-	plugin->priv->installation = xdg_app_installation_new_user (cancellable, error);
+	plugin->priv->installation = xdg_app_installation_new_for_path (install_file,
+									TRUE,
+									cancellable,
+									error);
 	if (plugin->priv->installation == NULL)
 		return FALSE;
 
