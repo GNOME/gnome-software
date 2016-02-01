@@ -353,7 +353,7 @@ about_activated (GSimpleAction *action,
 			       "comments", _("A nice way to manage the software on your system."),
 			       "copyright", copyright,
 			       "license-type", GTK_LICENSE_GPL_2_0,
-			       "logo-icon-name", "gnome-software",
+			       "logo-icon-name", "org.gnome.Software",
 			       "translator-credits", _("translator-credits"),
 			       "version", VERSION,
 			       NULL);
