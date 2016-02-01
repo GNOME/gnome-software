@@ -203,6 +203,7 @@ static void
 gs_shell_updates_update_ui_state (GsShellUpdates *self)
 {
 	GtkWidget *widget;
+	gboolean allow_mobile_refresh = TRUE;
 	g_autofree gchar *checked_str = NULL;
 	g_autofree gchar *spinner_str = NULL;
 
@@ -305,9 +306,11 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
 					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
 		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_refresh"));
-		gtk_widget_set_visible (widget,
-					!g_network_monitor_get_network_metered (self->network_monitor) ||
-					self->has_agreed_to_mobile_data);
+		if (self->network_monitor != NULL &&
+		    g_network_monitor_get_network_metered (self->network_monitor) &&
+		    !self->has_agreed_to_mobile_data)
+			allow_mobile_refresh = FALSE;
+		gtk_widget_set_visible (widget, allow_mobile_refresh);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -343,9 +346,13 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 		break;
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 
+		/* we just don't know */
+		if (self->network_monitor == NULL) {
+			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "uptodate");
+
 		/* check we have a "free" network connection */
-		if (g_network_monitor_get_network_available (self->network_monitor) &&
-		    !g_network_monitor_get_network_metered (self->network_monitor)) {
+		} else if (g_network_monitor_get_network_available (self->network_monitor) &&
+			   !g_network_monitor_get_network_metered (self->network_monitor)) {
 			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_updates), "uptodate");
 
 		/* expensive network connection */
@@ -744,6 +751,12 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 		return;
 	}
 
+	/* we don't know the network state */
+	if (self->network_monitor == NULL) {
+		gs_shell_updates_get_new_updates (self);
+		return;
+	}
+
 	/* check we have a "free" network connection */
 	if (g_network_monitor_get_network_available (self->network_monitor) &&
 	    !g_network_monitor_get_network_metered (self->network_monitor)) {
@@ -988,9 +1001,11 @@ gs_shell_updates_setup (GsShellUpdates *self,
 
 	gs_shell_updates_monitor_permission (self);
 
-	g_signal_connect (self->network_monitor, "network-changed",
-			  G_CALLBACK (gs_shell_updates_notify_network_state_cb),
-			  self);
+	if (self->network_monitor != NULL) {
+		g_signal_connect (self->network_monitor, "network-changed",
+				  G_CALLBACK (gs_shell_updates_notify_network_state_cb),
+				  self);
+	}
 
 	/* chain up */
 	gs_page_setup (GS_PAGE (self),

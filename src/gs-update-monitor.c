@@ -287,6 +287,10 @@ check_updates (GsUpdateMonitor *monitor)
 	g_autoptr(GDateTime) last_refreshed = NULL;
 	g_autoptr(GDateTime) now_refreshed = NULL;
 
+	/* we don't know the network state */
+	if (monitor->network_monitor == NULL)
+		return;
+
 	/* never refresh when offline or on mobile connections */
 	if (!g_network_monitor_get_network_available (monitor->network_monitor) ||
 	    g_network_monitor_get_network_metered (monitor->network_monitor))
@@ -658,8 +662,10 @@ gs_update_monitor_init (GsUpdateMonitor *monitor)
 
 	monitor->cancellable = g_cancellable_new ();
 	monitor->network_monitor = g_network_monitor_get_default ();
-	g_signal_connect (monitor->network_monitor, "network-changed",
-			  G_CALLBACK (notify_network_state_cb), monitor);
+	if (monitor->network_monitor != NULL) {
+		g_signal_connect (monitor->network_monitor, "network-changed",
+				  G_CALLBACK (notify_network_state_cb), monitor);
+	}
 }
 
 static void
