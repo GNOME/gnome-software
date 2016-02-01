@@ -101,7 +101,7 @@ try:
     assert (search_page.showing)
 
     """Details page test section"""
-    search_page_listbox.child(roleName='label', name='Geary').click()
+    search_page_listbox.child(roleName='label', name='Files').click()
     doDelay(4)
     assert (not overview_page.showing)
     assert (not installed_page.showing)
