@@ -87,6 +87,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (plugin->priv->monitor);
 }
 
+#ifndef HAVE_PACKAGEKIT
 /**
  * gs_plugin_add_popular:
  */
@@ -106,7 +107,6 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		"org.gnome.Evince.desktop",
 		"org.gnome.gedit.desktop",
 		"org.gnome.Maps.desktop",
-		"org.gnome.Software.desktop",
 		"org.gnome.Weather.desktop",
 		NULL };
 
@@ -118,6 +118,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	}
 	return TRUE;
 }
+#endif
 
 /**
  * gs_plugin_xdg_app_changed_cb:
