@@ -778,10 +778,8 @@ gs_plugin_refine_item (GsPlugin *plugin,
 				  gs_app_get_id (app));
 
 	/* check if this desktop ID can be handled by the plugin */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) {
-		if (!gs_plugin_refine_item_action (plugin, app, cancellable, error))
-			return FALSE;
-	}
+	if (!gs_plugin_refine_item_action (plugin, app, cancellable, error))
+		return FALSE;
 
 	/* size */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) {
