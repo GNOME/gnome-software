@@ -432,8 +432,6 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 
 			/* set images */
 			ssimg = gs_screenshot_image_new (self->session);
-			gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg),
-							  g_get_user_cache_dir ());
 			gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 			gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
 						      640,
@@ -459,8 +457,6 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 	ss = g_ptr_array_index (screenshots, 0);
 	ssimg = gs_screenshot_image_new (self->session);
 	gtk_widget_set_can_focus (gtk_bin_get_child (GTK_BIN (ssimg)), FALSE);
-	gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg),
-					  g_get_user_cache_dir ());
 	gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 
 	/* use a slightly larger screenshot if it's the only screenshot */
@@ -489,8 +485,6 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 	for (i = 0; i < screenshots->len; i++) {
 		ss = g_ptr_array_index (screenshots, i);
 		ssimg = gs_screenshot_image_new (self->session);
-		gs_screenshot_image_set_cachedir (GS_SCREENSHOT_IMAGE (ssimg),
-						  g_get_user_cache_dir ());
 		gs_screenshot_image_set_screenshot (GS_SCREENSHOT_IMAGE (ssimg), ss);
 		gs_screenshot_image_set_size (GS_SCREENSHOT_IMAGE (ssimg),
 					      AS_IMAGE_THUMBNAIL_WIDTH,

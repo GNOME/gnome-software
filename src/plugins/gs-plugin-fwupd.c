@@ -155,10 +155,7 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			  G_CALLBACK (gs_plugin_fwupd_changed_cb), plugin);
 
 	/* create the cache location */
-	plugin->priv->cachedir = g_build_filename (g_get_user_cache_dir (),
-						   "gnome-software",
-						   "firmware",
-						   NULL);
+	plugin->priv->cachedir = gs_utils_get_cachedir ("firmware");
 	rc = g_mkdir_with_parents (plugin->priv->cachedir, 0700);
 	if (rc != 0) {
 		g_set_error_literal (error,

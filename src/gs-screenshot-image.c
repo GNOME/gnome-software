@@ -44,7 +44,6 @@ struct _GsScreenshotImage
 	GtkWidget	*label_error;
 	SoupSession	*session;
 	SoupMessage	*message;
-	gchar		*cachedir;
 	gchar		*filename;
 	const gchar	*current_image;
 	gboolean	 use_desktop_background;
@@ -282,16 +281,6 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 }
 
 /**
- * gs_screenshot_image_set_cachedir:
- **/
-void
-gs_screenshot_image_set_cachedir (GsScreenshotImage *ssimg, const gchar *cachedir)
-{
-	g_free (ssimg->cachedir);
-	ssimg->cachedir = g_strdup (cachedir);
-}
-
-/**
  * gs_screenshot_image_set_screenshot:
  **/
 void
@@ -360,8 +349,9 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	const gchar *url;
 	gint rc;
 	g_autofree gchar *basename = NULL;
-	g_autofree gchar *cachedir2 = NULL;
+	g_autofree gchar *cachedir_full = NULL;
 	g_autofree gchar *cachedir = NULL;
+	g_autofree gchar *cachedir_thumb = NULL;
 	g_autofree gchar *sizedir = NULL;
 
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
@@ -396,12 +386,9 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	} else {
 		sizedir = g_strdup_printf ("%ux%u", ssimg->width * ssimg->scale, ssimg->height * ssimg->scale);
 	}
-	cachedir = g_build_filename (ssimg->cachedir,
-				     "gnome-software",
-				     "screenshots",
-				     sizedir,
-				     NULL);
-	rc = g_mkdir_with_parents (cachedir, 0700);
+	cachedir = gs_utils_get_cachedir ("screenshots");
+	cachedir_full = g_build_filename (cachedir, sizedir, NULL);
+	rc = g_mkdir_with_parents (cachedir_full, 0700);
 	if (rc != 0) {
 		/* TRANSLATORS: this is when we try create the cache directory
 		 * but we were out of space or permission was denied */
@@ -410,7 +397,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* does local file already exist */
-	ssimg->filename = g_build_filename (cachedir, basename, NULL);
+	ssimg->filename = g_build_filename (cachedir_full, basename, NULL);
 	if (g_file_test (ssimg->filename, G_FILE_TEST_EXISTS)) {
 		as_screenshot_show_image (ssimg);
 		return;
@@ -419,14 +406,12 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* can we load a blurred smaller version of this straight away */
 	if (ssimg->width > AS_IMAGE_THUMBNAIL_WIDTH &&
 	    ssimg->height > AS_IMAGE_THUMBNAIL_HEIGHT) {
-		cachedir2 = g_build_filename (ssimg->cachedir,
-					      "gnome-software",
-					      "screenshots",
-					      "112x63",
-					      basename,
-					      NULL);
-		if (g_file_test (cachedir2, G_FILE_TEST_EXISTS))
-			gs_screenshot_image_show_blurred (ssimg, cachedir2);
+		cachedir_thumb = g_build_filename (cachedir,
+						   "112x63",
+						   basename,
+						   NULL);
+		if (g_file_test (cachedir_thumb, G_FILE_TEST_EXISTS))
+			gs_screenshot_image_show_blurred (ssimg, cachedir_thumb);
 	}
 
 	/* download file */
@@ -481,7 +466,6 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 	g_clear_object (&ssimg->screenshot);
 	g_clear_object (&ssimg->session);
 
-	g_clear_pointer (&ssimg->cachedir, g_free);
 	g_clear_pointer (&ssimg->filename, g_free);
 
 	GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->destroy (widget);

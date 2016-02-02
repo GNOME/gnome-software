@@ -450,4 +450,17 @@ gs_user_agent (void)
 	return PACKAGE_NAME "/" PACKAGE_VERSION;
 }
 
+/**
+ * gs_utils_get_cachedir:
+ **/
+gchar *
+gs_utils_get_cachedir (const gchar *kind)
+{
+	g_autofree gchar *vername = NULL;
+	g_auto(GStrv) version = g_strsplit (VERSION, ".", 3);
+	vername = g_strdup_printf ("%s.%s", version[0], version[1]);
+	return g_build_filename (g_get_user_cache_dir (),
+				 "gnome-software", vername, kind, NULL);
+}
+
 /* vim: set noexpandtab: */

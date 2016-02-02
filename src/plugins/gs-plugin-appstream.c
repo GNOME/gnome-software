@@ -23,6 +23,7 @@
 #include <glib/gi18n.h>
 #include <appstream-glib.h>
 
+#include <gs-utils.h>
 #include <gs-plugin.h>
 #include <gs-plugin-loader.h>
 
@@ -255,20 +256,17 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autofree gchar *fn = NULL;
-	g_autofree gchar *path = NULL;
+	g_autofree gchar *cachedir = NULL;
 
 	icon = as_app_get_icon_default (item);
 	switch (as_icon_get_kind (icon)) {
 	case AS_ICON_KIND_REMOTE:
 		gs_app_set_icon (app, icon);
 		if (as_icon_get_filename (icon) == NULL) {
-			path = g_build_filename (g_get_user_data_dir (),
-						 "gnome-software",
-						 "icons",
-						 NULL);
-			fn = g_build_filename (path, as_icon_get_name (icon), NULL);
+			cachedir = gs_utils_get_cachedir ("icons");
+			fn = g_build_filename (cachedir, as_icon_get_name (icon), NULL);
 			as_icon_set_filename (icon, fn);
-			as_icon_set_prefix (icon, path);
+			as_icon_set_prefix (icon, cachedir);
 		}
 		if (g_file_test (fn, G_FILE_TEST_EXISTS)) {
 			as_icon_set_kind (icon, AS_ICON_KIND_LOCAL);
