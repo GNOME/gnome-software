@@ -88,6 +88,38 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_add_popular:
+ */
+gboolean
+gs_plugin_add_popular (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	guint i;
+	const gchar *apps[] = {
+		"org.gnome.Builder.desktop",
+		"org.gnome.Calculator.desktop",
+		"org.gnome.clocks.desktop",
+		"org.gnome.Dictionary.desktop",
+		"org.gnome.Documents.desktop",
+		"org.gnome.Evince.desktop",
+		"org.gnome.gedit.desktop",
+		"org.gnome.Maps.desktop",
+		"org.gnome.Software.desktop",
+		"org.gnome.Weather.desktop",
+		NULL };
+
+	/* just add all */
+	for (i = 0; apps[i] != NULL; i++) {
+		g_autoptr(GsApp) app = NULL;
+		app = gs_app_new (apps[i]);
+		gs_plugin_add_app (list, app);
+	}
+	return TRUE;
+}
+
+/**
  * gs_plugin_xdg_app_changed_cb:
  */
 static void
