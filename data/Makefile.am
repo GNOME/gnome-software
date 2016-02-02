@@ -8,6 +8,8 @@ dist_resources_DATA =					\
 	featured-ardour.png				\
 	featured-ardour-bg.png				\
 	featured-blender.png				\
+	featured-builder.png				\
+	featured-builder-bg.jpg				\
 	featured-chess.png				\
 	featured-firefox.png				\
 	featured-gimp.png				\
