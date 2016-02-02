@@ -336,6 +336,19 @@ gs_screenshot_image_set_use_desktop_background (GsScreenshotImage *ssimg,
 }
 
 /**
+ * gs_screenshot_get_cachefn_for_url:
+ **/
+static gchar *
+gs_screenshot_get_cachefn_for_url (const gchar *url)
+{
+	g_autofree gchar *basename = NULL;
+	g_autofree gchar *checksum = NULL;
+	checksum = g_compute_checksum_for_string (G_CHECKSUM_SHA256, url, -1);
+	basename = g_path_get_basename (url);
+	return g_strdup_printf ("%s-%s", checksum, basename);
+}
+
+/**
  * gs_screenshot_image_load_async:
  **/
 void
@@ -377,7 +390,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		return;
 	}
 	url = as_image_get_url (im);
-	basename = g_path_get_basename (url);
+	basename = gs_screenshot_get_cachefn_for_url (url);
 	if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT) {
 		sizedir = g_strdup ("unknown");
 	} else {
