@@ -98,6 +98,13 @@ gs_plugin_fedora_provenance_refine_app (GsApp *app)
 				 "updates-testing-source",
 				 NULL };
 
+	/* simple case */
+	origin = gs_app_get_origin (app);
+	if (origin != NULL && g_strv_contains (valid, origin)) {
+		gs_app_set_provenance (app, TRUE);
+		return;
+	}
+
 	/* this only works for packages */
 	origin = gs_app_get_source_id_default (app);
 	if (origin == NULL)
