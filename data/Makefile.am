@@ -15,6 +15,8 @@ dist_resources_DATA =					\
 	featured-gimp.png				\
 	featured-gnome-sudoku.png			\
 	featured-inkscape.png				\
+	featured-maps.png           \
+	featured-maps-bg.png        \
 	featured-mypaint.png				\
 	featured-polari.svg				\
 	featured-transmission.png			\
