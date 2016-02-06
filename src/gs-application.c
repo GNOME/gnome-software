@@ -270,6 +270,16 @@ theme_changed (GtkSettings *settings, GParamSpec *pspec, GsApplication *app)
 }
 
 static void
+css_error (GtkCssProvider *provider,
+           GtkCssSection  *section,
+           const GError   *error,
+           gpointer        data)
+{
+  if (!g_error_matches (error, GTK_CSS_PROVIDER_ERROR, GTK_CSS_PROVIDER_ERROR_DEPRECATED))
+    g_error ("CSS parsing error: %s", error->message);
+}
+
+static void
 gs_application_initialize_ui (GsApplication *app)
 {
 	static gboolean initialized = FALSE;
@@ -284,6 +294,11 @@ gs_application_initialize_ui (GsApplication *app)
 	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
 						   GTK_STYLE_PROVIDER (app->provider),
 						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+
+	/* This is to avoid CSS deprecation warnings until we can update
+	 * the CSS to not use deprecated selectors.
+	 */
+	g_signal_connect (app->provider, "parsing-error", G_CALLBACK (css_error), NULL);
 
 	g_signal_connect (gtk_settings_get_default (), "notify::gtk-theme-name",
 			  G_CALLBACK (theme_changed), app);
