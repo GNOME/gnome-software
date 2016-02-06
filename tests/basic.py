@@ -90,7 +90,7 @@ try:
     assert (not updates_page.showing)
     assert (not search_page.showing)
 
-    type("geary\n")
+    type("archive\n")
     doDelay(2)
     assert (not all_button.checked)
     assert (not installed_button.checked)
@@ -101,7 +101,7 @@ try:
     assert (search_page.showing)
 
     """Details page test section"""
-    search_page_listbox.child(roleName='label', name='Files').click()
+    search_page_listbox.child(roleName='label', name='Archive Manager').click()
     doDelay(4)
     assert (not overview_page.showing)
     assert (not installed_page.showing)
