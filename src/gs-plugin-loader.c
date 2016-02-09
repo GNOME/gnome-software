@@ -3695,6 +3695,33 @@ gs_plugin_loader_offline_update_finish (GsPluginLoader *plugin_loader,
 	return g_task_propagate_boolean (G_TASK (res), error);
 }
 
+/**
+ * gs_plugin_loader_get_plugin_supported:
+ *
+ * This function returns TRUE if the symbol is found in any enabled plugin.
+ */
+gboolean
+gs_plugin_loader_get_plugin_supported (GsPluginLoader *plugin_loader,
+				       const gchar *function_name)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	gboolean ret;
+	gpointer dummy;
+	guint i;
+
+	for (i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
+		ret = g_module_symbol (plugin->module,
+				       function_name,
+				       (gpointer *) &dummy);
+		if (ret)
+			return TRUE;
+	}
+	return FALSE;
+}
+
 /******************************************************************************/
 
 /* vim: set noexpandtab: */
