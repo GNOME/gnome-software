@@ -36,6 +36,7 @@ struct _GsReview
 	gchar			*version;
 	gchar			*reviewer;
 	GDateTime		*date;
+	GHashTable		*metadata;
 };
 
 enum {
@@ -242,6 +243,26 @@ gs_review_set_date (GsReview *review, GDateTime *date)
 		review->date = g_date_time_ref (date);
 }
 
+/**
+ * gs_review_get_metadata_item:
+ */
+const gchar *
+gs_review_get_metadata_item (GsReview *review, const gchar *key)
+{
+	g_return_val_if_fail (GS_IS_REVIEW (review), NULL);
+	return g_hash_table_lookup (review->metadata, key);
+}
+
+/**
+ * gs_review_add_metadata:
+ */
+void
+gs_review_add_metadata (GsReview *review, const gchar *key, const gchar *value)
+{
+	g_return_if_fail (GS_IS_REVIEW (review));
+	g_hash_table_insert (review->metadata, g_strdup (key), g_strdup (value));
+}
+
 static void
 gs_review_get_property (GObject *object, guint prop_id,
 			GValue *value, GParamSpec *pspec)
@@ -334,6 +355,7 @@ gs_review_finalize (GObject *object)
 	g_free (review->summary);
 	g_free (review->text);
 	g_free (review->reviewer);
+	g_hash_table_unref (review->metadata);
 
 	G_OBJECT_CLASS (gs_review_parent_class)->finalize (object);
 }
@@ -419,6 +441,8 @@ static void
 gs_review_init (GsReview *review)
 {
 	review->rating = -1;
+	review->metadata = g_hash_table_new_full (g_str_hash, g_str_equal,
+						  g_free, g_free);
 }
 
 /**

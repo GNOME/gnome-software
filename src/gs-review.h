@@ -83,6 +83,12 @@ GsReviewState	 gs_review_get_state			(GsReview	*review);
 void		 gs_review_set_state			(GsReview	*review,
 							 GsReviewState	 state);
 
+const gchar	*gs_review_get_metadata_item		(GsReview	*review,
+							 const gchar	*key);
+void		 gs_review_add_metadata			(GsReview	*review,
+							 const gchar	*key,
+							 const gchar	*value);
+
 G_END_DECLS
 
 #endif /* __GS_REVIEW_H */
