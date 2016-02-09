@@ -40,8 +40,9 @@ typedef enum {
 } GsReviewAction;
 
 typedef enum {
-	GS_REVIEW_STATE_NONE = 0,
-	GS_REVIEW_STATE_SELF = 1 << 0,	/* user wrote the review themselves */
+	GS_REVIEW_STATE_NONE	= 0,
+	GS_REVIEW_STATE_SELF	= 1 << 0,	/* user wrote the review themselves */
+	GS_REVIEW_STATE_VOTED	= 1 << 1,	/* user voted on the review */
 	GS_REVIEW_STATE_LAST
 } GsReviewState;
 

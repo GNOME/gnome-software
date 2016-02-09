@@ -283,6 +283,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 			 GError **error)
 {
 	g_debug ("Reporting dummy review");
+	gs_review_set_state (review, GS_REVIEW_STATE_VOTED);
 	return TRUE;
 }
 
@@ -297,6 +298,7 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 			 GError **error)
 {
 	g_debug ("Upvoting dummy review");
+	gs_review_set_state (review, GS_REVIEW_STATE_VOTED);
 	return TRUE;
 }
 
@@ -311,6 +313,7 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 			   GError **error)
 {
 	g_debug ("Downvoting dummy review");
+	gs_review_set_state (review, GS_REVIEW_STATE_VOTED);
 	return TRUE;
 }
 

@@ -32,6 +32,7 @@ typedef struct
 	GtkListBoxRow	 parent_instance;
 
 	GsReview	*review;
+	guint64		 actions;
 	GtkWidget	*stars;
 	GtkWidget	*summary_label;
 	GtkWidget	*author_label;
@@ -75,6 +76,26 @@ gs_review_row_refresh (GsReviewRow *row)
 			    gs_review_get_summary (priv->review));
 	gtk_label_set_text (GTK_LABEL (priv->text_label),
 			    gs_review_get_text (priv->review));
+
+	/* if we voted, we can't do any actions */
+	if (gs_review_get_state (priv->review) & GS_REVIEW_STATE_VOTED)
+		priv->actions = 0;
+
+	/* set actions up */
+	if ((priv->actions & (1 << GS_REVIEW_ACTION_UPVOTE |
+			      1 << GS_REVIEW_ACTION_DOWNVOTE)) == 0) {
+		gtk_widget_set_visible (priv->box_vote_buttons, FALSE);
+	} else {
+		gtk_widget_set_visible (priv->box_vote_buttons, TRUE);
+		gtk_widget_set_visible (priv->button_yes,
+					priv->actions & 1 << GS_REVIEW_ACTION_UPVOTE);
+		gtk_widget_set_visible (priv->button_no,
+					priv->actions & 1 << GS_REVIEW_ACTION_DOWNVOTE);
+	}
+	gtk_widget_set_visible (priv->button_remove,
+				priv->actions & 1 << GS_REVIEW_ACTION_REMOVE);
+	gtk_widget_set_visible (priv->button_report,
+				priv->actions & 1 << GS_REVIEW_ACTION_REPORT);
 }
 
 static gboolean
@@ -182,21 +203,8 @@ void
 gs_review_row_set_actions (GsReviewRow *review_row, guint64 actions)
 {
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (review_row);
-
-	if ((actions & (1 << GS_REVIEW_ACTION_UPVOTE |
-			1 << GS_REVIEW_ACTION_DOWNVOTE)) == 0) {
-		gtk_widget_set_visible (priv->box_vote_buttons, FALSE);
-	} else {
-		gtk_widget_set_visible (priv->box_vote_buttons, TRUE);
-		gtk_widget_set_visible (priv->button_yes,
-					actions & 1 << GS_REVIEW_ACTION_UPVOTE);
-		gtk_widget_set_visible (priv->button_no,
-					actions & 1 << GS_REVIEW_ACTION_DOWNVOTE);
-	}
-	gtk_widget_set_visible (priv->button_remove,
-				actions & 1 << GS_REVIEW_ACTION_REMOVE);
-	gtk_widget_set_visible (priv->button_report,
-				actions & 1 << GS_REVIEW_ACTION_REPORT);
+	priv->actions = actions;
+	gs_review_row_refresh (review_row);
 }
 
 /**
