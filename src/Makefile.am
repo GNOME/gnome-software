@@ -77,6 +77,7 @@ noinst_PROGRAMS =					\
 
 gnome_software_cmd_SOURCES =				\
 	gs-app.c					\
+	gs-review.c					\
 	gs-cmd.c					\
 	gs-utils.c					\
 	gs-os-release.c					\
@@ -139,6 +140,8 @@ gnome_software_SOURCES =				\
 	gs-plugin.h					\
 	gs-progress-button.c				\
 	gs-progress-button.h				\
+	gs-review.c					\
+	gs-review.h					\
 	gs-screenshot-image.c				\
 	gs-screenshot-image.h				\
 	gs-shell.c					\
@@ -265,6 +268,7 @@ gs_self_test_SOURCES =						\
 	gs-plugin-loader-sync.c					\
 	gs-plugin-loader.c					\
 	gs-plugin.c						\
+	gs-review.c						\
 	gs-utils.c						\
 	gs-self-test.c
 

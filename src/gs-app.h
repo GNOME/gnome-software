@@ -26,6 +26,8 @@
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <appstream-glib.h>
 
+#include "gs-review.h"
+
 G_BEGIN_DECLS
 
 #define GS_TYPE_APP (gs_app_get_type ())
@@ -196,6 +198,9 @@ void		 gs_app_set_metadata		(GsApp		*app,
 gint		 gs_app_get_rating		(GsApp		*app);
 void		 gs_app_set_rating		(GsApp		*app,
 						 gint		 rating);
+GPtrArray	*gs_app_get_reviews		(GsApp		*app);
+void		 gs_app_add_review		(GsApp		*app,
+						 GsReview	*review);
 guint64		 gs_app_get_size		(GsApp		*app);
 void		 gs_app_set_size		(GsApp		*app,
 						 guint64	 size);
