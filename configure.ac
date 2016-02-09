@@ -43,6 +43,7 @@ GNOME_COMPILE_WARNINGS([maximum],[
 	-Winline
 	-Wmissing-parameter-type
 	-Woverride-init
+	-Wno-discarded-qualifiers
 ])
 
 dnl ---------------------------------------------------------------------------
