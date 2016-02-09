@@ -37,6 +37,7 @@ UI_FILES =						\
 	gs-app-row.ui					\
 	gs-first-run-dialog.ui				\
 	gs-history-dialog.ui				\
+	gs-review-row.ui				\
 	gs-shell-category.ui				\
 	gs-shell-extras.ui				\
 	gs-shell-details.ui				\
@@ -142,6 +143,8 @@ gnome_software_SOURCES =				\
 	gs-progress-button.h				\
 	gs-review.c					\
 	gs-review.h					\
+	gs-review-row.c					\
+	gs-review-row.h					\
 	gs-screenshot-image.c				\
 	gs-screenshot-image.h				\
 	gs-shell.c					\
