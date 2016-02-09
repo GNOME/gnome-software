@@ -971,6 +971,8 @@ gs_shell_details_refresh_addons (GsShellDetails *self)
 	}
 }
 
+static void gs_shell_details_refresh_reviews (GsShellDetails *self);
+
 /**
  * gs_shell_details_app_set_review_cb:
  **/
@@ -986,7 +988,9 @@ gs_shell_details_app_set_review_cb (GObject *source,
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
 		g_warning ("failed to set review %s: %s",
 			   gs_app_get_id (self->app), error->message);
+		return;
 	}
+	gs_shell_details_refresh_reviews (self);
 }
 
 static void

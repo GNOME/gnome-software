@@ -2486,6 +2486,10 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 		g_task_return_error (task, error);
 	}
 
+	/* add this to the app */
+	if (g_strcmp0 (state->function_name, "gs_plugin_review_submit") == 0)
+		gs_app_add_review (state->app, state->review);
+
 	g_task_return_boolean (task, TRUE);
 }
 
