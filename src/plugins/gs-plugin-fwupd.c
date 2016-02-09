@@ -126,7 +126,6 @@ gs_plugin_fwupd_changed_cb (GDBusProxy *proxy,
 static gboolean
 gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	gint rc;
 	gsize len;
 	g_autoptr(GError) error_local = NULL;
 	g_autofree gchar *data = NULL;
@@ -155,15 +154,9 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			  G_CALLBACK (gs_plugin_fwupd_changed_cb), plugin);
 
 	/* create the cache location */
-	plugin->priv->cachedir = gs_utils_get_cachedir ("firmware");
-	rc = g_mkdir_with_parents (plugin->priv->cachedir, 0700);
-	if (rc != 0) {
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "Could not create firmware cache");
+	plugin->priv->cachedir = gs_utils_get_cachedir ("firmware", error);
+	if (plugin->priv->cachedir == NULL)
 		return FALSE;
-	}
 
 	/* get the hash of the previously downloaded file */
 	plugin->priv->lvfs_sig_fn = g_build_filename (plugin->priv->cachedir,

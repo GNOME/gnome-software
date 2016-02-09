@@ -60,7 +60,8 @@ void	gs_image_set_from_pixbuf		(GtkImage		*image,
 						 const GdkPixbuf	*pixbuf);
 const gchar	 *gs_user_agent			(void);
 
-gchar		*gs_utils_get_cachedir		(const gchar	*kind);
+gchar		*gs_utils_get_cachedir		(const gchar	*kind,
+						 GError		**error);
 
 G_END_DECLS
 

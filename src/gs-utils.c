@@ -454,13 +454,24 @@ gs_user_agent (void)
  * gs_utils_get_cachedir:
  **/
 gchar *
-gs_utils_get_cachedir (const gchar *kind)
+gs_utils_get_cachedir (const gchar *kind, GError **error)
 {
 	g_autofree gchar *vername = NULL;
+	g_autofree gchar *cachedir = NULL;
 	g_auto(GStrv) version = g_strsplit (VERSION, ".", 3);
+	g_autoptr(GFile) cachedir_file = NULL;
+
+	/* create the cachedir in a per-release location, creating
+	 * if it does not already exist */
 	vername = g_strdup_printf ("%s.%s", version[0], version[1]);
-	return g_build_filename (g_get_user_cache_dir (),
-				 "gnome-software", vername, kind, NULL);
+	cachedir = g_build_filename (g_get_user_cache_dir (),
+				      "gnome-software", vername, kind, NULL);
+	cachedir_file = g_file_new_for_path (cachedir);
+	if (!g_file_query_exists (cachedir_file, NULL) &&
+	    !g_file_make_directory_with_parents (cachedir_file, NULL, error))
+		return NULL;
+
+	return g_steal_pointer (&cachedir);
 }
 
 /* vim: set noexpandtab: */

@@ -386,7 +386,7 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	} else {
 		sizedir = g_strdup_printf ("%ux%u", ssimg->width * ssimg->scale, ssimg->height * ssimg->scale);
 	}
-	cachedir = gs_utils_get_cachedir ("screenshots");
+	cachedir = gs_utils_get_cachedir ("screenshots", NULL);
 	cachedir_full = g_build_filename (cachedir, sizedir, NULL);
 	rc = g_mkdir_with_parents (cachedir_full, 0700);
 	if (rc != 0) {

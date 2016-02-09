@@ -263,7 +263,7 @@ gs_plugin_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 	case AS_ICON_KIND_REMOTE:
 		gs_app_set_icon (app, icon);
 		if (as_icon_get_filename (icon) == NULL) {
-			cachedir = gs_utils_get_cachedir ("icons");
+			cachedir = gs_utils_get_cachedir ("icons", NULL);
 			fn = g_build_filename (cachedir, as_icon_get_name (icon), NULL);
 			as_icon_set_filename (icon, fn);
 			as_icon_set_prefix (icon, cachedir);
