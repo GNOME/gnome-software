@@ -227,6 +227,45 @@
                             <property name="position">1</property>
                           </packing>
                         </child>
+                        <child>
+                          <object class="GtkBox" id="star_box">
+                            <property name="visible">True</property>
+                            <property name="valign">start</property>
+                            <child>
+                              <object class="GsStarWidget" id="star">
+                                <property name="visible">True</property>
+                                <property name="halign">start</property>
+                                <property name="valign">center</property>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_review_count">
+                                <property name="visible">True</property>
+                                <property name="margin_start">5</property>
+                                <property name="halign">start</property>
+                                <property name="valign">center</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">False</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">False</property>
+                            <property name="position">2</property>
+                          </packing>
+                        </child>
                       </object>
                       <packing>
                         <property name="expand">False</property>
@@ -1124,7 +1163,60 @@
                         <property name="position">12</property>
                       </packing>
                     </child>
-
+                    <child>
+                      <object class="GtkBox" id="box_reviews">
+                        <property name="orientation">vertical</property>
+                        <property name="margin_top">28</property>
+                        <child>
+                          <object class="GtkLabel" id="application_details_reviews_title">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_bottom">20</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="hexpand">True</property>
+                            <property name="xalign">0</property>
+                            <property name="label" translatable="yes">Reviews</property>
+                            <style>
+                              <class name="application-reviews-title"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GsReviewHistogram" id="histogram">
+                            <property name="halign">start</property>
+                            <property name="valign">center</property>
+                            <property name="margin_bottom">20</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkButton" id="button_review">
+                            <property name="use_underline">True</property>
+                            <property name="label" translatable="yes">_Write a Review</property>
+                            <property name="can_focus">True</property>
+                            <property name="receives_default">False</property>
+                            <property name="halign">start</property>
+                            <property name="valign">start</property>
+                            <property name="margin_bottom">20</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkListBox" id="list_box_reviews">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="selection_mode">none</property>
+                            <style>
+                              <class name="review-listbox"/>
+                            </style>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">12</property>
+                      </packing>
+                    </child>
                   </object>
                 </child>
               </object>
