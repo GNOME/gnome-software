@@ -61,20 +61,22 @@ gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 {
 	GsReviewHistogramPrivate *priv;
 	gdouble max;
-	gint count[5];
+	gint count[5] = { 0, 0, 0, 0, 0 };
 	guint i;
 
 	g_return_if_fail (GS_IS_REVIEW_HISTOGRAM (histogram));
 	priv = gs_review_histogram_get_instance_private (histogram);
 
 	/* Scale to maximum value */
-	for (i = 0; i < 5; i++)
-		count[i] = g_array_index (review_ratings, gint, i + 1);
-	max = count[0];
-	max = count[1] > max ? count[1] : max;
-	max = count[2] > max ? count[2] : max;
-	max = count[3] > max ? count[3] : max;
-	max = count[4] > max ? count[4] : max;
+	for (max = 0, i = 0; i < review_ratings->len; i++) {
+		gint c;
+
+		c = g_array_index (review_ratings, gint, i);
+		if (c > max)
+			max = c;
+		if (i > 0 && i < 6)
+			count[i - 1] = c;
+	}
 
 	gs_review_bar_set_fraction (GS_REVIEW_BAR (priv->bar5), count[4] / max);
 	set_label (priv->label_count5, count[4]);
