@@ -176,6 +176,27 @@ gs_plugin_refine (GsPlugin *plugin,
 			gs_app_add_review (app, review);
 		}
 	}
+
+	/* add fake ratings */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS) {
+		for (l = *list; l != NULL; l = l->next) {
+			g_autoptr(GArray) ratings = NULL;
+			const gint data[] = { 0, 10, 20, 30, 15, 2 };
+			ratings = g_array_sized_new (FALSE, FALSE, sizeof (gint), 6);
+			g_array_append_vals (ratings, data, 6);
+			app = GS_APP (l->data);
+			gs_app_set_review_ratings (app, ratings);
+		}
+	}
+
+	/* add a rating */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) {
+		for (l = *list; l != NULL; l = l->next) {
+			app = GS_APP (l->data);
+			gs_app_set_rating (app, 66);
+		}
+	}
+
 	return TRUE;
 }
 
