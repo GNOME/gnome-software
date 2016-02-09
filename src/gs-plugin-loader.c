@@ -73,6 +73,7 @@ typedef struct {
 	guint				 cache_age;
 	GsCategory			*category;
 	GsApp				*app;
+	GsReview			*review;
 	AsAppState			 state_success;
 	AsAppState			 state_failure;
 } GsPluginLoaderAsyncState;
@@ -84,6 +85,8 @@ gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
 		g_object_unref (state->category);
 	if (state->app != NULL)
 		g_object_unref (state->app);
+	if (state->review != NULL)
+		g_object_unref (state->review);
 
 	g_free (state->filename);
 	g_free (state->value);
@@ -2388,6 +2391,104 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
 
+/**
+ * gs_plugin_loader_run_review_plugin:
+ **/
+static gboolean
+gs_plugin_loader_run_review_plugin (GsPluginLoader *plugin_loader,
+				    GsPlugin *plugin,
+				    GsApp *app,
+				    GsReview *review,
+				    const gchar *function_name,
+				    GCancellable *cancellable,
+				    GError **error)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GError *error_local = NULL;
+	GsPluginReviewFunc plugin_func = NULL;
+	gboolean exists;
+	gboolean ret = TRUE;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	exists = g_module_symbol (plugin->module,
+				  function_name,
+				  (gpointer *) &plugin_func);
+	if (!exists)
+		goto out;
+	ptask = as_profile_start (priv->profile,
+				  "GsPlugin::%s(%s)",
+				  plugin->name,
+				  function_name);
+	ret = plugin_func (plugin, app, review, cancellable, &error_local);
+	if (!ret) {
+		if (g_error_matches (error_local,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED)) {
+			ret = TRUE;
+			g_debug ("not supported for plugin %s: %s",
+				 plugin->name,
+				 error_local->message);
+			g_clear_error (&error_local);
+		} else {
+			g_propagate_error (error, error_local);
+			goto out;
+		}
+	}
+out:
+	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+	return ret;
+}
+
+/**
+ * gs_plugin_loader_review_action_thread_cb:
+ **/
+static void
+gs_plugin_loader_review_action_thread_cb (GTask *task,
+					  gpointer object,
+					  gpointer task_data,
+					  GCancellable *cancellable)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GError *error = NULL;
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
+	GsPlugin *plugin;
+	gboolean ret;
+	gboolean anything_ran = FALSE;
+	guint i;
+
+	/* run each plugin */
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
+		if (g_cancellable_set_error_if_cancelled (cancellable, &error))
+			g_task_return_error (task, error);
+		ret = gs_plugin_loader_run_review_plugin (plugin_loader,
+							  plugin,
+							  state->app,
+							  state->review,
+							  state->function_name,
+							  cancellable,
+							  &error);
+		if (!ret)
+			g_task_return_error (task, error);
+		anything_ran = TRUE;
+	}
+
+	/* nothing ran */
+	if (!anything_ran) {
+		g_set_error (&error,
+			     GS_PLUGIN_LOADER_ERROR,
+			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     "no plugin could handle %s",
+			     state->function_name);
+		g_task_return_error (task, error);
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
 static gboolean
 load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 {
@@ -2636,6 +2737,58 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
 	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_app_action_thread_cb);
+}
+
+/**
+ * gs_plugin_loader_review_action_async:
+ **/
+void
+gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
+				      GsApp *app,
+				      GsReview *review,
+				      GsPluginLoaderAction action,
+				      GCancellable *cancellable,
+				      GAsyncReadyCallback callback,
+				      gpointer user_data)
+{
+	GsPluginLoaderAsyncState *state;
+	g_autoptr(GTask) task = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->app = g_object_ref (app);
+	state->review = g_object_ref (review);
+
+	switch (action) {
+	case GS_PLUGIN_LOADER_ACTION_REVIEW_SUBMIT:
+		state->function_name = "gs_plugin_review_submit";
+		break;
+	case GS_PLUGIN_LOADER_ACTION_REVIEW_UPVOTE:
+		state->function_name = "gs_plugin_review_upvote";
+		break;
+	case GS_PLUGIN_LOADER_ACTION_REVIEW_DOWNVOTE:
+		state->function_name = "gs_plugin_review_downvote";
+		break;
+	case GS_PLUGIN_LOADER_ACTION_REVIEW_REPORT:
+		state->function_name = "gs_plugin_review_report";
+		break;
+	case GS_PLUGIN_LOADER_ACTION_REVIEW_REMOVE:
+		state->function_name = "gs_plugin_review_remove";
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+
+	/* run in a thread */
+	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
+	g_task_set_return_on_cancel (task, TRUE);
+	g_task_run_in_thread (task, gs_plugin_loader_review_action_thread_cb);
 }
 
 /**

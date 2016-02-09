@@ -219,3 +219,68 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
+
+/**
+ * gs_plugin_review_submit:
+ */
+gboolean
+gs_plugin_review_submit (GsPlugin *plugin,
+			 GsApp *app,
+			 GsReview *review,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	return TRUE;
+}
+
+/**
+ * gs_plugin_review_report:
+ */
+gboolean
+gs_plugin_review_report (GsPlugin *plugin,
+			 GsApp *app,
+			 GsReview *review,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	return TRUE;
+}
+
+/**
+ * gs_plugin_review_upvote:
+ */
+gboolean
+gs_plugin_review_upvote (GsPlugin *plugin,
+			 GsApp *app,
+			 GsReview *review,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	return TRUE;
+}
+
+/**
+ * gs_plugin_review_downvote:
+ */
+gboolean
+gs_plugin_review_downvote (GsPlugin *plugin,
+			   GsApp *app,
+			   GsReview *review,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	return TRUE;
+}
+
+/**
+ * gs_plugin_review_remove:
+ */
+gboolean
+gs_plugin_review_remove (GsPlugin *plugin,
+			 GsApp *app,
+			 GsReview *review,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	return TRUE;
+}

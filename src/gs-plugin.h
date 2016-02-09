@@ -142,6 +142,11 @@ typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsReview	*review,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
 							 GList		**list,
 							 GsPluginRefineFlags flags,
@@ -274,6 +279,31 @@ gboolean	 gs_plugin_app_update			(GsPlugin	*plugin,
 							 GError		**error);
 gboolean	 gs_plugin_app_upgrade_download		(GsPlugin	*plugin,
 							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_review_submit		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsReview	*review,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_review_upvote		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsReview	*review,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_review_downvote		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsReview	*review,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_review_report		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsReview	*review,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_review_remove		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
