@@ -3,13 +3,83 @@
   <!-- interface-requires gtk+ 3.10 -->
   <template class="GsReviewRow" parent="GtkListBoxRow">
     <property name="visible">True</property>
+
     <child>
       <object class="GtkGrid" id="grid">
         <property name="visible">True</property>
-        <property name="row-spacing">5</property>
-        <property name="column-spacing">10</property>
-        <property name="margin-top">20</property>
-        <property name="margin-bottom">20</property>
+        <property name="can_focus">False</property>
+        <property name="margin_top">20</property>
+        <property name="margin_bottom">20</property>
+        <property name="row_spacing">5</property>
+        <property name="column_spacing">10</property>
+        <property name="hexpand">True</property>
+        <property name="vexpand">True</property>
+        <child>
+          <object class="GtkLabel" id="summary_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label">Steep learning curve, but worth it</property>
+            <property name="ellipsize">end</property>
+            <property name="hexpand">True</property>
+            <style>
+              <class name="review-summary"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">1</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="date_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">end</property>
+            <property name="label">3 January 2016</property>
+            <property name="hexpand">True</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">2</property>
+            <property name="top_attach">0</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="author_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="label">Angela Avery</property>
+            <style>
+              <class name="dim-label"/>
+            </style>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">1</property>
+            <property name="width">3</property>
+          </packing>
+        </child>
+        <child>
+          <object class="GtkLabel" id="text_label">
+            <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="halign">start</property>
+            <property name="margin_top">10</property>
+            <property name="margin_bottom">8</property>
+            <property name="label">Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used.</property>
+            <property name="wrap">True</property>
+            <property name="max_width_chars">80</property>
+          </object>
+          <packing>
+            <property name="left_attach">0</property>
+            <property name="top_attach">2</property>
+            <property name="width">3</property>
+          </packing>
+        </child>
         <child>
           <object class="GsStarWidget" id="stars">
             <property name="visible">True</property>
@@ -17,75 +87,119 @@
             <property name="sensitive">False</property>
           </object>
           <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">0</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
+            <property name="left_attach">0</property>
+            <property name="top_attach">0</property>
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="summary_label">
+          <object class="GtkBox" id="box_vote_buttons">
             <property name="visible">True</property>
-            <property name="expand">True</property>
-            <property name="halign">start</property>
-            <property name="ellipsize">end</property>
-            <style>
-              <class name="review-summary"/>
-            </style>
+            <property name="can_focus">False</property>
+            <property name="spacing">9</property>
+            <child>
+              <object class="GtkLabel">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">Was this review useful to you?</property>
+                <style>
+                  <class name="dim-label"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_yes">
+                <property name="label" translatable="yes">Yes</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_no">
+                <property name="label" translatable="yes">No</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+                <property name="position">2</property>
+              </packing>
+            </child>
           </object>
           <packing>
-            <property name="left-attach">1</property>
-            <property name="top-attach">0</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
+            <property name="left_attach">0</property>
+            <property name="top_attach">3</property>
+            <property name="width">2</property>
           </packing>
         </child>
         <child>
-          <object class="GtkLabel" id="date_label">
+          <object class="GtkBox" id="box_action_buttons">
             <property name="visible">True</property>
+            <property name="can_focus">False</property>
+            <property name="spacing">9</property>
             <property name="halign">end</property>
-            <style>
-              <class name="dim-label"/>
-            </style>
+            <child>
+              <object class="GtkButton" id="button_report">
+                <property name="label" translatable="yes">Report Abuse</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="width_request">150</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">0</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_remove">
+                <property name="label" translatable="yes">Remove</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">True</property>
+                <property name="width_request">150</property>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">True</property>
+                <property name="position">1</property>
+              </packing>
+            </child>
           </object>
           <packing>
-            <property name="left-attach">2</property>
-            <property name="top-attach">0</property>
-            <property name="width">1</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="author_label">
-            <property name="visible">True</property>
-            <property name="halign">start</property>
-            <style>
-              <class name="dim-label"/>
-            </style>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">1</property>
-            <property name="width">3</property>
-            <property name="height">1</property>
-          </packing>
-        </child>
-        <child>
-          <object class="GtkLabel" id="text_label">
-            <property name="visible">True</property>
-            <property name="halign">start</property>
-            <property name="wrap">True</property>
-            <property name="xalign">0</property>
-            <property name="margin-top">10</property>
-          </object>
-          <packing>
-            <property name="left-attach">0</property>
-            <property name="top-attach">2</property>
-            <property name="width">3</property>
-            <property name="height">1</property>
+            <property name="left_attach">2</property>
+            <property name="top_attach">3</property>
           </packing>
         </child>
       </object>
     </child>
+
   </template>
+
+  <object class="GtkSizeGroup" id="action_sizegroup">
+    <widgets>
+      <widget name="button_report"/>
+      <widget name="button_remove"/>
+    </widgets>
+  </object>
+  <object class="GtkSizeGroup" id="useful_sizegroup">
+    <widgets>
+      <widget name="button_yes"/>
+      <widget name="button_no"/>
+    </widgets>
+  </object>
+
 </interface>

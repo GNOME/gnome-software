@@ -30,6 +30,21 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsReview, gs_review, GS, REVIEW, GObject)
 
+typedef enum {
+	GS_REVIEW_ACTION_SUBMIT,
+	GS_REVIEW_ACTION_UPVOTE,
+	GS_REVIEW_ACTION_DOWNVOTE,
+	GS_REVIEW_ACTION_REPORT,
+	GS_REVIEW_ACTION_REMOVE,
+	GS_REVIEW_ACTION_LAST
+} GsReviewAction;
+
+typedef enum {
+	GS_REVIEW_STATE_NONE = 0,
+	GS_REVIEW_STATE_SELF = 1 << 0,	/* user wrote the review themselves */
+	GS_REVIEW_STATE_LAST
+} GsReviewState;
+
 GsReview	*gs_review_new				(void);
 
 gint		 gs_review_get_karma			(GsReview	*review);
@@ -59,6 +74,10 @@ void		 gs_review_set_reviewer			(GsReview	*review,
 GDateTime	*gs_review_get_date			(GsReview	*review);
 void		 gs_review_set_date			(GsReview	*review,
 							 GDateTime	*date);
+
+GsReviewState	 gs_review_get_state			(GsReview	*review);
+void		 gs_review_set_state			(GsReview	*review,
+							 GsReviewState	 state);
 
 G_END_DECLS
 

@@ -61,11 +61,6 @@ typedef enum {
 	GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER,
 	GS_PLUGIN_LOADER_ACTION_LAUNCH,
 	GS_PLUGIN_LOADER_ACTION_OFFLINE_UPDATE_CANCEL,
-	GS_PLUGIN_LOADER_ACTION_REVIEW_SUBMIT,
-	GS_PLUGIN_LOADER_ACTION_REVIEW_UPVOTE,
-	GS_PLUGIN_LOADER_ACTION_REVIEW_DOWNVOTE,
-	GS_PLUGIN_LOADER_ACTION_REVIEW_REPORT,
-	GS_PLUGIN_LOADER_ACTION_REVIEW_REMOVE,
 	GS_PLUGIN_LOADER_ACTION_LAST
 } GsPluginLoaderAction;
 
@@ -217,7 +212,7 @@ gboolean	 gs_plugin_loader_app_action_finish	(GsPluginLoader	*plugin_loader,
 void		 gs_plugin_loader_review_action_async	(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 GsReview	*review,
-							 GsPluginLoaderAction a,
+							 GsReviewAction	 action,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);

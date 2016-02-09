@@ -27,6 +27,7 @@ struct _GsReview
 {
 	GObject			 parent_instance;
 
+	GsReviewState		 state;
 	gchar			*summary;
 	gchar			*text;
 	gint			 karma;
@@ -45,6 +46,7 @@ enum {
 	PROP_VERSION,
 	PROP_REVIEWER,
 	PROP_DATE,
+	PROP_STATE,
 	PROP_LAST
 };
 
@@ -133,6 +135,26 @@ gs_review_set_rating (GsReview *review, gint rating)
 }
 
 /**
+ * gs_review_get_state:
+ */
+GsReviewState
+gs_review_get_state (GsReview *review)
+{
+	g_return_val_if_fail (GS_IS_REVIEW (review), 0);
+	return review->state;
+}
+
+/**
+ * gs_review_set_state:
+ */
+void
+gs_review_set_state (GsReview *review, GsReviewState state)
+{
+	g_return_if_fail (GS_IS_REVIEW (review));
+	review->state = state;
+}
+
+/**
  * gs_review_get_reviewer:
  **/
 const gchar *
@@ -215,6 +237,9 @@ gs_review_get_property (GObject *object, guint prop_id,
 	case PROP_RATING:
 		g_value_set_int (value, review->rating);
 		break;
+	case PROP_STATE:
+		g_value_set_uint64 (value, review->state);
+		break;
 	case PROP_VERSION:
 		g_value_set_string (value, review->version);
 		break;
@@ -248,6 +273,9 @@ gs_review_set_property (GObject *object, guint prop_id,
 		break;
 	case PROP_RATING:
 		gs_review_set_rating (review, g_value_get_int (value));
+		break;
+	case PROP_STATE:
+		gs_review_set_state (review, g_value_get_uint64 (value));
 		break;
 	case PROP_VERSION:
 		gs_review_set_version (review, g_value_get_string (value));
@@ -327,6 +355,16 @@ gs_review_class_init (GsReviewClass *klass)
 				  -1, 100, -1,
 				  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_RATING, pspec);
+
+	/**
+	 * GsApp:state:
+	 */
+	pspec = g_param_spec_uint64 ("state", NULL, NULL,
+				     GS_REVIEW_STATE_NONE,
+				     GS_REVIEW_STATE_LAST,
+				     GS_REVIEW_STATE_NONE,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_STATE, pspec);
 
 	/**
 	 * GsApp:version:

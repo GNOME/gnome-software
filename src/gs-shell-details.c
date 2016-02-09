@@ -971,11 +971,55 @@ gs_shell_details_refresh_addons (GsShellDetails *self)
 	}
 }
 
+/**
+ * gs_shell_details_app_set_review_cb:
+ **/
+static void
+gs_shell_details_app_set_review_cb (GObject *source,
+				GAsyncResult *res,
+				gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
+	g_autoptr(GError) error = NULL;
+
+	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to set review %s: %s",
+			   gs_app_get_id (self->app), error->message);
+	}
+}
+
+static void
+gs_shell_details_review_button_clicked_cb (GsReviewRow *row,
+					   GsReviewAction action,
+					   GsShellDetails *self)
+{
+	gs_plugin_loader_review_action_async (self->plugin_loader,
+					      self->app,
+					      gs_review_row_get_review (row),
+					      action,
+					      self->cancellable,
+					      gs_shell_details_app_set_review_cb,
+					      self);
+}
+
 static void
 gs_shell_details_refresh_reviews (GsShellDetails *self)
 {
 	GPtrArray *reviews;
 	guint i;
+	guint64 possible_actions = 0;
+	struct {
+		GsReviewAction action;
+		const gchar *plugin_func;
+	} plugin_vfuncs[] = {
+		{ GS_REVIEW_ACTION_UPVOTE,	"gs_plugin_review_upvote" },
+		{ GS_REVIEW_ACTION_DOWNVOTE,	"gs_plugin_review_downvote" },
+		{ GS_REVIEW_ACTION_REPORT,	"gs_plugin_review_report" },
+		{ GS_REVIEW_ACTION_SUBMIT,	"gs_plugin_review_submit" },
+		{ GS_REVIEW_ACTION_REMOVE,	"gs_plugin_review_remove" },
+		{ GS_REVIEW_ACTION_LAST,	NULL }
+	};
 
 	if (!gs_plugin_loader_get_plugin_supported (self->plugin_loader,
 						    "gs_plugin_review_submit"))
@@ -983,11 +1027,29 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_reviews));
 
+	/* find what the plugins support */
+	for (i = 0; plugin_vfuncs[i].action != GS_REVIEW_ACTION_LAST; i++) {
+		if (gs_plugin_loader_get_plugin_supported (self->plugin_loader,
+							   plugin_vfuncs[i].plugin_func)) {
+			possible_actions |= 1 << plugin_vfuncs[i].action;
+		}
+	}
+
 	/* add all the reviews */
 	reviews = gs_app_get_reviews (self->app);
 	for (i = 0; i < reviews->len; i++) {
 		GsReview *review = g_ptr_array_index (reviews, i);
 		GtkWidget *row = gs_review_row_new (review);
+		guint64 actions;
+
+		g_signal_connect (row, "button-clicked",
+				  G_CALLBACK (gs_shell_details_review_button_clicked_cb), self);
+		if (gs_review_get_state (review) & GS_REVIEW_STATE_SELF) {
+			actions = possible_actions & 1 << GS_REVIEW_ACTION_REMOVE;
+		} else {
+			actions = possible_actions & ~(1 << GS_REVIEW_ACTION_REMOVE);
+		}
+		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);
 		gtk_widget_show (row);
 	}
@@ -1338,25 +1400,6 @@ gs_shell_details_app_set_ratings_cb (GObject *source,
 	}
 }
 
-
-/**
- * gs_shell_details_app_set_review_cb:
- **/
-static void
-gs_shell_details_app_set_review_cb (GObject *source,
-				GAsyncResult *res,
-				gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
-	g_autoptr(GError) error = NULL;
-
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to set review %s: %s",
-			   gs_app_get_id (self->app), error->message);
-	}
-}
-
 /**
  * gs_shell_details_write_review_cb:
  **/
@@ -1389,7 +1432,7 @@ gs_shell_details_write_review_cb (GtkButton *button,
 		gs_plugin_loader_review_action_async (self->plugin_loader,
 						      self->app,
 						      review,
-						      GS_PLUGIN_LOADER_ACTION_REVIEW_SUBMIT,
+						      GS_REVIEW_ACTION_SUBMIT,
 						      self->cancellable,
 						      gs_shell_details_app_set_review_cb,
 						      self);

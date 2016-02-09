@@ -165,15 +165,32 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* add fake review */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
 		for (l = *list; l != NULL; l = l->next) {
-			g_autoptr(GsReview) review = NULL;
+			g_autoptr(GsReview) review1 = NULL;
+			g_autoptr(GsReview) review2 = NULL;
+			g_autoptr(GDateTime) dt = NULL;
 			app = GS_APP (l->data);
-			review = gs_review_new ();
-			gs_review_set_rating (review, 50);
-			gs_review_set_reviewer (review, "Angela Avery");
-			gs_review_set_summary (review, "Steep learning curve, but worth it");
-			gs_review_set_text (review, "Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used.");
-			gs_review_set_version (review, "3.16.4");
-			gs_app_add_review (app, review);
+			dt = g_date_time_new_now_utc ();
+
+			/* set first review */
+			review1 = gs_review_new ();
+			gs_review_set_rating (review1, 50);
+			gs_review_set_reviewer (review1, "Angela Avery");
+			gs_review_set_summary (review1, "Steep learning curve, but worth it");
+			gs_review_set_text (review1, "Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used.");
+			gs_review_set_version (review1, "3.16.4");
+			gs_review_set_date (review1, dt);
+			gs_app_add_review (app, review1);
+
+			/* set self review */
+			review2 = gs_review_new ();
+			gs_review_set_rating (review2, 100);
+			gs_review_set_reviewer (review2, "Just Myself");
+			gs_review_set_summary (review2, "I like this application");
+			gs_review_set_text (review2, "I'm not very wordy myself.");
+			gs_review_set_version (review2, "3.16.3");
+			gs_review_set_date (review2, dt);
+			gs_review_set_state (review2, GS_REVIEW_STATE_SELF);
+			gs_app_add_review (app, review2);
 		}
 	}
 
@@ -251,6 +268,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	g_debug ("Submitting dummy review");
 	return TRUE;
 }
 
@@ -264,6 +282,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	g_debug ("Reporting dummy review");
 	return TRUE;
 }
 
@@ -277,6 +296,7 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	g_debug ("Upvoting dummy review");
 	return TRUE;
 }
 
@@ -290,6 +310,7 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
+	g_debug ("Downvoting dummy review");
 	return TRUE;
 }
 
@@ -303,5 +324,6 @@ gs_plugin_review_remove (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	g_debug ("Removing dummy self-review");
 	return TRUE;
 }

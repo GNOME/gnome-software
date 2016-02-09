@@ -27,7 +27,7 @@
 #include "gs-review-row.h"
 #include "gs-star-widget.h"
 
-struct _GsReviewRow
+typedef struct
 {
 	GtkListBoxRow	 parent_instance;
 
@@ -37,28 +37,44 @@ struct _GsReviewRow
 	GtkWidget	*author_label;
 	GtkWidget	*date_label;
 	GtkWidget	*text_label;
+	GtkWidget	*button_yes;
+	GtkWidget	*button_no;
+	GtkWidget	*button_report;
+	GtkWidget	*button_remove;
+	GtkWidget	*box_vote_buttons;
+} GsReviewRowPrivate;
+
+enum {
+	SIGNAL_BUTTON_CLICKED,
+	SIGNAL_LAST
 };
 
-G_DEFINE_TYPE (GsReviewRow, gs_review_row, GTK_TYPE_LIST_BOX_ROW)
+static guint signals [SIGNAL_LAST] = { 0 };
+
+G_DEFINE_TYPE_WITH_PRIVATE (GsReviewRow, gs_review_row, GTK_TYPE_LIST_BOX_ROW)
 
 static void
 gs_review_row_refresh (GsReviewRow *row)
 {
+	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
 	const gchar *reviewer;
 	GDateTime *date;
 	g_autofree gchar *text;
 
-	gs_star_widget_set_rating (GS_STAR_WIDGET (row->stars), gs_review_get_rating (row->review));
-	reviewer = gs_review_get_reviewer (row->review);
-	gtk_label_set_text (GTK_LABEL (row->author_label), reviewer ? reviewer : "");
-	date = gs_review_get_date (row->review);
+	gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
+				   gs_review_get_rating (priv->review));
+	reviewer = gs_review_get_reviewer (priv->review);
+	gtk_label_set_text (GTK_LABEL (priv->author_label), reviewer ? reviewer : "");
+	date = gs_review_get_date (priv->review);
 	if (date != NULL)
 		text = g_date_time_format (date, "%e %B %Y");
 	else
 		text = g_strdup ("");
-	gtk_label_set_text (GTK_LABEL (row->date_label), text);
-	gtk_label_set_text (GTK_LABEL (row->summary_label), gs_review_get_summary (row->review));
-	gtk_label_set_text (GTK_LABEL (row->text_label), gs_review_get_text (row->review));
+	gtk_label_set_text (GTK_LABEL (priv->date_label), text);
+	gtk_label_set_text (GTK_LABEL (priv->summary_label),
+			    gs_review_get_summary (priv->review));
+	gtk_label_set_text (GTK_LABEL (priv->text_label),
+			    gs_review_get_text (priv->review));
 }
 
 static gboolean
@@ -91,8 +107,9 @@ static void
 gs_review_row_dispose (GObject *object)
 {
 	GsReviewRow *row = GS_REVIEW_ROW (object);
+	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
 
-	g_clear_object (&row->review);
+	g_clear_object (&priv->review);
 
 	G_OBJECT_CLASS (gs_review_row_parent_class)->dispose (object);
 }
@@ -105,13 +122,81 @@ gs_review_row_class_init (GsReviewRowClass *klass)
 
 	object_class->dispose = gs_review_row_dispose;
 
+	signals [SIGNAL_BUTTON_CLICKED] =
+		g_signal_new ("button-clicked",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsReviewRowClass, button_clicked),
+			      NULL, NULL, g_cclosure_marshal_VOID__UINT,
+			      G_TYPE_NONE, 1, G_TYPE_UINT);
+
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-review-row.ui");
 
-	gtk_widget_class_bind_template_child (widget_class, GsReviewRow, stars);
-	gtk_widget_class_bind_template_child (widget_class, GsReviewRow, summary_label);
-	gtk_widget_class_bind_template_child (widget_class, GsReviewRow, author_label);
-	gtk_widget_class_bind_template_child (widget_class, GsReviewRow, date_label);
-	gtk_widget_class_bind_template_child (widget_class, GsReviewRow, text_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, stars);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, summary_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, author_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, date_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, text_label);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_yes);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_no);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_report);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_remove);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, box_vote_buttons);
+}
+
+static void
+gs_review_row_button_clicked_upvote_cb (GtkButton *button, GsReviewRow *row)
+{
+	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
+		       GS_REVIEW_ACTION_UPVOTE);
+}
+
+static void
+gs_review_row_button_clicked_downvote_cb (GtkButton *button, GsReviewRow *row)
+{
+	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
+		       GS_REVIEW_ACTION_DOWNVOTE);
+}
+
+static void
+gs_review_row_button_clicked_report_cb (GtkButton *button, GsReviewRow *row)
+{
+	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
+		       GS_REVIEW_ACTION_REPORT);
+}
+
+static void
+gs_review_row_button_clicked_remove_cb (GtkButton *button, GsReviewRow *row)
+{
+	g_signal_emit (row, signals[SIGNAL_BUTTON_CLICKED], 0,
+		       GS_REVIEW_ACTION_REMOVE);
+}
+
+GsReview *
+gs_review_row_get_review (GsReviewRow *review_row)
+{
+	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (review_row);
+	return priv->review;
+}
+
+void
+gs_review_row_set_actions (GsReviewRow *review_row, guint64 actions)
+{
+	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (review_row);
+
+	if ((actions & (1 << GS_REVIEW_ACTION_UPVOTE |
+			1 << GS_REVIEW_ACTION_DOWNVOTE)) == 0) {
+		gtk_widget_set_visible (priv->box_vote_buttons, FALSE);
+	} else {
+		gtk_widget_set_visible (priv->box_vote_buttons, TRUE);
+		gtk_widget_set_visible (priv->button_yes,
+					actions & 1 << GS_REVIEW_ACTION_UPVOTE);
+		gtk_widget_set_visible (priv->button_no,
+					actions & 1 << GS_REVIEW_ACTION_DOWNVOTE);
+	}
+	gtk_widget_set_visible (priv->button_remove,
+				actions & 1 << GS_REVIEW_ACTION_REMOVE);
+	gtk_widget_set_visible (priv->button_report,
+				actions & 1 << GS_REVIEW_ACTION_REPORT);
 }
 
 /**
@@ -126,13 +211,27 @@ GtkWidget *
 gs_review_row_new (GsReview *review)
 {
 	GsReviewRow *row;
+	GsReviewRowPrivate *priv;
 
 	g_return_val_if_fail (GS_IS_REVIEW (review), NULL);
 
 	row = g_object_new (GS_TYPE_REVIEW_ROW, NULL);
-	row->review = g_object_ref (review);
-	g_signal_connect_object (row->review, "notify::state",
+	priv = gs_review_row_get_instance_private (row);
+	priv->review = g_object_ref (review);
+	g_signal_connect_object (priv->review, "notify::state",
 				 G_CALLBACK (gs_review_row_notify_props_changed_cb),
+				 row, 0);
+	g_signal_connect_object (priv->button_yes, "clicked",
+				 G_CALLBACK (gs_review_row_button_clicked_upvote_cb),
+				 row, 0);
+	g_signal_connect_object (priv->button_no, "clicked",
+				 G_CALLBACK (gs_review_row_button_clicked_downvote_cb),
+				 row, 0);
+	g_signal_connect_object (priv->button_report, "clicked",
+				 G_CALLBACK (gs_review_row_button_clicked_report_cb),
+				 row, 0);
+	g_signal_connect_object (priv->button_remove, "clicked",
+				 G_CALLBACK (gs_review_row_button_clicked_remove_cb),
 				 row, 0);
 	gs_review_row_refresh (row);
 

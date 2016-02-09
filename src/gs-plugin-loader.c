@@ -2746,7 +2746,7 @@ void
 gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 				      GsApp *app,
 				      GsReview *review,
-				      GsPluginLoaderAction action,
+				      GsReviewAction action,
 				      GCancellable *cancellable,
 				      GAsyncReadyCallback callback,
 				      gpointer user_data)
@@ -2764,19 +2764,19 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 	state->review = g_object_ref (review);
 
 	switch (action) {
-	case GS_PLUGIN_LOADER_ACTION_REVIEW_SUBMIT:
+	case GS_REVIEW_ACTION_SUBMIT:
 		state->function_name = "gs_plugin_review_submit";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_REVIEW_UPVOTE:
+	case GS_REVIEW_ACTION_UPVOTE:
 		state->function_name = "gs_plugin_review_upvote";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_REVIEW_DOWNVOTE:
+	case GS_REVIEW_ACTION_DOWNVOTE:
 		state->function_name = "gs_plugin_review_downvote";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_REVIEW_REPORT:
+	case GS_REVIEW_ACTION_REPORT:
 		state->function_name = "gs_plugin_review_report";
 		break;
-	case GS_PLUGIN_LOADER_ACTION_REVIEW_REMOVE:
+	case GS_REVIEW_ACTION_REMOVE:
 		state->function_name = "gs_plugin_review_remove";
 		break;
 	default:
