@@ -161,6 +161,21 @@ gs_plugin_refine (GsPlugin *plugin,
 			}
 		}
 	}
+
+	/* add fake review */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
+		for (l = *list; l != NULL; l = l->next) {
+			g_autoptr(GsReview) review = NULL;
+			app = GS_APP (l->data);
+			review = gs_review_new ();
+			gs_review_set_rating (review, 50);
+			gs_review_set_reviewer (review, "Angela Avery");
+			gs_review_set_summary (review, "Steep learning curve, but worth it");
+			gs_review_set_text (review, "Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used.");
+			gs_review_set_version (review, "3.16.4");
+			gs_app_add_review (app, review);
+		}
+	}
 	return TRUE;
 }
 

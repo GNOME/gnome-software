@@ -1070,7 +1070,8 @@ gs_shell_details_set_filename (GsShellDetails *self, const gchar *filename)
 	gs_plugin_loader_filename_to_app_async (self->plugin_loader,
 						filename,
 						GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+						GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
 						self->cancellable,
 						gs_shell_details_filename_to_app_cb,
 						self);
@@ -1094,7 +1095,8 @@ gs_shell_details_load (GsShellDetails *self)
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
 					   self->cancellable,
 					   gs_shell_details_app_refine_cb,
 					   self);
