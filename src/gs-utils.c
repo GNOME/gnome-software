@@ -474,4 +474,31 @@ gs_utils_get_cachedir (const gchar *kind, GError **error)
 	return g_steal_pointer (&cachedir);
 }
 
+/**
+ * gs_utils_get_user_hash:
+ *
+ * This SHA1 hash is composed of the contents of machine-id and your
+ * usename and is also salted with a hardcoded value.
+ *
+ * This provides an identifier that can be used to identify a specific
+ * user on a machine, allowing them to cast only one vote or perform
+ * one review on each application.
+ *
+ * There is no known way to calculate the machine ID or username from
+ * the machine hash and there should be no privacy issue.
+ */
+gchar *
+gs_utils_get_user_hash (GError **error)
+{
+	g_autofree gchar *data = NULL;
+	g_autofree gchar *salted = NULL;
+
+	if (!g_file_get_contents ("/etc/machine-id", &data, NULL, error))
+		return NULL;
+
+	salted = g_strdup_printf ("gnome-software[%s:%s]",
+				  g_get_user_name (), data);
+	return g_compute_checksum_for_string (G_CHECKSUM_SHA1, salted, -1);
+}
+
 /* vim: set noexpandtab: */

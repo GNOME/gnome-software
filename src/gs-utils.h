@@ -62,6 +62,7 @@ const gchar	 *gs_user_agent			(void);
 
 gchar		*gs_utils_get_cachedir		(const gchar	*kind,
 						 GError		**error);
+gchar		*gs_utils_get_user_hash		(GError		**error);
 
 G_END_DECLS
 
