@@ -31,6 +31,7 @@ struct _GsReview
 	gchar			*summary;
 	gchar			*text;
 	gint			 karma;
+	gint			 score;
 	gint			 rating;
 	gchar			*version;
 	gchar			*reviewer;
@@ -70,6 +71,29 @@ gs_review_set_karma (GsReview *review, gint karma)
 {
 	g_return_if_fail (GS_IS_REVIEW (review));
 	review->karma = karma;
+}
+
+/**
+ * gs_review_get_score:
+ *
+ * This allows the UI to sort reviews into the correct order.
+ * Higher numbers indicate a more important or relevant review.
+ */
+gint
+gs_review_get_score (GsReview *review)
+{
+	g_return_val_if_fail (GS_IS_REVIEW (review), 0);
+	return review->score;
+}
+
+/**
+ * gs_review_set_score:
+ */
+void
+gs_review_set_score (GsReview *review, gint score)
+{
+	g_return_if_fail (GS_IS_REVIEW (review));
+	review->score = score;
 }
 
 /**
@@ -328,7 +352,7 @@ gs_review_class_init (GsReviewClass *klass)
 	 * GsApp:karma:
 	 */
 	pspec = g_param_spec_int ("karma", NULL, NULL,
-				  0, G_MAXINT, G_MININT,
+				  G_MININT, G_MAXINT, 0,
 				  G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_KARMA, pspec);
 
