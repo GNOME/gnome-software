@@ -1007,6 +1007,7 @@ static void
 gs_shell_details_refresh_reviews (GsShellDetails *self)
 {
 	GPtrArray *reviews;
+	gboolean show_review_button = TRUE;
 	guint i;
 	guint64 possible_actions = 0;
 	struct {
@@ -1046,6 +1047,7 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 				  G_CALLBACK (gs_shell_details_review_button_clicked_cb), self);
 		if (gs_review_get_state (review) & GS_REVIEW_STATE_SELF) {
 			actions = possible_actions & 1 << GS_REVIEW_ACTION_REMOVE;
+			show_review_button = FALSE;
 		} else {
 			actions = possible_actions & ~(1 << GS_REVIEW_ACTION_REMOVE);
 		}
@@ -1054,8 +1056,8 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		gtk_widget_show (row);
 	}
 
-	/* FIXME: show the button only if the user never reviewed */
-	gtk_widget_set_visible (self->button_review, TRUE);
+	/* show the button only if the user never reviewed */
+	gtk_widget_set_visible (self->button_review, show_review_button);
 }
 
 /**
