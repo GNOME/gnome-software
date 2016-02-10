@@ -1407,6 +1407,17 @@ gs_shell_details_app_set_ratings_cb (GObject *source,
 }
 
 /**
+ * gs_shell_details_sanitize_version:
+ */
+static gchar *
+gs_shell_details_sanitize_version (const gchar *version)
+{
+	gchar *tmp = g_strdup (version);
+	g_strdelimit (tmp, "-", '\0');
+	return tmp;
+}
+
+/**
  * gs_shell_details_write_review_cb:
  **/
 static void
@@ -1424,13 +1435,15 @@ gs_shell_details_write_review_cb (GtkButton *button,
 		g_autoptr(GsReview) review = NULL;
 		g_autoptr(GDateTime) now = NULL;
 		g_autofree gchar *text = NULL;
+		g_autofree gchar *version = NULL;
 
 		review = gs_review_new ();
 		gs_review_set_summary (review, gs_review_dialog_get_summary (GS_REVIEW_DIALOG (dialog)));
 		text = gs_review_dialog_get_text (GS_REVIEW_DIALOG (dialog));
 		gs_review_set_text (review, text);
 		gs_review_set_rating (review, gs_review_dialog_get_rating (GS_REVIEW_DIALOG (dialog)));
-		gs_review_set_version (review, gs_app_get_version (self->app));
+		version = gs_shell_details_sanitize_version (gs_app_get_version (self->app));
+		gs_review_set_version (review, version);
 		now = g_date_time_new_now_local ();
 		gs_review_set_date (review, now);
 
