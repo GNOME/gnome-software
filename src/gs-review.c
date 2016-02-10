@@ -27,7 +27,7 @@ struct _GsReview
 {
 	GObject			 parent_instance;
 
-	GsReviewState		 state;
+	GsReviewFlags		 flags;
 	gchar			*summary;
 	gchar			*text;
 	gint			 karma;
@@ -48,7 +48,7 @@ enum {
 	PROP_VERSION,
 	PROP_REVIEWER,
 	PROP_DATE,
-	PROP_STATE,
+	PROP_FLAGS,
 	PROP_LAST
 };
 
@@ -160,23 +160,33 @@ gs_review_set_rating (GsReview *review, gint rating)
 }
 
 /**
- * gs_review_get_state:
+ * gs_review_get_flags:
  */
-GsReviewState
-gs_review_get_state (GsReview *review)
+GsReviewFlags
+gs_review_get_flags (GsReview *review)
 {
 	g_return_val_if_fail (GS_IS_REVIEW (review), 0);
-	return review->state;
+	return review->flags;
 }
 
 /**
- * gs_review_set_state:
+ * gs_review_set_flags:
  */
 void
-gs_review_set_state (GsReview *review, GsReviewState state)
+gs_review_set_flags (GsReview *review, GsReviewFlags flags)
 {
 	g_return_if_fail (GS_IS_REVIEW (review));
-	review->state = state;
+	review->flags = flags;
+}
+
+/**
+ * gs_review_add_flags:
+ */
+void
+gs_review_add_flags (GsReview *review, GsReviewFlags flags)
+{
+	g_return_if_fail (GS_IS_REVIEW (review));
+	review->flags |= flags;
 }
 
 /**
@@ -282,8 +292,8 @@ gs_review_get_property (GObject *object, guint prop_id,
 	case PROP_RATING:
 		g_value_set_int (value, review->rating);
 		break;
-	case PROP_STATE:
-		g_value_set_uint64 (value, review->state);
+	case PROP_FLAGS:
+		g_value_set_uint64 (value, review->flags);
 		break;
 	case PROP_VERSION:
 		g_value_set_string (value, review->version);
@@ -319,8 +329,8 @@ gs_review_set_property (GObject *object, guint prop_id,
 	case PROP_RATING:
 		gs_review_set_rating (review, g_value_get_int (value));
 		break;
-	case PROP_STATE:
-		gs_review_set_state (review, g_value_get_uint64 (value));
+	case PROP_FLAGS:
+		gs_review_set_flags (review, g_value_get_uint64 (value));
 		break;
 	case PROP_VERSION:
 		gs_review_set_version (review, g_value_get_string (value));
@@ -403,14 +413,14 @@ gs_review_class_init (GsReviewClass *klass)
 	g_object_class_install_property (object_class, PROP_RATING, pspec);
 
 	/**
-	 * GsApp:state:
+	 * GsApp:flags:
 	 */
-	pspec = g_param_spec_uint64 ("state", NULL, NULL,
-				     GS_REVIEW_STATE_NONE,
-				     GS_REVIEW_STATE_LAST,
-				     GS_REVIEW_STATE_NONE,
+	pspec = g_param_spec_uint64 ("flags", NULL, NULL,
+				     GS_REVIEW_FLAG_NONE,
+				     GS_REVIEW_FLAG_LAST,
+				     GS_REVIEW_FLAG_NONE,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
-	g_object_class_install_property (object_class, PROP_STATE, pspec);
+	g_object_class_install_property (object_class, PROP_FLAGS, pspec);
 
 	/**
 	 * GsApp:version:

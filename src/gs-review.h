@@ -40,11 +40,11 @@ typedef enum {
 } GsReviewAction;
 
 typedef enum {
-	GS_REVIEW_STATE_NONE	= 0,
-	GS_REVIEW_STATE_SELF	= 1 << 0,	/* user wrote the review themselves */
-	GS_REVIEW_STATE_VOTED	= 1 << 1,	/* user voted on the review */
-	GS_REVIEW_STATE_LAST
-} GsReviewState;
+	GS_REVIEW_FLAG_NONE	= 0,
+	GS_REVIEW_FLAG_SELF	= 1 << 0,	/* user wrote the review themselves */
+	GS_REVIEW_FLAG_VOTED	= 1 << 1,	/* user voted on the review */
+	GS_REVIEW_FLAG_LAST
+} GsReviewFlags;
 
 GsReview	*gs_review_new				(void);
 
@@ -80,9 +80,11 @@ GDateTime	*gs_review_get_date			(GsReview	*review);
 void		 gs_review_set_date			(GsReview	*review,
 							 GDateTime	*date);
 
-GsReviewState	 gs_review_get_state			(GsReview	*review);
-void		 gs_review_set_state			(GsReview	*review,
-							 GsReviewState	 state);
+GsReviewFlags	 gs_review_get_flags			(GsReview	*review);
+void		 gs_review_set_flags			(GsReview	*review,
+							 GsReviewFlags	 state);
+void		 gs_review_add_flags			(GsReview	*review,
+							 GsReviewFlags	 state);
 
 const gchar	*gs_review_get_metadata_item		(GsReview	*review,
 							 const gchar	*key);

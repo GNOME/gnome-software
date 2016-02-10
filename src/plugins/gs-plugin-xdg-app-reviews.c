@@ -140,24 +140,28 @@ xdg_app_review_parse_review_object (JsonObject *item)
 		gs_review_set_karma (rev, json_object_get_int_member (item, "karma"));
 
 	/* add extra metadata for the plugin */
-	if (json_object_has_member (item, "user_id")) {
+	if (json_object_has_member (item, "user_hash")) {
 		gs_review_add_metadata (rev, "user_hash",
-					json_object_get_string_member (item, "user_id"));
+					json_object_get_string_member (item, "user_hash"));
 	}
-	if (json_object_has_member (item, "user_key")) {
-		gs_review_add_metadata (rev, "user_key",
-					json_object_get_string_member (item, "user_key"));
+	if (json_object_has_member (item, "user_skey")) {
+		gs_review_add_metadata (rev, "user_skey",
+					json_object_get_string_member (item, "user_skey"));
 	}
-	if (json_object_has_member (item, "appid")) {
-		gs_review_add_metadata (rev, "appid",
-					json_object_get_string_member (item, "appid"));
+	if (json_object_has_member (item, "app_id")) {
+		gs_review_add_metadata (rev, "app_id",
+					json_object_get_string_member (item, "app_id"));
 	}
-	if (json_object_has_member (item, "dbid")) {
-		g_autofree gchar *dbid = NULL;
-		dbid = g_strdup_printf ("%" G_GINT64_FORMAT,
-					json_object_get_int_member (item, "dbid"));
-		gs_review_add_metadata (rev, "dbid", dbid);
+	if (json_object_has_member (item, "review_id")) {
+		g_autofree gchar *review_id = NULL;
+		review_id = g_strdup_printf ("%" G_GINT64_FORMAT,
+					json_object_get_int_member (item, "review_id"));
+		gs_review_add_metadata (rev, "review_id", review_id);
 	}
+
+	/* don't allow multiple votes */
+	if (json_object_has_member (item, "vote_id"))
+		gs_review_add_flags (rev, GS_REVIEW_FLAG_VOTED);
 
 	return rev;
 }
@@ -587,9 +591,9 @@ xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	/* create object with review data */
 	builder = json_builder_new ();
 	json_builder_begin_object (builder);
-	json_builder_set_member_name (builder, "user_id");
+	json_builder_set_member_name (builder, "user_hash");
 	json_builder_add_string_value (builder, plugin->priv->user_hash);
-	json_builder_set_member_name (builder, "appid");
+	json_builder_set_member_name (builder, "app_id");
 	json_builder_add_string_value (builder, gs_app_get_id (app));
 	json_builder_set_member_name (builder, "locale");
 	json_builder_add_string_value (builder, plugin->locale);
@@ -677,14 +681,14 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 		/* save this on the application object so we can use it for
 		 * submitting a new review */
 		if (i == 0) {
-			gs_app_set_metadata (app, "XdgAppReviews::user_key",
-					     gs_review_get_metadata_item (review, "user_key"));
+			gs_app_set_metadata (app, "XdgAppReviews::user_skey",
+					     gs_review_get_metadata_item (review, "user_skey"));
 		}
 
-		/* the user_id matches, so mark this as our own review */
+		/* the user_hash matches, so mark this as our own review */
 		if (g_strcmp0 (gs_review_get_metadata_item (review, "user_hash"),
 			       plugin->priv->user_hash) == 0) {
-			gs_review_set_state (review, GS_REVIEW_STATE_SELF);
+			gs_review_set_flags (review, GS_REVIEW_FLAG_SELF);
 		}
 		gs_app_add_review (app, review);
 	}
@@ -744,6 +748,19 @@ gs_plugin_refine (GsPlugin *plugin,
 }
 
 /**
+ * xdg_app_review_sanitize_version:
+ */
+static gchar *
+xdg_app_review_sanitize_version (const gchar *version)
+{
+	gchar *tmp = g_strdup (version);
+	if (tmp == NULL)
+		return g_strdup ("unknown");
+	g_strdelimit (tmp, "-", '\0');
+	return tmp;
+}
+
+/**
  * gs_plugin_review_submit:
  */
 gboolean
@@ -755,34 +772,37 @@ gs_plugin_review_submit (GsPlugin *plugin,
 {
 	g_autofree gchar *data = NULL;
 	g_autofree gchar *uri = NULL;
+	g_autofree gchar *version = NULL;
 	g_autoptr(JsonBuilder) builder = NULL;
 	g_autoptr(JsonGenerator) json_generator = NULL;
 	g_autoptr(JsonNode) json_root = NULL;
 
 	/* save as we don't re-request the review from the server */
-	gs_review_add_metadata (review, "appid", gs_app_get_id (app));
-	gs_review_add_metadata (review, "user_key",
-				gs_app_get_metadata_item (app, "XdgAppReviews::user_key"));
+	gs_review_set_reviewer (review, g_get_real_name ());
+	gs_review_add_metadata (review, "app_id", gs_app_get_id (app));
+	gs_review_add_metadata (review, "user_skey",
+				gs_app_get_metadata_item (app, "XdgAppReviews::user_skey"));
 
 	/* create object with review data */
 	builder = json_builder_new ();
 	json_builder_begin_object (builder);
-	json_builder_set_member_name (builder, "user_id");
+	json_builder_set_member_name (builder, "user_hash");
 	json_builder_add_string_value (builder, plugin->priv->user_hash);
-	json_builder_set_member_name (builder, "user_key");
+	json_builder_set_member_name (builder, "user_skey");
 	json_builder_add_string_value (builder,
-				       gs_review_get_metadata_item (review, "user_key"));
-	json_builder_set_member_name (builder, "appid");
+				       gs_review_get_metadata_item (review, "user_skey"));
+	json_builder_set_member_name (builder, "app_id");
 	json_builder_add_string_value (builder,
-				       gs_review_get_metadata_item (review, "appid"));
+				       gs_review_get_metadata_item (review, "app_id"));
 	json_builder_set_member_name (builder, "locale");
 	json_builder_add_string_value (builder, plugin->locale);
 	json_builder_set_member_name (builder, "distro");
 	json_builder_add_string_value (builder, plugin->priv->distro);
 	json_builder_set_member_name (builder, "version");
-	json_builder_add_string_value (builder, gs_review_get_version (review));
+	version = xdg_app_review_sanitize_version (gs_review_get_version (review));
+	json_builder_add_string_value (builder, version);
 	json_builder_set_member_name (builder, "user_display");
-	json_builder_add_string_value (builder, g_get_real_name ());
+	json_builder_add_string_value (builder, gs_review_get_reviewer (review));
 	json_builder_set_member_name (builder, "summary");
 	json_builder_add_string_value (builder, gs_review_get_summary (review));
 	json_builder_set_member_name (builder, "description");
@@ -799,7 +819,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	data = json_generator_to_data (json_generator, NULL);
 
 	/* POST */
-	uri = g_strdup_printf ("%s/add", plugin->priv->review_server);
+	uri = g_strdup_printf ("%s/submit", plugin->priv->review_server);
 	return gs_plugin_xdg_app_reviews_json_post (plugin->priv->session,
 						    uri, data, error);
 }
@@ -820,7 +840,7 @@ gs_plugin_xdg_app_reviews_invalidate_cache (GsReview *review, GError **error)
 		return FALSE;
 	cachefn = g_strdup_printf ("%s/%s.json",
 				   cachedir,
-				   gs_review_get_metadata_item (review, "appid"));
+				   gs_review_get_metadata_item (review, "app_id"));
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (!g_file_query_exists (cachefn_file, NULL))
 		return TRUE;
@@ -834,7 +854,7 @@ static gboolean
 gs_plugin_xdg_app_reviews_vote (GsPlugin *plugin, GsReview *review,
 				const gchar *uri, GError **error)
 {
-	guint64 dbid;
+	const gchar *tmp;
 	g_autofree gchar *data = NULL;
 	g_autoptr(JsonBuilder) builder = NULL;
 	g_autoptr(JsonGenerator) json_generator = NULL;
@@ -844,17 +864,21 @@ gs_plugin_xdg_app_reviews_vote (GsPlugin *plugin, GsReview *review,
 	builder = json_builder_new ();
 	json_builder_begin_object (builder);
 
-	json_builder_set_member_name (builder, "user_id");
+	json_builder_set_member_name (builder, "user_hash");
 	json_builder_add_string_value (builder, plugin->priv->user_hash);
-	json_builder_set_member_name (builder, "user_key");
+	json_builder_set_member_name (builder, "user_skey");
 	json_builder_add_string_value (builder,
-				       gs_review_get_metadata_item (review, "user_key"));
-	json_builder_set_member_name (builder, "appid");
+				       gs_review_get_metadata_item (review, "user_skey"));
+	json_builder_set_member_name (builder, "app_id");
 	json_builder_add_string_value (builder,
-				       gs_review_get_metadata_item (review, "appid"));
-	json_builder_set_member_name (builder, "dbid");
-	dbid = g_ascii_strtoull (gs_review_get_metadata_item (review, "dbid"), NULL, 10);
-	json_builder_add_int_value (builder, dbid);
+				       gs_review_get_metadata_item (review, "app_id"));
+	tmp = gs_review_get_metadata_item (review, "review_id");
+	if (tmp != NULL) {
+		guint64 review_id;
+		json_builder_set_member_name (builder, "review_id");
+		review_id = g_ascii_strtoull (tmp, NULL, 10);
+		json_builder_add_int_value (builder, review_id);
+	}
 	json_builder_end_object (builder);
 
 	/* export as a string */
@@ -876,7 +900,7 @@ gs_plugin_xdg_app_reviews_vote (GsPlugin *plugin, GsReview *review,
 		return FALSE;
 
 	/* mark as voted */
-	gs_review_set_state (review, GS_REVIEW_STATE_VOTED);
+	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
 
 	/* success */
 	return TRUE;

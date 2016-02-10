@@ -496,7 +496,7 @@ gs_utils_get_user_hash (GError **error)
 	if (!g_file_get_contents ("/etc/machine-id", &data, NULL, error))
 		return NULL;
 
-	salted = g_strdup_printf ("gnome-software[%s:%s]",
+	salted = g_strdup_printf ("XXXYYgnome-software[%s:%s]",
 				  g_get_user_name (), data);
 	return g_compute_checksum_for_string (G_CHECKSUM_SHA1, salted, -1);
 }

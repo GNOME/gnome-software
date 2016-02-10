@@ -189,7 +189,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			gs_review_set_text (review2, "I'm not very wordy myself.");
 			gs_review_set_version (review2, "3.16.3");
 			gs_review_set_date (review2, dt);
-			gs_review_set_state (review2, GS_REVIEW_STATE_SELF);
+			gs_review_set_flags (review2, GS_REVIEW_FLAG_SELF);
 			gs_app_add_review (app, review2);
 		}
 	}
@@ -283,7 +283,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 			 GError **error)
 {
 	g_debug ("Reporting dummy review");
-	gs_review_set_state (review, GS_REVIEW_STATE_VOTED);
+	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
 	return TRUE;
 }
 
@@ -298,7 +298,7 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 			 GError **error)
 {
 	g_debug ("Upvoting dummy review");
-	gs_review_set_state (review, GS_REVIEW_STATE_VOTED);
+	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
 	return TRUE;
 }
 
@@ -313,7 +313,7 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 			   GError **error)
 {
 	g_debug ("Downvoting dummy review");
-	gs_review_set_state (review, GS_REVIEW_STATE_VOTED);
+	gs_review_add_flags (review, GS_REVIEW_FLAG_VOTED);
 	return TRUE;
 }
 

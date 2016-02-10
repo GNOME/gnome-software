@@ -78,7 +78,7 @@ gs_review_row_refresh (GsReviewRow *row)
 			    gs_review_get_text (priv->review));
 
 	/* if we voted, we can't do any actions */
-	if (gs_review_get_state (priv->review) & GS_REVIEW_STATE_VOTED)
+	if (gs_review_get_flags (priv->review) & GS_REVIEW_FLAG_VOTED)
 		priv->actions = 0;
 
 	/* set actions up */
