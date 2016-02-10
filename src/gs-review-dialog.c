@@ -86,7 +86,8 @@ gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 	/* require rating, summary and long review */
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (dialog->text_view));
 	if (dialog->timer_id != 0) {
-		/* display nothing */
+		/* TRANSLATORS: the review can't just be copied and pasted */
+		msg = _("Please take more time writing the review");
 		all_okay = FALSE;
 	} else if (gs_star_widget_get_rating (GS_STAR_WIDGET (dialog->star)) == 0) {
 		/* TRANSLATORS: the review is not acceptable */
