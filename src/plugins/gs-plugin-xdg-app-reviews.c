@@ -459,7 +459,7 @@ xdg_app_review_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 	 * review the application ourselves */
 	uri = g_strdup_printf ("%s/ratings/%s",
 			       plugin->priv->review_server,
-			       "org.gnome.Software.desktop");
+			       gs_app_get_id (app));
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	status_code = soup_session_send_message (plugin->priv->session, msg);
 	if (status_code != SOUP_STATUS_OK) {
