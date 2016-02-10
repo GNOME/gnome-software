@@ -684,18 +684,18 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 	for (i = 0; i < reviews->len; i++) {
 		review = g_ptr_array_index (reviews, i);
 
-		/* ignore invalid reviews */
-		if (gs_review_get_rating (review) == 0)
-			continue;
-		if (gs_review_get_reviewer (review) == NULL)
-			continue;
-
 		/* save this on the application object so we can use it for
 		 * submitting a new review */
 		if (i == 0) {
 			gs_app_set_metadata (app, "XdgAppReviews::user_skey",
 					     gs_review_get_metadata_item (review, "user_skey"));
 		}
+
+		/* ignore invalid reviews */
+		if (gs_review_get_rating (review) == 0)
+			continue;
+		if (gs_review_get_reviewer (review) == NULL)
+			continue;
 
 		/* the user_hash matches, so mark this as our own review */
 		if (g_strcmp0 (gs_review_get_metadata_item (review, "user_hash"),
