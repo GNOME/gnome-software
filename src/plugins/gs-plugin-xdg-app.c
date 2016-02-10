@@ -134,6 +134,79 @@ gs_plugin_xdg_app_changed_cb (GFileMonitor *monitor,
 }
 
 /**
+ * gs_plugin_refresh_appstream:
+ */
+static gboolean
+gs_plugin_refresh_appstream (GsPlugin *plugin,
+			     guint cache_age,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	gboolean ret;
+	guint i;
+	g_autoptr(GPtrArray) xremotes = NULL;
+
+	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
+						      cancellable,
+						      error);
+	if (xremotes == NULL)
+		return FALSE;
+	for (i = 0; i < xremotes->len; i++) {
+		guint tmp;
+		g_autoptr(GError) error_local = NULL;
+		g_autoptr(GFile) file = NULL;
+		g_autoptr(GFile) file_timestamp = NULL;
+		g_autofree gchar *appstream_fn = NULL;
+		XdgAppRemote *xremote = g_ptr_array_index (xremotes, i);
+
+		/* skip known-broken repos */
+		if (g_strcmp0 (xdg_app_remote_get_name (xremote), "gnome-sdk") == 0)
+			continue;
+		if (g_strcmp0 (xdg_app_remote_get_name (xremote), "test-apps") == 0)
+			continue;
+
+		/* is the timestamp new enough */
+		file_timestamp = xdg_app_remote_get_appstream_timestamp (xremote, NULL);
+		tmp = gs_utils_get_file_age (file_timestamp);
+		if (tmp < cache_age) {
+			g_autofree gchar *fn = g_file_get_path (file_timestamp);
+			g_debug ("%s is only %i seconds old, so ignoring refresh",
+				 fn, tmp);
+			continue;
+		}
+
+		/* download new data */
+		ret = xdg_app_installation_update_appstream_sync (plugin->priv->installation,
+								  xdg_app_remote_get_name (xremote),
+								  NULL, /* arch */
+								  NULL, /* out_changed */
+								  cancellable,
+								  &error_local);
+		if (!ret) {
+			if (g_error_matches (error_local,
+					     G_IO_ERROR,
+					     G_IO_ERROR_FAILED)) {
+				g_debug ("Failed to get AppStream metadata: %s",
+					 error_local->message);
+				continue;
+			}
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "Failed to get AppStream metadata: %s",
+				     error_local->message);
+			return FALSE;
+		}
+
+		/* add the new AppStream repo to the shared store */
+		file = xdg_app_remote_get_appstream_dir (xremote, NULL);
+		appstream_fn = g_file_get_path (file);
+		g_debug ("using AppStream metadata found at: %s", appstream_fn);
+	}
+	return TRUE;
+}
+
+/**
  * gs_plugin_ensure_installation:
  */
 static gboolean
@@ -177,6 +250,10 @@ gs_plugin_ensure_installation (GsPlugin *plugin,
 		return FALSE;
 	g_signal_connect (plugin->priv->monitor, "changed",
 			  G_CALLBACK (gs_plugin_xdg_app_changed_cb), plugin);
+
+	/* if we've never ever run before, get at least the AppStream data */
+	if (!gs_plugin_refresh_appstream (plugin, G_MAXUINT, cancellable, error))
+		return FALSE;
 
 	/* success */
 	return TRUE;
@@ -485,9 +562,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 {
 	GsPluginHelper helper;
 	guint i;
-	gboolean ret;
 	g_autoptr(GPtrArray) xrefs = NULL;
-	g_autoptr(GPtrArray) xremotes = NULL;
 
 	/* not us */
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
@@ -498,57 +573,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 		return FALSE;
 
 	/* update AppStream metadata */
-	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
-						      cancellable,
-						      error);
-	if (xremotes == NULL)
+	if (!gs_plugin_refresh_appstream (plugin, cache_age, cancellable, error))
 		return FALSE;
-	for (i = 0; i < xremotes->len; i++) {
-		guint tmp;
-		g_autoptr(GError) error_local = NULL;
-		g_autoptr(GFile) file = NULL;
-		g_autoptr(GFile) file_timestamp = NULL;
-		g_autofree gchar *appstream_fn = NULL;
-		XdgAppRemote *xremote = g_ptr_array_index (xremotes, i);
-
-		/* is the timestamp new enough */
-		file_timestamp = xdg_app_remote_get_appstream_timestamp (xremote, NULL);
-		tmp = gs_utils_get_file_age (file_timestamp);
-		if (tmp < cache_age) {
-			g_autofree gchar *fn = g_file_get_path (file_timestamp);
-			g_debug ("%s is only %i seconds old, so ignoring refresh",
-				 fn, tmp);
-			continue;
-		}
-
-		/* download new data */
-		ret = xdg_app_installation_update_appstream_sync (plugin->priv->installation,
-								  xdg_app_remote_get_name (xremote),
-								  NULL, /* arch */
-								  NULL, /* out_changed */
-								  cancellable,
-								  &error_local);
-		if (!ret) {
-			if (g_error_matches (error_local,
-					     G_IO_ERROR,
-					     G_IO_ERROR_FAILED)) {
-				g_debug ("Failed to get AppStream metadata: %s",
-					 error_local->message);
-				continue;
-			}
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-				     "Failed to get AppStream metadata: %s",
-				     error_local->message);
-			return FALSE;
-		}
-
-		/* add the new AppStream repo to the shared store */
-		file = xdg_app_remote_get_appstream_dir (xremote, NULL);
-		appstream_fn = g_file_get_path (file);
-		g_debug ("using AppStream metadata found at: %s", appstream_fn);
-	}
 
 	/* use helper: FIXME: new()&ref? */
 	helper.plugin = plugin;
