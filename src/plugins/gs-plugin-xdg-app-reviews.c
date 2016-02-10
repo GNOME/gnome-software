@@ -113,34 +113,51 @@ static GsReview *
 xdg_app_review_parse_review_object (JsonObject *item)
 {
 	GsReview *rev = gs_review_new ();
-	guint64 timestamp;
-	g_autofree gchar *dbid = NULL;
-	g_autoptr(GDateTime) dt = NULL;
 
 	/* date */
-	timestamp = json_object_get_int_member (item, "date_created");
-	dt = g_date_time_new_from_unix_utc (timestamp);
-	gs_review_set_date (rev, dt);
+	if (json_object_has_member (item, "date_created")) {
+		guint64 timestamp;
+		g_autoptr(GDateTime) dt = NULL;
+		timestamp = json_object_get_int_member (item, "date_created");
+		dt = g_date_time_new_from_unix_utc (timestamp);
+		gs_review_set_date (rev, dt);
+	}
 
 	/* assemble review */
-	gs_review_set_rating (rev, json_object_get_int_member (item, "rating"));
-	gs_review_set_score (rev, json_object_get_int_member (item, "score"));
-	gs_review_set_reviewer (rev, json_object_get_string_member (item, "user_display"));
-	gs_review_set_summary (rev, json_object_get_string_member (item, "summary"));
-	gs_review_set_text (rev, json_object_get_string_member (item, "description"));
-	gs_review_set_version (rev, json_object_get_string_member (item, "version"));
-	gs_review_set_karma (rev, json_object_get_int_member (item, "karma"));
+	if (json_object_has_member (item, "rating"))
+		gs_review_set_rating (rev, json_object_get_int_member (item, "rating"));
+	if (json_object_has_member (item, "score"))
+		gs_review_set_score (rev, json_object_get_int_member (item, "score"));
+	if (json_object_has_member (item, "user_display"))
+		gs_review_set_reviewer (rev, json_object_get_string_member (item, "user_display"));
+	if (json_object_has_member (item, "summary"))
+		gs_review_set_summary (rev, json_object_get_string_member (item, "summary"));
+	if (json_object_has_member (item, "description"))
+		gs_review_set_text (rev, json_object_get_string_member (item, "description"));
+	if (json_object_has_member (item, "version"))
+		gs_review_set_version (rev, json_object_get_string_member (item, "version"));
+	if (json_object_has_member (item, "karma"))
+		gs_review_set_karma (rev, json_object_get_int_member (item, "karma"));
 
 	/* add extra metadata for the plugin */
-	gs_review_add_metadata (rev, "user_hash",
-				json_object_get_string_member (item, "user_id"));
-	gs_review_add_metadata (rev, "user_key",
-				json_object_get_string_member (item, "user_key"));
-	gs_review_add_metadata (rev, "appid",
-				json_object_get_string_member (item, "appid"));
-	dbid = g_strdup_printf ("%" G_GINT64_FORMAT,
-				json_object_get_int_member (item, "dbid"));
-	gs_review_add_metadata (rev, "dbid", dbid);
+	if (json_object_has_member (item, "user_id")) {
+		gs_review_add_metadata (rev, "user_hash",
+					json_object_get_string_member (item, "user_id"));
+	}
+	if (json_object_has_member (item, "user_key")) {
+		gs_review_add_metadata (rev, "user_key",
+					json_object_get_string_member (item, "user_key"));
+	}
+	if (json_object_has_member (item, "appid")) {
+		gs_review_add_metadata (rev, "appid",
+					json_object_get_string_member (item, "appid"));
+	}
+	if (json_object_has_member (item, "dbid")) {
+		g_autofree gchar *dbid = NULL;
+		dbid = g_strdup_printf ("%" G_GINT64_FORMAT,
+					json_object_get_int_member (item, "dbid"));
+		gs_review_add_metadata (rev, "dbid", dbid);
+	}
 
 	return rev;
 }
@@ -650,6 +667,12 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 		return FALSE;
 	for (i = 0; i < reviews->len; i++) {
 		review = g_ptr_array_index (reviews, i);
+
+		/* ignore invalid reviews */
+		if (gs_review_get_rating (review) == 0)
+			continue;
+		if (gs_review_get_reviewer (review) == NULL)
+			continue;
 
 		/* save this on the application object so we can use it for
 		 * submitting a new review */
