@@ -492,7 +492,7 @@ xdg_app_review_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 				     "status code invalid");
 		return NULL;
 	}
-	g_warning ("xdg-app-review returned: %s", msg->response_body->data);
+	g_debug ("xdg-app-review returned: %s", msg->response_body->data);
 	ratings = xdg_app_review_parse_ratings (msg->response_body->data,
 						msg->response_body->length,
 						error);
@@ -734,7 +734,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			if (!gs_plugin_refine_ratings (plugin, app,
 						       cancellable,
 						       &error_local)) {
-				g_warning ("Failed to get reviews: %s",
+				g_warning ("Failed to get ratings: %s",
 					   error_local->message);
 			}
 		}
