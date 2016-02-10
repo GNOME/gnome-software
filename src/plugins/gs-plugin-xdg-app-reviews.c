@@ -707,32 +707,36 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* add reviews if possible */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
 		for (l = *list; l != NULL; l = l->next) {
+			g_autoptr(GError) error_local = NULL;
 			app = GS_APP (l->data);
 			if (gs_app_get_reviews(app)->len > 0)
 				continue;
 			if (gs_app_get_id (app) == NULL)
 				continue;
-			if (!gs_plugin_refine_reviews (plugin,
-						       app,
+			if (!gs_plugin_refine_reviews (plugin, app,
 						       cancellable,
-						       error))
-				return FALSE;
+						       &error_local)) {
+				g_warning ("Failed to get reviews: %s",
+					   error_local->message);
+			}
 		}
 	}
 
 	/* add ratings if possible */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS) {
 		for (l = *list; l != NULL; l = l->next) {
+			g_autoptr(GError) error_local = NULL;
 			app = GS_APP (l->data);
 			if (gs_app_get_review_ratings(app) != NULL)
 				continue;
 			if (gs_app_get_id (app) == NULL)
 				continue;
-			if (!gs_plugin_refine_ratings (plugin,
-						       app,
+			if (!gs_plugin_refine_ratings (plugin, app,
 						       cancellable,
-						       error))
-				return FALSE;
+						       &error_local)) {
+				g_warning ("Failed to get reviews: %s",
+					   error_local->message);
+			}
 		}
 	}
 
