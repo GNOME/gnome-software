@@ -272,8 +272,12 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 							  flags,
 							  cancellable,
 							  error);
-		if (!ret)
+		if (!ret) {
+			g_prefix_error (error,
+					"failed to run plugin '%s': ",
+					plugin->name);
 			goto out;
+		}
 	}
 
 	/* refine addons one layer deep */
