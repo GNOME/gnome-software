@@ -204,6 +204,8 @@ void		 gs_app_set_review_ratings	(GsApp		*app,
 GPtrArray	*gs_app_get_reviews		(GsApp		*app);
 void		 gs_app_add_review		(GsApp		*app,
 						 GsReview	*review);
+void		 gs_app_remove_review		(GsApp		*app,
+						 GsReview	*review);
 guint64		 gs_app_get_size		(GsApp		*app);
 void		 gs_app_set_size		(GsApp		*app,
 						 guint64	 size);

@@ -1690,6 +1690,16 @@ gs_app_add_review (GsApp *app, GsReview *review)
 }
 
 /**
+ * gs_app_remove_review:
+ */
+void
+gs_app_remove_review (GsApp *app, GsReview *review)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_ptr_array_remove (app->reviews, review);
+}
+
+/**
  * gs_app_get_size:
  */
 guint64
