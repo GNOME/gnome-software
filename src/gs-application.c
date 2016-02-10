@@ -148,8 +148,9 @@ gs_application_monitor_permission (GsApplication *app)
 	GPermission *permission;
 
 	permission = gs_update_monitor_permission_get ();
-	g_signal_connect (permission, "notify",
-			  G_CALLBACK (on_permission_changed), app);
+	if (permission != NULL)
+		g_signal_connect (permission, "notify",
+				  G_CALLBACK (on_permission_changed), app);
 }
 
 static void

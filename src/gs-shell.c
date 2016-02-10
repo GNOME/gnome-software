@@ -556,8 +556,9 @@ gs_shell_monitor_permission (GsShell *shell)
         GPermission *permission;
 
         permission = gs_update_monitor_permission_get ();
-        g_signal_connect (permission, "notify",
-                          G_CALLBACK (on_permission_changed), shell);
+	if (permission != NULL)
+		g_signal_connect (permission, "notify",
+				  G_CALLBACK (on_permission_changed), shell);
 }
 
 /**

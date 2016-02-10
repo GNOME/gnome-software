@@ -951,8 +951,9 @@ gs_shell_updates_monitor_permission (GsShellUpdates *self)
         GPermission *permission;
 
         permission = gs_update_monitor_permission_get ();
-        g_signal_connect (permission, "notify",
-                          G_CALLBACK (on_permission_changed), self);
+	if (permission != NULL)
+		g_signal_connect (permission, "notify",
+				  G_CALLBACK (on_permission_changed), self);
 }
 
 void
