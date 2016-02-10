@@ -742,7 +742,8 @@ gs_plugin_refine_item_action (GsPlugin *plugin,
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* already found */
-	if (gs_app_get_metadata_item (app, "XgdApp::type") != NULL)
+	if (gs_app_get_metadata_item (app, "XgdApp::type") != NULL &&
+	    gs_app_get_state (app) != AS_APP_STATE_UNKNOWN)
 		return TRUE;
 
 	/* get apps and runtimes */
