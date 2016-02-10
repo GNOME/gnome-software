@@ -73,11 +73,23 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_autoptr(GError) error = NULL;
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (), NULL);
-	plugin->priv->user_hash = gs_utils_get_user_hash (&error);
-	plugin->priv->distro = gs_os_release_get_name (&error);
 	plugin->priv->settings = g_settings_new ("org.gnome.software");
 	plugin->priv->review_server = g_settings_get_string (plugin->priv->settings,
 							     "review-server");
+
+	/* get the machine+user ID hash value */
+	plugin->priv->user_hash = gs_utils_get_user_hash (&error);
+	if (plugin->priv->user_hash == NULL) {
+		g_warning ("Failed to get machine+user hash: %s", error->message);
+		return;
+	}
+
+	/* get the distro name (e.g. 'Fedora') but allow a fallback */
+	plugin->priv->distro = gs_os_release_get_name (&error);
+	if (plugin->priv->distro == NULL) {
+		g_warning ("Failed to get distro name: %s", error->message);
+		plugin->priv->distro = g_strdup ("Unknown");
+	}
 }
 
 
