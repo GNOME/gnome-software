@@ -23,6 +23,7 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <gtkspell/gtkspell.h>
 
 #include "gs-review-dialog.h"
 #include "gs-star-widget.h"
@@ -41,6 +42,7 @@ struct _GsReviewDialog
 	GtkWidget	*summary_entry;
 	GtkWidget	*post_button;
 	GtkWidget	*text_view;
+	GtkSpellChecker	*spell_checker;
 	guint		 timer_id;
 };
 
@@ -134,6 +136,11 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 	gs_star_widget_set_icon_size (GS_STAR_WIDGET (dialog->star), 32);
 
+	/* allow checking spelling */
+	dialog->spell_checker = gtk_spell_checker_new ();
+	gtk_spell_checker_attach (dialog->spell_checker,
+				  GTK_TEXT_VIEW (dialog->text_view));
+
 	/* require the user to spend at least 30 seconds on writing a review */
 	dialog->timer_id = g_timeout_add_seconds (WRITING_TIME_MIN,
 						  gs_review_dialog_timeout_cb,
@@ -158,6 +165,7 @@ gs_review_row_dispose (GObject *object)
 	GsReviewDialog *dialog = GS_REVIEW_DIALOG (object);
 	if (dialog->timer_id > 0)
 		g_source_remove (dialog->timer_id);
+	gtk_widget_destroy (dialog->spell_checker);
 	G_OBJECT_CLASS (gs_review_dialog_parent_class)->dispose (object);
 }
 

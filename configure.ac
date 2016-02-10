@@ -60,7 +60,7 @@ GLIB_GSETTINGS
 dnl ---------------------------------------------------------------------------
 dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
-PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.18.2 gio-unix-2.0)
+PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.18.2 gio-unix-2.0 gtkspell3-3.0)
 PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.5.5)
 PKG_CHECK_MODULES(JSON_GLIB, json-glib-1.0)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
