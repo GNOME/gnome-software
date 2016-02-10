@@ -590,6 +590,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	guint64 kudos;
 	guint64 updated;
 	guint64 user_integration_bf;
+	guint i;
 	g_autoptr(GError) error = NULL;
 
 	/* change widgets */
@@ -747,14 +748,11 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 			gtk_widget_set_visible (self->histogram, FALSE);
 		}
 		n_reviews = 0;
-		if (review_ratings != NULL || gs_app_get_reviews (self->app) != NULL) {
-			if (review_ratings != NULL) {
-				guint i;
-				for (i = 0; i < review_ratings->len; i++)
-					n_reviews += g_array_index (review_ratings, gint, i);
-			} else  {
-				n_reviews = gs_app_get_reviews (self->app)->len;
-			}
+		if (review_ratings != NULL) {
+			for (i = 0; i < review_ratings->len; i++)
+				n_reviews += g_array_index (review_ratings, gint, i);
+		} else if (gs_app_get_reviews (self->app) != NULL) {
+			n_reviews = gs_app_get_reviews (self->app)->len;
 		}
 		if (n_reviews > 0) {
 			g_autofree gchar *text = NULL;
