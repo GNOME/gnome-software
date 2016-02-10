@@ -45,5 +45,14 @@
       <default>0</default>
       <summary>The last update timestamp</summary>
     </key>
+    <key name="review-server" type="s">
+      <default>'http://apps-xdgapp.rhcloud.com/1.0/reviews/api'</default>
+      <summary>The server to use for application reviews</summary>
+    </key>
+    <key name="review-karma-required" type="i">
+      <default>0</default>
+      <summary>The minimum karma score for reviews</summary>
+      <description>Reviews with karma less than this number will not be shown.</description>
+    </key>
   </schema>
 </schemalist>
