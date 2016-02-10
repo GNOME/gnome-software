@@ -89,6 +89,7 @@ gs_plugin_get_deps (GsPlugin *plugin)
 {
 	static const gchar *deps[] = {
 		"appstream",	/* need application IDs */
+		"xdg-app",	/* need version */
 		NULL };
 	return deps;
 }
@@ -532,6 +533,7 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 static GPtrArray *
 xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
+	const gchar *version;
 	guint karma_min;
 	guint status_code;
 	g_autofree gchar *cachedir = NULL;
@@ -560,6 +562,11 @@ xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 		return xdg_app_review_parse_reviews (json_data, -1, error);
 	}
 
+	/* not always available */
+	version = gs_app_get_version (app);
+	if (version == NULL)
+		version = "unknown";
+
 	/* create object with review data */
 	builder = json_builder_new ();
 	json_builder_begin_object (builder);
@@ -572,7 +579,7 @@ xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	json_builder_set_member_name (builder, "distro");
 	json_builder_add_string_value (builder, plugin->priv->distro);
 	json_builder_set_member_name (builder, "version");
-	json_builder_add_string_value (builder, gs_app_get_version (app));
+	json_builder_add_string_value (builder, version);
 	json_builder_set_member_name (builder, "limit");
 	json_builder_add_int_value (builder, XDG_APP_REVIEW_NUMBER_RESULTS_MAX);
 	json_builder_set_member_name (builder, "karma");

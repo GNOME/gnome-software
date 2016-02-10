@@ -782,6 +782,15 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (!gs_plugin_refine_item_action (plugin, app, cancellable, error))
 		return FALSE;
 
+	/* version fallback */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) {
+		if (gs_app_get_version (app) == NULL) {
+			const gchar *branch;
+			branch = gs_app_get_metadata_item (app, "XgdApp::branch");
+			gs_app_set_version (app, branch);
+		}
+	}
+
 	/* size */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) {
 		if (!gs_plugin_refine_item_size (plugin, app, cancellable, error))
