@@ -62,10 +62,10 @@ dbusservice_DATA =					\
 if HAVE_PACKAGEKIT
 dbusservice_DATA +=
 	org.freedesktop.PackageKit.service
-endif
 
 org.freedesktop.PackageKit.service: org.freedesktop.PackageKit.service.in Makefile
 	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $<> $@
+endif
 
 org.gnome.Software.service: org.gnome.Software.service.in Makefile
 	$(AM_V_GEN) sed -e "s|\@bindir\@|$(bindir)|" $<> $@
