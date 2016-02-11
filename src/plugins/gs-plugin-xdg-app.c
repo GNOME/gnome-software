@@ -251,10 +251,6 @@ gs_plugin_ensure_installation (GsPlugin *plugin,
 	g_signal_connect (plugin->priv->monitor, "changed",
 			  G_CALLBACK (gs_plugin_xdg_app_changed_cb), plugin);
 
-	/* if we've never ever run before, get at least the AppStream data */
-	if (!gs_plugin_refresh_appstream (plugin, G_MAXUINT, cancellable, error))
-		return FALSE;
-
 	/* success */
 	return TRUE;
 }
@@ -424,12 +420,22 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	g_autoptr(GError) error_md = NULL;
 	g_autoptr(GPtrArray) xrefs = NULL;
 	guint i;
 
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
 		return FALSE;
+
+	/* if we've never ever run before, get the AppStream data */
+	if (!gs_plugin_refresh_appstream (plugin,
+					  G_MAXUINT,
+					  cancellable,
+					  &error_md)) {
+		g_warning ("failed to get initial available data: %s",
+			   error_md->message);
+	}
 
 	/* get apps and runtimes */
 	xrefs = xdg_app_installation_list_installed_refs (plugin->priv->installation,
