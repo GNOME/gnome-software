@@ -106,8 +106,8 @@ G_DEFINE_QUARK (gs-plugin-loader-error-quark, gs_plugin_loader_error)
 static gint
 gs_plugin_loader_app_sort_cb (gconstpointer a, gconstpointer b)
 {
-	return g_strcmp0 (gs_app_get_name (GS_APP (a)),
-			  gs_app_get_name (GS_APP (b)));
+	return g_strcmp0 (gs_app_get_name (GS_APP ((gpointer) a)),
+			  gs_app_get_name (GS_APP ((gpointer) b)));
 }
 
 /**
@@ -1956,8 +1956,8 @@ gs_plugin_loader_search_what_provides_finish (GsPluginLoader *plugin_loader,
 static gint
 gs_plugin_loader_category_sort_cb (gconstpointer a, gconstpointer b)
 {
-	return g_strcmp0 (gs_category_get_name (GS_CATEGORY (a)),
-			  gs_category_get_name (GS_CATEGORY (b)));
+	return g_strcmp0 (gs_category_get_name (GS_CATEGORY ((gpointer) a)),
+			  gs_category_get_name (GS_CATEGORY ((gpointer) b)));
 }
 
 /**

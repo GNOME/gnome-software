@@ -63,8 +63,8 @@ static gint
 search_sort_by_kudo_cb (gconstpointer a, gconstpointer b)
 {
 	guint pa, pb;
-	pa = gs_app_get_kudos_percentage (GS_APP (a));
-	pb = gs_app_get_kudos_percentage (GS_APP (b));
+	pa = gs_app_get_kudos_percentage (GS_APP ((gpointer) a));
+	pb = gs_app_get_kudos_percentage (GS_APP ((gpointer) b));
 	if (pa < pb)
 		return 1;
 	else if (pa > pb)

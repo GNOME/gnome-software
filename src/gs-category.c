@@ -143,8 +143,8 @@ gs_category_add_subcategory (GsCategory *category, GsCategory *subcategory)
 static gint
 gs_category_sort_subcategories_cb (gconstpointer a, gconstpointer b)
 {
-	GsCategory *ca = GS_CATEGORY (a);
-	GsCategory *cb = GS_CATEGORY (b);
+	GsCategory *ca = GS_CATEGORY ((gpointer) a);
+	GsCategory *cb = GS_CATEGORY ((gpointer) b);
 	const gchar *id_a = gs_category_get_id (ca);
 	const gchar *id_b = gs_category_get_id (cb);
 
