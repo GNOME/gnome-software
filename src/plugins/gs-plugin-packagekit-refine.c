@@ -781,7 +781,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	/* ask PK to download enough packages to upgrade the system */
 	results = pk_client_upgrade_system (plugin->priv->client,
 					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_ONLY_DOWNLOAD, -1),
-					    gs_app_get_id (app),
+					    gs_app_get_version (app),
 					    PK_UPGRADE_KIND_ENUM_COMPLETE,
 					    cancellable,
 					    gs_plugin_packagekit_progress_cb, &data,
