@@ -251,6 +251,10 @@ gboolean	 gs_plugin_add_featured			(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_add_unvoted_reviews		(GsPlugin	*plugin,
+							 GList		**list,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_refine			(GsPlugin	*plugin,
 							 GList		**list,
 							 GsPluginRefineFlags flags,
@@ -305,6 +309,11 @@ gboolean	 gs_plugin_review_report		(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_review_remove		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsReview	*review,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_review_dismiss		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsReview	*review,
 							 GCancellable	*cancellable,

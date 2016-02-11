@@ -513,6 +513,8 @@ set_mode_activated (GSimpleAction *action,
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_UPDATES);
 	} else if (g_strcmp0 (mode, "installed") == 0) {
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_INSTALLED);
+	} else if (g_strcmp0 (mode, "moderate") == 0) {
+		gs_shell_set_mode (app->shell, GS_SHELL_MODE_MODERATE);
 	} else if (g_strcmp0 (mode, "overview") == 0) {
 		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
 	} else if (g_strcmp0 (mode, "updated") == 0) {

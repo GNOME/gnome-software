@@ -44,6 +44,7 @@ UI_FILES =						\
 	gs-shell-extras.ui				\
 	gs-shell-details.ui				\
 	gs-shell-installed.ui				\
+	gs-shell-moderate.ui				\
 	gs-shell-overview.ui				\
 	gs-shell-search.ui				\
 	gs-shell-updates.ui				\
@@ -172,6 +173,8 @@ gnome_software_SOURCES =				\
 	gs-shell-extras.h				\
 	gs-shell-installed.c				\
 	gs-shell-installed.h				\
+	gs-shell-moderate.c				\
+	gs-shell-moderate.h				\
 	gs-shell-overview.c				\
 	gs-shell-overview.h				\
 	gs-shell-updates.c				\

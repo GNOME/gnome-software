@@ -95,6 +95,14 @@ void		 gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader	*plugin_loader
 GList		*gs_plugin_loader_get_distro_upgrades_finish (GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
+void		 gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader	*plugin_loader,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
+GList		*gs_plugin_loader_get_unvoted_reviews_finish (GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
 void		 gs_plugin_loader_get_sources_async	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,

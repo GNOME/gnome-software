@@ -319,47 +319,6 @@ xdg_app_review_parse_success (const gchar *data,
 	return TRUE;
 }
 
-#if 0
-/**
- * xdg_app_review_get_moderate:
- */
-static GPtrArray *
-xdg_app_review_get_moderate (SoupSession *session,
-			     const gchar *user_hash,
-			     GError **error)
-{
-	guint status_code;
-	g_autofree gchar *uri = NULL;
-	g_autoptr(SoupMessage) msg = NULL;
-	g_autoptr(GFile) cachefn_file = NULL;
-	g_autoptr(GPtrArray) reviews = NULL;
-
-	/* create the GET data *with* the machine hash so we can later
-	 * review the application ourselves */
-	uri = g_strdup_printf ("%s/moderate/%s",
-			       plugin->priv->review_server,
-			       user_hash);
-	msg = soup_message_new (SOUP_METHOD_GET, uri);
-	status_code = soup_session_send_message (session, msg);
-	if (status_code != SOUP_STATUS_OK) {
-		if (!xdg_app_review_parse_success (msg->response_body->data,
-						   msg->response_body->length,
-						   error))
-			return NULL;
-		/* not sure what to do here */
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "status code invalid");
-		return NULL;
-	}
-	g_debug ("xdg-app-review returned: %s", msg->response_body->data);
-	return xdg_app_review_parse_reviews (msg->response_body->data,
-					     msg->response_body->length,
-					     error);
-}
-#endif
-
 /**
  * gs_plugin_xdg_app_reviews_json_post:
  */
@@ -970,6 +929,21 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_review_dismiss:
+ */
+gboolean
+gs_plugin_review_dismiss (GsPlugin *plugin,
+			  GsApp *app,
+			  GsReview *review,
+			  GCancellable *cancellable,
+			  GError **error)
+{
+	g_autofree gchar *uri = NULL;
+	uri = g_strdup_printf ("%s/dismiss", plugin->priv->review_server);
+	return gs_plugin_xdg_app_reviews_vote (plugin, review, uri, error);
+}
+
+/**
  * gs_plugin_review_remove:
  */
 gboolean
@@ -982,4 +956,68 @@ gs_plugin_review_remove (GsPlugin *plugin,
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/remove", plugin->priv->review_server);
 	return gs_plugin_xdg_app_reviews_vote (plugin, review, uri, error);
+}
+
+/**
+ * gs_plugin_add_unvoted_reviews:
+ */
+gboolean
+gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
+			       GList **list,
+			       GCancellable *cancellable,
+			       GError **error)
+{
+	const gchar *app_id_last = NULL;
+	guint status_code;
+	guint i;
+	g_autofree gchar *uri = NULL;
+	g_autoptr(GFile) cachefn_file = NULL;
+	g_autoptr(GPtrArray) reviews = NULL;
+	g_autoptr(GsApp) app_current = NULL;
+	g_autoptr(SoupMessage) msg = NULL;
+
+	/* create the GET data *with* the machine hash so we can later
+	 * review the application ourselves */
+	uri = g_strdup_printf ("%s/moderate/%s",
+			       plugin->priv->review_server,
+			       plugin->priv->user_hash);
+	msg = soup_message_new (SOUP_METHOD_GET, uri);
+	status_code = soup_session_send_message (plugin->soup_session, msg);
+	if (status_code != SOUP_STATUS_OK) {
+		if (!xdg_app_review_parse_success (msg->response_body->data,
+						   msg->response_body->length,
+						   error))
+			return FALSE;
+		/* not sure what to do here */
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "status code invalid");
+		return FALSE;
+	}
+	g_debug ("xdg-app-review returned: %s", msg->response_body->data);
+	reviews = xdg_app_review_parse_reviews (msg->response_body->data,
+						msg->response_body->length,
+						error);
+	if (reviews == NULL)
+		return FALSE;
+
+	/* look at all the reviews; faking application objects */
+	for (i = 0; i < reviews->len; i++) {
+		GsReview *review;
+		const gchar *app_id;
+
+		/* same app? */
+		review = g_ptr_array_index (reviews, i);
+		app_id = gs_review_get_metadata_item (review, "app_id");
+		if (g_strcmp0 (app_id, app_id_last) != 0) {
+			g_clear_object (&app_current);
+			app_current = gs_app_new (app_id);
+			gs_plugin_add_app (list, app_current);
+			app_id_last = app_id;
+		}
+		gs_app_add_review (app_current, review);
+	}
+
+	return TRUE;
 }

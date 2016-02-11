@@ -29,6 +29,7 @@
 #include "gs-shell.h"
 #include "gs-shell-details.h"
 #include "gs-shell-installed.h"
+#include "gs-shell-moderate.h"
 #include "gs-shell-search.h"
 #include "gs-shell-overview.h"
 #include "gs-shell-updates.h"
@@ -46,6 +47,7 @@ static const gchar *page_name[] = {
 	"details",
 	"category",
 	"extras",
+	"moderate",
 };
 
 typedef struct {
@@ -63,6 +65,7 @@ typedef struct
 	GsShellMode		 mode;
 	GsShellOverview		*shell_overview;
 	GsShellInstalled	*shell_installed;
+	GsShellModerate		*shell_moderate;
 	GsShellSearch		*shell_search;
 	GsShellUpdates		*shell_updates;
 	GsShellDetails		*shell_details;
@@ -188,6 +191,9 @@ gs_shell_change_mode (GsShell *shell,
 		break;
 	case GS_SHELL_MODE_INSTALLED:
 		gs_shell_installed_switch_to (priv->shell_installed, scroll_up);
+		break;
+	case GS_SHELL_MODE_MODERATE:
+		gs_shell_moderate_switch_to (priv->shell_moderate, scroll_up);
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
@@ -647,6 +653,12 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				  priv->plugin_loader,
 				  priv->builder,
 				  priv->cancellable);
+	priv->shell_moderate = GS_SHELL_MODERATE (gtk_builder_get_object (priv->builder, "shell_moderate"));
+	gs_shell_moderate_setup (priv->shell_moderate,
+				 shell,
+				 priv->plugin_loader,
+				 priv->builder,
+				 priv->cancellable);
 	priv->shell_search = GS_SHELL_SEARCH (gtk_builder_get_object (priv->builder, "shell_search"));
 	gs_shell_search_setup (priv->shell_search,
 			       shell,

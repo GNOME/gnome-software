@@ -1005,6 +1005,89 @@ gs_plugin_loader_get_distro_upgrades_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 /**
+ * gs_plugin_loader_get_unvoted_reviews_thread_cb:
+ **/
+static void
+gs_plugin_loader_get_unvoted_reviews_thread_cb (GTask *task,
+						gpointer object,
+						gpointer task_data,
+						GCancellable *cancellable)
+{
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GError *error = NULL;
+
+	state->list = gs_plugin_loader_run_results (plugin_loader,
+						    "gs_plugin_add_unvoted_reviews",
+						    state->flags,
+						    cancellable,
+						    &error);
+	if (error != NULL) {
+		g_task_return_error (task, error);
+		return;
+	}
+
+	/* filter package list */
+	gs_plugin_list_filter_duplicates (&state->list);
+
+	/* dedupe applications we already know about */
+	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
+
+	/* success */
+	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
+}
+
+/**
+ * gs_plugin_loader_get_unvoted_reviews_async:
+ *
+ * This method calls all plugins that implement the gs_plugin_add_unvoted_reviews()
+ * function.
+ **/
+void
+gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader *plugin_loader,
+					    GsPluginRefineFlags flags,
+					    GCancellable *cancellable,
+					    GAsyncReadyCallback callback,
+					    gpointer user_data)
+{
+	GsPluginLoaderAsyncState *state;
+	g_autoptr(GTask) task = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->flags = flags;
+
+	/* run in a thread */
+	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
+	g_task_set_return_on_cancel (task, TRUE);
+	g_task_run_in_thread (task, gs_plugin_loader_get_unvoted_reviews_thread_cb);
+}
+
+/**
+ * gs_plugin_loader_get_unvoted_reviews_finish:
+ *
+ * Return value: (element-type GsApp) (transfer full): A list of applications
+ **/
+GList *
+gs_plugin_loader_get_unvoted_reviews_finish (GsPluginLoader *plugin_loader,
+					     GAsyncResult *res,
+					     GError **error)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
+	g_return_val_if_fail (G_IS_TASK (res), NULL);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), NULL);
+	g_return_val_if_fail (error == NULL || *error == NULL, NULL);
+
+	return g_task_propagate_pointer (G_TASK (res), error);
+}
+
+/******************************************************************************/
+
+/**
  * gs_plugin_loader_get_sources_thread_cb:
  **/
 static void
@@ -2792,6 +2875,9 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 		break;
 	case GS_REVIEW_ACTION_REMOVE:
 		state->function_name = "gs_plugin_review_remove";
+		break;
+	case GS_REVIEW_ACTION_DISMISS:
+		state->function_name = "gs_plugin_review_dismiss";
 		break;
 	default:
 		g_assert_not_reached ();
