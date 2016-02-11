@@ -26,7 +26,6 @@
 #include <fcntl.h>
 #include <gio/gio.h>
 #include <gio/gunixfdlist.h>
-#include <libsoup/soup.h>
 #include <glib/gstdio.h>
 
 #include <gs-plugin.h>
@@ -46,7 +45,6 @@ struct GsPluginPrivate {
 	GDBusProxy		*proxy;
 	GPtrArray		*to_download;
 	GPtrArray		*to_ignore;
-	SoupSession		*session;
 	gchar			*cachedir;
 	gchar			*lvfs_sig_fn;
 	gchar			*lvfs_sig_hash;
@@ -71,12 +69,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	plugin->priv->to_download = g_ptr_array_new_with_free_func (g_free);
 	plugin->priv->to_ignore = g_ptr_array_new_with_free_func (g_free);
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
-	                                                       NULL);
-	/* this disables the double-compression of the firmware.xml.gz file */
-	soup_session_remove_feature_by_type (plugin->priv->session,
-					     SOUP_TYPE_CONTENT_DECODER);
-
 	plugin->priv->config_fn = g_build_filename (SYSCONFDIR, "fwupd.conf", NULL);
 	if (!g_file_test (plugin->priv->config_fn, G_FILE_TEST_EXISTS)) {
 		g_free (plugin->priv->config_fn);
@@ -102,8 +94,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_ptr_array_unref (plugin->priv->to_ignore);
 	if (plugin->priv->proxy != NULL)
 		g_object_unref (plugin->priv->proxy);
-	if (plugin->priv->session != NULL)
-		g_object_unref (plugin->priv->session);
 }
 
 /**
@@ -645,7 +635,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	/* download the signature first, it's smaller */
 	url_sig = g_strdup_printf ("%s.asc", url_data);
 	msg_sig = soup_message_new (SOUP_METHOD_GET, url_sig);
-	status_code = soup_session_send_message (plugin->priv->session, msg_sig);
+	status_code = soup_session_send_message (plugin->soup_session, msg_sig);
 	if (status_code != SOUP_STATUS_OK) {
 		g_warning ("Failed to download %s, ignoring: %s",
 			   url_sig, soup_status_get_phrase (status_code));
@@ -681,7 +671,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 
 	/* download the payload */
 	msg_data = soup_message_new (SOUP_METHOD_GET, url_data);
-	status_code = soup_session_send_message (plugin->priv->session, msg_data);
+	status_code = soup_session_send_message (plugin->soup_session, msg_data);
 	if (status_code != SOUP_STATUS_OK) {
 		g_warning ("Failed to download %s, ignoring: %s",
 			   url_data, soup_status_get_phrase (status_code));
@@ -753,7 +743,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 		/* set sync request */
 		msg = soup_message_new (SOUP_METHOD_GET, tmp);
-		status_code = soup_session_send_message (plugin->priv->session, msg);
+		status_code = soup_session_send_message (plugin->soup_session, msg);
 		if (status_code != SOUP_STATUS_OK) {
 			g_warning ("Failed to download %s, ignoring: %s",
 				   tmp, soup_status_get_phrase (status_code));

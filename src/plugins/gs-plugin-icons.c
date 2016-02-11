@@ -25,7 +25,6 @@
 #include <string.h>
 
 #include <glib/gi18n.h>
-#include <libsoup/soup.h>
 
 #include <gs-plugin.h>
 #include <gs-utils.h>
@@ -38,10 +37,6 @@
  * have to handle the download and caching functionality.
  */
 
-struct GsPluginPrivate {
-	SoupSession		*session;
-};
-
 /**
  * gs_plugin_get_name:
  */
@@ -49,17 +44,6 @@ const gchar *
 gs_plugin_get_name (void)
 {
 	return "icons";
-}
-
-/**
- * gs_plugin_initialize:
- */
-void
-gs_plugin_initialize (GsPlugin *plugin)
-{
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
-	                                                       NULL);
 }
 
 /**
@@ -73,16 +57,6 @@ gs_plugin_get_deps (GsPlugin *plugin)
 		"epiphany",		/* "" */
 		NULL };
 	return deps;
-}
-
-/**
- * gs_plugin_destroy:
- */
-void
-gs_plugin_destroy (GsPlugin *plugin)
-{
-	if (plugin->priv->session != NULL)
-		g_object_unref (plugin->priv->session);
 }
 
 /**
@@ -108,7 +82,7 @@ gs_plugin_icons_download (GsPlugin *plugin, const gchar *uri, const gchar *filen
 	}
 
 	/* set sync request */
-	status_code = soup_session_send_message (plugin->priv->session, msg);
+	status_code = soup_session_send_message (plugin->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,

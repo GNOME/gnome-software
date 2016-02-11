@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <libsoup/soup.h>
 #include <string.h>
 #include <sqlite3.h>
 #include <stdlib.h>
@@ -35,10 +34,6 @@
  *
  * It will self-disable if not run on a Fedora system.
  */
-
-struct GsPluginPrivate {
-	SoupSession		*session;
-};
 
 /**
  * gs_plugin_get_name:
@@ -58,10 +53,6 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	g_autoptr(GSettings) settings = NULL;
-
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
-	                                                       NULL);
 
 	/* this is opt-in, and turned off by default */
 	settings = g_settings_new ("org.gnome.desktop.privacy");
@@ -93,16 +84,6 @@ gs_plugin_get_deps (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_destroy:
- */
-void
-gs_plugin_destroy (GsPlugin *plugin)
-{
-	if (plugin->priv->session != NULL)
-		g_object_unref (plugin->priv->session);
-}
-
-/**
  * gs_plugin_app_set_usage_pkg:
  */
 static gboolean
@@ -128,7 +109,7 @@ gs_plugin_app_set_usage_pkg (GsPlugin *plugin,
 				  SOUP_MEMORY_COPY, data, strlen (data));
 
 	/* set sync request */
-	status_code = soup_session_send_message (plugin->priv->session, msg);
+	status_code = soup_session_send_message (plugin->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
 		g_debug ("Failed to set usage on fedora-tagger: %s",
 			 soup_status_get_phrase (status_code));

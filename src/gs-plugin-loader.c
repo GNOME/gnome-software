@@ -27,6 +27,7 @@
 
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
+#include "gs-utils.h"
 
 #define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */
 
@@ -37,6 +38,7 @@ typedef struct
 	gchar			*locale;
 	GsPluginStatus		 status_last;
 	AsProfile		*profile;
+	SoupSession		*soup_session;
 
 	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
@@ -3033,6 +3035,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->updates_changed_fn = gs_plugin_loader_updates_changed_cb;
 	plugin->updates_changed_user_data = plugin_loader;
 	plugin->profile = g_object_ref (priv->profile);
+	plugin->soup_session = g_object_ref (priv->soup_session);
 	plugin->scale = gs_plugin_loader_get_scale (plugin_loader);
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
 
@@ -3247,6 +3250,7 @@ gs_plugin_loader_plugin_free (GsPlugin *plugin)
 	g_free (plugin->priv);
 	g_free (plugin->name);
 	g_object_unref (plugin->profile);
+	g_object_unref (plugin->soup_session);
 	g_module_close (plugin->module);
 	g_slice_free (GsPlugin, plugin);
 }
@@ -3290,6 +3294,7 @@ gs_plugin_loader_finalize (GObject *object)
 	g_strfreev (priv->compatible_projects);
 	g_free (priv->location);
 	g_free (priv->locale);
+	g_object_unref (priv->soup_session);
 
 	g_mutex_clear (&priv->pending_apps_mutex);
 	g_mutex_clear (&priv->app_cache_mutex);
@@ -3351,6 +3356,12 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 								g_str_equal,
 								g_free,
 								(GFreeFunc) g_object_unref);
+
+	/* share a soup session (also disable the double-compression) */
+	priv->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
+							    NULL);
+	soup_session_remove_feature_by_type (priv->soup_session,
+					     SOUP_TYPE_CONTENT_DECODER);
 
 	/* get the locale without the UTF-8 suffix */
 	priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));

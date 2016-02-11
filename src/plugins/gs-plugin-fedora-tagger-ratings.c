@@ -22,7 +22,6 @@
 #include <config.h>
 
 #include <json-glib/json-glib.h>
-#include <libsoup/soup.h>
 #include <string.h>
 #include <sqlite3.h>
 #include <stdlib.h>
@@ -38,7 +37,6 @@
  */
 
 struct GsPluginPrivate {
-	SoupSession		*session;
 	gchar			*db_path;
 	gsize			 loaded;
 	sqlite3			*db;
@@ -71,8 +69,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 						  "gnome-software",
 						  "fedora-tagger.db",
 						  NULL);
-	plugin->priv->session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
-	                                                       NULL);
 
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
@@ -113,8 +109,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (plugin->priv->db_path);
 	if (plugin->priv->db != NULL)
 		sqlite3_close (plugin->priv->db);
-	if (plugin->priv->session != NULL)
-		g_object_unref (plugin->priv->session);
 }
 
 /**
@@ -174,7 +168,7 @@ gs_plugin_app_set_rating_pkg (GsPlugin *plugin,
 				  SOUP_MEMORY_COPY, data, strlen (data));
 
 	/* set sync request */
-	status_code = soup_session_send_message (plugin->priv->session, msg);
+	status_code = soup_session_send_message (plugin->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
 		g_debug ("Failed to set rating on fedora-tagger: %s",
 			 soup_status_get_phrase (status_code));
@@ -341,7 +335,7 @@ gs_plugin_fedora_tagger_download (GsPlugin *plugin, GError **error)
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 
 	/* set sync request */
-	status_code = soup_session_send_message (plugin->priv->session, msg);
+	status_code = soup_session_send_message (plugin->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,

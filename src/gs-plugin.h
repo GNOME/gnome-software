@@ -27,6 +27,7 @@
 #include <gmodule.h>
 #include <gio/gio.h>
 #include <gtk/gtk.h>
+#include <libsoup/soup.h>
 
 #include "gs-app.h"
 #include "gs-category.h"
@@ -75,6 +76,7 @@ struct GsPlugin {
 	GsPluginUpdatesChanged	 updates_changed_fn;
 	gpointer		 updates_changed_user_data;
 	AsProfile		*profile;
+	SoupSession		*soup_session;
 };
 
 typedef enum {
