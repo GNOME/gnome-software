@@ -249,11 +249,11 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GError **error)
 {
 	g_autoptr(GsApp) app = NULL;
-	app = gs_app_new ("org.fedoraproject.release-24.upgrade");
+	app = gs_app_new ("org.fedoraproject.release-rawhide.upgrade");
 	gs_app_set_kind (app, GS_APP_KIND_DISTRO_UPGRADE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Fedora");
-	gs_app_set_version (app, "24");
+	gs_app_set_version (app, "rawhide");
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
