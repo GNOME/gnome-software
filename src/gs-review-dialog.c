@@ -31,8 +31,8 @@
 #define DESCRIPTION_LENGTH_MAX		3000	/* chars */
 #define DESCRIPTION_LENGTH_MIN		60	/* chars */
 #define SUMMARY_LENGTH_MAX		70	/* chars */
-#define SUMMARY_LENGTH_MIN		15	/* chars */
-#define WRITING_TIME_MIN		20	/* seconds */
+#define SUMMARY_LENGTH_MIN		10	/* chars */
+#define WRITING_TIME_MIN		5	/* seconds */
 
 struct _GsReviewDialog
 {
