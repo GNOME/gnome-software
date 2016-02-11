@@ -41,7 +41,10 @@ struct _GsUpgradeBannerClass
 	void		(*learn_more_button_clicked)	(GsUpgradeBanner	*self);
 };
 
-GtkWidget	*gs_upgrade_banner_new			(GsApp			*app);
+GtkWidget	*gs_upgrade_banner_new			(void);
+void		 gs_upgrade_banner_set_app		(GsUpgradeBanner	*self,
+							 GsApp			*app);
+GsApp		*gs_upgrade_banner_get_app		(GsUpgradeBanner	*self);
 
 G_END_DECLS
 

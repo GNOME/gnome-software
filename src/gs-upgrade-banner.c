@@ -185,7 +185,7 @@ learn_more_button_cb (GtkWidget *widget, GsUpgradeBanner *self)
 	g_signal_emit (self, signals[SIGNAL_LEARN_MORE_BUTTON_CLICKED], 0);
 }
 
-static void
+void
 gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 {
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
@@ -204,6 +204,16 @@ gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 			  G_CALLBACK (app_state_changed), self);
 
 	gs_upgrade_banner_refresh (self);
+}
+
+GsApp *
+gs_upgrade_banner_get_app (GsUpgradeBanner *self)
+{
+	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
+
+	g_return_val_if_fail (GS_IS_UPGRADE_BANNER (self), NULL);
+
+	return priv->app;
 }
 
 static void
@@ -278,12 +288,11 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 }
 
 GtkWidget *
-gs_upgrade_banner_new (GsApp *app)
+gs_upgrade_banner_new (void)
 {
 	GsUpgradeBanner *self;
 
 	self = g_object_new (GS_TYPE_UPGRADE_BANNER, NULL);
-	gs_upgrade_banner_set_app (self, app);
 
 	return GTK_WIDGET (self);
 }
