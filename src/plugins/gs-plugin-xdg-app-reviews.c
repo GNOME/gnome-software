@@ -729,6 +729,8 @@ gs_plugin_refine (GsPlugin *plugin,
 				continue;
 			if (gs_app_get_id (app) == NULL)
 				continue;
+			if (gs_app_get_id_kind (app) == AS_ID_KIND_ADDON)
+				continue;
 			if (!gs_plugin_refine_reviews (plugin, app,
 						       cancellable,
 						       &error_local)) {
@@ -746,6 +748,8 @@ gs_plugin_refine (GsPlugin *plugin,
 			if (gs_app_get_review_ratings(app) != NULL)
 				continue;
 			if (gs_app_get_id (app) == NULL)
+				continue;
+			if (gs_app_get_id_kind (app) == AS_ID_KIND_ADDON)
 				continue;
 			if (!gs_plugin_refine_ratings (plugin, app,
 						       cancellable,
