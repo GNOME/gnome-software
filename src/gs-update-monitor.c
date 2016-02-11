@@ -216,8 +216,13 @@ get_upgrades_finished_cb (GObject *object,
 		g_debug ("no upgrades; withdrawing upgrades-available notification");
 		g_application_withdraw_notification (monitor->application,
 						     "upgrades-available");
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+		if (g_error_matches (error,
+		                     GS_PLUGIN_LOADER_ERROR,
+		                     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
+			g_debug ("no upgrades to show");
+		} else if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_warning ("failed to get upgrades: %s", error->message);
+		}
 		return;
 	}
 
