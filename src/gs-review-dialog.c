@@ -165,7 +165,6 @@ gs_review_row_dispose (GObject *object)
 	GsReviewDialog *dialog = GS_REVIEW_DIALOG (object);
 	if (dialog->timer_id > 0)
 		g_source_remove (dialog->timer_id);
-	g_clear_object (&dialog->spell_checker);
 	G_OBJECT_CLASS (gs_review_dialog_parent_class)->dispose (object);
 }
 
