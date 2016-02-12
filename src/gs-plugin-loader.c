@@ -3359,6 +3359,7 @@ gs_plugin_loader_dispose (GObject *object)
 		g_source_remove (priv->updates_changed_id);
 		priv->updates_changed_id = 0;
 	}
+	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->profile);
 	g_clear_object (&priv->settings);
 	g_clear_pointer (&priv->app_cache, g_hash_table_unref);
@@ -3380,7 +3381,6 @@ gs_plugin_loader_finalize (GObject *object)
 	g_strfreev (priv->compatible_projects);
 	g_free (priv->location);
 	g_free (priv->locale);
-	g_object_unref (priv->soup_session);
 
 	g_mutex_clear (&priv->pending_apps_mutex);
 	g_mutex_clear (&priv->app_cache_mutex);

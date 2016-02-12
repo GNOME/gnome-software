@@ -70,7 +70,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	g_autoptr(GError) error = NULL;
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (), NULL);
 	plugin->priv->settings = g_settings_new ("org.gnome.software");
 	plugin->priv->review_server = g_settings_get_string (plugin->priv->settings,
 							     "review-server");
@@ -112,7 +111,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_free (plugin->priv->user_hash);
 	g_free (plugin->priv->distro);
-	g_object_unref (plugin->soup_session);
 	g_object_unref (plugin->priv->settings);
 }
 

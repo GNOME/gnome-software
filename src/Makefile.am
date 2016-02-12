@@ -293,6 +293,7 @@ gs_self_test_SOURCES =						\
 
 gs_self_test_LDADD =						\
 	$(APPSTREAM_LIBS)					\
+	$(SOUP_LIBS)						\
 	$(GLIB_LIBS)						\
 	$(GTK_LIBS)
 
