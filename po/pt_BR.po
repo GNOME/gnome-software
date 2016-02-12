@@ -5,7 +5,7 @@
 # Georges Basile Stavracas Neto <georges.stavracas@gmail.com>, 2013, 2014.
 # Enrico Nicoletto <liverig@gmail.com>, 2013, 2014, 2015.
 # Felipe Braga <fbobraga@gmail.com>, 2015.
-# Fábio Nogueira <deb-user-ba@ubuntu.com>, 2015.
+# Fábio Nogueira <deb-user-ba@ubuntu.com>, 2015, 2016.
 # Rafael Fontenelle <rffontenelle@gmail.com>, 2013, 2014, 2015, 2016.
 #
 msgid ""
@@ -13,9 +13,9 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-02-10 10:24+0000\n"
-"PO-Revision-Date: 2016-02-10 14:28-0200\n"
-"Last-Translator: Rafael Fontenelle <rffontenelle@gmail.com>\n"
+"POT-Creation-Date: 2016-02-12 16:59+0000\n"
+"PO-Revision-Date: 2016-02-12 15:11-0300\n"
+"Last-Translator: Fábio Nogueira <fnogueira@gnome.org>\n"
 "Language-Team: Brazilian Portuguese <gnome-pt_br-list@gnome.org>\n"
 "Language: pt_BR\n"
 "MIME-Version: 1.0\n"
@@ -81,7 +81,7 @@ msgstr "Instalado"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:371 ../src/gs-shell.c:159
+#: ../src/gs-application.c:371 ../src/gs-shell.c:162
 msgid "Software"
 msgstr "Programas"
 
@@ -312,7 +312,7 @@ msgstr "Instalar"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #: ../src/gs-app-row.c:276 ../src/gs-app-row.c:287 ../src/gs-page.c:231
-#: ../src/gs-review-row.ui.h:5
+#: ../src/gs-review-row.ui.h:6
 msgid "Remove"
 msgstr "Remover"
 
@@ -492,24 +492,24 @@ msgstr "%s será removido e para usá-lo novamente, você precisará instalá-lo
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:781
+#: ../src/gs-plugin-loader.c:787
 msgid "OS Updates"
 msgstr "Atualizações do SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:786
+#: ../src/gs-plugin-loader.c:792
 msgid "Includes performance, stability and security improvements."
 msgstr "Inclui melhorias de desempenho, estabilidade e segurança."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1429 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1518 ../src/gs-shell-extras.c:387
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Não há complementos de codecs disponíveis para o formato %s."
 
-#: ../src/gs-plugin-loader.c:1432
+#: ../src/gs-plugin-loader.c:1521
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -518,28 +518,33 @@ msgstr ""
 "Informações sobre %s, bem como as opções de como obter um codec que pode "
 "reproduzir este formato podem ser encontradas no site da web."
 
+#. TRANSLATORS: the review can't just be copied and pasted
+#: ../src/gs-review-dialog.c:92
+msgid "Please take more time writing the review"
+msgstr "Por favor, leve mais tempo escrevendo a avaliação"
+
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:93
+#: ../src/gs-review-dialog.c:96
 msgid "Please choose a star rating"
 msgstr "Por favor, escolha uma estrela de pontuação"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:97
+#: ../src/gs-review-dialog.c:100
 msgid "The summary is too short"
 msgstr "A resenha está curta demais"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:101
+#: ../src/gs-review-dialog.c:104
 msgid "The summary is too long"
 msgstr "A resenha está grande demais"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:105
+#: ../src/gs-review-dialog.c:108
 msgid "The description is too short"
 msgstr "A descrição está curta demais"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:109
+#: ../src/gs-review-dialog.c:112
 msgid "The description is too long"
 msgstr "A descrição está grande demais"
 
@@ -568,7 +573,8 @@ msgstr ""
 "Forneça uma breve resenha da sua avaliação, por exemplo: “Ótimo aplicativo, "
 "eu recomendo”."
 
-#: ../src/gs-review-dialog.ui.h:7 ../src/gs-update-monitor.c:456
+#. TRANSLATORS: to look at the updates that were installed
+#: ../src/gs-review-dialog.ui.h:7 ../src/gs-update-monitor.c:457
 msgid "Review"
 msgstr "Revisar"
 
@@ -594,6 +600,10 @@ msgid "No"
 msgstr "Não"
 
 #: ../src/gs-review-row.ui.h:4
+msgid "Meh"
+msgstr "Meh"
+
+#: ../src/gs-review-row.ui.h:5
 msgid "Report Abuse"
 msgstr "Relatar abuso"
 
@@ -849,51 +859,51 @@ msgid "_Removing"
 msgstr "_Removendo"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:649
+#: ../src/gs-shell-details.c:650
 msgctxt "license"
 msgid "Unknown"
 msgstr "Desconhecido"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:662
+#: ../src/gs-shell-details.c:663
 msgctxt "version"
 msgid "Unknown"
 msgstr "Desconhecido"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:668
+#: ../src/gs-shell-details.c:669
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Calculando…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:671
+#: ../src/gs-shell-details.c:672
 msgctxt "size"
 msgid "Unknown"
 msgstr "Desconhecido"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:683
+#: ../src/gs-shell-details.c:684
 msgctxt "updated"
 msgid "Never"
 msgstr "Nunca"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:697
+#: ../src/gs-shell-details.c:698
 msgctxt "menu category"
 msgid "None"
 msgstr "Nenhuma"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:714
+#: ../src/gs-shell-details.c:715
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Desconhecido"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:803
+#: ../src/gs-shell-details.c:801
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -901,27 +911,27 @@ msgstr ""
 "Este aplicativo só pode ser usado quando há uma conexão ativa com a Internet."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:814
+#: ../src/gs-shell-details.c:812
 msgid "This software comes from a 3rd party."
 msgstr "Este programa veio de terceiros"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:823
+#: ../src/gs-shell-details.c:821
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr "Este programa veio de terceiros e pode conter componentes não livres."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:832
+#: ../src/gs-shell-details.c:830
 msgid "This software may contain non-free components."
 msgstr "Este programa pode conter componentes não livres."
 
-#: ../src/gs-shell-details.c:1105
+#: ../src/gs-shell-details.c:1103
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Não foi possível localizar \"%s\""
 
-#: ../src/gs-shell-details.c:1153 ../src/gs-utils.c:162
+#: ../src/gs-shell-details.c:1151 ../src/gs-utils.c:162
 msgid "Sorry, this did not work"
 msgstr "Desculpe, isto não funcionou"
 
@@ -992,7 +1002,7 @@ msgstr "Site da _web"
 msgid "_History"
 msgstr "_Histórico"
 
-#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:550
+#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:551
 msgid "Details"
 msgstr "Detalhes"
 
@@ -1113,6 +1123,10 @@ msgid "Recommended Office Applications"
 msgstr "Aplicativos de escritório recomendados"
 
 #. vim: set noexpandtab:
+#: ../src/gs-shell-moderate.ui.h:1
+msgid "Moderate page"
+msgstr "Página moderada"
+
 #: ../src/gs-shell-overview.ui.h:1
 msgid "Overview page"
 msgstr "Página de visão geral"
@@ -1563,29 +1577,29 @@ msgstr[1] "Foram instaladas atualizações importantes do sistema operacional."
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-update-monitor.c:531
+#: ../src/gs-update-monitor.c:532
 msgid "Detailed errors from the package manager follow:"
 msgstr "Seguem os erros detalhados do gerenciador de pacotes:"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:592
+#: ../src/gs-update-monitor.c:593
 msgid "Failed To Update"
 msgstr "Ocorreu falha ao atualizar"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:598
+#: ../src/gs-update-monitor.c:599
 msgid "The system was already up to date."
 msgstr "O sistema já está atualizado."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:603
+#: ../src/gs-update-monitor.c:604
 msgid "The update was cancelled."
 msgstr "A atualização foi cancelada."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:609
+#: ../src/gs-update-monitor.c:610
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1594,7 +1608,7 @@ msgstr ""
 "certifique-se de que você possui acesso à internet e tente novamente."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:615
+#: ../src/gs-update-monitor.c:616
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -1603,7 +1617,7 @@ msgstr ""
 "fornecedor de software para mais detalhes."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:621
+#: ../src/gs-update-monitor.c:622
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -1611,7 +1625,7 @@ msgstr ""
 "novamente."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:626
+#: ../src/gs-update-monitor.c:627
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
