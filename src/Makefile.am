@@ -95,6 +95,7 @@ gnome_software_cmd_SOURCES =				\
 
 gnome_software_cmd_LDADD =				\
 	$(APPSTREAM_LIBS)				\
+	$(SOUP_LIBS)					\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)
 
