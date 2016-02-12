@@ -454,7 +454,7 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	notification = g_notification_new (title);
 	g_notification_set_body (notification, message);
 	/* TRANSLATORS: to look at the updates that were installed */
-	g_notification_add_button_with_target (notification, _("Review"), "app.set-mode", "s", "updated");
+	g_notification_add_button_with_target (notification, C_("updates", "Review"), "app.set-mode", "s", "updated");
 	g_notification_set_default_action_and_target (notification, "app.set-mode", "s", "updated");
 	g_application_send_notification (monitor->application, "offline-updates", notification);
 
