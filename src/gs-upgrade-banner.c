@@ -151,7 +151,7 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 }
 
 static gboolean
-app_state_changed_idle (gpointer user_data)
+app_refresh_idle (gpointer user_data)
 {
 	GsUpgradeBanner *self = GS_UPGRADE_BANNER (user_data);
 
@@ -164,7 +164,13 @@ app_state_changed_idle (gpointer user_data)
 static void
 app_state_changed (GsApp *app, GParamSpec *pspec, GsUpgradeBanner *self)
 {
-	g_idle_add (app_state_changed_idle, g_object_ref (self));
+	g_idle_add (app_refresh_idle, g_object_ref (self));
+}
+
+static void
+app_progress_changed (GsApp *app, GParamSpec *pspec, GsUpgradeBanner *self)
+{
+	g_idle_add (app_refresh_idle, g_object_ref (self));
 }
 
 static void
@@ -193,8 +199,10 @@ gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 	g_return_if_fail (GS_IS_UPGRADE_BANNER (self));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
-	if (priv->app)
+	if (priv->app) {
 		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, self);
+		g_signal_handlers_disconnect_by_func (priv->app, app_progress_changed, self);
+	}
 
 	g_set_object (&priv->app, app);
 	if (!app)
@@ -202,6 +210,8 @@ gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 
 	g_signal_connect (priv->app, "notify::state",
 			  G_CALLBACK (app_state_changed), self);
+	g_signal_connect (priv->app, "notify::progress",
+	                  G_CALLBACK (app_progress_changed), self);
 
 	gs_upgrade_banner_refresh (self);
 }
@@ -222,8 +232,10 @@ gs_upgrade_banner_destroy (GtkWidget *widget)
 	GsUpgradeBanner *self = GS_UPGRADE_BANNER (widget);
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
 
-	if (priv->app)
+	if (priv->app) {
 		g_signal_handlers_disconnect_by_func (priv->app, app_state_changed, self);
+		g_signal_handlers_disconnect_by_func (priv->app, app_progress_changed, self);
+	}
 
 	g_clear_object (&priv->app);
 
