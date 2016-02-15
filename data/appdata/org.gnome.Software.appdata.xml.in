@@ -30,6 +30,29 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.19.90" date="2016-02-15">
+      <description>
+        <p>
+          This is an unstable release in the 3.19 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add end-user application review functionality</li>
+          <li>Add support for upgrading the OS from one release to another</li>
+          <li>Add support for xdg-app and Limba bundles</li>
+          <li>Add tags to applications, and explain them in the details page</li>
+          <li>Update the list of featured applications on the front page</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Add a missing tag to the software center metadata file</li>
+          <li>PackageKit support is now optional</li>
+          <li>Temporarily remove the remove button in the sources dialog</li>
+          <li>Use versioned user cache directories to pick up new screenshots</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release version="3.19.4" timestamp="1452867221">
       <description>
         <p>
