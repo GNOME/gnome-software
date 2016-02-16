@@ -102,6 +102,7 @@ struct _GsApp
 	gboolean		 to_be_installed;
 	gboolean		 provenance;
 	gboolean		 licence_is_free;
+	GsApp			*runtime;
 };
 
 enum {
@@ -326,6 +327,13 @@ gs_app_to_string (GsApp *app)
 					(const gchar *) l->data, tmp);
 	}
 	g_list_free (keys);
+
+	/* print runtime data too */
+	if (app->runtime != NULL) {
+		g_autofree gchar *runtime = gs_app_to_string (app->runtime);
+		g_string_append_printf (str, "\n\tRuntime:\n\t%s\n", runtime);
+	}
+
 	return g_string_free (str, FALSE);
 }
 
@@ -951,6 +959,26 @@ gs_app_set_icon (GsApp *app, AsIcon *icon)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_set_object (&app->icon, icon);
+}
+
+/**
+ * gs_app_get_runtime:
+ */
+GsApp *
+gs_app_get_runtime (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->runtime;
+}
+
+/**
+ * gs_app_set_runtime:
+ */
+void
+gs_app_set_runtime (GsApp *app, GsApp *runtime)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_set_object (&app->runtime, runtime);
 }
 
 /**
@@ -2256,6 +2284,7 @@ gs_app_dispose (GObject *object)
 	GsApp *app = GS_APP (object);
 
 	g_clear_object (&app->icon);
+	g_clear_object (&app->runtime);
 	g_clear_object (&app->pixbuf);
 
 	g_clear_pointer (&app->addons, g_ptr_array_unref);
