@@ -3449,9 +3449,12 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	soup_session_remove_feature_by_type (priv->soup_session,
 					     SOUP_TYPE_CONTENT_DECODER);
 
-	/* get the locale without the UTF-8 suffix */
+	/* get the locale without the various UTF-8 suffixes */
 	priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
 	match = g_strstr_len (priv->locale, -1, ".UTF-8");
+	if (match != NULL)
+		*match = '\0';
+	match = g_strstr_len (priv->locale, -1, ".utf8");
 	if (match != NULL)
 		*match = '\0';
 
