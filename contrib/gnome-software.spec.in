@@ -1,5 +1,5 @@
 %define alphatag                        #ALPHATAG#
-%define distrotag                       21
+%define distrotag                       23
 
 Summary:   A software center for GNOME
 Name:      gnome-software
@@ -44,13 +44,13 @@ and update software in the GNOME desktop.
 %setup -q
 
 %build
-%configure --disable-static
+%configure --disable-static --disable-silent-rules
 make %{?_smp_mflags}
 
 %install
 %make_install
 
-%__rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.la
+rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.la
 
 # make the software center load faster
 desktop-file-edit %{buildroot}%{_datadir}/applications/org.gnome.Software.desktop \
@@ -77,7 +77,8 @@ gtk-update-icon-cache %{_datadir}/icons/hicolor &> /dev/null || :
 glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 
 %files -f %{name}.lang
-%doc AUTHORS COPYING NEWS README
+%doc AUTHORS NEWS README
+%license COPYING
 %{_bindir}/gnome-software
 %{_datadir}/applications/*.desktop
 %dir %{_datadir}/gnome-software
@@ -91,12 +92,12 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %dir %{_libdir}/gs-plugins-%{gs_plugin_version}
 %{_libdir}/gs-plugins-%{gs_plugin_version}/*.so
 %{_sysconfdir}/xdg/autostart/gnome-software-service.desktop
+%{_datadir}/dbus-1/services/org.freedesktop.PackageKit.service
 %{_datadir}/dbus-1/services/org.gnome.Software.service
 %{_datadir}/gnome-shell/search-providers/org.gnome.Software-search-provider.ini
 %{_datadir}/glib-2.0/schemas/org.gnome.software.gschema.xml
 %dir %{_datadir}/gnome-software/modulesets.d
 %{_datadir}/gnome-software/modulesets.d/*.xml
-%{_datadir}/dbus-1/services/org.freedesktop.PackageKit.service
 
 %changelog
 * #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#
