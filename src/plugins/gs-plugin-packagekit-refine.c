@@ -865,6 +865,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 			continue;
 		app = GS_APP (l->data);
+		if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+			continue;
 		if (gs_app_get_source_id_default (app) != NULL)
 			continue;
 		tmp = gs_app_get_id (app);
