@@ -1252,7 +1252,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 				gs_app_set_state (runtime, AS_APP_STATE_AVAILABLE);
 				return FALSE;
 			}
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+			gs_app_set_state (runtime, AS_APP_STATE_INSTALLED);
 		} else {
 			g_debug ("%s is already installed, so skipping",
 				 gs_app_get_id (runtime));
