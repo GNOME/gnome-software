@@ -567,17 +567,13 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 	/* set name */
 	tmp = as_app_get_name (item, NULL);
 	if (tmp != NULL) {
-		gs_app_set_name (app,
-				 GS_APP_QUALITY_HIGHEST,
-				 as_app_get_name (item, NULL));
+		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, tmp);
 	}
 
 	/* set summary */
 	tmp = as_app_get_comment (item, NULL);
 	if (tmp != NULL) {
-		gs_app_set_summary (app,
-				    GS_APP_QUALITY_HIGHEST,
-				    as_app_get_comment (item, NULL));
+		gs_app_set_summary (app, GS_APP_QUALITY_HIGHEST, tmp);
 	}
 
 	/* add urls */
@@ -622,9 +618,7 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 			g_prefix_error (error, "trying to parse '%s': ", tmp);
 			return FALSE;
 		}
-		gs_app_set_description (app,
-					GS_APP_QUALITY_HIGHEST,
-					from_xml);
+		gs_app_set_description (app, GS_APP_QUALITY_HIGHEST, from_xml);
 	}
 
 	/* set icon */
