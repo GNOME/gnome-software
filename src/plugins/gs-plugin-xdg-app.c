@@ -476,6 +476,11 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		XdgAppInstalledRef *xref = g_ptr_array_index (xrefs, i);
 		g_autoptr(GError) error_local = NULL;
 		g_autoptr(GsApp) app = NULL;
+
+		/* only apps */
+		if (xdg_app_ref_get_kind (XDG_APP_REF (xref)) != XDG_APP_REF_KIND_APP)
+			continue;
+
 		app = gs_plugin_xdg_app_create_installed (plugin, xref, &error_local);
 		if (app == NULL) {
 			g_warning ("failed to add xdg-app: %s", error_local->message);
