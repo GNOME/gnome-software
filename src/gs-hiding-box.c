@@ -273,7 +273,7 @@ gs_hiding_box_size_allocate (GtkWidget *widget, GtkAllocation *allocation)
 		clip.x = clip.y = 0;
 	}
 
-	for (i = 0, child = box->children; child != NULL; child = child->next) {
+	for (child = box->children; child != NULL; child = child->next) {
 		child_widget = GTK_WIDGET (child->data);
 		if (gtk_widget_get_visible (child_widget) &&
 		    gtk_widget_get_child_visible (child_widget)) {
