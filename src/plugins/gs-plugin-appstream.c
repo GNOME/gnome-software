@@ -474,6 +474,7 @@ gs_plugin_refine_item_management_plugin (GsApp *app, AsApp *item)
 {
 	GPtrArray *bundles;
 	const gchar *management_plugin = NULL;
+	const gchar *runtime = NULL;
 	guint i;
 
 	/* find the default bundle kind */
@@ -483,6 +484,20 @@ gs_plugin_refine_item_management_plugin (GsApp *app, AsApp *item)
 		if (as_bundle_get_kind (bundle) == AS_BUNDLE_KIND_XDG_APP) {
 			management_plugin = "XgdApp";
 			gs_app_add_source (app, as_bundle_get_id (bundle));
+
+#if AS_CHECK_VERSION(0,5,10)
+			/* automatically add runtime */
+			runtime = as_bundle_get_runtime (bundle);
+			if (runtime != NULL) {
+				g_autofree gchar *source = NULL;
+				g_autoptr(GsApp) app_runtime = NULL;
+				app_runtime = gs_app_new (runtime);
+				source = g_strdup_printf ("runtime/%s", runtime);
+				gs_app_add_source (app_runtime, source);
+				gs_app_set_id_kind (app_runtime, AS_ID_KIND_RUNTIME);
+				gs_app_set_runtime (app, app_runtime);
+			}
+#endif
 			break;
 		}
 		if (as_bundle_get_kind (bundle) == AS_BUNDLE_KIND_LIMBA) {
