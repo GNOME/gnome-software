@@ -1000,6 +1000,10 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 	if (!gs_plugin_refine_item_commit (plugin, app, cancellable, error))
 		return FALSE;
 
+	/* need runtime */
+	if (!gs_plugin_refine_item_runtime (plugin, app, cancellable, error))
+		return FALSE;
+
 	/* calculate the platform size too if the app is not installed */
 	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE &&
 	    gs_app_get_xdgapp_kind (app) == XDG_APP_REF_KIND_APP) {
@@ -1105,12 +1109,6 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	/* origin */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
 		if (!gs_plugin_refine_item_origin_ui (plugin, app, cancellable, error))
-			return FALSE;
-	}
-
-	/* runtime */
-	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) {
-		if (!gs_plugin_refine_item_runtime (plugin, app, cancellable, error))
 			return FALSE;
 	}
 
