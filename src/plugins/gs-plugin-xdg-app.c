@@ -22,12 +22,11 @@
 /* Notes:
  *
  * All GsApp's created have management-plugin set to XgdApp
- * Some GsApp's created have have XgdApp::type of app or runtime
+ * Some GsApp's created have have XgdApp::kind of app or runtime
  * The GsApp:origin is the remote name, e.g. test-repo
  *
  * Some outstanding notes:
  *
- * - How can I get the AppStream metadata using libxdgapp?
  * - Where is the privaledge elevation helper?
  */
 
@@ -85,6 +84,46 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (plugin->priv->installation);
 	if (plugin->priv->monitor != NULL)
 		g_object_unref (plugin->priv->monitor);
+}
+
+/* helpers */
+#define gs_app_get_xdgapp_kind_as_str(app)	gs_app_get_metadata_item(app,"XgdApp::kind")
+#define gs_app_get_xdgapp_name(app)		gs_app_get_metadata_item(app,"XgdApp::name")
+#define gs_app_get_xdgapp_arch(app)		gs_app_get_metadata_item(app,"XgdApp::arch")
+#define gs_app_get_xdgapp_branch(app)		gs_app_get_metadata_item(app,"XgdApp::branch")
+#define gs_app_get_xdgapp_commit(app)		gs_app_get_metadata_item(app,"XgdApp::commit")
+#define gs_app_set_xdgapp_name(app,val)		gs_app_set_metadata(app,"XgdApp::name",val)
+#define gs_app_set_xdgapp_arch(app,val)		gs_app_set_metadata(app,"XgdApp::arch",val)
+#define gs_app_set_xdgapp_branch(app,val)	gs_app_set_metadata(app,"XgdApp::branch",val)
+#define gs_app_set_xdgapp_commit(app,val)	gs_app_set_metadata(app,"XgdApp::commit",val)
+
+/**
+ * gs_app_get_xdgapp_kind:
+ */
+static XdgAppRefKind
+gs_app_get_xdgapp_kind (GsApp *app)
+{
+	const gchar *kind = gs_app_get_metadata_item (app, "XgdApp::kind");
+	if (g_strcmp0 (kind, "app") == 0)
+		return XDG_APP_REF_KIND_APP;
+	if (g_strcmp0 (kind, "runtime") == 0)
+		return XDG_APP_REF_KIND_RUNTIME;
+	g_warning ("unknown xdg-app kind: %s", kind);
+	return XDG_APP_REF_KIND_APP;
+}
+
+/**
+ * gs_app_set_xdgapp_kind:
+ */
+static void
+gs_app_set_xdgapp_kind (GsApp *app, XdgAppRefKind kind)
+{
+	if (kind == XDG_APP_REF_KIND_APP)
+		gs_app_set_metadata (app, "XgdApp::kind", "app");
+	else if (kind == XDG_APP_REF_KIND_RUNTIME)
+		gs_app_set_metadata (app, "XgdApp::kind", "runtime");
+	else
+		g_assert_not_reached ();
 }
 
 #ifndef HAVE_PACKAGEKIT
@@ -262,25 +301,11 @@ static void
 gs_plugin_xdg_app_set_metadata (GsApp *app, XdgAppRef *xref)
 {
 	gs_app_set_management_plugin (app, "XgdApp");
-	gs_app_set_metadata (app, "XgdApp::branch",
-			     xdg_app_ref_get_branch (xref));
-	gs_app_set_metadata (app, "XgdApp::commit",
-			     xdg_app_ref_get_commit (xref));
-	gs_app_set_metadata (app, "XgdApp::name",
-			     xdg_app_ref_get_name (xref));
-	gs_app_set_metadata (app, "XgdApp::arch",
-			     xdg_app_ref_get_arch (xref));
-
-	switch (xdg_app_ref_get_kind (xref)) {
-	case XDG_APP_REF_KIND_APP:
-		gs_app_set_metadata (app, "XgdApp::type", "app");
-		break;
-	case XDG_APP_REF_KIND_RUNTIME:
-		gs_app_set_metadata (app, "XgdApp::type", "runtime");
-		break;
-	default:
-		break;
-	}
+	gs_app_set_xdgapp_kind (app, xdg_app_ref_get_kind (xref));
+	gs_app_set_xdgapp_name (app, xdg_app_ref_get_name (xref));
+	gs_app_set_xdgapp_arch (app, xdg_app_ref_get_arch (xref));
+	gs_app_set_xdgapp_branch (app, xdg_app_ref_get_branch (xref));
+	gs_app_set_xdgapp_commit (app, xdg_app_ref_get_commit (xref));
 }
 
 /**
@@ -323,6 +348,17 @@ gs_plugin_xdg_app_set_metadata_installed (GsApp *app, XdgAppInstalledRef *xref)
 }
 
 /**
+ * gs_plugin_xdg_app_build_id:
+ */
+static gchar *
+gs_plugin_xdg_app_build_id (XdgAppRef *xref)
+{
+	if (xdg_app_ref_get_kind (xref) == XDG_APP_REF_KIND_APP)
+		return g_strdup_printf ("%s.desktop", xdg_app_ref_get_name (xref));
+	return g_strdup_printf ("%s.runtime", xdg_app_ref_get_name (xref));
+}
+
+/**
  * gs_plugin_xdg_app_create_installed:
  */
 static GsApp *
@@ -354,20 +390,17 @@ gs_plugin_xdg_app_create_installed (GsPlugin *plugin,
 	}
 
 	/* create new object */
-	app = gs_app_new (NULL);
+	id = gs_plugin_xdg_app_build_id (XDG_APP_REF (xref));
+	app = gs_app_new (id);
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_plugin_xdg_app_set_metadata_installed (app, xref);
 
 	switch (xdg_app_ref_get_kind (XDG_APP_REF(xref))) {
 	case XDG_APP_REF_KIND_APP:
-		id = g_strdup_printf ("%s.desktop",
-				      xdg_app_ref_get_name (XDG_APP_REF(xref)));
 		gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
 		break;
 	case XDG_APP_REF_KIND_RUNTIME:
-		id = g_strdup_printf ("%s.runtime",
-				      xdg_app_ref_get_name (XDG_APP_REF(xref)));
-		gs_app_set_metadata (app, "XgdApp::type", "runtime");
+		gs_app_set_xdgapp_kind (app, XDG_APP_REF_KIND_RUNTIME);
 		gs_app_set_id_kind (app, AS_ID_KIND_RUNTIME);
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
 				 xdg_app_ref_get_name (XDG_APP_REF (xref)));
@@ -385,9 +418,6 @@ gs_plugin_xdg_app_create_installed (GsPlugin *plugin,
 				     "XdgAppRefKind not known");
 		return NULL;
 	}
-
-	/* we know the full application ID now */
-	gs_app_set_id (app, id);
 	return g_object_ref (app);
 }
 
@@ -619,13 +649,13 @@ gs_plugin_refresh (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_refine_item_origin:
+ * gs_plugin_refine_item_origin_ui:
  */
 static gboolean
-gs_plugin_refine_item_origin (GsPlugin *plugin,
-			      GsApp *app,
-			      GCancellable *cancellable,
-			      GError **error)
+gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
+				 GsApp *app,
+				 GCancellable *cancellable,
+				 GError **error)
 {
 	const gchar *origin;
 	guint i;
@@ -636,6 +666,47 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 	/* already set */
 	origin = gs_app_get_origin_ui (app);
 	if (origin != NULL)
+		return TRUE;
+
+	/* ensure we can set up the repo */
+	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-origin-ui");
+	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
+		return FALSE;
+
+	/* find list of remotes */
+	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
+						      cancellable,
+						      error);
+	if (xremotes == NULL)
+		return FALSE;
+	for (i = 0; i < xremotes->len; i++) {
+		XdgAppRemote *xremote = g_ptr_array_index (xremotes, i);
+		if (g_strcmp0 (gs_app_get_origin (app),
+			       xdg_app_remote_get_name (xremote)) == 0) {
+			gs_app_set_origin_ui (app, xdg_app_remote_get_title (xremote));
+			break;
+		}
+	}
+
+	return TRUE;
+}
+
+/**
+ * gs_plugin_refine_item_origin:
+ */
+static gboolean
+gs_plugin_refine_item_origin (GsPlugin *plugin,
+			      GsApp *app,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	guint i;
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GPtrArray) xremotes = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* already set */
+	if (gs_app_get_origin (app) != NULL)
 		return TRUE;
 
 	/* ensure we can set up the repo */
@@ -650,15 +721,31 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 	if (xremotes == NULL)
 		return FALSE;
 	for (i = 0; i < xremotes->len; i++) {
+		const gchar *remote_name;
 		XdgAppRemote *xremote = g_ptr_array_index (xremotes, i);
-		if (g_strcmp0 (gs_app_get_origin (app),
-		    xdg_app_remote_get_name (xremote)) == 0) {
-			gs_app_set_origin_ui (app, xdg_app_remote_get_title (xremote));
-			break;
+		g_autoptr(XdgAppRemoteRef) xref = NULL;
+		remote_name = xdg_app_remote_get_name (xremote);
+		xref = xdg_app_installation_fetch_remote_ref_sync (plugin->priv->installation,
+								   remote_name,
+								   XDG_APP_REF_KIND_RUNTIME,
+								   gs_app_get_xdgapp_name (app),
+								   gs_app_get_xdgapp_arch (app),
+								   gs_app_get_xdgapp_branch (app),
+								   cancellable,
+								   NULL);
+		if (xref != NULL) {
+			gs_app_set_origin (app, remote_name);
+			return TRUE;
 		}
 	}
-
-	return TRUE;
+	g_set_error (error,
+		     GS_PLUGIN_ERROR,
+		     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+		     "Not found %s/%s/%s",
+		     gs_app_get_xdgapp_name (app),
+		     gs_app_get_xdgapp_arch (app),
+		     gs_app_get_xdgapp_branch (app));
+	return NULL;
 }
 
 /**
@@ -670,28 +757,222 @@ gs_plugin_refine_item_commit (GsPlugin *plugin,
 			      GCancellable *cancellable,
 			      GError **error)
 {
-	XdgAppRefKind kind = XDG_APP_REF_KIND_APP;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(XdgAppRemoteRef) xref_remote = NULL;
 
-	if (gs_app_get_metadata_item (app, "XgdApp::commit") != NULL)
+	if (gs_app_get_xdgapp_commit (app) != NULL)
 		return TRUE;
-	if (g_strcmp0 (gs_app_get_metadata_item (app, "XgdApp::type"), "runtime") == 0)
-		kind = XDG_APP_REF_KIND_RUNTIME;
+	if (gs_app_get_origin (app) == NULL) {
+		g_debug ("no origin got commit, so refining origin first");
+		if (!gs_plugin_refine_item_origin (plugin, app, cancellable, error))
+			return FALSE;
+	}
 
 	ptask = as_profile_start_literal (plugin->profile, "xdg-app::fetch-remote-ref");
 	xref_remote = xdg_app_installation_fetch_remote_ref_sync (plugin->priv->installation,
 								  gs_app_get_origin (app),
-								  kind,
-								  gs_app_get_metadata_item (app, "XgdApp::name"),
-								  gs_app_get_metadata_item (app, "XgdApp::arch"),
-								  gs_app_get_metadata_item (app, "XgdApp::branch"),
+								  gs_app_get_xdgapp_kind (app),
+								  gs_app_get_xdgapp_name (app),
+								  gs_app_get_xdgapp_arch (app),
+								  gs_app_get_xdgapp_branch (app),
 								  cancellable,
 								  error);
 	if (xref_remote == NULL)
 		return FALSE;
-	gs_app_set_metadata (app, "XgdApp::commit",
-			     xdg_app_ref_get_commit (XDG_APP_REF (xref_remote)));
+	gs_app_set_xdgapp_commit (app, xdg_app_ref_get_commit (XDG_APP_REF (xref_remote)));
+	return TRUE;
+}
+
+/**
+ * gs_plugin_xdg_app_is_xref:
+ */
+static gboolean
+gs_plugin_xdg_app_is_xref (GsApp *app, XdgAppRef *xref)
+{
+	g_autofree gchar *id = NULL;
+
+	/* check ID */
+	id = gs_plugin_xdg_app_build_id (xref);
+	if (g_strcmp0 (id, gs_app_get_id (app)) == 0)
+		return TRUE;
+
+	/* check source ID */
+//	if (g_strcmp0 (id, gs_app_get_id (app)) == 0)
+//		return TRUE;
+
+	/* do all the metadata items match? */
+	if (g_strcmp0 (gs_app_get_xdgapp_name (app),
+		       xdg_app_ref_get_name (xref)) == 0 &&
+	    g_strcmp0 (gs_app_get_xdgapp_arch (app),
+		       xdg_app_ref_get_arch (xref)) == 0 &&
+	    g_strcmp0 (gs_app_get_xdgapp_branch (app),
+		       xdg_app_ref_get_branch (xref)) == 0)
+		return TRUE;
+
+	/* sad panda */
+	return FALSE;
+}
+
+/**
+ * gs_plugin_refine_item_metadata:
+ */
+static gboolean
+gs_plugin_refine_item_metadata (GsPlugin *plugin,
+				GsApp *app,
+				GCancellable *cancellable,
+				GError **error)
+{
+	g_autoptr(XdgAppRef) xref = NULL;
+
+	/* already set */
+	if (gs_app_get_metadata_item (app, "XgdApp::kind") != NULL)
+		return TRUE;
+
+	/* AppStream sets the source to appname/arch/branch, if this isn't set
+	 * we can't break out the fields */
+	if (gs_app_get_source_default (app) == NULL)
+		return TRUE;
+
+	/* parse the ref */
+	xref = xdg_app_ref_parse (gs_app_get_source_default (app), error);
+	if (xref == NULL)
+		return FALSE;
+	gs_plugin_xdg_app_set_metadata (app, xref);
+
+	/* success */
+	return TRUE;
+}
+
+/**
+ * gs_plugin_refine_item_state:
+ */
+static gboolean
+gs_plugin_refine_item_state (GsPlugin *plugin,
+			      GsApp *app,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	guint i;
+	g_autoptr(GPtrArray) xrefs = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
+
+	/* already found */
+	if (gs_app_get_state (app) != AS_APP_STATE_UNKNOWN)
+		return TRUE;
+
+	/* need broken out metadata */
+	if (!gs_plugin_refine_item_metadata (plugin, app, cancellable, error))
+		return FALSE;
+
+	/* get apps and runtimes */
+	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-action");
+	xrefs = xdg_app_installation_list_installed_refs (plugin->priv->installation,
+							  cancellable, error);
+	if (xrefs == NULL)
+		return FALSE;
+	for (i = 0; i < xrefs->len; i++) {
+		XdgAppInstalledRef *xref = g_ptr_array_index (xrefs, i);
+
+		/* check xref is app */
+		if (!gs_plugin_xdg_app_is_xref (app, XDG_APP_REF(xref)))
+			continue;
+
+		/* mark as installed */
+		g_debug ("marking %s as installed with xdg-app",
+			 gs_app_get_id (app));
+		gs_plugin_xdg_app_set_metadata_installed (app, xref);
+		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	}
+
+	/* since xdg-app can't 'disable' a repo, if we have an AppStream entry
+	 * with the correct bundle type that's not installed we can assume it
+	 * is available for install */
+	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
+		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+
+	/* success */
+	return TRUE;
+}
+
+/**
+ * gs_plugin_refine_item_runtime:
+ */
+static gboolean
+gs_plugin_refine_item_runtime (GsPlugin *plugin,
+			       GsApp *app,
+			       GCancellable *cancellable,
+			       GError **error)
+{
+	const gchar *commit;
+	const gchar *str;
+	gsize len = -1;
+	g_autofree gchar *contents = NULL;
+	g_autofree gchar *install_path = NULL;
+	g_autofree gchar *runtime = NULL;
+	g_autofree gchar *source = NULL;
+	g_autoptr(GBytes) data = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
+	g_autoptr(GsApp) app_runtime = NULL;
+	g_autoptr(XdgAppInstalledRef) xref = NULL;
+
+	/* not applicable */
+	if (gs_app_get_xdgapp_kind (app) != XDG_APP_REF_KIND_APP)
+		return TRUE;
+
+	/* already exists */
+	if (gs_app_get_runtime (app) != NULL)
+		return TRUE;
+
+	/* this is quicker than doing network IO */
+	install_path = g_build_filename (g_get_home_dir (),
+					 ".local",
+					 "share",	//FIXME: use xdg_app_installation_get_path()
+					 "xdg-app",
+					 gs_app_get_xdgapp_kind_as_str (app),
+					 gs_app_get_xdgapp_name (app),
+					 gs_app_get_xdgapp_arch (app),
+					 gs_app_get_xdgapp_branch (app),
+					 "active",
+					 "metadata",
+					 NULL);
+	if (g_file_test (install_path, G_FILE_TEST_EXISTS)) {
+		if (!g_file_get_contents (install_path, &contents, &len, error))
+			return FALSE;
+		str = contents;
+	} else {
+
+		/* need commit */
+		if (!gs_plugin_refine_item_commit (plugin, app, cancellable, error))
+			return FALSE;
+
+		/* fetch from the server */
+		commit = gs_app_get_xdgapp_commit (app);
+		data = xdg_app_installation_fetch_remote_metadata_sync (plugin->priv->installation,
+									gs_app_get_origin (app),
+									commit,
+									cancellable,
+									error);
+		if (data == NULL)
+			return FALSE;
+		str = g_bytes_get_data (data, &len);
+	}
+
+	/* parse key file */
+	kf = g_key_file_new ();
+	if (!g_key_file_load_from_data (kf, str, len, G_KEY_FILE_NONE, error))
+		return FALSE;
+	runtime = g_key_file_get_string (kf, "Application", "runtime", error);
+	if (runtime == NULL)
+		return FALSE;
+	g_debug ("runtime for %s is %s", gs_app_get_id (app), runtime);
+
+	/* create runtime */
+	app_runtime = gs_app_new (runtime);
+	source = g_strdup_printf ("runtime/%s", runtime);
+	gs_app_add_source (app_runtime, source);
+	gs_app_set_id_kind (app_runtime, AS_ID_KIND_RUNTIME);
+	gs_app_set_runtime (app, app_runtime);
 	return TRUE;
 }
 
@@ -707,8 +988,10 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 	gboolean ret;
 	guint64 download_size;
 	guint64 installed_size;
-	g_autoptr(GError) error_local = NULL;
+	guint64 size = 0;
+	g_auto(GStrv) split = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GError) error_local = NULL;
 
 	if (gs_app_get_size (app) > 0)
 		return TRUE;
@@ -717,76 +1000,61 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 	if (!gs_plugin_refine_item_commit (plugin, app, cancellable, error))
 		return FALSE;
 
+	/* calculate the platform size too if the app is not installed */
+	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE &&
+	    gs_app_get_xdgapp_kind (app) == XDG_APP_REF_KIND_APP) {
+		GsApp *app_runtime;
+
+		/* find out what runtime the application depends on */
+		if (!gs_plugin_refine_item_runtime (plugin,
+						    app,
+						    cancellable,
+						    error))
+			return FALSE;
+
+		/* is the app_runtime already installed? */
+		app_runtime = gs_app_get_runtime (app);
+		if (!gs_plugin_refine_item_state (plugin,
+						  app_runtime,
+						  cancellable,
+						  error))
+			return FALSE;
+		if (gs_app_get_state (app_runtime) == AS_APP_STATE_INSTALLED) {
+			g_debug ("runtime %s is already installed, so not adding size",
+				 gs_app_get_id (app_runtime));
+		} else {
+			if (!gs_plugin_refine_item_size (plugin,
+							 app_runtime,
+							 cancellable,
+							 error))
+				return FALSE;
+			g_debug ("runtime %s is not installed, so adding download",
+				 gs_app_get_id (app_runtime));
+			size += gs_app_get_size (app_runtime);
+		}
+	}
+
+	/* just get the size of the runtime */
 	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-size");
 	ret = xdg_app_installation_fetch_remote_size_sync (plugin->priv->installation,
 							   gs_app_get_origin (app),
-							   gs_app_get_metadata_item (app, "XgdApp::commit"),
+							   gs_app_get_xdgapp_commit (app),
 							   &download_size,
 							   &installed_size,
 							   cancellable, &error_local);
 	if (!ret) {
 		g_warning ("libxdgapp failed to return application size: %s",
 			   error_local->message);
-		installed_size = GS_APP_SIZE_MISSING;
+	} else {
+		if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+			size += installed_size;
+		} else {
+			size += download_size;
+		}
 	}
-	gs_app_set_size (app, installed_size);
-
-	return TRUE;
-}
-
-/**
- * gs_plugin_refine_item_action:
- */
-static gboolean
-gs_plugin_refine_item_action (GsPlugin *plugin,
-			      GsApp *app,
-			      GCancellable *cancellable,
-			      GError **error)
-{
-	guint i;
-	g_autoptr(GPtrArray) xrefs = NULL;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* already found */
-	if (gs_app_get_metadata_item (app, "XgdApp::type") != NULL &&
-	    gs_app_get_state (app) != AS_APP_STATE_UNKNOWN)
-		return TRUE;
-
-	/* get apps and runtimes */
-	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-action");
-	xrefs = xdg_app_installation_list_installed_refs (plugin->priv->installation,
-							  cancellable, error);
-	if (xrefs == NULL)
-		return FALSE;
-	for (i = 0; i < xrefs->len; i++) {
-		g_autofree gchar *id = NULL;
-		XdgAppInstalledRef *xref = g_ptr_array_index (xrefs, i);
-		if (xdg_app_ref_get_kind (XDG_APP_REF(xref)) != XDG_APP_REF_KIND_APP)
-			continue;
-		id = g_strdup_printf ("%s.desktop",
-				      xdg_app_ref_get_name (XDG_APP_REF(xref)));
-		if (g_strcmp0 (id, gs_app_get_id (app)) != 0)
-			continue;
-
-		/* 'claim' this application for our own */
-		g_debug ("claiming %s for xdg-app", gs_app_get_id (app));
-		gs_plugin_xdg_app_set_metadata_installed (app, xref);
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	}
-
-	/* since xdg-app can't 'disable' a repo, if we have an AppStream entry
-	 * with the correct bundle type that's not installed we can assume it
-	 * is available for install */
-	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
-		g_autoptr(XdgAppRef) xref = NULL;
-		xref = xdg_app_ref_parse (gs_app_get_source_default (app), error);
-		if (xref == NULL)
-			return FALSE;
-		gs_plugin_xdg_app_set_metadata (app, xref);
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-	}
-
+	if (size == 0)
+		size = GS_APP_SIZE_MISSING;
+	gs_app_set_size (app, size);
 	return TRUE;
 }
 
@@ -811,15 +1079,19 @@ gs_plugin_refine_item (GsPlugin *plugin,
 				  "xdg-app::refine{%s}",
 				  gs_app_get_id (app));
 
-	/* check if this desktop ID can be handled by the plugin */
-	if (!gs_plugin_refine_item_action (plugin, app, cancellable, error))
+	/* AppStream sets the source to appname/arch/branch */
+	if (!gs_plugin_refine_item_metadata (plugin, app, cancellable, error))
+		return FALSE;
+
+	/* check the installed state */
+	if (!gs_plugin_refine_item_state (plugin, app, cancellable, error))
 		return FALSE;
 
 	/* version fallback */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) {
 		if (gs_app_get_version (app) == NULL) {
 			const gchar *branch;
-			branch = gs_app_get_metadata_item (app, "XgdApp::branch");
+			branch = gs_app_get_xdgapp_branch (app);
 			gs_app_set_version (app, branch);
 		}
 	}
@@ -832,7 +1104,13 @@ gs_plugin_refine_item (GsPlugin *plugin,
 
 	/* origin */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
-		if (!gs_plugin_refine_item_origin (plugin, app, cancellable, error))
+		if (!gs_plugin_refine_item_origin_ui (plugin, app, cancellable, error))
+			return FALSE;
+	}
+
+	/* runtime */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) {
+		if (!gs_plugin_refine_item_runtime (plugin, app, cancellable, error))
 			return FALSE;
 	}
 
@@ -883,11 +1161,11 @@ gs_plugin_launch (GsPlugin *plugin,
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
 		return FALSE;
 
-	branch = gs_app_get_metadata_item (app, "XgdApp::branch");
+	branch = gs_app_get_xdgapp_branch (app);
 	if (branch == NULL)
 		branch = "master";
 	return xdg_app_installation_launch (plugin->priv->installation,
-					    gs_app_get_metadata_item (app, "XgdApp::name"),
+					    gs_app_get_xdgapp_name (app),
 					    NULL,
 					    branch,
 					    NULL,
@@ -922,9 +1200,9 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	return xdg_app_installation_uninstall (plugin->priv->installation,
 					       XDG_APP_REF_KIND_APP,
-					       gs_app_get_metadata_item (app, "XgdApp::name"),
-					       gs_app_get_metadata_item (app, "XgdApp::arch"),
-					       gs_app_get_metadata_item (app, "XgdApp::branch"),
+					       gs_app_get_xdgapp_name (app),
+					       gs_app_get_xdgapp_arch (app),
+					       gs_app_get_xdgapp_branch (app),
 					       gs_plugin_xdg_app_progress_cb, &helper,
 					       cancellable, error);
 }
@@ -955,12 +1233,42 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+
+	/* install required runtime if not already installed */
+	if (gs_app_get_id_kind (app) == AS_ID_KIND_DESKTOP) {
+		GsApp *runtime;
+		runtime = gs_app_get_runtime (app);
+		if (gs_app_get_state (runtime) != AS_APP_STATE_INSTALLED) {
+			g_debug ("%s is not already installed, so installing",
+				 gs_app_get_id (runtime));
+			gs_app_set_state (runtime, AS_APP_STATE_INSTALLING);
+			xref = xdg_app_installation_install (plugin->priv->installation,
+							     gs_app_get_origin (runtime),
+							     gs_app_get_xdgapp_kind (runtime),
+							     gs_app_get_xdgapp_name (runtime),
+							     gs_app_get_xdgapp_arch (runtime),
+							     gs_app_get_xdgapp_branch (runtime),
+							     gs_plugin_xdg_app_progress_cb, &helper,
+							     cancellable, error);
+			if (xref == NULL) {
+				gs_app_set_state (runtime, AS_APP_STATE_AVAILABLE);
+				return FALSE;
+			}
+			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		} else {
+			g_debug ("%s is already installed, so skipping",
+				 gs_app_get_id (runtime));
+		}
+	}
+
+	/* now the main application */
+	g_debug ("installing %s", gs_app_get_id (app));
 	xref = xdg_app_installation_install (plugin->priv->installation,
 					     gs_app_get_origin (app),
-					     XDG_APP_REF_KIND_APP,
-					     gs_app_get_metadata_item (app, "XgdApp::name"),
-					     gs_app_get_metadata_item (app, "XgdApp::arch"),
-					     gs_app_get_metadata_item (app, "XgdApp::branch"),
+					     gs_app_get_xdgapp_kind (app),
+					     gs_app_get_xdgapp_name (app),
+					     gs_app_get_xdgapp_arch (app),
+					     gs_app_get_xdgapp_branch (app),
 					     gs_plugin_xdg_app_progress_cb, &helper,
 					     cancellable, error);
 	return xref != NULL;
@@ -969,7 +1277,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 /**
  * gs_plugin_app_update:
  *
- * This is only called when updating device firmware live.
+ * This is only called when updating live.
  */
 gboolean
 gs_plugin_app_update (GsPlugin *plugin,
@@ -978,7 +1286,6 @@ gs_plugin_app_update (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginHelper helper;
-	XdgAppRefKind kind = XDG_APP_REF_KIND_APP;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
 
 	/* only process this app if was created by this plugin */
@@ -993,18 +1300,14 @@ gs_plugin_app_update (GsPlugin *plugin,
 	helper.app = app;
 	helper.plugin = plugin;
 
-	/* special case */
-	if (g_strcmp0 (gs_app_get_metadata_item (app, "XgdApp::type"), "runtime") == 0)
-		kind = XDG_APP_REF_KIND_RUNTIME;
-
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	xref = xdg_app_installation_update (plugin->priv->installation,
 					    XDG_APP_UPDATE_FLAGS_NONE,
-					    kind,
-					    gs_app_get_metadata_item (app, "XgdApp::name"),
-					    gs_app_get_metadata_item (app, "XgdApp::arch"),
-					    gs_app_get_metadata_item (app, "XgdApp::branch"),
+					    gs_app_get_xdgapp_kind (app),
+					    gs_app_get_xdgapp_name (app),
+					    gs_app_get_xdgapp_arch (app),
+					    gs_app_get_xdgapp_branch (app),
 					    gs_plugin_xdg_app_progress_cb, &helper,
 					    cancellable, error);
 	return xref != NULL;
