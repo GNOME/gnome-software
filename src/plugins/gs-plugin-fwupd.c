@@ -555,6 +555,7 @@ gs_plugin_fwupd_update_lvfs_metadata (const gchar *data_fn, const gchar *sig_fn,
 	/* set out of band file descriptor */
 	fd_list = g_unix_fd_list_new ();
 	retval = g_unix_fd_list_append (fd_list, fd_data, NULL);
+	g_assert (retval != -1);
 	retval = g_unix_fd_list_append (fd_list, fd_sig, NULL);
 	g_assert (retval != -1);
 	request = g_dbus_message_new_method_call (FWUPD_DBUS_SERVICE,
