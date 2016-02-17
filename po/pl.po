@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-14 19:10+0100\n"
-"PO-Revision-Date: 2016-02-14 19:11+0100\n"
+"POT-Creation-Date: 2016-02-17 22:22+0100\n"
+"PO-Revision-Date: 2016-02-17 22:23+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -243,7 +243,7 @@ msgstr "Usuwanie"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1327 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1369 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " i "
 
@@ -251,17 +251,17 @@ msgstr " i "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1335
+#: ../src/gs-app.c:1377
 msgid " or "
 msgstr " lub "
 
 #. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1358
+#: ../src/gs-app.c:1400
 msgid "Proprietary"
 msgstr "Własnościowy"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1368
+#: ../src/gs-app.c:1410
 msgid "Public domain"
 msgstr "Domena publiczna"
 
@@ -568,12 +568,13 @@ msgstr ""
 "Proszę wpisać krótkie podsumowanie recenzji, na przykład: „Świetny program, "
 "polecam”."
 
-#. TRANSLATORS: to look at the updates that were installed
-#: ../src/gs-review-dialog.ui.h:7 ../src/gs-update-monitor.c:457
-msgid "Review"
-msgstr "Przejrzyj"
-
+#. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:8
+msgctxt "app review"
+msgid "Review"
+msgstr "Recenzja"
+
+#: ../src/gs-review-dialog.ui.h:9
 msgid "What do you think of the app? Try to give reasons for your views."
 msgstr "Co sądzisz o tym programie? Proszę uzasadnić swoje zdanie."
 
@@ -1002,7 +1003,7 @@ msgstr "_Witryna"
 msgid "_History"
 msgstr "_Historia"
 
-#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:551
+#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:556
 msgid "Details"
 msgstr "Szczegóły"
 
@@ -1126,6 +1127,10 @@ msgstr "Polecane programy biurowe"
 msgid "Moderate page"
 msgstr "Strona moderacji"
 
+#: ../src/gs-shell-moderate.ui.h:2
+msgid "There are no reviews to moderate"
+msgstr "Brak recenzji do moderacji"
+
 #: ../src/gs-shell-overview.ui.h:1
 msgid "Overview page"
 msgstr "Strona przeglądu"
@@ -1157,95 +1162,95 @@ msgid "No Application Found"
 msgstr "Nie odnaleziono żadnego programu"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:144
+#: ../src/gs-shell-updates.c:146
 msgid "%R"
 msgstr "%H∶%M"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:147
+#: ../src/gs-shell-updates.c:149
 msgid "%l:%M %p"
 msgstr "%l∶%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:153
+#: ../src/gs-shell-updates.c:155
 msgid "Yesterday, %R"
 msgstr "Wczoraj o %H∶%M"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:157
+#: ../src/gs-shell-updates.c:159
 msgid "Yesterday, %l:%M %p"
 msgstr "Wczoraj o %l∶%M %p"
 
-#: ../src/gs-shell-updates.c:160
+#: ../src/gs-shell-updates.c:162
 msgid "Two days ago"
 msgstr "Dwa dni temu"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:164
 msgid "Three days ago"
 msgstr "Trzy dni temu"
 
-#: ../src/gs-shell-updates.c:164
+#: ../src/gs-shell-updates.c:166
 msgid "Four days ago"
 msgstr "Cztery dni temu"
 
-#: ../src/gs-shell-updates.c:166
+#: ../src/gs-shell-updates.c:168
 msgid "Five days ago"
 msgstr "Pięć dni temu"
 
-#: ../src/gs-shell-updates.c:168
+#: ../src/gs-shell-updates.c:170
 msgid "Six days ago"
 msgstr "Sześć dni temu"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:172
 msgid "One week ago"
 msgstr "Tydzień temu"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:174
 msgid "Two weeks ago"
 msgstr "Dwa tygodnie temu"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:176
+#: ../src/gs-shell-updates.c:178
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:192
+#: ../src/gs-shell-updates.c:194
 msgid "Downloading new updates…"
 msgstr "Pobieranie nowych aktualizacji…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:196
+#: ../src/gs-shell-updates.c:198
 msgid "Looking for new updates…"
 msgstr "Wyszukiwanie nowych aktualizacji…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:237
+#: ../src/gs-shell-updates.c:239
 msgid "Setting up updates…"
 msgstr "Ustawianie aktualizacji…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:238 ../src/gs-shell-updates.c:245
+#: ../src/gs-shell-updates.c:240 ../src/gs-shell-updates.c:247
 msgid "(This could take a while)"
 msgstr "(Może to chwilę zająć)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:394
+#: ../src/gs-shell-updates.c:403
 #, c-format
 msgid "Last checked: %s"
 msgstr "Ostatnio wyszukano: %s"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:778
+#: ../src/gs-shell-updates.c:809
 msgid "Charges may apply"
 msgstr "Możliwe koszty"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:782
+#: ../src/gs-shell-updates.c:813
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1255,24 +1260,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:786
+#: ../src/gs-shell-updates.c:817
 msgid "Check Anyway"
 msgstr "Wyszukaj mimo to"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:802
+#: ../src/gs-shell-updates.c:833
 msgid "No Network"
 msgstr "Brak sieci"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:806
+#: ../src/gs-shell-updates.c:837
 msgid "Internet access is required to check for updates."
 msgstr "Wymagany jest dostęp do Internetu, aby wyszukać aktualizacje."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:810
+#: ../src/gs-shell-updates.c:841
 msgid "Network Settings"
 msgstr "Ustawienia sieci"
 
@@ -1539,33 +1544,33 @@ msgstr "Wyświetl"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:229
+#: ../src/gs-update-monitor.c:234
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Nowa wersja systemu %s jest gotowa do zainstalowania"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:233
+#: ../src/gs-update-monitor.c:238
 msgid "Software Upgrade Available"
 msgstr "Dostępna jest aktualizacja oprogramowania"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:427
+#: ../src/gs-update-monitor.c:432
 msgid "Software Updates Failed"
 msgstr "Aktualizacje oprogramowania się nie powiodły"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:429
+#: ../src/gs-update-monitor.c:434
 msgid "An important OS update failed to be installed."
 msgstr ""
 "Zainstalowanie ważnej aktualizacji systemu operacyjnego się nie powiodło."
 
-#: ../src/gs-update-monitor.c:431
+#: ../src/gs-update-monitor.c:436
 msgid "Show Details"
 msgstr "Wyświetl szczegóły"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:446
+#: ../src/gs-update-monitor.c:451
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Zainstalowano aktualizację oprogramowania"
@@ -1573,39 +1578,45 @@ msgstr[1] "Zainstalowano aktualizacje oprogramowania"
 msgstr[2] "Zainstalowano aktualizacje oprogramowania"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:450
+#: ../src/gs-update-monitor.c:455
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Zainstalowano ważną aktualizację systemu operacyjnego."
 msgstr[1] "Zainstalowano ważne aktualizacje systemu operacyjnego."
 msgstr[2] "Zainstalowano ważne aktualizacje systemu operacyjnego."
 
+#. TRANSLATORS: to look at the updates that were installed
+#: ../src/gs-update-monitor.c:462
+msgctxt "updates"
+msgid "Review"
+msgstr "Przejrzyj"
+
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-update-monitor.c:532
+#: ../src/gs-update-monitor.c:537
 msgid "Detailed errors from the package manager follow:"
 msgstr "Szczegółowe błędy z menedżera pakietów:"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:593
+#: ../src/gs-update-monitor.c:598
 msgid "Failed To Update"
 msgstr "Aktualizacja się nie powiodła"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:599
+#: ../src/gs-update-monitor.c:604
 msgid "The system was already up to date."
 msgstr "Komputer jest już aktualny."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:604
+#: ../src/gs-update-monitor.c:609
 msgid "The update was cancelled."
 msgstr "Anulowano aktualizację."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:610
+#: ../src/gs-update-monitor.c:615
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1614,7 +1625,7 @@ msgstr ""
 "upewnić, że można połączyć się z Internetem i spróbować ponownie."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:616
+#: ../src/gs-update-monitor.c:621
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -1623,7 +1634,7 @@ msgstr ""
 "dostawcą oprogramowania, aby dowiedzieć się więcej."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:622
+#: ../src/gs-update-monitor.c:627
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
@@ -1631,7 +1642,7 @@ msgstr ""
 "ponownie."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:627
+#: ../src/gs-update-monitor.c:632
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
