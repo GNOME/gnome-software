@@ -433,14 +433,14 @@ xdg_app_review_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 	cachedir = gs_utils_get_cachedir ("ratings", error);
 	if (cachedir == NULL)
 		return NULL;
-	cachefn = g_strdup_printf ("%s/%s.json", cachedir, gs_app_get_id (app));
+	cachefn = g_strdup_printf ("%s/%s.json", cachedir, gs_app_get_id_no_prefix (app));
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (gs_utils_get_file_age (cachefn_file) < XDG_APP_REVIEW_CACHE_AGE_MAX) {
 		g_autofree gchar *json_data = NULL;
 		if (!g_file_get_contents (cachefn, &json_data, NULL, error))
 			return NULL;
 		g_debug ("got ratings data for %s from %s",
-			 gs_app_get_id (app), cachefn);
+			 gs_app_get_id_no_prefix (app), cachefn);
 		return xdg_app_review_parse_ratings (json_data, -1, error);
 	}
 
@@ -448,7 +448,7 @@ xdg_app_review_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 	 * review the application ourselves */
 	uri = g_strdup_printf ("%s/ratings/%s",
 			       plugin->priv->review_server,
-			       gs_app_get_id (app));
+			       gs_app_get_id_no_prefix (app));
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	status_code = soup_session_send_message (plugin->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
@@ -539,14 +539,14 @@ xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	cachedir = gs_utils_get_cachedir ("reviews", error);
 	if (cachedir == NULL)
 		return NULL;
-	cachefn = g_strdup_printf ("%s/%s.json", cachedir, gs_app_get_id (app));
+	cachefn = g_strdup_printf ("%s/%s.json", cachedir, gs_app_get_id_no_prefix (app));
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (gs_utils_get_file_age (cachefn_file) < XDG_APP_REVIEW_CACHE_AGE_MAX) {
 		g_autofree gchar *json_data = NULL;
 		if (!g_file_get_contents (cachefn, &json_data, NULL, error))
 			return NULL;
 		g_debug ("got review data for %s from %s",
-			 gs_app_get_id (app), cachefn);
+			 gs_app_get_id_no_prefix (app), cachefn);
 		return xdg_app_review_parse_reviews (json_data, -1, error);
 	}
 
@@ -561,7 +561,7 @@ xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	json_builder_set_member_name (builder, "user_hash");
 	json_builder_add_string_value (builder, plugin->priv->user_hash);
 	json_builder_set_member_name (builder, "app_id");
-	json_builder_add_string_value (builder, gs_app_get_id (app));
+	json_builder_add_string_value (builder, gs_app_get_id_no_prefix (app));
 	json_builder_set_member_name (builder, "locale");
 	json_builder_add_string_value (builder, plugin->locale);
 	json_builder_set_member_name (builder, "distro");
@@ -682,7 +682,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			app = GS_APP (l->data);
 			if (gs_app_get_reviews(app)->len > 0)
 				continue;
-			if (gs_app_get_id (app) == NULL)
+			if (gs_app_get_id_no_prefix (app) == NULL)
 				continue;
 			if (gs_app_get_id_kind (app) == AS_ID_KIND_ADDON)
 				continue;
@@ -702,7 +702,7 @@ gs_plugin_refine (GsPlugin *plugin,
 			app = GS_APP (l->data);
 			if (gs_app_get_review_ratings(app) != NULL)
 				continue;
-			if (gs_app_get_id (app) == NULL)
+			if (gs_app_get_id_no_prefix (app) == NULL)
 				continue;
 			if (gs_app_get_id_kind (app) == AS_ID_KIND_ADDON)
 				continue;
@@ -773,7 +773,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 
 	/* save as we don't re-request the review from the server */
 	gs_review_set_reviewer (review, g_get_real_name ());
-	gs_review_add_metadata (review, "app_id", gs_app_get_id (app));
+	gs_review_add_metadata (review, "app_id", gs_app_get_id_no_prefix (app));
 	gs_review_add_metadata (review, "user_skey",
 				gs_app_get_metadata_item (app, "XdgAppReviews::user_skey"));
 

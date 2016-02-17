@@ -99,6 +99,7 @@ void		 gs_app_subsume			(GsApp		*app,
 const gchar	*gs_app_get_id			(GsApp		*app);
 void		 gs_app_set_id			(GsApp		*app,
 						 const gchar	*id);
+const gchar	*gs_app_get_id_no_prefix	(GsApp		*app);
 GsAppKind	 gs_app_get_kind		(GsApp		*app);
 void		 gs_app_set_kind		(GsApp		*app,
 						 GsAppKind	 kind);
