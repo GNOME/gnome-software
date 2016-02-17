@@ -406,6 +406,7 @@ gs_plugin_xdg_app_create_installed (GsPlugin *plugin,
 				 xdg_app_ref_get_name (XDG_APP_REF (xref)));
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
 				    "Framework for applications");
+		gs_app_set_version (app, xdg_app_ref_get_branch (XDG_APP_REF (xref)));
 		icon = as_icon_new ();
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 		as_icon_set_name (icon, "system-run-symbolic");
