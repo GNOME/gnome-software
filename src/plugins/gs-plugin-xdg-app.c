@@ -850,6 +850,34 @@ gs_plugin_refine_item_metadata (GsPlugin *plugin,
 }
 
 /**
+ * _dg_app_installation_get_remote_by_name:
+ */
+static XdgAppRemote *
+_dg_app_installation_get_remote_by_name (XdgAppInstallation *self,
+					 const gchar *name,
+					 GCancellable *cancellable,
+					 GError **error)
+{
+	g_autoptr(GPtrArray) xremotes = NULL;
+	guint i;
+
+	xremotes = xdg_app_installation_list_remotes (self, cancellable, error);
+	if (xremotes == NULL)
+		return NULL;
+	for (i = 0; i < xremotes->len; i++) {
+		XdgAppRemote *xremote = g_ptr_array_index (xremotes, i);
+		if (g_strcmp0 (xdg_app_remote_get_name (xremote), name) == 0)
+			return g_object_ref (xremote);
+	}
+	g_set_error (error,
+		     G_IO_ERROR,
+		     G_IO_ERROR_NOT_FOUND,
+		     "no remote called %s",
+		     name);
+	return NULL;
+}
+
+/**
  * gs_plugin_refine_item_state:
  */
 static gboolean
@@ -891,11 +919,16 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	}
 
-	/* since xdg-app can't 'disable' a repo, if we have an AppStream entry
-	 * with the correct bundle type that's not installed we can assume it
-	 * is available for install */
-	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
-		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	/* anything not installed just check the remote is still present */
+	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
+	    gs_app_get_origin (app) != NULL) {
+		g_autoptr(XdgAppRemote) xremote = NULL;
+		xremote = _dg_app_installation_get_remote_by_name (plugin->priv->installation,
+								   gs_app_get_origin (app),
+								   cancellable, NULL);
+		if (xremote != NULL)
+			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	}
 
 	/* success */
 	return TRUE;
