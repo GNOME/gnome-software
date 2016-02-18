@@ -354,8 +354,8 @@ static gchar *
 gs_plugin_xdg_app_build_id (XdgAppRef *xref)
 {
 	if (xdg_app_ref_get_kind (xref) == XDG_APP_REF_KIND_APP)
-		return g_strdup_printf ("%s.desktop", xdg_app_ref_get_name (xref));
-	return g_strdup_printf ("%s.runtime", xdg_app_ref_get_name (xref));
+		return g_strdup_printf ("user-xdgapp:%s.desktop", xdg_app_ref_get_name (xref));
+	return g_strdup_printf ("user-xdgapp:%s.runtime", xdg_app_ref_get_name (xref));
 }
 
 /**
@@ -365,7 +365,8 @@ static GsApp *
 gs_plugin_xdg_app_create_installed (GsPlugin *plugin,
 				    XdgAppInstalledRef *xref,
 				    GError **error)
-{	g_autofree gchar *id = NULL;
+{
+	g_autofree gchar *id = NULL;
 	g_autoptr(AsIcon) icon = NULL;
 	g_autoptr(GsApp) app = NULL;
 
