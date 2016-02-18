@@ -162,8 +162,20 @@ button.star, .button.star {
 	outline-offset: -1px;
 }
 
-.star {
+/* for the review dialog */
+.star-enabled {
 	color: #000000;
+}
+.star-disabled {
+	color: #777777;
+}
+
+/* for the app details shell */
+.star-enabled:insensitive {
+	color: #000000;
+}
+.star-disabled:insensitive {
+	color: #777777;
 }
 
 .counter-label {

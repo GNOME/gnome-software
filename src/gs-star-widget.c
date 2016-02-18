@@ -66,26 +66,6 @@ gs_star_widget_get_rating (GsStarWidget *star)
 }
 
 /**
- * gs_star_widget_set_image_rating:
- **/
-static void
-gs_star_widget_set_image_rating (GtkImage *image,
-				 gint value, gint lower, gint higher)
-{
-	GtkStyleContext *context;
-	const gchar *icon_name = "semi-starred-symbolic";
-
-	if (value <= lower)
-		icon_name = "non-starred-symbolic";
-	if (value >= higher)
-		icon_name = "starred-symbolic";
-
-	context = gtk_widget_get_style_context (GTK_WIDGET (image));
-	gtk_style_context_add_class (context, "star");
-	gtk_image_set_from_icon_name (image, icon_name, GTK_ICON_SIZE_MENU);
-}
-
-/**
  * gs_star_widget_set_icon_size:
  **/
 void
@@ -101,16 +81,18 @@ gs_star_widget_set_icon_size (GsStarWidget *star, guint pixel_size)
 	gtk_image_set_pixel_size (GTK_IMAGE (priv->image5), pixel_size);
 }
 
-/**
- * gs_star_widget_set_interactive:
- **/
-void
-gs_star_widget_set_interactive (GsStarWidget *star, gboolean interactive)
+static void
+gs_star_widget_style_class_enable (GtkWidget *widget, gboolean val)
 {
-	GsStarWidgetPrivate *priv;
-	g_return_if_fail (GS_IS_STAR_WIDGET (star));
-	priv = gs_star_widget_get_instance_private (star);
-	priv->interactive = interactive;
+	GtkStyleContext *context;
+	context = gtk_widget_get_style_context (widget);
+	if (val) {
+		gtk_style_context_add_class (context, "star-enabled");
+		gtk_style_context_remove_class (context, "star-disabled");
+	} else {
+		gtk_style_context_add_class (context, "star-disabled");
+		gtk_style_context_remove_class (context, "star-enabled");
+	}
 }
 
 /**
@@ -121,21 +103,31 @@ gs_star_widget_refresh (GsStarWidget *star)
 {
 	GsStarWidgetPrivate *priv;
 	priv = gs_star_widget_get_instance_private (star);
-	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image1),
-					 priv->rating,
-					 0, rate_to_star[0]);
-	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image2),
-					 priv->rating,
-					 rate_to_star[0], rate_to_star[1]);
-	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image3),
-					 priv->rating,
-					 rate_to_star[1], rate_to_star[2]);
-	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image4),
-					 priv->rating,
-					 rate_to_star[2], rate_to_star[3]);
-	gs_star_widget_set_image_rating (GTK_IMAGE (priv->image5),
-					 priv->rating,
-					 rate_to_star[3], rate_to_star[4]);
+
+	gtk_widget_set_sensitive (priv->image1, priv->interactive);
+	gtk_widget_set_sensitive (priv->image2, priv->interactive);
+	gtk_widget_set_sensitive (priv->image3, priv->interactive);
+	gtk_widget_set_sensitive (priv->image4, priv->interactive);
+	gtk_widget_set_sensitive (priv->image5, priv->interactive);
+
+	gs_star_widget_style_class_enable (priv->image1, priv->rating > 0);
+	gs_star_widget_style_class_enable (priv->image2, priv->rating > 20);
+	gs_star_widget_style_class_enable (priv->image3, priv->rating > 40);
+	gs_star_widget_style_class_enable (priv->image4, priv->rating > 60);
+	gs_star_widget_style_class_enable (priv->image5, priv->rating > 80);
+}
+
+/**
+ * gs_star_widget_set_interactive:
+ **/
+void
+gs_star_widget_set_interactive (GsStarWidget *star, gboolean interactive)
+{
+	GsStarWidgetPrivate *priv;
+	g_return_if_fail (GS_IS_STAR_WIDGET (star));
+	priv = gs_star_widget_get_instance_private (star);
+	priv->interactive = interactive;
+	gs_star_widget_refresh (star);
 }
 
 /**
