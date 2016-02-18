@@ -211,6 +211,11 @@ gs_app_row_refresh (GsAppRow *app_row)
 		folder = gs_folders_get_app_folder (folders, gs_app_get_id (priv->app), gs_app_get_categories (priv->app));
 		if (folder)
 			folder = gs_folders_get_folder_name (folders, folder);
+
+		/* we overwrite this for some apps */
+		if (folder == NULL)
+			folder = gs_app_get_metadata_item (priv->app, "X-XdgApp-Tags");
+
 		gtk_label_set_label (GTK_LABEL (priv->folder_label), folder);
 		gtk_widget_set_visible (priv->folder_label, folder != NULL);
 	}

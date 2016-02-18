@@ -567,8 +567,10 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 	/* set name */
 	tmp = as_app_get_name (item, NULL);
 	if (tmp != NULL) {
-		if (g_str_has_prefix (tmp, "(Nightly) "))
+		if (g_str_has_prefix (tmp, "(Nightly) ")) {
 			tmp += 10;
+			gs_app_set_metadata (app, "X-XdgApp-Tags", "Nightly");
+		}
 		gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, tmp);
 	}
 
