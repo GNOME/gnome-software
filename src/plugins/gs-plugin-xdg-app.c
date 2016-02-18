@@ -842,8 +842,11 @@ gs_plugin_refine_item_metadata (GsPlugin *plugin,
 
 	/* parse the ref */
 	xref = xdg_app_ref_parse (gs_app_get_source_default (app), error);
-	if (xref == NULL)
+	if (xref == NULL) {
+		g_prefix_error (error, "failed to parse '%s': ",
+				gs_app_get_source_default (app));
 		return FALSE;
+	}
 	gs_plugin_xdg_app_set_metadata (app, xref);
 
 	/* success */
