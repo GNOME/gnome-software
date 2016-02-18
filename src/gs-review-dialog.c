@@ -147,6 +147,7 @@ gs_review_dialog_init (GsReviewDialog *dialog)
 						  dialog);
 
 	/* update UI */
+	gs_star_widget_set_interactive (GS_STAR_WIDGET (dialog->star), TRUE);
 	g_signal_connect_swapped (dialog->star, "rating-changed",
 				  G_CALLBACK (gs_review_dialog_changed_cb), dialog);
 	g_signal_connect_swapped (dialog->summary_entry, "notify::text",

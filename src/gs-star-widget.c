@@ -28,6 +28,7 @@
 
 typedef struct
 {
+	gboolean	 interactive;
 	gint		 rating;
 	GtkWidget	*button1;
 	GtkWidget	*button2;
@@ -101,6 +102,18 @@ gs_star_widget_set_icon_size (GsStarWidget *star, guint pixel_size)
 }
 
 /**
+ * gs_star_widget_set_interactive:
+ **/
+void
+gs_star_widget_set_interactive (GsStarWidget *star, gboolean interactive)
+{
+	GsStarWidgetPrivate *priv;
+	g_return_if_fail (GS_IS_STAR_WIDGET (star));
+	priv = gs_star_widget_get_instance_private (star);
+	priv->interactive = interactive;
+}
+
+/**
  * gs_star_widget_refresh:
  **/
 static void
@@ -158,6 +171,9 @@ gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
 	gint rating;
 
 	priv = gs_star_widget_get_instance_private (star);
+	if (!priv->interactive)
+		return;
+
 	rating = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (button),
 						     "GsStarWidget::value"));
 	priv->rating = rating;

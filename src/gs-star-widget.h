@@ -45,6 +45,8 @@ void		 gs_star_widget_set_rating		(GsStarWidget	*star,
 							 gint		 rating);
 void		 gs_star_widget_set_icon_size		(GsStarWidget	*star,
 							 guint		 pixel_size);
+void		 gs_star_widget_set_interactive		(GsStarWidget	*star,
+							 gboolean	 interactive);
 
 G_END_DECLS
 

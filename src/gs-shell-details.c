@@ -1398,24 +1398,6 @@ gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *self)
 }
 
 /**
- * gs_shell_details_app_set_ratings_cb:
- **/
-static void
-gs_shell_details_app_set_ratings_cb (GObject *source,
-				GAsyncResult *res,
-				gpointer user_data)
-{
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
-	g_autoptr(GError) error = NULL;
-
-	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to set rating %s: %s",
-			   gs_app_get_id (self->app), error->message);
-	}
-}
-
-/**
  * gs_shell_details_write_review_cb:
  **/
 static void
@@ -1453,28 +1435,6 @@ gs_shell_details_write_review_cb (GtkButton *button,
 						      self);
 	}
 	gtk_widget_destroy (dialog);
-}
-
-/**
- * gs_shell_details_rating_changed_cb:
- **/
-static void
-gs_shell_details_rating_changed_cb (GsStarWidget *star,
-				    guint rating,
-				    GsShellDetails *self)
-{
-	g_debug ("%s rating changed from %i%% to %i%%",
-		 gs_app_get_id (self->app),
-		 gs_app_get_rating (self->app),
-		 rating);
-
-	/* call into the plugins to set the new value */
-	gs_app_set_rating (self->app, rating);
-	gs_plugin_loader_app_action_async (self->plugin_loader, self->app,
-					   GS_PLUGIN_LOADER_ACTION_SET_RATING,
-					   self->cancellable,
-					   gs_shell_details_app_set_ratings_cb,
-					   self);
 }
 
 static void
@@ -1515,11 +1475,6 @@ gs_shell_details_setup (GsShellDetails *self,
 		gtk_widget_set_visible (self->box_reviews, TRUE);
 	g_signal_connect (self->button_review, "clicked",
 			  G_CALLBACK (gs_shell_details_write_review_cb),
-			  self);
-
-	/* set up star ratings */
-	g_signal_connect (self->star, "rating-changed",
-			  G_CALLBACK (gs_shell_details_rating_changed_cb),
 			  self);
 
 	/* setup details */
