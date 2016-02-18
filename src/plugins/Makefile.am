@@ -36,7 +36,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_moduleset.la			\
 	libgs_plugin_menu-spec-categories.la		\
 	libgs_plugin_menu-spec-refine.la		\
-	libgs_plugin_local-ratings.la			\
 	libgs_plugin_fedora_distro_upgrades.la		\
 	libgs_plugin_fedora_provenance.la		\
 	libgs_plugin_fedora_tagger_usage.la		\
@@ -160,11 +159,6 @@ libgs_plugin_hardcoded_blacklist_la_SOURCES = gs-plugin-hardcoded-blacklist.c
 libgs_plugin_hardcoded_blacklist_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_blacklist_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_blacklist_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
-
-libgs_plugin_local_ratings_la_SOURCES = gs-plugin-local-ratings.c
-libgs_plugin_local_ratings_la_LIBADD = $(GS_PLUGIN_LIBS) $(SQLITE_LIBS)
-libgs_plugin_local_ratings_la_LDFLAGS = -module -avoid-version
-libgs_plugin_local_ratings_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_la_SOURCES =			\
 	gs-plugin-packagekit.c				\
