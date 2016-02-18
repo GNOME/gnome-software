@@ -751,7 +751,7 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 		     gs_app_get_xdgapp_name (app),
 		     gs_app_get_xdgapp_arch (app),
 		     gs_app_get_xdgapp_branch (app));
-	return NULL;
+	return FALSE;
 }
 
 /**
