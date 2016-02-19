@@ -39,6 +39,7 @@ struct _GsReviewDialog
 	GtkDialog	 parent_instance;
 
 	GtkWidget	*star;
+	GtkWidget	*label_rating_desc;
 	GtkWidget	*summary_entry;
 	GtkWidget	*post_button;
 	GtkWidget	*text_view;
@@ -79,11 +80,49 @@ gs_review_dialog_get_text (GsReviewDialog *dialog)
 }
 
 static void
+gs_review_dialog_update_review_comment (GsReviewDialog *dialog)
+{
+	const gchar *msg = NULL;
+	gint perc;
+
+	/* update the rating description */
+	perc = gs_star_widget_get_rating (GS_STAR_WIDGET (dialog->star));
+	if (perc == 20) {
+		/* TRANSLATORS: lighthearted star rating description;
+		 *		A really bad application */
+		msg = _("Hate it");
+	} else if (perc == 40) {
+		/* TRANSLATORS: lighthearted star rating description;
+		 *		Not a great application */
+		msg = _("Don't like it");
+	} else if (perc == 60) {
+		/* TRANSLATORS: lighthearted star rating description;
+		 *		A fairly-good application */
+		msg = _("It's OK");
+	} else if (perc == 80) {
+		/* TRANSLATORS: lighthearted star rating description;
+		 *		A good application */
+		msg = _("Like it");
+	} else if (perc == 100) {
+		/* TRANSLATORS: lighthearted star rating description;
+		 *		A really awesome application */
+		msg = _("Love it");
+	} else {
+		/* just reserve space */
+		msg = "";
+	}
+	gtk_label_set_label (GTK_LABEL (dialog->label_rating_desc), msg);
+}
+
+static void
 gs_review_dialog_changed_cb (GsReviewDialog *dialog)
 {
 	GtkTextBuffer *buffer;
 	gboolean all_okay = TRUE;
 	const gchar *msg = NULL;
+
+	/* update review text */
+	gs_review_dialog_update_review_comment (dialog);
 
 	/* require rating, summary and long review */
 	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (dialog->text_view));
@@ -182,6 +221,7 @@ gs_review_dialog_class_init (GsReviewDialogClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-review-dialog.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, star);
+	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, label_rating_desc);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, summary_entry);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, text_view);
 	gtk_widget_class_bind_template_child (widget_class, GsReviewDialog, post_button);
