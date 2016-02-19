@@ -854,34 +854,6 @@ gs_plugin_refine_item_metadata (GsPlugin *plugin,
 }
 
 /**
- * _dg_app_installation_get_remote_by_name:
- */
-static XdgAppRemote *
-_dg_app_installation_get_remote_by_name (XdgAppInstallation *self,
-					 const gchar *name,
-					 GCancellable *cancellable,
-					 GError **error)
-{
-	g_autoptr(GPtrArray) xremotes = NULL;
-	guint i;
-
-	xremotes = xdg_app_installation_list_remotes (self, cancellable, error);
-	if (xremotes == NULL)
-		return NULL;
-	for (i = 0; i < xremotes->len; i++) {
-		XdgAppRemote *xremote = g_ptr_array_index (xremotes, i);
-		if (g_strcmp0 (xdg_app_remote_get_name (xremote), name) == 0)
-			return g_object_ref (xremote);
-	}
-	g_set_error (error,
-		     G_IO_ERROR,
-		     G_IO_ERROR_NOT_FOUND,
-		     "no remote called %s",
-		     name);
-	return NULL;
-}
-
-/**
  * gs_plugin_refine_item_state:
  */
 static gboolean
@@ -927,7 +899,7 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
 	    gs_app_get_origin (app) != NULL) {
 		g_autoptr(XdgAppRemote) xremote = NULL;
-		xremote = _dg_app_installation_get_remote_by_name (plugin->priv->installation,
+		xremote = xdg_app_installation_get_remote_by_name (plugin->priv->installation,
 								   gs_app_get_origin (app),
 								   cancellable, NULL);
 		if (xremote != NULL)
@@ -951,10 +923,12 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 	const gchar *str;
 	gsize len = -1;
 	g_autofree gchar *contents = NULL;
+	g_autofree gchar *installation_path_str = NULL;
 	g_autofree gchar *install_path = NULL;
 	g_autofree gchar *runtime = NULL;
 	g_autofree gchar *source = NULL;
 	g_autoptr(GBytes) data = NULL;
+	g_autoptr(GFile) installation_path = NULL;
 	g_autoptr(GKeyFile) kf = NULL;
 	g_autoptr(GsApp) app_runtime = NULL;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
@@ -968,10 +942,9 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 		return TRUE;
 
 	/* this is quicker than doing network IO */
-	install_path = g_build_filename (g_get_home_dir (),
-					 ".local",
-					 "share",	//FIXME: use xdg_app_installation_get_path()
-					 "xdg-app",
+	installation_path = xdg_app_installation_get_path (plugin->priv->installation);
+	installation_path_str = g_file_get_path (installation_path);
+	install_path = g_build_filename (installation_path_str,
 					 gs_app_get_xdgapp_kind_as_str (app),
 					 gs_app_get_xdgapp_name (app),
 					 gs_app_get_xdgapp_arch (app),
