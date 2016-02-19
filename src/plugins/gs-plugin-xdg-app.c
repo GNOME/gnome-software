@@ -38,6 +38,11 @@
 
 #include "gs-utils.h"
 
+static gboolean		gs_plugin_refine_item_metadata (GsPlugin *plugin,
+							GsApp *app,
+							GCancellable *cancellable,
+							GError **error);
+
 struct GsPluginPrivate {
 	XdgAppInstallation	*installation;
 	GFileMonitor		*monitor;
@@ -721,7 +726,15 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
 		return FALSE;
 
+	/* ensure metadata exists */
+	if (!gs_plugin_refine_item_metadata (plugin, app, cancellable, error))
+		return FALSE;
+
 	/* find list of remotes */
+	g_debug ("looking for a remote for %s/%s/%s",
+		 gs_app_get_xdgapp_name (app),
+		 gs_app_get_xdgapp_arch (app),
+		 gs_app_get_xdgapp_branch (app));
 	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
 						      cancellable,
 						      error);
@@ -732,15 +745,17 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 		XdgAppRemote *xremote = g_ptr_array_index (xremotes, i);
 		g_autoptr(XdgAppRemoteRef) xref = NULL;
 		remote_name = xdg_app_remote_get_name (xremote);
+		g_debug ("looking at remote %s", remote_name);
 		xref = xdg_app_installation_fetch_remote_ref_sync (plugin->priv->installation,
 								   remote_name,
-								   XDG_APP_REF_KIND_RUNTIME,
+								   gs_app_get_xdgapp_kind (app),
 								   gs_app_get_xdgapp_name (app),
 								   gs_app_get_xdgapp_arch (app),
 								   gs_app_get_xdgapp_branch (app),
 								   cancellable,
 								   NULL);
 		if (xref != NULL) {
+			g_debug ("found remote %s", remote_name);
 			gs_app_set_origin (app, remote_name);
 			return TRUE;
 		}
@@ -902,8 +917,11 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 		xremote = xdg_app_installation_get_remote_by_name (plugin->priv->installation,
 								   gs_app_get_origin (app),
 								   cancellable, NULL);
-		if (xremote != NULL)
+		if (xremote != NULL) {
+			g_debug ("marking %s as available with xdg-app",
+				 gs_app_get_id (app));
 			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+		}
 	}
 
 	/* success */
@@ -1241,6 +1259,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
 		return FALSE;
 
+	/* ensure we have metadata and state */
+	if (!gs_plugin_refine_item (plugin, app, 0, cancellable, error))
+		return FALSE;
+
 	/* use helper: FIXME: new()&ref? */
 	helper.app = app;
 	helper.plugin = plugin;
@@ -1252,7 +1274,25 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (gs_app_get_id_kind (app) == AS_ID_KIND_DESKTOP) {
 		GsApp *runtime;
 		runtime = gs_app_get_runtime (app);
-		if (gs_app_get_state (runtime) != AS_APP_STATE_INSTALLED) {
+
+		/* the runtime could come from a different remote to the app */
+		if (!gs_plugin_refine_item_metadata (plugin, runtime, cancellable, error))
+			return FALSE;
+		if (!gs_plugin_refine_item_origin (plugin, runtime, cancellable, error))
+			return FALSE;
+		if (!gs_plugin_refine_item_state (plugin, runtime, cancellable, error))
+			return FALSE;
+		if (gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_NOT_SUPPORTED,
+				     "Failed to find runtime %s",
+				     gs_app_get_source_default (runtime));
+			return FALSE;
+		}
+
+		/* not installed */
+		if (gs_app_get_state (runtime) == AS_APP_STATE_AVAILABLE) {
 			g_debug ("%s is not already installed, so installing",
 				 gs_app_get_id (runtime));
 			gs_app_set_state (runtime, AS_APP_STATE_INSTALLING);
