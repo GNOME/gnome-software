@@ -249,6 +249,31 @@ gs_page_remove_app (GsPage *page, GsApp *app)
 	gtk_widget_destroy (dialog);
 }
 
+static void
+gs_page_app_launched_cb (GObject *source,
+			 GAsyncResult *res,
+			 gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	g_autoptr(GError) error = NULL;
+	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to launch GsApp: %s", error->message);
+		return;
+	}
+}
+
+void
+gs_page_launch_app (GsPage *page, GsApp *app)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+	                                   app,
+	                                   GS_PLUGIN_LOADER_ACTION_LAUNCH,
+	                                   priv->cancellable,
+	                                   gs_page_app_launched_cb,
+	                                   NULL);
+}
+
 void
 gs_page_setup (GsPage *page,
                GsShell *shell,
