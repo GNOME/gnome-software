@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-02-16 10:22+0000\n"
-"PO-Revision-Date: 2016-02-16 17:56+0100\n"
+"POT-Creation-Date: 2016-02-22 17:06+0000\n"
+"PO-Revision-Date: 2016-02-22 19:08+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: slovenčina <>\n"
 "Language: sk\n"
@@ -226,7 +226,7 @@ msgstr "Dušan Kazik <prescott66@gmail.com>"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:258
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:263
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Čaká na inštaláciu"
@@ -235,7 +235,7 @@ msgstr "Čaká na inštaláciu"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:296
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:301
 #: ../src/gs-app-tile.c:88 ../src/gs-app-tile.c:91
 msgid "Installing"
 msgstr "Inštaluje sa"
@@ -244,7 +244,7 @@ msgstr "Inštaluje sa"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:305
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:310
 #: ../src/gs-app-tile.c:97 ../src/gs-app-tile.c:100
 msgid "Removing"
 msgstr "Odstraňuje sa"
@@ -254,7 +254,7 @@ msgstr "Odstraňuje sa"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1327 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1369 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " a "
 
@@ -262,17 +262,17 @@ msgstr " a "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1335
+#: ../src/gs-app.c:1377
 msgid " or "
 msgstr " alebo "
 
 #. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1358
+#: ../src/gs-app.c:1400
 msgid "Proprietary"
 msgstr "Uzavretá"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1368
+#: ../src/gs-app.c:1410
 msgid "Public domain"
 msgstr "Verejná doména"
 
@@ -284,7 +284,7 @@ msgstr "Zariadenie nie je možné používať počas aktualizácie."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:242
+#: ../src/gs-app-row.c:247
 msgid "Visit website"
 msgstr "Navštíviť webovú stránku"
 
@@ -292,13 +292,13 @@ msgstr "Navštíviť webovú stránku"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:247
+#: ../src/gs-app-row.c:252
 msgid "Install…"
 msgstr "Inštalovať…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:255
+#: ../src/gs-app-row.c:260
 msgid "Cancel"
 msgstr "Zrušiť"
 
@@ -309,7 +309,7 @@ msgstr "Zrušiť"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:265 ../src/gs-app-row.c:272 ../src/gs-page.c:204
+#: ../src/gs-app-row.c:270 ../src/gs-app-row.c:277 ../src/gs-page.c:204
 #: ../src/gs-utils.c:313
 msgid "Install"
 msgstr "Inštalovať"
@@ -318,8 +318,8 @@ msgstr "Inštalovať"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:276 ../src/gs-app-row.c:287 ../src/gs-page.c:231
-#: ../src/gs-review-row.ui.h:6
+#: ../src/gs-app-row.c:281 ../src/gs-app-row.c:292 ../src/gs-page.c:231
+#: ../src/gs-review-row.ui.h:7
 msgid "Remove"
 msgstr "Odstrániť"
 
@@ -531,33 +531,63 @@ msgstr ""
 "Informácie o formáte %s, ako aj o možnostiach získania kodeku na prehranie "
 "tohto formátu, môžete nájsť na webovej stránke."
 
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really bad application
+#: ../src/gs-review-dialog.c:93
+msgid "Hate it"
+msgstr "Nemám ho rád"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		Not a great application
+#: ../src/gs-review-dialog.c:97
+msgid "Don't like it"
+msgstr "Nepáči sa mi"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A fairly-good application
+#: ../src/gs-review-dialog.c:101
+msgid "It's OK"
+msgstr "Je v poriadku"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A good application
+#: ../src/gs-review-dialog.c:105
+msgid "Like it"
+msgstr "Páči sa mi"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really awesome application
+#: ../src/gs-review-dialog.c:109
+msgid "Love it"
+msgstr "Zbožňujem ho"
+
 #. TRANSLATORS: the review can't just be copied and pasted
-#: ../src/gs-review-dialog.c:92
+#: ../src/gs-review-dialog.c:131
 msgid "Please take more time writing the review"
 msgstr "Prosím, venujte viac času napísaniu recenzie"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:96
+#: ../src/gs-review-dialog.c:135
 msgid "Please choose a star rating"
 msgstr "Prosím, zvoľte hodnotenie pomocou hviezdičiek"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:100
+#: ../src/gs-review-dialog.c:139
 msgid "The summary is too short"
 msgstr "Súhrn je príliš krátky"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:104
+#: ../src/gs-review-dialog.c:143
 msgid "The summary is too long"
 msgstr "Súhrn je príliš dlhý"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:108
+#: ../src/gs-review-dialog.c:147
 msgid "The description is too short"
 msgstr "Popis je príliš krátky"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:112
+#: ../src/gs-review-dialog.c:151
 msgid "The description is too long"
 msgstr "Popis je príliš dlhý"
 
@@ -614,11 +644,12 @@ msgstr "Áno"
 msgid "No"
 msgstr "Nie"
 
-#: ../src/gs-review-row.ui.h:4
+#. Translators: Button text for indifference, only used when moderating
+#: ../src/gs-review-row.ui.h:5
 msgid "Meh"
 msgstr ""
 
-#: ../src/gs-review-row.ui.h:5
+#: ../src/gs-review-row.ui.h:6
 msgid "Report Abuse"
 msgstr "Nahlásiť zneužitie"
 
@@ -1159,14 +1190,12 @@ msgstr "Odporúčané kancelárske aplikácie"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-moderate.ui.h:1
-#, fuzzy
-#| msgid "Updates page"
 msgid "Moderate page"
-msgstr "Strana s aktualizáciami"
+msgstr "Strana s moderovaním"
 
 #: ../src/gs-shell-moderate.ui.h:2
 msgid "There are no reviews to moderate"
-msgstr ""
+msgstr "Neexistujú žiadne recenzie na moderovanie"
 
 #: ../src/gs-shell-overview.ui.h:1
 msgid "Overview page"
