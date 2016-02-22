@@ -3,14 +3,15 @@
 # This file is distributed under the same license as the gnome-software package.
 #
 # Nathan Follens <nthn@unseen.is>, 2015.
+# Justin van Steijn <justin50@live.nl> 2015, 2016.
 # Hannie Dumoleyn <hannie@ubuntu-nl.org>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software gnome-3-16\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-02-10 17:29+0000\n"
-"PO-Revision-Date: 2016-02-22 09:40+0100\n"
+"POT-Creation-Date: 2016-02-22 13:58+0000\n"
+"PO-Revision-Date: 2016-02-22 16:17+0100\n"
 "Last-Translator: Hannie Dumoleyn <hannie@ubuntu-nl.org>\n"
 "Language-Team: Dutch <gnome-nl-list@gnome.org>\n"
 "Language: nl\n"
@@ -75,7 +76,7 @@ msgstr "Geïnstalleerd"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:371 ../src/gs-shell.c:159
+#: ../src/gs-application.c:371 ../src/gs-shell.c:162
 msgid "Software"
 msgstr "Software"
 
@@ -208,11 +209,15 @@ msgstr "Een prettige manier om de software op uw systeem te beheren."
 
 #: ../src/gs-application.c:378
 msgid "translator-credits"
-msgstr "Nathan Follens"
+msgstr ""
+"Gnome-NL\n"
+"\n"
+"Nathan Follens\n"
+"Justin van Steijn"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:258
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:263
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "In behandeling"
@@ -221,7 +226,7 @@ msgstr "In behandeling"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:296
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:301
 #: ../src/gs-app-tile.c:88 ../src/gs-app-tile.c:91
 msgid "Installing"
 msgstr "Wordt geïnstalleerd"
@@ -230,7 +235,7 @@ msgstr "Wordt geïnstalleerd"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:305
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:310
 #: ../src/gs-app-tile.c:97 ../src/gs-app-tile.c:100
 msgid "Removing"
 msgstr "Wordt verwijderd"
@@ -240,7 +245,7 @@ msgstr "Wordt verwijderd"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1327 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1369 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " en "
 
@@ -248,19 +253,17 @@ msgstr " en "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1335
+#: ../src/gs-app.c:1377
 msgid " or "
 msgstr " of "
 
 #. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1358
+#: ../src/gs-app.c:1400
 msgid "Proprietary"
 msgstr "Niet-vrij"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1368
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "Publishing"
+#: ../src/gs-app.c:1410
 msgid "Public domain"
 msgstr "Publiek domein"
 
@@ -272,20 +275,20 @@ msgstr "Apparaat kan niet worden gebruikt tijdens het bijwerken."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:242
+#: ../src/gs-app-row.c:247
 msgid "Visit website"
 msgstr "Website bezoeken"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:247
+#: ../src/gs-app-row.c:252
 msgid "Install…"
 msgstr "Installeren…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:255
+#: ../src/gs-app-row.c:260
 msgid "Cancel"
 msgstr "Annuleren"
 
@@ -295,7 +298,7 @@ msgstr "Annuleren"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:265 ../src/gs-app-row.c:272 ../src/gs-page.c:204
+#: ../src/gs-app-row.c:270 ../src/gs-app-row.c:277 ../src/gs-page.c:204
 #: ../src/gs-utils.c:313
 msgid "Install"
 msgstr "Installeren"
@@ -303,8 +306,8 @@ msgstr "Installeren"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:276 ../src/gs-app-row.c:287 ../src/gs-page.c:231
-#: ../src/gs-review-row.ui.h:5
+#: ../src/gs-app-row.c:281 ../src/gs-app-row.c:292 ../src/gs-page.c:231
+#: ../src/gs-review-row.ui.h:7
 msgid "Remove"
 msgstr "Verwijderen"
 
@@ -486,24 +489,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:785
+#: ../src/gs-plugin-loader.c:787
 msgid "OS Updates"
 msgstr "OS updates"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:790
+#: ../src/gs-plugin-loader.c:792
 msgid "Includes performance, stability and security improvements."
 msgstr "Inclusief verbeteringen voor prestatie, stabiliteit en veiligheid."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1433 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1518 ../src/gs-shell-extras.c:387
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Geen addon codecs beschikbaar voor het formaat %s."
 
-#: ../src/gs-plugin-loader.c:1436
+#: ../src/gs-plugin-loader.c:1521
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -512,39 +515,68 @@ msgstr ""
 "Informatie over %s, evenals opties voor het verkrijgen van een codec die dit "
 "formaat kan afspelen, is te vinden op de website."
 
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really bad application
+#: ../src/gs-review-dialog.c:93
+msgid "Hate it"
+msgstr "Ik haat het"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		Not a great application
+#: ../src/gs-review-dialog.c:97
+msgid "Don't like it"
+msgstr "Vind het niet leuk"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A fairly-good application
+#: ../src/gs-review-dialog.c:101
+msgid "It's OK"
+msgstr "Het is oké"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A good application
+#: ../src/gs-review-dialog.c:105
+msgid "Like it"
+msgstr "Vind het leuk"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really awesome application
+#: ../src/gs-review-dialog.c:109
+msgid "Love it"
+msgstr "Ik hou ervan"
+
 #. TRANSLATORS: the review can't just be copied and pasted
-#: ../src/gs-review-dialog.c:92
+#: ../src/gs-review-dialog.c:131
 msgid "Please take more time writing the review"
 msgstr "Gelieve de tijd te nemen voor het schrijven van de beoordeling"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:96
+#: ../src/gs-review-dialog.c:135
 msgid "Please choose a star rating"
 msgstr "Kies één of meer sterren voor de beoordeling"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:100
+#: ../src/gs-review-dialog.c:139
 msgid "The summary is too short"
 msgstr "De samenvatting is te kort"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:104
+#: ../src/gs-review-dialog.c:143
 msgid "The summary is too long"
 msgstr "De samenvatting is te lang"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:108
+#: ../src/gs-review-dialog.c:147
 msgid "The description is too short"
 msgstr "De beschrijving is te kort"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:112
+#: ../src/gs-review-dialog.c:151
 msgid "The description is too long"
 msgstr "De beschrijving is te lang"
 
 #. vim: set noexpandtab:
 #: ../src/gs-review-dialog.ui.h:1
-#| msgid "Review"
 msgid "Post Review"
 msgstr "Beoordeling plaatsen"
 
@@ -553,8 +585,6 @@ msgid "_Post"
 msgstr "_Plaatsen"
 
 #: ../src/gs-review-dialog.ui.h:4
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Editing"
 msgid "Rating"
 msgstr "Beoordeling"
 
@@ -567,14 +597,16 @@ msgid ""
 "Give a short summary of your review, for example: “Great app, would "
 "recommend”."
 msgstr ""
-"Geef een korte samenvatting van uw beoordeling, bijvoorbeeld: “Geweldige app, "
-"aan te bevelen”."
+"Geef een korte samenvatting van uw beoordeling, bijvoorbeeld: “Geweldige "
+"app, aan te bevelen”."
 
-#: ../src/gs-review-dialog.ui.h:7 ../src/gs-update-monitor.c:456
+#. Translators: This is where the users enter their opinions about the apps.
+#: ../src/gs-review-dialog.ui.h:8
+msgctxt "app review"
 msgid "Review"
 msgstr "Beoordeling"
 
-#: ../src/gs-review-dialog.ui.h:8
+#: ../src/gs-review-dialog.ui.h:9
 msgid "What do you think of the app? Try to give reasons for your views."
 msgstr "Wat vindt u van de app? Probeer uw mening nader te verklaren."
 
@@ -592,12 +624,15 @@ msgid "Yes"
 msgstr "Ja"
 
 #: ../src/gs-review-row.ui.h:3
-#| msgctxt "menu category"
-#| msgid "None"
 msgid "No"
 msgstr "Nee"
 
-#: ../src/gs-review-row.ui.h:4
+#. Translators: Button text for indifference, only used when moderating
+#: ../src/gs-review-row.ui.h:5
+msgid "Meh"
+msgstr "Een beetje"
+
+#: ../src/gs-review-row.ui.h:6
 msgid "Report Abuse"
 msgstr "Misbruik rapporteren"
 
@@ -693,8 +728,8 @@ msgid ""
 "Information about %s, as well as options for how to get missing applications "
 "might be found %s."
 msgstr ""
-"Informatie over %s en opties voor het verkrijgen van ontbrekende toepassingen "
-"kunnen gevonden worden %s."
+"Informatie over %s en opties voor het verkrijgen van ontbrekende "
+"toepassingen kunnen gevonden worden %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -737,8 +772,8 @@ msgid ""
 "Information about %s, as well as options for how to get additional fonts "
 "might be found %s."
 msgstr ""
-"Informatie over %s en opties voor het verkrijgen van extra lettertypes kunnen "
-"gevonden worden %s."
+"Informatie over %s en opties voor het verkrijgen van extra lettertypes "
+"kunnen gevonden worden %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -801,7 +836,8 @@ msgid_plural ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
 "%s for more information."
 msgstr[0] ""
-"De %s waar u naar zocht kon niet gevonden worden. Zie %s voor meer informatie."
+"De %s waar u naar zocht kon niet gevonden worden. Zie %s voor meer "
+"informatie."
 msgstr[1] ""
 "De %s waar u naar zocht konden niet gevonden worden. Zie %s voor meer "
 "informatie."
@@ -902,7 +938,8 @@ msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr ""
-"Deze toepassing kan alleen gebruikt worden met een actieve internetverbinding."
+"Deze toepassing kan alleen gebruikt worden met een actieve "
+"internetverbinding."
 
 #. TRANSLATORS: this is the warning box
 #: ../src/gs-shell-details.c:812
@@ -968,8 +1005,8 @@ msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
 msgstr ""
-"Deze software wordt al door uw distributie aangeboden en hoeft niet vervangen "
-"te worden."
+"Deze software wordt al door uw distributie aangeboden en hoeft niet "
+"vervangen te worden."
 
 #. Translators: a repository file used for installing software has been discovered.
 #: ../src/gs-shell-details.ui.h:13
@@ -996,7 +1033,7 @@ msgstr "_Website"
 msgid "_History"
 msgstr "Gesc_hiedenis"
 
-#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:550
+#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:556
 msgid "Details"
 msgstr "Gegevens"
 
@@ -1005,8 +1042,6 @@ msgid "Localized in your Language"
 msgstr "Aangepast aan uw taal"
 
 #: ../src/gs-shell-details.ui.h:20
-#| msgctxt "Menu subcategory of Office"
-#| msgid "Presentation"
 msgid "Documentation"
 msgstr "Documentatie"
 
@@ -1016,7 +1051,6 @@ msgid "Release Activity"
 msgstr "Release Activiteit"
 
 #: ../src/gs-shell-details.ui.h:22
-#| msgid "System Applications"
 msgid "System Integration"
 msgstr "Systeemintegratie"
 
@@ -1065,7 +1099,6 @@ msgid "Selected add-ons will be installed with the application."
 msgstr "Geselecteerde add-ons zullen met de toepassing worden geïnstalleerd."
 
 #: ../src/gs-shell-details.ui.h:35
-#| msgid "Review"
 msgid "Reviews"
 msgstr "Beoordelingen"
 
@@ -1121,6 +1154,14 @@ msgid "Recommended Office Applications"
 msgstr "Aanbevolen kantoortoepassingen"
 
 #. vim: set noexpandtab:
+#: ../src/gs-shell-moderate.ui.h:1
+msgid "Moderate page"
+msgstr "Pagina modereren"
+
+#: ../src/gs-shell-moderate.ui.h:2
+msgid "There are no reviews to moderate"
+msgstr "Er zijn geen beoordelingen om te modereren"
+
 #: ../src/gs-shell-overview.ui.h:1
 msgid "Overview page"
 msgstr "Overzicht-pagina"
@@ -1152,95 +1193,95 @@ msgid "No Application Found"
 msgstr "Geen toepassing gevonden"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:144
+#: ../src/gs-shell-updates.c:146
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:147
+#: ../src/gs-shell-updates.c:149
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:153
+#: ../src/gs-shell-updates.c:155
 msgid "Yesterday, %R"
 msgstr "Gisteren, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:157
+#: ../src/gs-shell-updates.c:159
 msgid "Yesterday, %l:%M %p"
 msgstr "Gisteren, %l:%M %p"
 
-#: ../src/gs-shell-updates.c:160
+#: ../src/gs-shell-updates.c:162
 msgid "Two days ago"
 msgstr "Twee dagen geleden"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:164
 msgid "Three days ago"
 msgstr "Drie dagen geleden"
 
-#: ../src/gs-shell-updates.c:164
+#: ../src/gs-shell-updates.c:166
 msgid "Four days ago"
 msgstr "Vier dagen geleden"
 
-#: ../src/gs-shell-updates.c:166
+#: ../src/gs-shell-updates.c:168
 msgid "Five days ago"
 msgstr "Vijf dagen geleden"
 
-#: ../src/gs-shell-updates.c:168
+#: ../src/gs-shell-updates.c:170
 msgid "Six days ago"
 msgstr "Zes dagen geleden"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:172
 msgid "One week ago"
 msgstr "Een week geleden"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:174
 msgid "Two weeks ago"
 msgstr "Twee weken geleden"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:176
+#: ../src/gs-shell-updates.c:178
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:192
+#: ../src/gs-shell-updates.c:194
 msgid "Downloading new updates…"
 msgstr "Nieuwe updates worden gedownload…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:196
+#: ../src/gs-shell-updates.c:198
 msgid "Looking for new updates…"
 msgstr "Zoeken naar nieuwe updates…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:237
+#: ../src/gs-shell-updates.c:239
 msgid "Setting up updates…"
 msgstr "Instellen van nieuwe updates…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:238 ../src/gs-shell-updates.c:245
+#: ../src/gs-shell-updates.c:240 ../src/gs-shell-updates.c:247
 msgid "(This could take a while)"
 msgstr "(Dit kan even duren)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:394
+#: ../src/gs-shell-updates.c:403
 #, c-format
 msgid "Last checked: %s"
 msgstr "Laatst gecontroleerd: %s"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:778
+#: ../src/gs-shell-updates.c:809
 msgid "Charges may apply"
 msgstr "Er kunnen kosten aan verbonden zijn"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:782
+#: ../src/gs-shell-updates.c:813
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1250,24 +1291,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:786
+#: ../src/gs-shell-updates.c:817
 msgid "Check Anyway"
 msgstr "Toch controleren"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:802
+#: ../src/gs-shell-updates.c:833
 msgid "No Network"
 msgstr "Geen netwerk"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:806
+#: ../src/gs-shell-updates.c:837
 msgid "Internet access is required to check for updates."
 msgstr "Internettoegang is vereist voor het controleren op updates."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:810
+#: ../src/gs-shell-updates.c:841
 msgid "Network Settings"
 msgstr "Netwerkinstellingen"
 
@@ -1383,8 +1424,8 @@ msgid ""
 "Software sources can be downloaded from the internet. They give you access "
 "to additional software that is not provided by %s."
 msgstr ""
-"Softwarebronnen kunnen gedownload worden van het internet. Ze geven u toegang "
-"tot extra software die niet door %s meegeleverd is."
+"Softwarebronnen kunnen gedownload worden van het internet. Ze geven u "
+"toegang tot extra software die niet door %s meegeleverd is."
 
 #. vim: set noexpandtab:
 #: ../src/gs-sources-dialog.ui.h:1
@@ -1456,7 +1497,6 @@ msgstr "Er zijn geen updates geïnstalleerd op dit systeem."
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
 #: ../src/gs-upgrade-banner.c:75
 #, c-format
-#| msgid "%s is not available."
 msgid "%s %s Now Available"
 msgstr "%s %s is nu beschikbaar"
 
@@ -1465,7 +1505,6 @@ msgstr "%s %s is nu beschikbaar"
 #. * is the version, e.g. "Downloading Fedora 23"
 #: ../src/gs-upgrade-banner.c:88
 #, c-format
-#| msgid "Downloading new updates…"
 msgid "Downloading %s %s"
 msgstr "%s %s wordt gedownload"
 
@@ -1475,8 +1514,6 @@ msgstr "%s %s wordt gedownload"
 #. * e.g. "Fedora 23 Ready to be Installed"
 #: ../src/gs-upgrade-banner.c:102
 #, c-format
-#| msgid "%s and %s installed"
-#| msgid_plural "%s and %s installed"
 msgid "%s %s Ready to be Installed"
 msgstr "%s  %s klaar om te worden geïnstalleerd"
 
@@ -1494,7 +1531,6 @@ msgid "_Download"
 msgstr "_Downloaden"
 
 #: ../src/gs-upgrade-banner.ui.h:5
-#| msgid "It is recommended that you install important updates now"
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr ""
@@ -1533,70 +1569,77 @@ msgstr "Bekijken"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:229
+#: ../src/gs-update-monitor.c:234
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Er is een nieuwe versie van %s beschikbaar om te installeren"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:233
+#: ../src/gs-update-monitor.c:238
 msgid "Software Upgrade Available"
 msgstr "Software-upgrade beschikbaar"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:427
+#: ../src/gs-update-monitor.c:432
 msgid "Software Updates Failed"
 msgstr "Software-updates mislukt"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:429
+#: ../src/gs-update-monitor.c:434
 msgid "An important OS update failed to be installed."
 msgstr "Installatie van een belangrijke OS-update is mislukt"
 
-#: ../src/gs-update-monitor.c:431
+#: ../src/gs-update-monitor.c:436
 msgid "Show Details"
 msgstr "Gegevens tonen"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:446
+#: ../src/gs-update-monitor.c:451
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Software-update geïnstalleerd"
 msgstr[1] "Software-updates geïnstalleerd"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:450
+#: ../src/gs-update-monitor.c:455
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Een belangrijke OS-update is geïnstalleerd."
 msgstr[1] "Belangrijke OS-updates zijn geïnstalleerd."
 
+# in de zin van: Bekijk updates (die zijn geïnstalleerd)
+#. TRANSLATORS: to look at the updates that were installed
+#: ../src/gs-update-monitor.c:462
+msgctxt "updates"
+msgid "Review"
+msgstr "Bekijk"
+
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-update-monitor.c:531
+#: ../src/gs-update-monitor.c:537
 msgid "Detailed errors from the package manager follow:"
 msgstr "Gedetailleerde fouten van de pakketbeheerder volgen:"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:592
+#: ../src/gs-update-monitor.c:598
 msgid "Failed To Update"
 msgstr "Bijwerken mislukt"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:598
+#: ../src/gs-update-monitor.c:604
 msgid "The system was already up to date."
 msgstr "Het systeem was al bijgewerkt."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:603
+#: ../src/gs-update-monitor.c:609
 msgid "The update was cancelled."
 msgstr "De update is geannuleerd."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:609
+#: ../src/gs-update-monitor.c:615
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1605,23 +1648,23 @@ msgstr ""
 "internettoegang heeft en probeer het opnieuw."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:615
+#: ../src/gs-update-monitor.c:621
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr ""
-"Er zijn veiligheidsproblemen met de update. Gelieve uw softwareleverancier te "
-"raadplegen voor meer details."
+"Er zijn veiligheidsproblemen met de update. Gelieve uw softwareleverancier "
+"te raadplegen voor meer details."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:621
+#: ../src/gs-update-monitor.c:627
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Er is niet genoeg opslagruimte. Maak wat ruimte vrij en probeer het opnieuw."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:626
+#: ../src/gs-update-monitor.c:632
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
