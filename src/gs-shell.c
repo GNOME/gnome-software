@@ -198,7 +198,8 @@ gs_shell_change_mode (GsShell *shell,
 	case GS_SHELL_MODE_SEARCH:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		text = gtk_entry_get_text (GTK_ENTRY (widget));
-		gs_shell_search_switch_to (priv->shell_search, text, scroll_up);
+		gs_shell_search_set_text (priv->shell_search, text);
+		gs_shell_search_switch_to (priv->shell_search, scroll_up);
 		break;
 	case GS_SHELL_MODE_UPDATES:
 		gs_shell_updates_switch_to (priv->shell_updates, scroll_up);
@@ -319,7 +320,8 @@ gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
 		return;
 
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
-		gs_shell_search_switch_to (priv->shell_search, text, TRUE);
+		gs_shell_search_set_text (priv->shell_search, text);
+		gs_shell_search_switch_to (priv->shell_search, TRUE);
 	} else {
 		gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 	}
@@ -443,10 +445,12 @@ search_changed_handler (GObject *entry, GsShell *shell)
 	}
 
 	if (strlen(text) > 2) {
-		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH)
+		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH) {
 			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
-		else
-			gs_shell_search_switch_to (priv->shell_search, text, TRUE);
+		} else {
+			gs_shell_search_set_text (priv->shell_search, text);
+			gs_shell_search_switch_to (priv->shell_search, TRUE);
+		}
 	}
 }
 

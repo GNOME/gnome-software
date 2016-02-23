@@ -197,11 +197,18 @@ gs_shell_search_set_appid_to_show (GsShellSearch *self, const gchar *appid)
 	self->appid_to_show = g_strdup (appid);
 }
 
+void
+gs_shell_search_set_text (GsShellSearch *self, const gchar *value)
+{
+	g_free (self->value);
+	self->value = g_strdup (value);
+}
+
 /**
  * gs_shell_search_switch_to:
  **/
 void
-gs_shell_search_switch_to (GsShellSearch *self, const gchar *value, gboolean scroll_up)
+gs_shell_search_switch_to (GsShellSearch *self, gboolean scroll_up)
 {
 	GtkWidget *widget;
 
@@ -222,9 +229,6 @@ gs_shell_search_switch_to (GsShellSearch *self, const gchar *value, gboolean scr
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search));
 		gtk_adjustment_set_value (adj, gtk_adjustment_get_lower (adj));
 	}
-
-	g_free (self->value);
-	self->value = g_strdup (value);
 
 	gs_shell_search_load (self);
 }
