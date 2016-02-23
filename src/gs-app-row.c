@@ -162,8 +162,12 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
 	} else {
 		switch (gs_app_get_id_kind (priv->app)) {
-		case AS_ID_KIND_WEB_APP:
 		case AS_ID_KIND_UNKNOWN:
+			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
+			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
+			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
+			break;
+		case AS_ID_KIND_WEB_APP:
 			gtk_widget_set_visible (priv->label_tag_webapp, TRUE);
 			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
 			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
