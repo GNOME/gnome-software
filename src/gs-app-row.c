@@ -111,6 +111,8 @@ gs_app_row_get_description (GsAppRow *app_row)
 		tmp = gs_app_get_summary (priv->app);
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_name (priv->app);
+	if (tmp == NULL)
+		return NULL;
 	escaped = g_markup_escape_text (tmp, -1);
 	return g_string_new (escaped);
 }
@@ -142,9 +144,13 @@ gs_app_row_refresh (GsAppRow *app_row)
 
 	/* join the description lines */
 	str = gs_app_row_get_description (app_row);
-	gs_string_replace (str, "\n", " ");
-	gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
-	g_string_free (str, TRUE);
+	if (str != NULL) {
+		gs_string_replace (str, "\n", " ");
+		gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
+		g_string_free (str, TRUE);
+	} else {
+		gtk_label_set_text (GTK_LABEL (priv->description_label), NULL);
+	}
 
 	/* add warning */
 	if (gs_app_get_kind (priv->app) == GS_APP_KIND_FIRMWARE_UPDATE) {
