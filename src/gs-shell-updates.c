@@ -68,6 +68,10 @@ struct _GsShellUpdates
 	gulong			 network_changed_handler;
 	GsPluginStatus		 last_status;
 	GsShellUpdatesState	 state;
+	GtkWidget		*button_refresh;
+	GtkWidget		*button_update_all;
+	GtkWidget		*header_spinner_start;
+	GtkWidget		*header_start_box;
 	gboolean		 has_agreed_to_mobile_data;
 	gboolean		 ampm_available;
 
@@ -205,7 +209,6 @@ gs_shell_updates_get_state_string (GsPluginStatus status)
 static void
 gs_shell_updates_update_ui_state (GsShellUpdates *self)
 {
-	GtkWidget *widget;
 	gboolean allow_mobile_refresh = TRUE;
 	g_autofree gchar *checked_str = NULL;
 	g_autofree gchar *spinner_str = NULL;
@@ -261,11 +264,10 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	}
 
 	/* headerbar spinner */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "header_spinner_start"));
 	switch (self->state) {
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
-		gtk_widget_show (widget);
-		gtk_spinner_start (GTK_SPINNER (widget));
+		gtk_widget_show (self->header_spinner_start);
+		gtk_spinner_start (GTK_SPINNER (self->header_spinner_start));
 		break;
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
@@ -274,8 +276,8 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_STARTUP:
 	case GS_SHELL_UPDATES_STATE_FAILED:
-		gtk_spinner_stop (GTK_SPINNER (widget));
-		gtk_widget_hide (widget);
+		gtk_spinner_stop (GTK_SPINNER (self->header_spinner_start));
+		gtk_widget_hide (self->header_spinner_start);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -283,37 +285,32 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	}
 
 	/* headerbar refresh icon */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_refresh_image"));
 	switch (self->state) {
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
-		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
+		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
 					      "media-playback-stop-symbolic", GTK_ICON_SIZE_MENU);
-		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_refresh"));
-		gtk_widget_show (widget);
+		gtk_widget_show (self->button_refresh);
 		break;
 	case GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES:
 	case GS_SHELL_UPDATES_STATE_STARTUP:
 	case GS_SHELL_UPDATES_STATE_MANAGED:
-		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_refresh"));
-		gtk_widget_hide (widget);
+		gtk_widget_hide (self->button_refresh);
 		break;
 	case GS_SHELL_UPDATES_STATE_FAILED:
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
-		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
+		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
 					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
-		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_refresh"));
-		gtk_widget_show (widget);
+		gtk_widget_show (self->button_refresh);
 		break;
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
-		gtk_image_set_from_icon_name (GTK_IMAGE (widget),
+		gtk_image_set_from_icon_name (GTK_IMAGE (gtk_button_get_image (GTK_BUTTON (self->button_refresh))),
 					      "view-refresh-symbolic", GTK_ICON_SIZE_MENU);
-		widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_refresh"));
 		if (self->network_monitor != NULL &&
 		    g_network_monitor_get_network_metered (self->network_monitor) &&
 		    !self->has_agreed_to_mobile_data)
 			allow_mobile_refresh = FALSE;
-		gtk_widget_set_visible (widget, allow_mobile_refresh);
+		gtk_widget_set_visible (self->button_refresh, allow_mobile_refresh);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -321,11 +318,10 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	}
 
 	/* headerbar update button */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_update_all"));
 	switch (self->state) {
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_HAS_UPDATES:
 	case GS_SHELL_UPDATES_STATE_HAS_UPDATES:
-		gtk_widget_show (widget);
+		gtk_widget_show (self->button_update_all);
 		break;
 	case GS_SHELL_UPDATES_STATE_STARTUP:
 	case GS_SHELL_UPDATES_STATE_ACTION_REFRESH_NO_UPDATES:
@@ -333,7 +329,7 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	case GS_SHELL_UPDATES_STATE_NO_UPDATES:
 	case GS_SHELL_UPDATES_STATE_MANAGED:
 	case GS_SHELL_UPDATES_STATE_FAILED:
-		gtk_widget_hide (widget);
+		gtk_widget_hide (self->button_update_all);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -570,8 +566,7 @@ gs_shell_updates_switch_to (GsPage *page,
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_refresh"));
-	gtk_widget_set_visible (widget, TRUE);
+	gtk_widget_set_visible (self->button_refresh, TRUE);
 
 	if (scroll_up) {
 		GtkAdjustment *adj;
@@ -1108,7 +1103,7 @@ gs_shell_updates_setup (GsShellUpdates *self,
 			GtkBuilder *builder,
 			GCancellable *cancellable)
 {
-	GtkWidget *widget;
+	AtkObject *accessible;
 
 	g_return_if_fail (GS_IS_SHELL_UPDATES (self));
 
@@ -1136,14 +1131,29 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	g_signal_connect (self->upgrade_banner, "install-button-clicked",
 			  G_CALLBACK (gs_shell_updates_install_upgrade_cb), self);
 
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_update_all"));
-	g_signal_connect (widget, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), self);
+	self->button_update_all = gtk_button_new_with_mnemonic (_("Restart & _Install"));
+	gtk_widget_set_visible (self->button_update_all, TRUE);
+	gtk_style_context_add_class (gtk_widget_get_style_context (self->button_update_all), "suggested-action");
+	gs_page_set_header_end_widget (GS_PAGE (self), self->button_update_all);
+	g_signal_connect (self->button_update_all, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), self);
+
+	self->header_start_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+	gtk_widget_set_visible (self->header_start_box, TRUE);
+	gs_page_set_header_start_widget (GS_PAGE (self), self->header_start_box);
+
+	self->header_spinner_start = gtk_spinner_new ();
+	gtk_box_pack_end (GTK_BOX (self->header_start_box), self->header_spinner_start, FALSE, FALSE, 0);
 
 	/* setup update details window */
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_refresh"));
-	g_signal_connect (widget, "clicked",
+	self->button_refresh = gtk_button_new_from_icon_name ("view-refresh-symbolic", GTK_ICON_SIZE_MENU);
+	accessible = gtk_widget_get_accessible (self->button_refresh);
+	if (accessible != NULL)
+		atk_object_set_name (accessible, _("Check for updates"));
+	gtk_box_pack_start (GTK_BOX (self->header_start_box), self->button_refresh, FALSE, FALSE, 0);
+	g_signal_connect (self->button_refresh, "clicked",
 			  G_CALLBACK (gs_shell_updates_button_refresh_cb),
 			  self);
+
 	g_signal_connect (self->button_updates_mobile, "clicked",
 			  G_CALLBACK (gs_shell_updates_button_mobile_refresh_cb),
 			  self);

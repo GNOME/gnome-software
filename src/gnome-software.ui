@@ -17,16 +17,6 @@
       </object>
     </child>
   </object>
-  <object class="GtkImage" id="button_select_image">
-    <property name="visible">True</property>
-    <property name="icon_size">0</property>
-    <property name="icon_name">object-select-symbolic</property> 
-  </object>
-  <object class="GtkImage" id="button_refresh_image">
-    <property name="visible">True</property>
-    <property name="icon_size">0</property>
-    <property name="icon_name">view-refresh-symbolic</property> 
-  </object>
   <object class="GtkApplicationWindow" id="window_software">
     <property name="can_focus">False</property>
     <property name="default-width">1200</property>
@@ -251,56 +241,6 @@
                   </packing>
                 </child>
               </object>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_update_all">
-                <property name="use_underline">True</property>
-                <property name="label" translatable="yes">Restart &amp; _Install</property>
-                <property name="can_focus">True</property>
-                <property name="receives_default">True</property>
-                <style>
-                  <class name="suggested-action"/>
-                </style>
-              </object>
-              <packing>
-                <property name="pack_type">end</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_select">
-                <property name="image">button_select_image</property>
-                <property name="can_focus">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="button-select-accessible">
-                    <property name="accessible-name" translatable="yes">Select</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="pack_type">end</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkButton" id="button_refresh">
-                <property name="image">button_refresh_image</property>
-                <property name="can_focus">True</property>
-                <child internal-child="accessible">
-                  <object class="AtkObject" id="button-refresh-accessible">
-                    <property name="accessible-name" translatable="yes">Check for updates</property>
-                  </object>
-                </child>
-              </object>
-              <packing>
-                <property name="pack_type">start</property>
-              </packing>
-            </child>
-            <child>
-              <object class="GtkSpinner" id="header_spinner_start">
-                <property name="can_focus">False</property>
-              </object>
-              <packing>
-                <property name="pack_type">start</property>
-              </packing>
             </child>
           </object>
           <packing>

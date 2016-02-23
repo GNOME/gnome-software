@@ -34,6 +34,8 @@ typedef struct
 	GsPluginLoader		*plugin_loader;
 	GCancellable		*cancellable;
 	GsShell			*shell;
+	GtkWidget		*header_start_widget;
+	GtkWidget		*header_end_widget;
 } GsPagePrivate;
 
 G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
@@ -120,6 +122,38 @@ gs_page_app_removed_cb (GObject *source,
 
 out:
 	install_remove_data_free (data);
+}
+
+GtkWidget *
+gs_page_get_header_start_widget (GsPage *page)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+
+	return priv->header_start_widget;
+}
+
+void
+gs_page_set_header_start_widget (GsPage *page, GtkWidget *widget)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+
+	g_set_object (&priv->header_start_widget, widget);
+}
+
+GtkWidget *
+gs_page_get_header_end_widget (GsPage *page)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+
+	return priv->header_end_widget;
+}
+
+void
+gs_page_set_header_end_widget (GsPage *page, GtkWidget *widget)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+
+	g_set_object (&priv->header_end_widget, widget);
 }
 
 void
@@ -321,6 +355,8 @@ gs_page_dispose (GObject *object)
 
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->cancellable);
+	g_clear_object (&priv->header_start_widget);
+	g_clear_object (&priv->header_end_widget);
 
 	G_OBJECT_CLASS (gs_page_parent_class)->dispose (object);
 }
