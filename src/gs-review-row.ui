@@ -98,6 +98,7 @@
             <property name="visible">True</property>
             <property name="can_focus">False</property>
             <property name="spacing">9</property>
+            <property name="halign">start</property>
             <child>
               <object class="GtkLabel">
                 <property name="visible">True</property>
@@ -119,6 +120,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <style>
+                  <class name="naked-button"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -132,6 +136,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <style>
+                  <class name="naked-button"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -145,6 +152,9 @@
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
+                <style>
+                  <class name="naked-button"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -167,11 +177,14 @@
             <property name="halign">end</property>
             <child>
               <object class="GtkButton" id="button_report">
-                <property name="label" translatable="yes">Report Abuse</property>
+                <property name="label" translatable="yes">Report…</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="width_request">150</property>
+                <property name="halign">end</property>
+                <style>
+                  <class name="naked-button"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -181,11 +194,14 @@
             </child>
             <child>
               <object class="GtkButton" id="button_remove">
-                <property name="label" translatable="yes">Remove</property>
+                <property name="label" translatable="yes">Remove…</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>
                 <property name="receives_default">True</property>
-                <property name="width_request">150</property>
+                <property name="halign">end</property>
+                <style>
+                  <class name="naked-button"/>
+                </style>
               </object>
               <packing>
                 <property name="expand">False</property>
