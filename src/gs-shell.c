@@ -71,6 +71,8 @@ typedef struct
 	GsShellDetails		*shell_details;
 	GsShellCategory		*shell_category;
 	GsShellExtras		*shell_extras;
+	GtkWidget		*header_start_widget;
+	GtkWidget		*header_end_widget;
 	GtkBuilder		*builder;
 	GtkWindow		*main_window;
 	GQueue			*back_entry_stack;
@@ -116,6 +118,58 @@ gs_shell_activate (GsShell *shell)
 	gtk_window_present (priv->main_window);
 }
 
+static void
+gs_shell_set_header_start_widget (GsShell *shell, GtkWidget *widget)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *old_widget;
+	GtkWidget *header;
+
+	old_widget = priv->header_start_widget;
+	header = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
+
+	if (priv->header_start_widget == widget)
+		return;
+
+	if (widget != NULL) {
+		g_object_ref (widget);
+		gtk_header_bar_pack_start (GTK_HEADER_BAR (header), widget);
+	}
+
+	priv->header_start_widget = widget;
+
+	if (old_widget != NULL) {
+		gtk_container_remove (GTK_CONTAINER (header), old_widget);
+		g_object_unref (old_widget);
+	}
+}
+
+static void
+gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWidget *old_widget;
+	GtkWidget *header;
+
+	old_widget = priv->header_end_widget;
+	header = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header"));
+
+	if (priv->header_end_widget == widget)
+		return;
+
+	if (widget != NULL) {
+		g_object_ref (widget);
+		gtk_header_bar_pack_end (GTK_HEADER_BAR (header), widget);
+	}
+
+	priv->header_end_widget = widget;
+
+	if (old_widget != NULL) {
+		gtk_container_remove (GTK_CONTAINER (header), old_widget);
+		g_object_unref (old_widget);
+	}
+}
+
 void
 gs_shell_change_mode (GsShell *shell,
 		      GsShellMode mode,
@@ -124,6 +178,7 @@ gs_shell_change_mode (GsShell *shell,
 		      gboolean scroll_up)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GsPage *new_page;
 	GtkWidget *widget;
 	const gchar *text;
 	GtkStyleContext *context;
@@ -137,15 +192,6 @@ gs_shell_change_mode (GsShell *shell,
 	/* hide all mode specific header widgets here, they will be shown in the
 	 * refresh functions
 	 */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_update_all"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_spinner_start"));
-	gtk_spinner_stop (GTK_SPINNER (widget));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_select"));
-	gtk_widget_hide (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "button_refresh"));
-	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "application_details_header"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
@@ -187,42 +233,50 @@ gs_shell_change_mode (GsShell *shell,
 	priv->mode = mode;
 	switch (mode) {
 	case GS_SHELL_MODE_OVERVIEW:
-		gs_page_switch_to (GS_PAGE (priv->shell_overview), scroll_up);
+		new_page = GS_PAGE (priv->shell_overview);
 		break;
 	case GS_SHELL_MODE_INSTALLED:
-		gs_page_switch_to (GS_PAGE (priv->shell_installed), scroll_up);
+		new_page = GS_PAGE (priv->shell_installed);
 		break;
 	case GS_SHELL_MODE_MODERATE:
-		gs_page_switch_to (GS_PAGE (priv->shell_moderate), scroll_up);
+		new_page = GS_PAGE (priv->shell_moderate);
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		text = gtk_entry_get_text (GTK_ENTRY (widget));
 		gs_shell_search_set_text (priv->shell_search, text);
-		gs_page_switch_to (GS_PAGE (priv->shell_search), scroll_up);
+		new_page = GS_PAGE (priv->shell_search);
 		break;
 	case GS_SHELL_MODE_UPDATES:
-		gs_page_switch_to (GS_PAGE (priv->shell_updates), scroll_up);
+		new_page = GS_PAGE (priv->shell_updates);
 		break;
 	case GS_SHELL_MODE_DETAILS:
-		if (app != NULL) {
+		if (app != NULL)
 			gs_shell_details_set_app (priv->shell_details, app);
-			gs_page_switch_to (GS_PAGE (priv->shell_details), scroll_up);
-		}
 		if (data != NULL)
 			gs_shell_details_set_filename (priv->shell_details, data);
+		new_page = GS_PAGE (priv->shell_details);
 		break;
 	case GS_SHELL_MODE_CATEGORY:
 		gs_shell_category_set_category (priv->shell_category,
 						GS_CATEGORY (data));
-		gs_page_switch_to (GS_PAGE (priv->shell_category), scroll_up);
+		new_page = GS_PAGE (priv->shell_category);
 		break;
 	case GS_SHELL_MODE_EXTRAS:
-		gs_page_switch_to (GS_PAGE (priv->shell_extras), scroll_up);
+		new_page = GS_PAGE (priv->shell_extras);
 		break;
 	default:
 		g_assert_not_reached ();
 	}
+
+	gs_page_switch_to (new_page, scroll_up);
+
+	/* update header bar widgets */
+	widget = gs_page_get_header_start_widget (new_page);
+	gs_shell_set_header_start_widget (shell, widget);
+
+	widget = gs_page_get_header_end_widget (new_page);
+	gs_shell_set_header_end_widget (shell, widget);
 }
 
 /**
@@ -852,6 +906,8 @@ gs_shell_dispose (GObject *object)
 	g_clear_object (&priv->builder);
 	g_clear_object (&priv->cancellable);
 	g_clear_object (&priv->plugin_loader);
+	g_clear_object (&priv->header_start_widget);
+	g_clear_object (&priv->header_end_widget);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
