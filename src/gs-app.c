@@ -2325,6 +2325,7 @@ gs_app_finalize (GObject *object)
 	g_free (app->licence);
 	g_strfreev (app->menu_path);
 	g_free (app->origin);
+	g_free (app->origin_ui);
 	g_ptr_array_unref (app->sources);
 	g_ptr_array_unref (app->source_ids);
 	g_free (app->project_group);
