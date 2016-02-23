@@ -40,7 +40,6 @@ GsShellCategory	*gs_shell_category_new		(void);
 void		 gs_shell_category_set_category	(GsShellCategory	*self,
 						 GsCategory		*category);
 GsCategory	*gs_shell_category_get_category (GsShellCategory	*self);
-void		 gs_shell_category_switch_to	(GsShellCategory	*self);
 void		 gs_shell_category_reload	(GsShellCategory	*self);
 void		 gs_shell_category_setup	(GsShellCategory	*self,
 						 GsShell		*shell,

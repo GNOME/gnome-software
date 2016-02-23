@@ -187,27 +187,27 @@ gs_shell_change_mode (GsShell *shell,
 	priv->mode = mode;
 	switch (mode) {
 	case GS_SHELL_MODE_OVERVIEW:
-		gs_shell_overview_switch_to (priv->shell_overview, scroll_up);
+		gs_page_switch_to (GS_PAGE (priv->shell_overview), scroll_up);
 		break;
 	case GS_SHELL_MODE_INSTALLED:
-		gs_shell_installed_switch_to (priv->shell_installed, scroll_up);
+		gs_page_switch_to (GS_PAGE (priv->shell_installed), scroll_up);
 		break;
 	case GS_SHELL_MODE_MODERATE:
-		gs_shell_moderate_switch_to (priv->shell_moderate, scroll_up);
+		gs_page_switch_to (GS_PAGE (priv->shell_moderate), scroll_up);
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 		text = gtk_entry_get_text (GTK_ENTRY (widget));
 		gs_shell_search_set_text (priv->shell_search, text);
-		gs_shell_search_switch_to (priv->shell_search, scroll_up);
+		gs_page_switch_to (GS_PAGE (priv->shell_search), scroll_up);
 		break;
 	case GS_SHELL_MODE_UPDATES:
-		gs_shell_updates_switch_to (priv->shell_updates, scroll_up);
+		gs_page_switch_to (GS_PAGE (priv->shell_updates), scroll_up);
 		break;
 	case GS_SHELL_MODE_DETAILS:
 		if (app != NULL) {
 			gs_shell_details_set_app (priv->shell_details, app);
-			gs_shell_details_switch_to (priv->shell_details);
+			gs_page_switch_to (GS_PAGE (priv->shell_details), scroll_up);
 		}
 		if (data != NULL)
 			gs_shell_details_set_filename (priv->shell_details, data);
@@ -215,10 +215,10 @@ gs_shell_change_mode (GsShell *shell,
 	case GS_SHELL_MODE_CATEGORY:
 		gs_shell_category_set_category (priv->shell_category,
 						GS_CATEGORY (data));
-		gs_shell_category_switch_to (priv->shell_category);
+		gs_page_switch_to (GS_PAGE (priv->shell_category), scroll_up);
 		break;
 	case GS_SHELL_MODE_EXTRAS:
-		gs_shell_extras_switch_to (priv->shell_extras, scroll_up);
+		gs_page_switch_to (GS_PAGE (priv->shell_extras), scroll_up);
 		break;
 	default:
 		g_assert_not_reached ();
@@ -321,7 +321,7 @@ gs_shell_search_activated_cb (GtkEntry *entry, GsShell *shell)
 
 	if (gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
 		gs_shell_search_set_text (priv->shell_search, text);
-		gs_shell_search_switch_to (priv->shell_search, TRUE);
+		gs_page_switch_to (GS_PAGE (priv->shell_search), TRUE);
 	} else {
 		gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 	}
@@ -449,7 +449,7 @@ search_changed_handler (GObject *entry, GsShell *shell)
 			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 		} else {
 			gs_shell_search_set_text (priv->shell_search, text);
-			gs_shell_search_switch_to (priv->shell_search, TRUE);
+			gs_page_switch_to (GS_PAGE (priv->shell_search), TRUE);
 		}
 	}
 }

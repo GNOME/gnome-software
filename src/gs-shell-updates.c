@@ -554,10 +554,11 @@ gs_shell_updates_reload (GsShellUpdates *self)
 /**
  * gs_shell_updates_switch_to:
  **/
-void
-gs_shell_updates_switch_to (GsShellUpdates *self,
+static void
+gs_shell_updates_switch_to (GsPage *page,
 			    gboolean scroll_up)
 {
+	GsShellUpdates *self = GS_SHELL_UPDATES (page);
 	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES) {
@@ -679,7 +680,7 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 
 	/* get the new list */
 	gs_shell_updates_invalidate (self);
-	gs_shell_updates_switch_to (self, TRUE);
+	gs_page_switch_to (GS_PAGE (self), TRUE);
 }
 
 /**
@@ -1198,9 +1199,11 @@ static void
 gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_shell_updates_dispose;
+	page_class->switch_to = gs_shell_updates_switch_to;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-updates.ui");
 

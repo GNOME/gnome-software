@@ -278,6 +278,26 @@ gs_page_launch_app (GsPage *page, GsApp *app)
 	                                   NULL);
 }
 
+/**
+ * gs_page_switch_to:
+ *
+ * Pure virtual method that subclasses have to override to show page specific
+ * widgets.
+ */
+void
+gs_page_switch_to (GsPage *page,
+                   gboolean scroll_up)
+{
+	GsPageClass *klass;
+
+	g_return_if_fail (GS_IS_PAGE (page));
+
+	klass = GS_PAGE_GET_CLASS (page);
+	g_assert (klass->switch_to != NULL);
+
+	klass->switch_to (page, scroll_up);
+}
+
 void
 gs_page_setup (GsPage *page,
                GsShell *shell,

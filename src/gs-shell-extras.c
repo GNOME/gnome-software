@@ -1011,10 +1011,11 @@ gs_shell_extras_search (GsShellExtras  *self,
 	}
 }
 
-void
-gs_shell_extras_switch_to (GsShellExtras *self,
-			    gboolean scroll_up)
+static void
+gs_shell_extras_switch_to (GsPage *page,
+                           gboolean scroll_up)
 {
+	GsShellExtras *self = GS_SHELL_EXTRAS (page);
 	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_EXTRAS) {
@@ -1187,9 +1188,11 @@ static void
 gs_shell_extras_class_init (GsShellExtrasClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_shell_extras_dispose;
+	page_class->switch_to = gs_shell_extras_switch_to;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-extras.ui");
 

@@ -40,8 +40,6 @@ void		 gs_shell_search_set_appid_to_show (GsShellSearch	*self,
 						 const gchar		*appid);
 void		 gs_shell_search_set_text	(GsShellSearch		*self,
 						 const gchar		*value);
-void		 gs_shell_search_switch_to	(GsShellSearch		*self,
-						 gboolean                scroll_up);
 void		 gs_shell_search_reload		(GsShellSearch		*self);
 void		 gs_shell_search_setup		(GsShellSearch		*self,
 						 GsShell		*shell,

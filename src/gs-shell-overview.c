@@ -454,9 +454,10 @@ gs_shell_overview_reload (GsShellOverview *self)
 /**
  * gs_shell_overview_switch_to:
  **/
-void
-gs_shell_overview_switch_to (GsShellOverview *self, gboolean scroll_up)
+static void
+gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 {
+	GsShellOverview *self = GS_SHELL_OVERVIEW (page);
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GtkWidget *widget;
 	GtkAdjustment *adj;
@@ -567,9 +568,11 @@ static void
 gs_shell_overview_class_init (GsShellOverviewClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_shell_overview_dispose;
+	page_class->switch_to = gs_shell_overview_switch_to;
 	klass->refreshed = gs_shell_overview_refreshed;
 
 	signals [SIGNAL_REFRESHED] =

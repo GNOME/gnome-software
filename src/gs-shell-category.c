@@ -55,9 +55,10 @@ gs_shell_category_reload (GsShellCategory *self)
 {
 }
 
-void
-gs_shell_category_switch_to (GsShellCategory *self)
+static void
+gs_shell_category_switch_to (GsPage *page, gboolean scroll_up)
 {
+	GsShellCategory *self = GS_SHELL_CATEGORY (page);
 	GtkWidget *widget;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
@@ -262,9 +263,11 @@ static void
 gs_shell_category_class_init (GsShellCategoryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_shell_category_dispose;
+	page_class->switch_to = gs_shell_category_switch_to;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-category.ui");
 

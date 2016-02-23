@@ -155,9 +155,10 @@ gs_shell_details_set_state (GsShellDetails *self,
 /**
  * gs_shell_details_switch_to:
  **/
-void
-gs_shell_details_switch_to (GsShellDetails *self)
+static void
+gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 {
+	GsShellDetails *self = GS_SHELL_DETAILS (page);
 	AsAppState state;
 	GtkWidget *widget;
 	GtkAdjustment *adj;
@@ -367,7 +368,7 @@ gs_shell_details_switch_to_idle (gpointer user_data)
 	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
 
 	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS)
-		gs_shell_details_switch_to (self);
+		gs_page_switch_to (GS_PAGE (self), TRUE);
 
 	g_object_unref (self);
 	return G_SOURCE_REMOVE;
@@ -1186,7 +1187,7 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 	g_debug ("%s", tmp);
 
 	/* change widgets */
-	gs_shell_details_switch_to (self);
+	gs_page_switch_to (GS_PAGE (self), TRUE);
 	gs_shell_details_refresh_screenshots (self);
 	gs_shell_details_refresh_addons (self);
 	gs_shell_details_refresh_reviews (self);
@@ -1523,6 +1524,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	object_class->dispose = gs_shell_details_dispose;
 	page_class->app_installed = gs_shell_details_app_installed;
 	page_class->app_removed = gs_shell_details_app_removed;
+	page_class->switch_to = gs_shell_details_switch_to;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-details.ui");
 

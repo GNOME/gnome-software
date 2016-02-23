@@ -36,8 +36,6 @@ G_DECLARE_FINAL_TYPE (GsShellInstalled, gs_shell_installed, GS, SHELL_INSTALLED,
 
 GsShellInstalled *gs_shell_installed_new	(void);
 void		 gs_shell_installed_invalidate	(GsShellInstalled	*self);
-void		 gs_shell_installed_switch_to	(GsShellInstalled	*self,
-						 gboolean		scroll_up);
 void		 gs_shell_installed_reload	(GsShellInstalled	*self);
 void		 gs_shell_installed_setup	(GsShellInstalled	*self,
 						 GsShell		*shell,

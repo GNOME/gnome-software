@@ -42,6 +42,8 @@ struct _GsPageClass
 						 GsApp		 *app);
 	void		(*app_removed)		(GsPage		 *page,
 						 GsApp		 *app);
+	void		(*switch_to)		(GsPage		 *page,
+						 gboolean	  scroll_up);
 };
 
 GsPage		*gs_page_new				(void);
@@ -53,6 +55,8 @@ void		 gs_page_update_app			(GsPage		*page,
 							 GsApp		*app);
 void		 gs_page_launch_app			(GsPage		*page,
 							 GsApp		*app);
+void		 gs_page_switch_to			(GsPage		*page,
+							 gboolean	 scroll_up);
 void		 gs_page_setup				(GsPage		*page,
 							 GsShell	*shell,
 							 GsPluginLoader	*plugin_loader,

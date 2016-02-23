@@ -211,9 +211,11 @@ gs_shell_moderate_reload (GsShellModerate *self)
 /**
  * gs_shell_moderate_switch_to:
  **/
-void
-gs_shell_moderate_switch_to (GsShellModerate *self, gboolean scroll_up)
+static void
+gs_shell_moderate_switch_to (GsPage *page, gboolean scroll_up)
 {
+	GsShellModerate *self = GS_SHELL_MODERATE (page);
+
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_MODERATE) {
 		g_warning ("Called switch_to(moderate) when in mode %s",
 			   gs_shell_get_mode_string (self->shell));
@@ -292,9 +294,11 @@ static void
 gs_shell_moderate_class_init (GsShellModerateClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	GsPageClass *page_class = GS_PAGE_CLASS (klass);
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_shell_moderate_dispose;
+	page_class->switch_to = gs_shell_moderate_switch_to;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-moderate.ui");
 

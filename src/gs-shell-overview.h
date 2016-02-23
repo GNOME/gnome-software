@@ -45,8 +45,6 @@ struct _GsShellOverviewClass
 
 GsShellOverview	*gs_shell_overview_new		(void);
 void		 gs_shell_overview_invalidate	(GsShellOverview	*self);
-void		 gs_shell_overview_switch_to	(GsShellOverview	*self,
-						 gboolean		scroll_up);
 void		 gs_shell_overview_reload	(GsShellOverview	*self);
 void		 gs_shell_overview_setup	(GsShellOverview	*self,
 						 GsShell		*shell,
