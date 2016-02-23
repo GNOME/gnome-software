@@ -2094,6 +2094,8 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 	/* ensure they all have an 'All' category */
 	for (l = state->list; l != NULL; l = l->next) {
 		GsCategory *parent = GS_CATEGORY (l->data);
+		if (g_strcmp0 (gs_category_get_id (parent), "Addons") == 0)
+			continue;
 		if (gs_category_find_child (parent, "all") == NULL) {
 			g_autoptr(GsCategory) child = NULL;
 			child = gs_category_new (parent, "all", NULL);
