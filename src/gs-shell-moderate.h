@@ -35,8 +35,6 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsShellModerate, gs_shell_moderate, GS, SHELL_MODERATE, GsPage)
 
 GsShellModerate	*gs_shell_moderate_new		(void);
-void		 gs_shell_moderate_switch_to	(GsShellModerate	*self,
-						 gboolean		scroll_up);
 void		 gs_shell_moderate_reload	(GsShellModerate	*self);
 void		 gs_shell_moderate_setup	(GsShellModerate	*self,
 						 GsShell		*shell,

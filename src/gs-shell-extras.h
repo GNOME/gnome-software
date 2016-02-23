@@ -53,8 +53,6 @@ GsShellExtras		*gs_shell_extras_new			(void);
 void			 gs_shell_extras_search			(GsShellExtras		 *self,
 								 const gchar 		 *mode,
 								 gchar			**resources);
-void			 gs_shell_extras_switch_to		(GsShellExtras		 *self,
-								 gboolean		  scroll_up);
 void			 gs_shell_extras_reload			(GsShellExtras		 *self);
 void			 gs_shell_extras_setup			(GsShellExtras		 *self,
 								 GsShell		 *shell,

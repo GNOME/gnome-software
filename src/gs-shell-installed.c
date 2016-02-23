@@ -258,9 +258,10 @@ gs_shell_installed_reload (GsShellInstalled *self)
 /**
  * gs_shell_installed_switch_to:
  **/
-void
-gs_shell_installed_switch_to (GsShellInstalled *self, gboolean scroll_up)
+static void
+gs_shell_installed_switch_to (GsPage *page, gboolean scroll_up)
 {
+	GsShellInstalled *self = GS_SHELL_INSTALLED (page);
 	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_INSTALLED) {
@@ -759,6 +760,7 @@ gs_shell_installed_class_init (GsShellInstalledClass *klass)
 
 	object_class->dispose = gs_shell_installed_dispose;
 	page_class->app_removed = gs_shell_installed_app_removed;
+	page_class->switch_to = gs_shell_installed_switch_to;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-installed.ui");
 

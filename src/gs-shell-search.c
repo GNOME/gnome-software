@@ -207,9 +207,10 @@ gs_shell_search_set_text (GsShellSearch *self, const gchar *value)
 /**
  * gs_shell_search_switch_to:
  **/
-void
-gs_shell_search_switch_to (GsShellSearch *self, gboolean scroll_up)
+static void
+gs_shell_search_switch_to (GsPage *page, gboolean scroll_up)
 {
+	GsShellSearch *self = GS_SHELL_SEARCH (page);
 	GtkWidget *widget;
 
 	if (gs_shell_get_mode (self->shell) != GS_SHELL_MODE_SEARCH) {
@@ -444,6 +445,7 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 	object_class->finalize = gs_shell_search_finalize;
 	page_class->app_installed = gs_shell_search_app_installed;
 	page_class->app_removed = gs_shell_search_app_removed;
+	page_class->switch_to = gs_shell_search_switch_to;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-search.ui");
 
