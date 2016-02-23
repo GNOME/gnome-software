@@ -4,13 +4,14 @@
 # This file is distributed under the same license as the gnome-software package.
 # Мирослав Николић <miroslavnikolic@rocketmail.com>, 2013—2016.
 # Милош Поповић <gpopac@gmail.com>, 2015.
+# Марко М. Костић <marko.m.kostic@gmail.com>
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-02-18 10:22+0000\n"
-"PO-Revision-Date: 2016-02-18 20:04+0200\n"
+"POT-Creation-Date: 2016-02-22 22:25+0000\n"
+"PO-Revision-Date: 2016-02-23 09:29+0200\n"
 "Last-Translator: Мирослав Николић <miroslavnikolic@rocketmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
 "Language: sr\n"
@@ -263,8 +264,6 @@ msgstr "Власнички"
 
 #. TRANSLATORS: see the wikipedia page
 #: ../src/gs-app.c:1410
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "Publishing"
 msgid "Public domain"
 msgstr "Јавно власништво"
 
@@ -308,7 +307,7 @@ msgstr "Инсталирај"
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
 #: ../src/gs-app-row.c:281 ../src/gs-app-row.c:292 ../src/gs-page.c:231
-#: ../src/gs-review-row.ui.h:6
+#: ../src/gs-review-row.ui.h:7
 msgid "Remove"
 msgstr "Уклони"
 
@@ -320,7 +319,6 @@ msgstr "трећих лица"
 
 #. This is shown in the search result row as a tag
 #: ../src/gs-app-row.ui.h:4 ../src/gs-shell-details.ui.h:32
-#| msgid "Web app"
 msgid "web app"
 msgstr "програми веба"
 
@@ -517,40 +515,69 @@ msgstr ""
 "Податке о „%s“, као и податке о набављању кодека који може пуштати ову врсту "
 "датотеке можете пронаћи на веб страници."
 
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really bad application
+#: ../src/gs-review-dialog.c:93
+msgid "Hate it"
+msgstr "Никакав"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		Not a great application
+#: ../src/gs-review-dialog.c:97
+msgid "Don't like it"
+msgstr "Не допада ми се"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A fairly-good application
+#: ../src/gs-review-dialog.c:101
+msgid "It's OK"
+msgstr "У реду је"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A good application
+#: ../src/gs-review-dialog.c:105
+msgid "Like it"
+msgstr "Добар је"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really awesome application
+#: ../src/gs-review-dialog.c:109
+msgid "Love it"
+msgstr "Одличан"
+
 #. TRANSLATORS: the review can't just be copied and pasted
-#: ../src/gs-review-dialog.c:92
+#: ../src/gs-review-dialog.c:131
 msgid "Please take more time writing the review"
 msgstr "Утрошите мало више времена за писање прегледа"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:96
+#: ../src/gs-review-dialog.c:135
 msgid "Please choose a star rating"
 msgstr "Изаберите оцену звездицом"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:100
+#: ../src/gs-review-dialog.c:139
 msgid "The summary is too short"
 msgstr "Сажетак је прекратак"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:104
+#: ../src/gs-review-dialog.c:143
 msgid "The summary is too long"
 msgstr "Сажетак је предуг"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:108
+#: ../src/gs-review-dialog.c:147
 msgid "The description is too short"
 msgstr "Опис је прекратак"
 
 #. TRANSLATORS: the review is not acceptable
-#: ../src/gs-review-dialog.c:112
+#: ../src/gs-review-dialog.c:151
 msgid "The description is too long"
 msgstr "Опис је предуг"
 
 # Мислим да се ова ниска односи на део Програма који је посвећен рецензијама програма.
 #. vim: set noexpandtab:
 #: ../src/gs-review-dialog.ui.h:1
-#| msgid "Review"
 msgid "Post Review"
 msgstr "Објави преглед"
 
@@ -559,8 +586,6 @@ msgid "_Post"
 msgstr "_Објави"
 
 #: ../src/gs-review-dialog.ui.h:4
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Editing"
 msgid "Rating"
 msgstr "Оцењивање"
 
@@ -579,7 +604,6 @@ msgstr ""
 # Мислим да се ова ниска односи на део Програма који је посвећен рецензијама програма.
 #. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:8
-#| msgid "Review"
 msgctxt "app review"
 msgid "Review"
 msgstr "Преглед"
@@ -602,16 +626,15 @@ msgid "Yes"
 msgstr "Јесте"
 
 #: ../src/gs-review-row.ui.h:3
-#| msgctxt "menu category"
-#| msgid "None"
 msgid "No"
 msgstr "Није"
 
-#: ../src/gs-review-row.ui.h:4
+#. Translators: Button text for indifference, only used when moderating
+#: ../src/gs-review-row.ui.h:5
 msgid "Meh"
 msgstr "Онако"
 
-#: ../src/gs-review-row.ui.h:5
+#: ../src/gs-review-row.ui.h:6
 msgid "Report Abuse"
 msgstr "Пријави злоупотребу"
 
@@ -1020,8 +1043,6 @@ msgid "Localized in your Language"
 msgstr "Преведен на српски"
 
 #: ../src/gs-shell-details.ui.h:20
-#| msgctxt "Menu subcategory of Office"
-#| msgid "Presentation"
 msgid "Documentation"
 msgstr "Документација"
 
@@ -1030,7 +1051,6 @@ msgid "Release Activity"
 msgstr "Активност издања"
 
 #: ../src/gs-shell-details.ui.h:22
-#| msgid "System Applications"
 msgid "System Integration"
 msgstr "Обједињавање система"
 
@@ -1080,7 +1100,6 @@ msgstr "Изабрани додаци биће инсталирани са пр�
 
 # Мислим да се ова ниска односи на део Програма који је посвећен рецензијама програма.
 #: ../src/gs-shell-details.ui.h:35
-#| msgid "Review"
 msgid "Reviews"
 msgstr "Прегледи"
 
@@ -1137,7 +1156,6 @@ msgstr "Препоручени канцеларијски програми"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-moderate.ui.h:1
-#| msgid "Updates page"
 msgid "Moderate page"
 msgstr "Страница уређења"
 
@@ -1491,7 +1509,6 @@ msgstr "Ниједно ажурирање није инсталирано на �
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
 #: ../src/gs-upgrade-banner.c:75
 #, c-format
-#| msgid "%s is not available."
 msgid "%s %s Now Available"
 msgstr "%s %s је сада доступан"
 
@@ -1500,7 +1517,6 @@ msgstr "%s %s је сада доступан"
 #. * is the version, e.g. "Downloading Fedora 23"
 #: ../src/gs-upgrade-banner.c:88
 #, c-format
-#| msgid "Downloading new updates…"
 msgid "Downloading %s %s"
 msgstr "Преузимам %s %s"
 
@@ -1510,8 +1526,6 @@ msgstr "Преузимам %s %s"
 #. * e.g. "Fedora 23 Ready to be Installed"
 #: ../src/gs-upgrade-banner.c:102
 #, c-format
-#| msgid "%s and %s installed"
-#| msgid_plural "%s and %s installed"
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s је спреман за инсталирање"
 
@@ -1529,7 +1543,6 @@ msgid "_Download"
 msgstr "_Преузми"
 
 #: ../src/gs-upgrade-banner.ui.h:5
-#| msgid "It is recommended that you install important updates now"
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr ""
@@ -1612,7 +1625,6 @@ msgstr[3] "Једно важно ажурирање система је инст
 # Мислим да се ова ниска односи на део Програма који је посвећен рецензијама програма.
 #. TRANSLATORS: to look at the updates that were installed
 #: ../src/gs-update-monitor.c:462
-#| msgid "Review"
 msgctxt "updates"
 msgid "Review"
 msgstr "Преглед"
