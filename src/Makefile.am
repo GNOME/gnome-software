@@ -96,6 +96,7 @@ gnome_software_cmd_SOURCES =				\
 
 gnome_software_cmd_LDADD =				\
 	$(APPSTREAM_LIBS)				\
+	$(POLKIT_LIBS)					\
 	$(SOUP_LIBS)					\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)
@@ -293,6 +294,7 @@ gs_self_test_SOURCES =						\
 
 gs_self_test_LDADD =						\
 	$(APPSTREAM_LIBS)					\
+	$(POLKIT_LIBS)						\
 	$(SOUP_LIBS)						\
 	$(GLIB_LIBS)						\
 	$(GTK_LIBS)

@@ -28,6 +28,7 @@
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
 
 #include <gs-plugin.h>
+#include <gs-utils.h>
 
 /*
  * SECTION:
@@ -135,6 +136,19 @@ reload_proxy_settings (GsPlugin *plugin)
 {
 	g_autofree gchar *proxy_http = NULL;
 	g_autofree gchar *proxy_ftp = NULL;
+	g_autoptr(GPermission) permission = NULL;
+
+	/* only if we can achieve the action *without* an auth dialog */
+	permission = gs_utils_get_permission ("org.freedesktop.packagekit."
+					      "system-network-proxy-configure");
+	if (permission == NULL) {
+		g_debug ("not setting proxy as no permission");
+		return;
+	}
+	if (!g_permission_get_allowed (permission)) {
+		g_debug ("not setting proxy as no auth requested");
+		return;
+	}
 
 	proxy_http = get_proxy_http (plugin);
 	proxy_ftp = get_proxy_ftp (plugin);

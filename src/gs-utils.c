@@ -25,6 +25,10 @@
 #include <gio/gdesktopappinfo.h>
 #include <errno.h>
 
+#ifdef HAVE_POLKIT
+#include <polkit/polkit.h>
+#endif
+
 #include "gs-app.h"
 #include "gs-utils.h"
 #include "gs-plugin.h"
@@ -499,6 +503,28 @@ gs_utils_get_user_hash (GError **error)
 	salted = g_strdup_printf ("gnome-software[%s:%s]",
 				  g_get_user_name (), data);
 	return g_compute_checksum_for_string (G_CHECKSUM_SHA1, salted, -1);
+}
+
+/**
+ * gs_utils_get_permission:
+ **/
+GPermission *
+gs_utils_get_permission (const gchar *id)
+{
+#ifdef HAVE_POLKIT
+	g_autoptr(GPermission) permission = NULL;
+	g_autoptr(GError) error = NULL;
+
+	permission = polkit_permission_new_sync (id, NULL, NULL, &error);
+	if (permission == NULL) {
+		g_warning ("Failed to create permission %s: %s", id, error->message);
+		return NULL;
+	}
+	return g_steal_pointer (&permission);
+#else
+	g_debug ("no PolicyKit, so can't return GPermission for %s", id);
+	return NULL;
+#endif
 }
 
 /* vim: set noexpandtab: */
