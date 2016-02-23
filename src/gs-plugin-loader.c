@@ -2091,6 +2091,18 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
+	/* ensure they all have an 'All' category */
+	for (l = state->list; l != NULL; l = l->next) {
+		GsCategory *parent = GS_CATEGORY (l->data);
+		if (gs_category_find_child (parent, "all") == NULL) {
+			g_autoptr(GsCategory) child = NULL;
+			child = gs_category_new (parent, "all", NULL);
+			gs_category_add_subcategory (parent, child);
+			/* this is probably valid... */
+			gs_category_set_size (child, gs_category_get_size (parent));
+		}
+	}
+
 	/* sort by name */
 	state->list = g_list_sort (state->list, gs_plugin_loader_category_sort_cb);
 	for (l = state->list; l != NULL; l = l->next)

@@ -138,6 +138,24 @@ gs_category_add_subcategory (GsCategory *category, GsCategory *subcategory)
 }
 
 /**
+ * gs_category_get_sort_key:
+ **/
+static gchar *
+gs_category_get_sort_key (GsCategory *category)
+{
+	guint sort_order = 5;
+	if (g_strcmp0 (gs_category_get_id (category), "featured") == 0)
+		sort_order = 0;
+	else if (g_strcmp0 (gs_category_get_id (category), "all") == 0)
+		sort_order = 2;
+	else if (g_strcmp0 (gs_category_get_id (category), "other") == 0)
+		sort_order = 9;
+	return g_strdup_printf ("%i:%s",
+				sort_order,
+				gs_category_get_name (category));
+}
+
+/**
  * gs_category_sort_subcategories_cb:
  **/
 static gint
@@ -145,20 +163,9 @@ gs_category_sort_subcategories_cb (gconstpointer a, gconstpointer b)
 {
 	GsCategory *ca = GS_CATEGORY ((gpointer) a);
 	GsCategory *cb = GS_CATEGORY ((gpointer) b);
-	const gchar *id_a = gs_category_get_id (ca);
-	const gchar *id_b = gs_category_get_id (cb);
-
-	if (g_strcmp0 (id_a, "other") == 0)
-		return 1;
-	else if (g_strcmp0 (id_a, "featured") == 0)
-		return -1;
-
-	if (g_strcmp0 (id_b, "other") == 0)
-		return -1;
-	else if (g_strcmp0 (id_b, "featured") == 0)
-		return 1;
-
-	return g_strcmp0 (gs_category_get_name (ca), gs_category_get_name (cb));
+	g_autofree gchar *id_a = gs_category_get_sort_key (ca);
+	g_autofree gchar *id_b = gs_category_get_sort_key (cb);
+	return g_strcmp0 (id_a, id_b);
 }
 
 /**
@@ -226,6 +233,10 @@ gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
 		/* TRANSLATORS: this is where all applications that don't
 		 * fit in other groups are put */
 		name =_("Other");
+	} else if (g_strcmp0 (id, "all") == 0) {
+		/* TRANSLATORS: this is a subcategory matching all the
+		 * different apps in the parent category, e.g. "Games" */
+		name =_("All");
 	}
 
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);

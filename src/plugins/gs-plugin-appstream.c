@@ -945,7 +945,8 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		item = g_ptr_array_index (array, i);
 		if (as_app_get_id (item) == NULL)
 			continue;
-		if (!as_app_has_category (item, search_id1))
+		if (g_strcmp0 (search_id1, "all") != 0 &&
+		    !as_app_has_category (item, search_id1))
 			continue;
 		if (search_id2 != NULL && !as_app_has_category (item, search_id2))
 			continue;
