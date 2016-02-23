@@ -32,37 +32,70 @@
           </object>
         </child>
         <child>
-          <object class="GtkScrolledWindow" id="scrolledwindow_category">
+          <object class="GtkBox" id="box_category_results">
             <property name="visible">True</property>
-            <property name="shadow_type">none</property>
-            <property name="can_focus">False</property>
-            <property name="hscrollbar_policy">never</property>
-            <property name="vscrollbar_policy">automatic</property>
+            <property name="orientation">vertical</property>
+            <property name="spacing">9</property>
             <child>
-              <object class="GtkViewport" id="viewport3">
-                <property name="visible">True</property>
-                <property name="can_focus">False</property>
+              <object class="GtkBox" id="box_category_shell_extensions">
+                <property name="visible">False</property>
+                <property name="spacing">9</property>
+                <property name="margin_start">24</property>
+                <property name="margin_top">24</property>
+                <property name="margin_end">24</property>
                 <child>
-                  <object class="GsFixedSizeBin" id="gs_fixed_bin">
+                  <object class="GtkLabel" id="author_label">
                     <property name="visible">True</property>
-                    <!-- This is 3*420 plus margins, paddings, CSS borders -->
-                    <property name="preferred-width">1338</property>
+                    <property name="can_focus">False</property>
+                    <property name="halign">start</property>
+                    <property name="hexpand">True</property>
+                    <property name="label" translatable="yes">Extensions are used at your own risk. If you have any system problems, it is recommended to disable them.</property>
+                  </object>
+                </child>
+                <child>
+                  <object class="GtkButton" id="button_yes">
+                    <property name="label" translatable="yes">Extension Settings</property>
+                    <property name="visible">True</property>
+                    <property name="can_focus">True</property>
+                    <property name="receives_default">True</property>
+                  </object>
+                </child>
+              </object>
+            </child>
+            <child>
+              <object class="GtkScrolledWindow" id="scrolledwindow_category">
+                <property name="visible">True</property>
+                <property name="shadow_type">none</property>
+                <property name="can_focus">False</property>
+                <property name="hscrollbar_policy">never</property>
+                <property name="vscrollbar_policy">automatic</property>
+                <child>
+                  <object class="GtkViewport" id="viewport3">
+                    <property name="visible">True</property>
+                    <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkFlowBox" id="category_detail_box">
-                        <property name="margin_start">24</property>
-                        <property name="margin_end">24</property>
-                        <property name="margin_top">21</property>
-                        <property name="margin_bottom">21</property>
-                        <property name="halign">fill</property>
+                      <object class="GsFixedSizeBin" id="gs_fixed_bin">
                         <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="row_spacing">6</property>
-                        <property name="column_spacing">6</property>
-                        <property name="homogeneous">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="valign">start</property>
-                        <property name="min-children-per-line">2</property>
-                        <property name="max-children-per-line">3</property>
+                        <!-- This is 3*420 plus margins, paddings, CSS borders -->
+                        <property name="preferred-width">1338</property>
+                        <child>
+                          <object class="GtkFlowBox" id="category_detail_box">
+                            <property name="margin_start">24</property>
+                            <property name="margin_end">24</property>
+                            <property name="margin_top">21</property>
+                            <property name="margin_bottom">21</property>
+                            <property name="halign">fill</property>
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="row_spacing">6</property>
+                            <property name="column_spacing">6</property>
+                            <property name="homogeneous">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="valign">start</property>
+                            <property name="min-children-per-line">2</property>
+                            <property name="max-children-per-line">3</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>

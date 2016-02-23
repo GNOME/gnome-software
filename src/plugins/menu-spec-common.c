@@ -212,6 +212,7 @@ static const MenuSpecData msdata[] = {
 	{ "Addons::Codecs",			NC_("Menu subcategory of Add-ons", "Codecs") },
 	{ "Addons::InputSources",		NC_("Menu subcategory of Add-ons", "Input Sources") },
 	{ "Addons::LanguagePacks",		NC_("Menu subcategory of Add-ons", "Language Packs") },
+	{ "Addons::ShellExtensions",		NC_("Menu subcategory of Add-ons", "Shell Extensions") },
 	{ NULL,					NULL }
 };
 
