@@ -524,6 +524,12 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	for (i = 0; i < xremotes->len; i++) {
 		XdgAppRemote *xremote = g_ptr_array_index (xremotes, i);
 		g_autoptr(GsApp) app = NULL;
+
+		/* apps installed from bundles add their own remote that only
+		 * can be used for updating that app only -- so hide them */
+		if (xdg_app_remote_get_noenumerate (xremote))
+			continue;
+
 		app = gs_app_new (xdg_app_remote_get_name (xremote));
 		gs_app_set_management_plugin (app, "XgdApp");
 		gs_app_set_kind (app, GS_APP_KIND_SOURCE);
