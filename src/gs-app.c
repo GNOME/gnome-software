@@ -2180,11 +2180,11 @@ gs_app_subsume (GsApp *app, GsApp *other)
 void
 gs_app_set_search_sort_key (GsApp *app, guint match_value)
 {
-	gchar md_value[4];
+	gchar md_value[6];
 
 	g_return_if_fail (GS_IS_APP (app));
 
-	g_snprintf (md_value, 4, "%03i", match_value);
+	g_snprintf (md_value, sizeof(md_value), "%05x", match_value);
 	gs_app_set_metadata (app, "SearchMatch", md_value);
 }
 
