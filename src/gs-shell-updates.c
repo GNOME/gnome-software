@@ -72,11 +72,13 @@ struct _GsShellUpdates
 	GtkWidget		*button_update_all;
 	GtkWidget		*header_spinner_start;
 	GtkWidget		*header_start_box;
+	GtkWidget		*header_end_box;
 	gboolean		 has_agreed_to_mobile_data;
 	gboolean		 ampm_available;
 
 	GtkWidget		*button_updates_mobile;
 	GtkWidget		*button_updates_offline;
+	GtkWidget		*fake_header_bar;
 	GtkWidget		*label_updates_failed;
 	GtkWidget		*label_updates_last_checked;
 	GtkWidget		*label_updates_spinner;
@@ -209,6 +211,7 @@ gs_shell_updates_get_state_string (GsPluginStatus status)
 static void
 gs_shell_updates_update_ui_state (GsShellUpdates *self)
 {
+	GtkWidget *old_parent;
 	gboolean allow_mobile_refresh = TRUE;
 	g_autofree gchar *checked_str = NULL;
 	g_autofree gchar *spinner_str = NULL;
@@ -383,10 +386,28 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 		break;
 	}
 
-	/* upgrade banner */
+	/* are we showing an upgrade banner? */
 	if (gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner)) != NULL) {
+		/* move header bar buttons to the fake header bar */
+		g_object_ref (self->button_update_all);
+		old_parent = gtk_widget_get_parent (self->button_update_all);
+		if (old_parent != NULL)
+			gtk_container_remove (GTK_CONTAINER (old_parent), self->button_update_all);
+		gtk_header_bar_pack_end (GTK_HEADER_BAR (self->fake_header_bar), self->button_update_all);
+		g_object_unref (self->button_update_all);
+
+		gtk_widget_show (self->fake_header_bar);
 		gtk_widget_show (self->upgrade_banner);
 	} else {
+		/* move header bar buttons to the real header bar */
+		g_object_ref (self->button_update_all);
+		old_parent = gtk_widget_get_parent (self->button_update_all);
+		if (old_parent != NULL)
+			gtk_container_remove (GTK_CONTAINER (old_parent), self->button_update_all);
+		gtk_container_add (GTK_CONTAINER (self->header_end_box), self->button_update_all);
+		g_object_unref (self->button_update_all);
+
+		gtk_widget_hide (self->fake_header_bar);
 		gtk_widget_hide (self->upgrade_banner);
 	}
 
@@ -1131,10 +1152,14 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	g_signal_connect (self->upgrade_banner, "install-button-clicked",
 			  G_CALLBACK (gs_shell_updates_install_upgrade_cb), self);
 
+	self->header_end_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
+	gtk_widget_set_visible (self->header_end_box, TRUE);
+	gs_page_set_header_end_widget (GS_PAGE (self), self->header_end_box);
+
 	self->button_update_all = gtk_button_new_with_mnemonic (_("Restart & _Install"));
 	gtk_widget_set_visible (self->button_update_all, TRUE);
 	gtk_style_context_add_class (gtk_widget_get_style_context (self->button_update_all), "suggested-action");
-	gs_page_set_header_end_widget (GS_PAGE (self), self->button_update_all);
+	gtk_container_add (GTK_CONTAINER (self->header_end_box), self->button_update_all);
 	g_signal_connect (self->button_update_all, "clicked", G_CALLBACK (gs_shell_updates_button_update_all_cb), self);
 
 	self->header_start_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
@@ -1219,6 +1244,7 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, button_updates_mobile);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, button_updates_offline);
+	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, fake_header_bar);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, label_updates_failed);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, label_updates_last_checked);
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, label_updates_spinner);
