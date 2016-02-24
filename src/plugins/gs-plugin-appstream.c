@@ -961,74 +961,40 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_add_search_item_add:
- */
-static gboolean
-gs_plugin_add_search_item_add (GsPlugin *plugin,
-			       GList **list,
-			       AsApp *item,
-			       guint match_value,
-			       GError **error)
-{
-	g_autoptr(GsApp) app = NULL;
-	app = gs_app_new (as_app_get_id (item));
-	if (!gs_plugin_refine_item (plugin, app, item, error))
-		return FALSE;
-	gs_app_set_search_sort_key (app, match_value);
-	gs_plugin_add_app (list, app);
-	return TRUE;
-}
-
-/**
  * gs_plugin_add_search_item:
  */
 static gboolean
 gs_plugin_add_search_item (GsPlugin *plugin,
 			   GList **list,
-			   AsApp *app,
+			   AsApp *item,
 			   gchar **values,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	AsApp *item;
-	GPtrArray *extends;
-	const gchar *id;
-	gboolean ret = TRUE;
+	AsApp *item_tmp;
+	GPtrArray *addons;
 	guint i;
 	guint match_value;
+	g_autoptr(GsApp) app = NULL;
+
+	/* match against the app or any of the addons */
+	match_value = as_app_search_matches_all (item, values);
+	addons = as_app_get_addons (item);
+	for (i = 0; i < addons->len; i++) {
+		item_tmp = g_ptr_array_index (addons, i);
+		match_value |= as_app_search_matches_all (item_tmp, values);
+	}
 
 	/* no match */
-	match_value = as_app_search_matches_all (app, values);
 	if (match_value == 0)
 		return TRUE;
 
-	/* if the app does not extend an application, then just add it */
-	extends = as_app_get_extends (app);
-	if (extends->len == 0) {
-		return gs_plugin_add_search_item_add (plugin,
-						      list,
-						      app,
-						      match_value,
-						      error);
-	}
-
-	/* add the thing that we extend, not the addon itself */
-	for (i = 0; i < extends->len; i++) {
-		if (g_cancellable_set_error_if_cancelled (cancellable, error))
-			return FALSE;
-
-		id = g_ptr_array_index (extends, i);
-		item = as_store_get_app_by_id (plugin->priv->store, id);
-		if (item == NULL)
-			continue;
-		ret = gs_plugin_add_search_item_add (plugin,
-						     list,
-						     item,
-						     match_value,
-						     error);
-		if (!ret)
-			return FALSE;
-	}
+	/* create app */
+	app = gs_app_new (as_app_get_id (item));
+	if (!gs_plugin_refine_item (plugin, app, item, error))
+		return FALSE;
+	gs_app_set_search_sort_key (app, match_value);
+	gs_plugin_add_app (list, app);
 	return TRUE;
 }
 
