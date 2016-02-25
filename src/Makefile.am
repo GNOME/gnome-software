@@ -108,8 +108,6 @@ bin_PROGRAMS =						\
 	gnome-software
 
 gnome_software_SOURCES =				\
-	gs-resources.c					\
-	gs-resources.h					\
 	gs-utils.c					\
 	gs-utils.h					\
 	gs-app.c					\
@@ -200,8 +198,6 @@ gnome_software_SOURCES =				\
 	gs-plugin-loader.h				\
 	gs-plugin-loader-sync.c				\
 	gs-plugin-loader-sync.h				\
-	gs-shell-search-provider-generated.c		\
-	gs-shell-search-provider-generated.h		\
 	gs-shell-search-provider.c			\
 	gs-shell-search-provider.h			\
 	gs-application.c				\
@@ -210,12 +206,20 @@ gnome_software_SOURCES =				\
 	gs-folders.h					\
 	gs-main.c
 
+nodist_gnome_software_SOURCES =				\
+	gs-resources.c					\
+	gs-resources.h					\
+	gs-shell-search-provider-generated.c		\
+	gs-shell-search-provider-generated.h
+
 if HAVE_PACKAGEKIT
 gnome_software_SOURCES +=				\
-	$(packagekit_built_sources)			\
-	$(packagekit_modify2_built_sources)		\
 	gs-dbus-helper.c				\
 	gs-dbus-helper.h
+
+nodist_gnome_software_SOURCES +=			\
+	$(packagekit_built_sources)			\
+	$(packagekit_modify2_built_sources)
 endif
 
 gnome_software_LDADD =					\
