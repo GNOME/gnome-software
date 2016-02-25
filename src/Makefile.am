@@ -236,7 +236,6 @@ gnome_software_CFLAGS =					\
 	-DLIBEXECDIR=\"$(libexecdir)\"			\
 	$(WARN_CFLAGS)
 
-if HAVE_PACKAGEKIT
 packagekit_built_sources = gs-packagekit-generated.c gs-packagekit-generated.h
 $(packagekit_built_sources): Makefile.am org.freedesktop.PackageKit.xml
 	$(AM_V_GEN) gdbus-codegen				\
@@ -252,7 +251,6 @@ $(packagekit_modify2_built_sources): Makefile.am org.freedesktop.PackageKit.Modi
 		--c-namespace Gs					\
 		--generate-c-code gs-packagekit-modify2-generated	\
 		$(srcdir)/org.freedesktop.PackageKit.Modify2.xml
-endif
 
 gs-shell-search-provider-generated.h gs-shell-search-provider-generated.c: Makefile.am $(srcdir)/shell-search-provider-dbus-interfaces.xml
 	$(AM_V_GEN) gdbus-codegen \
