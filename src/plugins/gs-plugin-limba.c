@@ -364,7 +364,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 			 * In any other case, the Limba bundle name equals the AppStream ID of the component it contains */
 			tmp = g_strdup_printf ("%s.desktop", li_pkg_info_get_name (old_pki));
 			app = gs_app_new (tmp);
-			gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+			gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
 		} else {
 			app = gs_app_new (li_pkg_info_get_name (old_pki));
 		}

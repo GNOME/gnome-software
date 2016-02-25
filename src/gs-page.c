@@ -174,7 +174,7 @@ gs_page_update_app (GsPage *page, GsApp *app)
 	g_autofree gchar *escaped = NULL;
 
 	/* non-firmware applications do not have to be prepared */
-	if (gs_app_get_id_kind (app) != AS_ID_KIND_FIRMWARE) {
+	if (gs_app_get_id_kind (app) != AS_APP_KIND_FIRMWARE) {
 		gs_page_update_app_real (page, app);
 		return;
 	}

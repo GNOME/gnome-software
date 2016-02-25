@@ -329,11 +329,11 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 
 	/* sort desktop files, then addons */
 	switch (gs_app_get_id_kind (app)) {
-	case AS_ID_KIND_DESKTOP:
-	case AS_ID_KIND_WEB_APP:
+	case AS_APP_KIND_DESKTOP:
+	case AS_APP_KIND_WEB_APP:
 		g_string_append (key, "1:");
 		break;
-	case AS_ID_KIND_RUNTIME:
+	case AS_APP_KIND_RUNTIME:
 		g_string_append (key, "2:");
 		break;
 	default:
@@ -394,11 +394,11 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 static gboolean
 gs_shell_installed_is_addon_id_kind (GsApp *app)
 {
-	AsIdKind id_kind;
+	AsAppKind id_kind;
 	id_kind = gs_app_get_id_kind (app);
-	if (id_kind == AS_ID_KIND_DESKTOP)
+	if (id_kind == AS_APP_KIND_DESKTOP)
 		return FALSE;
-	if (id_kind == AS_ID_KIND_WEB_APP)
+	if (id_kind == AS_APP_KIND_WEB_APP)
 		return FALSE;
 	return TRUE;
 }
@@ -406,7 +406,7 @@ gs_shell_installed_is_addon_id_kind (GsApp *app)
 static gboolean
 gs_shell_installed_is_system_application (GsApp *app)
 {
-	if (gs_app_get_id_kind (app) == AS_ID_KIND_DESKTOP &&
+	if (gs_app_get_id_kind (app) == AS_APP_KIND_DESKTOP &&
 	    gs_app_get_kind (app) == GS_APP_KIND_SYSTEM)
 		return TRUE;
 	return FALSE;

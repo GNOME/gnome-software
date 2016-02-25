@@ -103,9 +103,9 @@ const gchar	*gs_app_get_id_no_prefix	(GsApp		*app);
 GsAppKind	 gs_app_get_kind		(GsApp		*app);
 void		 gs_app_set_kind		(GsApp		*app,
 						 GsAppKind	 kind);
-AsIdKind	 gs_app_get_id_kind		(GsApp		*app);
+AsAppKind	 gs_app_get_id_kind		(GsApp		*app);
 void		 gs_app_set_id_kind		(GsApp		*app,
-						 AsIdKind	 id_kind);
+						 AsAppKind	 id_kind);
 AsAppState	 gs_app_get_state		(GsApp		*app);
 void		 gs_app_set_state		(GsApp		*app,
 						 AsAppState	 state);

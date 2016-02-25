@@ -168,12 +168,12 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
 	} else {
 		switch (gs_app_get_id_kind (priv->app)) {
-		case AS_ID_KIND_UNKNOWN:
+		case AS_APP_KIND_UNKNOWN:
 			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
 			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
 			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
 			break;
-		case AS_ID_KIND_WEB_APP:
+		case AS_APP_KIND_WEB_APP:
 			gtk_widget_set_visible (priv->label_tag_webapp, TRUE);
 			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
 			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
@@ -335,9 +335,9 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	if (priv->selectable) {
-		if (gs_app_get_id_kind (priv->app) == AS_ID_KIND_DESKTOP ||
-		    gs_app_get_id_kind (priv->app) == AS_ID_KIND_RUNTIME ||
-		    gs_app_get_id_kind (priv->app) == AS_ID_KIND_WEB_APP)
+		if (gs_app_get_id_kind (priv->app) == AS_APP_KIND_DESKTOP ||
+		    gs_app_get_id_kind (priv->app) == AS_APP_KIND_RUNTIME ||
+		    gs_app_get_id_kind (priv->app) == AS_APP_KIND_WEB_APP)
 			gtk_widget_set_visible (priv->checkbox, TRUE);
 		gtk_widget_set_sensitive (priv->button, FALSE);
 	} else {

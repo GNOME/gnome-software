@@ -139,7 +139,7 @@ gs_app_notify_installed (GsApp *app)
 	 * has been successfully installed */
 	summary = g_strdup_printf (_("%s is now installed"), gs_app_get_name (app));
 	n = g_notification_new (summary);
-	if (gs_app_get_id_kind (app) == AS_ID_KIND_DESKTOP) {
+	if (gs_app_get_id_kind (app) == AS_APP_KIND_DESKTOP) {
 		/* TRANSLATORS: this is button that opens the newly installed application */
 		g_notification_add_button_with_target (n, _("Launch"),
 						       "app.launch", "s",
@@ -294,7 +294,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	/* be aware of patent clauses */
 	if (hint & GS_APP_LICENCE_PATENT_CONCERN) {
 		g_string_append (body, "\n\n");
-		if (gs_app_get_id_kind (app) != AS_ID_KIND_CODEC) {
+		if (gs_app_get_id_kind (app) != AS_APP_KIND_CODEC) {
 			g_string_append_printf (body,
 						/* TRANSLATORS: Laws are geographical, urgh... */
 						_("It may be illegal to install "

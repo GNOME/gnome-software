@@ -288,7 +288,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 				g_autofree gchar *basename = g_path_get_basename (fns[j]);
 				gs_app_set_id (app, basename);
 				gs_app_set_kind (app, GS_APP_KIND_NORMAL);
-				gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+				gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
 				break;
 			}
 		}

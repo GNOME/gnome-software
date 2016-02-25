@@ -87,7 +87,7 @@ struct _GsApp
 	GPtrArray		*reviews; /* of GsReview */
 	guint64			 size;
 	GsAppKind		 kind;
-	AsIdKind		 id_kind;
+	AsAppKind		 id_kind;
 	AsAppState		 state;
 	guint			 progress;
 	GHashTable		*metadata;
@@ -176,9 +176,9 @@ gs_app_to_string (GsApp *app)
 	str = g_string_new ("GsApp:\n");
 	g_string_append_printf (str, "\tkind:\t%s\n",
 				gs_app_kind_to_string (app->kind));
-	if (app->id_kind != AS_ID_KIND_UNKNOWN) {
+	if (app->id_kind != AS_APP_KIND_UNKNOWN) {
 		g_string_append_printf (str, "\tid-kind:\t%s\n",
-					as_id_kind_to_string (app->id_kind));
+					as_app_kind_to_string (app->id_kind));
 	}
 	g_string_append_printf (str, "\tstate:\t%s\n",
 				as_app_state_to_string (app->state));
@@ -656,7 +656,7 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 /**
  * gs_app_get_id_kind:
  */
-AsIdKind
+AsAppKind
 gs_app_get_id_kind (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), GS_APP_KIND_UNKNOWN);
@@ -667,7 +667,7 @@ gs_app_get_id_kind (GsApp *app)
  * gs_app_set_id_kind:
  */
 void
-gs_app_set_id_kind (GsApp *app, AsIdKind id_kind)
+gs_app_set_id_kind (GsApp *app, AsAppKind id_kind)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	app->id_kind = id_kind;
@@ -861,11 +861,11 @@ gs_app_set_project_group (GsApp *app, const gchar *project_group)
 static gboolean
 gs_app_is_addon_id_kind (GsApp *app)
 {
-	AsIdKind id_kind;
+	AsAppKind id_kind;
 	id_kind = gs_app_get_id_kind (app);
-	if (id_kind == AS_ID_KIND_DESKTOP)
+	if (id_kind == AS_APP_KIND_DESKTOP)
 		return FALSE;
-	if (id_kind == AS_ID_KIND_WEB_APP)
+	if (id_kind == AS_APP_KIND_WEB_APP)
 		return FALSE;
 	return TRUE;
 }

@@ -1543,7 +1543,7 @@ gs_plugin_loader_convert_unavailable (GList *list, const gchar *search)
 			continue;
 		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
 			continue;
-		if (gs_app_get_id_kind (app) != AS_ID_KIND_CODEC)
+		if (gs_app_get_id_kind (app) != AS_APP_KIND_CODEC)
 			continue;
 		if (gs_app_get_url (app, AS_URL_KIND_MISSING) == NULL)
 			continue;

@@ -661,7 +661,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	ptask = as_profile_start_literal (plugin->profile, "packagekit-refine[source->licence]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_id_kind (app) == AS_ID_KIND_WEB_APP)
+		if (gs_app_get_id_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
 		if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
 			continue;
@@ -833,7 +833,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	ptask = as_profile_start_literal (plugin->profile, "packagekit-refine[name->id]");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_id_kind (app) == AS_ID_KIND_WEB_APP)
+		if (gs_app_get_id_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
 		if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
 			continue;
@@ -873,10 +873,10 @@ gs_plugin_refine (GsPlugin *plugin,
 		if (tmp == NULL)
 			continue;
 		switch (gs_app_get_id_kind (app)) {
-		case AS_ID_KIND_DESKTOP:
+		case AS_APP_KIND_DESKTOP:
 			fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
 			break;
-		case AS_ID_KIND_ADDON:
+		case AS_APP_KIND_ADDON:
 			fn = g_strdup_printf ("/usr/share/appdata/%s.metainfo.xml", tmp);
 			break;
 		default:

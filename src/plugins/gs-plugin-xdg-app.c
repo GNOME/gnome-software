@@ -403,11 +403,11 @@ gs_plugin_xdg_app_create_installed (GsPlugin *plugin,
 
 	switch (xdg_app_ref_get_kind (XDG_APP_REF(xref))) {
 	case XDG_APP_REF_KIND_APP:
-		gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+		gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
 		break;
 	case XDG_APP_REF_KIND_RUNTIME:
 		gs_app_set_xdgapp_kind (app, XDG_APP_REF_KIND_RUNTIME);
-		gs_app_set_id_kind (app, AS_ID_KIND_RUNTIME);
+		gs_app_set_id_kind (app, AS_APP_KIND_RUNTIME);
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
 				 xdg_app_ref_get_name (XDG_APP_REF (xref)));
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
@@ -1011,7 +1011,7 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 	app_runtime = gs_app_new (runtime);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app_runtime, source);
-	gs_app_set_id_kind (app_runtime, AS_ID_KIND_RUNTIME);
+	gs_app_set_id_kind (app_runtime, AS_APP_KIND_RUNTIME);
 	gs_app_set_runtime (app, app_runtime);
 	return TRUE;
 }
@@ -1277,7 +1277,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 
 	/* install required runtime if not already installed */
-	if (gs_app_get_id_kind (app) == AS_ID_KIND_DESKTOP) {
+	if (gs_app_get_id_kind (app) == AS_APP_KIND_DESKTOP) {
 		GsApp *runtime;
 		runtime = gs_app_get_runtime (app);
 

@@ -235,8 +235,8 @@ gs_shell_details_switch_to (GsShellDetails *self)
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
-		if (gs_app_get_id_kind (self->app) == AS_ID_KIND_DESKTOP ||
-		    gs_app_get_id_kind (self->app) == AS_ID_KIND_WEB_APP) {
+		if (gs_app_get_id_kind (self->app) == AS_APP_KIND_DESKTOP ||
+		    gs_app_get_id_kind (self->app) == AS_APP_KIND_WEB_APP) {
 			gtk_widget_set_visible (self->button_details_launch, TRUE);
 		} else {
 			gtk_widget_set_visible (self->button_details_launch, FALSE);
@@ -420,7 +420,7 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 	guint i;
 
 	/* treat screenshots differently */
-	if (gs_app_get_id_kind (self->app) == AS_ID_KIND_FONT) {
+	if (gs_app_get_id_kind (self->app) == AS_APP_KIND_FONT) {
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_main));
 		screenshots = gs_app_get_screenshots (self->app);
@@ -727,7 +727,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 
 	/* set the rating */
 	switch (gs_app_get_id_kind (self->app)) {
-	case AS_ID_KIND_WEB_APP:
+	case AS_APP_KIND_WEB_APP:
 		gtk_widget_set_visible (self->star, FALSE);
 		break;
 	default:
@@ -791,7 +791,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	gs_shell_details_set_sensitive (self->label_details_kudo_integration, ret);
 
 	/* set the tags buttons */
-	if (gs_app_get_id_kind (self->app) == AS_ID_KIND_WEB_APP) {
+	if (gs_app_get_id_kind (self->app) == AS_APP_KIND_WEB_APP) {
 		gtk_widget_set_visible (self->label_details_tag_webapp, TRUE);
 		gtk_widget_set_visible (self->label_details_tag_nonfree, FALSE);
 		gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
@@ -848,7 +848,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (self->app);
 	switch (gs_app_get_id_kind (self->app)) {
-	case AS_ID_KIND_WEB_APP:
+	case AS_APP_KIND_WEB_APP:
 		gtk_widget_set_visible (self->button_history, FALSE);
 		break;
 	default:
@@ -898,7 +898,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	switch (gs_app_get_kind (self->app)) {
 	case GS_APP_KIND_NORMAL:
 	case GS_APP_KIND_SYSTEM:
-		if (gs_app_get_id_kind (self->app) == AS_ID_KIND_FIRMWARE) {
+		if (gs_app_get_id_kind (self->app) == AS_APP_KIND_FIRMWARE) {
 			gtk_widget_set_visible (self->infobar_details_app_norepo, FALSE);
 		} else {
 			gtk_widget_set_visible (self->infobar_details_app_norepo,

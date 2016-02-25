@@ -497,7 +497,7 @@ gs_plugin_appstream_create_runtime (GsApp *parent, const gchar *runtime)
 	app = gs_app_new (id);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
-	gs_app_set_id_kind (app, AS_ID_KIND_RUNTIME);
+	gs_app_set_id_kind (app, AS_APP_KIND_RUNTIME);
 	gs_app_set_version (app, id_split[2]);
 
 	return g_steal_pointer (&app);
@@ -568,7 +568,7 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 	/* is an app */
 	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN ||
 	    gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
-		if (as_app_get_id_kind (item) == AS_ID_KIND_SOURCE) {
+		if (as_app_get_kind (item) == AS_APP_KIND_SOURCE) {
 			gs_app_set_kind (app, GS_APP_KIND_SOURCE);
 		} else {
 			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
@@ -683,8 +683,8 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 		gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
 
 	/* set id kind */
-	if (gs_app_get_id_kind (app) == AS_ID_KIND_UNKNOWN)
-		gs_app_set_id_kind (app, as_app_get_id_kind (item));
+	if (gs_app_get_id_kind (app) == AS_APP_KIND_UNKNOWN)
+		gs_app_set_id_kind (app, as_app_get_kind (item));
 
 	/* copy all the metadata */
 	gs_plugin_appstream_copy_metadata (app, item);
@@ -850,8 +850,8 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 		item = g_ptr_array_index (array, i);
 
-		// FIXME: AS_ID_KIND_DISTRO_UPGRADE
-		if (as_app_get_id_kind (item) != AS_ID_KIND_UNKNOWN)
+		// FIXME: AS_APP_KIND_DISTRO_UPGRADE
+		if (as_app_get_kind (item) != AS_APP_KIND_UNKNOWN)
 			continue;
 		if (as_app_get_metadata_item (item, "X-IsUpgrade") == NULL)
 			continue;

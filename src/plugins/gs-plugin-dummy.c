@@ -74,7 +74,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Boxes");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Do not segfault when using newer versons of libvirt.");
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
-	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+	gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
 	g_object_unref (app);
 
@@ -83,7 +83,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "libvirt-glib-devel");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Fix several memory leaks.");
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
-	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+	gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
 	g_object_unref (app);
 
@@ -92,7 +92,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "gnome-boxes-libs");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Do not segfault when using newer versons of libvirt.");
 	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
-	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+	gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
 	g_object_unref (app);
 
@@ -114,7 +114,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_plugin_add_app (list, app);
-	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+	gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
 
 	return TRUE;
 }
@@ -134,7 +134,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_plugin_add_app (list, app);
-	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+	gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
 
 	return TRUE;
 }
@@ -234,7 +234,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	gs_app_set_kind (app, GS_APP_KIND_NORMAL);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/gnome-boxes.png", NULL));
-	gs_app_set_id_kind (app, AS_ID_KIND_DESKTOP);
+	gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
