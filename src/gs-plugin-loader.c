@@ -285,6 +285,8 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	/* refine addons one layer deep */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS) > 0) {
 		flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS;
+		flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS;
+		flags &= ~GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS;
 		for (l = *list; l != NULL; l = l->next) {
 			app = GS_APP (l->data);
 			addons = gs_app_get_addons (app);
