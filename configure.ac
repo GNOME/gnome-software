@@ -164,7 +164,7 @@ AC_ARG_ENABLE(xdg-app,
               enable_xdg_app=maybe)
 AS_IF([test "x$enable_xdg_app" != "xno"], [
     PKG_CHECK_MODULES(XDG_APP,
-                      [xdg-app >= 0.4.12],
+                      [xdg-app >= 0.4.14],
                       [have_xdg_app=yes],
                       [have_xdg_app=no])
 ], [
