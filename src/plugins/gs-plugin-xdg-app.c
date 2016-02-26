@@ -36,6 +36,7 @@
 
 #include <gs-plugin.h>
 
+#include "gs-appstream.h"
 #include "gs-utils.h"
 
 static gboolean		gs_plugin_refine_item_metadata (GsPlugin *plugin,
@@ -935,6 +936,41 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_xdg_app_set_app_metadata:
+ */
+static gboolean
+gs_plugin_xdg_app_set_app_metadata (GsApp *app,
+				    const gchar *data,
+				    gsize length,
+				    GError **error)
+{
+	g_autofree gchar *name = NULL;
+	g_autofree gchar *runtime = NULL;
+	g_autofree gchar *source = NULL;
+	g_autoptr(GKeyFile) kf = NULL;
+	g_autoptr(GsApp) app_runtime = NULL;
+
+	kf = g_key_file_new ();
+	if (!g_key_file_load_from_data (kf, data, length, G_KEY_FILE_NONE, error))
+		return FALSE;
+	name = g_key_file_get_string (kf, "Application", "name", error);
+	if (name == NULL)
+		return FALSE;
+	gs_app_set_xdgapp_name (app, name);
+	runtime = g_key_file_get_string (kf, "Application", "runtime", error);
+	if (runtime == NULL)
+		return FALSE;
+	g_debug ("runtime for %s is %s", name, runtime);
+
+	/* create runtime */
+	app_runtime = gs_appstream_create_runtime (app, runtime);
+	if (app_runtime != NULL)
+		gs_app_set_runtime (app, app_runtime);
+
+	return TRUE;
+}
+
+/**
  * gs_plugin_refine_item_runtime:
  */
 static gboolean
@@ -949,12 +985,8 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 	g_autofree gchar *contents = NULL;
 	g_autofree gchar *installation_path_str = NULL;
 	g_autofree gchar *install_path = NULL;
-	g_autofree gchar *runtime = NULL;
-	g_autofree gchar *source = NULL;
 	g_autoptr(GBytes) data = NULL;
 	g_autoptr(GFile) installation_path = NULL;
-	g_autoptr(GKeyFile) kf = NULL;
-	g_autoptr(GsApp) app_runtime = NULL;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
 
 	/* not applicable */
@@ -999,20 +1031,8 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 	}
 
 	/* parse key file */
-	kf = g_key_file_new ();
-	if (!g_key_file_load_from_data (kf, str, len, G_KEY_FILE_NONE, error))
+	if (!gs_plugin_xdg_app_set_app_metadata (app, str, len, error))
 		return FALSE;
-	runtime = g_key_file_get_string (kf, "Application", "runtime", error);
-	if (runtime == NULL)
-		return FALSE;
-	g_debug ("runtime for %s is %s", gs_app_get_id (app), runtime);
-
-	/* create runtime */
-	app_runtime = gs_app_new (runtime);
-	source = g_strdup_printf ("runtime/%s", runtime);
-	gs_app_add_source (app_runtime, source);
-	gs_app_set_kind (app_runtime, AS_APP_KIND_RUNTIME);
-	gs_app_set_runtime (app, app_runtime);
 	return TRUE;
 }
 
