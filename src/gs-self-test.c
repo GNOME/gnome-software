@@ -512,13 +512,12 @@ gs_plugin_loader_refine_func (void)
 	g_assert_no_error (error);
 	g_assert (ret);
 
-	ret = gs_plugin_loader_set_enabled (loader, "packagekit-refine", TRUE);
+	ret = gs_plugin_loader_set_enabled (loader, "dummy", TRUE);
 	g_assert (ret);
 
 	/* get the extra bits */
-	g_setenv ("GNOME_SOFTWARE_USE_PKG_DESCRIPTIONS", "1", TRUE);
-	app = gs_app_new ("gimp");
-	gs_app_add_source (app, "gimp");
+	app = gs_app_new ("gnome-boxes");
+	gs_app_add_source (app, "gnome-boxes");
 	ret = gs_plugin_loader_app_refine (loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
@@ -529,7 +528,8 @@ gs_plugin_loader_refine_func (void)
 	g_assert_no_error (error);
 	g_assert (ret);
 
-	g_assert_cmpstr (gs_app_get_licence (app), ==, "<a href=\"http://spdx.org/licenses/GPL-3.0+\">GPL-3.0+</a> and <a href=\"http://spdx.org/licenses/GPL-3.0\">GPL-3.0</a>");
+	g_assert_cmpstr (gs_app_get_licence (app), ==,
+			 "<a href=\"http://spdx.org/licenses/GPL-2.0+\">GPL-2.0+</a>");
 	g_assert_cmpstr (gs_app_get_description (app), !=, NULL);
 	url = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
 	g_assert_cmpstr (url, ==, "http://www.gimp.org/");

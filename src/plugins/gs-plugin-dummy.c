@@ -156,8 +156,16 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_name (app) == NULL) {
 			if (g_strcmp0 (gs_app_get_id (app), "gnome-boxes") == 0) {
-				gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Boxes");
-				gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A simple GNOME 3 application to access remote or virtual systems");
+				gs_app_set_licence (app, "GPL-2.0+", GS_APP_QUALITY_NORMAL);
+				gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
+						 "Boxes");
+				gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
+						"http://www.gimp.org/");
+				gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
+						    "A simple GNOME 3 application "
+						    "to access remote or virtual systems");
+				gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
+							"<p>long description!</p>");
 			}
 		}
 	}
