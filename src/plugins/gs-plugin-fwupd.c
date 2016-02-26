@@ -234,8 +234,8 @@ gs_plugin_fwupd_set_app_from_kv (GsApp *app, const gchar *key, GVariant *val)
 	}
 	if (g_strcmp0 (key, "License") == 0) {
 		gs_app_set_licence (app,
-				    g_variant_get_string (val, NULL),
-				    GS_APP_QUALITY_NORMAL);
+				    GS_APP_QUALITY_NORMAL,
+				    g_variant_get_string (val, NULL));
 		return;
 	}
 	if (g_strcmp0 (key, "UpdateDescription") == 0) {

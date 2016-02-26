@@ -137,8 +137,8 @@ void		 gs_app_set_url			(GsApp		*app,
 const gchar	*gs_app_get_licence		(GsApp		*app);
 gboolean	 gs_app_get_licence_is_free	(GsApp		*app);
 void		 gs_app_set_licence		(GsApp		*app,
-						 const gchar	*licence,
-						 GsAppQuality	 quality);
+						 GsAppQuality	 quality,
+						 const gchar	*licence);
 gchar		**gs_app_get_menu_path		(GsApp		*app);
 void		 gs_app_set_menu_path		(GsApp		*app,
 						 gchar		**menu_path);

@@ -485,8 +485,8 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 				license_spdx = as_utils_license_to_spdx (pk_details_get_license (details));
 				if (license_spdx != NULL) {
 					gs_app_set_licence (app,
-							    license_spdx,
-							    GS_APP_QUALITY_LOWEST);
+							    GS_APP_QUALITY_LOWEST,
+							    license_spdx);
 				}
 			}
 			if (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL) {

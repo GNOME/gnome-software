@@ -1291,7 +1291,7 @@ gs_app_get_licence_token_is_nonfree (const gchar *token)
  * gs_app_set_licence:
  */
 void
-gs_app_set_licence (GsApp *app, const gchar *licence, GsAppQuality quality)
+gs_app_set_licence (GsApp *app, GsAppQuality quality, const gchar *licence)
 {
 	GString *urld;
 	guint i;
