@@ -362,10 +362,10 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 
 	/* actually add the application */
 	gs_app_set_management_plugin (app, "fwupd");
-	gs_app_set_id_kind (app, AS_APP_KIND_FIRMWARE);
+	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_add_source_id (app, filename_cache);
 	gs_app_add_category (app, "System");
-	gs_app_set_kind (app, GS_APP_KIND_FIRMWARE_UPDATE);
+	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_set_metadata (app, "fwupd::DeviceID", id);
 	gs_plugin_add_app (list, app);
 
@@ -437,7 +437,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	app = gs_app_new (NULL);
 	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
+	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	g_variant_get (val, "(a{sv})", &iter);
 	while (g_variant_iter_next (iter, "{&sv}", &key, &variant)) {
 		gs_plugin_fwupd_set_app_from_kv (app, key, variant);
@@ -933,7 +933,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (gs_app_get_kind (app) == GS_APP_KIND_FIRMWARE_UPDATE)
+	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
 		offline = FALSE;
 	if (!gs_plugin_fwupd_upgrade (plugin, filename, FWUPD_DEVICE_ID_ANY, offline,
 				      cancellable, error))
@@ -1079,9 +1079,9 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 
 	/* get results */
 	app = gs_app_new (NULL);
-	gs_app_set_id_kind (app, AS_APP_KIND_FIRMWARE);
+	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_set_management_plugin (app, "fwupd");
-	gs_app_set_kind (app, GS_APP_KIND_FIRMWARE_UPDATE);
+	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_add_source_id (app, filename);
 	gs_app_add_category (app, "System");

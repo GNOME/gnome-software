@@ -265,7 +265,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		id = pk_repo_detail_get_id (rd);
 		app = gs_app_new (id);
 		gs_app_set_management_plugin (app, "PackageKit");
-		gs_app_set_kind (app, GS_APP_KIND_SOURCE);
+		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
 				 GS_APP_QUALITY_LOWEST,
@@ -573,7 +573,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return TRUE;
 
 	/* remove repo and all apps in it */
-	if (gs_app_get_kind (app) == GS_APP_KIND_SOURCE) {
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
 		return gs_plugin_app_source_remove (plugin, app,
 						    cancellable, error);
 	}
@@ -647,7 +647,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	data.ptask = NULL;
 
 	/* check is distro-upgrade */
-	if (gs_app_get_kind (app) != GS_APP_KIND_DISTRO_UPGRADE) {
+	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,

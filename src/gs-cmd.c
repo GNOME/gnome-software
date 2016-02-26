@@ -282,7 +282,7 @@ main (int argc, char **argv)
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "action-upgrade-download") == 0) {
 		app = gs_app_new (argv[2]);
-		gs_app_set_kind (app, GS_APP_KIND_DISTRO_UPGRADE);
+		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 		ret = gs_plugin_loader_app_action (plugin_loader,
 						   app,
 						   GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,

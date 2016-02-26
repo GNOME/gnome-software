@@ -26,9 +26,9 @@
  *
  * This object represents a 1:1 mapping to a .desktop file. The design is such
  * so you can't have different GsApp's for different versions or architectures
- * of a package. This rule really only applies to GsApps of kind GS_APP_KIND_NORMAL
- * and GS_APP_KIND_SYSTEM. We allow GsApps of kind GS_APP_KIND_SYSTEM_UPDATE or
- * GS_APP_KIND_PACKAGE, which don't correspond to desktop files, but instead
+ * of a package. This rule really only applies to GsApps of kind AS_APP_KIND_DESKTOP
+ * and AS_APP_KIND_GENERIC. We allow GsApps of kind AS_APP_KIND_OS_UPDATE or
+ * AS_APP_KIND_GENERIC, which don't correspond to desktop files, but instead
  * represent a system update and its individual components.
  *
  * The #GsPluginLoader de-duplicates the GsApp instances that are produced by
@@ -86,8 +86,7 @@ struct _GsApp
 	GArray			*review_ratings;
 	GPtrArray		*reviews; /* of GsReview */
 	guint64			 size;
-	GsAppKind		 kind;
-	AsAppKind		 id_kind;
+	AsAppKind		 kind;
 	AsAppState		 state;
 	guint			 progress;
 	GHashTable		*metadata;
@@ -101,6 +100,7 @@ struct _GsApp
 	guint64			 kudos;
 	gboolean		 to_be_installed;
 	gboolean		 provenance;
+	gboolean		 compulsory;
 	gboolean		 licence_is_free;
 	GsApp			*runtime;
 };
@@ -129,35 +129,6 @@ G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
 G_DEFINE_QUARK (gs-app-error-quark, gs_app_error)
 
 /**
- * gs_app_kind_to_string:
- **/
-const gchar *
-gs_app_kind_to_string (GsAppKind kind)
-{
-	if (kind == GS_APP_KIND_UNKNOWN)
-		return "unknown";
-	if (kind == GS_APP_KIND_NORMAL)
-		return "normal";
-	if (kind == GS_APP_KIND_SYSTEM)
-		return "system";
-	if (kind == GS_APP_KIND_PACKAGE)
-		return "package";
-	if (kind == GS_APP_KIND_OS_UPDATE)
-		return "os-update";
-	if (kind == GS_APP_KIND_MISSING)
-		return "missing";
-	if (kind == GS_APP_KIND_SOURCE)
-		return "source";
-	if (kind == GS_APP_KIND_CORE)
-		return "core";
-	if (kind == GS_APP_KIND_DISTRO_UPGRADE)
-		return "distro-upgrade";
-	if (kind == GS_APP_KIND_FIRMWARE_UPDATE)
-		return "firmware-update";
-	return NULL;
-}
-
-/**
  * gs_app_to_string:
  **/
 gchar *
@@ -175,11 +146,9 @@ gs_app_to_string (GsApp *app)
 
 	str = g_string_new ("GsApp:\n");
 	g_string_append_printf (str, "\tkind:\t%s\n",
-				gs_app_kind_to_string (app->kind));
-	if (app->id_kind != AS_APP_KIND_UNKNOWN) {
-		g_string_append_printf (str, "\tid-kind:\t%s\n",
-					as_app_kind_to_string (app->id_kind));
-	}
+				as_app_kind_to_string (app->kind));
+	g_string_append_printf (str, "\tcompulsory:\t%s\n",
+				app->compulsory ? "True" : "False");
 	g_string_append_printf (str, "\tstate:\t%s\n",
 				as_app_state_to_string (app->state));
 	if (app->progress > 0)
@@ -580,10 +549,10 @@ gs_app_set_state (GsApp *app, AsAppState state)
 /**
  * gs_app_get_kind:
  */
-GsAppKind
+AsAppKind
 gs_app_get_kind (GsApp *app)
 {
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_KIND_UNKNOWN);
+	g_return_val_if_fail (GS_IS_APP (app), AS_APP_KIND_UNKNOWN);
 	return app->kind;
 }
 
@@ -591,14 +560,14 @@ gs_app_get_kind (GsApp *app)
  * gs_app_set_kind:
  *
  * This sets the kind of the application. The following state diagram explains
- * the typical states. All applications start with kind %GS_APP_KIND_UNKNOWN.
+ * the typical states. All applications start with kind %AS_APP_KIND_UNKNOWN.
  *
  * PACKAGE --> NORMAL
  * PACKAGE --> SYSTEM
  * NORMAL  --> SYSTEM
  */
 void
-gs_app_set_kind (GsApp *app, GsAppKind kind)
+gs_app_set_kind (GsApp *app, AsAppKind kind)
 {
 	gboolean state_change_ok = FALSE;
 
@@ -608,35 +577,29 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 
 	/* check the state change is allowed */
 	switch (app->kind) {
-	case GS_APP_KIND_UNKNOWN:
+	case AS_APP_KIND_UNKNOWN:
 		/* unknown can go into any state */
 		state_change_ok = TRUE;
 		break;
-	case GS_APP_KIND_PACKAGE:
+	case AS_APP_KIND_GENERIC:
 		/* package can become either normal or a system application */
-		if (kind == GS_APP_KIND_NORMAL ||
-		    kind == GS_APP_KIND_SYSTEM ||
-		    kind == GS_APP_KIND_CORE ||
-		    kind == GS_APP_KIND_SOURCE ||
-		    kind == GS_APP_KIND_UNKNOWN)
+		if (kind == AS_APP_KIND_DESKTOP ||
+		    kind == AS_APP_KIND_SOURCE ||
+		    kind == AS_APP_KIND_UNKNOWN)
 			state_change_ok = TRUE;
 		break;
-	case GS_APP_KIND_NORMAL:
+	case AS_APP_KIND_DESKTOP:
 		/* normal can only be promoted to system */
-		if (kind == GS_APP_KIND_SYSTEM ||
-		    kind == GS_APP_KIND_UNKNOWN)
+		if (kind == AS_APP_KIND_UNKNOWN)
 			state_change_ok = TRUE;
 		break;
-	case GS_APP_KIND_SYSTEM:
-	case GS_APP_KIND_OS_UPDATE:
-	case GS_APP_KIND_CORE:
-	case GS_APP_KIND_SOURCE:
-	case GS_APP_KIND_MISSING:
+	case AS_APP_KIND_OS_UPDATE:
+	case AS_APP_KIND_SOURCE:
 		/* this can never change state */
 		break;
 	default:
 		g_warning ("kind %s unhandled",
-			   gs_app_kind_to_string (app->kind));
+			   as_app_kind_to_string (app->kind));
 		g_assert_not_reached ();
 	}
 
@@ -644,33 +607,13 @@ gs_app_set_kind (GsApp *app, GsAppKind kind)
 	if (!state_change_ok) {
 		g_warning ("Kind change on %s from %s to %s is not OK",
 			   app->id,
-			   gs_app_kind_to_string (app->kind),
-			   gs_app_kind_to_string (kind));
+			   as_app_kind_to_string (app->kind),
+			   as_app_kind_to_string (kind));
 		return;
 	}
 
 	app->kind = kind;
 	gs_app_queue_notify (app, "kind");
-}
-
-/**
- * gs_app_get_id_kind:
- */
-AsAppKind
-gs_app_get_id_kind (GsApp *app)
-{
-	g_return_val_if_fail (GS_IS_APP (app), GS_APP_KIND_UNKNOWN);
-	return app->id_kind;
-}
-
-/**
- * gs_app_set_id_kind:
- */
-void
-gs_app_set_id_kind (GsApp *app, AsAppKind id_kind)
-{
-	g_return_if_fail (GS_IS_APP (app));
-	app->id_kind = id_kind;
 }
 
 /**
@@ -861,11 +804,11 @@ gs_app_set_project_group (GsApp *app, const gchar *project_group)
 static gboolean
 gs_app_is_addon_id_kind (GsApp *app)
 {
-	AsAppKind id_kind;
-	id_kind = gs_app_get_id_kind (app);
-	if (id_kind == AS_APP_KIND_DESKTOP)
+	AsAppKind kind;
+	kind = gs_app_get_kind (app);
+	if (kind == AS_APP_KIND_DESKTOP)
 		return FALSE;
-	if (id_kind == AS_APP_KIND_WEB_APP)
+	if (kind == AS_APP_KIND_WEB_APP)
 		return FALSE;
 	return TRUE;
 }
@@ -926,7 +869,7 @@ gs_app_get_pixbuf (GsApp *app)
 
 	} else if (app->pixbuf == NULL && gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL) {
 		const gchar *icon_name;
-		if (gs_app_get_kind (app) == GS_APP_KIND_SOURCE)
+		if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 			icon_name = "x-package-repository";
 		else if (gs_app_is_addon_id_kind (app))
 			icon_name = "application-x-addon";
@@ -938,19 +881,20 @@ gs_app_get_pixbuf (GsApp *app)
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);
 
-	} else if (app->pixbuf == NULL && gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
+	} else if (app->pixbuf == NULL && gs_app_get_kind (app) == AS_APP_KIND_GENERIC) {
 		app->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 		                                              "application-x-addon", 64,
 		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);
-	} else if (app->pixbuf == NULL && gs_app_get_kind (app) == GS_APP_KIND_OS_UPDATE) {
+	} else if (app->pixbuf == NULL && gs_app_get_kind (app) == AS_APP_KIND_OS_UPDATE) {
 		app->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 		                                              "software-update-available-symbolic", 64,
 		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);
-	} else if (app->pixbuf == NULL && gs_app_get_kind (app) == GS_APP_KIND_MISSING) {
+	} else if (app->pixbuf == NULL &&
+		   gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
 		app->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
 		                                              "dialog-question-symbolic", 16,
 		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
@@ -2092,6 +2036,24 @@ gs_app_set_provenance (GsApp *app, gboolean provenance)
 }
 
 /**
+ * gs_app_get_compulsory:
+ */
+gboolean
+gs_app_get_compulsory (GsApp *app)
+{
+	return app->compulsory;
+}
+
+/**
+ * gs_app_set_compulsory:
+ */
+void
+gs_app_set_compulsory (GsApp *app, gboolean compulsory)
+{
+	app->compulsory = compulsory;
+}
+
+/**
  * gs_app_subsume:
  *
  * Imports all the useful data from @other into @app.
@@ -2417,9 +2379,9 @@ gs_app_class_init (GsAppClass *klass)
 	 * GsApp:kind:
 	 */
 	pspec = g_param_spec_uint ("kind", NULL, NULL,
-				   GS_APP_KIND_UNKNOWN,
-				   GS_APP_KIND_LAST,
-				   GS_APP_KIND_UNKNOWN,
+				   AS_APP_KIND_UNKNOWN,
+				   AS_APP_KIND_LAST,
+				   AS_APP_KIND_UNKNOWN,
 				   G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_KIND, pspec);
 

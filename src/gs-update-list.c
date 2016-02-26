@@ -96,7 +96,7 @@ static gboolean
 is_addon_id_kind (GsApp *app)
 {
 	AsAppKind id_kind;
-	id_kind = gs_app_get_id_kind (app);
+	id_kind = gs_app_get_kind (app);
 	if (id_kind == AS_APP_KIND_DESKTOP)
 		return FALSE;
 	if (id_kind == AS_APP_KIND_WEB_APP)
@@ -147,7 +147,7 @@ get_app_sort_key (GsApp *app)
 
 	/* sort by kind */
 	switch (gs_app_get_kind (app)) {
-	case GS_APP_KIND_OS_UPDATE:
+	case AS_APP_KIND_OS_UPDATE:
 		g_string_append (key, "1:");
 		break;
 	default:
@@ -156,7 +156,7 @@ get_app_sort_key (GsApp *app)
 	}
 
 	/* sort desktop files, then addons */
-	switch (gs_app_get_id_kind (app)) {
+	switch (gs_app_get_kind (app)) {
 	case AS_APP_KIND_FIRMWARE:
 		g_string_append (key, "1:");
 		break;

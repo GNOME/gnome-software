@@ -40,20 +40,6 @@ typedef enum {
 } GsAppError;
 
 typedef enum {
-	GS_APP_KIND_UNKNOWN,
-	GS_APP_KIND_NORMAL,		/* app	[ install:1 remove:1 update:1 ] */
-	GS_APP_KIND_SYSTEM,		/* app	[ install:0 remove:0 update:1 ] */
-	GS_APP_KIND_PACKAGE,		/* pkg	[ install:0 remove:0 update:1 ] */
-	GS_APP_KIND_OS_UPDATE,		/* pkg	[ install:0 remove:0 update:1 ] */
-	GS_APP_KIND_MISSING,		/* meta	[ install:0 remove:0 update:0 ] */
-	GS_APP_KIND_SOURCE,		/* src	[ install:1 remove:0 update:0 ] */
-	GS_APP_KIND_CORE,		/* pkg	[ install:0 remove:0 update:1 ] */
-	GS_APP_KIND_DISTRO_UPGRADE,	/* meta	[ install:0 remove:0 update:1 ] */
-	GS_APP_KIND_FIRMWARE_UPDATE,	/* app	[ install:0 remove:0 update:1 ] */
-	GS_APP_KIND_LAST
-} GsAppKind;
-
-typedef enum {
 	GS_APP_KUDO_MY_LANGUAGE			= 1 << 0,
 	GS_APP_KUDO_RECENT_RELEASE		= 1 << 1,
 	GS_APP_KUDO_FEATURED_RECOMMENDED	= 1 << 2,
@@ -91,7 +77,6 @@ GQuark		 gs_app_error_quark		(void);
 
 GsApp		*gs_app_new			(const gchar	*id);
 gchar		*gs_app_to_string		(GsApp		*app);
-const gchar	*gs_app_kind_to_string		(GsAppKind	 kind);
 
 void		 gs_app_subsume			(GsApp		*app,
 						 GsApp		*other);
@@ -100,12 +85,9 @@ const gchar	*gs_app_get_id			(GsApp		*app);
 void		 gs_app_set_id			(GsApp		*app,
 						 const gchar	*id);
 const gchar	*gs_app_get_id_no_prefix	(GsApp		*app);
-GsAppKind	 gs_app_get_kind		(GsApp		*app);
+AsAppKind	 gs_app_get_kind		(GsApp		*app);
 void		 gs_app_set_kind		(GsApp		*app,
-						 GsAppKind	 kind);
-AsAppKind	 gs_app_get_id_kind		(GsApp		*app);
-void		 gs_app_set_id_kind		(GsApp		*app,
-						 AsAppKind	 id_kind);
+						 AsAppKind	 kind);
 AsAppState	 gs_app_get_state		(GsApp		*app);
 void		 gs_app_set_state		(GsApp		*app,
 						 AsAppState	 state);
@@ -249,6 +231,9 @@ const gchar	*gs_app_get_search_sort_key	(GsApp		*app);
 gboolean	 gs_app_get_provenance		(GsApp		*app);
 void		 gs_app_set_provenance		(GsApp		*app,
 						 gboolean	 provenance);
+gboolean	 gs_app_get_compulsory		(GsApp		*app);
+void		 gs_app_set_compulsory		(GsApp		*app,
+						 gboolean	 compulsory);
 
 G_END_DECLS
 

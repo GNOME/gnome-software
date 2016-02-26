@@ -497,7 +497,7 @@ gs_plugin_appstream_create_runtime (GsApp *parent, const gchar *runtime)
 	app = gs_app_new (id);
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
-	gs_app_set_id_kind (app, AS_APP_KIND_RUNTIME);
+	gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
 	gs_app_set_version (app, id_split[2]);
 
 	return g_steal_pointer (&app);
@@ -566,12 +566,12 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 	guint i;
 
 	/* is an app */
-	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN ||
-	    gs_app_get_kind (app) == GS_APP_KIND_PACKAGE) {
+	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN ||
+	    gs_app_get_kind (app) == AS_APP_KIND_GENERIC) {
 		if (as_app_get_kind (item) == AS_APP_KIND_SOURCE) {
-			gs_app_set_kind (app, GS_APP_KIND_SOURCE);
+			gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		} else {
-			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+			gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 		}
 	}
 
@@ -580,7 +580,7 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 		switch (as_app_get_source_kind (item)) {
 		case AS_APP_SOURCE_KIND_APPDATA:
 		case AS_APP_SOURCE_KIND_DESKTOP:
-			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+			gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 			break;
 		case AS_APP_SOURCE_KIND_METAINFO:
@@ -679,12 +679,12 @@ gs_plugin_refine_item (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error
 
 	/* this is a core application for the desktop and cannot be removed */
 	if (_as_app_has_compulsory_for_desktop (item, "GNOME") &&
-	    gs_app_get_kind (app) == GS_APP_KIND_NORMAL)
-		gs_app_set_kind (app, GS_APP_KIND_SYSTEM);
+	    gs_app_get_kind (app) == AS_APP_KIND_DESKTOP)
+		gs_app_set_compulsory (app, TRUE);
 
 	/* set id kind */
-	if (gs_app_get_id_kind (app) == AS_APP_KIND_UNKNOWN)
-		gs_app_set_id_kind (app, as_app_get_kind (item));
+	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN)
+		gs_app_set_kind (app, as_app_get_kind (item));
 
 	/* copy all the metadata */
 	gs_plugin_appstream_copy_metadata (app, item);
@@ -850,7 +850,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 		item = g_ptr_array_index (array, i);
 
-		// FIXME: AS_APP_KIND_DISTRO_UPGRADE
+		// FIXME: AS_APP_KIND_OS_UPGRADE
 		if (as_app_get_kind (item) != AS_APP_KIND_UNKNOWN)
 			continue;
 		if (as_app_get_metadata_item (item, "X-IsUpgrade") == NULL)
@@ -858,7 +858,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 
 		/* create */
 		app = gs_app_new (as_app_get_id (item));
-		gs_app_set_kind (app, GS_APP_KIND_DISTRO_UPGRADE);
+		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		if (!gs_plugin_refine_item (plugin, app, item, error))
 			return FALSE;

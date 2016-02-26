@@ -251,8 +251,8 @@ gs_shell_search_get_app_sort_key (GsApp *app)
 	key = g_string_sized_new (64);
 
 	/* sort missing codecs before applications */
-	switch (gs_app_get_kind (app)) {
-	case GS_APP_KIND_MISSING:
+	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_UNAVAILABLE:
 		g_string_append (key, "9:");
 		break;
 	default:

@@ -156,7 +156,6 @@ gs_shell_details_set_state (GsShellDetails *self,
 void
 gs_shell_details_switch_to (GsShellDetails *self)
 {
-	GsAppKind kind;
 	AsAppState state;
 	GtkWidget *widget;
 	GtkAdjustment *adj;
@@ -170,7 +169,6 @@ gs_shell_details_switch_to (GsShellDetails *self)
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
 	gtk_widget_show (widget);
 
-	kind = gs_app_get_kind (self->app);
 	state = gs_app_get_state (self->app);
 
 	/* label */
@@ -187,7 +185,7 @@ gs_shell_details_switch_to (GsShellDetails *self)
 	switch (state) {
 	case AS_APP_STATE_AVAILABLE:
 	case AS_APP_STATE_AVAILABLE_LOCAL:
-		gtk_widget_set_visible (self->button_install, gs_app_get_kind (self->app) != GS_APP_KIND_CORE);
+		gtk_widget_set_visible (self->button_install, TRUE);
 		gtk_widget_set_sensitive (self->button_install, TRUE);
 		gtk_style_context_add_class (gtk_widget_get_style_context (self->button_install), "suggested-action");
 		/* TRANSLATORS: button text in the header when an application
@@ -235,8 +233,8 @@ gs_shell_details_switch_to (GsShellDetails *self)
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
-		if (gs_app_get_id_kind (self->app) == AS_APP_KIND_DESKTOP ||
-		    gs_app_get_id_kind (self->app) == AS_APP_KIND_WEB_APP) {
+		if (gs_app_get_kind (self->app) == AS_APP_KIND_DESKTOP ||
+		    gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP) {
 			gtk_widget_set_visible (self->button_details_launch, TRUE);
 		} else {
 			gtk_widget_set_visible (self->button_details_launch, FALSE);
@@ -252,7 +250,7 @@ gs_shell_details_switch_to (GsShellDetails *self)
 		gtk_widget_set_visible (self->button_details_launch, FALSE);
 
 	/* remove button */
-	if (kind == GS_APP_KIND_SYSTEM) {
+	if (gs_app_get_compulsory (self->app)) {
 		gtk_widget_set_visible (self->button_remove, FALSE);
 	} else {
 		switch (state) {
@@ -307,7 +305,7 @@ gs_shell_details_switch_to (GsShellDetails *self)
 	}
 
 	/* spinner */
-	if (kind == GS_APP_KIND_SYSTEM) {
+	if (gs_app_get_compulsory (self->app)) {
 		gtk_widget_set_visible (self->spinner_install_remove, FALSE);
 		gtk_spinner_stop (GTK_SPINNER (self->spinner_install_remove));
 	} else {
@@ -420,7 +418,7 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 	guint i;
 
 	/* treat screenshots differently */
-	if (gs_app_get_id_kind (self->app) == AS_APP_KIND_FONT) {
+	if (gs_app_get_kind (self->app) == AS_APP_KIND_FONT) {
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_thumbnails));
 		gs_container_remove_all (GTK_CONTAINER (self->box_details_screenshot_main));
 		screenshots = gs_app_get_screenshots (self->app);
@@ -726,7 +724,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 				gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* set the rating */
-	switch (gs_app_get_id_kind (self->app)) {
+	switch (gs_app_get_kind (self->app)) {
 	case AS_APP_KIND_WEB_APP:
 		gtk_widget_set_visible (self->star, FALSE);
 		break;
@@ -791,7 +789,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	gs_shell_details_set_sensitive (self->label_details_kudo_integration, ret);
 
 	/* set the tags buttons */
-	if (gs_app_get_id_kind (self->app) == AS_APP_KIND_WEB_APP) {
+	if (gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP) {
 		gtk_widget_set_visible (self->label_details_tag_webapp, TRUE);
 		gtk_widget_set_visible (self->label_details_tag_nonfree, FALSE);
 		gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
@@ -847,7 +845,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (self->app);
-	switch (gs_app_get_id_kind (self->app)) {
+	switch (gs_app_get_kind (self->app)) {
 	case AS_APP_KIND_WEB_APP:
 		gtk_widget_set_visible (self->button_history, FALSE);
 		break;
@@ -863,18 +861,13 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		gtk_widget_set_visible (self->button_history, FALSE);
 
 	/* are we trying to replace something in the baseos */
-	switch (gs_app_get_kind (self->app)) {
-	case GS_APP_KIND_CORE:
-		gtk_widget_set_visible (self->infobar_details_package_baseos, TRUE);
-		break;
-	default:
-		gtk_widget_set_visible (self->infobar_details_package_baseos, FALSE);
-		break;
-	}
+	gtk_widget_set_visible (self->infobar_details_package_baseos,
+				gs_app_get_compulsory (self->app) &&
+				gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* is this a repo-release */
 	switch (gs_app_get_kind (self->app)) {
-	case GS_APP_KIND_SOURCE:
+	case AS_APP_KIND_SOURCE:
 		gtk_widget_set_visible (self->infobar_details_repo, gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 		break;
 	default:
@@ -885,8 +878,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	/* installing a app with a repo file */
 	tmp = gs_app_get_metadata_item (self->app, "PackageKit::has-source");
 	switch (gs_app_get_kind (self->app)) {
-	case GS_APP_KIND_NORMAL:
-	case GS_APP_KIND_SYSTEM:
+	case AS_APP_KIND_DESKTOP:
 		gtk_widget_set_visible (self->infobar_details_app_repo, tmp != NULL && gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 		break;
 	default:
@@ -896,9 +888,8 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 
 	/* installing a app without a repo file */
 	switch (gs_app_get_kind (self->app)) {
-	case GS_APP_KIND_NORMAL:
-	case GS_APP_KIND_SYSTEM:
-		if (gs_app_get_id_kind (self->app) == AS_APP_KIND_FIRMWARE) {
+	case AS_APP_KIND_DESKTOP:
+		if (gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
 			gtk_widget_set_visible (self->infobar_details_app_norepo, FALSE);
 		} else {
 			gtk_widget_set_visible (self->infobar_details_app_norepo,
@@ -1096,7 +1087,7 @@ gs_shell_details_app_refine_cb (GObject *source,
 			   error->message);
 	}
 
-	if (gs_app_get_kind (self->app) == GS_APP_KIND_UNKNOWN ||
+	if (gs_app_get_kind (self->app) == AS_APP_KIND_UNKNOWN ||
 	    gs_app_get_state (self->app) == AS_APP_STATE_UNKNOWN) {
 		g_autofree gchar *str = NULL;
 

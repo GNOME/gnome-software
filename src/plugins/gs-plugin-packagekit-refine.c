@@ -248,7 +248,7 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 		/* we have less packages returned than source packages */
 		tmp = gs_app_to_string (app);
 		g_debug ("Failed to find all packages for:\n%s", tmp);
-		gs_app_set_kind (app, GS_APP_KIND_UNKNOWN);
+		gs_app_set_kind (app, AS_APP_KIND_UNKNOWN);
 		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 	}
 }
@@ -661,7 +661,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	ptask = as_profile_start_literal (plugin->profile, "packagekit-refine[source->licence]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_id_kind (app) == AS_APP_KIND_WEB_APP)
+		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
 		if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
 			continue;
@@ -819,7 +819,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED) {
 		for (l = *list; l != NULL; l = l->next) {
 			app = GS_APP (l->data);
-			if (gs_app_get_kind (app) != GS_APP_KIND_DISTRO_UPGRADE)
+			if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE)
 				continue;
 			if (!gs_plugin_packagekit_refine_distro_upgrade (plugin,
 									 app,
@@ -833,7 +833,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	ptask = as_profile_start_literal (plugin->profile, "packagekit-refine[name->id]");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_id_kind (app) == AS_APP_KIND_WEB_APP)
+		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
 		if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
 			continue;
@@ -870,7 +870,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		tmp = gs_app_get_id (app);
 		if (tmp == NULL)
 			continue;
-		switch (gs_app_get_id_kind (app)) {
+		switch (gs_app_get_kind (app)) {
 		case AS_APP_KIND_DESKTOP:
 			fn = g_strdup_printf ("/usr/share/applications/%s", tmp);
 			break;

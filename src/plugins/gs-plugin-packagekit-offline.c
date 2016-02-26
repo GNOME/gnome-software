@@ -196,7 +196,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_add_source_id (app, package_ids[i]);
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
+		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 		gs_app_set_install_date (app, mtime);
 		gs_plugin_add_app (list, app);
 	}

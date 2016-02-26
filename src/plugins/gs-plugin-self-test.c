@@ -61,7 +61,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-			gs_app_set_kind (app, GS_APP_KIND_NORMAL);
+			gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 		}
 	}
 	return TRUE;

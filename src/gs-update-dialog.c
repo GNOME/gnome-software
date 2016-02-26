@@ -90,14 +90,14 @@ back_entry_free (BackEntry *entry)
 static void
 set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 {
-	GsAppKind kind;
+	AsAppKind kind;
 	const GdkPixbuf *pixbuf;
 	const gchar *update_details;
 	g_autofree gchar *update_desc = NULL;
 
 	/* set window title */
 	kind = gs_app_get_kind (app);
-	if (kind == GS_APP_KIND_OS_UPDATE) {
+	if (kind == AS_APP_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (dialog), gs_app_get_name (app));
 	} else if (gs_app_get_source_default (app) != NULL) {
 		g_autofree gchar *tmp = NULL;
@@ -129,7 +129,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	}
 
 	/* set update header */
-	gtk_widget_set_visible (dialog->box_header, kind == GS_APP_KIND_NORMAL || kind == GS_APP_KIND_SYSTEM);
+	gtk_widget_set_visible (dialog->box_header, kind == AS_APP_KIND_DESKTOP);
 	gtk_label_set_markup (GTK_LABEL (dialog->label_details), update_desc);
 	gtk_label_set_label (GTK_LABEL (dialog->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (dialog->label_summary), gs_app_get_summary (app));
@@ -275,7 +275,7 @@ void
 gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 {
 	GsApp *app_related;
-	GsAppKind kind;
+	AsAppKind kind;
 	const gchar *sort;
 
 	kind = gs_app_get_kind (app);
@@ -288,7 +288,7 @@ gs_update_dialog_show_update_details (GsUpdateDialog *dialog, GsApp *app)
 	unset_focus (GTK_WIDGET (dialog));
 
 	/* set update description */
-	if (kind == GS_APP_KIND_OS_UPDATE) {
+	if (kind == AS_APP_KIND_OS_UPDATE) {
 		GPtrArray *related;
 		guint i;
 		GtkWidget *row, *label;

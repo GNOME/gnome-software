@@ -143,7 +143,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
 		gs_app_set_update_version (app, split[PK_PACKAGE_ID_VERSION]);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-		gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
+		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 		gs_plugin_add_app (list, app);
 	}
 	return TRUE;

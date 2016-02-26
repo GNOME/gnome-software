@@ -287,8 +287,8 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 			    g_str_has_suffix (fns[j], ".desktop")) {
 				g_autofree gchar *basename = g_path_get_basename (fns[j]);
 				gs_app_set_id (app, basename);
-				gs_app_set_kind (app, GS_APP_KIND_NORMAL);
-				gs_app_set_id_kind (app, AS_APP_KIND_DESKTOP);
+				gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+				gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 				break;
 			}
 		}
@@ -366,7 +366,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	split = pk_package_id_split (package_id);
 	basename = g_path_get_basename (filename);
 	gs_app_set_management_plugin (app, "PackageKit");
-	gs_app_set_kind (app, GS_APP_KIND_PACKAGE);
+	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	if (pk_details_get_summary (item))
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,

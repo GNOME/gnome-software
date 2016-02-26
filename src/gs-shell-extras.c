@@ -421,7 +421,8 @@ create_missing_app (SearchData *search_data)
 	}
 	gs_app_set_summary_missing (app, g_string_free (summary_missing, FALSE));
 
-	gs_app_set_kind (app, GS_APP_KIND_MISSING);
+	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 	gs_app_set_size (app, GS_APP_SIZE_MISSING);
 	gs_app_set_url (app, AS_URL_KIND_MISSING, search_data->url_not_found);
 
@@ -1043,7 +1044,7 @@ row_activated_cb (GtkListBox *list_box,
 
 	app = gs_app_row_get_app (GS_APP_ROW (row));
 
-	if (gs_app_get_kind (app) == GS_APP_KIND_MISSING &&
+	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE &&
 	    gs_app_get_url (app, AS_URL_KIND_MISSING) != NULL) {
 		gs_app_show_url (app, AS_URL_KIND_MISSING);
 	} else {
@@ -1059,8 +1060,8 @@ get_app_sort_key (GsApp *app)
 	key = g_string_sized_new (64);
 
 	/* sort missing applications as last */
-	switch (gs_app_get_kind (app)) {
-	case GS_APP_KIND_MISSING:
+	switch (gs_app_get_state (app)) {
+	case AS_APP_STATE_UNAVAILABLE:
 		g_string_append (key, "9:");
 		break;
 	default:

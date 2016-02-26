@@ -684,7 +684,7 @@ gs_plugin_refine (GsPlugin *plugin,
 				continue;
 			if (gs_app_get_id_no_prefix (app) == NULL)
 				continue;
-			if (gs_app_get_id_kind (app) == AS_APP_KIND_ADDON)
+			if (gs_app_get_kind (app) == AS_APP_KIND_ADDON)
 				continue;
 			if (!gs_plugin_refine_reviews (plugin, app,
 						       cancellable,
@@ -704,7 +704,7 @@ gs_plugin_refine (GsPlugin *plugin,
 				continue;
 			if (gs_app_get_id_no_prefix (app) == NULL)
 				continue;
-			if (gs_app_get_id_kind (app) == AS_APP_KIND_ADDON)
+			if (gs_app_get_kind (app) == AS_APP_KIND_ADDON)
 				continue;
 			if (!gs_plugin_refine_ratings (plugin, app,
 						       cancellable,

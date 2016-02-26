@@ -58,7 +58,7 @@ gs_app_addon_row_get_summary (GsAppAddonRow *row)
 	g_autofree gchar *escaped = NULL;
 
 	/* try all these things in order */
-	if (gs_app_get_kind (row->app) == GS_APP_KIND_MISSING)
+	if (gs_app_get_state (row->app) == AS_APP_STATE_UNAVAILABLE)
 		tmp = gs_app_get_summary_missing (row->app);
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
 		tmp = gs_app_get_summary (row->app);

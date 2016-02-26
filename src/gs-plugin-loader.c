@@ -503,7 +503,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show unconverted unavailables */
-	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN &&
+	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN &&
 		gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
 		g_debug ("app invalid as unconverted unavailable %s",
 			 gs_plugin_loader_get_app_str (app));
@@ -518,14 +518,14 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	}
 
 	/* don't show sources */
-	if (gs_app_get_kind (app) == GS_APP_KIND_SOURCE) {
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
 		g_debug ("app invalid as source %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
 
 	/* don't show unknown kind */
-	if (gs_app_get_kind (app) == GS_APP_KIND_UNKNOWN) {
+	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN) {
 		g_debug ("app invalid as kind unknown %s",
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
@@ -533,10 +533,9 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 
 	/* don't show unconverted packages in the application view */
 	if (((state->flags & GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES) == 0) &&
-	    (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE ||
-	     gs_app_get_kind (app) == GS_APP_KIND_CORE)) {
+	    (gs_app_get_kind (app) == AS_APP_KIND_GENERIC)) {
 //		g_debug ("app invalid as only a %s: %s",
-//			 gs_app_kind_to_string (gs_app_get_kind (app)),
+//			 as_app_kind_to_string (gs_app_get_kind (app)),
 //			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
@@ -552,7 +551,7 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 			 gs_plugin_loader_get_app_str (app));
 		return FALSE;
 	}
-	if (gs_app_get_kind (app) == GS_APP_KIND_NORMAL &&
+	if (gs_app_get_kind (app) == AS_APP_KIND_DESKTOP &&
 	    gs_app_get_pixbuf (app) == NULL) {
 		g_debug ("app invalid as no pixbuf %s",
 			 gs_plugin_loader_get_app_str (app));
@@ -597,12 +596,12 @@ gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 }
 
 /**
- * gs_plugin_loader_app_is_non_system:
+ * gs_plugin_loader_app_is_non_compulsory:
  **/
 static gboolean
-gs_plugin_loader_app_is_non_system (GsApp *app, gpointer user_data)
+gs_plugin_loader_app_is_non_compulsory (GsApp *app, gpointer user_data)
 {
-	return gs_app_get_kind (app) != GS_APP_KIND_SYSTEM;
+	return !gs_app_get_compulsory (app);
 }
 
 /**
@@ -745,11 +744,9 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 static gboolean
 gs_plugin_loader_merge_into_os_update (GsApp *app)
 {
-	if (gs_app_get_kind (app) == GS_APP_KIND_PACKAGE)
+	if (gs_app_get_kind (app) == AS_APP_KIND_GENERIC)
 		return TRUE;
-	if (gs_app_get_kind (app) == GS_APP_KIND_CORE)
-		return TRUE;
-	if (gs_app_get_kind (app) == GS_APP_KIND_SOURCE)
+	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 		return TRUE;
 	return FALSE;
 }
@@ -780,7 +777,7 @@ gs_plugin_loader_add_os_update_item (GList *list)
 
 	/* create new meta object */
 	app_os = gs_app_new ("os-update.virtual");
-	gs_app_set_kind (app_os, GS_APP_KIND_OS_UPDATE);
+	gs_app_set_kind (app_os, AS_APP_KIND_OS_UPDATE);
 	gs_app_set_state (app_os, AS_APP_STATE_UPDATABLE);
 	gs_app_set_name (app_os,
 			 GS_APP_QUALITY_NORMAL,
@@ -862,19 +859,19 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
  *
  * This method calls all plugins that implement the gs_plugin_add_updates()
  * function. The plugins can either return #GsApp objects of kind
- * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
- * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
+ * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
  *
  * Once the list of updates is refined, some of the #GsApp's of kind
- * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
- * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
+ * or if they are core applications, set as compulsory.
  *
- * Any #GsApp's of kind %GS_APP_KIND_PACKAGE that remain after refining are
- * added to a new virtual #GsApp of kind %GS_APP_KIND_OS_UPDATE and all the
- * %GS_APP_KIND_PACKAGE objects are moved to related packages of this object.
+ * Any #GsApp's of kind %AS_APP_KIND_GENERIC that remain after refining are
+ * added to a new virtual #GsApp of kind %AS_APP_KIND_OS_UPDATE and all the
+ * %AS_APP_KIND_GENERIC objects are moved to related packages of this object.
  *
  * This means all of the #GsApp's returning from this function are of kind
- * %GS_APP_KIND_NORMAL, %GS_APP_KIND_SYSTEM or %GS_APP_KIND_OS_UPDATE.
+ * %AS_APP_KIND_DESKTOP or %AS_APP_KIND_OS_UPDATE.
  *
  * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
@@ -960,7 +957,7 @@ gs_plugin_loader_get_distro_upgrades_thread_cb (GTask *task,
  * gs_plugin_loader_get_distro_upgrades_async:
  *
  * This method calls all plugins that implement the gs_plugin_add_distro_upgrades()
- * function. The plugins can returns #GsApp objects of kind %GS_APP_KIND_DISTRO_UPGRADE.
+ * function. The plugins can returns #GsApp objects of kind %AS_APP_KIND_OS_UPGRADE.
  **/
 void
 gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader *plugin_loader,
@@ -1135,7 +1132,7 @@ gs_plugin_loader_get_sources_thread_cb (GTask *task,
  * gs_plugin_loader_get_sources_async:
  *
  * This method calls all plugins that implement the gs_plugin_add_sources()
- * function. The plugins return #GsApp objects of kind %GS_APP_KIND_SOURCE..
+ * function. The plugins return #GsApp objects of kind %AS_APP_KIND_SOURCE..
  *
  * The *applications* installed from each source can be obtained using
  * gs_app_get_related() if this information is available.
@@ -1227,18 +1224,18 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
  *
  * This method calls all plugins that implement the gs_plugin_add_installed()
  * function. The plugins can either return #GsApp objects of kind
- * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
- * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
+ * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
  *
  * Once the list of updates is refined, some of the #GsApp's of kind
- * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
- * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
+ * or if they are core applications, set as compulsory.
  *
- * Any #GsApp's of kind %GS_APP_KIND_PACKAGE or %GS_APP_KIND_SYSTEM that remain
+ * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
  * after refining are automatically removed.
  *
  * This means all of the #GsApp's returning from this function are of kind
- * %GS_APP_KIND_NORMAL.
+ * %AS_APP_KIND_DESKTOP.
  *
  * The #GsApps will all initially be in state %AS_APP_STATE_INSTALLED.
  **/
@@ -1433,18 +1430,18 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
  *
  * This method calls all plugins that implement the gs_plugin_add_featured()
  * function. The plugins can either return #GsApp objects of kind
- * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
- * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
+ * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
  *
  * Once the list of updates is refined, some of the #GsApp's of kind
- * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
- * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
+ * or if they are core applications, set as compulsory.
  *
- * Any #GsApp's of kind %GS_APP_KIND_PACKAGE that remain after refining are
+ * Any #GsApp's of kind %AS_APP_KIND_GENERIC that remain after refining are
  * automatically removed.
  *
  * This means all of the #GsApp's returning from this function are of kind
- * %GS_APP_KIND_NORMAL or %GS_APP_KIND_SYSTEM.
+ * %AS_APP_KIND_DESKTOP.
  *
  * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
@@ -1524,7 +1521,8 @@ gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 				"for how to get a codec that can play this format "
 				"can be found on the website."), search);
 	gs_app_set_summary_missing (app, tmp->str);
-	gs_app_set_kind (app, GS_APP_KIND_MISSING);
+	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
 	gs_app_set_size (app, GS_APP_SIZE_MISSING);
 	return TRUE;
 }
@@ -1540,12 +1538,11 @@ gs_plugin_loader_convert_unavailable (GList *list, const gchar *search)
 
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_kind (app) != GS_APP_KIND_UNKNOWN &&
-		    gs_app_get_kind (app) != GS_APP_KIND_MISSING)
+		if (gs_app_get_kind (app) != AS_APP_KIND_GENERIC)
 			continue;
 		if (gs_app_get_state (app) != AS_APP_STATE_UNAVAILABLE)
 			continue;
-		if (gs_app_get_id_kind (app) != AS_APP_KIND_CODEC)
+		if (gs_app_get_kind (app) != AS_APP_KIND_CODEC)
 			continue;
 		if (gs_app_get_url (app, AS_URL_KIND_MISSING) == NULL)
 			continue;
@@ -1657,18 +1654,18 @@ gs_plugin_loader_search_thread_cb (GTask *task,
  *
  * This method calls all plugins that implement the gs_plugin_add_search()
  * function. The plugins can either return #GsApp objects of kind
- * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
- * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
+ * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
  *
  * Once the list of updates is refined, some of the #GsApp's of kind
- * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
- * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
+ * or if they are core applications, set as compulsory.
  *
- * Any #GsApp's of kind %GS_APP_KIND_PACKAGE or %GS_APP_KIND_SYSTEM that remain
+ * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
  * after refining are automatically removed.
  *
  * This means all of the #GsApp's returning from this function are of kind
- * %GS_APP_KIND_NORMAL.
+ * %AS_APP_KIND_DESKTOP.
  *
  * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
@@ -1816,18 +1813,18 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
  *
  * This method calls all plugins that implement the gs_plugin_add_search_files()
  * function. The plugins can either return #GsApp objects of kind
- * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
- * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
+ * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
  *
  * Once the list of updates is refined, some of the #GsApp's of kind
- * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
- * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
+ * or if they are core applications, set as compulsory.
  *
- * Any #GsApp's of kind %GS_APP_KIND_PACKAGE or %GS_APP_KIND_SYSTEM that remain
+ * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
  * after refining are automatically removed.
  *
  * This means all of the #GsApp's returning from this function are of kind
- * %GS_APP_KIND_NORMAL.
+ * %AS_APP_KIND_DESKTOP.
  *
  * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
@@ -1975,18 +1972,18 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
  *
  * This method calls all plugins that implement the gs_plugin_add_search_what_provides()
  * function. The plugins can either return #GsApp objects of kind
- * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
- * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
+ * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
  *
  * Once the list of updates is refined, some of the #GsApp's of kind
- * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
- * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
+ * or if they are core applications, set as compulsory.
  *
- * Any #GsApp's of kind %GS_APP_KIND_PACKAGE or %GS_APP_KIND_SYSTEM that remain
+ * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
  * after refining are automatically removed.
  *
  * This means all of the #GsApp's returning from this function are of kind
- * %GS_APP_KIND_NORMAL.
+ * %AS_APP_KIND_DESKTOP.
  *
  * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
@@ -2237,7 +2234,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
-	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_system, NULL);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_non_compulsory, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
@@ -2261,18 +2258,18 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
  *
  * This method calls all plugins that implement the gs_plugin_add_category_apps()
  * function. The plugins can either return #GsApp objects of kind
- * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
- * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
+ * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
  *
  * Once the list of updates is refined, some of the #GsApp's of kind
- * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
- * or if they are core applications, promoted again to a kind of %GS_APP_KIND_SYSTEM.
+ * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
+ * or if they are core applications, set as compulsory.
  *
- * Any #GsApp's of kind %GS_APP_KIND_PACKAGE or %GS_APP_KIND_SYSTEM that remain
+ * Any #GsApp's of kind %AS_APP_KIND_GENERIC or %AS_APP_KIND_UNKNOWN that remain
  * after refining are automatically removed.
  *
  * This means all of the #GsApp's returning from this function are of kind
- * %GS_APP_KIND_NORMAL.
+ * %AS_APP_KIND_DESKTOP.
  *
  * The #GsApps may be in state %AS_APP_STATE_INSTALLED or %AS_APP_STATE_AVAILABLE
  * and the UI may want to filter the two classes of applications differently.
@@ -3829,11 +3826,11 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
  *
  * This method calls all plugins that implement the gs_plugin_add_filename_to_app()
  * function. The plugins can either return #GsApp objects of kind
- * %GS_APP_KIND_NORMAL for bonafide applications, or #GsApp's of kind
- * %GS_APP_KIND_PACKAGE for packages that may or may not be applications.
+ * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
+ * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
  *
  * Once the list of updates is refined, some of the #GsApp's of kind
- * %GS_APP_KIND_PACKAGE will have been promoted to a kind of %GS_APP_KIND_NORMAL,
+ * %AS_APP_KIND_GENERIC will have been promoted to a kind of %AS_APP_KIND_DESKTOP,
  * or if they are core applications.
  **/
 void

@@ -254,7 +254,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 
 		/* create */
 		app = gs_app_new (app_id);
-		gs_app_set_kind (app, GS_APP_KIND_DISTRO_UPGRADE);
+		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, distro_info->name);
 		gs_app_set_version (app, app_version);

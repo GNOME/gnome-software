@@ -416,13 +416,13 @@ gs_plugin_loader_func (void)
 	g_assert_cmpstr (gs_app_get_id (app), ==, "os-update:gnome-boxes-libs;0.0.1;i386;updates-testing,libvirt-glib-devel;0.0.1;noarch;fedora");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Updates");
 //	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements for all users\nDo not segfault when using newer versons of libvirt.\nFix several memory leaks.");
-	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_OS_UPDATE);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPDATE);
 
 	app = g_list_nth_data (list, 1);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-boxes");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Boxes");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Do not segfault when using newer versons of libvirt.");
-	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_NORMAL);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 	gs_plugin_list_free (list);
 
 	/* test packagekit */
@@ -449,7 +449,8 @@ gs_plugin_loader_func (void)
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Screenshot");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Save images of your screen or individual windows");
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
-	g_assert_cmpint (gs_app_get_kind (app), ==, GS_APP_KIND_SYSTEM);
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert (gs_app_get_compulsory (app));
 	g_assert (gs_app_get_pixbuf (app) != NULL);
 	gs_plugin_list_free (list);
 
