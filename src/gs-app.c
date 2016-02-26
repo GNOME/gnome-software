@@ -362,6 +362,8 @@ gs_app_get_id_no_prefix (GsApp *app)
 {
 	gchar *tmp;
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	if (app->id == NULL)
+		return NULL;
 	tmp = g_strrstr (app->id, ":");
 	if (tmp != NULL)
 		return tmp + 1;
