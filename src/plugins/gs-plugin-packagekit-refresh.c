@@ -283,6 +283,10 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 		item = g_ptr_array_index (array, i);
 		fns = pk_files_get_files (item);
 		for (j = 0; fns[j] != NULL; j++) {
+			if (g_str_has_prefix (fns[j], "/etc/yum.repos.d/") &&
+			    g_str_has_suffix (fns[j], ".repo")) {
+				gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
+			}
 			if (g_str_has_prefix (fns[j], "/usr/share/applications/") &&
 			    g_str_has_suffix (fns[j], ".desktop")) {
 				g_autofree gchar *basename = g_path_get_basename (fns[j]);
