@@ -103,7 +103,10 @@ libgs_plugin_self_test_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_self_test_la_LDFLAGS = -module -avoid-version
 libgs_plugin_self_test_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
-libgs_plugin_appstream_la_SOURCES = gs-plugin-appstream.c
+libgs_plugin_appstream_la_SOURCES =			\
+	gs-appstream.c					\
+	gs-appstream.h					\
+	gs-plugin-appstream.c
 libgs_plugin_appstream_la_LIBADD = $(GS_PLUGIN_LIBS) $(APPSTREAM_LIBS)
 libgs_plugin_appstream_la_LDFLAGS = -module -avoid-version
 libgs_plugin_appstream_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
