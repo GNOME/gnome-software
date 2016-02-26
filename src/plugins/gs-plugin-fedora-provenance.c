@@ -101,7 +101,7 @@ gs_plugin_fedora_provenance_refine_app (GsApp *app)
 	/* simple case */
 	origin = gs_app_get_origin (app);
 	if (origin != NULL && g_strv_contains (valid, origin)) {
-		gs_app_set_provenance (app, TRUE);
+		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 		return;
 	}
 
@@ -116,7 +116,7 @@ gs_plugin_fedora_provenance_refine_app (GsApp *app)
 		origin += 10;
 	for (i = 0; valid[i] != NULL; i++) {
 		if (g_strcmp0 (origin + 1, valid[i]) == 0) {
-			gs_app_set_provenance (app, TRUE);
+			gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 			break;
 		}
 	}
@@ -142,7 +142,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	/* refine apps */
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_provenance (app))
+		if (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE))
 			continue;
 		gs_plugin_fedora_provenance_refine_app (app);
 	}

@@ -342,7 +342,7 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 	}
 
 	/* sort normal, compulsory */
-	if (!gs_app_get_compulsory (app))
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY))
 		g_string_append (key, "1:");
 	else
 		g_string_append (key, "2:");
@@ -412,8 +412,10 @@ gs_shell_installed_list_header_func (GtkListBoxRow *row,
 	if (before == NULL)
 		return;
 
-	if (!gs_app_get_compulsory (gs_app_row_get_app (GS_APP_ROW (before))) &&
-	    gs_app_get_compulsory (gs_app_row_get_app (GS_APP_ROW (row)))) {
+	if (!gs_app_has_quirk (gs_app_row_get_app (GS_APP_ROW (before)),
+			       AS_APP_QUIRK_COMPULSORY) &&
+	    gs_app_has_quirk (gs_app_row_get_app (GS_APP_ROW (row)),
+			      AS_APP_QUIRK_COMPULSORY)) {
 		/* TRANSLATORS: This is the header dividing the normal
 		 * applications and the system ones */
 		header = gtk_label_new (_("System Applications"));

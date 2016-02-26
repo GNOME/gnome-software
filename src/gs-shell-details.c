@@ -250,7 +250,7 @@ gs_shell_details_switch_to (GsShellDetails *self)
 		gtk_widget_set_visible (self->button_details_launch, FALSE);
 
 	/* remove button */
-	if (gs_app_get_compulsory (self->app)) {
+	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_COMPULSORY)) {
 		gtk_widget_set_visible (self->button_remove, FALSE);
 	} else {
 		switch (state) {
@@ -305,7 +305,7 @@ gs_shell_details_switch_to (GsShellDetails *self)
 	}
 
 	/* spinner */
-	if (gs_app_get_compulsory (self->app)) {
+	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_COMPULSORY)) {
 		gtk_widget_set_visible (self->spinner_install_remove, FALSE);
 		gtk_spinner_stop (GTK_SPINNER (self->spinner_install_remove));
 	} else {
@@ -800,7 +800,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	} else {
 		gtk_widget_set_visible (self->label_details_tag_webapp, FALSE);
 		if (gs_app_get_licence_is_free (self->app) &&
-		    !gs_app_get_provenance (self->app)) {
+		    !gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
 			/* free and 3rd party */
 			gtk_widget_set_visible (self->label_details_tag_nonfree, FALSE);
 			gtk_widget_set_visible (self->label_details_tag_3rdparty, TRUE);
@@ -809,7 +809,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 					     /* TRANSLATORS: this is the warning box */
 					     _("This software comes from a 3rd party."));
 		} else if (!gs_app_get_licence_is_free (self->app) &&
-			   !gs_app_get_provenance (self->app)) {
+			   !gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
 			/* nonfree and 3rd party */
 			gtk_widget_set_visible (self->label_details_tag_nonfree, TRUE);
 			gtk_widget_set_visible (self->label_details_tag_3rdparty, TRUE);
@@ -818,7 +818,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 					     /* TRANSLATORS: this is the warning box */
 					     _("This software comes from a 3rd party and may contain non-free components."));
 		} else if (!gs_app_get_licence_is_free (self->app) &&
-			   gs_app_get_provenance (self->app)) {
+			   gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
 			/* nonfree and distro */
 			gtk_widget_set_visible (self->label_details_tag_nonfree, TRUE);
 			gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
@@ -862,7 +862,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 
 	/* are we trying to replace something in the baseos */
 	gtk_widget_set_visible (self->infobar_details_package_baseos,
-				gs_app_get_compulsory (self->app) &&
+				gs_app_has_quirk (self->app, AS_APP_QUIRK_COMPULSORY) &&
 				gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 
 	/* is this a repo-release */
@@ -876,10 +876,12 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	}
 
 	/* installing a app with a repo file */
-	tmp = gs_app_get_metadata_item (self->app, "PackageKit::has-source");
 	switch (gs_app_get_kind (self->app)) {
 	case AS_APP_KIND_DESKTOP:
-		gtk_widget_set_visible (self->infobar_details_app_repo, tmp != NULL && gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
+		gtk_widget_set_visible (self->infobar_details_app_repo,
+					gs_app_has_quirk (self->app,
+							  AS_APP_QUIRK_HAS_SOURCE) &&
+					gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 		break;
 	default:
 		gtk_widget_set_visible (self->infobar_details_app_repo, FALSE);
@@ -893,7 +895,9 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 			gtk_widget_set_visible (self->infobar_details_app_norepo, FALSE);
 		} else {
 			gtk_widget_set_visible (self->infobar_details_app_norepo,
-						tmp == NULL && gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
+						!gs_app_has_quirk (self->app,
+							  AS_APP_QUIRK_HAS_SOURCE) &&
+						gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL);
 		}
 		break;
 	default:

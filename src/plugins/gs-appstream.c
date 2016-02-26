@@ -483,7 +483,7 @@ gs_appstream_refine_app (GsPlugin *plugin, GsApp *app, AsApp *item, GError **err
 	/* this is a core application for the desktop and cannot be removed */
 	if (_as_app_has_compulsory_for_desktop (item, "GNOME") &&
 	    gs_app_get_kind (app) == AS_APP_KIND_DESKTOP)
-		gs_app_set_compulsory (app, TRUE);
+		gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
 
 	/* set id kind */
 	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN)

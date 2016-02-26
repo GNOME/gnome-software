@@ -99,8 +99,7 @@ struct _GsApp
 	guint64			 install_date;
 	guint64			 kudos;
 	gboolean		 to_be_installed;
-	gboolean		 provenance;
-	gboolean		 compulsory;
+	AsAppQuirk		 quirk;
 	gboolean		 licence_is_free;
 	GsApp			*runtime;
 };
@@ -148,7 +147,8 @@ gs_app_to_string (GsApp *app)
 	g_string_append_printf (str, "\tkind:\t%s\n",
 				as_app_kind_to_string (app->kind));
 	g_string_append_printf (str, "\tcompulsory:\t%s\n",
-				app->compulsory ? "True" : "False");
+				gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY)
+				? "True" : "False");
 	g_string_append_printf (str, "\tstate:\t%s\n",
 				as_app_state_to_string (app->state));
 	if (app->progress > 0)
@@ -2020,39 +2020,21 @@ gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
 }
 
 /**
- * gs_app_get_provenance:
- */
+ * gs_app_has_quirk:
+ **/
 gboolean
-gs_app_get_provenance (GsApp *app)
+gs_app_has_quirk (GsApp *app, AsAppQuirk quirk)
 {
-	return app->provenance;
+	return (app->quirk & quirk) > 0;
 }
 
 /**
- * gs_app_set_provenance:
- */
+ * gs_app_add_quirk:
+ **/
 void
-gs_app_set_provenance (GsApp *app, gboolean provenance)
+gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
 {
-	app->provenance = provenance;
-}
-
-/**
- * gs_app_get_compulsory:
- */
-gboolean
-gs_app_get_compulsory (GsApp *app)
-{
-	return app->compulsory;
-}
-
-/**
- * gs_app_set_compulsory:
- */
-void
-gs_app_set_compulsory (GsApp *app, gboolean compulsory)
-{
-	app->compulsory = compulsory;
+	app->quirk |= quirk;
 }
 
 /**

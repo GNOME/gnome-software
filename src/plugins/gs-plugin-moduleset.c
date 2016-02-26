@@ -332,7 +332,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		/* mark each one as system */
 		for (i = 0; system_apps[i] != NULL; i++) {
 			if (g_strcmp0 (system_apps[i], gs_app_get_id (app)) == 0) {
-				gs_app_set_compulsory (app, TRUE);
+				gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
 				break;
 			}
 		}
@@ -340,7 +340,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		/* mark each one as core */
 		for (i = 0; core_pkgs[i] != NULL; i++) {
 			if (g_strcmp0 (core_pkgs[i], gs_app_get_source_default (app)) == 0) {
-				gs_app_set_compulsory (app, TRUE);
+				gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
 				break;
 			}
 		}

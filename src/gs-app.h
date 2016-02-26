@@ -228,12 +228,10 @@ void		 gs_app_set_search_sort_key	(GsApp		*app,
 						 guint		 match_value);
 const gchar	*gs_app_get_search_sort_key	(GsApp		*app);
 
-gboolean	 gs_app_get_provenance		(GsApp		*app);
-void		 gs_app_set_provenance		(GsApp		*app,
-						 gboolean	 provenance);
-gboolean	 gs_app_get_compulsory		(GsApp		*app);
-void		 gs_app_set_compulsory		(GsApp		*app,
-						 gboolean	 compulsory);
+gboolean	 gs_app_has_quirk		(GsApp		*app,
+						 AsAppQuirk	 quirk);
+void		 gs_app_add_quirk		(GsApp		*app,
+						 AsAppQuirk	 quirk);
 
 G_END_DECLS
 

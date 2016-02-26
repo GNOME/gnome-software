@@ -450,7 +450,7 @@ gs_plugin_loader_func (void)
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Save images of your screen or individual windows");
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
-	g_assert (gs_app_get_compulsory (app));
+	g_assert (gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY));
 	g_assert (gs_app_get_pixbuf (app) != NULL);
 	gs_plugin_list_free (list);
 

@@ -601,7 +601,7 @@ gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 static gboolean
 gs_plugin_loader_app_is_non_compulsory (GsApp *app, gpointer user_data)
 {
-	return !gs_app_get_compulsory (app);
+	return !gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY);
 }
 
 /**
