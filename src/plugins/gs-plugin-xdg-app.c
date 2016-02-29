@@ -1547,7 +1547,9 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	}
 
 	/* load icon */
-	icon_data = xdg_app_bundle_ref_get_icon (xref_bundle, 64);
+	icon_data = xdg_app_bundle_ref_get_icon (xref_bundle, 64 * plugin->scale);
+	if (icon_data == NULL)
+		icon_data = xdg_app_bundle_ref_get_icon (xref_bundle, 64);
 	if (icon_data != NULL) {
 		g_autoptr(GInputStream) stream_icon = NULL;
 		g_autoptr(GdkPixbuf) pixbuf = NULL;
