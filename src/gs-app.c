@@ -82,6 +82,7 @@ struct _GsApp
 	gchar			*update_details;
 	AsUrgencyKind		 update_urgency;
 	gchar			*management_plugin;
+	guint			 match_value;
 	gint			 rating;
 	GArray			*review_ratings;
 	GPtrArray		*reviews; /* of GsReview */
@@ -201,6 +202,10 @@ gs_app_to_string (GsApp *app)
 		if (as_icon_get_filename (app->icon) != NULL)
 			g_string_append_printf (str, "\ticon-filename:\t%s\n",
 						as_icon_get_filename (app->icon));
+	}
+	if (app->match_value != 0) {
+		g_string_append_printf (str, "\tmatch-value:\t%05x\n",
+					app->match_value);
 	}
 	if (app->version != NULL)
 		g_string_append_printf (str, "\tversion:\t%s\n", app->version);
@@ -2077,6 +2082,8 @@ gs_app_subsume (GsApp *app, GsApp *other)
 		gs_app_set_name (app, other->name_quality, other->name);
 	if (other->summary != NULL)
 		gs_app_set_summary (app, other->summary_quality, other->summary);
+	if (other->match_value != 0)
+		gs_app_set_match_value (app, other->match_value);
 	if (other->description != NULL)
 		gs_app_set_description (app, other->description_quality, other->description);
 	if (other->update_details != NULL)
@@ -2121,27 +2128,23 @@ gs_app_subsume (GsApp *app, GsApp *other)
 }
 
 /**
- * gs_app_set_search_sort_key:
+ * gs_app_set_match_value:
  */
 void
-gs_app_set_search_sort_key (GsApp *app, guint match_value)
+gs_app_set_match_value (GsApp *app, guint match_value)
 {
-	gchar md_value[6];
-
 	g_return_if_fail (GS_IS_APP (app));
-
-	g_snprintf (md_value, sizeof(md_value), "%05x", match_value);
-	gs_app_set_metadata (app, "SearchMatch", md_value);
+	app->match_value = match_value;
 }
 
 /**
- * gs_app_get_search_sort_key:
+ * gs_app_get_match_value:
  */
-const gchar *
-gs_app_get_search_sort_key (GsApp *app)
+guint
+gs_app_get_match_value (GsApp *app)
 {
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return gs_app_get_metadata_item (app, "SearchMatch");
+	g_return_val_if_fail (GS_IS_APP (app), 0);
+	return app->match_value;
 }
 
 /**

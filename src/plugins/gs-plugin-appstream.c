@@ -474,7 +474,7 @@ gs_plugin_add_search_item (GsPlugin *plugin,
 	app = gs_app_new (as_app_get_id (item));
 	if (!gs_appstream_refine_app (plugin, app, item, error))
 		return FALSE;
-	gs_app_set_search_sort_key (app, match_value);
+	gs_app_set_match_value (app, match_value);
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }

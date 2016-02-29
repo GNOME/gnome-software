@@ -265,7 +265,7 @@ gs_shell_search_get_app_sort_key (GsApp *app)
 	g_string_append_printf (key, "%c:", desc != NULL ? '2' : '1');
 
 	/* sort by the search key */
-	g_string_append_printf (key, "%s:", gs_app_get_search_sort_key (app));
+	g_string_append_printf (key, "%05x:", gs_app_get_match_value (app));
 
 	/* sort by kudos */
 	g_string_append_printf (key, "%03i:", gs_app_get_kudos_percentage (app));

@@ -224,9 +224,9 @@ guint		 gs_app_get_kudos_percentage	(GsApp		*app);
 gboolean	 gs_app_get_to_be_installed	(GsApp		*app);
 void		 gs_app_set_to_be_installed	(GsApp		*app,
 						 gboolean	 to_be_installed);
-void		 gs_app_set_search_sort_key	(GsApp		*app,
+void		 gs_app_set_match_value		(GsApp		*app,
 						 guint		 match_value);
-const gchar	*gs_app_get_search_sort_key	(GsApp		*app);
+guint		 gs_app_get_match_value		(GsApp		*app);
 
 gboolean	 gs_app_has_quirk		(GsApp		*app,
 						 AsAppQuirk	 quirk);
