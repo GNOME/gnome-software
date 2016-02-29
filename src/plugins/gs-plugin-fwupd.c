@@ -292,12 +292,13 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		g_variant_unref (variant);
 	}
 
-	/* offline unsupported */
-	if ((flags & FU_DEVICE_FLAG_ALLOW_OFFLINE) == 0) {
+	/* update unsupported */
+	if ((flags & FU_DEVICE_FLAG_ALLOW_ONLINE) == 0 &&
+	    (flags & FU_DEVICE_FLAG_ALLOW_OFFLINE) == 0) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "%s [%s] cannot be updated offline",
+			     "%s [%s] cannot be updated",
 			     gs_app_get_name (app), gs_app_get_id (app));
 		return FALSE;
 	}
@@ -315,52 +316,59 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		g_warning ("fwupd: No update-version! for %s!", gs_app_get_id (app));
 		return TRUE;
 	}
-	if (update_hash == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "%s [%s] (%s) has no checksum, ignoring as unsafe",
-			     gs_app_get_name (app),
-			     gs_app_get_id (app),
-			     gs_app_get_update_version (app));
-		return FALSE;
-	}
-	if (update_uri == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "no location available for %s [%s]",
-			     gs_app_get_name (app), gs_app_get_id (app));
-		return FALSE;
-	}
 
-	/* does the firmware already exist in the cache? */
-	basename = g_path_get_basename (update_uri);
-	filename_cache = g_build_filename (plugin->priv->cachedir, basename, NULL);
-	if (!g_file_test (filename_cache, G_FILE_TEST_EXISTS)) {
-		gs_plugin_fwupd_add_required_location (plugin, update_uri);
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "%s does not yet exist, wait patiently",
-			     filename_cache);
-		return FALSE;
-	}
+	/* devices that are locked need unlocking */
+	if (flags & FU_DEVICE_FLAG_LOCKED) {
+		gs_app_set_metadata (app, "fwupd::IsLocked", "");
+	} else {
+		if (update_hash == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "%s [%s] (%s) has no checksum, ignoring as unsafe",
+				     gs_app_get_name (app),
+				     gs_app_get_id (app),
+				     gs_app_get_update_version (app));
+			return FALSE;
+		}
+		if (update_uri == NULL) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "no location available for %s [%s]",
+				     gs_app_get_name (app), gs_app_get_id (app));
+			return FALSE;
+		}
 
-	/* does the checksum match */
-	checksum = gs_plugin_fwupd_get_file_checksum (filename_cache,
-						      G_CHECKSUM_SHA1,
-						      error);
-	if (checksum == NULL)
-		return FALSE;
-	if (g_strcmp0 (update_hash, checksum) != 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "%s does not match checksum, expected %s, got %s",
-			     filename_cache, update_hash, checksum);
-		g_unlink (filename_cache);
-		return FALSE;
+		/* does the firmware already exist in the cache? */
+		basename = g_path_get_basename (update_uri);
+		filename_cache = g_build_filename (plugin->priv->cachedir,
+						   basename, NULL);
+		if (!g_file_test (filename_cache, G_FILE_TEST_EXISTS)) {
+			gs_plugin_fwupd_add_required_location (plugin, update_uri);
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "%s does not yet exist, wait patiently",
+				     filename_cache);
+			return FALSE;
+		}
+
+		/* does the checksum match */
+		checksum = gs_plugin_fwupd_get_file_checksum (filename_cache,
+							      G_CHECKSUM_SHA1,
+							      error);
+		if (checksum == NULL)
+			return FALSE;
+		if (g_strcmp0 (update_hash, checksum) != 0) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "%s does not match checksum, expected %s got %s",
+				     filename_cache, update_hash, checksum);
+			g_unlink (filename_cache);
+			return FALSE;
+		}
 	}
 
 	/* can be done live */
@@ -953,6 +961,51 @@ gs_plugin_app_install (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_fwupd_unlock:
+ */
+static gboolean
+gs_plugin_fwupd_unlock (GsPlugin *plugin,
+			const gchar *device_id,
+			GCancellable *cancellable,
+			GError **error)
+{
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(GVariant) val = NULL;
+
+	/* set up plugin */
+	if (plugin->priv->proxy == NULL) {
+		if (!gs_plugin_startup (plugin, cancellable, error))
+			return FALSE;
+	}
+	if (plugin->priv->proxy == NULL)
+		return TRUE;
+
+	/* unlock device */
+	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
+				      "Unlock",
+				      g_variant_new ("(s)", device_id),
+				      G_DBUS_CALL_FLAGS_NONE,
+				      -1,
+				      NULL,
+				      &error_local);
+	if (val == NULL) {
+		if (g_error_matches (error_local,
+				     G_DBUS_ERROR,
+				     G_DBUS_ERROR_SERVICE_UNKNOWN)) {
+			/* the fwupd service might be unavailable */
+			g_debug ("fwupd: could not unlock, service is unknown");
+			return TRUE;
+		}
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     error_local->message);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+/**
  * gs_plugin_app_update:
  *
  * This is only called when updating device firmware live.
@@ -963,6 +1016,23 @@ gs_plugin_app_update (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	/* locked devices need unlocking, rather than installing */
+	if (gs_app_get_metadata_item (app, "fwupd::IsLocked") != NULL) {
+		const gchar *device_id;
+		device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
+		if (device_id == NULL) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED,
+					     "not enough data for fwupd unlock");
+			return FALSE;
+		}
+		return gs_plugin_fwupd_unlock (plugin,
+					       device_id,
+					       cancellable,
+					       error);
+	}
+
 	return gs_plugin_app_install (plugin, app, cancellable, error);
 }
 
