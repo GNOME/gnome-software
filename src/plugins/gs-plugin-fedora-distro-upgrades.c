@@ -30,10 +30,6 @@
 
 #define FEDORA_PKGDB_COLLECTIONS_API_URI "https://admin.fedoraproject.org/pkgdb/api/collections/"
 
-#ifndef JsonParser_autoptr
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(JsonParser, g_object_unref)
-#endif
-
 struct GsPluginPrivate {
 	GPtrArray	*distros;
 };

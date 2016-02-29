@@ -39,13 +39,6 @@
 #define XDG_APP_REVIEW_CACHE_AGE_MAX		237000 /* 1 week */
 #define XDG_APP_REVIEW_NUMBER_RESULTS_MAX	5
 
-#ifndef JsonParser_autoptr
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(JsonParser, g_object_unref)
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(JsonBuilder, g_object_unref)
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(JsonNode, json_node_free)
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(JsonGenerator, g_object_unref)
-#endif
-
 struct GsPluginPrivate {
 	GSettings		*settings;
 	gchar			*distro;
