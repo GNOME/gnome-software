@@ -503,6 +503,7 @@ parse_review (JsonNode *node)
 	GsReview *review;
 	JsonObject *object;
 	gint64 star_rating;
+	g_autofree gchar *id_string = NULL;
 
 	if (!JSON_NODE_HOLDS_OBJECT (node))
 		return NULL;
@@ -518,7 +519,8 @@ parse_review (JsonNode *node)
 	if (star_rating > 0)
 		gs_review_set_rating (review, star_rating * 20);
 	gs_review_set_date (review, parse_date_time (json_object_get_string_member (object, "date_created")));
-	gs_review_add_metadata (review, "ubuntu-id", json_object_get_string_member (object, "id"));
+	id_string = g_strdup_printf ("%ld", json_object_get_int_member (object, "id"));
+	gs_review_add_metadata (review, "ubuntu-id", id_string);
 
 	return review;
 }
