@@ -220,6 +220,26 @@ gs_plugin_appstream_startup (GsPlugin *plugin, GError **error)
 		}
 	}
 
+	/* fix up these */
+	for (i = 0; i < items->len; i++) {
+		app = g_ptr_array_index (items, i);
+		if (as_app_get_kind (app) == AS_APP_KIND_GENERIC &&
+		    g_str_has_prefix (as_app_get_id (app),
+				      "org.fedoraproject.LangPack-")) {
+			g_autoptr(AsIcon) icon = NULL;
+
+			/* add icon */
+			icon = as_icon_new ();
+			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+			as_icon_set_name (icon, "accessories-dictionary-symbolic");
+			as_app_add_icon (app, icon);
+
+			/* add categories */
+			as_app_add_category (app, "Addons");
+			as_app_add_category (app, "Localization");
+		}
+	}
+
 	/* rely on the store keeping itself updated */
 	plugin->priv->done_init = TRUE;
 	return TRUE;
