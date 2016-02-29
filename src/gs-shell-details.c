@@ -839,10 +839,6 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	    gs_app_get_rating (self->app) < 0)
 		gtk_widget_set_visible (self->star, FALSE);
 
-	/* only mark the stars as sensitive if the application is installed */
-	gtk_widget_set_sensitive (self->star,
-				  gs_app_get_state (self->app) == AS_APP_STATE_INSTALLED);
-
 	/* make history button insensitive if there is none */
 	history = gs_app_get_history (self->app);
 	switch (gs_app_get_kind (self->app)) {
