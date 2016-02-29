@@ -30,6 +30,30 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.19.91" date="2016-02-29">
+      <description>
+        <p>
+          This is an unstable release in the 3.19 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add an 'All' subcategory in the category shell</li>
+          <li>Add ratings and review functionality for Ubuntu</li>
+          <li>Install the xdg-app runtime as required automatically</li>
+          <li>Show a confirmation dialog before reporting a review</li>
+          <li>Show a guide label for the different star values</li>
+          <li>Support installing local xdg-app bundles</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Correctly identify local packages with sources</li>
+          <li>Do not add multiple search results for the same app</li>
+          <li>Do not show xdg-app runtimes in the installed panel</li>
+          <li>Escape markup before showing modal dialogs</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release version="3.19.90" date="2016-02-15">
       <description>
         <p>
