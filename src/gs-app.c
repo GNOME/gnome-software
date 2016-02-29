@@ -585,29 +585,18 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
 	/* check the state change is allowed */
 	switch (app->kind) {
 	case AS_APP_KIND_UNKNOWN:
-		/* unknown can go into any state */
+	case AS_APP_KIND_GENERIC:
+		/* all others derive from generic */
 		state_change_ok = TRUE;
 		break;
-	case AS_APP_KIND_GENERIC:
-		/* package can become either normal or a system application */
-		if (kind == AS_APP_KIND_DESKTOP ||
-		    kind == AS_APP_KIND_SOURCE ||
-		    kind == AS_APP_KIND_UNKNOWN)
-			state_change_ok = TRUE;
-		break;
 	case AS_APP_KIND_DESKTOP:
-		/* normal can only be promoted to system */
+		/* desktop has to be reset to override */
 		if (kind == AS_APP_KIND_UNKNOWN)
 			state_change_ok = TRUE;
 		break;
-	case AS_APP_KIND_OS_UPDATE:
-	case AS_APP_KIND_SOURCE:
+	default:
 		/* this can never change state */
 		break;
-	default:
-		g_warning ("kind %s unhandled",
-			   as_app_kind_to_string (app->kind));
-		g_assert_not_reached ();
 	}
 
 	/* this state change was unexpected */
