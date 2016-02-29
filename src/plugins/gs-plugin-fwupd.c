@@ -216,6 +216,16 @@ gs_plugin_fwupd_set_app_from_kv (GsApp *app, const gchar *key, GVariant *val)
 		gs_app_set_metadata (app, "GUID", g_variant_get_string (val, NULL));
 		return;
 	}
+	if (g_strcmp0 (key, "Name") == 0) {
+		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
+				 g_variant_get_string (val, NULL));
+		return;
+	}
+	if (g_strcmp0 (key, "Summary") == 0) {
+		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
+				    g_variant_get_string (val, NULL));
+		return;
+	}
 	if (g_strcmp0 (key, "Version") == 0) {
 		gs_app_set_version (app, g_variant_get_string (val, NULL));
 		return;
