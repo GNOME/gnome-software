@@ -399,7 +399,6 @@ gs_plugin_xdg_app_create_installed (GsPlugin *plugin,
 	/* create new object */
 	id = gs_plugin_xdg_app_build_id (XDG_APP_REF (xref));
 	app = gs_app_new (id);
-	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_plugin_xdg_app_set_metadata_installed (app, xref);
 
 	switch (xdg_app_ref_get_kind (XDG_APP_REF(xref))) {
