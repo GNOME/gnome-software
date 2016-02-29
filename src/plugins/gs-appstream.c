@@ -359,7 +359,10 @@ gs_refine_item_management_plugin (GsApp *app, AsApp *item)
  * gs_appstream_refine_app:
  */
 gboolean
-gs_appstream_refine_app (GsPlugin *plugin, GsApp *app, AsApp *item, GError **error)
+gs_appstream_refine_app (GsPlugin *plugin,
+			 GsApp *app,
+			 AsApp *item,
+			 GError **error)
 {
 	AsRelease *rel;
 	GHashTable *urls;
@@ -368,14 +371,10 @@ gs_appstream_refine_app (GsPlugin *plugin, GsApp *app, AsApp *item, GError **err
 	const gchar *tmp;
 	guint i;
 
-	/* is an app */
+	/* set the kind to be more precise */
 	if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN ||
 	    gs_app_get_kind (app) == AS_APP_KIND_GENERIC) {
-		if (as_app_get_kind (item) == AS_APP_KIND_SOURCE) {
-			gs_app_set_kind (app, AS_APP_KIND_SOURCE);
-		} else {
-			gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-		}
+		gs_app_set_kind (app, as_app_get_kind (item));
 	}
 
 	/* is installed already */

@@ -447,7 +447,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	app = gs_app_new (NULL);
 	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	g_variant_get (val, "(a{sv})", &iter);
 	while (g_variant_iter_next (iter, "{&sv}", &key, &variant)) {
 		gs_plugin_fwupd_set_app_from_kv (app, key, variant);
