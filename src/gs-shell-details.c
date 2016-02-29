@@ -101,6 +101,7 @@ struct _GsShellDetails
 	GtkWidget		*spinner_details;
 	GtkWidget		*spinner_install_remove;
 	GtkWidget		*stack_details;
+	GtkWidget		*grid_details_kudo;
 	GtkWidget		*image_details_kudo_docs;
 	GtkWidget		*image_details_kudo_integration;
 	GtkWidget		*image_details_kudo_translated;
@@ -790,6 +791,16 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 			gtk_widget_set_visible (self->label_details_tag_3rdparty, FALSE);
 			gtk_widget_set_visible (self->label_details_info_text, FALSE);
 		}
+	}
+
+	/* hide the kudo details for non-desktop software */
+	switch (gs_app_get_kind (self->app)) {
+	case AS_APP_KIND_DESKTOP:
+		gtk_widget_set_visible (self->grid_details_kudo, TRUE);
+		break;
+	default:
+		gtk_widget_set_visible (self->grid_details_kudo, FALSE);
+		break;
 	}
 
 	/* make history button insensitive if there is none */
@@ -1560,6 +1571,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_details);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, spinner_install_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, stack_details);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, grid_details_kudo);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_docs);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_integration);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, image_details_kudo_translated);
