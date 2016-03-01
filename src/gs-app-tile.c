@@ -128,6 +128,7 @@ void
 gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 {
 	const gchar *summary;
+	const GdkPixbuf *pixbuf;
 
 	g_return_if_fail (GS_IS_APP_TILE (tile));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
@@ -156,7 +157,9 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 			  G_CALLBACK (app_state_changed), tile);
 	app_state_changed (tile->app, NULL, tile);
 
-	gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), gs_app_get_pixbuf (app));
+	pixbuf = gs_app_get_pixbuf (app);
+	if (pixbuf != NULL)
+		gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), pixbuf);
 	gtk_label_set_label (GTK_LABEL (tile->name), gs_app_get_name (app));
 	summary = gs_app_get_summary (app);
 	gtk_label_set_label (GTK_LABEL (tile->summary), summary);
