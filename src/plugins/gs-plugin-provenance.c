@@ -106,8 +106,10 @@ gs_plugin_provenance_refine_app (GsPlugin *plugin, GsApp *app)
 
 	/* nothing to search */
 	sources = (const gchar * const *) plugin->priv->sources;
-	if (sources == NULL || sources[0] == NULL)
+	if (sources == NULL || sources[0] == NULL) {
+		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 		return;
+	}
 
 	/* simple case */
 	origin = gs_app_get_origin (app);
