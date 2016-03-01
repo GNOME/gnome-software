@@ -879,7 +879,7 @@ gs_app_get_pixbuf (GsApp *app)
 
 	} else if (app->pixbuf == NULL && gs_app_get_kind (app) == AS_APP_KIND_GENERIC) {
 		app->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
-		                                              "application-x-addon", 64,
+		                                              "application-x-addon-symbolic", 64,
 		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
 		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
 		                                              NULL);

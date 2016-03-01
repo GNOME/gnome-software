@@ -195,6 +195,21 @@
                     <property name="position">2</property>
                   </packing>
                 </child>
+                <child>
+                  <object class="GtkLabel" id="label_tag_extension">
+                    <property name="wrap">True</property>
+                    <property name="can_focus">False</property>
+                    <property name="label" translatable="yes" comments="This is shown in the search result row as a tag">shell extension</property>
+                    <style>
+                      <class name="app-row-tag"/>
+                    </style>
+                  </object>
+                  <packing>
+                    <property name="expand">False</property>
+                    <property name="fill">True</property>
+                    <property name="position">3</property>
+                  </packing>
+                </child>
               </object>
               <packing>
                 <property name="expand">False</property>

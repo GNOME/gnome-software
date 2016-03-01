@@ -91,6 +91,7 @@ struct _GsShellDetails
 	GtkWidget		*label_details_tag_nonfree;
 	GtkWidget		*label_details_tag_3rdparty;
 	GtkWidget		*label_details_tag_webapp;
+	GtkWidget		*label_details_tag_extension;
 	GtkWidget		*label_details_info_text;
 	GtkWidget		*list_box_addons;
 	GtkWidget		*box_reviews;
@@ -792,6 +793,8 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 			gtk_widget_set_visible (self->label_details_info_text, FALSE);
 		}
 	}
+	gtk_widget_set_visible (self->label_details_tag_extension,
+				gs_app_get_kind (self->app) == AS_APP_KIND_SHELL_EXTENSION);
 
 	/* hide the kudo details for non-desktop software */
 	switch (gs_app_get_kind (self->app)) {
@@ -1561,6 +1564,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_nonfree);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_3rdparty);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_webapp);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_tag_extension);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_info_text);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, list_box_addons);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_reviews);

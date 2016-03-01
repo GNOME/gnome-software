@@ -51,6 +51,7 @@ typedef struct
 	GtkWidget	*label_tag_warning;
 	GtkWidget	*label_tag_webapp;
 	GtkWidget	*label_tag_nonfree;
+	GtkWidget	*label_tag_extension;
 	gboolean	 colorful;
 	gboolean	 show_codec;
 	gboolean	 show_update;
@@ -166,20 +167,30 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
 		gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
 		gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
+		gtk_widget_set_visible (priv->label_tag_extension, FALSE);
 	} else {
 		switch (gs_app_get_kind (priv->app)) {
 		case AS_APP_KIND_UNKNOWN:
 			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
 			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
 			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
+			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
 			break;
 		case AS_APP_KIND_WEB_APP:
 			gtk_widget_set_visible (priv->label_tag_webapp, TRUE);
 			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
 			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
+			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
+			break;
+		case AS_APP_KIND_SHELL_EXTENSION:
+			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
+			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
+			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
+			gtk_widget_set_visible (priv->label_tag_extension, TRUE);
 			break;
 		default:
 			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
+			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
 			gtk_widget_set_visible (priv->label_tag_nonfree,
 						!gs_app_get_licence_is_free (priv->app));
 			gtk_widget_set_visible (priv->label_tag_foreign,
@@ -539,6 +550,7 @@ gs_app_row_class_init (GsAppRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_foreign);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_webapp);
 	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_nonfree);
+	gtk_widget_class_bind_template_child_private (widget_class, GsAppRow, label_tag_extension);
 }
 
 static void

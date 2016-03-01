@@ -115,6 +115,7 @@ typedef enum {
 } GsPluginRefineFlags;
 
 typedef enum {
+	GS_PLUGIN_REFRESH_FLAGS_NONE			= 0,
 	GS_PLUGIN_REFRESH_FLAGS_UPDATES			= 1 << 0,
 	GS_PLUGIN_REFRESH_FLAGS_LAST
 } GsPluginRefreshFlags;

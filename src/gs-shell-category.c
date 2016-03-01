@@ -39,6 +39,8 @@ struct _GsShellCategory
 	GsShell		*shell;
 	GsCategory	*category;
 
+	GtkWidget	*infobar_category_shell_extensions;
+	GtkWidget	*button_category_shell_extensions;
 	GtkWidget	*category_detail_box;
 	GtkWidget	*listbox_filter;
 	GtkWidget	*scrolledwindow_category;
@@ -131,6 +133,14 @@ gs_shell_category_populate_filtered (GsShellCategory *self, GsCategory *subcateg
 	g_debug ("search using %s/%s",
 	         gs_category_get_id (self->category),
 	         gs_category_get_id (subcategory));
+
+	/* show the shell extensions header */
+	if (g_strcmp0 (gs_category_get_id (self->category), "Addons") == 0 &&
+	    g_strcmp0 (gs_category_get_id (subcategory), "ShellExtensions") == 0) {
+		gtk_widget_set_visible (self->infobar_category_shell_extensions, TRUE);
+	} else {
+		gtk_widget_set_visible (self->infobar_category_shell_extensions, FALSE);
+	}
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
 	count = MIN(30, gs_category_get_size (subcategory));
@@ -269,6 +279,8 @@ gs_shell_category_class_init (GsShellCategoryClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-category.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, category_detail_box);
+	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, infobar_category_shell_extensions);
+	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, button_category_shell_extensions);
 	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, listbox_filter);
 	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, scrolledwindow_category);
 	gtk_widget_class_bind_template_child (widget_class, GsShellCategory, scrolledwindow_filter);
@@ -300,6 +312,18 @@ key_event (GtkWidget *listbox, GdkEvent *event, GsShellCategory *self)
 	return TRUE;
 }
 
+static void
+button_shell_extensions_cb (GtkButton *button, GsShellCategory *self)
+{
+	gboolean ret;
+	g_autoptr(GError) error = NULL;
+	const gchar *argv[] = { "gnome-shell-extension-prefs", NULL };
+	ret = g_spawn_async (NULL, (gchar **) argv, NULL, G_SPAWN_SEARCH_PATH,
+			     NULL, NULL, NULL, &error);
+	if (!ret)
+		g_warning ("failed to exec %s: %s", argv[0], error->message);
+}
+
 void
 gs_shell_category_setup (GsShellCategory *self,
 			 GsShell *shell,
@@ -320,6 +344,9 @@ gs_shell_category_setup (GsShellCategory *self,
 
 	g_signal_connect (self->listbox_filter, "key-press-event",
 			  G_CALLBACK (key_event), self);
+
+	g_signal_connect (self->button_category_shell_extensions, "clicked",
+			  G_CALLBACK (button_shell_extensions_cb), self);
 
 	/* chain up */
 	gs_page_setup (GS_PAGE (self),
