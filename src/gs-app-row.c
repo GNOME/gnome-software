@@ -231,7 +231,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 		gtk_widget_set_visible (priv->folder_label, folder != NULL);
 	}
 
-	if (gs_app_get_pixbuf (priv->app))
+	if (gs_app_get_pixbuf (priv->app) != NULL)
 		gs_image_set_from_pixbuf (GTK_IMAGE (priv->image),
 					  gs_app_get_pixbuf (priv->app));
 
