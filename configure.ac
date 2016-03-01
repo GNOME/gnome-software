@@ -203,7 +203,7 @@ AM_CONDITIONAL(HAVE_LIMBA, test x$enable_limba = xyes)
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-GS_PLUGIN_API_VERSION=8
+GS_PLUGIN_API_VERSION=9
 AC_SUBST(GS_PLUGIN_API_VERSION)
 AC_DEFINE_UNQUOTED([GS_PLUGIN_API_VERSION], "$GS_PLUGIN_API_VERSION", [the plugin API version])
 
