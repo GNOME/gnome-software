@@ -34,7 +34,7 @@ BuildRequires: fwupd-devel
 BuildRequires: json-glib-devel
 
 # this is not a library version
-%define gs_plugin_version               8
+%define gs_plugin_version               9
 
 %description
 gnome-software is an application that makes it easy to add, remove
@@ -55,6 +55,12 @@ rm %{buildroot}%{_libdir}/gs-plugins-%{gs_plugin_version}/*.la
 # make the software center load faster
 desktop-file-edit %{buildroot}%{_datadir}/applications/org.gnome.Software.desktop \
     --set-key=X-AppInstall-Package --set-value=%{name}
+
+# set up for Fedora
+cat >> %{buildroot}%{_datadir}/glib-2.0/schemas/org.gnome.software-fedora.gschema.override << FOE
+[org.gnome.software]
+official-sources = [ 'fedora', 'fedora-debuginfo', 'fedora-source', 'koji-override-0', 'koji-override-1', 'rawhide', 'rawhide-debuginfo', 'rawhide-source', 'updates', 'updates-debuginfo', 'updates-source', 'updates-testing', 'updates-testing-debuginfo', 'updates-testing-source' ]
+FOE
 
 %find_lang %name --with-gnome
 
@@ -96,6 +102,7 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/dbus-1/services/org.gnome.Software.service
 %{_datadir}/gnome-shell/search-providers/org.gnome.Software-search-provider.ini
 %{_datadir}/glib-2.0/schemas/org.gnome.software.gschema.xml
+%{_datadir}/glib-2.0/schemas/org.gnome.software-fedora.gschema.override
 %dir %{_datadir}/gnome-software/modulesets.d
 %{_datadir}/gnome-software/modulesets.d/*.xml
 

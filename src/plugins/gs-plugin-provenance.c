@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2015-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -26,10 +26,13 @@
 /*
  * SECTION:
  * Sets the package provanance to TRUE if installed by an official
- * Fedora repo.
- *
- * It will self-disable if not run on a Fedora system.
+ * software source.
  */
+
+struct GsPluginPrivate {
+	GSettings		*settings;
+	gchar			**sources;
+};
 
 /**
  * gs_plugin_get_name:
@@ -37,7 +40,22 @@
 const gchar *
 gs_plugin_get_name (void)
 {
-	return "fedora-provenance";
+	return "provenance";
+}
+
+/**
+ * gs_plugin_provenance_settings_changed_cb:
+ */
+static void
+gs_plugin_provenance_settings_changed_cb (GSettings *settings,
+					  const gchar *key,
+					  GsPlugin *plugin)
+{
+	if (g_strcmp0 (key, "official-sources") == 0) {
+		g_strfreev (plugin->priv->sources);
+		plugin->priv->sources = g_settings_get_strv (plugin->priv->settings,
+							     "official-sources");
+	}
 }
 
 /**
@@ -46,12 +64,12 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	/* check that we are running on Fedora */
-	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
-		gs_plugin_set_enabled (plugin, FALSE);
-		g_debug ("disabling '%s' as we're not Fedora", plugin->name);
-		return;
-	}
+	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	plugin->priv->settings = g_settings_new ("org.gnome.software");
+	g_signal_connect (plugin->priv->settings, "changed",
+			  G_CALLBACK (gs_plugin_provenance_settings_changed_cb), plugin);
+	plugin->priv->sources = g_settings_get_strv (plugin->priv->settings,
+						   "official-sources");
 }
 
 /**
@@ -72,35 +90,30 @@ gs_plugin_get_deps (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
+	g_strfreev (plugin->priv->sources);
+	g_object_unref (plugin->priv->settings);
 }
 
 /**
- * gs_plugin_fedora_provenance_refine_app:
+ * gs_plugin_provenance_refine_app:
  */
 static void
-gs_plugin_fedora_provenance_refine_app (GsApp *app)
+gs_plugin_provenance_refine_app (GsPlugin *plugin, GsApp *app)
 {
 	const gchar *origin;
+	const gchar * const *sources;
 	guint i;
-	const gchar *valid[] = { "fedora",
-				 "fedora-debuginfo",
-				 "fedora-source",
-				 "koji-override-0",
-				 "koji-override-1",
-				 "rawhide",
-				 "rawhide-debuginfo",
-				 "rawhide-source",
-				 "updates",
-				 "updates-debuginfo",
-				 "updates-source",
-				 "updates-testing",
-				 "updates-testing-debuginfo",
-				 "updates-testing-source",
-				 NULL };
+
+	/* nothing to search */
+	sources = (const gchar * const *) plugin->priv->sources;
+	if (sources == NULL || sources[0] == NULL) {
+		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		return;
+	}
 
 	/* simple case */
 	origin = gs_app_get_origin (app);
-	if (origin != NULL && g_strv_contains (valid, origin)) {
+	if (origin != NULL && g_strv_contains (sources, origin)) {
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 		return;
 	}
@@ -114,8 +127,8 @@ gs_plugin_fedora_provenance_refine_app (GsApp *app)
 		return;
 	if (g_str_has_prefix (origin + 1, "installed:"))
 		origin += 10;
-	for (i = 0; valid[i] != NULL; i++) {
-		if (g_strcmp0 (origin + 1, valid[i]) == 0) {
+	for (i = 0; sources[i] != NULL; i++) {
+		if (g_strcmp0 (origin + 1, sources[i]) == 0) {
 			gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 			break;
 		}
@@ -144,7 +157,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE))
 			continue;
-		gs_plugin_fedora_provenance_refine_app (app);
+		gs_plugin_provenance_refine_app (plugin, app);
 	}
 	return TRUE;
 }
