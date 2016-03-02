@@ -51,6 +51,7 @@ packagekit_status_enum_to_plugin_status (PkStatusEnum status)
 	case PK_STATUS_ENUM_TEST_COMMIT:
 	case PK_STATUS_ENUM_RUNNING:
 	case PK_STATUS_ENUM_SIG_CHECK:
+	case PK_STATUS_ENUM_REFRESH_CACHE:
 		plugin_status = GS_PLUGIN_STATUS_SETUP;
 		break;
 	case PK_STATUS_ENUM_DOWNLOAD:
