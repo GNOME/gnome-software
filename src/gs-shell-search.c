@@ -409,10 +409,21 @@ gs_shell_search_dispose (GObject *object)
 	g_clear_object (&self->cancellable);
 	g_clear_object (&self->search_cancellable);
 
+	G_OBJECT_CLASS (gs_shell_search_parent_class)->dispose (object);
+}
+
+/**
+ * gs_shell_search_finalize:
+ **/
+static void
+gs_shell_search_finalize (GObject *object)
+{
+	GsShellSearch *self = GS_SHELL_SEARCH (object);
+
 	g_free (self->appid_to_show);
 	g_free (self->value);
 
-	G_OBJECT_CLASS (gs_shell_search_parent_class)->dispose (object);
+	G_OBJECT_CLASS (gs_shell_search_parent_class)->finalize (object);
 }
 
 /**
@@ -426,6 +437,7 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
 
 	object_class->dispose = gs_shell_search_dispose;
+	object_class->finalize = gs_shell_search_finalize;
 	page_class->app_installed = gs_shell_search_app_installed;
 	page_class->app_removed = gs_shell_search_app_removed;
 
