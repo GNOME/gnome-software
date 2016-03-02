@@ -787,6 +787,16 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (retval == NULL)
 		return FALSE;
 	g_variant_get (retval, "(&s)", &retstr);
+
+	/* user declined download */
+	if (g_strcmp0 (retstr, "cancelled") == 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_CANCELLED,
+			     "extension %s download was cancelled",
+			     gs_app_get_id (app));
+		return FALSE;
+	}
 	g_debug ("shell returned: %s", retstr);
 	return TRUE;
 }
