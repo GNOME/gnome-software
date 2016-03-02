@@ -1242,30 +1242,30 @@ gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 }
 
 /**
- * gs_app_get_licence:
+ * gs_app_get_license:
  */
 const gchar *
-gs_app_get_licence (GsApp *app)
+gs_app_get_license (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	return app->licence;
 }
 
 /**
- * gs_app_get_licence_is_free:
+ * gs_app_get_license_is_free:
  */
 gboolean
-gs_app_get_licence_is_free (GsApp *app)
+gs_app_get_license_is_free (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
 	return app->licence_is_free;
 }
 
 /**
- * gs_app_get_licence_token_is_nonfree:
+ * gs_app_get_license_token_is_nonfree:
  */
 static gboolean
-gs_app_get_licence_token_is_nonfree (const gchar *token)
+gs_app_get_license_token_is_nonfree (const gchar *token)
 {
 	/* grammar */
 	if (g_strcmp0 (token, "(") == 0)
@@ -1282,10 +1282,10 @@ gs_app_get_licence_token_is_nonfree (const gchar *token)
 }
 
 /**
- * gs_app_set_licence:
+ * gs_app_set_license:
  */
 void
-gs_app_set_licence (GsApp *app, GsAppQuality quality, const gchar *licence)
+gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *licence)
 {
 	GString *urld;
 	guint i;
@@ -1325,7 +1325,7 @@ gs_app_set_licence (GsApp *app, GsAppQuality quality, const gchar *licence)
 		}
 
 		/* do the best we can */
-		if (gs_app_get_licence_token_is_nonfree (tokens[i])) {
+		if (gs_app_get_license_token_is_nonfree (tokens[i])) {
 			g_debug ("nonfree licence from %s: '%s'",
 				 gs_app_get_id (app), tokens[i]);
 			app->licence_is_free = FALSE;

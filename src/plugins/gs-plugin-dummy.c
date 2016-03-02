@@ -156,7 +156,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_name (app) == NULL) {
 			if (g_strcmp0 (gs_app_get_id (app), "gnome-boxes") == 0) {
-				gs_app_set_licence (app, GS_APP_QUALITY_NORMAL,
+				gs_app_set_license (app, GS_APP_QUALITY_NORMAL,
 						    "GPL-2.0+");
 				gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
 						 "Boxes");

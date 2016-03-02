@@ -435,8 +435,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* set licence */
-	if (as_app_get_project_license (item) != NULL && gs_app_get_licence (app) == NULL)
-		gs_app_set_licence (app,
+	if (as_app_get_project_license (item) != NULL && gs_app_get_license (app) == NULL)
+		gs_app_set_license (app,
 				    GS_APP_QUALITY_HIGHEST,
 				    as_app_get_project_license (item));
 

@@ -225,7 +225,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	g_autoptr(GString) title = NULL;
 
 	/* this is very crude */
-	licence = gs_app_get_licence (app);
+	licence = gs_app_get_license (app);
 	if (licence != NULL) {
 		for (i = 0; keywords[i].str != NULL; i++) {
 			if (g_strstr_len (licence, -1, keywords[i].str) != NULL)

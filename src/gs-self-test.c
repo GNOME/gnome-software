@@ -528,7 +528,7 @@ gs_plugin_loader_refine_func (void)
 	g_assert_no_error (error);
 	g_assert (ret);
 
-	g_assert_cmpstr (gs_app_get_licence (app), ==,
+	g_assert_cmpstr (gs_app_get_license (app), ==,
 			 "<a href=\"http://spdx.org/licenses/GPL-2.0+\">GPL-2.0+</a>");
 	g_assert_cmpstr (gs_app_get_description (app), !=, NULL);
 	url = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);

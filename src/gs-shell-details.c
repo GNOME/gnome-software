@@ -642,7 +642,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	}
 
 	/* set the licence */
-	tmp = gs_app_get_licence (self->app);
+	tmp = gs_app_get_license (self->app);
 	if (tmp == NULL) {
 		/* TRANSLATORS: this is where the licence is not known */
 		gtk_label_set_label (GTK_LABEL (self->label_details_licence_value), C_("license", "Unknown"));
@@ -759,7 +759,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 				     _("This application can only be used when there is an active internet connection."));
 	} else {
 		gtk_widget_set_visible (self->label_details_tag_webapp, FALSE);
-		if (gs_app_get_licence_is_free (self->app) &&
+		if (gs_app_get_license_is_free (self->app) &&
 		    !gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
 			/* free and 3rd party */
 			gtk_widget_set_visible (self->label_details_tag_nonfree, FALSE);
@@ -768,7 +768,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
 					     /* TRANSLATORS: this is the warning box */
 					     _("This software comes from a 3rd party."));
-		} else if (!gs_app_get_licence_is_free (self->app) &&
+		} else if (!gs_app_get_license_is_free (self->app) &&
 			   !gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
 			/* nonfree and 3rd party */
 			gtk_widget_set_visible (self->label_details_tag_nonfree, TRUE);
@@ -777,7 +777,7 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 			gtk_label_set_label (GTK_LABEL (self->label_details_info_text),
 					     /* TRANSLATORS: this is the warning box */
 					     _("This software comes from a 3rd party and may contain non-free components."));
-		} else if (!gs_app_get_licence_is_free (self->app) &&
+		} else if (!gs_app_get_license_is_free (self->app) &&
 			   gs_app_has_quirk (self->app, AS_APP_QUIRK_PROVENANCE)) {
 			/* nonfree and distro */
 			gtk_widget_set_visible (self->label_details_tag_nonfree, TRUE);
