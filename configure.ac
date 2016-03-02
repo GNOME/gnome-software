@@ -201,6 +201,27 @@ AS_IF([test "x$have_limba" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_LIMBA, test x$enable_limba = xyes)
 
+# Steam
+AC_ARG_ENABLE(steam,
+              [AS_HELP_STRING([--enable-steam],
+                              [enable steam support [default=auto]])],,
+              enable_steam=maybe)
+AS_IF([test "x$enable_steam" != "xno"], [
+    PKG_CHECK_MODULES(STEAM, libicns,
+		      [have_steam=yes],
+                      [have_steam=no])
+], [
+    have_steam=no
+])
+AS_IF([test "x$have_steam" = "xyes"], [
+    AC_DEFINE(HAVE_STEAM,1,[Build steam support])
+], [
+    AS_IF([test "x$enable_steam" = "xyes"], [
+          AC_MSG_ERROR([Steam support requested but 'steam' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_STEAM, test x$have_steam = xyes)
+
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
 GS_PLUGIN_API_VERSION=9
@@ -250,4 +271,5 @@ echo "
         Firmware support:          ${have_firmware}
         Limba support:             ${have_limba}
         XDG-APP support:           ${have_xdg_app}
+        Steam support:             ${have_steam}
 "
