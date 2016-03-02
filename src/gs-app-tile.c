@@ -126,8 +126,8 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsAppTile *tile)
 void
 gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 {
-	const gchar *summary;
 	const GdkPixbuf *pixbuf;
+	g_autofree gchar *text = NULL;
 
 	g_return_if_fail (GS_IS_APP_TILE (tile));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
@@ -152,9 +152,20 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 	if (pixbuf != NULL)
 		gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), pixbuf);
 	gtk_label_set_label (GTK_LABEL (tile->name), gs_app_get_name (app));
-	summary = gs_app_get_summary (app);
-	gtk_label_set_label (GTK_LABEL (tile->summary), summary);
-	gtk_widget_set_visible (tile->summary, summary && summary[0]);
+
+	/* some kinds have boring summaries */
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_SHELL_EXTENSION:
+		text = g_strdup (gs_app_get_description (app));
+		g_strdelimit (text, "\n\t", ' ');
+		break;
+	default:
+		text = g_strdup (gs_app_get_summary (app));
+		break;
+	}
+
+	gtk_label_set_label (GTK_LABEL (tile->summary), text);
+	gtk_widget_set_visible (tile->summary, text && text[0]);
 }
 
 static void
