@@ -861,7 +861,7 @@ gs_shell_class_init (GsShellClass *klass)
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
 	object_class->dispose = gs_shell_dispose;
 
-       signals [SIGNAL_LOADED] =
+	signals [SIGNAL_LOADED] =
 		g_signal_new ("loaded",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (GsShellClass, loaded),
