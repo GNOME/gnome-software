@@ -356,14 +356,29 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 	g_autofree gchar *shell_version = NULL;
 	g_autoptr(AsRelease) release = NULL;
 
-	/* look for version, FIXME: either major.minor or major.minor.micro */
+	/* look for version, major.minor.micro */
 	if (json_object_has_member (ver_map, plugin->priv->shell_version)) {
 		json_ver = json_object_get_object_member (ver_map,
 							  plugin->priv->shell_version);
 	}
+
+	/* look for version, major.minor */
 	if (json_ver == NULL) {
-		g_warning ("no shell_version_map for %s",
-			   plugin->priv->shell_version);
+		g_auto(GStrv) ver_majmin = NULL;
+		ver_majmin = g_strsplit (plugin->priv->shell_version, ".", -1);
+		if (g_strv_length (ver_majmin) >= 2) {
+			g_autofree gchar *tmp = NULL;
+			tmp = g_strdup_printf ("%s.%s", ver_majmin[0], ver_majmin[1]);
+			if (json_object_has_member (ver_map, tmp))
+				json_ver = json_object_get_object_member (ver_map, tmp);
+		}
+	}
+
+	/* FIXME: mark as incompatible? */
+	if (json_ver == NULL) {
+		g_debug ("no version_map for %s: %s",
+			 as_app_get_id (app),
+			 plugin->priv->shell_version);
 		return TRUE;
 	}
 
