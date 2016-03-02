@@ -192,7 +192,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
 			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
 			gtk_widget_set_visible (priv->label_tag_nonfree,
-						!gs_app_get_licence_is_free (priv->app));
+						!gs_app_get_license_is_free (priv->app));
 			gtk_widget_set_visible (priv->label_tag_foreign,
 						!gs_app_has_quirk (priv->app,
 								   AS_APP_QUIRK_PROVENANCE));

@@ -480,11 +480,11 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 						pk_details_get_package_id (details))) {
 				continue;
 			}
-			if (gs_app_get_licence (app) == NULL) {
+			if (gs_app_get_license (app) == NULL) {
 				g_autofree gchar *license_spdx = NULL;
 				license_spdx = as_utils_license_to_spdx (pk_details_get_license (details));
 				if (license_spdx != NULL) {
-					gs_app_set_licence (app,
+					gs_app_set_license (app,
 							    GS_APP_QUALITY_LOWEST,
 							    license_spdx);
 				}
@@ -631,7 +631,7 @@ static gboolean
 gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsPluginRefineFlags flags, GsApp *app)
 {
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0 &&
-	    gs_app_get_licence (app) == NULL)
+	    gs_app_get_license (app) == NULL)
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0 &&
 	    gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)

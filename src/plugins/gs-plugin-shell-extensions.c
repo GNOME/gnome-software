@@ -124,7 +124,7 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 	gs_app_set_management_plugin (app, "ShellExtensions");
 	gs_app_set_metadata (app, "ShellExtensions::uuid", uuid);
 	gs_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
-	gs_app_set_licence (app, GS_APP_QUALITY_NORMAL, "GPL-2.0+");
+	gs_app_set_license (app, GS_APP_QUALITY_NORMAL, "GPL-2.0+");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "GNOME Shell Extension");
 	while (g_variant_iter_loop (iter, "{sv}", &str, &val)) {
 		if (g_strcmp0 (str, "description") == 0) {

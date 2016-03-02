@@ -387,7 +387,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, pk_details_get_url (item));
 	gs_app_set_size (app, pk_details_get_size (item));
 	license_spdx = as_utils_license_to_spdx (pk_details_get_license (item));
-	gs_app_set_licence (app, GS_APP_QUALITY_LOWEST, license_spdx);
+	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, license_spdx);
 
 	/* look for a desktop file so we can use a valid application id */
 	if (!gs_plugin_packagekit_refresh_guess_app_id (plugin,

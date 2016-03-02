@@ -134,9 +134,9 @@ const gchar	*gs_app_get_url			(GsApp		*app,
 void		 gs_app_set_url			(GsApp		*app,
 						 AsUrlKind	 kind,
 						 const gchar	*url);
-const gchar	*gs_app_get_licence		(GsApp		*app);
-gboolean	 gs_app_get_licence_is_free	(GsApp		*app);
-void		 gs_app_set_licence		(GsApp		*app,
+const gchar	*gs_app_get_license		(GsApp		*app);
+gboolean	 gs_app_get_license_is_free	(GsApp		*app);
+void		 gs_app_set_license		(GsApp		*app,
 						 GsAppQuality	 quality,
 						 const gchar	*licence);
 gchar		**gs_app_get_menu_path		(GsApp		*app);
