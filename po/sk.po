@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-02-28 10:21+0000\n"
-"PO-Revision-Date: 2016-02-28 20:35+0100\n"
+"POT-Creation-Date: 2016-03-02 16:33+0000\n"
+"PO-Revision-Date: 2016-03-02 18:33+0100\n"
 "Last-Translator: Dušan Kazik <prescott66@gmail.com>\n"
 "Language-Team: slovenčina <>\n"
 "Language: sk\n"
@@ -114,7 +114,7 @@ msgid ""
 "The list of sources that have been previously enabled when installing third-"
 "party applications."
 msgstr ""
-"Zoznam zdrojov, ktoré boli predošle povolené pri inštalovaní aplikácií "
+"Zoznam zdrojov, ktoré boli predošle povolené pri inštalovaní aplikácií od "
 "tretích strán."
 
 #: ../data/org.gnome.software.gschema.xml.h:13
@@ -142,13 +142,19 @@ msgstr "Minimálne body karmy recenzií"
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Recenzie s karmou nižšou ako toto číslo nebudú zobrazené."
 
+#: ../data/org.gnome.software.gschema.xml.h:19
+msgid "A list of official sources that should not be considered 3rd party"
+msgstr ""
+"Zoznam oficiálnych zdrojov, ktoré by nemali byť považované za zdroje od "
+"tretích strán"
+
 # GsAppFolderDialog title, GtkLabel
 #: ../src/app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Pridanie do priečinka s aplikáciami"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:281
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:283
 #: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "_Zrušiť"
@@ -159,8 +165,8 @@ msgstr "_Pridať"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:79
-#: ../src/gs-app-tile.c:82 ../src/gs-feature-tile.c:68
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:78
+#: ../src/gs-app-tile.c:81 ../src/gs-feature-tile.c:68
 #: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
@@ -242,7 +248,7 @@ msgstr "Čaká na inštaláciu"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
 #: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:312
-#: ../src/gs-app-tile.c:88 ../src/gs-app-tile.c:91
+#: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
 msgid "Installing"
 msgstr "Inštaluje sa"
 
@@ -251,7 +257,7 @@ msgstr "Inštaluje sa"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
 #: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:321
-#: ../src/gs-app-tile.c:97 ../src/gs-app-tile.c:100
+#: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
 msgid "Removing"
 msgstr "Odstraňuje sa"
 
@@ -260,7 +266,7 @@ msgstr "Odstraňuje sa"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1321 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1315 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " a "
 
@@ -268,17 +274,17 @@ msgstr " a "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1329
+#: ../src/gs-app.c:1323
 msgid " or "
 msgstr " alebo "
 
 #. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1352
+#: ../src/gs-app.c:1346
 msgid "Proprietary"
 msgstr "Uzavretá"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1362
+#: ../src/gs-app.c:1356
 msgid "Public domain"
 msgstr "Verejná doména"
 
@@ -833,14 +839,14 @@ msgstr "Nastavenia rozšírenia"
 # GtkButton
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:193 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:195 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:4
 msgid "_Install"
 msgstr "_Inštalovať"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:204
+#: ../src/gs-shell-details.c:206
 msgid "_Installing"
 msgstr "_Inštaluje sa"
 
@@ -849,67 +855,67 @@ msgstr "_Inštaluje sa"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:222
+#: ../src/gs-shell-details.c:224
 msgid "_Install…"
 msgstr "_Inštalovať…"
 
 # GtkButton
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:268 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:270 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "O_dstrániť"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:275
+#: ../src/gs-shell-details.c:277
 msgid "_Removing"
 msgstr "O_dstraňuje sa"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:647
 msgctxt "license"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:661
+#: ../src/gs-shell-details.c:660
 msgctxt "version"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:667
+#: ../src/gs-shell-details.c:666
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Vypočítava sa…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:670
+#: ../src/gs-shell-details.c:669
 msgctxt "size"
 msgid "Unknown"
 msgstr "Neznáma"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:682
+#: ../src/gs-shell-details.c:681
 msgctxt "updated"
 msgid "Never"
 msgstr "Nikdy"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:696
+#: ../src/gs-shell-details.c:695
 msgctxt "menu category"
 msgid "None"
 msgstr "Žiadna"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:713
+#: ../src/gs-shell-details.c:712
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Neznámy"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:799
+#: ../src/gs-shell-details.c:758
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -917,28 +923,28 @@ msgstr ""
 "Táto aplikácia sa môže používať iba ak je aktívne internetové pripojenie."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:810
+#: ../src/gs-shell-details.c:769
 msgid "This software comes from a 3rd party."
 msgstr "Tento softvér pochádza od tretích strán."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:819
+#: ../src/gs-shell-details.c:778
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
 "Tento softvér pochádza od tretích strán a môže obsahovať neslobodné súčasti."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:828
+#: ../src/gs-shell-details.c:787
 msgid "This software may contain non-free components."
 msgstr "Tento softvér môže obsahovať neslobodné súčasti."
 
-#: ../src/gs-shell-details.c:1098
+#: ../src/gs-shell-details.c:1109
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nepodarilo sa nájsť „%s“"
 
-#: ../src/gs-shell-details.c:1146 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1157 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "Prepáčte, toto nefungovalo"
 
