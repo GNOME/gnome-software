@@ -219,30 +219,25 @@ get_review_stats (GsPlugin *plugin,
 static gboolean
 parse_histogram (const gchar *text, Histogram *histogram)
 {
-	JsonParser *parser = NULL;
+	g_autoptr(JsonParser) parser = NULL;
 	JsonArray *array;
-	gboolean result = FALSE;
 
 	/* Histogram is a five element JSON array, e.g. "[1, 3, 5, 8, 4]" */
 	parser = json_parser_new ();
 	if (!json_parser_load_from_data (parser, text, -1, NULL))
-		goto out;
+		return FALSE;
 	if (!JSON_NODE_HOLDS_ARRAY (json_parser_get_root (parser)))
-		goto out;
+		return FALSE;
 	array = json_node_get_array (json_parser_get_root (parser));
 	if (json_array_get_length (array) != 5)
-		goto out;
+		return FALSE;
 	histogram->one_star_count = json_array_get_int_element (array, 0);
 	histogram->two_star_count = json_array_get_int_element (array, 1);
 	histogram->three_star_count = json_array_get_int_element (array, 2);
 	histogram->four_star_count = json_array_get_int_element (array, 3);
 	histogram->five_star_count = json_array_get_int_element (array, 4);
-	result = TRUE;
 
-out:
-	g_clear_object (&parser);
-
-	return result;
+	return TRUE;
 }
 
 static gboolean
@@ -305,7 +300,7 @@ send_review_request (GsPlugin *plugin, const gchar *method, const gchar *path, J
 	msg = soup_message_new (method, uri);
 
 	if (request != NULL) {
-		JsonGenerator *generator;
+		g_autoptr(JsonGenerator) generator = NULL;
 		gchar *data;
 		gsize length;
 
@@ -313,7 +308,6 @@ send_review_request (GsPlugin *plugin, const gchar *method, const gchar *path, J
 		json_generator_set_root (generator, json_builder_get_root (request));
 		data = json_generator_to_data (generator, &length);
 		soup_message_set_request (msg, "application/json", SOUP_MEMORY_TAKE, data, length);
-		g_object_unref (generator);
 	}
 
 	status_code = soup_session_send_message (plugin->soup_session, msg);
@@ -327,7 +321,7 @@ send_review_request (GsPlugin *plugin, const gchar *method, const gchar *path, J
 	}
 
 	if (result != NULL) {
-		JsonParser *parser;
+		g_autoptr(JsonParser) parser = NULL;
 		const gchar *content_type;
 
 		content_type = soup_message_headers_get_content_type (msg->response_headers, NULL);
@@ -342,10 +336,9 @@ send_review_request (GsPlugin *plugin, const gchar *method, const gchar *path, J
 
 		parser = json_parser_new ();
 		if (!json_parser_load_from_data (parser, msg->response_body->data, -1, error)) {
-			g_object_unref (parser);
 			return FALSE;
 		}
-		*result = parser;
+		*result = g_steal_pointer (&parser);
 	}
 
 	return TRUE;
@@ -356,16 +349,13 @@ download_review_stats (GsPlugin *plugin, GError **error)
 {
 	g_autofree gchar *uri = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
-	JsonParser *result;
-	gboolean ret;
+	g_autoptr(JsonParser) result = NULL;
 
 	if (!send_review_request (plugin, SOUP_METHOD_GET, "/api/1.0/review-stats/any/any/", NULL, &result, error))
 		return FALSE;
 
 	/* Extract the stats from the data */
-	ret = parse_review_entries (plugin, result, error);
-	g_object_unref (result);
-	if (!ret)
+	if (!parse_review_entries (plugin, result, error))
 		return FALSE;
 
 	/* Record the time we downloaded it */
@@ -543,15 +533,12 @@ parse_reviews (GsPlugin *plugin, JsonParser *parser, GsApp *app, GError **error)
 		return FALSE;
 	array = json_node_get_array (json_parser_get_root (parser));
 	for (i = 0; i < json_array_get_length (array); i++) {
-		GsReview *review;
+		g_autoptr(GsReview) review = NULL;
 
 		/* Read in from JSON... (skip bad entries) */
 		review = parse_review (json_array_get_element (array, i));
-		if (!review)
-			continue;
-
-		gs_app_add_review (app, review);
-		g_object_unref (review);
+		if (review != NULL)
+			gs_app_add_review (app, review);
 	}
 
 	return TRUE;
@@ -575,8 +562,7 @@ static gboolean
 download_reviews (GsPlugin *plugin, GsApp *app, const gchar *package_name, GError **error)
 {
 	g_autofree gchar *language = NULL, *path = NULL;
-	JsonParser *result;
-	gboolean ret;
+	g_autoptr(JsonParser) result = NULL;
 
 	/* Get the review stats using HTTP */
 	// FIXME: This will only get the first page of reviews
@@ -586,10 +572,7 @@ download_reviews (GsPlugin *plugin, GsApp *app, const gchar *package_name, GErro
 		return FALSE;
 
 	/* Extract the stats from the data */
-	ret = parse_reviews (plugin, result, app, error);
-	g_object_unref (result);
-
-	return ret;
+	return parse_reviews (plugin, result, app, error);
 }
 
 static gboolean
