@@ -402,9 +402,6 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	as_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
 	as_app_set_project_license (app, "GPL-2.0+");
 
-	/* not sure what this is for :/ */
-	pk = json_object_get_int_member (json_app, "pk");
-
 	tmp = json_object_get_string_member (json_app, "description");
 	if (tmp != NULL) {
 		g_autofree gchar *desc = NULL;
@@ -456,15 +453,15 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	}
 
 	/* add a screenshot, which curiously isn't in the json */
+	pk = json_object_get_int_member (json_app, "pk");
 	if (1) {
 		g_autoptr(AsScreenshot) ss = NULL;
 		g_autoptr(AsImage) im = NULL;
 		g_autofree gchar *uri = NULL;
 		uri = g_strdup_printf ("%s/static/extension-data/"
 				       "screenshots/"
-				       "screenshot_%" G_GSIZE_FORMAT ".png",
+				       "screenshot_%" G_GUINT64_FORMAT ".png",
 				       SHELL_EXTENSIONS_API_URI, pk);
-		/* TODO: check if the URI exists */
 		im = as_image_new ();
 		as_image_set_kind (im, AS_IMAGE_KIND_SOURCE);
 		as_image_set_url (im, uri);
