@@ -678,15 +678,19 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_autoptr(GPtrArray) apps = NULL;
 	g_autoptr(AsStore) store = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GError) error_local = NULL;
 
 	/* connect to gnome-shell */
 	if (!gs_plugin_setup (plugin, cancellable, error))
 		return FALSE;
 
-	/* get data */
-	apps = gs_plugin_shell_extensions_get_apps (plugin, cache_age, error);
-	if (apps == NULL)
-		return FALSE;
+	/* get data, non-fatal if download failed */
+	apps = gs_plugin_shell_extensions_get_apps (plugin, cache_age, &error_local);
+	if (apps == NULL) {
+		g_warning ("failed to refresh list of shell updates: %s",
+			   error_local->message);
+		return TRUE;
+	}
 
 	/* add to local store */
 	store = as_store_new ();
