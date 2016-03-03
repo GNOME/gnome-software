@@ -640,8 +640,17 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 						      msg->response_body->data,
 						      msg->response_body->length,
 						      error);
-	if (apps == NULL)
+	if (apps == NULL) {
+		guint len = msg->response_body->length;
+		g_autofree gchar *tmp = NULL;
+
+		/* truncate the string if long */
+		if (len > 100)
+			len = 100;
+		tmp = g_strndup (msg->response_body->data, len);
+		g_prefix_error (error, "Failed to parse '%s': ", tmp);
 		return NULL;
+	}
 
 	/* save to the cache */
 	if (!g_file_set_contents (cachefn,
