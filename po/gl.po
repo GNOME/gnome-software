@@ -3,21 +3,24 @@
 # This file is distributed under the same license as the PACKAGE package.
 # Fran Diéguez <frandieguez@gnome.org>, 2013.
 # Fran Dieguez <frandieguez@gnome.org>, 2013, 2014, 2015, 2016.
+# Marcos Lans <marcoslansgarza@gmail.com>, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
-"Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-24 20:25+0100\n"
-"PO-Revision-Date: 2016-02-24 20:38+0200\n"
-"Last-Translator: Fran Dieguez <frandieguez@gnome.org>\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2016-02-25 22:24+0000\n"
+"PO-Revision-Date: 2016-03-03 17:32+0100\n"
+"Last-Translator: marcos <marcoslansgarza@gmail.com>\n"
 "Language-Team: gnome-l10n-gl@gnome.org\n"
 "Language: gl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Virtaal 0.7.1\n"
+"X-Generator: Poedit 1.5.4\n"
 "X-Project-Style: gnome\n"
+"X-Launchpad-Export-Date: 2013-08-23 20:28+0000\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
@@ -100,7 +103,7 @@ msgstr "Unha lista dos aplicativos máis populares"
 #: ../data/org.gnome.software.gschema.xml.h:10
 msgid "A list of applications to use, overriding the system defined ones."
 msgstr ""
-"Unha lista dos aplicativos a uar, sobrescribindo os definidos polo sistema."
+"Unha lista dos aplicativos a usar, sobrescribindo os definidos polo sistema."
 
 #: ../data/org.gnome.software.gschema.xml.h:11
 msgid "The list of extra sources that have been previously enabled"
@@ -134,7 +137,7 @@ msgstr "O servidor a usar para as revisións de aplicativos"
 
 #: ../data/org.gnome.software.gschema.xml.h:17
 msgid "The minimum karma score for reviews"
-msgstr "A puntuació mínima de karma para as revisións"
+msgstr "A puntuación mínima de karma para as revisións"
 
 #: ../data/org.gnome.software.gschema.xml.h:18
 msgid "Reviews with karma less than this number will not be shown."
@@ -169,7 +172,7 @@ msgstr "Instalar software"
 
 #: ../src/gnome-software-local-file.desktop.in.h:2
 msgid "Install selected software on the system"
-msgstr "Instala o software seleccionado no seu sistema"
+msgstr "Instalar o software seleccionado no seu sistema"
 
 #: ../src/gnome-software.ui.h:1
 msgid "Select All"
@@ -206,7 +209,7 @@ msgstr "_Instalado"
 #. Translators: A label for a button to show only updates which are available to install.
 #: ../src/gnome-software.ui.h:10
 msgid "_Updates"
-msgstr "_Anovacións"
+msgstr "_Actualizacións"
 
 #: ../src/gnome-software.ui.h:11
 msgid "Restart & _Install"
@@ -218,7 +221,7 @@ msgstr "Seleccionar"
 
 #: ../src/gnome-software.ui.h:13
 msgid "Check for updates"
-msgstr "Buscando actualizacións"
+msgstr "Buscar actualizacións"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
@@ -304,11 +307,11 @@ msgstr "ID"
 
 #: ../src/gs-application.c:102
 msgid "Open a local package file"
-msgstr "Abrir ficheiro de paquete local"
+msgstr "Abrir un ficheiro de paquete local"
 
 #: ../src/gs-application.c:102
 msgid "FILENAME"
-msgstr "NOME_DE_FICHEIRO"
+msgstr "NOME_DO_FICHEIRO"
 
 #: ../src/gs-application.c:104
 msgid "Show verbose debugging information"
@@ -316,7 +319,7 @@ msgstr "Mostrar información de depuración detallada"
 
 #: ../src/gs-application.c:106
 msgid "Show profiling information for the service"
-msgstr "Mostra información de perfilado para o servizo"
+msgstr "Mostrar información de perfilado para o servizo"
 
 #: ../src/gs-application.c:108
 msgid "Prefer local file sources to AppStream"
@@ -425,7 +428,7 @@ msgstr "%s está solicitando compatibilidade dun formato de ficheiro adicional."
 #. TRANSLATORS: notification title
 #: ../src/gs-dbus-helper.c:315
 msgid "Additional MIME Types Required"
-msgstr "Requírese un tipo MIME adicional"
+msgstr "Requírense tipos MIME adicionais"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
 #: ../src/gs-dbus-helper.c:319
@@ -503,11 +506,11 @@ msgstr "_Imos mercar"
 #. in GTK+ project. Please use the same translation.
 #: ../src/gs-hiding-box.c:384
 msgid "Spacing"
-msgstr "Espaciado"
+msgstr "Espazado"
 
 #: ../src/gs-hiding-box.c:385
 msgid "The amount of space between children"
-msgstr "A cantidade de espacio entre os fillos"
+msgstr "A cantidade de espazo entre os fillos"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
@@ -567,13 +570,13 @@ msgstr "%s vaise retirar, e terá que instalalo para usalo de novo."
 #. * packages and are not shown in the main list
 #: ../src/gs-plugin-loader.c:787
 msgid "OS Updates"
-msgstr "Anovacións do sistema operativo"
+msgstr "Actualizacións do sistema operativo"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
 #: ../src/gs-plugin-loader.c:792
 msgid "Includes performance, stability and security improvements."
-msgstr "Inclúe melloras no rendemento, estabilidade e de seguridade."
+msgstr "Inclúe melloras no rendemento, estabilidade e seguranza."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -676,7 +679,7 @@ msgid ""
 "recommend”."
 msgstr ""
 "Envíenos un pequeno resumo da súa revisión, por exemplo: «Gran aplicativo, "
-"moi recomendable»."
+"moi recomendábel»."
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:10
@@ -696,7 +699,7 @@ msgstr "Total"
 #: ../src/gs-review-row.c:207
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
-"Pode reportar revisisóns por ser abusivas, groseiras ou conducta "
+"Pode denunciar revisións por ser abusivas, groseiras ou conductas "
 "discriminatoria."
 
 #. TRANSLATORS: we ask the user if they really want to do this
@@ -705,7 +708,7 @@ msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
 msgstr ""
-"En canto estea reportada, a revisión ocultarase ate que sexa revisada polo "
+"En canto estea denunciada, a revisión ocultarase até que sexa revisada polo "
 "administrador."
 
 #. TRANSLATORS: window title when
@@ -713,13 +716,13 @@ msgstr ""
 #. * for moderation
 #: ../src/gs-review-row.c:226
 msgid "Report Review?"
-msgstr "Reportar revisión?"
+msgstr "Denunciar a revisión?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: ../src/gs-review-row.c:230
 msgid "Report"
-msgstr "Reportar"
+msgstr "Denunciar"
 
 #. vim: set noexpandtab:
 #. Translators: Users can express their opinions about other users' opinions about the apps.
@@ -738,11 +741,11 @@ msgstr "Non"
 #. Translators: Button text for indifference, only used when moderating
 #: ../src/gs-review-row.ui.h:6
 msgid "Meh"
-msgstr "Meh"
+msgstr "Psss"
 
 #: ../src/gs-review-row.ui.h:7
 msgid "Report…"
-msgstr "Reportar…"
+msgstr "Denunciar…"
 
 #: ../src/gs-review-row.ui.h:8
 msgid "Remove…"
@@ -880,18 +883,18 @@ msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr ""
-"Este aplicativo só pode usarse cando hai unha conexión a Internet activa."
+"Este aplicativo só se pode usar cando hai unha conexión activa a Internet."
 
 #. TRANSLATORS: this is the warning box
 #: ../src/gs-shell-details.c:812
 msgid "This software comes from a 3rd party."
-msgstr "Este softawre ven dun terceiro."
+msgstr "Este software vén dun terceiro."
 
 #. TRANSLATORS: this is the warning box
 #: ../src/gs-shell-details.c:821
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
-msgstr "Este software ven dun terceiro e pode conter compoñentes non libres."
+msgstr "Este software vén dun terceiro e pode conter compoñentes non libres."
 
 #. TRANSLATORS: this is the warning box
 #: ../src/gs-shell-details.c:830
@@ -905,7 +908,7 @@ msgstr "Non foi posíbel atopar «%s»"
 
 #: ../src/gs-shell-details.c:1151 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
-msgstr "Desculpa, isto non funcionou"
+msgstr "Desculpe, isto non funcionou"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-details.ui.h:1
@@ -1064,8 +1067,8 @@ msgstr ","
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
-msgstr[0] "Tipo de letra dispoñíbel para o script %s"
-msgstr[1] "Tipos de letra dispoñíbeis para o script %s"
+msgstr[0] "Tipos de letra dispoñíbeis para o script %s"
+msgstr[1] "Tipos de letra dispoñíbeis para os scripts %s"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
@@ -1115,7 +1118,7 @@ msgstr ""
 #: ../src/gs-shell-extras.c:343 ../src/gs-shell-extras.c:365
 #, c-format
 msgid "No applications are available for %s support."
-msgstr "Non hai ningún aplicativo dispoñíbel para o formato %s."
+msgstr "Non hai ningún aplicativo dispoñíbel para asistir a %s."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
@@ -1169,7 +1172,7 @@ msgstr ""
 #: ../src/gs-shell-extras.c:398
 #, c-format
 msgid "No Plasma resources are available for %s support."
-msgstr "Non hai ningún recurso Plasma dispoñíbel para o formato %s."
+msgstr "Non hai ningún recurso Plasma dispoñíbel para asistir a %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
@@ -1223,7 +1226,7 @@ msgstr[1] ""
 #: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
 #: ../src/gs-shell-extras.c:640
 msgid "Failed to find any search results"
-msgstr "Produciuse un fallo ao buscar calquera resultado de busca"
+msgstr "Non foi posíbel atopar ningún resultado da busca"
 
 #: ../src/gs-shell-extras.c:809
 #, c-format
@@ -1640,7 +1643,7 @@ msgstr "Actualizacións instaladas"
 
 #: ../src/gs-update-dialog.ui.h:2
 msgid "No updates have been installed on this system."
-msgstr "Non se instalou ningunha actualización neste computador."
+msgstr "Non se instalou ningunha actualización neste sistema."
 
 #: ../src/gs-update-monitor.c:89
 msgid "Security Updates Pending"
@@ -1754,8 +1757,8 @@ msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
 msgstr ""
-"Requírese acceso a internet pero non está dispoñíbel. Asegúrese que ten "
-"acceso a internet e probe de novo."
+"Requírese o acceso a internet pero non está dispoñíbel. Asegúrese que ten "
+"acceso e probe de novo."
 
 #. TRANSLATORS: if the package is not signed correctly
 #: ../src/gs-update-monitor.c:621
@@ -1763,7 +1766,7 @@ msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr ""
-"Producironse problemas de seguranza coa actualización. Consulte co seu "
+"Producíronse problemas de seguranza coa actualización. Consulte co seu "
 "fornecedor de software para obter máis información."
 
 #. TRANSLATORS: we ran out of disk space
@@ -1771,7 +1774,7 @@ msgstr ""
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
-"Non hai espazo en disco dabondo. Por favor libere algún espazo e ténteo de "
+"Non hai espazo dabondo no disco. Por favor libere algún espazo e ténteo de "
 "novo."
 
 #. TRANSLATORS: We didn't handle the error type
@@ -1780,9 +1783,9 @@ msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
 msgstr ""
-"Disculpe: a actualización non puido instalarse. Agarde a que se publique "
-"unha nova actualización e ténteo de novo. Se o problema persiste, contacte "
-"co seu fornecedor de software."
+"Desculpe pero non foi posíbel instalar a actualización. Agarde a que se "
+"publique unha nova actualización e ténteo outra vez. Se o problema persiste, "
+"contacte co seu fornecedor de software."
 
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
@@ -1790,7 +1793,7 @@ msgstr ""
 #: ../src/gs-upgrade-banner.c:75
 #, c-format
 msgid "%s %s Now Available"
-msgstr "%s %s está dispoñíbel agora"
+msgstr "%s %s xa está dispoñíbel"
 
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
@@ -1807,7 +1810,7 @@ msgstr "Descargando %s %s…"
 #: ../src/gs-upgrade-banner.c:102
 #, c-format
 msgid "%s %s Ready to be Installed"
-msgstr "%s %s listo para ser instalado"
+msgstr "%s %s está listo para ser instalado"
 
 #. vim: set noexpandtab:
 #: ../src/gs-upgrade-banner.ui.h:1
@@ -1826,15 +1829,15 @@ msgstr "_Descargar"
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr ""
-"Recoméndase facer unha copia seguranza dos seus datos e ficheiros antes de "
-"anovar."
+"Recomendámoslle facer unha copia de seguranza dos seus datos e ficheiros "
+"antes de anovar."
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
 #: ../src/gs-utils.c:140
 #, c-format
 msgid "%s is now installed"
-msgstr "%s agora está instalado"
+msgstr "Rematou a instalación de %s"
 
 #. TRANSLATORS: this is button that opens the newly installed application
 #: ../src/gs-utils.c:144
@@ -1861,7 +1864,7 @@ msgstr "Desexa instalar software de terceiros?"
 #. TRANSLATORS: window title
 #: ../src/gs-utils.c:252
 msgid "Enable Third-Party Software Source?"
-msgstr "Desexa activar os orixes de software de terceiros?"
+msgstr "Desexa activar as orixes de software de terceiros?"
 
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
@@ -1874,7 +1877,7 @@ msgid ""
 "source_software\">free and open source software</a>, and is provided by “%s”."
 msgstr ""
 "%s non é <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
-"source_software\">software libre e de fontes abertas</a>, e é fornecido por "
+"source_software\">software libre e de fontes abertas</a> e é fornecido por "
 "«%s»."
 
 #. TRANSLATORS: the replacements are as follows:
@@ -1888,7 +1891,7 @@ msgstr "%s é fornecido por «%s». "
 #. TRANSLATORS: a software source is a repo
 #: ../src/gs-utils.c:290
 msgid "This software source must be enabled to continue installation."
-msgstr "Este orixe de software debe activarse para continuar a instalación."
+msgstr "Debe activar esta orixe de software para continuar coa instalación."
 
 #. TRANSLATORS: Laws are geographical, urgh...
 #: ../src/gs-utils.c:300
@@ -1926,14 +1929,14 @@ msgstr "_Saír"
 
 #: ../src/org.gnome.Software.desktop.in.h:2
 msgid "Add, remove or update software on this computer"
-msgstr "Engadir, quitar ou anovar software neste computador"
+msgstr "Engadir, retirar ou actualizar software neste computador"
 
 #: ../src/org.gnome.Software.desktop.in.h:3
 msgid ""
 "Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
 "Software;App;Store;"
 msgstr ""
-"Actualizacións;Anovar;Orixes;Repositorios;Preferenzas;Instalar;Desinstalar;"
+"Actualizacións;Anovar;Orixes;Repositorios;Preferencias;Instalar;Desinstalar;"
 "Programa;Software;Aplicativo;Tenda;"
 
 #: ../src/plugins/gs-plugin-appstream.c:199
@@ -1953,7 +1956,7 @@ msgstr "Son"
 #: ../src/plugins/menu-spec-common.c:31
 msgctxt "Menu subcategory of Audio"
 msgid "Editing"
-msgstr "Editando"
+msgstr "Edición"
 
 #: ../src/plugins/menu-spec-common.c:32
 msgctxt "Menu subcategory of Audio"
@@ -2013,7 +2016,7 @@ msgstr "Ferramentas de desenvolvemento"
 #: ../src/plugins/menu-spec-common.c:44
 msgctxt "Menu subcategory of Development Tools"
 msgid "Building"
-msgstr "Construíndo"
+msgstr "Creación"
 
 #: ../src/plugins/menu-spec-common.c:45
 msgctxt "Menu subcategory of Development Tools"
@@ -2073,7 +2076,7 @@ msgstr "Artes"
 #: ../src/plugins/menu-spec-common.c:57
 msgctxt "Menu subcategory of Education"
 msgid "Artificial Intelligence"
-msgstr "Intelixencia Artificial"
+msgstr "Intelixencia artificial"
 
 #: ../src/plugins/menu-spec-common.c:58
 msgctxt "Menu subcategory of Education"
@@ -2153,7 +2156,7 @@ msgstr "Humanidades"
 #: ../src/plugins/menu-spec-common.c:73
 msgctxt "Menu subcategory of Education"
 msgid "Image Processing"
-msgstr "Preprocesado da imaxe"
+msgstr "Procesamento de imaxes"
 
 #: ../src/plugins/menu-spec-common.c:74
 msgctxt "Menu subcategory of Education"
@@ -2323,7 +2326,7 @@ msgstr "Publicación"
 #: ../src/plugins/menu-spec-common.c:109
 msgctxt "Menu subcategory of Graphics"
 msgid "Raster Graphics"
-msgstr "Gráficos raster"
+msgstr "Gráficos rasterizados"
 
 #: ../src/plugins/menu-spec-common.c:110
 msgctxt "Menu subcategory of Graphics"
@@ -2353,7 +2356,7 @@ msgstr "Chat"
 #: ../src/plugins/menu-spec-common.c:116
 msgctxt "Menu subcategory of Internet"
 msgid "Dialup"
-msgstr "Marcado telefónico"
+msgstr "Acceso telefónico"
 
 #: ../src/plugins/menu-spec-common.c:117
 msgctxt "Menu subcategory of Internet"
@@ -2378,7 +2381,7 @@ msgstr "Radioafeccionado"
 #: ../src/plugins/menu-spec-common.c:121
 msgctxt "Menu subcategory of Internet"
 msgid "Instant Messaging"
-msgstr "Mensaxaría instantánea"
+msgstr "Mensaxería instantánea"
 
 #: ../src/plugins/menu-spec-common.c:122
 msgctxt "Menu subcategory of Internet"
@@ -2433,12 +2436,12 @@ msgstr "Oficina"
 #: ../src/plugins/menu-spec-common.c:133
 msgctxt "Menu subcategory of Office"
 msgid "Calendar"
-msgstr "Calendar"
+msgstr "Calendario"
 
 #: ../src/plugins/menu-spec-common.c:134
 msgctxt "Menu subcategory of Office"
 msgid "Chart"
-msgstr "Gráfica"
+msgstr "Gráficas"
 
 #: ../src/plugins/menu-spec-common.c:135
 msgctxt "Menu subcategory of Office"
@@ -2523,7 +2526,7 @@ msgstr "Artes"
 #: ../src/plugins/menu-spec-common.c:152
 msgctxt "Menu subcategory of Science"
 msgid "Artificial Intelligence"
-msgstr "Intelixencia Artificial"
+msgstr "Intelixencia artificial"
 
 #: ../src/plugins/menu-spec-common.c:153
 msgctxt "Menu subcategory of Science"
@@ -2603,7 +2606,7 @@ msgstr "Humanidades"
 #: ../src/plugins/menu-spec-common.c:168
 msgctxt "Menu subcategory of Science"
 msgid "Image Processing"
-msgstr "Preprocesado da imaxe"
+msgstr "Procesamento de imaxes"
 
 #: ../src/plugins/menu-spec-common.c:169
 msgctxt "Menu subcategory of Science"
