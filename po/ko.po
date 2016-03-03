@@ -1,23 +1,23 @@
 # Korean translation for gnome-software.
 # Copyright (C) 2013 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
-# Seong-ho Cho <shcho@gnome.org>, 2013-2015.
+# Seong-ho Cho <shcho@gnome.org>, 2013-2015, 2016.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-10-03 08:43+0000\n"
-"PO-Revision-Date: 2015-10-03 21:01+0900\n"
+"POT-Creation-Date: 2016-03-02 16:33+0000\n"
+"PO-Revision-Date: 2016-03-03 18:25+0900\n"
 "Last-Translator: Seong-ho Cho <shcho@gnome.org>\n"
-"Language-Team: Korean <gnome-kr@googlegroups.com>\n"
+"Language-Team: GNOME Korea <gnome-kr@googlegroups.com>\n"
 "Language: ko\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=1; plural=0;\n"
-"X-Generator: Poedit 1.5.5\n"
+"X-Generator: Gtranslator 2.91.7\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
@@ -43,52 +43,120 @@ msgid ""
 "also allows you to update your system using an offline update."
 msgstr ""
 "그놈 소프트웨어 프로그램은 각각의 추천 항목과 인기 있는 프로그램을 유용한 설"
-"명과 여러가지 스크린샷을 곁들여 선보입니다. 분류 목록을 탐색하거나 검색을 통"
-"해 프로그램을 찾을 수 있습니다. 오프라인 업데이트를 사용하여 시스템을 업데이"
-"트할 수도 있습니다."
+"명과 여러가지 미리보기 화면을 곁들여 선보입니다. 분류 목록을 탐색하거나 검색"
+"을 통해 프로그램을 찾을 수 있습니다. 오프라인 업데이트를 사용하여 시스템을 업"
+"데이트할 수도 있습니다."
+
+#: ../data/org.gnome.software.gschema.xml.h:1
+msgid "A list of compatible projects"
+msgstr "호환 프로젝트 목록"
+
+#: ../data/org.gnome.software.gschema.xml.h:2
+msgid ""
+"This is a list of compatible projects we should show such as GNOME, KDE and "
+"XFCE."
+msgstr "그놈, KDE, XFCE와 같은 호환 프로젝트 목록입니다."
+
+#: ../data/org.gnome.software.gschema.xml.h:3
+msgid "Whether to automatically download updates"
+msgstr "자동 업데이트 다운로드 여부"
+
+#: ../data/org.gnome.software.gschema.xml.h:4
+msgid ""
+"If enabled, GNOME Software automatically downloads updates in the background "
+"and prompts the user to install them when ready."
+msgstr ""
+"설정을 활성화하면, 그놈 소프트웨어는 백그라운드에서 업데이트를 자동으로 다운"
+"로드하며 설치 준비가 끝나면 사용자에게 설치 여부를 묻습니다."
+
+#: ../data/org.gnome.software.gschema.xml.h:5
+msgid "Whether it's the very first run of GNOME Software"
+msgstr "그놈 소프트웨어 처음 실행 여부"
+
+#: ../data/org.gnome.software.gschema.xml.h:6
+msgid "Show star ratings next to applications"
+msgstr "프로그램 옆에 별점 표시"
+
+#: ../data/org.gnome.software.gschema.xml.h:7
+msgid "Non-free applications show a warning dialog before install"
+msgstr "독점 프로그램을 설치하기 전 경고 대화상자 표시"
+
+#: ../data/org.gnome.software.gschema.xml.h:8
+msgid ""
+"When non-free applications are installed a warning dialog can be shown. This "
+"controls if that dialog is suppressed."
+msgstr ""
+"독점 프로그램을 설치할 때 경고 대화상자를 표시할 수 있습니다. 대화 상자를 표"
+"시 여부를 다룹니다."
+
+#: ../data/org.gnome.software.gschema.xml.h:9
+msgid "A list of popular applications"
+msgstr "인기있는 프로그램 목록"
+
+#: ../data/org.gnome.software.gschema.xml.h:10
+msgid "A list of applications to use, overriding the system defined ones."
+msgstr "시스템에서 지정한 프로그램 목록보다 우선해서 활용할 프로그램 목록."
+
+#: ../data/org.gnome.software.gschema.xml.h:11
+msgid "The list of extra sources that have been previously enabled"
+msgstr "앞서 활성화한 추가 공급원 목록"
+
+#: ../data/org.gnome.software.gschema.xml.h:12
+msgid ""
+"The list of sources that have been previously enabled when installing third-"
+"party applications."
+msgstr "서드파티 프로그램을 설치할 때 이미 활성화한 공급원 목록."
+
+#: ../data/org.gnome.software.gschema.xml.h:13
+msgid "The last update check timestamp"
+msgstr "최근 업데이트 확인 타임스탬프"
+
+#: ../data/org.gnome.software.gschema.xml.h:14
+msgid "The timestamp of the first security update, cleared after update"
+msgstr "첫 보안 업데이트 실시후 정리한 타임스탬프"
+
+#: ../data/org.gnome.software.gschema.xml.h:15
+msgid "The last update timestamp"
+msgstr "최근 업데이트 타임스탬프"
+
+#: ../data/org.gnome.software.gschema.xml.h:16
+msgid "The server to use for application reviews"
+msgstr "프로그램 평가에 활용할 서버"
+
+#: ../data/org.gnome.software.gschema.xml.h:17
+msgid "The minimum karma score for reviews"
+msgstr "평가에 대한 최소 카르마 점수"
+
+#: ../data/org.gnome.software.gschema.xml.h:18
+msgid "Reviews with karma less than this number will not be shown."
+msgstr "이 숫자보다 적은 카르마를 보유한 평가는 나타나지 않습니다."
+
+#: ../data/org.gnome.software.gschema.xml.h:19
+msgid "A list of official sources that should not be considered 3rd party"
+msgstr "서드파티로 고려하지 않는 공식 공급원 목록입니다"
 
 #: ../src/app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "프로그램 폴더에 추가"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:315
-#: ../src/gs-shell-details.c:233 ../src/gs-shell-installed.c:524
+#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:283
+#: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "취소(_C)"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:320
+#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:321
 msgid "_Add"
 msgstr "추가(_A)"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:96 ../src/gs-app-tile.c:72
-#: ../src/gs-app-tile.c:75 ../src/gs-feature-tile.c:67
-#: ../src/gs-popular-tile.c:73 ../src/gs-popular-tile.c:76
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:78
+#: ../src/gs-app-tile.c:81 ../src/gs-feature-tile.c:68
+#: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
 msgstr "설치함"
-
-#. TRANSLATORS: this is the application name
-#. set the window title back to default
-#. TRANSLATORS: this is the main window title
-#: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:344 ../src/gs-shell.c:159
-msgid "Software"
-msgstr "소프트웨어"
-
-#: ../src/org.gnome.Software.desktop.in.h:2
-msgid "Add, remove or update software on this computer"
-msgstr "이 컴퓨터에 프로그램을 추가, 제거, 업데이트 합니다"
-
-#: ../src/org.gnome.Software.desktop.in.h:3
-msgid ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;"
-msgstr ""
-"Updates;업데이트;Upgrade;업그레이드;Sources;공급원;Repositories;저장소;"
-"Preferences;기본 설정;Install;설치;Uninstall;설치 제거;Program;프로그램;"
-"Software;소프트웨어;App;앱;Store;스토어;"
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
 msgid "Software Install"
@@ -105,6 +173,14 @@ msgstr "모두 선택"
 #: ../src/gnome-software.ui.h:2
 msgid "Select None"
 msgstr "선택 취소"
+
+#. TRANSLATORS: this is the application name
+#. set the window title back to default
+#. TRANSLATORS: this is the main window title
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:371
+#: ../src/gs-shell.c:162 ../src/org.gnome.Software.desktop.in.h:1
+msgid "Software"
+msgstr "소프트웨어"
 
 #. vim: set noexpandtab:
 #: ../src/gnome-software.ui.h:4 ../src/gs-sources-dialog.ui.h:2
@@ -139,72 +215,9 @@ msgstr "선택"
 msgid "Check for updates"
 msgstr "업데이트 검사"
 
-#: ../src/gs-app-folder-dialog.c:304
-msgid "Folder Name"
-msgstr "폴더 이름"
-
-#. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:91
-msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
-msgstr "시작 모드: 'updates', 'updated', 'installed', 'overview'"
-
-#: ../src/gs-application.c:91
-msgid "MODE"
-msgstr "모드"
-
-#: ../src/gs-application.c:93
-msgid "Search for applications"
-msgstr "프로그램 검색"
-
-#: ../src/gs-application.c:93
-msgid "SEARCH"
-msgstr "검색"
-
-#: ../src/gs-application.c:95
-msgid "Show application details"
-msgstr "프로그램 세부 정보 표시"
-
-#: ../src/gs-application.c:95
-msgid "ID"
-msgstr "ID"
-
-#: ../src/gs-application.c:97
-msgid "Open a local package file"
-msgstr "지역 패키지 파일 열기"
-
-#: ../src/gs-application.c:97
-msgid "FILENAME"
-msgstr "<파일 이름>"
-
-#: ../src/gs-application.c:99
-msgid "Show verbose debugging information"
-msgstr "디버깅 정보 자세히 표시"
-
-#: ../src/gs-application.c:101
-msgid "Show profiling information for the service"
-msgstr "서비스 프로파일 정보 표시"
-
-#: ../src/gs-application.c:103
-msgid "Prefer local file sources to AppStream"
-msgstr "로컬 파일 공급원을 앱스트림에 준비"
-
-#. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:342
-msgid "About Software"
-msgstr "소프트웨어 정보"
-
-#. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:347
-msgid "A nice way to manage the software on your system."
-msgstr "시스템의 프로그램을 관리하는 세련된 수단입니다."
-
-#: ../src/gs-application.c:351
-msgid "translator-credits"
-msgstr "Seong-ho Cho <darkcircle.0426@gmail.com>"
-
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:226
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:274
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "대기 중"
@@ -213,8 +226,8 @@ msgstr "대기 중"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:100 ../src/gs-app-row.c:250
-#: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:312
+#: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
 msgid "Installing"
 msgstr "설치 중"
 
@@ -222,8 +235,8 @@ msgstr "설치 중"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:104 ../src/gs-app-row.c:259
-#: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:321
+#: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
 msgid "Removing"
 msgstr "제거 중"
 
@@ -232,7 +245,7 @@ msgstr "제거 중"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1299 ../src/gs-shell-extras.c:147
+#: ../src/gs-app.c:1315 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " 및 "
 
@@ -240,48 +253,157 @@ msgstr " 및 "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1307
+#: ../src/gs-app.c:1323
 msgid " or "
 msgstr " 또는 "
 
+#. TRANSLATORS: non-free app
+#: ../src/gs-app.c:1346
+msgid "Proprietary"
+msgstr "상업용"
+
+#. TRANSLATORS: see the wikipedia page
+#: ../src/gs-app.c:1356
+msgid "Public domain"
+msgstr "퍼블릭 도메인"
+
+#: ../src/gs-app-folder-dialog.c:305
+msgid "Folder Name"
+msgstr "폴더 이름"
+
+#. TRANSLATORS: this is a command line option
+#: ../src/gs-application.c:96
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr "시작 모드: 'updates', 'updated', 'installed', 'overview'"
+
+#: ../src/gs-application.c:96
+msgid "MODE"
+msgstr "모드"
+
+#: ../src/gs-application.c:98
+msgid "Search for applications"
+msgstr "프로그램 검색"
+
+#: ../src/gs-application.c:98
+msgid "SEARCH"
+msgstr "검색"
+
+#: ../src/gs-application.c:100
+msgid "Show application details"
+msgstr "프로그램 세부 정보 표시"
+
+#: ../src/gs-application.c:100
+msgid "ID"
+msgstr "ID"
+
+#: ../src/gs-application.c:102
+msgid "Open a local package file"
+msgstr "지역 패키지 파일 열기"
+
+#: ../src/gs-application.c:102
+msgid "FILENAME"
+msgstr "<파일 이름>"
+
+#: ../src/gs-application.c:104
+msgid "Show verbose debugging information"
+msgstr "디버깅 정보 자세히 표시"
+
+#: ../src/gs-application.c:106
+msgid "Show profiling information for the service"
+msgstr "서비스 프로파일 정보 표시"
+
+#: ../src/gs-application.c:108
+msgid "Prefer local file sources to AppStream"
+msgstr "로컬 파일 공급원을 앱스트림에 준비"
+
+#: ../src/gs-application.c:110
+msgid "Show version number"
+msgstr "버전 번호 표시"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:369
+msgid "About Software"
+msgstr "소프트웨어 정보"
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:374
+msgid "A nice way to manage the software on your system."
+msgstr "시스템의 프로그램을 관리하는 세련된 수단입니다."
+
+#: ../src/gs-application.c:378
+msgid "translator-credits"
+msgstr "Seong-ho Cho <darkcircle.0426@gmail.com>"
+
+#. TRANSLATORS: during the update the device
+#. * will restart into a special update-only mode
+#: ../src/gs-app-row.c:160
+msgid "Device cannot be used during update."
+msgstr "업데이트 하는 동안 장치를 사용할 수 없습니다."
+
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:210
+#: ../src/gs-app-row.c:258
 msgid "Visit website"
 msgstr "웹사이트 방문"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:215
+#: ../src/gs-app-row.c:263
 msgid "Install…"
 msgstr "설치…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:223
+#: ../src/gs-app-row.c:271
 msgid "Cancel"
 msgstr "취소"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
+#. TRANSLATORS: this is a button in the updates panel
+#. * that allows the app to be easily updated live
+#. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:233 ../src/gs-utils.c:313
+#: ../src/gs-app-row.c:281 ../src/gs-app-row.c:288 ../src/gs-page.c:206
+#: ../src/gs-utils.c:317
 msgid "Install"
 msgstr "설치"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:241 ../src/gs-page.c:178
+#: ../src/gs-app-row.c:292 ../src/gs-app-row.c:303 ../src/gs-page.c:235
 msgid "Remove"
 msgstr "제거"
 
+#. vim: set noexpandtab:
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:2 ../src/gs-shell-details.ui.h:31
+msgid "3rd party"
+msgstr "서드파티"
+
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:4 ../src/gs-shell-details.ui.h:32
+msgid "web app"
+msgstr "웹 앱"
+
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:6
+msgid "nonfree"
+msgstr "독점"
+
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:228
+#: ../src/gs-category.c:235
 msgid "Other"
 msgstr "기타"
+
+#. TRANSLATORS: this is a subcategory matching all the
+#. * different apps in the parent category, e.g. "Games"
+#: ../src/gs-category.c:239
+msgid "All"
+msgstr "모두"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: ../src/gs-dbus-helper.c:307
@@ -397,7 +519,7 @@ msgstr "설치함"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gs-history-dialog.c:94
+#: ../src/gs-history-dialog.c:95
 msgctxt "app status"
 msgid "Updated"
 msgstr "업데이트함"
@@ -405,7 +527,7 @@ msgstr "업데이트함"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-history-dialog.c:100
+#: ../src/gs-history-dialog.c:101
 msgctxt "app status"
 msgid "Unknown"
 msgstr "알 수 없음"
@@ -415,144 +537,221 @@ msgstr "알 수 없음"
 msgid "History"
 msgstr "역사"
 
-#. TRANSLATORS: the transaction could not be completed
-#. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:47
-msgid "A previous update was unfinished."
-msgstr "이전 업데이트가 끝나지 않았습니다."
-
-#. TRANSLATORS: the package manager needed to download
-#. * something with no network available
-#: ../src/gs-offline-updates.c:56
-msgid ""
-"Internet access was required but wasn’t available. Please make sure that you "
-"have internet access and try again."
-msgstr ""
-"인터넷 연결이 필요하지만 연결할 수 없습니다. 인터넷 연결을 확인하고 다시 시도"
-"하십시오."
-
-#. TRANSLATORS: if the package is not signed correctly
-#. *
-#: ../src/gs-offline-updates.c:66
-msgid ""
-"There were security issues with the update. Please consult your software "
-"provider for more details."
-msgstr ""
-"업데이트에 보안 문제가 있습니다. 자세한 문제를 알아보려면 프로그램 공급자에"
-"게 연락하십시오."
-
-#. TRANSLATORS: the transaction failed in a way the user
-#. * probably cannot comprehend. Package management systems
-#. * really are teh suck.
-#. TRANSLATORS: the update process failed in a general
-#. * way, usually this message will come from source distros
-#. * like gentoo
-#: ../src/gs-offline-updates.c:76 ../src/gs-offline-updates.c:99
-msgid ""
-"The update couldn’t be installed; this is often a problem with the update "
-"itself. Please wait for another update and try again."
-msgstr ""
-"업데이트를 설치할 수 없습니다. 자체적으로 업데이트할 때 빈번히 일어나는 문제"
-"입니다. 다른 업데이트를 기다린 후 다시 시도하십시오."
-
-#. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:81
-msgid "The update was cancelled."
-msgstr "업데이트를 취소했습니다."
-
-#. TRANSLATORS: the user must have updated manually after
-#. * the updates were prepared
-#: ../src/gs-offline-updates.c:87
-msgid "The system was already up to date."
-msgstr "시스템이 이미 최신입니다."
-
-#. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:91
-msgid ""
-"There wasn’t enough disk space. Please free up some space and try again."
-msgstr ""
-"디스크 공간이 충분하지 않습니다. 여분의 공간을 확보하고 다시 시도하십시오."
-
-#. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:104
-msgid ""
-"We’re sorry: the update failed to install. Please wait for another update "
-"and try again. If the problem persists, contact your software provider."
-msgstr ""
-"죄송합니다. 업데이트 설치에 실패했습니다. 다른 업데이트를 기다린 후 다시 시도"
-"하십시오. 문제가 계속되면 프로그램 공급자에게 연락하십시오."
-
-#. TRANSLATORS: these are geeky messages from the
-#. * package manager no mortal is supposed to understand,
-#. * but google might know what they mean
-#: ../src/gs-offline-updates.c:212
-msgid "Detailed errors from the package manager follow:"
-msgstr "패키지 관리자의 자세한 오류 정보는 다음과 같습니다:"
-
-#: ../src/gs-offline-updates.c:231 ../src/gs-shell-details.ui.h:20
-msgid "Details"
-msgstr "자세히 보기"
-
-#. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:282
-msgid "Failed To Update"
-msgstr "업데이트에 실패했습니다"
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:200
+#, c-format
+msgid "Prepare %s"
+msgstr "%s 준비"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:163
+#: ../src/gs-page.c:227
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "정말로 %s 프로그램을 제거하시겠습니까?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:175
+#: ../src/gs-page.c:232
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s 프로그램을 제거하겠으며, 다시 사용하려면 설치해야 합니다."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:804
+#: ../src/gs-plugin-loader.c:786
 msgid "OS Updates"
 msgstr "운영체제 업데이트"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:809
+#: ../src/gs-plugin-loader.c:791
 msgid "Includes performance, stability and security improvements."
 msgstr "성능, 안정성, 보안 개선 요소가 있습니다."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1369 ../src/gs-shell-extras.c:389
+#: ../src/gs-plugin-loader.c:1517 ../src/gs-shell-extras.c:387
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s 형식에 대한 추가 코덱이 없습니다."
 
-#: ../src/gs-plugin-loader.c:1372
+#: ../src/gs-plugin-loader.c:1520
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
 "play this format can be found on the website."
 msgstr ""
-"이 형식에 대해 재생 할 수 있는 코덱을 얻기 위한 옵션과 같은 %s 정보는 웹사이"
-"트에서 찾을 수 있습니다."
+"이 형식에 대해 재생할 수 있는 코덱을 얻기 위한 옵션과 같은 %s 정보는 웹사이트"
+"에서 찾을 수 있습니다."
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really bad application
+#: ../src/gs-review-dialog.c:93
+msgid "Hate it"
+msgstr "싫어요"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		Not a great application
+#: ../src/gs-review-dialog.c:97
+msgid "Don't like it"
+msgstr "별로예요"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A fairly-good application
+#: ../src/gs-review-dialog.c:101
+msgid "It's OK"
+msgstr "괜찮군요"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A good application
+#: ../src/gs-review-dialog.c:105
+msgid "Like it"
+msgstr "좋아요"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really awesome application
+#: ../src/gs-review-dialog.c:109
+msgid "Love it"
+msgstr "완전 좋아요"
+
+#. TRANSLATORS: the review can't just be copied and pasted
+#: ../src/gs-review-dialog.c:131
+msgid "Please take more time writing the review"
+msgstr "시간을 내어 평가를 작성해주세요"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:135
+msgid "Please choose a star rating"
+msgstr "별점을 선택하세요"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:139
+msgid "The summary is too short"
+msgstr "요약 내용이 너무 짧습니다"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:143
+msgid "The summary is too long"
+msgstr "요약 내용이 너무 깁니다"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:147
+msgid "The description is too short"
+msgstr "설명이 너무 짧습니다"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:151
+msgid "The description is too long"
+msgstr "설명이 너무 깁니다"
+
+#. vim: set noexpandtab:
+#. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
+#: ../src/gs-review-dialog.ui.h:2
+msgid "Post Review"
+msgstr "평가 제출"
+
+#. Translators: A button to publish the user's opinion about the app.
+#: ../src/gs-review-dialog.ui.h:5
+msgid "_Post"
+msgstr "게시(_P)"
+
+#: ../src/gs-review-dialog.ui.h:6
+msgid "Rating"
+msgstr "평점 매기기"
+
+#: ../src/gs-review-dialog.ui.h:7
+msgid "Summary"
+msgstr "요약"
+
+#: ../src/gs-review-dialog.ui.h:8
+msgid ""
+"Give a short summary of your review, for example: “Great app, would "
+"recommend”."
+msgstr "“대단한데요, 추천합니다”와 같이 간단한 평가 소감을 적어주세요."
+
+#. Translators: This is where the users enter their opinions about the apps.
+#: ../src/gs-review-dialog.ui.h:10
+msgctxt "app review"
+msgid "Review"
+msgstr "평가"
+
+#: ../src/gs-review-dialog.ui.h:11
+msgid "What do you think of the app? Try to give reasons for your views."
+msgstr "이 앱은 어떤가요? 평가해보시고 이유를 이야기해보세요."
+
+#: ../src/gs-review-histogram.ui.h:1
+msgid "Total"
+msgstr "총계"
+
+#. TRANSLATORS: we explain what the action is going to do
+#: ../src/gs-review-row.c:207
+msgid "You can report reviews for abusive, rude, or discriminatory behavior."
+msgstr ""
+"시스템에 해를 가하거나, 기능이 제대로 동작하지 않거나, 사용자를 차별하는 기능"
+"에 대한 평가를 보고할 수 있습니다."
+
+#. TRANSLATORS: we ask the user if they really want to do this
+#: ../src/gs-review-row.c:212
+msgid ""
+"Once reported, a review will be hidden until it has been checked by an "
+"administrator."
+msgstr "제출하고 나면, 관리자가 확인하기 전까지는 평가 내용을 숨겨놓습니다."
+
+#. TRANSLATORS: window title when
+#. * reporting a user-submitted review
+#. * for moderation
+#: ../src/gs-review-row.c:226
+msgid "Report Review?"
+msgstr "평가를 제출하시겠습니까?"
+
+#. TRANSLATORS: button text when
+#. * sending a review for moderation
+#: ../src/gs-review-row.c:230
+msgid "Report"
+msgstr "제출"
+
+#. vim: set noexpandtab:
+#. Translators: Users can express their opinions about other users' opinions about the apps.
+#: ../src/gs-review-row.ui.h:2
+msgid "Was this review useful to you?"
+msgstr "평가 내용이 도움 됐나요?"
+
+#: ../src/gs-review-row.ui.h:3
+msgid "Yes"
+msgstr "예"
+
+#: ../src/gs-review-row.ui.h:4
+msgid "No"
+msgstr "아니요"
+
+#. Translators: Button text for indifference, only used when moderating
+#: ../src/gs-review-row.ui.h:6
+msgid "Meh"
+msgstr "지루해요"
+
+#: ../src/gs-review-row.ui.h:7
+msgid "Report…"
+msgstr "보고…"
+
+#: ../src/gs-review-row.ui.h:8
+msgid "Remove…"
+msgstr "제거…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:233
+#: ../src/gs-screenshot-image.c:232
 msgid "Screenshot not found"
 msgstr "스크린샷이 없습니다"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:249
+#: ../src/gs-screenshot-image.c:248
 msgid "Failed to load image"
 msgstr "이미지 불러오기에 실패했습니다"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:376
+#: ../src/gs-screenshot-image.c:379
 msgid "Screenshot size not found"
 msgstr "스크린샷 크기 정보가 없습니다"
 
@@ -564,27 +763,294 @@ msgstr "캐시를 만들 수 없습니다"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:425
+#: ../src/gs-screenshot-image.c:423
 msgid "Screenshot not valid"
 msgstr "스크린샷이 유효하지 않습니다"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:441
+#: ../src/gs-screenshot-image.c:439
 msgid "Screenshot not available"
 msgstr "스크린샷이 없습니다"
 
-#: ../src/gs-screenshot-image.c:493
+#: ../src/gs-screenshot-image.c:490
 msgid "Screenshot"
 msgstr "스크린샷"
 
+#. vim: set noexpandtab:
+#: ../src/gs-shell-category.ui.h:1
+msgid ""
+"Extensions are used at your own risk. If you have any system problems, it is "
+"recommended to disable them."
+msgstr ""
+"확장 기능 사용시 문제가 발생할 수 있습니다. 시스템에 문제가 있다면, 동작을 끄"
+"는 것이 좋습니다."
+
+#: ../src/gs-shell-category.ui.h:2
+msgid "Extension Settings"
+msgstr "추가 기능 설정"
+
+#. TRANSLATORS: button text in the header when an application
+#. * can be installed
+#: ../src/gs-shell-details.c:195 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-upgrade-banner.ui.h:4
+msgid "_Install"
+msgstr "설치(_I)"
+
+#. TRANSLATORS: button text in the header when an application
+#. * is in the process of being installed
+#: ../src/gs-shell-details.c:206
+msgid "_Installing"
+msgstr "설치 중(_I)"
+
+#. TRANSLATORS: this is a button that allows the apps to
+#. * be installed.
+#. * The ellipsis indicates that further steps are required,
+#. * e.g. enabling software sources or the like
+#: ../src/gs-shell-details.c:224
+msgid "_Install…"
+msgstr "설치(_I)…"
+
+#. TRANSLATORS: button text in the header when an application can be erased
+#: ../src/gs-shell-details.c:270 ../src/gs-shell-details.ui.h:3
+msgid "_Remove"
+msgstr "제거(_R)"
+
+#. TRANSLATORS: button text in the header when an application can be installed
+#: ../src/gs-shell-details.c:277
+msgid "_Removing"
+msgstr "제거 중(_R)"
+
+#. TRANSLATORS: this is where the licence is not known
+#: ../src/gs-shell-details.c:647
+msgctxt "license"
+msgid "Unknown"
+msgstr "알 수 없음"
+
+#. TRANSLATORS: this is where the version is not known
+#: ../src/gs-shell-details.c:660
+msgctxt "version"
+msgid "Unknown"
+msgstr "알 수 없음"
+
+#. TRANSLATORS: this is where the size is being worked out
+#: ../src/gs-shell-details.c:666
+msgctxt "size"
+msgid "Calculating…"
+msgstr "계산 중…"
+
+#. TRANSLATORS: this is where the size is not known
+#: ../src/gs-shell-details.c:669
+msgctxt "size"
+msgid "Unknown"
+msgstr "알 수 없음"
+
+#. TRANSLATORS: this is where the updated date is not known
+#: ../src/gs-shell-details.c:681
+msgctxt "updated"
+msgid "Never"
+msgstr "안 함"
+
+#. TRANSLATORS: this is the application isn't in any
+#. * defined menu category
+#: ../src/gs-shell-details.c:695
+msgctxt "menu category"
+msgid "None"
+msgstr "분류 안함"
+
+#. TRANSLATORS: this is where we don't know the origin of the
+#. * application
+#: ../src/gs-shell-details.c:712
+msgctxt "origin"
+msgid "Unknown"
+msgstr "알 수 없음"
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:758
+msgid ""
+"This application can only be used when there is an active internet "
+"connection."
+msgstr "이 프로그램은 인터넷에 연결되어 있을 때만 사용할 수 있습니다."
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:769
+msgid "This software comes from a 3rd party."
+msgstr "이 프로그램은 서드파티 제조자/제조사에서 가져옵니다."
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:778
+msgid ""
+"This software comes from a 3rd party and may contain non-free components."
+msgstr ""
+"이 프로그램은 서드파티 제조자/제조사에서 왔기 때문에 독점 구성요소가 있을 수 "
+"있습니다."
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:787
+msgid "This software may contain non-free components."
+msgstr "이 프로그램에는 독점 구성요소가 들어있을 수 있습니다."
+
+#: ../src/gs-shell-details.c:1109
+#, c-format
+msgid "Could not find '%s'"
+msgstr "'%s'을(를) 찾을 수 없습니다"
+
+#: ../src/gs-shell-details.c:1157 ../src/gs-utils.c:166
+msgid "Sorry, this did not work"
+msgstr "유감스럽게도 동작하지 않습니다"
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-details.ui.h:1
+msgid "Details page"
+msgstr "세부 정보 페이지"
+
+#. Translators: A label for a button to execute the selected application.
+#: ../src/gs-shell-details.ui.h:6
+msgid "_Launch"
+msgstr "실행(_L)"
+
+#: ../src/gs-shell-details.ui.h:7
+msgid "Software Source Included"
+msgstr "포함된 프로그램 공급원"
+
+#: ../src/gs-shell-details.ui.h:8
+msgid ""
+"This application includes a software source which provides updates, as well "
+"as access to other software."
+msgstr ""
+"이 프로그램에는 다른 프로그램처럼 접근하여 업데이트를 제공하는 프로그램 공급"
+"원이 있습니다."
+
+#: ../src/gs-shell-details.ui.h:9
+msgid "No Software Source Included"
+msgstr "포함된 프로그램 공급원 없음"
+
+#: ../src/gs-shell-details.ui.h:10
+msgid ""
+"This application does not include a software source. It will not be updated "
+"with new versions."
+msgstr ""
+"이 프로그램에는 프로그램 공급원이 없습니다. 새 버전으로 업데이트하지 않겠습니"
+"다."
+
+#: ../src/gs-shell-details.ui.h:11
+msgid ""
+"This software is already provided by your distribution and should not be "
+"replaced."
+msgstr ""
+"이 프로그램은 이미 배포판에서 제공하며 다른 프로그램으로 바꿀 수 없습니다."
+
+#. Translators: a repository file used for installing software has been discovered.
+#: ../src/gs-shell-details.ui.h:13
+msgid "Software Source Identified"
+msgstr "식별된 프로그램 공급원"
+
+#: ../src/gs-shell-details.ui.h:14
+msgid ""
+"Adding this software source will give you access to additional software and "
+"upgrades."
+msgstr ""
+"이 프로그램 공급원을 추가하면 추가 프로그램과 업그레이드에 접근할 수 있습니"
+"다."
+
+#: ../src/gs-shell-details.ui.h:15
+msgid "Only use software sources that you trust."
+msgstr "신뢰하는 프로그램 공급원만 사용합니다."
+
+#: ../src/gs-shell-details.ui.h:16
+msgid "_Website"
+msgstr "웹사이트(_W)"
+
+#: ../src/gs-shell-details.ui.h:17
+msgid "_History"
+msgstr "기록(_H)"
+
+#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:556
+msgid "Details"
+msgstr "자세히 보기"
+
+#: ../src/gs-shell-details.ui.h:19
+msgid "Localized in your Language"
+msgstr "사용 언어 환경에 맞춰 지역화함"
+
+#: ../src/gs-shell-details.ui.h:20
+msgid "Documentation"
+msgstr "문서"
+
+#: ../src/gs-shell-details.ui.h:21
+msgid "Release Activity"
+msgstr "출시 활동"
+
+#: ../src/gs-shell-details.ui.h:22
+msgid "System Integration"
+msgstr "시스템 통합"
+
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-sources-dialog.ui.h:8
+msgid "Version"
+msgstr "버전"
+
+#: ../src/gs-shell-details.ui.h:24
+msgid "Updated"
+msgstr "업데이트함"
+
+#: ../src/gs-shell-details.ui.h:25
+msgid "Category"
+msgstr "분류"
+
+#: ../src/gs-shell-details.ui.h:26
+msgid "Size"
+msgstr "크기"
+
+#: ../src/gs-shell-details.ui.h:27
+msgid "Source"
+msgstr "공급원"
+
+#: ../src/gs-shell-details.ui.h:28
+msgid "Developer"
+msgstr "개발자"
+
+#: ../src/gs-shell-details.ui.h:29
+msgid "License"
+msgstr "라이선스"
+
+#: ../src/gs-shell-details.ui.h:30
+msgid "non-free"
+msgstr "독점"
+
+#. TRANSLATORS: This is the header dividing the normal
+#. * applications and the addons
+#. TRANSLATORS: this is the main category for Add-ons
+#: ../src/gs-shell-details.ui.h:33 ../src/gs-shell-installed.c:431
+#: ../src/gs-update-list.c:129 ../src/plugins/menu-spec-common.c:210
+msgid "Add-ons"
+msgstr "추가 프로그램"
+
+#: ../src/gs-shell-details.ui.h:34
+msgid "Selected add-ons will be installed with the application."
+msgstr "선택한 추가 기능을 프로그램과 함께 설치합니다."
+
+#. Translators: Header of the section with other users' opinions about the app.
+#: ../src/gs-shell-details.ui.h:36
+msgid "Reviews"
+msgstr "평가"
+
+#. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
+#: ../src/gs-shell-details.ui.h:38
+msgid "_Write a Review"
+msgstr "평가 작성(_W)"
+
+#. Translators: Button to return more application-submitted reviews.
+#: ../src/gs-shell-details.ui.h:40
+msgid "_Show More"
+msgstr "더 표시(_S)"
+
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:150
+#: ../src/gs-shell-extras.c:149
 msgid ", "
 msgstr ","
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: ../src/gs-shell-extras.c:176
+#: ../src/gs-shell-extras.c:175
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -592,38 +1058,38 @@ msgstr[0] "%s 문자에 대응하는 글꼴"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: ../src/gs-shell-extras.c:184
+#: ../src/gs-shell-extras.c:183
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
 msgstr[0] "%s용 프로그램"
 
-#: ../src/gs-shell-extras.c:226
+#: ../src/gs-shell-extras.c:225
 msgid "Unable to Find Requested Software"
 msgstr "요청한 프로그램을 찾을 수 없습니다"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: ../src/gs-shell-extras.c:323
+#: ../src/gs-shell-extras.c:321
 #, c-format
 msgid "%s not found"
 msgstr "%s이(가) 없습니다"
 
 #. TRANSLATORS: hyperlink title
-#: ../src/gs-shell-extras.c:327
+#: ../src/gs-shell-extras.c:325
 msgid "on the website"
 msgstr "웹사이트"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:334
+#: ../src/gs-shell-extras.c:332
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "%s 파일을 제공하는 프로그램이 없습니다."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:338 ../src/gs-shell-extras.c:349
-#: ../src/gs-shell-extras.c:360
+#: ../src/gs-shell-extras.c:336 ../src/gs-shell-extras.c:347
+#: ../src/gs-shell-extras.c:358
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -633,21 +1099,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:345 ../src/gs-shell-extras.c:367
+#: ../src/gs-shell-extras.c:343 ../src/gs-shell-extras.c:365
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "%s을(를) 지원하는 프로그램이 없습니다."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:356
+#: ../src/gs-shell-extras.c:354
 #, c-format
 msgid "%s is not available."
 msgstr "%s이(가) 없습니다."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:371
+#: ../src/gs-shell-extras.c:369
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -658,14 +1124,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:378
+#: ../src/gs-shell-extras.c:376
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "%s 문자를 지원하는 글꼴이 없습니다."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:382
+#: ../src/gs-shell-extras.c:380
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -674,7 +1140,7 @@ msgstr "추가 글꼴 가져오기 설정 항목 같은 %s 정보는 %s에서 �
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:393
+#: ../src/gs-shell-extras.c:391
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -685,14 +1151,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:400
+#: ../src/gs-shell-extras.c:398
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "%s을(를) 지원하는 플라즈마 자원이 없습니다."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:404
+#: ../src/gs-shell-extras.c:402
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -702,14 +1168,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:411
+#: ../src/gs-shell-extras.c:409
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "%s용 프린터 드라이버가 없습니다."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:415
+#: ../src/gs-shell-extras.c:413
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -718,12 +1184,12 @@ msgstr ""
 "이 프린터를 지원하는 드라이버 가져오기 설정 항목 같은 %s 정보는 %s에서 찾을 "
 "수 있습니다."
 
-#: ../src/gs-shell-extras.c:460
+#: ../src/gs-shell-extras.c:459
 msgid "this website"
 msgstr "이 웹사이트"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: ../src/gs-shell-extras.c:464
+#: ../src/gs-shell-extras.c:463
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -735,12 +1201,12 @@ msgstr[0] ""
 "안타깝게도, \"%s\" 검색 대상을 찾지 못했습니다. 더 알아보시려면 %s을(를) 참고"
 "하십시오."
 
-#: ../src/gs-shell-extras.c:544 ../src/gs-shell-extras.c:592
-#: ../src/gs-shell-extras.c:642
+#: ../src/gs-shell-extras.c:543 ../src/gs-shell-extras.c:591
+#: ../src/gs-shell-extras.c:641
 msgid "Failed to find any search results"
 msgstr "검색 결과 찾기에 실패했습니다"
 
-#: ../src/gs-shell-extras.c:814
+#: ../src/gs-shell-extras.c:810
 #, c-format
 msgid "%s file format"
 msgstr "%s 파일 형식"
@@ -750,207 +1216,13 @@ msgstr "%s 파일 형식"
 msgid "Codecs page"
 msgstr "코덱 페이지"
 
-#. TRANSLATORS: button text in the header when an application
-#. * can be installed
-#: ../src/gs-shell-details.c:172 ../src/gs-shell-details.ui.h:2
-msgid "_Install"
-msgstr "설치(_I)"
-
-#. TRANSLATORS: button text in the header when an application
-#. * is in the process of being installed
-#: ../src/gs-shell-details.c:183
-msgid "_Installing"
-msgstr "설치 중(_I)"
-
-#. TRANSLATORS: this is a button that allows the apps to
-#. * be installed.
-#. * The ellipsis indicates that further steps are required,
-#. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:200
-msgid "_Install…"
-msgstr "설치(_I)…"
-
-#. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:220 ../src/gs-shell-details.ui.h:3
-msgid "_Remove"
-msgstr "제거(_R)"
-
-#. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:227
-msgid "_Removing"
-msgstr "제거 중(_R)"
-
-#. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:599
-msgctxt "license"
-msgid "Unknown"
-msgstr "알 수 없음"
-
-#. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:612
-msgctxt "version"
-msgid "Unknown"
-msgstr "알 수 없음"
-
-#. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:618
-msgctxt "size"
-msgid "Calculating…"
-msgstr "계산 중…"
-
-#. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:621
-msgctxt "size"
-msgid "Unknown"
-msgstr "알 수 없음"
-
-#. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:633
-msgctxt "updated"
-msgid "Never"
-msgstr "안 함"
-
-#. TRANSLATORS: this is the application isn't in any
-#. * defined menu category
-#: ../src/gs-shell-details.c:647
-msgctxt "menu category"
-msgid "None"
-msgstr "분류 안함"
-
-#. TRANSLATORS: this is where we don't know the origin of the
-#. * application
-#: ../src/gs-shell-details.c:662
-msgctxt "origin"
-msgid "Unknown"
-msgstr "알 수 없음"
-
-#: ../src/gs-shell-details.c:927 ../src/gs-utils.c:162
-msgid "Sorry, this did not work"
-msgstr "유감스럽게도 동작하지 않습니다"
-
-#. vim: set noexpandtab:
-#: ../src/gs-shell-details.ui.h:1
-msgid "Details page"
-msgstr "세부 정보 페이지"
-
-#: ../src/gs-shell-details.ui.h:5
-msgid "Software Source Included"
-msgstr "포함된 프로그램 공급원"
-
-#: ../src/gs-shell-details.ui.h:6
-msgid ""
-"This application includes a software source which provides updates, as well "
-"as access to other software."
-msgstr ""
-"이 프로그램에는 다른 프로그램처럼 접근하여 업데이트를 제공하는 프로그램 공급"
-"원이 있습니다."
-
-#: ../src/gs-shell-details.ui.h:7
-msgid "No Software Source Included"
-msgstr "포함된 프로그램 공급원 없음"
-
-#: ../src/gs-shell-details.ui.h:8
-msgid ""
-"This application does not include a software source. It will not be updated "
-"with new versions."
-msgstr ""
-"이 프로그램에는 프로그램 공급원이 없습니다. 새 버전으로 업데이트하지 않겠습니"
-"다."
-
-#: ../src/gs-shell-details.ui.h:9
-msgid ""
-"This software is already provided by your distribution and should not be "
-"replaced."
-msgstr ""
-"이 프로그램은 이미 배포판에서 제공하며 다른 프로그램으로 바꿀 수 없습니다."
-
-#. Translators: a repository file used for installing software has been discovered.
-#: ../src/gs-shell-details.ui.h:11
-msgid "Software Source Identified"
-msgstr "식별된 프로그램 공급원"
-
-#: ../src/gs-shell-details.ui.h:12
-msgid ""
-"Adding this software source will give you access to additional software and "
-"upgrades."
-msgstr ""
-"이 프로그램 공급원을 추가하면 추가 프로그램과 업그레이드에 접근할 수 있습니"
-"다."
-
-#: ../src/gs-shell-details.ui.h:13
-msgid "Only use software sources that you trust."
-msgstr "신뢰하는 프로그램 공급원만 사용합니다."
-
-#: ../src/gs-shell-details.ui.h:14
-msgid "Internet Only Application"
-msgstr "인터넷 전용 프로그램"
-
-#: ../src/gs-shell-details.ui.h:15
-msgid ""
-"This application can only be used when there is an active internet "
-"connection."
-msgstr "이 프로그램은 인터넷에 연결되어 있을 때만 사용할 수 있습니다."
-
-#: ../src/gs-shell-details.ui.h:16
-msgid "_Website"
-msgstr "웹사이트(_W)"
-
-#: ../src/gs-shell-details.ui.h:17
-msgid "_History"
-msgstr "기록(_H)"
-
-#. Translators: A label for a button to execute the selected application.
-#: ../src/gs-shell-details.ui.h:19
-msgid "_Launch"
-msgstr "실행(_L)"
-
-#: ../src/gs-shell-details.ui.h:21 ../src/gs-sources-dialog.ui.h:8
-msgid "Version"
-msgstr "버전"
-
-#: ../src/gs-shell-details.ui.h:22
-msgid "Updated"
-msgstr "업데이트함"
-
-#: ../src/gs-shell-details.ui.h:23
-msgid "Category"
-msgstr "분류"
-
-#: ../src/gs-shell-details.ui.h:24
-msgid "Source"
-msgstr "공급원"
-
-#: ../src/gs-shell-details.ui.h:25
-msgid "License"
-msgstr "라이선스"
-
-#: ../src/gs-shell-details.ui.h:26
-msgid "Size"
-msgstr "크기"
-
-#: ../src/gs-shell-details.ui.h:27
-msgid "Developer"
-msgstr "개발자"
-
-#. TRANSLATORS: This is the header dividing the normal
-#. * applications and the addons
-#. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:441
-#: ../src/gs-update-list.c:106 ../src/plugins/menu-spec-common.c:210
-msgid "Add-ons"
-msgstr "추가 프로그램"
-
-#: ../src/gs-shell-details.ui.h:29
-msgid "Selected add-ons will be installed with the application."
-msgstr "선택한 추가 기능을 프로그램과 함께 설치합니다."
-
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:431
+#: ../src/gs-shell-installed.c:421
 msgid "System Applications"
 msgstr "시스템 프로그램"
 
-#: ../src/gs-shell-installed.c:532
+#: ../src/gs-shell-installed.c:522
 msgid "Click on items to select them"
 msgstr "항목을 선택하려면 항목을 마우스로 누르십시오"
 
@@ -971,23 +1243,31 @@ msgstr "폴더로 이동(_M)…"
 msgid "_Remove from Folder"
 msgstr "폴더에서 제거(_R)"
 
+#: ../src/gs-shell-moderate.ui.h:1
+msgid "Moderate page"
+msgstr "관리 페이지"
+
+#: ../src/gs-shell-moderate.ui.h:2
+msgid "There are no reviews to moderate"
+msgstr "관리할 평가가 없습니다"
+
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:368
+#: ../src/gs-shell-overview.c:367
 msgid "Recommended Audio Applications"
 msgstr "추천 오디오 프로그램"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:373
+#: ../src/gs-shell-overview.c:372
 msgid "Recommended Games"
 msgstr "추천 게임"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:378
+#: ../src/gs-shell-overview.c:377
 msgid "Recommended Graphics Applications"
 msgstr "추천 그래픽 프로그램"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:383
+#: ../src/gs-shell-overview.c:382
 msgid "Recommended Office Applications"
 msgstr "추천 사무용 프로그램"
 
@@ -1000,7 +1280,7 @@ msgstr "개요 페이지"
 msgid "Featured Application"
 msgstr "추천 프로그램"
 
-#. Translators: This is a heading for software which has been featured (
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: ../src/gs-shell-overview.ui.h:4
 msgid "Editor's Picks"
 msgstr "편집자 추천"
@@ -1023,117 +1303,95 @@ msgid "No Application Found"
 msgstr "프로그램이 없습니다"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:144
+#: ../src/gs-shell-updates.c:146
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:147
+#: ../src/gs-shell-updates.c:149
 msgid "%l:%M %p"
 msgstr "%p %l:%M"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:153
+#: ../src/gs-shell-updates.c:155
 msgid "Yesterday, %R"
 msgstr "어제, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:157
+#: ../src/gs-shell-updates.c:159
 msgid "Yesterday, %l:%M %p"
 msgstr "어제, %p %l:%M"
 
-#: ../src/gs-shell-updates.c:160
+#: ../src/gs-shell-updates.c:162
 msgid "Two days ago"
 msgstr "2일 전"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:164
 msgid "Three days ago"
 msgstr "3일 전"
 
-#: ../src/gs-shell-updates.c:164
+#: ../src/gs-shell-updates.c:166
 msgid "Four days ago"
 msgstr "4일 전"
 
-#: ../src/gs-shell-updates.c:166
+#: ../src/gs-shell-updates.c:168
 msgid "Five days ago"
 msgstr "5일 전"
 
-#: ../src/gs-shell-updates.c:168
+#: ../src/gs-shell-updates.c:170
 msgid "Six days ago"
 msgstr "6일 전"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:172
 msgid "One week ago"
 msgstr "1주 전"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:174
 msgid "Two weeks ago"
 msgstr "2주 전"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:176
+#: ../src/gs-shell-updates.c:178
 msgid "%e %B %Y"
 msgstr "%Y년 %B %e일"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:192
+#: ../src/gs-shell-updates.c:194
 msgid "Downloading new updates…"
 msgstr "새 업데이트 다운로드 중…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:196
+#: ../src/gs-shell-updates.c:198
 msgid "Looking for new updates…"
 msgstr "새 업데이트 찾는 중…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:251
+#: ../src/gs-shell-updates.c:239
 msgid "Setting up updates…"
 msgstr "업데이트 설정 중…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:252 ../src/gs-shell-updates.c:259
+#: ../src/gs-shell-updates.c:240 ../src/gs-shell-updates.c:247
 msgid "(This could take a while)"
 msgstr "(시간이 좀 걸릴 수 있습니다)"
 
-#. TRANSLATORS: this is when the updates panel is starting up
-#: ../src/gs-shell-updates.c:264
-msgid "Checking for updates…"
-msgstr "업데이트 확인 중…"
-
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:405
+#: ../src/gs-shell-updates.c:403
 #, c-format
 msgid "Last checked: %s"
 msgstr "마지막 확인 일시: %s"
 
-#. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:771
-msgid "No Network"
-msgstr "네트워크 연결이 없습니다"
-
-#. TRANSLATORS: we need network
-#. * to do the updates check
-#: ../src/gs-shell-updates.c:775
-msgid "Internet access is required to check for updates."
-msgstr "업데이트를 확인하려면 인터넷 접근이 필요합니다."
-
-#. TRANSLATORS: this is a link to the
-#. * control-center network panel
-#: ../src/gs-shell-updates.c:779
-msgid "Network Settings"
-msgstr "네트워크 설정"
-
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:798
+#: ../src/gs-shell-updates.c:809
 msgid "Charges may apply"
 msgstr "요금이 청구될 수 있음"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:802
+#: ../src/gs-shell-updates.c:813
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1142,9 +1400,26 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:806
+#: ../src/gs-shell-updates.c:817
 msgid "Check Anyway"
 msgstr "어쨌든 확인"
+
+#. TRANSLATORS: can't do updates check
+#: ../src/gs-shell-updates.c:833
+msgid "No Network"
+msgstr "네트워크 연결이 없습니다"
+
+#. TRANSLATORS: we need network
+#. * to do the updates check
+#: ../src/gs-shell-updates.c:837
+msgid "Internet access is required to check for updates."
+msgstr "업데이트를 확인하려면 인터넷 접근이 필요합니다."
+
+#. TRANSLATORS: this is a link to the
+#. * control-center network panel
+#: ../src/gs-shell-updates.c:841
+msgid "Network Settings"
+msgstr "네트워크 설정"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-updates.ui.h:1
@@ -1180,7 +1455,7 @@ msgstr "업데이트를 자동으로 관리함"
 
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
-#: ../src/gs-sources-dialog.c:93
+#: ../src/gs-sources-dialog.c:94
 msgid "No applications or addons installed; other software might still be"
 msgstr ""
 "설치한 프로그램 또는 추가 기능이 없습니다. 다른 프로그램도 마찬가지일지도 모"
@@ -1188,7 +1463,7 @@ msgstr ""
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:97
+#: ../src/gs-sources-dialog.c:98
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
@@ -1196,7 +1471,7 @@ msgstr[0] "프로그램 %i개 설치"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:103
+#: ../src/gs-sources-dialog.c:104
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
@@ -1205,7 +1480,7 @@ msgstr[0] "추가 기능 %i개 설치"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
-#: ../src/gs-sources-dialog.c:110
+#: ../src/gs-sources-dialog.c:111
 #, c-format
 msgid "%i application"
 msgid_plural "%i applications"
@@ -1214,7 +1489,7 @@ msgstr[0] "프로그램 %i개"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
-#: ../src/gs-sources-dialog.c:116
+#: ../src/gs-sources-dialog.c:117
 #, c-format
 msgid "%i add-on"
 msgid_plural "%i add-ons"
@@ -1224,30 +1499,30 @@ msgstr[0] "추가 기능 %i개"
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: ../src/gs-sources-dialog.c:123
+#: ../src/gs-sources-dialog.c:124
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
 msgstr[0] "%s 및 %s을(를) 설치했습니다"
 
-#: ../src/gs-sources-dialog.c:321 ../src/gs-sources-dialog.ui.h:12
+#: ../src/gs-sources-dialog.c:322 ../src/gs-sources-dialog.ui.h:12
 msgid "Remove Source"
 msgstr "공급원 제거"
 
-#: ../src/gs-sources-dialog.c:335
+#: ../src/gs-sources-dialog.c:336
 msgid "Removing…"
 msgstr "제거 중…"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:415
+#: ../src/gs-sources-dialog.c:402
 msgid "the operating system"
 msgstr "운영체제"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:486
+#: ../src/gs-sources-dialog.c:473
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1294,84 +1569,6 @@ msgstr "추가함"
 msgid "Website"
 msgstr "웹사이트"
 
-#. TRANSLATORS: this is where the packager did not write a
-#. * description for the update
-#: ../src/gs-update-dialog.c:120
-msgid "No update description available."
-msgstr "업데이트 설명이 없습니다."
-
-#. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:223
-msgid "Installed Updates"
-msgstr "설치한 업데이트"
-
-#. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:236
-#, c-format
-msgid "Installed on %s"
-msgstr "%s에 설치함"
-
-#: ../src/gs-update-dialog.ui.h:2
-msgid "No updates have been installed on this system."
-msgstr "이 시스템에 설치한 업데이트가 없습니다."
-
-#: ../src/gs-update-monitor.c:108
-msgid "Security Updates Pending"
-msgstr "대기 중인 보안 업데이트"
-
-#: ../src/gs-update-monitor.c:109
-msgid "It is recommended that you install important updates now"
-msgstr "지금 중요한 업데이트를 설치하시는 것이 좋습니다"
-
-#: ../src/gs-update-monitor.c:112
-msgid "Restart & Install"
-msgstr "다시 시작하고 설치"
-
-#: ../src/gs-update-monitor.c:116
-msgid "Software Updates Available"
-msgstr "프로그램 업데이트가 있습니다"
-
-#: ../src/gs-update-monitor.c:117
-msgid "Important OS and application updates are ready to be installed"
-msgstr "중요한 OS 업데이트와 프로그램 업데이트에 대한 설치 준비가 끝났습니다"
-
-#: ../src/gs-update-monitor.c:120
-msgid "Not Now"
-msgstr "아직 하지 않음"
-
-#: ../src/gs-update-monitor.c:121
-msgid "View"
-msgstr "보기"
-
-#: ../src/gs-update-monitor.c:167
-msgid "Software Update Installed"
-msgid_plural "Software Updates Installed"
-msgstr[0] "프로그램 업데이트를 설치했습니다"
-
-#. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:171
-msgid "An important OS update has been installed."
-msgid_plural "Important OS updates have been installed."
-msgstr[0] "중요한 OS 업데이트를 설치했습니다."
-
-#: ../src/gs-update-monitor.c:177
-msgid "Software Updates Failed"
-msgstr "프로그램 업데이트에 실패했습니다"
-
-#. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:179
-msgid "An important OS update failed to be installed."
-msgstr "중요한 OS 업데이트 설치에 실패했습니다."
-
-#: ../src/gs-update-monitor.c:185
-msgid "Review"
-msgstr "검토"
-
-#: ../src/gs-update-monitor.c:188
-msgid "Show Details"
-msgstr "상세정보 표시"
-
-#. vim: set noexpandtab:
 #: ../src/gs-star-widget.ui.h:1
 msgid "One Star"
 msgstr "별점 한개"
@@ -1392,37 +1589,239 @@ msgstr "별점 네개"
 msgid "Five Stars"
 msgstr "별점 다섯개"
 
+#. TRANSLATORS: this is where the
+#. * packager did not write a
+#. * description for the update
+#: ../src/gs-update-dialog.c:119
+msgid "No update description available."
+msgstr "업데이트 설명이 없습니다."
+
+#. TRANSLATORS: this is the subtitle of the installed updates dialog window.
+#. %s will be replaced by the date when the updates were installed.
+#. The date format is defined by the locale's preferred date representation
+#. ("%x" in strftime.)
+#: ../src/gs-update-dialog.c:225
+#, c-format
+msgid "Installed on %s"
+msgstr "%s에 설치함"
+
+#. TRANSLATORS: this is the title of the installed updates dialog window
+#: ../src/gs-update-dialog.c:245
+msgid "Installed Updates"
+msgstr "설치한 업데이트"
+
+#: ../src/gs-update-dialog.ui.h:2
+msgid "No updates have been installed on this system."
+msgstr "이 시스템에 설치한 업데이트가 없습니다."
+
+#: ../src/gs-update-monitor.c:89
+msgid "Security Updates Pending"
+msgstr "대기 중인 보안 업데이트"
+
+#: ../src/gs-update-monitor.c:90
+msgid "It is recommended that you install important updates now"
+msgstr "지금 중요한 업데이트를 설치하시는 것이 좋습니다"
+
+#: ../src/gs-update-monitor.c:93
+msgid "Restart & Install"
+msgstr "다시 시작하고 설치"
+
+#: ../src/gs-update-monitor.c:97
+msgid "Software Updates Available"
+msgstr "프로그램 업데이트가 있습니다"
+
+#: ../src/gs-update-monitor.c:98
+msgid "Important OS and application updates are ready to be installed"
+msgstr "중요한 OS 업데이트와 프로그램 업데이트에 대한 설치 준비가 끝났습니다"
+
+#: ../src/gs-update-monitor.c:101
+msgid "Not Now"
+msgstr "아직 하지 않음"
+
+#: ../src/gs-update-monitor.c:102
+msgid "View"
+msgstr "보기"
+
+#. TRANSLATORS: this is a distro upgrade, the replacement would be the
+#. * distro name, e.g. 'Fedora'
+#: ../src/gs-update-monitor.c:230
+#, c-format
+msgid "A new version of %s is available to install"
+msgstr "%s 새 버전을 설치할 수 있습니다"
+
+#. TRANSLATORS: this is a distro upgrade
+#: ../src/gs-update-monitor.c:234
+msgid "Software Upgrade Available"
+msgstr "업그레이드할 프로그램이 있습니다"
+
+#. TRANSLATORS: title when we offline updates have failed
+#: ../src/gs-update-monitor.c:428
+msgid "Software Updates Failed"
+msgstr "프로그램 업데이트에 실패했습니다"
+
+#. TRANSLATORS: message when we offline updates have failed
+#: ../src/gs-update-monitor.c:430
+msgid "An important OS update failed to be installed."
+msgstr "중요한 OS 업데이트 설치에 실패했습니다."
+
+#: ../src/gs-update-monitor.c:432
+msgid "Show Details"
+msgstr "상세정보 표시"
+
+#. TRANSLATORS: title when we've done offline updates
+#: ../src/gs-update-monitor.c:447
+msgid "Software Update Installed"
+msgid_plural "Software Updates Installed"
+msgstr[0] "프로그램 업데이트를 설치했습니다"
+
+#. TRANSLATORS: message when we've done offline updates
+#: ../src/gs-update-monitor.c:451
+msgid "An important OS update has been installed."
+msgid_plural "Important OS updates have been installed."
+msgstr[0] "중요한 OS 업데이트를 설치했습니다."
+
+#. TRANSLATORS: Button to look at the updates that were installed.
+#. * Note that it has nothing to do with the application reviews, the
+#. * users can't express their opinions here. In some languages
+#. * "Review (evaluate) something" is a different translation than
+#. * "Review (browse) something."
+#: ../src/gs-update-monitor.c:462
+msgctxt "updates"
+msgid "Review"
+msgstr "평가"
+
+#. TRANSLATORS: these are show_detailed_error messages from the
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: ../src/gs-update-monitor.c:537
+msgid "Detailed errors from the package manager follow:"
+msgstr "패키지 관리자의 자세한 오류 정보는 다음과 같습니다:"
+
+#. TRANSLATORS: this is when the offline update failed
+#: ../src/gs-update-monitor.c:598
+msgid "Failed To Update"
+msgstr "업데이트에 실패했습니다"
+
+#. TRANSLATORS: the user must have updated manually after
+#. * the updates were prepared
+#: ../src/gs-update-monitor.c:604
+msgid "The system was already up to date."
+msgstr "시스템이 이미 최신입니다."
+
+#. TRANSLATORS: the user aborted the update manually
+#: ../src/gs-update-monitor.c:609
+msgid "The update was cancelled."
+msgstr "업데이트를 취소했습니다."
+
+#. TRANSLATORS: the package manager needed to download
+#. * something with no network available
+#: ../src/gs-update-monitor.c:615
+msgid ""
+"Internet access was required but wasn’t available. Please make sure that you "
+"have internet access and try again."
+msgstr ""
+"인터넷 연결이 필요하지만 연결할 수 없습니다. 인터넷 연결을 확인하고 다시 시도"
+"하십시오."
+
+#. TRANSLATORS: if the package is not signed correctly
+#: ../src/gs-update-monitor.c:621
+msgid ""
+"There were security issues with the update. Please consult your software "
+"provider for more details."
+msgstr ""
+"업데이트에 보안 문제가 있습니다. 자세한 문제를 알아보려면 프로그램 공급자에"
+"게 연락하십시오."
+
+#. TRANSLATORS: we ran out of disk space
+#: ../src/gs-update-monitor.c:627
+msgid ""
+"There wasn’t enough disk space. Please free up some space and try again."
+msgstr ""
+"디스크 공간이 충분하지 않습니다. 여분의 공간을 확보하고 다시 시도하십시오."
+
+#. TRANSLATORS: We didn't handle the error type
+#: ../src/gs-update-monitor.c:632
+msgid ""
+"We’re sorry: the update failed to install. Please wait for another update "
+"and try again. If the problem persists, contact your software provider."
+msgstr ""
+"죄송합니다. 업데이트 설치에 실패했습니다. 다른 업데이트를 기다린 후 다시 시도"
+"하십시오. 문제가 계속되면 프로그램 공급자에게 연락하십시오."
+
+#. TRANSLATORS: This is the text displayed when a distro
+#. * upgrade is available. First %s is the distro name and the
+#. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
+#: ../src/gs-upgrade-banner.c:75
+#, c-format
+msgid "%s %s Now Available"
+msgstr "%s %s이(가) 있습니다"
+
+#. TRANSLATORS: This is the text displayed while downloading a
+#. * distro upgrade. First %s is the distro name and the 2nd %s
+#. * is the version, e.g. "Downloading Fedora 23"
+#: ../src/gs-upgrade-banner.c:88
+#, c-format
+msgid "Downloading %s %s"
+msgstr "%s %s 다운로드 중…"
+
+#. TRANSLATORS: This is the text displayed when a distro
+#. * upgrade has been downloaded and is ready to be installed.
+#. * First %s is the distro name and the 2nd %s is the version,
+#. * e.g. "Fedora 23 Ready to be Installed"
+#: ../src/gs-upgrade-banner.c:102
+#, c-format
+msgid "%s %s Ready to be Installed"
+msgstr "%s %s 설치 준비가 끝났습니다"
+
+#. vim: set noexpandtab:
+#: ../src/gs-upgrade-banner.ui.h:1
+msgid "A major upgrade, with new features and added polish."
+msgstr "새 기능을 추가하고 매끄럽게 다듬은 주요 버전 수준 업그레이드."
+
+#: ../src/gs-upgrade-banner.ui.h:2
+msgid "_Learn More"
+msgstr "더 알아보기(_L)"
+
+#: ../src/gs-upgrade-banner.ui.h:3
+msgid "_Download"
+msgstr "다운로드(_D)"
+
+#: ../src/gs-upgrade-banner.ui.h:5
+msgid ""
+"It is recommended that you back up your data and files before upgrading."
+msgstr "업데이트하기 전 데이터와 파일을 백업하는 것이 좋습니다."
+
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:136
+#: ../src/gs-utils.c:140
 #, c-format
 msgid "%s is now installed"
 msgstr "%s을(를) 설치했습니다"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:140
+#: ../src/gs-utils.c:144
 msgid "Launch"
 msgstr "실행"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:166
+#: ../src/gs-utils.c:170
 #, c-format
 msgid "Installation of %s failed."
 msgstr "%s 설치에 실패했습니다."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:171
+#: ../src/gs-utils.c:175
 #, c-format
 msgid "Removal of %s failed."
 msgstr "%s 제거에 실패했습니다."
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:244
+#: ../src/gs-utils.c:248
 msgid "Install Third-Party Software?"
 msgstr "제 3자 프로그램을 설치합니까?"
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:248
+#: ../src/gs-utils.c:252
 msgid "Enable Third-Party Software Source?"
 msgstr "제 3자 프로그램 공급원을 활성화하시겠습니까?"
 
@@ -1430,7 +1829,7 @@ msgstr "제 3자 프로그램 공급원을 활성화하시겠습니까?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
 #.
-#: ../src/gs-utils.c:266
+#: ../src/gs-utils.c:270
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1443,43 +1842,69 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:276
+#: ../src/gs-utils.c:280
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "“%s”에서 %s 프로그램을 제공함."
 
 #. TRANSLATORS: a software source is a repo
-#: ../src/gs-utils.c:286
+#: ../src/gs-utils.c:290
 msgid "This software source must be enabled to continue installation."
 msgstr "설치를 계속하려면 이 프로그램 공급원을 활성화해야합니다."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:296
+#: ../src/gs-utils.c:300
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "일부 국가에서는 %s 설치 및 사용이 법에 저촉될 수 있습니다."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:302
+#: ../src/gs-utils.c:306
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr "일부 국가에서는 이 코덱의 설치 및 사용이 법에 저촉될 수 있습니다."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:309
+#: ../src/gs-utils.c:313
 msgid "Don't Warn Again"
 msgstr "다시 경고 안함"
 
 #. TRANSLATORS: button text
-#: ../src/gs-utils.c:318
+#: ../src/gs-utils.c:322
 msgid "Enable and Install"
 msgstr "활성화 및 설치"
 
-#: ../src/plugins/gs-plugin-appstream.c:226
+#. vim: set noexpandtab:
+#: ../src/menus.ui.h:1
+msgid "_Software Sources"
+msgstr "소프트웨어 공급원(_S)"
+
+#: ../src/menus.ui.h:2
+msgid "_About"
+msgstr "정보(_A)"
+
+#: ../src/menus.ui.h:3
+msgid "_Quit"
+msgstr "끝내기(_Q)"
+
+#: ../src/org.gnome.Software.desktop.in.h:2
+msgid "Add, remove or update software on this computer"
+msgstr "이 컴퓨터에 프로그램을 추가, 제거, 업데이트 합니다"
+
+#: ../src/org.gnome.Software.desktop.in.h:3
+msgid ""
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
+"Software;App;Store;"
+msgstr ""
+"Updates;업데이트;Upgrade;업그레이드;Sources;공급원;Repositories;저장소;"
+"Preferences;기본 설정;Install;설치;Uninstall;설치 제거;Program;프로그램;"
+"Software;소프트웨어;App;앱;Store;스토어;"
+
+#: ../src/plugins/gs-plugin-appstream.c:199
 #, c-format
 msgid "No AppStream data found"
 msgstr "앱 스트림 데이터가 없습니다"
 
-#: ../src/plugins/gs-plugin-moduleset.c:132
+#: ../src/plugins/gs-plugin-moduleset.c:153
 msgid "Featured"
 msgstr "추천"
 
@@ -2349,225 +2774,12 @@ msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "언어 패키지"
 
-#: ../src/menus.ui.h:1
-msgid "_Software Sources"
-msgstr "소프트웨어 공급원(_S)"
+#: ../src/plugins/menu-spec-common.c:215
+msgctxt "Menu subcategory of Add-ons"
+msgid "Shell Extensions"
+msgstr "쉘 확장 기능"
 
-#: ../src/menus.ui.h:2
-msgid "_About"
-msgstr "정보(_A)"
-
-#: ../src/menus.ui.h:3
-msgid "_Quit"
-msgstr "끝내기(_Q)"
-
-#~ msgid "Enter GApplication service mode"
-#~ msgstr "GApplication 서비스 모드 진입"
-
-#~ msgid "Updates"
-#~ msgstr "업데이트"
-
-#~ msgid "Network access was required but not available."
-#~ msgstr "네트워크 접근이 필요하지만 연결이 없습니다."
-
-#~ msgid "An update was not signed in the correct way."
-#~ msgstr "업데이트가 올바른 방식으로 서명처리되지 않았습니다."
-
-#~ msgid "The update could not be completed."
-#~ msgstr "업데이트를 완료할 수 없습니다."
-
-#~ msgid "An offline update was requested but no packages required updating."
-#~ msgstr "오프라인 업데이트를 요청했지만 업데이트가 필요한 패키지가 없습니다."
-
-#~ msgid "No space was left on the drive."
-#~ msgstr "드라이브에 공간이 없습니다."
-
-#~ msgid "An update failed to install correctly."
-#~ msgstr "업데이트를 올바르게 설치하는데 실패했습니다."
-
-#~ msgid "The offline update failed in an unexpected way."
-#~ msgstr "예상치 못한 문제로 오프라인 업데이트에 실패했습니다."
-
-#~ msgid "No software installed"
-#~ msgstr "설치한 프로그램이 없습니다"
-
-#~ msgid "No sources found."
-#~ msgstr "공급원이 없습니다."
-
-#~ msgid "OK"
-#~ msgstr "확인"
-
-#~ msgid "%i application and %i add-ons installed"
-#~ msgid_plural "%i applications and %i add-ons installed"
-#~ msgstr[0] "프로그램 %i개, 추가 기능 %i개 설치함"
-
-#~ msgid "Web app"
-#~ msgstr "웹 앱"
-
-#~ msgid "Proprietary"
-#~ msgstr "상업용"
-
-#~ msgid "Picks"
-#~ msgstr "배포판 선정"
-
-#~ msgid "January 30, 2014"
-#~ msgstr "2014년 1월 30일"
-
-#~ msgid "Set the specified debugging level"
-#~ msgstr "지정 디버그 레벨 설정"
-
-#~ msgid "_Pending"
-#~ msgstr "대기(_P)"
-
-#~ msgid "Complicated!"
-#~ msgstr "복잡합니다!"
-
-#~ msgid "Recent Software Updates"
-#~ msgstr "최근 소프트웨어 업데이트"
-
-#~ msgctxt "Menu subcategory of Development"
-#~ msgid "Databases"
-#~ msgstr "데이터베이스"
-
-#~ msgctxt "Menu subcategory of Network"
-#~ msgid "Ham Radio"
-#~ msgstr "아마추어 무선통신 라디오"
-
-#~ msgctxt "Menu subcategory of Network"
-#~ msgid "Web Development"
-#~ msgstr "웹 개발"
-
-#~ msgctxt "Menu subcategory of Utility"
-#~ msgid "File Tools"
-#~ msgstr "파일 도구"
-
-#~ msgctxt "Menu subcategory of Utility"
-#~ msgid "Maps"
-#~ msgstr "지도"
-
-#~ msgctxt "Menu subcategory of Utility"
-#~ msgid "Spirituality"
-#~ msgstr "형이상학"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Fonts"
-#~ msgstr "글꼴"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Codecs"
-#~ msgstr "코덱"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Input Sources"
-#~ msgstr "입력기"
-
-#~ msgctxt "Menu subcategory of Addons"
-#~ msgid "Language Packs"
-#~ msgstr "언어 패키지"
-
-#~ msgid "_Done"
-#~ msgstr "완료(_D)"
-
-#~ msgid "Application _Folders"
-#~ msgstr "프로그램 폴더(_F)"
-
-#~ msgid "Done"
-#~ msgstr "완료"
-
-#~ msgid ""
-#~ "Add or remove folders. Your application folders can be found in the "
-#~ "Activities Overview."
-#~ msgstr ""
-#~ "폴더를 추가하거나 제거합니다. 프로그램 폴더는 활동 개요에서 찾을 수 있습니"
-#~ "다."
-
-#~ msgid ""
-#~ "Choose a folder for %s. Your application folders can be found in the "
-#~ "Activities Overview."
-#~ msgstr ""
-#~ "%s의 폴더를 고르십시오. 프로그램 폴더는 활동 개요에서 찾을 수 있습니다."
-
-#~ msgid ""
-#~ "Choose a folder for %s and %s. Your application folders can be found in "
-#~ "the Activities Overview."
-#~ msgstr ""
-#~ "%s, %s의 폴더를 고르십시오. 프로그램 폴더는 활동 개요에서 찾을 수 있습니"
-#~ "다."
-
-#~ msgid ""
-#~ "Choose a folder for %s, %s and %s. Your application folders can be found "
-#~ "in the Activities Overview."
-#~ msgstr ""
-#~ "%s, %s, %s의 폴더를 고르십시오. 프로그램 폴더는 활동 개요에서 찾을 수 있습"
-#~ "니다."
-
-#~ msgid ""
-#~ "Choose a folder for the selected applications. Your application folders "
-#~ "can be found in the Activities Overview."
-#~ msgstr ""
-#~ "선택한 프로그램의 폴더를 고르십시오. 프로그램 폴더는 활동 개요에서 찾을 "
-#~ "수 있습니다."
-
-#~ msgid "Update"
-#~ msgstr "업데이트"
-
-#~ msgid "General"
-#~ msgstr "일반"
-
-#~ msgid "Settings"
-#~ msgstr "설정"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Accessibility"
-#~ msgstr "접근성"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Hardware Settings"
-#~ msgstr "하드웨어 설정"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Package Manager"
-#~ msgstr "패키지 관리자"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Printing"
-#~ msgstr "출력"
-
-#~ msgctxt "Menu subcategory of Settings"
-#~ msgid "Security"
-#~ msgstr "보안"
-
-#~ msgid "GNU Image Manipulation Program"
-#~ msgstr "GNU 그림 편집 프로그램"
-
-#~ msgid "The Gimp"
-#~ msgstr "김프"
-
-#~ msgid ""
-#~ "GIMP (GNU Image Manipulation Program) is a powerful image composition "
-#~ "and\n"
-#~ "editing program, which can be extremely useful for creating logos and "
-#~ "other\n"
-#~ "graphics for webpages. GIMP has many of the tools and filters you would "
-#~ "expect\n"
-#~ "to find in similar commercial offerings, and some interesting extras as "
-#~ "well.\n"
-#~ "GIMP provides a large image manipulation toolbox, including channel "
-#~ "operations\n"
-#~ "and layers, effects, sub-pixel imaging and anti-aliasing, and "
-#~ "conversions, all\n"
-#~ "with multi-level undo.\n"
-#~ msgstr ""
-#~ "김프(GNU 그림 편집 프로그램)는 웹페이지에 사용할 로고나 그래픽을 만드는"
-#~ "데\n"
-#~ "특히 쓸모있는 강력한 이미지 합성, 편집 프로그램입니다. GIMP는 상업용 프로"
-#~ "그램\n"
-#~ "에서 제공하는 것과 유사한 수많은 도구와 필터가 있으며, 몇가지 추가기능 또"
-#~ "한\n"
-#~ "갖춰져 있습니다. GIMP는 채널 처리, 레이어, 효과, 서브픽셀처리, 안티 애일리"
-#~ "어싱\n"
-#~ "변환, 다단계 실행 취소를 포함하는 대규모 이미지 조작 도구 모음을 제공합니"
-#~ "다.\n"
-
-#~ msgid "DataVisualization"
-#~ msgstr "데이터 시각화"
+#: ../src/plugins/menu-spec-common.c:216
+msgctxt "Menu subcategory of Add-ons"
+msgid "Localization"
+msgstr "지역화"
