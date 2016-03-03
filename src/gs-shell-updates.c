@@ -65,6 +65,7 @@ struct _GsShellUpdates
 	gboolean		 in_progress;
 	GsShell			*shell;
 	GNetworkMonitor		*network_monitor;
+	gulong			 network_changed_handler;
 	GsPluginStatus		 last_status;
 	GsShellUpdatesState	 state;
 	gboolean		 has_agreed_to_mobile_data;
@@ -1152,9 +1153,9 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	gs_shell_updates_monitor_permission (self);
 
 	if (self->network_monitor != NULL) {
-		g_signal_connect (self->network_monitor, "network-changed",
-				  G_CALLBACK (gs_shell_updates_notify_network_state_cb),
-				  self);
+		self->network_changed_handler = g_signal_connect (self->network_monitor, "network-changed",
+						G_CALLBACK (gs_shell_updates_notify_network_state_cb),
+						self);
 	}
 
 	/* chain up */
@@ -1172,6 +1173,10 @@ gs_shell_updates_dispose (GObject *object)
 {
 	GsShellUpdates *self = GS_SHELL_UPDATES (object);
 
+	if (self->network_changed_handler != 0) {
+		g_signal_handler_disconnect (self->network_monitor, self->network_changed_handler);
+		self->network_changed_handler = 0;
+	}
 	if (self->cancellable_refresh != NULL) {
 		g_cancellable_cancel (self->cancellable_refresh);
 		g_clear_object (&self->cancellable_refresh);
