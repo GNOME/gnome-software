@@ -62,6 +62,7 @@ struct _GsApplication {
 #endif
 	GsShellSearchProvider *search_provider;
 	GNetworkMonitor *network_monitor;
+	gulong		 network_changed_handler;
 	GSettings       *settings;
 };
 
@@ -181,8 +182,8 @@ gs_application_monitor_network (GsApplication *app)
 		return;
 	app->network_monitor = g_object_ref (network_monitor);
 
-	g_signal_connect (app->network_monitor, "network-changed",
-			  G_CALLBACK (network_changed_cb), app);
+	app->network_changed_handler = g_signal_connect (app->network_monitor, "network-changed",
+							 G_CALLBACK (network_changed_cb), app);
 
 	network_changed_cb (app->network_monitor,
 			    g_network_monitor_get_network_available (app->network_monitor),
@@ -698,6 +699,10 @@ gs_application_dispose (GObject *object)
 	g_clear_object (&app->provider);
 	g_clear_object (&app->update_monitor);
 	g_clear_object (&app->profile);
+	if (app->network_changed_handler != 0) {
+		g_signal_handler_disconnect (app->network_monitor, app->network_changed_handler);
+		app->network_changed_handler = 0;
+	}
 	g_clear_object (&app->network_monitor);
 #ifdef HAVE_PACKAGEKIT
 	g_clear_object (&app->dbus_helper);
