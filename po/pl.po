@@ -10,8 +10,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-02-28 16:57+0100\n"
-"PO-Revision-Date: 2016-02-28 16:58+0100\n"
+"POT-Creation-Date: 2016-03-03 17:04+0100\n"
+"PO-Revision-Date: 2016-03-03 17:05+0100\n"
 "Last-Translator: Piotr Drąg <piotrdrag@gmail.com>\n"
 "Language-Team: Polish <gnomepl@aviary.pl>\n"
 "Language: pl\n"
@@ -140,12 +140,18 @@ msgstr "Minimalna karma recenzji"
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Recenzje o niższej karmie nie będą wyświetlane."
 
+#: ../data/org.gnome.software.gschema.xml.h:19
+msgid "A list of official sources that should not be considered 3rd party"
+msgstr ""
+"Lista oficjalnych źródeł, które powinny być traktowane jako dostarczane "
+"przez stronę trzecią"
+
 #: ../src/app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Dodanie do katalogu programów"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:281
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:283
 #: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "_Anuluj"
@@ -156,8 +162,8 @@ msgstr "_Dodaj"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:79
-#: ../src/gs-app-tile.c:82 ../src/gs-feature-tile.c:68
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:78
+#: ../src/gs-app-tile.c:81 ../src/gs-feature-tile.c:68
 #: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
@@ -232,7 +238,7 @@ msgstr "Oczekujące"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
 #: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:312
-#: ../src/gs-app-tile.c:88 ../src/gs-app-tile.c:91
+#: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
 msgid "Installing"
 msgstr "Instalowanie"
 
@@ -241,7 +247,7 @@ msgstr "Instalowanie"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
 #: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:321
-#: ../src/gs-app-tile.c:97 ../src/gs-app-tile.c:100
+#: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
 msgid "Removing"
 msgstr "Usuwanie"
 
@@ -250,7 +256,7 @@ msgstr "Usuwanie"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1321 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1315 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " i "
 
@@ -258,17 +264,17 @@ msgstr " i "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1329
+#: ../src/gs-app.c:1323
 msgid " or "
 msgstr " lub "
 
 #. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1352
+#: ../src/gs-app.c:1346
 msgid "Proprietary"
 msgstr "Własnościowy"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1362
+#: ../src/gs-app.c:1356
 msgid "Public domain"
 msgstr "Domena publiczna"
 
@@ -804,14 +810,14 @@ msgstr "Ustawienia rozszerzenia"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:193 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:195 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:4
 msgid "_Install"
 msgstr "_Zainstaluj"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:204
+#: ../src/gs-shell-details.c:206
 msgid "_Installing"
 msgstr "_Instalowanie"
 
@@ -819,66 +825,66 @@ msgstr "_Instalowanie"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:222
+#: ../src/gs-shell-details.c:224
 msgid "_Install…"
 msgstr "_Zainstaluj…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:268 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:270 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "_Usuń"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:275
+#: ../src/gs-shell-details.c:277
 msgid "_Removing"
 msgstr "_Usuwanie"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:647
 msgctxt "license"
 msgid "Unknown"
 msgstr "Nieznana"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:661
+#: ../src/gs-shell-details.c:660
 msgctxt "version"
 msgid "Unknown"
 msgstr "Nieznana"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:667
+#: ../src/gs-shell-details.c:666
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Obliczanie…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:670
+#: ../src/gs-shell-details.c:669
 msgctxt "size"
 msgid "Unknown"
 msgstr "Nieznany"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:682
+#: ../src/gs-shell-details.c:681
 msgctxt "updated"
 msgid "Never"
 msgstr "Nigdy"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:696
+#: ../src/gs-shell-details.c:695
 msgctxt "menu category"
 msgid "None"
 msgstr "Brak"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:713
+#: ../src/gs-shell-details.c:712
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Nieznane"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:799
+#: ../src/gs-shell-details.c:758
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -887,12 +893,12 @@ msgstr ""
 "internetowe."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:810
+#: ../src/gs-shell-details.c:769
 msgid "This software comes from a 3rd party."
 msgstr "To oprogramowanie jest dostarczane przez stronę trzecią."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:819
+#: ../src/gs-shell-details.c:778
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
@@ -900,16 +906,16 @@ msgstr ""
 "własnościowe składniki."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:828
+#: ../src/gs-shell-details.c:787
 msgid "This software may contain non-free components."
 msgstr "To oprogramowanie może zawierać własnościowe składniki."
 
-#: ../src/gs-shell-details.c:1098
+#: ../src/gs-shell-details.c:1109
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nie można odnaleźć „%s”"
 
-#: ../src/gs-shell-details.c:1146 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1157 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "To nie zadziałało"
 
