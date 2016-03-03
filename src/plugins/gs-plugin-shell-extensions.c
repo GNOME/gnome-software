@@ -130,7 +130,9 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 		if (g_strcmp0 (str, "description") == 0) {
 			g_autofree gchar *tmp1 = NULL;
 			g_autofree gchar *tmp2 = NULL;
-			tmp1 = as_markup_import (g_variant_get_string (val, NULL));
+			tmp1 = as_markup_import (g_variant_get_string (val, NULL),
+						 AS_MARKUP_CONVERT_FORMAT_SIMPLE,
+						 NULL);
 			tmp2 = as_markup_convert_simple (tmp1, error);
 			if (tmp2 == NULL)
 				return NULL;
@@ -420,7 +422,9 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	tmp = json_object_get_string_member (json_app, "description");
 	if (tmp != NULL) {
 		g_autofree gchar *desc = NULL;
-		desc = as_markup_import (tmp);
+		desc = as_markup_import (tmp, AS_MARKUP_CONVERT_FORMAT_SIMPLE, error);
+		if (desc == NULL)
+			return NULL;
 		as_app_set_description (app, NULL, desc);
 	}
 	tmp = json_object_get_string_member (json_app, "name");
