@@ -1641,7 +1641,7 @@ gs_app_set_rating (GsApp *app, gint rating)
 GArray *
 gs_app_get_review_ratings (GsApp *app)
 {
-	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
 	return app->review_ratings;
 }
 

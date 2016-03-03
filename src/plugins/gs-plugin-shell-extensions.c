@@ -464,7 +464,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 							       app,
 							       json_ver_map,
 							       error))
-			return FALSE;
+			return NULL;
 	}
 
 	/* add a screenshot, which curiously isn't in the json */
