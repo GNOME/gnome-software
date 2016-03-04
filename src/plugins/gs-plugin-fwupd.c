@@ -117,7 +117,6 @@ static gboolean
 gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	gsize len;
-	g_autoptr(GError) error_local = NULL;
 	g_autofree gchar *data = NULL;
 	g_autoptr(GDBusConnection) conn = NULL;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->mutex);
@@ -135,10 +134,10 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 						     FWUPD_DBUS_PATH,
 						     FWUPD_DBUS_INTERFACE,
 						     NULL,
-						     &error_local);
+						     error);
 	if (plugin->priv->proxy == NULL) {
-		g_warning ("Failed to start fwupd: %s", error_local->message);
-		return TRUE;
+		g_prefix_error (error, "failed to start fwupd: ");
+		return FALSE;
 	}
 	g_signal_connect (plugin->priv->proxy, "g-signal",
 			  G_CALLBACK (gs_plugin_fwupd_changed_cb), plugin);
@@ -271,7 +270,6 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	FwupdDeviceFlags flags = 0;
 	GVariant *variant;
 	const gchar *key;
-	g_autoptr(GError) error_local = NULL;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *checksum = NULL;
 	g_autofree gchar *filename_cache = NULL;
@@ -430,13 +428,6 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				      &error_local);
 	if (val == NULL) {
 		if (g_error_matches (error_local,
-				     G_DBUS_ERROR,
-				     G_DBUS_ERROR_SERVICE_UNKNOWN)) {
-			/* the fwupd service might be unavailable, continue in that case */
-			g_debug ("fwupd: Could not get historical updates, service is unknown.");
-			return TRUE;
-		}
-		if (g_error_matches (error_local,
 				     FWUPD_ERROR,
 				     FWUPD_ERROR_NOTHING_TO_DO))
 			return TRUE;
@@ -502,8 +493,8 @@ gs_plugin_add_updates (GsPlugin *plugin,
 				     G_DBUS_ERROR,
 				     G_DBUS_ERROR_SERVICE_UNKNOWN)) {
 			/* the fwupd service might be unavailable, continue in that case */
-			g_debug ("fwupd: Could not get updates, service is unknown.");
-			return TRUE;
+			g_prefix_error (error, "could not get fwupd updates: ");
+			return FALSE;
 		}
 		if (g_error_matches (error_local,
 				     FWUPD_ERROR,
@@ -969,7 +960,6 @@ gs_plugin_fwupd_unlock (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GVariant) val = NULL;
 
 	/* set up plugin */
@@ -987,21 +977,9 @@ gs_plugin_fwupd_unlock (GsPlugin *plugin,
 				      G_DBUS_CALL_FLAGS_NONE,
 				      -1,
 				      NULL,
-				      &error_local);
-	if (val == NULL) {
-		if (g_error_matches (error_local,
-				     G_DBUS_ERROR,
-				     G_DBUS_ERROR_SERVICE_UNKNOWN)) {
-			/* the fwupd service might be unavailable */
-			g_debug ("fwupd: could not unlock, service is unknown");
-			return TRUE;
-		}
-		g_set_error_literal (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     error_local->message);
+				      error);
+	if (val == NULL)
 		return FALSE;
-	}
 	return TRUE;
 }
 

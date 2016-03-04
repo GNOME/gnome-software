@@ -677,7 +677,6 @@ gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
 {
 	const gchar *origin;
 	guint i;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
@@ -719,7 +718,6 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 			      GError **error)
 {
 	guint i;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
@@ -1458,7 +1456,6 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	g_autoptr(GBytes) appstream_gz = NULL;
 	g_autoptr(GBytes) icon_data = NULL;
 	g_autoptr(GBytes) metadata = NULL;
-	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(XdgAppBundleRef) xref_bundle = NULL;
@@ -1474,13 +1471,9 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 
 	/* load bundle */
 	file = g_file_new_for_path (filename);
-	xref_bundle = xdg_app_bundle_ref_new (file, &error_local);
+	xref_bundle = xdg_app_bundle_ref_new (file, error);
 	if (xref_bundle == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
-			     "Error loading bundle: %s",
-			     error_local->message);
+		g_prefix_error (error, "error loading bundle: ");
 		return FALSE;
 	}
 
