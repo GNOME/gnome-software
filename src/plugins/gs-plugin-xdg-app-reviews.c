@@ -958,7 +958,7 @@ gs_plugin_create_app_dummy (const gchar *id)
 	GsApp *app = gs_app_new (id);
 	g_autoptr(GString) str = NULL;
 	str = g_string_new (id);
-	gs_string_replace (str, ".desktop", "");
+	as_utils_string_replace (str, ".desktop", "");
 	g_string_prepend (str, "No description is available for ");
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Unknown Application");
 	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST, "Application not found");
