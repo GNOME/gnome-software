@@ -1,24 +1,24 @@
 # Hungarian translation of gnome-software.
-# Copyright (C) 2013, 2014. Free Software Foundation, Inc.
+# Copyright (C) 2013-2016 Free Software Foundation, Inc.
 # This file is distributed under the same license as the gnome-software package.
 #
-# Balázs Úr <urbalazs at gmail dot com>, 2013, 2014, 2015.
+# Balázs Úr <urbalazs at gmail dot com>, 2013, 2014, 2015, 2016.
 # Gabor Kelemen <kelemeng at gnome dot hu>, 2013, 2014, 2015, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-02-26 21:08+0000\n"
-"PO-Revision-Date: 2016-02-27 23:42+0100\n"
-"Last-Translator: Gabor Kelemen <kelemeng at ubuntu dot com>\n"
+"POT-Creation-Date: 2016-03-04 10:23+0000\n"
+"PO-Revision-Date: 2016-03-04 19:38+0100\n"
+"Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
 "Language-Team: Hungarian <openscope at googlegroups dot com>\n"
 "Language: hu\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
-"X-Generator: Lokalize 1.5\n"
+"X-Generator: Lokalize 1.2\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
@@ -67,16 +67,21 @@ msgid "Whether to automatically download updates"
 msgstr "A frissítések automatikusan letöltendők-e"
 
 #: ../data/org.gnome.software.gschema.xml.h:4
+#| msgid ""
+#| "If enabled, gnome-software automatically downloads updates in the "
+#| "background and prompts the user to install them when ready."
 msgid ""
-"If enabled, gnome-software automatically downloads updates in the background "
+"If enabled, GNOME Software automatically downloads updates in the background "
 "and prompts the user to install them when ready."
 msgstr ""
-"A GNOME Szoftverek automatikusan letöltse-e a frissítéseket a háttérben, és a "
-"befejezés után kérjen engedélyt a felhasználótól a telepítésre."
+"Ha engedélyezve van, akkor a GNOME Szoftverek automatikusan letölti a "
+"frissítéseket a háttérben, és a befejezés után engedélyt kér a felhasználótól "
+"a telepítésre."
 
 #: ../data/org.gnome.software.gschema.xml.h:5
-msgid "Whether it's the very first run of gnome-software"
-msgstr "A GNOME Szoftverek legelső futása-e"
+#| msgid "Whether it's the very first run of gnome-software"
+msgid "Whether it's the very first run of GNOME Software"
+msgstr "Vajon ez a GNOME Szoftverek legelső futása-e"
 
 #: ../data/org.gnome.software.gschema.xml.h:6
 msgid "Show star ratings next to applications"
@@ -96,7 +101,6 @@ msgstr ""
 "ablak. Itt beállítható ennek megjelenése."
 
 #: ../data/org.gnome.software.gschema.xml.h:9
-#| msgid "Search for applications"
 msgid "A list of popular applications"
 msgstr "Népszerű alkalmazások listája"
 
@@ -142,12 +146,18 @@ msgstr "A vélemények minimális karma pontszáma"
 msgid "Reviews with karma less than this number will not be shown."
 msgstr "Az ennél alacsonyabb karmájú vélemények nem jelennek meg."
 
+#: ../data/org.gnome.software.gschema.xml.h:19
+msgid "A list of official sources that should not be considered 3rd party"
+msgstr ""
+"Azon hivatalos források listája, amelyek nem szabad harmadik féltől "
+"származónak tekinteni"
+
 #: ../src/app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Hozzáadás alkalmazásmappához"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:281
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:283
 #: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "Mé_gse"
@@ -158,8 +168,8 @@ msgstr "Hozzá_adás"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:79
-#: ../src/gs-app-tile.c:82 ../src/gs-feature-tile.c:68
+#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:78
+#: ../src/gs-app-tile.c:81 ../src/gs-feature-tile.c:68
 #: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
 #: ../src/popular-tile.ui.h:1
 msgid "Installed"
@@ -184,7 +194,7 @@ msgstr "Kijelölés törlése"
 #. TRANSLATORS: this is the application name
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
-#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:371
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:372
 #: ../src/gs-shell.c:162 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Szoftverek"
@@ -234,7 +244,7 @@ msgstr "Függőben"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
 #: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:312
-#: ../src/gs-app-tile.c:88 ../src/gs-app-tile.c:91
+#: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
 msgid "Installing"
 msgstr "Telepítés"
 
@@ -243,7 +253,7 @@ msgstr "Telepítés"
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
 #: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:321
-#: ../src/gs-app-tile.c:97 ../src/gs-app-tile.c:100
+#: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
 msgid "Removing"
 msgstr "Eltávolítás"
 
@@ -252,7 +262,7 @@ msgstr "Eltávolítás"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1321 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1315 ../src/gs-shell-extras.c:146
 msgid " and "
 msgstr " és "
 
@@ -260,17 +270,17 @@ msgstr " és "
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1329
+#: ../src/gs-app.c:1323
 msgid " or "
 msgstr " vagy "
 
 #. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1352
+#: ../src/gs-app.c:1346
 msgid "Proprietary"
 msgstr "Zárt"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1362
+#: ../src/gs-app.c:1356
 msgid "Public domain"
 msgstr "Közkincs"
 
@@ -279,66 +289,66 @@ msgid "Folder Name"
 msgstr "Mappa neve"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:96
+#: ../src/gs-application.c:97
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Indítási mód: az „updates”, „updated”, „installed” vagy „overwiew” egyike"
 
-#: ../src/gs-application.c:96
+#: ../src/gs-application.c:97
 msgid "MODE"
 msgstr "MÓD"
 
-#: ../src/gs-application.c:98
+#: ../src/gs-application.c:99
 msgid "Search for applications"
 msgstr "Alkalmazások keresése"
 
-#: ../src/gs-application.c:98
+#: ../src/gs-application.c:99
 msgid "SEARCH"
 msgstr "KERESÉS"
 
-#: ../src/gs-application.c:100
+#: ../src/gs-application.c:101
 msgid "Show application details"
 msgstr "Alkalmazásadatok megjelenítése"
 
-#: ../src/gs-application.c:100
+#: ../src/gs-application.c:101
 msgid "ID"
 msgstr "Azonosító"
 
-#: ../src/gs-application.c:102
+#: ../src/gs-application.c:103
 msgid "Open a local package file"
 msgstr "Egy helyi csomagfájl megnyitása"
 
-#: ../src/gs-application.c:102
+#: ../src/gs-application.c:103
 msgid "FILENAME"
 msgstr "FÁJLNÉV"
 
-#: ../src/gs-application.c:104
+#: ../src/gs-application.c:105
 msgid "Show verbose debugging information"
 msgstr "Részletes hibakeresési információk megjelenítése"
 
-#: ../src/gs-application.c:106
+#: ../src/gs-application.c:107
 msgid "Show profiling information for the service"
 msgstr "Profilozási információk megjelenítése a szolgáltatásnak"
 
-#: ../src/gs-application.c:108
+#: ../src/gs-application.c:109
 msgid "Prefer local file sources to AppStream"
 msgstr "Helyi fájlforrások előnyben részesítése az alkalmazáshoz"
 
-#: ../src/gs-application.c:110
+#: ../src/gs-application.c:111
 msgid "Show version number"
 msgstr "Verziószám megjelenítése"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:369
+#: ../src/gs-application.c:370
 msgid "About Software"
 msgstr "A Szoftverek névjegye"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:374
+#: ../src/gs-application.c:375
 msgid "A nice way to manage the software on your system."
 msgstr "A rendszerén található szoftverek kezelése elegánsan."
 
-#: ../src/gs-application.c:378
+#: ../src/gs-application.c:379
 msgid "translator-credits"
 msgstr ""
 "Kelemen Gábor <kelemeng at gnome dot hu>\n"
@@ -716,14 +726,12 @@ msgstr ""
 #. * reporting a user-submitted review
 #. * for moderation
 #: ../src/gs-review-row.c:226
-#| msgid "Post Review"
 msgid "Report Review?"
 msgstr "Jelenti a véleményt?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: ../src/gs-review-row.c:230
-#| msgid "Report Abuse"
 msgid "Report"
 msgstr "Jelentés"
 
@@ -751,7 +759,6 @@ msgid "Report…"
 msgstr "Jelentés…"
 
 #: ../src/gs-review-row.ui.h:8
-#| msgid "Remove"
 msgid "Remove…"
 msgstr "Eltávolítás…"
 
@@ -803,20 +810,19 @@ msgstr ""
 "tapasztal, javasolt a kikapcsolásuk."
 
 #: ../src/gs-shell-category.ui.h:2
-#| msgid "Network Settings"
 msgid "Extension Settings"
 msgstr "Kiterjesztésbeállítások"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:193 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:195 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:4
 msgid "_Install"
 msgstr "_Telepítés"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:204
+#: ../src/gs-shell-details.c:206
 msgid "_Installing"
 msgstr "_Telepítés"
 
@@ -824,66 +830,66 @@ msgstr "_Telepítés"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:222
+#: ../src/gs-shell-details.c:224
 msgid "_Install…"
 msgstr "_Telepítés…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:268 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:270 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "_Eltávolítás"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:275
+#: ../src/gs-shell-details.c:277
 msgid "_Removing"
 msgstr "Eltávolítás"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:647
 msgctxt "license"
 msgid "Unknown"
 msgstr "Ismeretlen"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:661
+#: ../src/gs-shell-details.c:660
 msgctxt "version"
 msgid "Unknown"
 msgstr "Ismeretlen"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:667
+#: ../src/gs-shell-details.c:666
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Számítás…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:670
+#: ../src/gs-shell-details.c:669
 msgctxt "size"
 msgid "Unknown"
 msgstr "Ismeretlen"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:682
+#: ../src/gs-shell-details.c:681
 msgctxt "updated"
 msgid "Never"
 msgstr "Soha"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:696
+#: ../src/gs-shell-details.c:695
 msgctxt "menu category"
 msgid "None"
 msgstr "Nincs"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:713
+#: ../src/gs-shell-details.c:712
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Ismeretlen"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:799
+#: ../src/gs-shell-details.c:758
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -891,12 +897,12 @@ msgstr ""
 "Ez az alkalmazás csak akkor használható, ha van aktív internet-kapcsolat."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:810
+#: ../src/gs-shell-details.c:769
 msgid "This software comes from a 3rd party."
 msgstr "Ez a szoftver külső féltől származik."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:819
+#: ../src/gs-shell-details.c:778
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
@@ -904,16 +910,16 @@ msgstr ""
 "tartalmazhat."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:828
+#: ../src/gs-shell-details.c:787
 msgid "This software may contain non-free components."
 msgstr "Ez a szoftver nem szabad összetevőket tartalmazhat."
 
-#: ../src/gs-shell-details.c:1098
+#: ../src/gs-shell-details.c:1109
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nem található: „%s”"
 
-#: ../src/gs-shell-details.c:1146 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1157 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "Elnézést, ez nem sikerült"
 
@@ -1332,95 +1338,95 @@ msgid "No Application Found"
 msgstr "Nem található alkalmazás"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:146
+#: ../src/gs-shell-updates.c:147
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:149
+#: ../src/gs-shell-updates.c:150
 msgid "%l:%M %p"
 msgstr "%l.%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:155
+#: ../src/gs-shell-updates.c:156
 msgid "Yesterday, %R"
 msgstr "Tegnap, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:159
+#: ../src/gs-shell-updates.c:160
 msgid "Yesterday, %l:%M %p"
 msgstr "Tegnap, %l.%M %P"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:163
 msgid "Two days ago"
 msgstr "Két nappal ezelőtt"
 
-#: ../src/gs-shell-updates.c:164
+#: ../src/gs-shell-updates.c:165
 msgid "Three days ago"
 msgstr "Három nappal ezelőtt"
 
-#: ../src/gs-shell-updates.c:166
+#: ../src/gs-shell-updates.c:167
 msgid "Four days ago"
 msgstr "Négy nappal ezelőtt"
 
-#: ../src/gs-shell-updates.c:168
+#: ../src/gs-shell-updates.c:169
 msgid "Five days ago"
 msgstr "Öt nappal ezelőtt"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:171
 msgid "Six days ago"
 msgstr "Hat nappal ezelőtt"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:173
 msgid "One week ago"
 msgstr "Egy héttel ezelőtt"
 
-#: ../src/gs-shell-updates.c:174
+#: ../src/gs-shell-updates.c:175
 msgid "Two weeks ago"
 msgstr "Két héttel ezelőtt"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:178
+#: ../src/gs-shell-updates.c:179
 msgid "%e %B %Y"
 msgstr "%Y. %B %e"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:194
+#: ../src/gs-shell-updates.c:195
 msgid "Downloading new updates…"
 msgstr "Új frissítések letöltése…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:198
+#: ../src/gs-shell-updates.c:199
 msgid "Looking for new updates…"
 msgstr "Új frissítések keresése…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:239
+#: ../src/gs-shell-updates.c:240
 msgid "Setting up updates…"
 msgstr "Frissítések beállítása…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:240 ../src/gs-shell-updates.c:247
+#: ../src/gs-shell-updates.c:241 ../src/gs-shell-updates.c:248
 msgid "(This could take a while)"
 msgstr "(Ez eltarthat egy ideig)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:403
+#: ../src/gs-shell-updates.c:404
 #, c-format
 msgid "Last checked: %s"
 msgstr "Utolsó ellenőrzés: %s"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:809
+#: ../src/gs-shell-updates.c:810
 msgid "Charges may apply"
 msgstr "Költségek merülhetnek fel"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:813
+#: ../src/gs-shell-updates.c:814
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1430,24 +1436,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:817
+#: ../src/gs-shell-updates.c:818
 msgid "Check Anyway"
 msgstr "Keresés mindenképp"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:833
+#: ../src/gs-shell-updates.c:834
 msgid "No Network"
 msgstr "Nincs hálózat"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:837
+#: ../src/gs-shell-updates.c:838
 msgid "Internet access is required to check for updates."
 msgstr "A frissítések kereséséhez internetkapcsolat szükséges."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:841
+#: ../src/gs-shell-updates.c:842
 msgid "Network Settings"
 msgstr "Hálózati beállítások"
 
@@ -1726,7 +1732,6 @@ msgstr[1] "Fontos rendszerfrissítések lettek telepítve."
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
 #: ../src/gs-update-monitor.c:462
-#| msgid "Review"
 msgctxt "updates"
 msgid "Review"
 msgstr "Vélemény"
@@ -2823,7 +2828,6 @@ msgid "Shell Extensions"
 msgstr "A Shell bővítményei"
 
 #: ../src/plugins/menu-spec-common.c:216
-#| msgid "An application"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Localization"
 msgstr "Lokalizáció"
