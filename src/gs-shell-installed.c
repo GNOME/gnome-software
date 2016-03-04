@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -610,9 +610,9 @@ show_folder_dialog (GtkButton *button, GsShellInstalled *self)
 	toplevel = gtk_widget_get_toplevel (GTK_WIDGET (button));
 	apps = get_selected_apps (self);
 	dialog = gs_app_folder_dialog_new (GTK_WINDOW (toplevel), apps);
-	gtk_window_present (GTK_WINDOW (dialog));
 	g_signal_connect_swapped (dialog, "delete-event",
 				  G_CALLBACK (folder_dialog_done), self);
+	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 }
 
 static void

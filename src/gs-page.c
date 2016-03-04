@@ -43,16 +43,16 @@ G_DEFINE_ABSTRACT_TYPE_WITH_PRIVATE (GsPage, gs_page, GTK_TYPE_BIN)
 typedef struct {
 	GsApp		*app;
 	GsPage		*page;
-} InstallRemoveData;
+} GsPageHelper;
 
 static void
-install_remove_data_free (InstallRemoveData *data)
+gs_page_helper_free (GsPageHelper *helper)
 {
-	if (data->app != NULL)
-		g_object_unref (data->app);
-	if (data->page != NULL)
-		g_object_unref (data->page);
-	g_slice_free (InstallRemoveData, data);
+	if (helper->app != NULL)
+		g_object_unref (helper->app);
+	if (helper->page != NULL)
+		g_object_unref (helper->page);
+	g_slice_free (GsPageHelper, helper);
 }
 
 static void
@@ -61,8 +61,8 @@ gs_page_app_installed_cb (GObject *source,
                           gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	InstallRemoveData *data = (InstallRemoveData *) user_data;
-	GsPage *page = data->page;
+	GsPageHelper *helper = (GsPageHelper *) user_data;
+	GsPage *page = helper->page;
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
@@ -72,9 +72,9 @@ gs_page_app_installed_cb (GObject *source,
 	                                          &error);
 	if (!ret) {
 		g_warning ("failed to install %s: %s",
-		           gs_app_get_id (data->app),
+		           gs_app_get_id (helper->app),
 		           error->message);
-		gs_app_notify_failed_modal (data->app,
+		gs_app_notify_failed_modal (helper->app,
 		                            gs_shell_get_window (priv->shell),
 		                            GS_PLUGIN_LOADER_ACTION_INSTALL,
 		                            error);
@@ -82,15 +82,15 @@ gs_page_app_installed_cb (GObject *source,
 	}
 
 	/* only show this if the window is not active */
-	if (gs_app_get_state (data->app) != AS_APP_STATE_QUEUED_FOR_INSTALL &&
+	if (gs_app_get_state (helper->app) != AS_APP_STATE_QUEUED_FOR_INSTALL &&
 	    !gs_shell_is_active (priv->shell))
-		gs_app_notify_installed (data->app);
+		gs_app_notify_installed (helper->app);
 
 	if (GS_PAGE_GET_CLASS (page)->app_installed != NULL)
-		GS_PAGE_GET_CLASS (page)->app_installed (page, data->app);
+		GS_PAGE_GET_CLASS (page)->app_installed (page, helper->app);
 
 out:
-	install_remove_data_free (data);
+	gs_page_helper_free (helper);
 }
 
 static void
@@ -99,8 +99,8 @@ gs_page_app_removed_cb (GObject *source,
                         gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	InstallRemoveData *data = (InstallRemoveData *) user_data;
-	GsPage *page = data->page;
+	GsPageHelper *helper = (GsPageHelper *) user_data;
+	GsPage *page = helper->page;
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
 	g_autoptr(GError) error = NULL;
@@ -110,7 +110,7 @@ gs_page_app_removed_cb (GObject *source,
 	                                          &error);
 	if (!ret) {
 		g_warning ("failed to remove: %s", error->message);
-		gs_app_notify_failed_modal (data->app,
+		gs_app_notify_failed_modal (helper->app,
 		                            gs_shell_get_window (priv->shell),
 		                            GS_PLUGIN_LOADER_ACTION_REMOVE,
 		                            error);
@@ -118,10 +118,10 @@ gs_page_app_removed_cb (GObject *source,
 	}
 
 	if (GS_PAGE_GET_CLASS (page)->app_removed != NULL)
-		GS_PAGE_GET_CLASS (page)->app_removed (page, data->app);
+		GS_PAGE_GET_CLASS (page)->app_removed (page, helper->app);
 
 out:
-	install_remove_data_free (data);
+	gs_page_helper_free (helper);
 }
 
 GtkWidget *
@@ -160,7 +160,7 @@ void
 gs_page_install_app (GsPage *page, GsApp *app)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	InstallRemoveData *data;
+	GsPageHelper *helper;
 	GtkResponseType response;
 
 	/* probably non-free */
@@ -170,61 +170,75 @@ gs_page_install_app (GsPage *page, GsApp *app)
 			return;
 	}
 
-	data = g_slice_new0 (InstallRemoveData);
-	data->app = g_object_ref (app);
-	data->page = g_object_ref (page);
+	helper = g_slice_new0 (GsPageHelper);
+	helper->app = g_object_ref (app);
+	helper->page = g_object_ref (page);
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
 	                                   app,
 	                                   GS_PLUGIN_LOADER_ACTION_INSTALL,
 	                                   priv->cancellable,
 	                                   gs_page_app_installed_cb,
-	                                   data);
+	                                   helper);
 }
 
 static void
-gs_page_update_app_real (GsPage *page, GsApp *app)
+gs_page_update_app_response_cb (GtkDialog *dialog,
+				gint response,
+				GsPageHelper *helper)
 {
-	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	InstallRemoveData *data;
-	data = g_slice_new0 (InstallRemoveData);
-	data->app = g_object_ref (app);
-	data->page = g_object_ref (page);
-	g_debug ("update %s", gs_app_get_id (app));
+	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+
+	/* not agreed */
+	if (response != GTK_RESPONSE_OK) {
+		gs_page_helper_free (helper);
+		return;
+	}
+	g_debug ("update %s", gs_app_get_id (helper->app));
 	gs_plugin_loader_app_action_async (priv->plugin_loader,
-					   app,
+					   helper->app,
 					   GS_PLUGIN_LOADER_ACTION_UPDATE,
 					   priv->cancellable,
 					   gs_page_app_installed_cb,
-					   data);
+					   helper);
 }
 
 void
 gs_page_update_app (GsPage *page, GsApp *app)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	GtkResponseType response;
+	GsPageHelper *helper;
 	GtkWidget *dialog;
 	AsScreenshot *ss;
 	g_autofree gchar *escaped = NULL;
 
 	/* non-firmware applications do not have to be prepared */
-	if (gs_app_get_kind (app) != AS_APP_KIND_FIRMWARE) {
-		gs_page_update_app_real (page, app);
-		return;
-	}
-
-	/* there are no steps required to put the device into DFU mode */
-	if (gs_app_get_screenshots (app)->len == 0) {
-		gs_page_update_app_real (page, app);
+	helper = g_slice_new0 (GsPageHelper);
+	helper->app = g_object_ref (app);
+	helper->page = g_object_ref (page);
+	if (gs_app_get_kind (app) != AS_APP_KIND_FIRMWARE ||
+	    gs_app_get_screenshots (app)->len == 0) {
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+						   helper->app,
+						   GS_PLUGIN_LOADER_ACTION_UPDATE,
+						   priv->cancellable,
+						   gs_page_app_installed_cb,
+						   helper);
 		return;
 	}
 
 	/* tell the user what they have to do */
 	ss = g_ptr_array_index (gs_app_get_screenshots (app), 0);
 	if (as_screenshot_get_caption (ss, NULL) == NULL) {
-		gs_page_update_app_real (page, app);
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+						   helper->app,
+						   GS_PLUGIN_LOADER_ACTION_UPDATE,
+						   priv->cancellable,
+						   gs_page_app_installed_cb,
+						   helper);
 		return;
 	}
+
+	/* show user caption */
 	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 					 GTK_DIALOG_MODAL,
 					 GTK_MESSAGE_INFO,
@@ -238,20 +252,58 @@ gs_page_update_app (GsPage *page, GsApp *app)
 						    "%s", escaped);
 	/* TRANSLATORS: this is button text to update the firware */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Install"), GTK_RESPONSE_OK);
-	response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_OK)
-		gs_page_update_app_real (page, app);
-	gtk_widget_destroy (dialog);
+
+	/* handle this async */
+	g_signal_connect (dialog, "response",
+			  G_CALLBACK (gs_page_update_app_response_cb), helper);
+	gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+}
+
+static void
+gs_page_remove_app_response_cb (GtkDialog *dialog,
+				gint response,
+				GsPageHelper *helper)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+
+	/* not agreed */
+	if (response != GTK_RESPONSE_OK) {
+		gs_page_helper_free (helper);
+		return;
+	}
+	g_debug ("remove %s", gs_app_get_id (helper->app));
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+					   helper->app,
+					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   priv->cancellable,
+					   gs_page_app_removed_cb,
+					   helper);
 }
 
 void
 gs_page_remove_app (GsPage *page, GsApp *app)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
-	GtkResponseType response;
+	GsPageHelper *helper;
 	GtkWidget *dialog;
 	g_autofree gchar *escaped = NULL;
 
+	/* pending install */
+	helper = g_slice_new0 (GsPageHelper);
+	helper->app = g_object_ref (app);
+	helper->page = g_object_ref (page);
+	if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL) {
+		g_debug ("remove %s", gs_app_get_id (app));
+		gs_plugin_loader_app_action_async (priv->plugin_loader,
+		                                   app,
+		                                   GS_PLUGIN_LOADER_ACTION_REMOVE,
+		                                   priv->cancellable,
+		                                   gs_page_app_removed_cb,
+		                                   helper);
+		return;
+	}
+
+	/* ask for confirmation */
 	dialog = gtk_message_dialog_new (gs_shell_get_window (priv->shell),
 	                                 GTK_DIALOG_MODAL,
 	                                 GTK_MESSAGE_QUESTION,
@@ -265,26 +317,14 @@ gs_page_remove_app (GsPage *page, GsApp *app)
 	                                            /* TRANSLATORS: longer dialog text */
                                                     _("%s will be removed, and you will have to install it to use it again."),
                                                     escaped);
+
 	/* TRANSLATORS: this is button text to remove the application */
 	gtk_dialog_add_button (GTK_DIALOG (dialog), _("Remove"), GTK_RESPONSE_OK);
-	if (gs_app_get_state (app) == AS_APP_STATE_QUEUED_FOR_INSTALL)
-		response = GTK_RESPONSE_OK; /* pending install */
-	else
-		response = gtk_dialog_run (GTK_DIALOG (dialog));
-	if (response == GTK_RESPONSE_OK) {
-		InstallRemoveData *data;
-		g_debug ("remove %s", gs_app_get_id (app));
-		data = g_slice_new0 (InstallRemoveData);
-		data->app = g_object_ref (app);
-		data->page = g_object_ref (page);
-		gs_plugin_loader_app_action_async (priv->plugin_loader,
-		                                   app,
-		                                   GS_PLUGIN_LOADER_ACTION_REMOVE,
-		                                   priv->cancellable,
-		                                   gs_page_app_removed_cb,
-		                                   data);
-	}
-	gtk_widget_destroy (dialog);
+
+	/* handle this async */
+	g_signal_connect (dialog, "response",
+			  G_CALLBACK (gs_page_remove_app_response_cb), helper);
+	gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
 }
 
 static void

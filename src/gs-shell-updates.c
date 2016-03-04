@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -615,9 +615,7 @@ show_update_details (GsApp *app, GsShellUpdates *self)
 
 	dialog = gs_update_dialog_new (self->plugin_loader);
 	gs_update_dialog_show_update_details (GS_UPDATE_DIALOG (dialog), app);
-
-	gtk_window_set_transient_for (GTK_WINDOW (dialog), gs_shell_get_window (self->shell));
-	gtk_window_present (GTK_WINDOW (dialog));
+	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 }
 
 /**
@@ -837,7 +835,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 		g_signal_connect (dialog, "response",
 				  G_CALLBACK (gs_shell_updates_refresh_confirm_cb),
 				  self);
-		gtk_window_present (GTK_WINDOW (dialog));
+		gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 
 	/* no network connection */
 	} else {
@@ -861,7 +859,7 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 		g_signal_connect (dialog, "response",
 				  G_CALLBACK (gs_shell_updates_refresh_confirm_cb),
 				  self);
-		gtk_window_present (GTK_WINDOW (dialog));
+		gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 	}
 }
 

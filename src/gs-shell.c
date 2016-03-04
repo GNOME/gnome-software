@@ -77,6 +77,7 @@ typedef struct
 	GtkWindow		*main_window;
 	GQueue			*back_entry_stack;
 	gboolean		 ignore_next_search_changed_signal;
+	GPtrArray		*modal_dialogs;
 } GsShellPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShell, gs_shell, G_TYPE_OBJECT)
@@ -87,6 +88,50 @@ enum {
 };
 
 static guint signals [SIGNAL_LAST] = { 0 };
+
+/**
+ * gs_shell_modal_dialog_present:
+ **/
+static void
+gs_shell_modal_dialog_response_cb (GtkDialog *dialog,
+				   gint response_id,
+				   GsShell *shell)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	g_debug ("handling modal dialog response %i for %p",
+		 response_id, dialog);
+	g_ptr_array_remove (priv->modal_dialogs, dialog);
+}
+
+/**
+ * gs_shell_modal_dialog_present:
+ **/
+void
+gs_shell_modal_dialog_present (GsShell *shell, GtkDialog *dialog)
+{
+	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
+	GtkWindow *parent;
+
+	/* show new modal on top of old modal */
+	if (priv->modal_dialogs->len > 0) {
+		parent = g_ptr_array_index (priv->modal_dialogs,
+					    priv->modal_dialogs->len - 1);
+		g_debug ("using old modal %p as parent", parent);
+	} else {
+		parent = priv->main_window;
+		g_debug ("using main window");
+	}
+	gtk_window_set_transient_for (GTK_WINDOW (dialog), parent);
+
+	/* add to stack, transfer ownership to here */
+	g_ptr_array_add (priv->modal_dialogs, dialog);
+
+	/* present the new one */
+	g_signal_connect (dialog, "response",
+			  G_CALLBACK (gs_shell_modal_dialog_response_cb), shell);
+	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
+	gtk_window_present (GTK_WINDOW (dialog));
+}
 
 /**
  * gs_shell_is_active:
@@ -277,6 +322,10 @@ gs_shell_change_mode (GsShell *shell,
 
 	widget = gs_page_get_header_end_widget (new_page);
 	gs_shell_set_header_end_widget (shell, widget);
+
+	/* destroy any existing modals */
+	if (priv->modal_dialogs != NULL)
+		g_ptr_array_set_size (priv->modal_dialogs, 0);
 }
 
 /**
@@ -815,10 +864,7 @@ gs_shell_show_sources (GsShell *shell)
 	GtkWidget *dialog;
 
 	dialog = gs_sources_dialog_new (priv->main_window, priv->plugin_loader);
-	g_signal_connect_swapped (dialog, "response",
-				  G_CALLBACK (gtk_widget_destroy),
-				  dialog);
-	gtk_window_present (GTK_WINDOW (dialog));
+	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
 }
 
 void
@@ -908,6 +954,7 @@ gs_shell_dispose (GObject *object)
 	g_clear_object (&priv->plugin_loader);
 	g_clear_object (&priv->header_start_widget);
 	g_clear_object (&priv->header_end_widget);
+	g_clear_pointer (&priv->modal_dialogs, (GDestroyNotify) g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
@@ -939,6 +986,7 @@ gs_shell_init (GsShell *shell)
 
 	priv->back_entry_stack = g_queue_new ();
 	priv->ignore_primary_buttons = FALSE;
+	priv->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);
 }
 
 /**
