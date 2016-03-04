@@ -99,12 +99,16 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	kind = gs_app_get_kind (app);
 	if (kind == AS_APP_KIND_OS_UPDATE) {
 		gtk_window_set_title (GTK_WINDOW (dialog), gs_app_get_name (app));
-	} else if (gs_app_get_source_default (app) != NULL) {
+	} else if (gs_app_get_source_default (app) != NULL &&
+		   gs_app_get_update_version (app) != NULL) {
 		g_autofree gchar *tmp = NULL;
 		tmp = g_strdup_printf ("%s %s",
 				       gs_app_get_source_default (app),
 				       gs_app_get_update_version (app));
 		gtk_window_set_title (GTK_WINDOW (dialog), tmp);
+	} else if (gs_app_get_source_default (app) != NULL) {
+		gtk_window_set_title (GTK_WINDOW (dialog),
+				      gs_app_get_source_default (app));
 	} else {
 		gtk_window_set_title (GTK_WINDOW (dialog),
 				      gs_app_get_update_version (app));
@@ -130,7 +134,8 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 
 	/* set update header */
 	gtk_widget_set_visible (dialog->box_header, kind == AS_APP_KIND_DESKTOP);
-	gtk_label_set_markup (GTK_LABEL (dialog->label_details), update_desc);
+	if (update_desc != NULL)
+		gtk_label_set_markup (GTK_LABEL (dialog->label_details), update_desc);
 	gtk_label_set_label (GTK_LABEL (dialog->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (dialog->label_summary), gs_app_get_summary (app));
 
