@@ -231,7 +231,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, list, flags, cancellable, &error_local);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   "gs_plugin_refine", plugin->name,
+				   function_name, plugin->name,
 				   error_local->message);
 			continue;
 		}
