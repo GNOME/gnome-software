@@ -142,7 +142,7 @@ endif
 
 if HAVE_STEAM
 libgs_plugin_steam_la_SOURCES = gs-plugin-steam.c
-libgs_plugin_steam_la_LIBADD = $(GS_PLUGIN_LIBS) $(STEAM_LIBS)
+libgs_plugin_steam_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_steam_la_LDFLAGS = -module -avoid-version
 libgs_plugin_steam_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif

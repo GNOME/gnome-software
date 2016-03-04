@@ -23,7 +23,6 @@
 
 #include <gs-plugin.h>
 #include <string.h>
-#include <icns.h>
 
 #include "gs-utils.h"
 
@@ -439,68 +438,6 @@ gs_plugin_steam_update_description (AsApp *app,
 }
 
 /**
- * gs_plugin_steam_new_pixbuf_from_icns:
- **/
-static GdkPixbuf *
-gs_plugin_steam_new_pixbuf_from_icns (const gchar *fn, GError **error)
-{
-	GdkPixbuf *pb = NULL;
-	FILE *datafile;
-	guint i;
-	icns_family_t *icon_family = NULL;
-	icns_image_t im;
-	int rc;
-	icns_type_t preference[] = {
-		ICNS_128X128_32BIT_DATA,
-		ICNS_256x256_32BIT_ARGB_DATA,
-		ICNS_48x48_32BIT_DATA,
-		0 };
-
-	/* open file */
-	datafile = fopen (fn, "rb");
-	rc = icns_read_family_from_file (datafile, &icon_family);
-	if (rc != 0) {
-		g_set_error (error, 1, 0, "Failed to read icon %s", fn);
-		return NULL;
-	}
-
-	/* libicns 'helpfully' frees the @arg */
-	im.imageData = NULL;
-
-	/* get the best sized icon */
-	for (i = 0; preference[i] != 0; i++) {
-		rc = icns_get_image32_with_mask_from_family (icon_family,
-							     preference[i],
-							     &im);
-		if (rc == 0) {
-			gchar buf[5];
-			icns_type_str (preference[i], buf);
-			g_debug ("using ICNS %s for %s", buf, fn);
-			break;
-		}
-	}
-	if (im.imageData == NULL) {
-		g_set_error (error, 1, 0, "Failed to get icon %s", fn);
-		return NULL;
-	}
-
-	/* create the pixbuf */
-	pb = gdk_pixbuf_new_from_data (im.imageData,
-				       GDK_COLORSPACE_RGB,
-				       TRUE,
-				       im.imagePixelDepth,
-				       im.imageWidth,
-				       im.imageHeight,
-				       im.imageWidth * im.imageChannels,
-				       NULL, //??
-				       NULL);
-	g_assert (pb != NULL);
-
-	fclose (datafile);
-	return pb;
-}
-
-/**
  * gs_plugin_steam_download_icon:
  **/
 static gboolean
@@ -540,19 +477,10 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 			return FALSE;
 	}
 
-	/* check the icns file is not just a png/ico/jpg file in disguise */
-	if (memcmp (data + 1, "\x89PNG", 4) == 0 ||
-	    memcmp (data, "\x00\x00\x01\x00", 4) == 0 ||
-	    memcmp (data, "\xff\xd8\xff", 3) == 0) {
-		g_debug ("using fallback for %s\n", cache_fn);
-		pb = gdk_pixbuf_new_from_file (cache_fn, error);
-		if (pb == NULL)
-			return FALSE;
-	} else {
-		pb = gs_plugin_steam_new_pixbuf_from_icns (cache_fn, error);
-		if (pb == NULL)
-			return FALSE;
-	}
+	/* load the icon as large as possible */
+	pb = gdk_pixbuf_new_from_file (cache_fn, error);
+	if (pb == NULL)
+		return FALSE;
 
 	/* too small? */
 	if (gdk_pixbuf_get_width (pb) < 48 ||
