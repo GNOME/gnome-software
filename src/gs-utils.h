@@ -47,9 +47,6 @@ GtkResponseType
 void	 gs_app_show_url		(GsApp		*app,
 					 AsUrlKind	 kind);
 
-guint	 gs_string_replace		(GString	*string,
-					 const gchar	*search,
-					 const gchar	*replace);
 gboolean gs_mkdir_parent		(const gchar	*path,
 					 GError		**error);
 
