@@ -262,12 +262,23 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 /**
  * gs_plugin_refine_app:
  */
-static gboolean
-gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	g_autofree gchar *fn = NULL;
 	g_autofree gchar *hash = NULL;
 	g_autofree gchar *id_nonfull = NULL;
+
+	if (gs_app_get_kind (app) != AS_APP_KIND_WEB_APP)
+		return TRUE;
+	if (gs_app_get_source_id_default (app) != NULL)
+		return TRUE;
+
+	gs_app_set_size (app, 4096);
 
 	id_nonfull = _gs_app_get_id_nonfull (app);
 	hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, gs_app_get_name (app), -1);
@@ -284,34 +295,6 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 		return TRUE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-	return TRUE;
-}
-
-/**
- * gs_plugin_refine:
- */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GList *l;
-	GsApp *app;
-	const gchar *tmp;
-
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (gs_app_get_kind (app) != AS_APP_KIND_WEB_APP)
-			continue;
-		gs_app_set_size (app, 4096);
-		tmp = gs_app_get_source_id_default (app);
-		if (tmp != NULL)
-			continue;
-		if (!gs_plugin_refine_app (plugin, app, error))
-			return FALSE;
-	}
 	return TRUE;
 }
 

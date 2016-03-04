@@ -185,9 +185,8 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	GPtrArray *related;
 	GsApp *app;
 	GsPlugin *plugin;
-	GsPluginRefineFunc plugin_func = NULL;
+	const gchar *function_name_app = "gs_plugin_refine_app";
 	const gchar *function_name = "gs_plugin_refine";
-	gboolean exists;
 	gboolean ret = TRUE;
 	guint i;
 	g_autoptr(GsAppList) addons_list = NULL;
@@ -201,18 +200,20 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginRefineAppFunc plugin_app_func = NULL;
+		GsPluginRefineFunc plugin_func = NULL;
 		g_autoptr(AsProfileTask) ptask = NULL;
-		g_autoptr(GError) error_local = NULL;
 
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!plugin->enabled)
 			continue;
 
-		/* load the symbol */
-		exists = g_module_symbol (plugin->module,
-					  function_name,
-					  (gpointer *) &plugin_func);
-		if (!exists)
+		/* load the possible symbols */
+		g_module_symbol (plugin->module, function_name,
+				 (gpointer *) &plugin_func);
+		g_module_symbol (plugin->module, function_name_app,
+				 (gpointer *) &plugin_app_func);
+		if (plugin_func == NULL && plugin_app_func == NULL)
 			continue;
 
 		/* profile the plugin runtime */
@@ -228,12 +229,32 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 						  function_name_parent,
 						  function_name);
 		}
-		ret = plugin_func (plugin, list, flags, cancellable, &error_local);
-		if (!ret) {
-			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
-				   error_local->message);
-			continue;
+
+		/* run the batched plugin symbol then the per-app plugin */
+		if (plugin_func != NULL) {
+			g_autoptr(GError) error_local = NULL;
+			ret = plugin_func (plugin, list, flags,
+					   cancellable, &error_local);
+			if (!ret) {
+				g_warning ("failed to call %s on %s: %s",
+					   function_name, plugin->name,
+					   error_local->message);
+				continue;
+			}
+		}
+		if (plugin_app_func != NULL) {
+			for (l = *list; l != NULL; l = l->next) {
+				g_autoptr(GError) error_local = NULL;
+				app = GS_APP (l->data);
+				ret = plugin_app_func (plugin, app, flags,
+						    cancellable, &error_local);
+				if (!ret) {
+					g_warning ("failed to call %s on %s: %s",
+						   function_name_app, plugin->name,
+						   error_local->message);
+					continue;
+				}
+			}
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}

@@ -928,14 +928,14 @@ typedef enum {
 } GsSteamStateFlags;
 
 /**
- * gs_plugin_steam_refine_app:
+ * gs_plugin_refine_app:
  */
-static gboolean
-gs_plugin_steam_refine_app (GsPlugin *plugin,
-			    GsApp *app,
-			    GsPluginRefineFlags flags,
-			    GCancellable *cancellable,
-			    GError **error)
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	const gchar *gameid;
 	const gchar *tmp;
@@ -1015,28 +1015,6 @@ gs_plugin_steam_refine_app (GsPlugin *plugin,
 			gs_app_set_install_date (app, ts);
 	}
 
-	return TRUE;
-}
-
-/**
- * gs_plugin_refine:
- */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GList *l;
-	GsApp *app;
-
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (!gs_plugin_steam_refine_app (plugin, app, flags,
-						 cancellable, error))
-			return FALSE;
-	}
 	return TRUE;
 }
 

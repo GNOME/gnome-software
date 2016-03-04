@@ -52,8 +52,12 @@ gs_plugin_get_deps (GsPlugin *plugin)
 /**
  * gs_plugin_refine_app:
  */
-static gboolean
-gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	guint i;
 	const gchar *app_globs[] = {
@@ -69,12 +73,14 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 		"tracker-preferences.desktop",
 		"Uninstall*.desktop",
 		NULL };
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* not set yet */
 	if (gs_app_get_id (app) == NULL)
 		return TRUE;
 
 	/* search */
+	ptask = as_profile_start_literal (plugin->profile, "hardcoded-blacklist");
 	for (i = 0; app_globs[i] != NULL; i++) {
 		if (fnmatch (app_globs[i], gs_app_get_id (app), 0) == 0) {
 			gs_app_add_category (app, "Blacklisted");
@@ -82,29 +88,5 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 		}
 	}
 
-	return TRUE;
-}
-
-/**
- * gs_plugin_refine:
- */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GList *l;
-	GsApp *app;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* are any of the packages on the blacklist? */
-	ptask = as_profile_start_literal (plugin->profile, "hardcoded-blacklist");
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (!gs_plugin_refine_app (plugin, app, error))
-			return FALSE;
-	}
 	return TRUE;
 }

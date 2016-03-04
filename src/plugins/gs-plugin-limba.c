@@ -67,11 +67,23 @@ gs_plugin_destroy (GsPlugin *plugin)
 /**
  * gs_plugin_refine_app:
  */
-static gboolean
-gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	LiPkgInfo *pki;
 	g_autoptr(GError) error_local = NULL;
+
+	/* not us */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "Limba") != 0)
+		return TRUE;
+
+	ptask = as_profile_start_literal (plugin->profile, "limba::refine");
+	if (!gs_plugin_refine_app (plugin, app, error))
+		return FALSE;
 
 	/* sanity check */
 	if (gs_app_get_source_default (app) == NULL)
@@ -99,36 +111,6 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 
 	gs_app_set_version (app, li_pkg_info_get_version (pki));
 
-	return TRUE;
-}
-
-/**
- * gs_plugin_refine:
- */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		GList **list,
-		GsPluginRefineFlags flags,
-		GCancellable *cancellable,
-		GError **error)
-{
-	GList *l;
-	GsApp *app;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	ptask = as_profile_start_literal (plugin->profile, "limba::refine");
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-
-		/* not us */
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "Limba") != 0)
-			continue;
-
-		if (!gs_plugin_refine_app (plugin, app, error))
-			return FALSE;
-	}
-
-	/* sucess */
 	return TRUE;
 }
 

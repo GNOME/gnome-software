@@ -297,12 +297,14 @@ gs_plugin_add_installed (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_refine:
+ * gs_plugin_refine_app:
  */
-static gboolean
-gs_plugin_refine_item (GsPlugin *plugin,
-		       GsApp *app,
-		       GError **error)
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	/* only process this these kinds */
 	if (gs_app_get_kind (app) != AS_APP_KIND_SHELL_EXTENSION)
@@ -320,27 +322,6 @@ gs_plugin_refine_item (GsPlugin *plugin,
 	if (gs_app_get_size (app) == 0)
 		gs_app_set_size (app, 1024 * 50);
 
-	return TRUE;
-}
-
-/**
- * gs_plugin_refine:
- */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GList *l;
-	GsApp *app;
-
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (!gs_plugin_refine_item (plugin, app, error))
-			return FALSE;
-	}
 	return TRUE;
 }
 

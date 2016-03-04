@@ -349,34 +349,28 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_refine:
+ * gs_plugin_refine_app:
  */
 gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	gboolean found = FALSE;
-	GList *l;
-	GsApp *app;
-	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
 
 	/* load XML files */
 	if (!gs_plugin_appstream_startup (plugin, error))
 		return FALSE;
 
-	ptask = as_profile_start_literal (plugin->profile, "appstream::refine");
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (!gs_plugin_refine_from_id (plugin, app, &found, error))
+	/* find by ID then package name */
+	if (!gs_plugin_refine_from_id (plugin, app, &found, error))
+		return FALSE;
+	if (!found) {
+		if (!gs_plugin_refine_from_pkgname (plugin, app, error))
 			return FALSE;
-		if (!found) {
-			if (!gs_plugin_refine_from_pkgname (plugin, app, error))
-				return FALSE;
-		}
 	}
 
 	/* sucess */
