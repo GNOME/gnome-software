@@ -29,9 +29,9 @@
 #include "gs-star-widget.h"
 
 #define DESCRIPTION_LENGTH_MAX		3000	/* chars */
-#define DESCRIPTION_LENGTH_MIN		60	/* chars */
+#define DESCRIPTION_LENGTH_MIN		15	/* chars */
 #define SUMMARY_LENGTH_MAX		70	/* chars */
-#define SUMMARY_LENGTH_MIN		10	/* chars */
+#define SUMMARY_LENGTH_MIN		3	/* chars */
 #define WRITING_TIME_MIN		5	/* seconds */
 
 struct _GsReviewDialog
