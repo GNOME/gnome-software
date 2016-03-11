@@ -10,7 +10,7 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2016-03-05 22:15+0100\n"
-"PO-Revision-Date: 2016-03-05 22:16+0100\n"
+"PO-Revision-Date: 2016-03-05 23:15+0100\n"
 "Last-Translator: Matej Urbančič <mateju@svn.gnome.org>\n"
 "Language-Team: Slovenščina <gnome-si@googlegroups.com>\n"
 "Language: sl_SI\n"
@@ -204,7 +204,7 @@ msgstr "Enostaven način upravljanja s programsko opremo sistema."
 
 #: ../src/gs-application.c:351
 msgid "translator-credits"
-msgstr "Matej Urbančič"
+msgstr "Matej Urbančič <mateju@svn.gnome.org>"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
@@ -431,6 +431,8 @@ msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
 msgstr ""
+"Zahtevana je omrežna povezava, ki pa ni na voljo. Vzpostavite povezavo z "
+"internetom in poskusite znova."
 
 #. TRANSLATORS: if the package is not signed correctly
 #. *
@@ -439,6 +441,8 @@ msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
 msgstr ""
+"Pri posodobitvi je prišlo do varnostnih težav. Za več podrobnosti stopite v "
+"stik s ponudnikom programske opreme."
 
 #. TRANSLATORS: the transaction failed in a way the user
 #. * probably cannot comprehend. Package management systems
@@ -451,6 +455,8 @@ msgid ""
 "The update couldn’t be installed; this is often a problem with the update "
 "itself. Please wait for another update and try again."
 msgstr ""
+"Posodobitve ni mogoče namestiti; najverjetneje je težava v sami posodobitvi. "
+"Počakajte na naslednjo posodobitev in poskusite znova."
 
 #. TRANSLATORS: the user aborted the update manually
 #: ../src/gs-offline-updates.c:81
@@ -466,7 +472,7 @@ msgstr "Sistem je že posodobljen"
 #. TRANSLATORS: we ran out of disk space
 #: ../src/gs-offline-updates.c:91
 msgid "There wasn’t enough disk space. Please free up some space and try again."
-msgstr ""
+msgstr "Ni dovolj prostora na disku. Naredite ga in poskusite znova."
 
 #. TRANSLATORS: We didn't handle the error type
 #: ../src/gs-offline-updates.c:104
@@ -474,6 +480,9 @@ msgid ""
 "We’re sorry: the update failed to install. Please wait for another update and "
 "try again. If the problem persists, contact your software provider."
 msgstr ""
+"Namestitev posodobitve je spodletela. Počakajte na naslednjo posodobitev in "
+"poskusite znova. Če bo težava ostala, stopite v stik s ponudnikom programske "
+"opreme."
 
 #. TRANSLATORS: these are geeky messages from the
 #. * package manager no mortal is supposed to understand,
@@ -583,10 +592,10 @@ msgstr ", "
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
-msgstr[0] ""
-msgstr[1] ""
-msgstr[2] ""
-msgstr[3] ""
+msgstr[0] "Razpoložljive pisave za %s skriptov"
+msgstr[1] "Razpoložljive pisave za %s skript"
+msgstr[2] "Razpoložljive pisave za %s skripta"
+msgstr[3] "Razpoložljive pisave za %s skripte"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
@@ -661,7 +670,7 @@ msgstr ""
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
 #: ../src/gs-shell-extras.c:377
-#, fuzzy, c-format
+#, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "Za podporo %s ni na voljo dodatnih pisav."
 
@@ -1194,7 +1203,7 @@ msgstr "Posodobitve se upravljalo samodejno"
 #. has no software installed from it.
 #: ../src/gs-sources-dialog.c:93
 msgid "No applications or addons installed; other software might still be"
-msgstr ""
+msgstr "Ni nameščenih programov; druga programska oprema še vedno je lahko"
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
@@ -1278,6 +1287,8 @@ msgid ""
 "Software sources can be downloaded from the internet. They give you access to "
 "additional software that is not provided by %s."
 msgstr ""
+"Programske vire je mogoče prejeti prek interneta. Omogočajo dostop do dodatne "
+"programske opreme, ki ni podprta s strani %s."
 
 #. vim: set noexpandtab:
 #: ../src/gs-sources-dialog.ui.h:1
@@ -1338,7 +1349,7 @@ msgstr "Nameščeno na %s"
 
 #: ../src/gs-update-dialog.ui.h:2
 msgid "No updates have been installed on this system."
-msgstr ""
+msgstr "Sistem ni bil posodobljen."
 
 #: ../src/gs-update-monitor.c:108
 msgid "Security Updates Pending"
