@@ -509,46 +509,46 @@ gs_utils_get_content_rating (void)
 	_("None") },
 	{ "violence-cartoon",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Depictions of cartoon-like characters in unsafe situations") },
+	_("Cartoon characters in unsafe situations") },
 	{ "violence-cartoon",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Depictions of cartoon-like characters in aggressive conflict") },
+	_("Cartoon characters in aggressive conflict") },
 	{ "violence-cartoon",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Graphic depictions of violence involving cartoon-like characters") },
+	_("Graphic violence involving cartoon characters") },
 	{ "violence-fantasy",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
 	{ "violence-fantasy",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Depictions of characters in unsafe situations easily distinguishable from real life") },
+	_("Characters in unsafe situations easily distinguishable from reality") },
 	{ "violence-fantasy",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Depictions of characters in aggressive conflict easily distinguishable from real life") },
+	_("Characters in aggressive conflict easily distinguishable from reality") },
 	{ "violence-fantasy",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Graphic depictions of violence involving situations easily distinguishable from real life") },
+	_("Graphic violence easily distinguishable from reality") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Mild depictions of realistic characters in unsafe situations") },
+	_("Mild realistic characters in unsafe situations") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
 	_("Depictions of realistic characters in aggressive conflict") },
 	{ "violence-realistic",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Graphic depictions of violence involving realistic characters") },
+	_("Graphic violence involving realistic characters") },
 	{ "violence-bloodshed",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
 	{ "violence-bloodshed",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Unrealistic depictions of bloodshed") },
+	_("Unrealistic bloodshed") },
 	{ "violence-bloodshed",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Realistic depictions of bloodshed") },
+	_("Realistic bloodshed") },
 	{ "violence-bloodshed",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
 	_("Depictions of bloodshed and the mutilation of body parts") },
@@ -557,13 +557,13 @@ gs_utils_get_content_rating (void)
 	_("None") },
 	{ "violence-sexual",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Depictions of or graphic references to rape or other violent sexual behavior") },
+	_("Rape or other violent sexual behavior") },
 	{ "drugs-alcohol",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
 	{ "drugs-alcohol",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("References to or images of alcoholic beverages") },
+	_("References to alcoholic beverages") },
 	{ "drugs-alcohol",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
 	_("Use of alcoholic beverages") },
@@ -572,13 +572,13 @@ gs_utils_get_content_rating (void)
 	_("None") },
 	{ "drugs-narcotics",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("References to or images of illicit drugs") },
+	_("References to illicit drugs") },
 	{ "drugs-narcotics",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
 	_("Use of illicit drugs") },
 	{ "drugs-tobacco",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("References to or images of tobacco products") },
+	_("References to tobacco products") },
 	{ "drugs-tobacco",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
 	_("Use of tobacco products") },
@@ -587,10 +587,10 @@ gs_utils_get_content_rating (void)
 	_("None") },
 	{ "sex-nudity",		AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Brief depictions of nudity or artistic nudity") },
+	_("Brief artistic nudity") },
 	{ "sex-nudity",		AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Prolonged depictions of nudity") },
+	_("Prolonged nudity") },
 	{ "sex-themes",		AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
@@ -602,58 +602,82 @@ gs_utils_get_content_rating (void)
 	_("Sexual references or depictions") },
 	{ "sex-themes",		AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Graphic depictions of sexual behavior") },
+	_("Graphic sexual behavior") },
 	{ "language-profanity",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
 	{ "language-profanity",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Mild or infrequent use of profanity, e.g. 'damn' or 'butt'") },
+	_("Mild or infrequent use of profanity") },
 	{ "language-profanity",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Moderate use of profanity, e.g. 'crap'") },
+	_("Moderate use of profanity") },
 	{ "language-profanity",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Strong or frequent use of profanity, e.g. 'fuck'") },
+	_("Strong or frequent use of profanity") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Depictions of or dialog including slapstick humor") },
+	_("Slapstick humor") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Depictions of or dialog including vulgar humor; bathroom humor") },
+	_("Vulgar or bathroom humor") },
 	{ "language-humor",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Depictions of or dialog including mature humor; sexual humor") },
+	_("Mature or sexual humor") },
+	{ "language-discrimination", AS_CONTENT_RATING_VALUE_NONE,
+	/* TRANSLATORS: content rating description */
+	_("None") },
+	{ "language-discrimination", AS_CONTENT_RATING_VALUE_MILD,
+	/* TRANSLATORS: content rating description: comments welcome */
+	_("Negativity towards a specific group of people") },
+	{ "language-discrimination", AS_CONTENT_RATING_VALUE_MODERATE,
+	/* TRANSLATORS: content rating description: comments welcome */
+	_("Discrimation designed to cause emotional harm") },
+	{ "language-discrimination", AS_CONTENT_RATING_VALUE_INTENSE,
+	/* TRANSLATORS: content rating description: comments welcome */
+	_("Explicit discrimination based on gender, sexuality, race or religion") },
+	{ "money-advertising", AS_CONTENT_RATING_VALUE_NONE,
+	/* TRANSLATORS: content rating description */
+	_("None") },
+	{ "money-advertising", AS_CONTENT_RATING_VALUE_MILD,
+	/* TRANSLATORS: content rating description: comments welcome */
+	_("Product placement") },
+	{ "money-advertising", AS_CONTENT_RATING_VALUE_MODERATE,
+	/* TRANSLATORS: content rating description: comments welcome */
+	_("Explicit references to specific brands or trademarked products") },
+	{ "money-advertising", AS_CONTENT_RATING_VALUE_INTENSE,
+	/* TRANSLATORS: content rating description: comments welcome */
+	_("Players are encouraged to purchase specific real-world items") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Player can gamble on random events using tokens or credits") },
+	_("Gambling on random events using tokens or credits") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Player can gamble using \"play\" money") },
+	_("Gambling using \"play\" money") },
 	{ "money-gambling",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Player can gamble using real money") },
+	_("Gambling using real money") },
 	{ "money-purchasing",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
 	{ "money-purchasing",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Ability to spend real money in-game, e.g. buying new content_rating or new levels") },
+	_("Ability to spend real money in-game") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_MILD,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Player-to-player game interactions (e.g. playing chess) without chat functionality") },
+	_("Player-to-player game interactions without chat functionality") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_MODERATE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Player-to-player scripted interactions (e.g. giving an axe for a quest) without chat functionality") },
+	_("Player-to-player preset interactions without chat functionality") },
 	{ "social-chat",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
 	_("Uncontrolled chat functionality between players") },
@@ -668,7 +692,7 @@ gs_utils_get_content_rating (void)
 	_("None") },
 	{ "social-contacts",	AS_CONTENT_RATING_VALUE_INTENSE,
 	/* TRANSLATORS: content rating description: comments welcome */
-	_("Ability to share Twitter, Facebook or email addresses to other players") },
+	_("Ability to share social network usernames or email addresses") },
 	{ "social-info",	AS_CONTENT_RATING_VALUE_NONE,
 	/* TRANSLATORS: content rating description */
 	_("None") },
