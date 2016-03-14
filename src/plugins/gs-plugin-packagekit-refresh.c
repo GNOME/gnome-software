@@ -228,13 +228,7 @@ gs_plugin_packagekit_refresh_content_type_matches (const gchar *filename,
 	tmp = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
 
 	/* match any */
-	*matches = FALSE;
-	for (i = 0; mimetypes[i] != NULL; i++) {
-		if (g_strcmp0 (tmp, mimetypes[i]) == 0) {
-			*matches = TRUE;
-			break;
-		}
-	}
+	*matches = tmp != NULL && g_strv_contains (mimetypes, tmp);
 	return TRUE;
 }
 

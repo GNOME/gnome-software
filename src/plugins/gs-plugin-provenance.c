@@ -106,7 +106,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	const gchar *origin;
 	const gchar * const *sources;
-	guint i;
 
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE) == 0)
@@ -137,11 +136,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 	if (g_str_has_prefix (origin + 1, "installed:"))
 		origin += 10;
-	for (i = 0; sources[i] != NULL; i++) {
-		if (g_strcmp0 (origin + 1, sources[i]) == 0) {
-			gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-			break;
-		}
+	if (g_strv_contains (sources, origin + 1)) {
+		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		return TRUE;
 	}
 	return TRUE;
 }
