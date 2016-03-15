@@ -211,6 +211,16 @@ AS_IF([test "x$enable_steam" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_STEAM, test x$enable_steam = xyes)
 
+# Shell Extensions
+AC_ARG_ENABLE(shell_extensions,
+              [AS_HELP_STRING([--enable-shell-extensions],
+                              [enable GNOME shell extensions support [default=yes]])],,
+              enable_shell_extensions=yes)
+AS_IF([test "x$enable_shell_extensions" = "xyes"], [
+  AC_DEFINE(HAVE_SHELL_EXTENSIONS,1,[Build GNOME Shell extensions])], [
+])
+AM_CONDITIONAL(HAVE_SHELL_EXTENSIONS, [test "x$enable_shell_extensions" = "xyes"])
+
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
 GS_PLUGIN_API_VERSION=9
@@ -261,4 +271,5 @@ echo "
         Limba support:             ${have_limba}
         XDG-APP support:           ${have_xdg_app}
         Steam support:             ${enable_steam}
+        GNOME Shell ext. support:  ${enable_shell_extensions}
 "

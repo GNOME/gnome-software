@@ -40,7 +40,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_provenance.la			\
 	libgs_plugin_ubuntu-reviews.la			\
 	libgs_plugin_fedora_tagger_usage.la		\
-	libgs_plugin_shell-extensions.la		\
 	libgs_plugin_epiphany.la			\
 	libgs_plugin_icons.la
 
@@ -54,6 +53,10 @@ plugin_LTLIBRARIES +=					\
 	libgs_plugin_packagekit-proxy.la		\
 	libgs_plugin_packagekit-history.la		\
 	libgs_plugin_packagekit.la
+endif
+
+if HAVE_SHELL_EXTENSIONS
+plugin_LTLIBRARIES += libgs_plugin_shell-extensions.la
 endif
 
 if HAVE_FIRMWARE
@@ -78,10 +81,12 @@ libgs_plugin_dummy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_dummy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_dummy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
+if HAVE_SHELL_EXTENSIONS
 libgs_plugin_shell_extensions_la_SOURCES = gs-plugin-shell-extensions.c
 libgs_plugin_shell_extensions_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
 libgs_plugin_shell_extensions_la_LDFLAGS = -module -avoid-version
 libgs_plugin_shell_extensions_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+endif
 
 libgs_plugin_fedora_distro_upgrades_la_SOURCES = gs-plugin-fedora-distro-upgrades.c
 libgs_plugin_fedora_distro_upgrades_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS) $(SOUP_LIBS)
