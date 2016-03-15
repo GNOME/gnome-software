@@ -221,6 +221,14 @@ AS_IF([test "x$enable_shell_extensions" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_SHELL_EXTENSIONS, [test "x$enable_shell_extensions" = "xyes"])
 
+# Reviews
+AC_ARG_ENABLE(reviews,
+              [AS_HELP_STRING([--enable-reviews],
+                              [enable reviews [default=yes]])],,
+              enable_reviews=yes)
+AM_CONDITIONAL(HAVE_REVIEWS, [test "x$enable_reviews" = "xyes"])
+AC_DEFINE(HAVE_REVIEWS,1,[Build reviews])
+
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
 GS_PLUGIN_API_VERSION=9
@@ -272,4 +280,5 @@ echo "
         XDG-APP support:           ${have_xdg_app}
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}
+        Reviews support:           ${enable_reviews}
 "
