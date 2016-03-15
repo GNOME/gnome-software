@@ -9,8 +9,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-04 18:40+0000\n"
-"PO-Revision-Date: 2016-03-04 23:16+0100\n"
+"POT-Creation-Date: 2016-03-15 08:25+0000\n"
+"PO-Revision-Date: 2016-03-15 09:47+0100\n"
 "Last-Translator: Balázs Úr <urbalazs@gmail.com>\n"
 "Language-Team: Hungarian <openscope at googlegroups dot com>\n"
 "Language: hu\n"
@@ -399,8 +399,6 @@ msgstr "nem-szabad"
 
 #. This is shown in the search result row as a tag
 #: ../src/gs-app-row.ui.h:8 ../src/gs-shell-details.ui.h:33
-#| msgctxt "Menu subcategory of Add-ons"
-#| msgid "Shell Extensions"
 msgid "shell extension"
 msgstr "parancsértelmező kiterjesztés"
 
@@ -1466,7 +1464,6 @@ msgid "Updates page"
 msgstr "Frissítések oldal"
 
 #: ../src/gs-shell-updates.ui.h:2
-#| msgid "OS Updates"
 msgid "Other Updates"
 msgstr "Egyéb frissítések"
 
@@ -1930,6 +1927,396 @@ msgstr "Ne figyelmeztessen többé"
 #: ../src/gs-utils.c:322
 msgid "Enable and Install"
 msgstr "Engedélyezés és telepítés"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:509
+#| msgid "None"
+msgctxt "content rating violence-cartoon"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:512
+msgid "Cartoon characters in unsafe situations"
+msgstr "Rajzfilmfigurák veszélyes helyzetekben"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:515
+msgid "Cartoon characters in aggressive conflict"
+msgstr "Rajzfilmfigurák agresszív konfliktusban"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:518
+msgid "Graphic violence involving cartoon characters"
+msgstr "Rajzfilmfigurákat érintő grafikus erőszak"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:521
+#| msgid "None"
+msgctxt "content rating violence-fantasy"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:524
+msgid "Characters in unsafe situations easily distinguishable from reality"
+msgstr ""
+"Karakterek veszélyes helyzetekben, amely könnyen megkülönböztethető a "
+"valóságtól"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:527
+msgid "Characters in aggressive conflict easily distinguishable from reality"
+msgstr ""
+"Karakterek agresszív konfliktusban, amely könnyen megkülönböztethető a "
+"valóságtól"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:530
+msgid "Graphic violence easily distinguishable from reality"
+msgstr "Grafikus erőszak, amely könnyen megkülönböztethető a valóságtól"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:533
+#| msgid "None"
+msgctxt "content rating violence-realistic"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:536
+msgid "Mild realistic characters in unsafe situations"
+msgstr "Enyhén valósághű karakterek veszélyes helyzetekben"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:539
+msgid "Depictions of realistic characters in aggressive conflict"
+msgstr "Valósághű karakterek ábrázolása agresszív konfliktusban"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:542
+msgid "Graphic violence involving realistic characters"
+msgstr "Valósághű karaktereket érintő grafikus erőszak"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:545
+#| msgid "None"
+msgctxt "content rating violence-bloodshed"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:548
+msgid "Unrealistic bloodshed"
+msgstr "Nem valósághű vérontás"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:551
+msgid "Realistic bloodshed"
+msgstr "Valósághű vérontás"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:554
+msgid "Depictions of bloodshed and the mutilation of body parts"
+msgstr "Várontás és a testrészek megcsonkításának ábrázolása"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:557
+#| msgid "None"
+msgctxt "content rating violence-sexual"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:560
+msgid "Rape or other violent sexual behavior"
+msgstr "Megerőszakolás vagy egyéb erőszakos szexuális viselkedés"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:563
+#| msgid "None"
+msgctxt "content rating drugs-alcohol"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:566
+msgid "References to alcoholic beverages"
+msgstr "Alkoholtartalmú italokra való hivatkozások"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:569
+msgid "Use of alcoholic beverages"
+msgstr "Alkoholtartalmú italok használata"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:572
+#| msgid "None"
+msgctxt "content rating drugs-narcotics"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:575
+msgid "References to illicit drugs"
+msgstr "Tiltott kábítószerekre való hivatkozások"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:578
+msgid "Use of illicit drugs"
+msgstr "Tiltott kábítószerek használata"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:581
+msgid "References to tobacco products"
+msgstr "Dohánytermékekre való hivatkozások"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:584
+msgid "Use of tobacco products"
+msgstr "Dohánytermékek használata"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:587
+#| msgid "None"
+msgctxt "content rating sex-nudity"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:590
+msgid "Brief artistic nudity"
+msgstr "Rövid művészi meztelenség"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:593
+msgid "Prolonged nudity"
+msgstr "Hosszan tartó meztelenség"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:596
+#| msgid "None"
+msgctxt "content rating sex-themes"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:599
+msgid "Provocative references or depictions"
+msgstr "Kihívó hivatkozások vagy ábrázolások"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:602
+msgid "Sexual references or depictions"
+msgstr "Szexuális hivatkozások vagy ábrázolások"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:605
+msgid "Graphic sexual behavior"
+msgstr "Grafikus szexuális viselkedés"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:608
+#| msgid "None"
+msgctxt "content rating language-profanity"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:611
+msgid "Mild or infrequent use of profanity"
+msgstr "Enyhe vagy ritka káromkodáshasználat"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:614
+msgid "Moderate use of profanity"
+msgstr "Mérsékelt káromkodáshasználat"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:617
+msgid "Strong or frequent use of profanity"
+msgstr "Erős vagy gyakori káromkodáshasználat"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:620
+#| msgid "None"
+msgctxt "content rating language-humor"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:623
+msgid "Slapstick humor"
+msgstr "Helyzethumor"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:626
+msgid "Vulgar or bathroom humor"
+msgstr "Vulgáris vagy fürdőszoba humor"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:629
+msgid "Mature or sexual humor"
+msgstr "Felnőtt vagy szexuális humor"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:632
+#| msgid "None"
+msgctxt "content rating language-discrimination"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:635
+msgid "Negativity towards a specific group of people"
+msgstr "Negatívság egy bizonyos embercsoport felé"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:638
+msgid "Discrimation designed to cause emotional harm"
+msgstr "Érzelmi károsodást okozó tervezett diszkrimináció"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:641
+msgid "Explicit discrimination based on gender, sexuality, race or religion"
+msgstr "Kifejezetten nemi, szexuális, faji vagy vallási alapú diszkrimináció"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:644
+#| msgid "None"
+msgctxt "content rating money-advertising"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:647
+msgid "Product placement"
+msgstr "Termékelhelyezés"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:650
+msgid "Explicit references to specific brands or trademarked products"
+msgstr ""
+"Közvetlen utalások egy bizonyos márkára vagy védjeggyel védett termékre"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:653
+msgid "Players are encouraged to purchase specific real-world items"
+msgstr ""
+"A játékosokat arra ösztönzik, hogy a valódi világban bizonyos tárgyakat "
+"vásároljanak"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:656
+#| msgid "None"
+msgctxt "content rating money-gambling"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:659
+msgid "Gambling on random events using tokens or credits"
+msgstr ""
+"Szerencsejáték véletlenszerű eseményeken zsetonok vagy kreditek használatával"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:662
+msgid "Gambling using \"play\" money"
+msgstr "Szerencsejáték „játékpénz” használatával"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:665
+msgid "Gambling using real money"
+msgstr "Szerencsejáték valódi pénz használatával"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:668
+#| msgid "None"
+msgctxt "content rating money-purchasing"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:671
+msgid "Ability to spend real money in-game"
+msgstr "Képesség valódi pénz költésére a játékon belül"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:674
+#| msgid "None"
+msgctxt "content rating social-chat"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:677
+msgid "Player-to-player game interactions without chat functionality"
+msgstr "Játékosok közötti játékkölcsönhatások csevegés funkcionalitás nélkül"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:680
+msgid "Player-to-player preset interactions without chat functionality"
+msgstr ""
+"Játékosok közötti előre meghatározott kölcsönhatások csevegés funkcionalitás "
+"nélkül"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:683
+msgid "Uncontrolled chat functionality between players"
+msgstr "Ellenőrizetlen csevegés funkcionalitás a játékosok között"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:686
+#| msgid "None"
+msgctxt "content rating social-audio"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:689
+msgid "Uncontrolled audio or video chat functionality between players"
+msgstr ""
+"Ellenőrizetlen hang- vagy videocsevegés funkcionalitás a játékosok között"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:692
+#| msgid "None"
+msgctxt "content rating social-contacts"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:695
+#| msgid "Ability to share social network usernames or email addresses"
+msgid "Sharing social network usernames or email addresses"
+msgstr ""
+"Közösségi hálózatokon használt felhasználónevek vagy e-mail címek megosztása"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:698
+#| msgid "None"
+msgctxt "content rating social-info"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:701
+#| msgid "User information is shared with 3rd parties"
+msgid "Sharing user information with 3rd parties"
+msgstr "Felhasználói információk megosztása harmadik féllel"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-utils.c:704
+#| msgid "None"
+msgctxt "content rating social-location"
+msgid "None"
+msgstr "Nincs"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-utils.c:707
+#| msgid "Ability to share physical location to other users"
+msgid "Sharing physical location to other users"
+msgstr "Fizikai hely megosztása más felhasználók számára"
 
 #. vim: set noexpandtab:
 #: ../src/menus.ui.h:1
