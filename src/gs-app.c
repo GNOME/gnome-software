@@ -1291,12 +1291,12 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *licence)
 	guint i;
 	g_auto(GStrv) tokens = NULL;
 
+	g_return_if_fail (GS_IS_APP (app));
+
 	/* only save this if the data is sufficiently high quality */
 	if (quality <= app->licence_quality)
 		return;
 	app->licence_quality = quality;
-
-	g_return_if_fail (GS_IS_APP (app));
 
 	/* assume free software until we find an unmatched SPDX token */
 	app->licence_is_free = TRUE;
@@ -2019,6 +2019,8 @@ gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
 gboolean
 gs_app_has_quirk (GsApp *app, AsAppQuirk quirk)
 {
+	g_return_val_if_fail (GS_IS_APP (app), FALSE);
+
 	return (app->quirk & quirk) > 0;
 }
 
@@ -2028,6 +2030,8 @@ gs_app_has_quirk (GsApp *app, AsAppQuirk quirk)
 void
 gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
 {
+	g_return_if_fail (GS_IS_APP (app));
+
 	app->quirk |= quirk;
 }
 
