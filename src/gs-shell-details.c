@@ -257,7 +257,8 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 		gtk_widget_set_visible (self->button_details_launch, FALSE);
 
 	/* remove button */
-	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_COMPULSORY)) {
+	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_COMPULSORY) ||
+	    gs_app_get_kind (self->app) == AS_APP_KIND_FIRMWARE) {
 		gtk_widget_set_visible (self->button_remove, FALSE);
 	} else {
 		switch (state) {
