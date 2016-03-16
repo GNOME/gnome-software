@@ -291,8 +291,11 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	}
 
 	/* update unsupported */
-	if ((flags & FU_DEVICE_FLAG_ALLOW_ONLINE) == 0 &&
-	    (flags & FU_DEVICE_FLAG_ALLOW_OFFLINE) == 0) {
+	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE) {
+		gs_app_set_metadata (app, "fwupd::InstallMethod", "online");
+	} else if (flags & FU_DEVICE_FLAG_ALLOW_OFFLINE) {
+		gs_app_set_metadata (app, "fwupd::InstallMethod", "offline");
+	} else {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -925,6 +928,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	const gchar *install_method;
 	const gchar *filename;
 	gboolean offline = TRUE;
 
@@ -941,9 +945,13 @@ gs_plugin_app_install (GsPlugin *plugin,
 			     filename);
 		return FALSE;
 	}
+
+	/* only offline supported */
+	install_method = gs_app_get_metadata_item (app, "fwupd::InstallMethod");
+	if (g_strcmp0 (install_method, "offline") == 0)
+		offline = TRUE;
+
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
-		offline = FALSE;
 	if (!gs_plugin_fwupd_upgrade (plugin, filename, FWUPD_DEVICE_ID_ANY, offline,
 				      cancellable, error))
 		return FALSE;
@@ -1063,6 +1071,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
+	FwupdDeviceFlags flags = FU_DEVICE_FLAG_ALLOW_OFFLINE;
 	GVariant *body;
 	GVariant *val;
 	GVariant *variant;
@@ -1140,14 +1149,26 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
-	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_add_source_id (app, filename);
 	gs_app_add_category (app, "System");
 	val = g_dbus_message_get_body (message);
 	g_variant_get (val, "(a{sv})", &iter);
 	while (g_variant_iter_next (iter, "{&sv}", &key, &variant)) {
 		gs_plugin_fwupd_set_app_from_kv (app, key, variant);
+		if (g_strcmp0 (key, "Flags") == 0)
+			flags = g_variant_get_uint64 (variant);
 		g_variant_unref (variant);
+	}
+
+	/* can we install on-line, off-line, or not at all */
+	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE) {
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_metadata (app, "fwupd::InstallMethod", "online");
+	} else if (flags & FU_DEVICE_FLAG_ALLOW_OFFLINE) {
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+		gs_app_set_metadata (app, "fwupd::InstallMethod", "offline");
+	} else {
+		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 	}
 
 	/* create icon */
