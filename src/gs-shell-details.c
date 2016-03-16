@@ -172,6 +172,10 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "application_details_header"));
 	gtk_widget_show (widget);
 
+	/* not set, perhaps filename-to-app */
+	if (self->app == NULL)
+		return;
+
 	state = gs_app_get_state (self->app);
 
 	/* label */
