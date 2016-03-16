@@ -1164,6 +1164,17 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 							      &error));
 	if (self->app == NULL) {
 		GtkWidget *dialog;
+		const gchar *msg;
+
+		if (g_error_matches (error,
+				     GS_PLUGIN_LOADER_ERROR,
+				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
+			/* TRANSLATORS: the file format was not recognised by
+			 * any plugin, e.g. if you try installing a .tar.gz */
+			msg = _("The file is not supported.");
+		} else {
+			msg = error->message;
+		}
 
 		dialog = gtk_message_dialog_new (gs_shell_get_window (self->shell),
 		                                 GTK_DIALOG_MODAL |
@@ -1172,7 +1183,7 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 		                                 GTK_BUTTONS_CLOSE,
 		                                 _("Sorry, this did not work"));
 		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-		                                          "%s", error->message);
+		                                          "%s", msg);
 		g_signal_connect (dialog, "response",
 				  G_CALLBACK (gs_shell_details_failed_response_cb), self);
 		gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
