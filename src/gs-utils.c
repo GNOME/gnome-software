@@ -490,6 +490,7 @@ gs_utils_get_permission (const gchar *id)
 #endif
 }
 
+#if AS_CHECK_VERSION(0,5,12)
 /**
  * gs_utils_get_content_rating:
  *
@@ -708,5 +709,6 @@ gs_utils_get_content_rating (void)
 	{ NULL, 0, NULL } };
 	return content_rating_oars[0].desc;
 }
+#endif
 
 /* vim: set noexpandtab: */

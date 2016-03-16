@@ -61,7 +61,9 @@ gchar		*gs_utils_get_cachedir		(const gchar	*kind,
 						 GError		**error);
 gchar		*gs_utils_get_user_hash		(GError		**error);
 GPermission	*gs_utils_get_permission	(const gchar	*id);
+#if AS_CHECK_VERSION(0,5,12)
 const gchar 	*gs_utils_get_content_rating	(void);
+#endif
 
 G_END_DECLS
 
