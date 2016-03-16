@@ -1129,6 +1129,18 @@ gs_shell_details_app_refine_cb (GObject *source,
 }
 
 /**
+ * gs_shell_details_failed_response_cb:
+ **/
+static void
+gs_shell_details_failed_response_cb (GtkDialog *dialog,
+				     gint response,
+				     GsShellDetails *self)
+{
+	/* switch away from the details view that failed to load */
+	gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
+}
+
+/**
  * gs_shell_details_filename_to_app_cb:
  **/
 static void
@@ -1162,12 +1174,11 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 		                                 _("Sorry, this did not work"));
 		gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
 		                                          "%s", error->message);
+		g_signal_connect (dialog, "response",
+				  G_CALLBACK (gs_shell_details_failed_response_cb), self);
 		gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 
 		g_warning ("failed to convert to GsApp: %s", error->message);
-
-		/* Switch away from the details view that failed to load */
-		gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
 		return;
 	}
 
