@@ -690,15 +690,13 @@ gs_plugin_offline_update (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_app_install:
- *
- * Called when a user double clicks on a .cab file
+ * gs_plugin_fwupd_install:
  */
-gboolean
-gs_plugin_app_install (GsPlugin *plugin,
-		       GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
+static gboolean
+gs_plugin_fwupd_install (GsPlugin *plugin,
+			 GsApp *app,
+			 GCancellable *cancellable,
+			 GError **error)
 {
 	const gchar *install_method;
 	const gchar *filename;
@@ -732,6 +730,20 @@ gs_plugin_app_install (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_app_install:
+ *
+ * Called when a user double clicks on a .cab file
+ */
+gboolean
+gs_plugin_app_install (GsPlugin *plugin,
+		       GsApp *app,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
+}
+
+/**
  * gs_plugin_app_update:
  *
  * This is only called when updating device firmware live.
@@ -761,7 +773,7 @@ gs_plugin_app_update (GsPlugin *plugin,
 					    cancellable, error);
 	}
 
-	return gs_plugin_app_install (plugin, app, cancellable, error);
+	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
 }
 
 /**
