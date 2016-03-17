@@ -754,8 +754,10 @@ GPermission *
 gs_update_monitor_permission_get (void)
 {
 	static GPermission *permission = NULL;
+#ifdef HAVE_PACKAGEKIT
 	if (permission == NULL)
 		permission = gs_utils_get_permission ("org.freedesktop.packagekit.trigger-offline-update");
+#endif
 	return permission;
 }
 
