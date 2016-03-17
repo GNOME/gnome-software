@@ -137,6 +137,8 @@ gnome_software_SOURCES =				\
 	gs-fixed-size-bin.c				\
 	gs-hiding-box.h					\
 	gs-hiding-box.c					\
+	gs-info-bar.h					\
+	gs-info-bar.c					\
 	gs-language.c					\
 	gs-language.h					\
 	gs-os-release.c					\

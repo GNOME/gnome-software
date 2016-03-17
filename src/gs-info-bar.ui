@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<interface>
+  <!-- interface-requires gtk+ 3.10 -->
+  <template class="GsInfoBar" parent="GtkInfoBar">
+    <property name="app_paintable">True</property>
+    <property name="message_type">info</property>
+    <style>
+      <class name="application-details-infobar"/>
+    </style>
+    <child internal-child="content_area">
+      <object class="GtkBox" id="content_area">
+        <property name="can_focus">False</property>
+        <property name="spacing">0</property>
+        <property name="halign">fill</property>
+        <property name="orientation">vertical</property>
+        <child>
+          <object class="GtkLabel" id="label_title">
+            <property name="justify">center</property>
+            <property name="wrap">True</property>
+            <property name="max_width_chars">30</property>
+            <property name="visible">False</property>
+            <property name="can_focus">False</property>
+            <attributes>
+              <attribute name="weight" value="bold"/>
+            </attributes>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_body">
+            <property name="justify">center</property>
+            <property name="wrap">True</property>
+            <property name="max_width_chars">30</property>
+            <property name="visible">False</property>
+            <property name="can_focus">False</property>
+          </object>
+        </child>
+        <child>
+          <object class="GtkLabel" id="label_warning">
+            <property name="justify">center</property>
+            <property name="wrap">True</property>
+            <property name="max_width_chars">30</property>
+            <property name="visible">False</property>
+            <property name="can_focus">False</property>
+          </object>
+        </child>
+      </object>
+      <packing>
+        <property name="expand">False</property>
+        <property name="fill">False</property>
+        <property name="position">0</property>
+      </packing>
+    </child>
+  </template>
+</interface>
