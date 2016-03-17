@@ -10,22 +10,22 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-15 10:26+0000\n"
-"PO-Revision-Date: 2016-03-15 15:27+0300\n"
-"Last-Translator: Stas Solovey <whats_up@tut.by>\n"
+"POT-Creation-Date: 2016-03-17 12:52+0000\n"
+"PO-Revision-Date: 2016-03-17 21:16+0300\n"
+"Last-Translator: Yuri Myasoedov <ymyasoedov@yandex.ru>\n"
 "Language-Team: Русский <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
-"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2)\n"
-"X-Generator: Gtranslator 2.91.7\n"
+"%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
+"X-Generator: Poedit 1.6.9\n"
 
 #  перевод по аналогии с ubuntu software - центр приложений ubuntu
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
-msgstr "Центр приложений GNOME"
+msgstr "Менеджер приложений GNOME"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
 msgid "Application manager for GNOME"
@@ -53,95 +53,103 @@ msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
-msgstr ""
+msgstr "Список совместимых проектов"
 
 #: ../data/org.gnome.software.gschema.xml.h:2
 msgid ""
 "This is a list of compatible projects we should show such as GNOME, KDE and "
 "XFCE."
 msgstr ""
+"Это список совместимых проектов, которые мы должны показывать как GNOME, KDE "
+"и XFCE."
 
 #: ../data/org.gnome.software.gschema.xml.h:3
 msgid "Whether to automatically download updates"
-msgstr ""
+msgstr "Автоматически загружать обновления"
 
 #: ../data/org.gnome.software.gschema.xml.h:4
 msgid ""
 "If enabled, GNOME Software automatically downloads updates in the background "
 "and prompts the user to install them when ready."
 msgstr ""
+"Если включено, то менеджер приложений GNOME будет автоматически загружать "
+"обновления в фоне и предлагать их к установке, как только они будут "
+"загружены."
 
 #: ../data/org.gnome.software.gschema.xml.h:5
 msgid "Whether it's the very first run of GNOME Software"
-msgstr ""
+msgstr "Первый запуск менеджера приложений GNOME"
 
 #: ../data/org.gnome.software.gschema.xml.h:6
 msgid "Show star ratings next to applications"
-msgstr ""
+msgstr "Показывать оценки приложений"
 
 #: ../data/org.gnome.software.gschema.xml.h:7
 msgid "Non-free applications show a warning dialog before install"
-msgstr ""
+msgstr "Предупреждать при установке несвободных приложений"
 
 #: ../data/org.gnome.software.gschema.xml.h:8
 msgid ""
 "When non-free applications are installed a warning dialog can be shown. This "
 "controls if that dialog is suppressed."
 msgstr ""
+"Показывать диалог с предупреждением при установке несвободных приложений. "
 
 #: ../data/org.gnome.software.gschema.xml.h:9
-#| msgid "Search for applications"
 msgid "A list of popular applications"
 msgstr "Список популярных приложений"
 
 #: ../data/org.gnome.software.gschema.xml.h:10
 msgid "A list of applications to use, overriding the system defined ones."
-msgstr ""
+msgstr "Список используемых приложений, переопределяющих системные."
 
 #: ../data/org.gnome.software.gschema.xml.h:11
 msgid "The list of extra sources that have been previously enabled"
-msgstr ""
+msgstr "Список включённых ранее дополнительных источников"
 
 #: ../data/org.gnome.software.gschema.xml.h:12
 msgid ""
 "The list of sources that have been previously enabled when installing third-"
 "party applications."
-msgstr ""
+msgstr "Список источников включённых ранее при установке сторонних приложений."
 
 #: ../data/org.gnome.software.gschema.xml.h:13
 msgid "The last update check timestamp"
-msgstr ""
+msgstr "Метка времени последней проверки обновлений"
 
 #: ../data/org.gnome.software.gschema.xml.h:14
 msgid "The timestamp of the first security update, cleared after update"
 msgstr ""
+"Метка времени первого обновления по безопасности, очищенная после обновления"
 
 #: ../data/org.gnome.software.gschema.xml.h:15
 msgid "The last update timestamp"
-msgstr ""
+msgstr "Метка времени последнего обновления"
 
 #: ../data/org.gnome.software.gschema.xml.h:16
 msgid "The server to use for application reviews"
-msgstr ""
+msgstr "Сервер, используемый для рецензии приложений"
 
 #: ../data/org.gnome.software.gschema.xml.h:17
 msgid "The minimum karma score for reviews"
-msgstr ""
+msgstr "Минимальное значение кармы для рецензии"
 
 #: ../data/org.gnome.software.gschema.xml.h:18
 msgid "Reviews with karma less than this number will not be shown."
-msgstr ""
+msgstr "Рецензии с кармой, меньше этого числа, будут скрываться."
 
 #: ../data/org.gnome.software.gschema.xml.h:19
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
+"Список официальных источников, которые не будут считаться в качестве "
+"сторонних"
 
 #: ../src/app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Добавить в папку приложения"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:284
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:288
 #: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "О_тменить"
@@ -182,7 +190,7 @@ msgstr "Снять выделение"
 #: ../src/gnome-software.ui.h:3 ../src/gs-application.c:374
 #: ../src/gs-shell.c:253 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
-msgstr "Центр приложений"
+msgstr "Менеджер приложений"
 
 #. vim: set noexpandtab:
 #: ../src/gnome-software.ui.h:4 ../src/gs-sources-dialog.ui.h:2
@@ -254,8 +262,6 @@ msgstr "Проприетарное"
 
 #. TRANSLATORS: see the wikipedia page
 #: ../src/gs-app.c:1356
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "Publishing"
 msgid "Public domain"
 msgstr "Общественное достояние"
 
@@ -398,7 +404,6 @@ msgstr "Другое"
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
 #: ../src/gs-category.c:239
-#| msgid "_All"
 msgid "All"
 msgstr "Все"
 
@@ -591,66 +596,65 @@ msgstr ""
 #. *		A really bad application
 #: ../src/gs-review-dialog.c:93
 msgid "Hate it"
-msgstr ""
+msgstr "Ненавижу"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great application
 #: ../src/gs-review-dialog.c:97
 msgid "Don't like it"
-msgstr ""
+msgstr "Не понравилось"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good application
 #: ../src/gs-review-dialog.c:101
 msgid "It's OK"
-msgstr ""
+msgstr "Нормально"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good application
 #: ../src/gs-review-dialog.c:105
 msgid "Like it"
-msgstr ""
+msgstr "Понравилось"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome application
 #: ../src/gs-review-dialog.c:109
 msgid "Love it"
-msgstr ""
+msgstr "Обожаю"
 
 #. TRANSLATORS: the review can't just be copied and pasted
 #: ../src/gs-review-dialog.c:131
 msgid "Please take more time writing the review"
-msgstr ""
+msgstr "Уделите рецензированию больше времени"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:135
 msgid "Please choose a star rating"
-msgstr ""
+msgstr "Выберите оценку"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:139
 msgid "The summary is too short"
-msgstr ""
+msgstr "Краткое описание должно быть длиннее"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:143
 msgid "The summary is too long"
-msgstr ""
+msgstr "Краткое описание слишком длинное"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:147
 msgid "The description is too short"
-msgstr ""
+msgstr "Описание слишком короткое"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:151
 msgid "The description is too long"
-msgstr ""
+msgstr "Описание слишком длинное"
 
 #. vim: set noexpandtab:
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:2
-#| msgid "Review"
 msgid "Post Review"
 msgstr "Разместить отзыв"
 
@@ -660,8 +664,6 @@ msgid "_Post"
 msgstr "_Разместить"
 
 #: ../src/gs-review-dialog.ui.h:6
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Editing"
 msgid "Rating"
 msgstr "Рейтинг"
 
@@ -679,7 +681,6 @@ msgstr ""
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:10
-#| msgid "Review"
 msgctxt "app review"
 msgid "Review"
 msgstr "Отзыв"
@@ -696,6 +697,7 @@ msgstr "Итог"
 #: ../src/gs-review-row.c:207
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
+"Вы не можете публиковать рецензии из-за оскорбительного и грубого поведения."
 
 #. TRANSLATORS: we ask the user if they really want to do this
 #: ../src/gs-review-row.c:212
@@ -703,20 +705,18 @@ msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
 msgstr ""
+"Ваша рецензия будет скрыта до тех пор, пока её не проверит администратор."
 
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
 #: ../src/gs-review-row.c:226
-#| msgid "Review"
 msgid "Report Review?"
 msgstr "Отправить отзыв?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: ../src/gs-review-row.c:230
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Sports"
 msgid "Report"
 msgstr "Отправить"
 
@@ -731,8 +731,6 @@ msgid "Yes"
 msgstr "Да"
 
 #: ../src/gs-review-row.ui.h:4
-#| msgctxt "menu category"
-#| msgid "None"
 msgid "No"
 msgstr "Нет"
 
@@ -746,7 +744,6 @@ msgid "Report…"
 msgstr "Сообщить…"
 
 #: ../src/gs-review-row.ui.h:8
-#| msgid "Remove"
 msgid "Remove…"
 msgstr "Удалить…"
 
@@ -798,20 +795,19 @@ msgstr ""
 "проблемы с системой, рекомендуется отключить их."
 
 #: ../src/gs-shell-category.ui.h:2
-#| msgid "Network Settings"
 msgid "Extension Settings"
 msgstr "Параметры расширения"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:196 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:200 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:4
 msgid "_Install"
 msgstr "_Установить"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:207
+#: ../src/gs-shell-details.c:211
 msgid "_Installing"
 msgstr "У_становка"
 
@@ -819,66 +815,66 @@ msgstr "У_становка"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:225
+#: ../src/gs-shell-details.c:229
 msgid "_Install…"
 msgstr "Ус_тановить…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:271 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:275 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "У_далить"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:278
+#: ../src/gs-shell-details.c:282
 msgid "_Removing"
 msgstr "У_даление"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:652
 msgctxt "license"
 msgid "Unknown"
 msgstr "Неизвестная"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:661
+#: ../src/gs-shell-details.c:665
 msgctxt "version"
 msgid "Unknown"
 msgstr "Неизвестная"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:667
+#: ../src/gs-shell-details.c:671
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Подсчёт…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:670
+#: ../src/gs-shell-details.c:674
 msgctxt "size"
 msgid "Unknown"
 msgstr "Неизвестно"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:682
+#: ../src/gs-shell-details.c:686
 msgctxt "updated"
 msgid "Never"
 msgstr "Никогда"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:696
+#: ../src/gs-shell-details.c:700
 msgctxt "menu category"
 msgid "None"
 msgstr "Нет"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:713
+#: ../src/gs-shell-details.c:717
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Неизвестно"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:759
+#: ../src/gs-shell-details.c:763
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -887,27 +883,29 @@ msgstr ""
 "подключения."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:770
+#: ../src/gs-shell-details.c:774
 msgid "This software comes from a 3rd party."
-msgstr ""
+msgstr "Это — стороннее программное обеспечение."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:779
+#: ../src/gs-shell-details.c:783
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
+"Это — стороннее программное обеспечение, оно может содержать несвободные "
+"компоненты."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:788
+#: ../src/gs-shell-details.c:792
 msgid "This software may contain non-free components."
-msgstr ""
+msgstr "Это программное обеспечение может содержать несвободные компоненты."
 
-#: ../src/gs-shell-details.c:1110
+#: ../src/gs-shell-details.c:1114
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Не удалось найти «%s»"
 
-#: ../src/gs-shell-details.c:1158 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1174 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "Не сработало"
 
@@ -989,17 +987,14 @@ msgid "Localized in your Language"
 msgstr "Переведено на ваш язык"
 
 #: ../src/gs-shell-details.ui.h:20
-#| msgctxt "Menu subcategory of Office"
-#| msgid "Presentation"
 msgid "Documentation"
 msgstr "Документация"
 
 #: ../src/gs-shell-details.ui.h:21
 msgid "Release Activity"
-msgstr ""
+msgstr "Выпуски версий"
 
 #: ../src/gs-shell-details.ui.h:22
-#| msgid "System Applications"
 msgid "System Integration"
 msgstr "Системная интеграция"
 
@@ -1049,7 +1044,6 @@ msgstr "Выбранные дополнения будут установлен�
 
 #. Translators: Header of the section with other users' opinions about the app.
 #: ../src/gs-shell-details.ui.h:36
-#| msgid "Review"
 msgid "Reviews"
 msgstr "Отзывы"
 
@@ -1282,7 +1276,6 @@ msgid "_Remove from Folder"
 msgstr "_Удалить из папки"
 
 #: ../src/gs-shell-moderate.ui.h:1
-#| msgid "Updates page"
 msgid "Moderate page"
 msgstr "Отредактировать страницу"
 
@@ -1477,7 +1470,6 @@ msgid "Updates page"
 msgstr "Страница обновлений"
 
 #: ../src/gs-shell-updates.ui.h:2
-#| msgid "OS Updates"
 msgid "Other Updates"
 msgstr "Другие обновления"
 
@@ -1763,7 +1755,6 @@ msgstr[2] "Установлены важные обновления ОС."
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
 #: ../src/gs-update-monitor.c:462
-#| msgid "Review"
 msgctxt "updates"
 msgid "Review"
 msgstr "Просмотреть"
@@ -1830,6 +1821,7 @@ msgstr ""
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
 #: ../src/gs-upgrade-banner.c:75
+#, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s уже доступно"
 
@@ -1837,6 +1829,7 @@ msgstr "%s %s уже доступно"
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
 #: ../src/gs-upgrade-banner.c:88
+#, c-format
 msgid "Downloading %s %s"
 msgstr "Загрузка %s %s"
 
@@ -1845,6 +1838,7 @@ msgstr "Загрузка %s %s"
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
 #: ../src/gs-upgrade-banner.c:102
+#, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s готово к установке"
 
@@ -2857,7 +2851,6 @@ msgstr "Расширения GNOME Shell"
 
 # Приложению требуется …
 #: ../src/plugins/menu-spec-common.c:216
-#| msgid "An application"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Localization"
 msgstr "Локализация"
