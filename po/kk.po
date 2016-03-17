@@ -8,8 +8,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-02 22:27+0000\n"
-"PO-Revision-Date: 2016-03-04 08:44+0500\n"
+"POT-Creation-Date: 2016-03-16 22:26+0000\n"
+"PO-Revision-Date: 2016-03-17 08:27+0500\n"
 "Last-Translator: Baurzhan Muftakhidinov <baurthefirst@gmail.com>\n"
 "Language-Team: Kazakh <kk_KZ@googlegroups.com>\n"
 "Language: kk\n"
@@ -139,7 +139,7 @@ msgid "Add to Application Folder"
 msgstr "Қолданбалар бумасына қосу"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:283
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:284
 #: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "Ба_с тарту"
@@ -176,8 +176,8 @@ msgstr "Ештеңе таңдамау"
 #. TRANSLATORS: this is the application name
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
-#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:371
-#: ../src/gs-shell.c:162 ../src/org.gnome.Software.desktop.in.h:1
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:374
+#: ../src/gs-shell.c:253 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Бағд. қамтама"
 
@@ -201,18 +201,6 @@ msgstr "Орнат_ылған"
 #: ../src/gnome-software.ui.h:10
 msgid "_Updates"
 msgstr "Жаңар_тулар"
-
-#: ../src/gnome-software.ui.h:11
-msgid "Restart & _Install"
-msgstr "Қайта қосу және _орнату"
-
-#: ../src/gnome-software.ui.h:12
-msgid "Select"
-msgstr "Таңдау"
-
-#: ../src/gnome-software.ui.h:13
-msgid "Check for updates"
-msgstr "Жаңартуларға тексеру"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
@@ -271,69 +259,69 @@ msgid "Folder Name"
 msgstr "Бума атауы"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:96
+#: ../src/gs-application.c:97
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Іске қосылу режимі келесіден біреу: ‘updates’, ‘updated’, ‘installed’ не "
 "‘overview’"
 
-#: ../src/gs-application.c:96
+#: ../src/gs-application.c:97
 msgid "MODE"
 msgstr "РЕЖИМІ"
 
-#: ../src/gs-application.c:98
+#: ../src/gs-application.c:99
 msgid "Search for applications"
 msgstr "Қолданбаларды іздеу"
 
-#: ../src/gs-application.c:98
+#: ../src/gs-application.c:99
 msgid "SEARCH"
 msgstr "ІЗДЕУ"
 
-#: ../src/gs-application.c:100
+#: ../src/gs-application.c:101
 msgid "Show application details"
 msgstr "Қолданба ақпаратын көрсету"
 
-#: ../src/gs-application.c:100
+#: ../src/gs-application.c:101
 msgid "ID"
 msgstr "ID"
 
-#: ../src/gs-application.c:102
+#: ../src/gs-application.c:103
 msgid "Open a local package file"
 msgstr "Жергілікті десте файлын ашу"
 
-#: ../src/gs-application.c:102
+#: ../src/gs-application.c:103
 msgid "FILENAME"
 msgstr "ФАЙЛ_АТЫ"
 
-#: ../src/gs-application.c:104
+#: ../src/gs-application.c:105
 msgid "Show verbose debugging information"
 msgstr "Кеңейтілген жөндеу ақпаратын көрсету"
 
-#: ../src/gs-application.c:106
+#: ../src/gs-application.c:107
 msgid "Show profiling information for the service"
 msgstr "Қызмет үшін профильдеу ақпаратын көрсету"
 
-#: ../src/gs-application.c:108
+#: ../src/gs-application.c:109
 msgid "Prefer local file sources to AppStream"
 msgstr "AppStream орнына жергілікті файлдағы қайнар көздерін қалау"
 
-#: ../src/gs-application.c:110
+#: ../src/gs-application.c:111
 msgid "Show version number"
 msgstr "Нұсқа ақпаратын шығару"
 
+#: ../src/gs-application.c:367
+msgid "translator-credits"
+msgstr "Baurzhan Muftakhidinov <baurthefirst@gmail.com>"
+
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:369
+#: ../src/gs-application.c:371
 msgid "About Software"
 msgstr "Осы туралы"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:374
+#: ../src/gs-application.c:377
 msgid "A nice way to manage the software on your system."
 msgstr "Жүйеңізде БҚ-ны басқарудың ыңғайлы жолы."
-
-#: ../src/gs-application.c:378
-msgid "translator-credits"
-msgstr "Baurzhan Muftakhidinov <baurthefirst@gmail.com>"
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
@@ -366,7 +354,7 @@ msgstr "Бас тарту"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:281 ../src/gs-app-row.c:288 ../src/gs-page.c:206
+#: ../src/gs-app-row.c:281 ../src/gs-app-row.c:288 ../src/gs-page.c:254
 #: ../src/gs-utils.c:317
 msgid "Install"
 msgstr "Орнату"
@@ -374,7 +362,7 @@ msgstr "Орнату"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:292 ../src/gs-app-row.c:303 ../src/gs-page.c:235
+#: ../src/gs-app-row.c:292 ../src/gs-app-row.c:303 ../src/gs-page.c:322
 msgid "Remove"
 msgstr "Өшіру"
 
@@ -540,20 +528,20 @@ msgstr "Тарихы"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:200
+#: ../src/gs-page.c:248
 #, c-format
 msgid "Prepare %s"
 msgstr "%s дайындау"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:227
+#: ../src/gs-page.c:313
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "%s өшіруді шынымен қалайсыз ба?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:232
+#: ../src/gs-page.c:318
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -562,24 +550,24 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:786
+#: ../src/gs-plugin-loader.c:689
 msgid "OS Updates"
 msgstr "ОЖ жаңартулары"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:791
+#: ../src/gs-plugin-loader.c:694
 msgid "Includes performance, stability and security improvements."
 msgstr "Өнімділік, тұрақтылық және қауіпсіздік жақсартуларын әкеледі."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1517 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1420 ../src/gs-shell-extras.c:387
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s пішімі үшін бірде-бір аддон кодектері жоқ."
 
-#: ../src/gs-plugin-loader.c:1520
+#: ../src/gs-plugin-loader.c:1423
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -790,14 +778,14 @@ msgstr "Кеңейту баптаулары"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:195 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:196 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:4
 msgid "_Install"
 msgstr "Ор_нату"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:206
+#: ../src/gs-shell-details.c:207
 msgid "_Installing"
 msgstr "Ор_натылуда"
 
@@ -805,66 +793,66 @@ msgstr "Ор_натылуда"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:224
+#: ../src/gs-shell-details.c:225
 msgid "_Install…"
 msgstr "Ор_нату…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:270 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:271 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "Ө_шіру"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:277
+#: ../src/gs-shell-details.c:278
 msgid "_Removing"
 msgstr "Ө_шірілуде"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:647
+#: ../src/gs-shell-details.c:648
 msgctxt "license"
 msgid "Unknown"
 msgstr "Белгісіз"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:660
+#: ../src/gs-shell-details.c:661
 msgctxt "version"
 msgid "Unknown"
 msgstr "Белгісіз"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:666
+#: ../src/gs-shell-details.c:667
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Есептеу…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:669
+#: ../src/gs-shell-details.c:670
 msgctxt "size"
 msgid "Unknown"
 msgstr "Белгісіз"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:681
+#: ../src/gs-shell-details.c:682
 msgctxt "updated"
 msgid "Never"
 msgstr "Ешқашан"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:695
+#: ../src/gs-shell-details.c:696
 msgctxt "menu category"
 msgid "None"
 msgstr "Ешнәрсе"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:712
+#: ../src/gs-shell-details.c:713
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Белгісіз"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:758
+#: ../src/gs-shell-details.c:759
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -873,27 +861,27 @@ msgstr ""
 "болады."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:769
+#: ../src/gs-shell-details.c:770
 msgid "This software comes from a 3rd party."
 msgstr "Бұл БҚ үшінші жақтан келді."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:778
+#: ../src/gs-shell-details.c:779
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr "Бұл БҚ үшінші жақтан келді, онда еркін емес құрамасы болуы мүмкін."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:787
+#: ../src/gs-shell-details.c:788
 msgid "This software may contain non-free components."
 msgstr "Бұл БҚ-да еркін емес құрамасы болуы мүмкін."
 
-#: ../src/gs-shell-details.c:1109
+#: ../src/gs-shell-details.c:1110
 #, c-format
 msgid "Could not find '%s'"
 msgstr "'%s' табу мүмкін емес"
 
-#: ../src/gs-shell-details.c:1157 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1158 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "Кешіріңіз, бұл жасамады"
 
@@ -1013,7 +1001,7 @@ msgstr "еркін_емес"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:33 ../src/gs-shell-installed.c:431
+#: ../src/gs-shell-details.ui.h:33 ../src/gs-shell-installed.c:432
 #: ../src/gs-update-list.c:129 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Қосымшалар"
@@ -1216,13 +1204,17 @@ msgstr "Кодектер беті"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:421
+#: ../src/gs-shell-installed.c:422
 msgid "System Applications"
 msgstr "Жүйелік қолданбалар"
 
 #: ../src/gs-shell-installed.c:522
 msgid "Click on items to select them"
 msgstr "Бірнәрсені таңдау үшін оның үстіне шертіңіз"
+
+#: ../src/gs-shell-installed.c:713
+msgid "Select"
+msgstr "Таңдау"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-installed.ui.h:1
@@ -1242,7 +1234,6 @@ msgid "_Remove from Folder"
 msgstr "Бумадан ө_шіру"
 
 #: ../src/gs-shell-moderate.ui.h:1
-#| msgid "Updates page"
 msgid "Moderate page"
 msgstr ""
 
@@ -1302,95 +1293,95 @@ msgid "No Application Found"
 msgstr "Қолданбалар табылмады"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:146
+#: ../src/gs-shell-updates.c:153
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:149
+#: ../src/gs-shell-updates.c:156
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:155
+#: ../src/gs-shell-updates.c:162
 msgid "Yesterday, %R"
 msgstr "Кеше, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:159
+#: ../src/gs-shell-updates.c:166
 msgid "Yesterday, %l:%M %p"
 msgstr "Кеше, %l:%M %p"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:169
 msgid "Two days ago"
 msgstr "Екі күн бұрын"
 
-#: ../src/gs-shell-updates.c:164
+#: ../src/gs-shell-updates.c:171
 msgid "Three days ago"
 msgstr "Үш күн бұрын"
 
-#: ../src/gs-shell-updates.c:166
+#: ../src/gs-shell-updates.c:173
 msgid "Four days ago"
 msgstr "Төрт күн бұрын"
 
-#: ../src/gs-shell-updates.c:168
+#: ../src/gs-shell-updates.c:175
 msgid "Five days ago"
 msgstr "Бес күн бұрын"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:177
 msgid "Six days ago"
 msgstr "Алты күн бұрын"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:179
 msgid "One week ago"
 msgstr "Бір апта бұрын"
 
-#: ../src/gs-shell-updates.c:174
+#: ../src/gs-shell-updates.c:181
 msgid "Two weeks ago"
 msgstr "Екі апта бұрын"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:178
+#: ../src/gs-shell-updates.c:185
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:194
+#: ../src/gs-shell-updates.c:201
 msgid "Downloading new updates…"
 msgstr "Жаңа жаңартуларды жүктеп алу…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:198
+#: ../src/gs-shell-updates.c:205
 msgid "Looking for new updates…"
 msgstr "Жаңа жаңартуларды іздеу…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:239
+#: ../src/gs-shell-updates.c:246
 msgid "Setting up updates…"
 msgstr "Жаңартуларды баптау…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:240 ../src/gs-shell-updates.c:247
+#: ../src/gs-shell-updates.c:247 ../src/gs-shell-updates.c:254
 msgid "(This could take a while)"
 msgstr "(Бұл біраз уақытты алуы мүмкін)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:403
+#: ../src/gs-shell-updates.c:421
 #, c-format
 msgid "Last checked: %s"
 msgstr "Соңғы тексерілген: %s"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:809
+#: ../src/gs-shell-updates.c:825
 msgid "Charges may apply"
 msgstr "Ақша алынуы мүмкін"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:813
+#: ../src/gs-shell-updates.c:829
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1400,26 +1391,34 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:817
+#: ../src/gs-shell-updates.c:833
 msgid "Check Anyway"
 msgstr "Сонда да тексеру"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:833
+#: ../src/gs-shell-updates.c:849
 msgid "No Network"
 msgstr "Желі жоқ"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:837
+#: ../src/gs-shell-updates.c:853
 msgid "Internet access is required to check for updates."
 msgstr "Жаңартуларға тексеру үшін Интернетпен байланыс керек."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:841
+#: ../src/gs-shell-updates.c:857
 msgid "Network Settings"
 msgstr "Желі баптаулары"
+
+#: ../src/gs-shell-updates.c:1157
+msgid "Restart & _Install"
+msgstr "Қайта қосу және _орнату"
+
+#: ../src/gs-shell-updates.c:1174
+msgid "Check for updates"
+msgstr "Жаңартуларға тексеру"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-updates.ui.h:1
@@ -1427,10 +1426,14 @@ msgid "Updates page"
 msgstr "Жаңартулар парағы"
 
 #: ../src/gs-shell-updates.ui.h:2
+msgid "Other Updates"
+msgstr "Басқа жаңартулар"
+
+#: ../src/gs-shell-updates.ui.h:3
 msgid "Software is up to date"
 msgstr "БҚ ескірмеді"
 
-#: ../src/gs-shell-updates.ui.h:3
+#: ../src/gs-shell-updates.ui.h:4
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -1438,19 +1441,19 @@ msgstr ""
 "Сымсыз кеңжолақты желісін пайдалану кезінде жаңартуларға тексеру қосымша "
 "шығындарға әкеп соғуы мүмкін"
 
-#: ../src/gs-shell-updates.ui.h:4
+#: ../src/gs-shell-updates.ui.h:5
 msgid "_Check Anyway"
 msgstr "_Сонда да тексеру"
 
-#: ../src/gs-shell-updates.ui.h:5
+#: ../src/gs-shell-updates.ui.h:6
 msgid "Go online to check for updates"
 msgstr "Жаңартуларға тексеру үшін желіге байланысыңыз"
 
-#: ../src/gs-shell-updates.ui.h:6
+#: ../src/gs-shell-updates.ui.h:7
 msgid "_Network Settings"
 msgstr "_Желі баптаулары"
 
-#: ../src/gs-shell-updates.ui.h:7
+#: ../src/gs-shell-updates.ui.h:8
 msgid "Updates are automatically managed"
 msgstr "Жаңартулар автоматты түрде басқарылады"
 
@@ -1593,7 +1596,7 @@ msgstr "Бес жұлдыз"
 #. TRANSLATORS: this is where the
 #. * packager did not write a
 #. * description for the update
-#: ../src/gs-update-dialog.c:119
+#: ../src/gs-update-dialog.c:123
 msgid "No update description available."
 msgstr "Жаңартудың сипаттамасы жоқ."
 
@@ -1601,13 +1604,13 @@ msgstr "Жаңартудың сипаттамасы жоқ."
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: ../src/gs-update-dialog.c:225
+#: ../src/gs-update-dialog.c:230
 #, c-format
 msgid "Installed on %s"
 msgstr "Орнатылған %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:245
+#: ../src/gs-update-dialog.c:250
 msgid "Installed Updates"
 msgstr "Орнатылған жаңартулар"
 
