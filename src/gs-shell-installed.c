@@ -48,6 +48,7 @@ struct _GsShellInstalled
 	GsShell			*shell;
 	GtkWidget		*button_select;
 	gboolean 		 selection_mode;
+	GSettings		*settings;
 
 	GtkWidget		*bottom_install;
 	GtkWidget		*button_folder_add;
@@ -256,6 +257,14 @@ gs_shell_installed_reload (GsShellInstalled *self)
 	gs_shell_installed_load (self);
 }
 
+static void
+gs_shell_update_button_select_visibility (GsShellInstalled *self)
+{
+	gboolean show_button_select;
+	show_button_select = g_settings_get_boolean (self->settings, "show-folder-management");
+	gtk_widget_set_visible (self->button_select, show_button_select);
+}
+
 /**
  * gs_shell_installed_switch_to:
  **/
@@ -275,7 +284,7 @@ gs_shell_installed_switch_to (GsPage *page, gboolean scroll_up)
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
 
-	gtk_widget_show (self->button_select);
+	gs_shell_update_button_select_visibility (self);
 
 	if (scroll_up) {
 		GtkAdjustment *adj;
@@ -664,6 +673,16 @@ select_none_cb (GtkMenuItem *item, GsShellInstalled *self)
 	}
 }
 
+static void
+gs_shell_settings_changed_cb (GsShellInstalled *self,
+                              const gchar *key,
+                              gpointer data)
+{
+	if (g_strcmp0 (key, "show-folder-management") == 0) {
+		gs_shell_update_button_select_visibility (self);
+	}
+}
+
 /**
  * gs_shell_installed_setup:
  */
@@ -743,6 +762,7 @@ gs_shell_installed_dispose (GObject *object)
 	g_clear_object (&self->builder);
 	g_clear_object (&self->plugin_loader);
 	g_clear_object (&self->cancellable);
+	g_clear_object (&self->settings);
 
 	G_OBJECT_CLASS (gs_shell_installed_parent_class)->dispose (object);
 }
@@ -783,6 +803,11 @@ gs_shell_installed_init (GsShellInstalled *self)
 
 	self->sizegroup_image = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
+
+	self->settings = g_settings_new ("org.gnome.software");
+	g_signal_connect_swapped (self->settings, "changed",
+				  G_CALLBACK (gs_shell_settings_changed_cb),
+				  self);
 }
 
 /**
