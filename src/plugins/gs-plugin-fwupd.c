@@ -42,7 +42,7 @@
 
 struct GsPluginPrivate {
 	GMutex			 mutex;
-	GDBusProxy		*proxy;
+	FwupdClient		*client;
 	GPtrArray		*to_download;
 	GPtrArray		*to_ignore;
 	gchar			*cachedir;
@@ -67,6 +67,7 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	plugin->priv->client = fwupd_client_new ();
 	plugin->priv->to_download = g_ptr_array_new_with_free_func (g_free);
 	plugin->priv->to_ignore = g_ptr_array_new_with_free_func (g_free);
 	plugin->priv->config_fn = g_build_filename (SYSCONFDIR, "fwupd.conf", NULL);
@@ -90,24 +91,18 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (plugin->priv->lvfs_sig_fn);
 	g_free (plugin->priv->lvfs_sig_hash);
 	g_free (plugin->priv->config_fn);
+	g_object_unref (plugin->priv->client);
 	g_ptr_array_unref (plugin->priv->to_download);
 	g_ptr_array_unref (plugin->priv->to_ignore);
-	if (plugin->priv->proxy != NULL)
-		g_object_unref (plugin->priv->proxy);
 }
 
 /**
  * gs_plugin_fwupd_changed_cb:
  */
 static void
-gs_plugin_fwupd_changed_cb (GDBusProxy *proxy,
-			    const gchar *sender_name,
-			    const gchar *signal_name,
-			    GVariant *parameters,
-			    GsPlugin *plugin)
+gs_plugin_fwupd_changed_cb (FwupdClient *client, GsPlugin *plugin)
 {
-	if (g_strcmp0 (signal_name, "Changed") == 0)
-		gs_plugin_updates_changed (plugin);
+	gs_plugin_updates_changed (plugin);
 }
 
 /**
@@ -118,28 +113,15 @@ gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	gsize len;
 	g_autofree gchar *data = NULL;
-	g_autoptr(GDBusConnection) conn = NULL;
 	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->mutex);
+
+	/* already done */
+	if (plugin->priv->cachedir != NULL)
+		return TRUE;
 
 	/* register D-Bus errors */
 	fwupd_error_quark ();
-
-	conn = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, error);
-	if (conn == NULL)
-		return FALSE;
-	plugin->priv->proxy = g_dbus_proxy_new_sync (conn,
-						     G_DBUS_PROXY_FLAGS_NONE,
-						     NULL,
-						     FWUPD_DBUS_SERVICE,
-						     FWUPD_DBUS_PATH,
-						     FWUPD_DBUS_INTERFACE,
-						     NULL,
-						     error);
-	if (plugin->priv->proxy == NULL) {
-		g_prefix_error (error, "failed to start fwupd: ");
-		return FALSE;
-	}
-	g_signal_connect (plugin->priv->proxy, "g-signal",
+	g_signal_connect (plugin->priv->client, "changed",
 			  G_CALLBACK (gs_plugin_fwupd_changed_cb), plugin);
 
 	/* create the cache location */
@@ -200,61 +182,74 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 }
 
 /**
- * gs_plugin_fwupd_set_app_from_kv:
+ * gs_plugin_fwupd_new_app_from_results:
  */
-static void
-gs_plugin_fwupd_set_app_from_kv (GsApp *app, const gchar *key, GVariant *val)
+static GsApp *
+gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 {
-	g_debug ("key %s", key);
+	GsApp *app;
+	g_autoptr(AsIcon) icon = NULL;
 
-	if (g_strcmp0 (key, "AppstreamId") == 0) {
-		gs_app_set_id (app, g_variant_get_string (val, NULL));
-		return;
+	/* default stuff */
+	app = gs_app_new (fwupd_result_get_update_id (res));
+	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
+	gs_app_set_management_plugin (app, "fwupd");
+	gs_app_add_category (app, "System");
+	gs_app_set_metadata (app, "fwupd::DeviceID",
+			     fwupd_result_get_device_id (res));
+
+	/* create icon */
+	icon = as_icon_new ();
+	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+	as_icon_set_name (icon, "application-x-firmware");
+	gs_app_set_icon (app, icon);
+
+	if (fwupd_result_get_update_id (res) != NULL) {
+		gs_app_set_id (app, fwupd_result_get_update_id (res));
 	}
-	if (g_strcmp0 (key, "Guid") == 0) {
-		gs_app_set_metadata (app, "GUID", g_variant_get_string (val, NULL));
-		return;
+	if (fwupd_result_get_guid (res) != NULL) {
+		gs_app_set_metadata (app, "fwupd::Guid",
+				     fwupd_result_get_guid (res));
 	}
-	if (g_strcmp0 (key, "Name") == 0) {
+	if (fwupd_result_get_update_name (res) != NULL) {
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
-				 g_variant_get_string (val, NULL));
-		return;
+				 fwupd_result_get_update_name (res));
 	}
-	if (g_strcmp0 (key, "Summary") == 0) {
+	if (fwupd_result_get_update_summary (res) != NULL) {
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
-				    g_variant_get_string (val, NULL));
-		return;
+				    fwupd_result_get_update_summary (res));
 	}
-	if (g_strcmp0 (key, "Version") == 0) {
-		gs_app_set_version (app, g_variant_get_string (val, NULL));
-		return;
+	if (fwupd_result_get_device_version (res) != NULL) {
+		gs_app_set_version (app, fwupd_result_get_device_version (res));
 	}
-	if (g_strcmp0 (key, "Size") == 0) {
-		gs_app_set_size (app, g_variant_get_uint64 (val));
-		return;
+	if (fwupd_result_get_update_size (res) != 0) {
+		gs_app_set_size (app, fwupd_result_get_update_size (res));
 	}
-	if (g_strcmp0 (key, "Created") == 0) {
-		gs_app_set_install_date (app, g_variant_get_uint64 (val));
-		return;
+	if (fwupd_result_get_device_created (res) != 0) {
+		gs_app_set_install_date (app, fwupd_result_get_device_created (res));
 	}
-	if (g_strcmp0 (key, "UpdateVersion") == 0) {
-		gs_app_set_update_version (app, g_variant_get_string (val, NULL));
-		return;
+	if (fwupd_result_get_update_version (res) != NULL) {
+		gs_app_set_update_version (app, fwupd_result_get_update_version (res));
 	}
-	if (g_strcmp0 (key, "License") == 0) {
-		gs_app_set_license (app,
-				    GS_APP_QUALITY_NORMAL,
-				    g_variant_get_string (val, NULL));
-		return;
+	if (fwupd_result_get_update_license (res) != NULL) {
+		gs_app_set_license (app, GS_APP_QUALITY_NORMAL,
+				    fwupd_result_get_update_license (res));
 	}
-	if (g_strcmp0 (key, "UpdateDescription") == 0) {
+	if (fwupd_result_get_update_description (res) != NULL) {
 		g_autofree gchar *tmp = NULL;
-		tmp = as_markup_convert (g_variant_get_string (val, NULL),
+		tmp = as_markup_convert (fwupd_result_get_update_description (res),
 					 AS_MARKUP_CONVERT_FORMAT_SIMPLE, NULL);
 		if (tmp != NULL)
 			gs_app_set_update_details (app, tmp);
-		return;
 	}
+
+	/* the same as we have already */
+	if (g_strcmp0 (fwupd_result_get_device_version (res),
+		       fwupd_result_get_update_version (res)) == 0) {
+		g_warning ("same firmware version as installed");
+	}
+
+	return app;
 }
 
 /**
@@ -263,34 +258,20 @@ gs_plugin_fwupd_set_app_from_kv (GsApp *app, const gchar *key, GVariant *val)
 static gboolean
 gs_plugin_add_update_app (GsPlugin *plugin,
 			  GList **list,
-			  const gchar *id,
-			  GVariantIter *iter_device,
+			  FwupdResult *res,
 			  GError **error)
 {
 	FwupdDeviceFlags flags = 0;
-	GVariant *variant;
-	const gchar *key;
+	const gchar *update_hash;
+	const gchar *update_uri;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *checksum = NULL;
 	g_autofree gchar *filename_cache = NULL;
-	g_autofree gchar *update_hash = NULL;
-	g_autofree gchar *update_uri = NULL;
-	g_autoptr(AsIcon) icon = NULL;
 	g_autoptr(GsApp) app = NULL;
 
-	app = gs_app_new (NULL);
-	while (g_variant_iter_next (iter_device, "{&sv}", &key, &variant)) {
-		gs_plugin_fwupd_set_app_from_kv (app, key, variant);
-		if (g_strcmp0 (key, "UpdateHash") == 0)
-			update_hash = g_variant_dup_string (variant, NULL);
-		else if (g_strcmp0 (key, "UpdateUri") == 0)
-			update_uri = g_variant_dup_string (variant, NULL);
-		else if (g_strcmp0 (key, "Flags") == 0)
-			flags = g_variant_get_uint64 (variant);
-		g_variant_unref (variant);
-	}
-
 	/* update unsupported */
+	app = gs_plugin_fwupd_new_app_from_results (res);
+	flags = fwupd_result_get_device_flags (res);
 	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE) {
 		gs_app_set_metadata (app, "fwupd::InstallMethod", "online");
 	} else if (flags & FU_DEVICE_FLAG_ALLOW_OFFLINE) {
@@ -305,6 +286,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	}
 
 	/* some missing */
+	update_hash = fwupd_result_get_update_checksum (res);
 	if (gs_app_get_id (app) == NULL) {
 		g_warning ("fwupd: No id! for %s!", update_hash);
 		return TRUE;
@@ -332,6 +314,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 				     gs_app_get_update_version (app));
 			return FALSE;
 		}
+		update_uri = fwupd_result_get_update_uri (res);
 		if (update_uri == NULL) {
 			g_set_error (error,
 				     GS_PLUGIN_ERROR,
@@ -380,19 +363,8 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	}
 
 	/* actually add the application */
-	gs_app_set_management_plugin (app, "fwupd");
-	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_add_source_id (app, filename_cache);
-	gs_app_add_category (app, "System");
-	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
-	gs_app_set_metadata (app, "fwupd::DeviceID", id);
 	gs_plugin_add_app (list, app);
-
-	/* create icon */
-	icon = as_icon_new ();
-	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-	as_icon_set_name (icon, "application-x-firmware");
-	gs_app_set_icon (app, icon);
 
 	return TRUE;
 }
@@ -406,30 +378,20 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GCancellable *cancellable,
 				  GError **error)
 {
-	GVariant *variant;
-	const gchar *key;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GVariantIter) iter = NULL;
-	g_autoptr(GVariant) val = NULL;
+	g_autoptr(FwupdResult) res = NULL;
 
 	/* set up plugin */
-	if (plugin->priv->proxy == NULL) {
-		if (!gs_plugin_startup (plugin, cancellable, error))
-			return FALSE;
-	}
-	if (plugin->priv->proxy == NULL)
-		return TRUE;
+	if (!gs_plugin_startup (plugin, cancellable, error))
+		return FALSE;
 
 	/* get historical updates */
-	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
-				      "GetResults",
-				      g_variant_new ("(s)", FWUPD_DEVICE_ID_ANY),
-				      G_DBUS_CALL_FLAGS_NONE,
-				      -1,
-				      NULL,
-				      &error_local);
-	if (val == NULL) {
+	res = fwupd_client_get_results (plugin->priv->client,
+					FWUPD_DEVICE_ID_ANY,
+					cancellable,
+					&error_local);
+	if (res == NULL) {
 		if (g_error_matches (error_local,
 				     FWUPD_ERROR,
 				     FWUPD_ERROR_NOTHING_TO_DO))
@@ -446,17 +408,9 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	}
 
 	/* parse */
-	app = gs_app_new (NULL);
-	gs_app_set_management_plugin (app, "fwupd");
+	app = gs_plugin_fwupd_new_app_from_results (res);
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
-	g_variant_get (val, "(a{sv})", &iter);
-	while (g_variant_iter_next (iter, "{&sv}", &key, &variant)) {
-		gs_plugin_fwupd_set_app_from_kv (app, key, variant);
-		g_variant_unref (variant);
-	}
 	gs_plugin_add_app (list, app);
-
 	return TRUE;
 }
 
@@ -469,36 +423,18 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	const gchar *id;
-	GVariantIter *iter_device;
+	guint i;
 	g_autoptr(GError) error_local = NULL;
-	g_autoptr(GVariantIter) iter = NULL;
-	g_autoptr(GVariant) val = NULL;
+	g_autoptr(GPtrArray) results = NULL;
 
 	/* set up plugin */
-	if (plugin->priv->proxy == NULL) {
-		if (!gs_plugin_startup (plugin, cancellable, error))
-			return FALSE;
-	}
-	if (plugin->priv->proxy == NULL)
-		return TRUE;
+	if (!gs_plugin_startup (plugin, cancellable, error))
+		return FALSE;
 
 	/* get current list of updates */
-	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
-				      "GetUpdates",
-				      NULL,
-				      G_DBUS_CALL_FLAGS_NONE,
-				      -1,
-				      NULL,
-				      &error_local);
-	if (val == NULL) {
-		if (g_error_matches (error_local,
-				     G_DBUS_ERROR,
-				     G_DBUS_ERROR_SERVICE_UNKNOWN)) {
-			/* the fwupd service might be unavailable, continue in that case */
-			g_prefix_error (error, "could not get fwupd updates: ");
-			return FALSE;
-		}
+	results = fwupd_client_get_updates (plugin->priv->client,
+					    cancellable, &error_local);
+	if (results == NULL) {
 		if (g_error_matches (error_local,
 				     FWUPD_ERROR,
 				     FWUPD_ERROR_NOTHING_TO_DO))
@@ -511,92 +447,11 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	}
 
 	/* parse */
-	g_variant_get (val, "(a{sa{sv}})", &iter);
-	while (g_variant_iter_next (iter, "{&sa{sv}}", &id, &iter_device)) {
+	for (i = 0; i < results->len; i++) {
+		FwupdResult *res = g_ptr_array_index (results, i);
 		g_autoptr(GError) error_local2 = NULL;
-		if (!gs_plugin_add_update_app (plugin, list,
-					       id, iter_device,
-					       &error_local2))
+		if (!gs_plugin_add_update_app (plugin, list, res, &error_local2))
 			g_debug ("%s", error_local2->message);
-		g_variant_iter_free (iter_device);
-	}
-
-	return TRUE;
-}
-
-/**
- * gs_plugin_fwupd_update_lvfs_metadata:
- */
-static gboolean
-gs_plugin_fwupd_update_lvfs_metadata (const gchar *data_fn, const gchar *sig_fn, GError **error)
-{
-	GVariant *body;
-	gint fd_sig;
-	gint fd_data;
-	gint retval;
-	g_autoptr(GDBusConnection) conn = NULL;
-	g_autoptr(GDBusMessage) message = NULL;
-	g_autoptr(GDBusMessage) request = NULL;
-	g_autoptr(GUnixFDList) fd_list = NULL;
-
-	conn = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, error);
-	if (conn == NULL)
-		return FALSE;
-
-	/* open files */
-	fd_data = open (data_fn, O_RDONLY);
-	if (fd_data < 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to open %s",
-			     data_fn);
-		return FALSE;
-	}
-	fd_sig = open (sig_fn, O_RDONLY);
-	if (fd_sig < 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to open %s",
-			     sig_fn);
-		close (fd_data);
-		return FALSE;
-	}
-
-	/* set out of band file descriptor */
-	fd_list = g_unix_fd_list_new ();
-	retval = g_unix_fd_list_append (fd_list, fd_data, NULL);
-	g_assert (retval != -1);
-	retval = g_unix_fd_list_append (fd_list, fd_sig, NULL);
-	g_assert (retval != -1);
-	request = g_dbus_message_new_method_call (FWUPD_DBUS_SERVICE,
-						  FWUPD_DBUS_PATH,
-						  FWUPD_DBUS_INTERFACE,
-						  "UpdateMetadata");
-	g_dbus_message_set_unix_fd_list (request, fd_list);
-
-	/* g_unix_fd_list_append did a dup() already */
-	close (fd_data);
-	close (fd_sig);
-
-	/* send message */
-	body = g_variant_new ("(hh)", 0, 1);
-	g_dbus_message_set_body (request, body);
-	message = g_dbus_connection_send_message_with_reply_sync (conn,
-								  request,
-								  G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-								  -1,
-								  NULL,
-								  NULL,
-								  error);
-	if (message == NULL) {
-		g_dbus_error_strip_remote_error (*error);
-		return FALSE;
-	}
-	if (g_dbus_message_to_gerror (message, error)) {
-		g_dbus_error_strip_remote_error (*error);
-		return FALSE;
 	}
 
 	return TRUE;
@@ -708,9 +563,11 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	}
 
 	/* phew, lets send all this to fwupd */
-	if (!gs_plugin_fwupd_update_lvfs_metadata (cache_fn_data,
-						   plugin->priv->lvfs_sig_fn,
-						   error))
+	if (!fwupd_client_refresh (plugin->priv->client,
+				   cache_fn_data,
+				   plugin->priv->lvfs_sig_fn,
+				   cancellable,
+				   error))
 		return FALSE;
 
 	return TRUE;
@@ -730,12 +587,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 	guint i;
 
 	/* set up plugin */
-	if (plugin->priv->proxy == NULL) {
-		if (!gs_plugin_startup (plugin, cancellable, error))
-			return FALSE;
-	}
-	if (plugin->priv->proxy == NULL)
-		return TRUE;
+	if (!gs_plugin_startup (plugin, cancellable, error))
+		return FALSE;
 
 	/* get the metadata and signature file */
 	if (!gs_plugin_fwupd_check_lvfs_metadata (plugin, cache_age, cancellable, error))
@@ -783,87 +636,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_fwupd_upgrade:
- */
-static gboolean
-gs_plugin_fwupd_upgrade (GsPlugin *plugin,
-			 const gchar *filename,
-			 const gchar *device_id,
-			 gboolean do_offline,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	GVariant *body;
-	GVariantBuilder builder;
-	gint fd;
-	gint retval;
-	g_autoptr(GDBusConnection) conn = NULL;
-	g_autoptr(GDBusMessage) message = NULL;
-	g_autoptr(GDBusMessage) request = NULL;
-	g_autoptr(GUnixFDList) fd_list = NULL;
-
-	conn = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, error);
-	if (conn == NULL)
-		return FALSE;
-
-	/* set options */
-	g_variant_builder_init (&builder, G_VARIANT_TYPE_ARRAY);
-	g_variant_builder_add (&builder, "{sv}",
-			       "reason", g_variant_new_string ("system-update"));
-	g_variant_builder_add (&builder, "{sv}",
-			       "filename", g_variant_new_string (filename));
-	if (do_offline) {
-		g_variant_builder_add (&builder, "{sv}",
-				       "offline", g_variant_new_boolean (TRUE));
-	}
-
-	/* open file */
-	fd = open (filename, O_RDONLY);
-	if (fd < 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to open %s",
-			     filename);
-		return FALSE;
-	}
-
-	/* set out of band file descriptor */
-	fd_list = g_unix_fd_list_new ();
-	retval = g_unix_fd_list_append (fd_list, fd, NULL);
-	g_assert (retval != -1);
-	request = g_dbus_message_new_method_call (FWUPD_DBUS_SERVICE,
-						  FWUPD_DBUS_PATH,
-						  FWUPD_DBUS_INTERFACE,
-						  "Install");
-	g_dbus_message_set_unix_fd_list (request, fd_list);
-
-	/* g_unix_fd_list_append did a dup() already */
-	close (fd);
-
-	/* send message */
-	body = g_variant_new ("(sha{sv})", device_id, 0, &builder);
-	g_dbus_message_set_body (request, body);
-	message = g_dbus_connection_send_message_with_reply_sync (conn,
-								  request,
-								  G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-								  -1,
-								  NULL,
-								  NULL,
-								  error);
-	if (message == NULL) {
-		g_dbus_error_strip_remote_error (*error);
-		return FALSE;
-	}
-	if (g_dbus_message_to_gerror (message, error)) {
-		g_dbus_error_strip_remote_error (*error);
-		return FALSE;
-	}
-
-	return TRUE;
-}
-
-/**
  * gs_plugin_app_upgrade:
  */
 static gboolean
@@ -890,8 +662,8 @@ gs_plugin_app_upgrade (GsPlugin *plugin,
 		return FALSE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!gs_plugin_fwupd_upgrade (plugin, filename, device_id, TRUE,
-				      cancellable, error))
+	if (!fwupd_client_install (plugin->priv->client, device_id, filename,
+				   FWUPD_UPDATE_FLAG_OFFLINE, cancellable, error))
 		return FALSE;
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
@@ -930,7 +702,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	const gchar *install_method;
 	const gchar *filename;
-	gboolean offline = TRUE;
+	FwupdUpdateFlags update_flags = 0;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "fwupd") != 0)
@@ -949,45 +721,13 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* only offline supported */
 	install_method = gs_app_get_metadata_item (app, "fwupd::InstallMethod");
 	if (g_strcmp0 (install_method, "offline") == 0)
-		offline = TRUE;
+		update_flags |= FWUPD_UPDATE_FLAG_OFFLINE;
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!gs_plugin_fwupd_upgrade (plugin, filename, FWUPD_DEVICE_ID_ANY, offline,
-				      cancellable, error))
+	if (!fwupd_client_install (plugin->priv->client, FWUPD_DEVICE_ID_ANY,
+				   filename, update_flags, cancellable, error))
 		return FALSE;
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	return TRUE;
-}
-
-/**
- * gs_plugin_fwupd_unlock:
- */
-static gboolean
-gs_plugin_fwupd_unlock (GsPlugin *plugin,
-			const gchar *device_id,
-			GCancellable *cancellable,
-			GError **error)
-{
-	g_autoptr(GVariant) val = NULL;
-
-	/* set up plugin */
-	if (plugin->priv->proxy == NULL) {
-		if (!gs_plugin_startup (plugin, cancellable, error))
-			return FALSE;
-	}
-	if (plugin->priv->proxy == NULL)
-		return TRUE;
-
-	/* unlock device */
-	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
-				      "Unlock",
-				      g_variant_new ("(s)", device_id),
-				      G_DBUS_CALL_FLAGS_NONE,
-				      -1,
-				      NULL,
-				      error);
-	if (val == NULL)
-		return FALSE;
 	return TRUE;
 }
 
@@ -1002,6 +742,10 @@ gs_plugin_app_update (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	/* set up plugin */
+	if (!gs_plugin_startup (plugin, cancellable, error))
+		return FALSE;
+
 	/* locked devices need unlocking, rather than installing */
 	if (gs_app_get_metadata_item (app, "fwupd::IsLocked") != NULL) {
 		const gchar *device_id;
@@ -1013,10 +757,8 @@ gs_plugin_app_update (GsPlugin *plugin,
 					     "not enough data for fwupd unlock");
 			return FALSE;
 		}
-		return gs_plugin_fwupd_unlock (plugin,
-					       device_id,
-					       cancellable,
-					       error);
+		return fwupd_client_unlock (plugin->priv->client, device_id,
+					    cancellable, error);
 	}
 
 	return gs_plugin_app_install (plugin, app, cancellable, error);
@@ -1071,21 +813,10 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	FwupdDeviceFlags flags = FU_DEVICE_FLAG_ALLOW_OFFLINE;
-	GVariant *body;
-	GVariant *val;
-	GVariant *variant;
-	const gchar *key;
+	FwupdDeviceFlags flags;
 	gboolean supported;
-	gint fd;
-	gint retval;
-	g_autoptr(AsIcon) icon = NULL;
-	g_autoptr(GDBusConnection) conn = NULL;
-	g_autoptr(GDBusMessage) message = NULL;
-	g_autoptr(GDBusMessage) request = NULL;
+	g_autoptr(FwupdResult) res = NULL;
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GUnixFDList) fd_list = NULL;
-	g_autoptr(GVariantIter) iter = NULL;
 
 	/* does this match any of the mimetypes we support */
 	if (!gs_plugin_fwupd_content_type_matches (filename,
@@ -1096,71 +827,23 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	if (!supported)
 		return TRUE;
 
-	/* get request */
-	conn = g_bus_get_sync (G_BUS_TYPE_SYSTEM, NULL, error);
-	if (conn == NULL)
-		return FALSE;
-
-	/* open file */
-	fd = open (filename, O_RDONLY);
-	if (fd < 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to open %s",
-			     filename);
-		return FALSE;
-	}
-
-	/* set out of band file descriptor */
-	fd_list = g_unix_fd_list_new ();
-	retval = g_unix_fd_list_append (fd_list, fd, NULL);
-	g_assert (retval != -1);
-	request = g_dbus_message_new_method_call (FWUPD_DBUS_SERVICE,
-						  FWUPD_DBUS_PATH,
-						  FWUPD_DBUS_INTERFACE,
-						  "GetDetails");
-	g_dbus_message_set_unix_fd_list (request, fd_list);
-
-	/* g_unix_fd_list_append did a dup() already */
-	close (fd);
-
-	/* send message */
-	body = g_variant_new ("(h)", 0);
-	g_dbus_message_set_body (request, body);
-	message = g_dbus_connection_send_message_with_reply_sync (conn,
-								  request,
-								  G_DBUS_SEND_MESSAGE_FLAGS_NONE,
-								  -1,
-								  NULL,
-								  NULL,
-								  error);
-	if (message == NULL) {
-		g_dbus_error_strip_remote_error (*error);
-		return FALSE;
-	}
-	if (g_dbus_message_to_gerror (message, error)) {
-		g_dbus_error_strip_remote_error (*error);
-		return FALSE;
-	}
-
 	/* get results */
-	app = gs_app_new (NULL);
-	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
-	gs_app_set_management_plugin (app, "fwupd");
-	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
+	res = fwupd_client_get_details (plugin->priv->client,
+					filename,
+					cancellable,
+					error);
+	if (res == NULL)
+		return FALSE;
+	app = gs_plugin_fwupd_new_app_from_results (res);
 	gs_app_add_source_id (app, filename);
-	gs_app_add_category (app, "System");
-	val = g_dbus_message_get_body (message);
-	g_variant_get (val, "(a{sv})", &iter);
-	while (g_variant_iter_next (iter, "{&sv}", &key, &variant)) {
-		gs_plugin_fwupd_set_app_from_kv (app, key, variant);
-		if (g_strcmp0 (key, "Flags") == 0)
-			flags = g_variant_get_uint64 (variant);
-		g_variant_unref (variant);
-	}
+
+	/* we have no update view for local files */
+	gs_app_set_version (app, gs_app_get_update_version (app));
+	gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
+				gs_app_get_update_details (app));
 
 	/* can we install on-line, off-line, or not at all */
+	flags = fwupd_result_get_device_flags (res);
 	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE) {
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 		gs_app_set_metadata (app, "fwupd::InstallMethod", "online");
@@ -1170,13 +853,6 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	} else {
 		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 	}
-
-	/* create icon */
-	icon = as_icon_new ();
-	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-	as_icon_set_name (icon, "application-x-firmware");
-	gs_app_set_icon (app, icon);
-
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
