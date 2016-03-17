@@ -11,8 +11,8 @@ msgstr ""
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
 "POT-Creation-Date: 2016-03-17 13:48+0000\n"
-"PO-Revision-Date: 2015-11-11 23:36+0300\n"
-"Last-Translator: Stas Solovey <whats_up@tut.by>\n"
+"PO-Revision-Date: 2016-03-17 21:31+0300\n"
+"Last-Translator: Yuri Myasoedov <ymyasoedov@yandex.ru>\n"
 "Language-Team: Russian <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
 "MIME-Version: 1.0\n"
@@ -20,7 +20,7 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=(n%10==1 && n%100!=11 ? 0 : n%10>=2 && n"
 "%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2);\n"
-"X-Generator: Gtranslator 2.91.7\n"
+"X-Generator: Poedit 1.6.9\n"
 
 #  перевод по аналогии с ubuntu software - центр приложений ubuntu
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
@@ -53,41 +53,47 @@ msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
-msgstr ""
+msgstr "Список совместимых проектов"
 
 #: ../data/org.gnome.software.gschema.xml.h:2
 msgid ""
 "This is a list of compatible projects we should show such as GNOME, KDE and "
 "XFCE."
 msgstr ""
+"Это список совместимых проектов, которые мы должны показывать как GNOME, KDE "
+"и XFCE."
 
 #: ../data/org.gnome.software.gschema.xml.h:3
 msgid "Whether to automatically download updates"
-msgstr ""
+msgstr "Автоматически загружать обновления"
 
 #: ../data/org.gnome.software.gschema.xml.h:4
 msgid ""
 "If enabled, GNOME Software automatically downloads updates in the background "
 "and prompts the user to install them when ready."
 msgstr ""
+"Если включено, то менеджер приложений GNOME будет автоматически загружать "
+"обновления в фоне и предлагать их к установке, как только они будут "
+"загружены."
 
 #: ../data/org.gnome.software.gschema.xml.h:5
 msgid "Whether it's the very first run of GNOME Software"
-msgstr ""
+msgstr "Первый запуск менеджера приложений GNOME"
 
 #: ../data/org.gnome.software.gschema.xml.h:6
 msgid "Show star ratings next to applications"
-msgstr ""
+msgstr "Показывать оценки приложений"
 
 #: ../data/org.gnome.software.gschema.xml.h:7
 msgid "Non-free applications show a warning dialog before install"
-msgstr ""
+msgstr "Предупреждать при установке несвободных приложений"
 
 #: ../data/org.gnome.software.gschema.xml.h:8
 msgid ""
 "When non-free applications are installed a warning dialog can be shown. This "
 "controls if that dialog is suppressed."
 msgstr ""
+"Показывать диалог с предупреждением при установке несвободных приложений. "
 
 #: ../data/org.gnome.software.gschema.xml.h:9
 #, fuzzy
@@ -97,45 +103,48 @@ msgstr "Поиск приложений"
 
 #: ../data/org.gnome.software.gschema.xml.h:10
 msgid "A list of applications to use, overriding the system defined ones."
-msgstr ""
+msgstr "Список используемых приложений, переопределяющих системные."
 
 #: ../data/org.gnome.software.gschema.xml.h:11
 msgid "The list of extra sources that have been previously enabled"
-msgstr ""
+msgstr "Список включённых ранее дополнительных источников"
 
 #: ../data/org.gnome.software.gschema.xml.h:12
 msgid ""
 "The list of sources that have been previously enabled when installing third-"
 "party applications."
-msgstr ""
+msgstr "Список источников включённых ранее при установке сторонних приложений."
 
 #: ../data/org.gnome.software.gschema.xml.h:13
 msgid "The last update check timestamp"
-msgstr ""
+msgstr "Метка времени последней проверки обновлений"
 
 #: ../data/org.gnome.software.gschema.xml.h:14
 msgid "The timestamp of the first security update, cleared after update"
 msgstr ""
+"Метка времени первого обновления по безопасности, очищенная после обновления"
 
 #: ../data/org.gnome.software.gschema.xml.h:15
 msgid "The last update timestamp"
-msgstr ""
+msgstr "Метка времени последнего обновления"
 
 #: ../data/org.gnome.software.gschema.xml.h:16
 msgid "The server to use for application reviews"
-msgstr ""
+msgstr "Сервер, используемый для отзывов на приложения"
 
 #: ../data/org.gnome.software.gschema.xml.h:17
 msgid "The minimum karma score for reviews"
-msgstr ""
+msgstr "Минимальное значение кармы для отзывов"
 
 #: ../data/org.gnome.software.gschema.xml.h:18
 msgid "Reviews with karma less than this number will not be shown."
-msgstr ""
+msgstr "Рецензии с кармой, меньше этого числа, будут скрываться."
 
 #: ../data/org.gnome.software.gschema.xml.h:19
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
+"Список официальных источников, которые не будут считаться в качестве "
+"сторонних"
 
 #: ../src/app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
@@ -599,61 +608,61 @@ msgstr ""
 #. *		A really bad application
 #: ../src/gs-review-dialog.c:93
 msgid "Hate it"
-msgstr ""
+msgstr "Ненавижу"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		Not a great application
 #: ../src/gs-review-dialog.c:97
 msgid "Don't like it"
-msgstr ""
+msgstr "Не понравилось"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A fairly-good application
 #: ../src/gs-review-dialog.c:101
 msgid "It's OK"
-msgstr ""
+msgstr "Нормально"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A good application
 #: ../src/gs-review-dialog.c:105
 msgid "Like it"
-msgstr ""
+msgstr "Понравилось"
 
 #. TRANSLATORS: lighthearted star rating description;
 #. *		A really awesome application
 #: ../src/gs-review-dialog.c:109
 msgid "Love it"
-msgstr ""
+msgstr "Обожаю"
 
 #. TRANSLATORS: the review can't just be copied and pasted
 #: ../src/gs-review-dialog.c:131
 msgid "Please take more time writing the review"
-msgstr ""
+msgstr "Уделите рецензированию больше времени"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:135
 msgid "Please choose a star rating"
-msgstr ""
+msgstr "Выберите оценку"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:139
 msgid "The summary is too short"
-msgstr ""
+msgstr "Краткое описание должно быть длиннее"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:143
 msgid "The summary is too long"
-msgstr ""
+msgstr "Краткое описание слишком длинное"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:147
 msgid "The description is too short"
-msgstr ""
+msgstr "Описание слишком короткое"
 
 #. TRANSLATORS: the review is not acceptable
 #: ../src/gs-review-dialog.c:151
 msgid "The description is too long"
-msgstr ""
+msgstr "Описание слишком длинное"
 
 #. vim: set noexpandtab:
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
@@ -666,7 +675,7 @@ msgstr "Просмотреть"
 #. Translators: A button to publish the user's opinion about the app.
 #: ../src/gs-review-dialog.ui.h:5
 msgid "_Post"
-msgstr ""
+msgstr "Сводка"
 
 #: ../src/gs-review-dialog.ui.h:6
 #, fuzzy
@@ -677,13 +686,15 @@ msgstr "Редактирование"
 
 #: ../src/gs-review-dialog.ui.h:7
 msgid "Summary"
-msgstr ""
+msgstr "_Разместить"
 
 #: ../src/gs-review-dialog.ui.h:8
 msgid ""
 "Give a short summary of your review, for example: “Great app, would "
 "recommend”."
 msgstr ""
+"Напишите краткое описание отзыва, например: «Замечательное приложение, "
+"рекомендую»."
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:10
@@ -695,23 +706,24 @@ msgstr "Просмотреть"
 
 #: ../src/gs-review-dialog.ui.h:11
 msgid "What do you think of the app? Try to give reasons for your views."
-msgstr ""
+msgstr "Что вы думаете о приложении? Постарайтесь аргументировать ваше мнение."
 
 #: ../src/gs-review-histogram.ui.h:1
 msgid "Total"
-msgstr ""
+msgstr "Итог"
 
 #. TRANSLATORS: we explain what the action is going to do
 #: ../src/gs-review-row.c:207
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
+"Вы не можете публиковать отзывы из-за оскорбительного и грубого поведения."
 
 #. TRANSLATORS: we ask the user if they really want to do this
 #: ../src/gs-review-row.c:212
 msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
-msgstr ""
+msgstr "Ваш отзыв будет скрыт до тех пор, пока его не проверит администратор."
 
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
@@ -735,11 +747,11 @@ msgstr "Спорт"
 #. Translators: Users can express their opinions about other users' opinions about the apps.
 #: ../src/gs-review-row.ui.h:2
 msgid "Was this review useful to you?"
-msgstr ""
+msgstr "Был ли этот отзыв полезным для вас?"
 
 #: ../src/gs-review-row.ui.h:3
 msgid "Yes"
-msgstr ""
+msgstr "Да"
 
 #: ../src/gs-review-row.ui.h:4
 #, fuzzy
@@ -751,11 +763,11 @@ msgstr "Нет"
 #. Translators: Button text for indifference, only used when moderating
 #: ../src/gs-review-row.ui.h:6
 msgid "Meh"
-msgstr ""
+msgstr "Незначительно"
 
 #: ../src/gs-review-row.ui.h:7
 msgid "Report…"
-msgstr ""
+msgstr "Сообщить…"
 
 #: ../src/gs-review-row.ui.h:8
 #, fuzzy
@@ -813,6 +825,8 @@ msgid ""
 "Extensions are used at your own risk. If you have any system problems, it is "
 "recommended to disable them."
 msgstr ""
+"Расширения используются на свой страх и риск. Если появились какие-либо "
+"проблемы с системой, рекомендуется отключить их."
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
@@ -911,18 +925,20 @@ msgstr ""
 #. TRANSLATORS: this is the warning box
 #: ../src/gs-shell-details.c:792
 msgid "This software comes from a 3rd party."
-msgstr ""
+msgstr "Это — стороннее программное обеспечение."
 
 #. TRANSLATORS: this is the warning box
 #: ../src/gs-shell-details.c:801
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
+"Это — стороннее программное обеспечение, оно может содержать несвободные "
+"компоненты."
 
 #. TRANSLATORS: this is the warning box
 #: ../src/gs-shell-details.c:810
 msgid "This software may contain non-free components."
-msgstr ""
+msgstr "Это программное обеспечение может содержать несвободные компоненты."
 
 #: ../src/gs-shell-details.c:1134
 #, c-format
@@ -933,7 +949,7 @@ msgstr "Не удалось найти «%s»"
 #. * any plugin, e.g. if you try installing a .tar.gz
 #: ../src/gs-shell-details.c:1195
 msgid "The file is not supported."
-msgstr ""
+msgstr "Этот файл не поддерживается."
 
 #: ../src/gs-shell-details.c:1205 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
@@ -1014,7 +1030,7 @@ msgstr "Описание"
 
 #: ../src/gs-shell-details.ui.h:19
 msgid "Localized in your Language"
-msgstr ""
+msgstr "Переведено на ваш язык"
 
 #: ../src/gs-shell-details.ui.h:20
 #, fuzzy
@@ -1025,7 +1041,7 @@ msgstr "Презентации"
 
 #: ../src/gs-shell-details.ui.h:21
 msgid "Release Activity"
-msgstr ""
+msgstr "Выпуски версий"
 
 #: ../src/gs-shell-details.ui.h:22
 #, fuzzy
@@ -1063,7 +1079,7 @@ msgstr "Лицензия"
 
 #: ../src/gs-shell-details.ui.h:30
 msgid "non-free"
-msgstr ""
+msgstr "Несвободная"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
@@ -1087,12 +1103,12 @@ msgstr "Просмотреть"
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
 #: ../src/gs-shell-details.ui.h:39
 msgid "_Write a Review"
-msgstr ""
+msgstr "_Написать отзыв"
 
 #. Translators: Button to return more application-submitted reviews.
 #: ../src/gs-shell-details.ui.h:41
 msgid "_Show More"
-msgstr ""
+msgstr "_Показать ещё"
 
 #. TRANSLATORS: separator for a list of items
 #: ../src/gs-shell-extras.c:149
@@ -1320,7 +1336,7 @@ msgstr "Страница обновлений"
 
 #: ../src/gs-shell-moderate.ui.h:2
 msgid "There are no reviews to moderate"
-msgstr ""
+msgstr "Нет отзывов для редактирования"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:367
@@ -1892,15 +1908,15 @@ msgstr "%s и %s установлено"
 #. vim: set noexpandtab:
 #: ../src/gs-upgrade-banner.ui.h:1
 msgid "A major upgrade, with new features and added polish."
-msgstr ""
+msgstr "Крупное обновление, с новыми возможностями и улучшенным дизайном."
 
 #: ../src/gs-upgrade-banner.ui.h:2
 msgid "_Learn More"
-msgstr ""
+msgstr "_Подробнее"
 
 #: ../src/gs-upgrade-banner.ui.h:3
 msgid "_Download"
-msgstr ""
+msgstr "_Загрузить"
 
 #: ../src/gs-upgrade-banner.ui.h:5
 #, fuzzy
