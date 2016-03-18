@@ -563,11 +563,11 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	}
 
 	/* phew, lets send all this to fwupd */
-	if (!fwupd_client_refresh (plugin->priv->client,
-				   cache_fn_data,
-				   plugin->priv->lvfs_sig_fn,
-				   cancellable,
-				   error))
+	if (!fwupd_client_update_metadata (plugin->priv->client,
+					   cache_fn_data,
+					   plugin->priv->lvfs_sig_fn,
+					   cancellable,
+					   error))
 		return FALSE;
 
 	return TRUE;
@@ -663,7 +663,7 @@ gs_plugin_app_upgrade (GsPlugin *plugin,
 	}
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	if (!fwupd_client_install (plugin->priv->client, device_id, filename,
-				   FWUPD_UPDATE_FLAG_OFFLINE, cancellable, error))
+				   FWUPD_INSTALL_FLAG_OFFLINE, cancellable, error))
 		return FALSE;
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
@@ -700,7 +700,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 {
 	const gchar *install_method;
 	const gchar *filename;
-	FwupdUpdateFlags update_flags = 0;
+	FwupdInstallFlags install_flags = 0;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "fwupd") != 0)
@@ -719,11 +719,11 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	/* only offline supported */
 	install_method = gs_app_get_metadata_item (app, "fwupd::InstallMethod");
 	if (g_strcmp0 (install_method, "offline") == 0)
-		update_flags |= FWUPD_UPDATE_FLAG_OFFLINE;
+		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	if (!fwupd_client_install (plugin->priv->client, FWUPD_DEVICE_ID_ANY,
-				   filename, update_flags, cancellable, error))
+				   filename, install_flags, cancellable, error))
 		return FALSE;
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
