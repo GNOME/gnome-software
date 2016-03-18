@@ -1403,7 +1403,6 @@ gs_plugin_xdg_app_content_type_matches (const gchar *filename,
 				      GError **error)
 {
 	const gchar *tmp;
-	guint i;
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GFileInfo) info = NULL;
 	const gchar *mimetypes[] = {
