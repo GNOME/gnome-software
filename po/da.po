@@ -9,8 +9,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-03-16 00:50+0100\n"
-"PO-Revision-Date: 2016-02-23 19:29+0200\n"
+"POT-Creation-Date: 2016-03-20 22:45+0100\n"
+"PO-Revision-Date: 2016-03-20 21:34+0100\n"
 "Last-Translator: Kris Thomsen <mail@kristhomsen.dk>\n"
 "Language-Team: Danish <dansk@dansk-gruppen.dk>\n"
 "Language: da\n"
@@ -50,95 +50,105 @@ msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
-msgstr ""
+msgstr "En liste over kompatible projekter"
 
 #: ../data/org.gnome.software.gschema.xml.h:2
 msgid ""
 "This is a list of compatible projects we should show such as GNOME, KDE and "
 "XFCE."
 msgstr ""
+"Dette er en liste over kompatible projekter, som vi skal vise, som f.eks. "
+"GNOME, KDE og XFCE."
 
 #: ../data/org.gnome.software.gschema.xml.h:3
 msgid "Whether to automatically download updates"
-msgstr ""
+msgstr "Om opdateringer skal hentes automatisk"
 
 #: ../data/org.gnome.software.gschema.xml.h:4
 msgid ""
 "If enabled, GNOME Software automatically downloads updates in the background "
 "and prompts the user to install them when ready."
 msgstr ""
+"Hvis aktiveret, vil GNOME Software automatisk hente opdateringer i "
+"baggrunden og bede brugeren om at installere dem, når de er klar."
 
 #: ../data/org.gnome.software.gschema.xml.h:5
 msgid "Whether it's the very first run of GNOME Software"
-msgstr ""
+msgstr "Om det er første gang, GNOME Software køres"
 
 #: ../data/org.gnome.software.gschema.xml.h:6
 msgid "Show star ratings next to applications"
-msgstr ""
+msgstr "Vis stjernevurderinger ved siden af programmerne"
 
 #: ../data/org.gnome.software.gschema.xml.h:7
 msgid "Non-free applications show a warning dialog before install"
-msgstr ""
+msgstr "Ikke-frie programmer viser en advarselsdialog før installation"
 
 #: ../data/org.gnome.software.gschema.xml.h:8
 msgid ""
 "When non-free applications are installed a warning dialog can be shown. This "
 "controls if that dialog is suppressed."
 msgstr ""
+"Når ikke-frie programmer installeres, vil en advarselsdialog blive vist. "
+"Dette kontrollerer om den dialog undertrykkes."
 
 #: ../data/org.gnome.software.gschema.xml.h:9
-#, fuzzy
 msgid "A list of popular applications"
-msgstr "Søg efter programmer"
+msgstr "En liste over populære programmer"
 
 #: ../data/org.gnome.software.gschema.xml.h:10
 msgid "A list of applications to use, overriding the system defined ones."
 msgstr ""
+"En liste over programmer som skal bruges, som tilsidesætters de "
+"systemdefinerede."
 
 #: ../data/org.gnome.software.gschema.xml.h:11
 msgid "The list of extra sources that have been previously enabled"
-msgstr ""
+msgstr "Listen over ekstra kilder, som tidligere er bleveret aktiveret"
 
 #: ../data/org.gnome.software.gschema.xml.h:12
 msgid ""
 "The list of sources that have been previously enabled when installing third-"
 "party applications."
 msgstr ""
+"Listen over kilder, som tidligere er blevet aktiveret når der blev "
+"installeret tredjepartsprogrammer."
 
 #: ../data/org.gnome.software.gschema.xml.h:13
 msgid "The last update check timestamp"
-msgstr ""
+msgstr "Tidsstemplet for seneste opdateringskontrol"
 
 #: ../data/org.gnome.software.gschema.xml.h:14
 msgid "The timestamp of the first security update, cleared after update"
 msgstr ""
+"Tidsstemplet for den første sikkerhedsopdatering; ryddes efter opdatering"
 
 #: ../data/org.gnome.software.gschema.xml.h:15
 msgid "The last update timestamp"
-msgstr ""
+msgstr "Tidsstemplet for seneste opdatering"
 
 #: ../data/org.gnome.software.gschema.xml.h:16
 msgid "The server to use for application reviews"
-msgstr ""
+msgstr "Serveren, som bruges til programanmeldelser"
 
 #: ../data/org.gnome.software.gschema.xml.h:17
 msgid "The minimum karma score for reviews"
-msgstr ""
+msgstr "Mindste karmascore for anmeldelser"
 
 #: ../data/org.gnome.software.gschema.xml.h:18
 msgid "Reviews with karma less than this number will not be shown."
-msgstr ""
+msgstr "Anmeldelser med mindre karma end dette nummer vil ikke blive vist."
 
 #: ../data/org.gnome.software.gschema.xml.h:19
 msgid "A list of official sources that should not be considered 3rd party"
-msgstr ""
+msgstr "En liste over officielle kilder, som ikke skal anses som tredjepart"
 
 #: ../src/app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Føj til programmappe"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:284
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:288
 #: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "_Annullér"
@@ -398,9 +408,8 @@ msgstr "Andet"
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
 #: ../src/gs-category.c:239
-#, fuzzy
 msgid "All"
-msgstr "_Alle"
+msgstr "Alle"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: ../src/gs-dbus-helper.c:307
@@ -688,6 +697,8 @@ msgstr "Samlet"
 #: ../src/gs-review-row.c:207
 msgid "You can report reviews for abusive, rude, or discriminatory behavior."
 msgstr ""
+"Du kan rapportere anmeldelser for aggressivt, uforskammet ellet "
+"diskriminerende indhold."
 
 #. TRANSLATORS: we ask the user if they really want to do this
 #: ../src/gs-review-row.c:212
@@ -695,21 +706,21 @@ msgid ""
 "Once reported, a review will be hidden until it has been checked by an "
 "administrator."
 msgstr ""
+"Når en anmeldelse er rapporteret, vil den være skjult, indtil den er "
+"kontrolleret af en administrator."
 
 #. TRANSLATORS: window title when
 #. * reporting a user-submitted review
 #. * for moderation
 #: ../src/gs-review-row.c:226
-#, fuzzy
 msgid "Report Review?"
-msgstr "Send anmeldelse"
+msgstr "Rapportér anmeldelse?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: ../src/gs-review-row.c:230
-#, fuzzy
 msgid "Report"
-msgstr "Rapportér misbrug"
+msgstr "Rapportér"
 
 #. vim: set noexpandtab:
 #. Translators: Users can express their opinions about other users' opinions about the apps.
@@ -732,12 +743,11 @@ msgstr "Hmm"
 
 #: ../src/gs-review-row.ui.h:7
 msgid "Report…"
-msgstr ""
+msgstr "Rapportér…"
 
 #: ../src/gs-review-row.ui.h:8
-#, fuzzy
 msgid "Remove…"
-msgstr "Fjern"
+msgstr "Fjern…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
@@ -783,22 +793,23 @@ msgid ""
 "Extensions are used at your own risk. If you have any system problems, it is "
 "recommended to disable them."
 msgstr ""
+"Udvidelser bruges under eget ansvar. Hvis du har nogen systemproblemer, "
+"anbefales det at deaktivere dem."
 
 #: ../src/gs-shell-category.ui.h:2
-#, fuzzy
 msgid "Extension Settings"
-msgstr "Netværksindstillinger"
+msgstr "Udvidelsesindstillinger"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:196 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-shell-details.c:200 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:4
 msgid "_Install"
 msgstr "_Installér"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:207
+#: ../src/gs-shell-details.c:211
 msgid "_Installing"
 msgstr "_Installerer"
 
@@ -806,78 +817,78 @@ msgstr "_Installerer"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:225
+#: ../src/gs-shell-details.c:229
 msgid "_Install…"
 msgstr "_Installér…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:271 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:275 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "_Fjern"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:278
+#: ../src/gs-shell-details.c:282
 msgid "_Removing"
 msgstr "_Fjerner"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:652
 msgctxt "license"
 msgid "Unknown"
 msgstr "Ukendt"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:661
+#: ../src/gs-shell-details.c:665
 msgctxt "version"
 msgid "Unknown"
 msgstr "Ukendt"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:667
+#: ../src/gs-shell-details.c:671
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Beregner…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:670
+#: ../src/gs-shell-details.c:674
 msgctxt "size"
 msgid "Unknown"
 msgstr "Ukendt"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:682
+#: ../src/gs-shell-details.c:686
 msgctxt "updated"
 msgid "Never"
 msgstr "Aldrig"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:696
+#: ../src/gs-shell-details.c:700
 msgctxt "menu category"
 msgid "None"
 msgstr "Ingen"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:713
+#: ../src/gs-shell-details.c:717
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Ukendt"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:759
+#: ../src/gs-shell-details.c:763
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Dette program kan kun bruges når der er en aktiv internet-forbindelse."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:770
+#: ../src/gs-shell-details.c:774
 msgid "This software comes from a 3rd party."
 msgstr "Dette software kommer fra en tredjepart."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:779
+#: ../src/gs-shell-details.c:783
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
@@ -885,16 +896,16 @@ msgstr ""
 "komponenter."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:788
+#: ../src/gs-shell-details.c:792
 msgid "This software may contain non-free components."
 msgstr "Dette software kan indeholder ikke-frie komponenter."
 
-#: ../src/gs-shell-details.c:1110
+#: ../src/gs-shell-details.c:1114
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Kunne ikke finde \"%s\""
 
-#: ../src/gs-shell-details.c:1158 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1174 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "Beklager, dette virkede ikke"
 
@@ -1041,7 +1052,7 @@ msgstr "_Skriv en anmeldelse"
 #. Translators: Button to return more application-submitted reviews.
 #: ../src/gs-shell-details.ui.h:40
 msgid "_Show More"
-msgstr ""
+msgstr "_Vis mere"
 
 #. TRANSLATORS: separator for a list of items
 #: ../src/gs-shell-extras.c:149
@@ -1449,9 +1460,8 @@ msgid "Updates page"
 msgstr "Opdateringsside"
 
 #: ../src/gs-shell-updates.ui.h:2
-#, fuzzy
 msgid "Other Updates"
-msgstr "Systemopdateringer"
+msgstr "Andre opdateringer"
 
 #: ../src/gs-shell-updates.ui.h:3
 msgid "Software is up to date"
@@ -2358,7 +2368,7 @@ msgstr "Opkaldsforbindelse"
 #: ../src/plugins/menu-spec-common.c:117
 msgctxt "Menu subcategory of Internet"
 msgid "Email"
-msgstr "E-post"
+msgstr "E-mail"
 
 #: ../src/plugins/menu-spec-common.c:118
 msgctxt "Menu subcategory of Internet"
@@ -2458,7 +2468,7 @@ msgstr "Ordbog"
 #: ../src/plugins/menu-spec-common.c:138
 msgctxt "Menu subcategory of Office"
 msgid "Email"
-msgstr "E-post"
+msgstr "E-mail"
 
 #: ../src/plugins/menu-spec-common.c:139
 msgctxt "Menu subcategory of Office"
@@ -2813,13 +2823,12 @@ msgstr "Sprogpakker"
 #: ../src/plugins/menu-spec-common.c:215
 msgctxt "Menu subcategory of Add-ons"
 msgid "Shell Extensions"
-msgstr ""
+msgstr "Shell-udvidelser"
 
 #: ../src/plugins/menu-spec-common.c:216
-#, fuzzy
 msgctxt "Menu subcategory of Add-ons"
 msgid "Localization"
-msgstr "Et program"
+msgstr "Lokalisering"
 
 #~ msgid "A previous update was unfinished."
 #~ msgstr "En tidligere opdatering blev ikke færdiggjort."
