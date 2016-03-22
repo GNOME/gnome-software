@@ -33,7 +33,7 @@
 
 /*
  * SECTION:
- * Provides review data from an anonymous source.
+ * Provides review data from the Open Desktop Ratings Serice.
  */
 
 #define XDG_APP_REVIEW_CACHE_AGE_MAX		237000 /* 1 week */
@@ -52,7 +52,7 @@ struct GsPluginPrivate {
 const gchar *
 gs_plugin_get_name (void)
 {
-	return "xdg-app-reviews";
+	return "odrs";
 }
 
 /**
@@ -108,10 +108,10 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
- * xdg_app_review_parse_review_object:
+ * gs_plugin_odrs_parse_review_object:
  */
 static GsReview *
-xdg_app_review_parse_review_object (JsonObject *item)
+gs_plugin_odrs_parse_review_object (JsonObject *item)
 {
 	GsReview *rev = gs_review_new ();
 
@@ -168,12 +168,10 @@ xdg_app_review_parse_review_object (JsonObject *item)
 }
 
 /**
- * xdg_app_review_parse_reviews:
+ * gs_plugin_odrs_parse_reviews:
  */
 static GPtrArray *
-xdg_app_review_parse_reviews (const gchar *data,
-			      gsize data_len,
-			      GError **error)
+gs_plugin_odrs_parse_reviews (const gchar *data, gsize data_len, GError **error)
 {
 	JsonArray *json_reviews;
 	JsonNode *json_root;
@@ -237,19 +235,17 @@ xdg_app_review_parse_reviews (const gchar *data,
 		}
 
 		/* create review */
-		review = xdg_app_review_parse_review_object (json_item);
+		review = gs_plugin_odrs_parse_review_object (json_item);
 		g_ptr_array_add (reviews, g_object_ref (review));
 	}
 	return g_steal_pointer (&reviews);
 }
 
 /**
- * xdg_app_review_parse_success:
+ * gs_plugin_odrs_parse_success:
  */
 static gboolean
-xdg_app_review_parse_success (const gchar *data,
-			      gsize data_len,
-			      GError **error)
+gs_plugin_odrs_parse_success (const gchar *data, gsize data_len, GError **error)
 {
 	JsonNode *json_root;
 	JsonObject *json_item;
@@ -311,13 +307,13 @@ xdg_app_review_parse_success (const gchar *data,
 }
 
 /**
- * gs_plugin_xdg_app_reviews_json_post:
+ * gs_plugin_odrs_json_post:
  */
 static gboolean
-gs_plugin_xdg_app_reviews_json_post (SoupSession *session,
-				     const gchar *uri,
-				     const gchar *data,
-				     GError **error)
+gs_plugin_odrs_json_post (SoupSession *session,
+			  const gchar *uri,
+			  const gchar *data,
+			  GError **error)
 {
 	guint status_code;
 	g_autoptr(SoupMessage) msg = NULL;
@@ -337,18 +333,16 @@ gs_plugin_xdg_app_reviews_json_post (SoupSession *session,
 
 	/* process returned JSON */
 	g_debug ("xdg-app-review returned: %s", msg->response_body->data);
-	return xdg_app_review_parse_success (msg->response_body->data,
+	return gs_plugin_odrs_parse_success (msg->response_body->data,
 					     msg->response_body->length,
 					     error);
 }
 
 /**
- * xdg_app_review_parse_ratings:
+ * gs_plugin_odrs_parse_ratings:
  */
 static GArray *
-xdg_app_review_parse_ratings (const gchar *data,
-			      gsize data_len,
-			      GError **error)
+gs_plugin_odrs_parse_ratings (const gchar *data, gsize data_len, GError **error)
 {
 	GArray *ratings;
 	JsonNode *json_root;
@@ -408,10 +402,10 @@ xdg_app_review_parse_ratings (const gchar *data,
 }
 
 /**
- * xdg_app_review_get_ratings:
+ * gs_plugin_odrs_get_ratings:
  */
 static GArray *
-xdg_app_review_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
+gs_plugin_odrs_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 {
 	GArray *ratings;
 	guint status_code;
@@ -434,7 +428,7 @@ xdg_app_review_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 			return NULL;
 		g_debug ("got ratings data for %s from %s",
 			 gs_app_get_id_no_prefix (app), cachefn);
-		return xdg_app_review_parse_ratings (json_data, -1, error);
+		return gs_plugin_odrs_parse_ratings (json_data, -1, error);
 	}
 
 	/* create the GET data *with* the machine hash so we can later
@@ -445,7 +439,7 @@ xdg_app_review_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	status_code = soup_session_send_message (plugin->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
-		if (!xdg_app_review_parse_success (msg->response_body->data,
+		if (!gs_plugin_odrs_parse_success (msg->response_body->data,
 						   msg->response_body->length,
 						   error))
 			return NULL;
@@ -457,7 +451,7 @@ xdg_app_review_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 		return NULL;
 	}
 	g_debug ("xdg-app-review returned: %s", msg->response_body->data);
-	ratings = xdg_app_review_parse_ratings (msg->response_body->data,
+	ratings = gs_plugin_odrs_parse_ratings (msg->response_body->data,
 						msg->response_body->length,
 						error);
 	if (ratings == NULL)
@@ -489,7 +483,7 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 	g_autoptr(GArray) array = NULL;
 
 	/* get ratings */
-	array = xdg_app_review_get_ratings (plugin, app, error);
+	array = gs_plugin_odrs_get_ratings (plugin, app, error);
 	if (array == NULL)
 		return FALSE;
 	gs_app_set_review_ratings (app, array);
@@ -509,10 +503,10 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 }
 
 /**
- * xdg_app_review_fetch_for_app:
+ * gs_plugin_odrs_fetch_for_app:
  */
 static GPtrArray *
-xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
+gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
 	const gchar *version;
 	guint karma_min;
@@ -540,7 +534,7 @@ xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 			return NULL;
 		g_debug ("got review data for %s from %s",
 			 gs_app_get_id_no_prefix (app), cachefn);
-		return xdg_app_review_parse_reviews (json_data, -1, error);
+		return gs_plugin_odrs_parse_reviews (json_data, -1, error);
 	}
 
 	/* not always available */
@@ -583,7 +577,7 @@ xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 				  SOUP_MEMORY_COPY, data, strlen (data));
 	status_code = soup_session_send_message (plugin->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
-		if (!xdg_app_review_parse_success (msg->response_body->data,
+		if (!gs_plugin_odrs_parse_success (msg->response_body->data,
 						   msg->response_body->length,
 						   error))
 			return NULL;
@@ -594,7 +588,7 @@ xdg_app_review_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 				     "status code invalid");
 		return NULL;
 	}
-	reviews = xdg_app_review_parse_reviews (msg->response_body->data,
+	reviews = gs_plugin_odrs_parse_reviews (msg->response_body->data,
 						msg->response_body->length,
 						error);
 	if (reviews == NULL)
@@ -626,7 +620,7 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 	g_autoptr(GPtrArray) reviews = NULL;
 
 	/* get from server */
-	reviews = xdg_app_review_fetch_for_app (plugin, app, error);
+	reviews = gs_plugin_odrs_fetch_for_app (plugin, app, error);
 	if (reviews == NULL)
 		return FALSE;
 	for (i = 0; i < reviews->len; i++) {
@@ -693,10 +687,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 }
 
 /**
- * xdg_app_review_sanitize_version:
+ * gs_plugin_odrs_sanitize_version:
  */
 static gchar *
-xdg_app_review_sanitize_version (const gchar *version)
+gs_plugin_odrs_sanitize_version (const gchar *version)
 {
 	gchar *tmp = g_strdup (version);
 	if (tmp == NULL)
@@ -706,10 +700,10 @@ xdg_app_review_sanitize_version (const gchar *version)
 }
 
 /**
- * gs_plugin_xdg_app_reviews_invalidate_cache:
+ * gs_plugin_odrs_invalidate_cache:
  */
 static gboolean
-gs_plugin_xdg_app_reviews_invalidate_cache (GsReview *review, GError **error)
+gs_plugin_odrs_invalidate_cache (GsReview *review, GError **error)
 {
 	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *cachefn = NULL;
@@ -767,7 +761,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	json_builder_set_member_name (builder, "distro");
 	json_builder_add_string_value (builder, plugin->priv->distro);
 	json_builder_set_member_name (builder, "version");
-	version = xdg_app_review_sanitize_version (gs_review_get_version (review));
+	version = gs_plugin_odrs_sanitize_version (gs_review_get_version (review));
 	json_builder_add_string_value (builder, version);
 	json_builder_set_member_name (builder, "user_display");
 	json_builder_add_string_value (builder, gs_review_get_reviewer (review));
@@ -787,21 +781,21 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	data = json_generator_to_data (json_generator, NULL);
 
 	/* clear cache */
-	if (!gs_plugin_xdg_app_reviews_invalidate_cache (review, error))
+	if (!gs_plugin_odrs_invalidate_cache (review, error))
 		return FALSE;
 
 	/* POST */
 	uri = g_strdup_printf ("%s/submit", plugin->priv->review_server);
-	return gs_plugin_xdg_app_reviews_json_post (plugin->soup_session,
+	return gs_plugin_odrs_json_post (plugin->soup_session,
 						    uri, data, error);
 }
 
 /**
- * gs_plugin_xdg_app_reviews_vote:
+ * gs_plugin_odrs_vote:
  */
 static gboolean
-gs_plugin_xdg_app_reviews_vote (GsPlugin *plugin, GsReview *review,
-				const gchar *uri, GError **error)
+gs_plugin_odrs_vote (GsPlugin *plugin, GsReview *review,
+		     const gchar *uri, GError **error)
 {
 	const gchar *tmp;
 	g_autofree gchar *data = NULL;
@@ -840,11 +834,11 @@ gs_plugin_xdg_app_reviews_vote (GsPlugin *plugin, GsReview *review,
 		return FALSE;
 
 	/* clear cache */
-	if (!gs_plugin_xdg_app_reviews_invalidate_cache (review, error))
+	if (!gs_plugin_odrs_invalidate_cache (review, error))
 		return FALSE;
 
 	/* send to server */
-	if (!gs_plugin_xdg_app_reviews_json_post (plugin->soup_session,
+	if (!gs_plugin_odrs_json_post (plugin->soup_session,
 						  uri, data, error))
 		return FALSE;
 
@@ -867,7 +861,7 @@ gs_plugin_review_report (GsPlugin *plugin,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/report", plugin->priv->review_server);
-	return gs_plugin_xdg_app_reviews_vote (plugin, review, uri, error);
+	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
 /**
@@ -882,7 +876,7 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/upvote", plugin->priv->review_server);
-	return gs_plugin_xdg_app_reviews_vote (plugin, review, uri, error);
+	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
 /**
@@ -897,7 +891,7 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/downvote", plugin->priv->review_server);
-	return gs_plugin_xdg_app_reviews_vote (plugin, review, uri, error);
+	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
 /**
@@ -912,7 +906,7 @@ gs_plugin_review_dismiss (GsPlugin *plugin,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/dismiss", plugin->priv->review_server);
-	return gs_plugin_xdg_app_reviews_vote (plugin, review, uri, error);
+	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
 /**
@@ -927,7 +921,7 @@ gs_plugin_review_remove (GsPlugin *plugin,
 {
 	g_autofree gchar *uri = NULL;
 	uri = g_strdup_printf ("%s/remove", plugin->priv->review_server);
-	return gs_plugin_xdg_app_reviews_vote (plugin, review, uri, error);
+	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
 /**
@@ -973,7 +967,7 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	status_code = soup_session_send_message (plugin->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
-		if (!xdg_app_review_parse_success (msg->response_body->data,
+		if (!gs_plugin_odrs_parse_success (msg->response_body->data,
 						   msg->response_body->length,
 						   error))
 			return FALSE;
@@ -985,7 +979,7 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 		return FALSE;
 	}
 	g_debug ("xdg-app-review returned: %s", msg->response_body->data);
-	reviews = xdg_app_review_parse_reviews (msg->response_body->data,
+	reviews = gs_plugin_odrs_parse_reviews (msg->response_body->data,
 						msg->response_body->length,
 						error);
 	if (reviews == NULL)

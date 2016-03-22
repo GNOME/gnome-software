@@ -66,7 +66,7 @@ endif
 if HAVE_XDG_APP
 plugin_LTLIBRARIES += libgs_plugin_xdg_app.la
 if HAVE_REVIEWS
-plugin_LTLIBRARIES += libgs_plugin_xdg_app_reviews.la
+plugin_LTLIBRARIES += libgs_plugin_odrs.la
 endif # HAVE_REVIEWS
 endif # HAVE_XDG_APP
 
@@ -142,10 +142,10 @@ libgs_plugin_xdg_app_la_LDFLAGS = -module -avoid-version
 libgs_plugin_xdg_app_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 if HAVE_REVIEWS
-libgs_plugin_xdg_app_reviews_la_SOURCES = gs-plugin-xdg-app-reviews.c
-libgs_plugin_xdg_app_reviews_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
-libgs_plugin_xdg_app_reviews_la_LDFLAGS = -module -avoid-version
-libgs_plugin_xdg_app_reviews_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+libgs_plugin_odrs_la_SOURCES = gs-plugin-odrs.c
+libgs_plugin_odrs_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
+libgs_plugin_odrs_la_LDFLAGS = -module -avoid-version
+libgs_plugin_odrs_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif # HAVE_REVIEWS
 endif # HAVE_XDG_APP
 
