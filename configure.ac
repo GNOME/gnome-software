@@ -201,6 +201,13 @@ AS_IF([test "x$have_limba" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_LIMBA, test x$enable_limba = xyes)
 
+# Open Desktop Ratings Service
+AC_ARG_ENABLE(odrs,
+              [AS_HELP_STRING([--enable-odrs],
+                              [enable ODRS support [default=yes]])],,
+              have_odrs=yes)
+AM_CONDITIONAL(HAVE_ODRS, test "$have_odrs" != no)
+
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
 GS_PLUGIN_API_VERSION=9
@@ -250,4 +257,5 @@ echo "
         Firmware support:          ${have_firmware}
         Limba support:             ${have_limba}
         XDG-APP support:           ${have_xdg_app}
+        ODRS support:              ${have_odrs}
 "

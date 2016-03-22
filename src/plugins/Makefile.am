@@ -61,11 +61,14 @@ endif
 
 if HAVE_XDG_APP
 plugin_LTLIBRARIES += libgs_plugin_xdg_app.la
-plugin_LTLIBRARIES += libgs_plugin_xdg_app_reviews.la
 endif
 
 if HAVE_LIMBA
 plugin_LTLIBRARIES += libgs_plugin_limba.la
+endif
+
+if HAVE_ODRS
+plugin_LTLIBRARIES += libgs_plugin_xdg_app_reviews.la
 endif
 
 libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
