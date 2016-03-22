@@ -221,13 +221,20 @@ AS_IF([test "x$enable_shell_extensions" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_SHELL_EXTENSIONS, [test "x$enable_shell_extensions" = "xyes"])
 
-# Reviews
-AC_ARG_ENABLE(reviews,
-              [AS_HELP_STRING([--enable-reviews],
-                              [enable reviews [default=yes]])],,
-              enable_reviews=yes)
-AM_CONDITIONAL(HAVE_REVIEWS, [test "x$enable_reviews" = "xyes"])
-AC_DEFINE(HAVE_REVIEWS,1,[Build reviews])
+# Open Desktop Ratings Serice
+AC_ARG_ENABLE(odrs,
+              [AS_HELP_STRING([--enable-odrs],
+                              [enable ODRS support [default=yes]])],,
+              have_odrs=yes)
+AM_CONDITIONAL(HAVE_ODRS, test "$have_odrs" != no)
+
+# Ubuntu-specific Reviews
+AC_ARG_ENABLE(ubuntu-reviews,
+              [AS_HELP_STRING([--enable-ubuntu-reviews],
+                              [enable Ubuntu reviews [default=no]])],,
+              enable_ubuntu_reviews=no)
+AM_CONDITIONAL(HAVE_UBUNTU_REVIEWS, [test "x$enable_ubuntu_reviews" = "xyes"])
+AC_DEFINE(HAVE_UBUNTU_REVIEWS,1,[Build Ubuntu reviews])
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
@@ -280,5 +287,6 @@ echo "
         XDG-APP support:           ${have_xdg_app}
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}
-        Reviews support:           ${enable_reviews}
+        ODRS support:              ${have_odrs}
+        Ubuntu Reviews support:    ${enable_ubuntu_reviews}
 "

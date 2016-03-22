@@ -65,10 +65,7 @@ endif
 
 if HAVE_XDG_APP
 plugin_LTLIBRARIES += libgs_plugin_xdg_app.la
-if HAVE_REVIEWS
-plugin_LTLIBRARIES += libgs_plugin_odrs.la
-endif # HAVE_REVIEWS
-endif # HAVE_XDG_APP
+endif
 
 if HAVE_LIMBA
 plugin_LTLIBRARIES += libgs_plugin_limba.la
@@ -76,6 +73,10 @@ endif
 
 if HAVE_STEAM
 plugin_LTLIBRARIES += libgs_plugin_steam.la
+endif
+
+if HAVE_ODRS
+plugin_LTLIBRARIES += libgs_plugin_odrs.la
 endif
 
 libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
@@ -140,14 +141,14 @@ libgs_plugin_xdg_app_la_SOURCES = gs-plugin-xdg-app.c
 libgs_plugin_xdg_app_la_LIBADD = $(GS_PLUGIN_LIBS) $(XDG_APP_LIBS)
 libgs_plugin_xdg_app_la_LDFLAGS = -module -avoid-version
 libgs_plugin_xdg_app_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+endif
 
-if HAVE_REVIEWS
+if HAVE_ODRS
 libgs_plugin_odrs_la_SOURCES = gs-plugin-odrs.c
 libgs_plugin_odrs_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
 libgs_plugin_odrs_la_LDFLAGS = -module -avoid-version
 libgs_plugin_odrs_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
-endif # HAVE_REVIEWS
-endif # HAVE_XDG_APP
+endif
 
 if HAVE_STEAM
 libgs_plugin_steam_la_SOURCES = gs-plugin-steam.c
@@ -190,13 +191,13 @@ libgs_plugin_hardcoded_blacklist_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_blacklist_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_blacklist_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
-if HAVE_REVIEWS
+if HAVE_UBUNTU_REVIEWS
 libgs_plugin_ubuntu_reviews_la_SOURCES =		\
 	gs-plugin-ubuntu-reviews.c
 libgs_plugin_ubuntu_reviews_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(JSON_GLIB_LIBS) $(SQLITE_LIBS)
 libgs_plugin_ubuntu_reviews_la_LDFLAGS = -module -avoid-version
 libgs_plugin_ubuntu_reviews_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
-endif # HAVE_REVIEWS
+endif
 
 libgs_plugin_packagekit_la_SOURCES =			\
 	gs-plugin-packagekit.c				\
