@@ -629,7 +629,7 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 		/* save this on the application object so we can use it for
 		 * submitting a new review */
 		if (i == 0) {
-			gs_app_set_metadata (app, "XdgAppReviews::user_skey",
+			gs_app_set_metadata (app, "ODRS::user_skey",
 					     gs_review_get_metadata_item (review, "user_skey"));
 		}
 
@@ -743,7 +743,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	gs_review_set_reviewer (review, g_get_real_name ());
 	gs_review_add_metadata (review, "app_id", gs_app_get_id_no_prefix (app));
 	gs_review_add_metadata (review, "user_skey",
-				gs_app_get_metadata_item (app, "XdgAppReviews::user_skey"));
+				gs_app_get_metadata_item (app, "ODRS::user_skey"));
 
 	/* create object with review data */
 	builder = json_builder_new ();
