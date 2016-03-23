@@ -73,6 +73,10 @@ typedef enum {
 
 #define	GS_APP_KUDOS_WEIGHT_TO_PERCENTAGE(w)	(w * 20)
 
+#if !AS_CHECK_VERSION(0,5,12)
+#define AS_APP_QUIRK_MATCH_ANY_PREFIX		(1 << 3)
+#endif
+
 GQuark		 gs_app_error_quark		(void);
 
 GsApp		*gs_app_new			(const gchar	*id);
