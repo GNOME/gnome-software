@@ -321,6 +321,13 @@ gs_refine_item_management_plugin (GsApp *app, AsApp *item)
 	const gchar *runtime = NULL;
 	guint i;
 
+	/* allow override */
+	management_plugin = as_app_get_metadata_item (item, "GnomeSoftware::Plugin");
+	if (management_plugin != NULL) {
+		gs_app_set_management_plugin (app, management_plugin);
+		return;
+	}
+
 	/* find the default bundle kind */
 	bundles = as_app_get_bundles (item);
 	for (i = 0; i < bundles->len; i++) {
