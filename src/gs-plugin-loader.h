@@ -237,8 +237,6 @@ void		 gs_plugin_loader_refresh_async		(GsPluginLoader	*plugin_loader,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
 GPtrArray	*gs_plugin_loader_get_pending		(GsPluginLoader	*plugin_loader);
-GsApp		*gs_plugin_loader_dedupe		(GsPluginLoader	*plugin_loader,
-							 GsApp		*app);
 void		 gs_plugin_loader_set_network_status    (GsPluginLoader *plugin_loader,
 							 gboolean        online);
 gboolean	 gs_plugin_loader_get_plugin_supported	(GsPluginLoader	*plugin_loader,
