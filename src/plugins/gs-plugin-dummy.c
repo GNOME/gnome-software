@@ -129,6 +129,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		       GError **error)
 {
 	g_autoptr(GsApp) app = gs_app_new ("gnome-power-manager");
+	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Power Manager");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "Power Management Program");
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);

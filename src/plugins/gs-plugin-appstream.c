@@ -265,6 +265,14 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	if (id == NULL)
 		return TRUE;
 	item = as_store_get_app_by_id (plugin->priv->store, id);
+#if AS_CHECK_VERSION(0,5,12)
+	if (item == NULL &&
+	    gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+		item = as_store_get_app_by_id_ignore_prefix (plugin->priv->store, id);
+		if (item != NULL)
+			g_debug ("found %s for wildcard %s", as_app_get_id (item), id);
+	}
+#endif
 	if (item == NULL)
 		return TRUE;
 

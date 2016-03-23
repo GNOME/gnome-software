@@ -71,6 +71,7 @@ gs_plugin_add_featured_app (GList **list,
 	/* add app */
 	app = gs_app_new (id);
 	gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
+	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 	gs_app_set_metadata (app, "Featured::background", background);
 	gs_app_set_metadata (app, "Featured::stroke-color", stroke_color);
 	gs_app_set_metadata (app, "Featured::text-color", text_color);
