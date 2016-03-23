@@ -155,7 +155,7 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 {
 	const gchar *data;
 
-	gs_app_set_management_plugin (app, "PackageKit");
+	gs_app_set_management_plugin (app, "packagekit");
 	gs_app_add_source (app, pk_package_get_name (package));
 	gs_app_add_source_id (app, pk_package_get_id (package));
 	switch (pk_package_get_info (package)) {
@@ -314,7 +314,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	packages = pk_results_get_package_array (results);
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
-		if (gs_app_get_metadata_item (app, "PackageKit::local-filename") != NULL)
+		if (gs_app_get_metadata_item (app, "packagekit::local-filename") != NULL)
 			continue;
 		gs_plugin_packagekit_resolve_packages_app (plugin, packages, app);
 	}
@@ -663,7 +663,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 			continue;
 		if (gs_app_get_source_id_default (app) == NULL)
 			continue;
@@ -835,7 +835,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 			continue;
 		sources = gs_app_get_sources (app);
 		if (sources->len == 0)
@@ -903,7 +903,7 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
 			continue;
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 			continue;
 		if (gs_plugin_refine_requires_update_details (app, flags))
 			updatedetails_all = g_list_prepend (updatedetails_all, app);

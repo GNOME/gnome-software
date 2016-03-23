@@ -957,13 +957,9 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	const gchar *gameid;
 	g_autofree gchar *cmdline = NULL;
 
-	/* check is us */
-	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
-	if (gameid == NULL)
-		return TRUE;
-
 	/* this is async as steam is a different process: FIXME: use D-Bus */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
 	cmdline = g_strdup_printf ("steam steam://install/%s", gameid);
 	return g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error);
 }
@@ -978,13 +974,9 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	const gchar *gameid;
 	g_autofree gchar *cmdline = NULL;
 
-	/* check is us */
-	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
-	if (gameid == NULL)
-		return TRUE;
-
 	/* this is async as steam is a different process: FIXME: use D-Bus */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
 	cmdline = g_strdup_printf ("steam steam://uninstall/%s", gameid);
 	return g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error);
 }
@@ -999,12 +991,8 @@ gs_plugin_launch (GsPlugin *plugin, GsApp *app,
 	const gchar *gameid;
 	g_autofree gchar *cmdline = NULL;
 
-	/* check is us */
-	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
-	if (gameid == NULL)
-		return TRUE;
-
 	/* this is async as steam is a different process: FIXME: use D-Bus */
+	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
 	cmdline = g_strdup_printf ("steam steam://run/%s", gameid);
 	return g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error);
 }

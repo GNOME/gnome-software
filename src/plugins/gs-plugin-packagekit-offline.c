@@ -193,7 +193,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		split = g_strsplit (package_ids[i], ";", 4);
 		gs_app_add_source (app, split[0]);
 		gs_app_set_update_version (app, split[1]);
-		gs_app_set_management_plugin (app, "PackageKit");
+		gs_app_set_management_plugin (app, "packagekit");
 		gs_app_add_source_id (app, package_ids[i]);
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, AS_APP_KIND_GENERIC);

@@ -21,8 +21,8 @@
 
 /* Notes:
  *
- * All GsApp's created have management-plugin set to XgdApp
- * Some GsApp's created have have XgdApp::kind of app or runtime
+ * All GsApp's created have management-plugin set to xdg-app
+ * Some GsApp's created have have xdg-app::kind of app or runtime
  * The GsApp:origin is the remote name, e.g. test-repo
  *
  * Some outstanding notes:
@@ -93,15 +93,15 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /* helpers */
-#define gs_app_get_xdgapp_kind_as_str(app)	gs_app_get_metadata_item(app,"XgdApp::kind")
-#define gs_app_get_xdgapp_name(app)		gs_app_get_metadata_item(app,"XgdApp::name")
-#define gs_app_get_xdgapp_arch(app)		gs_app_get_metadata_item(app,"XgdApp::arch")
-#define gs_app_get_xdgapp_branch(app)		gs_app_get_metadata_item(app,"XgdApp::branch")
-#define gs_app_get_xdgapp_commit(app)		gs_app_get_metadata_item(app,"XgdApp::commit")
-#define gs_app_set_xdgapp_name(app,val)		gs_app_set_metadata(app,"XgdApp::name",val)
-#define gs_app_set_xdgapp_arch(app,val)		gs_app_set_metadata(app,"XgdApp::arch",val)
-#define gs_app_set_xdgapp_branch(app,val)	gs_app_set_metadata(app,"XgdApp::branch",val)
-#define gs_app_set_xdgapp_commit(app,val)	gs_app_set_metadata(app,"XgdApp::commit",val)
+#define gs_app_get_xdgapp_kind_as_str(app)	gs_app_get_metadata_item(app,"xdg-app::kind")
+#define gs_app_get_xdgapp_name(app)		gs_app_get_metadata_item(app,"xdg-app::name")
+#define gs_app_get_xdgapp_arch(app)		gs_app_get_metadata_item(app,"xdg-app::arch")
+#define gs_app_get_xdgapp_branch(app)		gs_app_get_metadata_item(app,"xdg-app::branch")
+#define gs_app_get_xdgapp_commit(app)		gs_app_get_metadata_item(app,"xdg-app::commit")
+#define gs_app_set_xdgapp_name(app,val)		gs_app_set_metadata(app,"xdg-app::name",val)
+#define gs_app_set_xdgapp_arch(app,val)		gs_app_set_metadata(app,"xdg-app::arch",val)
+#define gs_app_set_xdgapp_branch(app,val)	gs_app_set_metadata(app,"xdg-app::branch",val)
+#define gs_app_set_xdgapp_commit(app,val)	gs_app_set_metadata(app,"xdg-app::commit",val)
 
 /**
  * gs_app_get_xdgapp_kind:
@@ -109,7 +109,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 static XdgAppRefKind
 gs_app_get_xdgapp_kind (GsApp *app)
 {
-	const gchar *kind = gs_app_get_metadata_item (app, "XgdApp::kind");
+	const gchar *kind = gs_app_get_metadata_item (app, "xdg-app::kind");
 	if (g_strcmp0 (kind, "app") == 0)
 		return XDG_APP_REF_KIND_APP;
 	if (g_strcmp0 (kind, "runtime") == 0)
@@ -125,9 +125,9 @@ static void
 gs_app_set_xdgapp_kind (GsApp *app, XdgAppRefKind kind)
 {
 	if (kind == XDG_APP_REF_KIND_APP)
-		gs_app_set_metadata (app, "XgdApp::kind", "app");
+		gs_app_set_metadata (app, "xdg-app::kind", "app");
 	else if (kind == XDG_APP_REF_KIND_RUNTIME)
-		gs_app_set_metadata (app, "XgdApp::kind", "runtime");
+		gs_app_set_metadata (app, "xdg-app::kind", "runtime");
 	else
 		g_assert_not_reached ();
 }
@@ -306,7 +306,7 @@ gs_plugin_ensure_installation (GsPlugin *plugin,
 static void
 gs_plugin_xdg_app_set_metadata (GsApp *app, XdgAppRef *xref)
 {
-	gs_app_set_management_plugin (app, "XgdApp");
+	gs_app_set_management_plugin (app, "xdg-app");
 	gs_app_set_xdgapp_kind (app, xdg_app_ref_get_kind (xref));
 	gs_app_set_xdgapp_name (app, xdg_app_ref_get_name (xref));
 	gs_app_set_xdgapp_arch (app, xdg_app_ref_get_arch (xref));
@@ -531,7 +531,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 			continue;
 
 		app = gs_app_new (xdg_app_remote_get_name (xremote));
-		gs_app_set_management_plugin (app, "XgdApp");
+		gs_app_set_management_plugin (app, "xdg-app");
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
@@ -851,7 +851,7 @@ gs_plugin_refine_item_metadata (GsPlugin *plugin,
 	g_autoptr(XdgAppRef) xref = NULL;
 
 	/* already set */
-	if (gs_app_get_metadata_item (app, "XgdApp::kind") != NULL)
+	if (gs_app_get_metadata_item (app, "xdg-app::kind") != NULL)
 		return TRUE;
 
 	/* AppStream sets the source to appname/arch/branch, if this isn't set
@@ -1132,7 +1132,7 @@ gs_plugin_xdg_app_refine_app (GsPlugin *plugin,
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "XgdApp") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "xdg-app") != 0)
 		return TRUE;
 
 	/* profile */
@@ -1199,10 +1199,6 @@ gs_plugin_launch (GsPlugin *plugin,
 {
 	const gchar *branch = NULL;
 
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "XgdApp") != 0)
-		return TRUE;
-
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
 		return FALSE;
@@ -1231,7 +1227,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GsPluginHelper helper;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "XgdApp") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "xdg-app") != 0)
 		return TRUE;
 
 	/* ensure we can set up the repo */
@@ -1266,7 +1262,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "XgdApp") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "xdg-app") != 0)
 		return TRUE;
 
 	/* ensure we can set up the repo */
@@ -1367,10 +1363,6 @@ gs_plugin_app_update (GsPlugin *plugin,
 {
 	GsPluginHelper helper;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
-
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "XgdApp") != 0)
-		return TRUE;
 
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))

@@ -549,10 +549,14 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 	GsPluginActionFunc plugin_func = NULL;
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
+	const gchar *management_plugin;
 	gboolean anything_ran = FALSE;
 	gboolean exists;
 	gboolean ret;
 	guint i;
+
+	/* don't force each plugin to check this */
+	management_plugin = gs_app_get_management_plugin (app);
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
@@ -569,6 +573,14 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 					  (gpointer *) &plugin_func);
 		if (!exists)
 			continue;
+
+		/* only run method for the correct management plugin */
+		if (g_strcmp0 (management_plugin, plugin->name) != 0) {
+			g_debug ("skipping %s:%s as invalid (%s)",
+				 plugin->name, function_name, management_plugin);
+			continue;
+		}
+
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
@@ -582,6 +594,13 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 		}
 		anything_ran = TRUE;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+	}
+
+	/* fall back to generic helper */
+	if (!anything_ran &&
+	    g_strcmp0 (function_name, "gs_plugin_launch") == 0) {
+		g_debug ("using launch helper for %s", gs_app_get_id (app));
+		return gs_plugin_app_launch (NULL, app, error);
 	}
 
 	/* nothing ran */

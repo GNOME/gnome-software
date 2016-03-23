@@ -143,7 +143,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) == 0)
 		return TRUE;
 
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 		return TRUE;
 	if (gs_app_get_origin (app) == NULL)
 		return TRUE;

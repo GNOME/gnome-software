@@ -121,8 +121,8 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 	id = gs_plugin_shell_extensions_id_from_uuid (uuid);
 	id_prefix = g_strdup_printf ("user:%s", id);
 	app = gs_app_new (id_prefix);
-	gs_app_set_management_plugin (app, "ShellExtensions");
-	gs_app_set_metadata (app, "ShellExtensions::uuid", uuid);
+	gs_app_set_management_plugin (app, "shell-extensions");
+	gs_app_set_metadata (app, "shell-extensions::uuid", uuid);
 	gs_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
 	gs_app_set_license (app, GS_APP_QUALITY_NORMAL, "GPL-2.0+");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "GNOME Shell Extension");
@@ -194,17 +194,17 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 		}
 		if (g_strcmp0 (str, "hasPrefs") == 0) {
 			if (g_variant_get_boolean (val))
-				gs_app_set_metadata (app, "ShellExtensions::has-prefs", "");
+				gs_app_set_metadata (app, "shell-extensions::has-prefs", "");
 			continue;
 		}
 		if (g_strcmp0 (str, "extension-id") == 0) {
 			tmp = g_variant_get_string (val, NULL);
-			gs_app_set_metadata (app, "ShellExtensions::extension-id", tmp);
+			gs_app_set_metadata (app, "shell-extensions::extension-id", tmp);
 			continue;
 		}
 		if (g_strcmp0 (str, "path") == 0) {
 			tmp = g_variant_get_string (val, NULL);
-			gs_app_set_metadata (app, "ShellExtensions::path", tmp);
+			gs_app_set_metadata (app, "shell-extensions::path", tmp);
 			continue;
 		}
 	}
@@ -217,7 +217,7 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 
 	/* add categories */
 	gs_app_add_category (app, "Addons");
-	gs_app_add_category (app, "ShellExtensions");
+	gs_app_add_category (app, "shell-extensions");
 
 	return g_steal_pointer (&app);
 }
@@ -312,7 +312,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* adopt any here */
 	if (gs_app_get_management_plugin (app) == NULL)
-		gs_app_set_management_plugin (app, "ShellExtensions");
+		gs_app_set_management_plugin (app, "shell-extensions");
 
 	/* assume apps are available if they exist in AppStream metadata */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
@@ -416,7 +416,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 		g_autofree gchar *id = NULL;
 		id = gs_plugin_shell_extensions_id_from_uuid (tmp);
 		as_app_set_id (app, id);
-		as_app_add_metadata (app, "ShellExtensions::uuid", tmp);
+		as_app_add_metadata (app, "shell-extensions::uuid", tmp);
 	}
 	tmp = json_object_get_string_member (json_app, "link");
 	if (tmp != NULL) {
@@ -473,11 +473,11 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 
 	/* required to match categories in gnome-software */
 	as_app_add_category (app, "Addons");
-	as_app_add_category (app, "ShellExtensions");
+	as_app_add_category (app, "shell-extensions");
 
 	/* we have no data :/ */
 	as_app_set_comment (app, NULL, "GNOME Shell Extension");
-	as_app_add_metadata (app, "ManagementPlugin", "ShellExtensions");
+	as_app_add_metadata (app, "ManagementPlugin", "shell-extensions");
 	return app;
 }
 
@@ -713,16 +713,12 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gboolean ret;
 	g_autoptr(GVariant) retval = NULL;
 
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "ShellExtensions") != 0)
-		return TRUE;
-
 	/* connect to gnome-shell */
 	if (!gs_plugin_setup (plugin, cancellable, error))
 		return FALSE;
 
 	/* install */
-	uuid = gs_app_get_metadata_item (app, "ShellExtensions::uuid");
+	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
 	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
 					 "UninstallExtension",
 					 g_variant_new ("(s)", uuid),
@@ -760,16 +756,12 @@ gs_plugin_app_install (GsPlugin *plugin,
 	const gchar *retstr;
 	g_autoptr(GVariant) retval = NULL;
 
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "ShellExtensions") != 0)
-		return TRUE;
-
 	/* connect to gnome-shell */
 	if (!gs_plugin_setup (plugin, cancellable, error))
 		return FALSE;
 
 	/* install */
-	uuid = gs_app_get_metadata_item (app, "ShellExtensions::uuid");
+	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
 					 "InstallRemoteExtension",
@@ -816,7 +808,7 @@ gs_plugin_launch (GsPlugin *plugin,
 		return FALSE;
 
 	/* install */
-	uuid = gs_app_get_metadata_item (app, "ShellExtensions::uuid");
+	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
 	if (uuid == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
