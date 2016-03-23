@@ -303,7 +303,7 @@ gs_appstream_create_runtime (GsApp *parent, const gchar *runtime)
 	source = g_strdup_printf ("runtime/%s", runtime);
 	gs_app_add_source (app, source);
 	gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
-	gs_app_set_version (app, id_split[2]);
+	gs_app_set_version (app, runtime_split[2]);
 
 	return g_steal_pointer (&app);
 }
