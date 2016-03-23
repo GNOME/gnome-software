@@ -37,7 +37,6 @@ gs_plugin_loader_get_app_by_id (GsPluginLoader *plugin_loader,
 	gboolean ret;
 
 	app = gs_app_new (id);
-	app = gs_plugin_loader_dedupe (plugin_loader, app);
 	ret = gs_plugin_loader_app_refine (plugin_loader, app, flags,
 					   cancellable, error);
 	if (!ret)

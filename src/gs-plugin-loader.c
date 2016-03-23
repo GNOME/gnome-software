@@ -43,8 +43,6 @@ typedef struct
 	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
 
-	GMutex			 app_cache_mutex;
-	GHashTable		*app_cache;
 	GSettings		*settings;
 
 	gchar			**compatible_projects;
@@ -110,62 +108,6 @@ gs_plugin_loader_app_sort_cb (gconstpointer a, gconstpointer b)
 {
 	return g_strcmp0 (gs_app_get_name (GS_APP ((gpointer) a)),
 			  gs_app_get_name (GS_APP ((gpointer) b)));
-}
-
-/**
- * gs_plugin_loader_dedupe:
- */
-GsApp *
-gs_plugin_loader_dedupe (GsPluginLoader *plugin_loader, GsApp *app)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GsApp *new_app;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->app_cache_mutex);
-
-	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
-	g_return_val_if_fail (GS_IS_APP (app), NULL);
-
-	/* not yet set */
-	if (gs_app_get_id (app) == NULL) {
-		return app;
-	}
-
-	/* already exists */
-	new_app = g_hash_table_lookup (priv->app_cache, gs_app_get_id (app));
-	if (new_app == app) {
-		return app;
-	}
-
-	/* insert new entry */
-	if (new_app == NULL) {
-		g_hash_table_insert (priv->app_cache,
-				     g_strdup (gs_app_get_id (app)),
-				     g_object_ref (app));
-		return app;
-	}
-
-	/* import all the useful properties */
-	gs_app_subsume (new_app, app);
-
-	/* this looks a little odd to unref the method parameter,
-	 * but it allows us to do:
-	 * app = gs_plugin_loader_dedupe (cache, app);
-	 */
-	g_object_unref (app);
-	g_object_ref (new_app);
-
-	return new_app;
-}
-
-/**
- * gs_plugin_loader_list_dedupe:
- **/
-static void
-gs_plugin_loader_list_dedupe (GsPluginLoader *plugin_loader, GList *list)
-{
-	GList *l;
-	for (l = list; l != NULL; l = l->next)
-		l->data = gs_plugin_loader_dedupe (plugin_loader, GS_APP (l->data));
 }
 
 /**
@@ -316,9 +258,6 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 				goto out;
 		}
 	}
-
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, *list);
 out:
 	/* now emit all the changed signals */
 	for (l = freeze_list; l != NULL; l = l->next)
@@ -390,9 +329,6 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
-
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, list);
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
@@ -765,9 +701,6 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
 
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
-
 	/* coalesce all packages down into one os-update */
 	state->list = gs_plugin_loader_add_os_update_item (state->list);
 
@@ -878,9 +811,6 @@ gs_plugin_loader_get_distro_upgrades_thread_cb (GTask *task,
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
 
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
-
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 }
@@ -961,9 +891,6 @@ gs_plugin_loader_get_unvoted_reviews_thread_cb (GTask *task,
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
 
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
-
 	/* success */
 	g_task_return_pointer (task, gs_plugin_list_copy (state->list), (GDestroyNotify) gs_plugin_list_free);
 }
@@ -1043,9 +970,6 @@ gs_plugin_loader_get_sources_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_plugin_list_filter_duplicates (&state->list);
-
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
 
 	/* none left? */
 	if (state->list == NULL) {
@@ -1545,9 +1469,6 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
-
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
 					   function_name,
@@ -1708,9 +1629,6 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
-
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
@@ -1873,9 +1791,6 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
-
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
@@ -2177,9 +2092,6 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
-
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
@@ -2560,12 +2472,6 @@ load_install_queue (GsPluginLoader *plugin_loader, GError **error)
 			continue;
 		app = gs_app_new (names[i]);
 		gs_app_set_state (app, AS_APP_STATE_QUEUED_FOR_INSTALL);
-
-		g_mutex_lock (&priv->app_cache_mutex);
-		g_hash_table_insert (priv->app_cache,
-				     g_strdup (gs_app_get_id (app)),
-				     g_object_ref (app));
-		g_mutex_unlock (&priv->app_cache_mutex);
 
 		g_mutex_lock (&priv->pending_apps_mutex);
 		g_ptr_array_add (priv->pending_apps,
@@ -2966,30 +2872,6 @@ gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GList *apps;
-	GList *l;
-	GsApp *app;
-
-	/* no longer know the state of these */
-	g_mutex_lock (&priv->app_cache_mutex);
-	apps = g_hash_table_get_values (priv->app_cache);
-	for (l = apps; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		switch (gs_app_get_state (app)) {
-		case AS_APP_STATE_INSTALLED:
-		case AS_APP_STATE_UPDATABLE:
-		case AS_APP_STATE_UPDATABLE_LIVE:
-			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
-			break;
-		default:
-			break;
-		}
-	}
-	g_list_free (apps);
-
-	/* not valid anymore */
-	g_hash_table_remove_all (priv->app_cache);
-	g_mutex_unlock (&priv->app_cache_mutex);
 
 	/* notify shells */
 	g_debug ("updates-changed");
@@ -3396,7 +3278,6 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->profile);
 	g_clear_object (&priv->settings);
-	g_clear_pointer (&priv->app_cache, g_hash_table_unref);
 	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
@@ -3417,7 +3298,6 @@ gs_plugin_loader_finalize (GObject *object)
 	g_free (priv->locale);
 
 	g_mutex_clear (&priv->pending_apps_mutex);
-	g_mutex_clear (&priv->app_cache_mutex);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->finalize (object);
 }
@@ -3472,10 +3352,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->profile = as_profile_new ();
 	priv->settings = g_settings_new ("org.gnome.software");
-	priv->app_cache = g_hash_table_new_full (g_str_hash,
-								g_str_equal,
-								g_free,
-								(GFreeFunc) g_object_unref);
 
 	/* share a soup session (also disable the double-compression) */
 	priv->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
@@ -3493,7 +3369,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 		*match = '\0';
 
 	g_mutex_init (&priv->pending_apps_mutex);
-	g_mutex_init (&priv->app_cache_mutex);
 
 	/* by default we only show project-less apps or compatible projects */
 	tmp = g_getenv ("GNOME_SOFTWARE_COMPATIBLE_PROJECTS");
@@ -3780,9 +3655,6 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
-
-	/* dedupe applications we already know about */
-	gs_plugin_loader_list_dedupe (plugin_loader, state->list);
 
 	/* run refine() on each one */
 	ret = gs_plugin_loader_run_refine (plugin_loader,
