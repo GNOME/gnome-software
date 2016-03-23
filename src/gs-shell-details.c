@@ -69,7 +69,6 @@ struct _GsShellDetails
 	GtkWidget		*box_details_screenshot_thumbnails;
 	GtkWidget		*button_details_launch;
 	GtkWidget		*button_details_website;
-	GtkWidget		*button_history;
 	GtkWidget		*button_install;
 	GtkWidget		*button_remove;
 	GtkWidget		*infobar_details_app_norepo;
@@ -595,6 +594,20 @@ gs_shell_details_set_sensitive (GtkWidget *widget, gboolean is_active)
 	}
 }
 
+static gboolean
+gs_shell_details_history_cb (GtkLabel *label,
+			     gchar *uri,
+			     GsShellDetails *self)
+{
+	GtkWidget *dialog;
+
+	dialog = gs_history_dialog_new ();
+	gs_history_dialog_set_app (GS_HISTORY_DIALOG (dialog), self->app);
+	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+
+	return TRUE;
+}
+
 /**
  * gs_shell_details_refresh_all:
  **/
@@ -707,7 +720,19 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		g_autofree gchar *updated_str = NULL;
 		dt = g_date_time_new_from_unix_utc (updated);
 		updated_str = g_date_time_format (dt, "%x");
-		gtk_label_set_label (GTK_LABEL (self->label_details_updated_value), updated_str);
+
+		history = gs_app_get_history (self->app);
+
+		if (history->len == 0) {
+			gtk_label_set_label (GTK_LABEL (self->label_details_updated_value), updated_str);
+		} else {
+			GString *url;
+
+			url = g_string_new (NULL);
+			g_string_printf (url, "<a href=\"show-history\">%s</a>", updated_str);
+			gtk_label_set_markup (GTK_LABEL (self->label_details_updated_value), url->str);
+			g_string_free (url, TRUE);
+		}
 	}
 
 	/* set the category */
@@ -827,23 +852,6 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		gtk_widget_set_visible (self->grid_details_kudo, FALSE);
 		break;
 	}
-
-	/* make history button insensitive if there is none */
-	history = gs_app_get_history (self->app);
-	switch (gs_app_get_kind (self->app)) {
-	case AS_APP_KIND_WEB_APP:
-		gtk_widget_set_visible (self->button_history, FALSE);
-		break;
-	default:
-		gtk_widget_set_sensitive (self->button_history, history->len > 0);
-		gtk_widget_set_visible (self->button_history, TRUE);
-		break;
-	}
-
-	/* don't show missing history on a local file */
-	if (gs_app_get_state (self->app) == AS_APP_STATE_AVAILABLE_LOCAL &&
-	    history->len == 0)
-		gtk_widget_set_visible (self->button_history, FALSE);
 
 	/* are we trying to replace something in the baseos */
 	gtk_widget_set_visible (self->infobar_details_package_baseos,
@@ -1413,19 +1421,6 @@ gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *self)
 }
 
 /**
- * gs_shell_details_app_history_button_cb:
- **/
-static void
-gs_shell_details_app_history_button_cb (GtkWidget *widget, GsShellDetails *self)
-{
-	GtkWidget *dialog;
-
-	dialog = gs_history_dialog_new ();
-	gs_history_dialog_set_app (GS_HISTORY_DIALOG (dialog), self->app);
-	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
-}
-
-/**
  * gs_shell_details_review_response_cb:
  **/
 static void
@@ -1522,8 +1517,8 @@ gs_shell_details_setup (GsShellDetails *self,
 	g_signal_connect (self->button_remove, "clicked",
 			  G_CALLBACK (gs_shell_details_app_remove_button_cb),
 			  self);
-	g_signal_connect (self->button_history, "clicked",
-			  G_CALLBACK (gs_shell_details_app_history_button_cb),
+	g_signal_connect (self->label_details_updated_value, "activate-link",
+			  G_CALLBACK (gs_shell_details_history_cb),
 			  self);
 	g_signal_connect (self->button_details_launch, "clicked",
 			  G_CALLBACK (gs_shell_details_app_launch_button_cb),
@@ -1593,7 +1588,6 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_thumbnails);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_launch);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_website);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_history);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_remove);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_app_norepo);
