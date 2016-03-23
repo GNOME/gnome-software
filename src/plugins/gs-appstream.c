@@ -382,7 +382,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		switch (as_app_get_source_kind (item)) {
 		case AS_APP_SOURCE_KIND_APPDATA:
 		case AS_APP_SOURCE_KIND_DESKTOP:
-			gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 			break;
 		case AS_APP_SOURCE_KIND_METAINFO:
