@@ -234,8 +234,6 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	g_autoptr(GFile) file_app = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "epiphany") != 0)
-		return TRUE;
 	epi_desktop = gs_app_get_source_id_default (app);
 	if (epi_desktop == NULL)
 		return TRUE;

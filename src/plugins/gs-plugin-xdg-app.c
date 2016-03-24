@@ -1226,10 +1226,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 {
 	GsPluginHelper helper;
 
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "xdg-app") != 0)
-		return TRUE;
-
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
 		return FALSE;
@@ -1260,10 +1256,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	GsPluginHelper helper;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
-
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "xdg-app") != 0)
-		return TRUE;
 
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
