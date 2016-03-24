@@ -58,6 +58,25 @@ gs_plugin_initialize (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_get_conflicts:
+ */
+const gchar **
+gs_plugin_get_conflicts (GsPlugin *plugin)
+{
+	static const gchar *deps[] = {
+		"packagekit",
+		"packagekit-history",
+		"packagekit-offline",
+		"packagekit-origin",
+		"packagekit-proxy",
+		"packagekit-refine",
+		"packagekit-refresh",
+		"systemd-updates",
+		NULL };
+	return deps;
+}
+
+/**
  * gs_plugin_destroy:
  */
 void

@@ -84,6 +84,18 @@ gs_plugin_get_deps (GsPlugin *plugin)
 	return deps;
 }
 
+/**
+ * gs_plugin_get_conflicts:
+ */
+const gchar **
+gs_plugin_get_conflicts (GsPlugin *plugin)
+{
+	static const gchar *deps[] = {
+		"odrs",
+		NULL };
+	return deps;
+}
+
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
