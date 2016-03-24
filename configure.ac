@@ -225,8 +225,8 @@ AM_CONDITIONAL(HAVE_SHELL_EXTENSIONS, [test "x$enable_shell_extensions" = "xyes"
 AC_ARG_ENABLE(odrs,
               [AS_HELP_STRING([--enable-odrs],
                               [enable ODRS support [default=yes]])],,
-              have_odrs=yes)
-AM_CONDITIONAL(HAVE_ODRS, test "$have_odrs" != no)
+              enable_odrs=yes)
+AM_CONDITIONAL(HAVE_ODRS, test "x$enable_odrs" = "xyes")
 
 # Ubuntu-specific Reviews
 AC_ARG_ENABLE(ubuntu-reviews,
@@ -287,6 +287,6 @@ echo "
         XDG-APP support:           ${have_xdg_app}
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}
-        ODRS support:              ${have_odrs}
+        ODRS support:              ${enable_odrs}
         Ubuntu Reviews support:    ${enable_ubuntu_reviews}
 "
