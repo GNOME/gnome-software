@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -322,31 +322,6 @@ gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 				    gpointer user_data)
 {
 	_status_changed_cnt++;
-}
-
-static void
-gs_plugin_loader_dedupe_func (void)
-{
-	g_autoptr(GsApp) app1 = NULL;
-	g_autoptr(GsApp) app2 = NULL;
-	g_autoptr(GsPluginLoader) loader = NULL;
-
-	loader = gs_plugin_loader_new ();
-
-	/* add app */
-	app1 = gs_app_new ("app1");
-	gs_app_set_description (app1, GS_APP_QUALITY_NORMAL, "description");
-	app1 = gs_plugin_loader_dedupe (loader, app1);
-	g_assert_cmpstr (gs_app_get_id (app1), ==, "app1");
-	g_assert_cmpstr (gs_app_get_description (app1), ==, "description");
-
-	app2 = gs_app_new ("app1");
-	app2 = gs_plugin_loader_dedupe (loader, app2);
-	g_assert_cmpstr (gs_app_get_id (app2), ==, "app1");
-	g_assert_cmpstr (gs_app_get_description (app2), ==, "description");
-	app2 = gs_plugin_loader_dedupe (loader, app2);
-	g_assert_cmpstr (gs_app_get_id (app2), ==, "app1");
-	g_assert_cmpstr (gs_app_get_description (app2), ==, "description");
 }
 
 static void
@@ -698,7 +673,6 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/app{subsume}", gs_app_subsume_func);
 	if (g_getenv ("HAS_APPSTREAM") != NULL)
 		g_test_add_func ("/gnome-software/plugin-loader{empty}", gs_plugin_loader_empty_func);
-	g_test_add_func ("/gnome-software/plugin-loader{dedupe}", gs_plugin_loader_dedupe_func);
 	if(0)g_test_add_func ("/gnome-software/plugin-loader", gs_plugin_loader_func);
 	if(0)g_test_add_func ("/gnome-software/plugin-loader{webapps}", gs_plugin_loader_webapps_func);
 
