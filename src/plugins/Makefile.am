@@ -12,6 +12,7 @@ AM_CPPFLAGS =						\
 	$(FWUPD_CFLAGS)					\
 	$(JSON_GLIB_CFLAGS)				\
 	$(LIMBA_CFLAGS)					\
+	$(OSTREE_CFLAGS)				\
 	$(XDG_APP_CFLAGS)				\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
@@ -65,6 +66,10 @@ endif
 
 if HAVE_XDG_APP
 plugin_LTLIBRARIES += libgs_plugin_xdg_app.la
+endif
+
+if HAVE_OSTREE
+plugin_LTLIBRARIES += libgs_plugin_ostree.la
 endif
 
 if HAVE_LIMBA
@@ -141,6 +146,13 @@ libgs_plugin_xdg_app_la_SOURCES = gs-plugin-xdg-app.c
 libgs_plugin_xdg_app_la_LIBADD = $(GS_PLUGIN_LIBS) $(XDG_APP_LIBS)
 libgs_plugin_xdg_app_la_LDFLAGS = -module -avoid-version
 libgs_plugin_xdg_app_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+endif
+
+if HAVE_OSTREE
+libgs_plugin_ostree_la_SOURCES = gs-plugin-ostree.c
+libgs_plugin_ostree_la_LIBADD = $(GS_PLUGIN_LIBS) $(OSTREE_LIBS)
+libgs_plugin_ostree_la_LDFLAGS = -module -avoid-version
+libgs_plugin_ostree_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
 if HAVE_ODRS

@@ -179,6 +179,28 @@ AS_IF([test "x$have_xdg_app" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_XDG_APP, test "$have_xdg_app" != no)
 
+# ostree
+AC_ARG_ENABLE(ostree,
+              [AS_HELP_STRING([--enable-ostree],
+                              [enable ostree support [default=auto]])],,
+              enable_ostree=maybe)
+AS_IF([test "x$enable_ostree" != "xno"], [
+    PKG_CHECK_MODULES(OSTREE,
+                      [ostree-1],
+                      [have_ostree=yes],
+                      [have_ostree=no])
+], [
+    have_ostree=no
+])
+AS_IF([test "x$have_ostree" = "xyes"], [
+    AC_DEFINE(HAVE_OSTREE,1,[Build ostree support])
+], [
+    AS_IF([test "x$enable_ostree" = "xyes"], [
+          AC_MSG_ERROR([ostree support requested but 'ostree' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_OSTREE, test "$have_ostree" != no)
+
 # Limba
 AC_ARG_ENABLE(limba,
               [AS_HELP_STRING([--enable-limba],
@@ -285,6 +307,7 @@ echo "
         Firmware support:          ${have_firmware}
         Limba support:             ${have_limba}
         XDG-APP support:           ${have_xdg_app}
+        OSTree support:            ${have_ostree}
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}
         ODRS support:              ${enable_odrs}
