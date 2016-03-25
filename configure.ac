@@ -223,6 +223,28 @@ AS_IF([test "x$have_limba" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_LIMBA, test x$enable_limba = xyes)
 
+# RPM
+AC_ARG_ENABLE(rpm,
+              [AS_HELP_STRING([--enable-rpm],
+                              [enable RPM support [default=auto]])],,
+              enable_rpm=maybe)
+AS_IF([test "x$enable_rpm" != "xno"], [
+    PKG_CHECK_MODULES(RPM,
+                      rpm,
+                      [have_rpm=yes],
+                      [have_rpm=no])
+], [
+    have_rpm=no
+])
+AS_IF([test "x$have_rpm" = "xyes"], [
+    AC_DEFINE(HAVE_RPM, 1, [Build RPM support])
+], [
+    AS_IF([test "x$enable_rpm" = "xyes"], [
+          AC_MSG_ERROR([RPM support requested but 'rpm' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_RPM, test x$have_rpm = xyes)
+
 # Steam
 AC_ARG_ENABLE(steam,
               [AS_HELP_STRING([--enable-steam],
@@ -308,6 +330,7 @@ echo "
         Limba support:             ${have_limba}
         XDG-APP support:           ${have_xdg_app}
         OSTree support:            ${have_ostree}
+        RPM support:               ${have_rpm}
         Steam support:             ${enable_steam}
         GNOME Shell ext. support:  ${enable_shell_extensions}
         ODRS support:              ${enable_odrs}

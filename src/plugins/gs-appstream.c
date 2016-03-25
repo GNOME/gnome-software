@@ -409,6 +409,9 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	if (as_app_get_id (item) != NULL && gs_app_get_id (app) == NULL)
 		gs_app_set_id (app, as_app_get_id (item));
 
+	/* set source */
+	gs_app_set_metadata (app, "appstream::source-file", as_app_get_source_file (item));
+
 	/* set name */
 	tmp = as_app_get_name (item, NULL);
 	if (tmp != NULL) {
