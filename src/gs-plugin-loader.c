@@ -381,6 +381,27 @@ gs_plugin_loader_get_app_str (GsApp *app)
 }
 
 /**
+ * gs_plugin_loader_app_is_valid_installed:
+ **/
+static gboolean
+gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
+{
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_ADDON:
+	case AS_APP_KIND_CODEC:
+	case AS_APP_KIND_FONT:
+		g_debug ("app invalid as %s: %s",
+			 as_app_kind_to_string (gs_app_get_kind (app)),
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+		break;
+	default:
+		break;
+	}
+	return TRUE;
+}
+
+/**
  * gs_plugin_loader_app_is_valid:
  **/
 static gboolean
@@ -1074,6 +1095,7 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid, state);
+	gs_plugin_list_filter (&state->list, gs_plugin_loader_app_is_valid_installed, state);
 	if (state->list == NULL) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
