@@ -127,6 +127,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) == 0 &&
+	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) == 0 &&
+	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) == 0 &&
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 		return TRUE;
 
@@ -159,13 +161,28 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		const gchar *version;
 		const gchar *arch;
 		const gchar *release;
-		g_autofree gchar *tmp = NULL;
+		const gchar *license;
 
 		/* add default source */
 		name = headerGetString (h, RPMTAG_NAME);
 		if (gs_app_get_source_default (app) == NULL) {
 			g_debug ("rpm: setting source to %s", name);
 			gs_app_add_source (app, name);
+		}
+
+		/* set size */
+		if (gs_app_get_size (app) == 0) {
+			guint64 tmp;
+			tmp = headerGetNumber (h, RPMTAG_SIZE);
+			gs_app_set_size (app, tmp);
+		}
+
+		/* set license */
+		license = headerGetString (h, RPMTAG_LICENSE);
+		if (gs_app_get_license (app) == NULL && license != NULL) {
+			g_autofree gchar *tmp = NULL;
+			tmp = as_utils_license_to_spdx (license);
+			gs_app_set_license (app, GS_APP_QUALITY_NORMAL, tmp);
 		}
 
 		/* add version */
@@ -177,6 +194,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 		/* add source-id */
 		if (gs_app_get_source_id_default (app) == NULL) {
+			g_autofree gchar *tmp = NULL;
 			release = headerGetString (h, RPMTAG_RELEASE);
 			arch = headerGetString (h, RPMTAG_ARCH);
 			epoch = headerGetNumber (h, RPMTAG_EPOCH);
