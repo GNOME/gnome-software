@@ -190,7 +190,7 @@ gs_shell_moderate_load (GsShellModerate *self)
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
+						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS,
 						    self->cancellable,
 						    gs_shell_moderate_get_unvoted_reviews_cb,

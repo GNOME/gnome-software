@@ -142,7 +142,7 @@ const gchar	*gs_app_get_license		(GsApp		*app);
 gboolean	 gs_app_get_license_is_free	(GsApp		*app);
 void		 gs_app_set_license		(GsApp		*app,
 						 GsAppQuality	 quality,
-						 const gchar	*licence);
+						 const gchar	*license);
 gchar		**gs_app_get_menu_path		(GsApp		*app);
 void		 gs_app_set_menu_path		(GsApp		*app,
 						 gchar		**menu_path);

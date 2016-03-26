@@ -193,10 +193,10 @@ gs_app_notify_failed_modal (GsApp *app,
 }
 
 typedef enum {
-	GS_APP_LICENCE_FREE		= 0,
-	GS_APP_LICENCE_NONFREE		= 1,
-	GS_APP_LICENCE_PATENT_CONCERN	= 2
-} GsAppLicenceHint;
+	GS_APP_LICENSE_FREE		= 0,
+	GS_APP_LICENSE_NONFREE		= 1,
+	GS_APP_LICENSE_PATENT_CONCERN	= 2
+} GsAppLicenseHint;
 
 /**
  * gs_app_notify_unavailable:
@@ -204,19 +204,19 @@ typedef enum {
 GtkResponseType
 gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 {
-	GsAppLicenceHint hint = GS_APP_LICENCE_FREE;
+	GsAppLicenseHint hint = GS_APP_LICENSE_FREE;
 	GtkResponseType response;
 	GtkWidget *dialog;
-	const gchar *licence;
+	const gchar *license;
 	gboolean already_enabled = FALSE;	/* FIXME */
 	guint i;
 	struct {
 		const gchar	*str;
-		GsAppLicenceHint hint;
+		GsAppLicenseHint hint;
 	} keywords[] = {
-		{ "NonFree",		GS_APP_LICENCE_NONFREE },
-		{ "PatentConcern",	GS_APP_LICENCE_PATENT_CONCERN },
-		{ "Proprietary",	GS_APP_LICENCE_NONFREE },
+		{ "NonFree",		GS_APP_LICENSE_NONFREE },
+		{ "PatentConcern",	GS_APP_LICENSE_PATENT_CONCERN },
+		{ "Proprietary",	GS_APP_LICENSE_NONFREE },
 		{ NULL, 0 }
 	};
 	g_autofree gchar *origin_url = NULL;
@@ -225,15 +225,15 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	g_autoptr(GString) title = NULL;
 
 	/* this is very crude */
-	licence = gs_app_get_license (app);
-	if (licence != NULL) {
+	license = gs_app_get_license (app);
+	if (license != NULL) {
 		for (i = 0; keywords[i].str != NULL; i++) {
-			if (g_strstr_len (licence, -1, keywords[i].str) != NULL)
+			if (g_strstr_len (license, -1, keywords[i].str) != NULL)
 				hint |= keywords[i].hint;
 		}
 	} else {
 		/* use the worst-case assumption */
-		hint = GS_APP_LICENCE_NONFREE | GS_APP_LICENCE_PATENT_CONCERN;
+		hint = GS_APP_LICENSE_NONFREE | GS_APP_LICENSE_PATENT_CONCERN;
 	}
 
 	/* check if the user has already dismissed */
@@ -261,7 +261,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	/* FIXME: get the URL somehow... */
 	origin_url = g_strdup_printf ("<a href=\"\">%s</a>", gs_app_get_origin (app));
 	body = g_string_new ("");
-	if (hint & GS_APP_LICENCE_NONFREE) {
+	if (hint & GS_APP_LICENSE_NONFREE) {
 		g_string_append_printf (body,
 					/* TRANSLATORS: the replacements are as follows:
 					 * 1. Application name, e.g. "Firefox"
@@ -292,7 +292,7 @@ gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 	}
 
 	/* be aware of patent clauses */
-	if (hint & GS_APP_LICENCE_PATENT_CONCERN) {
+	if (hint & GS_APP_LICENSE_PATENT_CONCERN) {
 		g_string_append (body, "\n\n");
 		if (gs_app_get_kind (app) != AS_APP_KIND_CODEC) {
 			g_string_append_printf (body,

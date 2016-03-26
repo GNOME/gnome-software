@@ -496,7 +496,7 @@ gs_plugin_loader_refine_func (void)
 	ret = gs_plugin_loader_app_refine (loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
 					   NULL,
 					   &error);

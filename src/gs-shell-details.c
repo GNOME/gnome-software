@@ -79,7 +79,7 @@ struct _GsShellDetails
 	GtkWidget		*label_details_category_value;
 	GtkWidget		*label_details_developer_title;
 	GtkWidget		*label_details_developer_value;
-	GtkWidget		*label_details_licence_value;
+	GtkWidget		*label_details_license_value;
 	GtkWidget		*label_details_origin_title;
 	GtkWidget		*label_details_origin_value;
 	GtkWidget		*label_details_size_value;
@@ -676,15 +676,15 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		gtk_widget_set_visible (self->label_details_developer_value, TRUE);
 	}
 
-	/* set the licence */
+	/* set the license */
 	tmp = gs_app_get_license (self->app);
 	if (tmp == NULL) {
-		/* TRANSLATORS: this is where the licence is not known */
-		gtk_label_set_label (GTK_LABEL (self->label_details_licence_value), C_("license", "Unknown"));
-		gtk_widget_set_tooltip_text (self->label_details_licence_value, NULL);
+		/* TRANSLATORS: this is where the license is not known */
+		gtk_label_set_label (GTK_LABEL (self->label_details_license_value), C_("license", "Unknown"));
+		gtk_widget_set_tooltip_text (self->label_details_license_value, NULL);
 	} else {
-		gtk_label_set_markup (GTK_LABEL (self->label_details_licence_value), tmp);
-		gtk_widget_set_tooltip_text (self->label_details_licence_value, NULL);
+		gtk_label_set_markup (GTK_LABEL (self->label_details_license_value), tmp);
+		gtk_widget_set_tooltip_text (self->label_details_license_value, NULL);
 	}
 
 	/* set version */
@@ -1227,7 +1227,7 @@ gs_shell_details_filename_to_app_cb (GObject *source,
 	g_signal_connect_object (self->app, "notify::size",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 self, 0);
-	g_signal_connect_object (self->app, "notify::licence",
+	g_signal_connect_object (self->app, "notify::license",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::progress",
@@ -1272,7 +1272,7 @@ static void
 gs_shell_details_load (GsShellDetails *self)
 {
 	gs_plugin_loader_app_refine_async (self->plugin_loader, self->app,
-					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE |
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
@@ -1327,7 +1327,7 @@ gs_shell_details_set_app (GsShellDetails *self, GsApp *app)
 	g_signal_connect_object (self->app, "notify::size",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 self, 0);
-	g_signal_connect_object (self->app, "notify::licence",
+	g_signal_connect_object (self->app, "notify::license",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::progress",
@@ -1598,7 +1598,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_category_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_title);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_licence_value);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_license_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_origin_title);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_origin_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_value);

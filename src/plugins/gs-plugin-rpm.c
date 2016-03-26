@@ -128,7 +128,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) == 0 &&
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) == 0 &&
-	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) == 0 &&
+	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0 &&
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 		return TRUE;
 
