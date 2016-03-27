@@ -29,25 +29,6 @@
 #define	GS_APPSTREAM_MAX_SCREENSHOTS	5
 
 /**
- * _as_app_has_compulsory_for_desktop:
- */
-static gboolean
-_as_app_has_compulsory_for_desktop (AsApp *app, const gchar *compulsory_for_desktop)
-{
-	GPtrArray *compulsory_for_desktops;
-	const gchar *tmp;
-	guint i;
-
-	compulsory_for_desktops = as_app_get_compulsory_for_desktops (app);
-	for (i = 0; i < compulsory_for_desktops->len; i++) {
-		tmp = g_ptr_array_index (compulsory_for_desktops, i);
-		if (g_strcmp0 (tmp, compulsory_for_desktop) == 0)
-			return TRUE;
-	}
-	return FALSE;
-}
-
-/**
  * gs_refine_item_pixbuf:
  */
 static void
@@ -489,7 +470,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_set_project_group (app, as_app_get_project_group (item));
 
 	/* this is a core application for the desktop and cannot be removed */
-	if (_as_app_has_compulsory_for_desktop (item, "GNOME") &&
+	if (as_app_has_compulsory_for_desktop (item, "GNOME") &&
 	    gs_app_get_kind (app) == AS_APP_KIND_DESKTOP)
 		gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
 
@@ -522,6 +503,12 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	/* add kudos */
 	if (as_app_get_language (item, plugin->locale) > 50)
 		gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
+
+	/* add a kudo to featured and popular apps */
+	if (as_app_has_kudo (item, "GnomeSoftware::popular"))
+		gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
+	if (as_app_has_category (item, "featured"))
+		gs_app_add_kudo (app, GS_APP_KUDO_FEATURED_RECOMMENDED);
 
 	/* add new-style kudos */
 	kudos = as_app_get_kudos (item);

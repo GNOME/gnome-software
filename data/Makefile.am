@@ -1,7 +1,16 @@
 SUBDIRS =						\
 	appdata						\
-	modulesets					\
 	icons
+
+appstreamdir = $(datadir)/app-info/xmls
+appstream_DATA = org.gnome.Software.xml.gz
+appstream_files =					\
+	org.gnome.Software-categories.xml		\
+	org.gnome.Software-featured.xml			\
+	org.gnome.Software-popular.xml
+org.gnome.Software.xml.gz: $(appstream_files)
+	$(AM_V_GEN) appstream-util merge-appstream $@	\
+	$(srcdir)/org.gnome.Software-*.xml
 
 resourcesdir = $(datadir)/gnome-software
 dist_resources_DATA =					\
@@ -21,8 +30,7 @@ dist_resources_DATA =					\
 	featured-polari.svg				\
 	featured-transmission.png			\
 	featured-weather.png				\
-	featured-weather-bg.png				\
-	featured.ini
+	featured-weather-bg.png
 
 @GSETTINGS_RULES@
 gsettings_SCHEMAS = org.gnome.software.gschema.xml
@@ -39,9 +47,15 @@ install-sample-data:
 	rm fedora-20-icons.tar.gz; \
 	cd -
 
+BUILT_SOURCES =						\
+	org.gnome.Software.xml.gz
+
+CLEANFILES =						\
+	$(BUILT_SOURCES)
+
 EXTRA_DIST =						\
-	$(gsettings_SCHEMAS)				\
-	featured.ini.in
+	$(appstream_files)				\
+	$(gsettings_SCHEMAS)
 
 MAINTAINERCLEANFILES =					\
 	*~						\

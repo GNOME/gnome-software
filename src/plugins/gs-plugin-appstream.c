@@ -265,14 +265,12 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	if (id == NULL)
 		return TRUE;
 	item = as_store_get_app_by_id (plugin->priv->store, id);
-#if AS_CHECK_VERSION(0,5,12)
 	if (item == NULL &&
 	    gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
 		item = as_store_get_app_by_id_ignore_prefix (plugin->priv->store, id);
 		if (item != NULL)
 			g_debug ("found %s for wildcard %s", as_app_get_id (item), id);
 	}
-#endif
 	if (item == NULL)
 		return TRUE;
 
@@ -627,6 +625,78 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		if (as_app_get_priority (app) < 0)
 			continue;
 		gs_plugin_add_categories_for_app (*list, app);
+	}
+	return TRUE;
+}
+
+/**
+ * gs_plugin_add_popular:
+ */
+gboolean
+gs_plugin_add_popular (GsPlugin *plugin,
+		       GList **list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	AsApp *item;
+	GPtrArray *array;
+	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
+
+	/* load XML files */
+	if (!gs_plugin_appstream_startup (plugin, error))
+		return FALSE;
+
+	/* find out how many packages are in each category */
+	ptask = as_profile_start_literal (plugin->profile, "appstream::add-popular");
+	array = as_store_get_apps (plugin->priv->store);
+	for (i = 0; i < array->len; i++) {
+		g_autoptr(GsApp) app = NULL;
+		item = g_ptr_array_index (array, i);
+		if (as_app_get_id (item) == NULL)
+			continue;
+		if (!as_app_has_kudo (item, "GnomeSoftware::popular"))
+			continue;
+		app = gs_app_new (as_app_get_id_no_prefix (item));
+		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_plugin_add_app (list, app);
+	}
+	return TRUE;
+}
+
+/**
+ * gs_plugin_add_featured:
+ */
+gboolean
+gs_plugin_add_featured (GsPlugin *plugin,
+			GList **list,
+			GCancellable *cancellable,
+			GError **error)
+{
+	AsApp *item;
+	GPtrArray *array;
+	guint i;
+	g_autoptr(AsProfileTask) ptask = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
+
+	/* load XML files */
+	if (!gs_plugin_appstream_startup (plugin, error))
+		return FALSE;
+
+	/* find out how many packages are in each category */
+	ptask = as_profile_start_literal (plugin->profile, "appstream::add-featured");
+	array = as_store_get_apps (plugin->priv->store);
+	for (i = 0; i < array->len; i++) {
+		g_autoptr(GsApp) app = NULL;
+		item = g_ptr_array_index (array, i);
+		if (as_app_get_id (item) == NULL)
+			continue;
+		if (as_app_get_metadata_item (item, "GnomeSoftware::featured-background") == NULL)
+			continue;
+		app = gs_app_new (as_app_get_id_no_prefix (item));
+		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		gs_plugin_add_app (list, app);
 	}
 	return TRUE;
 }

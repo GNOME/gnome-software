@@ -40,6 +40,7 @@ EXTRA_DIST =						\
 	README
 
 DISTCHECK_CONFIGURE_FLAGS = 				\
+	--disable-tests					\
 	--disable-dogtail
 
 distclean-local:

@@ -117,7 +117,7 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
 
 	/* check the app has the featured data */
-	text_color = gs_app_get_metadata_item (app, "Featured::text-color");
+	text_color = gs_app_get_metadata_item (app, "GnomeSoftware::featured-text-color");
 	if (text_color == NULL) {
 		g_autofree gchar *tmp = NULL;
 		tmp = gs_app_to_string (app);
@@ -125,9 +125,9 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 			   gs_app_get_id (app), tmp);
 		return;
 	}
-	background = gs_app_get_metadata_item (app, "Featured::background");
-	stroke_color = gs_app_get_metadata_item (app, "Featured::stroke-color");
-	text_shadow = gs_app_get_metadata_item (app, "Featured::text-shadow");
+	background = gs_app_get_metadata_item (app, "GnomeSoftware::featured-background");
+	stroke_color = gs_app_get_metadata_item (app, "GnomeSoftware::featured-stroke-color");
+	text_shadow = gs_app_get_metadata_item (app, "GnomeSoftware::featured-text-shadow");
 
 	data = g_string_sized_new (1024);
 	g_string_append (data, ".featured-tile {\n");

@@ -61,7 +61,7 @@ dnl ---------------------------------------------------------------------------
 dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.18.2 gio-unix-2.0 gtkspell3-3.0)
-PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.5.11)
+PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.5.12)
 PKG_CHECK_MODULES(GDK_PIXBUF, gdk-pixbuf-2.0 >= 2.31.5)
 PKG_CHECK_MODULES(JSON_GLIB, json-glib-1.0 >= 1.1.1)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
@@ -89,6 +89,12 @@ AC_ARG_ENABLE(dogtail,
                               [test using dogtail [default=yes]])],,
               enable_dogtail=yes)
 AM_CONDITIONAL(ENABLE_DOGTAIL, test "$enable_dogtail" != no)
+
+AC_ARG_ENABLE(tests,
+              [AS_HELP_STRING([--enable-tests],
+                              [test using tests [default=yes]])],,
+              enable_tests=yes)
+AM_CONDITIONAL(ENABLE_TESTS, test "$enable_tests" != no)
 
 # PackageKit
 AC_ARG_ENABLE(packagekit,
@@ -282,7 +288,7 @@ AC_DEFINE(HAVE_UBUNTU_REVIEWS,1,[Build Ubuntu reviews])
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-GS_PLUGIN_API_VERSION=9
+GS_PLUGIN_API_VERSION=10
 AC_SUBST(GS_PLUGIN_API_VERSION)
 AC_DEFINE_UNQUOTED([GS_PLUGIN_API_VERSION], "$GS_PLUGIN_API_VERSION", [the plugin API version])
 
@@ -295,9 +301,7 @@ AC_CONFIG_FILES([
 Makefile
 po/Makefile.in
 data/appdata/Makefile
-data/featured.ini
 data/Makefile
-data/modulesets/Makefile
 data/icons/Makefile
 data/icons/hicolor/Makefile
 data/icons/hicolor/16x16/Makefile
@@ -324,6 +328,7 @@ echo "
         cflags:                    ${CFLAGS}
         cppflags:                  ${CPPFLAGS}
         Dogtail:                   ${enable_dogtail}
+        Self tests:                ${enable_tests}
         PackageKit support:        ${have_packagekit}
         PolicyKit support:         ${have_polkit}
         Firmware support:          ${have_firmware}

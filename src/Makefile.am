@@ -11,7 +11,6 @@ AM_CPPFLAGS =						\
 	$(POLKIT_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
-	-DGS_MODULESETDIR=\"$(datadir)/gnome-software/modulesets.d\" \
 	-DLIBDIR=\"$(libdir)\"				\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
@@ -279,6 +278,7 @@ TESTS_ENVIRONMENT =						\
 	--leak-check=full					\
 	--show-possibly-lost=no
 
+if ENABLE_TESTS
 check_PROGRAMS =						\
 	gs-self-test
 
@@ -304,6 +304,7 @@ gs_self_test_LDADD =						\
 gs_self_test_CFLAGS = $(WARN_CFLAGS)
 
 TESTS = gs-self-test
+endif
 
 EXTRA_DIST =						\
 	shell-search-provider-dbus-interfaces.xml	\

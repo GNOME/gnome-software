@@ -1183,17 +1183,35 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GError *error = NULL;
+	g_auto(GStrv) apps = NULL;
 
-	/* do things that would block */
-	state->list = gs_plugin_loader_run_results (plugin_loader,
-						    "gs_plugin_add_popular",
-						    state->flags,
-						    cancellable,
-						    &error);
-	if (error != NULL) {
-		g_task_return_error (task, error);
-		return;
+	/* debugging only */
+	if (g_getenv ("GNOME_SOFTWARE_POPULAR"))
+		apps = g_strsplit (g_getenv ("GNOME_SOFTWARE_POPULAR"), ",", 0);
+
+	/* are we using a corporate build */
+	if (apps == NULL)
+		apps = g_settings_get_strv (priv->settings, "popular-overrides");
+	if (apps != NULL && g_strv_length (apps) > 0) {
+		guint i;
+		for (i = 0; apps[i] != NULL; i++) {
+			g_autoptr(GsApp) app = gs_app_new (apps[i]);
+			gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+			gs_plugin_add_app (&state->list, app);
+		}
+	} else {
+		/* do things that would block */
+		state->list = gs_plugin_loader_run_results (plugin_loader,
+							    "gs_plugin_add_popular",
+							    state->flags,
+							    cancellable,
+							    &error);
+		if (error != NULL) {
+			g_task_return_error (task, error);
+			return;
+		}
 	}
 
 	/* filter package list */
@@ -1996,6 +2014,13 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 			gs_category_add_subcategory (parent, child);
 			/* this is probably valid... */
 			gs_category_set_size (child, gs_category_get_size (parent));
+		}
+		if (gs_category_find_child (parent, "featured") == NULL) {
+			g_autoptr(GsCategory) child = NULL;
+			child = gs_category_new (parent, "featured", NULL);
+			gs_category_add_subcategory (parent, child);
+			/* this is probably valid... */
+			gs_category_set_size (child, 5);
 		}
 	}
 
