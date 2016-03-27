@@ -237,6 +237,9 @@ gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
 		/* TRANSLATORS: this is a subcategory matching all the
 		 * different apps in the parent category, e.g. "Games" */
 		name =_("All");
+	} else if (g_strcmp0 (id, "featured") == 0) {
+		/* TRANSLATORS: this is a subcategory of featured apps */
+		name =_("Featured");
 	}
 
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
