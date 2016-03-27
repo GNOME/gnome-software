@@ -150,7 +150,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 				guint size;
 				g_autoptr(GsCategory) cat = NULL;
 
-				cat = gs_category_new (parent, "featured", _("Featured"));
+				cat = gs_category_new (parent, "featured", NULL);
 				gs_category_add_subcategory (parent, cat);
 				size = gs_moduleset_get_n_featured (plugin->priv->moduleset, id);
 				gs_category_set_size (cat, size);

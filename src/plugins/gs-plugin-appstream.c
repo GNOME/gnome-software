@@ -196,7 +196,7 @@ gs_plugin_appstream_startup (GsPlugin *plugin, GError **error)
 		g_set_error (error,
 			     GS_PLUGIN_LOADER_ERROR,
 			     GS_PLUGIN_LOADER_ERROR_FAILED,
-			     _("No AppStream data found"));
+			     "No AppStream data found");
 		return FALSE;
 	}
 
