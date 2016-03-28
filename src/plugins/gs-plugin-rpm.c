@@ -120,6 +120,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 	}
 
+	/* on rpm-ostree this package cannot be removed 'live' */
+	gs_app_add_quirk (app, AS_APP_QUIRK_COMPULSORY);
+
 	/* process any results */
 	g_debug ("rpm: querying for %s with %s", gs_app_get_id (app), fn);
 	while ((h = rpmdbNextIterator (mi)) != NULL) {
