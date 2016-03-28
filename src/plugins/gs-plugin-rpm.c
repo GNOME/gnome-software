@@ -28,11 +28,6 @@
 
 #include <gs-plugin.h>
 
-struct GsPluginPrivate {
-	rpmts			 ts;
-	gboolean		 loaded;
-};
-
 /**
  * gs_plugin_get_name:
  */
@@ -60,8 +55,6 @@ gs_plugin_get_deps (GsPlugin *plugin)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-
 	/* only works with an rpmdb */
 	if (!g_file_test ("/var/lib/rpm/Packages", G_FILE_TEST_EXISTS)) {
 		gs_plugin_set_enabled (plugin, FALSE);
@@ -70,46 +63,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* open transaction */
 	rpmReadConfigFiles(NULL, NULL);
-	plugin->priv->ts = rpmtsCreate();
 }
 
-/**
- * gs_plugin_destroy:
- */
-void
-gs_plugin_destroy (GsPlugin *plugin)
-{
-	if (plugin->priv->ts != NULL) {
-		rpmtsCloseDB (plugin->priv->ts);
-		rpmtsFree (plugin->priv->ts);
-	}
-}
-
-/**
- * gs_plugin_startup:
- */
-static gboolean
-gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
-{
-	gint rc;
-
-	/* already started */
-	if (plugin->priv->loaded)
-		return TRUE;
-
-	/* open db readonly */
-	rpmtsSetRootDir (plugin->priv->ts, NULL);
-	rc = rpmtsOpenDB (plugin->priv->ts, O_RDONLY);
-	if (rc != 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to open rpmdb: %i", rc);
-		return FALSE;
-	}
-	plugin->priv->loaded = TRUE;
-	return TRUE;
-}
+G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmts, rpmtsFree, NULL);
+G_DEFINE_AUTO_CLEANUP_FREE_FUNC(rpmdbMatchIterator, rpmdbFreeIterator, NULL);
 
 /**
  * gs_plugin_refine_app:
@@ -123,23 +80,33 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	Header h;
 	const gchar *fn;
-	rpmdbMatchIterator mi;
+	gint rc;
+	g_auto(rpmdbMatchIterator) mi = NULL;
+	g_auto(rpmts) ts = NULL;
 
-	/* required */
+	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) == 0 &&
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) == 0 &&
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0 &&
 	    (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION) == 0)
 		return TRUE;
 
-	/* ensure database open */
-	if (!gs_plugin_startup (plugin, cancellable, error))
-		return FALSE;
-
 	/* no need to run the plugin */
 	if (gs_app_get_source_default (app) != NULL &&
 	    gs_app_get_source_id_default (app) != NULL)
 		return TRUE;
+
+	/* open db readonly */
+	ts = rpmtsCreate();
+	rpmtsSetRootDir (ts, NULL);
+	rc = rpmtsOpenDB (ts, O_RDONLY);
+	if (rc != 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to open rpmdb: %i", rc);
+		return FALSE;
+	}
 
 	/* look for a specific file */
 	fn = gs_app_get_metadata_item (app, "appstream::source-file");
@@ -147,15 +114,15 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 	if (!g_str_has_prefix (fn, "/usr"))
 		return TRUE;
-	mi = rpmtsInitIterator(plugin->priv->ts, RPMDBI_INSTFILENAMES, fn, 0);
+	mi = rpmtsInitIterator (ts, RPMDBI_INSTFILENAMES, fn, 0);
 	if (mi == NULL) {
 		g_debug ("rpm: no search results for %s", fn);
 		return TRUE;
 	}
 
 	/* process any results */
-	g_debug ("rpm: querying with %s", fn);
-	while ((h = rpmdbNextIterator(mi)) != NULL) {
+	g_debug ("rpm: querying for %s with %s", gs_app_get_id (app), fn);
+	while ((h = rpmdbNextIterator (mi)) != NULL) {
 		guint64 epoch;
 		const gchar *name;
 		const gchar *version;
@@ -209,6 +176,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			gs_app_add_source_id (app, tmp);
 		}
 	}
-	rpmdbFreeIterator (mi);
+
 	return TRUE;
 }
