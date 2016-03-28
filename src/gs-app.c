@@ -1754,6 +1754,7 @@ void
 gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 {
 	const gchar *found;
+	GString *str;
 
 	g_return_if_fail (GS_IS_APP (app));
 
@@ -1772,9 +1773,11 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 			   key, found, value);
 		return;
 	}
+	str = g_string_new (value);
+	as_utils_string_replace (str, "@datadir@", DATADIR);
 	g_hash_table_insert (app->metadata,
 			     g_strdup (key),
-			     g_strdup (value));
+			     g_string_free (str, FALSE));
 }
 
 /**
