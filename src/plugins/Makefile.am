@@ -40,7 +40,6 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_menu-spec-refine.la		\
 	libgs_plugin_fedora_distro_upgrades.la		\
 	libgs_plugin_provenance.la			\
-	libgs_plugin_ubuntu-reviews.la			\
 	libgs_plugin_fedora_tagger_usage.la		\
 	libgs_plugin_epiphany.la			\
 	libgs_plugin_icons.la
@@ -55,6 +54,10 @@ plugin_LTLIBRARIES +=					\
 	libgs_plugin_packagekit-proxy.la		\
 	libgs_plugin_packagekit-history.la		\
 	libgs_plugin_packagekit.la
+endif
+
+if HAVE_UBUNTU_REVIEWS
+plugin_LTLIBRARIES += libgs_plugin_ubuntu-reviews.la
 endif
 
 if HAVE_SHELL_EXTENSIONS
