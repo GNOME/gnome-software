@@ -972,6 +972,38 @@ gs_plugin_app_install (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_fwupd_unlock:
+ */
+static gboolean
+gs_plugin_fwupd_unlock (GsPlugin *plugin,
+			const gchar *device_id,
+			GCancellable *cancellable,
+			GError **error)
+{
+	g_autoptr(GVariant) val = NULL;
+
+	/* set up plugin */
+	if (plugin->priv->proxy == NULL) {
+		if (!gs_plugin_startup (plugin, cancellable, error))
+			return FALSE;
+	}
+	if (plugin->priv->proxy == NULL)
+		return TRUE;
+
+	/* unlock device */
+	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
+				      "Unlock",
+				      g_variant_new ("(s)", device_id),
+				      G_DBUS_CALL_FLAGS_NONE,
+				      -1,
+				      NULL,
+				      error);
+	if (val == NULL)
+		return FALSE;
+	return TRUE;
+}
+
+/**
  * gs_plugin_app_update:
  *
  * This is only called when updating device firmware live.
@@ -982,6 +1014,23 @@ gs_plugin_app_update (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	/* locked devices need unlocking, rather than installing */
+	if (gs_app_get_metadata_item (app, "fwupd::IsLocked") != NULL) {
+		const gchar *device_id;
+		device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
+		if (device_id == NULL) {
+			g_set_error_literal (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED,
+					     "not enough data for fwupd unlock");
+			return FALSE;
+		}
+		return gs_plugin_fwupd_unlock (plugin,
+					       device_id,
+					       cancellable,
+					       error);
+	}
+
 	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
 }
 
