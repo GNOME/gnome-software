@@ -229,7 +229,7 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 		} else {
 			/* TRANSLATORS: button text in the header when an application
 			 * can be live-updated */
-			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Update"));
+			gtk_button_set_label (GTK_BUTTON (self->button_install), _("_Install"));
 			gtk_style_context_remove_class (sc, "suggested-action");
 		}
 		break;
