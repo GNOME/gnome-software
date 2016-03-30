@@ -585,6 +585,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 
 	for (i = 0; i < snaps->len; i++) {
 		g_autoptr(GsApp) app = snap_to_app (plugin, g_ptr_array_index (snaps, i));
+		gs_app_set_match_value (app, snaps->len - i);
 		gs_app_list_add (list, app);
 	}
 

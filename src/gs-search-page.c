@@ -203,6 +203,12 @@ gs_search_page_get_app_sort_key (GsApp *app)
 {
 	GString *key = g_string_sized_new (64);
 
+	/* sort snaps before other apps */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") == 0)
+		g_string_append (key, "9:");
+	else
+		g_string_append (key, "1:");
+
 	/* sort apps before runtimes and extensions */
 	switch (gs_app_get_kind (app)) {
 	case AS_APP_KIND_DESKTOP:
