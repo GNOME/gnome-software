@@ -142,7 +142,7 @@ AC_ARG_ENABLE(firmware,
               enable_firmware=maybe)
 AS_IF([test "x$enable_firmware" != "xno"], [
     PKG_CHECK_MODULES(FWUPD,
-                      [fwupd],
+                      [fwupd >= 0.6.3],
                       [have_firmware=yes],
                       [have_firmware=no])
 ], [
