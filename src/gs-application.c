@@ -46,6 +46,7 @@
 #include "gs-folders.h"
 #include "gs-utils.h"
 
+#define ENABLE_SOFTWARE_SOURCES_CONF_KEY "enable-software-sources"
 
 struct _GsApplication {
 	GtkApplication	 parent;
@@ -656,8 +657,32 @@ static GActionEntry actions[] = {
 };
 
 static void
+gs_application_update_software_sources_presence (GApplication *self)
+{
+	GSimpleAction *action;
+	gboolean enable_sources;
+
+	action = G_SIMPLE_ACTION (g_action_map_lookup_action (G_ACTION_MAP (self),
+							      "sources"));
+	enable_sources = g_settings_get_boolean (GS_APPLICATION (self)->settings,
+						 ENABLE_SOFTWARE_SOURCES_CONF_KEY);
+	g_simple_action_set_enabled (action, enable_sources);
+}
+
+static void
+gs_application_settings_changed_cb (GApplication *self,
+				    const gchar *key,
+				    gpointer data)
+{
+	if (g_strcmp0 (key, ENABLE_SOFTWARE_SOURCES_CONF_KEY) == 0) {
+		gs_application_update_software_sources_presence (self);
+	}
+}
+
+static void
 gs_application_startup (GApplication *application)
 {
+	GSettings *settings;
 	G_APPLICATION_CLASS (gs_application_parent_class)->startup (application);
 
 	g_action_map_add_action_entries (G_ACTION_MAP (application),
@@ -667,11 +692,18 @@ gs_application_startup (GApplication *application)
 #ifdef HAVE_PACKAGEKIT
 	GS_APPLICATION (application)->dbus_helper = gs_dbus_helper_new ();
 #endif
-	GS_APPLICATION (application)->settings = g_settings_new ("org.gnome.software");
+	settings = g_settings_new ("org.gnome.software");
+	GS_APPLICATION (application)->settings = settings;
+	g_signal_connect_swapped (settings, "changed",
+				  G_CALLBACK (gs_application_settings_changed_cb),
+				  application);
+
 	gs_application_monitor_permission (GS_APPLICATION (application));
 	gs_application_monitor_updates (GS_APPLICATION (application));
 	gs_application_monitor_network (GS_APPLICATION (application));
 	gs_folders_convert ();
+
+	gs_application_update_software_sources_presence (application);
 }
 
 static void
