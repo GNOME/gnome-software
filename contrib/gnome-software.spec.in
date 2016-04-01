@@ -1,3 +1,13 @@
+%global glib2_version 2.45.8
+%global gtk3_version 3.17.7
+%global json_glib_version 1.1.1
+%global packagekit_version 1.0.9
+%global appstream_glib_version 0.5.1
+%global libsoup_version 2.51.92
+%global gsettings_desktop_schemas_version 3.11.5
+%global gnome_desktop_version 3.17.92
+%global xdg_app_version 0.4.14
+
 %define alphatag                        #ALPHATAG#
 %define distrotag                       23
 
@@ -8,31 +18,41 @@ Release:   0.#BUILD#%{?alphatag}%{?dist}
 License:   GPLv2+
 Group:     Applications/System
 URL:       https://wiki.gnome.org/Apps/Software
-Source0:   http://download.gnome.org/sources/gnome-software/3.13/%{name}-%{version}.tar.xz
+Source0:   http://download.gnome.org/sources/gnome-software/3.20/%{name}-%{version}.tar.xz
 
 Requires:  appstream-data
 Requires:  epiphany-runtime
-Requires:  gsettings-desktop-schemas
+Requires:  glib2%{?_isa} >= %{glib2_version}
+# needed for app folder .directory entries
+Requires:  gnome-desktop3%{?_isa} >= %{gnome_desktop_version}
+Requires:  gnome-menus%{?_isa}
+Requires:  gsettings-desktop-schemas%{?_isa} >= %{gsettings_desktop_schemas_version}
+Requires:  gtk3%{?_isa} >= %{gtk3_version}
+Requires:  json-glib%{?_isa} >= %{json_glib_version}
 Requires:  iso-codes
-Requires:  PackageKit
+Requires:  libappstream-glib%{?_isa} >= %{appstream_glib_version}
+# for gdk-pixbuf svg loader
+Requires:  librsvg2%{?_isa}
+Requires:  libsoup%{?_isa} >= %{libsoup_version}
+Requires:  PackageKit%{?_isa} >= %{packagekit_version}
 
 BuildRequires: gettext
 BuildRequires: intltool
 BuildRequires: libxslt
 BuildRequires: docbook-style-xsl
 BuildRequires: desktop-file-utils
-BuildRequires: glib2-devel >= 2.39.1
-BuildRequires: gtk3-devel >= 3.9.12
-BuildRequires: gtkspell3-devel
-BuildRequires: libnotify-devel
-BuildRequires: PackageKit-glib-devel >= 0.8.10
-BuildRequires: libsoup-devel
-BuildRequires: gnome-desktop3-devel
-BuildRequires: gsettings-desktop-schemas-devel
-BuildRequires: libappstream-glib-devel
 BuildRequires: fwupd-devel
-BuildRequires: json-glib-devel
-BuildRequires: rpm-devel
+BuildRequires: glib2-devel >= %{glib2_version}
+BuildRequires: gnome-desktop3-devel
+BuildRequires: gsettings-desktop-schemas-devel >= %{gsettings_desktop_schemas_version}
+BuildRequires: gtk3-devel >= %{gtk3_version}
+BuildRequires: gtkspell3-devel
+BuildRequires: json-glib-devel >= %{json_glib_version}
+BuildRequires: libappstream-glib-devel >= %{appstream_glib_version}
+BuildRequires: libsoup-devel
+BuildRequires: PackageKit-glib-devel >= %{packagekit_version}
+BuildRequires: polkit-devel
+BuildRequires: xdg-app-devel >= %{xdg_app_version}
 
 # this is not a library version
 %define gs_plugin_version               10
