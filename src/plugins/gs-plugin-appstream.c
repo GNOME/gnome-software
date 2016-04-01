@@ -337,11 +337,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		item = g_ptr_array_index (array, i);
-
-		// FIXME: AS_APP_KIND_OS_UPGRADE
-		if (as_app_get_kind (item) != AS_APP_KIND_UNKNOWN)
-			continue;
-		if (as_app_get_metadata_item (item, "X-IsUpgrade") == NULL)
+		if (as_app_get_kind (item) != AS_APP_KIND_OS_UPDATE)
 			continue;
 
 		/* create */
