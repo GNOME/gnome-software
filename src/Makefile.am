@@ -36,6 +36,7 @@ UI_FILES =						\
 	gs-app-row.ui					\
 	gs-first-run-dialog.ui				\
 	gs-history-dialog.ui				\
+	gs-info-bar.ui					\
 	gs-review-dialog.ui				\
 	gs-review-histogram.ui				\
 	gs-review-row.ui				\
