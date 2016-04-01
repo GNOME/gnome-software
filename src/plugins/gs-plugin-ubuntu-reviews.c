@@ -185,6 +185,66 @@ get_review_stats_sqlite_cb (void *data,
 	return 0;
 }
 
+static gdouble
+pnormaldist (gdouble qn)
+{
+	static gdouble b[11] = { 1.570796288,      0.03706987906,   -0.8364353589e-3,
+				-0.2250947176e-3,  0.6841218299e-5,  0.5824238515e-5,
+				-0.104527497e-5,   0.8360937017e-7, -0.3231081277e-8,
+				 0.3657763036e-10, 0.6936233982e-12 };
+	gdouble w1, w3;
+	int i;
+
+	if (qn < 0 || qn > 1)
+		return 0; // This is an error case
+	if (qn == 0.5)
+		return 0;
+
+	w1 = qn;
+	if (qn > 0.5)
+		w1 = 1.0 - w1;
+	w3 = -log (4.0 * w1 * (1.0 - w1));
+	w1 = b[0];
+	for (i = 1; i < 11; i++)
+		w1 = w1 + (b[i] * pow (w3, i));
+
+	if (qn > 0.5)
+		return sqrt (w1 * w3);
+	else
+		return -sqrt (w1 * w3);
+}
+
+static gdouble
+wilson_score (gdouble value, gint n, gdouble power)
+{
+	gdouble z, phat;
+
+	if (value == 0)
+		return 0;
+
+	z = pnormaldist (1 - power / 2);
+	phat = value / n;
+	return (phat + z * z / (2 * n) - z * sqrt ((phat * (1 - phat) + z * z / (4 * n)) / n)) / (1 + z * z / n);
+}
+
+static gint
+get_rating (gint64 one_star_count, gint64 two_star_count, gint64 three_star_count, gint64 four_star_count, gint64 five_star_count)
+{
+	gint n_ratings;
+
+	n_ratings = one_star_count + two_star_count + three_star_count + four_star_count + five_star_count;
+	if (n_ratings == 0)
+		return -1;
+
+	// Use a Wilson score which is a method of ensuring small numbers of ratings don't give high scores
+	// https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
+	return ((wilson_score (one_star_count, n_ratings, 0.1) * 20) +
+		(wilson_score (two_star_count, n_ratings, 0.1) * 40) +
+		(wilson_score (three_star_count, n_ratings, 0.1) * 60) +
+		(wilson_score (four_star_count, n_ratings, 0.1) * 80) +
+		(wilson_score (five_star_count, n_ratings, 0.1) * 100));
+}
+
 static gboolean
 get_review_stats (GsPlugin *plugin,
 		  const gchar *package_name,
@@ -194,7 +254,7 @@ get_review_stats (GsPlugin *plugin,
 {
 	Histogram histogram = { 0, 0, 0, 0, 0 };
 	gchar *error_msg = NULL;
-	gint result, n_ratings;
+	gint result;
 	g_autofree gchar *statement = NULL;
 
 	/* Get histogram from the database */
@@ -214,13 +274,7 @@ get_review_stats (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* Convert to a rating */
-	// FIXME: Convert to a Wilson score
-	n_ratings = histogram.one_star_count + histogram.two_star_count + histogram.three_star_count + histogram.four_star_count + histogram.five_star_count;
-	if (n_ratings == 0)
-		*rating = -1;
-	else
-		*rating = ((histogram.one_star_count * 20) + (histogram.two_star_count * 40) + (histogram.three_star_count * 60) + (histogram.four_star_count * 80) + (histogram.five_star_count * 100)) / n_ratings;
+	*rating = get_rating (histogram.one_star_count, histogram.two_star_count, histogram.three_star_count, histogram.four_star_count, histogram.five_star_count);
 	review_ratings[0] = 0;
 	review_ratings[1] = histogram.one_star_count;
 	review_ratings[2] = histogram.two_star_count;
