@@ -159,7 +159,7 @@ gs_popular_tile_class_init (GsPopularTileClass *klass)
 
 	widget_class->destroy = gs_popular_tile_destroy;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/popular-tile.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-popular-tile.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsPopularTile, label);
 	gtk_widget_class_bind_template_child (widget_class, GsPopularTile, image);
