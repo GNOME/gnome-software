@@ -8,7 +8,7 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-24 10:36+0000\n"
+"POT-Creation-Date: 2016-04-03 21:40+0000\n"
 "PO-Revision-Date: 2016-03-25 01:13+0800\n"
 "Last-Translator: Cheng-Chia Tseng <pswo10680@gmail.com>\n"
 "Language-Team: Chinese (Taiwan) <chinese-l10n@googlegroups.com>\n"
@@ -136,7 +136,7 @@ msgid "Add to Application Folder"
 msgstr "加入到應用程式資料夾中"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:288
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:305
 #: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "取消(_C)"
@@ -772,14 +772,19 @@ msgstr "擴充套件設定值"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:200 ../src/gs-shell-details.ui.h:2
+#. TRANSLATORS: button text in the header when firmware
+#. * can be live-installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be live-updated
+#: ../src/gs-shell-details.c:201 ../src/gs-shell-details.c:227
+#: ../src/gs-shell-details.c:232 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:4
 msgid "_Install"
 msgstr "安裝(_I)"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:211
+#: ../src/gs-shell-details.c:212
 msgid "_Installing"
 msgstr "安裝中(_I)"
 
@@ -787,93 +792,93 @@ msgstr "安裝中(_I)"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:229
+#: ../src/gs-shell-details.c:245
 msgid "_Install…"
 msgstr "安裝(_I)…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:275 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:292 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "移除(_R)"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:282
+#: ../src/gs-shell-details.c:299
 msgid "_Removing"
 msgstr "移除中(_R)"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:652
+#: ../src/gs-shell-details.c:669
 msgctxt "license"
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:665
+#: ../src/gs-shell-details.c:682
 msgctxt "version"
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:671
+#: ../src/gs-shell-details.c:688
 msgctxt "size"
 msgid "Calculating…"
 msgstr "計算中…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:674
+#: ../src/gs-shell-details.c:691
 msgctxt "size"
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:686
+#: ../src/gs-shell-details.c:703
 msgctxt "updated"
 msgid "Never"
 msgstr "永不"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:700
+#: ../src/gs-shell-details.c:717
 msgctxt "menu category"
 msgid "None"
 msgstr "無"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:717
+#: ../src/gs-shell-details.c:734
 msgctxt "origin"
 msgid "Unknown"
 msgstr "不明"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:763
+#: ../src/gs-shell-details.c:780
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "此類應用程式僅可在有網際網路連線時可以使用。"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:774
+#: ../src/gs-shell-details.c:791
 msgid "This software comes from a 3rd party."
 msgstr "這個軟體是來自第三方協力廠商。"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:783
+#: ../src/gs-shell-details.c:800
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr "這個軟體來自第三方協力廠商，並可能包含非自由的元件。"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:792
+#: ../src/gs-shell-details.c:809
 msgid "This software may contain non-free components."
 msgstr "這個軟體可能包含非自由的元件。"
 
-#: ../src/gs-shell-details.c:1114
+#: ../src/gs-shell-details.c:1131
 #, c-format
 msgid "Could not find '%s'"
 msgstr "找不到「%s」"
 
-#: ../src/gs-shell-details.c:1174 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1191 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "很抱歉，那沒有用"
 
@@ -1026,7 +1031,7 @@ msgstr "、"
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
-msgstr[0] "%s 命令稿的可用字型"
+msgstr[0] "%s 文書的可用字型"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
@@ -1096,7 +1101,7 @@ msgstr "%s 的相關資訊，以及該如何取得支援此格式的程式的選
 #: ../src/gs-shell-extras.c:376
 #, c-format
 msgid "No fonts are available for the %s script support."
-msgstr "沒有可支援 %s 命令稿的字型。"
+msgstr "沒有可支援 %s 文書的字型。"
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
