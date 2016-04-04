@@ -387,7 +387,6 @@ static gboolean
 gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 {
 	switch (gs_app_get_kind (app)) {
-	case AS_APP_KIND_ADDON:
 	case AS_APP_KIND_CODEC:
 	case AS_APP_KIND_FONT:
 		g_debug ("app invalid as %s: %s",
@@ -408,6 +407,13 @@ static gboolean
 gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 {
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) user_data;
+
+	/* never show addons */
+	if (gs_app_get_kind (app) == AS_APP_KIND_ADDON) {
+		g_debug ("app invalid as addon %s",
+			 gs_plugin_loader_get_app_str (app));
+		return FALSE;
+	}
 
 	/* don't show unknown state */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
