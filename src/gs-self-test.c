@@ -245,6 +245,24 @@ gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugin_loader_key_colors_func (GsPluginLoader *plugin_loader)
+{
+	gboolean ret;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+
+	/* get the extra bits */
+	app = gs_app_new ("zeus.desktop");
+	ret = gs_plugin_loader_app_refine (plugin_loader, app,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_key_colors(app)->len, >=, 3);
+}
+
+static void
 gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 {
 	GsApp *app;
@@ -516,6 +534,7 @@ main (int argc, char **argv)
 		"hardcoded-blacklist",
 		"icons",
 		"menu-spec-refine",
+		"key-colors",
 		"provenance",
 		"packagekit-local",
 		NULL
@@ -602,6 +621,9 @@ main (int argc, char **argv)
 	g_assert (gs_plugin_loader_get_enabled (plugin_loader, "dummy"));
 
 	/* plugin tests go here */
+	g_test_add_data_func ("/gnome-software/plugin-loader{key-colors}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_key_colors_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{packagekit-local}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_packagekit_local_func);

@@ -208,7 +208,6 @@ void
 gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 {
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
-	const gchar *css;
 
 	g_return_if_fail (GS_IS_UPGRADE_BANNER (self));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
@@ -227,10 +226,9 @@ gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 	g_signal_connect (priv->app, "notify::progress",
 	                  G_CALLBACK (app_progress_changed), self);
 
-	/* set custom css */
-	css = gs_app_get_metadata_item (app, "GnomeSoftware::UpgradeBanner-css");
-	if (css != NULL)
-		gs_utils_widget_set_custom_css (priv->box_upgrades, css);
+	/* perhaps set custom css */
+	gs_utils_widget_set_custom_css (app, priv->box_upgrades,
+					"GnomeSoftware::UpgradeBanner-css");
 
 	gs_upgrade_banner_refresh (self);
 }

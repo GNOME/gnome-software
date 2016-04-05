@@ -23,6 +23,7 @@
 #define __GS_APP_H
 
 #include <glib-object.h>
+#include <gdk/gdk.h>
 #include <gdk-pixbuf/gdk-pixbuf.h>
 #include <appstream-glib.h>
 
@@ -226,6 +227,11 @@ void		 gs_app_set_install_date	(GsApp		*app,
 GPtrArray	*gs_app_get_categories		(GsApp		*app);
 void		 gs_app_set_categories		(GsApp		*app,
 						 GPtrArray	*categories);
+GPtrArray	*gs_app_get_key_colors		(GsApp		*app);
+void		 gs_app_set_key_colors		(GsApp		*app,
+						 GPtrArray	*key_colors);
+void		 gs_app_add_key_color		(GsApp		*app,
+						 GdkRGBA	*key_color);
 gboolean	 gs_app_has_category		(GsApp		*app,
 						 const gchar	*category);
 void		 gs_app_add_category		(GsApp		*app,

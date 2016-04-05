@@ -91,7 +91,6 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsFeatureTile *tile)
 void
 gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 {
-	const gchar *css;
 	g_autoptr(GString) data = NULL;
 
 	g_return_if_fail (GS_IS_FEATURE_TILE (tile));
@@ -113,10 +112,9 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (tile->title), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
 
-	/* set custom css */
-	css = gs_app_get_metadata_item (app, "GnomeSoftware::FeatureTile-css");
-	if (css != NULL)
-		gs_utils_widget_set_custom_css (GTK_WIDGET (tile), css);
+	/* perhaps set custom css */
+	gs_utils_widget_set_custom_css (app, GTK_WIDGET (tile),
+					"GnomeSoftware::FeatureTile-css");
 }
 
 static void

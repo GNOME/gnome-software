@@ -830,21 +830,43 @@ gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
  * gs_utils_widget_set_custom_css:
  **/
 void
-gs_utils_widget_set_custom_css (GtkWidget *widget, const gchar *css)
+gs_utils_widget_set_custom_css (GsApp *app, GtkWidget *widget, const gchar *metadata_css)
 {
+	GPtrArray *key_colors;
 	GString *str = g_string_sized_new (1024);
+	GString *css_str = g_string_new ("");
 	GtkStyleContext *context;
+	const gchar *css;
+	guint i;
 	g_autofree gchar *class_name = NULL;
 	g_autoptr(GtkCssProvider) provider = NULL;
 
+	g_return_if_fail (GS_IS_APP (app));
+
 	/* invalid */
+	css = gs_app_get_metadata_item (app, metadata_css);
 	if (css == NULL)
 		return;
+
+	/* replace any key colors */
+	css_str = g_string_new (css);
+	key_colors = gs_app_get_key_colors (app);
+	for (i = 0; i < key_colors->len; i++) {
+		GdkRGBA *color = g_ptr_array_index (key_colors, 1);
+		g_autofree gchar *key = NULL;
+		g_autofree gchar *value = NULL;
+		key = g_strdup_printf ("@keycolor-%02i@", i);
+		value = g_strdup_printf ("rgb(%.0f,%.0f,%.0f)",
+					 color->red,
+					 color->green,
+					 color->blue);
+		as_utils_string_replace (css_str, key, value);
+	}
 
 	/* make into a proper CSS class */
 	class_name = g_strdup_printf ("themed-widget_%p", widget);
 	g_string_append_printf (str, ".%s {\n", class_name);
-	g_string_append_printf (str, "%s\n", css);
+	g_string_append_printf (str, "%s\n", css_str->str);
 	g_string_append (str, "}");
 
 	g_string_append_printf (str, ".%s:hover {\n", class_name);

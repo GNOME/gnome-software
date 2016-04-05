@@ -145,6 +145,8 @@ gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS;
 	if (g_strcmp0 (flag, "review-ratings") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS;
+	if (g_strcmp0 (flag, "key-colors") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS;
 	g_set_error (error,
 		     GS_PLUGIN_ERROR,
 		     GS_PLUGIN_ERROR_NOT_SUPPORTED,

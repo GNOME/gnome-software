@@ -71,6 +71,7 @@ struct _GsApp
 	GError			*last_error;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
+	GPtrArray		*key_colors;
 	GPtrArray		*keywords;
 	GHashTable		*urls;
 	gchar			*license;
@@ -338,6 +339,13 @@ gs_app_to_string (GsApp *app)
 	for (i = 0; i < app->categories->len; i++) {
 		tmp = g_ptr_array_index (app->categories, i);
 		gs_app_kv_lpad (str, "category", tmp);
+	}
+	for (i = 0; i < app->key_colors->len; i++) {
+		GdkRGBA *color = g_ptr_array_index (app->key_colors, i);
+		g_autofree gchar *key = NULL;
+		key = g_strdup_printf ("key-color-%02i", i);
+		gs_app_kv_printf (str, key, "%.0f,%.0f,%.0f",
+				  color->red, color->green, color->blue);
 	}
 	if (app->keywords != NULL) {
 		for (i = 0; i < app->keywords->len; i++) {
@@ -2096,6 +2104,40 @@ gs_app_add_category (GsApp *app, const gchar *category)
 }
 
 /**
+ * gs_app_get_key_colors:
+ */
+GPtrArray *
+gs_app_get_key_colors (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->key_colors;
+}
+
+/**
+ * gs_app_set_key_colors:
+ */
+void
+gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (key_colors != NULL);
+	if (app->key_colors != NULL)
+		g_ptr_array_unref (app->key_colors);
+	app->key_colors = g_ptr_array_ref (key_colors);
+}
+
+/**
+ * gs_app_add_key_color:
+ */
+void
+gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (key_color != NULL);
+	g_ptr_array_add (app->key_colors, gdk_rgba_copy (key_color));
+}
+
+/**
  * gs_app_get_keywords:
  */
 GPtrArray *
@@ -2436,6 +2478,7 @@ gs_app_finalize (GObject *object)
 	g_hash_table_unref (app->addons_hash);
 	g_hash_table_unref (app->related_hash);
 	g_ptr_array_unref (app->categories);
+	g_ptr_array_unref (app->key_colors);
 	if (app->keywords != NULL)
 		g_ptr_array_unref (app->keywords);
 	if (app->last_error != NULL)
@@ -2559,6 +2602,7 @@ gs_app_init (GsApp *app)
 	app->sources = g_ptr_array_new_with_free_func (g_free);
 	app->source_ids = g_ptr_array_new_with_free_func (g_free);
 	app->categories = g_ptr_array_new_with_free_func (g_free);
+	app->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
 	app->addons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->related = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);

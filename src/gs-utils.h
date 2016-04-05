@@ -69,8 +69,9 @@ const gchar 	*gs_utils_get_content_rating	(void);
 #endif
 
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
-void		 gs_utils_widget_set_custom_css	(GtkWidget	*widget,
-						 const gchar	*css);
+void		 gs_utils_widget_set_custom_css	(GsApp		*app,
+						 GtkWidget	*widget,
+						 const gchar	*metadata_css);
 
 G_END_DECLS
 
