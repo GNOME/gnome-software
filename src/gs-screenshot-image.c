@@ -379,7 +379,17 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 		gs_screenshot_image_set_error (ssimg, _("Screenshot size not found"));
 		return;
 	}
+
+	/* check if the URL points to a local file */
 	url = as_image_get_url (im);
+	if (g_str_has_prefix (url, "file://")) {
+		ssimg->filename = g_strdup (url + 7);
+		if (g_file_test (ssimg->filename, G_FILE_TEST_EXISTS)) {
+			as_screenshot_show_image (ssimg);
+			return;
+		}
+	}
+
 	basename = gs_screenshot_get_cachefn_for_url (url);
 	if (ssimg->width == G_MAXUINT || ssimg->height == G_MAXUINT) {
 		sizedir = g_strdup ("unknown");
