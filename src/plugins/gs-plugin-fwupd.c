@@ -187,6 +187,7 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 static GsApp *
 gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 {
+	FwupdDeviceFlags flags;
 	GsApp *app;
 	g_autoptr(AsIcon) icon = NULL;
 
@@ -197,6 +198,16 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 	gs_app_add_category (app, "System");
 	gs_app_set_metadata (app, "fwupd::DeviceID",
 			     fwupd_result_get_device_id (res));
+
+	/* something can be done */
+	flags = fwupd_result_get_device_flags (res);
+	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE ||
+	    flags & FU_DEVICE_FLAG_ALLOW_OFFLINE)
+		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+
+	/* can be done live */
+	if ((flags & FU_DEVICE_FLAG_ALLOW_ONLINE) == 0)
+		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
 
 	/* create icon */
 	icon = as_icon_new ();
@@ -271,12 +282,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 
 	/* update unsupported */
 	app = gs_plugin_fwupd_new_app_from_results (res);
-	flags = fwupd_result_get_device_flags (res);
-	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE) {
-		gs_app_set_metadata (app, "fwupd::InstallMethod", "online");
-	} else if (flags & FU_DEVICE_FLAG_ALLOW_OFFLINE) {
-		gs_app_set_metadata (app, "fwupd::InstallMethod", "offline");
-	} else {
+	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -301,6 +307,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	}
 
 	/* devices that are locked need unlocking */
+	flags = fwupd_result_get_device_flags (res);
 	if (flags & FU_DEVICE_FLAG_LOCKED) {
 		gs_app_set_metadata (app, "fwupd::IsLocked", "");
 	} else {
@@ -355,13 +362,6 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 		}
 	}
 
-	/* can be done live */
-	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE) {
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
-	} else {
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-	}
-
 	/* actually add the application */
 	gs_app_add_source_id (app, filename_cache);
 	gs_plugin_add_app (list, app);
@@ -409,7 +409,6 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 
 	/* parse */
 	app = gs_plugin_fwupd_new_app_from_results (res);
-	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
@@ -694,7 +693,6 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	const gchar *install_method;
 	const gchar *filename;
 	FwupdInstallFlags install_flags = 0;
 
@@ -709,8 +707,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	}
 
 	/* only offline supported */
-	install_method = gs_app_get_metadata_item (app, "fwupd::InstallMethod");
-	if (g_strcmp0 (install_method, "offline") == 0)
+	if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
 		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
@@ -817,7 +814,6 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	FwupdDeviceFlags flags;
 	gboolean supported;
 	g_autoptr(FwupdResult) res = NULL;
 	g_autoptr(GsApp) app = NULL;
@@ -845,18 +841,6 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_version (app, gs_app_get_update_version (app));
 	gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
 				gs_app_get_update_details (app));
-
-	/* can we install on-line, off-line, or not at all */
-	flags = fwupd_result_get_device_flags (res);
-	if (flags & FU_DEVICE_FLAG_ALLOW_ONLINE) {
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
-		gs_app_set_metadata (app, "fwupd::InstallMethod", "online");
-	} else if (flags & FU_DEVICE_FLAG_ALLOW_OFFLINE) {
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
-		gs_app_set_metadata (app, "fwupd::InstallMethod", "offline");
-	} else {
-		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
-	}
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
