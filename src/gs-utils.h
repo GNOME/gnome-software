@@ -68,6 +68,8 @@ GPermission	*gs_utils_get_permission	(const gchar	*id);
 const gchar 	*gs_utils_get_content_rating	(void);
 #endif
 
+gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
+
 G_END_DECLS
 
 #endif /* __GS_UTILS_H */
