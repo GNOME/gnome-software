@@ -64,7 +64,8 @@ typedef gboolean (*GsPluginListFilter)	(GsApp		*app,
 struct GsPlugin {
 	GModule			*module;
 	gdouble			 priority;	/* largest number gets run first */
-	const gchar		**deps;		/* allow-none */
+	const gchar		**order_after;	/* allow-none */
+	const gchar		**order_before;	/* allow-none */
 	const gchar		**conflicts;	/* allow-none */
 	gboolean		 enabled;
 	gchar			*name;
@@ -221,6 +222,7 @@ gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 const gchar	**gs_plugin_order_after			(GsPlugin	*plugin);
+const gchar	**gs_plugin_order_before		(GsPlugin	*plugin);
 const gchar	**gs_plugin_get_conflicts		(GsPlugin	*plugin);
 gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
 							 GList		**list,
