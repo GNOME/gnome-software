@@ -1357,6 +1357,23 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 			continue;
 		}
 
+		/* free software, license unspecified */
+		if (g_str_has_prefix (tokens[i], "@LicenseRef-free") == 0) {
+			const gchar *url = "http://www.gnu.org/philosophy/free-sw.en.html";
+			gchar *tmp;
+
+			/* we support putting a custom URL in the
+			 * token string, e.g. @LicenseRef-free=http://ubuntu.com */
+			tmp = g_strstr_len (tokens[i], -1, "=");
+			if (tmp != NULL)
+				url = tmp + 1;
+			g_string_append_printf (urld,
+						"<a href=\"%s\">%s</a>",
+						/* TRANSLATORS: see GNU page */
+						url, _("Free Software"));
+			continue;
+		}
+
 		/* SPDX value */
 		if (g_str_has_prefix (tokens[i], "@")) {
 			g_string_append_printf (urld,
