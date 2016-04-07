@@ -26,6 +26,7 @@
 #include <glib/gi18n.h>
 
 #include <gs-plugin.h>
+#include <gs-utils.h>
 
 #include "packagekit-common.h"
 
@@ -197,42 +198,6 @@ gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
 }
 
 /**
- * gs_plugin_packagekit_refresh_content_type_matches:
- */
-static gboolean
-gs_plugin_packagekit_refresh_content_type_matches (const gchar *filename,
-						   gboolean *matches,
-						   GCancellable *cancellable,
-						   GError **error)
-{
-	const gchar *tmp;
-	guint i;
-	g_autoptr(GFile) file = NULL;
-	g_autoptr(GFileInfo) info = NULL;
-	const gchar *mimetypes[] = {
-		"application/x-app-package",
-		"application/x-deb",
-		"application/x-redhat-package-manager",
-		"application/x-rpm",
-		NULL };
-
-	/* get content type */
-	file = g_file_new_for_path (filename);
-	info = g_file_query_info (file,
-				  G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
-				  G_FILE_QUERY_INFO_NONE,
-				  cancellable,
-				  error);
-	if (info == NULL)
-		return FALSE;
-	tmp = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
-
-	/* match any */
-	*matches = tmp != NULL && g_strv_contains (mimetypes, tmp);
-	return TRUE;
-}
-
-/**
  * gs_plugin_packagekit_refresh_guess_app_id:
  */
 static gboolean
@@ -305,24 +270,28 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			   GError **error)
 {
 	const gchar *package_id;
-	gboolean supported;
 	PkDetails *item;
 	ProgressData data;
 	g_autoptr (PkResults) results = NULL;
 	g_autofree gchar *basename = NULL;
+	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *license_spdx = NULL;
 	g_auto(GStrv) files = NULL;
 	g_auto(GStrv) split = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 	g_autoptr(GsApp) app = NULL;
+	const gchar *mimetypes[] = {
+		"application/x-app-package",
+		"application/x-deb",
+		"application/x-redhat-package-manager",
+		"application/x-rpm",
+		NULL };
 
 	/* does this match any of the mimetypes we support */
-	if (!gs_plugin_packagekit_refresh_content_type_matches (filename,
-								&supported,
-								cancellable,
-								error))
+	content_type = gs_utils_get_content_type (filename, cancellable, error);
+	if (content_type == NULL)
 		return FALSE;
-	if (!supported)
+	if (!g_strv_contains (mimetypes, content_type))
 		return TRUE;
 
 	data.plugin = plugin;

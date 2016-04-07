@@ -1378,38 +1378,6 @@ gs_plugin_app_update (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_xdg_app_content_type_matches:
- */
-static gboolean
-gs_plugin_xdg_app_content_type_matches (const gchar *filename,
-				      gboolean *matches,
-				      GCancellable *cancellable,
-				      GError **error)
-{
-	const gchar *tmp;
-	g_autoptr(GFile) file = NULL;
-	g_autoptr(GFileInfo) info = NULL;
-	const gchar *mimetypes[] = {
-		"application/vnd.xdgapp",
-		NULL };
-
-	/* get content type */
-	file = g_file_new_for_path (filename);
-	info = g_file_query_info (file,
-				  G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
-				  G_FILE_QUERY_INFO_NONE,
-				  cancellable,
-				  error);
-	if (info == NULL)
-		return FALSE;
-	tmp = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
-
-	/* match any */
-	*matches = tmp != NULL && g_strv_contains (mimetypes, tmp);
-	return TRUE;
-}
-
-/**
  * gs_plugin_filename_to_app:
  */
 gboolean
@@ -1419,7 +1387,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
-	gboolean supported;
+	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *id_prefixed = NULL;
 	g_autoptr(GBytes) appstream_gz = NULL;
 	g_autoptr(GBytes) icon_data = NULL;
@@ -1427,14 +1395,15 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(XdgAppBundleRef) xref_bundle = NULL;
+	const gchar *mimetypes[] = {
+		"application/vnd.xdgapp",
+		NULL };
 
 	/* does this match any of the mimetypes we support */
-	if (!gs_plugin_xdg_app_content_type_matches (filename,
-						     &supported,
-						     cancellable,
-						     error))
+	content_type = gs_utils_get_content_type (filename, cancellable, error);
+	if (content_type == NULL)
 		return FALSE;
-	if (!supported)
+	if (!g_strv_contains (mimetypes, content_type))
 		return TRUE;
 
 	/* load bundle */

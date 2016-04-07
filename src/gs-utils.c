@@ -711,4 +711,31 @@ gs_utils_get_content_rating (void)
 }
 #endif
 
+/**
+ * gs_utils_get_content_type:
+ */
+gchar *
+gs_utils_get_content_type (const gchar *filename,
+			   GCancellable *cancellable,
+			   GError **error)
+{
+	const gchar *tmp;
+	g_autoptr(GFile) file = NULL;
+	g_autoptr(GFileInfo) info = NULL;
+
+	/* get content type */
+	file = g_file_new_for_path (filename);
+	info = g_file_query_info (file,
+				  G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
+				  G_FILE_QUERY_INFO_NONE,
+				  cancellable,
+				  error);
+	if (info == NULL)
+		return NULL;
+	tmp = g_file_info_get_attribute_string (info, G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE);
+	if (tmp == NULL)
+		return NULL;
+	return g_strdup (tmp);
+}
+
 /* vim: set noexpandtab: */
