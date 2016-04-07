@@ -3272,7 +3272,7 @@ gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 	for (i = 0; i < priv->plugins->len; i++) {
 		plugin = g_ptr_array_index (priv->plugins, i);
 		g_debug ("[%s]\t%.1f\t->\t%s",
-			 plugin->enabled ? "enabled" : "disabled",
+			 plugin->enabled ? "enabled" : "disabld",
 			 plugin->priority,
 			 plugin->name);
 	}
