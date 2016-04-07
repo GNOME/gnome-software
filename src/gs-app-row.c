@@ -27,7 +27,6 @@
 
 #include "gs-app-row.h"
 #include "gs-star-widget.h"
-#include "gs-markdown.h"
 #include "gs-progress-button.h"
 #include "gs-utils.h"
 #include "gs-folders.h"
@@ -90,15 +89,8 @@ gs_app_row_get_description (GsAppRow *app_row)
 	    (gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE ||
 	     gs_app_get_state (priv->app) == AS_APP_STATE_UPDATABLE_LIVE)) {
 		tmp = gs_app_get_update_details (priv->app);
-		if (tmp != NULL && tmp[0] != '\0') {
-			g_autoptr(GsMarkdown) markdown = NULL;
-			markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
-			gs_markdown_set_smart_quoting (markdown, FALSE);
-			gs_markdown_set_autocode (markdown, FALSE);
-			gs_markdown_set_autolinkify (markdown, FALSE);
-			escaped = gs_markdown_parse (markdown, tmp);
-			return g_string_new (escaped);
-		}
+		if (tmp != NULL && tmp[0] != '\0')
+			return g_string_new (tmp);
 	}
 
 	if (gs_app_get_state (priv->app) == AS_APP_STATE_UNAVAILABLE)

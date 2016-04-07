@@ -29,7 +29,6 @@
 #include "gs-utils.h"
 #include "gs-app.h"
 #include "gs-app-row.h"
-#include "gs-markdown.h"
 #include "gs-update-dialog.h"
 #include "gs-update-list.h"
 #include "gs-update-monitor.h"

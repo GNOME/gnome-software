@@ -560,7 +560,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		if (tmp != NULL) {
 			g_autofree gchar *desc = NULL;
 			desc = as_markup_convert (tmp,
-						  AS_MARKUP_CONVERT_FORMAT_MARKDOWN,
+						  AS_MARKUP_CONVERT_FORMAT_SIMPLE,
 						  error);
 			if (desc == NULL)
 				return FALSE;

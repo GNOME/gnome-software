@@ -26,7 +26,6 @@
 
 #include "gs-update-dialog.h"
 #include "gs-app-row.h"
-#include "gs-markdown.h"
 #include "gs-update-list.h"
 #include "gs-utils.h"
 
@@ -93,7 +92,6 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 	AsAppKind kind;
 	const GdkPixbuf *pixbuf;
 	const gchar *update_details;
-	g_autofree gchar *update_desc = NULL;
 
 	/* set window title */
 	kind = gs_app_get_kind (app);
@@ -114,28 +112,15 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 				      gs_app_get_update_version (app));
 	}
 
-	/* this is set unconditionally just in case the output of the
-	 * markdown->PangoMarkup parser is invalid */
-	gtk_label_set_markup (GTK_LABEL (dialog->label_details),
-			      /* TRANSLATORS: this is where the
-			       * packager did not write a
-			       * description for the update */
-			      _("No update description available."));
-
-	/* get the update description */
-	update_details = gs_app_get_update_details (app);
-	if (update_details != NULL) {
-		g_autoptr(GsMarkdown) markdown = NULL;
-		markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_PANGO);
-		gs_markdown_set_smart_quoting (markdown, FALSE);
-		gs_markdown_set_autocode (markdown, TRUE);
-		update_desc = gs_markdown_parse (markdown, update_details);
-	}
-
 	/* set update header */
 	gtk_widget_set_visible (dialog->box_header, kind == AS_APP_KIND_DESKTOP);
-	if (update_desc != NULL)
-		gtk_label_set_markup (GTK_LABEL (dialog->label_details), update_desc);
+	update_details = gs_app_get_update_details (app);
+	if (update_details == NULL) {
+		/* TRANSLATORS: this is where the packager did not write
+		 * a description for the update */
+		update_details = _("No update description available.");
+	}
+	gtk_label_set_markup (GTK_LABEL (dialog->label_details), update_details);
 	gtk_label_set_label (GTK_LABEL (dialog->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (dialog->label_summary), gs_app_get_summary (app));
 
