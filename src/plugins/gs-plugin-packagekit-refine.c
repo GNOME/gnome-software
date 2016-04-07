@@ -28,6 +28,7 @@
 #include <gs-utils.h>
 #include <glib/gi18n.h>
 
+#include "gs-markdown.h"
 #include "packagekit-common.h"
 
 /*
@@ -386,6 +387,33 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_packagekit_fixup_update_description:
+ *
+ * Lets assume Fedora is sending us valid markdown, but fall back to
+ * plain text if this fails.
+ */
+static gchar *
+gs_plugin_packagekit_fixup_update_description (const gchar *text)
+{
+	gchar *tmp;
+	g_autoptr(GsMarkdown) markdown = NULL;
+
+	/* nothing to do */
+	if (text == NULL)
+		return NULL;
+
+	/* try to parse */
+	markdown = gs_markdown_new (GS_MARKDOWN_OUTPUT_TEXT);
+	gs_markdown_set_smart_quoting (markdown, FALSE);
+	gs_markdown_set_autocode (markdown, FALSE);
+	gs_markdown_set_autolinkify (markdown, FALSE);
+	tmp = gs_markdown_parse (markdown, text);
+	if (tmp != NULL)
+		return tmp;
+	return g_strdup (text);
+}
+
+/**
  * gs_plugin_packagekit_refine_updatedetails:
  */
 static gboolean
@@ -432,11 +460,16 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		package_id = gs_app_get_source_id_default (app);
 		for (i = 0; i < array->len; i++) {
+			const gchar *tmp;
+			g_autofree gchar *desc = NULL;
 			/* right package? */
 			update_detail = g_ptr_array_index (array, i);
 			if (g_strcmp0 (package_id, pk_update_detail_get_package_id (update_detail)) != 0)
 				continue;
-			gs_app_set_update_details (app, pk_update_detail_get_update_text (update_detail));
+			tmp = pk_update_detail_get_update_text (update_detail);
+			desc = gs_plugin_packagekit_fixup_update_description (tmp);
+			if (desc != NULL)
+				gs_app_set_update_details (app, desc);
 			break;
 		}
 	}
