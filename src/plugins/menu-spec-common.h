@@ -29,6 +29,7 @@ G_BEGIN_DECLS
 
 typedef struct {
 	const gchar *path;
+	const gchar *icon;
 	const gchar *text;
 } MenuSpecData;
 
