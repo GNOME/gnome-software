@@ -90,6 +90,7 @@ gs_plugin_order_after (GsPlugin *plugin)
 {
 	static const gchar *deps[] = {
 		"menu-spec-categories",	/* need category list */
+		"dpkg",			/* need package name */
 		NULL };
 	return deps;
 }
