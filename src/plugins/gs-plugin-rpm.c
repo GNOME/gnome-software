@@ -38,10 +38,10 @@ gs_plugin_get_name (void)
 }
 
 /**
- * gs_plugin_get_deps:
+ * gs_plugin_order_after:
  */
 const gchar **
-gs_plugin_get_deps (GsPlugin *plugin)
+gs_plugin_order_after (GsPlugin *plugin)
 {
 	static const gchar *deps[] = {
 		"appstream",	/* need application IDs */
