@@ -137,6 +137,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 		g_auto(GStrv) split = NULL;
 		app = gs_app_new (NULL);
+		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
 		gs_app_set_management_plugin (app, "PackageKit");
 		gs_app_add_source_id (app, package_ids[i]);
 		split = pk_package_id_split (package_ids[i]);
