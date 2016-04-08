@@ -635,56 +635,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_app_upgrade:
- */
-static gboolean
-gs_plugin_app_upgrade (GsPlugin *plugin,
-		       GsApp *app,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	const gchar *device_id;
-	const gchar *filename;
-
-	filename = gs_app_get_source_id_default (app);
-	device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
-	if (filename == NULL || device_id == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "not enough data for fwupd %s:%s",
-			     filename, device_id);
-		return FALSE;
-	}
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!fwupd_client_install (plugin->priv->client, device_id, filename,
-				   FWUPD_INSTALL_FLAG_OFFLINE, cancellable, error))
-		return FALSE;
-	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-	return TRUE;
-}
-
-/**
- * gs_plugin_offline_update:
- */
-gboolean
-gs_plugin_offline_update (GsPlugin *plugin,
-                          GList *apps,
-                          GCancellable *cancellable,
-                          GError **error)
-{
-	GList *l;
-
-	for (l = apps; l != NULL; l = l->next) {
-		gboolean ret = gs_plugin_app_upgrade (plugin, GS_APP (l->data), cancellable, error);
-		if (!ret)
-			return FALSE;
-	}
-
-	return TRUE;
-}
-
-/**
  * gs_plugin_fwupd_install:
  */
 static gboolean
@@ -693,6 +643,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	const gchar *device_id;
 	const gchar *filename;
 	FwupdInstallFlags install_flags = 0;
 
@@ -706,13 +657,19 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 		return FALSE;
 	}
 
+	/* limit to single device? */
+	device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
+	if (device_id == NULL)
+		device_id = FWUPD_DEVICE_ID_ANY;
+
 	/* only offline supported */
 	if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
 		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!fwupd_client_install (plugin->priv->client, FWUPD_DEVICE_ID_ANY,
-				   filename, install_flags, cancellable, error))
+	if (!fwupd_client_install (plugin->priv->client, device_id,
+				   filename, install_flags,
+				   cancellable, error))
 		return FALSE;
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
@@ -733,12 +690,12 @@ gs_plugin_app_install (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_app_update:
+ * gs_plugin_update_app:
  *
- * This is only called when updating device firmware live.
+ * Called when a user clicks [Update] in the updates panel
  */
 gboolean
-gs_plugin_app_update (GsPlugin *plugin,
+gs_plugin_update_app (GsPlugin *plugin,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)

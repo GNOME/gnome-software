@@ -173,7 +173,7 @@ typedef gboolean	 (*GsPluginFilenameToAppFunc)	(GsPlugin	*plugin,
 							 const gchar	*filename,
 							 GCancellable	*cancellable,
 							 GError		**error);
-typedef gboolean	 (*GsPluginOfflineUpdateFunc)	(GsPlugin	*plugin,
+typedef gboolean	 (*GsPluginUpdateFunc)		(GsPlugin	*plugin,
 							 GList		*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -279,7 +279,7 @@ gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_plugin_offline_update_cancel	(GsPlugin	*plugin,
+gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -295,7 +295,7 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_plugin_app_update			(GsPlugin	*plugin,
+gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -347,7 +347,7 @@ gboolean	 gs_plugin_filename_to_app		(GsPlugin	*plugin,
 							 const gchar	*filename,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_plugin_offline_update		(GsPlugin	*plugin,
+gboolean	 gs_plugin_update			(GsPlugin	*plugin,
 							 GList		*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);

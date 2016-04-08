@@ -366,12 +366,12 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_app_update:
+ * gs_plugin_update_app:
  *
  * Used only for online-updates.
  */
 gboolean
-gs_plugin_app_update (GsPlugin *plugin,
+gs_plugin_update_app (GsPlugin *plugin,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)

@@ -151,25 +151,35 @@ gs_plugin_add_updates (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_offline_update:
+ * gs_plugin_update:
  */
 gboolean
-gs_plugin_offline_update (GsPlugin *plugin,
-                          GList *apps,
-                          GCancellable *cancellable,
-                          GError **error)
+gs_plugin_update (GsPlugin *plugin,
+		  GList *apps,
+		  GCancellable *cancellable,
+		  GError **error)
 {
-	return pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT, cancellable, error);
+	GList *l;
+
+	/* any apps to process offline */
+	for (l = apps; l != NULL; l = l->next) {
+		GsApp *app = GS_APP (l->data);
+		if (gs_app_get_state (app) == AS_APP_STATE_UPDATABLE) {
+			return pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT,
+						   cancellable, error);
+		}
+	}
+	return TRUE;
 }
 
 /**
- * gs_plugin_offline_update_cancel:
+ * gs_plugin_update_cancel:
  */
 gboolean
-gs_plugin_offline_update_cancel (GsPlugin *plugin,
-				 GsApp *app,
-				 GCancellable *cancellable,
-				 GError **error)
+gs_plugin_update_cancel (GsPlugin *plugin,
+			 GsApp *app,
+			 GCancellable *cancellable,
+			 GError **error)
 {
 	return pk_offline_cancel (NULL, error);
 }

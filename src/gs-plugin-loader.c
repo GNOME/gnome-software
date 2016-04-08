@@ -2664,6 +2664,15 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
 
+	/* handle with a fake list */
+	if (action == GS_PLUGIN_LOADER_ACTION_UPDATE) {
+		g_autoptr(GsAppList) list = NULL;
+		gs_plugin_add_app (&list, app);
+		gs_plugin_loader_update_async (plugin_loader, list,
+					       cancellable, callback,
+					       user_data);
+	}
+
 	if (action == GS_PLUGIN_LOADER_ACTION_REMOVE) {
 		if (remove_app_from_install_queue (plugin_loader, app)) {
 			task = g_task_new (plugin_loader, cancellable, callback, user_data);
@@ -2720,8 +2729,8 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 		state->state_success = AS_APP_STATE_UNKNOWN;
 		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
-	case GS_PLUGIN_LOADER_ACTION_OFFLINE_UPDATE_CANCEL:
-		state->function_name = "gs_plugin_offline_update_cancel";
+	case GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL:
+		state->function_name = "gs_plugin_update_cancel";
 		state->state_success = AS_APP_STATE_UNKNOWN;
 		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
@@ -3761,21 +3770,22 @@ gs_plugin_loader_filename_to_app_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 /**
- * gs_plugin_loader_offline_update_thread_cb:
+ * gs_plugin_loader_update_thread_cb:
  **/
 static void
-gs_plugin_loader_offline_update_thread_cb (GTask *task,
-                                           gpointer object,
-                                           gpointer task_data,
-                                           GCancellable *cancellable)
+gs_plugin_loader_update_thread_cb (GTask *task,
+				   gpointer object,
+				   gpointer task_data,
+				   GCancellable *cancellable)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	const gchar *function_name = "gs_plugin_offline_update";
+	const gchar *function_name = "gs_plugin_update";
 	gboolean ret = TRUE;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPlugin *plugin;
-	GsPluginOfflineUpdateFunc plugin_func = NULL;
+	GsPluginUpdateFunc plugin_func = NULL;
+	GsPluginActionFunc plugin_app_func = NULL;
 	guint i;
 
 	/* run each plugin */
@@ -3807,21 +3817,71 @@ gs_plugin_loader_offline_update_thread_cb (GTask *task,
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 
+	/* run each plugin, per-app version */
+	function_name = "gs_plugin_update_app";
+	for (i = 0; i < priv->plugins->len; i++) {
+		GList *l;
+
+		plugin = g_ptr_array_index (priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
+		ret = g_task_return_error_if_cancelled (task);
+		if (ret)
+			return;
+		ret = g_module_symbol (plugin->module,
+		                       function_name,
+		                       (gpointer *) &plugin_app_func);
+		if (!ret)
+			continue;
+
+		/* for each app */
+		for (l = state->list; l != NULL; l = l->next) {
+			GsApp *app = GS_APP (l->data);
+			const gchar *management_plugin;
+			g_autoptr(AsProfileTask) ptask = NULL;
+			g_autoptr(GError) error_local = NULL;
+
+			/* only run method for the correct plugin */
+			management_plugin = gs_app_get_management_plugin (app);
+			if (g_strcmp0 (management_plugin, plugin->name) != 0) {
+				g_debug ("skipping %s:%s as invalid (%s)",
+					 plugin->name, function_name, management_plugin);
+				continue;
+			}
+
+			ptask = as_profile_start (priv->profile,
+						  "GsPlugin::%s(%s){%s}",
+						  plugin->name,
+						  function_name,
+						  gs_app_get_id (app));
+			ret = plugin_app_func (plugin, app,
+					       cancellable,
+					       &error_local);
+			if (!ret) {
+				g_warning ("failed to call %s on %s: %s",
+					   function_name, plugin->name,
+					   error_local->message);
+				continue;
+			}
+		}
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+	}
+
 	g_task_return_boolean (task, TRUE);
 }
 
 /**
- * gs_plugin_loader_offline_update_async:
+ * gs_plugin_loader_update_async:
  *
- * This method calls all plugins that implement the gs_plugin_add_offline_update()
- * function.
+ * This method calls all plugins that implement the gs_plugin_update()
+ * or gs_plugin_update_app() functions.
  **/
 void
-gs_plugin_loader_offline_update_async (GsPluginLoader *plugin_loader,
-                                       GList *apps,
-                                       GCancellable *cancellable,
-                                       GAsyncReadyCallback callback,
-                                       gpointer user_data)
+gs_plugin_loader_update_async (GsPluginLoader *plugin_loader,
+			       GList *apps,
+			       GCancellable *cancellable,
+			       GAsyncReadyCallback callback,
+			       gpointer user_data)
 {
 	GsPluginLoaderAsyncState *state;
 	g_autoptr(GTask) task = NULL;
@@ -3837,16 +3897,16 @@ gs_plugin_loader_offline_update_async (GsPluginLoader *plugin_loader,
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
 	g_task_set_return_on_cancel (task, TRUE);
-	g_task_run_in_thread (task, gs_plugin_loader_offline_update_thread_cb);
+	g_task_run_in_thread (task, gs_plugin_loader_update_thread_cb);
 }
 
 /**
- * gs_plugin_loader_offline_update_finish:
+ * gs_plugin_loader_update_finish:
  **/
 gboolean
-gs_plugin_loader_offline_update_finish (GsPluginLoader *plugin_loader,
-                                        GAsyncResult *res,
-                                        GError **error)
+gs_plugin_loader_update_finish (GsPluginLoader *plugin_loader,
+				GAsyncResult *res,
+				GError **error)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
 	g_return_val_if_fail (G_IS_TASK (res), FALSE);

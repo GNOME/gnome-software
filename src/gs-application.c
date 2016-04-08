@@ -427,7 +427,7 @@ reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 	/* cancel trigger */
 	gs_plugin_loader_app_action_async (app->plugin_loader,
 					   NULL, /* everything! */
-					   GS_PLUGIN_LOADER_ACTION_OFFLINE_UPDATE_CANCEL,
+					   GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL,
 					   app->cancellable,
 					   cancel_trigger_failed_cb,
 					   app);
@@ -443,7 +443,7 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 {
 	g_autoptr(GDBusConnection) bus = NULL;
 	g_autoptr(GError) error = NULL;
-	if (!gs_plugin_loader_offline_update_finish (plugin_loader, res, &error)) {
+	if (!gs_plugin_loader_update_finish (plugin_loader, res, &error)) {
 		g_warning ("Failed to trigger offline update: %s", error->message);
 		return;
 	}
@@ -468,11 +468,11 @@ reboot_and_install (GSimpleAction *action,
 {
 	GsApplication *app = GS_APPLICATION (data);
 	gs_application_initialize_plugins (app);
-	gs_plugin_loader_offline_update_async (app->plugin_loader,
-	                                       NULL,
-	                                       app->cancellable,
-	                                       (GAsyncReadyCallback) offline_update_cb,
-	                                       app);
+	gs_plugin_loader_update_async (app->plugin_loader,
+				       NULL,
+				       app->cancellable,
+				       (GAsyncReadyCallback) offline_update_cb,
+				       app);
 }
 
 static void

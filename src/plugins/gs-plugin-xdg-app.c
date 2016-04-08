@@ -1343,12 +1343,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_app_update:
- *
- * This is only called when updating live.
+ * gs_plugin_update_app:
  */
 gboolean
-gs_plugin_app_update (GsPlugin *plugin,
+gs_plugin_update_app (GsPlugin *plugin,
 		      GsApp *app,
 		      GCancellable *cancellable,
 		      GError **error)
