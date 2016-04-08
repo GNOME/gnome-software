@@ -62,6 +62,7 @@ struct _GsShellUpdates
 	GSettings		*desktop_settings;
 	gboolean		 cache_valid;
 	gboolean		 in_progress;
+	gboolean		 all_updates_are_live;
 	GsShell			*shell;
 	GNetworkMonitor		*network_monitor;
 	gulong			 network_changed_handler;
@@ -466,9 +467,24 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	self->all_updates_are_live = TRUE;
 	for (l = list; l != NULL; l = l->next) {
-		gs_update_list_add_app (GS_UPDATE_LIST (self->list_box_updates),
-					GS_APP (l->data));
+		GsApp *app = GS_APP (l->data);
+		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
+			self->all_updates_are_live = FALSE;
+		gs_update_list_add_app (GS_UPDATE_LIST (self->list_box_updates), app);
+	}
+
+	/* change the button as to whether a reboot is required to
+	 * apply all the updates */
+	if (self->all_updates_are_live) {
+		gtk_button_set_label (GTK_BUTTON (self->button_update_all),
+				      /* TRANSLATORS: all updates will be installed */
+				      _("_Install All"));
+	} else {
+		gtk_button_set_label (GTK_BUTTON (self->button_update_all),
+				      /* TRANSLATORS: this is an offline update */
+				      _("Restart & _Install"));
 	}
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_updates_counter"));
