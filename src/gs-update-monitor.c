@@ -333,7 +333,8 @@ check_updates (GsUpdateMonitor *monitor)
 	g_debug ("Refreshing cache");
 	gs_plugin_loader_refresh_async (monitor->plugin_loader,
 					60 * 60 * 24,
-					GS_PLUGIN_REFRESH_FLAGS_UPDATES,
+					GS_PLUGIN_REFRESH_FLAGS_METADATA |
+					GS_PLUGIN_REFRESH_FLAGS_PAYLOAD,
 					monitor->cancellable,
 					refresh_cache_finished_cb,
 					monitor);

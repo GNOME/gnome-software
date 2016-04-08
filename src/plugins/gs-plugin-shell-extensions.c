@@ -664,6 +664,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 	g_autoptr(AsStore) store = NULL;
 	g_autoptr(GFile) file = NULL;
 
+	/* no longer interesting */
+	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
+		return TRUE;
+
 	/* connect to gnome-shell */
 	if (!gs_plugin_setup (plugin, cancellable, error))
 		return FALSE;

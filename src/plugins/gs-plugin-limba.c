@@ -280,7 +280,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	GError *error_local = NULL;
 
 	/* not us */
-	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
+	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
 		return TRUE;
 
 	mgr = li_manager_new ();

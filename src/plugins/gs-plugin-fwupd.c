@@ -590,8 +590,17 @@ gs_plugin_refresh (GsPlugin *plugin,
 		return FALSE;
 
 	/* get the metadata and signature file */
-	if (!gs_plugin_fwupd_check_lvfs_metadata (plugin, cache_age, cancellable, error))
-		return FALSE;
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
+		if (!gs_plugin_fwupd_check_lvfs_metadata (plugin,
+							  cache_age,
+							  cancellable,
+							  error))
+			return FALSE;
+	}
+
+	/* no longer interesting */
+	if ((flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) == 0)
+		return TRUE;
 
 	/* download the files to the cachedir */
 	for (i = 0; i < plugin->priv->to_download->len; i++) {

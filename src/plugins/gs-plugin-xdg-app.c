@@ -618,17 +618,20 @@ gs_plugin_refresh (GsPlugin *plugin,
 	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
 
-	/* not us */
-	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
-		return TRUE;
-
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
 		return FALSE;
 
 	/* update AppStream metadata */
-	if (!gs_plugin_refresh_appstream (plugin, cache_age, cancellable, error))
-		return FALSE;
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
+		if (!gs_plugin_refresh_appstream (plugin, cache_age,
+						  cancellable, error))
+			return FALSE;
+	}
+
+	/* no longer interesting */
+	if ((flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) == 0)
+		return TRUE;
 
 	/* use helper: FIXME: new()&ref? */
 	helper.plugin = plugin;

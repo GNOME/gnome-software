@@ -175,6 +175,21 @@ gs_cmd_parse_refine_flags (const gchar *extra, GError **error)
 	return refine_flags;
 }
 
+/**
+ * gs_cmd_refresh_flag_from_string:
+ **/
+static GsPluginRefreshFlags
+gs_cmd_refresh_flag_from_string (const gchar *flag)
+{
+	if (flag == NULL || g_strcmp0 (flag, "all") == 0)
+		return G_MAXINT32;
+	if (g_strcmp0 (flag, "metadata") == 0)
+		return GS_PLUGIN_REFRESH_FLAGS_METADATA;
+	if (g_strcmp0 (flag, "payload") == 0)
+		return GS_PLUGIN_REFRESH_FLAGS_PAYLOAD;
+	return GS_PLUGIN_REFRESH_FLAGS_NONE;
+}
+
 int
 main (int argc, char **argv)
 {
@@ -420,10 +435,11 @@ main (int argc, char **argv)
 				break;
 			}
 		}
-	} else if (argc == 2 && g_strcmp0 (argv[1], "refresh") == 0) {
+	} else if (argc >= 2 && g_strcmp0 (argv[1], "refresh") == 0) {
+		GsPluginRefreshFlags refresh_flags;
+		refresh_flags = gs_cmd_refresh_flag_from_string (argv[2]);
 		ret = gs_plugin_loader_refresh (plugin_loader, cache_age,
-						GS_PLUGIN_REFRESH_FLAGS_UPDATES,
-						NULL, &error);
+						refresh_flags, NULL, &error);
 	} else {
 		ret = FALSE;
 		g_set_error_literal (&error,
