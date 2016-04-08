@@ -1832,6 +1832,13 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 
 	g_return_if_fail (GS_IS_APP (app));
 
+	/* if the app is updatable-live and any related app is not then
+	 * degrade to the offline state */
+	if (app->state == AS_APP_STATE_UPDATABLE_LIVE &&
+	    app2->state == AS_APP_STATE_UPDATABLE) {
+		app->state = app2->state;
+	}
+
 	key = g_strdup_printf ("%s-%s",
 			       gs_app_get_id (app2),
 			       gs_app_get_source_default (app2));
