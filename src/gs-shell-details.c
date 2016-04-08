@@ -1042,6 +1042,10 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		break;
 	}
 
+	/* some apps are unreviewable */
+	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_NOT_REVIEWABLE))
+		show_reviews = FALSE;
+
 	/* set the star rating */
 	if (show_reviews) {
 		if (gs_app_get_rating (self->app) >= 0) {
