@@ -941,7 +941,6 @@ gs_shell_updates_perform_update_cb (GsPluginLoader *plugin_loader,
                                     GAsyncResult *res,
                                     GsShellUpdates *self)
 {
-	g_autoptr(GDBusConnection) bus = NULL;
 	g_autoptr(GError) error = NULL;
 
 	/* get the results */
@@ -950,17 +949,20 @@ gs_shell_updates_perform_update_cb (GsPluginLoader *plugin_loader,
 		return;
 	}
 
-	/* trigger reboot */
-	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
-	g_dbus_connection_call (bus,
-				"org.gnome.SessionManager",
-				"/org/gnome/SessionManager",
-				"org.gnome.SessionManager",
-				"Reboot",
-				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
-				G_MAXINT, NULL,
-				gs_shell_updates_reboot_failed_cb,
-				self);
+	/* trigger reboot if any application was not updatable live */
+	if (!self->all_updates_are_live) {
+		g_autoptr(GDBusConnection) bus = NULL;
+		bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+		g_dbus_connection_call (bus,
+					"org.gnome.SessionManager",
+					"/org/gnome/SessionManager",
+					"org.gnome.SessionManager",
+					"Reboot",
+					NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+					G_MAXINT, NULL,
+					gs_shell_updates_reboot_failed_cb,
+					self);
+	}
 }
 
 static void
