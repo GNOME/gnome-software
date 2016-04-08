@@ -461,6 +461,45 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 				app);
 }
 
+/**
+ * gs_application_reboot_failed_cb:
+ **/
+static void
+gs_application_reboot_failed_cb (GObject *source,
+				 GAsyncResult *res,
+				 gpointer user_data)
+{
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GVariant) retval = NULL;
+
+	/* get result */
+	retval = g_dbus_connection_call_finish (G_DBUS_CONNECTION (source), res, &error);
+	if (retval != NULL)
+		return;
+	if (error != NULL) {
+		g_warning ("Calling org.gnome.SessionManager.Reboot failed: %s",
+			   error->message);
+	}
+}
+
+static void
+reboot_activated (GSimpleAction *action,
+		   GVariant      *parameter,
+		   gpointer       data)
+{
+	g_autoptr(GDBusConnection) bus = NULL;
+	bus = g_bus_get_sync (G_BUS_TYPE_SESSION, NULL, NULL);
+	g_dbus_connection_call (bus,
+				"org.gnome.SessionManager",
+				"/org/gnome/SessionManager",
+				"org.gnome.SessionManager",
+				"Reboot",
+				NULL, NULL, G_DBUS_CALL_FLAGS_NONE,
+				G_MAXINT, NULL,
+				gs_application_reboot_failed_cb,
+				NULL);
+}
+
 static void
 reboot_and_install (GSimpleAction *action,
 		    GVariant      *parameter,
@@ -646,6 +685,7 @@ static GActionEntry actions[] = {
 	{ "quit", quit_activated, NULL, NULL, NULL },
 	{ "profile", profile_activated, NULL, NULL, NULL },
 	{ "reboot-and-install", reboot_and_install, NULL, NULL, NULL },
+	{ "reboot", reboot_activated, NULL, NULL, NULL },
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
