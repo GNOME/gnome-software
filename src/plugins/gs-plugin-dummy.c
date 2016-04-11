@@ -255,6 +255,64 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	return TRUE;
 }
 
+typedef struct {
+	GsApp		*app;
+	GsPlugin	*plugin;
+	GMainLoop	*loop;
+	guint		 percentage;
+} GsPluginDummyHelper;
+
+/**
+ * gs_plugin_dummy_refresh_cb:
+ */
+static gboolean
+gs_plugin_dummy_refresh_cb (gpointer user_data)
+{
+	GsPluginDummyHelper *helper = (GsPluginDummyHelper *) user_data;
+	helper->percentage += 10;
+	if (helper->percentage >= 100) {
+		g_main_loop_quit (helper->loop);
+		return FALSE;
+	}
+	gs_app_set_progress (helper->app, helper->percentage);
+	gs_plugin_status_update (helper->plugin,
+				 helper->app,
+				 GS_PLUGIN_STATUS_DOWNLOADING);
+	return TRUE;
+}
+
+/**
+ * gs_plugin_refresh:
+ */
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GsPluginRefreshFlags flags,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	guint delay_ms = 2000;
+	g_autofree GsPluginDummyHelper *helper = g_new0 (GsPluginDummyHelper, 1);
+	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
+	g_autoptr(GsApp) app = gs_app_new (NULL);
+
+	/* each one takes more time */
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA)
+		delay_ms += 3000;
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD)
+		delay_ms += 5000;
+
+	/* set up callbacks */
+	helper->app = app;
+	helper->plugin = plugin;
+	helper->loop = loop;
+	g_debug ("dummy waiting");
+	g_timeout_add (delay_ms / 10, gs_plugin_dummy_refresh_cb, helper);
+	g_main_loop_run (loop);
+	g_debug ("dummy done");
+	return TRUE;
+}
+
 /**
  * gs_plugin_review_submit:
  */
