@@ -45,6 +45,18 @@ gs_plugin_get_name (void)
 }
 
 /**
+ * gs_plugin_order_after:
+ */
+const gchar **
+gs_plugin_order_after (GsPlugin *plugin)
+{
+	static const gchar *deps[] = { "appstream",
+				       "packagekit",
+				       NULL };
+	return deps;
+}
+
+/**
  * gs_plugin_initialize:
  */
 void
@@ -76,14 +88,16 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	LiPkgInfo *pki;
 	g_autoptr(GError) error_local = NULL;
+	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* not us */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "limba") != 0)
 		return TRUE;
 
-	ptask = as_profile_start_literal (plugin->profile, "limba::refine");
-	if (!gs_plugin_refine_app (plugin, app, error))
-		return FALSE;
+	/* profile */
+	ptask = as_profile_start (plugin->profile,
+				  "limba::refine{%s}",
+				  gs_app_get_id (app));
 
 	/* sanity check */
 	if (gs_app_get_source_default (app) == NULL)
@@ -298,6 +312,79 @@ gs_plugin_refresh (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_app_from_pki:
+ */
+static GsApp*
+gs_plugin_app_from_pki (LiPkgInfo *pki)
+{
+	const gchar *cptkind_str;
+	GsApp *app;
+
+	cptkind_str = li_pkg_info_get_component_kind (pki);
+	if ((cptkind_str != NULL) && (g_strcmp0 (cptkind_str, "desktop") == 0)) {
+		g_autofree gchar *tmp = NULL;
+		/* type=desktop AppStream components result in a Limba bundle name which has the .desktop stripped away.
+		 * We need to re-add it for GNOME Software.
+		 * In any other case, the Limba bundle name equals the AppStream ID of the component it contains */
+		tmp = g_strdup_printf ("%s.desktop", li_pkg_info_get_name (pki));
+		app = gs_app_new (tmp);
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	} else {
+		app = gs_app_new (li_pkg_info_get_name (pki));
+		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
+	}
+
+	gs_app_set_management_plugin (app, "limba");
+	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
+	gs_app_set_name (app,
+			 GS_APP_QUALITY_LOWEST,
+			 li_pkg_info_get_name (pki));
+	gs_app_set_summary (app,
+			    GS_APP_QUALITY_LOWEST,
+			    li_pkg_info_get_name (pki));
+	gs_app_set_version (app, li_pkg_info_get_version (pki));
+	gs_app_add_source (app, li_pkg_info_get_id (pki));
+
+	return app;
+}
+
+/**
+ * gs_plugin_add_sources:
+ */
+gboolean
+gs_plugin_add_installed (GsPlugin *plugin,
+			 GList **list,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	guint i;
+	g_autoptr(GPtrArray) swlist = NULL;
+	g_autoptr(GError) error_local = NULL;
+
+	/* HINT: We also emit not-installed but available software here. */
+
+	swlist = li_manager_get_software_list (plugin->priv->mgr, &error_local);
+	if (error_local != NULL) {
+		g_set_error (error,
+				GS_PLUGIN_ERROR,
+				GS_PLUGIN_ERROR_FAILED,
+				"Failed to list software: %s",
+				error_local->message);
+		return FALSE;
+	}
+
+	for (i = 0; i < swlist->len; i++) {
+		g_autoptr(GsApp) app = NULL;
+		LiPkgInfo *pki = LI_PKG_INFO (g_ptr_array_index (swlist, i));
+
+		app = gs_plugin_app_from_pki (pki);
+		gs_plugin_add_app (list, app);
+	}
+
+	return TRUE;
+}
+
+/**
  * gs_plugin_add_updates:
  */
 gboolean
@@ -323,42 +410,15 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	for (l = updates; l != NULL; l = l->next) {
 		LiPkgInfo *old_pki;
 		LiPkgInfo *new_pki;
-		const gchar *cptkind_str;
 		g_autoptr(GsApp) app = NULL;
 		LiUpdateItem *uitem = LI_UPDATE_ITEM (l->data);
 
 		old_pki = li_update_item_get_installed_pkg (uitem);
 		new_pki = li_update_item_get_available_pkg (uitem);
 
-		cptkind_str = li_pkg_info_get_component_kind (old_pki);
-		if ((cptkind_str != NULL) && (g_strcmp0 (cptkind_str, "desktop") == 0)) {
-			g_autofree gchar *tmp = NULL;
-			/* type=desktop AppStream components result in a Limba bundle name which has the .desktop stripped away.
-			 * We need to re-add it for GNOME Software.
-			 * In any other case, the Limba bundle name equals the AppStream ID of the component it contains */
-			tmp = g_strdup_printf ("%s.desktop", li_pkg_info_get_name (old_pki));
-			app = gs_app_new (tmp);
-			gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-		} else {
-			app = gs_app_new (li_pkg_info_get_name (old_pki));
-		}
-
-		gs_app_set_management_plugin (app, "limba");
-		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
-		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
-		gs_plugin_add_app (list, app);
-		gs_app_set_name (app,
-				 GS_APP_QUALITY_LOWEST,
-				 li_pkg_info_get_name (old_pki));
-		gs_app_set_summary (app,
-				    GS_APP_QUALITY_LOWEST,
-				    li_pkg_info_get_name (old_pki));
-		gs_app_set_version (app,
-				    li_pkg_info_get_version (old_pki));
+		app = gs_plugin_app_from_pki (old_pki);
 		gs_app_set_update_version (app,
-					   li_pkg_info_get_version (new_pki));
-		gs_app_add_source (app,
-				   li_pkg_info_get_id (old_pki));
+				   li_pkg_info_get_version (new_pki));
 		gs_plugin_add_app (list, app);
 	}
 
