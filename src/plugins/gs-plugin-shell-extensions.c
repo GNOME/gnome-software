@@ -668,6 +668,21 @@ gs_plugin_refresh (GsPlugin *plugin,
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
 		return TRUE;
 
+	/* check age */
+	fn = g_build_filename (g_get_user_data_dir (),
+			       "app-info",
+			       "xmls",
+			       "extensions-web.xml",
+			       NULL);
+	file = g_file_new_for_path (fn);
+	if (g_file_query_exists (file, NULL)) {
+		guint age = gs_utils_get_file_age (file);
+		if (age < cache_age) {
+			g_debug ("%s is only %i seconds old, ignoring", fn, age);
+			return TRUE;
+		}
+	}
+
 	/* connect to gnome-shell */
 	if (!gs_plugin_setup (plugin, cancellable, error))
 		return FALSE;
@@ -687,14 +702,8 @@ gs_plugin_refresh (GsPlugin *plugin,
 	}
 
 	/* save to disk */
-	fn = g_build_filename (g_get_user_data_dir (),
-			       "app-info",
-			       "xmls",
-			       "extensions-web.xml",
-			       NULL);
 	if (!gs_mkdir_parent (fn, error))
 		return FALSE;
-	file = g_file_new_for_path (fn);
 	g_debug ("saving to %s", fn);
 	return as_store_to_file (store, file,
 				 AS_NODE_TO_XML_FLAG_ADD_HEADER |
