@@ -314,9 +314,6 @@ gs_application_initialize_ui (GsApplication *app)
 
 	gs_shell_setup (app->shell, app->plugin_loader, app->cancellable);
 	gtk_application_add_window (GTK_APPLICATION (app), gs_shell_get_window (app->shell));
-
-	g_signal_connect_swapped (app->shell, "loaded",
-				  G_CALLBACK (gtk_window_present), gs_shell_get_window (app->shell));
 }
 
 static void
@@ -747,11 +744,30 @@ gs_application_startup (GApplication *application)
 }
 
 static void
+gs_application_shell_loaded_cb (GsShell *shell, GsApplication *app)
+{
+	gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
+}
+
+static void
 gs_application_activate (GApplication *application)
 {
+	GsApplication *app = GS_APPLICATION (application);
+
 	gs_application_initialize_ui (GS_APPLICATION (application));
-	gs_shell_set_mode (GS_APPLICATION (application)->shell, GS_SHELL_MODE_OVERVIEW);
+
+	/* start metadata loading screen */
+	if (gs_shell_get_mode (app->shell) == GS_SHELL_MODE_UNKNOWN) {
+		g_signal_connect (app->shell, "loaded",
+				  G_CALLBACK (gs_application_shell_loaded_cb),
+				  app);
+		gs_shell_set_mode (app->shell, GS_SHELL_MODE_LOADING);
+	} else {
+		gs_shell_set_mode (app->shell, GS_SHELL_MODE_OVERVIEW);
+	}
+
 	gs_shell_activate (GS_APPLICATION (application)->shell);
+
 	gs_application_show_first_run_dialog (GS_APPLICATION (application));
 }
 

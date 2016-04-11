@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -30,6 +30,7 @@
 #include "gs-shell-details.h"
 #include "gs-shell-installed.h"
 #include "gs-shell-moderate.h"
+#include "gs-shell-loading.h"
 #include "gs-shell-search.h"
 #include "gs-shell-overview.h"
 #include "gs-shell-updates.h"
@@ -40,6 +41,7 @@
 #include "gs-update-monitor.h"
 
 static const gchar *page_name[] = {
+	"unknown",
 	"overview",
 	"installed",
 	"search",
@@ -48,6 +50,7 @@ static const gchar *page_name[] = {
 	"category",
 	"extras",
 	"moderate",
+	"loading",
 };
 
 typedef struct {
@@ -66,6 +69,7 @@ typedef struct
 	GsShellOverview		*shell_overview;
 	GsShellInstalled	*shell_installed;
 	GsShellModerate		*shell_moderate;
+	GsShellLoading		*shell_loading;
 	GsShellSearch		*shell_search;
 	GsShellUpdates		*shell_updates;
 	GsShellDetails		*shell_details;
@@ -285,6 +289,9 @@ gs_shell_change_mode (GsShell *shell,
 		break;
 	case GS_SHELL_MODE_MODERATE:
 		new_page = GS_PAGE (priv->shell_moderate);
+		break;
+	case GS_SHELL_MODE_LOADING:
+		new_page = GS_PAGE (priv->shell_loading);
 		break;
 	case GS_SHELL_MODE_SEARCH:
 		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
@@ -770,6 +777,12 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 				 priv->plugin_loader,
 				 priv->builder,
 				 priv->cancellable);
+	priv->shell_loading = GS_SHELL_LOADING (gtk_builder_get_object (priv->builder, "shell_loading"));
+	gs_shell_loading_setup (priv->shell_loading,
+				shell,
+				priv->plugin_loader,
+				priv->builder,
+				priv->cancellable);
 	priv->shell_search = GS_SHELL_SEARCH (gtk_builder_get_object (priv->builder, "shell_search"));
 	gs_shell_search_setup (priv->shell_search,
 			       shell,
@@ -808,7 +821,7 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			  G_CALLBACK (search_changed_handler), shell);
 
 	/* load content */
-	g_signal_connect (priv->shell_overview, "refreshed",
+	g_signal_connect (priv->shell_loading, "refreshed",
 			  G_CALLBACK (initial_overview_load_done), shell);
 }
 

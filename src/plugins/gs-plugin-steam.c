@@ -698,11 +698,16 @@ gs_plugin_steam_update_store (GsPlugin *plugin, AsStore *store, GPtrArray *apps,
 {
 	guint i;
 	GHashTable *app;
+	g_autoptr(GsApp) dummy = gs_app_new (NULL);
 
 	for (i = 0; i < apps->len; i++) {
 		app = g_ptr_array_index (apps, i);
 		if (!gs_plugin_steam_update_store_app (plugin, store, app, error))
 			return FALSE;
+
+		/* update progress */
+		gs_app_set_progress (dummy, (gdouble) i * 100.f / (gdouble) apps->len);
+		gs_plugin_status_update (plugin, dummy, GS_PLUGIN_STATUS_DOWNLOADING);
 	}
 	return TRUE;
 }
