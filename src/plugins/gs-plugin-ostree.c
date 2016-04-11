@@ -87,10 +87,10 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_startup:
+ * gs_plugin_setup:
  */
-static gboolean
-gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	/* already started */
 	if (plugin->priv->ostree_repo != NULL)
@@ -116,7 +116,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	g_auto(GStrv) names = NULL;
 
 	/* set up plugin */
-	if (!gs_plugin_startup (plugin, cancellable, error))
+	if (!gs_plugin_setup (plugin, cancellable, error))
 		return FALSE;
 
 	/* get all remotes */
@@ -154,9 +154,5 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	/* set up plugin */
-	if (!gs_plugin_startup (plugin, cancellable, error))
-		return FALSE;
-
 	return TRUE;
 }

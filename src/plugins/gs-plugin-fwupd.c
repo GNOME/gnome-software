@@ -41,7 +41,6 @@
  */
 
 struct GsPluginPrivate {
-	GMutex			 mutex;
 	FwupdClient		*client;
 	GPtrArray		*to_download;
 	GPtrArray		*to_ignore;
@@ -106,14 +105,13 @@ gs_plugin_fwupd_changed_cb (FwupdClient *client, GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_startup:
+ * gs_plugin_setup:
  */
-static gboolean
-gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	gsize len;
 	g_autofree gchar *data = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->mutex);
 
 	/* already done */
 	if (plugin->priv->cachedir != NULL)
@@ -382,10 +380,6 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FwupdResult) res = NULL;
 
-	/* set up plugin */
-	if (!gs_plugin_startup (plugin, cancellable, error))
-		return FALSE;
-
 	/* get historical updates */
 	res = fwupd_client_get_results (plugin->priv->client,
 					FWUPD_DEVICE_ID_ANY,
@@ -425,10 +419,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	guint i;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) results = NULL;
-
-	/* set up plugin */
-	if (!gs_plugin_startup (plugin, cancellable, error))
-		return FALSE;
 
 	/* get current list of updates */
 	results = fwupd_client_get_updates (plugin->priv->client,
@@ -585,10 +575,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	const gchar *tmp;
 	guint i;
 
-	/* set up plugin */
-	if (!gs_plugin_startup (plugin, cancellable, error))
-		return FALSE;
-
 	/* get the metadata and signature file */
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
 		if (!gs_plugin_fwupd_check_lvfs_metadata (plugin,
@@ -709,10 +695,6 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	/* set up plugin */
-	if (!gs_plugin_startup (plugin, cancellable, error))
-		return FALSE;
-
 	/* locked devices need unlocking, rather than installing */
 	if (gs_app_get_metadata_item (app, "fwupd::IsLocked") != NULL) {
 		const gchar *device_id;

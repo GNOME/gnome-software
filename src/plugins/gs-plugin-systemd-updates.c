@@ -35,7 +35,6 @@
 
 struct GsPluginPrivate {
 	GFileMonitor		*monitor;
-	gsize			 done_init;
 };
 
 /**
@@ -80,10 +79,10 @@ gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 }
 
 /**
- * gs_plugin_startup:
+ * gs_plugin_setup:
  */
-static gboolean
-gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	plugin->priv->monitor = pk_offline_get_prepared_monitor (cancellable, error);
 	if (plugin->priv->monitor == NULL)
@@ -103,18 +102,9 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	gboolean ret;
 	guint i;
 	g_autoptr(GError) error_local = NULL;
 	g_auto(GStrv) package_ids = NULL;
-
-	/* watch the file in case it comes or goes */
-	if (g_once_init_enter (&plugin->priv->done_init)) {
-		ret = gs_plugin_startup (plugin, cancellable, error);
-		g_once_init_leave (&plugin->priv->done_init, TRUE);
-		if (!ret)
-			return FALSE;
-	}
 
 	/* get the id's if the file exists */
 	package_ids = pk_offline_get_prepared_ids (&error_local);

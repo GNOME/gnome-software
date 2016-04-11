@@ -34,7 +34,6 @@
  */
 
 struct GsPluginPrivate {
-	gsize			 loaded;
 	GDBusConnection		*connection;
 };
 
@@ -133,10 +132,10 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 }
 
 /**
- * gs_plugin_load:
+ * gs_plugin_setup:
  */
-static gboolean
-gs_plugin_load (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	plugin->priv->connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
 						   cancellable,
@@ -160,14 +159,6 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	g_autofree const gchar **package_names = NULL;
 	g_autoptr(GVariant) result = NULL;
 	g_autoptr(GVariant) tuple = NULL;
-
-	/* already loaded */
-	if (g_once_init_enter (&plugin->priv->loaded)) {
-		ret = gs_plugin_load (plugin, cancellable, error);
-		g_once_init_leave (&plugin->priv->loaded, TRUE);
-		if (!ret)
-			return FALSE;
-	}
 
 	/* get an array of package names */
 	package_names = g_new0 (const gchar *, g_list_length (list) + 1);

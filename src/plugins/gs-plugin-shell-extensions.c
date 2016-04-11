@@ -225,7 +225,7 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 /**
  * gs_plugin_setup:
  */
-static gboolean
+gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	g_autoptr(GVariant) version = NULL;
@@ -262,10 +262,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	gchar *ext_uuid;
 	g_autoptr(GVariantIter) iter = NULL;
 	g_autoptr(GVariant) retval = NULL;
-
-	/* connect to gnome-shell */
-	if (!gs_plugin_setup (plugin, cancellable, error))
-		return FALSE;
 
 	/* installed */
 	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
@@ -683,10 +679,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 		}
 	}
 
-	/* connect to gnome-shell */
-	if (!gs_plugin_setup (plugin, cancellable, error))
-		return FALSE;
-
 	/* get data */
 	apps = gs_plugin_shell_extensions_get_apps (plugin, cache_age, error);
 	if (apps == NULL)
@@ -726,10 +718,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gboolean ret;
 	g_autoptr(GVariant) retval = NULL;
 
-	/* connect to gnome-shell */
-	if (!gs_plugin_setup (plugin, cancellable, error))
-		return FALSE;
-
 	/* install */
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
 	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
@@ -768,10 +756,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	const gchar *uuid;
 	const gchar *retstr;
 	g_autoptr(GVariant) retval = NULL;
-
-	/* connect to gnome-shell */
-	if (!gs_plugin_setup (plugin, cancellable, error))
-		return FALSE;
 
 	/* install */
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
@@ -815,10 +799,6 @@ gs_plugin_launch (GsPlugin *plugin,
 	/* launch both PackageKit-installed and user-installed */
 	if (gs_app_get_kind (app) != AS_APP_KIND_SHELL_EXTENSION)
 		return TRUE;
-
-	/* connect to gnome-shell */
-	if (!gs_plugin_setup (plugin, cancellable, error))
-		return FALSE;
 
 	/* install */
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2012-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2012-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -79,6 +79,7 @@ struct GsPlugin {
 	gpointer		 updates_changed_user_data;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
+	GRWLock			 rwlock;
 };
 
 typedef enum {
@@ -148,6 +149,9 @@ typedef enum {
 typedef const gchar	*(*GsPluginGetNameFunc)		(void);
 typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
 typedef void		 (*GsPluginFunc)		(GsPlugin	*plugin);
+typedef gboolean	 (*GsPluginSetupFunc)		(GsPlugin	*plugin,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginSearchFunc)		(GsPlugin	*plugin,
 							 gchar		**value,
 							 GList		**list,
@@ -242,6 +246,9 @@ gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
 const gchar	**gs_plugin_order_after			(GsPlugin	*plugin);
 const gchar	**gs_plugin_order_before		(GsPlugin	*plugin);
 const gchar	**gs_plugin_get_conflicts		(GsPlugin	*plugin);
+gboolean	 gs_plugin_setup			(GsPlugin	*plugin,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,
