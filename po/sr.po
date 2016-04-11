@@ -13,8 +13,8 @@ msgstr ""
 "Project-Id-Version: gnome-software\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-19 10:26+0000\n"
-"PO-Revision-Date: 2016-03-19 14:47+0100\n"
+"POT-Creation-Date: 2016-04-11 19:11+0000\n"
+"PO-Revision-Date: 2016-03-29 18:16+0200\n"
 "Last-Translator: Марко М. Костић <marko.m.kostic@gmail.com>\n"
 "Language-Team: Serbian <gnom@prevod.org>\n"
 "Language: sr\n"
@@ -152,7 +152,7 @@ msgid "Add to Application Folder"
 msgstr "Додај у фасциклу програма"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:288
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:305
 #: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "_Откажи"
@@ -806,14 +806,19 @@ msgstr "Подешавања проширења"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:200 ../src/gs-shell-details.ui.h:2
+#. TRANSLATORS: button text in the header when firmware
+#. * can be live-installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be live-updated
+#: ../src/gs-shell-details.c:201 ../src/gs-shell-details.c:227
+#: ../src/gs-shell-details.c:232 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:4
 msgid "_Install"
 msgstr "_Инсталирај"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:211
+#: ../src/gs-shell-details.c:212
 msgid "_Installing"
 msgstr "_Инсталирам"
 
@@ -821,94 +826,94 @@ msgstr "_Инсталирам"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:229
+#: ../src/gs-shell-details.c:245
 msgid "_Install…"
 msgstr "_Инсталирај…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:275 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:292 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "_Уклони"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:282
+#: ../src/gs-shell-details.c:299
 msgid "_Removing"
 msgstr "_Уклањам"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:652
+#: ../src/gs-shell-details.c:669
 msgctxt "license"
 msgid "Unknown"
 msgstr "Непозната"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:665
+#: ../src/gs-shell-details.c:682
 msgctxt "version"
 msgid "Unknown"
 msgstr "Непознато"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:671
+#: ../src/gs-shell-details.c:688
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Израчунавам…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:674
+#: ../src/gs-shell-details.c:691
 msgctxt "size"
 msgid "Unknown"
 msgstr "Непозната"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:686
+#: ../src/gs-shell-details.c:703
 msgctxt "updated"
 msgid "Never"
 msgstr "Никада"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:700
+#: ../src/gs-shell-details.c:717
 msgctxt "menu category"
 msgid "None"
 msgstr "Ниједна"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:717
+#: ../src/gs-shell-details.c:734
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Непознато"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:763
+#: ../src/gs-shell-details.c:780
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Овај програм се може користити само ако постоји веза са интернетом."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:774
+#: ../src/gs-shell-details.c:791
 msgid "This software comes from a 3rd party."
 msgstr "Овај програм испоручују треће стране."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:783
+#: ../src/gs-shell-details.c:800
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
 "Овај програм испоручује трећа страна и можда садржи неслободне састојке."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:792
+#: ../src/gs-shell-details.c:809
 msgid "This software may contain non-free components."
 msgstr "Овај програм можда садржи неслободне састојке."
 
-#: ../src/gs-shell-details.c:1114
+#: ../src/gs-shell-details.c:1131
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Не могу да нађем „%s“"
 
-#: ../src/gs-shell-details.c:1174 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1191 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "Нажалост, ово није успело"
 
@@ -993,11 +998,11 @@ msgstr "Документација"
 
 #: ../src/gs-shell-details.ui.h:21
 msgid "Release Activity"
-msgstr "Активност издања"
+msgstr "Активност пројекта"
 
 #: ../src/gs-shell-details.ui.h:22
 msgid "System Integration"
-msgstr "Обједињавање система"
+msgstr "Усклађеност са системом"
 
 #: ../src/gs-shell-details.ui.h:23 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
@@ -2859,6 +2864,9 @@ msgstr "Проширења шкољке"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Localization"
 msgstr "Превод"
+
+#~ msgid "_Update"
+#~ msgstr "Аж_урирај"
 
 #~ msgid "A previous update was unfinished."
 #~ msgstr "Претходно ажурирање је остало недовршено."
