@@ -90,6 +90,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginPrivate *priv = plugin->priv;
 
 	g_clear_pointer (&priv->db, sqlite3_close);
+	g_free (priv->db_path);
 }
 
 static gint
