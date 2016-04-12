@@ -453,6 +453,7 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		/* installing has to go into an stable state */
 		if (state == AS_APP_STATE_UNKNOWN ||
 		    state == AS_APP_STATE_INSTALLED ||
+		    state == AS_APP_STATE_UPDATABLE ||
 		    state == AS_APP_STATE_AVAILABLE)
 			state_change_ok = TRUE;
 		break;
