@@ -229,6 +229,8 @@ libgs_plugin_packagekit_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_refine_la_SOURCES =		\
 	gs-plugin-packagekit-refine.c			\
+	gs-markdown.c					\
+	gs-markdown.h					\
 	packagekit-common.c				\
 	packagekit-common.h
 libgs_plugin_packagekit_refine_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
@@ -274,5 +276,22 @@ libgs_plugin_packagekit_proxy_la_SOURCES = gs-plugin-packagekit-proxy.c
 libgs_plugin_packagekit_proxy_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_packagekit_proxy_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_proxy_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+if ENABLE_TESTS
+check_PROGRAMS =						\
+	gs-self-test
+
+gs_self_test_SOURCES =						\
+	gs-markdown.c						\
+	gs-self-test.c
+
+gs_self_test_LDADD =						\
+	$(GLIB_LIBS)						\
+	$(GTK_LIBS)
+
+gs_self_test_CFLAGS = $(WARN_CFLAGS)
+
+TESTS = gs-self-test
+endif
 
 -include $(top_srcdir)/git.mk
