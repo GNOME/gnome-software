@@ -250,15 +250,20 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Fedora");
-	gs_app_set_version (app, "rawhide");
+	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
+			"https://fedoraproject.org/wiki/Releases/24/Schedule");
+	gs_app_set_version (app, "25");
+	gs_app_set_management_plugin (app, plugin->name);
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
 
 typedef struct {
-	GsApp		*app;
 	GsPlugin	*plugin;
+	GsApp		*app;
 	GMainLoop	*loop;
+	GCancellable	*cancellable;
+	GError		**error;
 	guint		 percentage;
 } GsPluginDummyHelper;
 
@@ -274,11 +279,61 @@ gs_plugin_dummy_refresh_cb (gpointer user_data)
 		g_main_loop_quit (helper->loop);
 		return FALSE;
 	}
+	if (helper->error != NULL && *(helper->error) != NULL) {
+		g_main_loop_quit (helper->loop);
+		return FALSE;
+	}
+	g_debug ("dummy percentage=%i%%", helper->percentage);
 	gs_app_set_progress (helper->app, helper->percentage);
 	gs_plugin_status_update (helper->plugin,
 				 helper->app,
 				 GS_PLUGIN_STATUS_DOWNLOADING);
 	return TRUE;
+}
+
+/**
+ * gs_plugin_dummy_delay_cancel_cb:
+ */
+static void
+gs_plugin_dummy_delay_cancel_cb (GCancellable *cancellable,
+				 GsPluginDummyHelper *helper)
+{
+	g_debug ("dummy delay cancelled");
+	g_cancellable_set_error_if_cancelled (cancellable, helper->error);
+}
+
+/**
+ * gs_plugin_dummy_delay:
+ */
+static gboolean
+gs_plugin_dummy_delay (GsPlugin *plugin,
+		       GsApp *app,
+		       guint timeout_ms,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	g_autofree GsPluginDummyHelper *helper = g_new0 (GsPluginDummyHelper, 1);
+	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
+
+	/* cancel the delay on cancellation */
+	if (cancellable != NULL) {
+		g_cancellable_connect (cancellable,
+				       G_CALLBACK (gs_plugin_dummy_delay_cancel_cb),
+				       helper, NULL);
+	}
+
+	/* set up callbacks */
+	helper->app = app;
+	helper->cancellable = cancellable;
+	helper->error = error;
+	helper->loop = loop;
+	helper->percentage = 0;
+	helper->plugin = plugin;
+	g_debug ("dummy waiting for %ims", timeout_ms);
+	g_timeout_add (timeout_ms / 10, gs_plugin_dummy_refresh_cb, helper);
+	g_main_loop_run (loop);
+	g_debug ("dummy done");
+	return helper->error != NULL;
 }
 
 /**
@@ -291,9 +346,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	guint delay_ms = 2000;
-	g_autofree GsPluginDummyHelper *helper = g_new0 (GsPluginDummyHelper, 1);
-	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
+	guint delay_ms = 100;
 	g_autoptr(GsApp) app = gs_app_new (NULL);
 
 	/* each one takes more time */
@@ -302,14 +355,41 @@ gs_plugin_refresh (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD)
 		delay_ms += 5000;
 
-	/* set up callbacks */
-	helper->app = app;
-	helper->plugin = plugin;
-	helper->loop = loop;
-	g_debug ("dummy waiting");
-	g_timeout_add (delay_ms / 10, gs_plugin_dummy_refresh_cb, helper);
-	g_main_loop_run (loop);
-	g_debug ("dummy done");
+	/* do delay */
+	return gs_plugin_dummy_delay (plugin, app, delay_ms, cancellable, error);
+}
+
+/**
+ * gs_plugin_app_upgrade_download:
+ */
+gboolean
+gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
+			        GCancellable *cancellable, GError **error)
+{
+	g_debug ("starting download");
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	if (!gs_plugin_dummy_delay (plugin, app, 5000, cancellable, error))
+		return FALSE;
+	return TRUE;
+}
+
+/**
+ * gs_plugin_app_upgrade_trigger:
+ */
+gboolean
+gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
+			       GCancellable *cancellable, GError **error)
+{
+	return TRUE;
+}
+
+/**
+ * gs_plugin_update_cancel:
+ */
+gboolean
+gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
+			 GCancellable *cancellable, GError **error)
+{
 	return TRUE;
 }
 
