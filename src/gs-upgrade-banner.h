@@ -36,9 +36,10 @@ struct _GsUpgradeBannerClass
 {
 	GtkBinClass	 parent_class;
 
-	void		(*download_button_clicked)	(GsUpgradeBanner	*self);
-	void		(*install_button_clicked)	(GsUpgradeBanner	*self);
-	void		(*learn_more_button_clicked)	(GsUpgradeBanner	*self);
+	void		(*download_clicked)	(GsUpgradeBanner	*self);
+	void		(*install_clicked)	(GsUpgradeBanner	*self);
+	void		(*cancel_clicked)	(GsUpgradeBanner	*self);
+	void		(*help_clicked)		(GsUpgradeBanner	*self);
 };
 
 GtkWidget	*gs_upgrade_banner_new			(void);
