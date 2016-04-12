@@ -332,6 +332,10 @@ gs_plugin_steam_capture (const gchar *html,
 	guint start_len;
 	guint end_len;
 
+	/* invalid */
+	if (html == NULL)
+		return NULL;
+
 	/* find @start */
 	start_len = strlen (start);
 	for (i = *offset; html[i] != '\0'; i++) {
