@@ -205,6 +205,17 @@ void		 gs_plugin_initialize			(GsPlugin	*plugin);
 void		 gs_plugin_destroy			(GsPlugin	*plugin);
 void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);
+GBytes		*gs_plugin_download_data		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 const gchar	*uri,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_download_file		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 const gchar	*uri,
+							 const gchar	*filename,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_check_distro_id		(GsPlugin	*plugin,
 							 const gchar	*distro_id);
 void		 gs_plugin_add_app			(GList		**list,

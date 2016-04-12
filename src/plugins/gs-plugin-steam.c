@@ -38,50 +38,6 @@ gs_plugin_get_name (void)
 }
 
 /**
- * gs_plugin_steam_html_download:
- */
-static gboolean
-gs_plugin_steam_html_download (GsPlugin *plugin,
-			       const gchar *uri,
-			       gchar **data,
-			       gsize *data_len,
-			       GError **error)
-{
-	guint status_code;
-	g_autoptr(GInputStream) stream = NULL;
-	g_autoptr(SoupMessage) msg = NULL;
-
-	/* create the GET data */
-	msg = soup_message_new (SOUP_METHOD_GET, uri);
-	if (msg == NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "%s is not a valid URL", uri);
-		return FALSE;
-	}
-
-	/* set sync request */
-	status_code = soup_session_send_message (plugin->soup_session, msg);
-	if (status_code != SOUP_STATUS_OK) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to download icon %s: %s",
-			     uri, soup_status_get_phrase (status_code));
-		return FALSE;
-	}
-
-	/* return data */
-	if (data != NULL)
-		*data = g_memdup (msg->response_body->data,
-				  msg->response_body->length);
-	if (data_len != NULL)
-		*data_len = msg->response_body->length;
-	return TRUE;
-}
-
-/**
  * gs_plugin_order_after:
  */
 const gchar **
@@ -469,15 +425,14 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 		if (!g_file_get_contents (cache_fn, &data, &data_len, error))
 			return FALSE;
 	} else {
-		if (!gs_plugin_steam_html_download (plugin,
-						    uri,
-						    &data,
-						    &data_len,
-						    error))
-			return FALSE;
 		if (!gs_mkdir_parent (cache_fn, error))
 			return FALSE;
-		if (!g_file_set_contents (cache_fn, data, data_len, error))
+		if (!gs_plugin_download_file (plugin,
+					      NULL, /* GsApp */
+					      uri,
+					      cache_fn,
+					      NULL, /* GCancellable */
+					      error))
 			return FALSE;
 	}
 
@@ -668,18 +623,21 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 	if (cachedir == NULL)
 		return FALSE;
 	cache_fn = g_build_filename (cachedir, cache_basename, NULL);
-	if (g_file_test (cache_fn, G_FILE_TEST_EXISTS)) {
-		if (!g_file_get_contents (cache_fn, &html, NULL, error))
-			return FALSE;
-	} else {
+	if (!g_file_test (cache_fn, G_FILE_TEST_EXISTS)) {
+		g_autoptr(GsApp) app_dl = gs_app_new (plugin->name);
 		uri = g_strdup_printf ("http://store.steampowered.com/app/%s/", gameid_str);
-		if (!gs_plugin_steam_html_download (plugin, uri, &html, NULL, error))
-			return FALSE;
-		if (!g_file_set_contents (cache_fn, html, -1, error))
+		if (!gs_plugin_download_file (plugin,
+					      app_dl,
+					      uri,
+					      cache_fn,
+					      NULL, /* GCancellable */
+					      error))
 			return FALSE;
 	}
 
 	/* get screenshots and descriptions */
+	if (!g_file_get_contents (cache_fn, &html, NULL, error))
+		return FALSE;
 	if (!gs_plugin_steam_update_screenshots (item, html, error))
 		return FALSE;
 	if (!gs_plugin_steam_update_description (item, html, error))

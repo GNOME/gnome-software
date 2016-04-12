@@ -455,16 +455,15 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 				     GCancellable *cancellable,
 				     GError **error)
 {
-	guint status_code;
 	g_autoptr(GError) error_local = NULL;
 	g_autofree gchar *basename_data = NULL;
 	g_autofree gchar *cache_fn_data = NULL;
 	g_autofree gchar *checksum = NULL;
 	g_autofree gchar *url_data = NULL;
 	g_autofree gchar *url_sig = NULL;
+	g_autoptr(GBytes) data = NULL;
 	g_autoptr(GKeyFile) config = NULL;
-	g_autoptr(SoupMessage) msg_data = NULL;
-	g_autoptr(SoupMessage) msg_sig = NULL;
+	g_autoptr(GsApp) app_dl = gs_app_new (plugin->name);
 
 	/* read config file */
 	config = g_key_file_new ();
@@ -491,18 +490,18 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 
 	/* download the signature first, it's smaller */
 	url_sig = g_strdup_printf ("%s.asc", url_data);
-	msg_sig = soup_message_new (SOUP_METHOD_GET, url_sig);
-	status_code = soup_session_send_message (plugin->soup_session, msg_sig);
-	if (status_code != SOUP_STATUS_OK) {
-		g_warning ("Failed to download %s, ignoring: %s",
-			   url_sig, soup_status_get_phrase (status_code));
-		return TRUE;
-	}
+	data = gs_plugin_download_data (plugin,
+					app_dl,
+					url_sig,
+					cancellable,
+					error);
+	if (data == NULL)
+		return FALSE;
 
 	/* is the signature hash the same as we had before? */
 	checksum = g_compute_checksum_for_data (G_CHECKSUM_SHA1,
-						(const guchar *) msg_sig->response_body->data,
-						msg_sig->response_body->length);
+						(const guchar *) g_bytes_get_data (data, NULL),
+						g_bytes_get_size (data));
 	if (g_strcmp0 (checksum, plugin->priv->lvfs_sig_hash) == 0) {
 		g_debug ("signature of %s is unchanged", url_sig);
 		return TRUE;
@@ -511,8 +510,8 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	/* save to a file */
 	g_debug ("saving new LVFS signature to %s:", plugin->priv->lvfs_sig_fn);
 	if (!g_file_set_contents (plugin->priv->lvfs_sig_fn,
-				  msg_sig->response_body->data,
-				  msg_sig->response_body->length,
+				  g_bytes_get_data (data, NULL),
+				  g_bytes_get_size (data),
 				  &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -526,30 +525,17 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	g_free (plugin->priv->lvfs_sig_hash);
 	plugin->priv->lvfs_sig_hash = g_strdup (checksum);
 
-	/* download the payload */
-	msg_data = soup_message_new (SOUP_METHOD_GET, url_data);
-	status_code = soup_session_send_message (plugin->soup_session, msg_data);
-	if (status_code != SOUP_STATUS_OK) {
-		g_warning ("Failed to download %s, ignoring: %s",
-			   url_data, soup_status_get_phrase (status_code));
-		return TRUE;
-	}
-
-	/* save to a file */
+	/* download the payload and save to file */
 	basename_data = g_path_get_basename (url_data);
 	cache_fn_data = g_build_filename (plugin->priv->cachedir, basename_data, NULL);
 	g_debug ("saving new LVFS data to %s:", cache_fn_data);
-	if (!g_file_set_contents (cache_fn_data,
-				  msg_data->response_body->data,
-				  msg_data->response_body->length,
-				  &error_local)) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to save firmware: %s",
-			     error_local->message);
+	if (!gs_plugin_download_file (plugin,
+				      app_dl,
+				      url_data,
+				      cache_fn_data,
+				      cancellable,
+				      error))
 		return FALSE;
-	}
 
 	/* phew, lets send all this to fwupd */
 	if (!fwupd_client_update_metadata (plugin->priv->client,

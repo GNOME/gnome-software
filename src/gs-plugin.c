@@ -391,4 +391,141 @@ gs_plugin_updates_changed (GsPlugin *plugin)
 	g_idle_add (gs_plugin_updates_changed_cb, plugin);
 }
 
+typedef struct {
+	GsPlugin	*plugin;
+	GsApp		*app;
+	GCancellable	*cancellable;
+} GsPluginDownloadHelper;
+
+/**
+ * gs_plugin_download_chunk_cb:
+ **/
+static void
+gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
+			     GsPluginDownloadHelper *helper)
+{
+	guint percentage;
+	goffset header_size;
+	goffset body_length;
+
+	/* cancelled? */
+	if (g_cancellable_is_cancelled (helper->cancellable)) {
+		g_debug ("cancelling download of %s",
+			 gs_app_get_id (helper->app));
+		soup_session_cancel_message (helper->plugin->soup_session,
+					     msg,
+					     SOUP_STATUS_CANCELLED);
+		return;
+	}
+
+	/* if it's returning "Found" or an error, ignore the percentage */
+	if (msg->status_code != SOUP_STATUS_OK) {
+		g_debug ("ignoring status code %i (%s)",
+			 msg->status_code, msg->reason_phrase);
+		return;
+	}
+
+	/* get data */
+	body_length = msg->response_body->length;
+	header_size = soup_message_headers_get_content_length (msg->response_headers);
+
+	/* size is not known */
+	if (header_size < body_length)
+		return;
+
+	/* calulate percentage */
+	percentage = (100 * body_length) / header_size;
+	g_debug ("%s progress: %i%%", gs_app_get_id (helper->app), percentage);
+	gs_app_set_progress (helper->app, percentage);
+	gs_plugin_status_update (helper->plugin,
+				 helper->app,
+				 GS_PLUGIN_STATUS_DOWNLOADING);
+}
+
+/**
+ * gs_plugin_download_data:
+ */
+GBytes *
+gs_plugin_download_data (GsPlugin *plugin,
+			 GsApp *app,
+			 const gchar *uri,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	GsPluginDownloadHelper helper;
+	guint status_code;
+	g_autoptr(SoupMessage) msg = NULL;
+
+	g_debug ("downloading %s from %s", uri, plugin->name);
+	msg = soup_message_new (SOUP_METHOD_GET, uri);
+	if (app != NULL) {
+		helper.plugin = plugin;
+		helper.app = app;
+		helper.cancellable = cancellable;
+		g_signal_connect (msg, "got-chunk",
+				  G_CALLBACK (gs_plugin_download_chunk_cb),
+				  &helper);
+	}
+	status_code = soup_session_send_message (plugin->soup_session, msg);
+	if (status_code != SOUP_STATUS_OK) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to get shell extensions: %s",
+			     msg->response_body->data);
+		return NULL;
+	}
+	return g_bytes_new (msg->response_body->data,
+			    msg->response_body->length);
+}
+
+/**
+ * gs_plugin_download_file:
+ */
+gboolean
+gs_plugin_download_file (GsPlugin *plugin,
+			 GsApp *app,
+			 const gchar *uri,
+			 const gchar *filename,
+			 GCancellable *cancellable,
+			 GError **error)
+{
+	GsPluginDownloadHelper helper;
+	guint status_code;
+	g_autoptr(GError) error_local = NULL;
+	g_autoptr(SoupMessage) msg = NULL;
+
+	g_debug ("downloading %s to %s from %s", uri, filename, plugin->name);
+	msg = soup_message_new (SOUP_METHOD_GET, uri);
+	if (app != NULL) {
+		helper.plugin = plugin;
+		helper.app = app;
+		helper.cancellable = cancellable;
+		g_signal_connect (msg, "got-chunk",
+				  G_CALLBACK (gs_plugin_download_chunk_cb),
+				  &helper);
+	}
+	status_code = soup_session_send_message (plugin->soup_session, msg);
+	if (status_code != SOUP_STATUS_OK) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to get shell extensions: %s",
+			     msg->response_body->data);
+		return FALSE;
+	}
+	if (!g_file_set_contents (filename,
+				  msg->response_body->data,
+				  msg->response_body->length,
+				  &error_local)) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to save firmware: %s",
+			     error_local->message);
+		return FALSE;
+	}
+	return TRUE;
+}
+
 /* vim: set noexpandtab: */

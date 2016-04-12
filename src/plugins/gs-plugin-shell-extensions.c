@@ -574,16 +574,16 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 static GPtrArray *
 gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 				     guint cache_age,
+				     GCancellable *cancellable,
 				     GError **error)
 {
 	GPtrArray *apps;
-	guint status_code;
 	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *cachefn = NULL;
-	g_autofree gchar *data = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GFile) cachefn_file = NULL;
-	g_autoptr(SoupMessage) msg = NULL;
+	g_autoptr(GBytes) data = NULL;
+	g_autoptr(GsApp) dummy = gs_app_new (plugin->name);
 
 	/* look in the cache */
 	cachedir = gs_utils_get_cachedir ("extensions", error);
@@ -607,36 +607,29 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 			       "&page=1&n_per_page=1000",
 			       SHELL_EXTENSIONS_API_URI,
 			       plugin->priv->shell_version);
-	msg = soup_message_new (SOUP_METHOD_GET, uri);
-	status_code = soup_session_send_message (plugin->soup_session, msg);
-	if (status_code != SOUP_STATUS_OK) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to get shell extensions: %s",
-			     msg->response_body->data);
+	data = gs_plugin_download_data (plugin, dummy, uri, cancellable, error);
+	if (data == NULL)
 		return NULL;
-	}
 	apps = gs_plugin_shell_extensions_parse_apps (plugin,
-						      msg->response_body->data,
-						      msg->response_body->length,
+						      g_bytes_get_data (data, NULL),
+						      g_bytes_get_size (data),
 						      error);
 	if (apps == NULL) {
-		guint len = msg->response_body->length;
+		guint len = g_bytes_get_size (data);
 		g_autofree gchar *tmp = NULL;
 
 		/* truncate the string if long */
 		if (len > 100)
 			len = 100;
-		tmp = g_strndup (msg->response_body->data, len);
+		tmp = g_strndup (g_bytes_get_data (data, NULL), len);
 		g_prefix_error (error, "Failed to parse '%s': ", tmp);
 		return NULL;
 	}
 
 	/* save to the cache */
 	if (!g_file_set_contents (cachefn,
-				  msg->response_body->data,
-				  msg->response_body->length,
+				  g_bytes_get_data (data, NULL),
+				  g_bytes_get_size (data),
 				  error))
 		return NULL;
 
@@ -680,7 +673,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 	}
 
 	/* get data */
-	apps = gs_plugin_shell_extensions_get_apps (plugin, cache_age, error);
+	apps = gs_plugin_shell_extensions_get_apps (plugin,
+						    cache_age,
+						    cancellable,
+						    error);
 	if (apps == NULL)
 		return FALSE;
 
