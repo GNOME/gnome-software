@@ -29,12 +29,14 @@
 #include <locale.h>
 
 #include "gs-application.h"
+#include "gs-debug.h"
 
 int
 main (int argc, char **argv)
 {
 	int status = 0;
 	g_autoptr(GsApplication) application = NULL;
+	g_autoptr(GsDebug) debug = gs_debug_new ();
 	g_autoptr(AsProfile) profile = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
@@ -46,9 +48,10 @@ main (int argc, char **argv)
 
 	profile = as_profile_new ();
 	ptask = as_profile_start_literal (profile, "GsMain");
+
+	/* redirect logs */
 	application = gs_application_new ();
 	status = g_application_run (G_APPLICATION (application), argc, argv);
-
 	return status;
 }
 

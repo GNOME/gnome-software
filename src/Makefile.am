@@ -87,6 +87,7 @@ gnome_software_cmd_SOURCES =				\
 	gs-app.c					\
 	gs-review.c					\
 	gs-cmd.c					\
+	gs-debug.c					\
 	gs-utils.c					\
 	gs-os-release.c					\
 	gs-plugin-loader.c				\
@@ -114,6 +115,8 @@ gnome_software_SOURCES =				\
 	gs-app.h					\
 	gs-category.c					\
 	gs-category.h					\
+	gs-debug.c					\
+	gs-debug.h					\
 	gs-app-addon-row.c				\
 	gs-app-addon-row.h				\
 	gs-app-row.c					\

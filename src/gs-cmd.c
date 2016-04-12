@@ -26,6 +26,7 @@
 #include <gtk/gtk.h>
 #include <locale.h>
 
+#include "gs-debug.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
 
@@ -205,6 +206,7 @@ main (int argc, char **argv)
 	gint repeat = 1;
 	int status = 0;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsDebug) debug = gs_debug_new ();
 	g_autofree gchar *refine_flags_str = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
