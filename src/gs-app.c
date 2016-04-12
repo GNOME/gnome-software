@@ -1771,10 +1771,8 @@ gs_app_add_addon (GsApp *app, GsApp *addon)
 
 	id = gs_app_get_id (addon);
 	found = g_hash_table_lookup (app->addons_hash, id);
-	if (found != NULL) {
-		g_debug ("Already added %s as an addon", id);
+	if (found != NULL)
 		return;
-	}
 	g_hash_table_insert (app->addons_hash, g_strdup (id), GINT_TO_POINTER (1));
 
 	g_ptr_array_add (app->addons, g_object_ref (addon));
