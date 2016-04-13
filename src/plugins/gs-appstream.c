@@ -244,6 +244,8 @@ gs_appstream_copy_metadata (GsApp *app, AsApp *item)
 	for (l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		const gchar *value = g_hash_table_lookup (hash, key);
+		if (gs_app_get_metadata_item (app, key) != NULL)
+			continue;
 		gs_app_set_metadata (app, key, value);
 	}
 }
