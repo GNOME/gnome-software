@@ -76,6 +76,16 @@ gs_plugin_initialize (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_adopt_app:
+ */
+void
+gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+{
+	if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
+		gs_app_set_management_plugin (app, plugin->name);
+}
+
+/**
  * _gs_app_get_id_nonfull:
  */
 static gchar *
@@ -115,8 +125,8 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	g_autoptr(GFile) symlink_desktop = NULL;
 	g_autoptr(GFile) symlink_icon = NULL;
 
-	/* only process web apps */
-	if (gs_app_get_kind (app) != AS_APP_KIND_WEB_APP)
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 
 	/* create the correct directory */
@@ -234,12 +244,12 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	g_autoptr(GFile) file_app = NULL;
 
 	/* only process this app if was created by this plugin */
-	epi_desktop = gs_app_get_source_id_default (app);
-	if (epi_desktop == NULL)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 
 	/* remove the epi 'config' file */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	epi_desktop = gs_app_get_source_id_default (app);
 	file_epi = g_file_new_for_path (epi_desktop);
 	if (!g_file_delete (file_epi, NULL, error))
 		return FALSE;
@@ -271,9 +281,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	g_autofree gchar *hash = NULL;
 	g_autofree gchar *id_nonfull = NULL;
 
-	if (gs_app_get_kind (app) != AS_APP_KIND_WEB_APP)
-		return TRUE;
-	if (gs_app_get_source_id_default (app) != NULL)
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 
 	gs_app_set_size (app, 4096);
@@ -289,9 +298,24 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (g_file_test (fn, G_FILE_TEST_EXISTS)) {
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_add_source_id (app, fn);
-		gs_app_set_management_plugin (app, "epiphany");
+		gs_app_set_management_plugin (app, plugin->name);
 		return TRUE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	return TRUE;
+}
+
+/**
+ * gs_plugin_launch:
+ */
+gboolean
+gs_plugin_launch (GsPlugin *plugin,
+		  GsApp *app,
+		  GCancellable *cancellable,
+		  GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+	return gs_plugin_app_launch (plugin, app, error);
 }

@@ -924,6 +924,10 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	const gchar *gameid;
 	g_autofree gchar *cmdline = NULL;
 
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
 	/* this is async as steam is a different process: FIXME: use D-Bus */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
@@ -941,6 +945,10 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	const gchar *gameid;
 	g_autofree gchar *cmdline = NULL;
 
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
 	/* this is async as steam is a different process: FIXME: use D-Bus */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");
@@ -957,6 +965,10 @@ gs_plugin_launch (GsPlugin *plugin, GsApp *app,
 {
 	const gchar *gameid;
 	g_autofree gchar *cmdline = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
 
 	/* this is async as steam is a different process: FIXME: use D-Bus */
 	gameid = gs_app_get_metadata_item (app, "X-Steam-GameID");

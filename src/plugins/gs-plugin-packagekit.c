@@ -264,7 +264,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		rd = g_ptr_array_index (array, i);
 		id = pk_repo_detail_get_id (rd);
 		app = gs_app_new (id);
-		gs_app_set_management_plugin (app, "packagekit");
+		gs_app_set_management_plugin (app, plugin->name);
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
@@ -333,6 +333,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 	data.app = app;
 	data.plugin = plugin;
 	data.ptask = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
 
 	/* we enable the repo */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
@@ -564,6 +568,10 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	data.plugin = plugin;
 	data.ptask = NULL;
 
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
 	/* remove repo and all apps in it */
 	if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE) {
 		return gs_plugin_app_source_remove (plugin, app,
@@ -730,4 +738,19 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 
 	/* add results */
 	return gs_plugin_packagekit_add_results (plugin, list, results, error);
+}
+
+/**
+ * gs_plugin_launch:
+ */
+gboolean
+gs_plugin_launch (GsPlugin *plugin,
+		  GsApp *app,
+		  GCancellable *cancellable,
+		  GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+	return gs_plugin_app_launch (plugin, app, error);
 }

@@ -111,6 +111,41 @@ gs_plugin_loader_app_sort_cb (gconstpointer a, gconstpointer b)
 }
 
 /**
+ * gs_plugin_loader_run_adopt:
+ **/
+static void
+gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GList *list)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GList *l;
+	guint i;
+
+	/* go through each plugin in priority order */
+	for (i = 0; i < priv->plugins->len; i++) {
+		GsPluginAdoptAppFunc adopt_app_func = NULL;
+		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
+		g_module_symbol (plugin->module, "gs_plugin_adopt_app",
+				 (gpointer *) &adopt_app_func);
+		if (adopt_app_func == NULL)
+			continue;
+		for (l = list; l != NULL; l = l->next) {
+			GsApp *app = GS_APP (l->data);
+			if (gs_app_get_management_plugin (app) != NULL)
+				continue;
+			g_rw_lock_reader_lock (&plugin->rwlock);
+			adopt_app_func (plugin, app);
+			g_rw_lock_reader_unlock (&plugin->rwlock);
+			if (gs_app_get_management_plugin (app) != NULL) {
+				g_debug ("%s adopted %s", plugin->name,
+					 gs_app_get_id (app));
+			}
+		}
+	}
+}
+
+/**
  * gs_plugin_loader_run_refine:
  **/
 static gboolean
@@ -139,6 +174,9 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	freeze_list = gs_plugin_list_copy (*list);
 	for (l = freeze_list; l != NULL; l = l->next)
 		g_object_freeze_notify (G_OBJECT (l->data));
+
+	/* try to adopt each application with a plugin */
+	gs_plugin_loader_run_adopt (plugin_loader, *list);
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
@@ -257,6 +295,15 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			if (!ret)
 				goto out;
 		}
+	}
+
+	/* show a warning if nothing adopted this */
+	for (l = *list; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		if (gs_app_get_management_plugin (app) != NULL)
+			continue;
+		g_warning ("nothing adopted %s", gs_app_get_id (app));
+		g_print ("%s", gs_app_to_string (app));
 	}
 out:
 	/* now emit all the changed signals */
@@ -582,14 +629,10 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 	GsPluginActionFunc plugin_func = NULL;
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	GsPlugin *plugin;
-	const gchar *management_plugin;
 	gboolean anything_ran = FALSE;
 	gboolean exists;
 	gboolean ret;
 	guint i;
-
-	/* don't force each plugin to check this */
-	management_plugin = gs_app_get_management_plugin (app);
 
 	/* run each plugin */
 	for (i = 0; i < priv->plugins->len; i++) {
@@ -606,14 +649,6 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 					  (gpointer *) &plugin_func);
 		if (!exists)
 			continue;
-
-		/* only run method for the correct management plugin */
-		if (g_strcmp0 (management_plugin, plugin->name) != 0) {
-			g_debug ("skipping %s:%s as invalid (%s)",
-				 plugin->name, function_name, management_plugin);
-			continue;
-		}
-
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
@@ -629,13 +664,6 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 		}
 		anything_ran = TRUE;
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
-	}
-
-	/* fall back to generic helper */
-	if (!anything_ran &&
-	    g_strcmp0 (function_name, "gs_plugin_launch") == 0) {
-		g_debug ("using launch helper for %s", gs_app_get_id (app));
-		return gs_plugin_app_launch (NULL, app, error);
 	}
 
 	/* nothing ran */
@@ -3893,17 +3921,8 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 		/* for each app */
 		for (l = state->list; l != NULL; l = l->next) {
 			GsApp *app = GS_APP (l->data);
-			const gchar *management_plugin;
 			g_autoptr(AsProfileTask) ptask = NULL;
 			g_autoptr(GError) error_local = NULL;
-
-			/* only run method for the correct plugin */
-			management_plugin = gs_app_get_management_plugin (app);
-			if (g_strcmp0 (management_plugin, plugin->name) != 0) {
-				g_debug ("skipping %s:%s as invalid (%s)",
-					 plugin->name, function_name, management_plugin);
-				continue;
-			}
 
 			ptask = as_profile_start (priv->profile,
 						  "GsPlugin::%s(%s){%s}",

@@ -118,6 +118,22 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (plugin->priv->control);
 }
 
+/**
+ * gs_plugin_adopt_app:
+ */
+void
+gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+{
+	const gchar *tmp;
+
+	/* this was installed system-wide and picked up by AppStream */
+	tmp = gs_app_get_metadata_item (app, "appstream::source-file");
+	if (tmp != NULL && g_str_has_prefix (tmp, "/usr/share/") &&
+	    gs_app_get_source_default (app) != NULL) {
+		gs_app_set_management_plugin (app, "packagekit");
+		return;
+	}
+}
 
 typedef struct {
 	GsPlugin	*plugin;
@@ -880,7 +896,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
 			continue;
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		tmp = gs_app_get_management_plugin (app);
+		if (tmp != NULL && g_strcmp0 (tmp, "packagekit") != 0)
 			continue;
 		sources = gs_app_get_sources (app);
 		if (sources->len == 0)
@@ -948,7 +965,8 @@ gs_plugin_refine (GsPlugin *plugin,
 		app = GS_APP (l->data);
 		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
 			continue;
-		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		tmp = gs_app_get_management_plugin (app);
+		if (tmp != NULL && g_strcmp0 (tmp, "packagekit") != 0)
 			continue;
 		if (gs_plugin_refine_requires_update_details (app, flags))
 			updatedetails_all = g_list_prepend (updatedetails_all, app);

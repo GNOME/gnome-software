@@ -94,6 +94,16 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_adopt_app:
+ */
+void
+gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+{
+	if (gs_app_get_kind (app) == AS_APP_KIND_SHELL_EXTENSION)
+		gs_app_set_management_plugin (app, plugin->name);
+}
+
+/**
  * gs_plugin_shell_extensions_id_from_uuid:
  */
 static gchar *
@@ -308,7 +318,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* adopt any here */
 	if (gs_app_get_management_plugin (app) == NULL)
-		gs_app_set_management_plugin (app, "shell-extensions");
+		gs_app_set_management_plugin (app, plugin->name);
 
 	/* assume apps are available if they exist in AppStream metadata */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
@@ -473,7 +483,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 
 	/* we have no data :/ */
 	as_app_set_comment (app, NULL, "GNOME Shell Extension");
-	as_app_add_metadata (app, "ManagementPlugin", "shell-extensions");
+	as_app_add_metadata (app, "GnomeSoftware::Plugin", plugin->name);
 	return app;
 }
 
@@ -714,6 +724,10 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	gboolean ret;
 	g_autoptr(GVariant) retval = NULL;
 
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
 	/* install */
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
 	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
@@ -752,6 +766,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 	const gchar *uuid;
 	const gchar *retstr;
 	g_autoptr(GVariant) retval = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
 
 	/* install */
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");

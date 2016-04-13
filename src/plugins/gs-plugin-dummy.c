@@ -369,6 +369,10 @@ gboolean
 gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
 			        GCancellable *cancellable, GError **error)
 {
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
 	g_debug ("starting download");
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	if (!gs_plugin_dummy_delay (plugin, app, 5000, cancellable, error))
@@ -383,6 +387,11 @@ gboolean
 gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
 			       GCancellable *cancellable, GError **error)
 {
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
+	/* NOP */
 	return TRUE;
 }
 

@@ -96,6 +96,16 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_adopt_app:
+ */
+void
+gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+{
+	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
+		gs_app_set_management_plugin (app, plugin->name);
+}
+
+/**
  * gs_plugin_fwupd_changed_cb:
  */
 static void
@@ -667,6 +677,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
 	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
 }
 
@@ -681,6 +695,10 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
 	/* locked devices need unlocking, rather than installing */
 	if (gs_app_get_metadata_item (app, "fwupd::IsLocked") != NULL) {
 		const gchar *device_id;

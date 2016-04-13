@@ -92,6 +92,18 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (plugin->priv->monitor);
 }
 
+/**
+ * gs_plugin_adopt_app:
+ */
+void
+gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+{
+	if (g_str_has_prefix (gs_app_get_id (app), "user-xdgapp:") ||
+	    g_str_has_prefix (gs_app_get_id (app), "xdgapp:")) {
+		gs_app_set_management_plugin (app, plugin->name);
+	}
+}
+
 /* helpers */
 #define gs_app_get_xdgapp_kind_as_str(app)	gs_app_get_metadata_item(app,"xdg-app::kind")
 #define gs_app_get_xdgapp_name(app)		gs_app_get_metadata_item(app,"xdg-app::name")
@@ -531,7 +543,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 			continue;
 
 		app = gs_app_new (xdg_app_remote_get_name (xremote));
-		gs_app_set_management_plugin (app, "xdg-app");
+		gs_app_set_management_plugin (app, plugin->name);
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
@@ -1137,7 +1149,7 @@ gs_plugin_xdg_app_refine_app (GsPlugin *plugin,
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "xdg-app") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 
 	/* profile */
@@ -1204,6 +1216,10 @@ gs_plugin_launch (GsPlugin *plugin,
 {
 	const gchar *branch = NULL;
 
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
 		return FALSE;
@@ -1230,6 +1246,10 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginHelper helper;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
 
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
@@ -1261,6 +1281,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 {
 	GsPluginHelper helper;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
 
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
@@ -1358,6 +1382,10 @@ gs_plugin_update_app (GsPlugin *plugin,
 {
 	GsPluginHelper helper;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
+
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
 
 	/* ensure we can set up the repo */
 	if (!gs_plugin_ensure_installation (plugin, cancellable, error))

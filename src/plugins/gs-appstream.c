@@ -314,7 +314,7 @@ gs_refine_item_management_plugin (GsApp *app, AsApp *item)
 	for (i = 0; i < bundles->len; i++) {
 		AsBundle *bundle = g_ptr_array_index (bundles, i);
 		if (as_bundle_get_kind (bundle) == AS_BUNDLE_KIND_XDG_APP) {
-			management_plugin = "xdg-app";
+			gs_app_set_management_plugin (app, "xdg-app");
 			gs_app_add_source (app, as_bundle_get_id (bundle));
 
 			/* automatically add runtime */
@@ -331,18 +331,11 @@ gs_refine_item_management_plugin (GsApp *app, AsApp *item)
 			break;
 		}
 		if (as_bundle_get_kind (bundle) == AS_BUNDLE_KIND_LIMBA) {
-			management_plugin = "limba";
+			gs_app_set_management_plugin (app, "limba");
 			gs_app_add_source (app, as_bundle_get_id (bundle));
 			break;
 		}
 	}
-
-	/* fall back to PackageKit */
-	if (management_plugin == NULL &&
-	    as_app_get_pkgname_default (item) != NULL)
-		management_plugin = "packagekit";
-	if (management_plugin != NULL)
-		gs_app_set_management_plugin (app, management_plugin);
 }
 
 /**

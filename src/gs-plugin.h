@@ -199,10 +199,14 @@ typedef gboolean	 (*GsPluginUpdateFunc)		(GsPlugin	*plugin,
 							 GList		*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef void		 (*GsPluginAdoptAppFunc)	(GsPlugin	*plugin,
+							 GsApp		*app);
 
 const gchar	*gs_plugin_get_name			(void);
 void		 gs_plugin_initialize			(GsPlugin	*plugin);
 void		 gs_plugin_destroy			(GsPlugin	*plugin);
+void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
+							 GsApp		*app);
 void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);
 GBytes		*gs_plugin_download_data		(GsPlugin	*plugin,
