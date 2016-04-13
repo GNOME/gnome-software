@@ -200,6 +200,7 @@ main (int argc, char **argv)
 	gboolean prefer_local = FALSE;
 	gboolean ret;
 	gboolean show_results = FALSE;
+	gboolean verbose = FALSE;
 	guint64 refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT;
 	gint i;
 	gint cache_age = 0;
@@ -223,6 +224,8 @@ main (int argc, char **argv)
 		  "Use this maximum cache age in seconds", NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
 		  "Prefer local file sources to AppStream", NULL },
+		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
+		  "Show verbose debugging information", NULL },
 		{ NULL}
 	};
 
@@ -244,6 +247,8 @@ main (int argc, char **argv)
 		g_print ("Failed to parse options: %s\n", error->message);
 		goto out;
 	}
+	if (verbose)
+		g_setenv ("GS_DEBUG", "1", TRUE);
 
 	/* prefer local sources */
 	if (prefer_local)

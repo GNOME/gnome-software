@@ -809,7 +809,7 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	g_autoptr(GError) error = NULL;
 
 	if (g_variant_dict_contains (options, "verbose"))
-		g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
+		g_setenv ("GS_DEBUG", "1", TRUE);
 
 	/* prefer local sources */
 	if (g_variant_dict_contains (options, "prefer-local"))

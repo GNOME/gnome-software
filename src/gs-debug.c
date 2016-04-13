@@ -36,12 +36,19 @@ gs_debug_handler_cb (const gchar *log_domain,
 	GsDebug *debug = (GsDebug *) user_data;
 	guint i;
 	g_autofree gchar *tmp = NULL;
-	g_autoptr(GDateTime) dt = g_date_time_new_now_utc ();
 	g_autoptr(GString) domain = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&debug->mutex);
+	g_autoptr(GMutexLocker) locker = NULL;
+
+	/* enabled */
+	if (g_getenv ("GS_DEBUG") == NULL && log_level == G_LOG_LEVEL_DEBUG)
+		return;
+
+	/* make threadsafe */
+	locker = g_mutex_locker_new (&debug->mutex);
 
 	/* time header */
 	if (debug->use_time) {
+		g_autoptr(GDateTime) dt = g_date_time_new_now_utc ();
 		tmp = g_strdup_printf ("%02i:%02i:%02i:%04i",
 				       g_date_time_get_hour (dt),
 				       g_date_time_get_minute (dt),
