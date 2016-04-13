@@ -254,6 +254,9 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			"https://fedoraproject.org/wiki/Releases/24/Schedule");
 	gs_app_set_version (app, "25");
 	gs_app_set_management_plugin (app, plugin->name);
+	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
+			     "background: url('" DATADIR "/gnome-software/upgrade-bg.png');"
+			     "background-size: 100% 100%;");
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }

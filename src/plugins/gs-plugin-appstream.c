@@ -635,7 +635,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 		item = g_ptr_array_index (array, i);
 		if (as_app_get_id (item) == NULL)
 			continue;
-		if (as_app_get_metadata_item (item, "GnomeSoftware::featured-background") == NULL)
+		if (as_app_get_metadata_item (item, "GnomeSoftware::FeatureTile-css") == NULL)
 			continue;
 		app = gs_app_new (as_app_get_id_no_prefix (item));
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);

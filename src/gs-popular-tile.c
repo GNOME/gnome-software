@@ -103,6 +103,8 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsPopularTile *tile)
 void
 gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 {
+	const gchar *css;
+
 	g_return_if_fail (GS_IS_POPULAR_TILE (tile));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
@@ -125,6 +127,11 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 	g_signal_connect (tile->app, "notify::state",
 		 	  G_CALLBACK (app_state_changed), tile);
 	app_state_changed (tile->app, NULL, tile);
+
+	/* set custom css */
+	css = gs_app_get_metadata_item (app, "GnomeSoftware::PopularTile-css");
+	if (css != NULL)
+		gs_utils_widget_set_custom_css (GTK_WIDGET (tile), css);
 
 	gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), gs_app_get_pixbuf (tile->app));
 

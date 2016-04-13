@@ -753,4 +753,64 @@ gs_utils_is_current_desktop (const gchar *name)
 	return g_strv_contains ((const gchar * const *) names, name);
 }
 
+/**
+ * gs_utils_widget_css_parsing_error_cb:
+ */
+static void
+gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
+				      GtkCssSection *section,
+				      GError *error,
+				      gpointer user_data)
+{
+	g_warning ("CSS parse error %i:%i: %s",
+		   gtk_css_section_get_start_line (section),
+		   gtk_css_section_get_start_position (section),
+		   error->message);
+}
+
+/**
+ * gs_utils_widget_set_custom_css:
+ **/
+void
+gs_utils_widget_set_custom_css (GtkWidget *widget, const gchar *css)
+{
+	GString *str = g_string_sized_new (1024);
+	GtkStyleContext *context;
+	g_autofree gchar *class_name = NULL;
+	g_autoptr(GtkCssProvider) provider = NULL;
+
+	/* invalid */
+	if (css == NULL)
+		return;
+
+	/* make into a proper CSS class */
+	class_name = g_strdup_printf ("themed-widget_%p", widget);
+	g_string_append_printf (str, ".%s {\n", class_name);
+	g_string_append_printf (str, "%s\n", css);
+	g_string_append (str, "}");
+
+	g_string_append_printf (str, ".%s:hover {\n", class_name);
+	g_string_append (str, "  opacity: 0.9;\n");
+	g_string_append (str, "}\n");
+
+	g_debug ("using custom CSS %s", str->str);
+
+	/* set the custom CSS class */
+	context = gtk_widget_get_style_context (widget);
+	gtk_style_context_add_class (context, class_name);
+
+	/* set up custom provider and store on the widget */
+	provider = gtk_css_provider_new ();
+	g_signal_connect (provider, "parsing-error",
+			  G_CALLBACK (gs_utils_widget_css_parsing_error_cb), NULL);
+	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
+						   GTK_STYLE_PROVIDER (provider),
+						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data (provider, str->str, -1, NULL);
+	g_object_set_data_full (G_OBJECT (widget),
+				"GnomeSoftware::provider",
+				g_object_ref (provider),
+				g_object_unref);
+}
+
 /* vim: set noexpandtab: */
