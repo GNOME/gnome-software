@@ -115,10 +115,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	guint i;
 	g_auto(GStrv) names = NULL;
 
-	/* set up plugin */
-	if (!gs_plugin_setup (plugin, cancellable, error))
-		return FALSE;
-
 	/* get all remotes */
 	names = ostree_repo_remote_list (plugin->priv->ostree_repo, NULL);
 	if (names == NULL)
