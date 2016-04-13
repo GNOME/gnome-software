@@ -82,6 +82,10 @@ typedef enum {
 #define AS_APP_QUIRK_NOT_REVIEWABLE		(1 << 5)
 #endif
 
+#if !AS_CHECK_VERSION(0,5,15)
+#define AS_APP_QUIRK_HAS_SHORTCUT		(1 << 6)
+#endif
+
 GQuark		 gs_app_error_quark		(void);
 
 GsApp		*gs_app_new			(const gchar	*id);

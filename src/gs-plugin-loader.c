@@ -2885,6 +2885,12 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	case GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL:
 		state->function_name = "gs_plugin_update_cancel";
 		break;
+	case GS_PLUGIN_LOADER_ACTION_ADD_SHORTCUT:
+		state->function_name = "gs_plugin_add_shortcut";
+		break;
+	case GS_PLUGIN_LOADER_ACTION_REMOVE_SHORTCUT:
+		state->function_name = "gs_plugin_remove_shortcut";
+		break;
 	default:
 		g_assert_not_reached ();
 		break;

@@ -266,6 +266,14 @@ gboolean	 gs_plugin_launch			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_add_shortcut			(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_remove_shortcut		(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,

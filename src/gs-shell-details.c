@@ -70,6 +70,8 @@ struct _GsShellDetails
 	GtkWidget		*box_details_screenshot_main;
 	GtkWidget		*box_details_screenshot_thumbnails;
 	GtkWidget		*button_details_launch;
+	GtkWidget		*button_details_add_shortcut;
+	GtkWidget		*button_details_remove_shortcut;
 	GtkWidget		*button_details_website;
 	GtkWidget		*button_install;
 	GtkWidget		*button_remove;
@@ -151,6 +153,55 @@ gs_shell_details_set_state (GsShellDetails *self,
 		break;
 	default:
 		g_assert_not_reached ();
+	}
+}
+
+static void
+gs_shell_details_update_shortcut_button (GsShellDetails *self)
+{
+	gboolean add_shortcut_func;
+	gboolean remove_shortcut_func;
+	gboolean has_shortcut;
+
+	gtk_widget_set_visible (self->button_details_add_shortcut,
+				FALSE);
+	gtk_widget_set_visible (self->button_details_remove_shortcut,
+				FALSE);
+
+	if (gs_app_get_kind (self->app) != AS_APP_KIND_DESKTOP)
+		return;
+
+	/* only consider the shortcut button if the app is installed */
+	switch (gs_app_get_state (self->app)) {
+	case AS_APP_STATE_INSTALLED:
+	case AS_APP_STATE_UPDATABLE:
+	case AS_APP_STATE_UPDATABLE_LIVE:
+		break;
+	default:
+		return;
+	}
+
+	add_shortcut_func =
+		gs_plugin_loader_get_plugin_supported (self->plugin_loader,
+						       "gs_plugin_add_shortcut");
+	remove_shortcut_func =
+		gs_plugin_loader_get_plugin_supported (self->plugin_loader,
+						       "gs_plugin_remove_shortcut");
+
+	has_shortcut = gs_app_has_quirk (self->app, AS_APP_QUIRK_HAS_SHORTCUT);
+
+	if (add_shortcut_func) {
+		gtk_widget_set_visible (self->button_details_add_shortcut,
+					!has_shortcut || !remove_shortcut_func);
+		gtk_widget_set_sensitive (self->button_details_add_shortcut,
+					  !has_shortcut);
+	}
+
+	if (remove_shortcut_func) {
+		gtk_widget_set_visible (self->button_details_remove_shortcut,
+					has_shortcut || !add_shortcut_func);
+		gtk_widget_set_sensitive (self->button_details_remove_shortcut,
+					  has_shortcut);
 	}
 }
 
@@ -270,9 +321,10 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 		break;
 	}
 
-	/* don't show the launch button if the app doesn't have a desktop ID */
-	if (gs_app_get_id (self->app) == NULL)
+	/* don't show the launch and shortcut buttons if the app doesn't have a desktop ID */
+	if (gs_app_get_id (self->app) == NULL) {
 		gtk_widget_set_visible (self->button_details_launch, FALSE);
+	}
 
 	/* remove button */
 	if (gs_app_has_quirk (self->app, AS_APP_QUIRK_COMPULSORY) ||
@@ -915,6 +967,8 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		break;
 	}
 
+	gs_shell_details_update_shortcut_button (self);
+
 	addons = gtk_container_get_children (GTK_CONTAINER (self->list_box_addons));
 	gtk_widget_set_visible (self->box_addons, addons != NULL);
 	g_list_free (addons);
@@ -1433,6 +1487,26 @@ gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *self)
 }
 
 /**
+ * gs_shell_details_app_add_shortcut_button_cb:
+ **/
+static void
+gs_shell_details_app_add_shortcut_button_cb (GtkWidget *widget,
+					     GsShellDetails *self)
+{
+	gs_page_shortcut_add (GS_PAGE (self), self->app);
+}
+
+/**
+ * gs_shell_details_app_remove_shortcut_button_cb:
+ **/
+static void
+gs_shell_details_app_remove_shortcut_button_cb (GtkWidget *widget,
+						GsShellDetails *self)
+{
+	gs_page_shortcut_remove (GS_PAGE (self), self->app);
+}
+
+/**
  * gs_shell_details_review_response_cb:
  **/
 static void
@@ -1535,6 +1609,12 @@ gs_shell_details_setup (GsShellDetails *self,
 	g_signal_connect (self->button_details_launch, "clicked",
 			  G_CALLBACK (gs_shell_details_app_launch_button_cb),
 			  self);
+	g_signal_connect (self->button_details_add_shortcut, "clicked",
+			  G_CALLBACK (gs_shell_details_app_add_shortcut_button_cb),
+			  self);
+	g_signal_connect (self->button_details_remove_shortcut, "clicked",
+			  G_CALLBACK (gs_shell_details_app_remove_shortcut_button_cb),
+			  self);
 	g_signal_connect (self->button_details_website, "clicked",
 			  G_CALLBACK (gs_shell_details_website_cb),
 			  self);
@@ -1599,6 +1679,8 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_main);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, box_details_screenshot_thumbnails);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_launch);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_add_shortcut);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_remove_shortcut);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_website);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_remove);

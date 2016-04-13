@@ -380,6 +380,56 @@ gs_page_launch_app (GsPage *page, GsApp *app)
 	                                   NULL);
 }
 
+static void
+gs_page_app_shortcut_added_cb (GObject *source,
+			       GAsyncResult *res,
+			       gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	g_autoptr(GError) error = NULL;
+	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to add a shortcut to GsApp: %s", error->message);
+		return;
+	}
+}
+
+void
+gs_page_shortcut_add (GsPage *page, GsApp *app)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+	                                   app,
+	                                   GS_PLUGIN_LOADER_ACTION_ADD_SHORTCUT,
+	                                   priv->cancellable,
+	                                   gs_page_app_shortcut_added_cb,
+	                                   NULL);
+}
+
+static void
+gs_page_app_shortcut_removed_cb (GObject *source,
+				 GAsyncResult *res,
+				 gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	g_autoptr(GError) error = NULL;
+	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to remove the shortcut to GsApp: %s", error->message);
+		return;
+	}
+}
+
+void
+gs_page_shortcut_remove (GsPage *page, GsApp *app)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (page);
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+	                                   app,
+	                                   GS_PLUGIN_LOADER_ACTION_REMOVE_SHORTCUT,
+	                                   priv->cancellable,
+	                                   gs_page_app_shortcut_removed_cb,
+	                                   NULL);
+}
+
 /**
  * gs_page_switch_to:
  *
