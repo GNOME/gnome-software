@@ -186,10 +186,13 @@ gs_app_to_string (GsApp *app)
 	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (app->kind));
 	if (app->last_error != NULL)
 		gs_app_kv_lpad (str, "last-error", app->last_error->message);
+	gs_app_kv_lpad (str, "state", as_app_state_to_string (app->state));
 	gs_app_kv_lpad (str, "compulsory",
 			gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY)
-			? "True" : "False");
-	gs_app_kv_lpad (str, "state", as_app_state_to_string (app->state));
+			? "yes" : "no");
+	gs_app_kv_lpad (str, "provenance",
+			gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE)
+			? "yes" : "no");
 	if (app->progress > 0)
 		gs_app_kv_printf (str, "progress", "%i%%", app->progress);
 	if (app->id != NULL)
@@ -294,6 +297,8 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "url{homepage}", tmp);
 	if (app->license != NULL)
 		gs_app_kv_lpad (str, "license", app->license);
+	gs_app_kv_lpad (str, "license-is-free",
+			gs_app_get_license_is_free (app) ? "yes" : "no");
 	if (app->management_plugin != NULL)
 		gs_app_kv_lpad (str, "management-plugin", app->management_plugin);
 	if (app->summary_missing != NULL)
