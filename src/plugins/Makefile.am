@@ -68,7 +68,7 @@ plugin_LTLIBRARIES += libgs_plugin_limba.la
 endif
 
 if HAVE_ODRS
-plugin_LTLIBRARIES += libgs_plugin_xdg_app_reviews.la
+plugin_LTLIBRARIES += libgs_plugin_odrs.la
 endif
 
 libgs_plugin_dummy_la_SOURCES = gs-plugin-dummy.c
@@ -127,10 +127,10 @@ libgs_plugin_xdg_app_la_LIBADD = $(GS_PLUGIN_LIBS) $(XDG_APP_LIBS)
 libgs_plugin_xdg_app_la_LDFLAGS = -module -avoid-version
 libgs_plugin_xdg_app_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
-libgs_plugin_xdg_app_reviews_la_SOURCES = gs-plugin-xdg-app-reviews.c
-libgs_plugin_xdg_app_reviews_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
-libgs_plugin_xdg_app_reviews_la_LDFLAGS = -module -avoid-version
-libgs_plugin_xdg_app_reviews_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+libgs_plugin_odrs_la_SOURCES = gs-plugin-odrs.c
+libgs_plugin_odrs_la_LIBADD = $(GS_PLUGIN_LIBS) $(JSON_GLIB_LIBS)
+libgs_plugin_odrs_la_LDFLAGS = -module -avoid-version
+libgs_plugin_odrs_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
 libgs_plugin_moduleset_la_SOURCES =			\
