@@ -823,8 +823,10 @@ gs_plugin_refine_item_metadata (GsPlugin *plugin,
 
 	/* AppStream sets the source to appname/arch/branch, if this isn't set
 	 * we can't break out the fields */
-	if (gs_app_get_source_default (app) == NULL)
+	if (gs_app_get_source_default (app) == NULL) {
+		g_warning ("no source set by appstream for %s", plugin->name);
 		return TRUE;
+	}
 
 	/* parse the ref */
 	xref = xdg_app_ref_parse (gs_app_get_source_default (app), error);
