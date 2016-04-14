@@ -517,4 +517,19 @@ gs_utils_get_content_type (const gchar *filename,
 	return g_strdup (tmp);
 }
 
+/**
+ * gs_utils_is_current_desktop:
+ */
+gboolean
+gs_utils_is_current_desktop (const gchar *name)
+{
+	const gchar *tmp;
+	g_auto(GStrv) names = NULL;
+	tmp = g_getenv ("XDG_CURRENT_DESKTOP");
+	if (tmp == NULL)
+		return FALSE;
+	names = g_strsplit (tmp, ":", -1);
+	return g_strv_contains ((const gchar * const *) names, name);
+}
+
 /* vim: set noexpandtab: */
