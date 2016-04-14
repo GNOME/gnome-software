@@ -42,8 +42,6 @@
 
 struct GsPluginPrivate {
 	AsStore			*store;
-	GMutex			 store_mutex;
-	gboolean		 done_init;
 };
 
 /**
@@ -75,7 +73,6 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	g_mutex_init (&plugin->priv->store_mutex);
 	plugin->priv->store = as_store_new ();
 	as_store_set_watch_flags (plugin->priv->store,
 				  AS_STORE_WATCH_FLAG_ADDED |
@@ -101,7 +98,6 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	g_object_unref (plugin->priv->store);
-	g_mutex_clear (&plugin->priv->store_mutex);
 }
 
 /**
@@ -152,12 +148,10 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 }
 
 /**
- * gs_plugin_appstream_startup:
- *
- * This must be called with plugin->priv->store_mutex held.
+ * gs_plugin_setup:
  */
-static gboolean
-gs_plugin_appstream_startup (GsPlugin *plugin, GError **error)
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	AsApp *app;
 	GPtrArray *items;
@@ -166,13 +160,6 @@ gs_plugin_appstream_startup (GsPlugin *plugin, GError **error)
 	guint *perc;
 	guint i;
 	g_autoptr(GHashTable) origins = NULL;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* already done */
-	if (plugin->priv->done_init)
-		return TRUE;
-
-	ptask = as_profile_start_literal (plugin->profile, "appstream::startup");
 
 	/* Parse the XML */
 	if (g_getenv ("GNOME_SOFTWARE_PREFER_LOCAL") != NULL) {
@@ -241,7 +228,6 @@ gs_plugin_appstream_startup (GsPlugin *plugin, GError **error)
 	}
 
 	/* rely on the store keeping itself updated */
-	plugin->priv->done_init = TRUE;
 	return TRUE;
 }
 
@@ -319,11 +305,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	AsApp *item;
 	GPtrArray *array;
 	guint i;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
-
-	/* load XML files */
-	if (!gs_plugin_appstream_startup (plugin, error))
-		return FALSE;
 
 	/* find any upgrades */
 	array = as_store_get_apps (plugin->priv->store);
@@ -357,14 +338,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	gboolean found = FALSE;
 	GList *l;
 	GsApp *app;
-	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
 
-	/* load XML files */
-	if (!gs_plugin_appstream_startup (plugin, error))
-		return FALSE;
-
-	ptask = as_profile_start_literal (plugin->profile, "appstream::refine");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (!gs_plugin_refine_from_id (plugin, app, &found, error))
@@ -396,11 +370,6 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	GPtrArray *array;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
-
-	/* load XML files */
-	if (!gs_plugin_appstream_startup (plugin, error))
-		return FALSE;
 
 	/* get the two search terms */
 	ptask = as_profile_start_literal (plugin->profile, "appstream::add-category-apps");
@@ -490,11 +459,6 @@ gs_plugin_add_search (GsPlugin *plugin,
 	gboolean ret = TRUE;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
-
-	/* load XML files */
-	if (!gs_plugin_appstream_startup (plugin, error))
-		return FALSE;
 
 	/* search categories for the search term */
 	ptask = as_profile_start_literal (plugin->profile, "appstream::search");
@@ -524,11 +488,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	GPtrArray *array;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
-
-	/* load XML files */
-	if (!gs_plugin_appstream_startup (plugin, error))
-		return FALSE;
 
 	/* search categories for the search term */
 	ptask = as_profile_start_literal (plugin->profile, "appstream::add_installed");
@@ -605,11 +564,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	GPtrArray *array;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&plugin->priv->store_mutex);
-
-	/* load XML files */
-	if (!gs_plugin_appstream_startup (plugin, error))
-		return FALSE;
 
 	/* find out how many packages are in each category */
 	ptask = as_profile_start_literal (plugin->profile, "appstream::add-categories");

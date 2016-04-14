@@ -252,19 +252,14 @@ gs_plugin_refresh_appstream (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_ensure_installation:
+ * gs_plugin_setup:
  */
-static gboolean
-gs_plugin_ensure_installation (GsPlugin *plugin,
-			       GCancellable *cancellable,
-			       GError **error)
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	g_autofree gchar *install_path = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GFile) install_file = NULL;
-
-	if (plugin->priv->installation != NULL)
-		return TRUE;
 
 	/* If we're running INSIDE the xdg-app environment we'll have the
 	 * env var XDG_DATA_HOME set to "~/.var/app/org.gnome.Software/data"
@@ -461,10 +456,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	g_autoptr(GPtrArray) xrefs = NULL;
 	guint i;
 
-	/* ensure we can set up the repo */
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
-
 	/* if we've never ever run before, get the AppStream data */
 	if (!gs_plugin_refresh_appstream (plugin,
 					  G_MAXUINT,
@@ -512,10 +503,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	g_autoptr(GPtrArray) xremotes = NULL;
 	guint i;
 
-	/* ensure we can set up the repo */
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
-
 	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
 						      cancellable,
 						      error);
@@ -559,10 +546,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 {
 	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
-
-	/* ensure we can set up the repo */
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
 
 	/* get all the installed apps (no network I/O) */
 	xrefs = xdg_app_installation_list_installed_refs (plugin->priv->installation,
@@ -622,14 +605,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
 		return TRUE;
 
-	/* ensure we can set up the repo */
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
-
-	/* update AppStream metadata */
-	if (!gs_plugin_refresh_appstream (plugin, cache_age, cancellable, error))
-		return FALSE;
-
 	/* use helper: FIXME: new()&ref? */
 	helper.plugin = plugin;
 
@@ -685,12 +660,8 @@ gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
 	if (origin != NULL)
 		return TRUE;
 
-	/* ensure we can set up the repo */
-	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-origin-ui");
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
-
 	/* find list of remotes */
+	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-origin-ui");
 	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
 						      cancellable,
 						      error);
@@ -725,12 +696,8 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 	if (gs_app_get_origin (app) != NULL)
 		return TRUE;
 
-	/* ensure we can set up the repo */
-	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-origin");
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
-
 	/* ensure metadata exists */
+	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-origin");
 	if (!gs_plugin_refine_item_metadata (plugin, app, cancellable, error))
 		return FALSE;
 
@@ -1185,10 +1152,6 @@ gs_plugin_refine (GsPlugin *plugin,
 	GList *l;
 	GsApp *app;
 
-	/* ensure we can set up the repo */
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
-
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (!gs_plugin_refine_item (plugin, app, flags, cancellable, error))
@@ -1211,10 +1174,6 @@ gs_plugin_launch (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "XgdApp") != 0)
 		return TRUE;
-
-	/* ensure we can set up the repo */
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
 
 	branch = gs_app_get_xdgapp_branch (app);
 	if (branch == NULL)
@@ -1242,10 +1201,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "XgdApp") != 0)
 		return TRUE;
-
-	/* ensure we can set up the repo */
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
 
 	/* use helper: FIXME: new()&ref? */
 	helper.app = app;
@@ -1277,10 +1232,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "XgdApp") != 0)
 		return TRUE;
-
-	/* ensure we can set up the repo */
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
 
 	/* ensure we have metadata and state */
 	if (!gs_plugin_refine_item (plugin, app, 0, cancellable, error))
@@ -1380,10 +1331,6 @@ gs_plugin_app_update (GsPlugin *plugin,
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "XgdApp") != 0)
 		return TRUE;
-
-	/* ensure we can set up the repo */
-	if (!gs_plugin_ensure_installation (plugin, cancellable, error))
-		return FALSE;
 
 	/* use helper: FIXME: new()&ref? */
 	helper.app = app;

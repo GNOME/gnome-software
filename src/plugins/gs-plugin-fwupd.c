@@ -111,10 +111,10 @@ gs_plugin_fwupd_changed_cb (GDBusProxy *proxy,
 }
 
 /**
- * gs_plugin_startup:
+ * gs_plugin_setup:
  */
-static gboolean
-gs_plugin_startup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	gsize len;
 	g_autofree gchar *data = NULL;
@@ -413,14 +413,6 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	g_autoptr(GVariantIter) iter = NULL;
 	g_autoptr(GVariant) val = NULL;
 
-	/* set up plugin */
-	if (plugin->priv->proxy == NULL) {
-		if (!gs_plugin_startup (plugin, cancellable, error))
-			return FALSE;
-	}
-	if (plugin->priv->proxy == NULL)
-		return TRUE;
-
 	/* get historical updates */
 	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
 				      "GetResults",
@@ -474,14 +466,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GVariantIter) iter = NULL;
 	g_autoptr(GVariant) val = NULL;
-
-	/* set up plugin */
-	if (plugin->priv->proxy == NULL) {
-		if (!gs_plugin_startup (plugin, cancellable, error))
-			return FALSE;
-	}
-	if (plugin->priv->proxy == NULL)
-		return TRUE;
 
 	/* get current list of updates */
 	val = g_dbus_proxy_call_sync (plugin->priv->proxy,
@@ -729,14 +713,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	const gchar *tmp;
 	guint i;
 
-	/* set up plugin */
-	if (plugin->priv->proxy == NULL) {
-		if (!gs_plugin_startup (plugin, cancellable, error))
-			return FALSE;
-	}
-	if (plugin->priv->proxy == NULL)
-		return TRUE;
-
 	/* get the metadata and signature file */
 	if (!gs_plugin_fwupd_check_lvfs_metadata (plugin, cache_age, cancellable, error))
 		return FALSE;
@@ -981,14 +957,6 @@ gs_plugin_fwupd_unlock (GsPlugin *plugin,
 			GError **error)
 {
 	g_autoptr(GVariant) val = NULL;
-
-	/* set up plugin */
-	if (plugin->priv->proxy == NULL) {
-		if (!gs_plugin_startup (plugin, cancellable, error))
-			return FALSE;
-	}
-	if (plugin->priv->proxy == NULL)
-		return TRUE;
 
 	/* unlock device */
 	val = g_dbus_proxy_call_sync (plugin->priv->proxy,

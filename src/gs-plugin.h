@@ -77,6 +77,7 @@ struct GsPlugin {
 	gpointer		 updates_changed_user_data;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
+	GRWLock			 rwlock;
 };
 
 typedef enum {
@@ -127,6 +128,9 @@ typedef enum {
 typedef const gchar	*(*GsPluginGetNameFunc)		(void);
 typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
 typedef void		 (*GsPluginFunc)		(GsPlugin	*plugin);
+typedef gboolean	 (*GsPluginSetupFunc)		(GsPlugin	*plugin,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginSearchFunc)		(GsPlugin	*plugin,
 							 gchar		**value,
 							 GList		**list,
@@ -214,6 +218,9 @@ gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 const gchar	**gs_plugin_order_after			(GsPlugin	*plugin);
+gboolean	 gs_plugin_setup			(GsPlugin	*plugin,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,
