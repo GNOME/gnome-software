@@ -213,7 +213,7 @@ gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,
 							 GError		**error);
-const gchar	**gs_plugin_get_deps			(GsPlugin	*plugin);
+const gchar	**gs_plugin_order_after			(GsPlugin	*plugin);
 gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
 							 GList		**list,
 							 GCancellable	*cancellable,

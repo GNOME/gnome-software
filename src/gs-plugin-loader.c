@@ -3006,7 +3006,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 
 	/* get plugins this plugin depends on */
 	(void) g_module_symbol (module,
-	                        "gs_plugin_get_deps",
+	                        "gs_plugin_order_after",
 	                        (gpointer *) &plugin_deps);
 
 	/* print what we know */

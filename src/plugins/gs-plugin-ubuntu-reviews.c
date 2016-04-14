@@ -78,7 +78,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 }
 
 const gchar **
-gs_plugin_get_deps (GsPlugin *plugin)
+gs_plugin_order_after (GsPlugin *plugin)
 {
 	static const gchar *deps[] = { NULL };
 	return deps;
