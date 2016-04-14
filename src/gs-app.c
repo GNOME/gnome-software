@@ -1564,6 +1564,8 @@ void
 gs_app_set_origin (GsApp *app, const gchar *origin)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	if (origin == app->origin)
+		return;
 	g_free (app->origin);
 	app->origin = g_strdup (origin);
 }
@@ -1595,6 +1597,8 @@ void
 gs_app_set_origin_ui (GsApp *app, const gchar *origin_ui)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	if (origin_ui == app->origin_ui)
+		return;
 	g_free (app->origin_ui);
 	app->origin_ui = g_strdup (origin_ui);
 }
