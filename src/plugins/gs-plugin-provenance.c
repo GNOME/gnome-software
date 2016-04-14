@@ -21,6 +21,8 @@
 
 #include <config.h>
 
+#include <fnmatch.h>
+
 #include <gs-plugin.h>
 
 /*
@@ -95,17 +97,36 @@ gs_plugin_destroy (GsPlugin *plugin)
 }
 
 /**
+ * gs_utils_strv_fnmatch:
+ */
+static gboolean
+gs_utils_strv_fnmatch (gchar **strv, const gchar *str)
+{
+	guint i;
+
+	/* empty */
+	if (strv == NULL)
+		return FALSE;
+
+	/* look at each one */
+	for (i = 0; strv[i] != NULL; i++) {
+		if (fnmatch (strv[i], str, 0) == 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
  * gs_plugin_provenance_refine_app:
  */
 static void
 gs_plugin_provenance_refine_app (GsPlugin *plugin, GsApp *app)
 {
 	const gchar *origin;
-	const gchar * const *sources;
-	guint i;
+	gchar **sources;
 
 	/* nothing to search */
-	sources = (const gchar * const *) plugin->priv->sources;
+	sources = plugin->priv->sources;
 	if (sources == NULL || sources[0] == NULL) {
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 		return;
@@ -113,7 +134,7 @@ gs_plugin_provenance_refine_app (GsPlugin *plugin, GsApp *app)
 
 	/* simple case */
 	origin = gs_app_get_origin (app);
-	if (origin != NULL && g_strv_contains (sources, origin)) {
+	if (origin != NULL && gs_utils_strv_fnmatch (sources, origin)) {
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 		return;
 	}
@@ -127,11 +148,9 @@ gs_plugin_provenance_refine_app (GsPlugin *plugin, GsApp *app)
 		return;
 	if (g_str_has_prefix (origin + 1, "installed:"))
 		origin += 10;
-	for (i = 0; sources[i] != NULL; i++) {
-		if (g_strcmp0 (origin + 1, sources[i]) == 0) {
-			gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-			break;
-		}
+	if (gs_utils_strv_fnmatch (sources, origin + 1)) {
+		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		return;
 	}
 }
 
