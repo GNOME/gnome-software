@@ -45,24 +45,18 @@ gs_plugin_initialize (GsPlugin *plugin)
 }
 
 /**
- * gs_plugin_refine:
+ * gs_plugin_refine_app:
  */
 gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
-	GsApp *app;
-	GList *l;
-
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
-			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-			gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-		}
+	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	}
 	return TRUE;
 }

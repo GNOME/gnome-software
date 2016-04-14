@@ -140,87 +140,74 @@ gs_plugin_add_popular (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_refine:
+ * gs_plugin_refine_app:
  */
 gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
-	GsApp *app;
-	GList *l;
-
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (gs_app_get_name (app) == NULL) {
-			if (g_strcmp0 (gs_app_get_id (app), "gnome-boxes") == 0) {
-				gs_app_set_license (app, GS_APP_QUALITY_NORMAL,
-						    "GPL-2.0+");
-				gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
-						 "Boxes");
-				gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
-						"http://www.gimp.org/");
-				gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
-						    "A simple GNOME 3 application "
-						    "to access remote or virtual systems");
-				gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
-							"<p>long description!</p>");
-			}
+	/* pkgname */
+	if (gs_app_get_name (app) == NULL) {
+		if (g_strcmp0 (gs_app_get_id (app), "gnome-boxes") == 0) {
+			gs_app_set_license (app, GS_APP_QUALITY_NORMAL,
+					    "GPL-2.0+");
+			gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
+					 "Boxes");
+			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
+					"http://www.gimp.org/");
+			gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
+					    "A simple GNOME 3 application "
+					    "to access remote or virtual systems");
+			gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
+						"<p>long description!</p>");
 		}
 	}
 
 	/* add fake review */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
-		for (l = *list; l != NULL; l = l->next) {
-			g_autoptr(GsReview) review1 = NULL;
-			g_autoptr(GsReview) review2 = NULL;
-			g_autoptr(GDateTime) dt = NULL;
-			app = GS_APP (l->data);
-			dt = g_date_time_new_now_utc ();
+		g_autoptr(GsReview) review1 = NULL;
+		g_autoptr(GsReview) review2 = NULL;
+		g_autoptr(GDateTime) dt = NULL;
 
-			/* set first review */
-			review1 = gs_review_new ();
-			gs_review_set_rating (review1, 50);
-			gs_review_set_reviewer (review1, "Angela Avery");
-			gs_review_set_summary (review1, "Steep learning curve, but worth it");
-			gs_review_set_text (review1, "Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used.");
-			gs_review_set_version (review1, "3.16.4");
-			gs_review_set_date (review1, dt);
-			gs_app_add_review (app, review1);
+		dt = g_date_time_new_now_utc ();
 
-			/* set self review */
-			review2 = gs_review_new ();
-			gs_review_set_rating (review2, 100);
-			gs_review_set_reviewer (review2, "Just Myself");
-			gs_review_set_summary (review2, "I like this application");
-			gs_review_set_text (review2, "I'm not very wordy myself.");
-			gs_review_set_version (review2, "3.16.3");
-			gs_review_set_date (review2, dt);
-			gs_review_set_flags (review2, GS_REVIEW_FLAG_SELF);
-			gs_app_add_review (app, review2);
-		}
+		/* set first review */
+		review1 = gs_review_new ();
+		gs_review_set_rating (review1, 50);
+		gs_review_set_reviewer (review1, "Angela Avery");
+		gs_review_set_summary (review1, "Steep learning curve, but worth it");
+		gs_review_set_text (review1, "Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used. Best overall 3D application I've ever used overall 3D application I've ever used.");
+		gs_review_set_version (review1, "3.16.4");
+		gs_review_set_date (review1, dt);
+		gs_app_add_review (app, review1);
+
+		/* set self review */
+		review2 = gs_review_new ();
+		gs_review_set_rating (review2, 100);
+		gs_review_set_reviewer (review2, "Just Myself");
+		gs_review_set_summary (review2, "I like this application");
+		gs_review_set_text (review2, "I'm not very wordy myself.");
+		gs_review_set_version (review2, "3.16.3");
+		gs_review_set_date (review2, dt);
+		gs_review_set_flags (review2, GS_REVIEW_FLAG_SELF);
+		gs_app_add_review (app, review2);
 	}
 
 	/* add fake ratings */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS) {
-		for (l = *list; l != NULL; l = l->next) {
-			g_autoptr(GArray) ratings = NULL;
-			const gint data[] = { 0, 10, 20, 30, 15, 2 };
-			ratings = g_array_sized_new (FALSE, FALSE, sizeof (gint), 6);
-			g_array_append_vals (ratings, data, 6);
-			app = GS_APP (l->data);
-			gs_app_set_review_ratings (app, ratings);
-		}
+		g_autoptr(GArray) ratings = NULL;
+		const gint data[] = { 0, 10, 20, 30, 15, 2 };
+		ratings = g_array_sized_new (FALSE, FALSE, sizeof (gint), 6);
+		g_array_append_vals (ratings, data, 6);
+		gs_app_set_review_ratings (app, ratings);
 	}
 
 	/* add a rating */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING) {
-		for (l = *list; l != NULL; l = l->next) {
-			app = GS_APP (l->data);
-			gs_app_set_rating (app, 66);
-		}
+		gs_app_set_rating (app, 66);
 	}
 
 	return TRUE;

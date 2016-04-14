@@ -650,56 +650,37 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_refine:
+ * gs_plugin_refine_app:
  */
 gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
-	GsApp *app;
-	GList *l;
+	/* not valid */
+	if (gs_app_get_kind (app) == AS_APP_KIND_ADDON)
+		return TRUE;
+	if (gs_app_get_id_no_prefix (app) == NULL)
+		return TRUE;
 
 	/* add reviews if possible */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) {
-		for (l = *list; l != NULL; l = l->next) {
-			g_autoptr(GError) error_local = NULL;
-			app = GS_APP (l->data);
-			if (gs_app_get_reviews(app)->len > 0)
-				continue;
-			if (gs_app_get_id_no_prefix (app) == NULL)
-				continue;
-			if (gs_app_get_kind (app) == AS_APP_KIND_ADDON)
-				continue;
-			if (!gs_plugin_refine_reviews (plugin, app,
-						       cancellable,
-						       &error_local)) {
-				g_warning ("Failed to get reviews: %s",
-					   error_local->message);
-			}
-		}
+		if (gs_app_get_reviews(app)->len > 0)
+			return TRUE;
+		if (!gs_plugin_refine_reviews (plugin, app,
+					       cancellable, error))
+			return FALSE;
 	}
 
 	/* add ratings if possible */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS) {
-		for (l = *list; l != NULL; l = l->next) {
-			g_autoptr(GError) error_local = NULL;
-			app = GS_APP (l->data);
-			if (gs_app_get_review_ratings(app) != NULL)
-				continue;
-			if (gs_app_get_id_no_prefix (app) == NULL)
-				continue;
-			if (gs_app_get_kind (app) == AS_APP_KIND_ADDON)
-				continue;
-			if (!gs_plugin_refine_ratings (plugin, app,
-						       cancellable,
-						       &error_local)) {
-				g_warning ("Failed to get ratings: %s",
-					   error_local->message);
-			}
-		}
+		if (gs_app_get_review_ratings(app) != NULL)
+			return TRUE;
+		if (!gs_plugin_refine_ratings (plugin, app,
+					       cancellable, error))
+			return FALSE;
 	}
 
 	return TRUE;

@@ -117,66 +117,50 @@ gs_utils_strv_fnmatch (gchar **strv, const gchar *str)
 }
 
 /**
- * gs_plugin_provenance_refine_app:
+ * gs_plugin_refine_app:
  */
-static void
-gs_plugin_provenance_refine_app (GsPlugin *plugin, GsApp *app)
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	const gchar *origin;
 	gchar **sources;
+
+	/* not required */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE) == 0)
+		return TRUE;
+	if (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE))
+		return TRUE;
 
 	/* nothing to search */
 	sources = plugin->priv->sources;
 	if (sources == NULL || sources[0] == NULL) {
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-		return;
+		return TRUE;
 	}
 
 	/* simple case */
 	origin = gs_app_get_origin (app);
 	if (origin != NULL && gs_utils_strv_fnmatch (sources, origin)) {
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-		return;
+		return TRUE;
 	}
 
 	/* this only works for packages */
 	origin = gs_app_get_source_id_default (app);
 	if (origin == NULL)
-		return;
+		return TRUE;
 	origin = g_strrstr (origin, ";");
 	if (origin == NULL)
-		return;
+		return TRUE;
 	if (g_str_has_prefix (origin + 1, "installed:"))
 		origin += 10;
 	if (gs_utils_strv_fnmatch (sources, origin + 1)) {
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
-		return;
-	}
-}
-
-/**
- * gs_plugin_refine:
- */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GList *l;
-	GsApp *app;
-
-	/* not required */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE) == 0)
 		return TRUE;
-
-	/* refine apps */
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE))
-			continue;
-		gs_plugin_provenance_refine_app (plugin, app);
 	}
 	return TRUE;
 }

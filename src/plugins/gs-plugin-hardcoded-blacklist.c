@@ -52,8 +52,12 @@ gs_plugin_order_after (GsPlugin *plugin)
 /**
  * gs_plugin_refine_app:
  */
-static gboolean
-gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	guint i;
 	const gchar *app_globs[] = {
@@ -82,29 +86,5 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 		}
 	}
 
-	return TRUE;
-}
-
-/**
- * gs_plugin_refine:
- */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GList *l;
-	GsApp *app;
-	g_autoptr(AsProfileTask) ptask = NULL;
-
-	/* are any of the packages on the blacklist? */
-	ptask = as_profile_start_literal (plugin->profile, "hardcoded-blacklist");
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (!gs_plugin_refine_app (plugin, app, error))
-			return FALSE;
-	}
 	return TRUE;
 }

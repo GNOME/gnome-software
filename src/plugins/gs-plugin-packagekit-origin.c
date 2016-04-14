@@ -127,16 +127,21 @@ gs_plugin_packagekit_origin_ensure_sources (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_packagekit_origin_refine_app:
- **/
-static gboolean
-gs_plugin_packagekit_origin_refine_app (GsPlugin *plugin,
-					GsApp *app,
-					GCancellable *cancellable,
-					GError **error)
+ * gs_plugin_refine_app:
+ */
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	const gchar *origin_id;
 	const gchar *origin_ui;
+
+	/* only run when required */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) == 0)
+		return TRUE;
 
 	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 		return TRUE;
@@ -166,33 +171,5 @@ gs_plugin_packagekit_origin_refine_app (GsPlugin *plugin,
 	origin_ui = g_hash_table_lookup (plugin->priv->sources, origin_id);
 	if (origin_ui != NULL)
 		gs_app_set_origin_ui (app, origin_ui);
-	return TRUE;
-}
-
-/**
- * gs_plugin_refine:
- */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GList *l;
-	GsApp *app;
-
-	/* only run when required */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) == 0)
-		return TRUE;
-
-	/* for each app */
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (!gs_plugin_packagekit_origin_refine_app (plugin, app,
-							     cancellable,
-							     error))
-			return FALSE;
-	}
 	return TRUE;
 }

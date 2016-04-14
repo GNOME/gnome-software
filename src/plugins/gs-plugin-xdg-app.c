@@ -1089,14 +1089,14 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_refine_item:
+ * gs_plugin_xdg_app_refine_app:
  */
 static gboolean
-gs_plugin_refine_item (GsPlugin *plugin,
-		       GsApp *app,
-		       GsPluginRefineFlags flags,
-		       GCancellable *cancellable,
-		       GError **error)
+gs_plugin_xdg_app_refine_app (GsPlugin *plugin,
+			      GsApp *app,
+			      GsPluginRefineFlags flags,
+			      GCancellable *cancellable,
+			      GError **error)
 {
 	g_autoptr(AsProfileTask) ptask = NULL;
 
@@ -1142,24 +1142,15 @@ gs_plugin_refine_item (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_refine:
+ * gs_plugin_refine_app:
  */
 gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GList *l;
-	GsApp *app;
-
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (!gs_plugin_refine_item (plugin, app, flags, cancellable, error))
-			return FALSE;
-	}
-	return TRUE;
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
+{	return gs_plugin_xdg_app_refine_app (plugin, app, flags, cancellable, error);
 }
 
 /**
@@ -1236,7 +1227,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return TRUE;
 
 	/* ensure we have metadata and state */
-	if (!gs_plugin_refine_item (plugin, app, 0, cancellable, error))
+	if (!gs_plugin_xdg_app_refine_app (plugin, app, 0, cancellable, error))
 		return FALSE;
 
 	/* use helper: FIXME: new()&ref? */

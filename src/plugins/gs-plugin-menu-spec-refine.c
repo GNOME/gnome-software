@@ -93,13 +93,24 @@ gs_plugin_refine_app_category (GsPlugin *plugin,
 /**
  * gs_plugin_refine_app:
  */
-static gboolean
-gs_plugin_refine_app (GsPlugin *plugin, GsApp *app)
+gboolean
+gs_plugin_refine_app (GsPlugin *plugin,
+		      GsApp *app,
+		      GsPluginRefineFlags flags,
+		      GCancellable *cancellable,
+		      GError **error)
 {
 	const MenuSpecData *msdata;
 	gboolean ret = FALSE;
 	gchar *tmp;
 	guint i;
+	const gchar *EMPTY[] = { "", NULL };
+
+	/* nothing to do here */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH) == 0)
+		return TRUE;
+	if (gs_app_get_menu_path (app) != NULL)
+		return TRUE;
 
 	/* find a top level category the app has */
 	msdata = menu_spec_get_data ();
@@ -114,35 +125,10 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app)
 			break;
 		}
 	}
-	return ret;
-}
 
-/**
- * gs_plugin_refine:
- */
-gboolean
-gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
-		  GsPluginRefineFlags flags,
-		  GCancellable *cancellable,
-		  GError **error)
-{
-	GList *l;
-	GsApp *app;
-	const gchar *EMPTY[] = { "", NULL };
+	/* don't keep searching for this */
+	if (!ret)
+		gs_app_set_menu_path (app, (gchar **) EMPTY);
 
-	/* nothing to do here */
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH) == 0)
-		return TRUE;
-
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (gs_app_get_menu_path (app) == NULL) {
-			if (!gs_plugin_refine_app (plugin, app)) {
-				/* don't keep searching for this */
-				gs_app_set_menu_path (app, (gchar **) EMPTY);
-			}
-		}
-	}
 	return TRUE;
 }

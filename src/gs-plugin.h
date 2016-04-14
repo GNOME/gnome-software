@@ -159,6 +159,11 @@ typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginRefineAppFunc)	(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginRefreshFunc	)	(GsPlugin	*plugin,
 							 guint		 cache_age,
 							 GsPluginRefreshFlags flags,
@@ -264,6 +269,11 @@ gboolean	 gs_plugin_add_unvoted_reviews		(GsPlugin	*plugin,
 							 GError		**error);
 gboolean	 gs_plugin_refine			(GsPlugin	*plugin,
 							 GList		**list,
+							 GsPluginRefineFlags flags,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_refine_app			(GsPlugin	*plugin,
+							 GsApp		*app,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
