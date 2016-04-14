@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -60,9 +61,16 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 {
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
 	const gchar *uri;
+	g_autofree gchar *name_bold = NULL;
+	g_autofree gchar *version_bold = NULL;
+	g_autofree gchar *str = NULL;
 
 	if (priv->app == NULL)
 		return;
+
+	/* embolden */
+	name_bold = g_strdup_printf ("<b>%s</b>", gs_app_get_name (priv->app));
+	version_bold = g_strdup_printf ("<b>%s</b>", gs_app_get_version (priv->app));
 
 	/* Refresh the title. Normally a distro upgrade state goes from
 	 *
@@ -72,51 +80,36 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 	 */
 	switch (gs_app_get_state (priv->app)) {
 	case AS_APP_STATE_AVAILABLE:
-	{
-		g_autofree gchar *str = NULL;
-
 		/* TRANSLATORS: This is the text displayed when a distro
 		 * upgrade is available. First %s is the distro name and the
 		 * 2nd %s is the version, e.g. "Fedora 23 Now Available" */
-		str = g_strdup_printf (_("<b>%s %s</b> Now Available"),
-		                       gs_app_get_name (priv->app),
-		                       gs_app_get_version (priv->app));
+		str = g_strdup_printf (_("%s %s Now Available"),
+				       name_bold, version_bold);
 		gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
 		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
 		gtk_widget_set_visible (priv->button_upgrades_cancel, FALSE);
 		break;
-	}
 	case AS_APP_STATE_INSTALLING:
-	{
-		g_autofree gchar *str = NULL;
-
 		/* TRANSLATORS: This is the text displayed while downloading a
 		 * distro upgrade. First %s is the distro name and the 2nd %s
 		 * is the version, e.g. "Downloading Fedora 23" */
-		str = g_strdup_printf (_("Downloading <b>%s %s</b>"),
-		                       gs_app_get_name (priv->app),
-		                       gs_app_get_version (priv->app));
+		str = g_strdup_printf (_("Downloading %s %s"),
+				       name_bold, version_bold);
 		gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
 		gtk_widget_set_visible (priv->label_upgrades_warning, FALSE);
 		gtk_widget_set_visible (priv->button_upgrades_cancel, TRUE);
 		break;
-	}
 	case AS_APP_STATE_UPDATABLE:
-	{
-		g_autofree gchar *str = NULL;
-
 		/* TRANSLATORS: This is the text displayed when a distro
 		 * upgrade has been downloaded and is ready to be installed.
 		 * First %s is the distro name and the 2nd %s is the version,
 		 * e.g. "Fedora 23 Ready to be Installed" */
-		str = g_strdup_printf (_("<b>%s %s</b> Ready to be Installed"),
-		                       gs_app_get_name (priv->app),
-		                       gs_app_get_version (priv->app));
+		str = g_strdup_printf (_("%s %s Ready to be Installed"),
+				       name_bold, version_bold);
 		gtk_label_set_markup (GTK_LABEL (priv->label_upgrades_title), str);
 		gtk_widget_set_visible (priv->label_upgrades_warning, TRUE);
 		gtk_widget_set_visible (priv->button_upgrades_cancel, FALSE);
 		break;
-	}
 	default:
 		g_critical ("Unexpected app state");
 		break;
