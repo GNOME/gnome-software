@@ -251,6 +251,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Fedora");
 	gs_app_set_version (app, "24");
+	gs_app_set_management_plugin (app, plugin->name);
 	gs_plugin_add_app (list, app);
 	return TRUE;
 }
@@ -348,6 +349,49 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	/* do delay */
 	return gs_plugin_dummy_delay (plugin, app, delay_ms, cancellable, error);
+}
+
+/**
+ * gs_plugin_app_upgrade_download:
+ */
+gboolean
+gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
+			        GCancellable *cancellable, GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
+	g_debug ("starting download");
+	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+	if (!gs_plugin_dummy_delay (plugin, app, 5000, cancellable, error))
+		return FALSE;
+	return TRUE;
+}
+
+/**
+ * gs_plugin_app_upgrade_trigger:
+ */
+gboolean
+gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
+			       GCancellable *cancellable, GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
+	/* NOP */
+	return TRUE;
+}
+
+/**
+ * gs_plugin_offline_update_cancel:
+ */
+gboolean
+gs_plugin_offline_update_cancel (GsPlugin *plugin, GsApp *app,
+			 GCancellable *cancellable, GError **error)
+{
+	return TRUE;
 }
 
 /**
