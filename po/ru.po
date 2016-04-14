@@ -10,8 +10,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-17 12:52+0000\n"
-"PO-Revision-Date: 2016-03-17 21:33+0300\n"
+"POT-Creation-Date: 2016-04-14 09:45+0000\n"
+"PO-Revision-Date: 2016-04-14 15:48+0300\n"
 "Last-Translator: Yuri Myasoedov <ymyasoedov@yandex.ru>\n"
 "Language-Team: Русский <gnome-cyr@gnome.org>\n"
 "Language: ru\n"
@@ -25,7 +25,7 @@ msgstr ""
 #  перевод по аналогии с ubuntu software - центр приложений ubuntu
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
 msgid "GNOME Software"
-msgstr "Менеджер приложений GNOME"
+msgstr "Программы GNOME"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:2
 msgid "Application manager for GNOME"
@@ -36,8 +36,8 @@ msgid ""
 "Software allows you to find and install new applications and system "
 "extensions and remove existing installed applications."
 msgstr ""
-"Менеджер приложений позволяет находить и устанавливать новые приложения и "
-"расширения системы, а также удалять уже установленные приложения."
+"«Программы» позволяют находить и устанавливать новые приложения и расширения "
+"системы, а также удалять уже установленные."
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:4
 msgid ""
@@ -46,10 +46,10 @@ msgid ""
 "found either through browsing the list of categories or by searching. It "
 "also allows you to update your system using an offline update."
 msgstr ""
-"Менеджер приложений GNOME представляет рекомендуемые и популярные приложения "
-"с описанием и несколькими картинками к ним. Приложения можно находить "
-"просматривая список категорий или с помощью функции поиска. Также менеджер "
-"приложений позволяет обновлять систему с помощью отложенных обновлений."
+"«Программы GNOME» показывают рекомендуемые и популярные приложения с "
+"описаниями и снимками экрана. Приложения можно находить, просматривая список "
+"категорий, или при помощи строки поиска. Также «Программы GNOME» позволяют "
+"обновлять систему посредством автономных обновлений."
 
 #: ../data/org.gnome.software.gschema.xml.h:1
 msgid "A list of compatible projects"
@@ -149,7 +149,7 @@ msgid "Add to Application Folder"
 msgstr "Добавить в папку приложения"
 
 #: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:288
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:305
 #: ../src/gs-shell-installed.c:514
 msgid "_Cancel"
 msgstr "О_тменить"
@@ -173,7 +173,7 @@ msgstr "Установка приложений"
 
 #: ../src/gnome-software-local-file.desktop.in.h:2
 msgid "Install selected software on the system"
-msgstr "Установить выбранное программное обеспечение"
+msgstr "Установить выбранное приложение"
 
 #: ../src/gnome-software.ui.h:1
 msgid "Select All"
@@ -190,7 +190,7 @@ msgstr "Снять выделение"
 #: ../src/gnome-software.ui.h:3 ../src/gs-application.c:374
 #: ../src/gs-shell.c:253 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
-msgstr "Менеджер приложений"
+msgstr "Программы"
 
 #. vim: set noexpandtab:
 #: ../src/gnome-software.ui.h:4 ../src/gs-sources-dialog.ui.h:2
@@ -323,8 +323,8 @@ msgstr "Показать номер версии"
 #: ../src/gs-application.c:367
 msgid "translator-credits"
 msgstr ""
-"Stas Solovey <whats_up@tut.by>, 2013-2016.\n"
-"Юрий Мясоедов <ymyasoedov@yandex.ru>, 2014."
+"Стас Соловей <whats_up@tut.by>, 2013-2016.\n"
+"Юрий Мясоедов <ymyasoedov@yandex.ru>, 2014-2016."
 
 #. TRANSLATORS: this is the title of the about window
 #: ../src/gs-application.c:371
@@ -334,7 +334,7 @@ msgstr "О приложении"
 #. TRANSLATORS: well, we seem to think so, anyway
 #: ../src/gs-application.c:377
 msgid "A nice way to manage the software on your system."
-msgstr "Удобная программа управления программным обеспечением в системе."
+msgstr "Отличное средство для управления приложениями в системе."
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
@@ -472,7 +472,7 @@ msgstr "Требуются дополнительные пакеты"
 #. TRANSLATORS: this is a button that launches gnome-software
 #: ../src/gs-dbus-helper.c:348
 msgid "Find in Software"
-msgstr "Найти в приложениях"
+msgstr "Найти в «Программах»"
 
 #. vim: set noexpandtab:
 #: ../src/gs-first-run-dialog.ui.h:1
@@ -481,7 +481,7 @@ msgstr "Добро пожаловать"
 
 #: ../src/gs-first-run-dialog.ui.h:2
 msgid "Welcome to Software"
-msgstr "Добро пожаловать в менеджер приложений"
+msgstr "Добро пожаловать в «Программы»"
 
 #: ../src/gs-first-run-dialog.ui.h:3
 msgid ""
@@ -489,23 +489,23 @@ msgid ""
 "our recommendations, browse the categories, or search for the applications "
 "you want."
 msgstr ""
-"Менеджер приложений — это программа для централизованного управления "
-"программным обеспечением. Смотрите категории и рекомендации или найдите "
-"интересующие вас приложения."
+"Из «Программ» можно устанавливать любые интересующие вас приложения. "
+"Просматривайте рекомендации и категории или найдите нужное приложение по его "
+"названию."
 
 #: ../src/gs-first-run-dialog.ui.h:4
 msgid "_Let’s Go Shopping"
-msgstr "_Отправляемся за покупками"
+msgstr "_Идём смотреть"
 
 #. TRANSLATORS: Here are 2 strings the same as in gtk/gtkbox.c
 #. in GTK+ project. Please use the same translation.
 #: ../src/gs-hiding-box.c:384
 msgid "Spacing"
-msgstr "Отступы"
+msgstr "Отступ"
 
 #: ../src/gs-hiding-box.c:385
 msgid "The amount of space between children"
-msgstr "Объем пространства между дочерними элементами"
+msgstr "Расстояние между дочерними элементами"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was removed
@@ -799,14 +799,19 @@ msgstr "Параметры расширения"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:200 ../src/gs-shell-details.ui.h:2
+#. TRANSLATORS: button text in the header when firmware
+#. * can be live-installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be live-updated
+#: ../src/gs-shell-details.c:201 ../src/gs-shell-details.c:227
+#: ../src/gs-shell-details.c:232 ../src/gs-shell-details.ui.h:2
 #: ../src/gs-upgrade-banner.ui.h:4
 msgid "_Install"
 msgstr "_Установить"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:211
+#: ../src/gs-shell-details.c:212
 msgid "_Installing"
 msgstr "У_становка"
 
@@ -814,80 +819,79 @@ msgstr "У_становка"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:229
+#: ../src/gs-shell-details.c:245
 msgid "_Install…"
 msgstr "Ус_тановить…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:275 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:292 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "У_далить"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:282
+#: ../src/gs-shell-details.c:299
 msgid "_Removing"
 msgstr "У_даление"
 
 #. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:652
+#: ../src/gs-shell-details.c:669
 msgctxt "license"
 msgid "Unknown"
 msgstr "Неизвестная"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:665
+#: ../src/gs-shell-details.c:682
 msgctxt "version"
 msgid "Unknown"
 msgstr "Неизвестная"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:671
+#: ../src/gs-shell-details.c:688
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Подсчёт…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:674
+#: ../src/gs-shell-details.c:691
 msgctxt "size"
 msgid "Unknown"
 msgstr "Неизвестно"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:686
+#: ../src/gs-shell-details.c:703
 msgctxt "updated"
 msgid "Never"
 msgstr "Никогда"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:700
+#: ../src/gs-shell-details.c:717
 msgctxt "menu category"
 msgid "None"
 msgstr "Нет"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:717
+#: ../src/gs-shell-details.c:734
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Неизвестно"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:763
+#: ../src/gs-shell-details.c:780
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr ""
-"Этим приложением можно пользоваться только при наличии активного Интернет-"
-"подключения."
+"Этим приложением можно пользоваться только при наличии Интернет-подключения."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:774
+#: ../src/gs-shell-details.c:791
 msgid "This software comes from a 3rd party."
 msgstr "Это — стороннее программное обеспечение."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:783
+#: ../src/gs-shell-details.c:800
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
@@ -895,16 +899,16 @@ msgstr ""
 "компоненты."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:792
+#: ../src/gs-shell-details.c:809
 msgid "This software may contain non-free components."
 msgstr "Это программное обеспечение может содержать несвободные компоненты."
 
-#: ../src/gs-shell-details.c:1114
+#: ../src/gs-shell-details.c:1131
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Не удалось найти «%s»"
 
-#: ../src/gs-shell-details.c:1174 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1191 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "Не сработало"
 
@@ -920,28 +924,27 @@ msgstr "_Запустить"
 
 #: ../src/gs-shell-details.ui.h:7
 msgid "Software Source Included"
-msgstr "Содержит источник программного обеспечения"
+msgstr "Содержит источник программ"
 
 #: ../src/gs-shell-details.ui.h:8
 msgid ""
 "This application includes a software source which provides updates, as well "
 "as access to other software."
 msgstr ""
-"Это приложение содержит источник программного обеспечения, который "
-"предоставляет обновления приложения, а также доступ к другому программному "
-"обеспечению."
+"Это приложение содержит источник программ, который предоставляет обновления, "
+"а также доступ к другим приложениям."
 
 #: ../src/gs-shell-details.ui.h:9
 msgid "No Software Source Included"
-msgstr "Без источника программного обеспечения"
+msgstr "Без источника программ"
 
 #: ../src/gs-shell-details.ui.h:10
 msgid ""
 "This application does not include a software source. It will not be updated "
 "with new versions."
 msgstr ""
-"Приложение не содержит источник программного обеспечения. Оно не будет "
-"обновляться при выходе новых версий."
+"Приложение не содержит источника программ. Оно не будет обновляться при "
+"выпуске новых версий."
 
 #: ../src/gs-shell-details.ui.h:11
 msgid ""
@@ -954,20 +957,19 @@ msgstr ""
 #. Translators: a repository file used for installing software has been discovered.
 #: ../src/gs-shell-details.ui.h:13
 msgid "Software Source Identified"
-msgstr "Найден источник программного обеспечения"
+msgstr "Найден источник программ"
 
 #: ../src/gs-shell-details.ui.h:14
 msgid ""
 "Adding this software source will give you access to additional software and "
 "upgrades."
 msgstr ""
-"Добавление этого источника программного обеспечения предоставит доступ к "
-"дополнительным приложениям и обновлениям."
+"Добавление этого источника программ предоставит доступ к дополнительным "
+"приложениям и обновлениям."
 
 #: ../src/gs-shell-details.ui.h:15
 msgid "Only use software sources that you trust."
-msgstr ""
-"Используйте только те источники программного обеспечения, которым доверяете."
+msgstr "Используйте только те источники программ, которым доверяете."
 
 #: ../src/gs-shell-details.ui.h:16
 msgid "_Website"
@@ -1587,20 +1589,17 @@ msgid ""
 "Software sources can be downloaded from the internet. They give you access "
 "to additional software that is not provided by %s."
 msgstr ""
-"Источники программного обеспечения могут быть загружены из Интернета. Они "
-"дают вам доступ к дополнительному программному обеспечению, которое не "
-"предусмотрено %s."
+"Источники программ могут быть загружены из Интернета. Они дают вам доступ к "
+"дополнительному программному обеспечению, которое не предусмотрено %s."
 
 #. vim: set noexpandtab:
 #: ../src/gs-sources-dialog.ui.h:1
 msgid "Software Sources"
-msgstr "Источники программного обеспечения"
+msgstr "Источники программ"
 
 #: ../src/gs-sources-dialog.ui.h:3
 msgid "Software sources give you access to additional software."
-msgstr ""
-"Источники программного обеспечения предоставляют доступ к дополнительным "
-"приложениям."
+msgstr "Источники программ предоставляют доступ к дополнительным приложениям."
 
 #: ../src/gs-sources-dialog.ui.h:4
 msgid ""
@@ -1692,7 +1691,7 @@ msgstr "Перезапустить и установить"
 
 #: ../src/gs-update-monitor.c:97
 msgid "Software Updates Available"
-msgstr "Доступны обновления программного обеспечения"
+msgstr "Доступны обновления приложений"
 
 #: ../src/gs-update-monitor.c:98
 msgid "Important OS and application updates are ready to be installed"
@@ -1721,7 +1720,7 @@ msgstr "Доступно обновление на новую версию ОС"
 #. TRANSLATORS: title when we offline updates have failed
 #: ../src/gs-update-monitor.c:428
 msgid "Software Updates Failed"
-msgstr "Не удалось обновить программное обеспечение"
+msgstr "Не удалось обновить приложения"
 
 #. TRANSLATORS: message when we offline updates have failed
 #: ../src/gs-update-monitor.c:430
@@ -1958,8 +1957,7 @@ msgstr "_Завершить"
 
 #: ../src/org.gnome.Software.desktop.in.h:2
 msgid "Add, remove or update software on this computer"
-msgstr ""
-"Установка, удаление и обновление программного обеспечения на компьютере"
+msgstr "Установка, удаление и обновление приложений на компьютере"
 
 #: ../src/org.gnome.Software.desktop.in.h:3
 msgid ""
