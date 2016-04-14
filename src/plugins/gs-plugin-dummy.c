@@ -267,6 +267,101 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	return TRUE;
 }
 
+typedef struct {
+	GsPlugin	*plugin;
+	GsApp		*app;
+	GMainLoop	*loop;
+	GCancellable	*cancellable;
+	GError		**error;
+	guint		 percentage;
+} GsPluginDummyHelper;
+
+/**
+ * gs_plugin_dummy_delay_cb:
+ */
+static gboolean
+gs_plugin_dummy_delay_cb (gpointer user_data)
+{
+	GsPluginDummyHelper *helper = (GsPluginDummyHelper *) user_data;
+	helper->percentage += 10;
+	if (helper->percentage >= 100) {
+		g_main_loop_quit (helper->loop);
+		return FALSE;
+	}
+	if (helper->error != NULL && *(helper->error) != NULL) {
+		g_main_loop_quit (helper->loop);
+		return FALSE;
+	}
+	g_debug ("dummy percentage=%i%%", helper->percentage);
+	gs_app_set_progress (helper->app, helper->percentage);
+	gs_plugin_status_update (helper->plugin,
+				 helper->app,
+				 GS_PLUGIN_STATUS_DOWNLOADING);
+	return TRUE;
+}
+
+/**
+ * gs_plugin_dummy_delay_cancel_cb:
+ */
+static void
+gs_plugin_dummy_delay_cancel_cb (GCancellable *cancellable,
+				 GsPluginDummyHelper *helper)
+{
+	g_debug ("dummy delay cancelled");
+	g_cancellable_set_error_if_cancelled (cancellable, helper->error);
+}
+
+/**
+ * gs_plugin_dummy_delay:
+ */
+static gboolean
+gs_plugin_dummy_delay (GsPlugin *plugin,
+		       GsApp *app,
+		       guint timeout_ms,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	g_autofree GsPluginDummyHelper *helper = g_new0 (GsPluginDummyHelper, 1);
+	g_autoptr(GMainLoop) loop = g_main_loop_new (NULL, FALSE);
+
+	/* cancel the delay on cancellation */
+	if (cancellable != NULL) {
+		g_cancellable_connect (cancellable,
+				       G_CALLBACK (gs_plugin_dummy_delay_cancel_cb),
+				       helper, NULL);
+	}
+
+	/* set up callbacks */
+	helper->app = app;
+	helper->cancellable = cancellable;
+	helper->error = error;
+	helper->loop = loop;
+	helper->percentage = 0;
+	helper->plugin = plugin;
+	g_debug ("dummy waiting for %ims", timeout_ms);
+	g_timeout_add (timeout_ms / 10, gs_plugin_dummy_delay_cb, helper);
+	g_main_loop_run (loop);
+	g_debug ("dummy done");
+	return helper->error != NULL;
+}
+
+/**
+ * gs_plugin_refresh:
+ */
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GsPluginRefreshFlags flags,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	guint delay_ms = 100;
+	g_autoptr(GsApp) app = gs_app_new (NULL);
+
+	/* do delay */
+	return gs_plugin_dummy_delay (plugin, app, delay_ms, cancellable, error);
+}
+
 /**
  * gs_plugin_review_submit:
  */
