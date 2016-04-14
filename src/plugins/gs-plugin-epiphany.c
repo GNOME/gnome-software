@@ -234,7 +234,7 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	g_autoptr(GFile) file_app = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "Epiphany") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 	epi_desktop = gs_app_get_source_id_default (app);
 	if (epi_desktop == NULL)
@@ -280,7 +280,7 @@ gs_plugin_refine_app (GsPlugin *plugin, GsApp *app, GError **error)
 	if (g_file_test (fn, G_FILE_TEST_EXISTS)) {
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_add_source_id (app, fn);
-		gs_app_set_management_plugin (app, "Epiphany");
+		gs_app_set_management_plugin (app, plugin->name);
 		return TRUE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -325,7 +325,7 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "Epiphany") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 	return gs_plugin_app_launch (plugin, app, error);
 }

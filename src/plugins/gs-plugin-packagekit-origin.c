@@ -138,7 +138,7 @@ gs_plugin_packagekit_origin_refine_app (GsPlugin *plugin,
 	const gchar *origin_id;
 	const gchar *origin_ui;
 
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
 		return TRUE;
 	if (gs_app_get_origin (app) == NULL)
 		return TRUE;

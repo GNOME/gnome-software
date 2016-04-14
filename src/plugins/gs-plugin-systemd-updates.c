@@ -127,7 +127,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 		g_auto(GStrv) split = NULL;
 		app = gs_app_new (NULL);
-		gs_app_set_management_plugin (app, "PackageKit");
+		gs_app_set_management_plugin (app, "packagekit");
 		gs_app_add_source_id (app, package_ids[i]);
 		split = pk_package_id_split (package_ids[i]);
 		gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
@@ -148,7 +148,19 @@ gs_plugin_offline_update (GsPlugin *plugin,
                           GCancellable *cancellable,
                           GError **error)
 {
-	return pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT, cancellable, error);
+	GList *l;
+
+	/* any apps to process offline */
+	for (l = apps; l != NULL; l = l->next) {
+		GsApp *app = GS_APP (l->data);
+
+		/* only process this app if was created by this plugin */
+		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+			continue;
+		return pk_offline_trigger (PK_OFFLINE_ACTION_REBOOT,
+					   cancellable, error);
+	}
+	return TRUE;
 }
 
 /**
@@ -160,6 +172,9 @@ gs_plugin_offline_update_cancel (GsPlugin *plugin,
 				 GCancellable *cancellable,
 				 GError **error)
 {
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		return TRUE;
 	return pk_offline_cancel (NULL, error);
 }
 
@@ -172,5 +187,8 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
                                GCancellable *cancellable,
                                GError **error)
 {
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)
+		return TRUE;
 	return pk_offline_trigger_upgrade (PK_OFFLINE_ACTION_REBOOT, cancellable, error);
 }

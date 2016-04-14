@@ -380,7 +380,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	}
 
 	/* actually add the application */
-	gs_app_set_management_plugin (app, "fwupd");
+	gs_app_set_management_plugin (app, plugin->name);
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
 	gs_app_add_source_id (app, filename_cache);
 	gs_app_add_category (app, "System");
@@ -907,7 +907,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	gboolean offline = TRUE;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "fwupd") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 
 	filename = gs_app_get_source_id_default (app);

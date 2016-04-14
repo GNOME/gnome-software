@@ -264,7 +264,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		rd = g_ptr_array_index (array, i);
 		id = pk_repo_detail_get_id (rd);
 		app = gs_app_new (id);
-		gs_app_set_management_plugin (app, "PackageKit");
+		gs_app_set_management_plugin (app, plugin->name);
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
@@ -335,7 +335,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	data.ptask = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 
 	/* we enable the repo */
@@ -434,7 +434,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			return FALSE;
 		break;
 	case AS_APP_STATE_AVAILABLE_LOCAL:
-		package_id = gs_app_get_metadata_item (app, "PackageKit::local-filename");
+		package_id = gs_app_get_metadata_item (app, "packagekit::local-filename");
 		if (package_id == NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
@@ -453,7 +453,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			return FALSE;
 
 		/* get the new icon from the package */
-		gs_app_set_metadata (app, "PackageKit::local-filename", NULL);
+		gs_app_set_metadata (app, "packagekit::local-filename", NULL);
 		gs_app_set_icon (app, NULL);
 		gs_app_set_pixbuf (app, NULL);
 		break;
@@ -569,7 +569,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	data.ptask = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 
 	/* remove repo and all apps in it */
@@ -750,7 +750,7 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), "PackageKit") != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 	return gs_plugin_app_launch (plugin, app, error);
 }
