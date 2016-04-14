@@ -3027,7 +3027,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	gboolean ret;
 	GModule *module;
 	GsPluginGetNameFunc plugin_name = NULL;
-	GsPluginGetDepsFunc plugin_deps = NULL;
+	GsPluginGetDepsFunc order_after = NULL;
+	GsPluginGetDepsFunc order_before = NULL;
+	GsPluginGetDepsFunc plugin_conflicts = NULL;
 	GsPlugin *plugin = NULL;
 
 	module = g_module_open (filename, 0);
@@ -3048,9 +3050,15 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	}
 
 	/* get plugins this plugin depends on */
-	(void) g_module_symbol (module,
-	                        "gs_plugin_order_after",
-	                        (gpointer *) &plugin_deps);
+	g_module_symbol (module,
+			 "gs_plugin_order_after",
+			 (gpointer *) &order_after);
+	g_module_symbol (module,
+			 "gs_plugin_order_before",
+			 (gpointer *) &order_before);
+	g_module_symbol (module,
+			 "gs_plugin_get_conflicts",
+			 (gpointer *) &plugin_conflicts);
 
 	/* print what we know */
 	plugin = g_slice_new0 (GsPlugin);
@@ -3058,7 +3066,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->module = module;
 	plugin->pixbuf_size = 64;
 	plugin->priority = 0.f;
-	plugin->deps = plugin_deps != NULL ? plugin_deps (plugin) : NULL;
+	plugin->order_after = order_after != NULL ? order_after (plugin) : NULL;
+	plugin->order_before = order_before != NULL ? order_before (plugin) : NULL;
+	plugin->conflicts = plugin_conflicts != NULL ? plugin_conflicts (plugin) : NULL;
 	plugin->name = g_strdup (plugin_name ());
 	plugin->locale = priv->locale;
 	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
@@ -3208,25 +3218,50 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 		changes = FALSE;
 		for (i = 0; i < priv->plugins->len; i++) {
 			plugin = g_ptr_array_index (priv->plugins, i);
-			if (plugin->deps == NULL)
+			if (plugin->order_after == NULL)
 				continue;
-			for (j = 0; plugin->deps[j] != NULL && !changes; j++) {
+			for (j = 0; plugin->order_after[j] != NULL && !changes; j++) {
 				dep = gs_plugin_loader_find_plugin (plugin_loader,
-								    plugin->deps[j]);
+								    plugin->order_after[j]);
 				if (dep == NULL) {
 					g_debug ("cannot find plugin '%s'",
-						 plugin->deps[j]);
+						 plugin->order_after[j]);
 					continue;
 				}
 				if (!dep->enabled)
 					continue;
 				if (plugin->priority <= dep->priority) {
-					g_debug ("%s [%.1f] requires %s [%.1f] "
+					g_debug ("%s [%.1f] to be ordered after %s [%.1f] "
 						 "so promoting to [%.1f]",
 						 plugin->name, plugin->priority,
 						 dep->name, dep->priority,
 						 dep->priority + dep_increment);
 					plugin->priority = dep->priority + dep_increment;
+					changes = TRUE;
+				}
+			}
+		}
+		for (i = 0; i < priv->plugins->len; i++) {
+			plugin = g_ptr_array_index (priv->plugins, i);
+			if (plugin->order_before == NULL)
+				continue;
+			for (j = 0; plugin->order_before[j] != NULL && !changes; j++) {
+				dep = gs_plugin_loader_find_plugin (plugin_loader,
+								    plugin->order_before[j]);
+				if (dep == NULL) {
+					g_debug ("cannot find plugin '%s'",
+						 plugin->order_before[j]);
+					continue;
+				}
+				if (!dep->enabled)
+					continue;
+				if (plugin->priority <= dep->priority) {
+					g_debug ("%s [%.1f] to be ordered before %s [%.1f] "
+						 "so promoting to [%.1f]",
+						 plugin->name, plugin->priority,
+						 dep->name, dep->priority,
+						 dep->priority + dep_increment);
+					dep->priority = plugin->priority + dep_increment;
 					changes = TRUE;
 				}
 			}
@@ -3248,6 +3283,26 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_initialize");
+
+	/* check for conflicts */
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
+		if (plugin->conflicts == NULL)
+			continue;
+		for (j = 0; plugin->conflicts[j] != NULL && !changes; j++) {
+			dep = gs_plugin_loader_find_plugin (plugin_loader,
+							    plugin->conflicts[j]);
+			if (dep == NULL)
+				continue;
+			if (!dep->enabled)
+				continue;
+			g_debug ("disabling %s as conflicts with %s",
+				 dep->name, plugin->name);
+			dep->enabled = FALSE;
+		}
+	}
 
 	/* run setup */
 	for (i = 0; i < priv->plugins->len; i++) {
