@@ -60,7 +60,7 @@
             <property name="margin_top">16</property>
             <property name="margin_bottom">28</property>
             <child>
-              <object class="GtkButton" id="button_upgrades_learn_more">
+              <object class="GtkButton" id="button_upgrades_help">
                 <property name="label" translatable="yes">_Learn More</property>
                 <property name="width_request">150</property>
                 <property name="visible">True</property>
@@ -80,6 +80,24 @@
             <child>
               <object class="GtkButton" id="button_upgrades_download">
                 <property name="label" translatable="yes">_Download</property>
+                <property name="width_request">150</property>
+                <property name="visible">True</property>
+                <property name="can_focus">True</property>
+                <property name="receives_default">False</property>
+                <property name="use_underline">True</property>
+                <property name="relief">none</property>
+                <style>
+                  <class name="upgrade-button"/>
+                </style>
+              </object>
+              <packing>
+                <property name="expand">False</property>
+                <property name="fill">False</property>
+              </packing>
+            </child>
+            <child>
+              <object class="GtkButton" id="button_upgrades_cancel">
+                <property name="label" translatable="yes">_Cancel</property>
                 <property name="width_request">150</property>
                 <property name="visible">True</property>
                 <property name="can_focus">True</property>

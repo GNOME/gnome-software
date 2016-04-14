@@ -250,6 +250,8 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, "Fedora");
+	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
+			"https://fedoraproject.org/wiki/Releases/24/Schedule");
 	gs_app_set_version (app, "24");
 	gs_app_set_management_plugin (app, plugin->name);
 	gs_plugin_add_app (list, app);

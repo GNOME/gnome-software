@@ -58,6 +58,7 @@ struct _GsShellUpdates
 	GtkBuilder		*builder;
 	GCancellable		*cancellable;
 	GCancellable		*cancellable_refresh;
+	GCancellable		*cancellable_upgrade_download;
 	GSettings		*settings;
 	GSettings		*desktop_settings;
 	gboolean		 cache_valid;
@@ -978,7 +979,7 @@ upgrade_download_finished_cb (GObject *source,
 }
 
 static void
-gs_shell_updates_download_upgrade_cb (GsUpgradeBanner *upgrade_banner,
+gs_shell_updates_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
                                       GsShellUpdates *self)
 {
 	GsApp *app;
@@ -989,10 +990,13 @@ gs_shell_updates_download_upgrade_cb (GsUpgradeBanner *upgrade_banner,
 		return;
 	}
 
+	if (self->cancellable_upgrade_download != NULL)
+		g_object_unref (self->cancellable_upgrade_download);
+	self->cancellable_upgrade_download = g_cancellable_new ();
 	gs_plugin_loader_app_action_async (self->plugin_loader,
 					   app,
 					   GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
-					   self->cancellable,
+					   self->cancellable_upgrade_download,
 					   upgrade_download_finished_cb,
 					   self);
 }
@@ -1056,7 +1060,7 @@ upgrade_trigger_finished_cb (GObject *source,
 }
 
 static void
-gs_shell_updates_install_upgrade_cb (GsUpgradeBanner *upgrade_banner,
+gs_shell_updates_upgrade_install_cb (GsUpgradeBanner *upgrade_banner,
                                      GsShellUpdates *self)
 {
 	GsApp *app;
@@ -1073,6 +1077,26 @@ gs_shell_updates_install_upgrade_cb (GsUpgradeBanner *upgrade_banner,
 					   self->cancellable,
 					   upgrade_trigger_finished_cb,
 					   self);
+}
+
+static void
+gs_shell_updates_upgrade_help_cb (GsUpgradeBanner *upgrade_banner,
+				  GsShellUpdates *self)
+{
+	GsApp *app;
+	const gchar *uri;
+	g_autoptr(GError) error = NULL;
+
+	app = gs_upgrade_banner_get_app (upgrade_banner);
+	if (app == NULL) {
+		g_warning ("no upgrade available to launch");
+		return;
+	}
+
+	/* open the link */
+	uri = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
+	if (!gtk_show_uri (NULL, uri, GDK_CURRENT_TIME, &error))
+		g_warning ("failed to open %s: %s", uri, error->message);
 }
 
 /**
@@ -1114,6 +1138,13 @@ gs_shell_updates_monitor_permission (GsShellUpdates *self)
 				  G_CALLBACK (on_permission_changed), self);
 }
 
+static void
+gs_shell_updates_upgrade_cancel_cb (GsUpgradeBanner *upgrade_banner,
+				    GsShellUpdates *self)
+{
+	g_cancellable_cancel (self->cancellable_upgrade_download);
+}
+
 void
 gs_shell_updates_setup (GsShellUpdates *self,
 			GsShell *shell,
@@ -1144,10 +1175,14 @@ gs_shell_updates_setup (GsShellUpdates *self,
 			  G_CALLBACK (gs_shell_updates_button_clicked_cb), self);
 
 	/* setup system upgrades */
-	g_signal_connect (self->upgrade_banner, "download-button-clicked",
-			  G_CALLBACK (gs_shell_updates_download_upgrade_cb), self);
-	g_signal_connect (self->upgrade_banner, "install-button-clicked",
-			  G_CALLBACK (gs_shell_updates_install_upgrade_cb), self);
+	g_signal_connect (self->upgrade_banner, "download-clicked",
+			  G_CALLBACK (gs_shell_updates_upgrade_download_cb), self);
+	g_signal_connect (self->upgrade_banner, "install-clicked",
+			  G_CALLBACK (gs_shell_updates_upgrade_install_cb), self);
+	g_signal_connect (self->upgrade_banner, "cancel-clicked",
+			  G_CALLBACK (gs_shell_updates_upgrade_cancel_cb), self);
+	g_signal_connect (self->upgrade_banner, "help-clicked",
+			  G_CALLBACK (gs_shell_updates_upgrade_help_cb), self);
 
 	self->header_end_box = gtk_box_new (GTK_ORIENTATION_HORIZONTAL, 6);
 	gtk_widget_set_visible (self->header_end_box, TRUE);
