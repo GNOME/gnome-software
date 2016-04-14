@@ -175,8 +175,10 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		/* run the batched plugin symbol then the per-app plugin */
 		if (plugin_func != NULL) {
 			g_autoptr(GError) error_local = NULL;
+			g_rw_lock_reader_lock (&plugin->rwlock);
 			ret = plugin_func (plugin, list, flags,
 					   cancellable, &error_local);
+			g_rw_lock_reader_unlock (&plugin->rwlock);
 			if (!ret) {
 				g_warning ("failed to call %s on %s: %s",
 					   function_name, plugin->name,
