@@ -27,34 +27,34 @@ desktop_in_files =					\
 desktop_DATA = $(desktop_in_files:.desktop.in=.desktop)
 
 UI_FILES =						\
-	app-folder-dialog.ui				\
-	menus.ui					\
-	app-tile.ui					\
-	category-tile.ui				\
-	feature-tile.ui					\
 	gnome-software.ui				\
 	gs-app-addon-row.ui				\
+	gs-app-folder-dialog.ui				\
 	gs-app-row.ui					\
+	gs-app-tile.ui					\
+	gs-category-tile.ui				\
+	gs-feature-tile.ui				\
 	gs-first-run-dialog.ui				\
 	gs-history-dialog.ui				\
+	gs-menus.ui					\
+	gs-popular-tile.ui				\
 	gs-review-dialog.ui				\
 	gs-review-histogram.ui				\
 	gs-review-row.ui				\
+	gs-screenshot-image.ui				\
 	gs-shell-category.ui				\
-	gs-shell-extras.ui				\
 	gs-shell-details.ui				\
+	gs-shell-extras.ui				\
 	gs-shell-installed.ui				\
 	gs-shell-moderate.ui				\
 	gs-shell-overview.ui				\
 	gs-shell-search.ui				\
 	gs-shell-updates.ui				\
-	gs-sources-dialog.ui				\
 	gs-sources-dialog-row.ui			\
+	gs-sources-dialog.ui				\
 	gs-star-widget.ui				\
 	gs-update-dialog.ui				\
-	gs-upgrade-banner.ui				\
-	screenshot-image.ui				\
-	popular-tile.ui
+	gs-upgrade-banner.ui
 
 dbusservicedir = $(datadir)/dbus-1/services
 dbusservice_DATA =					\

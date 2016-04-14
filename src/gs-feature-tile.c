@@ -184,7 +184,7 @@ gs_feature_tile_class_init (GsFeatureTileClass *klass)
 
 	widget_class->destroy = gs_feature_tile_destroy;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/feature-tile.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-feature-tile.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, image);
 	gtk_widget_class_bind_template_child (widget_class, GsFeatureTile, stack);

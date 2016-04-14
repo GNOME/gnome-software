@@ -276,7 +276,7 @@ gs_app_tile_class_init (GsAppTileClass *klass)
 				  -1, G_MAXINT, -1,
 				  G_PARAM_READWRITE));
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/app-tile.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-app-tile.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsAppTile, image);
 	gtk_widget_class_bind_template_child (widget_class, GsAppTile, name);

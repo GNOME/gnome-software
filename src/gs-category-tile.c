@@ -80,7 +80,7 @@ gs_category_tile_class_init (GsCategoryTileClass *klass)
 
 	widget_class->destroy = gs_category_tile_destroy;
 
-	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/category-tile.ui");
+	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-tile.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryTile, label);
 }
