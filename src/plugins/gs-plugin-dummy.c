@@ -271,10 +271,10 @@ typedef struct {
 } GsPluginDummyHelper;
 
 /**
- * gs_plugin_dummy_refresh_cb:
+ * gs_plugin_dummy_delay_cb:
  */
 static gboolean
-gs_plugin_dummy_refresh_cb (gpointer user_data)
+gs_plugin_dummy_delay_cb (gpointer user_data)
 {
 	GsPluginDummyHelper *helper = (GsPluginDummyHelper *) user_data;
 	helper->percentage += 10;
@@ -333,7 +333,7 @@ gs_plugin_dummy_delay (GsPlugin *plugin,
 	helper->percentage = 0;
 	helper->plugin = plugin;
 	g_debug ("dummy waiting for %ims", timeout_ms);
-	g_timeout_add (timeout_ms / 10, gs_plugin_dummy_refresh_cb, helper);
+	g_timeout_add (timeout_ms / 10, gs_plugin_dummy_delay_cb, helper);
 	g_main_loop_run (loop);
 	g_debug ("dummy done");
 	return helper->error != NULL;
