@@ -539,7 +539,6 @@ gs_appstream_refine_app (GsPlugin *plugin,
 			gs_app_add_kudo (app, GS_APP_KUDO_HI_DPI_ICON);
 			break;
 		default:
-			g_debug ("no idea how to handle kudo '%s'", tmp);
 			break;
 		}
 	}
