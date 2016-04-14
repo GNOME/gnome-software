@@ -630,7 +630,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 static gboolean
 gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsPluginRefineFlags flags, GsApp *app)
 {
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0 &&
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) > 0 &&
 	    gs_app_get_license (app) == NULL)
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0 &&
@@ -658,7 +658,7 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	g_autoptr(GList) list_tmp = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
-	ptask = as_profile_start_literal (plugin->profile, "packagekit-refine[source->licence]");
+	ptask = as_profile_start_literal (plugin->profile, "packagekit-refine[source->license]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
@@ -735,7 +735,7 @@ gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
 		return FALSE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) > 0)
 		return TRUE;
-	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE) > 0)
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) > 0)
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL) > 0)
 		return TRUE;

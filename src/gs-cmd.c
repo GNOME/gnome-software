@@ -112,8 +112,8 @@ gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 {
 	if (g_strcmp0 (flag, "all") == 0)
 		return G_MAXINT32;
-	if (g_strcmp0 (flag, "licence") == 0)
-		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENCE;
+	if (g_strcmp0 (flag, "license") == 0)
+		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE;
 	if (g_strcmp0 (flag, "url") == 0)
 		return GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL;
 	if (g_strcmp0 (flag, "description") == 0)

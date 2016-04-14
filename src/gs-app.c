@@ -72,8 +72,8 @@ struct _GsApp
 	GPtrArray		*categories;
 	GPtrArray		*keywords;
 	GHashTable		*urls;
-	gchar			*licence;
-	GsAppQuality		 licence_quality;
+	gchar			*license;
+	GsAppQuality		 license_quality;
 	gchar			**menu_path;
 	gchar			*origin;
 	gchar			*origin_ui;
@@ -101,7 +101,7 @@ struct _GsApp
 	guint64			 kudos;
 	gboolean		 to_be_installed;
 	AsAppQuirk		 quirk;
-	gboolean		 licence_is_free;
+	gboolean		 license_is_free;
 	GsApp			*runtime;
 };
 
@@ -248,8 +248,8 @@ gs_app_to_string (GsApp *app)
 	tmp = g_hash_table_lookup (app->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
 	if (tmp != NULL)
 		g_string_append_printf (str, "\turl{homepage}:\t%s\n", tmp);
-	if (app->licence != NULL)
-		g_string_append_printf (str, "\tlicence:\t%s\n", app->licence);
+	if (app->license != NULL)
+		g_string_append_printf (str, "\tlicense:\t%s\n", app->license);
 	if (app->management_plugin != NULL)
 		g_string_append_printf (str, "\tmanagement-plugin:\t%s\n", app->management_plugin);
 	if (app->summary_missing != NULL)
@@ -1248,7 +1248,7 @@ const gchar *
 gs_app_get_license (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->licence;
+	return app->license;
 }
 
 /**
@@ -1258,7 +1258,7 @@ gboolean
 gs_app_get_license_is_free (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	return app->licence_is_free;
+	return app->license_is_free;
 }
 
 /**
@@ -1285,30 +1285,30 @@ gs_app_get_license_token_is_nonfree (const gchar *token)
  * gs_app_set_license:
  */
 void
-gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *licence)
+gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 {
 	GString *urld;
 	guint i;
 	g_auto(GStrv) tokens = NULL;
 
 	/* only save this if the data is sufficiently high quality */
-	if (quality <= app->licence_quality)
+	if (quality <= app->license_quality)
 		return;
-	app->licence_quality = quality;
+	app->license_quality = quality;
 
 	g_return_if_fail (GS_IS_APP (app));
 
 	/* assume free software until we find an unmatched SPDX token */
-	app->licence_is_free = TRUE;
+	app->license_is_free = TRUE;
 
 	/* tokenize the license string and URLify any SPDX IDs */
-	urld = g_string_sized_new (strlen (licence) + 1);
-	tokens = as_utils_spdx_license_tokenize (licence);
+	urld = g_string_sized_new (strlen (license) + 1);
+	tokens = as_utils_spdx_license_tokenize (license);
 	for (i = 0; tokens[i] != NULL; i++) {
 
 		/* translated join */
 		if (g_strcmp0 (tokens[i], "&") == 0) {
-			/* TRANSLATORS: This is how we join the licences and can
+			/* TRANSLATORS: This is how we join the licenses and can
 			 * be considered a "Conjunctive AND Operator" according
 			 * to the SPDX specification. For example:
 			 * "LGPL-2.1 and MIT and BSD-2-Clause" */
@@ -1316,7 +1316,7 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *licence)
 			continue;
 		}
 		if (g_strcmp0 (tokens[i], "|") == 0) {
-			/* TRANSLATORS: This is how we join the licences and can
+			/* TRANSLATORS: This is how we join the licenses and can
 			 * be considered a "Disjunctive OR Operator" according
 			 * to the SPDX specification. For example:
 			 * "LGPL-2.1 or MIT" */
@@ -1326,9 +1326,9 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *licence)
 
 		/* do the best we can */
 		if (gs_app_get_license_token_is_nonfree (tokens[i])) {
-			g_debug ("nonfree licence from %s: '%s'",
+			g_debug ("nonfree license from %s: '%s'",
 				 gs_app_get_id (app), tokens[i]);
-			app->licence_is_free = FALSE;
+			app->license_is_free = FALSE;
 		}
 
 		/* legacy literal text */
@@ -1377,8 +1377,8 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *licence)
 		g_string_append (urld, tokens[i]);
 	}
 
-	g_free (app->licence);
-	app->licence = g_string_free (urld, FALSE);
+	g_free (app->license);
+	app->license = g_string_free (urld, FALSE);
 }
 
 /**
@@ -2266,7 +2266,7 @@ gs_app_finalize (GObject *object)
 	g_free (app->id);
 	g_free (app->name);
 	g_hash_table_unref (app->urls);
-	g_free (app->licence);
+	g_free (app->license);
 	g_strfreev (app->menu_path);
 	g_free (app->origin);
 	g_free (app->origin_ui);
