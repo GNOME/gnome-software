@@ -73,16 +73,12 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		"tracker-preferences.desktop",
 		"Uninstall*.desktop",
 		NULL };
-	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* not set yet */
 	if (gs_app_get_id (app) == NULL)
 		return TRUE;
 
 	/* search */
-	ptask = as_profile_start (plugin->profile,
-				  "hardcoded-blacklist{%s}",
-				  gs_app_get_id (app));
 	for (i = 0; app_globs[i] != NULL; i++) {
 		if (fnmatch (app_globs[i], gs_app_get_id (app), 0) == 0) {
 			gs_app_add_category (app, "Blacklisted");
