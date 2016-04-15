@@ -255,6 +255,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, distro_info->name);
 		gs_app_set_version (app, app_version);
+		gs_app_set_management_plugin (app, "packagekit");
 
 		/* just use the release notes */
 		url = g_strdup_printf ("https://docs.fedoraproject.org/en-US/"
