@@ -21,7 +21,6 @@
 
 #include <config.h>
 
-#include <errno.h>
 #include <json-glib/json-glib.h>
 
 #include <gs-plugin.h>
@@ -31,7 +30,9 @@
 #define FEDORA_PKGDB_COLLECTIONS_API_URI "https://admin.fedoraproject.org/pkgdb/api/collections/"
 
 struct GsPluginPrivate {
-	GPtrArray	*distros;
+	gchar		*cachefn;
+	gchar		*os_name;
+	guint64		 os_version;
 };
 
 /**
@@ -64,8 +65,80 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	if (plugin->priv->distros != NULL)
-		g_ptr_array_unref (plugin->priv->distros);
+	g_free (plugin->priv->os_name);
+	g_free (plugin->priv->cachefn);
+}
+
+/**
+ * gs_plugin_setup:
+ */
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	gchar *endptr = NULL;
+	g_autofree gchar *cachedir = NULL;
+	g_autofree gchar *verstr = NULL;
+
+	/* create the cachedir */
+	cachedir = gs_utils_get_cachedir ("upgrades", error);
+	if (cachedir == NULL)
+		return FALSE;
+	plugin->priv->cachefn = g_build_filename (cachedir, "fedora.json", NULL);
+
+	/* read os-release for the current versions */
+	plugin->priv->os_name = gs_os_release_get_name (error);
+	if (plugin->priv->os_name == NULL)
+		return FALSE;
+	verstr = gs_os_release_get_version_id (error);
+	if (verstr == NULL)
+		return FALSE;
+
+	/* parse the version */
+	plugin->priv->os_version = g_ascii_strtoull (verstr, &endptr, 10);
+	if (endptr == verstr || plugin->priv->os_version > G_MAXUINT) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed parse VERSION_ID: %s", verstr);
+		return FALSE;
+	}
+
+	/* success */
+	return TRUE;
+}
+
+/**
+ * gs_plugin_refresh:
+ */
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GsPluginRefreshFlags flags,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	/* only for update metadata, no stored state other than setup() */
+	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
+		return TRUE;
+
+	/* check cache age */
+	if (cache_age > 0) {
+		guint tmp;
+		g_autoptr(GFile) file = g_file_new_for_path (plugin->priv->cachefn);
+		tmp = gs_utils_get_file_age (file);
+		if (tmp < cache_age) {
+			g_debug ("%s is only %i seconds old",
+				 plugin->priv->cachefn, tmp);
+			return TRUE;
+		}
+	}
+
+	/* download new file */
+	return gs_plugin_download_file (plugin, NULL,
+					FEDORA_PKGDB_COLLECTIONS_API_URI,
+					plugin->priv->cachefn,
+					cancellable,
+					error);
 }
 
 typedef enum {
@@ -160,9 +233,8 @@ parse_pkgdb_collections_data (const gchar *data,
 		if (version_str == NULL)
 			continue;
 
-		errno = 0;
 		version = g_ascii_strtoull (version_str, &endptr, 10);
-		if (errno != 0 || endptr == version_str || version > G_MAXUINT)
+		if (endptr == version_str || version > G_MAXUINT)
 			continue;
 
 		distro_info = g_slice_new0 (DistroInfo);
@@ -185,68 +257,40 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GCancellable *cancellable,
 			       GError **error)
 {
-	g_autofree gchar *os_name = NULL;
-	g_autofree gchar *os_version_str = NULL;
-	g_autoptr(GPtrArray) distros = NULL;
-	g_autoptr(SoupMessage) msg = NULL;
-	gchar *endptr = NULL;
+	gsize len;
 	guint i;
-	guint status_code;
-	guint64 os_version;
+	g_autofree gchar *data = NULL;
+	g_autoptr(GPtrArray) distros = NULL;
 
-	os_name = gs_os_release_get_name (error);
-	if (os_name == NULL)
-		return FALSE;
-	os_version_str = gs_os_release_get_version_id (error);
-	if (os_version_str == NULL)
+	/* get cached file */
+	if (!g_file_get_contents (plugin->priv->cachefn, &data, &len, error))
 		return FALSE;
 
-	errno = 0;
-	os_version = g_ascii_strtoull (os_version_str, &endptr, 10);
-	if (errno != 0 || endptr == os_version_str || os_version > G_MAXUINT) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed parse VERSION_ID: %s", os_version_str);
+	/* parse data */
+	distros = parse_pkgdb_collections_data (data, len, error);
+	if (distros == NULL)
 		return FALSE;
-	}
-
-	/* create the GET data */
-	msg = soup_message_new (SOUP_METHOD_GET, FEDORA_PKGDB_COLLECTIONS_API_URI);
-
-	/* set sync request */
-	status_code = soup_session_send_message (plugin->soup_session, msg);
-	if (status_code != SOUP_STATUS_OK) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to download distro upgrade data: %s",
-			     soup_status_get_phrase (status_code));
-		return FALSE;
-	}
-
-	g_clear_pointer (&plugin->priv->distros, g_ptr_array_unref);
-	plugin->priv->distros = parse_pkgdb_collections_data (msg->response_body->data,
-	                                                      msg->response_body->length,
-	                                                      error);
-	for (i = 0; i < plugin->priv->distros->len; i++) {
-		DistroInfo *distro_info = g_ptr_array_index (plugin->priv->distros, i);
+	for (i = 0; i < distros->len; i++) {
+		DistroInfo *distro_info = g_ptr_array_index (distros, i);
 		g_autofree gchar *app_id = NULL;
 		g_autofree gchar *app_version = NULL;
 		g_autofree gchar *url = NULL;
 		g_autoptr(GsApp) app = NULL;
 
 		/* only interested in upgrades to the same distro */
-		if (g_strcmp0 (distro_info->name, os_name) != 0)
+		if (g_strcmp0 (distro_info->name, plugin->priv->os_name) != 0)
 			continue;
+
 		/* only interested in newer versions */
-		if (distro_info->version <= os_version)
+		if (distro_info->version <= plugin->priv->os_version)
 			continue;
+
 		/* only interested in non-devel distros */
 		if (distro_info->status == DISTRO_STATUS_DEVEL)
 			continue;
 
-		app_id = g_strdup_printf ("org.fedoraproject.release-%d.upgrade", distro_info->version);
+		app_id = g_strdup_printf ("org.fedoraproject.release-%d.upgrade",
+					  distro_info->version);
 		app_version = g_strdup_printf ("%d", distro_info->version);
 
 		/* create */
