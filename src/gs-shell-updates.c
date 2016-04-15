@@ -717,7 +717,8 @@ gs_shell_updates_get_new_updates (GsShellUpdates *self)
 
 	gs_plugin_loader_refresh_async (self->plugin_loader,
 					10 * 60,
-					GS_PLUGIN_REFRESH_FLAGS_UPDATES,
+					GS_PLUGIN_REFRESH_FLAGS_METADATA |
+					GS_PLUGIN_REFRESH_FLAGS_PAYLOAD,
 					self->cancellable_refresh,
 					(GAsyncReadyCallback) gs_shell_updates_refresh_cb,
 					self);

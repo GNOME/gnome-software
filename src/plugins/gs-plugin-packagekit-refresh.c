@@ -117,16 +117,11 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
-	PkBitfield filter;
-	PkBitfield transaction_flags;
 	ProgressData data;
-	g_auto(GStrv) package_ids = NULL;
-	g_autoptr(PkPackageSack) sack = NULL;
-	g_autoptr(PkResults) results2 = NULL;
 	g_autoptr(PkResults) results = NULL;
 
-	/* not us */
-	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
+	/* nothing to re-generate */
+	if (flags == 0)
 		return TRUE;
 
 	/* cache age of 0 is user-initiated */
@@ -135,33 +130,47 @@ gs_plugin_refresh (GsPlugin *plugin,
 	data.plugin = plugin;
 	data.ptask = NULL;
 
-	/* update UI as this might take some time */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	/* refresh the metadata */
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA ||
+	    flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) {
+		PkBitfield filter;
 
-	/* do sync call */
-	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
-	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), cache_age);
-	results = pk_client_get_updates (PK_CLIENT (plugin->priv->task),
-					 filter,
-					 cancellable,
-					 gs_plugin_packagekit_progress_cb, &data,
-					 error);
-	if (results == NULL)
-		return FALSE;
+		filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
+		pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), cache_age);
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+		results = pk_client_get_updates (PK_CLIENT (plugin->priv->task),
+						 filter,
+						 cancellable,
+						 gs_plugin_packagekit_progress_cb, &data,
+						 error);
+		if (results == NULL)
+			return FALSE;
+	}
 
-	/* download all the updates */
-	sack = pk_results_get_package_sack (results);
-	if (pk_package_sack_get_size (sack) == 0)
-		return TRUE;
-	package_ids = pk_package_sack_get_ids (sack);
-	transaction_flags = pk_bitfield_value (PK_TRANSACTION_FLAG_ENUM_ONLY_DOWNLOAD);
-	results2 = pk_client_update_packages (PK_CLIENT (plugin->priv->task),
-					      transaction_flags,
-					      package_ids,
-					      cancellable,
-					      gs_plugin_packagekit_progress_cb, &data,
-					      error);
-	return results2 != NULL;
+	/* download all the packages themselves */
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) {
+		PkBitfield transaction_flags;
+		g_auto(GStrv) package_ids = NULL;
+		g_autoptr(PkPackageSack) sack = NULL;
+		g_autoptr(PkResults) results2 = NULL;
+
+		sack = pk_results_get_package_sack (results);
+		if (pk_package_sack_get_size (sack) == 0)
+			return TRUE;
+		package_ids = pk_package_sack_get_ids (sack);
+		transaction_flags = pk_bitfield_value (PK_TRANSACTION_FLAG_ENUM_ONLY_DOWNLOAD);
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+		results2 = pk_client_update_packages (PK_CLIENT (plugin->priv->task),
+						      transaction_flags,
+						      package_ids,
+						      cancellable,
+						      gs_plugin_packagekit_progress_cb, &data,
+						      error);
+		if (results2 == NULL)
+			return FALSE;
+	}
+
+	return TRUE;
 }
 
 /**

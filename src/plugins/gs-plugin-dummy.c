@@ -351,6 +351,12 @@ gs_plugin_refresh (GsPlugin *plugin,
 	guint delay_ms = 100;
 	g_autoptr(GsApp) app = gs_app_new (NULL);
 
+	/* each one takes more time */
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA)
+		delay_ms += 3000;
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD)
+		delay_ms += 5000;
+
 	/* do delay */
 	return gs_plugin_dummy_delay (plugin, app, delay_ms, cancellable, error);
 }

@@ -601,8 +601,15 @@ gs_plugin_refresh (GsPlugin *plugin,
 	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
 
-	/* not us */
-	if ((flags & GS_PLUGIN_REFRESH_FLAGS_UPDATES) == 0)
+	/* update AppStream metadata */
+	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
+		if (!gs_plugin_refresh_appstream (plugin, cache_age,
+						  cancellable, error))
+			return FALSE;
+	}
+
+	/* no longer interesting */
+	if ((flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) == 0)
 		return TRUE;
 
 	/* use helper: FIXME: new()&ref? */
