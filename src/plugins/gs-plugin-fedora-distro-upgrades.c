@@ -233,6 +233,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		DistroInfo *distro_info = g_ptr_array_index (plugin->priv->distros, i);
 		g_autofree gchar *app_id = NULL;
 		g_autofree gchar *app_version = NULL;
+		g_autofree gchar *url = NULL;
 		g_autoptr(GsApp) app = NULL;
 
 		/* only interested in upgrades to the same distro */
@@ -255,6 +256,13 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, distro_info->name);
 		gs_app_set_version (app, app_version);
 		gs_app_set_management_plugin (app, "packagekit");
+
+		/* just use the release notes */
+		url = g_strdup_printf ("https://docs.fedoraproject.org/en-US/"
+				       "Fedora/%i/html/Release_Notes/",
+				       distro_info->version);
+		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
+
 		gs_plugin_add_app (list, app);
 	}
 
