@@ -330,94 +330,6 @@ gs_plugin_loader_refine_func (void)
 }
 
 static void
-gs_plugin_loader_empty_func (void)
-{
-	gboolean ret;
-	GError *error = NULL;
-	GList *apps;
-	GList *l;
-	GList *l2;
-	GList *subcats;
-	GsCategory *category;
-	GsCategory *sub;
-	guint empty_subcats_cnt = 0;
-	g_autoptr(GsAppList) list = NULL;
-	g_autoptr(GsPluginLoader) loader = NULL;
-
-	/* not avaiable in make distcheck */
-	if (!g_file_test (GS_MODULESETDIR, G_FILE_TEST_EXISTS))
-		return;
-
-	/* load the plugins */
-	loader = gs_plugin_loader_new ();
-	gs_plugin_loader_set_location (loader, "./plugins/.libs");
-	ret = gs_plugin_loader_setup (loader, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-menu-spec", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "appstream", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "self-test", TRUE);
-	g_assert (ret);
-
-	/* get the list of categories */
-	list = gs_plugin_loader_get_categories (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
-	g_assert_no_error (error);
-	g_assert (list != NULL);
-
-	/* find how many packages each sub category has */
-	for (l = list; l != NULL; l = l->next) {
-		category = GS_CATEGORY (l->data);
-		subcats = gs_category_get_subcategories (category);
-		if (subcats == NULL)
-			continue;
-		for (l2 = subcats; l2 != NULL; l2 = l2->next) {
-			sub = GS_CATEGORY (l2->data);
-
-			/* ignore general */
-			if (gs_category_get_id (sub) == NULL)
-				continue;
-
-			/* find subcaegories that have no applications */
-			apps = gs_plugin_loader_get_category_apps (loader,
-								   sub,
-								   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-								   NULL,
-								   &error);
-			if (apps == NULL) {
-				g_debug ("NOAPPS:\t%s/%s: %s",
-					 gs_category_get_id (category),
-					 gs_category_get_id (sub),
-					 error->message);
-				g_clear_error (&error);
-				empty_subcats_cnt++;
-				//g_warning ("MOO");
-			} else {
-				GList *g;
-				if (g_getenv ("DUMPGROUPS") != NULL) {
-					for (g = apps; g != NULL; g = g->next) {
-						g_print ("Cat: %s\tSubCat: %s\tPkgName: %s\tAppId: %s\n",
-							 gs_category_get_id (category),
-							 gs_category_get_id (sub),
-							 gs_app_get_source_default (GS_APP (g->data)),
-							 gs_app_get_id (GS_APP (g->data)));
-					}
-				}
-				g_debug ("APPS[%i]:\t%s/%s",
-					 g_list_length (apps),
-					 gs_category_get_id (category),
-					 gs_category_get_id (sub));
-			}
-			g_list_free_full (apps, (GDestroyNotify) g_object_unref);
-		}
-		g_list_free (subcats);
-	}
-	g_assert_cmpint (empty_subcats_cnt, ==, 0);
-}
-
-static void
 gs_plugin_loader_webapps_func (void)
 {
 	gboolean ret;
@@ -489,8 +401,6 @@ main (int argc, char **argv)
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	g_test_add_func ("/gnome-software/app{subsume}", gs_app_subsume_func);
-	if (g_getenv ("HAS_APPSTREAM") != NULL)
-		g_test_add_func ("/gnome-software/plugin-loader{empty}", gs_plugin_loader_empty_func);
 	if(0)g_test_add_func ("/gnome-software/plugin-loader", gs_plugin_loader_func);
 	if(0)g_test_add_func ("/gnome-software/plugin-loader{webapps}", gs_plugin_loader_webapps_func);
 
