@@ -25,9 +25,6 @@ AM_CPPFLAGS =						\
 	-DTESTDATADIR=\""$(top_srcdir)/data/tests"\"	\
 	-I$(top_srcdir)/src
 
-noinst_LTLIBRARIES =					\
-	libgs_plugin_self_test.la
-
 plugindir = $(libdir)/gs-plugins-${GS_PLUGIN_API_VERSION}
 plugin_LTLIBRARIES =					\
 	libgs_plugin_appstream.la			\
@@ -131,11 +128,6 @@ libgs_plugin_icons_la_SOURCES = gs-plugin-icons.c
 libgs_plugin_icons_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS)
 libgs_plugin_icons_la_LDFLAGS = -module -avoid-version
 libgs_plugin_icons_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
-
-libgs_plugin_self_test_la_SOURCES = gs-plugin-self-test.c
-libgs_plugin_self_test_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_self_test_la_LDFLAGS = -module -avoid-version
-libgs_plugin_self_test_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_appstream_la_SOURCES =			\
 	gs-appstream.c					\
