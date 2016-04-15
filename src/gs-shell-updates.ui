@@ -72,27 +72,33 @@
                       </object>
                     </child>
                     <child>
-                      <object class="GtkHeaderBar" id="fake_header_bar">
+                      <object class="GtkBox" id="updates_box">
                         <property name="visible">True</property>
-                        <property name="hexpand">True</property>
-                        <property name="vexpand">False</property>
-                        <property name="title" translatable="yes">Other Updates</property>
-                        <style>
-                          <class name="fake-header-bar"/>
-                        </style>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GsUpdateList" id="list_box_updates">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="selection_mode">none</property>
-                      </object>
-                    </child>
-                    <child>
-                      <object class="GtkSeparator" id="list_box_updates_separator">
-                        <property name="visible">True</property>
-                        <property name="orientation">horizontal</property>
+                        <property name="orientation">vertical</property>
+                        <child>
+                          <object class="GtkHeaderBar" id="fake_header_bar">
+                            <property name="visible">True</property>
+                            <property name="hexpand">True</property>
+                            <property name="vexpand">False</property>
+                            <property name="title" translatable="yes">Other Updates</property>
+                            <style>
+                              <class name="fake-header-bar"/>
+                            </style>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GsUpdateList" id="list_box_updates">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="selection_mode">none</property>
+                          </object>
+                        </child>
+                        <child>
+                          <object class="GtkSeparator" id="list_box_updates_separator">
+                            <property name="visible">True</property>
+                            <property name="orientation">horizontal</property>
+                          </object>
+                        </child>
                       </object>
                     </child>
                   </object>
