@@ -3301,6 +3301,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 
 		/* run setup() if it exists */
 		plugin = g_ptr_array_index (priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
 		ret = g_module_symbol (plugin->module,
 				       function_name,
 				       (gpointer *) &plugin_func);
