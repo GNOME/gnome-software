@@ -277,6 +277,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	const gchar *name;
 	g_autofree gchar *fn = NULL;
 	g_autofree gchar *hash = NULL;
 	g_autofree gchar *id_nonfull = NULL;
@@ -287,8 +288,17 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	gs_app_set_size (app, 4096);
 
+	name = gs_app_get_name (app);
+	if (name == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "name unset for %s",
+			     gs_app_get_id (app));
+		return FALSE;
+	}
+	hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, name, -1);
 	id_nonfull = _gs_app_get_id_nonfull (app);
-	hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, gs_app_get_name (app), -1);
 	fn = g_strdup_printf ("%s/epiphany/app-%s-%s/%s-%s.desktop",
 			      g_get_user_config_dir (),
 			      id_nonfull,
