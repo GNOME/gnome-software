@@ -37,7 +37,6 @@
 
 struct GsPluginPrivate {
 	PkControl		*control;
-	GCancellable		*cancellable;
 	GSettings		*settings;
 	GSettings		*settings_http;
 	GSettings		*settings_ftp;
@@ -132,7 +131,7 @@ set_proxy_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 }
 
 static void
-reload_proxy_settings (GsPlugin *plugin)
+reload_proxy_settings (GsPlugin *plugin, GCancellable *cancellable)
 {
 	g_autofree gchar *proxy_http = NULL;
 	g_autofree gchar *proxy_ftp = NULL;
@@ -158,9 +157,22 @@ reload_proxy_settings (GsPlugin *plugin)
 	pk_control_set_proxy_async (plugin->priv->control,
 				    proxy_http,
 				    proxy_ftp,
-				    plugin->priv->cancellable,
+				    cancellable,
 				    set_proxy_cb,
 				    plugin);
+}
+
+/**
+ * gs_plugin_packagekit_proxy_changed_cb:
+ */
+static void
+gs_plugin_packagekit_proxy_changed_cb (GSettings *settings,
+				       const gchar *key,
+				       GsPlugin *plugin)
+{
+	if (!plugin->enabled)
+		return;
+	reload_proxy_settings (plugin, NULL);
 }
 
 /**
@@ -171,18 +183,26 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	/* create private area */
 	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->cancellable = g_cancellable_new ();
 	plugin->priv->control = pk_control_new ();
 	plugin->priv->settings = g_settings_new ("org.gnome.system.proxy");
-	g_signal_connect_swapped (plugin->priv->settings, "changed",
-			  	  G_CALLBACK (reload_proxy_settings), plugin);
+	g_signal_connect (plugin->priv->settings, "changed",
+			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
 	plugin->priv->settings_http = g_settings_new ("org.gnome.system.proxy.http");
-	g_signal_connect_swapped (plugin->priv->settings_http, "changed",
-			  	  G_CALLBACK (reload_proxy_settings), plugin);
+	g_signal_connect (plugin->priv->settings_http, "changed",
+			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
 	plugin->priv->settings_ftp = g_settings_new ("org.gnome.system.proxy.ftp");
-	g_signal_connect_swapped (plugin->priv->settings_ftp, "changed",
-			  	  G_CALLBACK (reload_proxy_settings), plugin);
-	reload_proxy_settings (plugin);
+	g_signal_connect (plugin->priv->settings_ftp, "changed",
+			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
+}
+
+/**
+ * gs_plugin_setup:
+ */
+gboolean
+gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
+{
+	reload_proxy_settings (plugin, cancellable);
+	return TRUE;
 }
 
 /**
@@ -191,11 +211,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	if (plugin->priv->cancellable != NULL) {
-		g_cancellable_cancel (plugin->priv->cancellable);
-		g_object_unref (plugin->priv->cancellable);
-	}
-
 	g_object_unref (plugin->priv->control);
 	g_object_unref (plugin->priv->settings);
 	g_object_unref (plugin->priv->settings_http);
