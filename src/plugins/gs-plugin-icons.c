@@ -138,6 +138,13 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (as_icon_get_filename (ic) == NULL)
 		return TRUE;
 
+	/* local */
+	if (g_str_has_prefix (as_icon_get_url (ic), "file://")) {
+		as_icon_set_filename (ic, as_icon_get_url (ic) + 7);
+		as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
+		return gs_app_load_icon (app, plugin->scale, error);
+	}
+
 	/* convert filename from jpg to png */
 	fn = as_icon_get_filename (ic);
 	found = g_strstr_len (fn, -1, ".jpg");
