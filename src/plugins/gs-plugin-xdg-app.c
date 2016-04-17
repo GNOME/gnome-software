@@ -1208,13 +1208,20 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	return xdg_app_installation_uninstall (plugin->priv->installation,
-					       XDG_APP_REF_KIND_APP,
-					       gs_app_get_xdgapp_name (app),
-					       gs_app_get_xdgapp_arch (app),
-					       gs_app_get_xdgapp_branch (app),
-					       gs_plugin_xdg_app_progress_cb, &helper,
-					       cancellable, error);
+	if (!xdg_app_installation_uninstall (plugin->priv->installation,
+					     XDG_APP_REF_KIND_APP,
+					     gs_app_get_xdgapp_name (app),
+					     gs_app_get_xdgapp_arch (app),
+					     gs_app_get_xdgapp_branch (app),
+					     gs_plugin_xdg_app_progress_cb, &helper,
+					     cancellable, error)) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	/* state is not known: we don't know if we can re-install this app */
+	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+	return TRUE;
 }
 
 /**
@@ -1279,7 +1286,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 							     gs_plugin_xdg_app_progress_cb, &helper,
 							     cancellable, error);
 			if (xref == NULL) {
-				gs_app_set_state (runtime, AS_APP_STATE_AVAILABLE);
+				gs_app_set_state_recover (runtime);
 				return FALSE;
 			}
 			gs_app_set_state (runtime, AS_APP_STATE_INSTALLED);
@@ -1309,9 +1316,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 						     gs_plugin_xdg_app_progress_cb, &helper,
 						     cancellable, error);
 	}
+	if (xref == NULL) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
 
-	/* now the main application */
-	return xref != NULL;
+	/* state is known */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	return TRUE;
 }
 
 /**
@@ -1346,7 +1358,14 @@ gs_plugin_app_update (GsPlugin *plugin,
 					    gs_app_get_xdgapp_branch (app),
 					    gs_plugin_xdg_app_progress_cb, &helper,
 					    cancellable, error);
-	return xref != NULL;
+	if (xref == NULL) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	/* state is known */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	return TRUE;
 }
 
 /**

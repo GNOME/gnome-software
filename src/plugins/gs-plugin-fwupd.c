@@ -927,8 +927,10 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	if (!gs_plugin_fwupd_upgrade (plugin, filename, FWUPD_DEVICE_ID_ANY, offline,
-				      cancellable, error))
+				      cancellable, error)) {
+		gs_app_set_state_recover (app);
 		return FALSE;
+	}
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
 }
