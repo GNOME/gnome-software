@@ -164,6 +164,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	if (gs_app_get_state (app) != AS_APP_STATE_INSTALLED)
+		return TRUE;
 	return gs_plugin_app_set_usage_app (plugin, app, TRUE, error);
 }
 
@@ -176,5 +178,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE)
+		return TRUE;
 	return gs_plugin_app_set_usage_app (plugin, app, FALSE, error);
 }

@@ -144,6 +144,14 @@ gs_app_func (void)
 	g_assert_cmpstr (gs_app_get_name (app), ==, "dave");
 	gs_app_set_name (app, GS_APP_QUALITY_HIGHEST, "hugh");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "hugh");
+
+	/* check non-transient state saving */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_REMOVING);
+	gs_app_set_state_recover (app); // simulate an error
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 }
 
 static guint _status_changed_cnt = 0;
@@ -157,6 +165,35 @@ gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 	_status_changed_cnt++;
 }
 
+static void
+gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
+{
+	gboolean ret;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+
+	/* install */
+	app = gs_app_new ("chiron.desktop");
+	gs_app_set_management_plugin (app, "dummy");
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+
+	/* remove -- we're really testing for return code UNKNOWN,
+	 * but dummy::refine() sets it */
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+}
 
 static void
 gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
@@ -456,6 +493,7 @@ main (int argc, char **argv)
 
 	/* we can only load this once per process */
 	plugin_loader = gs_plugin_loader_new ();
+	gs_plugin_loader_set_network_status (plugin_loader, TRUE);
 	g_signal_connect (plugin_loader, "status-changed",
 			  G_CALLBACK (gs_plugin_loader_status_changed_cb), NULL);
 	gs_plugin_loader_set_location (plugin_loader, "./plugins/.libs");
@@ -474,6 +512,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugin-loader{search}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_search_func);
+	g_test_add_data_func ("/gnome-software/plugin-loader{install}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_install_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{installed}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_installed_func);

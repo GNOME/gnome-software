@@ -364,13 +364,15 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
 		if (results == NULL) {
-			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+			gs_app_set_state_recover (app);
 			return FALSE;
 		}
 
+		/* state is known */
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
 		/* no longer valid */
 		gs_app_clear_source_ids (app);
-		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		return TRUE;
 	}
 
@@ -430,8 +432,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 cancellable,
 							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
-		if (results == NULL)
+		if (results == NULL) {
+			gs_app_set_state_recover (app);
 			return FALSE;
+		}
+
+		/* state is known */
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+
 		break;
 	case AS_APP_STATE_AVAILABLE_LOCAL:
 		package_id = gs_app_get_metadata_item (app, "packagekit::local-filename");
@@ -449,8 +457,13 @@ gs_plugin_app_install (GsPlugin *plugin,
 						      cancellable,
 						      gs_plugin_packagekit_progress_cb, &data,
 						      error);
-		if (results == NULL)
+		if (results == NULL) {
+			gs_app_set_state_recover (app);
 			return FALSE;
+		}
+
+		/* state is known */
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 
 		/* get the new icon from the package */
 		gs_app_set_metadata (app, "packagekit::local-filename", NULL);
@@ -610,8 +623,13 @@ gs_plugin_app_remove (GsPlugin *plugin,
 						cancellable,
 						gs_plugin_packagekit_progress_cb, &data,
 						error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_app_set_state_recover (app);
 		return FALSE;
+	}
+
+	/* state is not known: we don't know if we can re-install this app */
+	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 
 	/* no longer valid */
 	gs_app_clear_source_ids (app);
@@ -665,7 +683,14 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 					    cancellable,
 					    gs_plugin_packagekit_progress_cb, &data,
 					    error);
-	return results != NULL;
+	if (results == NULL) {
+		gs_app_set_state_recover (app);
+		return FALSE;
+	}
+
+	/* state is known */
+	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
+	return TRUE;
 }
 
 /**

@@ -56,6 +56,7 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (g_strcmp0 (gs_app_get_id (app), "mate-spell.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "zeus-spell.addon") == 0)
 		gs_app_set_management_plugin (app, plugin->name);
@@ -246,6 +247,56 @@ gs_plugin_add_installed (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_app_remove:
+ */
+gboolean
+gs_plugin_app_remove (GsPlugin *plugin,
+		      GsApp *app,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
+	/* remove app */
+	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0) {
+		gs_app_set_state (app, AS_APP_STATE_REMOVING);
+		if (!gs_plugin_dummy_delay (plugin, app, 500, cancellable, error)) {
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
+		gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
+	}
+	return TRUE;
+}
+
+/**
+ * gs_plugin_app_install:
+ */
+gboolean
+gs_plugin_app_install (GsPlugin *plugin,
+		       GsApp *app,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
+	/* install app */
+	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0) {
+		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
+		if (!gs_plugin_dummy_delay (plugin, app, 500, cancellable, error)) {
+			gs_app_set_state_recover (app);
+			return FALSE;
+		}
+		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	}
+	return TRUE;
+}
+
+/**
  * gs_plugin_refine_app:
  */
 gboolean
@@ -421,6 +472,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	if (!gs_plugin_dummy_delay (plugin, app, 5000, cancellable, error))
 		return FALSE;
+	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 	return TRUE;
 }
 

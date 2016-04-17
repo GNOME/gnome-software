@@ -74,8 +74,6 @@ typedef struct {
 	GsCategory			*category;
 	GsApp				*app;
 	GsReview			*review;
-	AsAppState			 state_success;
-	AsAppState			 state_failure;
 } GsPluginLoaderAsyncState;
 
 static void
@@ -2419,16 +2417,12 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 					   cancellable,
 					   &error);
 	if (ret) {
-		if (state->state_success != AS_APP_STATE_UNKNOWN) {
-			gs_app_set_state (state->app, state->state_success);
-			addons = gs_app_get_addons (state->app);
-			for (i = 0; i < addons->len; i++) {
-				GsApp *addon = g_ptr_array_index (addons, i);
-				if (gs_app_get_to_be_installed (addon)) {
-					gs_app_set_state (addon, state->state_success);
-					gs_app_set_to_be_installed (addon, FALSE);
-				}
-			}
+		/* unstage addons */
+		addons = gs_app_get_addons (state->app);
+		for (i = 0; i < addons->len; i++) {
+			GsApp *addon = g_ptr_array_index (addons, i);
+			if (gs_app_get_to_be_installed (addon))
+				gs_app_set_to_be_installed (addon, FALSE);
 		}
 
 		/* refine again to make sure we pick up new source id */
@@ -2445,18 +2439,20 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 		}
 	} else {
-		if (state->state_failure != AS_APP_STATE_UNKNOWN) {
-			gs_app_set_state (state->app, state->state_failure);
-			addons = gs_app_get_addons (state->app);
-			for (i = 0; i < addons->len; i++) {
-				GsApp *addon = g_ptr_array_index (addons, i);
-				if (gs_app_get_to_be_installed (addon)) {
-					gs_app_set_state (addon, state->state_failure);
-					gs_app_set_to_be_installed (addon, FALSE);
-				}
-			}
-		}
 		g_task_return_error (task, error);
+	}
+
+	/* check the app is not still in an action state */
+	switch (gs_app_get_state (state->app)) {
+	case AS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_REMOVING:
+		g_warning ("application %s left in %s state",
+			   gs_app_get_id (state->app),
+			   as_app_state_to_string (gs_app_get_state (state->app)));
+		gs_app_set_state (state->app, AS_APP_STATE_UNKNOWN);
+		break;
+	default:
+		break;
 	}
 
 	/* remove from list */
@@ -2745,38 +2741,24 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	switch (action) {
 	case GS_PLUGIN_LOADER_ACTION_INSTALL:
 		state->function_name = "gs_plugin_app_install";
-		state->state_success = AS_APP_STATE_INSTALLED;
-		state->state_failure = AS_APP_STATE_AVAILABLE;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_REMOVE:
 		state->function_name = "gs_plugin_app_remove";
-		state->state_success = AS_APP_STATE_AVAILABLE;
-		state->state_failure = AS_APP_STATE_INSTALLED;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_SET_RATING:
 		state->function_name = "gs_plugin_app_set_rating";
-		state->state_success = AS_APP_STATE_UNKNOWN;
-		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD:
 		state->function_name = "gs_plugin_app_upgrade_download";
-		state->state_success = AS_APP_STATE_UPDATABLE;
-		state->state_failure = AS_APP_STATE_AVAILABLE;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER:
 		state->function_name = "gs_plugin_app_upgrade_trigger";
-		state->state_success = AS_APP_STATE_UNKNOWN;
-		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_LAUNCH:
 		state->function_name = "gs_plugin_launch";
-		state->state_success = AS_APP_STATE_UNKNOWN;
-		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
 	case GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL:
 		state->function_name = "gs_plugin_update_cancel";
-		state->state_success = AS_APP_STATE_UNKNOWN;
-		state->state_failure = AS_APP_STATE_UNKNOWN;
 		break;
 	default:
 		g_assert_not_reached ();
@@ -3549,7 +3531,7 @@ gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 	if (priv->online == online)
 		return;
 
-	g_debug ("*** Network status change: %s", online ? "online" : "offline");
+	g_debug ("network status change: %s", online ? "online" : "offline");
 
 	priv->online = online;
 

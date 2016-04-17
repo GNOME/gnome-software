@@ -89,6 +89,7 @@ struct _GsApp
 	guint64			 size;
 	AsAppKind		 kind;
 	AsAppState		 state;
+	AsAppState		 state_recover;
 	guint			 progress;
 	GHashTable		*metadata;
 	GdkPixbuf		*pixbuf;
@@ -436,6 +437,19 @@ gs_app_get_progress (GsApp *app)
 }
 
 /**
+ * gs_app_set_state_recover:
+ *
+ * Sets the application state to the last status value that was not
+ * transient.
+ */
+void
+gs_app_set_state_recover (GsApp *app)
+{
+	if (app->state_recover != AS_APP_STATE_UNKNOWN)
+		gs_app_set_state (app, app->state_recover);
+}
+
+/**
  * gs_app_set_state_internal:
  */
 static gboolean
@@ -538,6 +552,19 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 	    state == AS_APP_STATE_AVAILABLE_LOCAL ||
 	    state == AS_APP_STATE_AVAILABLE)
 		app->install_date = 0;
+
+	/* save this to simplify error handling in the plugins */
+	switch (state) {
+	case AS_APP_STATE_INSTALLING:
+	case AS_APP_STATE_REMOVING:
+		/* transient, so ignore */
+		break;
+	default:
+		g_debug ("non-transient state now %s",
+			 as_app_state_to_string (state));
+		app->state_recover = state;
+		break;
+	}
 
 	return TRUE;
 }

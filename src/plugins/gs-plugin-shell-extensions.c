@@ -728,7 +728,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
 
-	/* install */
+	/* remove */
+	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
 	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
 					 "UninstallExtension",
@@ -737,12 +738,15 @@ gs_plugin_app_remove (GsPlugin *plugin,
 					 -1,
 					 cancellable,
 					 error);
-	if (retval == NULL)
+	if (retval == NULL) {
+		gs_app_set_state_recover (app);
 		return FALSE;
+	}
 
 	/* not sure why this would fail -- perhaps installed in /usr? */
 	g_variant_get (retval, "(b)", &ret);
 	if (!ret) {
+		gs_app_set_state_recover (app);
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -750,6 +754,9 @@ gs_plugin_app_remove (GsPlugin *plugin,
 			     gs_app_get_id (app));
 		return FALSE;
 	}
+
+	/* state is not known: we don't know if we can re-install this app */
+	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 
 	return TRUE;
 }
@@ -781,12 +788,15 @@ gs_plugin_app_install (GsPlugin *plugin,
 					 -1,
 					 cancellable,
 					 error);
-	if (retval == NULL)
+	if (retval == NULL) {
+		gs_app_set_state_recover (app);
 		return FALSE;
+	}
 	g_variant_get (retval, "(&s)", &retstr);
 
 	/* user declined download */
 	if (g_strcmp0 (retstr, "cancelled") == 0) {
+		gs_app_set_state_recover (app);
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_CANCELLED,
@@ -795,6 +805,9 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return FALSE;
 	}
 	g_debug ("shell returned: %s", retstr);
+
+	/* state is known */
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
 }
 

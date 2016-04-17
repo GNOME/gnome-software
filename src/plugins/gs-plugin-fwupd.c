@@ -660,8 +660,10 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	if (!fwupd_client_install (plugin->priv->client, device_id,
 				   filename, install_flags,
-				   cancellable, error))
+				   cancellable, error)) {
+		gs_app_set_state_recover (app);
 		return FALSE;
+	}
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
 }
