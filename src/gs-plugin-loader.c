@@ -541,6 +541,29 @@ gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 }
 
 /**
+ * gs_plugin_loader_set_app_error:
+ **/
+static void
+gs_plugin_loader_set_app_error (GsApp *app, GError *error)
+{
+	if (error == NULL)
+		return;
+
+	/* random, non-plugin error domains are never shown to the user */
+	if (error->domain == GS_PLUGIN_ERROR &&
+	    gs_app_get_last_error (app) == NULL) {
+		g_debug ("saving error for %s: %s",
+			 gs_app_get_id (app),
+			 error->message);
+		gs_app_set_last_error (app, error);
+	} else {
+		g_warning ("not saving error for %s: %s",
+			   gs_app_get_id (app),
+			   error->message);
+	}
+}
+
+/**
  * gs_plugin_loader_run_action:
  **/
 static gboolean
@@ -584,6 +607,7 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
 				   error_local->message);
+			gs_plugin_loader_set_app_error (app, error_local);
 			continue;
 		}
 		anything_ran = TRUE;

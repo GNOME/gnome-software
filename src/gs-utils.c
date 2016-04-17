@@ -161,32 +161,62 @@ gs_app_notify_failed_modal (GsApp *app,
 {
 	GtkWidget *dialog;
 	const gchar *title;
-	g_autofree gchar *msg = NULL;
+	gboolean show_detailed_error = TRUE;
+	g_autoptr(GString) msg = NULL;
 
+	/* TRANSLATORS: install or removed failed */
 	title = _("Sorry, this did not work");
+
+	/* say what we tried to do */
+	msg = g_string_new ("");
 	switch (action) {
 	case GS_PLUGIN_LOADER_ACTION_INSTALL:
 		/* TRANSLATORS: this is when the install fails */
-		msg = g_strdup_printf (_("Installation of %s failed."),
-				       gs_app_get_name (app));
+		g_string_append_printf (msg, _("Installation of %s failed."),
+					gs_app_get_name (app));
 		break;
 	case GS_PLUGIN_LOADER_ACTION_REMOVE:
 		/* TRANSLATORS: this is when the remove fails */
-		msg = g_strdup_printf (_("Removal of %s failed."),
-				       gs_app_get_name (app));
+		g_string_append_printf (msg, _("Removal of %s failed."),
+					gs_app_get_name (app));
 		break;
 	default:
 		g_assert_not_reached ();
 		break;
 	}
+	g_string_append (msg, " ");
+
 	dialog = gtk_message_dialog_new (parent_window,
 					 GTK_DIALOG_MODAL |
+					 GTK_DIALOG_USE_HEADER_BAR |
 					 GTK_DIALOG_DESTROY_WITH_PARENT,
 					 GTK_MESSAGE_ERROR,
 					 GTK_BUTTONS_CLOSE,
 					 "%s", title);
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-						  "%s", msg);
+						  "%s", msg->str);
+
+	/* detailed error in an expander */
+	if (show_detailed_error) {
+		GtkWidget *vbox;
+		GtkWidget *expander;
+		GtkWidget *scrolled_window;
+		GtkWidget *label;
+
+		vbox = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+		/* TRANSLATORS: this is an expander title */
+		expander = gtk_expander_new (_("Show Details"));
+		gtk_widget_set_margin_start (expander, 36);
+		gtk_widget_set_margin_end (expander, 36);
+		scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+		gtk_container_add (GTK_CONTAINER (expander), scrolled_window);
+		label = gtk_label_new (error->message);
+		gtk_container_add (GTK_CONTAINER (scrolled_window), label);
+		gtk_box_pack_end (GTK_BOX (vbox), expander, FALSE, TRUE, 4);
+		gtk_widget_show_all (expander);
+
+	}
+
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gtk_widget_destroy), NULL);
 	gtk_window_present (GTK_WINDOW (dialog));

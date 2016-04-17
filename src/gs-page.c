@@ -60,6 +60,7 @@ gs_page_app_installed_cb (GObject *source,
                           GAsyncResult *res,
                           gpointer user_data)
 {
+	GError *last_error;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsPageHelper *helper = (GsPageHelper *) user_data;
 	GsPage *page = helper->page;
@@ -81,6 +82,19 @@ gs_page_app_installed_cb (GObject *source,
 		goto out;
 	}
 
+	/* non-fatal error */
+	last_error = gs_app_get_last_error (helper->app);
+	if (last_error != NULL) {
+		g_warning ("failed to install %s: %s",
+		           gs_app_get_id (helper->app),
+		           last_error->message);
+		gs_app_notify_failed_modal (helper->app,
+					    gs_shell_get_window (priv->shell),
+					    GS_PLUGIN_LOADER_ACTION_INSTALL,
+					    last_error);
+		goto out;
+	}
+
 	/* only show this if the window is not active */
 	if (gs_app_get_state (helper->app) != AS_APP_STATE_QUEUED_FOR_INSTALL &&
 	    !gs_shell_is_active (priv->shell))
@@ -98,6 +112,7 @@ gs_page_app_removed_cb (GObject *source,
                         GAsyncResult *res,
                         gpointer user_data)
 {
+	GError *last_error;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
 	GsPageHelper *helper = (GsPageHelper *) user_data;
 	GsPage *page = helper->page;
@@ -114,6 +129,19 @@ gs_page_app_removed_cb (GObject *source,
 		                            gs_shell_get_window (priv->shell),
 		                            GS_PLUGIN_LOADER_ACTION_REMOVE,
 		                            error);
+		goto out;
+	}
+
+	/* non-fatal error */
+	last_error = gs_app_get_last_error (helper->app);
+	if (last_error != NULL) {
+		g_warning ("failed to remove %s: %s",
+		           gs_app_get_id (helper->app),
+		           last_error->message);
+		gs_app_notify_failed_modal (helper->app,
+					    gs_shell_get_window (priv->shell),
+					    GS_PLUGIN_LOADER_ACTION_REMOVE,
+					    last_error);
 		goto out;
 	}
 

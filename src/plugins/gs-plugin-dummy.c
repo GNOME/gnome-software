@@ -284,6 +284,27 @@ gs_plugin_app_install (GsPlugin *plugin,
 }
 
 /**
+ * gs_plugin_app_update:
+ */
+gboolean
+gs_plugin_app_update (GsPlugin *plugin,
+		      GsApp *app,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+		return TRUE;
+
+	/* always fail */
+	g_set_error_literal (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NO_NETWORK,
+			     "no network connection is available");
+	return FALSE;
+}
+
+/**
  * gs_plugin_refine_app:
  */
 gboolean

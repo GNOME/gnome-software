@@ -68,6 +68,7 @@ struct _GsApp
 	gchar			*summary_missing;
 	gchar			*description;
 	GsAppQuality		 description_quality;
+	GError			*last_error;
 	GPtrArray		*screenshots;
 	GPtrArray		*categories;
 	GPtrArray		*keywords;
@@ -175,6 +176,8 @@ gs_app_to_string (GsApp *app)
 
 	str = g_string_new ("GsApp:\n");
 	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (app->kind));
+	if (app->last_error != NULL)
+		gs_app_kv_lpad (str, "last-error", app->last_error->message);
 	gs_app_kv_lpad (str, "compulsory",
 			gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY)
 			? "True" : "False");
@@ -445,8 +448,13 @@ gs_app_get_progress (GsApp *app)
 void
 gs_app_set_state_recover (GsApp *app)
 {
-	if (app->state_recover != AS_APP_STATE_UNKNOWN)
-		gs_app_set_state (app, app->state_recover);
+	if (app->state_recover == AS_APP_STATE_UNKNOWN)
+		return;
+	if (app->state_recover == app->state)
+		return;
+	app->state = app->state_recover;
+	app->state_recover = AS_APP_STATE_UNKNOWN;
+	gs_app_queue_notify (app, "state");
 }
 
 /**
@@ -564,6 +572,9 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		g_debug ("non-transient state now %s",
 			 as_app_state_to_string (state));
 		app->state_recover = state;
+
+		/* clear the error as the application has changed state */
+		g_clear_error (&app->last_error);
 		break;
 	}
 
@@ -2203,6 +2214,25 @@ gs_app_get_match_value (GsApp *app)
 }
 
 /**
+ * gs_app_get_last_error:
+ */
+GError *
+gs_app_get_last_error (GsApp *app)
+{
+	return app->last_error;
+}
+
+/**
+ * gs_app_set_last_error:
+ */
+void
+gs_app_set_last_error (GsApp *app, GError *error)
+{
+	g_clear_error (&app->last_error);
+	app->last_error = g_error_copy (error);
+}
+
+/**
  * gs_app_get_property:
  */
 static void
@@ -2354,6 +2384,8 @@ gs_app_finalize (GObject *object)
 	g_ptr_array_unref (app->categories);
 	if (app->keywords != NULL)
 		g_ptr_array_unref (app->keywords);
+	if (app->last_error != NULL)
+		g_error_free (app->last_error);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
