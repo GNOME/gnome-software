@@ -157,6 +157,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GPtrArray *items;
 	gboolean ret;
 	const gchar *origin;
+	const gchar *tmp;
 	guint *perc;
 	guint i;
 	g_autoptr(GHashTable) origins = NULL;
@@ -166,17 +167,26 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		as_store_set_add_flags (plugin->priv->store,
 					AS_STORE_ADD_FLAG_PREFER_LOCAL);
 	}
-	ret = as_store_load (plugin->priv->store,
-			     AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM |
-			     AS_STORE_LOAD_FLAG_APP_INFO_USER |
-			     AS_STORE_LOAD_FLAG_APPDATA |
-			     AS_STORE_LOAD_FLAG_DESKTOP |
-			     AS_STORE_LOAD_FLAG_XDG_APP_USER |
-			     AS_STORE_LOAD_FLAG_APP_INSTALL,
-			     NULL,
-			     error);
-	if (!ret)
-		return FALSE;
+
+	/* only when in self test */
+	tmp = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
+	if (tmp != NULL) {
+		g_debug ("using self test data of %s", tmp);
+		if (!as_store_from_xml (plugin->priv->store, tmp, NULL, error))
+			return FALSE;
+	} else {
+		ret = as_store_load (plugin->priv->store,
+				     AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM |
+				     AS_STORE_LOAD_FLAG_APP_INFO_USER |
+				     AS_STORE_LOAD_FLAG_APPDATA |
+				     AS_STORE_LOAD_FLAG_DESKTOP |
+				     AS_STORE_LOAD_FLAG_XDG_APP_USER |
+				     AS_STORE_LOAD_FLAG_APP_INSTALL,
+				     NULL,
+				     error);
+		if (!ret)
+			return FALSE;
+	}
 	items = as_store_get_apps (plugin->priv->store);
 	if (items->len == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");

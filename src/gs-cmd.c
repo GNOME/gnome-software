@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -260,7 +260,7 @@ main (int argc, char **argv)
 	/* load plugins */
 	plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_set_location (plugin_loader, "./plugins/.libs");
-	ret = gs_plugin_loader_setup (plugin_loader, &error);
+	ret = gs_plugin_loader_setup (plugin_loader, NULL, &error);
 	if (!ret) {
 		g_print ("Failed to setup plugins: %s\n", error->message);
 		goto out;
