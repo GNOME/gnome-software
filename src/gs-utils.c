@@ -161,32 +161,87 @@ gs_app_notify_failed_modal (GsApp *app,
 {
 	GtkWidget *dialog;
 	const gchar *title;
-	g_autofree gchar *msg = NULL;
+	gboolean show_detailed_error;
+	g_autoptr(GString) msg = NULL;
 
+	/* TRANSLATORS: install or removed failed */
 	title = _("Sorry, this did not work");
+
+	/* say what we tried to do */
+	msg = g_string_new ("");
 	switch (action) {
 	case GS_PLUGIN_LOADER_ACTION_INSTALL:
 		/* TRANSLATORS: this is when the install fails */
-		msg = g_strdup_printf (_("Installation of %s failed."),
-				       gs_app_get_name (app));
+		g_string_append_printf (msg, _("Installation of %s failed."),
+					gs_app_get_name (app));
 		break;
 	case GS_PLUGIN_LOADER_ACTION_REMOVE:
 		/* TRANSLATORS: this is when the remove fails */
-		msg = g_strdup_printf (_("Removal of %s failed."),
-				       gs_app_get_name (app));
+		g_string_append_printf (msg, _("Removal of %s failed."),
+					gs_app_get_name (app));
 		break;
 	default:
 		g_assert_not_reached ();
 		break;
 	}
+	g_string_append (msg, " ");
+
+	/* give details about the error */
+	switch (error->code) {
+	case GS_PLUGIN_ERROR_NO_NETWORK:
+		/* TRANSLATORS: the package manager needed to download
+		 * something with no network available */
+		g_string_append (msg, _("Internet access was required but wasn’t available."));
+		g_string_append (msg, " ");
+		/* TRANSLATORS: plug in the network cable... */
+		g_string_append (msg, _("Please make sure that you have internet access and try again."));
+		show_detailed_error = FALSE;
+		break;
+	case GS_PLUGIN_ERROR_NO_SPACE:
+		/* TRANSLATORS: we ran out of disk space */
+		g_string_append (msg, _("There wasn’t enough disk space."));
+		g_string_append (msg, " ");
+		/* TRANSLATORS: delete some stuff! */
+		g_string_append (msg, _("Please free up some space and try again."));
+		show_detailed_error = FALSE;
+		break;
+	default:
+		/* TRANSLATORS: we didn't handle the error type */
+		g_string_append (msg, _("If the problem persists, contact your software provider."));
+		show_detailed_error = TRUE;
+	}
+
 	dialog = gtk_message_dialog_new (parent_window,
 					 GTK_DIALOG_MODAL |
+					 GTK_DIALOG_USE_HEADER_BAR |
 					 GTK_DIALOG_DESTROY_WITH_PARENT,
 					 GTK_MESSAGE_ERROR,
 					 GTK_BUTTONS_CLOSE,
 					 "%s", title);
 	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-						  "%s", msg);
+						  "%s", msg->str);
+
+	/* detailed error in an expander */
+	if (show_detailed_error) {
+		GtkWidget *vbox;
+		GtkWidget *expander;
+		GtkWidget *scrolled_window;
+		GtkWidget *label;
+
+		vbox = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
+		/* TRANSLATORS: this is an expander title */
+		expander = gtk_expander_new (_("Show Details"));
+		gtk_widget_set_margin_start (expander, 36);
+		gtk_widget_set_margin_end (expander, 36);
+		scrolled_window = gtk_scrolled_window_new (NULL, NULL);
+		gtk_container_add (GTK_CONTAINER (expander), scrolled_window);
+		label = gtk_label_new (error->message);
+		gtk_container_add (GTK_CONTAINER (scrolled_window), label);
+		gtk_box_pack_end (GTK_BOX (vbox), expander, FALSE, TRUE, 4);
+		gtk_widget_show_all (expander);
+
+	}
+
 	g_signal_connect (dialog, "response",
 			  G_CALLBACK (gtk_widget_destroy), NULL);
 	gtk_window_present (GTK_WINDOW (dialog));

@@ -196,6 +196,37 @@ gs_plugin_loader_install_func (GsPluginLoader *plugin_loader)
 }
 
 static void
+gs_plugin_loader_error_func (GsPluginLoader *plugin_loader)
+{
+	gboolean ret;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+	GError *last_error;
+
+	/* suppress this */
+	g_test_expect_message (G_LOG_DOMAIN, G_LOG_LEVEL_WARNING,
+			       "failed to call gs_plugin_update_app on dummy*");
+
+	/* update, which should cause an error to be emitted */
+	app = gs_app_new ("chiron.desktop");
+	gs_app_set_management_plugin (app, "dummy");
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_LOADER_ACTION_UPDATE,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* ensure we failed the plugin action */
+	g_test_assert_expected_messages ();
+
+	/* retrieve the error from the application */
+	last_error = gs_app_get_last_error (app);
+	g_assert_error (last_error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_NO_NETWORK);
+}
+
+static void
 gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
@@ -515,6 +546,9 @@ main (int argc, char **argv)
 	g_test_add_data_func ("/gnome-software/plugin-loader{install}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_install_func);
+	g_test_add_data_func ("/gnome-software/plugin-loader{error}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_error_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{installed}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_installed_func);
