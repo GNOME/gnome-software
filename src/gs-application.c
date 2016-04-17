@@ -1,7 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -204,7 +204,7 @@ gs_application_initialize_plugins (GsApplication *app)
 
 	app->plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_set_location (app->plugin_loader, NULL);
-	if (!gs_plugin_loader_setup (app->plugin_loader, &error)) {
+	if (!gs_plugin_loader_setup (app->plugin_loader, NULL, &error)) {
 		g_warning ("Failed to setup plugins: %s", error->message);
 		exit (1);
 	}

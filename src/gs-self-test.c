@@ -21,16 +21,30 @@
 
 #include "config.h"
 
-#include <glib.h>
 #include <glib-object.h>
-#include <gtk/gtk.h>
-#include <glib/gstdio.h>
+#include <stdlib.h>
 
 #include "gs-app.h"
 #include "gs-plugin.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
 #include "gs-utils.h"
+
+/**
+ * gs_test_get_filename:
+ **/
+static gchar *
+gs_test_get_filename (const gchar *filename)
+{
+	gchar *tmp;
+	char full_tmp[PATH_MAX];
+	g_autofree gchar *path = NULL;
+	path = g_build_filename (TESTDATADIR, filename, NULL);
+	tmp = realpath (path, full_tmp);
+	if (tmp == NULL)
+		return NULL;
+	return g_strdup (full_tmp);
+}
 
 static gboolean
 gs_plugin_list_filter_cb (GsApp *app, gpointer user_data)
@@ -143,169 +157,18 @@ gs_plugin_loader_status_changed_cb (GsPluginLoader *plugin_loader,
 	_status_changed_cnt++;
 }
 
-static void
-gs_plugin_loader_func (void)
-{
-	gboolean ret;
-	GError *error = NULL;
-	GList *list;
-	GList *l;
-	GsApp *app;
-	g_autoptr(GsPluginLoader) loader = NULL;
-
-	loader = gs_plugin_loader_new ();
-	g_assert (GS_IS_PLUGIN_LOADER (loader));
-	g_signal_connect (loader, "status-changed",
-			  G_CALLBACK (gs_plugin_loader_status_changed_cb), NULL);
-
-	/* load the plugins */
-	gs_plugin_loader_set_location (loader, "./plugins/.libs");
-	ret = gs_plugin_loader_setup (loader, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	/* enable some that will give us predictable results */
-	ret = gs_plugin_loader_set_enabled (loader, "dummy", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-kind", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "moduleset", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "hardcoded-ratings", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "datadir-filename", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "datadir-apps", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "notgoingtoexist", TRUE);
-	g_assert (!ret);
-
-	list = gs_plugin_loader_get_popular (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
-	g_assert_no_error (error);
-	g_assert (list != NULL);
-	g_assert_cmpint (_status_changed_cnt, ==, 1);
-	g_assert_cmpint (g_list_length (list), ==, 6);
-	app = g_list_nth_data (list, 0);
-	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-boxes");
-	g_assert_cmpstr (gs_app_get_name (app), ==, "Boxes");
-
-	app = g_list_nth_data (list, 1);
-	g_assert_cmpstr (gs_app_get_id (app), ==, "gedit");
-	g_assert_cmpstr (gs_app_get_summary (app), ==, "Edit text files");
-
-	gs_plugin_list_free (list);
-
-	/* get updates */
-	_status_changed_cnt = 0;
-	list = gs_plugin_loader_get_updates (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
-	g_assert_no_error (error);
-	g_assert (list != NULL);
-	g_assert_cmpint (_status_changed_cnt, >=, 1);
-	g_assert_cmpint (g_list_length (list), ==, 2);
-	app = g_list_nth_data (list, 0);
-	g_assert_cmpstr (gs_app_get_id (app), ==, "os-update:gnome-boxes-libs;0.0.1;i386;updates-testing,libvirt-glib-devel;0.0.1;noarch;fedora");
-	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Updates");
-//	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements for all users\nDo not segfault when using newer versons of libvirt.\nFix several memory leaks.");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPDATE);
-
-	app = g_list_nth_data (list, 1);
-	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-boxes");
-	g_assert_cmpstr (gs_app_get_name (app), ==, "Boxes");
-	g_assert_cmpstr (gs_app_get_summary (app), ==, "Do not segfault when using newer versons of libvirt.");
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
-	gs_plugin_list_free (list);
-
-	/* test packagekit */
-	gs_plugin_loader_set_enabled (loader, "dummy", FALSE);
-	ret = gs_plugin_loader_set_enabled (loader, "packagekit", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "desktopdb", TRUE);
-	g_assert (ret);
-	ret = gs_plugin_loader_set_enabled (loader, "datadir-apps", TRUE);
-	g_assert (ret);
-
-	list = gs_plugin_loader_get_installed (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
-	g_assert_no_error (error);
-	g_assert (list != NULL);
-	g_assert_cmpint (g_list_length (list), >, 50);
-
-	/* find a specific app */
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (g_strcmp0 (gs_app_get_id (app), "gnome-screenshot") == 0)
-			break;
-	}
-	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-screenshot");
-	g_assert_cmpstr (gs_app_get_name (app), ==, "Screenshot");
-	g_assert_cmpstr (gs_app_get_summary (app), ==, "Save images of your screen or individual windows");
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
-	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
-	g_assert (gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY));
-	g_assert (gs_app_get_pixbuf (app) != NULL);
-	gs_plugin_list_free (list);
-
-	/* do this again, which should be much faster */
-	list = gs_plugin_loader_get_installed (loader, GS_PLUGIN_REFINE_FLAGS_DEFAULT, NULL, &error);
-	g_assert_no_error (error);
-	g_assert (list != NULL);
-	g_assert_cmpint (g_list_length (list), >, 50);
-	gs_plugin_list_free (list);
-
-	/* set a rating */
-	gs_plugin_loader_set_enabled (loader, "packagekit", FALSE);
-	gs_plugin_loader_set_enabled (loader, "desktopdb", FALSE);
-	gs_plugin_loader_set_enabled (loader, "datadir-apps", FALSE);
-	ret = gs_plugin_loader_set_enabled (loader, "local-ratings", TRUE);
-	g_assert (ret);
-
-	/* create a dummy value */
-	app = gs_app_new ("self-test");
-	gs_app_set_rating (app, 35);
-	ret = gs_plugin_loader_app_action (loader,
-					   app,
-					   GS_PLUGIN_LOADER_ACTION_SET_RATING,
-					   NULL,
-					   &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	/* get the saved value */
-	gs_app_set_rating (app, -1);
-	ret = gs_plugin_loader_app_refine (loader,
-					   app,
-					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-					   NULL,
-					   &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-	g_assert_cmpint (gs_app_get_rating (app), ==, 35);
-	g_object_unref (app);
-}
 
 static void
-gs_plugin_loader_refine_func (void)
+gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
 {
-	GError *error = NULL;
-	const gchar *url;
 	gboolean ret;
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsPluginLoader) loader = NULL;
-
-	/* load the plugins */
-	loader = gs_plugin_loader_new ();
-	gs_plugin_loader_set_location (loader, "./plugins/.libs");
-	ret = gs_plugin_loader_setup (loader, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	ret = gs_plugin_loader_set_enabled (loader, "dummy", TRUE);
-	g_assert (ret);
+	g_autoptr(GError) error = NULL;
 
 	/* get the extra bits */
-	app = gs_app_new ("gnome-boxes");
-	gs_app_add_source (app, "gnome-boxes");
-	ret = gs_plugin_loader_app_refine (loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+	app = gs_app_new ("chiron.desktop");
+	gs_app_set_management_plugin (app, "dummy");
+	ret = gs_plugin_loader_app_refine (plugin_loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL,
@@ -317,81 +180,295 @@ gs_plugin_loader_refine_func (void)
 	g_assert_cmpstr (gs_app_get_license (app), ==,
 			 "<a href=\"http://spdx.org/licenses/GPL-2.0+\">GPL-2.0+</a>");
 	g_assert_cmpstr (gs_app_get_description (app), !=, NULL);
-	url = gs_app_get_url (app, AS_URL_KIND_HOMEPAGE);
-	g_assert_cmpstr (url, ==, "http://www.gimp.org/");
+	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://www.test.org/");
 }
 
 static void
-gs_plugin_loader_webapps_func (void)
+gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
+{
+	GsApp *app;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* get the updates list */
+	list = gs_plugin_loader_get_updates (plugin_loader,
+					     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					     NULL,
+					     &error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+
+	/* make sure there are two entries */
+	g_assert_cmpint (g_list_length (list), ==, 2);
+	app = g_list_nth_data (list, 0);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE_LIVE);
+	g_assert_cmpstr (gs_app_get_update_details (app), ==, "Do not crash when using libvirt.");
+	g_assert_cmpint (gs_app_get_update_urgency (app), ==, AS_URGENCY_KIND_HIGH);
+
+	/* get the virtual non-apps OS update */
+	app = g_list_nth_data (list, 1);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "os-update.virtual");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Updates");
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements.");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPDATE);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE);
+	g_assert_cmpint (gs_app_get_related(app)->len, ==, 2);
+}
+
+static void
+gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
+{
+	GsApp *app;
+	gboolean ret;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* get the updates list */
+	list = gs_plugin_loader_get_distro_upgrades (plugin_loader,
+						     GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						     NULL,
+						     &error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+
+	/* make sure there is one entry */
+	g_assert_cmpint (g_list_length (list), ==, 1);
+	app = GS_APP (list->data);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "org.fedoraproject.release-rawhide.upgrade");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPGRADE);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+
+	/* this should be set with a higher priority by AppStream */
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Release specific tagline");
+
+	/* download the update */
+	ret = gs_plugin_loader_app_action (plugin_loader,
+					   app,
+					   GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE);
+
+	/* trigger the update */
+	ret = gs_plugin_loader_app_action (plugin_loader,
+					   app,
+					   GS_PLUGIN_LOADER_ACTION_UPGRADE_TRIGGER,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE);
+}
+
+static void
+gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
+{
+	GsApp *app;
+	GsApp *addon;
+	GPtrArray *addons;
+	g_autofree gchar *menu_path = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* get installed packages */
+	list = gs_plugin_loader_get_installed (plugin_loader,
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
+					       NULL,
+					       &error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+
+	/* make sure there is one entry */
+	g_assert_cmpint (g_list_length (list), ==, 1);
+	app = GS_APP (list->data);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "zeus.desktop");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+	g_assert_cmpstr (gs_app_get_name (app), ==, "Zeus");
+	g_assert_cmpstr (gs_app_get_source_default (app), ==, "zeus");
+	g_assert (gs_app_get_pixbuf (app) != NULL);
+
+	/* check various bitfields */
+	g_assert (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE));
+	g_assert (gs_app_get_license_is_free (app));
+
+	/* check categories */
+	g_assert (gs_app_has_category (app, "Audio"));
+	g_assert (gs_app_has_category (app, "Player"));
+	g_assert (gs_app_has_category (app, "AudioVideo"));
+	g_assert (!gs_app_has_category (app, "ImageProcessing"));
+	g_assert (gs_app_get_menu_path (app) != NULL);
+	menu_path = g_strjoinv ("->", gs_app_get_menu_path (app));
+	g_assert_cmpstr (menu_path, ==, "Audio->Players");
+
+	/* check addon */
+	addons = gs_app_get_addons (app);
+	g_assert_cmpint (addons->len, ==, 1);
+	addon = g_ptr_array_index (addons, 0);
+	g_assert_cmpstr (gs_app_get_id (addon), ==, "zeus-spell.addon");
+	g_assert_cmpint (gs_app_get_kind (addon), ==, AS_APP_KIND_ADDON);
+	g_assert_cmpint (gs_app_get_state (addon), ==, AS_APP_STATE_UNKNOWN);
+	g_assert_cmpstr (gs_app_get_name (addon), ==, "Spell Check");
+	g_assert_cmpstr (gs_app_get_source_default (addon), ==, "zeus-spell");
+	g_assert (gs_app_get_pixbuf (addon) == NULL);
+}
+
+static void
+gs_plugin_loader_search_func (GsPluginLoader *plugin_loader)
+{
+	GsApp *app;
+	g_autofree gchar *menu_path = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	/* get search result based on addon keyword */
+	list = gs_plugin_loader_search (plugin_loader,
+					"spell",
+					GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					NULL,
+					&error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+
+	/* make sure there is one entry, the parent app */
+	g_assert_cmpint (g_list_length (list), ==, 1);
+	app = GS_APP (list->data);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "zeus.desktop");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+}
+
+static void
+gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
 {
 	gboolean ret;
-	GError *error = NULL;
-	g_autofree gchar *path = NULL;
+	g_autoptr(GError) error = NULL;
 	g_autoptr(GsApp) app = NULL;
-	g_autoptr(GsPluginLoader) loader = NULL;
 
-	/* load the plugins */
-	loader = gs_plugin_loader_new ();
-	gs_plugin_loader_set_location (loader, "./plugins/.libs");
-	ret = gs_plugin_loader_setup (loader, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	/* save shitty file */
-	path = g_build_filename (g_get_user_data_dir (),
-				 "app-info",
-				 "xmls",
-				 "test.xml",
-				 NULL);
-	ret = gs_mkdir_parent (path, &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-	ret = g_file_set_contents (path,
-				   "<?xml version=\"1.0\"?>\n"
-				   "<applications version=\"0.1\">\n"
-				   "  <application>\n"
-				   "    <id type=\"webapp\">epiphany-test.desktop</id>\n"
-				   "    <name>test</name>\n"
-				   "    <icon type=\"remote\">http://www.test.com/test.png</icon>\n"
-				   "  </application>\n"
-				   "</applications>\n",
-				   -1,
-				   &error);
-	g_assert_no_error (error);
-	g_assert (ret);
-
-	/* load a webapp with a failing icon */
-	app = gs_app_new ("epiphany-test");
-	ret = gs_plugin_loader_app_refine (loader, app,
+	/* a webapp with a local icon */
+	app = gs_app_new ("arachne.desktop");
+	gs_app_set_kind (app, AS_APP_KIND_WEB_APP);
+	ret = gs_plugin_loader_app_refine (plugin_loader, app,
 					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);
 	g_assert (ret);
-	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UNAVAILABLE);
-
-	g_unlink (path);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+	g_assert (gs_app_get_pixbuf (app) != NULL);
 }
 
 int
 main (int argc, char **argv)
 {
-	gtk_init (&argc, &argv);
+	gboolean ret;
+	g_autofree gchar *fn = NULL;
+	g_autofree gchar *xml = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsPluginLoader) plugin_loader = NULL;
+	const gchar *whitelist[] = {
+		"appstream",
+		"dummy",
+		"epiphany",
+		"hardcoded-blacklist",
+		"icons",
+		"menu-spec-refine",
+		"provenance",
+		NULL
+	};
+
 	g_test_init (&argc, &argv, NULL);
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
-	g_setenv ("GNOME_SOFTWARE_SELF_TEST", "1", TRUE);
+
+	/* set all the things required as a dummy test harness */
+	g_setenv ("GS_SELF_TEST_DUMMY_ENABLE", "1", TRUE);
+	g_setenv ("GS_SELF_TEST_PROVENANCE_SOURCES", "london*,boston", TRUE);
+
+	fn = gs_test_get_filename ("icons/hicolor/48x48/org.gnome.Software.png");
+	g_assert (fn != NULL);
+	xml = g_strdup_printf ("<?xml version=\"1.0\"?>\n"
+		"<components version=\"0.9\">\n"
+		"  <component type=\"desktop\">\n"
+		"    <id>zeus.desktop</id>\n"
+		"    <name>Zeus</name>\n"
+		"    <summary>A teaching application</summary>\n"
+		"    <pkgname>zeus</pkgname>\n"
+		"    <icon type=\"stock\">drive-harddisk</icon>\n"
+		"    <categories>\n"
+		"    <category>AudioVideo</category>\n"
+		"    <category>Player</category>\n"
+		"    </categories>\n"
+		"  </component>\n"
+		"  <component type=\"addon\">\n"
+		"    <id>zeus-spell.addon</id>\n"
+		"    <extends>zeus.desktop</extends>\n"
+		"    <name>Spell Check</name>\n"
+		"    <summary>Check the spelling when teaching</summary>\n"
+		"    <pkgname>zeus-spell</pkgname>\n"
+		"  </component>\n"
+		"  <component type=\"desktop\">\n"
+		"    <id>Uninstall Zeus.desktop</id>\n"
+		"    <name>Uninstall Zeus</name>\n"
+		"    <summary>Uninstall the teaching application</summary>\n"
+		"    <icon type=\"stock\">drive-harddisk</icon>\n"
+		"  </component>\n"
+		"  <component type=\"os-upgrade\">\n"
+		"    <id>org.fedoraproject.release-rawhide.upgrade</id>\n"
+		"    <summary>Release specific tagline</summary>\n"
+		"  </component>\n"
+		"  <component type=\"webapp\">\n"
+		"    <id>arachne.desktop</id>\n"
+		"    <name>test</name>\n"
+		"    <icon type=\"remote\">file://%s</icon>\n"
+		"  </component>\n"
+		"</components>\n", fn);
+	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
 
-	/* tests go here */
-	g_test_add_func ("/gnome-software/plugin-loader{refine}", gs_plugin_loader_refine_func);
-	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
+	/* generic tests go here */
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	g_test_add_func ("/gnome-software/app{subsume}", gs_app_subsume_func);
-	if(0)g_test_add_func ("/gnome-software/plugin-loader", gs_plugin_loader_func);
-	if(0)g_test_add_func ("/gnome-software/plugin-loader{webapps}", gs_plugin_loader_webapps_func);
+	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
 
+	/* we can only load this once per process */
+	plugin_loader = gs_plugin_loader_new ();
+	g_signal_connect (plugin_loader, "status-changed",
+			  G_CALLBACK (gs_plugin_loader_status_changed_cb), NULL);
+	gs_plugin_loader_set_location (plugin_loader, "./plugins/.libs");
+	ret = gs_plugin_loader_setup (plugin_loader, (gchar**) whitelist, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert (!gs_plugin_loader_get_enabled (plugin_loader, "notgoingtoexist"));
+	g_assert (!gs_plugin_loader_get_enabled (plugin_loader, "packagekit"));
+	g_assert (gs_plugin_loader_get_enabled (plugin_loader, "appstream"));
+	g_assert (gs_plugin_loader_get_enabled (plugin_loader, "dummy"));
+
+	/* plugin tests go here */
+	g_test_add_data_func ("/gnome-software/plugin-loader{webapps}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_webapps_func);
+	g_test_add_data_func ("/gnome-software/plugin-loader{search}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_search_func);
+	g_test_add_data_func ("/gnome-software/plugin-loader{installed}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_installed_func);
+	g_test_add_data_func ("/gnome-software/plugin-loader{refine}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_refine_func);
+	g_test_add_data_func ("/gnome-software/plugin-loader{updates}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_updates_func);
+	g_test_add_data_func ("/gnome-software/plugin-loader{distro-upgrades}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_distro_upgrades_func);
 	return g_test_run ();
 }
 

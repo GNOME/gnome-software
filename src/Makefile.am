@@ -16,6 +16,7 @@ AM_CPPFLAGS =						\
 	-DDATADIR=\"$(datadir)\"			\
 	-DVERSION="\"$(VERSION)\""			\
 	-DLOCALEDIR=\""$(localedir)"\"			\
+	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
 	-DGS_DATA=\"$(pkgdatadir)\"
 
 @INTLTOOL_DESKTOP_RULE@

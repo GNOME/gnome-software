@@ -2920,27 +2920,36 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 }
 
 /**
- * gs_plugin_loader_set_enabled:
+ * gs_plugin_loader_find_plugin:
  */
-gboolean
-gs_plugin_loader_set_enabled (GsPluginLoader *plugin_loader,
-			      const gchar *plugin_name,
-			      gboolean enabled)
+static GsPlugin *
+gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
+			      const gchar *plugin_name)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	gboolean ret = FALSE;
 	GsPlugin *plugin;
 	guint i;
 
 	for (i = 0; i < priv->plugins->len; i++) {
 		plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_strcmp0 (plugin->name, plugin_name) == 0) {
-			plugin->enabled = enabled;
-			ret = TRUE;
-			break;
-		}
+		if (g_strcmp0 (plugin->name, plugin_name) == 0)
+			return plugin;
 	}
-	return ret;
+	return NULL;
+}
+
+/**
+ * gs_plugin_loader_get_enabled:
+ */
+gboolean
+gs_plugin_loader_get_enabled (GsPluginLoader *plugin_loader,
+			      const gchar *plugin_name)
+{
+	GsPlugin *plugin;
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, plugin_name);
+	if (plugin == NULL)
+		return FALSE;
+	return plugin->enabled;
 }
 
 /**
@@ -3141,29 +3150,12 @@ gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
 }
 
 /**
- * gs_plugin_loader_find_plugin:
- */
-static GsPlugin *
-gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
-			      const gchar *plugin_name)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GsPlugin *plugin;
-	guint i;
-
-	for (i = 0; i < priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_strcmp0 (plugin->name, plugin_name) == 0)
-			return plugin;
-	}
-	return NULL;
-}
-
-/**
  * gs_plugin_loader_setup:
  */
 gboolean
-gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
+gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
+			gchar **whitelist,
+			GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *filename_tmp;
@@ -3199,6 +3191,17 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader, GError **error)
 						    NULL);
 		gs_plugin_loader_open_plugin (plugin_loader, filename_plugin);
 	} while (TRUE);
+
+	/* optional whitelist */
+	if (whitelist != NULL) {
+		for (i = 0; i < priv->plugins->len; i++) {
+			plugin = g_ptr_array_index (priv->plugins, i);
+			if (!plugin->enabled)
+				continue;
+			plugin->enabled = g_strv_contains ((const gchar * const *) whitelist,
+							   plugin->name);
+		}
+	}
 
 	/* order by deps */
 	do {

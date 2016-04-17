@@ -46,6 +46,21 @@ gs_plugin_get_name (void)
 }
 
 /**
+ * gs_plugin_provenance_get_sources:
+ */
+static gchar **
+gs_plugin_provenance_get_sources (GsPlugin *plugin)
+{
+	const gchar *tmp;
+	tmp = g_getenv ("GS_SELF_TEST_PROVENANCE_SOURCES");
+	if (tmp != NULL) {
+		g_debug ("using custom provenance sources of %s", tmp);
+		return g_strsplit (tmp, ",", -1);
+	}
+	return g_settings_get_strv (plugin->priv->settings, "official-sources");
+}
+
+/**
  * gs_plugin_provenance_settings_changed_cb:
  */
 static void
@@ -55,8 +70,7 @@ gs_plugin_provenance_settings_changed_cb (GSettings *settings,
 {
 	if (g_strcmp0 (key, "official-sources") == 0) {
 		g_strfreev (plugin->priv->sources);
-		plugin->priv->sources = g_settings_get_strv (plugin->priv->settings,
-							     "official-sources");
+		plugin->priv->sources = gs_plugin_provenance_get_sources (plugin);
 	}
 }
 
@@ -70,8 +84,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	plugin->priv->settings = g_settings_new ("org.gnome.software");
 	g_signal_connect (plugin->priv->settings, "changed",
 			  G_CALLBACK (gs_plugin_provenance_settings_changed_cb), plugin);
-	plugin->priv->sources = g_settings_get_strv (plugin->priv->settings,
-						   "official-sources");
+	plugin->priv->sources = gs_plugin_provenance_get_sources (plugin);
 }
 
 /**
