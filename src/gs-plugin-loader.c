@@ -3450,7 +3450,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *tmp;
-	gchar *match;
 	gchar **projects;
 	guint i;
 
@@ -3468,13 +3467,20 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 					     SOUP_TYPE_CONTENT_DECODER);
 
 	/* get the locale without the various UTF-8 suffixes */
-	priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
-	match = g_strstr_len (priv->locale, -1, ".UTF-8");
-	if (match != NULL)
-		*match = '\0';
-	match = g_strstr_len (priv->locale, -1, ".utf8");
-	if (match != NULL)
-		*match = '\0';
+	tmp = g_getenv ("GS_SELF_TEST_LOCALE");
+	if (tmp != NULL) {
+		g_debug ("using self test locale of %s", tmp);
+		priv->locale = g_strdup (tmp);
+	} else {
+		gchar *match;
+		priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
+		match = g_strstr_len (priv->locale, -1, ".UTF-8");
+		if (match != NULL)
+			*match = '\0';
+		match = g_strstr_len (priv->locale, -1, ".utf8");
+		if (match != NULL)
+			*match = '\0';
+	}
 
 	g_mutex_init (&priv->pending_apps_mutex);
 

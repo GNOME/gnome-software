@@ -270,6 +270,7 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 	GsApp *app;
 	GsApp *addon;
 	GPtrArray *addons;
+	guint64 kudos;
 	g_autofree gchar *menu_path = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -297,6 +298,10 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 	/* check various bitfields */
 	g_assert (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE));
 	g_assert (gs_app_get_license_is_free (app));
+
+	/* check kudos */
+	kudos = gs_app_get_kudos (app);
+	g_assert (kudos & GS_APP_KUDO_MY_LANGUAGE);
 
 	/* check categories */
 	g_assert (gs_app_has_category (app, "Audio"));
@@ -386,6 +391,7 @@ main (int argc, char **argv)
 	g_setenv ("G_MESSAGES_DEBUG", "all", TRUE);
 
 	/* set all the things required as a dummy test harness */
+	g_setenv ("GS_SELF_TEST_LOCALE", "en_GB", TRUE);
 	g_setenv ("GS_SELF_TEST_DUMMY_ENABLE", "1", TRUE);
 	g_setenv ("GS_SELF_TEST_PROVENANCE_SOURCES", "london*,boston", TRUE);
 
@@ -400,9 +406,12 @@ main (int argc, char **argv)
 		"    <pkgname>zeus</pkgname>\n"
 		"    <icon type=\"stock\">drive-harddisk</icon>\n"
 		"    <categories>\n"
-		"    <category>AudioVideo</category>\n"
-		"    <category>Player</category>\n"
+		"      <category>AudioVideo</category>\n"
+		"      <category>Player</category>\n"
 		"    </categories>\n"
+		"    <languages>\n"
+		"      <lang percentage=\"100\">en_GB</lang>\n"
+		"    </languages>\n"
 		"  </component>\n"
 		"  <component type=\"desktop\">\n"
 		"    <id>mate-spell.desktop</id>\n"

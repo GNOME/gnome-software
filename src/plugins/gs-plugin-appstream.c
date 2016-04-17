@@ -172,7 +172,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	/* only when in self test */
 	tmp = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
 	if (tmp != NULL) {
-		g_debug ("Using self test data of %s", tmp);
+		g_debug ("using self test data of %s", tmp);
 		if (!as_store_from_xml (plugin->priv->store, tmp, NULL, error))
 			return FALSE;
 	} else {
