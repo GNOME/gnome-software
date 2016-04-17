@@ -349,9 +349,10 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 		g_string_append (key, "2:");
 
 	/* finally, sort by short name */
-	casefolded_name = g_utf8_casefold (gs_app_get_name (app), -1);
-	g_string_append (key, casefolded_name);
-
+	if (gs_app_get_name (app) != NULL) {
+		casefolded_name = g_utf8_casefold (gs_app_get_name (app), -1);
+		g_string_append (key, casefolded_name);
+	}
 	return g_string_free (key, FALSE);
 }
 
