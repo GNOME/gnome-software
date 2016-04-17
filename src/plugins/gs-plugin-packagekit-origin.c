@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -114,8 +114,10 @@ gs_plugin_packagekit_origin_ensure_sources (GsPlugin *plugin,
 					   cancellable,
 					   NULL, plugin,
 					   error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 	array = pk_results_get_repo_detail_array (results);
 	for (i = 0; i < array->len; i++) {
 		rd = g_ptr_array_index (array, i);

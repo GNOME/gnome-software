@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2014-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -155,8 +155,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 						 cancellable,
 						 gs_plugin_packagekit_progress_cb, &data,
 						 error);
-		if (results == NULL)
+		if (results == NULL) {
+			gs_plugin_packagekit_convert_gerror (error);
 			return FALSE;
+		}
 	}
 
 	/* download all the packages themselves */
@@ -178,8 +180,10 @@ gs_plugin_refresh (GsPlugin *plugin,
 						      cancellable,
 						      gs_plugin_packagekit_progress_cb, &data,
 						      error);
-		if (results2 == NULL)
+		if (results2 == NULL) {
+			gs_plugin_packagekit_convert_gerror (error);
 			return FALSE;
+		}
 	}
 
 	return TRUE;
@@ -247,8 +251,10 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					     cancellable,
 					     gs_plugin_packagekit_progress_cb, &data,
 					     error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 	array = pk_results_get_files_array (results);
 	if (array->len == 0) {
 		g_set_error (error,
@@ -326,8 +332,10 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, &data,
 					       error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 
 	/* get results */
 	array = pk_results_get_details_array (results);

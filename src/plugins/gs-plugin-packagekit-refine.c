@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -324,8 +324,10 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				     cancellable,
 				     gs_plugin_packagekit_progress_cb, &data,
 				     error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
@@ -374,8 +376,10 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 					  cancellable,
 					  gs_plugin_packagekit_progress_cb, &data,
 					  error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
@@ -467,8 +471,10 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, &data,
 					       error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 
 	/* set the update details for the update */
 	array = pk_results_get_update_detail_array (results);
@@ -605,8 +611,10 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 
 	/* set the update details for the update */
 	array = pk_results_get_details_array (results);
@@ -645,8 +653,10 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 
 	/* set the update severity for the app */
 	sack = pk_results_get_package_sack (results);
@@ -840,8 +850,10 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 					    cancellable,
 					    gs_plugin_packagekit_progress_cb, &data,
 					    error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 	if (!gs_plugin_packagekit_add_results (plugin, &list, results, error))
 		return FALSE;
 

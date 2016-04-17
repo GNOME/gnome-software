@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -152,8 +152,10 @@ gs_plugin_add_installed (GsPlugin *plugin,
 					  cancellable,
 					  gs_plugin_packagekit_progress_cb, &data,
 					  error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 
 	/* add results */
 	return gs_plugin_packagekit_add_results (plugin, list, results, error);
@@ -195,6 +197,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 					   gs_plugin_packagekit_progress_cb, &data,
 					   error);
 	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		ret = FALSE;
 		goto out;
 	}
@@ -255,8 +258,10 @@ gs_plugin_add_sources (GsPlugin *plugin,
 					   cancellable,
 					   gs_plugin_packagekit_progress_cb, &data,
 					   error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 	hash = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	array = pk_results_get_repo_detail_array (results);
 	for (i = 0; i < array->len; i++) {
@@ -308,7 +313,11 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	return results != NULL;
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 /**
@@ -364,6 +373,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
 		if (results == NULL) {
+			gs_plugin_packagekit_convert_gerror (error);
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
@@ -433,6 +443,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 							 gs_plugin_packagekit_progress_cb, &data,
 							 error);
 		if (results == NULL) {
+			gs_plugin_packagekit_convert_gerror (error);
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
@@ -458,6 +469,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 						      gs_plugin_packagekit_progress_cb, &data,
 						      error);
 		if (results == NULL) {
+			gs_plugin_packagekit_convert_gerror (error);
 			gs_app_set_state_recover (app);
 			return FALSE;
 		}
@@ -520,7 +532,11 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	return results != NULL;
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 /**
@@ -624,6 +640,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 						gs_plugin_packagekit_progress_cb, &data,
 						error);
 	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -684,6 +701,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 					    gs_plugin_packagekit_progress_cb, &data,
 					    error);
 	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		gs_app_set_state_recover (app);
 		return FALSE;
 	}
@@ -722,8 +740,10 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 	                                  cancellable,
 	                                  gs_plugin_packagekit_progress_cb, &data,
 	                                  error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 
 	/* add results */
 	return gs_plugin_packagekit_add_results (plugin, list, results, error);
@@ -758,8 +778,10 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	                                   cancellable,
 	                                   gs_plugin_packagekit_progress_cb, &data,
 	                                   error);
-	if (results == NULL)
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
 		return FALSE;
+	}
 
 	/* add results */
 	return gs_plugin_packagekit_add_results (plugin, list, results, error);

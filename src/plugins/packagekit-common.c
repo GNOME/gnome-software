@@ -85,6 +85,78 @@ packagekit_status_enum_to_plugin_status (PkStatusEnum status)
 }
 
 /**
+ * gs_plugin_packagekit_convert_gerror:
+ */
+gboolean
+gs_plugin_packagekit_convert_gerror (GError **error)
+{
+	GError *error_tmp;
+
+	if (error == NULL)
+		return FALSE;
+	error_tmp = *error;
+	if (error_tmp == NULL)
+		return FALSE;
+
+	/* get a local version */
+	if (error_tmp->domain != PK_CLIENT_ERROR)
+		return FALSE;
+
+	/* daemon errors */
+	if (error_tmp->code <= 0xff) {
+		switch (error_tmp->code) {
+		case PK_CLIENT_ERROR_CANNOT_START_DAEMON:
+		case PK_CLIENT_ERROR_INVALID_FILE:
+		case PK_CLIENT_ERROR_NOT_SUPPORTED:
+			error_tmp->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
+			break;
+		default:
+			error_tmp->code = GS_PLUGIN_ERROR_FAILED;
+			break;
+		}
+
+	/* backend errors */
+	} else {
+		switch (error_tmp->code - 0xff) {
+		case PK_ERROR_ENUM_INVALID_PACKAGE_FILE:
+		case PK_ERROR_ENUM_NOT_SUPPORTED:
+		case PK_ERROR_ENUM_PACKAGE_INSTALL_BLOCKED:
+			error_tmp->code = GS_PLUGIN_ERROR_NOT_SUPPORTED;
+			break;
+		case PK_ERROR_ENUM_CANNOT_FETCH_SOURCES:
+		case PK_ERROR_ENUM_NO_CACHE:
+		case PK_ERROR_ENUM_NO_MORE_MIRRORS_TO_TRY:
+		case PK_ERROR_ENUM_NO_NETWORK:
+		case PK_ERROR_ENUM_PACKAGE_DOWNLOAD_FAILED:
+			error_tmp->code = GS_PLUGIN_ERROR_NO_NETWORK;
+			break;
+		case PK_ERROR_ENUM_BAD_GPG_SIGNATURE:
+		case PK_ERROR_ENUM_CANNOT_INSTALL_REPO_UNSIGNED:
+		case PK_ERROR_ENUM_CANNOT_UPDATE_REPO_UNSIGNED:
+		case PK_ERROR_ENUM_GPG_FAILURE:
+		case PK_ERROR_ENUM_MISSING_GPG_SIGNATURE:
+		case PK_ERROR_ENUM_NO_LICENSE_AGREEMENT:
+		case PK_ERROR_ENUM_NOT_AUTHORIZED:
+		case PK_ERROR_ENUM_RESTRICTED_DOWNLOAD:
+			error_tmp->code = GS_PLUGIN_ERROR_NO_SECURITY;
+			break;
+		case PK_ERROR_ENUM_NO_SPACE_ON_DEVICE:
+			error_tmp->code = GS_PLUGIN_ERROR_NO_SPACE;
+			break;
+		case PK_ERROR_ENUM_CANCELLED_PRIORITY:
+		case PK_ERROR_ENUM_TRANSACTION_CANCELLED:
+			error_tmp->code = GS_PLUGIN_ERROR_CANCELLED;
+			break;
+		default:
+			error_tmp->code = GS_PLUGIN_ERROR_FAILED;
+			break;
+		}
+	}
+	error_tmp->domain = GS_PLUGIN_ERROR;
+	return TRUE;
+}
+
+/**
  * gs_plugin_packagekit_add_results:
  */
 gboolean
