@@ -206,8 +206,10 @@ main (int argc, char **argv)
 	gint cache_age = 0;
 	gint repeat = 1;
 	int status = 0;
+	g_auto(GStrv) plugin_names = NULL;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsDebug) debug = gs_debug_new ();
+	g_autofree gchar *plugin_names_str = NULL;
 	g_autofree gchar *refine_flags_str = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
@@ -224,6 +226,8 @@ main (int argc, char **argv)
 		  "Use this maximum cache age in seconds", NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
 		  "Prefer local file sources to AppStream", NULL },
+		{ "plugin-names", '\0', 0, G_OPTION_ARG_NONE, &plugin_names_str,
+		  "Whitelist only these plugin names", NULL },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
 		  "Show verbose debugging information", NULL },
 		{ NULL}
@@ -267,7 +271,9 @@ main (int argc, char **argv)
 	/* load plugins */
 	plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_set_location (plugin_loader, "./plugins/.libs");
-	ret = gs_plugin_loader_setup (plugin_loader, NULL, &error);
+	if (plugin_names_str != NULL)
+		plugin_names = g_strsplit (plugin_names_str, ",", -1);
+	ret = gs_plugin_loader_setup (plugin_loader, plugin_names, &error);
 	if (!ret) {
 		g_print ("Failed to setup plugins: %s\n", error->message);
 		goto out;
