@@ -950,13 +950,11 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 			       GCancellable *cancellable,
 			       GError **error)
 {
-	const gchar *app_id_last = NULL;
 	guint status_code;
 	guint i;
 	g_autofree gchar *uri = NULL;
-	g_autoptr(GFile) cachefn_file = NULL;
+	g_autoptr(GHashTable) hash = NULL;
 	g_autoptr(GPtrArray) reviews = NULL;
-	g_autoptr(GsApp) app_current = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
 
 	/* create the GET data *with* the machine hash so we can later
@@ -986,20 +984,23 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 		return FALSE;
 
 	/* look at all the reviews; faking application objects */
+	hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+				      g_free, (GDestroyNotify) g_object_unref);
 	for (i = 0; i < reviews->len; i++) {
+		GsApp *app;
 		GsReview *review;
 		const gchar *app_id;
 
 		/* same app? */
 		review = g_ptr_array_index (reviews, i);
 		app_id = gs_review_get_metadata_item (review, "app_id");
-		if (g_strcmp0 (app_id, app_id_last) != 0) {
-			g_clear_object (&app_current);
-			app_current = gs_plugin_create_app_dummy (app_id);
-			gs_plugin_add_app (list, app_current);
-			app_id_last = app_id;
+		app = g_hash_table_lookup (hash, app_id);
+		if (app == NULL) {
+			app = gs_plugin_create_app_dummy (app_id);
+			gs_plugin_add_app (list, app);
+			g_hash_table_insert (hash, g_strdup (app_id), app);
 		}
-		gs_app_add_review (app_current, review);
+		gs_app_add_review (app, review);
 	}
 
 	return TRUE;
