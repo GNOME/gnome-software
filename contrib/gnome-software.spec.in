@@ -86,6 +86,7 @@ FOE
 %find_lang %name --with-gnome
 
 %check
+make check VERBOSE=1
 desktop-file-validate %{buildroot}%{_datadir}/applications/*.desktop
 DESTDIR=%{buildroot} appstream-util check-root
 
