@@ -1,33 +1,5 @@
-Star ratings used in Software
-=============================
-
-This document aims to explain the "star rating" given to applications.
-
-Introduction
-------------
-
-GNOME software used to show star ratings as *popularity* next to the application
-using the fedora-tagger application. This wasn't a good idea for several reasons:
-
- * People can't agree on a scale. Is an otherwise flawless application with one
-   translation issue 5 stars or 4? Is a useful computational fluid dynamics
-   application that crashes on startup but can be run manually on the command
-   line 1 star or 3 stars?
-
- * It only worked on Fedora, and there was no real policy on how to share data,
-   or the privacy implications of clicking a star.
-
- * People could *game* the ratings system, for example hardcore KDE users could
-   go through all the GNOME apps and give then one star. We then limited this
-   to only rate applications that you have installed, but it was really a cat
-   and mouse thing.
-
-So, lets go two steps back. What is the rating trying to convey to the user?
-When I look at a star rating, I want to see a proportional number of stars to
-how awesome it is to me. The rest of this blog tries to define **awesomeness**.
-
-Kudos
------
+Kudos used in Software
+======================
 
 As part of the AppStream generation process we explode various parts of the
 distro binary package and try to build metadata by merging various sources
@@ -62,9 +34,6 @@ GNOME Software. These include:
  * `Popular` — lots of people have downloaded this (only available on Fedora)
  * `RecentRelease` — there been an upstream release in the last year
 
-When added together, the number of stars will correspond roughly to the number
-of kudos the application has.
-
 You can verify the kudos your application is getting by doing something like:
 
     killall gnome-software
@@ -79,7 +48,6 @@ and then navigating to the details for an application you'll see on the console:
     kudo:            featured-recommended
     kudo:            has-screenshots
     kudo:            popular
-    kudo-percentage: 60
 
 Manually Adding Kudos
 ---------------------
@@ -94,11 +62,11 @@ To do this, just add something like:
     </kudos>
 
 Although, please bear in mind any application that is found cheating, i.e.
-adding kudos artificially just to get a higher star rating will have **all** the
-kudos manually removed with a blacklist rule in the AppStream builder.
+adding kudos artificially will have **all** the kudos manually removed
+with a blacklist rule in the AppStream builder.
 
 If you are a vendor, or a system distributor and just want to increase the
-number of stars for your pet proprietary application that's essential to
+number of kudos for your pet proprietary application that's essential to
 business function, a good kudo to manually add would be `FeaturedRecommended`,
 although, perhaps adding the desktop ID to the GSettings key
 `org.gnome.software.popular-overrides` would be a better idea.
