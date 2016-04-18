@@ -106,19 +106,6 @@ gs_plugin_func (void)
 }
 
 static void
-gs_app_subsume_func (void)
-{
-	g_autoptr(GsApp) new = NULL;
-	g_autoptr(GsApp) old = NULL;
-
-	new = gs_app_new ("xxx.desktop");
-	old = gs_app_new ("yyy.desktop");
-	gs_app_set_metadata (old, "foo", "bar");
-	gs_app_subsume (new, old);
-	g_assert_cmpstr (gs_app_get_metadata_item (new, "foo"), ==, "bar");
-}
-
-static void
 gs_app_func (void)
 {
 	g_autoptr(GsApp) app = NULL;
@@ -519,7 +506,6 @@ main (int argc, char **argv)
 
 	/* generic tests go here */
 	g_test_add_func ("/gnome-software/app", gs_app_func);
-	g_test_add_func ("/gnome-software/app{subsume}", gs_app_subsume_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
 
 	/* we can only load this once per process */

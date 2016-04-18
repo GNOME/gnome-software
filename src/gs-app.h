@@ -87,9 +87,6 @@ GQuark		 gs_app_error_quark		(void);
 GsApp		*gs_app_new			(const gchar	*id);
 gchar		*gs_app_to_string		(GsApp		*app);
 
-void		 gs_app_subsume			(GsApp		*app,
-						 GsApp		*other);
-
 const gchar	*gs_app_get_id			(GsApp		*app);
 void		 gs_app_set_id			(GsApp		*app,
 						 const gchar	*id);
