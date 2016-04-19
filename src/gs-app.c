@@ -570,9 +570,11 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 		/* transient, so ignore */
 		break;
 	default:
-		g_debug ("non-transient state now %s",
-			 as_app_state_to_string (state));
-		app->state_recover = state;
+		if (app->state_recover != state) {
+			g_debug ("%s non-transient state now %s",
+				 app->id, as_app_state_to_string (state));
+			app->state_recover = state;
+		}
 
 		/* clear the error as the application has changed state */
 		g_clear_error (&app->last_error);
