@@ -106,16 +106,16 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			" linear-gradient(to bottom, #8ac674, #cbddc3);" },
 		{ "inkscape.desktop",
 			"border-color: #819a6b;\n"
-			"text-shadow: 0 1px 3px rgba(0,0,0,0.9),0 1px 2px rgba(0,0,0,0.7);\n"
-			"color: #ffffff;\n"
+			"text-shadow: none;\n"
+			"color: #606060;\n"
 			"-GtkWidget-focus-padding: 0;\n"
 			"outline-color: alpha(#ffffff, 0.75);\n"
 			"outline-style: dashed;\n"
 			"outline-offset: 2px;\n"
 			" background:"
-			" url('@datadir@/gnome-software/featured-inkscape.png')"
+			" url('@datadir@/gnome-software/featured-inkscape.svg')"
 			" 20% / 60% auto no-repeat,"
-			" linear-gradient(to bottom, #ccd6c3, #a7b797);" },
+			" linear-gradient(to bottom, #ffffff, #e2e2e2);" },
 		{ "mypaint.desktop",
 			"border-color: #4c52aa;\n"
 			"color: #362d89;\n"
