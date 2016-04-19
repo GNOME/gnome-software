@@ -31,6 +31,7 @@
 
 struct GsPluginPrivate {
 	gchar		*cachefn;
+	GFileMonitor	*cachefn_monitor;
 	gchar		*os_name;
 	guint64		 os_version;
 };
@@ -65,8 +66,36 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
+	if (plugin->priv->cachefn_monitor != NULL)
+		g_object_unref (plugin->priv->cachefn_monitor);
 	g_free (plugin->priv->os_name);
 	g_free (plugin->priv->cachefn);
+}
+
+/**
+ * gs_plugin_fedora_distro_upgrades_changed_cb:
+ */
+static void
+gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
+					     GFile *file,
+					     GFile *other_file,
+					     GFileMonitorEvent event_type,
+					     gpointer user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+
+	/* only reload the update list if the plugin is NOT running itself
+	 * and the time since it ran is greater than 5 seconds (inotify FTW) */
+	if (plugin->flags & GS_PLUGIN_FLAGS_RUNNING_SELF) {
+		g_debug ("no notify as plugin %s active", plugin->name);
+		return;
+	}
+	if (plugin->flags & GS_PLUGIN_FLAGS_RECENT) {
+		g_debug ("no notify as plugin %s recently active", plugin->name);
+		return;
+	}
+	g_debug ("cache file changed, so reloading upgrades list");
+	gs_plugin_updates_changed (plugin);
 }
 
 /**
@@ -78,12 +107,24 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	gchar *endptr = NULL;
 	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *verstr = NULL;
+	g_autoptr(GFile) file = NULL;
 
 	/* create the cachedir */
 	cachedir = gs_utils_get_cachedir ("upgrades", error);
 	if (cachedir == NULL)
 		return FALSE;
 	plugin->priv->cachefn = g_build_filename (cachedir, "fedora.json", NULL);
+
+	/* watch this in case it is changed by the user */
+	file = g_file_new_for_path (plugin->priv->cachefn);
+	plugin->priv->cachefn_monitor = g_file_monitor (file,
+							G_FILE_MONITOR_NONE,
+							cancellable,
+							error);
+	if (plugin->priv->cachefn_monitor == NULL)
+		return FALSE;
+	g_signal_connect (plugin->priv->cachefn_monitor, "changed",
+			  G_CALLBACK (gs_plugin_fedora_distro_upgrades_changed_cb), plugin);
 
 	/* read os-release for the current versions */
 	plugin->priv->os_name = gs_os_release_get_name (error);

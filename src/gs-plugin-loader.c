@@ -109,6 +109,85 @@ gs_plugin_loader_app_sort_cb (gconstpointer a, gconstpointer b)
 }
 
 /**
+ * gs_plugin_loader_action_start:
+ **/
+static void
+gs_plugin_loader_action_start (GsPluginLoader *plugin_loader,
+			       GsPlugin *plugin,
+			       gboolean exclusive)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	guint i;
+
+	/* lock plugin */
+	if (exclusive) {
+		g_rw_lock_writer_lock (&plugin->rwlock);
+		plugin->flags |= GS_PLUGIN_FLAGS_EXCLUSIVE;
+	} else {
+		g_rw_lock_reader_lock (&plugin->rwlock);
+	}
+
+	/* set plugin as SELF and all plugins as OTHER */
+	plugin->flags |= GS_PLUGIN_FLAGS_RUNNING_SELF;
+	for (i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin_tmp;
+		plugin_tmp = g_ptr_array_index (priv->plugins, i);
+		if (!plugin_tmp->enabled)
+			continue;
+		plugin_tmp->flags |= GS_PLUGIN_FLAGS_RUNNING_OTHER;
+	}
+}
+
+/**
+ * gs_plugin_loader_action_delay_cb:
+ **/
+static gboolean
+gs_plugin_loader_action_delay_cb (gpointer user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+	g_debug ("plugin no longer recently active: %s", plugin->name);
+	plugin->flags &= ~GS_PLUGIN_FLAGS_RECENT;
+	plugin->timer_id = 0;
+	return FALSE;
+}
+
+/**
+ * gs_plugin_loader_action_stop:
+ **/
+static void
+gs_plugin_loader_action_stop (GsPluginLoader *plugin_loader, GsPlugin *plugin)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	guint i;
+
+	/* clear plugin as SELF and all plugins as OTHER */
+	plugin->flags &= ~GS_PLUGIN_FLAGS_RUNNING_SELF;
+	for (i = 0; i < priv->plugins->len; i++) {
+		GsPlugin *plugin_tmp;
+		plugin_tmp = g_ptr_array_index (priv->plugins, i);
+		if (!plugin_tmp->enabled)
+			continue;
+		plugin_tmp->flags &= ~GS_PLUGIN_FLAGS_RUNNING_OTHER;
+	}
+
+	/* unlock plugin */
+	if (plugin->flags & GS_PLUGIN_FLAGS_EXCLUSIVE) {
+		g_rw_lock_writer_unlock (&plugin->rwlock);
+		plugin->flags &= ~GS_PLUGIN_FLAGS_EXCLUSIVE;
+	} else {
+		g_rw_lock_reader_unlock (&plugin->rwlock);
+	}
+
+	/* unset this flag after 5 seconds */
+	plugin->flags |= GS_PLUGIN_FLAGS_RECENT;
+	if (plugin->timer_id > 0)
+		g_source_remove (plugin->timer_id);
+	plugin->timer_id = g_timeout_add (5000,
+					  gs_plugin_loader_action_delay_cb,
+					  plugin);
+}
+
+/**
  * gs_plugin_loader_run_adopt:
  **/
 static void
@@ -132,9 +211,9 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GList *list)
 			GsApp *app = GS_APP (l->data);
 			if (gs_app_get_management_plugin (app) != NULL)
 				continue;
-			g_rw_lock_reader_lock (&plugin->rwlock);
+			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 			adopt_app_func (plugin, app);
-			g_rw_lock_reader_unlock (&plugin->rwlock);
+			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (gs_app_get_management_plugin (app) != NULL) {
 				g_debug ("%s adopted %s", plugin->name,
 					 gs_app_get_id (app));
@@ -211,10 +290,10 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		/* run the batched plugin symbol then the per-app plugin */
 		if (plugin_func != NULL) {
 			g_autoptr(GError) error_local = NULL;
-			g_rw_lock_reader_lock (&plugin->rwlock);
+			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 			ret = plugin_func (plugin, list, flags,
 					   cancellable, &error_local);
-			g_rw_lock_reader_unlock (&plugin->rwlock);
+			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (!ret) {
 				g_warning ("failed to call %s on %s: %s",
 					   function_name, plugin->name,
@@ -226,10 +305,10 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			for (l = *list; l != NULL; l = l->next) {
 				g_autoptr(GError) error_local = NULL;
 				app = GS_APP (l->data);
-				g_rw_lock_reader_lock (&plugin->rwlock);
+				gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 				ret = plugin_app_func (plugin, app, flags,
 						       cancellable, &error_local);
-				g_rw_lock_reader_unlock (&plugin->rwlock);
+				gs_plugin_loader_action_stop (plugin_loader, plugin);
 				if (!ret) {
 					g_warning ("failed to call %s on %s: %s",
 						   function_name_app, plugin->name,
@@ -363,9 +442,9 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		ptask2 = as_profile_start (priv->profile,
 					   "GsPlugin::%s(%s)",
 					   plugin->name, function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, &list, cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -674,9 +753,9 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, app, cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -1571,10 +1650,10 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, values, &state->list,
 				   cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -1732,10 +1811,10 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, values, &state->list,
 				   cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -1894,10 +1973,10 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, values, &state->list,
 				   cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -2062,10 +2141,10 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, &state->list,
 				   cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -2202,10 +2281,10 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->category, &state->list,
 				   cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -2526,10 +2605,10 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  state->function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->app, state->review,
 				   cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   state->function_name, plugin->name,
@@ -2918,9 +2997,9 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		plugin_func (plugin);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
 }
@@ -3323,9 +3402,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 					   "GsPlugin::%s(%s)",
 					   plugin->name,
 					   function_name);
-		g_rw_lock_writer_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, TRUE);
 		ret = plugin_func (plugin, NULL, &error_local);
-		g_rw_lock_writer_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_debug ("disabling %s as setup failed: %s",
 				 plugin->name, error_local->message);
@@ -3364,6 +3443,8 @@ gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 static void
 gs_plugin_loader_plugin_free (GsPlugin *plugin)
 {
+	if (plugin->timer_id > 0)
+		g_source_remove (plugin->timer_id);
 	g_free (plugin->priv);
 	g_free (plugin->name);
 	g_rw_lock_clear (&plugin->rwlock);
@@ -3624,9 +3705,9 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_writer_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, TRUE);
 		ret = plugin_func (plugin, cache_age, flags, cancellable, &error_local);
-		g_rw_lock_writer_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -3766,10 +3847,10 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, &state->list, state->filename,
 				   cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -3909,9 +3990,9 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 					  "GsPlugin::%s(%s)",
 					  plugin->name,
 					  function_name);
-		g_rw_lock_reader_lock (&plugin->rwlock);
+		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->list, cancellable, &error_local);
-		g_rw_lock_reader_unlock (&plugin->rwlock);
+		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
@@ -3949,11 +4030,11 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 						  plugin->name,
 						  function_name,
 						  gs_app_get_id (app));
-			g_rw_lock_reader_lock (&plugin->rwlock);
+			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 			ret = plugin_app_func (plugin, app,
 					       cancellable,
 					       &error_local);
-			g_rw_lock_reader_unlock (&plugin->rwlock);
+			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (!ret) {
 				g_warning ("failed to call %s on %s: %s",
 					   function_name, plugin->name,

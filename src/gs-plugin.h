@@ -61,6 +61,15 @@ typedef void (*GsPluginUpdatesChanged)	(GsPlugin	*plugin,
 typedef gboolean (*GsPluginListFilter)	(GsApp		*app,
 					 gpointer	 user_data);
 
+typedef enum {
+	GS_PLUGIN_FLAGS_NONE		= 0,
+	GS_PLUGIN_FLAGS_RUNNING_SELF	= 1 << 0,
+	GS_PLUGIN_FLAGS_RUNNING_OTHER	= 1 << 1,
+	GS_PLUGIN_FLAGS_EXCLUSIVE	= 1 << 2,
+	GS_PLUGIN_FLAGS_RECENT		= 1 << 3,
+	GS_PLUGIN_FLAGS_LAST
+} GsPluginFlags;
+
 struct GsPlugin {
 	GModule			*module;
 	gdouble			 priority;	/* largest number gets run first */
@@ -81,6 +90,8 @@ struct GsPlugin {
 	SoupSession		*soup_session;
 	GHashTable		*cache;
 	GRWLock			 rwlock;
+	GsPluginFlags		 flags;
+	guint			 timer_id;
 };
 
 typedef enum {

@@ -63,7 +63,8 @@ gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 
 	/* this is not strictly true, but it causes all the UI to be reloaded
 	 * which is what we really want */
-	gs_plugin_updates_changed (plugin);
+	if ((plugin->flags & GS_PLUGIN_FLAGS_RUNNING_OTHER) == 0)
+		gs_plugin_updates_changed (plugin);
 }
 
 /**
