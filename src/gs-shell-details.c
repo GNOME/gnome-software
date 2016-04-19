@@ -38,6 +38,8 @@
 #include "gs-review-dialog.h"
 #include "gs-review-row.h"
 
+static void gs_shell_details_refresh_all (GsShellDetails *self);
+
 typedef enum {
 	GS_SHELL_DETAILS_STATE_LOADING,
 	GS_SHELL_DETAILS_STATE_READY,
@@ -390,6 +392,9 @@ gs_shell_details_switch_to_idle (gpointer user_data)
 
 	if (gs_shell_get_mode (self->shell) == GS_SHELL_MODE_DETAILS)
 		gs_page_switch_to (GS_PAGE (self), TRUE);
+
+	/* update widgets */
+	gs_shell_details_refresh_all (self);
 
 	g_object_unref (self);
 	return G_SOURCE_REMOVE;
@@ -1332,6 +1337,9 @@ gs_shell_details_set_app (GsShellDetails *self, GsApp *app)
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::license",
+				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
+				 self, 0);
+	g_signal_connect_object (self->app, "notify::quirk",
 				 G_CALLBACK (gs_shell_details_notify_state_changed_cb),
 				 self, 0);
 	g_signal_connect_object (self->app, "notify::progress",

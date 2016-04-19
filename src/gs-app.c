@@ -119,6 +119,7 @@ enum {
 	PROP_STATE,
 	PROP_PROGRESS,
 	PROP_INSTALL_DATE,
+	PROP_QUIRK,
 	PROP_LAST
 };
 
@@ -2127,6 +2128,19 @@ gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
 	g_return_if_fail (GS_IS_APP (app));
 
 	app->quirk |= quirk;
+	gs_app_queue_notify (app, "quirk");
+}
+
+/**
+ * gs_app_clear_quirk:
+ **/
+void
+gs_app_clear_quirk (GsApp *app, AsAppQuirk quirk)
+{
+	g_return_if_fail (GS_IS_APP (app));
+
+	app->quirk &= ~quirk;
+	gs_app_queue_notify (app, "quirk");
 }
 
 /**
@@ -2207,6 +2221,9 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	case PROP_INSTALL_DATE:
 		g_value_set_uint64 (value, app->install_date);
 		break;
+	case PROP_QUIRK:
+		g_value_set_uint64 (value, app->quirk);
+		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
 		break;
@@ -2257,6 +2274,9 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 		break;
 	case PROP_INSTALL_DATE:
 		gs_app_set_install_date (app, g_value_get_uint64 (value));
+		break;
+	case PROP_QUIRK:
+		app->quirk = g_value_get_uint64 (value);
 		break;
 	default:
 		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
@@ -2419,6 +2439,14 @@ gs_app_class_init (GsAppClass *klass)
 				     0, G_MAXUINT64, 0,
 				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
 	g_object_class_install_property (object_class, PROP_INSTALL_DATE, pspec);
+
+	/**
+	 * GsApp:quirk:
+	 */
+	pspec = g_param_spec_uint64 ("quirk", NULL, NULL,
+				     0, G_MAXUINT64, 0,
+				     G_PARAM_READWRITE | G_PARAM_CONSTRUCT);
+	g_object_class_install_property (object_class, PROP_QUIRK, pspec);
 }
 
 /**
