@@ -271,7 +271,7 @@ AS_IF([test "x$enable_shell_extensions" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_SHELL_EXTENSIONS, [test "x$enable_shell_extensions" = "xyes"])
 
-# Open Desktop Ratings Serice
+# Open Desktop Ratings Service
 AC_ARG_ENABLE(odrs,
               [AS_HELP_STRING([--enable-odrs],
                               [enable ODRS support [default=yes]])],,
