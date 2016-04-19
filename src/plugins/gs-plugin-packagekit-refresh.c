@@ -239,10 +239,8 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					     cancellable,
 					     gs_plugin_packagekit_progress_cb, &data,
 					     error);
-	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	}
 	array = pk_results_get_files_array (results);
 	if (array->len == 0) {
 		g_set_error (error,
@@ -320,10 +318,8 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, &data,
 					       error);
-	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	}
 
 	/* get results */
 	array = pk_results_get_details_array (results);
