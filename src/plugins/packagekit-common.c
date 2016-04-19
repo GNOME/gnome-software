@@ -157,6 +157,34 @@ gs_plugin_packagekit_convert_gerror (GError **error)
 }
 
 /**
+ * gs_plugin_packagekit_results_valid:
+ */
+gboolean
+gs_plugin_packagekit_results_valid (PkResults *results, GError **error)
+{
+	g_autoptr(PkError) error_code = NULL;
+
+	/* method failed? */
+	if (results == NULL) {
+		gs_plugin_packagekit_convert_gerror (error);
+		return FALSE;
+	}
+
+	/* check error code */
+	error_code = pk_results_get_error_code (results);
+	if (error_code != NULL) {
+		g_set_error_literal (error,
+				     PK_CLIENT_ERROR,
+				     pk_error_get_code (error_code),
+				     pk_error_get_details (error_code));
+		return FALSE;
+	}
+
+	/* all good */
+	return TRUE;
+}
+
+/**
  * gs_plugin_packagekit_add_results:
  */
 gboolean

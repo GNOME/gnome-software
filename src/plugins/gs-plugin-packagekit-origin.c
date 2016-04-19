@@ -114,10 +114,8 @@ gs_plugin_packagekit_origin_ensure_sources (GsPlugin *plugin,
 					   cancellable,
 					   NULL, plugin,
 					   error);
-	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	}
 	array = pk_results_get_repo_detail_array (results);
 	for (i = 0; i < array->len; i++) {
 		rd = g_ptr_array_index (array, i);

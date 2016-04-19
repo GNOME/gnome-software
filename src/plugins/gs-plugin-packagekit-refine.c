@@ -297,7 +297,6 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	const gchar *pkgname;
 	guint i;
 	ProgressData data;
-	g_autoptr(PkError) error_code = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) package_ids = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
@@ -324,22 +323,8 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				     cancellable,
 				     gs_plugin_packagekit_progress_cb, &data,
 				     error);
-	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	}
-
-	/* check error code */
-	error_code = pk_results_get_error_code (results);
-	if (error_code != NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to resolve: %s, %s",
-			     pk_error_enum_to_string (pk_error_get_code (error_code)),
-			     pk_error_get_details (error_code));
-		return FALSE;
-	}
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
@@ -361,7 +346,6 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 {
 	const gchar *to_array[] = { NULL, NULL };
 	ProgressData data;
-	g_autoptr(PkError) error_code = NULL;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 
@@ -376,22 +360,8 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 					  cancellable,
 					  gs_plugin_packagekit_progress_cb, &data,
 					  error);
-	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	}
-
-	/* check error code */
-	error_code = pk_results_get_error_code (results);
-	if (error_code != NULL) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to search files: %s, %s",
-			     pk_error_enum_to_string (pk_error_get_code (error_code)),
-			     pk_error_get_details (error_code));
-		return FALSE;
-	}
 
 	/* get results */
 	packages = pk_results_get_package_array (results);
@@ -471,10 +441,8 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, &data,
 					       error);
-	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	}
 
 	/* set the update details for the update */
 	array = pk_results_get_update_detail_array (results);
@@ -611,10 +579,8 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	}
 
 	/* set the update details for the update */
 	array = pk_results_get_details_array (results);
@@ -653,10 +619,8 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
 					 error);
-	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	}
 
 	/* set the update severity for the app */
 	sack = pk_results_get_package_sack (results);
@@ -850,10 +814,8 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 					    cancellable,
 					    gs_plugin_packagekit_progress_cb, &data,
 					    error);
-	if (results == NULL) {
-		gs_plugin_packagekit_convert_gerror (error);
+	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
-	}
 	if (!gs_plugin_packagekit_add_results (plugin, &list, results, error))
 		return FALSE;
 
