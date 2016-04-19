@@ -79,6 +79,7 @@ struct GsPlugin {
 	gpointer		 updates_changed_user_data;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
+	GHashTable		*cache;
 	GRWLock			 rwlock;
 };
 
@@ -231,6 +232,12 @@ void		 gs_plugin_list_filter			(GList		**list,
 							 gpointer	 user_data);
 void		 gs_plugin_list_filter_duplicates	(GList		**list);
 void		 gs_plugin_list_randomize		(GList		**list);
+
+GsApp		*gs_plugin_cache_lookup			(GsPlugin	*plugin,
+							 const gchar	*key);
+void		 gs_plugin_cache_add			(GsPlugin	*plugin,
+							 const gchar	*key,
+							 GsApp		*app);
 
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,

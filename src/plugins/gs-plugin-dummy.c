@@ -28,6 +28,10 @@
  * Provides some dummy data that is useful in self test programs.
  */
 
+struct GsPluginPrivate {
+	guint			 quirk_id;
+};
+
 /**
  * gs_plugin_get_name:
  */
@@ -43,10 +47,21 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
+	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
 	if (g_getenv ("GS_SELF_TEST_DUMMY_ENABLE") == NULL) {
 		g_debug ("disabling '%s' as not in self test", plugin->name);
 		gs_plugin_set_enabled (plugin, FALSE);
 	}
+}
+
+/**
+ * gs_plugin_destroy:
+ */
+void
+gs_plugin_destroy (GsPlugin *plugin)
+{
+	if (plugin->priv->quirk_id > 0)
+		g_source_remove (plugin->priv->quirk_id);
 }
 
 /**
@@ -140,6 +155,87 @@ gs_plugin_dummy_delay (GsPlugin *plugin,
 	g_main_loop_run (loop);
 	g_debug ("dummy done");
 	return helper->error != NULL;
+}
+
+/**
+ * gs_plugin_dummy_poll_cb:
+ */
+static gboolean
+gs_plugin_dummy_poll_cb (gpointer user_data)
+{
+	g_autoptr(GsApp) app = NULL;
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+
+	/* find the app in the per-plugin cache -- this assumes that we can
+	 * calculate the same key as used when calling gs_plugin_cache_add() */
+	app = gs_plugin_cache_lookup (plugin, "example:chiron");
+	if (app == NULL) {
+		g_warning ("app not found in cache!");
+		return FALSE;
+	}
+
+	/* toggle this to animate the hide/show the 3rd party banner */
+	if (!gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE)) {
+		g_debug ("about to make app distro-provided");
+		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+	} else {
+		g_debug ("about to make app 3rd party");
+		gs_app_clear_quirk (app, AS_APP_QUIRK_PROVENANCE);
+	}
+
+	/* continue polling */
+	return TRUE;
+}
+
+/**
+ * gs_plugin_add_search:
+ */
+gboolean
+gs_plugin_add_search (GsPlugin *plugin,
+		      gchar **values,
+		      GList **list,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(AsIcon) ic = NULL;
+
+	/* we're very specific */
+	if (g_strcmp0 (values[0], "chiron") != 0)
+		return TRUE;
+
+	/* does the app already exist? */
+	app = gs_plugin_cache_lookup (plugin, "example:chiron");
+	if (app != NULL) {
+		g_debug ("using %s fom the cache", gs_app_get_id (app));
+		gs_plugin_add_app (list, app);
+		return TRUE;
+	}
+
+	/* set up a timeout to emulate getting a GFileMonitor callback */
+	plugin->priv->quirk_id =
+		g_timeout_add_seconds (1, gs_plugin_dummy_poll_cb, plugin);
+
+	/* use a generic stock icon */
+	ic = as_icon_new ();
+	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+	as_icon_set_name (ic, "drive-harddisk");
+
+	/* add a live updatable normal application */
+	app = gs_app_new ("chiron.desktop");
+	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
+	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
+	gs_app_set_icon (app, ic);
+	gs_app_set_size (app, 42 * 1024 * 1024);
+	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
+	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+	gs_app_set_management_plugin (app, plugin->name);
+	gs_plugin_add_app (list, app);
+
+	/* add to cache so it can be found by the flashing callback */
+	gs_plugin_cache_add (plugin, "example:chiron", app);
+
+	return TRUE;
 }
 
 /**

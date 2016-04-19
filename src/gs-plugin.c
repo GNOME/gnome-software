@@ -528,4 +528,28 @@ gs_plugin_download_file (GsPlugin *plugin,
 	return TRUE;
 }
 
+/**
+ * gs_plugin_cache_lookup:
+ */
+GsApp *
+gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
+{
+	GsApp *app;
+	app = g_hash_table_lookup (plugin->cache, key);
+	if (app == NULL)
+		return NULL;
+	return g_object_ref (app);
+}
+
+/**
+ * gs_plugin_cache_add:
+ */
+void
+gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
+{
+	if (g_hash_table_lookup (plugin->cache, key) == app)
+		return;
+	g_hash_table_insert (plugin->cache, g_strdup (key), g_object_ref (app));
+}
+
 /* vim: set noexpandtab: */

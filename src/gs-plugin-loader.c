@@ -3080,6 +3080,8 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->profile = g_object_ref (priv->profile);
 	plugin->soup_session = g_object_ref (priv->soup_session);
 	plugin->scale = gs_plugin_loader_get_scale (plugin_loader);
+	plugin->cache = g_hash_table_new_full (g_str_hash, g_str_equal,
+					       g_free, (GDestroyNotify) g_object_unref);
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
 
 	/* rwlock */
@@ -3367,6 +3369,7 @@ gs_plugin_loader_plugin_free (GsPlugin *plugin)
 	g_rw_lock_clear (&plugin->rwlock);
 	g_object_unref (plugin->profile);
 	g_object_unref (plugin->soup_session);
+	g_hash_table_unref (plugin->cache);
 	g_module_close (plugin->module);
 	g_slice_free (GsPlugin, plugin);
 }
