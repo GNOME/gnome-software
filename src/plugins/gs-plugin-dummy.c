@@ -354,7 +354,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION) {
 		if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0) {
 			gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
-						"<p>long description!</p>");
+						"long description!");
 		}
 	}
 
