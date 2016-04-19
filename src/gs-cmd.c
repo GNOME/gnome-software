@@ -226,7 +226,7 @@ main (int argc, char **argv)
 		  "Use this maximum cache age in seconds", NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, &prefer_local,
 		  "Prefer local file sources to AppStream", NULL },
-		{ "plugin-names", '\0', 0, G_OPTION_ARG_NONE, &plugin_names_str,
+		{ "plugin-names", '\0', 0, G_OPTION_ARG_STRING, &plugin_names_str,
 		  "Whitelist only these plugin names", NULL },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, &verbose,
 		  "Show verbose debugging information", NULL },
