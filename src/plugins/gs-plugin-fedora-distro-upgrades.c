@@ -276,6 +276,13 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	g_autofree gchar *data = NULL;
 	g_autoptr(GPtrArray) distros = NULL;
 
+	/* just ensure there is any data, no matter how old */
+	if (!gs_plugin_fedora_distro_upgrades_refresh (plugin,
+						       G_MAXUINT,
+						       cancellable,
+						       error))
+		return FALSE;
+
 	/* get cached file */
 	if (!g_file_get_contents (plugin->priv->cachefn, &data, &len, error))
 		return FALSE;
@@ -325,20 +332,4 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	}
 
 	return TRUE;
-}
-
-/**
- * gs_plugin_add_distro_upgrades:
- */
-gboolean
-gs_plugin_add_distro_upgrades (GsPlugin *plugin,
-			       GList **list,
-			       GCancellable *cancellable,
-			       GError **error)
-{
-	/* just ensure there is any data, no matter how old */
-	return gs_plugin_fedora_distro_upgrades_refresh (plugin,
-							 G_MAXUINT,
-							 cancellable,
-							 error);
 }
