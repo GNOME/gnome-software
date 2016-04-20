@@ -272,7 +272,7 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 				   pk_info_enum_to_string (pk_package_get_info (package)));
 		}
 		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }

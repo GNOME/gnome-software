@@ -284,7 +284,7 @@ main (int argc, char **argv)
 	if (argc == 2 && g_strcmp0 (argv[1], "installed") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_plugin_list_free (list);
+				gs_app_list_free (list);
 			list = gs_plugin_loader_get_installed (plugin_loader,
 							       refine_flags,
 							       NULL,
@@ -297,7 +297,7 @@ main (int argc, char **argv)
 	} else if (argc == 3 && g_strcmp0 (argv[1], "search") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_plugin_list_free (list);
+				gs_app_list_free (list);
 			list = gs_plugin_loader_search (plugin_loader,
 							argv[2],
 							refine_flags,
@@ -317,7 +317,7 @@ main (int argc, char **argv)
 						   NULL,
 						   &error);
 		if (ret)
-			gs_plugin_add_app (&list, app);
+			gs_app_list_add (&list, app);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "refine") == 0) {
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {
@@ -329,7 +329,7 @@ main (int argc, char **argv)
 			if (!ret)
 				break;
 		}
-		gs_plugin_add_app (&list, app);
+		gs_app_list_add (&list, app);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "launch") == 0) {
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {
@@ -350,12 +350,12 @@ main (int argc, char **argv)
 		if (app == NULL) {
 			ret = FALSE;
 		} else {
-			gs_plugin_add_app (&list, app);
+			gs_app_list_add (&list, app);
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_plugin_list_free (list);
+				gs_app_list_free (list);
 			list = gs_plugin_loader_get_updates (plugin_loader,
 							     refine_flags,
 							     NULL,
@@ -368,7 +368,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "upgrades") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_plugin_list_free (list);
+				gs_app_list_free (list);
 			list = gs_plugin_loader_get_distro_upgrades (plugin_loader,
 								     refine_flags,
 								     NULL,
@@ -388,7 +388,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "popular") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_plugin_list_free (list);
+				gs_app_list_free (list);
 			list = gs_plugin_loader_get_popular (plugin_loader,
 							     refine_flags,
 							     NULL,
@@ -401,7 +401,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "featured") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_plugin_list_free (list);
+				gs_app_list_free (list);
 			list = gs_plugin_loader_get_featured (plugin_loader,
 							      refine_flags,
 							      NULL,
@@ -414,7 +414,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "get-categories") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (categories != NULL)
-				gs_plugin_list_free (categories);
+				gs_app_list_free (categories);
 			categories = gs_plugin_loader_get_categories (plugin_loader,
 								      refine_flags,
 								      NULL,
@@ -437,7 +437,7 @@ main (int argc, char **argv)
 		}
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_plugin_list_free (list);
+				gs_app_list_free (list);
 			list = gs_plugin_loader_get_category_apps (plugin_loader,
 								   category,
 								   refine_flags,
@@ -476,8 +476,8 @@ out:
 	if (profile != NULL)
 		as_profile_dump (profile);
 	g_option_context_free (context);
-	gs_plugin_list_free (list);
-	gs_plugin_list_free (categories);
+	gs_app_list_free (list);
+	gs_app_list_free (categories);
 	return status;
 }
 

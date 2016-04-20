@@ -171,7 +171,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	for (i = 0; apps[i] != NULL; i++) {
 		g_autoptr(GsApp) app = NULL;
 		app = gs_app_new (apps[i]);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }
@@ -497,7 +497,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			continue;
 		}
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
@@ -542,7 +542,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_url (app,
 				AS_URL_KIND_HOMEPAGE,
 				xdg_app_remote_get_url (xremote));
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }
@@ -593,7 +593,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED)
 			gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
@@ -1506,6 +1506,6 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 		gs_app_add_quirk (app, AS_APP_QUIRK_HAS_SOURCE);
 
 	g_debug ("created local app: %s", gs_app_to_string (app));
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	return TRUE;
 }

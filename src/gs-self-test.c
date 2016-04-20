@@ -47,7 +47,7 @@ gs_test_get_filename (const gchar *filename)
 }
 
 static gboolean
-gs_plugin_list_filter_cb (GsApp *app, gpointer user_data)
+gs_app_list_filter_cb (GsApp *app, gpointer user_data)
 {
 	if (g_strcmp0 (gs_app_get_id (app), "a") == 0)
 		return FALSE;
@@ -66,43 +66,43 @@ gs_plugin_func (void)
 
 	/* add a couple of duplicate IDs */
 	app = gs_app_new ("a");
-	gs_plugin_add_app (&list, app);
+	gs_app_list_add (&list, app);
 	g_object_unref (app);
 
 	/* test refcounting */
 	g_assert_cmpstr (gs_app_get_id (GS_APP (list->data)), ==, "a");
-	list_dup = gs_plugin_list_copy (list);
-	gs_plugin_list_free (list);
+	list_dup = gs_app_list_copy (list);
+	gs_app_list_free (list);
 	g_assert_cmpint (g_list_length (list_dup), ==, 1);
 	g_assert_cmpstr (gs_app_get_id (GS_APP (list_dup->data)), ==, "a");
-	gs_plugin_list_free (list_dup);
+	gs_app_list_free (list_dup);
 
 	/* test removing obects */
 	app = gs_app_new ("a");
-	gs_plugin_add_app (&list_remove, app);
+	gs_app_list_add (&list_remove, app);
 	g_object_unref (app);
 	app = gs_app_new ("b");
-	gs_plugin_add_app (&list_remove, app);
+	gs_app_list_add (&list_remove, app);
 	g_object_unref (app);
 	app = gs_app_new ("c");
-	gs_plugin_add_app (&list_remove, app);
+	gs_app_list_add (&list_remove, app);
 	g_object_unref (app);
 	g_assert_cmpint (g_list_length (list_remove), ==, 3);
-	gs_plugin_list_filter (&list_remove, gs_plugin_list_filter_cb, NULL);
+	gs_app_list_filter (&list_remove, gs_app_list_filter_cb, NULL);
 	g_assert_cmpint (g_list_length (list_remove), ==, 1);
 	g_assert_cmpstr (gs_app_get_id (GS_APP (list_remove->data)), ==, "b");
 
 	/* test removing duplicates */
 	app = gs_app_new ("b");
-	gs_plugin_add_app (&list_remove, app);
+	gs_app_list_add (&list_remove, app);
 	g_object_unref (app);
 	app = gs_app_new ("b");
-	gs_plugin_add_app (&list_remove, app);
+	gs_app_list_add (&list_remove, app);
 	g_object_unref (app);
-	gs_plugin_list_filter_duplicates (&list_remove);
+	gs_app_list_filter_duplicates (&list_remove);
 	g_assert_cmpint (g_list_length (list_remove), ==, 1);
 	g_assert_cmpstr (gs_app_get_id (GS_APP (list_remove->data)), ==, "b");
-	gs_plugin_list_free (list_remove);
+	gs_app_list_free (list_remove);
 }
 
 static void

@@ -997,7 +997,7 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 		app = g_hash_table_lookup (hash, app_id);
 		if (app == NULL) {
 			app = gs_plugin_create_app_dummy (app_id);
-			gs_plugin_add_app (list, app);
+			gs_app_list_add (list, app);
 			g_hash_table_insert (hash, g_strdup (app_id), app);
 		}
 		gs_app_add_review (app, review);

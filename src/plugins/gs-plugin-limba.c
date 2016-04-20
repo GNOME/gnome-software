@@ -386,7 +386,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		LiPkgInfo *pki = LI_PKG_INFO (g_ptr_array_index (swlist, i));
 
 		app = gs_plugin_app_from_pki (pki);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
@@ -427,7 +427,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		app = gs_plugin_app_from_pki (old_pki);
 		gs_app_set_update_version (app,
 				   li_pkg_info_get_version (new_pki));
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;

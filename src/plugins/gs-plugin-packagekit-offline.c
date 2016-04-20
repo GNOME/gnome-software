@@ -198,7 +198,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 		gs_app_set_install_date (app, mtime);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }

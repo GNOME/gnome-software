@@ -357,7 +357,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 				       distro_info->version);
 		gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
 
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;

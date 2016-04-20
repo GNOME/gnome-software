@@ -30,6 +30,7 @@
 #include <libsoup/soup.h>
 
 #include "gs-app.h"
+#include "gs-app-list.h"
 #include "gs-category.h"
 
 G_BEGIN_DECLS
@@ -49,16 +50,11 @@ typedef enum {
 	GS_PLUGIN_STATUS_LAST
 } GsPluginStatus;
 
-typedef GList GsAppList;
-
 typedef void (*GsPluginStatusUpdate)	(GsPlugin	*plugin,
 					 GsApp		*app,
 					 GsPluginStatus	 status,
 					 gpointer	 user_data);
 typedef void (*GsPluginUpdatesChanged)	(GsPlugin	*plugin,
-					 gpointer	 user_data);
-
-typedef gboolean (*GsPluginListFilter)	(GsApp		*app,
 					 gpointer	 user_data);
 
 typedef enum {
@@ -234,15 +230,6 @@ gboolean	 gs_plugin_download_file		(GsPlugin	*plugin,
 							 GError		**error);
 gboolean	 gs_plugin_check_distro_id		(GsPlugin	*plugin,
 							 const gchar	*distro_id);
-void		 gs_plugin_add_app			(GList		**list,
-							 GsApp		*app);
-void		 gs_plugin_list_free			(GList		*list);
-GList		*gs_plugin_list_copy			(GList		*list);
-void		 gs_plugin_list_filter			(GList		**list,
-							 GsPluginListFilter func,
-							 gpointer	 user_data);
-void		 gs_plugin_list_filter_duplicates	(GList		**list);
-void		 gs_plugin_list_randomize		(GList		**list);
 
 GsApp		*gs_plugin_cache_lookup			(GsPlugin	*plugin,
 							 const gchar	*key);
@@ -409,8 +396,6 @@ gboolean	 gs_plugin_update			(GsPlugin	*plugin,
 							 GList		*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsAppList, gs_plugin_list_free)
 
 G_END_DECLS
 

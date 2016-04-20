@@ -338,7 +338,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		if (!gs_appstream_refine_app (plugin, app, item, error))
 			return FALSE;
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }
@@ -415,7 +415,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 		app = gs_app_new (as_app_get_id (item));
 		if (!gs_appstream_refine_app (plugin, app, item, error))
 			return FALSE;
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }
@@ -454,7 +454,7 @@ gs_plugin_add_search_item (GsPlugin *plugin,
 	if (!gs_appstream_refine_app (plugin, app, item, error))
 		return FALSE;
 	gs_app_set_match_value (app, match_value);
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	return TRUE;
 }
 
@@ -513,7 +513,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			app = gs_app_new (as_app_get_id (item));
 			if (!gs_appstream_refine_app (plugin, app, item, error))
 				return FALSE;
-			gs_plugin_add_app (list, app);
+			gs_app_list_add (list, app);
 		}
 	}
 	return TRUE;
@@ -619,7 +619,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
 			continue;
 		app = gs_app_new (as_app_get_id_no_prefix (item));
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }
@@ -650,7 +650,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			continue;
 		app = gs_app_new (as_app_get_id_no_prefix (item));
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }

@@ -118,6 +118,6 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, description + 1);
 
 	/* success */
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	return TRUE;
 }

@@ -297,7 +297,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			return FALSE;
 
 		/* add to results */
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 	return TRUE;
 }

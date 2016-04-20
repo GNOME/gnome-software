@@ -208,7 +208,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	app = gs_plugin_cache_lookup (plugin, "example:chiron");
 	if (app != NULL) {
 		g_debug ("using %s fom the cache", gs_app_get_id (app));
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 		return TRUE;
 	}
 
@@ -230,7 +230,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	gs_app_set_management_plugin (app, plugin->name);
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 
 	/* add to cache so it can be found by the flashing callback */
 	gs_plugin_cache_add (plugin, "example:chiron", app);
@@ -272,7 +272,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 	gs_app_set_management_plugin (app, plugin->name);
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	g_object_unref (app);
 
 	/* add a offline OS update */
@@ -286,7 +286,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_add_source (app, "libvirt-glib-devel");
 	gs_app_add_source_id (app, "libvirt-glib-devel;0.0.1;noarch;fedora");
 	gs_app_set_management_plugin (app, plugin->name);
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	g_object_unref (app);
 
 	/* add a live OS update */
@@ -300,7 +300,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_add_source (app, "chiron-libs");
 	gs_app_add_source_id (app, "chiron-libs;0.0.1;i386;updates-testing");
 	gs_app_set_management_plugin (app, plugin->name);
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	g_object_unref (app);
 
 	return TRUE;
@@ -327,7 +327,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 		gs_app_set_origin (app, "london-west");
 		gs_app_set_management_plugin (app, plugin->name);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 
 	/* add all app-ids */
@@ -336,7 +336,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 		gs_app_set_management_plugin (app, plugin->name);
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 	}
 
 	return TRUE;
@@ -520,7 +520,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	gs_app_set_pixbuf (app, gdk_pixbuf_new_from_file ("/usr/share/icons/hicolor/48x48/apps/chiron.desktop.png", NULL));
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_management_plugin (app, plugin->name);
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	return TRUE;
 }
 
@@ -547,7 +547,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
 			     "background: url('" DATADIR "/gnome-software/upgrade-bg.png');"
 			     "background-size: 100% 100%;");
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	return TRUE;
 }
 

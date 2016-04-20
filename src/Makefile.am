@@ -87,6 +87,7 @@ noinst_PROGRAMS =					\
 
 gnome_software_cmd_SOURCES =				\
 	gs-app.c					\
+	gs-app-list.c					\
 	gs-review.c					\
 	gs-cmd.c					\
 	gs-debug.c					\
@@ -115,6 +116,8 @@ gnome_software_SOURCES =				\
 	gs-utils.h					\
 	gs-app.c					\
 	gs-app.h					\
+	gs-app-list.c					\
+	gs-app-list.h					\
 	gs-category.c					\
 	gs-category.h					\
 	gs-debug.c					\
@@ -292,6 +295,7 @@ check_PROGRAMS =						\
 
 gs_self_test_SOURCES =						\
 	gs-app.c						\
+	gs-app-list.c						\
 	gs-category.c						\
 	gs-os-release.c						\
 	gs-plugin-loader-sync.c					\

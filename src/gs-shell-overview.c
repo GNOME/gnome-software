@@ -144,8 +144,8 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 		goto out;
 	}
 	/* Don't show apps from the category that's currently featured as the category of the day */
-	gs_plugin_list_filter (&list, filter_category, priv->category_of_day);
-	gs_plugin_list_randomize (&list);
+	gs_app_list_filter (&list, filter_category, priv->category_of_day);
+	gs_app_list_randomize (&list);
 
 	gs_container_remove_all (GTK_CONTAINER (priv->box_popular));
 
@@ -198,7 +198,7 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 		gtk_widget_hide (priv->box_popular_rotating);
 		goto out;
 	}
-	gs_plugin_list_randomize (&list);
+	gs_app_list_randomize (&list);
 
 	gtk_widget_show (priv->popular_rotating_heading);
 	gtk_widget_show (priv->box_popular_rotating);
@@ -255,8 +255,8 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 
 	if (g_getenv ("GNOME_SOFTWARE_FEATURED") == NULL) {
 		/* Don't show apps from the category that's currently featured as the category of the day */
-		gs_plugin_list_filter (&list, filter_category, priv->category_of_day);
-		gs_plugin_list_randomize (&list);
+		gs_app_list_filter (&list, filter_category, priv->category_of_day);
+		gs_app_list_randomize (&list);
 	}
 
 	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));

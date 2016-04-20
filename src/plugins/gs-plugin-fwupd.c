@@ -372,7 +372,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 
 	/* actually add the application */
 	gs_app_add_source_id (app, filename_cache);
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 
 	return TRUE;
 }
@@ -413,7 +413,7 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 
 	/* parse */
 	app = gs_plugin_fwupd_new_app_from_results (res);
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	return TRUE;
 }
 
@@ -757,6 +757,6 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_app_set_version (app, gs_app_get_update_version (app));
 	gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
 				gs_app_get_update_details (app));
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	return TRUE;
 }

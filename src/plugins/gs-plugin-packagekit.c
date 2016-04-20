@@ -269,7 +269,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		gs_app_set_summary (app,
 				    GS_APP_QUALITY_LOWEST,
 				    pk_repo_detail_get_description (rd));
-		gs_plugin_add_app (list, app);
+		gs_app_list_add (list, app);
 		g_hash_table_insert (hash,
 				     g_strdup (id),
 				     (gpointer) app);

@@ -385,6 +385,6 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 							error))
 		return FALSE;
 
-	gs_plugin_add_app (list, app);
+	gs_app_list_add (list, app);
 	return TRUE;
 }
