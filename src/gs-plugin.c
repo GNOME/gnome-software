@@ -42,8 +42,31 @@
 #include <glib.h>
 #include <gio/gdesktopappinfo.h>
 
-#include "gs-plugin.h"
+#include "gs-plugin-private.h"
 #include "gs-os-release.h"
+
+struct GsPluginPrivate {
+	AsProfile		*profile;
+	GHashTable		*cache;
+	GModule			*module;
+	GRWLock			 rwlock;
+	GsPluginData		*data;			/* for gs-plugin-{name}.c */
+	GsPluginFlags		 flags;
+	SoupSession		*soup_session;
+	const gchar		**conflicts;		/* allow-none */
+	const gchar		**order_after;		/* allow-none */
+	const gchar		**order_before;		/* allow-none */
+	gboolean		 enabled;
+	gchar			*locale;		/* allow-none */
+	gint			 scale;
+	guint			 priority;
+	guint			 timer_id;
+};
+
+typedef const gchar	*(*GsPluginGetNameFunc)		(void);
+typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
+
+#define gs_plugin_get_instance_private(p) (p->priv);
 
 /**
  * gs_plugin_status_to_string:
@@ -69,12 +92,372 @@ gs_plugin_status_to_string (GsPluginStatus status)
 }
 
 /**
+ * gs_plugin_new:
+ **/
+GsPlugin *
+gs_plugin_new (void)
+{
+	GsPlugin *plugin = g_slice_new0 (GsPlugin);
+	plugin->priv = g_new0 (GsPluginPrivate, 1);
+	plugin->priv->enabled = TRUE;
+	plugin->priv->priority = 0.f;
+	plugin->priv->scale = 1;
+	plugin->priv->profile = as_profile_new ();
+	plugin->priv->cache = g_hash_table_new_full (g_str_hash,
+						     g_str_equal,
+						     g_free,
+						     (GDestroyNotify) g_object_unref);
+	g_rw_lock_init (&plugin->priv->rwlock);
+	return plugin;
+}
+
+/**
+ * gs_plugin_create:
+ **/
+GsPlugin *
+gs_plugin_create (const gchar *filename, GError **error)
+{
+	GModule *module;
+	GsPluginGetNameFunc plugin_name = NULL;
+	GsPluginGetDepsFunc order_after = NULL;
+	GsPluginGetDepsFunc order_before = NULL;
+	GsPluginGetDepsFunc plugin_conflicts = NULL;
+	GsPlugin *plugin = NULL;
+	gboolean ret;
+
+	module = g_module_open (filename, 0);
+	if (module == NULL) {
+		g_warning ("failed to open plugin %s: %s",
+			   filename, g_module_error ());
+		return NULL;
+	}
+
+	/* get description */
+	ret = g_module_symbol (module,
+			       "gs_plugin_get_name",
+			       (gpointer *) &plugin_name);
+	if (!ret) {
+		g_warning ("Plugin %s requires name", filename);
+		g_module_close (module);
+		return NULL;
+	}
+
+	/* get plugins this plugin depends on */
+	g_module_symbol (module,
+			 "gs_plugin_order_after",
+			 (gpointer *) &order_after);
+	g_module_symbol (module,
+			 "gs_plugin_order_before",
+			 (gpointer *) &order_before);
+	g_module_symbol (module,
+			 "gs_plugin_get_conflicts",
+			 (gpointer *) &plugin_conflicts);
+
+	/* create new plugin */
+	plugin = gs_plugin_new ();
+	plugin->priv->module = module;
+	plugin->priv->order_after = order_after != NULL ? order_after (plugin) : NULL;
+	plugin->priv->order_before = order_before != NULL ? order_before (plugin) : NULL;
+	plugin->priv->conflicts = plugin_conflicts != NULL ? plugin_conflicts (plugin) : NULL;
+	plugin->name = g_strdup (plugin_name ());
+	return plugin;
+}
+
+/**
+ * gs_plugin_free:
+ **/
+void
+gs_plugin_free (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	if (priv->timer_id > 0)
+		g_source_remove (priv->timer_id);
+	g_free (plugin->name);
+	g_free (priv->data);
+	g_free (priv->locale);
+	g_rw_lock_clear (&priv->rwlock);
+	g_object_unref (priv->profile);
+	g_object_unref (priv->soup_session);
+	g_hash_table_unref (priv->cache);
+	g_module_close (priv->module);
+	g_free (priv);
+	g_slice_free (GsPlugin, plugin);
+}
+
+/**
+ * gs_plugin_get_data:
+ **/
+GsPluginData *
+gs_plugin_get_data (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_assert (priv->data != NULL);
+	return priv->data;
+}
+
+/**
+ * gs_plugin_alloc_data:
+ **/
+GsPluginData *
+gs_plugin_alloc_data (GsPlugin *plugin, gsize sz)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_assert (priv->data == NULL);
+	priv->data = g_malloc0 (sz);
+	return priv->data;
+}
+
+/**
+ * gs_plugin_action_start:
+ *
+ * FIXME: unexport soon
+ **/
+void
+gs_plugin_action_start (GsPlugin *plugin, gboolean exclusive)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
+	/* lock plugin */
+	if (exclusive) {
+		g_rw_lock_writer_lock (&priv->rwlock);
+		priv->flags |= GS_PLUGIN_FLAGS_EXCLUSIVE;
+	} else {
+		g_rw_lock_reader_lock (&priv->rwlock);
+	}
+
+	/* set plugin as SELF */
+	priv->flags |= GS_PLUGIN_FLAGS_RUNNING_SELF;
+}
+
+/**
+ * gs_plugin_action_delay_cb:
+ **/
+static gboolean
+gs_plugin_action_delay_cb (gpointer user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
+	g_debug ("plugin no longer recently active: %s", plugin->name);
+	priv->flags &= ~GS_PLUGIN_FLAGS_RECENT;
+	priv->timer_id = 0;
+	return FALSE;
+}
+
+/**
+ * gs_plugin_action_stop:
+ *
+ * FIXME: unexport soon
+ **/
+void
+gs_plugin_action_stop (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
+	/* clear plugin as SELF */
+	priv->flags &= ~GS_PLUGIN_FLAGS_RUNNING_SELF;
+
+	/* unlock plugin */
+	if (priv->flags & GS_PLUGIN_FLAGS_EXCLUSIVE) {
+		g_rw_lock_writer_unlock (&priv->rwlock);
+		priv->flags &= ~GS_PLUGIN_FLAGS_EXCLUSIVE;
+	} else {
+		g_rw_lock_reader_unlock (&priv->rwlock);
+	}
+
+	/* unset this flag after 5 seconds */
+	priv->flags |= GS_PLUGIN_FLAGS_RECENT;
+	if (priv->timer_id > 0)
+		g_source_remove (priv->timer_id);
+	priv->timer_id = g_timeout_add (5000,
+					gs_plugin_action_delay_cb,
+					plugin);
+}
+
+/**
+ * gs_plugin_get_module:
+ *
+ * FIXME: unexport soon
+ **/
+GModule *
+gs_plugin_get_module (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->module;
+}
+
+/**
+ * gs_plugin_get_enabled:
+ **/
+gboolean
+gs_plugin_get_enabled (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->enabled;
+}
+
+/**
  * gs_plugin_set_enabled:
  **/
 void
 gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
 {
-	plugin->enabled = enabled;
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	priv->enabled = enabled;
+}
+
+/**
+ * gs_plugin_get_scale:
+ **/
+guint
+gs_plugin_get_scale (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->scale;
+}
+
+/**
+ * gs_plugin_set_scale:
+ **/
+void
+gs_plugin_set_scale (GsPlugin *plugin, guint scale)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	priv->scale = scale;
+}
+
+/**
+ * gs_plugin_get_priority:
+ **/
+guint
+gs_plugin_get_priority (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->priority;
+}
+
+/**
+ * gs_plugin_set_priority:
+ **/
+void
+gs_plugin_set_priority (GsPlugin *plugin, guint priority)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	priv->priority = priority;
+}
+
+/**
+ * gs_plugin_get_locale:
+ **/
+const gchar *
+gs_plugin_get_locale (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->locale;
+}
+
+/**
+ * gs_plugin_set_locale:
+ **/
+void
+gs_plugin_set_locale (GsPlugin *plugin, const gchar *locale)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_free (priv->locale);
+	priv->locale = g_strdup (locale);
+}
+
+/**
+ * gs_plugin_get_profile:
+ **/
+AsProfile *
+gs_plugin_get_profile (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->profile;
+}
+
+/**
+ * gs_plugin_set_profile:
+ **/
+void
+gs_plugin_set_profile (GsPlugin *plugin, AsProfile *profile)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_set_object (&priv->profile, profile);
+}
+
+/**
+ * gs_plugin_get_soup_session:
+ **/
+SoupSession *
+gs_plugin_get_soup_session (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->soup_session;
+}
+
+/**
+ * gs_plugin_set_soup_session:
+ **/
+void
+gs_plugin_set_soup_session (GsPlugin *plugin, SoupSession *soup_session)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_set_object (&priv->soup_session, soup_session);
+}
+
+/**
+ * gs_plugin_has_flags:
+ **/
+gboolean
+gs_plugin_has_flags (GsPlugin *plugin, GsPluginFlags flags)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return (priv->flags & flags) > 0;
+}
+
+/**
+ * gs_plugin_set_running_other:
+ **/
+void
+gs_plugin_set_running_other (GsPlugin *plugin, gboolean running_other)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	if (running_other)
+		priv->flags |= GS_PLUGIN_FLAGS_RUNNING_OTHER;
+	else
+		priv->flags &= ~GS_PLUGIN_FLAGS_RUNNING_OTHER;
+}
+
+/**
+ * gs_plugin_get_order_after:
+ **/
+const gchar **
+gs_plugin_get_order_after (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->order_after;
+}
+
+/**
+ * gs_plugin_get_order_before:
+ **/
+const gchar **
+gs_plugin_get_order_before (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->order_before;
+}
+
+/**
+ * gs_plugin_get_conflicts:
+ **/
+const gchar **
+gs_plugin_get_conflicts (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->conflicts;
 }
 
 /**
@@ -265,7 +648,7 @@ gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
 	if (g_cancellable_is_cancelled (helper->cancellable)) {
 		g_debug ("cancelling download of %s",
 			 gs_app_get_id (helper->app));
-		soup_session_cancel_message (helper->plugin->soup_session,
+		soup_session_cancel_message (helper->plugin->priv->soup_session,
 					     msg,
 					     SOUP_STATUS_CANCELLED);
 		return;
@@ -308,6 +691,7 @@ gs_plugin_download_data (GsPlugin *plugin,
 	GsPluginDownloadHelper helper;
 	guint status_code;
 	g_autoptr(SoupMessage) msg = NULL;
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
 	g_debug ("downloading %s from %s", uri, plugin->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
@@ -319,7 +703,7 @@ gs_plugin_download_data (GsPlugin *plugin,
 				  G_CALLBACK (gs_plugin_download_chunk_cb),
 				  &helper);
 	}
-	status_code = soup_session_send_message (plugin->soup_session, msg);
+	status_code = soup_session_send_message (priv->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -347,6 +731,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 	guint status_code;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
 	g_debug ("downloading %s to %s from %s", uri, filename, plugin->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
@@ -358,7 +743,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 				  G_CALLBACK (gs_plugin_download_chunk_cb),
 				  &helper);
 	}
-	status_code = soup_session_send_message (plugin->soup_session, msg);
+	status_code = soup_session_send_message (priv->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -388,7 +773,8 @@ GsApp *
 gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 {
 	GsApp *app;
-	app = g_hash_table_lookup (plugin->cache, key);
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	app = g_hash_table_lookup (priv->cache, key);
 	if (app == NULL)
 		return NULL;
 	return g_object_ref (app);
@@ -400,9 +786,10 @@ gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 void
 gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 {
-	if (g_hash_table_lookup (plugin->cache, key) == app)
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	if (g_hash_table_lookup (priv->cache, key) == app)
 		return;
-	g_hash_table_insert (plugin->cache, g_strdup (key), g_object_ref (app));
+	g_hash_table_insert (priv->cache, g_strdup (key), g_object_ref (app));
 }
 
 /* vim: set noexpandtab: */

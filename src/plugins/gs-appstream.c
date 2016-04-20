@@ -52,7 +52,7 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		}
 		if (g_file_test (fn, G_FILE_TEST_EXISTS)) {
 			as_icon_set_kind (icon, AS_ICON_KIND_LOCAL);
-			ret = gs_app_load_icon (app, plugin->scale, &error);
+			ret = gs_app_load_icon (app, gs_plugin_get_scale (plugin), &error);
 			if (!ret) {
 				g_warning ("failed to load icon %s: %s",
 					   as_icon_get_name (icon),
@@ -71,7 +71,7 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 
 		/* load */
-		ret = gs_app_load_icon (app, plugin->scale, &error);
+		ret = gs_app_load_icon (app, gs_plugin_get_scale (plugin), &error);
 		if (!ret) {
 			g_warning ("failed to load %s icon %s: %s",
 				   as_icon_kind_to_string (as_icon_get_kind (icon)),
@@ -81,7 +81,7 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		}
 		break;
 	case AS_ICON_KIND_CACHED:
-		if (plugin->scale == 2)
+		if (gs_plugin_get_scale (plugin) == 2)
 			icon = as_app_get_icon_for_size (item, 128, 128);
 		if (icon == NULL)
 			icon = as_app_get_icon_for_size (item, 64, 64);
@@ -496,7 +496,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
 
 	/* add kudos */
-	if (as_app_get_language (item, plugin->locale) > 50)
+	if (as_app_get_language (item, gs_plugin_get_locale (plugin)) > 50)
 		gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 
 	/* add a kudo to featured and popular apps */

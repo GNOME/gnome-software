@@ -42,7 +42,7 @@
  * for the source to the web application.
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	GDBusProxy	*proxy;
 	gchar		*shell_version;
 };
@@ -79,7 +79,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 }
 
 /**
@@ -88,9 +88,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_free (plugin->priv->shell_version);
-	if (plugin->priv->proxy != NULL)
-		g_object_unref (plugin->priv->proxy);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_free (priv->shell_version);
+	if (priv->proxy != NULL)
+		g_object_unref (priv->proxy);
 }
 
 /**
@@ -238,11 +239,12 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GVariant) version = NULL;
 
-	if (plugin->priv->proxy != NULL)
+	if (priv->proxy != NULL)
 		return TRUE;
-	plugin->priv->proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
+	priv->proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
 							     G_DBUS_PROXY_FLAGS_NONE,
 							     NULL,
 							     "org.gnome.Shell",
@@ -252,10 +254,10 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 							     error);
 
 	/* get the GNOME Shell version */
-	version = g_dbus_proxy_get_cached_property (plugin->priv->proxy,
+	version = g_dbus_proxy_get_cached_property (priv->proxy,
 						    "ShellVersion");
 	if (version != NULL)
-		plugin->priv->shell_version = g_variant_dup_string (version, NULL);
+		priv->shell_version = g_variant_dup_string (version, NULL);
 	return TRUE;
 }
 
@@ -268,13 +270,14 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GVariantIter *ext_iter;
 	gchar *ext_uuid;
 	g_autoptr(GVariantIter) iter = NULL;
 	g_autoptr(GVariant) retval = NULL;
 
 	/* installed */
-	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
+	retval = g_dbus_proxy_call_sync (priv->proxy,
 					 "ListExtensions",
 					 NULL,
 					 G_DBUS_CALL_FLAGS_NONE,
@@ -340,21 +343,22 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 					  JsonObject *ver_map,
 					  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	JsonObject *json_ver = NULL;
 	gint64 version;
 	g_autofree gchar *shell_version = NULL;
 	g_autoptr(AsRelease) release = NULL;
 
 	/* look for version, major.minor.micro */
-	if (json_object_has_member (ver_map, plugin->priv->shell_version)) {
+	if (json_object_has_member (ver_map, priv->shell_version)) {
 		json_ver = json_object_get_object_member (ver_map,
-							  plugin->priv->shell_version);
+							  priv->shell_version);
 	}
 
 	/* look for version, major.minor */
 	if (json_ver == NULL) {
 		g_auto(GStrv) ver_majmin = NULL;
-		ver_majmin = g_strsplit (plugin->priv->shell_version, ".", -1);
+		ver_majmin = g_strsplit (priv->shell_version, ".", -1);
 		if (g_strv_length (ver_majmin) >= 2) {
 			g_autofree gchar *tmp = NULL;
 			tmp = g_strdup_printf ("%s.%s", ver_majmin[0], ver_majmin[1]);
@@ -367,7 +371,7 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 	if (json_ver == NULL) {
 		g_debug ("no version_map for %s: %s",
 			 as_app_get_id (app),
-			 plugin->priv->shell_version);
+			 priv->shell_version);
 		return TRUE;
 	}
 
@@ -587,6 +591,7 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 				     GCancellable *cancellable,
 				     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *apps;
 	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *cachefn = NULL;
@@ -616,7 +621,7 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 			       "?shell_version=%s"
 			       "&page=1&n_per_page=1000",
 			       SHELL_EXTENSIONS_API_URI,
-			       plugin->priv->shell_version);
+			       priv->shell_version);
 	data = gs_plugin_download_data (plugin, dummy, uri, cancellable, error);
 	if (data == NULL)
 		return NULL;
@@ -720,6 +725,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *uuid;
 	gboolean ret;
 	g_autoptr(GVariant) retval = NULL;
@@ -731,7 +737,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
-	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
+	retval = g_dbus_proxy_call_sync (priv->proxy,
 					 "UninstallExtension",
 					 g_variant_new ("(s)", uuid),
 					 G_DBUS_CALL_FLAGS_NONE,
@@ -770,6 +776,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *uuid;
 	const gchar *retstr;
 	g_autoptr(GVariant) retval = NULL;
@@ -781,7 +788,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* install */
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
+	retval = g_dbus_proxy_call_sync (priv->proxy,
 					 "InstallRemoteExtension",
 					 g_variant_new ("(s)", uuid),
 					 G_DBUS_CALL_FLAGS_NONE,
@@ -820,6 +827,7 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *uuid;
 	g_autoptr(GVariant) retval = NULL;
 
@@ -837,7 +845,7 @@ gs_plugin_launch (GsPlugin *plugin,
 			     gs_app_get_id (app));
 		return FALSE;
 	}
-	retval = g_dbus_proxy_call_sync (plugin->priv->proxy,
+	retval = g_dbus_proxy_call_sync (priv->proxy,
 					 "LaunchExtensionPrefs",
 					 g_variant_new ("(s)", uuid),
 					 G_DBUS_CALL_FLAGS_NONE,

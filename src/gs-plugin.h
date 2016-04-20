@@ -35,6 +35,7 @@
 
 G_BEGIN_DECLS
 
+typedef struct	GsPluginData	GsPluginData;
 typedef struct	GsPluginPrivate	GsPluginPrivate;
 typedef struct	GsPlugin	GsPlugin;
 
@@ -67,27 +68,12 @@ typedef enum {
 } GsPluginFlags;
 
 struct GsPlugin {
-	GModule			*module;
-	gdouble			 priority;	/* largest number gets run first */
-	const gchar		**order_after;	/* allow-none */
-	const gchar		**order_before;	/* allow-none */
-	const gchar		**conflicts;	/* allow-none */
-	gboolean		 enabled;
 	gchar			*name;
 	GsPluginPrivate		*priv;
-	guint			 pixbuf_size;
-	gint			 scale;
-	const gchar		*locale;
 	GsPluginStatusUpdate	 status_update_fn;
 	gpointer		 status_update_user_data;
 	GsPluginUpdatesChanged	 updates_changed_fn;
 	gpointer		 updates_changed_user_data;
-	AsProfile		*profile;
-	SoupSession		*soup_session;
-	GHashTable		*cache;
-	GRWLock			 rwlock;
-	GsPluginFlags		 flags;
-	guint			 timer_id;
 };
 
 typedef enum {
@@ -151,72 +137,23 @@ typedef enum {
 
 /* helpers */
 #define	GS_PLUGIN_ERROR					1
-#define	GS_PLUGIN_GET_PRIVATE(x)			g_new0 (x,1)
-#define	GS_PLUGIN(x)					((GsPlugin *) x);
+#define	GS_PLUGIN(x)					((GsPlugin *) x)
 
-typedef const gchar	*(*GsPluginGetNameFunc)		(void);
-typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
-typedef void		 (*GsPluginFunc)		(GsPlugin	*plugin);
-typedef gboolean	 (*GsPluginSetupFunc)		(GsPlugin	*plugin,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginSearchFunc)		(GsPlugin	*plugin,
-							 gchar		**value,
-							 GList		**list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginCategoryFunc)	(GsPlugin	*plugin,
-							 GsCategory	*category,
-							 GList		**list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginResultsFunc)		(GsPlugin	*plugin,
-							 GList		**list,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginActionFunc)		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsReview	*review,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
-							 GList		**list,
-							 GsPluginRefineFlags flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginRefineAppFunc)	(GsPlugin	*plugin,
-							 GsApp		*app,
-							 GsPluginRefineFlags flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginRefreshFunc	)	(GsPlugin	*plugin,
-							 guint		 cache_age,
-							 GsPluginRefreshFlags flags,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginFilenameToAppFunc)	(GsPlugin	*plugin,
-							 GList		**list,
-							 const gchar	*filename,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef gboolean	 (*GsPluginUpdateFunc)		(GsPlugin	*plugin,
-							 GList		*apps,
-							 GCancellable	*cancellable,
-							 GError		**error);
-typedef void		 (*GsPluginAdoptAppFunc)	(GsPlugin	*plugin,
-							 GsApp		*app);
-
-const gchar	*gs_plugin_get_name			(void);
-void		 gs_plugin_initialize			(GsPlugin	*plugin);
-void		 gs_plugin_destroy			(GsPlugin	*plugin);
-void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
-							 GsApp		*app);
+/* public getters and setters */
+GsPluginData	*gs_plugin_alloc_data			(GsPlugin	*plugin,
+							 gsize		 sz);
+GsPluginData	*gs_plugin_get_data			(GsPlugin	*plugin);
+gboolean	 gs_plugin_get_enabled			(GsPlugin	*plugin);
 void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);
+gboolean	 gs_plugin_has_flags			(GsPlugin	*plugin,
+							 GsPluginFlags	 flags);
+guint		 gs_plugin_get_scale			(GsPlugin	*plugin);
+const gchar	*gs_plugin_get_locale			(GsPlugin	*plugin);
+AsProfile	*gs_plugin_get_profile			(GsPlugin	*plugin);
+SoupSession	*gs_plugin_get_soup_session		(GsPlugin	*plugin);
+
+/* helpers */
 GBytes		*gs_plugin_download_data		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 const gchar	*uri,
@@ -230,13 +167,11 @@ gboolean	 gs_plugin_download_file		(GsPlugin	*plugin,
 							 GError		**error);
 gboolean	 gs_plugin_check_distro_id		(GsPlugin	*plugin,
 							 const gchar	*distro_id);
-
 GsApp		*gs_plugin_cache_lookup			(GsPlugin	*plugin,
 							 const gchar	*key);
 void		 gs_plugin_cache_add			(GsPlugin	*plugin,
 							 const gchar	*key,
 							 GsApp		*app);
-
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
@@ -248,6 +183,13 @@ gboolean	 gs_plugin_app_launch			(GsPlugin	*plugin,
 							 GError		**error);
 void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
+
+/* vfuncs */
+const gchar	*gs_plugin_get_name			(void);
+void		 gs_plugin_initialize			(GsPlugin	*plugin);
+void		 gs_plugin_destroy			(GsPlugin	*plugin);
+void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
+							 GsApp		*app);
 gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
 							 gchar		**values,
 							 GList		**list,

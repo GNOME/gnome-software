@@ -39,7 +39,7 @@
 #define XDG_APP_REVIEW_CACHE_AGE_MAX		237000 /* 1 week */
 #define XDG_APP_REVIEW_NUMBER_RESULTS_MAX	5
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	GSettings		*settings;
 	gchar			*distro;
 	gchar			*user_hash;
@@ -61,24 +61,25 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	g_autoptr(GError) error = NULL;
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->settings = g_settings_new ("org.gnome.software");
-	plugin->priv->review_server = g_settings_get_string (plugin->priv->settings,
+
+	priv->settings = g_settings_new ("org.gnome.software");
+	priv->review_server = g_settings_get_string (priv->settings,
 							     "review-server");
 
 	/* get the machine+user ID hash value */
-	plugin->priv->user_hash = gs_utils_get_user_hash (&error);
-	if (plugin->priv->user_hash == NULL) {
+	priv->user_hash = gs_utils_get_user_hash (&error);
+	if (priv->user_hash == NULL) {
 		g_warning ("Failed to get machine+user hash: %s", error->message);
 		return;
 	}
 
 	/* get the distro name (e.g. 'Fedora') but allow a fallback */
-	plugin->priv->distro = gs_os_release_get_name (&error);
-	if (plugin->priv->distro == NULL) {
+	priv->distro = gs_os_release_get_name (&error);
+	if (priv->distro == NULL) {
 		g_warning ("Failed to get distro name: %s", error->message);
-		plugin->priv->distro = g_strdup ("Unknown");
+		priv->distro = g_strdup ("Unknown");
 	}
 }
 
@@ -102,9 +103,10 @@ gs_plugin_order_after (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_free (plugin->priv->user_hash);
-	g_free (plugin->priv->distro);
-	g_object_unref (plugin->priv->settings);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_free (priv->user_hash);
+	g_free (priv->distro);
+	g_object_unref (priv->settings);
 }
 
 /**
@@ -407,6 +409,7 @@ gs_plugin_odrs_parse_ratings (const gchar *data, gsize data_len, GError **error)
 static GArray *
 gs_plugin_odrs_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GArray *ratings;
 	guint status_code;
 	g_autofree gchar *cachedir = NULL;
@@ -434,10 +437,10 @@ gs_plugin_odrs_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 	/* create the GET data *with* the machine hash so we can later
 	 * review the application ourselves */
 	uri = g_strdup_printf ("%s/ratings/%s",
-			       plugin->priv->review_server,
+			       priv->review_server,
 			       gs_app_get_id_no_prefix (app));
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
-	status_code = soup_session_send_message (plugin->soup_session, msg);
+	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
 		if (!gs_plugin_odrs_parse_success (msg->response_body->data,
 						   msg->response_body->length,
@@ -508,6 +511,7 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 static GPtrArray *
 gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *version;
 	guint karma_min;
 	guint status_code;
@@ -546,19 +550,19 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	builder = json_builder_new ();
 	json_builder_begin_object (builder);
 	json_builder_set_member_name (builder, "user_hash");
-	json_builder_add_string_value (builder, plugin->priv->user_hash);
+	json_builder_add_string_value (builder, priv->user_hash);
 	json_builder_set_member_name (builder, "app_id");
 	json_builder_add_string_value (builder, gs_app_get_id_no_prefix (app));
 	json_builder_set_member_name (builder, "locale");
-	json_builder_add_string_value (builder, plugin->locale);
+	json_builder_add_string_value (builder, gs_plugin_get_locale (plugin));
 	json_builder_set_member_name (builder, "distro");
-	json_builder_add_string_value (builder, plugin->priv->distro);
+	json_builder_add_string_value (builder, priv->distro);
 	json_builder_set_member_name (builder, "version");
 	json_builder_add_string_value (builder, version);
 	json_builder_set_member_name (builder, "limit");
 	json_builder_add_int_value (builder, XDG_APP_REVIEW_NUMBER_RESULTS_MAX);
 	json_builder_set_member_name (builder, "karma");
-	karma_min = g_settings_get_int (plugin->priv->settings,
+	karma_min = g_settings_get_int (priv->settings,
 					"review-karma-required");
 	json_builder_add_int_value (builder, karma_min);
 	json_builder_end_object (builder);
@@ -571,11 +575,11 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	data = json_generator_to_data (json_generator, NULL);
 	if (data == NULL)
 		return NULL;
-	uri = g_strdup_printf ("%s/fetch", plugin->priv->review_server);
+	uri = g_strdup_printf ("%s/fetch", priv->review_server);
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
 	soup_message_set_request (msg, "application/json",
 				  SOUP_MEMORY_COPY, data, strlen (data));
-	status_code = soup_session_send_message (plugin->soup_session, msg);
+	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
 		if (!gs_plugin_odrs_parse_success (msg->response_body->data,
 						   msg->response_body->length,
@@ -615,6 +619,7 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsReview *review;
 	guint i;
 	g_autoptr(GPtrArray) reviews = NULL;
@@ -641,7 +646,7 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 
 		/* the user_hash matches, so mark this as our own review */
 		if (g_strcmp0 (gs_review_get_metadata_item (review, "user_hash"),
-			       plugin->priv->user_hash) == 0) {
+			       priv->user_hash) == 0) {
 			gs_review_set_flags (review, GS_REVIEW_FLAG_SELF);
 		}
 		gs_app_add_review (app, review);
@@ -732,6 +737,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *data = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autofree gchar *version = NULL;
@@ -749,7 +755,7 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	builder = json_builder_new ();
 	json_builder_begin_object (builder);
 	json_builder_set_member_name (builder, "user_hash");
-	json_builder_add_string_value (builder, plugin->priv->user_hash);
+	json_builder_add_string_value (builder, priv->user_hash);
 	json_builder_set_member_name (builder, "user_skey");
 	json_builder_add_string_value (builder,
 				       gs_review_get_metadata_item (review, "user_skey"));
@@ -757,9 +763,9 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	json_builder_add_string_value (builder,
 				       gs_review_get_metadata_item (review, "app_id"));
 	json_builder_set_member_name (builder, "locale");
-	json_builder_add_string_value (builder, plugin->locale);
+	json_builder_add_string_value (builder, gs_plugin_get_locale (plugin));
 	json_builder_set_member_name (builder, "distro");
-	json_builder_add_string_value (builder, plugin->priv->distro);
+	json_builder_add_string_value (builder, priv->distro);
 	json_builder_set_member_name (builder, "version");
 	version = gs_plugin_odrs_sanitize_version (gs_review_get_version (review));
 	json_builder_add_string_value (builder, version);
@@ -785,8 +791,8 @@ gs_plugin_review_submit (GsPlugin *plugin,
 		return FALSE;
 
 	/* POST */
-	uri = g_strdup_printf ("%s/submit", plugin->priv->review_server);
-	return gs_plugin_odrs_json_post (plugin->soup_session,
+	uri = g_strdup_printf ("%s/submit", priv->review_server);
+	return gs_plugin_odrs_json_post (gs_plugin_get_soup_session (plugin),
 						    uri, data, error);
 }
 
@@ -797,6 +803,7 @@ static gboolean
 gs_plugin_odrs_vote (GsPlugin *plugin, GsReview *review,
 		     const gchar *uri, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
 	g_autofree gchar *data = NULL;
 	g_autoptr(JsonBuilder) builder = NULL;
@@ -808,7 +815,7 @@ gs_plugin_odrs_vote (GsPlugin *plugin, GsReview *review,
 	json_builder_begin_object (builder);
 
 	json_builder_set_member_name (builder, "user_hash");
-	json_builder_add_string_value (builder, plugin->priv->user_hash);
+	json_builder_add_string_value (builder, priv->user_hash);
 	json_builder_set_member_name (builder, "user_skey");
 	json_builder_add_string_value (builder,
 				       gs_review_get_metadata_item (review, "user_skey"));
@@ -838,7 +845,7 @@ gs_plugin_odrs_vote (GsPlugin *plugin, GsReview *review,
 		return FALSE;
 
 	/* send to server */
-	if (!gs_plugin_odrs_json_post (plugin->soup_session,
+	if (!gs_plugin_odrs_json_post (gs_plugin_get_soup_session (plugin),
 						  uri, data, error))
 		return FALSE;
 
@@ -859,8 +866,9 @@ gs_plugin_review_report (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *uri = NULL;
-	uri = g_strdup_printf ("%s/report", plugin->priv->review_server);
+	uri = g_strdup_printf ("%s/report", priv->review_server);
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
@@ -874,8 +882,9 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *uri = NULL;
-	uri = g_strdup_printf ("%s/upvote", plugin->priv->review_server);
+	uri = g_strdup_printf ("%s/upvote", priv->review_server);
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
@@ -889,8 +898,9 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *uri = NULL;
-	uri = g_strdup_printf ("%s/downvote", plugin->priv->review_server);
+	uri = g_strdup_printf ("%s/downvote", priv->review_server);
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
@@ -904,8 +914,9 @@ gs_plugin_review_dismiss (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *uri = NULL;
-	uri = g_strdup_printf ("%s/dismiss", plugin->priv->review_server);
+	uri = g_strdup_printf ("%s/dismiss", priv->review_server);
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
@@ -919,8 +930,9 @@ gs_plugin_review_remove (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *uri = NULL;
-	uri = g_strdup_printf ("%s/remove", plugin->priv->review_server);
+	uri = g_strdup_printf ("%s/remove", priv->review_server);
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
@@ -950,6 +962,7 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 			       GCancellable *cancellable,
 			       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint status_code;
 	guint i;
 	g_autofree gchar *uri = NULL;
@@ -960,10 +973,10 @@ gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 	/* create the GET data *with* the machine hash so we can later
 	 * review the application ourselves */
 	uri = g_strdup_printf ("%s/moderate/%s",
-			       plugin->priv->review_server,
-			       plugin->priv->user_hash);
+			       priv->review_server,
+			       priv->user_hash);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
-	status_code = soup_session_send_message (plugin->soup_session, msg);
+	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
 		if (!gs_plugin_odrs_parse_success (msg->response_body->data,
 						   msg->response_body->length,

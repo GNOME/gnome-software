@@ -40,7 +40,7 @@
  * Refines:     | [source-id], [installed]
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	PkControl		*control;
 	PkClient		*client;
 	GHashTable		*sources;
@@ -83,16 +83,16 @@ gs_plugin_packagekit_cache_invalid_cb (PkControl *control, GsPlugin *plugin)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->client = pk_client_new ();
-	plugin->priv->control = pk_control_new ();
-	g_signal_connect (plugin->priv->control, "updates-changed",
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->client = pk_client_new ();
+	priv->control = pk_control_new ();
+	g_signal_connect (priv->control, "updates-changed",
 			  G_CALLBACK (gs_plugin_packagekit_cache_invalid_cb), plugin);
-	g_signal_connect (plugin->priv->control, "repo-list-changed",
+	g_signal_connect (priv->control, "repo-list-changed",
 			  G_CALLBACK (gs_plugin_packagekit_cache_invalid_cb), plugin);
-	pk_client_set_background (plugin->priv->client, FALSE);
-	pk_client_set_interactive (plugin->priv->client, FALSE);
-	pk_client_set_cache_age (plugin->priv->client, G_MAXUINT);
+	pk_client_set_background (priv->client, FALSE);
+	pk_client_set_interactive (priv->client, FALSE);
+	pk_client_set_cache_age (priv->client, G_MAXUINT);
 }
 
 /**
@@ -114,8 +114,9 @@ gs_plugin_order_after (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_object_unref (plugin->priv->client);
-	g_object_unref (plugin->priv->control);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_object_unref (priv->client);
+	g_object_unref (priv->control);
 }
 
 /**
@@ -162,7 +163,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	/* profile */
 	if (status == PK_STATUS_ENUM_SETUP) {
-		data->ptask = as_profile_start (plugin->profile,
+		data->ptask = as_profile_start (gs_plugin_get_profile (plugin),
 						"packagekit-refine::transaction[%s]",
 						data->profile_id);
 		/* this isn't awesome, but saves us handling it in the caller */
@@ -291,6 +292,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				       GCancellable *cancellable,
 				       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GList *l;
 	GPtrArray *sources;
 	GsApp *app;
@@ -317,7 +319,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	data.profile_id = NULL;
 
 	/* resolve them all at once */
-	results = pk_client_resolve (plugin->priv->client,
+	results = pk_client_resolve (priv->client,
 				     pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST, PK_FILTER_ENUM_ARCH, -1),
 				     (gchar **) package_ids->pdata,
 				     cancellable,
@@ -344,6 +346,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 					  GCancellable *cancellable,
 					  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *to_array[] = { NULL, NULL };
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
@@ -354,7 +357,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	data.profile_id = g_path_get_basename (filename);
 
 	to_array[0] = filename;
-	results = pk_client_search_files (plugin->priv->client,
+	results = pk_client_search_files (priv->client,
 					  pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED, -1),
 					  (gchar **) to_array,
 					  cancellable,
@@ -412,6 +415,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 					   GCancellable *cancellable,
 					   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 	GList *l;
 	GsApp *app;
@@ -436,7 +440,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	data.profile_id = NULL;
 
 	/* get any update details */
-	results = pk_client_get_update_detail (plugin->priv->client,
+	results = pk_client_get_update_detail (priv->client,
 					       (gchar **) package_ids,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, &data,
@@ -548,6 +552,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				     GCancellable *cancellable,
 				     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GList *l;
 	GPtrArray *source_ids;
 	GsApp *app;
@@ -574,7 +579,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	data.profile_id = g_strjoinv (",", (gchar **) package_ids->pdata);
 
 	/* get any details */
-	results = pk_client_get_details (plugin->priv->client,
+	results = pk_client_get_details (priv->client,
 					 (gchar **) package_ids->pdata,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
@@ -600,6 +605,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 					     GCancellable *cancellable,
 					     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GList *l;
 	GsApp *app;
 	const gchar *package_id;
@@ -614,7 +620,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 
 	/* get the list of updates */
 	filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
-	results = pk_client_get_updates (plugin->priv->client,
+	results = pk_client_get_updates (priv->client,
 					 filter,
 					 cancellable,
 					 gs_plugin_packagekit_progress_cb, &data,
@@ -693,7 +699,8 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	g_autoptr(GList) list_tmp = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
-	ptask = as_profile_start_literal (plugin->profile, "packagekit-refine[source->license]");
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "packagekit-refine[source->license]");
 	for (l = list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
@@ -796,6 +803,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 					    GCancellable *cancellable,
 					    GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GList *l;
 	GsApp *app2;
 	ProgressData data;
@@ -807,7 +815,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	data.profile_id = NULL;
 
 	/* ask PK to simulate upgrading the system */
-	results = pk_client_upgrade_system (plugin->priv->client,
+	results = pk_client_upgrade_system (priv->client,
 					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_SIMULATE, -1),
 					    gs_app_get_id (app),
 					    PK_UPGRADE_KIND_ENUM_COMPLETE,
@@ -865,7 +873,8 @@ gs_plugin_refine (GsPlugin *plugin,
 	}
 
 	/* can we resolve in one go? */
-	ptask = as_profile_start_literal (plugin->profile, "packagekit-refine[name->id]");
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "packagekit-refine[name->id]");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);
 		if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
@@ -894,7 +903,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	as_profile_task_free (ptask);
 
 	/* set the package-id for an installed desktop file */
-	ptask = as_profile_start_literal (plugin->profile,
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit-refine[installed-filename->id]");
 	for (l = *list; l != NULL; l = l->next) {
 		g_autofree gchar *fn = NULL;
@@ -933,7 +942,7 @@ gs_plugin_refine (GsPlugin *plugin,
 	as_profile_task_free (ptask);
 
 	/* any update details missing? */
-	ptask = as_profile_start_literal (plugin->profile,
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit-refine[id->update-details]");
 	for (l = *list; l != NULL; l = l->next) {
 		app = GS_APP (l->data);

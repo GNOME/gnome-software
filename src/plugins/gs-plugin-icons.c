@@ -82,7 +82,7 @@ gs_plugin_icons_download (GsPlugin *plugin, const gchar *uri, const gchar *filen
 	}
 
 	/* set sync request */
-	status_code = soup_session_send_message (plugin->soup_session, msg);
+	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -142,7 +142,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (g_str_has_prefix (as_icon_get_url (ic), "file://")) {
 		as_icon_set_filename (ic, as_icon_get_url (ic) + 7);
 		as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
-		return gs_app_load_icon (app, plugin->scale, error);
+		return gs_app_load_icon (app,
+					 gs_plugin_get_scale (plugin),
+					 error);
 	}
 
 	/* convert filename from jpg to png */
@@ -157,5 +159,5 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (!gs_plugin_icons_download (plugin, as_icon_get_url (ic), fn, error))
 		return FALSE;
 	as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
-	return gs_app_load_icon (app, plugin->scale, error);
+	return gs_app_load_icon (app, gs_plugin_get_scale (plugin), error);
 }

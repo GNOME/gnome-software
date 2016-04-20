@@ -29,7 +29,7 @@
 
 #define FEDORA_PKGDB_COLLECTIONS_API_URI "https://admin.fedoraproject.org/pkgdb/api/collections/"
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	gchar		*cachefn;
 	GFileMonitor	*cachefn_monitor;
 	gchar		*os_name;
@@ -51,7 +51,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
@@ -66,10 +66,11 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	if (plugin->priv->cachefn_monitor != NULL)
-		g_object_unref (plugin->priv->cachefn_monitor);
-	g_free (plugin->priv->os_name);
-	g_free (plugin->priv->cachefn);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (priv->cachefn_monitor != NULL)
+		g_object_unref (priv->cachefn_monitor);
+	g_free (priv->os_name);
+	g_free (priv->cachefn);
 }
 
 /**
@@ -86,11 +87,11 @@ gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
 
 	/* only reload the update list if the plugin is NOT running itself
 	 * and the time since it ran is greater than 5 seconds (inotify FTW) */
-	if (plugin->flags & GS_PLUGIN_FLAGS_RUNNING_SELF) {
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_SELF)) {
 		g_debug ("no notify as plugin %s active", plugin->name);
 		return;
 	}
-	if (plugin->flags & GS_PLUGIN_FLAGS_RECENT) {
+	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RECENT)) {
 		g_debug ("no notify as plugin %s recently active", plugin->name);
 		return;
 	}
@@ -104,6 +105,7 @@ gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gchar *endptr = NULL;
 	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *verstr = NULL;
@@ -113,30 +115,30 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	cachedir = gs_utils_get_cachedir ("upgrades", error);
 	if (cachedir == NULL)
 		return FALSE;
-	plugin->priv->cachefn = g_build_filename (cachedir, "fedora.json", NULL);
+	priv->cachefn = g_build_filename (cachedir, "fedora.json", NULL);
 
 	/* watch this in case it is changed by the user */
-	file = g_file_new_for_path (plugin->priv->cachefn);
-	plugin->priv->cachefn_monitor = g_file_monitor (file,
+	file = g_file_new_for_path (priv->cachefn);
+	priv->cachefn_monitor = g_file_monitor (file,
 							G_FILE_MONITOR_NONE,
 							cancellable,
 							error);
-	if (plugin->priv->cachefn_monitor == NULL)
+	if (priv->cachefn_monitor == NULL)
 		return FALSE;
-	g_signal_connect (plugin->priv->cachefn_monitor, "changed",
+	g_signal_connect (priv->cachefn_monitor, "changed",
 			  G_CALLBACK (gs_plugin_fedora_distro_upgrades_changed_cb), plugin);
 
 	/* read os-release for the current versions */
-	plugin->priv->os_name = gs_os_release_get_name (error);
-	if (plugin->priv->os_name == NULL)
+	priv->os_name = gs_os_release_get_name (error);
+	if (priv->os_name == NULL)
 		return FALSE;
 	verstr = gs_os_release_get_version_id (error);
 	if (verstr == NULL)
 		return FALSE;
 
 	/* parse the version */
-	plugin->priv->os_version = g_ascii_strtoull (verstr, &endptr, 10);
-	if (endptr == verstr || plugin->priv->os_version > G_MAXUINT) {
+	priv->os_version = g_ascii_strtoull (verstr, &endptr, 10);
+	if (endptr == verstr || priv->os_version > G_MAXUINT) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -157,14 +159,15 @@ gs_plugin_fedora_distro_upgrades_refresh (GsPlugin *plugin,
 					  GCancellable *cancellable,
 					  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	/* check cache age */
 	if (cache_age > 0) {
 		guint tmp;
-		g_autoptr(GFile) file = g_file_new_for_path (plugin->priv->cachefn);
+		g_autoptr(GFile) file = g_file_new_for_path (priv->cachefn);
 		tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
 			g_debug ("%s is only %i seconds old",
-				 plugin->priv->cachefn, tmp);
+				 priv->cachefn, tmp);
 			return TRUE;
 		}
 	}
@@ -172,7 +175,7 @@ gs_plugin_fedora_distro_upgrades_refresh (GsPlugin *plugin,
 	/* download new file */
 	return gs_plugin_download_file (plugin, NULL,
 					FEDORA_PKGDB_COLLECTIONS_API_URI,
-					plugin->priv->cachefn,
+					priv->cachefn,
 					cancellable,
 					error);
 }
@@ -312,6 +315,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GCancellable *cancellable,
 			       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gsize len;
 	guint i;
 	g_autofree gchar *data = NULL;
@@ -325,7 +329,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		return FALSE;
 
 	/* get cached file */
-	if (!g_file_get_contents (plugin->priv->cachefn, &data, &len, error))
+	if (!g_file_get_contents (priv->cachefn, &data, &len, error))
 		return FALSE;
 
 	/* parse data */
@@ -341,11 +345,11 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 
 		/* only interested in upgrades to the same distro */
-		if (g_strcmp0 (distro_info->name, plugin->priv->os_name) != 0)
+		if (g_strcmp0 (distro_info->name, priv->os_name) != 0)
 			continue;
 
 		/* only interested in newer versions */
-		if (distro_info->version <= plugin->priv->os_version)
+		if (distro_info->version <= priv->os_version)
 			continue;
 
 		/* only interested in non-devel distros */

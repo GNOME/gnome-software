@@ -31,7 +31,7 @@
  * Adds and removes limba packages.
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	LiManager	*mgr;
 };
 
@@ -62,9 +62,8 @@ gs_plugin_order_after (GsPlugin *plugin)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	/* create private area */
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->mgr = li_manager_new ();
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->mgr = li_manager_new ();
 }
 
 /**
@@ -73,7 +72,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_object_unref (plugin->priv->mgr);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_object_unref (priv->mgr);
 }
 
 /**
@@ -86,6 +86,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	LiPkgInfo *pki;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
@@ -95,7 +96,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* profile */
-	ptask = as_profile_start (plugin->profile,
+	ptask = as_profile_start (gs_plugin_get_profile (plugin),
 				  "limba::refine{%s}",
 				  gs_app_get_id (app));
 
@@ -103,7 +104,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (gs_app_get_source_default (app) == NULL)
 		return TRUE;
 
-	pki = li_manager_get_software_by_pkid (plugin->priv->mgr,
+	pki = li_manager_get_software_by_pkid (priv->mgr,
 						gs_app_get_source_default (app),
 						&error_local);
 	if (error_local != NULL) {
@@ -365,13 +366,14 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	g_autoptr(GPtrArray) swlist = NULL;
 	g_autoptr(GError) error_local = NULL;
 
 	/* HINT: We also emit not-installed but available software here. */
 
-	swlist = li_manager_get_software_list (plugin->priv->mgr, &error_local);
+	swlist = li_manager_get_software_list (priv->mgr, &error_local);
 	if (error_local != NULL) {
 		g_set_error (error,
 				GS_PLUGIN_ERROR,
@@ -401,11 +403,12 @@ gs_plugin_add_updates (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GList) updates = NULL;
 	GList *l;
 	g_autoptr(GError) error_local = NULL;
 
-	updates = li_manager_get_update_list (plugin->priv->mgr, &error_local);
+	updates = li_manager_get_update_list (priv->mgr, &error_local);
 	if (error_local != NULL) {
 		g_set_error (error,
 				GS_PLUGIN_ERROR,

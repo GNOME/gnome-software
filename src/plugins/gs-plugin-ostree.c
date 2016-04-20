@@ -29,7 +29,7 @@
 
 #include "gs-utils.h"
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	OstreeRepo		*ostree_repo;
 };
 
@@ -48,7 +48,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 
 	/* only works on OSTree */
 	if (!g_file_test ("/run/ostree-booted", G_FILE_TEST_EXISTS)) {
@@ -82,8 +82,9 @@ gs_plugin_get_conflicts (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	if (plugin->priv->ostree_repo != NULL)
-		g_object_unref (plugin->priv->ostree_repo);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (priv->ostree_repo != NULL)
+		g_object_unref (priv->ostree_repo);
 }
 
 /**
@@ -92,13 +93,15 @@ gs_plugin_destroy (GsPlugin *plugin)
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
 	/* already started */
-	if (plugin->priv->ostree_repo != NULL)
+	if (priv->ostree_repo != NULL)
 		return TRUE;
 
 	/* open */
-	plugin->priv->ostree_repo = ostree_repo_new_default ();
-	if (!ostree_repo_open (plugin->priv->ostree_repo, cancellable, error))
+	priv->ostree_repo = ostree_repo_new_default ();
+	if (!ostree_repo_open (priv->ostree_repo, cancellable, error))
 		return FALSE;
 	return TRUE;
 }
@@ -112,11 +115,12 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	g_auto(GStrv) names = NULL;
 
 	/* get all remotes */
-	names = ostree_repo_remote_list (plugin->priv->ostree_repo, NULL);
+	names = ostree_repo_remote_list (priv->ostree_repo, NULL);
 	if (names == NULL)
 		return TRUE;
 	for (i = 0; names[i] != NULL; i++) {
@@ -124,7 +128,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		g_autoptr(GsApp) app = NULL;
 
 		/* get info */
-		if (!ostree_repo_remote_get_url (plugin->priv->ostree_repo,
+		if (!ostree_repo_remote_get_url (priv->ostree_repo,
 						 names[i], &url, error))
 			return FALSE;
 

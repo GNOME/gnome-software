@@ -38,7 +38,7 @@
  * Refines:     | [source-id], [source], [update-details], [management-plugin]
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	PkTask			*task;
 };
 
@@ -57,12 +57,11 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	/* create private area */
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->task = pk_task_new ();
-	pk_client_set_background (PK_CLIENT (plugin->priv->task), FALSE);
-	pk_client_set_interactive (PK_CLIENT (plugin->priv->task), FALSE);
-	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), G_MAXUINT);
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->task = pk_task_new ();
+	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
+	pk_client_set_interactive (PK_CLIENT (priv->task), FALSE);
+	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
 }
 
 /**
@@ -71,7 +70,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_object_unref (plugin->priv->task);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_object_unref (priv->task);
 }
 
 typedef struct {
@@ -100,7 +100,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 		/* profile */
 		if (status == PK_STATUS_ENUM_SETUP) {
-			data->ptask = as_profile_start_literal (plugin->profile,
+			data->ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 						"packagekit-refine::transaction");
 		} else if (status == PK_STATUS_ENUM_FINISHED) {
 			g_clear_pointer (&data->ptask, as_profile_task_free);
@@ -129,6 +129,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
@@ -147,7 +148,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 					 PK_FILTER_ENUM_APPLICATION,
 					 PK_FILTER_ENUM_NOT_COLLECTIONS,
 					 -1);
-	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
+	results = pk_client_get_packages (PK_CLIENT(priv->task),
 					  filter,
 					  cancellable,
 					  gs_plugin_packagekit_progress_cb, &data,
@@ -168,6 +169,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 			       GCancellable *cancellable,
 			       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GList *l;
 	GsApp *app;
 	GsApp *app_tmp;
@@ -183,13 +185,14 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	data.plugin = plugin;
 	data.ptask = NULL;
 
-	ptask = as_profile_start_literal (plugin->profile, "packagekit::add-sources-related");
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "packagekit::add-sources-related");
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
 					 PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,
 					 PK_FILTER_ENUM_NOT_COLLECTIONS,
 					 -1);
-	results = pk_client_get_packages (PK_CLIENT(plugin->priv->task),
+	results = pk_client_get_packages (PK_CLIENT(priv->task),
 					   filter,
 					   cancellable,
 					   gs_plugin_packagekit_progress_cb, &data,
@@ -228,6 +231,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
 	PkRepoDetail *rd;
 	ProgressData data;
@@ -246,7 +250,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 					 PK_FILTER_ENUM_NOT_SUPPORTED,
 					 PK_FILTER_ENUM_INSTALLED,
 					 -1);
-	results = pk_client_get_repo_list (PK_CLIENT(plugin->priv->task),
+	results = pk_client_get_repo_list (PK_CLIENT(priv->task),
 					   filter,
 					   cancellable,
 					   gs_plugin_packagekit_progress_cb, &data,
@@ -289,6 +293,7 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
 
@@ -298,7 +303,7 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-	results = pk_client_repo_enable (PK_CLIENT (plugin->priv->task),
+	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_origin (app),
 					 TRUE,
 					 cancellable,
@@ -318,6 +323,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *addons;
 	GPtrArray *source_ids;
 	ProgressData data;
@@ -355,7 +361,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		/* actually install the package */
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-		results = pk_task_install_packages_sync (plugin->priv->task,
+		results = pk_task_install_packages_sync (priv->task,
 							 package_ids,
 							 cancellable,
 							 gs_plugin_packagekit_progress_cb, &data,
@@ -425,7 +431,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			if (gs_app_get_to_be_installed (addon))
 				gs_app_set_state (addon, AS_APP_STATE_INSTALLING);
 		}
-		results = pk_task_install_packages_sync (plugin->priv->task,
+		results = pk_task_install_packages_sync (priv->task,
 							 (gchar **) array_package_ids->pdata,
 							 cancellable,
 							 gs_plugin_packagekit_progress_cb, &data,
@@ -451,7 +457,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		}
 		package_ids = g_strsplit (package_id, "\t", -1);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-		results = pk_task_install_files_sync (plugin->priv->task,
+		results = pk_task_install_files_sync (priv->task,
 						      package_ids,
 						      cancellable,
 						      gs_plugin_packagekit_progress_cb, &data,
@@ -494,6 +500,7 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 			      GCancellable *cancellable,
 			      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
 
@@ -503,7 +510,7 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-	results = pk_client_repo_enable (PK_CLIENT (plugin->priv->task),
+	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_id (app),
 					 FALSE,
 					 cancellable,
@@ -523,6 +530,7 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	ProgressData data;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(PkResults) results = NULL;
@@ -533,7 +541,7 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-	results = pk_client_repo_remove (PK_CLIENT (plugin->priv->task),
+	results = pk_client_repo_remove (PK_CLIENT (priv->task),
 					 pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_NONE, -1),
 					 gs_app_get_id (app),
 					 TRUE,
@@ -559,6 +567,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 	GPtrArray *source_ids;
 	ProgressData data;
@@ -607,7 +616,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	/* do the action */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	results = pk_task_remove_packages_sync (plugin->priv->task,
+	results = pk_task_remove_packages_sync (priv->task,
 						package_ids,
 						TRUE, FALSE,
 						cancellable,
@@ -636,6 +645,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 				GCancellable *cancellable,
 				GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
 
@@ -655,7 +665,7 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 
 	/* ask PK to download enough packages to upgrade the system */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	results = pk_client_upgrade_system (PK_CLIENT (plugin->priv->task),
+	results = pk_client_upgrade_system (PK_CLIENT (priv->task),
 					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_ONLY_DOWNLOAD, -1),
 					    gs_app_get_version (app),
 					    PK_UPGRADE_KIND_ENUM_COMPLETE,
@@ -682,6 +692,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
                             GCancellable *cancellable,
                             GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
@@ -695,7 +706,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,
 					 -1);
-	results = pk_client_search_files (PK_CLIENT (plugin->priv->task),
+	results = pk_client_search_files (PK_CLIENT (priv->task),
 	                                  filter,
 	                                  search,
 	                                  cancellable,
@@ -718,6 +729,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
                                     GCancellable *cancellable,
                                     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkBitfield filter;
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
@@ -731,7 +743,7 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NEWEST,
 					 PK_FILTER_ENUM_ARCH,
 					 -1);
-	results = pk_client_what_provides (PK_CLIENT (plugin->priv->task),
+	results = pk_client_what_provides (PK_CLIENT (priv->task),
 	                                   filter,
 	                                   search,
 	                                   cancellable,

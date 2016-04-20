@@ -109,7 +109,7 @@ gs_plugin_app_set_usage_pkg (GsPlugin *plugin,
 				  SOUP_MEMORY_COPY, data, strlen (data));
 
 	/* set sync request */
-	status_code = soup_session_send_message (plugin->soup_session, msg);
+	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
 		g_debug ("Failed to set usage on fedora-tagger: %s",
 			 soup_status_get_phrase (status_code));

@@ -44,7 +44,7 @@ static gboolean		gs_plugin_refine_item_metadata (GsPlugin *plugin,
 							GCancellable *cancellable,
 							GError **error);
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	XdgAppInstallation	*installation;
 	GFileMonitor		*monitor;
 };
@@ -76,8 +76,7 @@ gs_plugin_order_after (GsPlugin *plugin)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	/* create private area */
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 }
 
 /**
@@ -86,10 +85,11 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	if (plugin->priv->installation != NULL)
-		g_object_unref (plugin->priv->installation);
-	if (plugin->priv->monitor != NULL)
-		g_object_unref (plugin->priv->monitor);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (priv->installation != NULL)
+		g_object_unref (priv->installation);
+	if (priv->monitor != NULL)
+		g_object_unref (priv->monitor);
 }
 
 /**
@@ -199,11 +199,12 @@ gs_plugin_refresh_appstream (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gboolean ret;
 	guint i;
 	g_autoptr(GPtrArray) xremotes = NULL;
 
-	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
+	xremotes = xdg_app_installation_list_remotes (priv->installation,
 						      cancellable,
 						      error);
 	if (xremotes == NULL)
@@ -233,7 +234,7 @@ gs_plugin_refresh_appstream (GsPlugin *plugin,
 		}
 
 		/* download new data */
-		ret = xdg_app_installation_update_appstream_sync (plugin->priv->installation,
+		ret = xdg_app_installation_update_appstream_sync (priv->installation,
 								  xdg_app_remote_get_name (xremote),
 								  NULL, /* arch */
 								  NULL, /* out_changed */
@@ -269,6 +270,7 @@ gs_plugin_refresh_appstream (GsPlugin *plugin,
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *install_path = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GFile) install_file = NULL;
@@ -285,22 +287,23 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* FIXME: this should default to system-wide, but we need a permissions
 	 * helper to elevate privs */
-	ptask = as_profile_start_literal (plugin->profile, "xdg-app::ensure-origin");
-	plugin->priv->installation = xdg_app_installation_new_for_path (install_file,
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "xdg-app::ensure-origin");
+	priv->installation = xdg_app_installation_new_for_path (install_file,
 									TRUE,
 									cancellable,
 									error);
-	if (plugin->priv->installation == NULL)
+	if (priv->installation == NULL)
 		return FALSE;
 
 	/* watch for changes */
-	plugin->priv->monitor =
-		xdg_app_installation_create_monitor (plugin->priv->installation,
+	priv->monitor =
+		xdg_app_installation_create_monitor (priv->installation,
 						     cancellable,
 						     error);
-	if (plugin->priv->monitor == NULL)
+	if (priv->monitor == NULL)
 		return FALSE;
-	g_signal_connect (plugin->priv->monitor, "changed",
+	g_signal_connect (priv->monitor, "changed",
 			  G_CALLBACK (gs_plugin_xdg_app_changed_cb), plugin);
 
 	/* success */
@@ -464,6 +467,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GError) error_md = NULL;
 	g_autoptr(GPtrArray) xrefs = NULL;
 	guint i;
@@ -478,7 +482,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	}
 
 	/* get apps and runtimes */
-	xrefs = xdg_app_installation_list_installed_refs (plugin->priv->installation,
+	xrefs = xdg_app_installation_list_installed_refs (priv->installation,
 							  cancellable, error);
 	if (xrefs == NULL)
 		return FALSE;
@@ -512,10 +516,11 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GPtrArray) xremotes = NULL;
 	guint i;
 
-	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
+	xremotes = xdg_app_installation_list_remotes (priv->installation,
 						      cancellable,
 						      error);
 	if (xremotes == NULL)
@@ -556,11 +561,12 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
 
 	/* get all the installed apps (no network I/O) */
-	xrefs = xdg_app_installation_list_installed_refs (plugin->priv->installation,
+	xrefs = xdg_app_installation_list_installed_refs (priv->installation,
 							  cancellable,
 							  error);
 	if (xrefs == NULL)
@@ -609,6 +615,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsPluginHelper helper;
 	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
@@ -628,7 +635,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 	helper.plugin = plugin;
 
 	/* get all the updates available from all remotes */
-	xrefs = xdg_app_installation_list_installed_refs_for_update (plugin->priv->installation,
+	xrefs = xdg_app_installation_list_installed_refs_for_update (priv->installation,
 								     cancellable,
 								     error);
 	if (xrefs == NULL)
@@ -645,7 +652,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		/* fetch but do not deploy */
 		g_debug ("pulling update for %s",
 			 xdg_app_ref_get_name (XDG_APP_REF (xref)));
-		xref2 = xdg_app_installation_update (plugin->priv->installation,
+		xref2 = xdg_app_installation_update (priv->installation,
 						     XDG_APP_UPDATE_FLAGS_NO_DEPLOY,
 						     xdg_app_ref_get_kind (XDG_APP_REF (xref)),
 						     xdg_app_ref_get_name (XDG_APP_REF (xref)),
@@ -669,6 +676,7 @@ gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
 				 GCancellable *cancellable,
 				 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *origin;
 	guint i;
 	g_autoptr(GPtrArray) xremotes = NULL;
@@ -680,8 +688,9 @@ gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
 		return TRUE;
 
 	/* find list of remotes */
-	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-origin-ui");
-	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "xdg-app::refine-origin-ui");
+	xremotes = xdg_app_installation_list_remotes (priv->installation,
 						      cancellable,
 						      error);
 	if (xremotes == NULL)
@@ -707,6 +716,7 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 			      GCancellable *cancellable,
 			      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	g_autoptr(GPtrArray) xremotes = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
@@ -716,7 +726,8 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 		return TRUE;
 
 	/* ensure metadata exists */
-	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-origin");
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "xdg-app::refine-origin");
 	if (!gs_plugin_refine_item_metadata (plugin, app, cancellable, error))
 		return FALSE;
 
@@ -725,7 +736,7 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 		 gs_app_get_xdgapp_name (app),
 		 gs_app_get_xdgapp_arch (app),
 		 gs_app_get_xdgapp_branch (app));
-	xremotes = xdg_app_installation_list_remotes (plugin->priv->installation,
+	xremotes = xdg_app_installation_list_remotes (priv->installation,
 						      cancellable,
 						      error);
 	if (xremotes == NULL)
@@ -736,7 +747,7 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 		g_autoptr(XdgAppRemoteRef) xref = NULL;
 		remote_name = xdg_app_remote_get_name (xremote);
 		g_debug ("looking at remote %s", remote_name);
-		xref = xdg_app_installation_fetch_remote_ref_sync (plugin->priv->installation,
+		xref = xdg_app_installation_fetch_remote_ref_sync (priv->installation,
 								   remote_name,
 								   gs_app_get_xdgapp_kind (app),
 								   gs_app_get_xdgapp_name (app),
@@ -769,6 +780,7 @@ gs_plugin_refine_item_commit (GsPlugin *plugin,
 			      GCancellable *cancellable,
 			      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(XdgAppRemoteRef) xref_remote = NULL;
 
@@ -780,8 +792,9 @@ gs_plugin_refine_item_commit (GsPlugin *plugin,
 			return FALSE;
 	}
 
-	ptask = as_profile_start_literal (plugin->profile, "xdg-app::fetch-remote-ref");
-	xref_remote = xdg_app_installation_fetch_remote_ref_sync (plugin->priv->installation,
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "xdg-app::fetch-remote-ref");
+	xref_remote = xdg_app_installation_fetch_remote_ref_sync (priv->installation,
 								  gs_app_get_origin (app),
 								  gs_app_get_xdgapp_kind (app),
 								  gs_app_get_xdgapp_name (app),
@@ -869,6 +882,7 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 			      GCancellable *cancellable,
 			      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
@@ -882,8 +896,9 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 		return FALSE;
 
 	/* get apps and runtimes */
-	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-action");
-	xrefs = xdg_app_installation_list_installed_refs (plugin->priv->installation,
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "xdg-app::refine-action");
+	xrefs = xdg_app_installation_list_installed_refs (priv->installation,
 							  cancellable, error);
 	if (xrefs == NULL)
 		return FALSE;
@@ -906,7 +921,7 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
 	    gs_app_get_origin (app) != NULL) {
 		g_autoptr(XdgAppRemote) xremote = NULL;
-		xremote = xdg_app_installation_get_remote_by_name (plugin->priv->installation,
+		xremote = xdg_app_installation_get_remote_by_name (priv->installation,
 								   gs_app_get_origin (app),
 								   cancellable, NULL);
 		if (xremote != NULL) {
@@ -964,6 +979,7 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 			       GCancellable *cancellable,
 			       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *commit;
 	const gchar *str;
 	gsize len = -1;
@@ -983,7 +999,7 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 		return TRUE;
 
 	/* this is quicker than doing network IO */
-	installation_path = xdg_app_installation_get_path (plugin->priv->installation);
+	installation_path = xdg_app_installation_get_path (priv->installation);
 	installation_path_str = g_file_get_path (installation_path);
 	install_path = g_build_filename (installation_path_str,
 					 gs_app_get_xdgapp_kind_as_str (app),
@@ -1005,7 +1021,7 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 
 		/* fetch from the server */
 		commit = gs_app_get_xdgapp_commit (app);
-		data = xdg_app_installation_fetch_remote_metadata_sync (plugin->priv->installation,
+		data = xdg_app_installation_fetch_remote_metadata_sync (priv->installation,
 									gs_app_get_origin (app),
 									commit,
 									cancellable,
@@ -1030,6 +1046,7 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 			    GCancellable *cancellable,
 			    GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gboolean ret;
 	guint64 download_size;
 	guint64 installed_size;
@@ -1084,8 +1101,9 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 	}
 
 	/* just get the size of the runtime */
-	ptask = as_profile_start_literal (plugin->profile, "xdg-app::refine-size");
-	ret = xdg_app_installation_fetch_remote_size_sync (plugin->priv->installation,
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "xdg-app::refine-size");
+	ret = xdg_app_installation_fetch_remote_size_sync (priv->installation,
 							   gs_app_get_origin (app),
 							   gs_app_get_xdgapp_commit (app),
 							   &download_size,
@@ -1124,7 +1142,7 @@ gs_plugin_xdg_app_refine_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* profile */
-	ptask = as_profile_start (plugin->profile,
+	ptask = as_profile_start (gs_plugin_get_profile (plugin),
 				  "xdg-app::refine{%s}",
 				  gs_app_get_id (app));
 
@@ -1181,6 +1199,7 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GCancellable *cancellable,
 		  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *branch = NULL;
 
 	/* only process this app if was created by this plugin */
@@ -1190,7 +1209,7 @@ gs_plugin_launch (GsPlugin *plugin,
 	branch = gs_app_get_xdgapp_branch (app);
 	if (branch == NULL)
 		branch = "master";
-	return xdg_app_installation_launch (plugin->priv->installation,
+	return xdg_app_installation_launch (priv->installation,
 					    gs_app_get_xdgapp_name (app),
 					    NULL,
 					    branch,
@@ -1208,6 +1227,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsPluginHelper helper;
 
 	/* only process this app if was created by this plugin */
@@ -1220,7 +1240,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	if (!xdg_app_installation_uninstall (plugin->priv->installation,
+	if (!xdg_app_installation_uninstall (priv->installation,
 					     XDG_APP_REF_KIND_APP,
 					     gs_app_get_xdgapp_name (app),
 					     gs_app_get_xdgapp_arch (app),
@@ -1245,6 +1265,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsPluginHelper helper;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
 
@@ -1289,7 +1310,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 			g_debug ("%s is not already installed, so installing",
 				 gs_app_get_id (runtime));
 			gs_app_set_state (runtime, AS_APP_STATE_INSTALLING);
-			xref = xdg_app_installation_install (plugin->priv->installation,
+			xref = xdg_app_installation_install (priv->installation,
 							     gs_app_get_origin (runtime),
 							     gs_app_get_xdgapp_kind (runtime),
 							     gs_app_get_xdgapp_name (runtime),
@@ -1312,14 +1333,14 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL) {
 		g_autoptr(GFile) file = NULL;
 		file = g_file_new_for_path (gs_app_get_source_default (app));
-		xref = xdg_app_installation_install_bundle (plugin->priv->installation,
+		xref = xdg_app_installation_install_bundle (priv->installation,
 							    file,
 							    gs_plugin_xdg_app_progress_cb,
 							    &helper,
 							    cancellable, error);
 	} else {
 		g_debug ("installing %s", gs_app_get_id (app));
-		xref = xdg_app_installation_install (plugin->priv->installation,
+		xref = xdg_app_installation_install (priv->installation,
 						     gs_app_get_origin (app),
 						     gs_app_get_xdgapp_kind (app),
 						     gs_app_get_xdgapp_name (app),
@@ -1347,6 +1368,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GsPluginHelper helper;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
 
@@ -1360,7 +1382,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	xref = xdg_app_installation_update (plugin->priv->installation,
+	xref = xdg_app_installation_update (priv->installation,
 					    XDG_APP_UPDATE_FLAGS_NONE,
 					    gs_app_get_xdgapp_kind (app),
 					    gs_app_get_xdgapp_name (app),
@@ -1478,7 +1500,8 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	}
 
 	/* load icon */
-	icon_data = xdg_app_bundle_ref_get_icon (xref_bundle, 64 * plugin->scale);
+	icon_data = xdg_app_bundle_ref_get_icon (xref_bundle,
+						 64 * gs_plugin_get_scale (plugin));
 	if (icon_data == NULL)
 		icon_data = xdg_app_bundle_ref_get_icon (xref_bundle, 64);
 	if (icon_data != NULL) {

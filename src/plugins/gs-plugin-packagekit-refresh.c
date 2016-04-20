@@ -36,7 +36,7 @@
  * also convert any package files to applications the best we can.
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	PkTask			*task;
 };
 
@@ -67,10 +67,9 @@ gs_plugin_get_conflicts (GsPlugin *plugin)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	/* create private area */
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->task = pk_task_new ();
-	pk_client_set_interactive (PK_CLIENT (plugin->priv->task), FALSE);
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->task = pk_task_new ();
+	pk_client_set_interactive (PK_CLIENT (priv->task), FALSE);
 }
 
 /**
@@ -79,7 +78,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_object_unref (plugin->priv->task);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_object_unref (priv->task);
 }
 
 typedef struct {
@@ -108,7 +108,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	/* profile */
 	if (status == PK_STATUS_ENUM_SETUP) {
-		data->ptask = as_profile_start_literal (plugin->profile,
+		data->ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 							"packagekit-refresh::transaction");
 	} else if (status == PK_STATUS_ENUM_FINISHED) {
 		g_clear_pointer (&data->ptask, as_profile_task_free);
@@ -129,6 +129,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
 
@@ -137,7 +138,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		return TRUE;
 
 	/* cache age of 0 is user-initiated */
-	pk_client_set_background (PK_CLIENT (plugin->priv->task), cache_age > 0);
+	pk_client_set_background (PK_CLIENT (priv->task), cache_age > 0);
 
 	data.plugin = plugin;
 	data.ptask = NULL;
@@ -148,9 +149,9 @@ gs_plugin_refresh (GsPlugin *plugin,
 		PkBitfield filter;
 
 		filter = pk_bitfield_value (PK_FILTER_ENUM_NONE);
-		pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), cache_age);
+		pk_client_set_cache_age (PK_CLIENT (priv->task), cache_age);
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-		results = pk_client_get_updates (PK_CLIENT (plugin->priv->task),
+		results = pk_client_get_updates (PK_CLIENT (priv->task),
 						 filter,
 						 cancellable,
 						 gs_plugin_packagekit_progress_cb, &data,
@@ -174,7 +175,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		package_ids = pk_package_sack_get_ids (sack);
 		transaction_flags = pk_bitfield_value (PK_TRANSACTION_FLAG_ENUM_ONLY_DOWNLOAD);
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-		results2 = pk_client_update_packages (PK_CLIENT (plugin->priv->task),
+		results2 = pk_client_update_packages (PK_CLIENT (priv->task),
 						      transaction_flags,
 						      package_ids,
 						      cancellable,
@@ -232,6 +233,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					   GCancellable *cancellable,
 					   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkFiles *item;
 	ProgressData data;
 	guint i;
@@ -246,7 +248,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 
 	/* get file list so we can work out ID */
 	files = g_strsplit (filename, "\t", -1);
-	results = pk_client_get_files_local (PK_CLIENT (plugin->priv->task),
+	results = pk_client_get_files_local (PK_CLIENT (priv->task),
 					     files,
 					     cancellable,
 					     gs_plugin_packagekit_progress_cb, &data,
@@ -294,6 +296,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
 	PkDetails *item;
 	ProgressData data;
@@ -324,8 +327,8 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 
 	/* get details */
 	files = g_strsplit (filename, "\t", -1);
-	pk_client_set_cache_age (PK_CLIENT (plugin->priv->task), G_MAXUINT);
-	results = pk_client_get_details_local (PK_CLIENT (plugin->priv->task),
+	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
+	results = pk_client_get_details_local (PK_CLIENT (priv->task),
 					       files,
 					       cancellable,
 					       gs_plugin_packagekit_progress_cb, &data,

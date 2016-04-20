@@ -33,7 +33,7 @@
  * scheduling the offline update.
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	GFileMonitor		*monitor;
 };
 
@@ -52,7 +52,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 }
 
 /**
@@ -61,8 +61,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	if (plugin->priv->monitor != NULL)
-		g_object_unref (plugin->priv->monitor);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (priv->monitor != NULL)
+		g_object_unref (priv->monitor);
 }
 
 /**
@@ -84,10 +85,11 @@ gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	plugin->priv->monitor = pk_offline_get_prepared_monitor (cancellable, error);
-	if (plugin->priv->monitor == NULL)
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	priv->monitor = pk_offline_get_prepared_monitor (cancellable, error);
+	if (priv->monitor == NULL)
 		return FALSE;
-	g_signal_connect (plugin->priv->monitor, "changed",
+	g_signal_connect (priv->monitor, "changed",
 			  G_CALLBACK (gs_plugin_systemd_updates_changed_cb),
 			  plugin);
 	return TRUE;

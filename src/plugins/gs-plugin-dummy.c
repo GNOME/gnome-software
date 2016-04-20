@@ -28,7 +28,7 @@
  * Provides some dummy data that is useful in self test programs.
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	guint			 quirk_id;
 };
 
@@ -47,7 +47,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	if (g_getenv ("GS_SELF_TEST_DUMMY_ENABLE") == NULL) {
 		g_debug ("disabling '%s' as not in self test", plugin->name);
 		gs_plugin_set_enabled (plugin, FALSE);
@@ -60,8 +60,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	if (plugin->priv->quirk_id > 0)
-		g_source_remove (plugin->priv->quirk_id);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (priv->quirk_id > 0)
+		g_source_remove (priv->quirk_id);
 }
 
 /**
@@ -197,6 +198,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(AsIcon) ic = NULL;
 
@@ -213,7 +215,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	}
 
 	/* set up a timeout to emulate getting a GFileMonitor callback */
-	plugin->priv->quirk_id =
+	priv->quirk_id =
 		g_timeout_add_seconds (1, gs_plugin_dummy_poll_cb, plugin);
 
 	/* use a generic stock icon */

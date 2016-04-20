@@ -38,7 +38,7 @@
  * Refines:     | [origin-ui]
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	PkClient		*client;
 	GHashTable		*sources;
 };
@@ -58,12 +58,12 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->client = pk_client_new ();
-	pk_client_set_background (plugin->priv->client, FALSE);
-	pk_client_set_interactive (plugin->priv->client, FALSE);
-	pk_client_set_cache_age (plugin->priv->client, G_MAXUINT);
-	plugin->priv->sources = g_hash_table_new_full (g_str_hash,
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->client = pk_client_new ();
+	pk_client_set_background (priv->client, FALSE);
+	pk_client_set_interactive (priv->client, FALSE);
+	pk_client_set_cache_age (priv->client, G_MAXUINT);
+	priv->sources = g_hash_table_new_full (g_str_hash,
 						       g_str_equal,
 						       g_free,
 						       g_free);
@@ -87,8 +87,9 @@ gs_plugin_order_after (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_hash_table_unref (plugin->priv->sources);
-	g_object_unref (plugin->priv->client);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_hash_table_unref (priv->sources);
+	g_object_unref (priv->client);
 }
 
 /**
@@ -99,17 +100,18 @@ gs_plugin_packagekit_origin_ensure_sources (GsPlugin *plugin,
 					    GCancellable *cancellable,
 					    GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	PkRepoDetail *rd;
 	guint i;
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
 	/* already done */
-	if (g_hash_table_size (plugin->priv->sources) > 0)
+	if (g_hash_table_size (priv->sources) > 0)
 		return TRUE;
 
 	/* ask PK for the repo details */
-	results = pk_client_get_repo_list (plugin->priv->client,
+	results = pk_client_get_repo_list (priv->client,
 					   pk_bitfield_from_enums (PK_FILTER_ENUM_NONE, -1),
 					   cancellable,
 					   NULL, plugin,
@@ -119,7 +121,7 @@ gs_plugin_packagekit_origin_ensure_sources (GsPlugin *plugin,
 	array = pk_results_get_repo_detail_array (results);
 	for (i = 0; i < array->len; i++) {
 		rd = g_ptr_array_index (array, i);
-		g_hash_table_insert (plugin->priv->sources,
+		g_hash_table_insert (priv->sources,
 				     g_strdup (pk_repo_detail_get_id (rd)),
 				     g_strdup (pk_repo_detail_get_description (rd)));
 	}
@@ -136,6 +138,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *origin_id;
 	const gchar *origin_ui;
 
@@ -168,7 +171,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return FALSE;
 
 	/* set new value */
-	origin_ui = g_hash_table_lookup (plugin->priv->sources, origin_id);
+	origin_ui = g_hash_table_lookup (priv->sources, origin_id);
 	if (origin_ui != NULL)
 		gs_app_set_origin_ui (app, origin_ui);
 	return TRUE;

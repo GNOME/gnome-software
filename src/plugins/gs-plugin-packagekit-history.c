@@ -33,7 +33,7 @@
  * This returns update history using the system PackageKit instance.
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	GDBusConnection		*connection;
 };
 
@@ -52,7 +52,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 }
 
 /**
@@ -74,8 +74,9 @@ gs_plugin_order_after (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	if (plugin->priv->connection != NULL)
-		g_object_unref (plugin->priv->connection);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (priv->connection != NULL)
+		g_object_unref (priv->connection);
 }
 
 /**
@@ -137,10 +138,11 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
-	plugin->priv->connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	priv->connection = g_bus_get_sync (G_BUS_TYPE_SYSTEM,
 						   cancellable,
 						   error);
-	return plugin->priv->connection != NULL;
+	return priv->connection != NULL;
 }
 
 static gboolean
@@ -149,6 +151,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gboolean ret;
 	GError *error_local = NULL;
 	GList *l;
@@ -168,7 +171,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	}
 
 	g_debug ("getting history for %i packages", g_list_length (list));
-	result = g_dbus_connection_call_sync (plugin->priv->connection,
+	result = g_dbus_connection_call_sync (priv->connection,
 					      "org.freedesktop.PackageKit",
 					      "/org/freedesktop/PackageKit",
 					      "org.freedesktop.PackageKit",

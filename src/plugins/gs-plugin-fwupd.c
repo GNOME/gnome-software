@@ -40,7 +40,7 @@
  * added or removed or if a device has been updated live.
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	FwupdClient		*client;
 	GPtrArray		*to_download;
 	GPtrArray		*to_ignore;
@@ -65,16 +65,16 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->client = fwupd_client_new ();
-	plugin->priv->to_download = g_ptr_array_new_with_free_func (g_free);
-	plugin->priv->to_ignore = g_ptr_array_new_with_free_func (g_free);
-	plugin->priv->config_fn = g_build_filename (SYSCONFDIR, "fwupd.conf", NULL);
-	if (!g_file_test (plugin->priv->config_fn, G_FILE_TEST_EXISTS)) {
-		g_free (plugin->priv->config_fn);
-		plugin->priv->config_fn = g_strdup ("/etc/fwupd.conf");
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->client = fwupd_client_new ();
+	priv->to_download = g_ptr_array_new_with_free_func (g_free);
+	priv->to_ignore = g_ptr_array_new_with_free_func (g_free);
+	priv->config_fn = g_build_filename (SYSCONFDIR, "fwupd.conf", NULL);
+	if (!g_file_test (priv->config_fn, G_FILE_TEST_EXISTS)) {
+		g_free (priv->config_fn);
+		priv->config_fn = g_strdup ("/etc/fwupd.conf");
 	}
-	if (!g_file_test (plugin->priv->config_fn, G_FILE_TEST_EXISTS)) {
+	if (!g_file_test (priv->config_fn, G_FILE_TEST_EXISTS)) {
 		g_debug ("fwupd configuration not found, disabling plugin.");
 		gs_plugin_set_enabled (plugin, FALSE);
 	}
@@ -86,13 +86,14 @@ gs_plugin_initialize (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_free (plugin->priv->cachedir);
-	g_free (plugin->priv->lvfs_sig_fn);
-	g_free (plugin->priv->lvfs_sig_hash);
-	g_free (plugin->priv->config_fn);
-	g_object_unref (plugin->priv->client);
-	g_ptr_array_unref (plugin->priv->to_download);
-	g_ptr_array_unref (plugin->priv->to_ignore);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_free (priv->cachedir);
+	g_free (priv->lvfs_sig_fn);
+	g_free (priv->lvfs_sig_hash);
+	g_free (priv->config_fn);
+	g_object_unref (priv->client);
+	g_ptr_array_unref (priv->to_download);
+	g_ptr_array_unref (priv->to_ignore);
 }
 
 /**
@@ -120,32 +121,33 @@ gs_plugin_fwupd_changed_cb (FwupdClient *client, GsPlugin *plugin)
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gsize len;
 	g_autofree gchar *data = NULL;
 
 	/* already done */
-	if (plugin->priv->cachedir != NULL)
+	if (priv->cachedir != NULL)
 		return TRUE;
 
 	/* register D-Bus errors */
 	fwupd_error_quark ();
-	g_signal_connect (plugin->priv->client, "changed",
+	g_signal_connect (priv->client, "changed",
 			  G_CALLBACK (gs_plugin_fwupd_changed_cb), plugin);
 
 	/* create the cache location */
-	plugin->priv->cachedir = gs_utils_get_cachedir ("firmware", error);
-	if (plugin->priv->cachedir == NULL)
+	priv->cachedir = gs_utils_get_cachedir ("firmware", error);
+	if (priv->cachedir == NULL)
 		return FALSE;
 
 	/* get the hash of the previously downloaded file */
-	plugin->priv->lvfs_sig_fn = g_build_filename (plugin->priv->cachedir,
+	priv->lvfs_sig_fn = g_build_filename (priv->cachedir,
 						      "firmware.xml.gz.asc",
 						      NULL);
-	if (g_file_test (plugin->priv->lvfs_sig_fn, G_FILE_TEST_EXISTS)) {
-		if (!g_file_get_contents (plugin->priv->lvfs_sig_fn,
+	if (g_file_test (priv->lvfs_sig_fn, G_FILE_TEST_EXISTS)) {
+		if (!g_file_get_contents (priv->lvfs_sig_fn,
 					  &data, &len, error))
 			return FALSE;
-		plugin->priv->lvfs_sig_hash =
+		priv->lvfs_sig_hash =
 			g_compute_checksum_for_data (G_CHECKSUM_SHA1, (guchar *) data, len);
 	}
 
@@ -158,19 +160,20 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 static void
 gs_plugin_fwupd_add_required_location (GsPlugin *plugin, const gchar *location)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
 	guint i;
-	for (i = 0; i < plugin->priv->to_ignore->len; i++) {
-		tmp = g_ptr_array_index (plugin->priv->to_ignore, i);
+	for (i = 0; i < priv->to_ignore->len; i++) {
+		tmp = g_ptr_array_index (priv->to_ignore, i);
 		if (g_strcmp0 (tmp, location) == 0)
 			return;
 	}
-	for (i = 0; i < plugin->priv->to_download->len; i++) {
-		tmp = g_ptr_array_index (plugin->priv->to_download, i);
+	for (i = 0; i < priv->to_download->len; i++) {
+		tmp = g_ptr_array_index (priv->to_download, i);
 		if (g_strcmp0 (tmp, location) == 0)
 			return;
 	}
-	g_ptr_array_add (plugin->priv->to_download, g_strdup (location));
+	g_ptr_array_add (priv->to_download, g_strdup (location));
 }
 
 /**
@@ -280,6 +283,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 			  FwupdResult *res,
 			  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	FwupdDeviceFlags flags = 0;
 	const gchar *update_hash;
 	const gchar *update_uri;
@@ -341,7 +345,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 
 		/* does the firmware already exist in the cache? */
 		basename = g_path_get_basename (update_uri);
-		filename_cache = g_build_filename (plugin->priv->cachedir,
+		filename_cache = g_build_filename (priv->cachedir,
 						   basename, NULL);
 		if (!g_file_test (filename_cache, G_FILE_TEST_EXISTS)) {
 			gs_plugin_fwupd_add_required_location (plugin, update_uri);
@@ -386,12 +390,13 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GCancellable *cancellable,
 				  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FwupdResult) res = NULL;
 
 	/* get historical updates */
-	res = fwupd_client_get_results (plugin->priv->client,
+	res = fwupd_client_get_results (priv->client,
 					FWUPD_DEVICE_ID_ANY,
 					cancellable,
 					&error_local);
@@ -426,12 +431,13 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	guint i;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(GPtrArray) results = NULL;
 
 	/* get current list of updates */
-	results = fwupd_client_get_updates (plugin->priv->client,
+	results = fwupd_client_get_updates (priv->client,
 					    cancellable, &error_local);
 	if (results == NULL) {
 		if (g_error_matches (error_local,
@@ -465,6 +471,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 				     GCancellable *cancellable,
 				     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autoptr(GError) error_local = NULL;
 	g_autofree gchar *basename_data = NULL;
 	g_autofree gchar *cache_fn_data = NULL;
@@ -477,18 +484,18 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 
 	/* read config file */
 	config = g_key_file_new ();
-	if (!g_key_file_load_from_file (config, plugin->priv->config_fn, G_KEY_FILE_NONE, error))
+	if (!g_key_file_load_from_file (config, priv->config_fn, G_KEY_FILE_NONE, error))
 		return FALSE;
 
 	/* check cache age */
 	if (cache_age > 0) {
 		guint tmp;
 		g_autoptr(GFile) file = NULL;
-		file = g_file_new_for_path (plugin->priv->lvfs_sig_fn);
+		file = g_file_new_for_path (priv->lvfs_sig_fn);
 		tmp = gs_utils_get_file_age (file);
 		if (tmp < cache_age) {
 			g_debug ("%s is only %i seconds old, so ignoring refresh",
-				 plugin->priv->lvfs_sig_fn, tmp);
+				 priv->lvfs_sig_fn, tmp);
 			return TRUE;
 		}
 	}
@@ -512,14 +519,14 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	checksum = g_compute_checksum_for_data (G_CHECKSUM_SHA1,
 						(const guchar *) g_bytes_get_data (data, NULL),
 						g_bytes_get_size (data));
-	if (g_strcmp0 (checksum, plugin->priv->lvfs_sig_hash) == 0) {
+	if (g_strcmp0 (checksum, priv->lvfs_sig_hash) == 0) {
 		g_debug ("signature of %s is unchanged", url_sig);
 		return TRUE;
 	}
 
 	/* save to a file */
-	g_debug ("saving new LVFS signature to %s:", plugin->priv->lvfs_sig_fn);
-	if (!g_file_set_contents (plugin->priv->lvfs_sig_fn,
+	g_debug ("saving new LVFS signature to %s:", priv->lvfs_sig_fn);
+	if (!g_file_set_contents (priv->lvfs_sig_fn,
 				  g_bytes_get_data (data, NULL),
 				  g_bytes_get_size (data),
 				  &error_local)) {
@@ -532,12 +539,12 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	}
 
 	/* save the new checksum so we don't downoad the payload unless it's changed */
-	g_free (plugin->priv->lvfs_sig_hash);
-	plugin->priv->lvfs_sig_hash = g_strdup (checksum);
+	g_free (priv->lvfs_sig_hash);
+	priv->lvfs_sig_hash = g_strdup (checksum);
 
 	/* download the payload and save to file */
 	basename_data = g_path_get_basename (url_data);
-	cache_fn_data = g_build_filename (plugin->priv->cachedir, basename_data, NULL);
+	cache_fn_data = g_build_filename (priv->cachedir, basename_data, NULL);
 	g_debug ("saving new LVFS data to %s:", cache_fn_data);
 	if (!gs_plugin_download_file (plugin,
 				      app_dl,
@@ -548,9 +555,9 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 		return FALSE;
 
 	/* phew, lets send all this to fwupd */
-	if (!fwupd_client_update_metadata (plugin->priv->client,
+	if (!fwupd_client_update_metadata (priv->client,
 					   cache_fn_data,
-					   plugin->priv->lvfs_sig_fn,
+					   priv->lvfs_sig_fn,
 					   cancellable,
 					   error))
 		return FALSE;
@@ -568,6 +575,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GCancellable *cancellable,
 		   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
 	guint i;
 
@@ -585,26 +593,26 @@ gs_plugin_refresh (GsPlugin *plugin,
 		return TRUE;
 
 	/* download the files to the cachedir */
-	for (i = 0; i < plugin->priv->to_download->len; i++) {
+	for (i = 0; i < priv->to_download->len; i++) {
 		guint status_code;
 		g_autoptr(GError) error_local = NULL;
 		g_autofree gchar *basename = NULL;
 		g_autofree gchar *filename_cache = NULL;
 		g_autoptr(SoupMessage) msg = NULL;
 
-		tmp = g_ptr_array_index (plugin->priv->to_download, i);
+		tmp = g_ptr_array_index (priv->to_download, i);
 		basename = g_path_get_basename (tmp);
-		filename_cache = g_build_filename (plugin->priv->cachedir, basename, NULL);
+		filename_cache = g_build_filename (priv->cachedir, basename, NULL);
 		g_debug ("downloading %s to %s", tmp, filename_cache);
 
 		/* set sync request */
 		msg = soup_message_new (SOUP_METHOD_GET, tmp);
-		status_code = soup_session_send_message (plugin->soup_session, msg);
+		status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 		if (status_code != SOUP_STATUS_OK) {
 			g_warning ("Failed to download %s, ignoring: %s",
 				   tmp, soup_status_get_phrase (status_code));
-			g_ptr_array_remove_index (plugin->priv->to_download, i--);
-			g_ptr_array_add (plugin->priv->to_ignore, g_strdup (tmp));
+			g_ptr_array_remove_index (priv->to_download, i--);
+			g_ptr_array_add (priv->to_ignore, g_strdup (tmp));
 			continue;
 		}
 
@@ -634,6 +642,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *device_id;
 	const gchar *filename;
 	FwupdInstallFlags install_flags = 0;
@@ -658,7 +667,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 		install_flags |= FWUPD_INSTALL_FLAG_OFFLINE;
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!fwupd_client_install (plugin->priv->client, device_id,
+	if (!fwupd_client_install (priv->client, device_id,
 				   filename, install_flags,
 				   cancellable, error)) {
 		gs_app_set_state_recover (app);
@@ -697,6 +706,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
@@ -712,7 +722,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 					     "not enough data for fwupd unlock");
 			return FALSE;
 		}
-		return fwupd_client_unlock (plugin->priv->client, device_id,
+		return fwupd_client_unlock (priv->client, device_id,
 					    cancellable, error);
 	}
 
@@ -729,6 +739,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 			   GCancellable *cancellable,
 			   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *content_type = NULL;
 	g_autoptr(FwupdResult) res = NULL;
 	g_autoptr(GsApp) app = NULL;
@@ -744,7 +755,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* get results */
-	res = fwupd_client_get_details (plugin->priv->client,
+	res = fwupd_client_get_details (priv->client,
 					filename,
 					cancellable,
 					error);

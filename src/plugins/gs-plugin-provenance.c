@@ -31,7 +31,7 @@
  * software source.
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	GSettings		*settings;
 	gchar			**sources;
 };
@@ -51,13 +51,14 @@ gs_plugin_get_name (void)
 static gchar **
 gs_plugin_provenance_get_sources (GsPlugin *plugin)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *tmp;
 	tmp = g_getenv ("GS_SELF_TEST_PROVENANCE_SOURCES");
 	if (tmp != NULL) {
 		g_debug ("using custom provenance sources of %s", tmp);
 		return g_strsplit (tmp, ",", -1);
 	}
-	return g_settings_get_strv (plugin->priv->settings, "official-sources");
+	return g_settings_get_strv (priv->settings, "official-sources");
 }
 
 /**
@@ -68,9 +69,10 @@ gs_plugin_provenance_settings_changed_cb (GSettings *settings,
 					  const gchar *key,
 					  GsPlugin *plugin)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	if (g_strcmp0 (key, "official-sources") == 0) {
-		g_strfreev (plugin->priv->sources);
-		plugin->priv->sources = gs_plugin_provenance_get_sources (plugin);
+		g_strfreev (priv->sources);
+		priv->sources = gs_plugin_provenance_get_sources (plugin);
 	}
 }
 
@@ -80,11 +82,11 @@ gs_plugin_provenance_settings_changed_cb (GSettings *settings,
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->settings = g_settings_new ("org.gnome.software");
-	g_signal_connect (plugin->priv->settings, "changed",
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->settings = g_settings_new ("org.gnome.software");
+	g_signal_connect (priv->settings, "changed",
 			  G_CALLBACK (gs_plugin_provenance_settings_changed_cb), plugin);
-	plugin->priv->sources = gs_plugin_provenance_get_sources (plugin);
+	priv->sources = gs_plugin_provenance_get_sources (plugin);
 }
 
 /**
@@ -105,8 +107,9 @@ gs_plugin_order_after (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_strfreev (plugin->priv->sources);
-	g_object_unref (plugin->priv->settings);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_strfreev (priv->sources);
+	g_object_unref (priv->settings);
 }
 
 /**
@@ -139,6 +142,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *origin;
 	gchar **sources;
 
@@ -149,7 +153,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* nothing to search */
-	sources = plugin->priv->sources;
+	sources = priv->sources;
 	if (sources == NULL || sources[0] == NULL) {
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 		return TRUE;

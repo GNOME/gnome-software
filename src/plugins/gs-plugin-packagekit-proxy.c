@@ -35,7 +35,7 @@
  * Sets the session proxy on the system PackageKit instance
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	PkControl		*control;
 	GSettings		*settings;
 	GSettings		*settings_http;
@@ -54,6 +54,7 @@ gs_plugin_get_name (void)
 static gchar *
 get_proxy_http (GsPlugin *plugin)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gboolean ret;
 	GString *string = NULL;
 	guint port;
@@ -62,22 +63,22 @@ get_proxy_http (GsPlugin *plugin)
 	g_autofree gchar *password = NULL;
 	g_autofree gchar *username = NULL;
 
-	proxy_mode = g_settings_get_enum (plugin->priv->settings, "mode");
+	proxy_mode = g_settings_get_enum (priv->settings, "mode");
 	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
 		return NULL;
 
-	host = g_settings_get_string (plugin->priv->settings_http, "host");
+	host = g_settings_get_string (priv->settings_http, "host");
 	if (host == NULL)
 		return NULL;
 
-	port = g_settings_get_int (plugin->priv->settings_http, "port");
+	port = g_settings_get_int (priv->settings_http, "port");
 
-	ret = g_settings_get_boolean (plugin->priv->settings_http,
+	ret = g_settings_get_boolean (priv->settings_http,
 				      "use-authentication");
 	if (ret) {
-		username = g_settings_get_string (plugin->priv->settings_http,
+		username = g_settings_get_string (priv->settings_http,
 						  "authentication-user");
-		password = g_settings_get_string (plugin->priv->settings_http,
+		password = g_settings_get_string (priv->settings_http,
 						  "authentication-password");
 	}
 
@@ -97,19 +98,20 @@ get_proxy_http (GsPlugin *plugin)
 static gchar *
 get_proxy_ftp (GsPlugin *plugin)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GString *string = NULL;
 	guint port;
 	GDesktopProxyMode proxy_mode;
 	g_autofree gchar *host = NULL;
 
-	proxy_mode = g_settings_get_enum (plugin->priv->settings, "mode");
+	proxy_mode = g_settings_get_enum (priv->settings, "mode");
 	if (proxy_mode != G_DESKTOP_PROXY_MODE_MANUAL)
 		return NULL;
 
-	host = g_settings_get_string (plugin->priv->settings_ftp, "host");
+	host = g_settings_get_string (priv->settings_ftp, "host");
 	if (host == NULL)
 		return NULL;
-	port = g_settings_get_int (plugin->priv->settings_ftp, "port");
+	port = g_settings_get_int (priv->settings_ftp, "port");
 	if (port == 0)
 		return NULL;
 
@@ -133,6 +135,7 @@ set_proxy_cb (GObject *object, GAsyncResult *res, gpointer user_data)
 static void
 reload_proxy_settings (GsPlugin *plugin, GCancellable *cancellable)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *proxy_http = NULL;
 	g_autofree gchar *proxy_ftp = NULL;
 	g_autoptr(GPermission) permission = NULL;
@@ -154,7 +157,7 @@ reload_proxy_settings (GsPlugin *plugin, GCancellable *cancellable)
 
 	g_debug ("Setting proxies (http: %s, ftp: %s)", proxy_http, proxy_ftp);
 
-	pk_control_set_proxy_async (plugin->priv->control,
+	pk_control_set_proxy_async (priv->control,
 				    proxy_http,
 				    proxy_ftp,
 				    cancellable,
@@ -170,7 +173,7 @@ gs_plugin_packagekit_proxy_changed_cb (GSettings *settings,
 				       const gchar *key,
 				       GsPlugin *plugin)
 {
-	if (!plugin->enabled)
+	if (!gs_plugin_get_enabled (plugin))
 		return;
 	reload_proxy_settings (plugin, NULL);
 }
@@ -181,17 +184,16 @@ gs_plugin_packagekit_proxy_changed_cb (GSettings *settings,
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	/* create private area */
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->control = pk_control_new ();
-	plugin->priv->settings = g_settings_new ("org.gnome.system.proxy");
-	g_signal_connect (plugin->priv->settings, "changed",
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->control = pk_control_new ();
+	priv->settings = g_settings_new ("org.gnome.system.proxy");
+	g_signal_connect (priv->settings, "changed",
 			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
-	plugin->priv->settings_http = g_settings_new ("org.gnome.system.proxy.http");
-	g_signal_connect (plugin->priv->settings_http, "changed",
+	priv->settings_http = g_settings_new ("org.gnome.system.proxy.http");
+	g_signal_connect (priv->settings_http, "changed",
 			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
-	plugin->priv->settings_ftp = g_settings_new ("org.gnome.system.proxy.ftp");
-	g_signal_connect (plugin->priv->settings_ftp, "changed",
+	priv->settings_ftp = g_settings_new ("org.gnome.system.proxy.ftp");
+	g_signal_connect (priv->settings_ftp, "changed",
 			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
 }
 
@@ -211,8 +213,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_object_unref (plugin->priv->control);
-	g_object_unref (plugin->priv->settings);
-	g_object_unref (plugin->priv->settings_http);
-	g_object_unref (plugin->priv->settings_ftp);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_object_unref (priv->control);
+	g_object_unref (priv->settings);
+	g_object_unref (priv->settings_http);
+	g_object_unref (priv->settings_ftp);
 }

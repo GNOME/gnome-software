@@ -156,6 +156,7 @@ gnome_software_SOURCES =				\
 	gs-page.h					\
 	gs-plugin.c					\
 	gs-plugin.h					\
+	gs-plugin-private.h				\
 	gs-progress-button.c				\
 	gs-progress-button.h				\
 	gs-review.c					\

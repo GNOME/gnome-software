@@ -40,7 +40,7 @@
  * Refines:     | [source]->[name,summary,pixbuf,id,kind]
  */
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	AsStore			*store;
 };
 
@@ -63,7 +63,7 @@ gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 
 	/* this is not strictly true, but it causes all the UI to be reloaded
 	 * which is what we really want */
-	if ((plugin->flags & GS_PLUGIN_FLAGS_RUNNING_OTHER) == 0)
+	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_OTHER))
 		gs_plugin_updates_changed (plugin);
 }
 
@@ -73,9 +73,9 @@ gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
-	plugin->priv->store = as_store_new ();
-	as_store_set_watch_flags (plugin->priv->store,
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->store = as_store_new ();
+	as_store_set_watch_flags (priv->store,
 				  AS_STORE_WATCH_FLAG_ADDED |
 				  AS_STORE_WATCH_FLAG_REMOVED);
 }
@@ -99,7 +99,8 @@ gs_plugin_order_after (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	g_object_unref (plugin->priv->store);
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_object_unref (priv->store);
 }
 
 /**
@@ -155,6 +156,7 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *app;
 	GPtrArray *items;
 	gboolean ret;
@@ -166,7 +168,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 	/* Parse the XML */
 	if (g_getenv ("GNOME_SOFTWARE_PREFER_LOCAL") != NULL) {
-		as_store_set_add_flags (plugin->priv->store,
+		as_store_set_add_flags (priv->store,
 					AS_STORE_ADD_FLAG_PREFER_LOCAL);
 	}
 
@@ -174,10 +176,10 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	tmp = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
 	if (tmp != NULL) {
 		g_debug ("using self test data of %s", tmp);
-		if (!as_store_from_xml (plugin->priv->store, tmp, NULL, error))
+		if (!as_store_from_xml (priv->store, tmp, NULL, error))
 			return FALSE;
 	} else {
-		ret = as_store_load (plugin->priv->store,
+		ret = as_store_load (priv->store,
 				     AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM |
 				     AS_STORE_LOAD_FLAG_APP_INFO_USER |
 				     AS_STORE_LOAD_FLAG_APPDATA |
@@ -189,7 +191,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 		if (!ret)
 			return FALSE;
 	}
-	items = as_store_get_apps (plugin->priv->store);
+	items = as_store_get_apps (priv->store);
 	if (items->len == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
 		g_set_error (error,
@@ -200,7 +202,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	}
 
 	/* watch for changes */
-	g_signal_connect (plugin->priv->store, "changed",
+	g_signal_connect (priv->store, "changed",
 			  G_CALLBACK (gs_plugin_appstream_store_changed_cb),
 			  plugin);
 
@@ -252,6 +254,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 			  gboolean *found,
 			  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *id;
 	AsApp *item = NULL;
 
@@ -262,10 +265,10 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		return TRUE;
-	item = as_store_get_app_by_id (plugin->priv->store, id);
+	item = as_store_get_app_by_id (priv->store, id);
 	if (item == NULL &&
 	    gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
-		item = as_store_get_app_by_id_ignore_prefix (plugin->priv->store, id);
+		item = as_store_get_app_by_id_ignore_prefix (priv->store, id);
 		if (item != NULL)
 			g_debug ("found %s for wildcard %s", as_app_get_id (item), id);
 	}
@@ -288,6 +291,7 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 			       GsApp *app,
 			       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item = NULL;
 	GPtrArray *sources;
 	const gchar *pkgname;
@@ -297,7 +301,7 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	sources = gs_app_get_sources (app);
 	for (i = 0; i < sources->len && item == NULL; i++) {
 		pkgname = g_ptr_array_index (sources, i);
-		item = as_store_get_app_by_pkgname (plugin->priv->store,
+		item = as_store_get_app_by_pkgname (priv->store,
 						    pkgname);
 		if (item == NULL)
 			g_debug ("no AppStream match for {pkgname} %s", pkgname);
@@ -320,12 +324,13 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GCancellable *cancellable,
 			       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item;
 	GPtrArray *array;
 	guint i;
 
 	/* find any upgrades */
-	array = as_store_get_apps (plugin->priv->store);
+	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		item = g_ptr_array_index (array, i);
@@ -377,6 +382,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *search_id1;
 	const gchar *search_id2 = NULL;
 	AsApp *item;
@@ -386,7 +392,8 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* get the two search terms */
-	ptask = as_profile_start_literal (plugin->profile, "appstream::add-category-apps");
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::add-category-apps");
 	search_id1 = gs_category_get_id (category);
 	parent = gs_category_get_parent (category);
 	if (parent != NULL)
@@ -399,7 +406,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	}
 
 	/* just look at each app in turn */
-	array = as_store_get_apps (plugin->priv->store);
+	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		item = g_ptr_array_index (array, i);
@@ -468,6 +475,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item;
 	GPtrArray *array;
 	gboolean ret = TRUE;
@@ -475,8 +483,9 @@ gs_plugin_add_search (GsPlugin *plugin,
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* search categories for the search term */
-	ptask = as_profile_start_literal (plugin->profile, "appstream::search");
-	array = as_store_get_apps (plugin->priv->store);
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::search");
+	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		if (g_cancellable_set_error_if_cancelled (cancellable, error))
 			return FALSE;
@@ -498,14 +507,16 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item;
 	GPtrArray *array;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* search categories for the search term */
-	ptask = as_profile_start_literal (plugin->profile, "appstream::add_installed");
-	array = as_store_get_apps (plugin->priv->store);
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::add_installed");
+	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		item = g_ptr_array_index (array, i);
 		if (as_app_get_state (item) == AS_APP_STATE_INSTALLED) {
@@ -574,14 +585,16 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			  GCancellable *cancellable,
 			  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *app;
 	GPtrArray *array;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* find out how many packages are in each category */
-	ptask = as_profile_start_literal (plugin->profile, "appstream::add-categories");
-	array = as_store_get_apps (plugin->priv->store);
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::add-categories");
+	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		app = g_ptr_array_index (array, i);
 		if (as_app_get_id (app) == NULL)
@@ -602,14 +615,16 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item;
 	GPtrArray *array;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* find out how many packages are in each category */
-	ptask = as_profile_start_literal (plugin->profile, "appstream::add-popular");
-	array = as_store_get_apps (plugin->priv->store);
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::add-popular");
+	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		item = g_ptr_array_index (array, i);
@@ -633,14 +648,16 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item;
 	GPtrArray *array;
 	guint i;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* find out how many packages are in each category */
-	ptask = as_profile_start_literal (plugin->profile, "appstream::add-featured");
-	array = as_store_get_apps (plugin->priv->store);
+	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+					  "appstream::add-featured");
+	array = as_store_get_apps (priv->store);
 	for (i = 0; i < array->len; i++) {
 		g_autoptr(GsApp) app = NULL;
 		item = g_ptr_array_index (array, i);

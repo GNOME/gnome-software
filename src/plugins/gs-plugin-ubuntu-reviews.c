@@ -32,7 +32,7 @@
 
 #include "gs-os-release.h"
 
-struct GsPluginPrivate {
+struct GsPluginData {
 	gchar		*db_path;
 	sqlite3		*db;
 	gsize		 db_loaded;
@@ -61,8 +61,7 @@ gs_plugin_get_name (void)
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	/* create private area */
-	plugin->priv = GS_PLUGIN_GET_PRIVATE (GsPluginPrivate);
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 
 	/* check that we are running on Ubuntu */
 	if (!gs_plugin_check_distro_id (plugin, "ubuntu")) {
@@ -71,7 +70,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 		return;
 	}
 
-	plugin->priv->db_path = g_build_filename (g_get_user_data_dir (),
+	priv->db_path = g_build_filename (g_get_user_data_dir (),
 						  "gnome-software",
 						  "ubuntu-reviews.db",
 						  NULL);
@@ -99,8 +98,7 @@ gs_plugin_get_conflicts (GsPlugin *plugin)
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
-	GsPluginPrivate *priv = plugin->priv;
-
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_clear_pointer (&priv->db, sqlite3_close);
 	g_free (priv->db_path);
 }
@@ -120,6 +118,7 @@ set_package_stats (GsPlugin *plugin,
 		   Histogram *histogram,
 		   GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	char *error_msg = NULL;
 	gint result;
 	g_autofree gchar *statement = NULL;
@@ -130,7 +129,7 @@ set_package_stats (GsPlugin *plugin,
 				     "VALUES ('%s', '%" G_GINT64_FORMAT "', '%" G_GINT64_FORMAT"', '%" G_GINT64_FORMAT "', '%" G_GINT64_FORMAT "', '%" G_GINT64_FORMAT "');",
 				     package_name, histogram->one_star_count, histogram->two_star_count,
 				     histogram->three_star_count, histogram->four_star_count, histogram->five_star_count);
-	result = sqlite3_exec (plugin->priv->db, statement, NULL, NULL, &error_msg);
+	result = sqlite3_exec (priv->db, statement, NULL, NULL, &error_msg);
 	if (result != SQLITE_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -156,7 +155,7 @@ set_timestamp (GsPlugin *plugin,
 				     "VALUES ('%s', '%" G_GINT64_FORMAT "');",
 				     type,
 				     g_get_real_time () / G_USEC_PER_SEC);
-	result = sqlite3_exec (plugin->priv->db, statement, NULL, NULL, &error_msg);
+	result = sqlite3_exec (priv->db, statement, NULL, NULL, &error_msg);
 	if (result != SQLITE_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -190,6 +189,7 @@ get_review_stats (GsPlugin *plugin,
 		  gint *review_ratings,
 		  GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	Histogram histogram = { 0, 0, 0, 0, 0 };
 	gchar *error_msg = NULL;
 	gint result, n_ratings;
@@ -198,7 +198,7 @@ get_review_stats (GsPlugin *plugin,
 	/* Get histogram from the database */
 	statement = g_strdup_printf ("SELECT one_star_count, two_star_count, three_star_count, four_star_count, five_star_count FROM review_stats "
 				     "WHERE package_name = '%s'", package_name);
-	result = sqlite3_exec (plugin->priv->db,
+	result = sqlite3_exec (priv->db,
 			       statement,
 			       get_review_stats_sqlite_cb,
 			       &histogram,
@@ -323,7 +323,7 @@ send_review_request (GsPlugin *plugin, const gchar *method, const gchar *path, J
 		soup_message_set_request (msg, "application/json", SOUP_MEMORY_TAKE, data, length);
 	}
 
-	status_code = soup_session_send_message (plugin->soup_session, msg);
+	status_code = soup_session_send_message (gs_plugin_get_soup_session (plugin), msg);
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -378,6 +378,7 @@ download_review_stats (GsPlugin *plugin, GError **error)
 static gboolean
 load_database (GsPlugin *plugin, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *statement;
 	gboolean rebuild_ratings = FALSE;
 	char *error_msg = NULL;
@@ -386,25 +387,25 @@ load_database (GsPlugin *plugin, GError **error)
 	gint64 now;
 	g_autoptr(GError) error_local = NULL;
 
-	g_debug ("trying to open database '%s'", plugin->priv->db_path);
-	if (!gs_mkdir_parent (plugin->priv->db_path, error))
+	g_debug ("trying to open database '%s'", priv->db_path);
+	if (!gs_mkdir_parent (priv->db_path, error))
 		return FALSE;
-	result = sqlite3_open (plugin->priv->db_path, &plugin->priv->db);
+	result = sqlite3_open (priv->db_path, &priv->db);
 	if (result != SQLITE_OK) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "Can't open Ubuntu review statistics database: %s",
-			     sqlite3_errmsg (plugin->priv->db));
+			     sqlite3_errmsg (priv->db));
 		return FALSE;
 	}
 
 	/* We don't need to keep doing fsync */
-	sqlite3_exec (plugin->priv->db, "PRAGMA synchronous=OFF",
+	sqlite3_exec (priv->db, "PRAGMA synchronous=OFF",
 		      NULL, NULL, NULL);
 
 	/* Create a table to store the stats */
-	result = sqlite3_exec (plugin->priv->db, "SELECT * FROM review_stats LIMIT 1", NULL, NULL, &error_msg);
+	result = sqlite3_exec (priv->db, "SELECT * FROM review_stats LIMIT 1", NULL, NULL, &error_msg);
 	if (result != SQLITE_OK) {
 		g_debug ("creating table to repair: %s", error_msg);
 		sqlite3_free (error_msg);
@@ -415,12 +416,12 @@ load_database (GsPlugin *plugin, GError **error)
 			    "three_star_count INTEGER DEFAULT 0,"
 			    "four_star_count INTEGER DEFAULT 0,"
 			    "five_star_count INTEGER DEFAULT 0);";
-		sqlite3_exec (plugin->priv->db, statement, NULL, NULL, NULL);
+		sqlite3_exec (priv->db, statement, NULL, NULL, NULL);
 		rebuild_ratings = TRUE;
 	}
 
 	/* Create a table to store local reviews */
-	result = sqlite3_exec (plugin->priv->db, "SELECT * FROM reviews LIMIT 1", NULL, NULL, &error_msg);
+	result = sqlite3_exec (priv->db, "SELECT * FROM reviews LIMIT 1", NULL, NULL, &error_msg);
 	if (result != SQLITE_OK) {
 		g_debug ("creating table to repair: %s", error_msg);
 		sqlite3_free (error_msg);
@@ -432,12 +433,12 @@ load_database (GsPlugin *plugin, GError **error)
 			    "rating INTEGER,"
 			    "summary TEXT,"
 			    "text TEXT);";
-		sqlite3_exec (plugin->priv->db, statement, NULL, NULL, NULL);
+		sqlite3_exec (priv->db, statement, NULL, NULL, NULL);
 		rebuild_ratings = TRUE;
 	}
 
 	/* Create a table to store timestamps */
-	result = sqlite3_exec (plugin->priv->db,
+	result = sqlite3_exec (priv->db,
 			       "SELECT value FROM timestamps WHERE key = 'stats_mtime' LIMIT 1",
 			       get_timestamp_sqlite_cb, &stats_mtime,
 			       &error_msg);
@@ -447,7 +448,7 @@ load_database (GsPlugin *plugin, GError **error)
 		statement = "CREATE TABLE timestamps ("
 			    "key TEXT PRIMARY KEY,"
 			    "value INTEGER DEFAULT 0);";
-		sqlite3_exec (plugin->priv->db, statement, NULL, NULL, NULL);
+		sqlite3_exec (priv->db, statement, NULL, NULL, NULL);
 
 		/* Set the time of database creation */
 		if (!set_timestamp (plugin, "stats_ctime", error))
@@ -565,7 +566,7 @@ get_language (GsPlugin *plugin)
 	gchar *language, *c;
 
 	/* Convert locale into language */
-	language = g_strdup (plugin->locale);
+	language = g_strdup (gs_plugin_get_locale (plugin));
 	c = strchr (language, '_');
 	if (c)
 		*c = '\0';
@@ -593,13 +594,14 @@ download_reviews (GsPlugin *plugin, GsApp *app, const gchar *package_name, GErro
 static gboolean
 refine_rating (GsPlugin *plugin, GsApp *app, GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *sources;
 	guint i;
 
 	/* Load database once */
-	if (g_once_init_enter (&plugin->priv->db_loaded)) {
+	if (g_once_init_enter (&priv->db_loaded)) {
 		gboolean ret = load_database (plugin, error);
-		g_once_init_leave (&plugin->priv->db_loaded, TRUE);
+		g_once_init_leave (&priv->db_loaded, TRUE);
 		if (!ret)
 			return FALSE;
 	}
