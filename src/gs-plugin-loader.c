@@ -538,6 +538,7 @@ static gboolean
 gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 {
 	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_OS_UPGRADE:
 	case AS_APP_KIND_CODEC:
 	case AS_APP_KIND_FONT:
 		g_debug ("app invalid as %s: %s",
