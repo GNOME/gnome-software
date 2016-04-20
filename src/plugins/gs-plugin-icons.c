@@ -128,17 +128,23 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* invalid */
 	if (gs_app_get_pixbuf (app) != NULL)
 		return TRUE;
-	if (gs_app_get_icon (app) == NULL)
+	ic = gs_app_get_icon (app);
+	if (ic == NULL)
 		return TRUE;
 
+	/* handle LOCAL and STOCK */
+	if (as_icon_get_kind (ic) == AS_ICON_KIND_LOCAL ||
+	    as_icon_get_kind (ic) == AS_ICON_KIND_STOCK) {
+		return gs_app_load_icon (app, plugin->scale, error);
+	}
+
 	/* not applicable */
-	ic = gs_app_get_icon (app);
 	if (as_icon_get_url (ic) == NULL)
 		return TRUE;
 	if (as_icon_get_filename (ic) == NULL)
 		return TRUE;
 
-	/* local */
+	/* a REMOTE that's really LOCAL */
 	if (g_str_has_prefix (as_icon_get_url (ic), "file://")) {
 		as_icon_set_filename (ic, as_icon_get_url (ic) + 7);
 		as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
