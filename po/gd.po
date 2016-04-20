@@ -1,14 +1,14 @@
 # Scottish Gaelic translation for gnome-software.
 # Copyright (C) 2015 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-software package.
-# GunChleoc <fios@foramnagaidhlig.net>, 2015.
+# GunChleoc <fios@foramnagaidhlig.net>, 2015, 2016.
 msgid ""
 msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2015-11-16 10:19+0000\n"
-"PO-Revision-Date: 2015-11-16 14:34+0100\n"
+"POT-Creation-Date: 2016-04-20 09:47+0000\n"
+"PO-Revision-Date: 2016-04-20 13:19+0100\n"
 "Last-Translator: GunChleoc <fios@foramnagaidhlig.net>\n"
 "Language-Team: Fòram na Gàidhlig\n"
 "Language: gd\n"
@@ -18,6 +18,7 @@ msgstr ""
 "Plural-Forms: nplurals=4; plural=(n==1 || n==11) ? 0 : (n==2 || n==12) ? 1 : "
 "(n > 2 && n < 20) ? 2 : 3;\n"
 "X-Generator: Virtaal 0.7.1\n"
+"X-Launchpad-Export-Date: 2016-04-20 09:04+0000\n"
 "X-Project-Style: gnome\n"
 
 #: ../data/appdata/org.gnome.Software.appdata.xml.in.h:1
@@ -48,49 +49,129 @@ msgstr ""
 "greim air tu aplacaidean le brabhsadh tron na roinnean-seòrsa no le lorg. 'S "
 "urrainn dhut an siostam agad ùrachadh le ùrachadh far loidhne leis cuideachd."
 
-#: ../src/app-folder-dialog.ui.h:1
+#: ../data/org.gnome.software.gschema.xml.h:1
+msgid "A list of compatible projects"
+msgstr "Liosta dhe na pròiseactan co-chòrdail"
+
+#: ../data/org.gnome.software.gschema.xml.h:2
+msgid ""
+"This is a list of compatible projects we should show such as GNOME, KDE and "
+"XFCE."
+msgstr ""
+"Seo liosta dhe na pròiseactan co-chòrdail a bu chòir dhuinn sealltainn mar "
+"GNOME, KDE agus XFCE."
+
+#: ../data/org.gnome.software.gschema.xml.h:3
+msgid "Whether to automatically download updates"
+msgstr ""
+"Co-dhiù an dèid ùrachaidhean a luchdadh a-nuas gu fèin-obrachail gus nach "
+"dèid"
+
+#: ../data/org.gnome.software.gschema.xml.h:4
+msgid ""
+"If enabled, GNOME Software automatically downloads updates in the background "
+"and prompts the user to install them when ready."
+msgstr ""
+"Ma tha seo an comas, luchdaichidh Bathar-bog GNOME a-nuas ùrachaidhean gu "
+"fèin-obrachail sa chùlaibh agus iarraidh e air a' chleachdaiche an stàladh "
+"nuair a bhios iad deiseil."
+
+#: ../data/org.gnome.software.gschema.xml.h:5
+msgid "Whether it's the very first run of GNOME Software"
+msgstr "Ge b' e seo a' chiad turas a tha  Bathar-bog GNOME 'ga ruith"
+
+#: ../data/org.gnome.software.gschema.xml.h:6
+msgid "Show star ratings next to applications"
+msgstr "Seall rionnagan rangachaidh ris na h-aplacaidean"
+
+#: ../data/org.gnome.software.gschema.xml.h:7
+msgid "Non-free applications show a warning dialog before install"
+msgstr ""
+"Seallaidh aplacaidean nach eil saor còmhradh rabhaidh mus dèid an stàladh"
+
+#: ../data/org.gnome.software.gschema.xml.h:8
+msgid ""
+"When non-free applications are installed a warning dialog can be shown. This "
+"controls if that dialog is suppressed."
+msgstr ""
+"Cò-dhiù an gabh còmhradh rabhaidh sealltainn nuair a thèid aplacaidean nach "
+"eil saor an stàladh. Stiùirichidh seo an dèid an còmhradh ud a mhùchadh gus "
+"nach dèid."
+
+#: ../data/org.gnome.software.gschema.xml.h:9
+msgid "A list of popular applications"
+msgstr "Liosta dhe dh'aplacaidean air a bheil fèill mhòr"
+
+#: ../data/org.gnome.software.gschema.xml.h:10
+msgid "A list of applications to use, overriding the system defined ones."
+msgstr ""
+"Liosta dhe na h-aplacaidean ri an cleachdadh seach an fheadhainn a mhìnich "
+"an siostam."
+
+#: ../data/org.gnome.software.gschema.xml.h:11
+msgid "The list of extra sources that have been previously enabled"
+msgstr "Liosta dhe na tùsan a bharrachd a chaidh a chur an comas roimhe"
+
+#: ../data/org.gnome.software.gschema.xml.h:12
+msgid ""
+"The list of sources that have been previously enabled when installing third-"
+"party applications."
+msgstr ""
+"An liosta dhe na tùsan a chaidh a chur an comas roimhe le stàladh aplacaid "
+"treas-phartaidh."
+
+#: ../data/org.gnome.software.gschema.xml.h:13
+msgid "The last update check timestamp"
+msgstr "An àm mu dheireadh a chaidh sùil a thoirt airson ùrachadh"
+
+#: ../data/org.gnome.software.gschema.xml.h:14
+msgid "The timestamp of the first security update, cleared after update"
+msgstr ""
+"An stampa-tìde aig a' chiad ùrachadh tèarainteachd, thèid fhalamhachadh às "
+"dèidh an ùrachaidh"
+
+#: ../data/org.gnome.software.gschema.xml.h:15
+msgid "The last update timestamp"
+msgstr "An stampa-tìde aig an ùrachadh mu dheireadh"
+
+#: ../data/org.gnome.software.gschema.xml.h:16
+msgid "The server to use for application reviews"
+msgstr "Am frithealaiche a thèid a chleachdadh airson lèirmheasan aplacaidean"
+
+#: ../data/org.gnome.software.gschema.xml.h:17
+msgid "The minimum karma score for reviews"
+msgstr "An sgòr karma as lugha airson lèirmheasan"
+
+#: ../data/org.gnome.software.gschema.xml.h:18
+msgid "Reviews with karma less than this number will not be shown."
+msgstr "Cha nochd lèirmheasan aig a bheil nas lugha na an karma seo."
+
+#: ../data/org.gnome.software.gschema.xml.h:19
+msgid "A list of official sources that should not be considered 3rd party"
+msgstr "Liosta dhe na tùsan oifigeil nach eil 'nan treas-phartaidh"
+
+#: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Cuir ri pasgan nan aplacaid"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:315
-#: ../src/gs-shell-details.c:263 ../src/gs-shell-installed.c:523
+#: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:305
+#: ../src/gs-shell-installed.c:515 ../src/gs-upgrade-banner.ui.h:4
 msgid "_Cancel"
 msgstr "_Sguir dheth"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:320
+#: ../src/gs-app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:321
 msgid "_Add"
 msgstr "_Cuir ris"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:96 ../src/gs-app-tile.c:72
-#: ../src/gs-app-tile.c:75 ../src/gs-feature-tile.c:67
-#: ../src/gs-popular-tile.c:73 ../src/gs-popular-tile.c:76
-#: ../src/popular-tile.ui.h:1
+#: ../src/gs-app-tile.ui.h:1 ../src/gs-app-addon-row.c:97
+#: ../src/gs-app-tile.c:78 ../src/gs-app-tile.c:81 ../src/gs-feature-tile.c:68
+#: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
+#: ../src/gs-popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Air a stàladh"
-
-#. TRANSLATORS: this is the application name
-#. set the window title back to default
-#. TRANSLATORS: this is the main window title
-#: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:349 ../src/gs-shell.c:159
-msgid "Software"
-msgstr "Bathar-bog"
-
-#: ../src/org.gnome.Software.desktop.in.h:2
-msgid "Add, remove or update software on this computer"
-msgstr "Cuir ris, thoir air falbh no ùraich bathar-bog air a' choimpiutair seo"
-
-#: ../src/org.gnome.Software.desktop.in.h:3
-msgid ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;"
-msgstr ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;ùrachadh;ùrachaidhean;ùraich;àrdachadh;àrdaich;tùsan;"
-"ionad-tasgaidh;ionadan-tasgaidh;stàlaidh;stàladh;dì-stàlaich;dì-stàladh;"
-"prògram;bathar-bog;aplacaid;bùth;"
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
 msgid "Software Install"
@@ -107,6 +188,14 @@ msgstr "Tagh na h-uile"
 #: ../src/gnome-software.ui.h:2
 msgid "Select None"
 msgstr "Na tagh gin"
+
+#. TRANSLATORS: this is the application name
+#. set the window title back to default
+#. TRANSLATORS: this is the main window title
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:374
+#: ../src/gs-shell.c:253 ../src/org.gnome.Software.desktop.in.h:1
+msgid "Software"
+msgstr "Bathar-bog"
 
 #. vim: set noexpandtab:
 #: ../src/gnome-software.ui.h:4 ../src/gs-sources-dialog.ui.h:2
@@ -129,84 +218,9 @@ msgstr "A_ir a stàladh"
 msgid "_Updates"
 msgstr "Ù_rachaidhean"
 
-#: ../src/gnome-software.ui.h:11
-msgid "Restart & _Install"
-msgstr "Tòisich às ùr ⁊ stàlaich"
-
-#: ../src/gnome-software.ui.h:12
-msgid "Select"
-msgstr "Tagh"
-
-#: ../src/gnome-software.ui.h:13
-msgid "Check for updates"
-msgstr "Thoir sùil airson ùrachaidhean"
-
-#: ../src/gs-app-folder-dialog.c:304
-msgid "Folder Name"
-msgstr "Ainm a' phasgain"
-
-#. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:96
-msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
-msgstr "Modh tòiseachaidh: ‘updates’, ‘updated’, ‘installed’ no ‘overview’"
-
-#: ../src/gs-application.c:96
-msgid "MODE"
-msgstr "MODH"
-
-#: ../src/gs-application.c:98
-msgid "Search for applications"
-msgstr "Lorg airson aplacaidean"
-
-#: ../src/gs-application.c:98
-msgid "SEARCH"
-msgstr "LORG"
-
-#: ../src/gs-application.c:100
-msgid "Show application details"
-msgstr "Seall fiosrachadh na h-aplacaid"
-
-#: ../src/gs-application.c:100
-msgid "ID"
-msgstr "ID"
-
-#: ../src/gs-application.c:102
-msgid "Open a local package file"
-msgstr "Fosgail faidhle pacaid ionadail"
-
-#: ../src/gs-application.c:102
-msgid "FILENAME"
-msgstr "AINM AN FHAIDHLE"
-
-#: ../src/gs-application.c:104
-msgid "Show verbose debugging information"
-msgstr "Seall fiosrachadh dì-bhugachaidh briathrach"
-
-#: ../src/gs-application.c:106
-msgid "Show profiling information for the service"
-msgstr "Seall fiosrachadh pròifileadh airson na seirbheise"
-
-#: ../src/gs-application.c:108
-msgid "Prefer local file sources to AppStream"
-msgstr "'S fhearr leam tùsan faidhle ionadail na AppStream"
-
-#. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:347
-msgid "About Software"
-msgstr "Mu bhathar-bog"
-
-#. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:352
-msgid "A nice way to manage the software on your system."
-msgstr "Dòigh mhath gus am bathar-bog air an t-siostam agad a stiùireadh."
-
-#: ../src/gs-application.c:356
-msgid "translator-credits"
-msgstr "GunChleoc fios@foramnagaidhlig.net"
-
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:226
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:266
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Ri dhèiligeadh"
@@ -215,8 +229,8 @@ msgstr "Ri dhèiligeadh"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:100 ../src/gs-app-row.c:250
-#: ../src/gs-app-tile.c:81 ../src/gs-app-tile.c:84
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:304
+#: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
 msgid "Installing"
 msgstr "'Ga stàladh"
 
@@ -224,66 +238,184 @@ msgstr "'Ga stàladh"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:104 ../src/gs-app-row.c:259
-#: ../src/gs-app-tile.c:90 ../src/gs-app-tile.c:93
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:313
+#: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
 msgid "Removing"
 msgstr "'Ga thoirt air falbh"
 
-#. TRANSLATORS: This is how we join the licences and can
+#. TRANSLATORS: This is how we join the licenses and can
 #. * be considered a "Conjunctive AND Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1299 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1386 ../src/gs-shell-extras.c:145
 msgid " and "
 msgstr " 's "
 
-#. TRANSLATORS: This is how we join the licences and can
+#. TRANSLATORS: This is how we join the licenses and can
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1307
+#: ../src/gs-app.c:1394
 msgid " or "
 msgstr " no "
 
+#. TRANSLATORS: non-free app
+#: ../src/gs-app.c:1417
+msgid "Proprietary"
+msgstr "Fo sheilbh"
+
+#. TRANSLATORS: see the wikipedia page
+#: ../src/gs-app.c:1427
+msgid "Public domain"
+msgstr "Public Domain"
+
+#: ../src/gs-app-folder-dialog.c:305
+msgid "Folder Name"
+msgstr "Ainm a' phasgain"
+
+#. TRANSLATORS: this is a command line option
+#: ../src/gs-application.c:97
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr "Modh tòiseachaidh: ‘updates’, ‘updated’, ‘installed’ no ‘overview’"
+
+#: ../src/gs-application.c:97
+msgid "MODE"
+msgstr "MODH"
+
+#: ../src/gs-application.c:99
+msgid "Search for applications"
+msgstr "Lorg airson aplacaidean"
+
+#: ../src/gs-application.c:99
+msgid "SEARCH"
+msgstr "LORG"
+
+#: ../src/gs-application.c:101
+msgid "Show application details"
+msgstr "Seall fiosrachadh na h-aplacaid"
+
+#: ../src/gs-application.c:101
+msgid "ID"
+msgstr "ID"
+
+#: ../src/gs-application.c:103
+msgid "Open a local package file"
+msgstr "Fosgail faidhle pacaid ionadail"
+
+#: ../src/gs-application.c:103
+msgid "FILENAME"
+msgstr "AINM AN FHAIDHLE"
+
+#: ../src/gs-application.c:105
+msgid "Show verbose debugging information"
+msgstr "Seall fiosrachadh dì-bhugachaidh briathrach"
+
+#: ../src/gs-application.c:107
+msgid "Show profiling information for the service"
+msgstr "Seall fiosrachadh pròifileadh airson na seirbheise"
+
+#: ../src/gs-application.c:109
+msgid "Prefer local file sources to AppStream"
+msgstr "'S fhearr leam tùsan faidhle ionadail na AppStream"
+
+#: ../src/gs-application.c:111
+msgid "Show version number"
+msgstr "Seall àireamh an tionndaidh"
+
+#: ../src/gs-application.c:367
+msgid "translator-credits"
+msgstr ""
+"GunChleoc fios@foramnagaidhlig.net\n"
+"\n"
+"Launchpad Contributions:\n"
+"  GunChleoc https://launchpad.net/~gunchleoc"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:371
+msgid "About Software"
+msgstr "Mu bhathar-bog"
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:377
+msgid "A nice way to manage the software on your system."
+msgstr "Dòigh mhath gus am bathar-bog air an t-siostam agad a stiùireadh."
+
+#. TRANSLATORS: during the update the device
+#. * will restart into a special update-only mode
+#: ../src/gs-app-row.c:152
+msgid "Device cannot be used during update."
+msgstr "Cha ghabh an t-uidheam a chleachdadh rè ùrachaidh"
+
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:210
+#: ../src/gs-app-row.c:250
 msgid "Visit website"
 msgstr "Tadhail air an làrach-lìn"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:215
+#: ../src/gs-app-row.c:255
 msgid "Install…"
 msgstr "Stàlaich…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:223
+#: ../src/gs-app-row.c:263
 msgid "Cancel"
 msgstr "Sguir dheth"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
+#. TRANSLATORS: this is a button in the updates panel
+#. * that allows the app to be easily updated live
+#. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:233 ../src/gs-utils.c:313
+#: ../src/gs-app-row.c:273 ../src/gs-app-row.c:280 ../src/gs-page.c:282
+#: ../src/gs-utils.c:347
 msgid "Install"
 msgstr "Stàlaich"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:241 ../src/gs-page.c:177
+#: ../src/gs-app-row.c:284 ../src/gs-app-row.c:295 ../src/gs-page.c:350
 msgid "Remove"
 msgstr "Thoir air falbh"
 
+#. vim: set noexpandtab:
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:2 ../src/gs-shell-details.ui.h:31
+msgid "3rd party"
+msgstr "Treas-phartaidh"
+
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:4 ../src/gs-shell-details.ui.h:32
+msgid "web app"
+msgstr "aplacaid-lìn"
+
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:6
+msgid "nonfree"
+msgstr "chan eil e saor"
+
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:228
+#: ../src/gs-category.c:235
 msgid "Other"
 msgstr "Eile"
+
+#. TRANSLATORS: this is a subcategory matching all the
+#. * different apps in the parent category, e.g. "Games"
+#: ../src/gs-category.c:239
+msgid "All"
+msgstr "Na h-uile"
+
+#. TRANSLATORS: this is a subcategory of featured apps
+#: ../src/gs-category.c:242
+msgid "Featured"
+msgstr "Brosnaichte"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: ../src/gs-dbus-helper.c:307
@@ -399,7 +531,7 @@ msgstr "Air a stàladh"
 
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing the application was updated
-#: ../src/gs-history-dialog.c:94
+#: ../src/gs-history-dialog.c:95
 msgctxt "app status"
 msgid "Updated"
 msgstr "Air ùrachadh"
@@ -407,7 +539,7 @@ msgstr "Air ùrachadh"
 #. TRANSLATORS: this is the status in the history UI,
 #. * where we are showing that something happened to the
 #. * application but we don't know what
-#: ../src/gs-history-dialog.c:100
+#: ../src/gs-history-dialog.c:101
 msgctxt "app status"
 msgid "Unknown"
 msgstr "Chan eil fhios"
@@ -417,101 +549,22 @@ msgstr "Chan eil fhios"
 msgid "History"
 msgstr "Eachdraidh"
 
-#. TRANSLATORS: the transaction could not be completed
-#. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:47
-msgid "A previous update was unfinished."
-msgstr "Cha do chuireadh crìoch air ùrachadh roimhe."
-
-#. TRANSLATORS: the package manager needed to download
-#. * something with no network available
-#: ../src/gs-offline-updates.c:56
-msgid ""
-"Internet access was required but wasn’t available. Please make sure that you "
-"have internet access and try again."
-msgstr ""
-"Bha feum air ceangal dhan eadar-lìon ach cha robh e ri fhaighinn. Dèan "
-"cinnteach gu bheil inntrigeadh dhan eadar-lìon agad is feuch ris a-rithist."
-
-#. TRANSLATORS: if the package is not signed correctly
-#. *
-#: ../src/gs-offline-updates.c:66
-msgid ""
-"There were security issues with the update. Please consult your software "
-"provider for more details."
-msgstr ""
-"Bha duilgheadasan tèarainteachd ann leis an ùrachadh. Iarr barrachd "
-"fiosrachaidh air solaraiche a' bhathair-bhog agad."
-
-#. TRANSLATORS: the transaction failed in a way the user
-#. * probably cannot comprehend. Package management systems
-#. * really are teh suck.
-#. TRANSLATORS: the update process failed in a general
-#. * way, usually this message will come from source distros
-#. * like gentoo
-#: ../src/gs-offline-updates.c:76 ../src/gs-offline-updates.c:99
-msgid ""
-"The update couldn’t be installed; this is often a problem with the update "
-"itself. Please wait for another update and try again."
-msgstr ""
-"Cha b' urrainn dhuinn an t-ùrachadh a stàladh; 's e duilgheadas leis an "
-"ùrachadh fhèin a th' ann mar as trice. Fuirich gus am bi ùrachadh eile ann "
-"is feuch ris a-rithist."
-
-#. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:81
-msgid "The update was cancelled."
-msgstr "Chaidh sgur dhen urachadh."
-
-#. TRANSLATORS: the user must have updated manually after
-#. * the updates were prepared
-#: ../src/gs-offline-updates.c:87
-msgid "The system was already up to date."
-msgstr "Bha an siostam cho ùr 's a ghabhas mar-thà."
-
-#. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:91
-msgid ""
-"There wasn’t enough disk space. Please free up some space and try again."
-msgstr ""
-"Cha robh rum gu leòr air an diosga. Saoraich beagan ruim is feuch ris a-"
-"rithist."
-
-#. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:104
-msgid ""
-"We’re sorry: the update failed to install. Please wait for another update "
-"and try again. If the problem persists, contact your software provider."
-msgstr ""
-"Tha sinn duilich ach cha deach leinn an t-ùrachadh a stàladh. Fuirich gus am "
-"bi ùrachadh eile ann is feuch ris a-rithist. Ma bhios an duilgheadas seo ann "
-"fhathast an uairsin, cuir fios gu solaraiche a' bhathair-bhog agad."
-
-#. TRANSLATORS: these are geeky messages from the
-#. * package manager no mortal is supposed to understand,
-#. * but google might know what they mean
-#: ../src/gs-offline-updates.c:212
-msgid "Detailed errors from the package manager follow:"
-msgstr "Seo fiosrachadh air na mearachdan o mhanaidsear nam pacaidean:"
-
-#: ../src/gs-offline-updates.c:231 ../src/gs-shell-details.ui.h:20
-msgid "Details"
-msgstr "Fiosrachadh"
-
-#. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:282
-msgid "Failed To Update"
-msgstr "Dh'fhàillig leis an ùrachadh"
+#. TRANSLATORS: this is a prompt message, and
+#. * '%s' is an application summary, e.g. 'GNOME Clocks'
+#: ../src/gs-page.c:276
+#, c-format
+msgid "Prepare %s"
+msgstr "Ullaich %s"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:162
+#: ../src/gs-page.c:341
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "A bheil thu cinnteach gu bheil thu airson %s a thoirt air falbh?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:174
+#: ../src/gs-page.c:346
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr ""
@@ -520,13 +573,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:779
+#: ../src/gs-plugin-loader.c:676
 msgid "OS Updates"
 msgstr "Ùrachaidhean an t-siostaim-obrachaidh"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:784
+#: ../src/gs-plugin-loader.c:681
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "Gabhaidh seo a-steach piseach air an dèanadas, an t-seasmhachd agus an "
@@ -534,12 +587,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1427 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1395 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Chan eil codec ri làimh 'na thuilleadan airson an fhòrmait %s."
 
-#: ../src/gs-plugin-loader.c:1430
+#: ../src/gs-plugin-loader.c:1398
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -548,245 +601,231 @@ msgstr ""
 "Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus codec fhaighinn a "
 "chluicheas am fòrmat seo air an làrach-lìn."
 
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really bad application
+#: ../src/gs-review-dialog.c:93
+msgid "Hate it"
+msgstr "Is lugha orm i"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		Not a great application
+#: ../src/gs-review-dialog.c:97
+msgid "Don't like it"
+msgstr "Cha toigh leam i"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A fairly-good application
+#: ../src/gs-review-dialog.c:101
+msgid "It's OK"
+msgstr "Tha i ceart gu leòr"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A good application
+#: ../src/gs-review-dialog.c:105
+msgid "Like it"
+msgstr "Is toigh leam i"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really awesome application
+#: ../src/gs-review-dialog.c:109
+msgid "Love it"
+msgstr "Is fìor-thoigh leam i"
+
+#. TRANSLATORS: the review can't just be copied and pasted
+#: ../src/gs-review-dialog.c:131
+msgid "Please take more time writing the review"
+msgstr "Cuir seachad barrachd ùine a' sgrìobhadh an lèirmheis"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:135
+msgid "Please choose a star rating"
+msgstr "Tagh rionnag rangachaidh"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:139
+msgid "The summary is too short"
+msgstr "Tha an gearr-chunntas ro ghoirid"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:143
+msgid "The summary is too long"
+msgstr "Tha an gearr-chunntas ro fhada"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:147
+msgid "The description is too short"
+msgstr "Tha an tuairisgeul ro ghoirid"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:151
+msgid "The description is too long"
+msgstr "Tha an tuairisgeul ro fhada"
+
+#. vim: set noexpandtab:
+#. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
+#: ../src/gs-review-dialog.ui.h:2
+msgid "Post Review"
+msgstr "Dèan lèirmheas"
+
+#. Translators: A button to publish the user's opinion about the app.
+#: ../src/gs-review-dialog.ui.h:5
+msgid "_Post"
+msgstr "_Cuir a-null"
+
+#: ../src/gs-review-dialog.ui.h:6
+msgid "Rating"
+msgstr "Rangachadh"
+
+#: ../src/gs-review-dialog.ui.h:7
+msgid "Summary"
+msgstr "Gearr-chunntas"
+
+#: ../src/gs-review-dialog.ui.h:8
+msgid ""
+"Give a short summary of your review, for example: “Great app, would "
+"recommend”."
+msgstr ""
+"Thoir seachad gearr-chunntas air an lèirmheas agad, can: “Sàr-aplacaid, "
+"mholainn-sa i”."
+
+#. Translators: This is where the users enter their opinions about the apps.
+#: ../src/gs-review-dialog.ui.h:10
+msgctxt "app review"
+msgid "Review"
+msgstr "Lèirmheas"
+
+#: ../src/gs-review-dialog.ui.h:11
+msgid "What do you think of the app? Try to give reasons for your views."
+msgstr ""
+"Dè do bheachd air an aplacaid? Feuch an doir thu seachad adhbharan airson do "
+"bheachdan."
+
+#: ../src/gs-review-histogram.ui.h:1
+msgid "Total"
+msgstr "Iomlan"
+
+#. TRANSLATORS: we explain what the action is going to do
+#: ../src/gs-review-row.c:207
+msgid "You can report reviews for abusive, rude, or discriminatory behavior."
+msgstr ""
+"'S urrainn dhut aithris a dhèanamh air lèirmheasan ri linn droch-chainnt, mì-"
+"mhodha no giùlain leth-bhreithich."
+
+#. TRANSLATORS: we ask the user if they really want to do this
+#: ../src/gs-review-row.c:212
+msgid ""
+"Once reported, a review will be hidden until it has been checked by an "
+"administrator."
+msgstr ""
+"Nuair a bhios aithris air a dhèanamh air, thèid lèirmheas fhalach gus an dug "
+"rianaire sùil air."
+
+#. TRANSLATORS: window title when
+#. * reporting a user-submitted review
+#. * for moderation
+#: ../src/gs-review-row.c:226
+msgid "Report Review?"
+msgstr "Ag aithris lèirmheas"
+
+#. TRANSLATORS: button text when
+#. * sending a review for moderation
+#: ../src/gs-review-row.c:230
+msgid "Report"
+msgstr "Dèan aithris"
+
+#. vim: set noexpandtab:
+#. Translators: Users can express their opinions about other users' opinions about the apps.
+#: ../src/gs-review-row.ui.h:2
+msgid "Was this review useful to you?"
+msgstr "A bheil an lèirmheas seo feumail dhut?"
+
+#: ../src/gs-review-row.ui.h:3
+msgid "Yes"
+msgstr "Tha"
+
+#: ../src/gs-review-row.ui.h:4
+msgid "No"
+msgstr "Chan eil"
+
+#. Translators: Button text for indifference, only used when moderating
+#: ../src/gs-review-row.ui.h:6
+msgid "Meh"
+msgstr "Coma co-dhiù"
+
+#: ../src/gs-review-row.ui.h:7
+msgid "Report…"
+msgstr "Dèan aithris…"
+
+#: ../src/gs-review-row.ui.h:8
+msgid "Remove…"
+msgstr "Thoir air falbh…"
+
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:233
+#: ../src/gs-screenshot-image.c:232
 msgid "Screenshot not found"
 msgstr "Cha deach glacadh-sgrìn a lorg"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:249
+#: ../src/gs-screenshot-image.c:248
 msgid "Failed to load image"
 msgstr "Dh'fhàillig le luchdadh an deilbh"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:376
+#: ../src/gs-screenshot-image.c:379
 msgid "Screenshot size not found"
 msgstr "Cha deach meud a' ghlacaidh-sgrìn a lorg"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:395
+#: ../src/gs-screenshot-image.c:405
 msgid "Could not create cache"
 msgstr "Cha b' urrainn dhuinn tasgadan a chruthachadh"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:425
+#: ../src/gs-screenshot-image.c:433
 msgid "Screenshot not valid"
 msgstr "Chan eil an glacadh-sgrìn mar bu chòir"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:441
+#: ../src/gs-screenshot-image.c:449
 msgid "Screenshot not available"
 msgstr "Chan eil glacadh-sgrìn ri làimh"
 
-#: ../src/gs-screenshot-image.c:493
+#: ../src/gs-screenshot-image.c:500
 msgid "Screenshot"
 msgstr "Glacadh-sgrìn"
 
-#. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:149
-msgid ", "
-msgstr ", "
-
-#. TRANSLATORS: Application window title for fonts installation.
-#. %s will be replaced by name of the script we're searching for.
-#: ../src/gs-shell-extras.c:175
-#, c-format
-msgid "Available fonts for the %s script"
-msgid_plural "Available fonts for the %s scripts"
-msgstr[0] "Cruthan-clò ri am faighinn airson an sgriobt %s"
-msgstr[1] "Cruthan-clò ri am faighinn airson nan sgriobtaichean %s"
-msgstr[2] "Cruthan-clò ri am faighinn airson nan sgriobtaichean %s"
-msgstr[3] "Cruthan-clò ri am faighinn airson nan sgriobtaichean %s"
-
-#. TRANSLATORS: Application window title for codec installation.
-#. %s will be replaced by actual codec name(s)
-#: ../src/gs-shell-extras.c:183
-#, c-format
-msgid "Available software for %s"
-msgid_plural "Available software for %s"
-msgstr[0] "Bathar-bog ri fhaighinn airson %s"
-msgstr[1] "Bathar-bog ri fhaighinn airson %s"
-msgstr[2] "Bathar-bog ri fhaighinn airson %s"
-msgstr[3] "Bathar-bog ri fhaighinn airson %s"
-
-#: ../src/gs-shell-extras.c:225
-msgid "Unable to Find Requested Software"
-msgstr "Cha deach leinn am bathar-bog a chaidh iarraidh a lorg"
-
-#. TRANSLATORS: This string is used for codecs that weren't found
-#: ../src/gs-shell-extras.c:321
-#, c-format
-msgid "%s not found"
-msgstr "Cha deach %s a lorg"
-
-#. TRANSLATORS: hyperlink title
-#: ../src/gs-shell-extras.c:325
-msgid "on the website"
-msgstr "air an làrach-lìn"
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:332
-#, c-format
-msgid "No applications are available that provide the file %s."
-msgstr "Chan eil aplacaid ri làimh a bheir am faidhle %s dhut."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:336 ../src/gs-shell-extras.c:347
-#: ../src/gs-shell-extras.c:358
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get missing applications "
-"might be found %s."
-msgstr ""
-"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus na h-aplacaidean a "
-"tha a dhìth fhaighinn air %s ma dh'fhaoidte."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:343 ../src/gs-shell-extras.c:365
-#, c-format
-msgid "No applications are available for %s support."
-msgstr "Chan eil aplacaid ri làimh a bheir taic ri %s."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:354
-#, c-format
-msgid "%s is not available."
-msgstr "Chan eil %s ri làimh."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:369
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get an application that "
-"can support this format might be found %s."
-msgstr ""
-"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus aplacaid fhaighinn "
-"a bheir taic dhan fhòrmat seo air %s ma dh'fhaoidte."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:376
-#, c-format
-msgid "No fonts are available for the %s script support."
-msgstr "Chan eil cruth-clò ri fhaighinn a bheir taic ris an sgriobt %s."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:380
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get additional fonts "
-"might be found %s."
-msgstr ""
-"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus barrachd chruthan-"
-"clò fhaighinn air %s ma dh'fhaoidte."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:391
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get a codec that can "
-"play this format might be found %s."
-msgstr ""
-"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus codec fhaighinn a "
-"chluicheas am fòrmat seo air %s ma dh'fhaoidte."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:398
-#, c-format
-msgid "No Plasma resources are available for %s support."
-msgstr "Chan eil goireas Plasma ri làimh a bheir taic ri %s."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:402
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get additional Plasma "
-"resources might be found %s."
-msgstr ""
-"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus barrachd ghoireasan "
-"Plasma fhaighinn air %s ma dh'fhaoidte."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:409
-#, c-format
-msgid "No printer drivers are available for %s."
-msgstr "Chan eil draibhear clò-bhualadair ri làimh airson %s."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:413
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get a driver that "
-"supports this printer might be found %s."
-msgstr ""
-"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus draibhear fhaighinn "
-"bheir taic dhan chlò-bhualadair seo air %s ma dh'fhaoidte."
-
-#: ../src/gs-shell-extras.c:458
-msgid "this website"
-msgstr "an làrach-lìn seo"
-
-#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: ../src/gs-shell-extras.c:462
-#, c-format
-msgid ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
-msgid_plural ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
-msgstr[0] ""
-"Gu mì-fhortanach, cha deach an %s a bha thu a' sireadh a lorg. Tadhail air "
-"%s airson barrachd fiosrachaidh."
-msgstr[1] ""
-"Gu mì-fhortanach, cha deach an %s a bha thu a' sireadh a lorg. Tadhail air "
-"%s airson barrachd fiosrachaidh."
-msgstr[2] ""
-"Gu mì-fhortanach, cha deach na %s a bha thu a' sireadh a lorg. Tadhail air "
-"%s airson barrachd fiosrachaidh."
-msgstr[3] ""
-"Gu mì-fhortanach, cha deach na %s a bha thu a' sireadh a lorg. Tadhail air "
-"%s airson barrachd fiosrachaidh."
-
-#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
-#: ../src/gs-shell-extras.c:640
-msgid "Failed to find any search results"
-msgstr "Cha deach toradh a lorg"
-
-#: ../src/gs-shell-extras.c:809
-#, c-format
-msgid "%s file format"
-msgstr "fòrmat faidhle %s"
-
 #. vim: set noexpandtab:
-#: ../src/gs-shell-extras.ui.h:1
-msgid "Codecs page"
-msgstr "Duilleag nan codec"
+#: ../src/gs-shell-category.ui.h:1
+msgid ""
+"Extensions are used at your own risk. If you have any system problems, it is "
+"recommended to disable them."
+msgstr ""
+"Cleachdaidh tu leudachain air do chunnart fhèin. Ma dh'èireas duilgheadas "
+"sam bith leis an t-siostam, mholamaid gun cuir thu à comas iad."
+
+#: ../src/gs-shell-category.ui.h:2
+msgid "Extension Settings"
+msgstr "Roghainnean nan leudachan"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:178 ../src/gs-shell-details.ui.h:2
+#. TRANSLATORS: button text in the header when firmware
+#. * can be live-installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be live-updated
+#: ../src/gs-shell-details.c:201 ../src/gs-shell-details.c:227
+#: ../src/gs-shell-details.c:232 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-upgrade-banner.ui.h:5
 msgid "_Install"
 msgstr "_Stàlaich"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:189
+#: ../src/gs-shell-details.c:212
 msgid "_Installing"
 msgstr "'Ga _stàladh"
 
@@ -794,70 +833,98 @@ msgstr "'Ga _stàladh"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:206
+#: ../src/gs-shell-details.c:245
 msgid "_Install…"
 msgstr "_Stàlaich…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:250 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:292 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "Thoi_r air falbh"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:257
+#: ../src/gs-shell-details.c:299
 msgid "_Removing"
 msgstr "'Ga thoi_rt air falbh"
 
-#. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:629
+#. TRANSLATORS: this is where the license is not known
+#: ../src/gs-shell-details.c:669
 msgctxt "license"
 msgid "Unknown"
 msgstr "Chan eil fhios"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:642
+#: ../src/gs-shell-details.c:682
 msgctxt "version"
 msgid "Unknown"
 msgstr "Chan eil fhios"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:648
+#: ../src/gs-shell-details.c:688
 msgctxt "size"
 msgid "Calculating…"
 msgstr "'Ga àireamhachadh…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:651
+#: ../src/gs-shell-details.c:691
 msgctxt "size"
 msgid "Unknown"
 msgstr "Chan eil fhios"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:663
+#: ../src/gs-shell-details.c:703
 msgctxt "updated"
 msgid "Never"
 msgstr "A-riamh"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:677
+#: ../src/gs-shell-details.c:717
 msgctxt "menu category"
 msgid "None"
 msgstr "Chan eil gin"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:692
+#: ../src/gs-shell-details.c:734
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Chan eil fhios"
 
-#: ../src/gs-shell-details.c:902
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:780
+msgid ""
+"This application can only be used when there is an active internet "
+"connection."
+msgstr ""
+"Cha ghabh an aplacaid seo a chleachdadh ach fad a bhios tu ceangailte ris an "
+"eadar-lìon."
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:791
+msgid "This software comes from a 3rd party."
+msgstr "Tha am bathar-bog seo 'ga sholar le treas-phartaidh."
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:800
+msgid ""
+"This software comes from a 3rd party and may contain non-free components."
+msgstr ""
+"Tha am bathar-bog seo 'ga sholar le treas-phartaidh agus dh'fhaoidte nach "
+"eil gach co-phàirt aige saor."
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:809
+msgid "This software may contain non-free components."
+msgstr "Dh'fhaoidte nach eil gach co-phàirt aig a' bhathar-bhog seo saor."
+
+#: ../src/gs-shell-details.c:1135
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Cha deach leinn \"%s\" a lorg"
 
-#: ../src/gs-shell-details.c:949 ../src/gs-utils.c:162
+#. TRANSLATORS: install or removed failed
+#: ../src/gs-shell-details.c:1195 ../src/gs-utils.c:168
 msgid "Sorry, this did not work"
 msgstr "Duilich ach cha do dh'obraich seo"
 
@@ -921,74 +988,297 @@ msgid "Only use software sources that you trust."
 msgstr "Na cleachd ach bathar-bog sa bheil earbsa agad."
 
 #: ../src/gs-shell-details.ui.h:16
-msgid "Internet Only Application"
-msgstr "Aplacaid-lìn a-mhàin"
-
-#: ../src/gs-shell-details.ui.h:17
-msgid ""
-"This application can only be used when there is an active internet "
-"connection."
-msgstr ""
-"Cha ghabh an aplacaid seo a chleachdadh ach fad a bhios tu ceangailte ris an "
-"eadar-lìon."
-
-#: ../src/gs-shell-details.ui.h:18
 msgid "_Website"
 msgstr "_Làrach-lìn"
 
-#: ../src/gs-shell-details.ui.h:19
+#: ../src/gs-shell-details.ui.h:17
 msgid "_History"
 msgstr "_Eachdraidh"
 
-#: ../src/gs-shell-details.ui.h:21 ../src/gs-sources-dialog.ui.h:8
+#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:557
+msgid "Details"
+msgstr "Fiosrachadh"
+
+#: ../src/gs-shell-details.ui.h:19
+msgid "Localized in your Language"
+msgstr "Air eagar-theangachadh dhan chànan agad"
+
+#: ../src/gs-shell-details.ui.h:20
+msgid "Documentation"
+msgstr "Docamaideadh"
+
+#: ../src/gs-shell-details.ui.h:21
+msgid "Release Activity"
+msgstr "Gnìomhachd sgaoilidh"
+
+#: ../src/gs-shell-details.ui.h:22
+msgid "System Integration"
+msgstr "Filleadh a-steach dhan t-siostam"
+
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
 msgstr "Tionndadh"
 
-#: ../src/gs-shell-details.ui.h:22
+#: ../src/gs-shell-details.ui.h:24
 msgid "Updated"
 msgstr "Air ùrachadh"
 
-#: ../src/gs-shell-details.ui.h:23
+#: ../src/gs-shell-details.ui.h:25
 msgid "Category"
 msgstr "Roinn-seòrsa"
-
-#: ../src/gs-shell-details.ui.h:24
-msgid "Source"
-msgstr "Tùs"
-
-#: ../src/gs-shell-details.ui.h:25
-msgid "License"
-msgstr "Ceadachas"
 
 #: ../src/gs-shell-details.ui.h:26
 msgid "Size"
 msgstr "Meud"
 
 #: ../src/gs-shell-details.ui.h:27
+msgid "Source"
+msgstr "Tùs"
+
+#: ../src/gs-shell-details.ui.h:28
 msgid "Developer"
 msgstr "Leasaichear"
+
+#: ../src/gs-shell-details.ui.h:29
+msgid "License"
+msgstr "Ceadachas"
+
+#: ../src/gs-shell-details.ui.h:30
+msgid "non-free"
+msgstr "chan eil e saor"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:28 ../src/gs-shell-installed.c:440
-#: ../src/gs-update-list.c:105 ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-shell-details.ui.h:33 ../src/gs-shell-installed.c:433
+#: ../src/gs-update-list.c:129 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Tuilleadain"
 
-#: ../src/gs-shell-details.ui.h:29
+#: ../src/gs-shell-details.ui.h:34
 msgid "Selected add-ons will be installed with the application."
 msgstr "Thèid roghainn de thuilleadain a stàladh leis an aplacaid."
 
+#. Translators: Header of the section with other users' opinions about the app.
+#: ../src/gs-shell-details.ui.h:36
+msgid "Reviews"
+msgstr "Lèirmheasan"
+
+#. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
+#: ../src/gs-shell-details.ui.h:38
+msgid "_Write a Review"
+msgstr "Sgrìobh _lèirmheas"
+
+#. Translators: Button to return more application-submitted reviews.
+#: ../src/gs-shell-details.ui.h:40
+msgid "_Show More"
+msgstr "_Seall barrachd"
+
+#. TRANSLATORS: separator for a list of items
+#: ../src/gs-shell-extras.c:148
+msgid ", "
+msgstr ", "
+
+#. TRANSLATORS: Application window title for fonts installation.
+#. %s will be replaced by name of the script we're searching for.
+#: ../src/gs-shell-extras.c:174
+#, c-format
+msgid "Available fonts for the %s script"
+msgid_plural "Available fonts for the %s scripts"
+msgstr[0] "Cruthan-clò ri am faighinn airson an sgriobt %s"
+msgstr[1] "Cruthan-clò ri am faighinn airson nan sgriobtaichean %s"
+msgstr[2] "Cruthan-clò ri am faighinn airson nan sgriobtaichean %s"
+msgstr[3] "Cruthan-clò ri am faighinn airson nan sgriobtaichean %s"
+
+#. TRANSLATORS: Application window title for codec installation.
+#. %s will be replaced by actual codec name(s)
+#: ../src/gs-shell-extras.c:182
+#, c-format
+msgid "Available software for %s"
+msgid_plural "Available software for %s"
+msgstr[0] "Bathar-bog ri fhaighinn airson %s"
+msgstr[1] "Bathar-bog ri fhaighinn airson %s"
+msgstr[2] "Bathar-bog ri fhaighinn airson %s"
+msgstr[3] "Bathar-bog ri fhaighinn airson %s"
+
+#: ../src/gs-shell-extras.c:224
+msgid "Unable to Find Requested Software"
+msgstr "Cha deach leinn am bathar-bog a chaidh iarraidh a lorg"
+
+#. TRANSLATORS: This string is used for codecs that weren't found
+#: ../src/gs-shell-extras.c:320
+#, c-format
+msgid "%s not found"
+msgstr "Cha deach %s a lorg"
+
+#. TRANSLATORS: hyperlink title
+#: ../src/gs-shell-extras.c:324
+msgid "on the website"
+msgstr "air an làrach-lìn"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:331
+#, c-format
+msgid "No applications are available that provide the file %s."
+msgstr "Chan eil aplacaid ri làimh a bheir am faidhle %s dhut."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:335 ../src/gs-shell-extras.c:346
+#: ../src/gs-shell-extras.c:357
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get missing applications "
+"might be found %s."
+msgstr ""
+"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus na h-aplacaidean a "
+"tha a dhìth fhaighinn air %s ma dh'fhaoidte."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:342 ../src/gs-shell-extras.c:364
+#, c-format
+msgid "No applications are available for %s support."
+msgstr "Chan eil aplacaid ri làimh a bheir taic ri %s."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:353
+#, c-format
+msgid "%s is not available."
+msgstr "Chan eil %s ri làimh."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:368
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get an application that "
+"can support this format might be found %s."
+msgstr ""
+"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus aplacaid fhaighinn "
+"a bheir taic dhan fhòrmat seo air %s ma dh'fhaoidte."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:375
+#, c-format
+msgid "No fonts are available for the %s script support."
+msgstr "Chan eil cruth-clò ri fhaighinn a bheir taic ris an sgriobt %s."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:379
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get additional fonts "
+"might be found %s."
+msgstr ""
+"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus barrachd chruthan-"
+"clò fhaighinn air %s ma dh'fhaoidte."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:390
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a codec that can "
+"play this format might be found %s."
+msgstr ""
+"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus codec fhaighinn a "
+"chluicheas am fòrmat seo air %s ma dh'fhaoidte."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:397
+#, c-format
+msgid "No Plasma resources are available for %s support."
+msgstr "Chan eil goireas Plasma ri làimh a bheir taic ri %s."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:401
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get additional Plasma "
+"resources might be found %s."
+msgstr ""
+"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus barrachd ghoireasan "
+"Plasma fhaighinn air %s ma dh'fhaoidte."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:408
+#, c-format
+msgid "No printer drivers are available for %s."
+msgstr "Chan eil draibhear clò-bhualadair ri làimh airson %s."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:412
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a driver that "
+"supports this printer might be found %s."
+msgstr ""
+"Gheibh thu fiosrachadh mu %s cho math ri roghainnean gus draibhear fhaighinn "
+"bheir taic dhan chlò-bhualadair seo air %s ma dh'fhaoidte."
+
+#: ../src/gs-shell-extras.c:458
+msgid "this website"
+msgstr "an làrach-lìn seo"
+
+#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
+#: ../src/gs-shell-extras.c:462
+#, c-format
+msgid ""
+"Unfortunately, the %s you were searching for could not be found. Please see "
+"%s for more information."
+msgid_plural ""
+"Unfortunately, the %s you were searching for could not be found. Please see "
+"%s for more information."
+msgstr[0] ""
+"Gu mì-fhortanach, cha deach an %s a bha thu a' sireadh a lorg. Tadhail air "
+"%s airson barrachd fiosrachaidh."
+msgstr[1] ""
+"Gu mì-fhortanach, cha deach an %s a bha thu a' sireadh a lorg. Tadhail air "
+"%s airson barrachd fiosrachaidh."
+msgstr[2] ""
+"Gu mì-fhortanach, cha deach na %s a bha thu a' sireadh a lorg. Tadhail air "
+"%s airson barrachd fiosrachaidh."
+msgstr[3] ""
+"Gu mì-fhortanach, cha deach na %s a bha thu a' sireadh a lorg. Tadhail air "
+"%s airson barrachd fiosrachaidh."
+
+#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
+#: ../src/gs-shell-extras.c:640
+msgid "Failed to find any search results"
+msgstr "Cha deach toradh a lorg"
+
+#: ../src/gs-shell-extras.c:809
+#, c-format
+msgid "%s file format"
+msgstr "fòrmat faidhle %s"
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-extras.ui.h:1
+msgid "Codecs page"
+msgstr "Duilleag nan codec"
+
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:430
+#: ../src/gs-shell-installed.c:423
 msgid "System Applications"
 msgstr "Aplacaidean an t-siostaim"
 
-#: ../src/gs-shell-installed.c:531
+#: ../src/gs-shell-installed.c:523
 msgid "Click on items to select them"
 msgstr "Briog air nithean gus an taghadh"
+
+#: ../src/gs-shell-installed.c:714
+msgid "Select"
+msgstr "Tagh"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-installed.ui.h:1
@@ -1006,6 +1296,14 @@ msgstr "_Gluais gu pasgan…"
 #: ../src/gs-shell-installed.ui.h:4
 msgid "_Remove from Folder"
 msgstr "Thoi_r air falbh on phasgan"
+
+#: ../src/gs-shell-moderate.ui.h:1
+msgid "Moderate page"
+msgstr "Dèan maorsainneachd air an duilleag"
+
+#: ../src/gs-shell-moderate.ui.h:2
+msgid "There are no reviews to moderate"
+msgstr "Chan eil lèirmheas sam bith feumach air maorsainneachd"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:367
@@ -1036,7 +1334,7 @@ msgstr "Duilleag an fhoir-sheallaidh"
 msgid "Featured Application"
 msgstr "Aplacaid bhrosnaichte"
 
-#. Translators: This is a heading for software which has been featured (
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: ../src/gs-shell-overview.ui.h:4
 msgid "Editor's Picks"
 msgstr "Taghadh an deasaiche"
@@ -1059,113 +1357,95 @@ msgid "No Application Found"
 msgstr "Cha deach aplacaid a lorg"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:144
+#: ../src/gs-shell-updates.c:153
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:147
+#: ../src/gs-shell-updates.c:156
 msgid "%l:%M %p"
 msgstr "%l:%M%p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:153
+#: ../src/gs-shell-updates.c:162
 msgid "Yesterday, %R"
 msgstr "An-dè, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:157
+#: ../src/gs-shell-updates.c:166
 msgid "Yesterday, %l:%M %p"
 msgstr "An-dè, %l:%M%p"
 
-#: ../src/gs-shell-updates.c:160
+#: ../src/gs-shell-updates.c:169
 msgid "Two days ago"
 msgstr "A-bhòin-dè"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:171
 msgid "Three days ago"
 msgstr "Trì làithean air ais"
 
-#: ../src/gs-shell-updates.c:164
+#: ../src/gs-shell-updates.c:173
 msgid "Four days ago"
 msgstr "Ceithir làithean air ais"
 
-#: ../src/gs-shell-updates.c:166
+#: ../src/gs-shell-updates.c:175
 msgid "Five days ago"
 msgstr "Còig làithean air ais"
 
-#: ../src/gs-shell-updates.c:168
+#: ../src/gs-shell-updates.c:177
 msgid "Six days ago"
 msgstr "Sia làithean air ais"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:179
 msgid "One week ago"
 msgstr "Seachdain air ais"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:181
 msgid "Two weeks ago"
 msgstr "Dà sheachdain air ais"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:176
+#: ../src/gs-shell-updates.c:185
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:192
+#: ../src/gs-shell-updates.c:201
 msgid "Downloading new updates…"
 msgstr "A' luchdadh a-nuas ùrachaidhean ùra…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:196
+#: ../src/gs-shell-updates.c:205
 msgid "Looking for new updates…"
 msgstr "A' lorg ùrachaidhean ùra…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:251
+#: ../src/gs-shell-updates.c:246
 msgid "Setting up updates…"
 msgstr "A' suidheachadh nan ùrachaidhean…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:252 ../src/gs-shell-updates.c:259
+#: ../src/gs-shell-updates.c:247 ../src/gs-shell-updates.c:254
 msgid "(This could take a while)"
 msgstr "(Dh'fhaoidte gun doir seo greis)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:402
+#: ../src/gs-shell-updates.c:421
 #, c-format
 msgid "Last checked: %s"
 msgstr "An sgrùdadh mu dheireadh: %s"
 
-#. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:768
-msgid "No Network"
-msgstr "Chan eil lìonra ann"
-
-#. TRANSLATORS: we need network
-#. * to do the updates check
-#: ../src/gs-shell-updates.c:772
-msgid "Internet access is required to check for updates."
-msgstr ""
-"Tha feum air ceangal dhan eadar-lìon gus sùil a thoirt airson ùrachaidhean."
-
-#. TRANSLATORS: this is a link to the
-#. * control-center network panel
-#: ../src/gs-shell-updates.c:776
-msgid "Network Settings"
-msgstr "Roghainnean an lìonraidh"
-
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:795
+#: ../src/gs-shell-updates.c:826
 msgid "Charges may apply"
 msgstr "Dh'fhaoidte gum bi tàillean na lùib"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:799
+#: ../src/gs-shell-updates.c:830
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1175,9 +1455,35 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:803
+#: ../src/gs-shell-updates.c:834
 msgid "Check Anyway"
 msgstr "Thoir sùil co-dhiù"
+
+#. TRANSLATORS: can't do updates check
+#: ../src/gs-shell-updates.c:850
+msgid "No Network"
+msgstr "Chan eil lìonra ann"
+
+#. TRANSLATORS: we need network
+#. * to do the updates check
+#: ../src/gs-shell-updates.c:854
+msgid "Internet access is required to check for updates."
+msgstr ""
+"Tha feum air ceangal dhan eadar-lìon gus sùil a thoirt airson ùrachaidhean."
+
+#. TRANSLATORS: this is a link to the
+#. * control-center network panel
+#: ../src/gs-shell-updates.c:858
+msgid "Network Settings"
+msgstr "Roghainnean an lìonraidh"
+
+#: ../src/gs-shell-updates.c:1192
+msgid "Restart & _Install"
+msgstr "Tòisich às ùr ⁊ stàlaich"
+
+#: ../src/gs-shell-updates.c:1209
+msgid "Check for updates"
+msgstr "Thoir sùil airson ùrachaidhean"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-updates.ui.h:1
@@ -1185,10 +1491,14 @@ msgid "Updates page"
 msgstr "Duilleag nan ùrachaidhean"
 
 #: ../src/gs-shell-updates.ui.h:2
+msgid "Other Updates"
+msgstr "Ùrachaidhean eile"
+
+#: ../src/gs-shell-updates.ui.h:3
 msgid "Software is up to date"
 msgstr "Tha am bathar-bog cho ùr 's a ghabhas"
 
-#: ../src/gs-shell-updates.ui.h:3
+#: ../src/gs-shell-updates.ui.h:4
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -1196,25 +1506,25 @@ msgstr ""
 "Ma bheir thu sùil airson ùrachaidhean le bann-leathann inneal-làimhe, "
 "dh'fhaoidte gun iarrar airgead ort"
 
-#: ../src/gs-shell-updates.ui.h:4
+#: ../src/gs-shell-updates.ui.h:5
 msgid "_Check Anyway"
 msgstr "Thoir sùil _co-dhiù"
 
-#: ../src/gs-shell-updates.ui.h:5
+#: ../src/gs-shell-updates.ui.h:6
 msgid "Go online to check for updates"
 msgstr "Rach air loidhne gus sùil a toirt airson ùrachaidhean"
 
-#: ../src/gs-shell-updates.ui.h:6
+#: ../src/gs-shell-updates.ui.h:7
 msgid "_Network Settings"
 msgstr "Roghainnean an lìo_nraidh"
 
-#: ../src/gs-shell-updates.ui.h:7
+#: ../src/gs-shell-updates.ui.h:8
 msgid "Updates are automatically managed"
 msgstr "Tha na h-ùrachaidhean gan stiùireadh gu fèin-obrachail"
 
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
-#: ../src/gs-sources-dialog.c:93
+#: ../src/gs-sources-dialog.c:94
 msgid "No applications or addons installed; other software might still be"
 msgstr ""
 "Cha dèid aplacaidean no tuilleadain a stàladh ach dh'fhaoidte gun dèid "
@@ -1222,7 +1532,7 @@ msgstr ""
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:97
+#: ../src/gs-sources-dialog.c:98
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
@@ -1233,7 +1543,7 @@ msgstr[3] "%i aplacaid air an stàladh"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:103
+#: ../src/gs-sources-dialog.c:104
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
@@ -1245,7 +1555,7 @@ msgstr[3] "%i tuilleadan air an stàladh"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
-#: ../src/gs-sources-dialog.c:110
+#: ../src/gs-sources-dialog.c:111
 #, c-format
 msgid "%i application"
 msgid_plural "%i applications"
@@ -1257,7 +1567,7 @@ msgstr[3] "%i aplacaid"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
-#: ../src/gs-sources-dialog.c:116
+#: ../src/gs-sources-dialog.c:117
 #, c-format
 msgid "%i add-on"
 msgid_plural "%i add-ons"
@@ -1270,7 +1580,7 @@ msgstr[3] "%i tuilleadan"
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: ../src/gs-sources-dialog.c:123
+#: ../src/gs-sources-dialog.c:124
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -1279,24 +1589,24 @@ msgstr[1] "%s is %s air an stàladh"
 msgstr[2] "%s is %s air an stàladh"
 msgstr[3] "%s is %s air an stàladh"
 
-#: ../src/gs-sources-dialog.c:321 ../src/gs-sources-dialog.ui.h:12
+#: ../src/gs-sources-dialog.c:322 ../src/gs-sources-dialog.ui.h:12
 msgid "Remove Source"
 msgstr "Thoir an tùs air falbh"
 
-#: ../src/gs-sources-dialog.c:335
+#: ../src/gs-sources-dialog.c:336
 msgid "Removing…"
 msgstr "'Ga thoirt air falbh…"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:415
+#: ../src/gs-sources-dialog.c:402
 msgid "the operating system"
 msgstr "an siostam-obrachaidh"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:486
+#: ../src/gs-sources-dialog.c:473
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1345,105 +1655,6 @@ msgstr "Chaidh a chur ris"
 msgid "Website"
 msgstr "Làrach-lìn"
 
-#. TRANSLATORS: this is where the packager did not write a
-#. * description for the update
-#: ../src/gs-update-dialog.c:120
-msgid "No update description available."
-msgstr "Chan eil tuairisgeul an ùrachaidh ri fhaighinn."
-
-#. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:223
-msgid "Installed Updates"
-msgstr "Ùrachaidhean air an stàladh"
-
-#. TRANSLATORS: this is the subtitle of the installed updates dialog window
-#: ../src/gs-update-dialog.c:236
-#, c-format
-msgid "Installed on %s"
-msgstr "Chaidh a stàladh %s"
-
-#: ../src/gs-update-dialog.ui.h:2
-msgid "No updates have been installed on this system."
-msgstr "Cha deach ùrachadh sam bith a stàladh air an t-siostam seo."
-
-#: ../src/gs-update-monitor.c:90
-msgid "Security Updates Pending"
-msgstr "Tha ùrachaidhean tèarainteachd ri an dèiligeadh"
-
-#: ../src/gs-update-monitor.c:91
-msgid "It is recommended that you install important updates now"
-msgstr "Mholamaid gun stàlaich thu na h-ùrachaidhean cudromach an-dràsta"
-
-#: ../src/gs-update-monitor.c:94
-msgid "Restart & Install"
-msgstr "Tòisich às ùr ⁊ stàlaich"
-
-#: ../src/gs-update-monitor.c:98
-msgid "Software Updates Available"
-msgstr "Tha ùrachaidhean bathair-bhog ri am faighinn"
-
-#: ../src/gs-update-monitor.c:99
-msgid "Important OS and application updates are ready to be installed"
-msgstr ""
-"Tha ùrachaidhean cudromach airson an t-siostaim-obrachaidh is nan "
-"aplacaidean deiseil gus an stàladh"
-
-#: ../src/gs-update-monitor.c:102
-msgid "Not Now"
-msgstr "Chan ann an-dràsta"
-
-#: ../src/gs-update-monitor.c:103
-msgid "View"
-msgstr "Seall"
-
-#. TRANSLATORS: this is a distro upgrade, the replacement would be the
-#. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:227
-#, c-format
-msgid "A new version of %s is available to install"
-msgstr "Tha tionndadh ùr de %s ri fhaighinn airson stàladh"
-
-#. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:231
-#| msgid "Software Updates Available"
-msgid "Software Upgrade Available"
-msgstr "Tha àrdachadh bathair-bhog ri fhaighinn"
-
-#: ../src/gs-update-monitor.c:419
-msgid "Software Update Installed"
-msgid_plural "Software Updates Installed"
-msgstr[0] "Ùrachadh bathair-bhog air a stàladh"
-msgstr[1] "Ùrachaidhean bathair-bhog air an stàladh"
-msgstr[2] "Ùrachaidhean bathair-bhog air an stàladh"
-msgstr[3] "Ùrachaidhean bathair-bhog air an stàladh"
-
-#. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:423
-msgid "An important OS update has been installed."
-msgid_plural "Important OS updates have been installed."
-msgstr[0] "Chaidh ùrachadh cudromach an t-siostaim-obrachaidh a stàladh."
-msgstr[1] "Chaidh ùrachaidhean cudromach an t-siostaim-obrachaidh a stàladh."
-msgstr[2] "Chaidh ùrachaidhean cudromach an t-siostaim-obrachaidh a stàladh."
-msgstr[3] "Chaidh ùrachaidhean cudromach an t-siostaim-obrachaidh a stàladh."
-
-#: ../src/gs-update-monitor.c:429
-msgid "Software Updates Failed"
-msgstr "Dh'fhàillig le stàladh nan ùrachaidhean"
-
-#. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:431
-msgid "An important OS update failed to be installed."
-msgstr "Dh'fhàillig le stàladh ùrachadh cudromach an t-siostam-obrachaidh."
-
-#: ../src/gs-update-monitor.c:437
-msgid "Review"
-msgstr "Lèirmheas"
-
-#: ../src/gs-update-monitor.c:440
-msgid "Show Details"
-msgstr "Seall am mion-fhiosrachadh"
-
-#. vim: set noexpandtab:
 #: ../src/gs-star-widget.ui.h:1
 msgid "One Star"
 msgstr "Aon rionnag"
@@ -1464,37 +1675,251 @@ msgstr "Ceithir rionnagan"
 msgid "Five Stars"
 msgstr "Còig rionnagan"
 
+#. TRANSLATORS: this is where the packager did not write
+#. * a description for the update
+#: ../src/gs-update-dialog.c:121
+msgid "No update description available."
+msgstr "Chan eil tuairisgeul an ùrachaidh ri fhaighinn."
+
+#. TRANSLATORS: this is the subtitle of the installed updates dialog window.
+#. %s will be replaced by the date when the updates were installed.
+#. The date format is defined by the locale's preferred date representation
+#. ("%x" in strftime.)
+#: ../src/gs-update-dialog.c:215
+#, c-format
+msgid "Installed on %s"
+msgstr "Chaidh a stàladh %s"
+
+#. TRANSLATORS: this is the title of the installed updates dialog window
+#: ../src/gs-update-dialog.c:235
+msgid "Installed Updates"
+msgstr "Ùrachaidhean air an stàladh"
+
+#: ../src/gs-update-dialog.ui.h:2
+msgid "No updates have been installed on this system."
+msgstr "Cha deach ùrachadh sam bith a stàladh air an t-siostam seo."
+
+#: ../src/gs-update-monitor.c:89
+msgid "Security Updates Pending"
+msgstr "Tha ùrachaidhean tèarainteachd ri an dèiligeadh"
+
+#: ../src/gs-update-monitor.c:90
+msgid "It is recommended that you install important updates now"
+msgstr "Mholamaid gun stàlaich thu na h-ùrachaidhean cudromach an-dràsta"
+
+#: ../src/gs-update-monitor.c:93
+msgid "Restart & Install"
+msgstr "Tòisich às ùr ⁊ stàlaich"
+
+#: ../src/gs-update-monitor.c:97
+msgid "Software Updates Available"
+msgstr "Tha ùrachaidhean bathair-bhog ri am faighinn"
+
+#: ../src/gs-update-monitor.c:98
+msgid "Important OS and application updates are ready to be installed"
+msgstr ""
+"Tha ùrachaidhean cudromach airson an t-siostaim-obrachaidh is nan "
+"aplacaidean deiseil gus an stàladh"
+
+#: ../src/gs-update-monitor.c:101
+msgid "Not Now"
+msgstr "Chan ann an-dràsta"
+
+#: ../src/gs-update-monitor.c:102
+msgid "View"
+msgstr "Seall"
+
+#. TRANSLATORS: this is a distro upgrade, the replacement would be the
+#. * distro name, e.g. 'Fedora'
+#: ../src/gs-update-monitor.c:230
+#, c-format
+msgid "A new version of %s is available to install"
+msgstr "Tha tionndadh ùr de %s ri fhaighinn airson stàladh"
+
+#. TRANSLATORS: this is a distro upgrade
+#: ../src/gs-update-monitor.c:234
+msgid "Software Upgrade Available"
+msgstr "Tha àrdachadh bathair-bhog ri fhaighinn"
+
+#. TRANSLATORS: title when we offline updates have failed
+#: ../src/gs-update-monitor.c:429
+msgid "Software Updates Failed"
+msgstr "Dh'fhàillig le stàladh nan ùrachaidhean"
+
+#. TRANSLATORS: message when we offline updates have failed
+#: ../src/gs-update-monitor.c:431
+msgid "An important OS update failed to be installed."
+msgstr "Dh'fhàillig le stàladh ùrachadh cudromach an t-siostam-obrachaidh."
+
+#. TRANSLATORS: this is an expander title
+#: ../src/gs-update-monitor.c:433 ../src/gs-utils.c:208
+msgid "Show Details"
+msgstr "Seall am mion-fhiosrachadh"
+
+#. TRANSLATORS: title when we've done offline updates
+#: ../src/gs-update-monitor.c:448
+msgid "Software Update Installed"
+msgid_plural "Software Updates Installed"
+msgstr[0] "Ùrachadh bathair-bhog air a stàladh"
+msgstr[1] "Ùrachaidhean bathair-bhog air an stàladh"
+msgstr[2] "Ùrachaidhean bathair-bhog air an stàladh"
+msgstr[3] "Ùrachaidhean bathair-bhog air an stàladh"
+
+#. TRANSLATORS: message when we've done offline updates
+#: ../src/gs-update-monitor.c:452
+msgid "An important OS update has been installed."
+msgid_plural "Important OS updates have been installed."
+msgstr[0] "Chaidh ùrachadh cudromach an t-siostaim-obrachaidh a stàladh."
+msgstr[1] "Chaidh ùrachaidhean cudromach an t-siostaim-obrachaidh a stàladh."
+msgstr[2] "Chaidh ùrachaidhean cudromach an t-siostaim-obrachaidh a stàladh."
+msgstr[3] "Chaidh ùrachaidhean cudromach an t-siostaim-obrachaidh a stàladh."
+
+#. TRANSLATORS: Button to look at the updates that were installed.
+#. * Note that it has nothing to do with the application reviews, the
+#. * users can't express their opinions here. In some languages
+#. * "Review (evaluate) something" is a different translation than
+#. * "Review (browse) something."
+#: ../src/gs-update-monitor.c:463
+msgctxt "updates"
+msgid "Review"
+msgstr "Lèirmheas"
+
+#. TRANSLATORS: these are show_detailed_error messages from the
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: ../src/gs-update-monitor.c:538
+msgid "Detailed errors from the package manager follow:"
+msgstr "Seo fiosrachadh air na mearachdan o mhanaidsear nam pacaidean:"
+
+#. TRANSLATORS: this is when the offline update failed
+#: ../src/gs-update-monitor.c:599
+msgid "Failed To Update"
+msgstr "Dh'fhàillig leis an ùrachadh"
+
+#. TRANSLATORS: the user must have updated manually after
+#. * the updates were prepared
+#: ../src/gs-update-monitor.c:605
+msgid "The system was already up to date."
+msgstr "Bha an siostam cho ùr 's a ghabhas mar-thà."
+
+#. TRANSLATORS: the user aborted the update manually
+#: ../src/gs-update-monitor.c:610
+msgid "The update was cancelled."
+msgstr "Chaidh sgur dhen urachadh."
+
+#. TRANSLATORS: the package manager needed to download
+#. * something with no network available
+#: ../src/gs-update-monitor.c:616
+msgid ""
+"Internet access was required but wasn’t available. Please make sure that you "
+"have internet access and try again."
+msgstr ""
+"Bha feum air ceangal dhan eadar-lìon ach cha robh e ri fhaighinn. Dèan "
+"cinnteach gu bheil inntrigeadh dhan eadar-lìon agad is feuch ris a-rithist."
+
+#. TRANSLATORS: if the package is not signed correctly
+#: ../src/gs-update-monitor.c:622
+msgid ""
+"There were security issues with the update. Please consult your software "
+"provider for more details."
+msgstr ""
+"Bha duilgheadasan tèarainteachd ann leis an ùrachadh. Iarr barrachd "
+"fiosrachaidh air solaraiche a' bhathair-bhog agad."
+
+#. TRANSLATORS: we ran out of disk space
+#: ../src/gs-update-monitor.c:628
+msgid ""
+"There wasn’t enough disk space. Please free up some space and try again."
+msgstr ""
+"Cha robh rum gu leòr air an diosga. Saoraich beagan ruim is feuch ris a-"
+"rithist."
+
+#. TRANSLATORS: We didn't handle the error type
+#: ../src/gs-update-monitor.c:633
+msgid ""
+"We’re sorry: the update failed to install. Please wait for another update "
+"and try again. If the problem persists, contact your software provider."
+msgstr ""
+"Tha sinn duilich ach cha deach leinn an t-ùrachadh a stàladh. Fuirich gus am "
+"bi ùrachadh eile ann is feuch ris a-rithist. Ma bhios an duilgheadas seo ann "
+"fhathast an uairsin, cuir fios gu solaraiche a' bhathair-bhog agad."
+
+#. TRANSLATORS: This is the text displayed when a distro
+#. * upgrade is available. First %s is the distro name and the
+#. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
+#: ../src/gs-upgrade-banner.c:83
+#, c-format
+msgid "%s %s Now Available"
+msgstr "Tha %s %s ri fhaighinn a-nis"
+
+#. TRANSLATORS: This is the text displayed while downloading a
+#. * distro upgrade. First %s is the distro name and the 2nd %s
+#. * is the version, e.g. "Downloading Fedora 23"
+#: ../src/gs-upgrade-banner.c:93
+#, c-format
+msgid "Downloading %s %s"
+msgstr "A' luchdadh a-nuas %s %s"
+
+#. TRANSLATORS: This is the text displayed when a distro
+#. * upgrade has been downloaded and is ready to be installed.
+#. * First %s is the distro name and the 2nd %s is the version,
+#. * e.g. "Fedora 23 Ready to be Installed"
+#: ../src/gs-upgrade-banner.c:104
+#, c-format
+msgid "%s %s Ready to be Installed"
+msgstr "Tha %s %s deiseil airson stàladh"
+
+#. vim: set noexpandtab:
+#: ../src/gs-upgrade-banner.ui.h:1
+msgid "A major upgrade, with new features and added polish."
+msgstr "Seo mòr-àrdachadh le feartan is gleusadh ùr."
+
+#: ../src/gs-upgrade-banner.ui.h:2
+msgid "_Learn More"
+msgstr "_Barrachd fiosrachaidh"
+
+#: ../src/gs-upgrade-banner.ui.h:3
+msgid "_Download"
+msgstr "Luch_daich a-nuas"
+
+#: ../src/gs-upgrade-banner.ui.h:6
+msgid ""
+"It is recommended that you back up your data and files before upgrading."
+msgstr ""
+"Mholamaid gun dèan thu lethbhreac-glèidhidh dhen dàta ' dhe na faidhlichean "
+"agad mus dèan thu àrdachadh."
+
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:136
+#: ../src/gs-utils.c:140
 #, c-format
 msgid "%s is now installed"
 msgstr "Tha %s air a stàladh a-nis"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:140
+#: ../src/gs-utils.c:144
 msgid "Launch"
 msgstr "Tòisich"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:166
+#: ../src/gs-utils.c:175
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Cha deach leinn %s a stàladh."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:171
+#: ../src/gs-utils.c:180
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Cha deach leinn %s a thoirt air falbh."
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:244
+#: ../src/gs-utils.c:278
 msgid "Install Third-Party Software?"
 msgstr "A bheil thu airson bathar-bog treas-phàrtaidh a stàladh?"
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:248
+#: ../src/gs-utils.c:282
 msgid "Enable Third-Party Software Source?"
 msgstr "A bheil thu airson tùs bathair-bhog treas-phàrtaidh a cur an comas?"
 
@@ -1502,7 +1927,7 @@ msgstr "A bheil thu airson tùs bathair-bhog treas-phàrtaidh a cur an comas?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
 #.
-#: ../src/gs-utils.c:266
+#: ../src/gs-utils.c:300
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1515,20 +1940,20 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:276
+#: ../src/gs-utils.c:310
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "Tha %s ga sholar le “%s”."
 
 #. TRANSLATORS: a software source is a repo
-#: ../src/gs-utils.c:286
+#: ../src/gs-utils.c:320
 msgid "This software source must be enabled to continue installation."
 msgstr ""
 "Feumaidh tu an tùs bathair-bhog seo a chur an comas mus lean thu air adhart "
 "leis an stàladh."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:296
+#: ../src/gs-utils.c:330
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
@@ -1536,30 +1961,49 @@ msgstr ""
 "a dhùthchannan."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:302
+#: ../src/gs-utils.c:336
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Dh'fhaoidte gu bheil e mì-laghail an codec seo a stàladh no a chleachdadh "
 "ann an cuid a dhùthchannan."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:309
+#: ../src/gs-utils.c:343
 msgid "Don't Warn Again"
 msgstr "Na seall an rabhadh seo dhomh a-rithist"
 
 #. TRANSLATORS: button text
-#: ../src/gs-utils.c:318
+#: ../src/gs-utils.c:352
 msgid "Enable and Install"
 msgstr "Cuir an comas is stàlaich"
 
-#: ../src/plugins/gs-plugin-appstream.c:223
-#, c-format
-msgid "No AppStream data found"
-msgstr "Cha deach dàta AppStream a lorg"
+#. vim: set noexpandtab:
+#: ../src/gs-menus.ui.h:1
+#| msgid "Software Sources"
+msgid "_Software Sources"
+msgstr "_Tùsan bathair-bhog"
 
-#: ../src/plugins/gs-plugin-moduleset.c:130
-msgid "Featured"
-msgstr "Brosnaichte"
+#: ../src/gs-menus.ui.h:2
+msgid "_About"
+msgstr "_Mu dhèidhinn"
+
+#: ../src/gs-menus.ui.h:3
+msgid "_Quit"
+msgstr "_Fàg an-seo"
+
+#: ../src/org.gnome.Software.desktop.in.h:2
+msgid "Add, remove or update software on this computer"
+msgstr "Cuir ris, thoir air falbh no ùraich bathar-bog air a' choimpiutair seo"
+
+#: ../src/org.gnome.Software.desktop.in.h:3
+msgid ""
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
+"Software;App;Store;"
+msgstr ""
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
+"Software;App;Store;ùrachadh;ùrachaidhean;ùraich;àrdachadh;àrdaich;tùsan;"
+"ionad-tasgaidh;ionadan-tasgaidh;stàlaidh;stàladh;dì-stàlaich;dì-stàladh;"
+"prògram;bathar-bog;aplacaid;bùth;"
 
 #. TRANSLATORS: this is the menu spec main category for Audio
 #: ../src/plugins/menu-spec-common.c:30
@@ -2426,47 +2870,106 @@ msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Pacaidean cànain"
 
-#: ../src/menus.ui.h:1
-msgid "_Software Sources"
-msgstr "_Tùsan bathair-bhog"
+#: ../src/plugins/menu-spec-common.c:215
+msgctxt "Menu subcategory of Add-ons"
+msgid "Shell Extensions"
+msgstr "Leudachain shell"
 
-#: ../src/menus.ui.h:2
-msgid "_About"
-msgstr "_Mu dhèidhinn"
+#: ../src/plugins/menu-spec-common.c:216
+msgctxt "Menu subcategory of Add-ons"
+msgid "Localization"
+msgstr "Ionadaileadh"
 
-#: ../src/menus.ui.h:3
-msgid "_Quit"
-msgstr "_Fàg an-seo"
+#~ msgid "Open Source"
+#~ msgstr "Còd fosgailte"
 
-#~ msgid "Checking for updates…"
-#~ msgstr "A' toirt sùil airson ùrachaidhean…"
-
-#~ msgid "Enter GApplication service mode"
-#~ msgstr "Rach a-steach dhan mhodh seirbheis GApplication"
-
-#~ msgid "Updates"
-#~ msgstr "Ùrachaidhean"
-
-#~ msgid "Network access was required but not available."
-#~ msgstr "Chaidh inntrigeadh chan lìonra iarraidh ach chan eil e ri làimh."
-
-#~ msgid "An update was not signed in the correct way."
-#~ msgstr "Tha ùrachadh ann nach deach a shoidhneadh mar bu chòir."
-
-#~ msgid "The update could not be completed."
-#~ msgstr "Cha b' urrainn dhuinn an t-ùrachadh a choileanadh."
-
-#~ msgid "An offline update was requested but no packages required updating."
+#~ msgid "An update is needed to show all installable apps. Download now?"
 #~ msgstr ""
-#~ "Chaidh ùrachadh far loidhne iarraidh ach cha robh pacaid sam bith feumach "
-#~ "air ùrachadh."
+#~ "Tha feum air ùrachadh gus a h-uile aplacaid a ghabhas stàladh a "
+#~ "shealltainn. A bheil thu airson a luchdadh a-nuas an-dràsta?"
 
-#~ msgid "No space was left on the drive."
-#~ msgstr "Cha robh rum air fhàgail air an draibh."
+#~ msgid "Ubuntu Software"
+#~ msgstr "Bathar-bog Ubuntu"
 
-#~ msgid "An update failed to install correctly."
-#~ msgstr "Dh'fhàillig le ùrachadh stàladh mar bu chòir."
+#~ msgid "Updates have been installed"
+#~ msgstr "Tha na h-ùrachaidhean air an stàladh"
 
-#~ msgid "The offline update failed in an unexpected way."
+#~ msgid "A restart is required for them to take effect."
+#~ msgstr "Tha feum air ath-thòiseachadh gus an cur an sàs."
+
+#~ msgid "Restart"
+#~ msgstr "Tòisich às ùr"
+
+#~ msgid "_Software & Updates"
+#~ msgstr "_Bathar-bog ⁊ ùrachaidhean"
+
+#~ msgid "No AppStream data found"
+#~ msgstr "Cha deach dàta AppStream a lorg"
+
+#~ msgid "_Continue"
+#~ msgstr "_Lean air adhart"
+
+#~ msgid "Incorrect email or password"
+#~ msgstr "Chan eil am post-d no am facal-faire mar bu chòir"
+
+#~ msgid "Account suspended"
+#~ msgstr "Chaidh an cunntas a chur à rèim"
+
+#~ msgid "Account deactivated"
+#~ msgstr "Chaidh an cunntas a chur à gnìomh"
+
+#~ msgid "Email invalidated"
+#~ msgstr "Chaidh am post-d a dhèanamh mì-dhligheach"
+
+#~ msgid "Two-factor authentication failed"
+#~ msgstr "Dh'fhàillig leis an dearbhadh dà-cheumnach"
+
+#~ msgid "Password reset required"
+#~ msgstr "Tha feum air ath-shuidheachadh an fhacail-fhaire"
+
+#~ msgid "Too many requests"
+#~ msgstr "Cus iarrtasan"
+
+#~ msgid "An error occurred"
+#~ msgstr "Thachair mearachd"
+
+#~ msgid "Signing in…"
+#~ msgstr "'Gad chlàradh a-steach…"
+
+#~ msgid ""
+#~ "To rate and review software, you need an Ubuntu Single Sign-On account."
 #~ msgstr ""
-#~ "Dh'fhàillig le ùrachadh far loidhne ann an dòigh air nach robh dùil."
+#~ "Gus bathar-bog a rangachadh is lèirmheas a dhèanamh air, feumaidh tu "
+#~ "cunntas Ubuntu a chum clàradh a-steach le aon chunntas fhaighinn."
+
+#~ msgid "_Email address:"
+#~ msgstr "Seòladh _puist-d:"
+
+#~ msgid "I have an Ubuntu Single Sign-On account"
+#~ msgstr "Tha cunntas Ubuntu a chum clàradh a-steach le aon chunntas agam"
+
+#~ msgid "_Password:"
+#~ msgstr "_Facal-faire:"
+
+#~ msgid "Sign in automatically next time"
+#~ msgstr "Clàraich a-steach gu fèin-obrachail an ath-thuras"
+
+#~ msgid "I want to register for an account now"
+#~ msgstr "Tha mi airson cunntas a chlàradh an-dràsta"
+
+#~ msgid "I've forgotten my password"
+#~ msgstr "Dhìochuimhnich mi am facal-faire agam"
+
+#~ msgid "Enter your one-time password for two-factor authentication."
+#~ msgstr ""
+#~ "Cuir a-steach am facal-faire aon turais agad a chum a' chlàraidh a-steach "
+#~ "dhà-cheumnaich"
+
+#~ msgid "One-time password:"
+#~ msgstr "Facal-faire aon turais:"
+
+#~ msgid "You are now signed into Ubuntu One."
+#~ msgstr "Chaidh do chlàradh a-steach dha dh'Ubuntu One."
+
+#~ msgid "Ubuntu Snappy Store"
+#~ msgstr "Bùth Ubuntu Snappy"
