@@ -57,6 +57,10 @@
             <property name="valign">end</property>
             <property name="spacing">12</property>
             <property name="margin_top">16</property>
+            <style>
+              <class name="osd"/>
+              <class name="upgrade-buttons"/>
+            </style>
             <child>
               <object class="GtkButton" id="button_upgrades_help">
                 <property name="label" translatable="yes">_Learn More</property>
@@ -65,10 +69,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
-                <property name="relief">none</property>
-                <style>
-                  <class name="upgrade-button"/>
-                </style>
+                <property name="relief">normal</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -122,10 +123,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
-                <property name="relief">none</property>
-                <style>
-                  <class name="upgrade-button"/>
-                </style>
+                <property name="relief">normal</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -140,10 +138,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
-                <property name="relief">none</property>
-                <style>
-                  <class name="upgrade-button"/>
-                </style>
+                <property name="relief">normal</property>
               </object>
               <packing>
                 <property name="expand">False</property>
@@ -158,10 +153,7 @@
                 <property name="can_focus">True</property>
                 <property name="receives_default">False</property>
                 <property name="use_underline">True</property>
-                <property name="relief">none</property>
-                <style>
-                  <class name="upgrade-button"/>
-                </style>
+                <property name="relief">normal</property>
               </object>
               <packing>
                 <property name="expand">False</property>
