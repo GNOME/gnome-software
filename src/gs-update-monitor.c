@@ -222,6 +222,10 @@ get_upgrades_finished_cb (GObject *object,
 		return;
 	}
 
+	/* do not show if gnome-software is already open */
+	if (gs_application_has_active_window (GS_APPLICATION (monitor->application)))
+		return;
+
 	/* just get the first result : FIXME, do we sort these by date? */
 	app = GS_APP (apps->data);
 
