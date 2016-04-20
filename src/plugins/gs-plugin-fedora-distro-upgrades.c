@@ -149,19 +149,14 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 }
 
 /**
- * gs_plugin_refresh:
+ * gs_plugin_fedora_distro_upgrades_refresh:
  */
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GsPluginRefreshFlags flags,
-		   GCancellable *cancellable,
-		   GError **error)
+static gboolean
+gs_plugin_fedora_distro_upgrades_refresh (GsPlugin *plugin,
+					  guint cache_age,
+					  GCancellable *cancellable,
+					  GError **error)
 {
-	/* only for update metadata, no stored state other than setup() */
-	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
-		return TRUE;
-
 	/* check cache age */
 	if (cache_age > 0) {
 		guint tmp;
@@ -180,6 +175,25 @@ gs_plugin_refresh (GsPlugin *plugin,
 					plugin->priv->cachefn,
 					cancellable,
 					error);
+}
+
+/**
+ * gs_plugin_refresh:
+ */
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GsPluginRefreshFlags flags,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	/* only for update metadata, no stored state other than setup() */
+	if ((flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) == 0)
+		return TRUE;
+	return gs_plugin_fedora_distro_upgrades_refresh (plugin,
+							 cache_age,
+							 cancellable,
+							 error);
 }
 
 typedef enum {
@@ -302,6 +316,13 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	guint i;
 	g_autofree gchar *data = NULL;
 	g_autoptr(GPtrArray) distros = NULL;
+
+	/* just ensure there is any data, no matter how old */
+	if (!gs_plugin_fedora_distro_upgrades_refresh (plugin,
+						       G_MAXUINT,
+						       cancellable,
+						       error))
+		return FALSE;
 
 	/* get cached file */
 	if (!g_file_get_contents (plugin->priv->cachefn, &data, &len, error))
