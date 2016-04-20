@@ -3220,6 +3220,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		if (!ret) {
 			g_debug ("disabling %s as setup failed: %s",
 				 plugin->name, error_local->message);
+			plugin->enabled = FALSE;
 		}
 	}
 
