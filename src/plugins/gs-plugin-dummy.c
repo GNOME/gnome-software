@@ -180,7 +180,7 @@ gs_plugin_dummy_poll_cb (gpointer user_data)
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	} else {
 		g_debug ("about to make app 3rd party");
-		gs_app_clear_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		gs_app_remove_quirk (app, AS_APP_QUIRK_PROVENANCE);
 	}
 
 	/* continue polling */

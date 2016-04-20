@@ -2134,10 +2134,10 @@ gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
 }
 
 /**
- * gs_app_clear_quirk:
+ * gs_app_remove_quirk:
  **/
 void
-gs_app_clear_quirk (GsApp *app, AsAppQuirk quirk)
+gs_app_remove_quirk (GsApp *app, AsAppQuirk quirk)
 {
 	g_return_if_fail (GS_IS_APP (app));
 
