@@ -108,7 +108,8 @@ gs_upgrade_banner_refresh (GsUpgradeBanner *self)
 		gtk_widget_set_visible (priv->button_upgrades_cancel, FALSE);
 		break;
 	default:
-		g_critical ("Unexpected app state");
+		g_critical ("Unexpected app state %s",
+			    as_app_state_to_string (gs_app_get_state (priv->app)));
 		break;
 	}
 

@@ -2363,6 +2363,7 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 			g_task_return_error (task, error);
 		}
 	} else {
+		gs_app_set_state_recover (state->app);
 		g_task_return_error (task, error);
 	}
 
