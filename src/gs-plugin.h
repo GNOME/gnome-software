@@ -175,9 +175,6 @@ void		 gs_plugin_cache_add			(GsPlugin	*plugin,
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
-void		 gs_plugin_progress_update		(GsPlugin	*plugin,
-							 GsApp		*app,
-							 guint		 percentage);
 gboolean	 gs_plugin_app_launch			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GError		**error);

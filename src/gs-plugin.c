@@ -523,38 +523,6 @@ gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 }
 
 /**
- * gs_plugin_progress_update_cb:
- **/
-static gboolean
-gs_plugin_progress_update_cb (gpointer user_data)
-{
-	GsPluginStatusHelper *helper = (GsPluginStatusHelper *) user_data;
-
-	gs_app_set_progress (helper->app, helper->percentage);
-	g_object_unref (helper->app);
-	g_slice_free (GsPluginStatusHelper, helper);
-	return FALSE;
-}
-
-/**
- * gs_plugin_progress_update:
- **/
-void
-gs_plugin_progress_update (GsPlugin *plugin, GsApp *app, guint percentage)
-{
-	GsPluginStatusHelper *helper;
-
-	if (app == NULL)
-		return;
-
-	helper = g_slice_new0 (GsPluginStatusHelper);
-	helper->plugin = plugin;
-	helper->percentage = percentage;
-	helper->app = g_object_ref (app);
-	g_idle_add (gs_plugin_progress_update_cb, helper);
-}
-
-/**
  * gs_plugin_app_launch_cb:
  **/
 static gboolean

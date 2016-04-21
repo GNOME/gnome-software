@@ -152,7 +152,7 @@ gs_plugin_installer_progress_cb (LiInstaller *inst, guint percentage, const gcha
 	if (id != NULL)
 		return;
 
-	gs_plugin_progress_update (helper->plugin, helper->app, percentage);
+	gs_app_set_progress (helper->app, percentage);
 }
 
 /**
@@ -169,7 +169,7 @@ gs_plugin_manager_progress_cb (LiManager *mgr, guint percentage, const gchar *id
 	if (id != NULL)
 		return;
 
-	gs_plugin_progress_update (helper->plugin, helper->app, percentage);
+	gs_app_set_progress (helper->app, percentage);
 }
 
 /**

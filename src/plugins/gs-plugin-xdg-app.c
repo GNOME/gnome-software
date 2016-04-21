@@ -438,11 +438,6 @@ gs_plugin_xdg_app_create_installed (GsPlugin *plugin,
 	return g_object_ref (app);
 }
 
-typedef struct {
-	GsApp		*app;
-	GsPlugin	*plugin;
-} GsPluginHelper;
-
 /**
  * gs_plugin_xdg_app_progress_cb:
  */
@@ -452,10 +447,8 @@ gs_plugin_xdg_app_progress_cb (const gchar *status,
 			       gboolean estimating,
 			       gpointer user_data)
 {
-	GsPluginHelper *helper = (GsPluginHelper *) user_data;
-	if (helper->app == NULL)
-		return;
-	gs_plugin_progress_update (helper->plugin, helper->app, progress);
+	GsApp *app = GS_APP (user_data);
+	gs_app_set_progress (app, progress);
 }
 
 /**
@@ -616,7 +609,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsPluginHelper helper;
 	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
 
@@ -631,9 +623,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	if ((flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) == 0)
 		return TRUE;
 
-	/* use helper: FIXME: new()&ref? */
-	helper.plugin = plugin;
-
 	/* get all the updates available from all remotes */
 	xrefs = xdg_app_installation_list_installed_refs_for_update (priv->installation,
 								     cancellable,
@@ -647,7 +636,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 		/* try to create a GsApp so we can do progress reporting */
 		app = gs_plugin_xdg_app_create_installed (plugin, xref, NULL);
-		helper.app = app;
 
 		/* fetch but do not deploy */
 		g_debug ("pulling update for %s",
@@ -658,7 +646,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 						     xdg_app_ref_get_name (XDG_APP_REF (xref)),
 						     xdg_app_ref_get_arch (XDG_APP_REF (xref)),
 						     xdg_app_ref_get_branch (XDG_APP_REF (xref)),
-						     gs_plugin_xdg_app_progress_cb, &helper,
+						     gs_plugin_xdg_app_progress_cb, app,
 						     cancellable, error);
 		if (xref2 == NULL)
 			return FALSE;
@@ -1228,15 +1216,10 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsPluginHelper helper;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
-
-	/* use helper: FIXME: new()&ref? */
-	helper.app = app;
-	helper.plugin = plugin;
 
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
@@ -1245,7 +1228,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 					     gs_app_get_xdgapp_name (app),
 					     gs_app_get_xdgapp_arch (app),
 					     gs_app_get_xdgapp_branch (app),
-					     gs_plugin_xdg_app_progress_cb, &helper,
+					     gs_plugin_xdg_app_progress_cb, app,
 					     cancellable, error)) {
 		gs_app_set_state_recover (app);
 		return FALSE;
@@ -1266,7 +1249,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsPluginHelper helper;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
 
 	/* only process this app if was created by this plugin */
@@ -1276,10 +1258,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	/* ensure we have metadata and state */
 	if (!gs_plugin_xdg_app_refine_app (plugin, app, 0, cancellable, error))
 		return FALSE;
-
-	/* use helper: FIXME: new()&ref? */
-	helper.app = app;
-	helper.plugin = plugin;
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
@@ -1316,7 +1294,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 							     gs_app_get_xdgapp_name (runtime),
 							     gs_app_get_xdgapp_arch (runtime),
 							     gs_app_get_xdgapp_branch (runtime),
-							     gs_plugin_xdg_app_progress_cb, &helper,
+							     gs_plugin_xdg_app_progress_cb, app,
 							     cancellable, error);
 			if (xref == NULL) {
 				gs_app_set_state_recover (runtime);
@@ -1336,7 +1314,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		xref = xdg_app_installation_install_bundle (priv->installation,
 							    file,
 							    gs_plugin_xdg_app_progress_cb,
-							    &helper,
+							    app,
 							    cancellable, error);
 	} else {
 		g_debug ("installing %s", gs_app_get_id (app));
@@ -1346,7 +1324,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 						     gs_app_get_xdgapp_name (app),
 						     gs_app_get_xdgapp_arch (app),
 						     gs_app_get_xdgapp_branch (app),
-						     gs_plugin_xdg_app_progress_cb, &helper,
+						     gs_plugin_xdg_app_progress_cb, app,
 						     cancellable, error);
 	}
 	if (xref == NULL) {
@@ -1369,16 +1347,11 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GsPluginHelper helper;
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
 		return TRUE;
-
-	/* use helper: FIXME: new()&ref? */
-	helper.app = app;
-	helper.plugin = plugin;
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
@@ -1388,7 +1361,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 					    gs_app_get_xdgapp_name (app),
 					    gs_app_get_xdgapp_arch (app),
 					    gs_app_get_xdgapp_branch (app),
-					    gs_plugin_xdg_app_progress_cb, &helper,
+					    gs_plugin_xdg_app_progress_cb, app,
 					    cancellable, error);
 	if (xref == NULL) {
 		gs_app_set_state_recover (app);

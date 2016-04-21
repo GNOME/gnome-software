@@ -110,12 +110,9 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 			gs_plugin_status_update (plugin, NULL, plugin_status);
 
 	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
-		gint percentage;
-		g_object_get (progress,
-			      "percentage", &percentage,
-			      NULL);
+		gint percentage = pk_progress_get_percentage (progress);
 		if (percentage >= 0 && percentage <= 100)
-			gs_plugin_progress_update (plugin, data->app, percentage);
+			gs_app_set_progress (data->app, percentage);
 	}
 }
 
