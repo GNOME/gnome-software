@@ -38,15 +38,6 @@
  */
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "icons";
-}
-
-/**
  * gs_plugin_order_after:
  */
 const gchar **

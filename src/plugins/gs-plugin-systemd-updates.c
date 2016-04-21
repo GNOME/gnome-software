@@ -38,15 +38,6 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "systemd-updates";
-}
-
-/**
  * gs_plugin_initialize:
  */
 void

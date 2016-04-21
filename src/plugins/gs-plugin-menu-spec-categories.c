@@ -33,15 +33,6 @@
  */
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "menu-spec-categories";
-}
-
-/**
  * gs_plugin_add_categories:
  */
 gboolean

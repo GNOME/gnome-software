@@ -29,15 +29,6 @@
 #include <gs-plugin.h>
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "rpm";
-}
-
-/**
  * gs_plugin_order_after:
  */
 const gchar **

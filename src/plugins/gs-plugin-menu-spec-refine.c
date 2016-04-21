@@ -33,15 +33,6 @@
  */
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "menu-spec-refine";
-}
-
-/**
  * gs_plugin_order_after:
  */
 const gchar **

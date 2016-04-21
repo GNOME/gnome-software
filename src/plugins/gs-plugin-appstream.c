@@ -45,15 +45,6 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "appstream";
-}
-
-/**
  * gs_plugin_appstream_store_changed_cb:
  */
 static void

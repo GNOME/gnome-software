@@ -29,15 +29,6 @@
  */
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "hardcoded-blacklist";
-}
-
-/**
  * gs_plugin_order_after:
  */
 const gchar **

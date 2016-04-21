@@ -63,7 +63,6 @@ struct GsPluginPrivate {
 	guint			 timer_id;
 };
 
-typedef const gchar	*(*GsPluginGetNameFunc)		(void);
 typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
 
 #define gs_plugin_get_instance_private(p) (p->priv);
@@ -118,29 +117,33 @@ GsPlugin *
 gs_plugin_create (const gchar *filename, GError **error)
 {
 	GModule *module;
-	GsPluginGetNameFunc plugin_name = NULL;
 	GsPluginGetDepsFunc order_after = NULL;
 	GsPluginGetDepsFunc order_before = NULL;
 	GsPluginGetDepsFunc plugin_conflicts = NULL;
 	GsPlugin *plugin = NULL;
-	gboolean ret;
+	g_autofree gchar *basename = NULL;
 
 	module = g_module_open (filename, 0);
 	if (module == NULL) {
-		g_warning ("failed to open plugin %s: %s",
-			   filename, g_module_error ());
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to open plugin %s: %s",
+			     filename, g_module_error ());
 		return NULL;
 	}
 
-	/* get description */
-	ret = g_module_symbol (module,
-			       "gs_plugin_get_name",
-			       (gpointer *) &plugin_name);
-	if (!ret) {
-		g_warning ("Plugin %s requires name", filename);
-		g_module_close (module);
+	/* get the plugin name from the basename */
+	basename = g_path_get_basename (filename);
+	if (!g_str_has_prefix (basename, "libgs_plugin_")) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "plugin filename has wrong prefix: %s",
+			     filename);
 		return NULL;
 	}
+	g_strdelimit (basename, ".", '\0');
 
 	/* get plugins this plugin depends on */
 	g_module_symbol (module,
@@ -159,7 +162,7 @@ gs_plugin_create (const gchar *filename, GError **error)
 	plugin->priv->order_after = order_after != NULL ? order_after (plugin) : NULL;
 	plugin->priv->order_before = order_before != NULL ? order_before (plugin) : NULL;
 	plugin->priv->conflicts = plugin_conflicts != NULL ? plugin_conflicts (plugin) : NULL;
-	plugin->name = g_strdup (plugin_name ());
+	plugin->name = g_strdup (basename + 13);
 	return plugin;
 }
 

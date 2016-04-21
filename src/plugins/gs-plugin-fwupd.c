@@ -51,15 +51,6 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "fwupd";
-}
-
-/**
  * gs_plugin_initialize:
  */
 void

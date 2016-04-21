@@ -43,15 +43,6 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "packagekit";
-}
-
-/**
  * gs_plugin_initialize:
  */
 void

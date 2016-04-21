@@ -37,15 +37,6 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "fedora-distro-upgrades";
-}
-
-/**
  * gs_plugin_initialize:
  */
 void

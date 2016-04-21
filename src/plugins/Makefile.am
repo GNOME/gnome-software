@@ -64,7 +64,7 @@ plugin_LTLIBRARIES += libgs_plugin_fwupd.la
 endif
 
 if HAVE_XDG_APP
-plugin_LTLIBRARIES += libgs_plugin_xdg_app.la
+plugin_LTLIBRARIES += libgs_plugin_xdg-app.la
 endif
 
 if HAVE_OSTREE

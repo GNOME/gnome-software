@@ -182,7 +182,6 @@ void		 gs_plugin_updates_changed		(GsPlugin	*plugin);
 const gchar	*gs_plugin_status_to_string		(GsPluginStatus	 status);
 
 /* vfuncs */
-const gchar	*gs_plugin_get_name			(void);
 void		 gs_plugin_initialize			(GsPlugin	*plugin);
 void		 gs_plugin_destroy			(GsPlugin	*plugin);
 void		 gs_plugin_adopt_app			(GsPlugin	*plugin,

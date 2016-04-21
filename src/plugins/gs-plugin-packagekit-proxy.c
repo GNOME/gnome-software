@@ -42,15 +42,6 @@ struct GsPluginData {
 	GSettings		*settings_ftp;
 };
 
-/**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "packagekit-proxy";
-}
-
 static gchar *
 get_proxy_http (GsPlugin *plugin)
 {

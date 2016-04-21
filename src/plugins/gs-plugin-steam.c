@@ -29,15 +29,6 @@
 #define GS_PLUGIN_STEAM_SCREENSHOT_URI	"http://cdn.akamai.steamstatic.com/steam/apps"
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "steam";
-}
-
-/**
  * gs_plugin_order_after:
  */
 const gchar **

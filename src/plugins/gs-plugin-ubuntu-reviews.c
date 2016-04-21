@@ -46,12 +46,6 @@ typedef struct {
 	gint64		 five_star_count;
 } Histogram;
 
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "ubuntu-reviews";
-}
-
 #define UBUNTU_REVIEWS_SERVER		"https://reviews.ubuntu.com/reviews"
 
 /* Download new stats every three months */

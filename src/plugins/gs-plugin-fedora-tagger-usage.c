@@ -35,15 +35,6 @@
  * It will self-disable if not run on a Fedora system.
  */
 
-/**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "fedora-tagger-usage";
-}
-
 #define GS_PLUGIN_FEDORA_TAGGER_SERVER		"https://apps.fedoraproject.org/tagger"
 
 /**

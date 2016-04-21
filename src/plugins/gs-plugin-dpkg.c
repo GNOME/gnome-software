@@ -29,15 +29,6 @@
 #define DPKG_DEB_BINARY		"/usr/bin/dpkg-deb"
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "dpkg";
-}
-
-/**
  * gs_plugin_initialize:
  */
 void

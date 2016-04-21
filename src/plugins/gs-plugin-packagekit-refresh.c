@@ -41,15 +41,6 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_get_name:
- */
-const gchar *
-gs_plugin_get_name (void)
-{
-	return "packagekit-refresh";
-}
-
-/**
  * gs_plugin_get_conflicts:
  */
 const gchar **
