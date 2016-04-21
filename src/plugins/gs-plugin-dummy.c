@@ -42,6 +42,17 @@ gs_plugin_get_name (void)
 }
 
 /**
+ * gs_plugin_order_after:
+ */
+const gchar **
+gs_plugin_order_after (GsPlugin *plugin)
+{
+	static const gchar *deps[] = { "appstream",
+				       NULL };
+	return deps;
+}
+
+/**
  * gs_plugin_initialize:
  */
 void

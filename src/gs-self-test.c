@@ -352,6 +352,8 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 
 	/* check various bitfields */
 	g_assert (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE));
+	g_assert_cmpstr (gs_app_get_license (app), ==,
+			 "<a href=\"http://spdx.org/licenses/GPL-2.0+\">GPL-2.0+</a>");
 	g_assert (gs_app_get_license_is_free (app));
 
 	/* check kudos */
