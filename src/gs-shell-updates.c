@@ -545,10 +545,12 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_shell_updates_get_upgrades_cb (GsPluginLoader *plugin_loader,
-                                  GAsyncResult *res,
-                                  GsShellUpdates *self)
+gs_shell_updates_get_upgrades_cb (GObject *source_object,
+				  GAsyncResult *res,
+				  gpointer user_data)
 {
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
+	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -588,7 +590,6 @@ gs_shell_updates_load (GsShellUpdates *self)
 
 	if (self->in_flight > 0)
 		return;
-	self->in_flight = 2;
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_updates));
 	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
@@ -596,16 +597,22 @@ gs_shell_updates_load (GsShellUpdates *self)
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;
 	gs_shell_updates_set_state (self,
 				    GS_SHELL_UPDATES_STATE_ACTION_GET_UPDATES);
+	self->in_flight++;
 	gs_plugin_loader_get_updates_async (self->plugin_loader,
 					    refine_flags,
 					    self->cancellable,
 					    (GAsyncReadyCallback) gs_shell_updates_get_updates_cb,
 					    self);
-	gs_plugin_loader_get_distro_upgrades_async (self->plugin_loader,
-	                                            GS_PLUGIN_REFINE_FLAGS_DEFAULT,
-	                                            self->cancellable,
-	                                            (GAsyncReadyCallback) gs_shell_updates_get_upgrades_cb,
-	                                            self);
+
+	/* don't refresh every each time */
+	if ((self->result_flags & GS_SHELL_UPDATES_FLAG_HAS_UPGRADES) == 0) {
+		gs_plugin_loader_get_distro_upgrades_async (self->plugin_loader,
+							    refine_flags,
+							    self->cancellable,
+							    gs_shell_updates_get_upgrades_cb,
+							    self);
+		self->in_flight++;
+	}
 }
 
 /**
