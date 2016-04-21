@@ -297,6 +297,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		g_autofree gchar *app_version = NULL;
 		g_autofree gchar *url = NULL;
 		g_autoptr(GsApp) app = NULL;
+		g_autoptr(AsIcon) ic = NULL;
 
 		/* only interested in upgrades to the same distro */
 		if (g_strcmp0 (distro_info->name, plugin->priv->os_name) != 0)
@@ -314,12 +315,33 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 					  distro_info->version);
 		app_version = g_strdup_printf ("%d", distro_info->version);
 
+		/* icon from disk */
+		ic = as_icon_new ();
+		as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
+		as_icon_set_filename (ic, "/usr/share/pixmaps/fedora-logo-sprite.png");
+
 		/* create */
 		app = gs_app_new (app_id);
 		gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, distro_info->name);
+		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
+				    "A major upgrade, with new features "
+				    "and added polish.");
+		gs_app_set_description (app, GS_APP_QUALITY_LOWEST,
+					"Fedora Workstation is a polished, "
+					"easy to use operating system for "
+					"laptop and desktop computers, with a "
+					"complete set of tools for developers "
+					"and makers of all kinds.");
 		gs_app_set_version (app, app_version);
+		gs_app_set_size (app, 1024 * 1024 * 1024); /* estimate */
+		gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
+		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
+		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
+		gs_app_set_origin_ui (app, distro_info->name);
+		gs_app_set_icon (app, ic);
 		gs_app_set_management_plugin (app, "packagekit");
 
 		/* just use the release notes */
