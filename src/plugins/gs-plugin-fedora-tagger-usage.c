@@ -50,14 +50,14 @@ gs_plugin_initialize (GsPlugin *plugin)
 	if (!g_settings_get_boolean (settings, "send-software-usage-stats")) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_debug ("disabling '%s' as 'send-software-usage-stats' "
-			 "disabled in GSettings", plugin->name);
+			 "disabled in GSettings", gs_plugin_get_name (plugin));
 		return;
 	}
 
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
-		g_debug ("disabling '%s' as we're not Fedora", plugin->name);
+		g_debug ("disabling '%s' as we're not Fedora", gs_plugin_get_name (plugin));
 		return;
 	}
 }

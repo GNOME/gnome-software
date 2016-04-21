@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -39,13 +39,15 @@
 
 #include "config.h"
 
-#include <glib.h>
 #include <gio/gdesktopappinfo.h>
+#include <gdk/gdk.h>
 
-#include "gs-plugin-private.h"
 #include "gs-os-release.h"
+#include "gs-plugin-private.h"
+#include "gs-plugin.h"
 
-struct GsPluginPrivate {
+typedef struct
+{
 	AsProfile		*profile;
 	GHashTable		*cache;
 	GModule			*module;
@@ -58,14 +60,29 @@ struct GsPluginPrivate {
 	const gchar		**order_before;		/* allow-none */
 	gboolean		 enabled;
 	gchar			*locale;		/* allow-none */
+	gchar			*name;
 	gint			 scale;
 	guint			 priority;
 	guint			 timer_id;
+} GsPluginPrivate;
+
+G_DEFINE_TYPE_WITH_PRIVATE (GsPlugin, gs_plugin, G_TYPE_OBJECT)
+
+enum {
+	PROP_0,
+	PROP_FLAGS,
+	PROP_LAST
 };
 
-typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
+enum {
+	SIGNAL_UPDATES_CHANGED,
+	SIGNAL_STATUS_CHANGED,
+	SIGNAL_LAST
+};
 
-#define gs_plugin_get_instance_private(p) (p->priv);
+static guint signals [SIGNAL_LAST] = { 0 };
+
+typedef const gchar	**(*GsPluginGetDepsFunc)	(GsPlugin	*plugin);
 
 /**
  * gs_plugin_status_to_string:
@@ -89,27 +106,6 @@ gs_plugin_status_to_string (GsPluginStatus status)
 		return "removing";
 	return "unknown";
 }
-
-/**
- * gs_plugin_new:
- **/
-GsPlugin *
-gs_plugin_new (void)
-{
-	GsPlugin *plugin = g_slice_new0 (GsPlugin);
-	plugin->priv = g_new0 (GsPluginPrivate, 1);
-	plugin->priv->enabled = TRUE;
-	plugin->priv->priority = 0.f;
-	plugin->priv->scale = 1;
-	plugin->priv->profile = as_profile_new ();
-	plugin->priv->cache = g_hash_table_new_full (g_str_hash,
-						     g_str_equal,
-						     g_free,
-						     (GDestroyNotify) g_object_unref);
-	g_rw_lock_init (&plugin->priv->rwlock);
-	return plugin;
-}
-
 /**
  * gs_plugin_create:
  **/
@@ -121,6 +117,7 @@ gs_plugin_create (const gchar *filename, GError **error)
 	GsPluginGetDepsFunc order_before = NULL;
 	GsPluginGetDepsFunc plugin_conflicts = NULL;
 	GsPlugin *plugin = NULL;
+	GsPluginPrivate *priv;
 	g_autofree gchar *basename = NULL;
 
 	module = g_module_open (filename, 0);
@@ -158,24 +155,27 @@ gs_plugin_create (const gchar *filename, GError **error)
 
 	/* create new plugin */
 	plugin = gs_plugin_new ();
-	plugin->priv->module = module;
-	plugin->priv->order_after = order_after != NULL ? order_after (plugin) : NULL;
-	plugin->priv->order_before = order_before != NULL ? order_before (plugin) : NULL;
-	plugin->priv->conflicts = plugin_conflicts != NULL ? plugin_conflicts (plugin) : NULL;
-	plugin->name = g_strdup (basename + 13);
+	priv = gs_plugin_get_instance_private (plugin);
+	priv->module = module;
+	priv->order_after = order_after != NULL ? order_after (plugin) : NULL;
+	priv->order_before = order_before != NULL ? order_before (plugin) : NULL;
+	priv->conflicts = plugin_conflicts != NULL ? plugin_conflicts (plugin) : NULL;
+	priv->name = g_strdup (basename + 13);
 	return plugin;
 }
 
 /**
- * gs_plugin_free:
+ * gs_plugin_finalize:
  **/
-void
-gs_plugin_free (GsPlugin *plugin)
+static void
+gs_plugin_finalize (GObject *object)
 {
+	GsPlugin *plugin = GS_PLUGIN (object);
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
 	if (priv->timer_id > 0)
 		g_source_remove (priv->timer_id);
-	g_free (plugin->name);
+	g_free (priv->name);
 	g_free (priv->data);
 	g_free (priv->locale);
 	g_rw_lock_clear (&priv->rwlock);
@@ -183,8 +183,6 @@ gs_plugin_free (GsPlugin *plugin)
 	g_object_unref (priv->soup_session);
 	g_hash_table_unref (priv->cache);
 	g_module_close (priv->module);
-	g_free (priv);
-	g_slice_free (GsPlugin, plugin);
 }
 
 /**
@@ -241,7 +239,7 @@ gs_plugin_action_delay_cb (gpointer user_data)
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
-	g_debug ("plugin no longer recently active: %s", plugin->name);
+	g_debug ("plugin no longer recently active: %s", priv->name);
 	priv->flags &= ~GS_PLUGIN_FLAGS_RECENT;
 	priv->timer_id = 0;
 	return FALSE;
@@ -307,6 +305,16 @@ gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	priv->enabled = enabled;
+}
+
+/**
+ * gs_plugin_set_enabled:
+ **/
+const gchar *
+gs_plugin_get_name (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->name;
 }
 
 /**
@@ -497,14 +505,11 @@ static gboolean
 gs_plugin_status_update_cb (gpointer user_data)
 {
 	GsPluginStatusHelper *helper = (GsPluginStatusHelper *) user_data;
-
-	/* call back into the loader */
-	helper->plugin->status_update_fn (helper->plugin,
-					  helper->app,
-					  helper->status,
-					  helper->plugin->status_update_user_data);
-	if (helper->app != NULL)
-		g_object_unref (helper->app);
+	g_signal_emit (helper->plugin,
+		       signals[SIGNAL_STATUS_CHANGED], 0,
+		       helper->app,
+		       helper->status);
+	g_object_unref (helper->app);
 	g_slice_free (GsPluginStatusHelper, helper);
 	return FALSE;
 }
@@ -516,11 +521,12 @@ void
 gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 {
 	GsPluginStatusHelper *helper;
-
 	helper = g_slice_new0 (GsPluginStatusHelper);
 	helper->plugin = plugin;
 	helper->status = status;
-	if (app != NULL)
+	if (app == NULL)
+		helper->app = gs_app_new (NULL);
+	else
 		helper->app = g_object_ref (app);
 	g_idle_add (gs_plugin_status_update_cb, helper);
 }
@@ -585,7 +591,7 @@ static gboolean
 gs_plugin_updates_changed_cb (gpointer user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
-	plugin->updates_changed_fn (plugin, plugin->updates_changed_user_data);
+	g_signal_emit (plugin, signals[SIGNAL_UPDATES_CHANGED], 0);
 	return FALSE;
 }
 
@@ -611,6 +617,7 @@ static void
 gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
 			     GsPluginDownloadHelper *helper)
 {
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (helper->plugin);
 	guint percentage;
 	goffset header_size;
 	goffset body_length;
@@ -619,7 +626,7 @@ gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
 	if (g_cancellable_is_cancelled (helper->cancellable)) {
 		g_debug ("cancelling download of %s",
 			 gs_app_get_id (helper->app));
-		soup_session_cancel_message (helper->plugin->priv->soup_session,
+		soup_session_cancel_message (priv->soup_session,
 					     msg,
 					     SOUP_STATUS_CANCELLED);
 		return;
@@ -659,12 +666,12 @@ gs_plugin_download_data (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	GsPluginDownloadHelper helper;
 	guint status_code;
 	g_autoptr(SoupMessage) msg = NULL;
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
-	g_debug ("downloading %s from %s", uri, plugin->name);
+	g_debug ("downloading %s from %s", uri, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	if (app != NULL) {
 		helper.plugin = plugin;
@@ -698,13 +705,13 @@ gs_plugin_download_file (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	GsPluginDownloadHelper helper;
 	guint status_code;
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 
-	g_debug ("downloading %s to %s from %s", uri, filename, plugin->name);
+	g_debug ("downloading %s to %s from %s", uri, filename, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	if (app != NULL) {
 		helper.plugin = plugin;
@@ -743,9 +750,8 @@ gs_plugin_download_file (GsPlugin *plugin,
 GsApp *
 gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 {
-	GsApp *app;
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	app = g_hash_table_lookup (priv->cache, key);
+	GsApp *app = g_hash_table_lookup (priv->cache, key);
 	if (app == NULL)
 		return NULL;
 	return g_object_ref (app);
@@ -761,6 +767,103 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 	if (g_hash_table_lookup (priv->cache, key) == app)
 		return;
 	g_hash_table_insert (priv->cache, g_strdup (key), g_object_ref (app));
+}
+
+/**
+ * gs_plugin_set_property:
+ */
+static void
+gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
+{
+	GsPlugin *plugin = GS_PLUGIN (object);
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	switch (prop_id) {
+	case PROP_FLAGS:
+		priv->flags = g_value_get_uint64 (value);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+/**
+ * gs_plugin_get_property:
+ */
+static void
+gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
+{
+	GsPlugin *plugin = GS_PLUGIN (object);
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	switch (prop_id) {
+	case PROP_FLAGS:
+		g_value_set_uint64 (value, priv->flags);
+		break;
+	default:
+		G_OBJECT_WARN_INVALID_PROPERTY_ID (object, prop_id, pspec);
+		break;
+	}
+}
+
+/**
+ * gs_plugin_class_init:
+ */
+static void
+gs_plugin_class_init (GsPluginClass *klass)
+{
+	GParamSpec *pspec;
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+
+	object_class->set_property = gs_plugin_set_property;
+	object_class->get_property = gs_plugin_get_property;
+	object_class->finalize = gs_plugin_finalize;
+
+	pspec = g_param_spec_uint64 ("flags", NULL, NULL,
+				     0, G_MAXUINT64, 0, G_PARAM_READWRITE);
+	g_object_class_install_property (object_class, PROP_FLAGS, pspec);
+
+	signals [SIGNAL_UPDATES_CHANGED] =
+		g_signal_new ("updates-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, updates_changed),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
+
+	signals [SIGNAL_STATUS_CHANGED] =
+		g_signal_new ("status-changed",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, status_changed),
+			      NULL, NULL, g_cclosure_marshal_generic,
+			      G_TYPE_NONE, 2, GS_TYPE_APP, G_TYPE_UINT);
+}
+
+/**
+ * gs_plugin_init:
+ */
+static void
+gs_plugin_init (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	priv->enabled = TRUE;
+	priv->priority = 0.f;
+	priv->scale = 1;
+	priv->profile = as_profile_new ();
+	priv->cache = g_hash_table_new_full (g_str_hash,
+					     g_str_equal,
+					     g_free,
+					     (GDestroyNotify) g_object_unref);
+	g_rw_lock_init (&priv->rwlock);
+}
+
+/**
+ * gs_plugin_new:
+ */
+GsPlugin *
+gs_plugin_new (void)
+{
+	GsPlugin *plugin;
+	plugin = g_object_new (GS_TYPE_PLUGIN, NULL);
+	return plugin;
 }
 
 /* vim: set noexpandtab: */

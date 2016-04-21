@@ -36,7 +36,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	if (!g_file_test (DPKG_DEB_BINARY, G_FILE_TEST_EXISTS)) {
 		g_debug ("disabling '%s' as no %s available",
-			 plugin->name, DPKG_DEB_BINARY);
+			 gs_plugin_get_name (plugin), DPKG_DEB_BINARY);
 		gs_plugin_set_enabled (plugin, FALSE);
 	}
 }

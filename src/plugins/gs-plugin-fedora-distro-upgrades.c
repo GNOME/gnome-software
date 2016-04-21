@@ -46,7 +46,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* check that we are running on Fedora */
 	if (!gs_plugin_check_distro_id (plugin, "fedora")) {
 		gs_plugin_set_enabled (plugin, FALSE);
-		g_debug ("disabling '%s' as we're not Fedora", plugin->name);
+		g_debug ("disabling '%s' as we're not Fedora", gs_plugin_get_name (plugin));
 		return;
 	}
 }
@@ -79,11 +79,11 @@ gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
 	/* only reload the update list if the plugin is NOT running itself
 	 * and the time since it ran is greater than 5 seconds (inotify FTW) */
 	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_SELF)) {
-		g_debug ("no notify as plugin %s active", plugin->name);
+		g_debug ("no notify as plugin %s active", gs_plugin_get_name (plugin));
 		return;
 	}
 	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RECENT)) {
-		g_debug ("no notify as plugin %s recently active", plugin->name);
+		g_debug ("no notify as plugin %s recently active", gs_plugin_get_name (plugin));
 		return;
 	}
 	g_debug ("cache file changed, so reloading upgrades list");

@@ -92,7 +92,7 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_kind (app) == AS_APP_KIND_SHELL_EXTENSION)
-		gs_app_set_management_plugin (app, plugin->name);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 }
 
 /**
@@ -312,7 +312,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* adopt any here */
 	if (gs_app_get_management_plugin (app) == NULL)
-		gs_app_set_management_plugin (app, plugin->name);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 
 	/* assume apps are available if they exist in AppStream metadata */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
@@ -478,7 +478,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 
 	/* we have no data :/ */
 	as_app_set_comment (app, NULL, "GNOME Shell Extension");
-	as_app_add_metadata (app, "GnomeSoftware::Plugin", plugin->name);
+	as_app_add_metadata (app, "GnomeSoftware::Plugin", gs_plugin_get_name (plugin));
 	return app;
 }
 
@@ -589,7 +589,7 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GFile) cachefn_file = NULL;
 	g_autoptr(GBytes) data = NULL;
-	g_autoptr(GsApp) dummy = gs_app_new (plugin->name);
+	g_autoptr(GsApp) dummy = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* look in the cache */
 	cachedir = gs_utils_get_cachedir ("extensions", error);
@@ -722,7 +722,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_autoptr(GVariant) retval = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* remove */
@@ -773,7 +774,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(GVariant) retval = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* install */

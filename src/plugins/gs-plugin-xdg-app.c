@@ -91,7 +91,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (g_str_has_prefix (gs_app_get_id (app), "user-xdgapp:") ||
 	    g_str_has_prefix (gs_app_get_id (app), "xdgapp:")) {
-		gs_app_set_management_plugin (app, plugin->name);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	}
 }
 
@@ -519,7 +519,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 			continue;
 
 		app = gs_app_new (xdg_app_remote_get_name (xremote));
-		gs_app_set_management_plugin (app, plugin->name);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
@@ -835,7 +835,7 @@ gs_plugin_refine_item_metadata (GsPlugin *plugin,
 	/* AppStream sets the source to appname/arch/branch, if this isn't set
 	 * we can't break out the fields */
 	if (gs_app_get_source_default (app) == NULL) {
-		g_warning ("no source set by appstream for %s", plugin->name);
+		g_warning ("no source set by appstream for %s", gs_plugin_get_name (plugin));
 		return TRUE;
 	}
 
@@ -1117,7 +1117,8 @@ gs_plugin_xdg_app_refine_app (GsPlugin *plugin,
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* profile */
@@ -1182,7 +1183,8 @@ gs_plugin_launch (GsPlugin *plugin,
 	const gchar *branch = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	branch = gs_app_get_xdgapp_branch (app);
@@ -1209,7 +1211,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* remove */
@@ -1243,7 +1246,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* ensure we have metadata and state */
@@ -1341,7 +1345,8 @@ gs_plugin_update_app (GsPlugin *plugin,
 	g_autoptr(XdgAppInstalledRef) xref = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* install */

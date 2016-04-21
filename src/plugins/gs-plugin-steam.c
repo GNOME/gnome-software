@@ -615,7 +615,7 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 		return FALSE;
 	cache_fn = g_build_filename (cachedir, cache_basename, NULL);
 	if (!g_file_test (cache_fn, G_FILE_TEST_EXISTS)) {
-		g_autoptr(GsApp) app_dl = gs_app_new (plugin->name);
+		g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 		uri = g_strdup_printf ("http://store.steampowered.com/app/%s/", gameid_str);
 		if (!gs_plugin_download_file (plugin,
 					      app_dl,
@@ -916,7 +916,8 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	g_autofree gchar *cmdline = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* this is async as steam is a different process: FIXME: use D-Bus */
@@ -937,7 +938,8 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	g_autofree gchar *cmdline = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* this is async as steam is a different process: FIXME: use D-Bus */
@@ -958,7 +960,8 @@ gs_plugin_launch (GsPlugin *plugin, GsApp *app,
 	g_autofree gchar *cmdline = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* this is async as steam is a different process: FIXME: use D-Bus */

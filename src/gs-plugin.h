@@ -26,7 +26,6 @@
 #include <glib-object.h>
 #include <gmodule.h>
 #include <gio/gio.h>
-#include <gtk/gtk.h>
 #include <libsoup/soup.h>
 
 #include "gs-app.h"
@@ -35,9 +34,21 @@
 
 G_BEGIN_DECLS
 
+#define GS_TYPE_PLUGIN (gs_plugin_get_type ())
+
+G_DECLARE_DERIVABLE_TYPE (GsPlugin, gs_plugin, GS, PLUGIN, GObject)
+
+struct _GsPluginClass
+{
+	GObjectClass		 parent_class;
+	void			(*updates_changed)	(GsPlugin	*plugin);
+	void			(*status_changed)	(GsPlugin	*plugin,
+							 GsApp		*app,
+							 guint		 status);
+	gpointer		 padding[29];
+};
+
 typedef struct	GsPluginData	GsPluginData;
-typedef struct	GsPluginPrivate	GsPluginPrivate;
-typedef struct	GsPlugin	GsPlugin;
 
 typedef enum {
 	GS_PLUGIN_STATUS_UNKNOWN,
@@ -51,13 +62,6 @@ typedef enum {
 	GS_PLUGIN_STATUS_LAST
 } GsPluginStatus;
 
-typedef void (*GsPluginStatusUpdate)	(GsPlugin	*plugin,
-					 GsApp		*app,
-					 GsPluginStatus	 status,
-					 gpointer	 user_data);
-typedef void (*GsPluginUpdatesChanged)	(GsPlugin	*plugin,
-					 gpointer	 user_data);
-
 typedef enum {
 	GS_PLUGIN_FLAGS_NONE		= 0,
 	GS_PLUGIN_FLAGS_RUNNING_SELF	= 1 << 0,
@@ -66,15 +70,6 @@ typedef enum {
 	GS_PLUGIN_FLAGS_RECENT		= 1 << 3,
 	GS_PLUGIN_FLAGS_LAST
 } GsPluginFlags;
-
-struct GsPlugin {
-	gchar			*name;
-	GsPluginPrivate		*priv;
-	GsPluginStatusUpdate	 status_update_fn;
-	gpointer		 status_update_user_data;
-	GsPluginUpdatesChanged	 updates_changed_fn;
-	gpointer		 updates_changed_user_data;
-};
 
 typedef enum {
 	GS_PLUGIN_ERROR_FAILED,
@@ -137,12 +132,12 @@ typedef enum {
 
 /* helpers */
 #define	GS_PLUGIN_ERROR					1
-#define	GS_PLUGIN(x)					((GsPlugin *) x)
 
 /* public getters and setters */
 GsPluginData	*gs_plugin_alloc_data			(GsPlugin	*plugin,
 							 gsize		 sz);
 GsPluginData	*gs_plugin_get_data			(GsPlugin	*plugin);
+const gchar	*gs_plugin_get_name			(GsPlugin	*plugin);
 gboolean	 gs_plugin_get_enabled			(GsPlugin	*plugin);
 void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);

@@ -260,7 +260,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		rd = g_ptr_array_index (array, i);
 		id = pk_repo_detail_get_id (rd);
 		app = gs_app_new (id);
-		gs_app_set_management_plugin (app, plugin->name);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
@@ -337,7 +337,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	data.ptask = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* high priority foreground operation */
@@ -589,7 +590,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	data.ptask = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* remove repo and all apps in it */
@@ -786,7 +788,8 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 	return gs_plugin_app_launch (plugin, app, error);
 }

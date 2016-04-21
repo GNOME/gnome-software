@@ -60,7 +60,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	/* check that we are running on Ubuntu */
 	if (!gs_plugin_check_distro_id (plugin, "ubuntu")) {
 		gs_plugin_set_enabled (plugin, FALSE);
-		g_debug ("disabling '%s' as we're not Ubuntu", plugin->name);
+		g_debug ("disabling '%s' as we're not Ubuntu", gs_plugin_get_name (plugin));
 		return;
 	}
 

@@ -83,7 +83,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* not us */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* profile */
@@ -177,7 +178,8 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 
 	/* not us */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	mgr = li_manager_new ();
@@ -223,7 +225,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 
 	/* not us */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* create new installer and select remote package */

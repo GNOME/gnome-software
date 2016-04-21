@@ -35,7 +35,6 @@ GsPlugin	*gs_plugin_new				(void);
 GsPlugin	*gs_plugin_create			(const gchar	*filename,
 							 GError		**error);
 
-void		 gs_plugin_free				(GsPlugin	*plugin);
 void		 gs_plugin_action_start			(GsPlugin	*plugin,
 							 gboolean	 exclusive);
 void		 gs_plugin_action_stop			(GsPlugin	*plugin);

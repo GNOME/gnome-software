@@ -62,7 +62,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 	if (epiphany == NULL) {
 		gs_plugin_set_enabled (plugin, FALSE);
 		g_debug ("disabling '%s' as epiphany does not exist",
-			 plugin->name);
+			 gs_plugin_get_name (plugin));
 	}
 }
 
@@ -73,7 +73,7 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_kind (app) == AS_APP_KIND_WEB_APP)
-		gs_app_set_management_plugin (app, plugin->name);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 }
 
 /**
@@ -117,7 +117,8 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	g_autoptr(GFile) symlink_icon = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* create the correct directory */
@@ -235,7 +236,8 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	g_autoptr(GFile) file_app = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* remove the epi 'config' file */
@@ -274,7 +276,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	g_autofree gchar *id_nonfull = NULL;
 
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	gs_app_set_size (app, 4096);
@@ -299,7 +302,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (g_file_test (fn, G_FILE_TEST_EXISTS)) {
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_add_source_id (app, fn);
-		gs_app_set_management_plugin (app, plugin->name);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		return TRUE;
 	}
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -316,7 +319,8 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 	return gs_plugin_app_launch (plugin, app, error);
 }

@@ -94,7 +94,7 @@ void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
 	if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
-		gs_app_set_management_plugin (app, plugin->name);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 }
 
 /**
@@ -471,7 +471,7 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	g_autofree gchar *url_sig = NULL;
 	g_autoptr(GBytes) data = NULL;
 	g_autoptr(GKeyFile) config = NULL;
-	g_autoptr(GsApp) app_dl = gs_app_new (plugin->name);
+	g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* read config file */
 	config = g_key_file_new ();
@@ -680,7 +680,8 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
@@ -699,7 +700,8 @@ gs_plugin_update_app (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app), plugin->name) != 0)
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
 	/* locked devices need unlocking, rather than installing */

@@ -234,7 +234,8 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GList *list)
 			adopt_app_func (plugin, app);
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (gs_app_get_management_plugin (app) != NULL) {
-				g_debug ("%s adopted %s", plugin->name,
+				g_debug ("%s adopted %s",
+					 gs_plugin_get_name (plugin),
 					 gs_app_get_id (app));
 			}
 		}
@@ -298,12 +299,12 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		if (function_name_parent == NULL) {
 			ptask = as_profile_start (priv->profile,
 						  "GsPlugin::%s(%s)",
-						  plugin->name,
+						  gs_plugin_get_name (plugin),
 						  function_name);
 		} else {
 			ptask = as_profile_start (priv->profile,
 						  "GsPlugin::%s(%s;%s)",
-						  plugin->name,
+						  gs_plugin_get_name (plugin),
 						  function_name_parent,
 						  function_name);
 		}
@@ -317,7 +318,8 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (!ret) {
 				g_warning ("failed to call %s on %s: %s",
-					   function_name, plugin->name,
+					   function_name,
+					   gs_plugin_get_name (plugin),
 					   error_local->message);
 				continue;
 			}
@@ -332,7 +334,8 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 				gs_plugin_loader_action_stop (plugin_loader, plugin);
 				if (!ret) {
 					g_warning ("failed to call %s on %s: %s",
-						   function_name_app, plugin->name,
+						   function_name_app,
+						   gs_plugin_get_name (plugin),
 						   error_local->message);
 					continue;
 				}
@@ -462,13 +465,15 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		/* run function */
 		ptask2 = as_profile_start (priv->profile,
 					   "GsPlugin::%s(%s)",
-					   plugin->name, function_name);
+					   gs_plugin_get_name (plugin),
+					   function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, &list, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -773,14 +778,15 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, app, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			gs_plugin_loader_set_app_error (app, error_local);
 			continue;
@@ -1670,7 +1676,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, values, &state->list,
@@ -1678,7 +1684,8 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -1831,7 +1838,7 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, values, &state->list,
@@ -1839,7 +1846,8 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -1993,7 +2001,7 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, values, &state->list,
@@ -2001,7 +2009,8 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -2161,7 +2170,7 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, &state->list,
@@ -2169,7 +2178,8 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -2301,7 +2311,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->category, &state->list,
@@ -2309,7 +2319,8 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -2625,7 +2636,7 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  state->function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->app, state->review,
@@ -2633,7 +2644,8 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   state->function_name, plugin->name,
+				   state->function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -3023,7 +3035,7 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		plugin_func (plugin);
@@ -3045,7 +3057,7 @@ gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 
 	for (i = 0; i < priv->plugins->len; i++) {
 		plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_strcmp0 (plugin->name, plugin_name) == 0)
+		if (g_strcmp0 (gs_plugin_get_name (plugin), plugin_name) == 0)
 			return plugin;
 	}
 	return NULL;
@@ -3066,15 +3078,14 @@ gs_plugin_loader_get_enabled (GsPluginLoader *plugin_loader,
 }
 
 /**
- * gs_plugin_loader_status_update_cb:
+ * gs_plugin_loader_status_changed_cb:
  */
 static void
-gs_plugin_loader_status_update_cb (GsPlugin *plugin,
-				   GsApp *app,
-				   GsPluginStatus status,
-				   gpointer user_data)
+gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
+				    GsApp *app,
+				    GsPluginStatus status,
+				    GsPluginLoader *plugin_loader)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
 	/* same as last time */
@@ -3113,9 +3124,9 @@ gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
  * gs_plugin_loader_updates_changed_cb:
  */
 static void
-gs_plugin_loader_updates_changed_cb (GsPlugin *plugin, gpointer user_data)
+gs_plugin_loader_updates_changed_cb (GsPlugin *plugin,
+				     GsPluginLoader *plugin_loader)
 {
-	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	if (priv->updates_changed_id != 0)
 		return;
@@ -3142,15 +3153,17 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 		g_warning ("Failed to load %s: %s", filename, error->message);
 		return;
 	}
-	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
-	plugin->status_update_user_data = plugin_loader;
-	plugin->updates_changed_fn = gs_plugin_loader_updates_changed_cb;
-	plugin->updates_changed_user_data = plugin_loader;
+	g_signal_connect (plugin, "updates-changed",
+			  G_CALLBACK (gs_plugin_loader_updates_changed_cb),
+			  plugin_loader);
+	g_signal_connect (plugin, "status-changed",
+			  G_CALLBACK (gs_plugin_loader_status_changed_cb),
+			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, priv->soup_session);
 	gs_plugin_set_profile (plugin, priv->profile);
 	gs_plugin_set_locale (plugin, priv->locale);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
-	g_debug ("opened plugin %s: %s", filename, plugin->name);
+	g_debug ("opened plugin %s: %s", filename, gs_plugin_get_name (plugin));
 
 	/* add to array */
 	g_ptr_array_add (priv->plugins, plugin);
@@ -3272,7 +3285,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			if (!gs_plugin_get_enabled (plugin))
 				continue;
 			ret = g_strv_contains ((const gchar * const *) whitelist,
-					       plugin->name);
+					       gs_plugin_get_name (plugin));
 			gs_plugin_set_enabled (plugin, ret);
 		}
 	}
@@ -3298,9 +3311,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				if (gs_plugin_get_priority (plugin) <= gs_plugin_get_priority (dep)) {
 					g_debug ("%s [%i] to be ordered after %s [%i] "
 						 "so promoting to [%i]",
-						 plugin->name,
+						 gs_plugin_get_name (plugin),
 						 gs_plugin_get_priority (plugin),
-						 dep->name,
+						 gs_plugin_get_name (dep),
 						 gs_plugin_get_priority (dep),
 						 gs_plugin_get_priority (dep) + 1);
 					gs_plugin_set_priority (plugin, gs_plugin_get_priority (dep) + 1);
@@ -3326,9 +3339,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				if (gs_plugin_get_priority (plugin) <= gs_plugin_get_priority (dep)) {
 					g_debug ("%s [%i] to be ordered before %s [%i] "
 						 "so promoting to [%i]",
-						 plugin->name,
+						 gs_plugin_get_name (plugin),
 						 gs_plugin_get_priority (plugin),
-						 dep->name,
+						 gs_plugin_get_name (dep),
 						 gs_plugin_get_priority (dep),
 						 gs_plugin_get_priority (dep) + 1);
 					gs_plugin_set_priority (dep, gs_plugin_get_priority (plugin) + 1);
@@ -3370,7 +3383,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			if (!gs_plugin_get_enabled (dep))
 				continue;
 			g_debug ("disabling %s as conflicts with %s",
-				 dep->name, plugin->name);
+				 gs_plugin_get_name (dep),
+				 gs_plugin_get_name (plugin));
 			gs_plugin_set_enabled (dep, FALSE);
 		}
 	}
@@ -3394,14 +3408,15 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			continue;
 		ptask2 = as_profile_start (priv->profile,
 					   "GsPlugin::%s(%s)",
-					   plugin->name,
+					   gs_plugin_get_name (plugin),
 					   function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, TRUE);
 		ret = plugin_func (plugin, NULL, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_debug ("disabling %s as setup failed: %s",
-				 plugin->name, error_local->message);
+				 gs_plugin_get_name (plugin),
+				 error_local->message);
 			gs_plugin_set_enabled (plugin, FALSE);
 		}
 	}
@@ -3428,7 +3443,7 @@ gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 		g_debug ("[%s]\t%i\t->\t%s",
 			 gs_plugin_get_enabled (plugin) ? "enabled" : "disabld",
 			 gs_plugin_get_priority (plugin),
-			 plugin->name);
+			 gs_plugin_get_name (plugin));
 	}
 }
 
@@ -3521,7 +3536,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	guint i;
 
 	priv->scale = 1;
-	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_free);
+	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->status_last = GS_PLUGIN_STATUS_LAST;
 	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->profile = as_profile_new ();
@@ -3680,14 +3695,15 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, TRUE);
 		ret = plugin_func (plugin, cache_age, flags, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -3822,7 +3838,7 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, &state->list, state->filename,
@@ -3830,7 +3846,8 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -3965,14 +3982,15 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 			continue;
 		ptask = as_profile_start (priv->profile,
 					  "GsPlugin::%s(%s)",
-					  plugin->name,
+					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 		ret = plugin_func (plugin, state->list, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
 			g_warning ("failed to call %s on %s: %s",
-				   function_name, plugin->name,
+				   function_name,
+				   gs_plugin_get_name (plugin),
 				   error_local->message);
 			continue;
 		}
@@ -4004,7 +4022,7 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 
 			ptask = as_profile_start (priv->profile,
 						  "GsPlugin::%s(%s){%s}",
-						  plugin->name,
+						  gs_plugin_get_name (plugin),
 						  function_name,
 						  gs_app_get_id (app));
 			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
@@ -4014,7 +4032,8 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (!ret) {
 				g_warning ("failed to call %s on %s: %s",
-					   function_name, plugin->name,
+					   function_name,
+					   gs_plugin_get_name (plugin),
 					   error_local->message);
 				gs_plugin_loader_set_app_error (app, error_local);
 				continue;

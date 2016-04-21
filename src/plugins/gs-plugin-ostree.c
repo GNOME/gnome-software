@@ -125,7 +125,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 
 		/* create app */
 		app = gs_app_new (names[i]);
-		gs_app_set_management_plugin (app, plugin->name);
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
