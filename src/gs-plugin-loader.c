@@ -3140,7 +3140,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin = gs_plugin_create (filename, &error);
 	if (plugin == NULL) {
 		g_warning ("Failed to load %s: %s", filename, error->message);
-		return NULL;
+		return;
 	}
 	plugin->status_update_fn = gs_plugin_loader_status_update_cb;
 	plugin->status_update_user_data = plugin_loader;
