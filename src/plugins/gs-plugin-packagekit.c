@@ -662,6 +662,11 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin,
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
 
+	/* only process this app if was created by this plugin */
+	if (g_strcmp0 (gs_app_get_management_plugin (app),
+		       gs_plugin_get_name (plugin)) != 0)
+		return TRUE;
+
 	data.app = app;
 	data.plugin = plugin;
 	data.ptask = NULL;
