@@ -139,6 +139,12 @@ gs_app_func (void)
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_REMOVING);
 	gs_app_set_state_recover (app); // simulate an error
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+
+	/* try again */
+	gs_app_set_state (app, AS_APP_STATE_REMOVING);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_REMOVING);
+	gs_app_set_state_recover (app); // simulate an error
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
 }
 
 static guint _status_changed_cnt = 0;

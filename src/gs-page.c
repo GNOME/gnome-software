@@ -55,14 +55,16 @@ gs_page_helper_free (GsPageHelper *helper)
 	g_slice_free (GsPageHelper, helper);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPageHelper, gs_page_helper_free);
+
 static void
 gs_page_app_installed_cb (GObject *source,
                           GAsyncResult *res,
                           gpointer user_data)
 {
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GError *last_error;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsPageHelper *helper = (GsPageHelper *) user_data;
 	GsPage *page = helper->page;
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
@@ -79,7 +81,7 @@ gs_page_app_installed_cb (GObject *source,
 		                            gs_shell_get_window (priv->shell),
 		                            GS_PLUGIN_LOADER_ACTION_INSTALL,
 		                            error);
-		goto out;
+		return;
 	}
 
 	/* non-fatal error */
@@ -92,7 +94,7 @@ gs_page_app_installed_cb (GObject *source,
 					    gs_shell_get_window (priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_INSTALL,
 					    last_error);
-		goto out;
+		return;
 	}
 
 	/* only show this if the window is not active */
@@ -102,9 +104,6 @@ gs_page_app_installed_cb (GObject *source,
 
 	if (GS_PAGE_GET_CLASS (page)->app_installed != NULL)
 		GS_PAGE_GET_CLASS (page)->app_installed (page, helper->app);
-
-out:
-	gs_page_helper_free (helper);
 }
 
 static void
@@ -112,9 +111,9 @@ gs_page_app_removed_cb (GObject *source,
                         GAsyncResult *res,
                         gpointer user_data)
 {
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 	GError *last_error;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsPageHelper *helper = (GsPageHelper *) user_data;
 	GsPage *page = helper->page;
 	GsPagePrivate *priv = gs_page_get_instance_private (page);
 	gboolean ret;
@@ -129,7 +128,7 @@ gs_page_app_removed_cb (GObject *source,
 		                            gs_shell_get_window (priv->shell),
 		                            GS_PLUGIN_LOADER_ACTION_REMOVE,
 		                            error);
-		goto out;
+		return;
 	}
 
 	/* non-fatal error */
@@ -142,14 +141,11 @@ gs_page_app_removed_cb (GObject *source,
 					    gs_shell_get_window (priv->shell),
 					    GS_PLUGIN_LOADER_ACTION_REMOVE,
 					    last_error);
-		goto out;
+		return;
 	}
 
 	if (GS_PAGE_GET_CLASS (page)->app_removed != NULL)
 		GS_PAGE_GET_CLASS (page)->app_removed (page, helper->app);
-
-out:
-	gs_page_helper_free (helper);
 }
 
 GtkWidget *

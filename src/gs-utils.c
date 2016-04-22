@@ -180,6 +180,11 @@ gs_app_notify_failed_modal (GsApp *app,
 		g_string_append_printf (msg, _("Removal of %s failed."),
 					gs_app_get_name (app));
 		break;
+	case GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD:
+		/* TRANSLATORS: this is when the upgrade download fails */
+		g_string_append_printf (msg, _("Upgrade to %s failed."),
+					gs_app_get_name (app));
+		break;
 	default:
 		g_assert_not_reached ();
 		break;
