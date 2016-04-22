@@ -452,8 +452,13 @@ gs_app_set_state_recover (GsApp *app)
 		return;
 	if (app->state_recover == app->state)
 		return;
+
+	g_debug ("recovering state on %s from %s to %s",
+		 app->id,
+		 as_app_state_to_string (app->state),
+		 as_app_state_to_string (app->state_recover));
+
 	app->state = app->state_recover;
-	app->state_recover = AS_APP_STATE_UNKNOWN;
 	gs_app_queue_notify (app, "state");
 }
 
