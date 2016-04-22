@@ -550,8 +550,7 @@ gs_plugin_loader_set_app_error (GsApp *app, GError *error)
 		return;
 
 	/* random, non-plugin error domains are never shown to the user */
-	if (error->domain == GS_PLUGIN_ERROR &&
-	    gs_app_get_last_error (app) == NULL) {
+	if (error->domain == GS_PLUGIN_ERROR) {
 		g_debug ("saving error for %s: %s",
 			 gs_app_get_id (app),
 			 error->message);
