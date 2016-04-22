@@ -604,7 +604,7 @@
                             <property name="visible">True</property>
                             <property name="can_focus">False</property>
                             <property name="row_spacing">6</property>
-                            <property name="column_spacing">12</property>
+                            <property name="column_spacing">24</property>
                             <child>
                               <object class="GtkLabel" id="label_details_version_title">
                                 <property name="visible">True</property>
@@ -710,11 +710,12 @@
                                 <property name="top_attach">2</property>
                               </packing>
                             </child>
+
                             <child>
-                              <object class="GtkLabel" id="label_details_size_title">
+                              <object class="GtkLabel" id="label_details_size_installed_title">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
-                                <property name="label" translatable="yes">Size</property>
+                                <property name="label" translatable="yes">Installed Size</property>
                                 <property name="xalign">0</property>
                                 <property name="yalign">0</property>
                                 <style>
@@ -727,7 +728,7 @@
                               </packing>
                             </child>
                             <child>
-                              <object class="GtkLabel" id="label_details_size_value">
+                              <object class="GtkLabel" id="label_details_size_installed_value">
                                 <property name="visible">True</property>
                                 <property name="can_focus">False</property>
                                 <property name="hexpand">True</property>
@@ -741,6 +742,39 @@
                                 <property name="top_attach">6</property>
                               </packing>
                             </child>
+
+                            <child>
+                              <object class="GtkLabel" id="label_details_size_download_title">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="label" translatable="yes">Download Size</property>
+                                <property name="xalign">0</property>
+                                <property name="yalign">0</property>
+                                <style>
+                                  <class name="dim-label"/>
+                                </style>
+                              </object>
+                              <packing>
+                                <property name="left_attach">0</property>
+                                <property name="top_attach">7</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkLabel" id="label_details_size_download_value">
+                                <property name="visible">True</property>
+                                <property name="can_focus">False</property>
+                                <property name="hexpand">True</property>
+                                <property name="label">30 MB</property>
+                                <property name="selectable">True</property>
+                                <property name="xalign">0</property>
+                                <property name="yalign">0</property>
+                              </object>
+                              <packing>
+                                <property name="left_attach">1</property>
+                                <property name="top_attach">7</property>
+                              </packing>
+                            </child>
+
                             <child>
                               <object class="GtkLabel" id="label_details_origin_title">
                                 <property name="visible">True</property>
@@ -1173,7 +1207,8 @@
       <widget name="label_details_category_title"/>
       <widget name="label_details_origin_title"/>
       <widget name="label_details_license_title"/>
-      <widget name="label_details_size_title"/>
+      <widget name="label_details_size_installed_title"/>
+      <widget name="label_details_size_download_title"/>
       <widget name="label_details_developer_title"/>
     </widgets>
   </object>
@@ -1184,7 +1219,8 @@
       <widget name="label_details_updated_value"/>
       <widget name="label_details_category_value"/>
       <widget name="label_details_license_value"/>
-      <widget name="label_details_size_value"/>
+      <widget name="label_details_size_installed_value"/>
+      <widget name="label_details_size_download_value"/>
       <widget name="label_details_developer_value"/>
     </widgets>
   </object>

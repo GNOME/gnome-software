@@ -132,10 +132,12 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		}
 
 		/* set size */
-		if (gs_app_get_size (app) == 0) {
+		if (gs_app_get_size_download (app) == 0)
+			gs_app_set_size_download (app, 0);
+		if (gs_app_get_size_installed (app) == 0) {
 			guint64 tmp;
 			tmp = headerGetNumber (h, RPMTAG_SIZE);
-			gs_app_set_size (app, tmp);
+			gs_app_set_size_installed (app, tmp);
 		}
 
 		/* set license */

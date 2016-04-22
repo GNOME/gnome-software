@@ -351,7 +351,7 @@ gs_plugin_xdg_app_set_metadata_installed (GsApp *app, XdgAppInstalledRef *xref)
 	/* this is faster than xdg_app_installation_fetch_remote_size_sync() */
 	size_installed = xdg_app_installed_ref_get_installed_size (xref);
 	if (size_installed != 0)
-		gs_app_set_size (app, size_installed);
+		gs_app_set_size_installed (app, size_installed);
 }
 
 /**
@@ -1029,12 +1029,12 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 	gboolean ret;
 	guint64 download_size;
 	guint64 installed_size;
-	guint64 size = 0;
-	g_auto(GStrv) split = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 	g_autoptr(GError) error_local = NULL;
 
-	if (gs_app_get_size (app) > 0)
+	/* already set */
+	if (gs_app_get_size_installed (app) > 0 &&
+	    gs_app_get_size_download (app) > 0)
 		return TRUE;
 
 	/* need commit */
@@ -1073,9 +1073,6 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 							 cancellable,
 							 error))
 				return FALSE;
-			g_debug ("runtime %s is not installed, so adding download",
-				 gs_app_get_id (app_runtime));
-			size += gs_app_get_size (app_runtime);
 		}
 	}
 
@@ -1091,16 +1088,12 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 	if (!ret) {
 		g_warning ("libxdgapp failed to return application size: %s",
 			   error_local->message);
+		gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
+		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 	} else {
-		if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
-			size += installed_size;
-		} else {
-			size += download_size;
-		}
+		gs_app_set_size_installed (app, installed_size);
+		gs_app_set_size_download (app, download_size);
 	}
-	if (size == 0)
-		size = GS_APP_SIZE_MISSING;
-	gs_app_set_size (app, size);
 	return TRUE;
 }
 
@@ -1413,7 +1406,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	app = gs_app_new (id_prefixed);
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
-	gs_app_set_size (app, xdg_app_bundle_ref_get_installed_size (xref_bundle));
+	gs_app_set_size_installed (app, xdg_app_bundle_ref_get_installed_size (xref_bundle));
 	gs_plugin_xdg_app_set_metadata (app, XDG_APP_REF (xref_bundle));
 	metadata = xdg_app_bundle_ref_get_metadata (xref_bundle);
 	if (!gs_plugin_xdg_app_set_app_metadata (app,

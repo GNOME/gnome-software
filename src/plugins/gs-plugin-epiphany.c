@@ -280,7 +280,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
 
-	gs_app_set_size (app, 4096);
+	gs_app_set_size_installed (app, 4096);
 
 	name = gs_app_get_name (app);
 	if (name == NULL) {

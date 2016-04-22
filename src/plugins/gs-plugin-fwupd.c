@@ -236,7 +236,8 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 		gs_app_set_version (app, fwupd_result_get_device_version (res));
 	}
 	if (fwupd_result_get_update_size (res) != 0) {
-		gs_app_set_size (app, fwupd_result_get_update_size (res));
+		gs_app_set_size_installed (app, 0);
+		gs_app_set_size_download (app, fwupd_result_get_update_size (res));
 	}
 	if (fwupd_result_get_device_created (res) != 0) {
 		gs_app_set_install_date (app, fwupd_result_get_device_created (res));

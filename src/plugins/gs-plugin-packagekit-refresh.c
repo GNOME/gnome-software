@@ -367,7 +367,8 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 	gs_plugin_packagekit_refresh_set_text (app,
 					       pk_details_get_description (item));
 	gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, pk_details_get_url (item));
-	gs_app_set_size (app, pk_details_get_size (item));
+	gs_app_set_size_installed (app, pk_details_get_size (item));
+	gs_app_set_size_download (app, 0);
 	license_spdx = as_utils_license_to_spdx (pk_details_get_license (item));
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, license_spdx);
 

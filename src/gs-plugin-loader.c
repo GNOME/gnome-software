@@ -1593,7 +1593,8 @@ gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 	gs_app_set_summary_missing (app, tmp->str);
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
-	gs_app_set_size (app, GS_APP_SIZE_MISSING);
+	gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
+	gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 	return TRUE;
 }
 

@@ -190,7 +190,8 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 		if (data != NULL)
 			gs_app_set_origin (app, data);
 		gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
-		gs_app_set_size (app, GS_APP_SIZE_MISSING);
+		gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
+		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 		break;
 	default:
 		/* should we expect anything else? */
@@ -530,8 +531,15 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	}
 
 	/* the size is the size of all sources */
-	if (size > 0 && gs_app_get_size (app) == 0)
-		gs_app_set_size (app, size);
+	if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
+		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+		if (size > 0 && gs_app_get_size_installed (app) == 0)
+			gs_app_set_size_installed (app, size);
+	} else {
+		gs_app_set_size_installed (app, GS_APP_SIZE_UNKNOWABLE);
+		if (size > 0 && gs_app_get_size_download (app) == 0)
+			gs_app_set_size_download (app, size);
+	}
 }
 
 /**
@@ -669,7 +677,10 @@ gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsPluginRefineFlags flags,
 	    gs_app_get_url (app, AS_URL_KIND_HOMEPAGE) == NULL)
 		return TRUE;
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 &&
-	    gs_app_get_size (app) == GS_APP_SIZE_UNKNOWN)
+	    gs_app_get_size_installed (app) == 0)
+		return TRUE;
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) > 0 &&
+	    gs_app_get_size_download (app) == 0)
 		return TRUE;
 	return FALSE;
 }

@@ -86,7 +86,10 @@ struct _GsShellDetails
 	GtkWidget		*label_details_license_value;
 	GtkWidget		*label_details_origin_title;
 	GtkWidget		*label_details_origin_value;
-	GtkWidget		*label_details_size_value;
+	GtkWidget		*label_details_size_installed_title;
+	GtkWidget		*label_details_size_installed_value;
+	GtkWidget		*label_details_size_download_title;
+	GtkWidget		*label_details_size_download_value;
 	GtkWidget		*label_details_updated_value;
 	GtkWidget		*label_details_version_value;
 	GtkWidget		*label_failed;
@@ -753,17 +756,28 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		gtk_label_set_label (GTK_LABEL (self->label_details_version_value), C_("version", "Unknown"));
 	}
 
-	/* set the size */
-	if (gs_app_get_size (self->app) == GS_APP_SIZE_UNKNOWN) {
-		/* TRANSLATORS: this is where the size is being worked out */
-		gtk_label_set_label (GTK_LABEL (self->label_details_size_value), C_("size", "Calculating…"));
-	} else if (gs_app_get_size (self->app) == GS_APP_SIZE_MISSING) {
-		/* TRANSLATORS: this is where the size is not known */
-		gtk_label_set_label (GTK_LABEL (self->label_details_size_value), C_("size", "Unknown"));
+	/* set the installed size */
+	if (gs_app_get_size_installed (self->app) == GS_APP_SIZE_UNKNOWABLE) {
+		gtk_widget_hide (self->label_details_size_installed_title);
+		gtk_widget_hide (self->label_details_size_installed_value);
 	} else {
 		g_autofree gchar *size = NULL;
-		size = g_format_size (gs_app_get_size (self->app));
-		gtk_label_set_label (GTK_LABEL (self->label_details_size_value), size);
+		size = g_format_size (gs_app_get_size_installed (self->app));
+		gtk_label_set_label (GTK_LABEL (self->label_details_size_installed_value), size);
+		gtk_widget_show (self->label_details_size_installed_title);
+		gtk_widget_show (self->label_details_size_installed_value);
+	}
+
+	/* set the download size */
+	if (gs_app_get_size_download (self->app) == GS_APP_SIZE_UNKNOWABLE) {
+		gtk_widget_hide (self->label_details_size_download_title);
+		gtk_widget_hide (self->label_details_size_download_value);
+	} else {
+		g_autofree gchar *size = NULL;
+		size = g_format_size (gs_app_get_size_download (self->app));
+		gtk_label_set_label (GTK_LABEL (self->label_details_size_download_value), size);
+		gtk_widget_show (self->label_details_size_download_title);
+		gtk_widget_show (self->label_details_size_download_value);
 	}
 
 	/* set the updated date */
@@ -1695,7 +1709,10 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_license_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_origin_title);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_origin_value);
-	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_value);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_download_title);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_download_value);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_installed_title);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_size_installed_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_updated_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_version_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_failed);

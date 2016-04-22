@@ -319,8 +319,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 
 	/* FIXME: assume these are small */
-	if (gs_app_get_size (app) == 0)
-		gs_app_set_size (app, 1024 * 50);
+	if (gs_app_get_size_installed (app) == 0)
+		gs_app_set_size_installed (app, 1024 * 50);
+	if (gs_app_get_size_download (app) == 0)
+		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
 
 	return TRUE;
 }

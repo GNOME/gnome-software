@@ -838,13 +838,17 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* is this true? */
 	gs_app_set_kind (app, AS_ID_KIND_DESKTOP);
 
+	/* no way of knowing */
+	if (gs_app_get_size_download (app) == 0)
+		gs_app_set_size_download (app, GS_APP_SIZE_UNKNOWABLE);
+
 	/* size */
 	tmp = gs_app_get_metadata_item (app, "X-Steam-Size");
 	if (tmp != NULL) {
 		guint64 sz;
 		sz = g_ascii_strtoull (tmp, NULL, 10);
 		if (sz > 0)
-			gs_app_set_size (app, sz);
+			gs_app_set_size_installed (app, sz);
 	}
 
 	/* check manifest */
@@ -869,7 +873,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		guint64 sz;
 		sz = g_ascii_strtoull (tmp, NULL, 10);
 		if (sz > 0)
-			gs_app_set_size (app, sz);
+			gs_app_set_size_installed (app, sz);
 	}
 
 	/* set state */

@@ -87,7 +87,8 @@ struct _GsApp
 	gint			 rating;
 	GArray			*review_ratings;
 	GPtrArray		*reviews; /* of GsReview */
-	guint64			 size;
+	guint64			 size_installed;
+	guint64			 size_download;
 	AsAppKind		 kind;
 	AsAppState		 state;
 	AsAppState		 state_recover;
@@ -315,9 +316,15 @@ gs_app_to_string (GsApp *app)
 				  G_GUINT64_FORMAT "",
 				  app->install_date);
 	}
-	if (app->size != 0) {
-		gs_app_kv_printf (str, "size", "%" G_GUINT64_FORMAT "k",
-				  app->size / 1024);
+	if (app->size_installed != 0) {
+		gs_app_kv_printf (str, "size-installed",
+				  "%" G_GUINT64_FORMAT "k",
+				  app->size_installed / 1024);
+	}
+	if (app->size_download != 0) {
+		gs_app_kv_printf (str, "size-download",
+				  "%" G_GUINT64_FORMAT "k",
+				  app->size_download / 1024);
 	}
 	if (app->related->len > 0)
 		gs_app_kv_printf (str, "related", "%i", app->related->len);
@@ -1782,23 +1789,82 @@ gs_app_remove_review (GsApp *app, GsReview *review)
 }
 
 /**
- * gs_app_get_size:
+ * gs_app_get_size_download:
+ * @app: A #GsApp
+ *
+ * Gets the size of the total download needed to either install an available
+ * application, or update an already installed one.
+ *
+ * If there is a runtime not yet installed then this is also added.
+ *
+ * Returns: number of bytes, 0 for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid.
  */
 guint64
-gs_app_get_size (GsApp *app)
+gs_app_get_size_download (GsApp *app)
 {
+	guint64 sz;
+
 	g_return_val_if_fail (GS_IS_APP (app), G_MAXUINT64);
-	return app->size;
+
+	/* this app */
+	sz = app->size_download;
+
+	/* add the runtime if this is not installed */
+	if (app->runtime != NULL) {
+		if (gs_app_get_state (app->runtime) == AS_APP_STATE_AVAILABLE)
+			sz += gs_app_get_size_installed (app->runtime);
+	}
+
+	return sz;
 }
 
 /**
- * gs_app_set_size:
+ * gs_app_set_size_download:
  */
 void
-gs_app_set_size (GsApp *app, guint64 size)
+gs_app_set_size_download (GsApp *app, guint64 size_download)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	app->size = size;
+	app->size_download = size_download;
+}
+
+/**
+ * gs_app_get_size_installed:
+ *
+ * Gets the size on disk, either for an existing application of one that could
+ * be installed.
+ *
+ * If there is a runtime not yet installed then this is also added.
+ *
+ * Returns: size in bytes, 0 for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid.
+ */
+guint64
+gs_app_get_size_installed (GsApp *app)
+{
+	guint64 sz;
+
+	g_return_val_if_fail (GS_IS_APP (app), G_MAXUINT64);
+
+	/* this app */
+	sz = app->size_installed;
+
+	/* add the runtime if this is not installed */
+	if (app->runtime != NULL) {
+		if (gs_app_get_state (app->runtime) == AS_APP_STATE_AVAILABLE)
+			sz += gs_app_get_size_installed (app->runtime);
+	}
+
+	return sz;
+}
+
+/**
+ * gs_app_set_size_installed:
+ */
+void
+gs_app_set_size_installed (GsApp *app, guint64 size_installed)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	app->size_installed = size_installed;
 }
 
 /**

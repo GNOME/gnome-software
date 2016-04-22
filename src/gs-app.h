@@ -60,8 +60,7 @@ typedef enum {
 
 #define	GS_APP_INSTALL_DATE_UNSET		0
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
-#define	GS_APP_SIZE_UNKNOWN			0
-#define	GS_APP_SIZE_MISSING			1
+#define	GS_APP_SIZE_UNKNOWABLE			G_MAXUINT64
 
 typedef enum {
 	GS_APP_QUALITY_UNKNOWN,
@@ -203,9 +202,12 @@ void		 gs_app_add_review		(GsApp		*app,
 						 GsReview	*review);
 void		 gs_app_remove_review		(GsApp		*app,
 						 GsReview	*review);
-guint64		 gs_app_get_size		(GsApp		*app);
-void		 gs_app_set_size		(GsApp		*app,
-						 guint64	 size);
+guint64		 gs_app_get_size_installed	(GsApp		*app);
+void		 gs_app_set_size_installed	(GsApp		*app,
+						 guint64	 size_installed);
+guint64		 gs_app_get_size_download	(GsApp		*app);
+void		 gs_app_set_size_download	(GsApp		*app,
+						 guint64	 size_download);
 GPtrArray	*gs_app_get_addons		(GsApp		*app);
 void		 gs_app_add_addon		(GsApp		*app,
 						 GsApp		*addon);

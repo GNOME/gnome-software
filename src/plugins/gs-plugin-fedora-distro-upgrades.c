@@ -372,7 +372,8 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 					"complete set of tools for developers "
 					"and makers of all kinds.");
 		gs_app_set_version (app, app_version);
-		gs_app_set_size (app, 1024 * 1024 * 1024); /* estimate */
+		gs_app_set_size_installed (app, 1024 * 1024 * 1024); /* estimate */
+		gs_app_set_size_download (app, 256 * 1024 * 1024); /* estimate */
 		gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
 		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
 		gs_app_add_quirk (app, AS_APP_QUIRK_PROVENANCE);
