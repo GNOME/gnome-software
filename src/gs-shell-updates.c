@@ -988,16 +988,54 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 	                                       self);
 }
 
+typedef struct {
+	GsApp		*app;
+	GsShellUpdates	*self;
+} GsPageHelper;
+
+static void
+gs_page_helper_free (GsPageHelper *helper)
+{
+	if (helper->app != NULL)
+		g_object_unref (helper->app);
+	if (helper->self != NULL)
+		g_object_unref (helper->self);
+	g_slice_free (GsPageHelper, helper);
+}
+
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPageHelper, gs_page_helper_free);
+
 static void
 upgrade_download_finished_cb (GObject *source,
                               GAsyncResult *res,
                               gpointer user_data)
 {
-	GsShellUpdates *self = (GsShellUpdates *) user_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
+	GError *last_error;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 
-	if (!gs_plugin_loader_app_action_finish (self->plugin_loader, res, &error)) {
-		g_warning ("failed to download upgrade: %s", error->message);
+	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
+		g_warning ("failed to upgrade-download: %s", error->message);
+		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			return;
+		gs_app_notify_failed_modal (helper->app,
+					    gs_shell_get_window (helper->self->shell),
+					    GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
+					    error);
+		return;
+	}
+
+	/* non-fatal error */
+	last_error = gs_app_get_last_error (helper->app);
+	if (last_error != NULL) {
+		g_warning ("failed to upgrade-download %s: %s",
+			   gs_app_get_id (helper->app),
+			   last_error->message);
+		gs_app_notify_failed_modal (helper->app,
+					    gs_shell_get_window (helper->self->shell),
+					    GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
+					    last_error);
 		return;
 	}
 }
@@ -1007,12 +1045,17 @@ gs_shell_updates_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
                                       GsShellUpdates *self)
 {
 	GsApp *app;
+	GsPageHelper *helper;
 
 	app = gs_upgrade_banner_get_app (upgrade_banner);
 	if (app == NULL) {
 		g_warning ("no upgrade available to download");
 		return;
 	}
+
+	helper = g_slice_new0 (GsPageHelper);
+	helper->app = g_object_ref (app);
+	helper->self = g_object_ref (self);
 
 	if (self->cancellable_upgrade_download != NULL)
 		g_object_unref (self->cancellable_upgrade_download);
@@ -1022,7 +1065,7 @@ gs_shell_updates_upgrade_download_cb (GsUpgradeBanner *upgrade_banner,
 					   GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
 					   self->cancellable_upgrade_download,
 					   upgrade_download_finished_cb,
-					   self);
+					   helper);
 }
 
 static void

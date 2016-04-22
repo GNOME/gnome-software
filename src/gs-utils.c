@@ -171,6 +171,7 @@ gs_app_notify_failed_modal (GsApp *app,
 	msg = g_string_new ("");
 	switch (action) {
 	case GS_PLUGIN_LOADER_ACTION_INSTALL:
+	case GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD:
 		/* TRANSLATORS: this is when the install fails */
 		g_string_append_printf (msg, _("Installation of %s failed."),
 					gs_app_get_name (app));
