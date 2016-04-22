@@ -50,6 +50,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	priv->task = pk_task_new ();
+	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 	pk_client_set_interactive (PK_CLIENT (priv->task), FALSE);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
 }
@@ -128,9 +129,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	/* update UI as this might take some time */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
-
 	/* do sync call */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
 					 PK_FILTER_ENUM_NEWEST,
@@ -174,9 +172,6 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	data.app = NULL;
 	data.plugin = plugin;
 	data.ptask = NULL;
-
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "packagekit::add-sources-related");
@@ -238,9 +233,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	data.plugin = plugin;
 	data.ptask = NULL;
 
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
-
 	/* ask PK for the repo details */
 	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_NOT_SOURCE,
 					 PK_FILTER_ENUM_NOT_SUPPORTED,
@@ -297,9 +289,6 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 	data.plugin = plugin;
 	data.ptask = NULL;
 
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
-
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
@@ -340,9 +329,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
 		       gs_plugin_get_name (plugin)) != 0)
 		return TRUE;
-
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 
 	/* we enable the repo */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
@@ -511,9 +497,6 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 	data.plugin = plugin;
 	data.ptask = NULL;
 
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
-
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
@@ -544,9 +527,6 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 	data.app = NULL;
 	data.plugin = plugin;
 	data.ptask = NULL;
-
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -624,9 +604,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return FALSE;
 	}
 
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
-
 	/* do the action */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	results = pk_task_remove_packages_sync (priv->task,
@@ -650,60 +627,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_app_upgrade_download:
- */
-gboolean
-gs_plugin_app_upgrade_download (GsPlugin *plugin,
-				GsApp *app,
-				GCancellable *cancellable,
-				GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	ProgressData data;
-	g_autoptr(PkResults) results = NULL;
-
-	/* only process this app if was created by this plugin */
-	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
-		return TRUE;
-
-	data.app = app;
-	data.plugin = plugin;
-	data.ptask = NULL;
-
-	/* check is distro-upgrade */
-	if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "app %s is not a distro upgrade",
-			     gs_app_get_id (app));
-		return FALSE;
-	}
-
-	/* low priority background operation */
-	pk_client_set_background (PK_CLIENT (priv->task), TRUE);
-
-	/* ask PK to download enough packages to upgrade the system */
-	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	results = pk_client_upgrade_system (PK_CLIENT (priv->task),
-					    pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_ONLY_DOWNLOAD, -1),
-					    gs_app_get_version (app),
-					    PK_UPGRADE_KIND_ENUM_COMPLETE,
-					    cancellable,
-					    gs_plugin_packagekit_progress_cb, &data,
-					    error);
-	if (!gs_plugin_packagekit_results_valid (results, error)) {
-		gs_app_set_state_recover (app);
-		return FALSE;
-	}
-
-	/* state is known */
-	gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-	return TRUE;
-}
-
-/**
  * gs_plugin_add_search_files:
  */
 gboolean
@@ -721,9 +644,6 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 	data.app = NULL;
 	data.plugin = plugin;
 	data.ptask = NULL;
-
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
@@ -761,9 +681,6 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	data.app = NULL;
 	data.plugin = plugin;
 	data.ptask = NULL;
-
-	/* high priority foreground operation */
-	pk_client_set_background (PK_CLIENT (priv->task), FALSE);
 
 	/* do sync call */
 	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);

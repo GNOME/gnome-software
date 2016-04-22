@@ -48,6 +48,7 @@ plugin_LTLIBRARIES +=					\
 	libgs_plugin_packagekit-origin.la		\
 	libgs_plugin_packagekit-proxy.la		\
 	libgs_plugin_packagekit-history.la		\
+	libgs_plugin_packagekit-upgrade.la		\
 	libgs_plugin_packagekit.la
 endif
 
@@ -253,6 +254,14 @@ libgs_plugin_packagekit_history_la_SOURCES = gs-plugin-packagekit-history.c
 libgs_plugin_packagekit_history_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_packagekit_history_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_history_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_packagekit_upgrade_la_SOURCES =		\
+	gs-plugin-packagekit-upgrade.c			\
+	packagekit-common.c				\
+	packagekit-common.h
+libgs_plugin_packagekit_upgrade_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_packagekit_upgrade_la_LDFLAGS = -module -avoid-version
+libgs_plugin_packagekit_upgrade_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_packagekit_offline_la_SOURCES = gs-plugin-packagekit-offline.c
 libgs_plugin_packagekit_offline_la_LIBADD = $(GS_PLUGIN_LIBS)
