@@ -782,7 +782,6 @@ gs_plugin_loader_get_updates_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_get_updates_thread_cb);
 }
 
@@ -862,7 +861,6 @@ gs_plugin_loader_get_distro_upgrades_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_get_distro_upgrades_thread_cb);
 }
 
@@ -942,7 +940,6 @@ gs_plugin_loader_get_unvoted_reviews_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_get_unvoted_reviews_thread_cb);
 }
 
@@ -1034,7 +1031,6 @@ gs_plugin_loader_get_sources_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_get_sources_thread_cb);
 }
 
@@ -1136,7 +1132,6 @@ gs_plugin_loader_get_installed_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_get_installed_thread_cb);
 }
 
@@ -1223,7 +1218,6 @@ gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_get_popular_thread_cb);
 }
 
@@ -1343,7 +1337,6 @@ gs_plugin_loader_get_featured_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_get_featured_thread_cb);
 }
 
@@ -1572,7 +1565,6 @@ gs_plugin_loader_search_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_search_thread_cb);
 }
 
@@ -1734,7 +1726,6 @@ gs_plugin_loader_search_files_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_search_files_thread_cb);
 }
 
@@ -1896,7 +1887,6 @@ gs_plugin_loader_search_what_provides_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_search_what_provides_thread_cb);
 }
 
@@ -2039,7 +2029,6 @@ gs_plugin_loader_get_categories_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_get_categories_thread_cb);
 }
 
@@ -2190,7 +2179,6 @@ gs_plugin_loader_get_category_apps_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_get_category_apps_thread_cb);
 }
 
@@ -2276,7 +2264,6 @@ gs_plugin_loader_app_refine_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_app_refine_thread_cb);
 }
 
@@ -2685,7 +2672,6 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_app_action_thread_cb);
 }
 
@@ -2740,7 +2726,6 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_review_action_thread_cb);
 }
 
@@ -3595,7 +3580,6 @@ gs_plugin_loader_refresh_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_refresh_thread_cb);
 }
 
@@ -3738,7 +3722,6 @@ gs_plugin_loader_filename_to_app_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_filename_to_app_thread_cb);
 }
 
@@ -3840,7 +3823,6 @@ gs_plugin_loader_offline_update_async (GsPluginLoader *plugin_loader,
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_set_return_on_cancel (task, TRUE);
 	g_task_run_in_thread (task, gs_plugin_loader_offline_update_thread_cb);
 }
 
