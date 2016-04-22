@@ -996,7 +996,7 @@ gs_shell_details_review_button_clicked_cb (GsReviewRow *row,
 static void
 gs_shell_details_refresh_reviews (GsShellDetails *self)
 {
-	GArray *review_ratings;
+	GArray *review_ratings = NULL;
 	GPtrArray *reviews;
 	gboolean show_review_button = TRUE;
 	gboolean show_reviews = FALSE;
