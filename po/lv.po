@@ -4,10 +4,10 @@
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
-"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-so"
-"ftware&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-03-05 10:24+0000\n"
-"PO-Revision-Date: 2016-03-05 15:39+0200\n"
+"Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
+"software&keywords=I18N+L10N&component=general\n"
+"POT-Creation-Date: 2016-04-24 09:48+0000\n"
+"PO-Revision-Date: 2016-04-24 16:20+0200\n"
 "Last-Translator: Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>\n"
 "Language-Team: Latvian <lata-l10n@googlegroups.com>\n"
 "Language: lv\n"
@@ -55,8 +55,8 @@ msgid ""
 "This is a list of compatible projects we should show such as GNOME, KDE and "
 "XFCE."
 msgstr ""
-"Šis ir saraksts ar savietojamiem projektiem, ko rādīt, piemēram GNOME, KDE un "
-"XFCE."
+"Šis ir saraksts ar savietojamiem projektiem, ko rādīt, piemēram GNOME, KDE "
+"un XFCE."
 
 #: ../data/org.gnome.software.gschema.xml.h:3
 msgid "Whether to automatically download updates"
@@ -91,7 +91,6 @@ msgstr ""
 "nosaka, vai dialoglodziņu nerādīt."
 
 #: ../data/org.gnome.software.gschema.xml.h:9
-#| msgid "Search for applications"
 msgid "A list of popular applications"
 msgstr "Populāru lietotņu saraksts"
 
@@ -140,29 +139,29 @@ msgstr "Netiks rādītas recenzijas, kurām karma ir mazāka par šo skaitli."
 #: ../data/org.gnome.software.gschema.xml.h:19
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
-"Saraksts ar oficiālajiem avotiem, kurus nevajadzētu uzskatīt par trešās puses "
-"avotiem"
+"Saraksts ar oficiālajiem avotiem, kurus nevajadzētu uzskatīt par trešās "
+"puses avotiem"
 
-#: ../src/app-folder-dialog.ui.h:1
+#: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Pievienot lietotņu mapei"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:283
-#: ../src/gs-shell-installed.c:514
+#: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:305
+#: ../src/gs-shell-installed.c:515 ../src/gs-upgrade-banner.ui.h:4
 msgid "_Cancel"
 msgstr "At_celt"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:321
+#: ../src/gs-app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:321
 msgid "_Add"
 msgstr "_Pievienot"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:78
-#: ../src/gs-app-tile.c:81 ../src/gs-feature-tile.c:68
+#: ../src/gs-app-tile.ui.h:1 ../src/gs-app-addon-row.c:97
+#: ../src/gs-app-tile.c:78 ../src/gs-app-tile.c:81 ../src/gs-feature-tile.c:68
 #: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
-#: ../src/popular-tile.ui.h:1
+#: ../src/gs-popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Instalēts"
 
@@ -185,8 +184,8 @@ msgstr "Neizvēlēties nevienu"
 #. TRANSLATORS: this is the application name
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
-#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:372
-#: ../src/gs-shell.c:162 ../src/org.gnome.Software.desktop.in.h:1
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:374
+#: ../src/gs-shell.c:253 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Programmatūra"
 
@@ -211,21 +210,9 @@ msgstr "_Instalētās"
 msgid "_Updates"
 msgstr "_Atjauninājumi"
 
-#: ../src/gnome-software.ui.h:11
-msgid "Restart & _Install"
-msgstr "Pārstartēt un _instalēt"
-
-#: ../src/gnome-software.ui.h:12
-msgid "Select"
-msgstr "Izvēlēties"
-
-#: ../src/gnome-software.ui.h:13
-msgid "Check for updates"
-msgstr "Pārbaudīt atjauninājumus"
-
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:274
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:266
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Gaida"
@@ -234,7 +221,7 @@ msgstr "Gaida"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:312
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:304
 #: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
 msgid "Installing"
 msgstr "Instalē"
@@ -243,35 +230,35 @@ msgstr "Instalē"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:321
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:313
 #: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
 msgid "Removing"
 msgstr "Izņem"
 
-#. TRANSLATORS: This is how we join the licences and can
+#. TRANSLATORS: This is how we join the licenses and can
 #. * be considered a "Conjunctive AND Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1315 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1391 ../src/gs-shell-extras.c:145
 msgid " and "
 msgstr " un "
 
-#. TRANSLATORS: This is how we join the licences and can
+#. TRANSLATORS: This is how we join the licenses and can
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1323
+#: ../src/gs-app.c:1399
 msgid " or "
 msgstr " vai "
 
 #. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1346
+#: ../src/gs-app.c:1422
 msgid "Proprietary"
 msgstr "Īpašnieka"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1356
+#: ../src/gs-app.c:1432
 msgid "Public domain"
 msgstr "Sabiedriskā īpašuma"
 
@@ -329,42 +316,42 @@ msgstr "Dot priekšroku lokālo datņu avotiem, nevis AppStream"
 msgid "Show version number"
 msgstr "Rādīt versijas numuru"
 
+#: ../src/gs-application.c:367
+msgid "translator-credits"
+msgstr "Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>"
+
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:370
+#: ../src/gs-application.c:371
 msgid "About Software"
 msgstr "Par “Programmatūru”"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:375
+#: ../src/gs-application.c:377
 msgid "A nice way to manage the software on your system."
 msgstr "Labs veids, kā pārvaldīt programmatūru uz sava datora."
 
-#: ../src/gs-application.c:379
-msgid "translator-credits"
-msgstr "Rūdolfs Mazurs <rudolfs.mazurs@gmail.com>"
-
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: ../src/gs-app-row.c:160
+#: ../src/gs-app-row.c:152
 msgid "Device cannot be used during update."
 msgstr "Uzlabošanas laikā nevar izmantot ierīci"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:258
+#: ../src/gs-app-row.c:250
 msgid "Visit website"
 msgstr "Apmeklēt tīmekļa vietni"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:263
+#: ../src/gs-app-row.c:255
 msgid "Install…"
 msgstr "Instalēt…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:271
+#: ../src/gs-app-row.c:263
 msgid "Cancel"
 msgstr "Atcelt"
 
@@ -374,15 +361,15 @@ msgstr "Atcelt"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:281 ../src/gs-app-row.c:288 ../src/gs-page.c:206
-#: ../src/gs-utils.c:317
+#: ../src/gs-app-row.c:273 ../src/gs-app-row.c:280 ../src/gs-page.c:282
+#: ../src/gs-utils.c:348
 msgid "Install"
 msgstr "Instalēt"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:292 ../src/gs-app-row.c:303 ../src/gs-page.c:235
+#: ../src/gs-app-row.c:284 ../src/gs-app-row.c:295 ../src/gs-page.c:350
 msgid "Remove"
 msgstr "Izņemt"
 
@@ -411,9 +398,13 @@ msgstr "Citas"
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
 #: ../src/gs-category.c:239
-#| msgid "_All"
 msgid "All"
 msgstr "Visi"
+
+#. TRANSLATORS: this is a subcategory of featured apps
+#: ../src/gs-category.c:242
+msgid "Featured"
+msgstr "Piedāvātā"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: ../src/gs-dbus-helper.c:307
@@ -548,44 +539,44 @@ msgstr "Vēsture"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:200
+#: ../src/gs-page.c:276
 #, c-format
 msgid "Prepare %s"
 msgstr "Sagatavot %s"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:227
+#: ../src/gs-page.c:341
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "Vai tiešām vēlaties izņemt %s?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:232
+#: ../src/gs-page.c:346
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s tiks izņemta. Lai to lietotu atkal, tā būs jāuzinstalē."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:786
+#: ../src/gs-plugin-loader.c:675
 msgid "OS Updates"
 msgstr "OS atjauninājumi"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:791
+#: ../src/gs-plugin-loader.c:680
 msgid "Includes performance, stability and security improvements."
 msgstr "Iekļauj veiktspējas, stabilitātes un drošības uzlabojumus."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1517 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1387 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s formātam nav pieejamu papildinājuma kodeku."
 
-#: ../src/gs-plugin-loader.c:1520
+#: ../src/gs-plugin-loader.c:1390
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -657,7 +648,6 @@ msgstr "Apraksts ir pārāk garš"
 #. vim: set noexpandtab:
 #. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:2
-#| msgid "Review"
 msgid "Post Review"
 msgstr "Publicēt atsauksmi"
 
@@ -667,8 +657,6 @@ msgid "_Post"
 msgstr "_Sūtīt"
 
 #: ../src/gs-review-dialog.ui.h:6
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Editing"
 msgid "Rating"
 msgstr "Vērtējums"
 
@@ -685,7 +673,6 @@ msgstr ""
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:10
-#| msgid "Review"
 msgctxt "app review"
 msgid "Review"
 msgstr "Atsauksme"
@@ -716,15 +703,12 @@ msgstr ""
 #. * reporting a user-submitted review
 #. * for moderation
 #: ../src/gs-review-row.c:226
-#| msgid "Review"
 msgid "Report Review?"
 msgstr "Ziņot par atsauksmi?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: ../src/gs-review-row.c:230
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Sports"
 msgid "Report"
 msgstr "Ziņot"
 
@@ -739,8 +723,6 @@ msgid "Yes"
 msgstr "Jā"
 
 #: ../src/gs-review-row.ui.h:4
-#| msgctxt "menu category"
-#| msgid "None"
 msgid "No"
 msgstr "Nē"
 
@@ -754,7 +736,6 @@ msgid "Report…"
 msgstr "Ziņot…"
 
 #: ../src/gs-review-row.ui.h:8
-#| msgid "Remove"
 msgid "Remove…"
 msgstr "Izņemt…"
 
@@ -777,22 +758,22 @@ msgstr "Ekrānattēla izmērs nav atrasts"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:395
+#: ../src/gs-screenshot-image.c:405
 msgid "Could not create cache"
 msgstr "Neizdevās izveidot kešu"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:423
+#: ../src/gs-screenshot-image.c:433
 msgid "Screenshot not valid"
 msgstr "Ekrānattēls nav derīgs"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:439
+#: ../src/gs-screenshot-image.c:449
 msgid "Screenshot not available"
 msgstr "Ekrānattēls nav pieejams"
 
-#: ../src/gs-screenshot-image.c:490
+#: ../src/gs-screenshot-image.c:500
 msgid "Screenshot"
 msgstr "Ekrānattēls"
 
@@ -806,20 +787,24 @@ msgstr ""
 "tos ir ieteicams izslēgt."
 
 #: ../src/gs-shell-category.ui.h:2
-#| msgid "Network Settings"
 msgid "Extension Settings"
 msgstr "Paplašinājuma iestatījumi"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:195 ../src/gs-shell-details.ui.h:2
-#: ../src/gs-upgrade-banner.ui.h:4
+#. TRANSLATORS: button text in the header when firmware
+#. * can be live-installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be live-updated
+#: ../src/gs-shell-details.c:201 ../src/gs-shell-details.c:227
+#: ../src/gs-shell-details.c:232 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-upgrade-banner.ui.h:5
 msgid "_Install"
 msgstr "_Instalēt"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:206
+#: ../src/gs-shell-details.c:212
 msgid "_Installing"
 msgstr "_Instalē"
 
@@ -827,94 +812,95 @@ msgstr "_Instalē"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:224
+#: ../src/gs-shell-details.c:245
 msgid "_Install…"
 msgstr "_Instalēt…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:270 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:292 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "_Izņemt"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:277
+#: ../src/gs-shell-details.c:299
 msgid "_Removing"
 msgstr "_Izņem"
 
-#. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:647
+#. TRANSLATORS: this is where the license is not known
+#: ../src/gs-shell-details.c:669
 msgctxt "license"
 msgid "Unknown"
 msgstr "Nezināma"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:660
+#: ../src/gs-shell-details.c:682
 msgctxt "version"
 msgid "Unknown"
 msgstr "Nezināma"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:666
+#: ../src/gs-shell-details.c:688
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Aprēķina…"
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:669
+#: ../src/gs-shell-details.c:691
 msgctxt "size"
 msgid "Unknown"
 msgstr "Nezināms"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:681
+#: ../src/gs-shell-details.c:703
 msgctxt "updated"
 msgid "Never"
 msgstr "Nekad"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:695
+#: ../src/gs-shell-details.c:717
 msgctxt "menu category"
 msgid "None"
 msgstr "Nav"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:712
+#: ../src/gs-shell-details.c:734
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Nezināma"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:758
+#: ../src/gs-shell-details.c:780
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
 msgstr "Šo lietotni var izmantot tikai tad, kad ir savienojums ar internetu."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:769
+#: ../src/gs-shell-details.c:791
 msgid "This software comes from a 3rd party."
 msgstr "Šo programmatūru nodrošina trešā puse."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:778
+#: ../src/gs-shell-details.c:800
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
 "Šī programmatūra nāk no trešajām pusēm un var saturēt nebrīvas komponentes."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:787
+#: ../src/gs-shell-details.c:809
 msgid "This software may contain non-free components."
 msgstr "Šī programmatūra var saturēt nebrīvas komponentes."
 
-#: ../src/gs-shell-details.c:1109
+#: ../src/gs-shell-details.c:1135
 #, c-format
 msgid "Could not find '%s'"
 msgstr "Nevarēja atrasts “%s”"
 
-#: ../src/gs-shell-details.c:1157 ../src/gs-utils.c:166
+#. TRANSLATORS: install or removed failed
+#: ../src/gs-shell-details.c:1195 ../src/gs-utils.c:168
 msgid "Sorry, this did not work"
 msgstr "Diemžēl tas nenostrādāja"
 
@@ -984,7 +970,7 @@ msgstr "_Tīmekļa vietne"
 msgid "_History"
 msgstr "_Vēsture"
 
-#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:556
+#: ../src/gs-shell-details.ui.h:18 ../src/gs-update-monitor.c:561
 msgid "Details"
 msgstr "Sīkāka informācija"
 
@@ -1039,7 +1025,7 @@ msgstr "nebrīva"
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:33 ../src/gs-shell-installed.c:431
+#: ../src/gs-shell-details.ui.h:33 ../src/gs-shell-installed.c:433
 #: ../src/gs-update-list.c:129 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Pielikumi"
@@ -1050,7 +1036,6 @@ msgstr "Izvēlētie papildinājumi tiks instalēti kopā ar lietotni."
 
 #. Translators: Header of the section with other users' opinions about the app.
 #: ../src/gs-shell-details.ui.h:36
-#| msgid "Review"
 msgid "Reviews"
 msgstr "Atsauksmes"
 
@@ -1065,13 +1050,13 @@ msgid "_Show More"
 msgstr "_Rādīt vairāk"
 
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:149
+#: ../src/gs-shell-extras.c:148
 msgid ", "
 msgstr ", "
 
 #. TRANSLATORS: Application window title for fonts installation.
 #. %s will be replaced by name of the script we're searching for.
-#: ../src/gs-shell-extras.c:175
+#: ../src/gs-shell-extras.c:174
 #, c-format
 msgid "Available fonts for the %s script"
 msgid_plural "Available fonts for the %s scripts"
@@ -1081,7 +1066,7 @@ msgstr[2] "Pieejamie fonti %s skriptiem"
 
 #. TRANSLATORS: Application window title for codec installation.
 #. %s will be replaced by actual codec name(s)
-#: ../src/gs-shell-extras.c:183
+#: ../src/gs-shell-extras.c:182
 #, c-format
 msgid "Available software for %s"
 msgid_plural "Available software for %s"
@@ -1089,32 +1074,32 @@ msgstr[0] "Pieejamā programmatūra kodekam %s"
 msgstr[1] "Pieejamā programmatūra kodekiem %s"
 msgstr[2] "Pieejamā programmatūra kodekiem %s"
 
-#: ../src/gs-shell-extras.c:225
+#: ../src/gs-shell-extras.c:224
 msgid "Unable to Find Requested Software"
 msgstr "Nevarēja atrast pieprasīto programmatūru"
 
 #. TRANSLATORS: This string is used for codecs that weren't found
-#: ../src/gs-shell-extras.c:321
+#: ../src/gs-shell-extras.c:320
 #, c-format
 msgid "%s not found"
 msgstr "%s nav atrasts"
 
 #. TRANSLATORS: hyperlink title
-#: ../src/gs-shell-extras.c:325
+#: ../src/gs-shell-extras.c:324
 msgid "on the website"
 msgstr "tīmekļa vietnē"
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:332
+#: ../src/gs-shell-extras.c:331
 #, c-format
 msgid "No applications are available that provide the file %s."
 msgstr "Nav lietotņu, kas nodrošinātu datni %s."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:336 ../src/gs-shell-extras.c:347
-#: ../src/gs-shell-extras.c:358
+#: ../src/gs-shell-extras.c:335 ../src/gs-shell-extras.c:346
+#: ../src/gs-shell-extras.c:357
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get missing applications "
@@ -1125,21 +1110,21 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:343 ../src/gs-shell-extras.c:365
+#: ../src/gs-shell-extras.c:342 ../src/gs-shell-extras.c:364
 #, c-format
 msgid "No applications are available for %s support."
 msgstr "%s atbalstam nav pieejamu lietotņu."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:354
+#: ../src/gs-shell-extras.c:353
 #, c-format
 msgid "%s is not available."
 msgstr "%s nav pieejams."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:369
+#: ../src/gs-shell-extras.c:368
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get an application that "
@@ -1150,14 +1135,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:376
+#: ../src/gs-shell-extras.c:375
 #, c-format
 msgid "No fonts are available for the %s script support."
 msgstr "%s rakstības atbalstam nav pieejamu fontu."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:380
+#: ../src/gs-shell-extras.c:379
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional fonts "
@@ -1168,7 +1153,7 @@ msgstr ""
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:391
+#: ../src/gs-shell-extras.c:390
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1179,14 +1164,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:398
+#: ../src/gs-shell-extras.c:397
 #, c-format
 msgid "No Plasma resources are available for %s support."
 msgstr "%s atbalstam nav pieejamu Plasma resursu."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:402
+#: ../src/gs-shell-extras.c:401
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get additional Plasma "
@@ -1197,14 +1182,14 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:409
+#: ../src/gs-shell-extras.c:408
 #, c-format
 msgid "No printer drivers are available for %s."
 msgstr "%s nav pieejamu printera draiveru."
 
 #. TRANSLATORS: first %s is the codec name, and second %s is a
 #. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:413
+#: ../src/gs-shell-extras.c:412
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a driver that "
@@ -1213,12 +1198,12 @@ msgstr ""
 "Informāciju par %s, kā arī opcijas par to, kā saņemt draiveri, kas atbalsta "
 "šo printeri, var atrast %s."
 
-#: ../src/gs-shell-extras.c:459
+#: ../src/gs-shell-extras.c:458
 msgid "this website"
 msgstr "šī tīmekļa vietne"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: ../src/gs-shell-extras.c:463
+#: ../src/gs-shell-extras.c:462
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -1236,12 +1221,12 @@ msgstr[2] ""
 "Diemžēl neizdevās atrast jūsu meklētos kodekus %s. Lūdzu, skatiet %s, lai "
 "uzzinātu vairāk."
 
-#: ../src/gs-shell-extras.c:543 ../src/gs-shell-extras.c:591
-#: ../src/gs-shell-extras.c:641
+#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
+#: ../src/gs-shell-extras.c:640
 msgid "Failed to find any search results"
 msgstr "Neizdevās atrast nevienu meklēšanas rezultātu"
 
-#: ../src/gs-shell-extras.c:810
+#: ../src/gs-shell-extras.c:809
 #, c-format
 msgid "%s file format"
 msgstr "%s datnes formāts"
@@ -1253,13 +1238,17 @@ msgstr "Kodeku lapa"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:421
+#: ../src/gs-shell-installed.c:423
 msgid "System Applications"
 msgstr "Sistēmas lietotnes"
 
-#: ../src/gs-shell-installed.c:522
+#: ../src/gs-shell-installed.c:523
 msgid "Click on items to select them"
 msgstr "Spiediet uz vienumiem, lai tos izvēlētos"
+
+#: ../src/gs-shell-installed.c:714
+msgid "Select"
+msgstr "Izvēlēties"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-installed.ui.h:1
@@ -1279,7 +1268,6 @@ msgid "_Remove from Folder"
 msgstr "_Izņemt no mapes"
 
 #: ../src/gs-shell-moderate.ui.h:1
-#| msgid "Updates page"
 msgid "Moderate page"
 msgstr "Moderācijas lapa"
 
@@ -1339,95 +1327,95 @@ msgid "No Application Found"
 msgstr "Nav atrastu lietotņu"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:147
+#: ../src/gs-shell-updates.c:201
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:150
+#: ../src/gs-shell-updates.c:204
 msgid "%l:%M %p"
 msgstr "%l.%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:156
+#: ../src/gs-shell-updates.c:210
 msgid "Yesterday, %R"
 msgstr "Vakar, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:160
+#: ../src/gs-shell-updates.c:214
 msgid "Yesterday, %l:%M %p"
 msgstr "Vakar %l.%M %p"
 
-#: ../src/gs-shell-updates.c:163
+#: ../src/gs-shell-updates.c:217
 msgid "Two days ago"
 msgstr "Pirms divām dienām"
 
-#: ../src/gs-shell-updates.c:165
+#: ../src/gs-shell-updates.c:219
 msgid "Three days ago"
 msgstr "Pirms trīs dienām"
 
-#: ../src/gs-shell-updates.c:167
+#: ../src/gs-shell-updates.c:221
 msgid "Four days ago"
 msgstr "Pirms četrām dienām"
 
-#: ../src/gs-shell-updates.c:169
+#: ../src/gs-shell-updates.c:223
 msgid "Five days ago"
 msgstr "Pirms piecām dienām"
 
-#: ../src/gs-shell-updates.c:171
+#: ../src/gs-shell-updates.c:225
 msgid "Six days ago"
 msgstr "Pirms sešām dienām"
 
-#: ../src/gs-shell-updates.c:173
+#: ../src/gs-shell-updates.c:227
 msgid "One week ago"
 msgstr "Pirms nedēļas"
 
-#: ../src/gs-shell-updates.c:175
+#: ../src/gs-shell-updates.c:229
 msgid "Two weeks ago"
 msgstr "Pirms divām nedēļām"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:179
+#: ../src/gs-shell-updates.c:233
 msgid "%e %B %Y"
 msgstr "%e. %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:195
+#: ../src/gs-shell-updates.c:249
 msgid "Downloading new updates…"
 msgstr "Lejupielādē jaunus atjauninājumus…"
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:199
+#: ../src/gs-shell-updates.c:253
 msgid "Looking for new updates…"
 msgstr "Meklē jaunus atjauninājumus…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:240
+#: ../src/gs-shell-updates.c:296
 msgid "Setting up updates…"
 msgstr "Iestata atjauninājumus…"
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:241 ../src/gs-shell-updates.c:248
+#: ../src/gs-shell-updates.c:297 ../src/gs-shell-updates.c:304
 msgid "(This could take a while)"
 msgstr "(Tas var aizņemt kādu laiciņu)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:404
+#: ../src/gs-shell-updates.c:434
 #, c-format
 msgid "Last checked: %s"
 msgstr "Pēdējo reizi pārbaudīts: %s"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:810
+#: ../src/gs-shell-updates.c:849
 msgid "Charges may apply"
 msgstr "Var tikt piemērota maksa"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:814
+#: ../src/gs-shell-updates.c:853
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1437,26 +1425,34 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:818
+#: ../src/gs-shell-updates.c:857
 msgid "Check Anyway"
 msgstr "Tomēr pārbaudīt"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:834
+#: ../src/gs-shell-updates.c:873
 msgid "No Network"
 msgstr "Nav tīkla"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:838
+#: ../src/gs-shell-updates.c:877
 msgid "Internet access is required to check for updates."
 msgstr "Lai pārbaudītu atjauninājumus, nepieciešama piekļuve internetam."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:842
+#: ../src/gs-shell-updates.c:881
 msgid "Network Settings"
 msgstr "Tīkla iestatījumi"
+
+#: ../src/gs-shell-updates.c:1256
+msgid "Restart & _Install"
+msgstr "Pārstartēt un _instalēt"
+
+#: ../src/gs-shell-updates.c:1273
+msgid "Check for updates"
+msgstr "Pārbaudīt atjauninājumus"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-updates.ui.h:1
@@ -1464,10 +1460,15 @@ msgid "Updates page"
 msgstr "Atjauninājumu mape"
 
 #: ../src/gs-shell-updates.ui.h:2
+#| msgid "OS Updates"
+msgid "Other Updates"
+msgstr "Citi atjauninājumi"
+
+#: ../src/gs-shell-updates.ui.h:3
 msgid "Software is up to date"
 msgstr "Programmatūra ir aktuāla"
 
-#: ../src/gs-shell-updates.ui.h:3
+#: ../src/gs-shell-updates.ui.h:4
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -1475,19 +1476,19 @@ msgstr ""
 "Atjauninājumu pārbaudīšana, lietojot mobilo platjoslas savienojumu, var "
 "izmaksās papildus"
 
-#: ../src/gs-shell-updates.ui.h:4
+#: ../src/gs-shell-updates.ui.h:5
 msgid "_Check Anyway"
 msgstr "_Tomēr pārbaudīt"
 
-#: ../src/gs-shell-updates.ui.h:5
+#: ../src/gs-shell-updates.ui.h:6
 msgid "Go online to check for updates"
 msgstr "Doties tiešsaistē, lai pārbaudītu atjauninājumus"
 
-#: ../src/gs-shell-updates.ui.h:6
+#: ../src/gs-shell-updates.ui.h:7
 msgid "_Network Settings"
 msgstr "_Tīkla iestatījumi"
 
-#: ../src/gs-shell-updates.ui.h:7
+#: ../src/gs-shell-updates.ui.h:8
 msgid "Updates are automatically managed"
 msgstr "Atjauninājumi tika automātiski sapludināti"
 
@@ -1639,10 +1640,9 @@ msgstr "Četras zvaigznes"
 msgid "Five Stars"
 msgstr "Piecas zvaigznes"
 
-#. TRANSLATORS: this is where the
-#. * packager did not write a
-#. * description for the update
-#: ../src/gs-update-dialog.c:119
+#. TRANSLATORS: this is where the packager did not write
+#. * a description for the update
+#: ../src/gs-update-dialog.c:121
 msgid "No update description available."
 msgstr "Nav pieejams atjauninājumu apraksts."
 
@@ -1650,13 +1650,13 @@ msgstr "Nav pieejams atjauninājumu apraksts."
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: ../src/gs-update-dialog.c:225
+#: ../src/gs-update-dialog.c:215
 #, c-format
 msgid "Installed on %s"
 msgstr "Instalēts %s"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:245
+#: ../src/gs-update-dialog.c:235
 msgid "Installed Updates"
 msgstr "Instalētās lietotnes"
 
@@ -1695,32 +1695,33 @@ msgstr "Skatīt"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:230
+#: ../src/gs-update-monitor.c:234
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Jauna %s versija ir pieejama instalēšanai"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:234
+#: ../src/gs-update-monitor.c:238
 msgid "Software Upgrade Available"
 msgstr "Pieejami programmatūras atjauninājumi"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:428
+#: ../src/gs-update-monitor.c:433
 msgid "Software Updates Failed"
 msgstr "Neizdevās atjaunināt programmatūru"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:430
+#: ../src/gs-update-monitor.c:435
 msgid "An important OS update failed to be installed."
 msgstr "Neizdevās uzinstalēt svarīgus OS atjauninājumus."
 
-#: ../src/gs-update-monitor.c:432
+#. TRANSLATORS: this is an expander title
+#: ../src/gs-update-monitor.c:437 ../src/gs-utils.c:209
 msgid "Show Details"
 msgstr "Rādīt sīkāku informāciju"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:447
+#: ../src/gs-update-monitor.c:452
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Programmatūras atjauninājums uzinstalēts"
@@ -1728,7 +1729,7 @@ msgstr[1] "Programmatūras atjauninājumi uzinstalēti"
 msgstr[2] "Programmatūras atjauninājumi uzinstalēti"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:451
+#: ../src/gs-update-monitor.c:456
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Tika uzinstalēts svarīgs OS atjauninājums."
@@ -1740,8 +1741,7 @@ msgstr[2] "Tika uzinstalēti svarīgi OS atjauninājumi."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: ../src/gs-update-monitor.c:462
-#| msgid "Review"
+#: ../src/gs-update-monitor.c:467
 msgctxt "updates"
 msgid "Review"
 msgstr "Rakstīt atsauksmi"
@@ -1749,29 +1749,29 @@ msgstr "Rakstīt atsauksmi"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-update-monitor.c:537
+#: ../src/gs-update-monitor.c:542
 msgid "Detailed errors from the package manager follow:"
 msgstr "Seko detalizēta informācija par kļūdām no pakotņu pārvaldnieka:"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:598
+#: ../src/gs-update-monitor.c:603
 msgid "Failed To Update"
 msgstr "Neizdevās atjaunināt"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:604
+#: ../src/gs-update-monitor.c:609
 msgid "The system was already up to date."
 msgstr "Sistēma jau ir aktuāla."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:609
+#: ../src/gs-update-monitor.c:614
 msgid "The update was cancelled."
 msgstr "Atjaunināšana tika atcelta."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:615
+#: ../src/gs-update-monitor.c:620
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1780,7 +1780,7 @@ msgstr ""
 "Pārliecinieties, ka jums ir pieeja internetam un mēģiniet vēlreiz."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:621
+#: ../src/gs-update-monitor.c:626
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -1789,13 +1789,13 @@ msgstr ""
 "programmatūras nodrošinātāju, lai uzzinātu vairāk."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:627
+#: ../src/gs-update-monitor.c:632
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr "Nepietika diska vietas. Lūdzu, atbrīvojiet vietu un mēģiniet vēlreiz."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:632
+#: ../src/gs-update-monitor.c:637
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -1807,7 +1807,7 @@ msgstr ""
 #. TRANSLATORS: This is the text displayed when a distro
 #. * upgrade is available. First %s is the distro name and the
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
-#: ../src/gs-upgrade-banner.c:75
+#: ../src/gs-upgrade-banner.c:83
 #, c-format
 msgid "%s %s Now Available"
 msgstr "%s %s tagad pieejams."
@@ -1815,7 +1815,7 @@ msgstr "%s %s tagad pieejams."
 #. TRANSLATORS: This is the text displayed while downloading a
 #. * distro upgrade. First %s is the distro name and the 2nd %s
 #. * is the version, e.g. "Downloading Fedora 23"
-#: ../src/gs-upgrade-banner.c:88
+#: ../src/gs-upgrade-banner.c:93
 #, c-format
 msgid "Downloading %s %s"
 msgstr "Lejupielādē %s %s"
@@ -1824,7 +1824,7 @@ msgstr "Lejupielādē %s %s"
 #. * upgrade has been downloaded and is ready to be installed.
 #. * First %s is the distro name and the 2nd %s is the version,
 #. * e.g. "Fedora 23 Ready to be Installed"
-#: ../src/gs-upgrade-banner.c:102
+#: ../src/gs-upgrade-banner.c:104
 #, c-format
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s ir gatavs instalēšanai"
@@ -1842,7 +1842,7 @@ msgstr "_Uzzināt vairāk"
 msgid "_Download"
 msgstr "_Lejupielādēt"
 
-#: ../src/gs-upgrade-banner.ui.h:5
+#: ../src/gs-upgrade-banner.ui.h:6
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr "Pirms uzlabošanas ieteicams izveidot datu un datņu dublējumu."
@@ -1860,24 +1860,24 @@ msgid "Launch"
 msgstr "Palaist"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:170
+#: ../src/gs-utils.c:176
 #, c-format
 msgid "Installation of %s failed."
 msgstr "Neizdevās %s instalēšana."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:175
+#: ../src/gs-utils.c:181
 #, c-format
 msgid "Removal of %s failed."
 msgstr "Neizdevās %s izņemšana."
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:248
+#: ../src/gs-utils.c:279
 msgid "Install Third-Party Software?"
 msgstr "Instalēt trešās puses programmatūru?"
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:252
+#: ../src/gs-utils.c:283
 msgid "Enable Third-Party Software Source?"
 msgstr "Ieslēgt trešās puses programmatūras avotus?"
 
@@ -1885,7 +1885,7 @@ msgstr "Ieslēgt trešās puses programmatūras avotus?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
 #.
-#: ../src/gs-utils.c:270
+#: ../src/gs-utils.c:301
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1897,48 +1897,48 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:280
+#: ../src/gs-utils.c:311
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s nodrošina “%s”."
 
 #. TRANSLATORS: a software source is a repo
-#: ../src/gs-utils.c:290
+#: ../src/gs-utils.c:321
 msgid "This software source must be enabled to continue installation."
 msgstr "Jāieslēdz šie programmatūras avoti, lai varētu turpināt instalēšanu."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:300
+#: ../src/gs-utils.c:331
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr "%s instalēšana vai izmantošana dažās valstīs varētu būt nelegāla."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:306
+#: ../src/gs-utils.c:337
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Šī kodeka instalēšana vai izmantošana dažās valstīs varētu būt nelegāla."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:313
+#: ../src/gs-utils.c:344
 msgid "Don't Warn Again"
 msgstr "Vairs nebrīdināt"
 
 #. TRANSLATORS: button text
-#: ../src/gs-utils.c:322
+#: ../src/gs-utils.c:353
 msgid "Enable and Install"
 msgstr "Ieslēgt un instalēt"
 
 #. vim: set noexpandtab:
-#: ../src/menus.ui.h:1
+#: ../src/gs-menus.ui.h:1
 msgid "_Software Sources"
 msgstr "Programmatūra_s avoti"
 
-#: ../src/menus.ui.h:2
+#: ../src/gs-menus.ui.h:2
 msgid "_About"
 msgstr "P_ar"
 
-#: ../src/menus.ui.h:3
+#: ../src/gs-menus.ui.h:3
 msgid "_Quit"
 msgstr "I_ziet"
 
@@ -1953,15 +1953,6 @@ msgid ""
 msgstr ""
 "Atjauninājumi;Uzlabojumi;Avoti;Krātuves;Repozitoriji;Iestatījumi;Instalēt;"
 "Uzstādīt;Atinstalēt;Noņemt;Programmatūra;Lietotne;Veikals;"
-
-#: ../src/plugins/gs-plugin-appstream.c:199
-#, c-format
-msgid "No AppStream data found"
-msgstr "Nav atrastu AppStream datu"
-
-#: ../src/plugins/gs-plugin-moduleset.c:153
-msgid "Featured"
-msgstr "Piedāvātā"
 
 #. TRANSLATORS: this is the menu spec main category for Audio
 #: ../src/plugins/menu-spec-common.c:30
@@ -2834,8 +2825,9 @@ msgid "Shell Extensions"
 msgstr "Čaulas paplašinājumi"
 
 #: ../src/plugins/menu-spec-common.c:216
-#| msgid "An application"
 msgctxt "Menu subcategory of Add-ons"
 msgid "Localization"
 msgstr "Lokalizācija"
 
+#~ msgid "No AppStream data found"
+#~ msgstr "Nav atrastu AppStream datu"
