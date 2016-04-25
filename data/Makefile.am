@@ -1,5 +1,6 @@
 SUBDIRS =						\
 	appdata						\
+	tests						\
 	icons
 
 appstreamdir = $(datadir)/app-info/xmls
