@@ -42,6 +42,7 @@ plugin_LTLIBRARIES =					\
 if HAVE_PACKAGEKIT
 plugin_LTLIBRARIES +=					\
 	libgs_plugin_systemd-updates.la			\
+	libgs_plugin_packagekit-local.la		\
 	libgs_plugin_packagekit-refine.la		\
 	libgs_plugin_packagekit-refresh.la		\
 	libgs_plugin_packagekit-offline.la		\
@@ -237,6 +238,14 @@ libgs_plugin_packagekit_refresh_la_SOURCES =		\
 libgs_plugin_packagekit_refresh_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_refresh_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_refresh_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_packagekit_local_la_SOURCES =		\
+	gs-plugin-packagekit-local.c			\
+	packagekit-common.c				\
+	packagekit-common.h
+libgs_plugin_packagekit_local_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
+libgs_plugin_packagekit_local_la_LDFLAGS = -module -avoid-version
+libgs_plugin_packagekit_local_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_systemd_updates_la_SOURCES = gs-plugin-systemd-updates.c
 libgs_plugin_systemd_updates_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
