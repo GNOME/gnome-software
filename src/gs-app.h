@@ -78,6 +78,7 @@ typedef enum {
 #endif
 
 #if !AS_CHECK_VERSION(0,5,14)
+#define AS_APP_QUIRK_NEEDS_REBOOT		(1 << 4)
 #define AS_APP_QUIRK_NOT_REVIEWABLE		(1 << 5)
 #endif
 
