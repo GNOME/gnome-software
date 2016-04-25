@@ -30,6 +30,22 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.20.2" date="2016-04-24">
+      <description>
+        <p>This stable release fixes the following bugs:</p>
+        <ul>
+          <li>Allow popular and featured apps to match any plugin</li>
+          <li>Do not make the ODRS plugin depend on xdg-app</li>
+          <li>Fix many of the os-upgrade issues and implement the latest mockups</li>
+          <li>Fix several issues when running on Unity</li>
+          <li>Make all the plugins more threadsafe</li>
+          <li>Return all update descriptions newer than the installed version</li>
+          <li>Show some non-fatal error messages if installing fails</li>
+          <li>Use a background PackageKit transaction when downloading upgrades</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release version="3.20.1" date="2016-04-11">
       <description>
         <p>This stable release fixes the following bugs:</p>
