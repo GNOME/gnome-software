@@ -407,6 +407,9 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		g_warning ("nothing adopted %s", gs_app_get_id (app));
 		g_print ("%s", gs_app_to_string (app));
 	}
+
+	/* success */
+	ret = TRUE;
 out:
 	/* now emit all the changed signals */
 	for (l = freeze_list; l != NULL; l = l->next)
