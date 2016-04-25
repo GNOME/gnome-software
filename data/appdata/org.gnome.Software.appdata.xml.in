@@ -30,6 +30,68 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.21.1" date="2016-04-25">
+      <description>
+        <p>
+          This is an unstable release in the 3.19 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add an initial loading panel when there is no metadata</li>
+          <li>Add an outline ostree plugin that just adds remotes as sources</li>
+          <li>Add an unreviewable application quirk</li>
+          <li>Add initial Steam support</li>
+          <li>Add support for app shortcut addition/removal</li>
+          <li>Add support for GNOME Shell extensions</li>
+          <li>Allow free-but-unspecified SPDX tokens</li>
+          <li>Allow widgets to use custom CSS in a generic way</li>
+          <li>Do the PackageKit refresh as a background transaction</li>
+          <li>Hide "Software Sources" menu when its action is disabled</li>
+          <li>Make the distro upgrades dialog match the new mockup</li>
+          <li>Split the 'size' property into size-installed and size-download</li>
+          <li>Use a link instead of a button for history</li>
+          <li>Use AppStream files for the popular, featured and extra category data</li>
+          <li>Use dpkg-deb info to create a GsApp when double clicking on a .deb file</li>
+          <li>Use FwupdClient from fwupd 0.7.0</li>
+          <li>Use GdkPixbuf to parse icns files</li>
+          <li>Use gsettings to enable/disable the 'sources' action</li>
+          <li>Use the Fedora themed image for the upgrade banner</li>
+          <li>When there are no trusted sources mark everything as non-3rd-party</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Actually show the error dialog for an invalid file</li>
+          <li>Allow all functions called by g_module_symbol() to fail</li>
+          <li>Allow popular and featured apps to match any prefix</li>
+          <li>Do not maintain a cache of applications in the plugin loader</li>
+          <li>Do not make the ODRS plugin depend on xdg-app</li>
+          <li>Do not re-request the distro-upgrade when switching pages</li>
+          <li>Do not show ratings and reviews for some component kinds</li>
+          <li>Do not show the distro-upgrade notification if the window is open</li>
+          <li>Do not use the header bar on Unity</li>
+          <li>Fix a crash when double clicking package files</li>
+          <li>Fix live installing firmware</li>
+          <li>Get the correct icon size when installing xdg-app bundles on HiDPI</li>
+          <li>Hide the kudo details panel for non desktop components</li>
+          <li>Load screenshots directly if their URLs point to local files</li>
+          <li>Lower the limits for review text</li>
+          <li>Make all the plugins more threadsafe</li>
+          <li>Make the provenance plugin non-specific to Fedora</li>
+          <li>Move header bar button creation into individual pages</li>
+          <li>Move the Install &amp; Restart button below the upgrade banner</li>
+          <li>Never show star ratings on the category app tiles</li>
+          <li>Only show one modal dialog at a time</li>
+          <li>Only show the session manager restart if there were any non-live updates</li>
+          <li>Properly support multi-line .deb descriptions</li>
+          <li>Show a 'Install All' button when all the updates can be installed live</li>
+          <li>Show a modal dialog when downloading the distro-upgrade failed</li>
+          <li>Show the upgrades banner even if there are no updates to show</li>
+          <li>Use a cache file to respect the fedora-distro-upgrades cache-age</li>
+          <li>Use GFile instead of a filename when converting apps</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release version="3.19.91" date="2016-02-29">
       <description>
         <p>
