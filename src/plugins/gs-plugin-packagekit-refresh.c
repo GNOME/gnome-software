@@ -60,6 +60,8 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	priv->task = pk_task_new ();
+	pk_task_set_only_download (priv->task, TRUE);
+	pk_client_set_background (PK_CLIENT (priv->task), TRUE);
 	pk_client_set_interactive (PK_CLIENT (priv->task), FALSE);
 }
 
@@ -155,7 +157,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 	/* download all the packages themselves */
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_PAYLOAD) {
-		PkBitfield transaction_flags;
 		g_auto(GStrv) package_ids = NULL;
 		g_autoptr(PkPackageSack) sack = NULL;
 		g_autoptr(PkResults) results2 = NULL;
@@ -164,14 +165,12 @@ gs_plugin_refresh (GsPlugin *plugin,
 		if (pk_package_sack_get_size (sack) == 0)
 			return TRUE;
 		package_ids = pk_package_sack_get_ids (sack);
-		transaction_flags = pk_bitfield_value (PK_TRANSACTION_FLAG_ENUM_ONLY_DOWNLOAD);
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-		results2 = pk_client_update_packages (PK_CLIENT (priv->task),
-						      transaction_flags,
-						      package_ids,
-						      cancellable,
-						      gs_plugin_packagekit_progress_cb, &data,
-						      error);
+		results2 = pk_task_update_packages_sync (priv->task,
+							 package_ids,
+							 cancellable,
+							 gs_plugin_packagekit_progress_cb, &data,
+							 error);
 		if (results2 == NULL) {
 			gs_plugin_packagekit_convert_gerror (error);
 			return FALSE;
