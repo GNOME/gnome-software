@@ -97,7 +97,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	/* create app */
 	app = gs_app_new (NULL);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
-	gs_app_add_source (app, tokens[0]);
+	gs_app_add_source (app, filename);
 	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, tokens[0]);
 	gs_app_set_version (app, tokens[1]);
 	gs_app_set_size_installed (app, 1024 * atoi (tokens[2]));
