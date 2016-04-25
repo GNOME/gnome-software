@@ -296,6 +296,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		g_autofree gchar *app_id = NULL;
 		g_autofree gchar *app_version = NULL;
 		g_autofree gchar *url = NULL;
+		g_autofree gchar *css = NULL;
 		g_autoptr(GsApp) app = NULL;
 		g_autoptr(AsIcon) ic = NULL;
 
@@ -349,6 +350,14 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 				       "Fedora/%i/html/Release_Notes/",
 				       distro_info->version);
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
+
+		/* use a fancy background */
+		css = g_strdup_printf ("background: url('/usr/share/backgrounds/f%i/default/standard/f%i.png');"
+				       "background-position: center;"
+				       "background-size: cover;",
+				       distro_info->version,
+				       distro_info->version);
+		gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
 
 		gs_plugin_add_app (list, app);
 	}

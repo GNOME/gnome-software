@@ -67,6 +67,8 @@ GPermission	*gs_utils_get_permission	(const gchar	*id);
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
 
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
+void		 gs_utils_widget_set_custom_css	(GtkWidget	*widget,
+						 const gchar	*css);
 
 G_END_DECLS
 

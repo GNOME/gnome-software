@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -26,11 +27,13 @@
 #include <stdlib.h>
 
 #include "gs-upgrade-banner.h"
+#include "gs-utils.h"
 
 typedef struct
 {
 	GsApp		*app;
 
+	GtkWidget	*box_upgrades;
 	GtkWidget	*button_upgrades_download;
 	GtkWidget	*button_upgrades_install;
 	GtkWidget	*button_upgrades_help;
@@ -205,6 +208,7 @@ void
 gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 {
 	GsUpgradeBannerPrivate *priv = gs_upgrade_banner_get_instance_private (self);
+	const gchar *css;
 
 	g_return_if_fail (GS_IS_UPGRADE_BANNER (self));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
@@ -222,6 +226,11 @@ gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 			  G_CALLBACK (app_state_changed), self);
 	g_signal_connect (priv->app, "notify::progress",
 	                  G_CALLBACK (app_progress_changed), self);
+
+	/* set custom css */
+	css = gs_app_get_metadata_item (app, "GnomeSoftware::UpgradeBanner-css");
+	if (css != NULL)
+		gs_utils_widget_set_custom_css (priv->box_upgrades, css);
 
 	gs_upgrade_banner_refresh (self);
 }
@@ -311,6 +320,7 @@ gs_upgrade_banner_class_init (GsUpgradeBannerClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-upgrade-banner.ui");
 
+	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, box_upgrades);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_download);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_install);
 	gtk_widget_class_bind_template_child_private (widget_class, GsUpgradeBanner, button_upgrades_cancel);

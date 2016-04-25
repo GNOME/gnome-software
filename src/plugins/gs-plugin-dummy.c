@@ -453,6 +453,9 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_license (app, GS_APP_QUALITY_LOWEST, "LicenseRef-free");
 	gs_app_set_origin_ui (app, "Dummy");
 	gs_app_set_management_plugin (app, plugin->name);
+	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
+			     "background: url('" DATADIR "/gnome-software/upgrade-bg.png');"
+			     "background-size: 100% 100%;");
 	gs_app_set_icon (app, ic);
 	gs_plugin_add_app (list, app);
 	return TRUE;

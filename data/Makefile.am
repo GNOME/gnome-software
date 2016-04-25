@@ -5,6 +5,7 @@ SUBDIRS =						\
 
 resourcesdir = $(datadir)/gnome-software
 dist_resources_DATA =					\
+	upgrade-bg.png					\
 	featured-ardour.png				\
 	featured-ardour-bg.png				\
 	featured-blender.png				\

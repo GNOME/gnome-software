@@ -174,9 +174,7 @@
 }
 
 .fake-header-bar {
-	background-color: white;
-	background-image: none;
-	border-radius: 0;
+	all: unset;
 }
 
 .header-label {
@@ -270,15 +268,8 @@ button.star, .button.star {
 
 .upgrade-banner {
 	background-color: #1c5288;
+	padding: 0px;
 	color: @theme_selected_fg_color;
-}
-
-.upgrade-button {
-	background-image: none;
-	background-color: #5899dc;
-	box-shadow: none;
-	color: @theme_selected_fg_color;
-	border-color: @theme_selected_bg_color;
 }
 
 .upgrade-progressbar {
