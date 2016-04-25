@@ -1289,6 +1289,7 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	gs_page_set_header_end_widget (GS_PAGE (self), self->header_end_box);
 
 	self->button_update_all = gtk_button_new_with_mnemonic (_("Restart & _Install"));
+	gtk_widget_set_valign (self->button_update_all, GTK_ALIGN_CENTER);
 	gtk_widget_set_visible (self->button_update_all, TRUE);
 	gtk_style_context_add_class (gtk_widget_get_style_context (self->button_update_all), "suggested-action");
 	gtk_container_add (GTK_CONTAINER (self->header_end_box), self->button_update_all);
