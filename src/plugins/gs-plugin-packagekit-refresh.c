@@ -294,6 +294,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	g_autoptr (PkResults) results = NULL;
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *content_type = NULL;
+	g_autofree gchar *filename = NULL;
 	g_autofree gchar *license_spdx = NULL;
 	g_auto(GStrv) files = NULL;
 	g_auto(GStrv) split = NULL;
@@ -317,7 +318,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	data.ptask = NULL;
 
 	/* get details */
-	files = g_strsplit (g_file_get_path (file), "\t", -1);
+	filename = g_file_get_path (file);
+	files = g_strsplit (filename, "\t", -1);
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
 	results = pk_client_get_details_local (PK_CLIENT (priv->task),
 					       files,
@@ -333,7 +335,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "no details for %s", g_file_get_path (file));
+			     "no details for %s", filename);
 		return FALSE;
 	}
 	if (array->len > 1) {
@@ -341,7 +343,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "too many details [%i] for %s",
-			     array->len, g_file_get_path (file));
+			     array->len, filename);
 		return FALSE;
 	}
 
@@ -350,7 +352,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	app = gs_app_new (NULL);
 	package_id = pk_details_get_package_id (item);
 	split = pk_package_id_split (package_id);
-	basename = g_path_get_basename (g_file_get_path (file));
+	basename = g_path_get_basename (filename);
 	gs_app_set_management_plugin (app, "packagekit");
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
@@ -360,7 +362,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	else
 		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
 	gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
-	gs_app_set_metadata (app, "packagekit::local-filename", g_file_get_path (file));
 	gs_app_set_origin (app, basename);
 	gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);
 	gs_app_add_source_id (app, package_id);

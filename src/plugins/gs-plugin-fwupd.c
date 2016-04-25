@@ -282,6 +282,7 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	g_autofree gchar *basename = NULL;
 	g_autofree gchar *checksum = NULL;
 	g_autofree gchar *filename_cache = NULL;
+	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app = NULL;
 
 	/* update unsupported */
@@ -367,7 +368,8 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	}
 
 	/* actually add the application */
-	gs_app_add_source_id (app, filename_cache);
+	file = g_file_new_for_path (filename_cache);
+	gs_app_set_local_file (app, file);
 	gs_app_list_add (list, app);
 
 	return TRUE;
@@ -636,11 +638,11 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *device_id;
-	const gchar *filename;
 	FwupdInstallFlags install_flags = 0;
+	g_autofree gchar *filename = NULL;
 
-	filename = gs_app_get_source_id_default (app);
-	if (filename == NULL) {
+	/* not set */
+	if (gs_app_get_local_file (app) == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -648,6 +650,7 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 			     filename);
 		return FALSE;
 	}
+	filename = g_file_get_path (gs_app_get_local_file (app));
 
 	/* limit to single device? */
 	device_id = gs_app_get_metadata_item (app, "fwupd::DeviceID");
@@ -756,7 +759,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	if (res == NULL)
 		return FALSE;
 	app = gs_plugin_fwupd_new_app_from_results (res);
-	gs_app_add_source_id (app, g_file_get_path (file));
 
 	/* we have no update view for local files */
 	gs_app_set_version (app, gs_app_get_update_version (app));

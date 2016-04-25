@@ -180,6 +180,9 @@ void		 gs_app_set_pixbuf		(GsApp		*app,
 AsIcon		*gs_app_get_icon		(GsApp		*app);
 void		 gs_app_set_icon		(GsApp		*app,
 						 AsIcon		*icon);
+GFile		*gs_app_get_local_file		(GsApp		*app);
+void		 gs_app_set_local_file		(GsApp		*app,
+						 GFile		*icon);
 GsApp		*gs_app_get_runtime		(GsApp		*app);
 void		 gs_app_set_runtime		(GsApp		*app,
 						 GsApp		*runtime);

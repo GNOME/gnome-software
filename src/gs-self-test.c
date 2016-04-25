@@ -463,6 +463,7 @@ gs_plugin_loader_dpkg_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_description (app), ==,
 			 "This is the first paragraph in the example "
 			 "package control file.\nThis is the second paragraph.");
+	g_assert (gs_app_get_local_file (app) != NULL);
 }
 
 int

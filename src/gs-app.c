@@ -106,6 +106,7 @@ struct _GsApp
 	AsAppQuirk		 quirk;
 	gboolean		 license_is_free;
 	GsApp			*runtime;
+	GFile			*local_file;
 };
 
 enum {
@@ -278,6 +279,10 @@ gs_app_to_string (GsApp *app)
 		tmp = g_ptr_array_index (app->source_ids, i);
 		key = g_strdup_printf ("source-id-%02i", i);
 		gs_app_kv_lpad (str, key, tmp);
+	}
+	if (app->local_file != NULL) {
+		g_autofree gchar *fn = g_file_get_path (app->local_file);
+		gs_app_kv_lpad (str, "local-filename", fn);
 	}
 	tmp = g_hash_table_lookup (app->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
 	if (tmp != NULL)
@@ -1003,6 +1008,26 @@ gs_app_set_icon (GsApp *app, AsIcon *icon)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_set_object (&app->icon, icon);
+}
+
+/**
+ * gs_app_get_local_file:
+ */
+GFile *
+gs_app_get_local_file (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	return app->local_file;
+}
+
+/**
+ * gs_app_set_local_file:
+ */
+void
+gs_app_set_local_file (GsApp *app, GFile *local_file)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	g_set_object (&app->local_file, local_file);
 }
 
 /**
@@ -2415,6 +2440,8 @@ gs_app_finalize (GObject *object)
 		g_ptr_array_unref (app->keywords);
 	if (app->last_error != NULL)
 		g_error_free (app->last_error);
+	if (app->local_file != NULL)
+		g_object_unref (app->local_file);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }

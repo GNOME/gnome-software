@@ -317,9 +317,10 @@ gs_plugin_app_install (GsPlugin *plugin,
 	ProgressData data;
 	const gchar *package_id;
 	guint i, j;
-	g_autoptr(PkResults) results = NULL;
-	g_autoptr(GPtrArray) array_package_ids = NULL;
+	g_autofree gchar *local_filename = NULL;
 	g_auto(GStrv) package_ids = NULL;
+	g_autoptr(GPtrArray) array_package_ids = NULL;
+	g_autoptr(PkResults) results = NULL;
 
 	data.app = app;
 	data.plugin = plugin;
@@ -436,15 +437,15 @@ gs_plugin_app_install (GsPlugin *plugin,
 
 		break;
 	case AS_APP_STATE_AVAILABLE_LOCAL:
-		package_id = gs_app_get_metadata_item (app, "packagekit::local-filename");
-		if (package_id == NULL) {
+		if (gs_app_get_local_file (app) == NULL) {
 			g_set_error_literal (error,
 					     GS_PLUGIN_ERROR,
 					     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					     "local package, but no filename");
 			return FALSE;
 		}
-		package_ids = g_strsplit (package_id, "\t", -1);
+		local_filename = g_file_get_path (gs_app_get_local_file (app));
+		package_ids = g_strsplit (local_filename, "\t", -1);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 		results = pk_task_install_files_sync (priv->task,
 						      package_ids,
@@ -461,7 +462,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 
 		/* get the new icon from the package */
-		gs_app_set_metadata (app, "packagekit::local-filename", NULL);
+		gs_app_set_local_file (app, NULL);
 		gs_app_set_icon (app, NULL);
 		gs_app_set_pixbuf (app, NULL);
 		break;
