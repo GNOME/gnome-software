@@ -86,8 +86,8 @@ GsApp		*gs_plugin_loader_get_app_by_id		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GsApp		*gs_plugin_loader_filename_to_app	(GsPluginLoader	*plugin_loader,
-							 const gchar	*filename,
+GsApp		*gs_plugin_loader_file_to_app		(GsPluginLoader	*plugin_loader,
+							 GFile		*file,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);

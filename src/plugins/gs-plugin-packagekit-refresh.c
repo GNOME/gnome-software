@@ -278,14 +278,14 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_filename_to_app:
+ * gs_plugin_file_to_app:
  */
 gboolean
-gs_plugin_filename_to_app (GsPlugin *plugin,
-			   GList **list,
-			   const gchar *filename,
-			   GCancellable *cancellable,
-			   GError **error)
+gs_plugin_file_to_app (GsPlugin *plugin,
+		       GList **list,
+		       GFile *file,
+		       GCancellable *cancellable,
+		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *package_id;
@@ -307,7 +307,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 		NULL };
 
 	/* does this match any of the mimetypes we support */
-	content_type = gs_utils_get_content_type (filename, cancellable, error);
+	content_type = gs_utils_get_content_type (file, cancellable, error);
 	if (content_type == NULL)
 		return FALSE;
 	if (!g_strv_contains (mimetypes, content_type))

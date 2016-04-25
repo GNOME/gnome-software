@@ -106,9 +106,9 @@ typedef gboolean	 (*GsPluginRefreshFunc	)	(GsPlugin	*plugin,
 							 GsPluginRefreshFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-typedef gboolean	 (*GsPluginFilenameToAppFunc)	(GsPlugin	*plugin,
+typedef gboolean	 (*GsPluginFileToAppFunc)	(GsPlugin	*plugin,
 							 GList		**list,
-							 const gchar	*filename,
+							 GFile		*file,
 							 GCancellable	*cancellable,
 							 GError		**error);
 typedef gboolean	 (*GsPluginUpdateFunc)		(GsPlugin	*plugin,
@@ -124,7 +124,7 @@ typedef struct {
 	GList				*list;
 	GsPluginRefineFlags		 flags;
 	gchar				*value;
-	gchar				*filename;
+	GFile				*file;
 	guint				 cache_age;
 	GsCategory			*category;
 	GsApp				*app;
@@ -140,8 +140,9 @@ gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
 		g_object_unref (state->app);
 	if (state->review != NULL)
 		g_object_unref (state->review);
+	if (state->file != NULL)
+		g_object_unref (state->file);
 
-	g_free (state->filename);
 	g_free (state->value);
 	gs_app_list_free (state->list);
 	g_slice_free (GsPluginLoaderAsyncState, state);
@@ -3788,22 +3789,22 @@ gs_plugin_loader_refresh_finish (GsPluginLoader *plugin_loader,
 /******************************************************************************/
 
 /**
- * gs_plugin_loader_filename_to_app_thread_cb:
+ * gs_plugin_loader_file_to_app_thread_cb:
  **/
 static void
-gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
-					    gpointer object,
-					    gpointer task_data,
-					    GCancellable *cancellable)
+gs_plugin_loader_file_to_app_thread_cb (GTask *task,
+					gpointer object,
+					gpointer task_data,
+					GCancellable *cancellable)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	const gchar *function_name = "gs_plugin_filename_to_app";
+	const gchar *function_name = "gs_plugin_file_to_app";
 	gboolean ret = TRUE;
 	GError *error = NULL;
 	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
 	GsPlugin *plugin;
-	GsPluginFilenameToAppFunc plugin_func = NULL;
+	GsPluginFileToAppFunc plugin_func = NULL;
 	guint i;
 
 	/* run each plugin */
@@ -3826,7 +3827,7 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 					  gs_plugin_get_name (plugin),
 					  function_name);
 		gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-		ret = plugin_func (plugin, &state->list, state->filename,
+		ret = plugin_func (plugin, &state->list, state->file,
 				   cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
@@ -3857,7 +3858,7 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no filename_to_app results to show");
+					 "no file_to_app results to show");
 		return;
 	}
 
@@ -3867,16 +3868,16 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no application was created for %s",
-					 state->filename);
+					 g_file_get_path (state->file));
 		return;
 	}
 	g_task_return_pointer (task, g_object_ref (state->list->data), (GDestroyNotify) g_object_unref);
 }
 
 /**
- * gs_plugin_loader_filename_to_app_async:
+ * gs_plugin_loader_file_to_app_async:
  *
- * This method calls all plugins that implement the gs_plugin_add_filename_to_app()
+ * This method calls all plugins that implement the gs_plugin_add_file_to_app()
  * function. The plugins can either return #GsApp objects of kind
  * %AS_APP_KIND_DESKTOP for bonafide applications, or #GsApp's of kind
  * %AS_APP_KIND_GENERIC for packages that may or may not be applications.
@@ -3886,12 +3887,12 @@ gs_plugin_loader_filename_to_app_thread_cb (GTask *task,
  * or if they are core applications.
  **/
 void
-gs_plugin_loader_filename_to_app_async (GsPluginLoader *plugin_loader,
-					const gchar *filename,
-					GsPluginRefineFlags flags,
-					GCancellable *cancellable,
-					GAsyncReadyCallback callback,
-					gpointer user_data)
+gs_plugin_loader_file_to_app_async (GsPluginLoader *plugin_loader,
+				    GFile *file,
+				    GsPluginRefineFlags flags,
+				    GCancellable *cancellable,
+				    GAsyncReadyCallback callback,
+				    gpointer user_data)
 {
 	GsPluginLoaderAsyncState *state;
 	g_autoptr(GTask) task = NULL;
@@ -3902,23 +3903,23 @@ gs_plugin_loader_filename_to_app_async (GsPluginLoader *plugin_loader,
 	/* save state */
 	state = g_slice_new0 (GsPluginLoaderAsyncState);
 	state->flags = flags;
-	state->filename = g_strdup (filename);
+	state->file = g_object_ref (file);
 
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
-	g_task_run_in_thread (task, gs_plugin_loader_filename_to_app_thread_cb);
+	g_task_run_in_thread (task, gs_plugin_loader_file_to_app_thread_cb);
 }
 
 /**
- * gs_plugin_loader_filename_to_app_finish:
+ * gs_plugin_loader_file_to_app_finish:
  *
  * Return value: (element-type GsApp) (transfer full): An application, or %NULL
  **/
 GsApp *
-gs_plugin_loader_filename_to_app_finish (GsPluginLoader *plugin_loader,
-					 GAsyncResult *res,
-					 GError **error)
+gs_plugin_loader_file_to_app_finish (GsPluginLoader *plugin_loader,
+				     GAsyncResult *res,
+				     GError **error)
 {
 	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), NULL);
 	g_return_val_if_fail (G_IS_TASK (res), NULL);

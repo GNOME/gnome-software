@@ -328,9 +328,9 @@ gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
 							 GsPluginRefreshFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-gboolean	 gs_plugin_filename_to_app		(GsPlugin	*plugin,
+gboolean	 gs_plugin_file_to_app			(GsPlugin	*plugin,
 							 GList		**list,
-							 const gchar	*filename,
+							 GFile		*file,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_update			(GsPlugin	*plugin,

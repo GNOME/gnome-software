@@ -35,7 +35,7 @@ void	 gs_container_remove_all	(GtkContainer	*container);
 void	 gs_grab_focus_when_mapped	(GtkWidget	*widget);
 
 guint	 gs_utils_get_file_age		(GFile		*file);
-gchar	*gs_utils_get_content_type	(const gchar	*filename,
+gchar	*gs_utils_get_content_type	(GFile		*file,
 					 GCancellable	*cancellable,
 					 GError		**error);
 

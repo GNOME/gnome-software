@@ -724,14 +724,14 @@ gs_plugin_update_app (GsPlugin *plugin,
 }
 
 /**
- * gs_plugin_filename_to_app:
+ * gs_plugin_file_to_app:
  */
 gboolean
-gs_plugin_filename_to_app (GsPlugin *plugin,
-			   GList **list,
-			   const gchar *filename,
-			   GCancellable *cancellable,
-			   GError **error)
+gs_plugin_file_to_app (GsPlugin *plugin,
+		       GList **list,
+		       GFile *file,
+		       GCancellable *cancellable,
+		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *content_type = NULL;
@@ -742,7 +742,7 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 		NULL };
 
 	/* does this match any of the mimetypes we support */
-	content_type = gs_utils_get_content_type (filename, cancellable, error);
+	content_type = gs_utils_get_content_type (file, cancellable, error);
 	if (content_type == NULL)
 		return FALSE;
 	if (!g_strv_contains (mimetypes, content_type))
@@ -750,13 +750,13 @@ gs_plugin_filename_to_app (GsPlugin *plugin,
 
 	/* get results */
 	res = fwupd_client_get_details (priv->client,
-					filename,
+					g_file_get_path (file),
 					cancellable,
 					error);
 	if (res == NULL)
 		return FALSE;
 	app = gs_plugin_fwupd_new_app_from_results (res);
-	gs_app_add_source_id (app, filename);
+	gs_app_add_source_id (app, g_file_get_path (file));
 
 	/* we have no update view for local files */
 	gs_app_set_version (app, gs_app_get_update_version (app));

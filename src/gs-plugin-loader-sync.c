@@ -614,27 +614,27 @@ gs_plugin_loader_refresh (GsPluginLoader *plugin_loader,
 }
 
 static void
-gs_plugin_loader_filename_to_app_finish_sync (GObject *source_object,
-					      GAsyncResult *res,
-					      gpointer user_data)
+gs_plugin_loader_file_to_app_finish_sync (GObject *source_object,
+					  GAsyncResult *res,
+					  gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	GsPluginLoaderHelper *helper = (GsPluginLoaderHelper *) user_data;
-	helper->app = gs_plugin_loader_filename_to_app_finish (plugin_loader,
-							       res,
-							       helper->error);
+	helper->app = gs_plugin_loader_file_to_app_finish (plugin_loader,
+							   res,
+							   helper->error);
 	g_main_loop_quit (helper->loop);
 }
 
 /**
- * gs_plugin_loader_filename_to_app:
+ * gs_plugin_loader_file_to_app:
  **/
 GsApp *
-gs_plugin_loader_filename_to_app (GsPluginLoader *plugin_loader,
-				  const gchar *filename,
-				  GsPluginRefineFlags flags,
-				  GCancellable *cancellable,
-				  GError **error)
+gs_plugin_loader_file_to_app (GsPluginLoader *plugin_loader,
+			      GFile *file,
+			      GsPluginRefineFlags flags,
+			      GCancellable *cancellable,
+			      GError **error)
 {
 	GsPluginLoaderHelper helper;
 
@@ -647,12 +647,12 @@ gs_plugin_loader_filename_to_app (GsPluginLoader *plugin_loader,
 	g_main_context_push_thread_default (helper.context);
 
 	/* run async method */
-	gs_plugin_loader_filename_to_app_async (plugin_loader,
-						filename,
-						flags,
-						cancellable,
-						gs_plugin_loader_filename_to_app_finish_sync,
-						&helper);
+	gs_plugin_loader_file_to_app_async (plugin_loader,
+					    file,
+					    flags,
+					    cancellable,
+					    gs_plugin_loader_file_to_app_finish_sync,
+					    &helper);
 	g_main_loop_run (helper.loop);
 
 	g_main_context_pop_thread_default (helper.context);

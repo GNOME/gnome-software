@@ -775,16 +775,14 @@ gs_utils_get_content_rating (void)
  * gs_utils_get_content_type:
  */
 gchar *
-gs_utils_get_content_type (const gchar *filename,
+gs_utils_get_content_type (GFile *file,
 			   GCancellable *cancellable,
 			   GError **error)
 {
 	const gchar *tmp;
-	g_autoptr(GFile) file = NULL;
 	g_autoptr(GFileInfo) info = NULL;
 
 	/* get content type */
-	file = g_file_new_for_path (filename);
 	info = g_file_query_info (file,
 				  G_FILE_ATTRIBUTE_STANDARD_CONTENT_TYPE,
 				  G_FILE_QUERY_INFO_NONE,

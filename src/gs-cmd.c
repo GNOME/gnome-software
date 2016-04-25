@@ -212,6 +212,7 @@ main (int argc, char **argv)
 	g_autofree gchar *plugin_names_str = NULL;
 	g_autofree gchar *refine_flags_str = NULL;
 	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsPluginLoader) plugin_loader = NULL;
 	g_autoptr(AsProfile) profile = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
@@ -342,11 +343,12 @@ main (int argc, char **argv)
 				break;
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "filename-to-app") == 0) {
-		app = gs_plugin_loader_filename_to_app (plugin_loader,
-							argv[2],
-							refine_flags,
-							NULL,
-							&error);
+		file = g_file_new_for_path (argv[2]);
+		app = gs_plugin_loader_file_to_app (plugin_loader,
+						    file,
+						    refine_flags,
+						    NULL,
+						    &error);
 		if (app == NULL) {
 			ret = FALSE;
 		} else {

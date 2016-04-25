@@ -561,9 +561,9 @@ search_files_cb (GObject *source_object,
 }
 
 static void
-filename_to_app_cb (GObject *source_object,
-                    GAsyncResult *res,
-                    gpointer user_data)
+file_to_app_cb (GObject *source_object,
+                GAsyncResult *res,
+                gpointer user_data)
 {
 	SearchData *search_data = (SearchData *) user_data;
 	GsShellExtras *self = search_data->self;
@@ -571,7 +571,7 @@ filename_to_app_cb (GObject *source_object,
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 
-	app = gs_plugin_loader_filename_to_app_finish (plugin_loader, res, &error);
+	app = gs_plugin_loader_file_to_app_finish (plugin_loader, res, &error);
 	if (app == NULL) {
 		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
 			g_debug ("extras: search what provides cancelled");
@@ -700,15 +700,17 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			                                     search_files_cb,
 			                                     search_data);
 		} else if (search_data->package_filename != NULL) {
+			g_autoptr (GFile) file = NULL;
 			g_debug ("resolving filename to app: '%s'", search_data->package_filename);
-			gs_plugin_loader_filename_to_app_async (self->plugin_loader,
-			                                        search_data->package_filename,
-			                                        GS_PLUGIN_REFINE_FLAGS_DEFAULT |
-			                                        GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
-			                                        GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
-			                                        self->search_cancellable,
-			                                        filename_to_app_cb,
-			                                        search_data);
+			file = g_file_new_for_path (search_data->package_filename);
+			gs_plugin_loader_file_to_app_async (self->plugin_loader,
+			                                    file,
+			                                    GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+			                                    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
+			                                    GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
+			                                    self->search_cancellable,
+			                                    file_to_app_cb,
+			                                    search_data);
 		} else {
 			g_debug ("searching what provides: '%s'", search_data->search);
 			gs_plugin_loader_search_what_provides_async (self->plugin_loader,
