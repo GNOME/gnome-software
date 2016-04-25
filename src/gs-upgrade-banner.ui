@@ -9,7 +9,7 @@
         <property name="hexpand">True</property>
         <property name="vexpand">True</property>
         <property name="margin-top">48</property>
-        <property name="margin-bottom">76</property>
+        <property name="margin-bottom">48</property>
         <property name="height-request">300</property>
         <property name="valign">center</property>
         <style>
@@ -35,17 +35,6 @@
             <property name="label" translatable="yes">A major upgrade, with new features and added polish.</property>
             <attributes>
               <attribute name="scale" value="1.2"/>
-            </attributes>
-          </object>
-        </child>
-        <child>
-          <object class="GtkLabel" id="label_upgrades_warning">
-            <property name="visible">True</property>
-            <property name="can_focus">False</property>
-            <property name="label" translatable="yes">It is recommended that you back up your data and files before upgrading.</property>
-            <property name="margin_top">32</property>
-            <attributes>
-              <attribute name="scale" value="0.9"/>
             </attributes>
           </object>
         </child>
@@ -103,6 +92,14 @@
                 <property name="expand">False</property>
                 <property name="fill">True</property>
               </packing>
+            </child>
+
+            <child>
+              <object class="GtkLabel" id="label_upgrades_warning">
+                <property name="visible">True</property>
+                <property name="can_focus">False</property>
+                <property name="label" translatable="yes">It is recommended that you back up your data and files before upgrading.</property>
+              </object>
             </child>
 
             <child>
