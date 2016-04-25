@@ -1377,7 +1377,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	g_autoptr(GBytes) appstream_gz = NULL;
 	g_autoptr(GBytes) icon_data = NULL;
 	g_autoptr(GBytes) metadata = NULL;
-	g_autoptr(GFile) file = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(XdgAppBundleRef) xref_bundle = NULL;
 	const gchar *mimetypes[] = {
@@ -1392,7 +1391,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* load bundle */
-	file = g_file_new_for_path (filename);
 	xref_bundle = xdg_app_bundle_ref_new (file, error);
 	if (xref_bundle == NULL) {
 		g_prefix_error (error, "error loading bundle: ");
@@ -1484,7 +1482,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 
 	/* set the source so we can install it higher up */
-	gs_app_add_source (app, filename);
+	gs_app_add_source (app, g_file_get_path (file));
 
 	/* not quite true: this just means we can update this specific app */
 	if (xdg_app_bundle_ref_get_origin (xref_bundle))
