@@ -196,6 +196,7 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 	/* default stuff */
 	app = gs_app_new (fwupd_result_get_update_id (res));
 	gs_app_set_kind (app, AS_APP_KIND_FIRMWARE);
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	gs_app_set_management_plugin (app, "fwupd");
 	gs_app_add_category (app, "System");
 	gs_app_set_metadata (app, "fwupd::DeviceID",

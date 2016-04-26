@@ -312,8 +312,7 @@ gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 	case AS_APP_STATE_INSTALLED:
 	case AS_APP_STATE_UPDATABLE:
 	case AS_APP_STATE_UPDATABLE_LIVE:
-		if (gs_app_get_kind (self->app) == AS_APP_KIND_DESKTOP ||
-		    gs_app_get_kind (self->app) == AS_APP_KIND_WEB_APP) {
+		if (!gs_app_has_quirk (self->app, AS_APP_QUIRK_NOT_LAUNCHABLE)) {
 			gtk_widget_set_visible (self->button_details_launch, TRUE);
 		} else {
 			gtk_widget_set_visible (self->button_details_launch, FALSE);

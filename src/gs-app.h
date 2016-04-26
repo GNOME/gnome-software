@@ -84,6 +84,7 @@ typedef enum {
 
 #if !AS_CHECK_VERSION(0,5,15)
 #define AS_APP_QUIRK_HAS_SHORTCUT		(1 << 6)
+#define AS_APP_QUIRK_NOT_LAUNCHABLE		(1 << 7)
 #endif
 
 GQuark		 gs_app_error_quark		(void);
