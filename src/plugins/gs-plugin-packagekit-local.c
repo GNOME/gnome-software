@@ -262,11 +262,9 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_management_plugin (app, "packagekit");
 	gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
-	if (pk_details_get_summary (item))
-		gs_app_set_name (app, GS_APP_QUALITY_LOWEST,
-				 pk_details_get_summary (item));
-	else
-		gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
+	gs_app_set_name (app, GS_APP_QUALITY_LOWEST, split[PK_PACKAGE_ID_NAME]);
+	gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
+			    pk_details_get_summary (item));
 	gs_app_set_version (app, split[PK_PACKAGE_ID_VERSION]);
 	gs_app_set_origin (app, basename);
 	gs_app_add_source (app, split[PK_PACKAGE_ID_NAME]);

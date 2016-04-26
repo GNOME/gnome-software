@@ -466,6 +466,40 @@ gs_plugin_loader_dpkg_func (GsPluginLoader *plugin_loader)
 	g_assert (gs_app_get_local_file (app) != NULL);
 }
 
+static void
+gs_plugin_loader_packagekit_local_func (GsPluginLoader *plugin_loader)
+{
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autofree gchar *fn = NULL;
+	g_autoptr(GFile) file = NULL;
+
+	/* no dpkg, abort */
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "packagekit-local"))
+		return;
+
+	/* load local file */
+	fn = gs_test_get_filename ("tests/chiron-1.1-1.fc24.x86_64.rpm");
+	g_assert (fn != NULL);
+	file = g_file_new_for_path (fn);
+	app = gs_plugin_loader_file_to_app (plugin_loader,
+					    file,
+					    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					    NULL,
+					    &error);
+	g_assert_no_error (error);
+	g_assert (app != NULL);
+	g_assert_cmpstr (gs_app_get_id (app), ==, NULL);
+	g_assert_cmpstr (gs_app_get_source_default (app), ==, "chiron");
+	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
+	g_assert_cmpstr (gs_app_get_name (app), ==, "chiron");
+	g_assert_cmpstr (gs_app_get_version (app), ==, "1.1-1.fc24");
+	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
+	g_assert_cmpstr (gs_app_get_description (app), ==,
+			 "This is the first paragraph in the example "
+			 "package spec file.  This is the second paragraph.");
+}
+
 int
 main (int argc, char **argv)
 {
@@ -483,6 +517,7 @@ main (int argc, char **argv)
 		"icons",
 		"menu-spec-refine",
 		"provenance",
+		"packagekit-local",
 		NULL
 	};
 
@@ -567,6 +602,9 @@ main (int argc, char **argv)
 	g_assert (gs_plugin_loader_get_enabled (plugin_loader, "dummy"));
 
 	/* plugin tests go here */
+	g_test_add_data_func ("/gnome-software/plugin-loader{packagekit-local}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_packagekit_local_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{dpkg}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_dpkg_func);
