@@ -99,7 +99,9 @@ gs_application_init (GsApplication *application)
 		{ "search", '\0', 0, G_OPTION_ARG_STRING, NULL,
 		  _("Search for applications"), _("SEARCH") },
 		{ "details", '\0', 0, G_OPTION_ARG_STRING, NULL,
-		  _("Show application details"), _("ID") },
+		  _("Show application details (using application ID)"), _("ID") },
+		{ "details-pkg", '\0', 0, G_OPTION_ARG_STRING, NULL,
+		  _("Show application details (using package name)"), _("PKGNAME") },
 		{ "local-filename", '\0', 0, G_OPTION_ARG_FILENAME, NULL,
 		  _("Open a local package file"), _("FILENAME") },
 		{ "verbose", '\0', 0, G_OPTION_ARG_NONE, NULL,
@@ -590,8 +592,26 @@ details_activated (GSimpleAction *action,
 	g_variant_get (parameter, "(&s&s)", &id, &search);
 	if (search != NULL && search[0] != '\0')
 		gs_shell_show_search_result (app->shell, id, search);
-	else
-		gs_shell_show_details (app->shell, id);
+	else {
+		g_autoptr (GsApp) a = NULL;
+		a = gs_app_new (id);
+		gs_shell_show_app (app->shell, a);
+	}
+}
+
+static void
+details_pkg_activated (GSimpleAction *action,
+		       GVariant      *parameter,
+		       gpointer       data)
+{
+	GsApplication *app = GS_APPLICATION (data);
+	g_autoptr (GsApp) a = NULL;
+
+	initialize_ui_and_present_window (app);
+
+	a = gs_app_new (NULL);
+	gs_app_add_source (a, g_variant_get_string (parameter, NULL));
+	gs_shell_show_app (app->shell, a);
 }
 
 static void
@@ -686,6 +706,7 @@ static GActionEntry actions[] = {
 	{ "set-mode", set_mode_activated, "s", NULL, NULL },
 	{ "search", search_activated, "s", NULL, NULL },
 	{ "details", details_activated, "(ss)", NULL, NULL },
+	{ "details-pkg", details_pkg_activated, "s", NULL, NULL },
 	{ "filename", filename_activated, "(s)", NULL, NULL },
 	{ "launch", launch_activated, "s", NULL, NULL },
 	{ "show-offline-update-error", show_offline_updates_error, NULL, NULL, NULL },
@@ -803,6 +824,7 @@ static int
 gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 {
 	const gchar *id;
+	const gchar *pkgname;
 	const gchar *local_filename;
 	const gchar *mode;
 	const gchar *search;
@@ -846,6 +868,11 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"details",
 						g_variant_new ("(ss)", id, ""));
+		return 0;
+	} else if (g_variant_dict_lookup (options, "details-pkg", "&s", &pkgname)) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"details-pkg",
+						g_variant_new_string (pkgname));
 		return 0;
 	} else if (g_variant_dict_lookup (options, "local-filename", "^&ay", &local_filename)) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),

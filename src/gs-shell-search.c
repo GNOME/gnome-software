@@ -134,7 +134,9 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	}
 
 	if (self->appid_to_show != NULL) {
-		gs_shell_show_details (self->shell, self->appid_to_show);
+		g_autoptr (GsApp) a = NULL;
+		a = gs_app_new (self->appid_to_show);
+		gs_shell_show_app (self->shell, a);
 		g_clear_pointer (&self->appid_to_show, g_free);
 	}
 }

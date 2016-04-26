@@ -949,14 +949,6 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
 }
 
-void
-gs_shell_show_details (GsShell *shell, const gchar *id)
-{
-	g_autoptr(GsApp) app = NULL;
-	app = gs_app_new (id);
-	gs_shell_show_app (shell, app);
-}
-
 /**
  * gs_shell_dispose:
  **/
