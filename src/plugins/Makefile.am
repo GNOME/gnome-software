@@ -34,10 +34,10 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_hardcoded-blacklist.la		\
 	libgs_plugin_menu-spec-categories.la		\
 	libgs_plugin_menu-spec-refine.la		\
-	libgs_plugin_fedora_distro_upgrades.la		\
+	libgs_plugin_fedora-distro-upgrades.la		\
 	libgs_plugin_provenance.la			\
 	libgs_plugin_provenance-license.la		\
-	libgs_plugin_fedora_tagger_usage.la		\
+	libgs_plugin_fedora-tagger-usage.la		\
 	libgs_plugin_epiphany.la			\
 	libgs_plugin_icons.la
 
