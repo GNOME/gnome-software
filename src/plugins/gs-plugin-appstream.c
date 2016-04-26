@@ -247,6 +247,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *id;
+	guint i;
 	AsApp *item = NULL;
 
 	/* unfound */
@@ -256,13 +257,35 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	id = gs_app_get_id (app);
 	if (id == NULL)
 		return TRUE;
-	item = as_store_get_app_by_id (priv->store, id);
-	if (item == NULL &&
-	    gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
-		item = as_store_get_app_by_id_ignore_prefix (priv->store, id);
-		if (item != NULL)
-			g_debug ("found %s for wildcard %s", as_app_get_id (item), id);
+
+	/* find the best app when matching any prefixes */
+	if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
+		g_autoptr(GPtrArray) items = NULL;
+		items = as_store_get_apps_by_id (priv->store, id);
+		for (i = 0; i < items->len; i++) {
+			AsApp *item_tmp = NULL;
+
+			/* does the app have an installation method */
+			item_tmp = g_ptr_array_index (items, i);
+			if (as_app_get_pkgname_default (item_tmp) == NULL &&
+			    as_app_get_bundle_default (item_tmp) == NULL) {
+				g_debug ("not using %s for wildcard as "
+					 "no bundle or pkgname",
+					 as_app_get_id (item_tmp));
+				continue;
+			}
+
+			/* we could match more than one, so list all and return
+			 * the last entry -- fingers crossed it's only one... */
+			g_debug ("found %s for wildcard %s",
+				 as_app_get_id (item_tmp), id);
+			item = item_tmp;
+		}
+	} else {
+		item = as_store_get_app_by_id (priv->store, id);
 	}
+
+	/* nothing found */
 	if (item == NULL)
 		return TRUE;
 
