@@ -175,7 +175,6 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 				g_autofree gchar *basename = g_path_get_basename (fns[j]);
 				gs_app_set_id (app, basename);
 				gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
-				gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 				break;
 			}
 		}
@@ -280,7 +279,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	/* look for a desktop file so we can use a valid application id */
 	if (!gs_plugin_packagekit_refresh_guess_app_id (plugin,
 							app,
-							g_file_get_path (file),
+							filename,
 							cancellable,
 							error))
 		return FALSE;
