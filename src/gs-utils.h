@@ -72,6 +72,8 @@ gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
 void		 gs_utils_widget_set_custom_css	(GsApp		*app,
 						 GtkWidget	*widget,
 						 const gchar	*metadata_css);
+gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
+						 const gchar	*str);
 
 G_END_DECLS
 

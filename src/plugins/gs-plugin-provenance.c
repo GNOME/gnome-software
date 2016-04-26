@@ -21,9 +21,8 @@
 
 #include <config.h>
 
-#include <fnmatch.h>
-
 #include <gs-plugin.h>
+#include <gs-utils.h>
 
 /*
  * SECTION:
@@ -101,26 +100,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_strfreev (priv->sources);
 	g_object_unref (priv->settings);
-}
-
-/**
- * gs_utils_strv_fnmatch:
- */
-static gboolean
-gs_utils_strv_fnmatch (gchar **strv, const gchar *str)
-{
-	guint i;
-
-	/* empty */
-	if (strv == NULL)
-		return FALSE;
-
-	/* look at each one */
-	for (i = 0; strv[i] != NULL; i++) {
-		if (fnmatch (strv[i], str, 0) == 0)
-			return TRUE;
-	}
-	return FALSE;
 }
 
 /**

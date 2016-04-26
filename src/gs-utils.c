@@ -24,6 +24,7 @@
 #include <glib/gi18n.h>
 #include <gio/gdesktopappinfo.h>
 #include <errno.h>
+#include <fnmatch.h>
 
 #ifdef HAVE_POLKIT
 #include <polkit/polkit.h>
@@ -891,6 +892,26 @@ gs_utils_widget_set_custom_css (GsApp *app, GtkWidget *widget, const gchar *meta
 				"GnomeSoftware::provider",
 				g_object_ref (provider),
 				g_object_unref);
+}
+
+/**
+ * gs_utils_strv_fnmatch:
+ */
+gboolean
+gs_utils_strv_fnmatch (gchar **strv, const gchar *str)
+{
+	guint i;
+
+	/* empty */
+	if (strv == NULL)
+		return FALSE;
+
+	/* look at each one */
+	for (i = 0; strv[i] != NULL; i++) {
+		if (fnmatch (strv[i], str, 0) == 0)
+			return TRUE;
+	}
+	return FALSE;
 }
 
 /* vim: set noexpandtab: */
