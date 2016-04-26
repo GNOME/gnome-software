@@ -509,6 +509,25 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		}
 	}
 
+	/* types we can never launch */
+	switch (gs_app_get_kind (app)) {
+	case AS_APP_KIND_ADDON:
+	case AS_APP_KIND_CODEC:
+	case AS_APP_KIND_FIRMWARE:
+	case AS_APP_KIND_FONT:
+	case AS_APP_KIND_GENERIC:
+	case AS_APP_KIND_INPUT_METHOD:
+	case AS_APP_KIND_LOCALIZATION:
+	case AS_APP_KIND_OS_UPDATE:
+	case AS_APP_KIND_OS_UPGRADE:
+	case AS_APP_KIND_RUNTIME:
+	case AS_APP_KIND_SOURCE:
+		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+		break;
+	default:
+		break;
+	}
+
 	/* set management plugin automatically */
 	gs_refine_item_management_plugin (app, item);
 

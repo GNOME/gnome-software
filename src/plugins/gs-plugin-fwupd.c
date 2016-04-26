@@ -207,6 +207,8 @@ gs_plugin_fwupd_set_app_from_kv (GsApp *app, const gchar *key, GVariant *val)
 {
 	g_debug ("key %s", key);
 
+	gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
+
 	if (g_strcmp0 (key, "AppstreamId") == 0) {
 		gs_app_set_id (app, g_variant_get_string (val, NULL));
 		return;
