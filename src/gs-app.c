@@ -1478,7 +1478,7 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 
 		/* free software, license unspecified */
 		if (g_str_has_prefix (tokens[i], "@LicenseRef-free")) {
-			const gchar *url = "http://www.gnu.org/philosophy/free-sw.en.html";
+			const gchar *url = "https://www.gnu.org/philosophy/free-sw";
 			gchar *tmp;
 
 			/* we support putting a custom URL in the
