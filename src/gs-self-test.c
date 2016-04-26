@@ -356,6 +356,8 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 
 	/* get installed packages */
 	list = gs_plugin_loader_get_installed (plugin_loader,
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
@@ -402,6 +404,8 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_state (addon), ==, AS_APP_STATE_UNKNOWN);
 	g_assert_cmpstr (gs_app_get_name (addon), ==, "Spell Check");
 	g_assert_cmpstr (gs_app_get_source_default (addon), ==, "zeus-spell");
+	g_assert_cmpstr (gs_app_get_license (addon), ==,
+			 "<a href=\"https://www.debian.org/\">Free Software</a>");
 	g_assert (gs_app_get_pixbuf (addon) == NULL);
 }
 
@@ -536,6 +540,7 @@ main (int argc, char **argv)
 		"menu-spec-refine",
 		"key-colors",
 		"provenance",
+		"provenance-license",
 		"packagekit-local",
 		NULL
 	};
@@ -547,6 +552,8 @@ main (int argc, char **argv)
 	g_setenv ("GS_SELF_TEST_LOCALE", "en_GB", TRUE);
 	g_setenv ("GS_SELF_TEST_DUMMY_ENABLE", "1", TRUE);
 	g_setenv ("GS_SELF_TEST_PROVENANCE_SOURCES", "london*,boston", TRUE);
+	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_SOURCES", "london*,boston", TRUE);
+	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_URL", "https://www.debian.org/", TRUE);
 
 	fn = gs_test_get_filename ("icons/hicolor/48x48/org.gnome.Software.png");
 	g_assert (fn != NULL);

@@ -36,6 +36,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_menu-spec-refine.la		\
 	libgs_plugin_fedora_distro_upgrades.la		\
 	libgs_plugin_provenance.la			\
+	libgs_plugin_provenance-license.la		\
 	libgs_plugin_fedora_tagger_usage.la		\
 	libgs_plugin_epiphany.la			\
 	libgs_plugin_icons.la
@@ -121,6 +122,11 @@ libgs_plugin_provenance_la_SOURCES = gs-plugin-provenance.c
 libgs_plugin_provenance_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_provenance_la_LDFLAGS = -module -avoid-version
 libgs_plugin_provenance_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_provenance_license_la_SOURCES = gs-plugin-provenance-license.c
+libgs_plugin_provenance_license_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_provenance_license_la_LDFLAGS = -module -avoid-version
+libgs_plugin_provenance_license_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_fedora_tagger_usage_la_SOURCES = gs-plugin-fedora-tagger-usage.c
 libgs_plugin_fedora_tagger_usage_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(SQLITE_LIBS)

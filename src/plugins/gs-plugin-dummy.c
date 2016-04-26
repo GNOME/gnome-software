@@ -394,7 +394,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) {
 		if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
 		    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0)
-			gs_app_set_license (app, GS_APP_QUALITY_NORMAL, "GPL-2.0+");
+			gs_app_set_license (app, GS_APP_QUALITY_HIGHEST, "GPL-2.0+");
 	}
 
 	/* homepage */
@@ -403,6 +403,12 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
 					"http://www.test.org/");
 		}
+	}
+
+	/* origin */
+	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
+		if (g_strcmp0 (gs_app_get_id (app), "zeus-spell.addon") == 0)
+			gs_app_set_origin (app, "london-east");
 	}
 
 	/* description */
