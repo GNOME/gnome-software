@@ -19,10 +19,23 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+#include "config.h"
+
 #include <stdio.h>
 #include <unistd.h>
 
 #include "gs-debug.h"
+
+struct _GsDebug
+{
+	GObject		 parent_instance;
+	GMutex		 mutex;
+	gboolean	 use_time;
+	gboolean	 use_color;
+	GLogFunc	 log_func_old;
+};
+
+G_DEFINE_TYPE (GsDebug, gs_debug, G_TYPE_OBJECT)
 
 /**
  * gs_debug_handler_cb:
@@ -99,41 +112,49 @@ gs_debug_handler_cb (const gchar *log_domain,
 }
 
 /**
+ * gs_debug_finalize:
+ **/
+static void
+gs_debug_finalize (GObject *object)
+{
+	GsDebug *debug = GS_DEBUG (object);
+
+	if (debug->log_func_old != NULL)
+		g_log_set_default_handler (debug->log_func_old, NULL);
+	g_mutex_clear (&debug->mutex);
+
+	G_OBJECT_CLASS (gs_debug_parent_class)->finalize (object);
+}
+
+/**
+ * gs_debug_class_init:
+ **/
+static void
+gs_debug_class_init (GsDebugClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->finalize = gs_debug_finalize;
+}
+
+/**
+ * gs_debug_init:
+ **/
+static void
+gs_debug_init (GsDebug *debug)
+{
+	g_mutex_init (&debug->mutex);
+	debug->use_time = g_getenv ("GS_DEBUG_NO_TIME") == NULL;
+	debug->use_color = (isatty (fileno (stdout)) == 1);
+	debug->log_func_old = g_log_set_default_handler (gs_debug_handler_cb, debug);
+}
+
+/**
  * gs_debug_new:
  **/
 GsDebug *
 gs_debug_new (void)
 {
-	GsDebug *debug = g_new0 (GsDebug, 1);
-	guint i;
-	const gchar *log_domains[] = {
-		G_LOG_DOMAIN,
-		"As",
-		"Gtk",
-		"GsPlugin",
-		"PackageKit",
-		NULL };
-
-	debug->use_time = g_getenv ("GS_DEBUG_NO_TIME") == NULL;
-	debug->use_color = (isatty (fileno (stdout)) == 1);
-	g_mutex_init (&debug->mutex);
-	for (i = 0; log_domains[i] != NULL; i++) {
-		g_log_set_handler (log_domains[i],
-				   G_LOG_LEVEL_ERROR |
-				   G_LOG_LEVEL_CRITICAL |
-				   G_LOG_LEVEL_DEBUG |
-				   G_LOG_LEVEL_WARNING,
-				   gs_debug_handler_cb, debug);
-	}
-	return debug;
+	return GS_DEBUG (g_object_new (GS_TYPE_DEBUG, NULL));
 }
 
-/**
- * gs_debug_free:
- **/
-void
-gs_debug_free (GsDebug *debug)
-{
-	g_mutex_clear (&debug->mutex);
-	g_free (debug);
-}
+/* vim: set noexpandtab: */

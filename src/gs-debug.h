@@ -26,16 +26,11 @@
 
 G_BEGIN_DECLS
 
-typedef struct {
-	GMutex		 mutex;
-	gboolean	 use_time;
-	gboolean	 use_color;
-} GsDebug;
+#define GS_TYPE_DEBUG (gs_debug_get_type ())
 
-GsDebug		*gs_debug_new	(void);
-void		 gs_debug_free	(GsDebug	*debug);
+G_DECLARE_FINAL_TYPE (GsDebug, gs_debug, GS, DEBUG, GObject)
 
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsDebug, gs_debug_free);
+GsDebug	 	*gs_debug_new		(void);
 
 G_END_DECLS
 
