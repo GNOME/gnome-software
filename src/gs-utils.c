@@ -242,6 +242,7 @@ gs_app_notify_failed_modal (GsApp *app,
 		scrolled_window = gtk_scrolled_window_new (NULL, NULL);
 		gtk_container_add (GTK_CONTAINER (expander), scrolled_window);
 		label = gtk_label_new (error->message);
+		gtk_label_set_selectable (GTK_LABEL (label), TRUE);
 		gtk_container_add (GTK_CONTAINER (scrolled_window), label);
 		gtk_box_pack_end (GTK_BOX (vbox), expander, FALSE, TRUE, 4);
 		gtk_widget_show_all (expander);
