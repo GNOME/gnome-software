@@ -90,7 +90,7 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 			icon = as_app_get_icon_for_size (item, 64, 64);
 		if (icon == NULL) {
 			g_warning ("failed to find cached icon %s",
-				   as_icon_get_name (icon));
+				   as_app_get_id (item));
 			return;
 		}
 		if (!as_icon_load (icon, AS_ICON_LOAD_FLAG_SEARCH_SIZE, &error)) {
