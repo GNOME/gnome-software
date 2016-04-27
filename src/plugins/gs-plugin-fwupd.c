@@ -44,7 +44,6 @@ struct GsPluginData {
 	FwupdClient		*client;
 	GPtrArray		*to_download;
 	GPtrArray		*to_ignore;
-	gchar			*cachedir;
 	gchar			*lvfs_sig_fn;
 	gchar			*lvfs_sig_hash;
 	gchar			*config_fn;
@@ -78,7 +77,6 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_free (priv->cachedir);
 	g_free (priv->lvfs_sig_fn);
 	g_free (priv->lvfs_sig_hash);
 	g_free (priv->config_fn);
@@ -116,24 +114,18 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	gsize len;
 	g_autofree gchar *data = NULL;
 
-	/* already done */
-	if (priv->cachedir != NULL)
-		return TRUE;
-
 	/* register D-Bus errors */
 	fwupd_error_quark ();
 	g_signal_connect (priv->client, "changed",
 			  G_CALLBACK (gs_plugin_fwupd_changed_cb), plugin);
 
-	/* create the cache location */
-	priv->cachedir = gs_utils_get_cachedir ("firmware", error);
-	if (priv->cachedir == NULL)
-		return FALSE;
-
 	/* get the hash of the previously downloaded file */
-	priv->lvfs_sig_fn = g_build_filename (priv->cachedir,
-						      "firmware.xml.gz.asc",
-						      NULL);
+	priv->lvfs_sig_fn = gs_utils_get_cache_filename ("firmware",
+							 "firmware.xml.gz.asc",
+							 GS_UTILS_CACHE_FLAG_WRITEABLE,
+							 error);
+	if (priv->lvfs_sig_fn == NULL)
+		return FALSE;
 	if (g_file_test (priv->lvfs_sig_fn, G_FILE_TEST_EXISTS)) {
 		if (!g_file_get_contents (priv->lvfs_sig_fn,
 					  &data, &len, error))
@@ -276,7 +268,6 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 			  FwupdResult *res,
 			  GError **error)
 {
-	GsPluginData *priv = gs_plugin_get_data (plugin);
 	FwupdDeviceFlags flags = 0;
 	const gchar *update_hash;
 	const gchar *update_uri;
@@ -339,8 +330,12 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 
 		/* does the firmware already exist in the cache? */
 		basename = g_path_get_basename (update_uri);
-		filename_cache = g_build_filename (priv->cachedir,
-						   basename, NULL);
+		filename_cache = gs_utils_get_cache_filename ("firmware",
+							      basename,
+							      GS_UTILS_CACHE_FLAG_NONE,
+							      error);
+		if (filename_cache == NULL)
+			return FALSE;
 		if (!g_file_test (filename_cache, G_FILE_TEST_EXISTS)) {
 			gs_plugin_fwupd_add_required_location (plugin, update_uri);
 			g_set_error (error,
@@ -539,7 +534,12 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 
 	/* download the payload and save to file */
 	basename_data = g_path_get_basename (url_data);
-	cache_fn_data = g_build_filename (priv->cachedir, basename_data, NULL);
+	cache_fn_data = gs_utils_get_cache_filename ("firmware",
+						     basename_data,
+						     GS_UTILS_CACHE_FLAG_WRITEABLE,
+						     error);
+	if (cache_fn_data == NULL)
+		return FALSE;
 	g_debug ("saving new LVFS data to %s:", cache_fn_data);
 	if (!gs_plugin_download_file (plugin,
 				      app_dl,
@@ -597,7 +597,12 @@ gs_plugin_refresh (GsPlugin *plugin,
 
 		tmp = g_ptr_array_index (priv->to_download, i);
 		basename = g_path_get_basename (tmp);
-		filename_cache = g_build_filename (priv->cachedir, basename, NULL);
+		filename_cache = gs_utils_get_cache_filename ("firmware",
+							      basename,
+							      GS_UTILS_CACHE_FLAG_WRITEABLE,
+							      error);
+		if (filename_cache == NULL)
+			return FALSE;
 		g_debug ("downloading %s to %s", tmp, filename_cache);
 
 		/* set sync request */

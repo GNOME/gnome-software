@@ -480,27 +480,63 @@ gs_user_agent (void)
 }
 
 /**
- * gs_utils_get_cachedir:
+ * gs_utils_get_cache_filename:
+ *
+ * Returns a filename that points into the cache. This may be per-system
+ * or per-user, the latter being more likely when %GS_UTILS_CACHE_FLAG_WRITEABLE
+ * is specified in @flags.
+ *
+ * Returns: The full path and filename, which may or may not exist.
  **/
 gchar *
-gs_utils_get_cachedir (const gchar *kind, GError **error)
+gs_utils_get_cache_filename (const gchar *kind,
+			     const gchar *basename,
+			     GsUtilsCacheFlags flags, /* ignored */
+			     GError **error)
 {
-	g_autofree gchar *vername = NULL;
 	g_autofree gchar *cachedir = NULL;
+	g_autofree gchar *vername = NULL;
 	g_auto(GStrv) version = g_strsplit (VERSION, ".", 3);
 	g_autoptr(GFile) cachedir_file = NULL;
+
+	/* not writable, so try the system cache first */
+	if ((flags & GS_UTILS_CACHE_FLAG_WRITEABLE) == 0) {
+		g_autofree gchar *cachefn = NULL;
+		cachefn = g_build_filename (LOCALSTATEDIR,
+					    "cache",
+					    "gnome-software",
+					    basename,
+					    NULL);
+		if (g_file_test (cachefn, G_FILE_TEST_EXISTS))
+			return g_steal_pointer (&cachefn);
+	}
+
+	/* not writable, so try the system cache first */
+	if ((flags & GS_UTILS_CACHE_FLAG_WRITEABLE) == 0) {
+		g_autofree gchar *cachefn = NULL;
+		cachefn = g_build_filename (DATADIR,
+					    "gnome-software",
+					    "cache",
+					    kind,
+					    basename,
+					    NULL);
+		if (g_file_test (cachefn, G_FILE_TEST_EXISTS))
+			return g_steal_pointer (&cachefn);
+	}
 
 	/* create the cachedir in a per-release location, creating
 	 * if it does not already exist */
 	vername = g_strdup_printf ("%s.%s", version[0], version[1]);
 	cachedir = g_build_filename (g_get_user_cache_dir (),
-				      "gnome-software", vername, kind, NULL);
+				     "gnome-software",
+				     vername,
+				     kind,
+				     NULL);
 	cachedir_file = g_file_new_for_path (cachedir);
 	if (!g_file_query_exists (cachedir_file, NULL) &&
 	    !g_file_make_directory_with_parents (cachedir_file, NULL, error))
 		return NULL;
-
-	return g_steal_pointer (&cachedir);
+	return g_build_filename (cachedir, basename, NULL);
 }
 
 /**

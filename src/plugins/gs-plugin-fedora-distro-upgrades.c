@@ -98,15 +98,16 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gchar *endptr = NULL;
-	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *verstr = NULL;
 	g_autoptr(GFile) file = NULL;
 
-	/* create the cachedir */
-	cachedir = gs_utils_get_cachedir ("upgrades", error);
-	if (cachedir == NULL)
+	/* get the file to cache */
+	priv->cachefn = gs_utils_get_cache_filename ("upgrades",
+						     "fedora.json",
+						     GS_UTILS_CACHE_FLAG_WRITEABLE,
+						     error);
+	if (priv->cachefn == NULL)
 		return FALSE;
-	priv->cachefn = g_build_filename (cachedir, "fedora.json", NULL);
 
 	/* watch this in case it is changed by the user */
 	file = g_file_new_for_path (priv->cachefn);

@@ -586,7 +586,6 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *apps;
-	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *cachefn = NULL;
 	g_autofree gchar *uri = NULL;
 	g_autoptr(GFile) cachefn_file = NULL;
@@ -594,10 +593,12 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 	g_autoptr(GsApp) dummy = gs_app_new (gs_plugin_get_name (plugin));
 
 	/* look in the cache */
-	cachedir = gs_utils_get_cachedir ("extensions", error);
-	if (cachedir == NULL)
+	cachefn = gs_utils_get_cache_filename ("extensions",
+					       "gnome.json",
+					       GS_UTILS_CACHE_FLAG_WRITEABLE,
+					       error);
+	if (cachefn == NULL)
 		return NULL;
-	cachefn = g_strdup_printf ("%s/gnome.json", cachedir);
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (gs_utils_get_file_age (cachefn_file) < cache_age) {
 		g_autofree gchar *json_data = NULL;

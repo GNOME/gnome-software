@@ -347,11 +347,9 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	AsImage *im = NULL;
 	SoupURI *base_uri = NULL;
 	const gchar *url;
-	gint rc;
 	g_autofree gchar *basename = NULL;
-	g_autofree gchar *cachedir_full = NULL;
-	g_autofree gchar *cachedir = NULL;
-	g_autofree gchar *cachedir_thumb = NULL;
+	g_autofree gchar *cache_kind = NULL;
+	g_autofree gchar *cachefn_thumb = NULL;
 	g_autofree gchar *sizedir = NULL;
 
 	g_return_if_fail (GS_IS_SCREENSHOT_IMAGE (ssimg));
@@ -396,10 +394,12 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	} else {
 		sizedir = g_strdup_printf ("%ux%u", ssimg->width * ssimg->scale, ssimg->height * ssimg->scale);
 	}
-	cachedir = gs_utils_get_cachedir ("screenshots", NULL);
-	cachedir_full = g_build_filename (cachedir, sizedir, NULL);
-	rc = g_mkdir_with_parents (cachedir_full, 0700);
-	if (rc != 0) {
+	cache_kind = g_build_filename ("screenshots", sizedir, NULL);
+	ssimg->filename = gs_utils_get_cache_filename (cache_kind,
+						       basename,
+						       GS_UTILS_CACHE_FLAG_NONE,
+						       NULL);
+	if (ssimg->filename == NULL) {
 		/* TRANSLATORS: this is when we try create the cache directory
 		 * but we were out of space or permission was denied */
 		gs_screenshot_image_set_error (ssimg, _("Could not create cache"));
@@ -407,7 +407,6 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	}
 
 	/* does local file already exist */
-	ssimg->filename = g_build_filename (cachedir_full, basename, NULL);
 	if (g_file_test (ssimg->filename, G_FILE_TEST_EXISTS)) {
 		as_screenshot_show_image (ssimg);
 		return;
@@ -416,13 +415,25 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* can we load a blurred smaller version of this straight away */
 	if (ssimg->width > AS_IMAGE_THUMBNAIL_WIDTH &&
 	    ssimg->height > AS_IMAGE_THUMBNAIL_HEIGHT) {
-		cachedir_thumb = g_build_filename (cachedir,
-						   "112x63",
-						   basename,
-						   NULL);
-		if (g_file_test (cachedir_thumb, G_FILE_TEST_EXISTS))
-			gs_screenshot_image_show_blurred (ssimg, cachedir_thumb);
+		g_autofree gchar *cache_kind_thumb = NULL;
+		cache_kind_thumb = g_build_filename ("screenshots", "112x63", NULL);
+		cachefn_thumb = gs_utils_get_cache_filename (cache_kind_thumb,
+							     basename,
+							     GS_UTILS_CACHE_FLAG_NONE,
+							     NULL);
+		if (cachefn_thumb == NULL)
+			return;
+		if (g_file_test (cachefn_thumb, G_FILE_TEST_EXISTS))
+			gs_screenshot_image_show_blurred (ssimg, cachefn_thumb);
 	}
+
+	/* re-request the cache filename, which might be different as it needs
+	 * to be writable this time */
+	g_free (ssimg->filename);
+	ssimg->filename = gs_utils_get_cache_filename (cache_kind,
+						       basename,
+						       GS_UTILS_CACHE_FLAG_WRITEABLE,
+						       NULL);
 
 	/* download file */
 	g_debug ("downloading %s to %s", url, ssimg->filename);

@@ -403,7 +403,7 @@ gs_plugin_odrs_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GArray *ratings;
 	guint status_code;
-	g_autofree gchar *cachedir = NULL;
+	g_autofree gchar *cachefn_basename = NULL;
 	g_autofree gchar *cachefn = NULL;
 	g_autofree gchar *data = NULL;
 	g_autofree gchar *uri = NULL;
@@ -411,10 +411,13 @@ gs_plugin_odrs_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 	g_autoptr(SoupMessage) msg = NULL;
 
 	/* look in the cache */
-	cachedir = gs_utils_get_cachedir ("ratings", error);
-	if (cachedir == NULL)
+	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id_no_prefix (app));
+	cachefn = gs_utils_get_cache_filename ("ratings",
+					       cachefn_basename,
+					       GS_UTILS_CACHE_FLAG_WRITEABLE,
+					       error);
+	if (cachefn == NULL)
 		return NULL;
-	cachefn = g_strdup_printf ("%s/%s.json", cachedir, gs_app_get_id_no_prefix (app));
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (gs_utils_get_file_age (cachefn_file) < XDG_APP_REVIEW_CACHE_AGE_MAX) {
 		g_autofree gchar *json_data = NULL;
@@ -506,7 +509,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	const gchar *version;
 	guint karma_min;
 	guint status_code;
-	g_autofree gchar *cachedir = NULL;
+	g_autofree gchar *cachefn_basename = NULL;
 	g_autofree gchar *cachefn = NULL;
 	g_autofree gchar *data = NULL;
 	g_autofree gchar *uri = NULL;
@@ -518,10 +521,13 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	g_autoptr(SoupMessage) msg = NULL;
 
 	/* look in the cache */
-	cachedir = gs_utils_get_cachedir ("reviews", error);
-	if (cachedir == NULL)
+	cachefn_basename = g_strdup_printf ("%s.json", gs_app_get_id_no_prefix (app));
+	cachefn = gs_utils_get_cache_filename ("reviews",
+					       cachefn_basename,
+					       GS_UTILS_CACHE_FLAG_WRITEABLE,
+					       error);
+	if (cachefn == NULL)
 		return NULL;
-	cachefn = g_strdup_printf ("%s/%s.json", cachedir, gs_app_get_id_no_prefix (app));
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (gs_utils_get_file_age (cachefn_file) < XDG_APP_REVIEW_CACHE_AGE_MAX) {
 		g_autofree gchar *json_data = NULL;
@@ -701,17 +707,19 @@ gs_plugin_odrs_sanitize_version (const gchar *version)
 static gboolean
 gs_plugin_odrs_invalidate_cache (GsReview *review, GError **error)
 {
-	g_autofree gchar *cachedir = NULL;
+	g_autofree gchar *cachefn_basename = NULL;
 	g_autofree gchar *cachefn = NULL;
 	g_autoptr(GFile) cachefn_file = NULL;
 
 	/* look in the cache */
-	cachedir = gs_utils_get_cachedir ("reviews", error);
-	if (cachedir == NULL)
+	cachefn_basename = g_strdup_printf ("%s.json",
+					    gs_review_get_metadata_item (review, "app_id"));
+	cachefn = gs_utils_get_cache_filename ("reviews",
+					       cachefn_basename,
+					       GS_UTILS_CACHE_FLAG_WRITEABLE,
+					       error);
+	if (cachefn == NULL)
 		return FALSE;
-	cachefn = g_strdup_printf ("%s/%s.json",
-				   cachedir,
-				   gs_review_get_metadata_item (review, "app_id"));
 	cachefn_file = g_file_new_for_path (cachefn);
 	if (!g_file_query_exists (cachefn_file, NULL))
 		return TRUE;

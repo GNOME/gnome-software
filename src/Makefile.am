@@ -16,6 +16,7 @@ AM_CPPFLAGS =						\
 	-DDATADIR=\"$(datadir)\"			\
 	-DVERSION="\"$(VERSION)\""			\
 	-DLOCALEDIR=\""$(localedir)"\"			\
+	-DLOCALSTATEDIR=\""$(localstatedir)"\"		\
 	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
 	-DGS_DATA=\"$(pkgdatadir)\"
 

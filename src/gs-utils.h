@@ -30,6 +30,12 @@
 
 G_BEGIN_DECLS
 
+typedef enum {
+	GS_UTILS_CACHE_FLAG_NONE	= 0,
+	GS_UTILS_CACHE_FLAG_WRITEABLE	= 1 << 0,
+	GS_UTILS_CACHE_FLAG_LAST
+} GsUtilsCacheFlags;
+
 void	 gs_start_spinner		(GtkSpinner	*spinner);
 void	 gs_stop_spinner		(GtkSpinner	*spinner);
 void	 gs_container_remove_all	(GtkContainer	*container);
@@ -61,7 +67,9 @@ void	gs_image_set_from_pixbuf		(GtkImage		*image,
 						 const GdkPixbuf	*pixbuf);
 const gchar	 *gs_user_agent			(void);
 
-gchar		*gs_utils_get_cachedir		(const gchar	*kind,
+gchar		*gs_utils_get_cache_filename	(const gchar	*kind,
+						 const gchar	*basename,
+						 GsUtilsCacheFlags flags,
 						 GError		**error);
 gchar		*gs_utils_get_user_hash		(GError		**error);
 GPermission	*gs_utils_get_permission	(const gchar	*id);

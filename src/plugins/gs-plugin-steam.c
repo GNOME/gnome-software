@@ -399,7 +399,6 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 {
 	gsize data_len;
 	g_autofree gchar *cache_basename = NULL;
-	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *cache_fn = NULL;
 	g_autofree gchar *cache_png = NULL;
 	g_autofree gchar *data = NULL;
@@ -408,10 +407,12 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 
 	/* download icons from the cdn */
 	cache_basename = g_path_get_basename (uri);
-	cachedir = gs_utils_get_cachedir ("steam", error);
-	if (cachedir == NULL)
+	cache_fn = gs_utils_get_cache_filename ("steam",
+						cache_basename,
+						GS_UTILS_CACHE_FLAG_NONE,
+						error);
+	if (cache_fn == NULL)
 		return FALSE;
-	cache_fn = g_build_filename (cachedir, cache_basename, NULL);
 	if (g_file_test (cache_fn, G_FILE_TEST_EXISTS)) {
 		if (!g_file_get_contents (cache_fn, &data, &data_len, error))
 			return FALSE;
@@ -446,7 +447,12 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 
 	/* save to cache */
 	memcpy (cache_basename + 40, ".png\0", 5);
-	cache_png = g_build_filename (cachedir, cache_basename, NULL);
+	cache_png = gs_utils_get_cache_filename ("steam",
+						 cache_basename,
+						 GS_UTILS_CACHE_FLAG_WRITEABLE,
+						 error);
+	if (cache_png == NULL)
+		return FALSE;
 	if (!gdk_pixbuf_save (pb, cache_png, "png", error, NULL))
 		return FALSE;
 
@@ -472,7 +478,6 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 	guint32 gameid;
 	gchar *app_id;
 	g_autofree gchar *cache_basename = NULL;
-	g_autofree gchar *cachedir = NULL;
 	g_autofree gchar *cache_fn = NULL;
 	g_autofree gchar *gameid_str = NULL;
 	g_autofree gchar *html = NULL;
@@ -610,10 +615,12 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 
 	/* download page from the store */
 	cache_basename = g_strdup_printf ("%s.html", gameid_str);
-	cachedir = gs_utils_get_cachedir ("steam", error);
-	if (cachedir == NULL)
+	cache_fn = gs_utils_get_cache_filename ("steam",
+						cache_basename,
+						GS_UTILS_CACHE_FLAG_WRITEABLE,
+						error);
+	if (cache_fn == NULL)
 		return FALSE;
-	cache_fn = g_build_filename (cachedir, cache_basename, NULL);
 	if (!g_file_test (cache_fn, G_FILE_TEST_EXISTS)) {
 		g_autoptr(GsApp) app_dl = gs_app_new (gs_plugin_get_name (plugin));
 		uri = g_strdup_printf ("http://store.steampowered.com/app/%s/", gameid_str);
