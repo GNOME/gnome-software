@@ -22,6 +22,7 @@
 #ifndef __GS_UTILS_H
 #define __GS_UTILS_H
 
+#include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
@@ -74,6 +75,8 @@ void		 gs_utils_widget_set_custom_css	(GsApp		*app,
 						 const gchar	*metadata_css);
 gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
 						 const gchar	*str);
+
+GDesktopAppInfo *gs_utils_get_desktop_app_info	(const gchar	*id);
 
 G_END_DECLS
 

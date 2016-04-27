@@ -45,6 +45,7 @@
 #include "gs-os-release.h"
 #include "gs-plugin-private.h"
 #include "gs-plugin.h"
+#include "gs-utils.h"
 
 typedef struct
 {
@@ -568,7 +569,7 @@ gs_plugin_app_launch (GsPlugin *plugin, GsApp *app, GError **error)
 			     desktop_id);
 		return FALSE;
 	}
-	appinfo = G_APP_INFO (g_desktop_app_info_new (desktop_id));
+	appinfo = G_APP_INFO (gs_utils_get_desktop_app_info (desktop_id));
 	if (appinfo == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
