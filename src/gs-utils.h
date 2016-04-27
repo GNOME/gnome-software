@@ -22,6 +22,7 @@
 #ifndef __GS_UTILS_H
 #define __GS_UTILS_H
 
+#include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
@@ -73,6 +74,8 @@ void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
 						 const gchar	*title,
 						 const gchar	*msg,
 						 const gchar	*details);
+
+GDesktopAppInfo *gs_utils_get_desktop_app_info	(const gchar	*id);
 
 G_END_DECLS
 

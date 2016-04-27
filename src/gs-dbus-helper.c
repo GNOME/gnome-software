@@ -32,6 +32,7 @@
 #include "gs-packagekit-modify2-generated.h"
 #include "gs-resources.h"
 #include "gs-shell-extras.h"
+#include "gs-utils.h"
 
 struct _GsDbusHelper {
 	GObject			 parent;
@@ -297,7 +298,7 @@ notify_search_resources (GsShellExtrasMode   mode,
 	g_autoptr(GNotification) n = NULL;
 
 	if (desktop_id != NULL) {
-		app_info = g_desktop_app_info_new (desktop_id);
+		app_info = gs_utils_get_desktop_app_info (desktop_id);
 		if (app_info != NULL)
 			app_name = g_app_info_get_name (G_APP_INFO (app_info));
 	}

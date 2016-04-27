@@ -590,7 +590,7 @@ launch_activated (GSimpleAction *action,
 
 	desktop_id = g_variant_get_string (parameter, NULL);
 	display = gdk_display_get_default ();
-	appinfo = G_APP_INFO (g_desktop_app_info_new (desktop_id));
+	appinfo = G_APP_INFO (gs_utils_get_desktop_app_info (desktop_id));
 	if (appinfo == NULL) {
 		g_warning ("no such desktop file: %s", desktop_id);
 		return;
