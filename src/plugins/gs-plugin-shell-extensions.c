@@ -219,7 +219,7 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 
 	/* add categories */
 	gs_app_add_category (app, "Addons");
-	gs_app_add_category (app, "shell-extensions");
+	gs_app_add_category (app, "ShellExtensions");
 
 	return g_steal_pointer (&app);
 }
@@ -476,7 +476,7 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 
 	/* required to match categories in gnome-software */
 	as_app_add_category (app, "Addons");
-	as_app_add_category (app, "shell-extensions");
+	as_app_add_category (app, "ShellExtensions");
 
 	/* we have no data :/ */
 	as_app_set_comment (app, NULL, "GNOME Shell Extension");
