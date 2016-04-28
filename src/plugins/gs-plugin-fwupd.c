@@ -101,8 +101,36 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 static void
 gs_plugin_fwupd_changed_cb (FwupdClient *client, GsPlugin *plugin)
 {
+#if !FWUPD_CHECK_VERSION(0,7,1)
+	/* fwupd < 0.7.1 only supported the ::Changed() signal */
+	gs_plugin_updates_changed (plugin);
+#endif
+}
+
+#if FWUPD_CHECK_VERSION(0,7,1)
+/**
+ * gs_plugin_fwupd_device_changed_cb:
+ */
+static void
+gs_plugin_fwupd_device_changed_cb (FwupdClient *client,
+				   FwupdResult *device,
+				   GsPlugin *plugin)
+{
+	/* fwupd >= 0.7.1 supports per-device signals, and also the
+	 * SUPPORTED flag -- so we can limit number of UI refreshes */
+	if (!fwupd_result_has_device_flag (device, FU_DEVICE_FLAG_SUPPORTED)) {
+		g_debug ("%s changed (not supported) so ignoring",
+			 fwupd_result_get_device_id (device));
+		return;
+	}
+
+	/* If the flag is set the device matches something in the
+	 * metadata as therefor is worth refreshing the update list */
+	g_debug ("%s changed (supported) so reloading",
+		 fwupd_result_get_device_id (device));
 	gs_plugin_updates_changed (plugin);
 }
+#endif
 
 /**
  * gs_plugin_setup:
@@ -118,6 +146,14 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	fwupd_error_quark ();
 	g_signal_connect (priv->client, "changed",
 			  G_CALLBACK (gs_plugin_fwupd_changed_cb), plugin);
+#if FWUPD_CHECK_VERSION(0,7,1)
+	g_signal_connect (priv->client, "device-added",
+			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
+	g_signal_connect (priv->client, "device-removed",
+			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
+	g_signal_connect (priv->client, "device-changed",
+			  G_CALLBACK (gs_plugin_fwupd_device_changed_cb), plugin);
+#endif
 
 	/* get the hash of the previously downloaded file */
 	priv->lvfs_sig_fn = gs_utils_get_cache_filename ("firmware",
