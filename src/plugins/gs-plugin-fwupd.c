@@ -261,6 +261,10 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 		gs_app_set_summary (app, GS_APP_QUALITY_NORMAL,
 				    fwupd_result_get_update_summary (res));
 	}
+	if (fwupd_result_get_update_homepage (res) != NULL) {
+		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE,
+				fwupd_result_get_update_homepage (res));
+	}
 	if (fwupd_result_get_device_version (res) != NULL) {
 		gs_app_set_version (app, fwupd_result_get_device_version (res));
 	}
@@ -277,6 +281,13 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 	if (fwupd_result_get_update_license (res) != NULL) {
 		gs_app_set_license (app, GS_APP_QUALITY_NORMAL,
 				    fwupd_result_get_update_license (res));
+	}
+	if (fwupd_result_get_device_description (res) != NULL) {
+		g_autofree gchar *tmp = NULL;
+		tmp = as_markup_convert (fwupd_result_get_device_description (res),
+					 AS_MARKUP_CONVERT_FORMAT_SIMPLE, NULL);
+		if (tmp != NULL)
+			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, tmp);
 	}
 	if (fwupd_result_get_update_description (res) != NULL) {
 		g_autofree gchar *tmp = NULL;
