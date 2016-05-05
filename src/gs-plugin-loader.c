@@ -318,6 +318,13 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 					   cancellable, &error_local);
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (!ret) {
+				/* badly behaved plugin */
+				if (error_local == NULL) {
+					g_critical ("%s did not set error for %s",
+						    gs_plugin_get_name (plugin),
+						    function_name);
+					continue;
+				}
 				g_warning ("failed to call %s on %s: %s",
 					   function_name,
 					   gs_plugin_get_name (plugin),
@@ -334,6 +341,13 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 						       cancellable, &error_local);
 				gs_plugin_loader_action_stop (plugin_loader, plugin);
 				if (!ret) {
+					/* badly behaved plugin */
+					if (error_local == NULL) {
+						g_critical ("%s did not set error for %s",
+							    gs_plugin_get_name (plugin),
+							    function_name_app);
+						continue;
+					}
 					g_warning ("failed to call %s on %s: %s",
 						   function_name_app,
 						   gs_plugin_get_name (plugin),
@@ -475,6 +489,13 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, &list, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -787,6 +808,13 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, app, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -1680,6 +1708,13 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 				   cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -1841,6 +1876,13 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 				   cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -2003,6 +2045,13 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 				   cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -2171,6 +2220,13 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 				   cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -2311,6 +2367,13 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 				   cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -2635,6 +2698,13 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 				   cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    state->function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   state->function_name,
 				   gs_plugin_get_name (plugin),
@@ -3404,9 +3474,16 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, NULL, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
-			g_debug ("disabling %s as setup failed: %s",
-				 gs_plugin_get_name (plugin),
-				 error_local->message);
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+			} else {
+				g_debug ("disabling %s as setup failed: %s",
+					 gs_plugin_get_name (plugin),
+					 error_local->message);
+			}
 			gs_plugin_set_enabled (plugin, FALSE);
 		}
 	}
@@ -3691,6 +3768,13 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, cache_age, flags, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -3835,6 +3919,13 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 				   cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -3987,6 +4078,13 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 		ret = plugin_func (plugin, state->list, cancellable, &error_local);
 		gs_plugin_loader_action_stop (plugin_loader, plugin);
 		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    gs_plugin_get_name (plugin),
+					    function_name);
+				continue;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -4030,6 +4128,13 @@ gs_plugin_loader_update_thread_cb (GTask *task,
 					       &error_local);
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
 			if (!ret) {
+				/* badly behaved plugin */
+				if (error_local == NULL) {
+					g_critical ("%s did not set error for %s",
+						    gs_plugin_get_name (plugin),
+						    function_name);
+					continue;
+				}
 				g_warning ("failed to call %s on %s: %s",
 					   function_name,
 					   gs_plugin_get_name (plugin),
