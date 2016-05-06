@@ -226,9 +226,6 @@ void		 gs_plugin_loader_review_action_async	(GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
-gboolean	 gs_plugin_loader_review_action_finish	(GsPluginLoader	*plugin_loader,
-							 GAsyncResult	*res,
-							 GError		**error);
 gboolean	 gs_plugin_loader_refresh_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
