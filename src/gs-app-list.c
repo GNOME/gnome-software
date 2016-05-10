@@ -19,22 +19,11 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* Introduction:
+/**
+ * SECTION:gs-app-list
+ * @short_description: An application list
  *
- * Plugins are modules that are loaded at runtime to provide information
- * about requests and to service user actions like installing, removing
- * and updating.
- * This allows different distributions to pick and choose how the
- * application installer gathers data.
- *
- * Plugins also have a priority system where the largest number gets
- * run first. That means if one plugin requires some property or
- * metadata set by another plugin then it **must** depend on the other
- * plugin to be run in the correct order.
- *
- * As a general rule, try to make plugins as small and self-contained
- * as possible and remember to cache as much data as possible for speed.
- * Memory is cheap, time less so.
+ * These functions provide a refcounted list of #GsApp objects.
  */
 
 #include "config.h"
@@ -45,6 +34,10 @@
 
 /**
  * gs_app_list_add:
+ * @list: A pointer to a #GsAppList
+ * @app: A #GsApp
+ *
+ * Adds an application to the list, adding a reference.
  **/
 void
 gs_app_list_add (GsAppList **list, GsApp *app)
@@ -56,6 +49,9 @@ gs_app_list_add (GsAppList **list, GsApp *app)
 
 /**
  * gs_app_list_free:
+ * @list: A #GsAppList
+ *
+ * Frees the application list.
  **/
 void
 gs_app_list_free (GsAppList *list)
@@ -65,6 +61,9 @@ gs_app_list_free (GsAppList *list)
 
 /**
  * gs_app_list_filter:
+ * @list: A pointer to a #GsAppList
+ * @func: A #GsAppListFilterFunc
+ * @user_data: the user pointer to pass to @func
  *
  * If func() returns TRUE for the GsApp, then the app is kept.
  **/
@@ -101,15 +100,17 @@ gs_app_list_randomize_cb (gconstpointer a, gconstpointer b, gpointer user_data)
 	g_autofree gchar *key = NULL;
 
 	key = g_strdup_printf ("Plugin::sort-key[%p]", user_data);
-	k1 = gs_app_get_metadata_item (GS_APP (a), key);
-	k2 = gs_app_get_metadata_item (GS_APP (b), key);
+	k1 = gs_app_get_metadata_item ((GsApp *) a, key);
+	k2 = gs_app_get_metadata_item ((GsApp *) b, key);
 	return g_strcmp0 (k1, k2);
 }
 
 /**
  * gs_app_list_randomize:
+ * @list: A pointer to a #GsAppList
  *
- * Randomize the order of the list, but don't change the order until the next day
+ * Randomize the order of the list, but don't change the order until
+ * the next day.
  **/
 void
 gs_app_list_randomize (GsAppList **list)
@@ -144,6 +145,9 @@ gs_app_list_randomize (GsAppList **list)
 
 /**
  * gs_app_list_filter_duplicates:
+ * @list: A pointer to a #GsAppList
+ *
+ * Filter any duplicate applications from the list.
  **/
 void
 gs_app_list_filter_duplicates (GsAppList **list)
@@ -183,6 +187,11 @@ gs_app_list_filter_duplicates (GsAppList **list)
 
 /**
  * gs_app_list_copy:
+ * @list: A #GsAppList
+ *
+ * Returns a deep copy of the application list.
+ *
+ * Returns: A newly allocated #GsAppList
  **/
 GsAppList *
 gs_app_list_copy (GsAppList *list)
