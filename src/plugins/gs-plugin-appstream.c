@@ -182,8 +182,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	if (items->len == 0) {
 		g_warning ("No AppStream data, try 'make install-sample-data' in data/");
 		g_set_error (error,
-			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
 			     "No AppStream data found");
 		return FALSE;
 	}
