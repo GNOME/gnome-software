@@ -34,7 +34,6 @@ static void
 gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
 	AsIcon *icon;
-	gboolean ret;
 	g_autoptr(GError) error = NULL;
 	g_autofree gchar *fn = NULL;
 	g_autofree gchar *cachedir = NULL;
@@ -52,16 +51,6 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 			cachedir = g_path_get_basename (fn);
 			as_icon_set_prefix (icon, cachedir);
 		}
-		if (g_file_test (fn, G_FILE_TEST_EXISTS)) {
-			as_icon_set_kind (icon, AS_ICON_KIND_LOCAL);
-			ret = gs_app_load_icon (app, gs_plugin_get_scale (plugin), &error);
-			if (!ret) {
-				g_warning ("failed to load icon %s: %s",
-					   as_icon_get_name (icon),
-					   error->message);
-				return;
-			}
-		}
 		break;
 	case AS_ICON_KIND_STOCK:
 	case AS_ICON_KIND_LOCAL:
@@ -72,15 +61,6 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		    as_icon_get_filename (icon) == NULL)
 			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 
-		/* load */
-		ret = gs_app_load_icon (app, gs_plugin_get_scale (plugin), &error);
-		if (!ret) {
-			g_warning ("failed to load %s icon %s: %s",
-				   as_icon_kind_to_string (as_icon_get_kind (icon)),
-				   as_icon_get_name (icon),
-				   error->message);
-				return;
-		}
 		break;
 	case AS_ICON_KIND_CACHED:
 		if (gs_plugin_get_scale (plugin) == 2)
