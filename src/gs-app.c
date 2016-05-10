@@ -207,8 +207,6 @@ gs_app_to_string (GsApp *app)
 		gs_app_kv_lpad (str, "kudo", "has-screenshots");
 	if ((app->kudos & GS_APP_KUDO_POPULAR) > 0)
 		gs_app_kv_lpad (str, "kudo", "popular");
-	if ((app->kudos & GS_APP_KUDO_IBUS_HAS_SYMBOL) > 0)
-		gs_app_kv_lpad (str, "kudo", "ibus-has-symbol");
 	if ((app->kudos & GS_APP_KUDO_PERFECT_SCREENSHOTS) > 0)
 		gs_app_kv_lpad (str, "kudo", "perfect-screenshots");
 	if ((app->kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
@@ -437,7 +435,12 @@ gs_app_set_id (GsApp *app, const gchar *id)
 
 /**
  * gs_app_get_state:
- */
+ * @app: a #GsApp
+ *
+ * Gets the state of the application.
+ *
+ * Returns: the #AsAppState, e.g. %AS_APP_STATE_INSTALLED
+ **/
 AsAppState
 gs_app_get_state (GsApp *app)
 {
@@ -447,7 +450,12 @@ gs_app_get_state (GsApp *app)
 
 /**
  * gs_app_get_progress:
- */
+ * @app: a #GsApp
+ *
+ * Gets the percentage completion.
+ *
+ * Returns: the percentage completion, or 0 for unknown
+ **/
 guint
 gs_app_get_progress (GsApp *app)
 {
@@ -457,10 +465,11 @@ gs_app_get_progress (GsApp *app)
 
 /**
  * gs_app_set_state_recover:
+ * @app: a #GsApp
  *
  * Sets the application state to the last status value that was not
  * transient.
- */
+ **/
 void
 gs_app_set_state_recover (GsApp *app)
 {
@@ -606,9 +615,13 @@ gs_app_set_state_internal (GsApp *app, AsAppState state)
 
 /**
  * gs_app_set_progress:
+ * @app: a #GsApp
+ * @percentage: a percentage progress
  *
  * This sets the progress completion of the application.
- */
+ * If called more than once with the same value then subsequent calls
+ * will be ignored.
+ **/
 void
 gs_app_set_progress (GsApp *app, guint percentage)
 {
@@ -621,13 +634,16 @@ gs_app_set_progress (GsApp *app, guint percentage)
 
 /**
  * gs_app_set_state:
+ * @app: a #GsApp
+ * @state: a #AsAppState, e.g. AS_APP_STATE_UPDATABLE_LIVE
  *
- * This sets the state of the application. The following state diagram explains
- * the typical states. All applications start in state %AS_APP_STATE_UNKNOWN,
- * but the frontend is not supposed to see GsApps with this state, ever.
- * Backend plugins are reponsible for changing the state to one of the other
- * states before the GsApp is passed to the frontend. This is enforced by the
- * #GsPluginLoader.
+ * This sets the state of the application.
+ * The following state diagram explains the typical states.
+ * All applications start in state %AS_APP_STATE_UNKNOWN,
+ * but the frontend is not supposed to see GsApps with this state.
+ *
+ * Plugins are reponsible for changing the state to one of the other
+ * states before the GsApp is passed to the frontend.
  *
  * UPDATABLE --> INSTALLING --> INSTALLED
  * UPDATABLE --> REMOVING   --> AVAILABLE
@@ -635,7 +651,7 @@ gs_app_set_progress (GsApp *app, guint percentage)
  * AVAILABLE --> INSTALLING --> INSTALLED
  * AVAILABLE <--> QUEUED --> INSTALLING --> INSTALLED
  * UNKNOWN   --> UNAVAILABLE
- */
+ **/
 void
 gs_app_set_state (GsApp *app, AsAppState state)
 {
@@ -647,7 +663,12 @@ gs_app_set_state (GsApp *app, AsAppState state)
 
 /**
  * gs_app_get_kind:
- */
+ * @app: a #GsApp
+ *
+ * Gets the kind of the application.
+ *
+ * Returns: the #AsAppKind, e.g. %AS_APP_KIND_UNKNOWN
+ **/
 AsAppKind
 gs_app_get_kind (GsApp *app)
 {
@@ -657,14 +678,17 @@ gs_app_get_kind (GsApp *app)
 
 /**
  * gs_app_set_kind:
+ * @app: a #GsApp
+ * @kind: a #AsAppKind, e.g. #AS_APP_KIND_DESKTOP
  *
- * This sets the kind of the application. The following state diagram explains
- * the typical states. All applications start with kind %AS_APP_KIND_UNKNOWN.
+ * This sets the kind of the application.
+ * The following state diagram explains the typical states.
+ * All applications start with kind %AS_APP_KIND_UNKNOWN.
  *
  * PACKAGE --> NORMAL
  * PACKAGE --> SYSTEM
  * NORMAL  --> SYSTEM
- */
+ **/
 void
 gs_app_set_kind (GsApp *app, AsAppKind kind)
 {
@@ -706,7 +730,12 @@ gs_app_set_kind (GsApp *app, AsAppKind kind)
 
 /**
  * gs_app_get_name:
- */
+ * @app: a #GsApp
+ *
+ * Gets the application name.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_name (GsApp *app)
 {
@@ -716,10 +745,12 @@ gs_app_get_name (GsApp *app)
 
 /**
  * gs_app_set_name:
- * @app:	A #GsApp instance
- * @quality:	A data quality, e.g. %GS_APP_QUALITY_LOWEST
- * @name:	The short localized name, e.g. "Calculator"
- */
+ * @app: a #GsApp
+ * @quality: A #GsAppQuality, e.g. %GS_APP_QUALITY_LOWEST
+ * @name: The short localized name, e.g. "Calculator"
+ *
+ * Sets the application name.
+ **/
 void
 gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 {
@@ -736,7 +767,12 @@ gs_app_set_name (GsApp *app, GsAppQuality quality, const gchar *name)
 
 /**
  * gs_app_get_source_default:
- */
+ * @app: a #GsApp
+ *
+ * Gets the default source.
+ *
+ * Returns: a string, or %NULL
+ **/
 const gchar *
 gs_app_get_source_default (GsApp *app)
 {
@@ -748,7 +784,11 @@ gs_app_get_source_default (GsApp *app)
 
 /**
  * gs_app_add_source:
- */
+ * @app: a #GsApp
+ * @source: a source name
+ *
+ * Adds a source name for the application.
+ **/
 void
 gs_app_add_source (GsApp *app, const gchar *source)
 {
@@ -756,6 +796,7 @@ gs_app_add_source (GsApp *app, const gchar *source)
 	guint i;
 
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (source != NULL);
 
 	/* check source doesn't already exist */
 	for (i = 0; i < app->sources->len; i++) {
@@ -768,7 +809,12 @@ gs_app_add_source (GsApp *app, const gchar *source)
 
 /**
  * gs_app_get_sources:
- */
+ * @app: a #GsApp
+ *
+ * Gets the list of sources for the application.
+ *
+ * Returns: (element-type utf8): a list
+ **/
 GPtrArray *
 gs_app_get_sources (GsApp *app)
 {
@@ -778,13 +824,13 @@ gs_app_get_sources (GsApp *app)
 
 /**
  * gs_app_set_sources:
- * @app:	A #GsApp instance
- * @source:	The non-localized short names, e.g. ["gnome-calculator"]
+ * @app: a #GsApp
+ * @sources: The non-localized short names, e.g. ["gnome-calculator"]
  *
  * This name is used for the update page if the application is collected into
- * the 'OS Updates' group. It is typically the package names, although this
- * should not be relied upon.
- */
+ * the 'OS Updates' group.
+ * It is typically the package names, although this should not be relied upon.
+ **/
 void
 gs_app_set_sources (GsApp *app, GPtrArray *sources)
 {
@@ -796,7 +842,12 @@ gs_app_set_sources (GsApp *app, GPtrArray *sources)
 
 /**
  * gs_app_get_source_id_default:
- */
+ * @app: a #GsApp
+ *
+ * Gets the default source ID.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_source_id_default (GsApp *app)
 {
@@ -808,7 +859,12 @@ gs_app_get_source_id_default (GsApp *app)
 
 /**
  * gs_app_get_source_ids:
- */
+ * @app: a #GsApp
+ *
+ * Gets the list of source IDs.
+ *
+ * Returns: (element-type utf8): a list
+ **/
 GPtrArray *
 gs_app_get_source_ids (GsApp *app)
 {
@@ -818,7 +874,10 @@ gs_app_get_source_ids (GsApp *app)
 
 /**
  * gs_app_clear_source_ids:
- */
+ * @app: a #GsApp
+ *
+ * Clear the list of source IDs.
+ **/
 void
 gs_app_clear_source_ids (GsApp *app)
 {
@@ -828,12 +887,12 @@ gs_app_clear_source_ids (GsApp *app)
 
 /**
  * gs_app_set_source_ids:
- * @app:	A #GsApp instance
- * @source_id:	The source-id, e.g. ["gnome-calculator;0.134;fedora"]
- * 		or ["/home/hughsie/.local/share/applications/0ad.desktop"]
+ * @app: a #GsApp
+ * @source_ids: The source-id, e.g. ["gnome-calculator;0.134;fedora"]
+ *		or ["/home/hughsie/.local/share/applications/0ad.desktop"]
  *
  * This ID is used internally to the controlling plugin.
- */
+ **/
 void
 gs_app_set_source_ids (GsApp *app, GPtrArray *source_ids)
 {
@@ -845,7 +904,11 @@ gs_app_set_source_ids (GsApp *app, GPtrArray *source_ids)
 
 /**
  * gs_app_add_source_id:
- */
+ * @app: a #GsApp
+ * @source_id: a source ID, e.g. "gnome-calculator;0.134;fedora"
+ *
+ * Adds a source ID to the application.
+ **/
 void
 gs_app_add_source_id (GsApp *app, const gchar *source_id)
 {
@@ -865,7 +928,14 @@ gs_app_add_source_id (GsApp *app, const gchar *source_id)
 
 /**
  * gs_app_get_project_group:
- */
+ * @app: a #GsApp
+ *
+ * Gets a project group for the application.
+ * Applications belonging to other project groups may not be shown in
+ * this software center.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_project_group (GsApp *app)
 {
@@ -875,9 +945,11 @@ gs_app_get_project_group (GsApp *app)
 
 /**
  * gs_app_set_project_group:
- * @app:	A #GsApp instance
- * @project_group:	The non-localized project group, e.g. "GNOME" or "KDE"
- */
+ * @app: a #GsApp
+ * @project_group: The non-localized project group, e.g. "GNOME" or "KDE"
+ *
+ * Sets a project group for the application.
+ **/
 void
 gs_app_set_project_group (GsApp *app, const gchar *project_group)
 {
@@ -937,7 +1009,12 @@ icon_theme_add_path (const gchar *path)
 
 /**
  * gs_app_get_pixbuf:
- */
+ * @app: a #GsApp
+ *
+ * Gets a pixbuf to represent the application.
+ *
+ * Returns: a #GdkPixbuf, or %NULL
+ **/
 GdkPixbuf *
 gs_app_get_pixbuf (GsApp *app)
 {
@@ -995,7 +1072,12 @@ gs_app_get_pixbuf (GsApp *app)
 
 /**
  * gs_app_get_icon:
- */
+ * @app: a #GsApp
+ *
+ * Gets the icon for the application.
+ *
+ * Returns: a #AsIcon, or %NULL for unset
+ **/
 AsIcon *
 gs_app_get_icon (GsApp *app)
 {
@@ -1005,7 +1087,11 @@ gs_app_get_icon (GsApp *app)
 
 /**
  * gs_app_set_icon:
- */
+ * @app: a #GsApp
+ * @icon: a #AsIcon
+ *
+ * Sets an icon to use for the application.
+ **/
 void
 gs_app_set_icon (GsApp *app, AsIcon *icon)
 {
@@ -1015,7 +1101,13 @@ gs_app_set_icon (GsApp *app, AsIcon *icon)
 
 /**
  * gs_app_get_local_file:
- */
+ * @app: a #GsApp
+ *
+ * Gets the file that backs this application, for instance this might
+ * be a local file in ~/Downloads that we are installing.
+ *
+ * Returns: a #GFile, or %NULL
+ **/
 GFile *
 gs_app_get_local_file (GsApp *app)
 {
@@ -1025,7 +1117,12 @@ gs_app_get_local_file (GsApp *app)
 
 /**
  * gs_app_set_local_file:
- */
+ * @app: a #GsApp
+ * @local_file: a #GFile, or %NULL
+ *
+ * Sets the file that backs this application, for instance this might
+ * be a local file in ~/Downloads that we are installing.
+ **/
 void
 gs_app_set_local_file (GsApp *app, GFile *local_file)
 {
@@ -1035,7 +1132,12 @@ gs_app_set_local_file (GsApp *app, GFile *local_file)
 
 /**
  * gs_app_get_runtime:
- */
+ * @app: a #GsApp
+ *
+ * Gets the runtime for the application.
+ *
+ * Returns: a #GsApp, or %NULL for unset
+ **/
 GsApp *
 gs_app_get_runtime (GsApp *app)
 {
@@ -1045,7 +1147,11 @@ gs_app_get_runtime (GsApp *app)
 
 /**
  * gs_app_set_runtime:
- */
+ * @app: a #GsApp
+ * @runtime: a #GsApp
+ *
+ * Sets the runtime that the application requires.
+ **/
 void
 gs_app_set_runtime (GsApp *app, GsApp *runtime)
 {
@@ -1055,7 +1161,14 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 
 /**
  * gs_app_load_icon:
- */
+ * @app: a #GsApp
+ * @scale: a window scale factor, e.g. 2 for HiDPI displays
+ * @error: a #GError, or %NULL
+ *
+ * Loads an icon to a pixbuf for the application.
+ *
+ * Returns: %TRUE for success
+ **/
 gboolean
 gs_app_load_icon (GsApp *app, gint scale, GError **error)
 {
@@ -1111,7 +1224,11 @@ gs_app_load_icon (GsApp *app, gint scale, GError **error)
 
 /**
  * gs_app_set_pixbuf:
- */
+ * @app: a #GsApp
+ * @pixbuf: a #GdkPixbuf, or %NULL
+ *
+ * Sets a pixbuf used to represent the application.
+ **/
 void
 gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
@@ -1172,13 +1289,12 @@ gs_app_get_ui_version (const gchar *version, guint64 flags)
 
 	/* then remove any git suffix */
 	if ((flags & GS_APP_VERSION_FIXUP_GIT_SUFFIX) > 0) {
-		for (i = 1999; i < 2020; i++) {
-			g_autofree gchar *suffix = NULL;
-			suffix = g_strdup_printf (".%i", i);
-			f = g_strrstr_len (new, -1, suffix);
-			if (f != NULL)
-				*f= '\0';
-		}
+		f = g_strrstr_len (new, -1, ".2012");
+		if (f != NULL)
+			*f= '\0';
+		f = g_strrstr_len (new, -1, ".2013");
+		if (f != NULL)
+			*f= '\0';
 	}
 
 	return new;
@@ -1229,7 +1345,12 @@ gs_app_ui_versions_populate (GsApp *app)
 
 /**
  * gs_app_get_version:
- */
+ * @app: a #GsApp
+ *
+ * Gets the exact version for the application.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_version (GsApp *app)
 {
@@ -1239,7 +1360,12 @@ gs_app_get_version (GsApp *app)
 
 /**
  * gs_app_get_version_ui:
- */
+ * @app: a #GsApp
+ *
+ * Gets a version string that can be displayed in a UI.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_version_ui (GsApp *app)
 {
@@ -1256,12 +1382,12 @@ gs_app_get_version_ui (GsApp *app)
 
 /**
  * gs_app_set_version:
- * @app:	A #GsApp instance
- * @version:	The version, e.g. "2:1.2.3.fc19"
+ * @app: a #GsApp
+ * @version: The version, e.g. "2:1.2.3.fc19"
  *
  * This saves the version after stripping out any non-friendly parts, such as
  * distro tags, git revisions and that kind of thing.
- */
+ **/
 void
 gs_app_set_version (GsApp *app, const gchar *version)
 {
@@ -1274,7 +1400,12 @@ gs_app_set_version (GsApp *app, const gchar *version)
 
 /**
  * gs_app_get_summary:
- */
+ * @app: a #GsApp
+ *
+ * Gets the single-line description of the application.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_summary (GsApp *app)
 {
@@ -1284,10 +1415,12 @@ gs_app_get_summary (GsApp *app)
 
 /**
  * gs_app_set_summary:
- * @app:	A #GsApp instance
- * @quality:	A data quality, e.g. %GS_APP_QUALITY_LOWEST
- * @summary:	The medium length localized name, e.g. "A graphical calculator for GNOME"
- */
+ * @app: a #GsApp
+ * @quality: a #GsAppQuality, e.g. %GS_APP_QUALITY_LOWEST
+ * @summary: a string, e.g. "A graphical calculator for GNOME"
+ *
+ * The medium length one-line localized name.
+ **/
 void
 gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 {
@@ -1304,7 +1437,12 @@ gs_app_set_summary (GsApp *app, GsAppQuality quality, const gchar *summary)
 
 /**
  * gs_app_get_description:
- */
+ * @app: a #GsApp
+ *
+ * Gets the long multi-line description of the application.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_description (GsApp *app)
 {
@@ -1314,10 +1452,12 @@ gs_app_get_description (GsApp *app)
 
 /**
  * gs_app_set_description:
- * @app:	A #GsApp instance
- * @quality:	A data quality, e.g. %GS_APP_QUALITY_LOWEST
- * @summary:	The multiline localized description, e.g. "GNOME Calculator is a graphical calculator for GNOME....."
- */
+ * @app: a #GsApp
+ * @quality: a #GsAppQuality, e.g. %GS_APP_QUALITY_LOWEST
+ * @description: a string, e.g. "GNOME Calculator is a graphical calculator for GNOME..."
+ *
+ * Sets the long multi-line description of the application.
+ **/
 void
 gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *description)
 {
@@ -1334,7 +1474,13 @@ gs_app_set_description (GsApp *app, GsAppQuality quality, const gchar *descripti
 
 /**
  * gs_app_get_url:
- */
+ * @app: a #GsApp
+ * @kind: a #AsUrlKind, e.g. %AS_URL_KIND_HOMEPAGE
+ *
+ * Gets a web address of a specific type.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_url (GsApp *app, AsUrlKind kind)
 {
@@ -1344,7 +1490,12 @@ gs_app_get_url (GsApp *app, AsUrlKind kind)
 
 /**
  * gs_app_set_url:
- */
+ * @app: a #GsApp
+ * @kind: a #AsUrlKind, e.g. %AS_URL_KIND_HOMEPAGE
+ * @url: a web URL, e.g. "http://www.hughsie.com/"
+ *
+ * Sets a web address of a specific type.
+ **/
 void
 gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 {
@@ -1356,7 +1507,12 @@ gs_app_set_url (GsApp *app, AsUrlKind kind, const gchar *url)
 
 /**
  * gs_app_get_license:
- */
+ * @app: a #GsApp
+ *
+ * Gets the project license of the application.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_license (GsApp *app)
 {
@@ -1366,7 +1522,12 @@ gs_app_get_license (GsApp *app)
 
 /**
  * gs_app_get_license_is_free:
- */
+ * @app: a #GsApp
+ *
+ * Returns if the application is free software.
+ *
+ * Returns: %TRUE if the application is free software
+ **/
 gboolean
 gs_app_get_license_is_free (GsApp *app)
 {
@@ -1396,7 +1557,12 @@ gs_app_get_license_token_is_nonfree (const gchar *token)
 
 /**
  * gs_app_set_license:
- */
+ * @app: a #GsApp
+ * @quality: a #GsAppQuality, e.g. %GS_APP_QUALITY_NORMAL
+ * @license: a SPDX license string, e.g. "GPL-3.0 AND LGPL-2.0+"
+ *
+ * Sets the project licenses used in the application.
+ **/
 void
 gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 {
@@ -1515,7 +1681,12 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 
 /**
  * gs_app_get_summary_missing:
- */
+ * @app: a #GsApp
+ *
+ * Gets the one-line summary to use when this application is missing.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_summary_missing (GsApp *app)
 {
@@ -1525,7 +1696,11 @@ gs_app_get_summary_missing (GsApp *app)
 
 /**
  * gs_app_set_summary_missing:
- */
+ * @app: a #GsApp
+ * @summary_missing: a string, or %NULL
+ *
+ * Sets the one-line summary to use when this application is missing.
+ **/
 void
 gs_app_set_summary_missing (GsApp *app, const gchar *summary_missing)
 {
@@ -1536,13 +1711,14 @@ gs_app_set_summary_missing (GsApp *app, const gchar *summary_missing)
 
 /**
  * gs_app_get_menu_path:
+ * @app: a #GsApp
  *
  * Returns the menu path which is an array of path elements.
  * The resulting array is an internal structure and must not be
  * modified or freed.
  *
- * Returns: a %NULL-terminated array of strings.
- */
+ * Returns: a %NULL-terminated array of strings
+ **/
 gchar **
 gs_app_get_menu_path (GsApp *app)
 {
@@ -1552,11 +1728,12 @@ gs_app_get_menu_path (GsApp *app)
 
 /**
  * gs_app_set_menu_path:
+ * @app: a #GsApp
  * @menu_path: a %NULL-terminated array of strings
  *
  * Sets the new menu path. The menu path is an array of path elements.
  * This function creates a deep copy of the path.
- */
+ **/
 void
 gs_app_set_menu_path (GsApp *app, gchar **menu_path)
 {
@@ -1567,7 +1744,12 @@ gs_app_set_menu_path (GsApp *app, gchar **menu_path)
 
 /**
  * gs_app_get_origin:
- */
+ * @app: a #GsApp
+ *
+ * Gets the origin for the application, e.g. "fedora".
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_origin (GsApp *app)
 {
@@ -1577,9 +1759,11 @@ gs_app_get_origin (GsApp *app)
 
 /**
  * gs_app_set_origin:
+ * @app: a #GsApp
+ * @origin: a string, or %NULL
  *
  * The origin is the original source of the application e.g. "fedora-updates"
- */
+ **/
 void
 gs_app_set_origin (GsApp *app, const gchar *origin)
 {
@@ -1590,7 +1774,12 @@ gs_app_set_origin (GsApp *app, const gchar *origin)
 
 /**
  * gs_app_get_origin_ui:
- */
+ * @app: a #GsApp
+ *
+ * Gets the UI-visible origin used to install the application, e.g. "Fedora".
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_origin_ui (GsApp *app)
 {
@@ -1600,10 +1789,12 @@ gs_app_get_origin_ui (GsApp *app)
 
 /**
  * gs_app_set_origin_ui:
+ * @app: a #GsApp
+ * @origin_ui: a string, or %NULL
  *
  * The origin is the original source of the application to show in the UI,
  * e.g. "Fedora"
- */
+ **/
 void
 gs_app_set_origin_ui (GsApp *app, const gchar *origin_ui)
 {
@@ -1614,17 +1805,27 @@ gs_app_set_origin_ui (GsApp *app, const gchar *origin_ui)
 
 /**
  * gs_app_add_screenshot:
- */
+ * @app: a #GsApp
+ * @screenshot: a #AsScreenshot
+ *
+ * Adds a screenshot to the applicaton.
+ **/
 void
 gs_app_add_screenshot (GsApp *app, AsScreenshot *screenshot)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (AS_IS_SCREENSHOT (screenshot));
 	g_ptr_array_add (app->screenshots, g_object_ref (screenshot));
 }
 
 /**
  * gs_app_get_screenshots:
- */
+ * @app: a #GsApp
+ *
+ * Gets the list of screenshots.
+ *
+ * Returns: (element-type AsScreenshot): a list
+ **/
 GPtrArray *
 gs_app_get_screenshots (GsApp *app)
 {
@@ -1634,7 +1835,12 @@ gs_app_get_screenshots (GsApp *app)
 
 /**
  * gs_app_get_update_version:
- */
+ * @app: a #GsApp
+ *
+ * Gets the newest update version.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_update_version (GsApp *app)
 {
@@ -1644,7 +1850,12 @@ gs_app_get_update_version (GsApp *app)
 
 /**
  * gs_app_get_update_version_ui:
- */
+ * @app: a #GsApp
+ *
+ * Gets the update version for the UI.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_update_version_ui (GsApp *app)
 {
@@ -1672,7 +1883,11 @@ gs_app_set_update_version_internal (GsApp *app, const gchar *update_version)
 
 /**
  * gs_app_set_update_version:
- */
+ * @app: a #GsApp
+ * @update_version: a string, e.g. "0.1.2.3"
+ *
+ * Sets the new version number of the update.
+ **/
 void
 gs_app_set_update_version (GsApp *app, const gchar *update_version)
 {
@@ -1683,7 +1898,12 @@ gs_app_set_update_version (GsApp *app, const gchar *update_version)
 
 /**
  * gs_app_get_update_details:
- */
+ * @app: a #GsApp
+ *
+ * Gets the multi-line description for the update.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_update_details (GsApp *app)
 {
@@ -1693,7 +1913,11 @@ gs_app_get_update_details (GsApp *app)
 
 /**
  * gs_app_set_update_details:
- */
+ * @app: a #GsApp
+ * @update_details: a string
+ *
+ * Sets the multi-line description for the update.
+ **/
 void
 gs_app_set_update_details (GsApp *app, const gchar *update_details)
 {
@@ -1704,7 +1928,12 @@ gs_app_set_update_details (GsApp *app, const gchar *update_details)
 
 /**
  * gs_app_get_update_urgency:
- */
+ * @app: a #GsApp
+ *
+ * Gets the update urgency.
+ *
+ * Returns: a #AsUrgencyKind, or %AS_URGENCY_KIND_UNKNOWN for unset
+ **/
 AsUrgencyKind
 gs_app_get_update_urgency (GsApp *app)
 {
@@ -1714,7 +1943,11 @@ gs_app_get_update_urgency (GsApp *app)
 
 /**
  * gs_app_set_update_urgency:
- */
+ * @app: a #GsApp
+ * @update_urgency: a #AsUrgencyKind
+ *
+ * Sets the update urgency.
+ **/
 void
 gs_app_set_update_urgency (GsApp *app, AsUrgencyKind update_urgency)
 {
@@ -1724,7 +1957,17 @@ gs_app_set_update_urgency (GsApp *app, AsUrgencyKind update_urgency)
 
 /**
  * gs_app_get_management_plugin:
- */
+ * @app: a #GsApp
+ *
+ * Gets the management plugin.
+ * This is some metadata about the application which is used to work out
+ * which plugin should handle the install, remove or upgrade actions.
+ *
+ * Typically plugins will just set this to the plugin name using
+ * gs_plugin_get_name().
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_management_plugin (GsApp *app)
 {
@@ -1734,10 +1977,13 @@ gs_app_get_management_plugin (GsApp *app)
 
 /**
  * gs_app_set_management_plugin:
+ * @app: a #GsApp
+ * @management_plugin: a string, or %NULL, e.g. "fwupd"
  *
  * The management plugin is the plugin that can handle doing install and remove
- * operations on the #GsApp. Typical values include "PackageKit" and "jhbuild"
- */
+ * operations on the #GsApp.
+ * Typical values include "packagekit" and "jhbuild"
+ **/
 void
 gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
 {
@@ -1748,7 +1994,12 @@ gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
 
 /**
  * gs_app_get_rating:
- */
+ * @app: a #GsApp
+ *
+ * Gets the percentage rating of the application, where 100 is 5 stars.
+ *
+ * Returns: a percentage, or -1 for unset
+ **/
 gint
 gs_app_get_rating (GsApp *app)
 {
@@ -1758,7 +2009,11 @@ gs_app_get_rating (GsApp *app)
 
 /**
  * gs_app_set_rating:
- */
+ * @app: a #GsApp
+ * @rating: a percentage, or -1 for invalid
+ *
+ * Gets the percentage rating of the application.
+ **/
 void
 gs_app_set_rating (GsApp *app, gint rating)
 {
@@ -1769,7 +2024,12 @@ gs_app_set_rating (GsApp *app, gint rating)
 
 /**
  * gs_app_get_review_ratings:
- */
+ * @app: a #GsApp
+ *
+ * Gets the review ratings.
+ *
+ * Returns: (element-type gint): a list
+ **/
 GArray *
 gs_app_get_review_ratings (GsApp *app)
 {
@@ -1779,7 +2039,11 @@ gs_app_get_review_ratings (GsApp *app)
 
 /**
  * gs_app_set_review_ratings:
- */
+ * @app: a #GsApp
+ * @review_ratings: (element-type gint): a list
+ *
+ * Sets the review ratings.
+ **/
 void
 gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
 {
@@ -1791,7 +2055,12 @@ gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
 
 /**
  * gs_app_get_reviews:
- */
+ * @app: a #GsApp
+ *
+ * Gets all the user-submitted reviews for the application.
+ *
+ * Returns: (element-type GsReview): the list of reviews
+ **/
 GPtrArray *
 gs_app_get_reviews (GsApp *app)
 {
@@ -1801,17 +2070,26 @@ gs_app_get_reviews (GsApp *app)
 
 /**
  * gs_app_add_review:
- */
+ * @app: a #GsApp
+ * @review: a #GsReview
+ *
+ * Adds a user-submitted review to the application.
+ **/
 void
 gs_app_add_review (GsApp *app, GsReview *review)
 {
 	g_return_if_fail (GS_IS_APP (app));
+	g_return_if_fail (GS_IS_REVIEW (review));
 	g_ptr_array_add (app->reviews, g_object_ref (review));
 }
 
 /**
  * gs_app_remove_review:
- */
+ * @app: a #GsApp
+ * @review: a #GsReview
+ *
+ * Removes a user-submitted review to the application.
+ **/
 void
 gs_app_remove_review (GsApp *app, GsReview *review)
 {
@@ -1828,8 +2106,8 @@ gs_app_remove_review (GsApp *app, GsReview *review)
  *
  * If there is a runtime not yet installed then this is also added.
  *
- * Returns: number of bytes, 0 for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid.
- */
+ * Returns: number of bytes, 0 for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid
+ **/
 guint64
 gs_app_get_size_download (GsApp *app)
 {
@@ -1851,7 +2129,12 @@ gs_app_get_size_download (GsApp *app)
 
 /**
  * gs_app_set_size_download:
- */
+ * @app: a #GsApp
+ * @size_download: size in bytes, or %GS_APP_SIZE_UNKNOWABLE for invalid
+ *
+ * Sets the download size of the application, not including any
+ * required runtime.
+ **/
 void
 gs_app_set_size_download (GsApp *app, guint64 size_download)
 {
@@ -1861,6 +2144,7 @@ gs_app_set_size_download (GsApp *app, guint64 size_download)
 
 /**
  * gs_app_get_size_installed:
+ * @app: a #GsApp
  *
  * Gets the size on disk, either for an existing application of one that could
  * be installed.
@@ -1868,7 +2152,7 @@ gs_app_set_size_download (GsApp *app, guint64 size_download)
  * If there is a runtime not yet installed then this is also added.
  *
  * Returns: size in bytes, 0 for unknown, or %GS_APP_SIZE_UNKNOWABLE for invalid.
- */
+ **/
 guint64
 gs_app_get_size_installed (GsApp *app)
 {
@@ -1890,7 +2174,11 @@ gs_app_get_size_installed (GsApp *app)
 
 /**
  * gs_app_set_size_installed:
- */
+ * @app: a #GsApp
+ * @size_installed: size in bytes, or %GS_APP_SIZE_UNKNOWABLE for invalid
+ *
+ * Sets the installed size of the application.
+ **/
 void
 gs_app_set_size_installed (GsApp *app, guint64 size_installed)
 {
@@ -1900,17 +2188,33 @@ gs_app_set_size_installed (GsApp *app, guint64 size_installed)
 
 /**
  * gs_app_get_metadata_item:
- */
+ * @app: a #GsApp
+ * @key: a string, e.g. "fwupd::device-id"
+ *
+ * Gets some metadata for the application.
+ * Is is expected that plugins namespace any plugin-specific metadata,
+ * for example `fwupd::device-id`.
+ *
+ * Returns: a string, or %NULL for unset
+ **/
 const gchar *
 gs_app_get_metadata_item (GsApp *app, const gchar *key)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
+	g_return_val_if_fail (key != NULL, NULL);
 	return g_hash_table_lookup (app->metadata, key);
 }
 
 /**
  * gs_app_set_metadata:
- */
+ * @app: a #GsApp
+ * @key: a string, e.g. "fwupd::device-id"
+ * @value: a string, e.g. "fubar"
+ *
+ * Sets some metadata for the application.
+ * Is is expected that plugins namespace any plugin-specific metadata,
+ * for example `fwupd::device-id`.
+ **/
 void
 gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 {
@@ -1943,7 +2247,12 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
 
 /**
  * gs_app_get_addons:
- */
+ * @app: a #GsApp
+ *
+ * Gets the list of addons for the application.
+ *
+ * Returns: (element-type GsApp): a list of addons
+ **/
 GPtrArray *
 gs_app_get_addons (GsApp *app)
 {
@@ -1953,7 +2262,11 @@ gs_app_get_addons (GsApp *app)
 
 /**
  * gs_app_add_addon:
- */
+ * @app: a #GsApp
+ * @addon: a #GsApp
+ *
+ * Adds an addon to the list of application addons.
+ **/
 void
 gs_app_add_addon (GsApp *app, GsApp *addon)
 {
@@ -1974,7 +2287,12 @@ gs_app_add_addon (GsApp *app, GsApp *addon)
 
 /**
  * gs_app_get_related:
- */
+ * @app: a #GsApp
+ *
+ * Gets any related applications.
+ *
+ * Returns: (element-type GsApp): a list of applications
+ **/
 GPtrArray *
 gs_app_get_related (GsApp *app)
 {
@@ -1984,7 +2302,11 @@ gs_app_get_related (GsApp *app)
 
 /**
  * gs_app_add_related:
- */
+ * @app: a #GsApp
+ * @app2: a #GsApp
+ *
+ * Adds a related application.
+ **/
 void
 gs_app_add_related (GsApp *app, GsApp *app2)
 {
@@ -2015,7 +2337,12 @@ gs_app_add_related (GsApp *app, GsApp *app2)
 
 /**
  * gs_app_get_history:
- */
+ * @app: a #GsApp
+ *
+ * Gets the history of this application.
+ *
+ * Returns: (element-type GsApp): a list
+ **/
 GPtrArray *
 gs_app_get_history (GsApp *app)
 {
@@ -2025,7 +2352,11 @@ gs_app_get_history (GsApp *app)
 
 /**
  * gs_app_add_history:
- */
+ * @app: a #GsApp
+ * @app2: a #GsApp
+ *
+ * Adds a history item for this package.
+ **/
 void
 gs_app_add_history (GsApp *app, GsApp *app2)
 {
@@ -2033,6 +2364,14 @@ gs_app_add_history (GsApp *app, GsApp *app2)
 	g_ptr_array_add (app->history, g_object_ref (app2));
 }
 
+/**
+ * gs_app_get_install_date:
+ * @app: a #GsApp
+ *
+ * Gets the date that an application was installed.
+ *
+ * Returns: A UNIX epoch, or 0 for unset
+ **/
 guint64
 gs_app_get_install_date (GsApp *app)
 {
@@ -2040,6 +2379,13 @@ gs_app_get_install_date (GsApp *app)
 	return app->install_date;
 }
 
+/**
+ * gs_app_set_install_date:
+ * @app: a #GsApp
+ * @install_date: an epoch, or %GS_APP_INSTALL_DATE_UNKNOWN
+ *
+ * Sets the date that an application was installed.
+ **/
 void
 gs_app_set_install_date (GsApp *app, guint64 install_date)
 {
@@ -2049,7 +2395,12 @@ gs_app_set_install_date (GsApp *app, guint64 install_date)
 
 /**
  * gs_app_get_categories:
- */
+ * @app: a #GsApp
+ *
+ * Gets the list of categories for an application.
+ *
+ * Returns: (element-type utf8): a list
+ **/
 GPtrArray *
 gs_app_get_categories (GsApp *app)
 {
@@ -2059,7 +2410,13 @@ gs_app_get_categories (GsApp *app)
 
 /**
  * gs_app_has_category:
- */
+ * @app: a #GsApp
+ * @category: a category ID, e.g. "AudioVideo"
+ *
+ * Checks if the application is in a specific category.
+ *
+ * Returns: %TRUE for success
+ **/
 gboolean
 gs_app_has_category (GsApp *app, const gchar *category)
 {
@@ -2079,7 +2436,11 @@ gs_app_has_category (GsApp *app, const gchar *category)
 
 /**
  * gs_app_set_categories:
- */
+ * @app: a #GsApp
+ * @categories: a set of categories
+ *
+ * Set the list of categories for an application.
+ **/
 void
 gs_app_set_categories (GsApp *app, GPtrArray *categories)
 {
@@ -2092,7 +2453,11 @@ gs_app_set_categories (GsApp *app, GPtrArray *categories)
 
 /**
  * gs_app_add_category:
- */
+ * @app: a #GsApp
+ * @category: a category ID, e.g. "AudioVideo"
+ *
+ * Adds a category ID to an application.
+ **/
 void
 gs_app_add_category (GsApp *app, const gchar *category)
 {
@@ -2103,7 +2468,12 @@ gs_app_add_category (GsApp *app, const gchar *category)
 
 /**
  * gs_app_get_key_colors:
- */
+ * @app: a #GsApp
+ *
+ * Gets the key colors used in the application icon.
+ *
+ * Returns: (element-type GdkRGBA): a list
+ **/
 GPtrArray *
 gs_app_get_key_colors (GsApp *app)
 {
@@ -2113,7 +2483,11 @@ gs_app_get_key_colors (GsApp *app)
 
 /**
  * gs_app_set_key_colors:
- */
+ * @app: a #GsApp
+ * @key_colors: (element-type GdkRGBA): a set of key colors
+ *
+ * Sets the key colors used in the application icon.
+ **/
 void
 gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
 {
@@ -2126,7 +2500,11 @@ gs_app_set_key_colors (GsApp *app, GPtrArray *key_colors)
 
 /**
  * gs_app_add_key_color:
- */
+ * @app: a #GsApp
+ * @key_color: a #GdkRGBA
+ *
+ * Adds a key colors used in the application icon.
+ **/
 void
 gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 {
@@ -2137,7 +2515,12 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
 
 /**
  * gs_app_get_keywords:
- */
+ * @app: a #GsApp
+ *
+ * Gets the list of application keywords in the users locale.
+ *
+ * Returns: (element-type utf8): a list
+ **/
 GPtrArray *
 gs_app_get_keywords (GsApp *app)
 {
@@ -2147,7 +2530,11 @@ gs_app_get_keywords (GsApp *app)
 
 /**
  * gs_app_set_keywords:
- */
+ * @app: a #GsApp
+ * @keywords: (element-type utf8): a set of keywords
+ *
+ * Sets the list of application keywords in the users locale.
+ **/
 void
 gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
 {
@@ -2160,7 +2547,11 @@ gs_app_set_keywords (GsApp *app, GPtrArray *keywords)
 
 /**
  * gs_app_add_kudo:
- */
+ * @app: a #GsApp
+ * @kudo: a #GsAppKudo, e.g. %GS_APP_KUDO_MY_LANGUAGE
+ *
+ * Adds a kudo to the application.
+ **/
 void
 gs_app_add_kudo (GsApp *app, GsAppKudo kudo)
 {
@@ -2170,7 +2561,12 @@ gs_app_add_kudo (GsApp *app, GsAppKudo kudo)
 
 /**
  * gs_app_get_kudos:
- */
+ * @app: a #GsApp
+ *
+ * Gets all the kudos the application has been awarded.
+ *
+ * Returns: the kudos, as a bitfield
+ **/
 guint64
 gs_app_get_kudos (GsApp *app)
 {
@@ -2180,7 +2576,12 @@ gs_app_get_kudos (GsApp *app)
 
 /**
  * gs_app_get_kudos_percentage:
- */
+ * @app: a #GsApp
+ *
+ * Gets the kudos, as a percentage value.
+ *
+ * Returns: a percentage, with 0 for no kudos and a maximum of 100.
+ **/
 guint
 gs_app_get_kudos_percentage (GsApp *app)
 {
@@ -2208,8 +2609,6 @@ gs_app_get_kudos_percentage (GsApp *app)
 		percentage += 10;
 	if ((app->kudos & GS_APP_KUDO_HAS_SCREENSHOTS) > 0)
 		percentage += 20;
-	if ((app->kudos & GS_APP_KUDO_IBUS_HAS_SYMBOL) > 0)
-		percentage += 20;
 	if ((app->kudos & GS_APP_KUDO_PERFECT_SCREENSHOTS) > 0)
 		percentage += 20;
 	if ((app->kudos & GS_APP_KUDO_HIGH_CONTRAST) > 0)
@@ -2226,7 +2625,12 @@ gs_app_get_kudos_percentage (GsApp *app)
 
 /**
  * gs_app_get_to_be_installed:
- */
+ * @app: a #GsApp
+ *
+ * Gets if the application is queued for installation.
+ *
+ * Returns: %TRUE for success
+ **/
 gboolean
 gs_app_get_to_be_installed (GsApp *app)
 {
@@ -2237,7 +2641,11 @@ gs_app_get_to_be_installed (GsApp *app)
 
 /**
  * gs_app_set_to_be_installed:
- */
+ * @app: a #GsApp
+ * @to_be_installed: if the app is due to be installed
+ *
+ * Sets if the application is queued for installation.
+ **/
 void
 gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
 {
@@ -2248,6 +2656,12 @@ gs_app_set_to_be_installed (GsApp *app, gboolean to_be_installed)
 
 /**
  * gs_app_has_quirk:
+ * @app: a #GsApp
+ * @quirk: a #AsAppQuirk, e.g. %AS_APP_QUIRK_COMPULSORY
+ *
+ * Finds out if an application has a specific quirk.
+ *
+ * Returns: %TRUE for success
  **/
 gboolean
 gs_app_has_quirk (GsApp *app, AsAppQuirk quirk)
@@ -2259,6 +2673,10 @@ gs_app_has_quirk (GsApp *app, AsAppQuirk quirk)
 
 /**
  * gs_app_add_quirk:
+ * @app: a #GsApp
+ * @quirk: a #AsAppQuirk, e.g. %AS_APP_QUIRK_COMPULSORY
+ *
+ * Adds a quirk to an application.
  **/
 void
 gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
@@ -2271,6 +2689,10 @@ gs_app_add_quirk (GsApp *app, AsAppQuirk quirk)
 
 /**
  * gs_app_remove_quirk:
+ * @app: a #GsApp
+ * @quirk: a #AsAppQuirk, e.g. %AS_APP_QUIRK_COMPULSORY
+ *
+ * Removes a quirk from an application.
  **/
 void
 gs_app_remove_quirk (GsApp *app, AsAppQuirk quirk)
@@ -2283,7 +2705,12 @@ gs_app_remove_quirk (GsApp *app, AsAppQuirk quirk)
 
 /**
  * gs_app_set_match_value:
- */
+ * @app: a #GsApp
+ * @match_value: a value
+ *
+ * Set a match quality value, where higher values correspond to a
+ * "better" search match, and should be shown above lower results.
+ **/
 void
 gs_app_set_match_value (GsApp *app, guint match_value)
 {
@@ -2293,7 +2720,17 @@ gs_app_set_match_value (GsApp *app, guint match_value)
 
 /**
  * gs_app_get_match_value:
- */
+ * @app: a #GsApp
+ *
+ * Get a match quality value, where higher values correspond to a
+ * "better" search match, and should be shown above lower results.
+ *
+ * Note: This value is only valid when processing the result set
+ * and may be overwritten on subsequent searches if the plugin is using
+ * a cache.
+ *
+ * Returns: a value, where higher is better
+ **/
 guint
 gs_app_get_match_value (GsApp *app)
 {
@@ -2303,7 +2740,12 @@ gs_app_get_match_value (GsApp *app)
 
 /**
  * gs_app_get_last_error:
- */
+ * @app: a #GsApp
+ *
+ * Get the last error.
+ *
+ * Returns: a #GError, or %NULL
+ **/
 GError *
 gs_app_get_last_error (GsApp *app)
 {
@@ -2312,7 +2754,11 @@ gs_app_get_last_error (GsApp *app)
 
 /**
  * gs_app_set_last_error:
- */
+ * @app: a #GsApp
+ * @error: a #GError
+ *
+ * Sets the last error.
+ **/
 void
 gs_app_set_last_error (GsApp *app, GError *error)
 {
@@ -2626,8 +3072,11 @@ gs_app_init (GsApp *app)
 
 /**
  * gs_app_new:
+ * @id: an ID, or %NULL
  *
- * Return value: a new GsApp object.
+ * Creates a new application object.
+ *
+ * Returns: a new #GsApp
  **/
 GsApp *
 gs_app_new (const gchar *id)

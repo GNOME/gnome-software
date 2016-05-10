@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -35,6 +35,25 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsApp, gs_app, GS, APP, GObject)
 
+/**
+ * GsAppKudo:
+ * @GS_APP_KUDO_MY_LANGUAGE:		Localised in my language
+ * @GS_APP_KUDO_RECENT_RELEASE:		Released recently
+ * @GS_APP_KUDO_FEATURED_RECOMMENDED:	Chosen for the front page
+ * @GS_APP_KUDO_MODERN_TOOLKIT:		Uses a modern toolkit
+ * @GS_APP_KUDO_SEARCH_PROVIDER:	Provides a search provider
+ * @GS_APP_KUDO_INSTALLS_USER_DOCS:	Installs user docs
+ * @GS_APP_KUDO_USES_NOTIFICATIONS:	Registers notifications
+ * @GS_APP_KUDO_HAS_KEYWORDS:		Has at least 1 keyword
+ * @GS_APP_KUDO_USES_APP_MENU:		Uses an AppMenu for navigation
+ * @GS_APP_KUDO_HAS_SCREENSHOTS:	Supplies screenshots
+ * @GS_APP_KUDO_POPULAR:		Is popular
+ * @GS_APP_KUDO_PERFECT_SCREENSHOTS:	Supplies perfect screenshots
+ * @GS_APP_KUDO_HIGH_CONTRAST:		Installs a high contrast icon
+ * @GS_APP_KUDO_HI_DPI_ICON:		Installs a HiDPI icon
+ *
+ * Any awards given to the application.
+ **/
 typedef enum {
 	GS_APP_KUDO_MY_LANGUAGE			= 1 << 0,
 	GS_APP_KUDO_RECENT_RELEASE		= 1 << 1,
@@ -47,10 +66,10 @@ typedef enum {
 	GS_APP_KUDO_USES_APP_MENU		= 1 << 8,
 	GS_APP_KUDO_HAS_SCREENSHOTS		= 1 << 9,
 	GS_APP_KUDO_POPULAR			= 1 << 10,
-	GS_APP_KUDO_IBUS_HAS_SYMBOL		= 1 << 11,
 	GS_APP_KUDO_PERFECT_SCREENSHOTS		= 1 << 12,
 	GS_APP_KUDO_HIGH_CONTRAST		= 1 << 13,
 	GS_APP_KUDO_HI_DPI_ICON			= 1 << 14,
+	/*< private >*/
 	GS_APP_KUDO_LAST
 } GsAppKudo;
 
@@ -58,11 +77,21 @@ typedef enum {
 #define	GS_APP_INSTALL_DATE_UNKNOWN		1 /* 1s past the epoch */
 #define	GS_APP_SIZE_UNKNOWABLE			G_MAXUINT64
 
+/**
+ * GsAppQuality:
+ * @GS_APP_QUALITY_UNKNOWN:	The quality value is unknown
+ * @GS_APP_QUALITY_LOWEST:	Lowest quality
+ * @GS_APP_QUALITY_NORMAL:	Normal quality
+ * @GS_APP_QUALITY_HIGHEST:	Highest quality
+ *
+ * Any awards given to the application.
+ **/
 typedef enum {
 	GS_APP_QUALITY_UNKNOWN,
 	GS_APP_QUALITY_LOWEST,
 	GS_APP_QUALITY_NORMAL,
 	GS_APP_QUALITY_HIGHEST,
+	/*< private >*/
 	GS_APP_QUALITY_LAST
 } GsAppQuality;
 
@@ -118,7 +147,7 @@ void		 gs_app_set_source_ids		(GsApp		*app,
 void		 gs_app_clear_source_ids	(GsApp		*app);
 const gchar	*gs_app_get_project_group	(GsApp		*app);
 void		 gs_app_set_project_group	(GsApp		*app,
-						 const gchar	*source);
+						 const gchar	*project_group);
 const gchar	*gs_app_get_version		(GsApp		*app);
 const gchar	*gs_app_get_version_ui		(GsApp		*app);
 void		 gs_app_set_version		(GsApp		*app,
@@ -129,7 +158,7 @@ void		 gs_app_set_summary		(GsApp		*app,
 						 const gchar	*summary);
 const gchar	*gs_app_get_summary_missing	(GsApp		*app);
 void		 gs_app_set_summary_missing	(GsApp		*app,
-						 const gchar	*missing);
+						 const gchar	*summary_missing);
 const gchar	*gs_app_get_description		(GsApp		*app);
 void		 gs_app_set_description		(GsApp		*app,
 						 GsAppQuality	 quality,
@@ -177,7 +206,7 @@ void		 gs_app_set_icon		(GsApp		*app,
 						 AsIcon		*icon);
 GFile		*gs_app_get_local_file		(GsApp		*app);
 void		 gs_app_set_local_file		(GsApp		*app,
-						 GFile		*icon);
+						 GFile		*local_file);
 GsApp		*gs_app_get_runtime		(GsApp		*app);
 void		 gs_app_set_runtime		(GsApp		*app,
 						 GsApp		*runtime);
