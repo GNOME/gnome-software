@@ -142,6 +142,7 @@ typedef enum {
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS:		Require user-reviews
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS:	Require user-ratings
  * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS:		Require the key colors
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON:		Require the icon to be loaded
  *
  * The refine flags.
  **/
@@ -168,6 +169,7 @@ typedef enum {
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS		= 1 << 18,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS	= 1 << 19,
 	GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS	= 1 << 20,
+	GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON		= 1 << 21,
 	/*< private >*/
 	GS_PLUGIN_REFINE_FLAGS_LAST
 } GsPluginRefineFlags;

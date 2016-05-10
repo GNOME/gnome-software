@@ -693,7 +693,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			g_debug ("searching filename: '%s'", search_data->search_filename);
 			gs_plugin_loader_search_files_async (self->plugin_loader,
 			                                     search_data->search_filename,
-			                                     GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 			                                     GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 			                                     GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 			                                     self->search_cancellable,
@@ -705,7 +705,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			file = g_file_new_for_path (search_data->package_filename);
 			gs_plugin_loader_file_to_app_async (self->plugin_loader,
 			                                    file,
-			                                    GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+			                                    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 			                                    GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 			                                    GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 			                                    self->search_cancellable,
@@ -715,7 +715,7 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			g_debug ("searching what provides: '%s'", search_data->search);
 			gs_plugin_loader_search_what_provides_async (self->plugin_loader,
 			                                             search_data->search,
-			                                             GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |

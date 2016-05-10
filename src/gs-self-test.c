@@ -442,7 +442,7 @@ gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
 	app = gs_app_new ("arachne.desktop");
 	gs_app_set_kind (app, AS_APP_KIND_WEB_APP);
 	ret = gs_plugin_loader_app_refine (plugin_loader, app,
-					   GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					   NULL,
 					   &error);
 	g_assert_no_error (error);

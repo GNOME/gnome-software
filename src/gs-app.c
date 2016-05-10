@@ -96,7 +96,6 @@ struct _GsApp
 	AsAppState		 state_recover;
 	guint			 progress;
 	GHashTable		*metadata;
-	GdkPixbuf		*pixbuf;
 	GPtrArray		*addons; /* of GsApp */
 	GHashTable		*addons_hash; /* of "id" */
 	GPtrArray		*related; /* of GsApp */
@@ -220,6 +219,8 @@ gs_app_to_string (GsApp *app)
 	if (app->icon != NULL) {
 		gs_app_kv_lpad (str, "icon-kind",
 				as_icon_kind_to_string (as_icon_get_kind (app->icon)));
+		gs_app_kv_printf (str, "icon-pixbuf", "%p",
+				  as_icon_get_pixbuf (app->icon));
 		if (as_icon_get_name (app->icon) != NULL)
 			gs_app_kv_lpad (str, "icon-name",
 					as_icon_get_name (app->icon));
@@ -308,8 +309,6 @@ gs_app_to_string (GsApp *app)
 	}
 	if (app->reviews != NULL)
 		gs_app_kv_printf (str, "reviews", "%i", app->reviews->len);
-	if (app->pixbuf != NULL)
-		gs_app_kv_printf (str, "pixbuf", "%p", app->pixbuf);
 	if (app->install_date != 0) {
 		gs_app_kv_printf (str, "install-date", "%"
 				  G_GUINT64_FORMAT "",
@@ -959,55 +958,6 @@ gs_app_set_project_group (GsApp *app, const gchar *project_group)
 }
 
 /**
- * gs_app_is_addon_id_kind
- **/
-static gboolean
-gs_app_is_addon_id_kind (GsApp *app)
-{
-	AsAppKind kind;
-	kind = gs_app_get_kind (app);
-	if (kind == AS_APP_KIND_DESKTOP)
-		return FALSE;
-	if (kind == AS_APP_KIND_WEB_APP)
-		return FALSE;
-	return TRUE;
-}
-
-static GtkIconTheme	*icon_theme_singleton;
-static GMutex		 icon_theme_lock;
-static GHashTable	*icon_theme_paths;
-
-/**
- * icon_theme_get:
- */
-static GtkIconTheme *
-icon_theme_get (void)
-{
-	if (icon_theme_singleton == NULL)
-		icon_theme_singleton = gtk_icon_theme_new ();
-
-	return icon_theme_singleton;
-}
-
-/**
- * icon_theme_add_path:
- */
-static void
-icon_theme_add_path (const gchar *path)
-{
-	if (path == NULL)
-		return;
-
-	if (icon_theme_paths == NULL)
-		icon_theme_paths = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
-
-	if (!g_hash_table_contains (icon_theme_paths, path)) {
-		gtk_icon_theme_prepend_search_path (icon_theme_get (), path);
-		g_hash_table_add (icon_theme_paths, g_strdup (path));
-	}
-}
-
-/**
  * gs_app_get_pixbuf:
  * @app: a #GsApp
  *
@@ -1018,56 +968,10 @@ icon_theme_add_path (const gchar *path)
 GdkPixbuf *
 gs_app_get_pixbuf (GsApp *app)
 {
-	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&icon_theme_lock);
-
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-
-	/* has an icon */
-	if (app->pixbuf == NULL &&
-	    app->icon != NULL &&
-	    as_icon_get_kind (app->icon) == AS_ICON_KIND_STOCK) {
-		app->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
-							      as_icon_get_name (app->icon), 64,
-							      GTK_ICON_LOOKUP_USE_BUILTIN |
-							      GTK_ICON_LOOKUP_FORCE_SIZE,
-							      NULL);
-
-	} else if (app->pixbuf == NULL && gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL) {
-		const gchar *icon_name;
-		if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
-			icon_name = "x-package-repository";
-		else if (gs_app_is_addon_id_kind (app))
-			icon_name = "application-x-addon";
-		else
-			icon_name = "application-x-executable";
-		app->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
-		                                              icon_name, 96,
-		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
-		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
-		                                              NULL);
-
-	} else if (app->pixbuf == NULL && gs_app_get_kind (app) == AS_APP_KIND_GENERIC) {
-		app->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
-		                                              "application-x-addon-symbolic", 64,
-		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
-		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
-		                                              NULL);
-	} else if (app->pixbuf == NULL && gs_app_get_kind (app) == AS_APP_KIND_OS_UPDATE) {
-		app->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
-		                                              "software-update-available-symbolic", 64,
-		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
-		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
-		                                              NULL);
-	} else if (app->pixbuf == NULL &&
-		   gs_app_get_state (app) == AS_APP_STATE_UNAVAILABLE) {
-		app->pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
-		                                              "dialog-question-symbolic", 16,
-		                                              GTK_ICON_LOOKUP_USE_BUILTIN |
-		                                              GTK_ICON_LOOKUP_FORCE_SIZE,
-		                                              NULL);
-	}
-
-	return app->pixbuf;
+	if (app->icon == NULL)
+		return NULL;
+	return as_icon_get_pixbuf (app->icon);
 }
 
 /**
@@ -1160,69 +1064,6 @@ gs_app_set_runtime (GsApp *app, GsApp *runtime)
 }
 
 /**
- * gs_app_load_icon:
- * @app: a #GsApp
- * @scale: a window scale factor, e.g. 2 for HiDPI displays
- * @error: a #GError, or %NULL
- *
- * Loads an icon to a pixbuf for the application.
- *
- * Returns: %TRUE for success
- **/
-gboolean
-gs_app_load_icon (GsApp *app, gint scale, GError **error)
-{
-	AsIcon *icon;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
-
-	g_return_val_if_fail (GS_IS_APP (app), FALSE);
-	g_return_val_if_fail (app->icon != NULL, FALSE);
-
-	/* either load from the theme or from a file */
-	icon = gs_app_get_icon (app);
-	switch (as_icon_get_kind (icon)) {
-	case AS_ICON_KIND_LOCAL:
-		if (as_icon_get_filename (icon) == NULL) {
-			g_set_error (error,
-				     GS_PLUGIN_ERROR,
-				     GS_PLUGIN_ERROR_FAILED,
-				     "%s icon has no filename",
-				     as_icon_get_name (icon));
-			return FALSE;
-		}
-		pixbuf = gdk_pixbuf_new_from_file_at_size (as_icon_get_filename (icon),
-							   64 * scale,
-							   64 * scale,
-							   error);
-		break;
-	case AS_ICON_KIND_STOCK:
-	{
-		g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&icon_theme_lock);
-
-		icon_theme_add_path (as_icon_get_prefix (icon));
-		pixbuf = gtk_icon_theme_load_icon (icon_theme_get (),
-						   as_icon_get_name (icon),
-						   64 * scale,
-						   GTK_ICON_LOOKUP_USE_BUILTIN |
-						   GTK_ICON_LOOKUP_FORCE_SIZE,
-						   error);
-		break;
-	}
-	default:
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "%s icon cannot be loaded",
-			     as_icon_kind_to_string (as_icon_get_kind (icon)));
-		break;
-	}
-	if (pixbuf == NULL)
-		return FALSE;
-	gs_app_set_pixbuf (app, pixbuf);
-	return TRUE;
-}
-
-/**
  * gs_app_set_pixbuf:
  * @app: a #GsApp
  * @pixbuf: a #GdkPixbuf, or %NULL
@@ -1233,7 +1074,11 @@ void
 gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_set_object (&app->pixbuf, pixbuf);
+	if (app->icon == NULL) {
+		g_warning ("trying to set pixbuf on %s with no icon", app->id);
+		return;
+	}
+	as_icon_set_pixbuf (app->icon, pixbuf);
 }
 
 typedef enum {
@@ -2797,7 +2642,6 @@ gs_app_dispose (GObject *object)
 
 	g_clear_object (&app->icon);
 	g_clear_object (&app->runtime);
-	g_clear_object (&app->pixbuf);
 
 	g_clear_pointer (&app->addons, g_ptr_array_unref);
 	g_clear_pointer (&app->history, g_ptr_array_unref);

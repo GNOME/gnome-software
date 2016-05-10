@@ -232,7 +232,7 @@ gs_shell_installed_load (GsShellInstalled *self)
 
 	/* get popular apps */
 	gs_plugin_loader_get_installed_async (self->plugin_loader,
-					      GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 					      GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |

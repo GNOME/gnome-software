@@ -432,6 +432,8 @@ out:
 	return ret;
 }
 
+static GList *gs_plugin_loader_add_os_update_item (GList *list);
+
 /**
  * gs_plugin_loader_run_results:
  **/
@@ -514,6 +516,19 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 					   error);
 	if (!ret)
 		goto out;
+
+	/* coalesce all packages down into one os-update */
+	if (g_strcmp0 (function_name, "gs_plugin_add_updates") == 0) {
+		list = gs_plugin_loader_add_os_update_item (list);
+		ret = gs_plugin_loader_run_refine (plugin_loader,
+						   function_name,
+						   &list,
+						   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+						   cancellable,
+						   error);
+		if (!ret)
+			goto out;
+	}
 
 	/* filter package list */
 	gs_app_list_filter_duplicates (&list);
@@ -872,6 +887,7 @@ gs_plugin_loader_add_os_update_item (GList *list)
 	GsApp *app_tmp;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(AsIcon) ic = NULL;
 
 	/* do we have any packages left that are not apps? */
 	for (l = list; l != NULL; l = l->next) {
@@ -886,6 +902,7 @@ gs_plugin_loader_add_os_update_item (GList *list)
 
 	/* create new meta object */
 	app_os = gs_app_new ("os-update.virtual");
+	gs_app_set_management_plugin (app_os, "");
 	gs_app_set_kind (app_os, AS_APP_KIND_OS_UPDATE);
 	gs_app_set_state (app_os, AS_APP_STATE_UPDATABLE_LIVE);
 	gs_app_set_name (app_os,
@@ -907,6 +924,10 @@ gs_plugin_loader_add_os_update_item (GList *list)
 			continue;
 		gs_app_add_related (app_os, app_tmp);
 	}
+	ic = as_icon_new ();
+	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+	as_icon_set_name (ic, "software-update-available-symbolic");
+	gs_app_set_icon (app_os, ic);
 
 	return g_list_prepend (list, app_os);
 }
@@ -941,9 +962,6 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_app_list_filter_duplicates (&state->list);
-
-	/* coalesce all packages down into one os-update */
-	state->list = gs_plugin_loader_add_os_update_item (state->list);
 
 	/* remove any packages that are not proper applications or
 	 * OS updates */
@@ -2548,6 +2566,10 @@ gs_plugin_loader_app_refine_async (GsPluginLoader *plugin_loader,
 	state->app = g_object_ref (app);
 	state->flags = flags;
 
+	/* enforce this */
+	if (state->flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS)
+		state->flags |= GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON;
+
 	/* run in a thread */
 	task = g_task_new (plugin_loader, cancellable, callback, user_data);
 	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
@@ -3968,6 +3990,32 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 					 GS_PLUGIN_LOADER_ERROR,
 					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
 					 "no file_to_app results to show");
+		return;
+	}
+
+	/* check the apps have an icon set */
+	for (l = state->list; l != NULL; l = l->next) {
+		GsApp *app = GS_APP (l->data);
+		if (gs_app_get_icon (app) == NULL) {
+			g_autoptr(AsIcon) ic = as_icon_new ();
+			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+			if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
+				as_icon_set_name (ic, "x-package-repository");
+			else
+				as_icon_set_name (ic, "application-x-executable");
+			gs_app_set_icon (app, ic);
+		}
+	}
+
+	/* run refine() on each one again to pick up any icons */
+	ret = gs_plugin_loader_run_refine (plugin_loader,
+					   function_name,
+					   &state->list,
+					   GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					   cancellable,
+					   &error);
+	if (!ret) {
+		g_task_return_error (task, error);
 		return;
 	}
 

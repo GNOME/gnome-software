@@ -591,7 +591,7 @@ gs_shell_updates_load (GsShellUpdates *self)
 	if (self->in_flight > 0)
 		return;
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_updates));
-	refine_flags = GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+	refine_flags = GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 		       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION;

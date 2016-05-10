@@ -210,9 +210,6 @@ void		 gs_app_set_local_file		(GsApp		*app,
 GsApp		*gs_app_get_runtime		(GsApp		*app);
 void		 gs_app_set_runtime		(GsApp		*app,
 						 GsApp		*runtime);
-gboolean	 gs_app_load_icon		(GsApp		*app,
-						 gint		 scale,
-						 GError		**error);
 const gchar	*gs_app_get_metadata_item	(GsApp		*app,
 						 const gchar	*key);
 void		 gs_app_set_metadata		(GsApp		*app,

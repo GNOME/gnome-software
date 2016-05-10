@@ -30,9 +30,39 @@
  * SECTION:
  * Loads remote icons and converts them into local cached ones.
  *
- * It is provided so that each plugin handling REMOTE icons does not
+ * It is provided so that each plugin handling icons does not
  * have to handle the download and caching functionality.
  */
+
+struct GsPluginData {
+	GtkIconTheme		*icon_theme;
+	GMutex			 icon_theme_lock;
+	GHashTable		*icon_theme_paths;
+};
+
+/**
+ * gs_plugin_initialize:
+ */
+void
+gs_plugin_initialize (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->icon_theme = gtk_icon_theme_new ();
+	priv->icon_theme_paths = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
+	g_mutex_init (&priv->icon_theme_lock);
+}
+
+/**
+ * gs_plugin_destroy:
+ */
+void
+gs_plugin_destroy (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_object_unref (priv->icon_theme);
+	g_hash_table_unref (priv->icon_theme_paths);
+	g_mutex_clear (&priv->icon_theme_lock);
+}
 
 /**
  * gs_plugin_order_after:
@@ -100,6 +130,82 @@ gs_plugin_icons_download (GsPlugin *plugin, const gchar *uri, const gchar *filen
 }
 
 /**
+ * gs_plugin_icons_load_local:
+ */
+static gboolean
+gs_plugin_icons_load_local (GsPlugin *plugin, GsApp *app, GError **error)
+{
+	AsIcon *icon;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
+
+	icon = gs_app_get_icon (app);
+	if (as_icon_get_filename (icon) == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "%s icon has no filename",
+			     gs_app_get_id (app));
+		return FALSE;
+	}
+	pixbuf = gdk_pixbuf_new_from_file_at_size (as_icon_get_filename (icon),
+						   64 * gs_plugin_get_scale (plugin),
+						   64 * gs_plugin_get_scale (plugin),
+						   error);
+	if (pixbuf == NULL)
+		return FALSE;
+	gs_app_set_pixbuf (app, pixbuf);
+	return TRUE;
+}
+
+/**
+ * gs_plugin_icons_add_theme_path:
+ */
+static void
+gs_plugin_icons_add_theme_path (GsPlugin *plugin, const gchar *path)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	if (path == NULL)
+		return;
+	if (!g_hash_table_contains (priv->icon_theme_paths, path)) {
+		gtk_icon_theme_prepend_search_path (priv->icon_theme, path);
+		g_hash_table_add (priv->icon_theme_paths, g_strdup (path));
+	}
+}
+
+/**
+ * gs_plugin_icons_load_stock:
+ */
+static gboolean
+gs_plugin_icons_load_stock (GsPlugin *plugin, GsApp *app, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	AsIcon *icon;
+	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->icon_theme_lock);
+
+	icon = gs_app_get_icon (app);
+	if (as_icon_get_name (icon) == NULL) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "%s icon has no name",
+			     gs_app_get_id (app));
+		return FALSE;
+	}
+	gs_plugin_icons_add_theme_path (plugin, as_icon_get_prefix (icon));
+	pixbuf = gtk_icon_theme_load_icon (priv->icon_theme,
+					   as_icon_get_name (icon),
+					   64 * gs_plugin_get_scale (plugin),
+					   GTK_ICON_LOOKUP_USE_BUILTIN |
+					   GTK_ICON_LOOKUP_FORCE_SIZE,
+					   error);
+	if (pixbuf == NULL)
+		return FALSE;
+	gs_app_set_pixbuf (app, pixbuf);
+	return TRUE;
+}
+
+/**
  * gs_plugin_refine_app:
  */
 gboolean
@@ -113,6 +219,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	const gchar *fn;
 	gchar *found;
 
+	/* not required */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) == 0)
+		return TRUE;
+
 	/* invalid */
 	if (gs_app_get_pixbuf (app) != NULL)
 		return TRUE;
@@ -120,15 +230,13 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (ic == NULL)
 		return TRUE;
 
-	/* handle LOCAL and STOCK */
-	if (as_icon_get_kind (ic) == AS_ICON_KIND_LOCAL ||
-	    as_icon_get_kind (ic) == AS_ICON_KIND_STOCK) {
-		return gs_app_load_icon (app,
-					 gs_plugin_get_scale (plugin),
-					 error);
-	}
+	/* handle different icon types */
+	if (as_icon_get_kind (ic) == AS_ICON_KIND_LOCAL)
+		return gs_plugin_icons_load_local (plugin, app, error);
+	if (as_icon_get_kind (ic) == AS_ICON_KIND_STOCK)
+		return gs_plugin_icons_load_stock (plugin, app, error);
 
-	/* not applicable */
+	/* not applicable for remote */
 	if (as_icon_get_url (ic) == NULL)
 		return TRUE;
 	if (as_icon_get_filename (ic) == NULL)
@@ -138,9 +246,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (g_str_has_prefix (as_icon_get_url (ic), "file://")) {
 		as_icon_set_filename (ic, as_icon_get_url (ic) + 7);
 		as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
-		return gs_app_load_icon (app,
-					 gs_plugin_get_scale (plugin),
-					 error);
+		return gs_plugin_icons_load_local (plugin, app, error);
 	}
 
 	/* convert filename from jpg to png */
@@ -155,5 +261,5 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (!gs_plugin_icons_download (plugin, as_icon_get_url (ic), fn, error))
 		return FALSE;
 	as_icon_set_kind (ic, AS_ICON_KIND_LOCAL);
-	return gs_app_load_icon (app, gs_plugin_get_scale (plugin), error);
+	return gs_plugin_icons_load_local (plugin, app, error);
 }

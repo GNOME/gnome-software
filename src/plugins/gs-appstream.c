@@ -39,9 +39,9 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 	g_autofree gchar *cachedir = NULL;
 
 	icon = as_app_get_icon_default (item);
+	gs_app_set_icon (app, icon);
 	switch (as_icon_get_kind (icon)) {
 	case AS_ICON_KIND_REMOTE:
-		gs_app_set_icon (app, icon);
 		if (as_icon_get_filename (icon) == NULL) {
 			fn = gs_utils_get_cache_filename ("icons",
 							  as_icon_get_name (icon),
@@ -53,14 +53,12 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 		}
 		break;
 	case AS_ICON_KIND_STOCK:
+		break;
 	case AS_ICON_KIND_LOCAL:
-		gs_app_set_icon (app, icon);
-
 		/* does not exist, so try to find using the icon theme */
 		if (as_icon_get_kind (icon) == AS_ICON_KIND_LOCAL &&
 		    as_icon_get_filename (icon) == NULL)
 			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-
 		break;
 	case AS_ICON_KIND_CACHED:
 		if (gs_plugin_get_scale (plugin) == 2)

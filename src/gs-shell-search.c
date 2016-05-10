@@ -160,7 +160,7 @@ gs_shell_search_load (GsShellSearch *self)
 	/* search for apps */
 	gs_plugin_loader_search_async (self->plugin_loader,
 				       self->value,
-				       GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |

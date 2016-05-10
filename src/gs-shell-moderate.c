@@ -185,7 +185,7 @@ gs_shell_moderate_load (GsShellModerate *self)
 
 	/* get unvoted reviews as apps */
 	gs_plugin_loader_get_unvoted_reviews_async (self->plugin_loader,
-						    GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 						    GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |

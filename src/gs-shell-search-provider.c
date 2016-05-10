@@ -193,7 +193,7 @@ handle_get_result_metas (GsShellSearchProvider2	*skeleton,
 		/* find the application with this ID */
 		app = gs_plugin_loader_get_app_by_id (self->plugin_loader,
 						      results[i],
-						      GS_PLUGIN_REFINE_FLAGS_DEFAULT |
+						      GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 						      GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION,
 						      NULL,
 						      &error);
