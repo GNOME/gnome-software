@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2015 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -19,6 +19,14 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * SECTION:gs-utils
+ * @short_description: Utilities that plugins can use
+ *
+ * These functions provide useful functionality that makes it easy to
+ * add new plugin functions.
+ */
+
 #include "config.h"
 
 #include <errno.h>
@@ -34,6 +42,12 @@
 
 /**
  * gs_mkdir_parent:
+ * @path: A full pathname
+ * @error: A #GError, or %NULL
+ *
+ * Creates any required directories, including any parent directories.
+ *
+ * Returns: %TRUE for success
  **/
 gboolean
 gs_mkdir_parent (const gchar *path, GError **error)
@@ -54,8 +68,11 @@ gs_mkdir_parent (const gchar *path, GError **error)
 
 /**
  * gs_utils_get_file_age:
+ * @file: A #GFile
  *
- * Returns: The time in seconds since the file was modified
+ * Gets a file age.
+ *
+ * Returns: The time in seconds since the file was modified, or %G_MAXUINT for error
  */
 guint
 gs_utils_get_file_age (GFile *file)
@@ -80,12 +97,16 @@ gs_utils_get_file_age (GFile *file)
 
 /**
  * gs_utils_get_cache_filename:
+ * @kind: A cache kind, e.g. "firmware" or "screenshots/123x456"
+ * @basename: A filename basename, e.g. "system.bin"
+ * @flags: Some #GsUtilsCacheFlags, e.g. %GS_UTILS_CACHE_FLAG_WRITEABLE
+ * @error: A #GError, or %NULL
  *
- * Returns a filename that points into the cache. This may be per-system
- * or per-user, the latter being more likely when %GS_UTILS_CACHE_FLAG_WRITEABLE
- * is specified in @flags.
+ * Returns a filename that points into the cache.
+ * This may be per-system or per-user, the latter being more likely
+ * when %GS_UTILS_CACHE_FLAG_WRITEABLE is specified in @flags.
  *
- * Returns: The full path and filename, which may or may not exist.
+ * Returns: The full path and filename, which may or may not exist, or %NULL
  **/
 gchar *
 gs_utils_get_cache_filename (const gchar *kind,
@@ -140,6 +161,7 @@ gs_utils_get_cache_filename (const gchar *kind,
 
 /**
  * gs_utils_get_user_hash:
+ * @error: A #GError, or %NULL
  *
  * This SHA1 hash is composed of the contents of machine-id and your
  * usename and is also salted with a hardcoded value.
@@ -150,6 +172,8 @@ gs_utils_get_cache_filename (const gchar *kind,
  *
  * There is no known way to calculate the machine ID or username from
  * the machine hash and there should be no privacy issue.
+ *
+ * Returns: The user hash, or %NULL on error
  */
 gchar *
 gs_utils_get_user_hash (GError **error)
@@ -167,6 +191,11 @@ gs_utils_get_user_hash (GError **error)
 
 /**
  * gs_utils_get_permission:
+ * @id: A PolicyKit ID, e.g. "org.gnome.Desktop"
+ *
+ * Gets a permission object for an ID.
+ *
+ * Returns: a #GPermission, or %NULL if this if not possible.
  **/
 GPermission *
 gs_utils_get_permission (const gchar *id)
@@ -189,6 +218,13 @@ gs_utils_get_permission (const gchar *id)
 
 /**
  * gs_utils_get_content_type:
+ * @file: A GFile
+ * @cancellable: A #GCancellable, or %NULL
+ * @error: A #GError, or %NULL
+ *
+ * Gets the standard content type for a file.
+ *
+ * Returns: the content type, or %NULL, e.g. "text/plain"
  */
 gchar *
 gs_utils_get_content_type (GFile *file,
@@ -214,6 +250,12 @@ gs_utils_get_content_type (GFile *file,
 
 /**
  * gs_utils_strv_fnmatch:
+ * @strv: A NUL-terminated list of strings
+ * @str: A string
+ *
+ * Matches a string against a list of globs.
+ *
+ * Returns: %TRUE if the list matches
  */
 gboolean
 gs_utils_strv_fnmatch (gchar **strv, const gchar *str)
@@ -234,6 +276,11 @@ gs_utils_strv_fnmatch (gchar **strv, const gchar *str)
 
 /**
  * gs_utils_get_desktop_app_info:
+ * @id: A desktop ID, e.g. "gimp.desktop"
+ *
+ * Gets a a #GDesktopAppInfo taking into account the kde4- prefix.
+ *
+ * Returns: a #GDesktopAppInfo for a specific ID, or %NULL
  */
 GDesktopAppInfo *
 gs_utils_get_desktop_app_info (const gchar *id)

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -29,9 +29,17 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GsUtilsCacheFlags:
+ * @GS_UTILS_CACHE_FLAG_NONE:		No flags set
+ * @GS_UTILS_CACHE_FLAG_WRITEABLE:	A writable directory is required
+ *
+ * The cache flags.
+ **/
 typedef enum {
 	GS_UTILS_CACHE_FLAG_NONE	= 0,
 	GS_UTILS_CACHE_FLAG_WRITEABLE	= 1 << 0,
+	/*< private >*/
 	GS_UTILS_CACHE_FLAG_LAST
 } GsUtilsCacheFlags;
 
