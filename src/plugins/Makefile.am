@@ -14,6 +14,7 @@ AM_CPPFLAGS =						\
 	$(LIMBA_CFLAGS)					\
 	$(OSTREE_CFLAGS)				\
 	$(XDG_APP_CFLAGS)				\
+	$(FLATPAK_CFLAGS)				\
 	$(RPM_CFLAGS)					\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
@@ -69,6 +70,10 @@ endif
 
 if HAVE_XDG_APP
 plugin_LTLIBRARIES += libgs_plugin_xdg-app.la
+endif
+
+if HAVE_FLATPAK
+plugin_LTLIBRARIES += libgs_plugin_flatpak.la
 endif
 
 if HAVE_OSTREE
@@ -166,6 +171,16 @@ libgs_plugin_xdg_app_la_SOURCES =			\
 libgs_plugin_xdg_app_la_LIBADD = $(GS_PLUGIN_LIBS) $(XDG_APP_LIBS)
 libgs_plugin_xdg_app_la_LDFLAGS = -module -avoid-version
 libgs_plugin_xdg_app_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+endif
+
+if HAVE_FLATPAK
+libgs_plugin_flatpak_la_SOURCES =			\
+	gs-appstream.c					\
+	gs-appstream.h					\
+	gs-plugin-flatpak.c
+libgs_plugin_flatpak_la_LIBADD = $(GS_PLUGIN_LIBS) $(FLATPAK_LIBS)
+libgs_plugin_flatpak_la_LDFLAGS = -module -avoid-version
+libgs_plugin_flatpak_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
 if HAVE_OSTREE

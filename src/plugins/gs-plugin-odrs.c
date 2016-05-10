@@ -78,6 +78,7 @@ gs_plugin_order_after (GsPlugin *plugin)
 	static const gchar *deps[] = {
 		"appstream",	/* need application IDs */
 		"xdg-app",	/* need version */
+		"flatpak",	/* need version */
 		NULL };
 	return deps;
 }

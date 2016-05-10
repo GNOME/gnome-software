@@ -61,7 +61,7 @@ dnl ---------------------------------------------------------------------------
 dnl - Check library dependencies
 dnl ---------------------------------------------------------------------------
 PKG_CHECK_MODULES(GTK, gtk+-3.0 >= 3.18.2 gio-unix-2.0 gtkspell3-3.0)
-PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.5.12)
+PKG_CHECK_MODULES(APPSTREAM, appstream-glib >= 0.5.15)
 PKG_CHECK_MODULES(GDK_PIXBUF, gdk-pixbuf-2.0 >= 2.31.5)
 PKG_CHECK_MODULES(JSON_GLIB, json-glib-1.0 >= 1.1.1)
 PKG_CHECK_MODULES(SQLITE, sqlite3)
@@ -184,6 +184,28 @@ AS_IF([test "x$have_xdg_app" = "xyes"], [
     ])
 ])
 AM_CONDITIONAL(HAVE_XDG_APP, test "$have_xdg_app" != no)
+
+# flatpak
+AC_ARG_ENABLE(flatpak,
+              [AS_HELP_STRING([--enable-flatpak],
+                              [enable flatpak support [default=auto]])],,
+              enable_flatpak=maybe)
+AS_IF([test "x$enable_flatpak" != "xno"], [
+    PKG_CHECK_MODULES(FLATPAK,
+                      [flatpak >= 0.4.14],
+                      [have_flatpak=yes],
+                      [have_flatpak=no])
+], [
+    have_flatpak=no
+])
+AS_IF([test "x$have_flatpak" = "xyes"], [
+    AC_DEFINE(HAVE_FLATPAK,1,[Build flatpak support])
+], [
+    AS_IF([test "x$enable_flatpak" = "xyes"], [
+          AC_MSG_ERROR([flatpak support requested but 'flatpak' was not found])
+    ])
+])
+AM_CONDITIONAL(HAVE_FLATPAK, test "$have_flatpak" != no)
 
 # ostree
 AC_ARG_ENABLE(ostree,
@@ -335,6 +357,7 @@ echo "
         Firmware support:          ${have_firmware}
         Limba support:             ${have_limba}
         XDG-APP support:           ${have_xdg_app}
+        Flatpak support:           ${have_flatpak}
         OSTree support:            ${have_ostree}
         RPM support:               ${have_rpm}
         Steam support:             ${enable_steam}

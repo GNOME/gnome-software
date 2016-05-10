@@ -22,7 +22,9 @@
 #include "config.h"
 
 #include <glib-object.h>
+#include <glib/gstdio.h>
 #include <stdlib.h>
+#include <fnmatch.h>
 
 #include "gs-app-private.h"
 #include "gs-plugin.h"
@@ -44,6 +46,50 @@ gs_test_get_filename (const gchar *filename)
 	if (tmp == NULL)
 		return NULL;
 	return g_strdup (full_tmp);
+}
+
+/**
+ * gs_test_rmtree:
+ **/
+static gboolean
+gs_test_rmtree (const gchar *directory, GError **error)
+{
+	const gchar *filename;
+	g_autoptr(GDir) dir = NULL;
+
+	/* try to open */
+	dir = g_dir_open (directory, 0, error);
+	if (dir == NULL)
+		return FALSE;
+
+	/* find each */
+	while ((filename = g_dir_read_name (dir))) {
+		g_autofree gchar *src = NULL;
+		src = g_build_filename (directory, filename, NULL);
+		if (g_file_test (src, G_FILE_TEST_IS_DIR) &&
+		    !g_file_test (src, G_FILE_TEST_IS_SYMLINK)) {
+			if (!gs_test_rmtree (src, error))
+				return FALSE;
+		} else {
+			g_debug ("deleting %s", src);
+			if (g_unlink (src) != 0) {
+				g_set_error (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED,
+					     "Failed to delete: %s", src);
+				return FALSE;
+			}
+		}
+	}
+	g_debug ("removing empty %s", directory);
+	if (g_rmdir (directory) != 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to remove: %s", directory);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 static gboolean
@@ -563,9 +609,171 @@ gs_plugin_loader_fwupd_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_id (app), ==, NULL);
 }
 
+static void
+gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
+{
+	GsApp *app;
+	const gchar *root;
+	gboolean ret;
+	gint kf_remote_repo_version;
+	g_autofree gchar *changed_fn = NULL;
+	g_autofree gchar *config_fn = NULL;
+	g_autofree gchar *desktop_fn = NULL;
+	g_autofree gchar *kf_remote_url = NULL;
+	g_autofree gchar *metadata_fn = NULL;
+	g_autofree gchar *runtime_fn = NULL;
+	g_autofree gchar *testdir = NULL;
+	g_autofree gchar *testdir_repourl = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GKeyFile) kf1 = g_key_file_new ();
+	g_autoptr(GKeyFile) kf2 = g_key_file_new ();
+	g_autoptr(GsApp) app_source = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GsAppList) sources = NULL;
+
+	/* no flatpak, abort */
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
+		return;
+
+	/* check changed file exists */
+	root = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
+	changed_fn = g_build_filename (root, "flatpak", ".changed", NULL);
+	g_assert (g_file_test (changed_fn, G_FILE_TEST_IS_REGULAR));
+
+	/* check repo is set up */
+	config_fn = g_build_filename (root, "flatpak", "repo", "config", NULL);
+	ret = g_key_file_load_from_file (kf1, config_fn, G_KEY_FILE_NONE, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	kf_remote_repo_version = g_key_file_get_integer (kf1, "core", "repo_version", &error);
+	g_assert_no_error (error);
+	g_assert_cmpint (kf_remote_repo_version, ==, 1);
+
+	/* add a remote */
+	app_source = gs_app_new ("test");
+	testdir = gs_test_get_filename ("tests/flatpak");
+	g_assert (testdir != NULL);
+	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
+	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
+	gs_app_set_management_plugin (app_source, "flatpak");
+	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
+	gs_app_set_url (app_source, AS_URL_KIND_HOMEPAGE, testdir_repourl);
+	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
+					   GS_PLUGIN_LOADER_ACTION_ADD_SOURCE,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app_source), ==, AS_APP_STATE_INSTALLED);
+
+	/* check remote was set up */
+	ret = g_key_file_load_from_file (kf2, config_fn, G_KEY_FILE_NONE, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	kf_remote_url = g_key_file_get_string (kf2, "remote \"test\"", "url", &error);
+	g_assert_no_error (error);
+	g_assert_cmpstr (kf_remote_url, !=, NULL);
+
+	/* check the source now exists */
+	sources = gs_plugin_loader_get_sources (plugin_loader,
+						GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						NULL,
+						&error);
+	g_assert_no_error (error);
+	g_assert (sources != NULL);
+	g_assert_cmpint (g_list_length (sources), ==, 1);
+	app = GS_APP (sources->data);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "test");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_SOURCE);
+
+	/* refresh the appstream metadata */
+	ret = gs_plugin_loader_refresh (plugin_loader,
+					G_MAXUINT,
+					GS_PLUGIN_REFRESH_FLAGS_METADATA,
+					NULL,
+					&error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* find available application */
+	list = gs_plugin_loader_search (plugin_loader,
+					"Bingo",
+					GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					NULL,
+					&error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+
+	/* make sure there is one entry, the flatpak app */
+	g_assert_cmpint (g_list_length (list), ==, 1);
+	app = GS_APP (list->data);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron.desktop");
+	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+
+	/* install, also installing runtime */
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
+
+	/* check the application exists in the right places */
+	metadata_fn = g_build_filename (root,
+					"flatpak",
+					"app",
+					"org.test.Chiron",
+					"current",
+					"active",
+					"metadata",
+					NULL);
+	g_assert (g_file_test (metadata_fn, G_FILE_TEST_IS_REGULAR));
+	desktop_fn = g_build_filename (root,
+					"flatpak",
+					"app",
+					"org.test.Chiron",
+					"current",
+					"active",
+					"export",
+					"share",
+					"applications",
+					"org.test.Chiron.desktop",
+					NULL);
+	g_assert (g_file_test (desktop_fn, G_FILE_TEST_IS_REGULAR));
+
+	/* check the runtime was installed as well */
+	runtime_fn = g_build_filename (root,
+					"flatpak",
+					"runtime",
+					"org.test.Runtime",
+					"x86_64",
+					"master",
+					"active",
+					"files",
+					"share",
+					"libtest",
+					"README",
+					NULL);
+	g_assert (g_file_test (runtime_fn, G_FILE_TEST_IS_REGULAR));
+
+	/* remove the application */
+	ret = gs_plugin_loader_app_action (plugin_loader, app,
+					   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   NULL,
+					   &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
+	g_assert (!g_file_test (metadata_fn, G_FILE_TEST_IS_REGULAR));
+	g_assert (!g_file_test (desktop_fn, G_FILE_TEST_IS_REGULAR));
+}
+
 int
 main (int argc, char **argv)
 {
+	const gchar *tmp_root = "/var/tmp/self-test";
 	gboolean ret;
 	g_autofree gchar *fn = NULL;
 	g_autofree gchar *xml = NULL;
@@ -576,6 +784,7 @@ main (int argc, char **argv)
 		"dpkg",
 		"dummy",
 		"epiphany",
+		"flatpak",
 		"fwupd",
 		"hardcoded-blacklist",
 		"icons",
@@ -596,6 +805,15 @@ main (int argc, char **argv)
 	g_setenv ("GS_SELF_TEST_PROVENANCE_SOURCES", "london*,boston", TRUE);
 	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_SOURCES", "london*,boston", TRUE);
 	g_setenv ("GS_SELF_TEST_PROVENANCE_LICENSE_URL", "https://www.debian.org/", TRUE);
+	g_setenv ("GS_SELF_TEST_FLATPACK_DATADIR", tmp_root, TRUE);
+
+	/* ensure test root does not exist */
+	if (g_file_test (tmp_root, G_FILE_TEST_EXISTS)) {
+		ret = gs_test_rmtree (tmp_root, &error);
+		g_assert_no_error (error);
+		g_assert (ret);
+		g_assert (!g_file_test (tmp_root, G_FILE_TEST_EXISTS));
+	}
 
 	fn = gs_test_get_filename ("icons/hicolor/48x48/org.gnome.Software.png");
 	g_assert (fn != NULL);
@@ -645,8 +863,24 @@ main (int argc, char **argv)
 		"    <name>test</name>\n"
 		"    <icon type=\"remote\">file://%s</icon>\n"
 		"  </component>\n"
+		"  <component type=\"desktop\">\n"
+		"    <id>org.test.Chiron.desktop</id>\n"
+		"    <name>Chiron</name>\n"
+		"    <summary>Single line synopsis</summary>\n"
+		"    <description><p>Long description.</p></description>\n"
+		"    <icon height=\"128\" width=\"128\" type=\"cached\">128x128/org.test.Chiron.png</icon>\n"
+		"    <icon height=\"64\" width=\"64\" type=\"cached\">64x64/org.test.Chiron.png</icon>\n"
+		"    <keywords>\n"
+		"      <keyword>Bingo</keyword>\n"
+		"    </keywords>\n"
+		"    <project_license>GPL-2.0+</project_license>\n"
+		"    <url type=\"homepage\">http://127.0.0.1/</url>\n"
+		"    <bundle type=\"flatpak\" runtime=\"org.test.Runtime/x86_64/master\">app/org.test.Chiron/x86_64/master</bundle>\n"
+		"  </component>\n"
 		"</components>\n", fn);
 	g_setenv ("GS_SELF_TEST_APPSTREAM_XML", xml, TRUE);
+	g_setenv ("GS_SELF_TEST_APPSTREAM_ICON_ROOT",
+		  "/var/tmp/self-test/flatpak/appstream/test/x86_64/active/", TRUE);
 
 	/* only critical and error are fatal */
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
@@ -670,6 +904,9 @@ main (int argc, char **argv)
 	g_assert (gs_plugin_loader_get_enabled (plugin_loader, "dummy"));
 
 	/* plugin tests go here */
+	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_flatpak_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{fwupd}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_fwupd_func);
