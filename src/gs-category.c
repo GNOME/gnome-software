@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -18,6 +18,14 @@
  * You should have received a copy of the GNU General Public License
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
+ */
+
+/**
+ * SECTION:gs-category
+ * @short_description: An category that contains applications
+ *
+ * This object provides functionality that allows a plugin to create
+ * a tree structure of categories that each contain #GsApp's.
  */
 
 #include "config.h"
@@ -41,11 +49,14 @@ G_DEFINE_TYPE (GsCategory, gs_category, G_TYPE_OBJECT)
 
 /**
  * gs_category_get_size:
+ * @category: a #GsCategory
  *
  * Returns how many applications the category could contain.
  *
  * NOTE: This may over-estimate the number if duplicate applications are
  * filtered or core applications are not shown.
+ *
+ * Returns: the number of apps in the category
  **/
 guint
 gs_category_get_size (GsCategory *category)
@@ -56,6 +67,11 @@ gs_category_get_size (GsCategory *category)
 
 /**
  * gs_category_set_size:
+ * @category: a #GsCategory
+ * @size: the number of applications
+ *
+ * Sets the number of applications in the category.
+ * Most plugins do not need to call this function.
  **/
 void
 gs_category_set_size (GsCategory *category, guint size)
@@ -66,6 +82,7 @@ gs_category_set_size (GsCategory *category, guint size)
 
 /**
  * gs_category_increment_size:
+ * @category: a #GsCategory
  *
  * Adds one to the size count if an application is available
  **/
@@ -76,6 +93,14 @@ gs_category_increment_size (GsCategory *category)
 	category->size++;
 }
 
+/**
+ * gs_category_get_id:
+ * @category: a #GsCategory
+ *
+ * Gets the category ID.
+ *
+ * Returns: the string, e.g. "other"
+ **/
 const gchar *
 gs_category_get_id (GsCategory *category)
 {
@@ -83,6 +108,14 @@ gs_category_get_id (GsCategory *category)
 	return category->id;
 }
 
+/**
+ * gs_category_get_name:
+ * @category: a #GsCategory
+ *
+ * Gets the category name.
+ *
+ * Returns: the string, or %NULL
+ **/
 const gchar *
 gs_category_get_name (GsCategory *category)
 {
@@ -90,6 +123,15 @@ gs_category_get_name (GsCategory *category)
 	return category->name;
 }
 
+/**
+ * gs_category_find_child:
+ * @category: a #GsCategory
+ * @id: a category ID, e.g. "other"
+ *
+ * Find a child category with a specific ID.
+ *
+ * Returns: the #GsCategory, or %NULL
+ **/
 GsCategory *
 gs_category_find_child (GsCategory *category, const gchar *id)
 {
@@ -107,6 +149,14 @@ gs_category_find_child (GsCategory *category, const gchar *id)
 	return NULL;
 }
 
+/**
+ * gs_category_get_parent:
+ * @category: a #GsCategory
+ *
+ * Gets the parent category.
+ *
+ * Returns: the #GsCategory or %NULL
+ **/
 GsCategory *
 gs_category_get_parent (GsCategory *category)
 {
@@ -116,6 +166,9 @@ gs_category_get_parent (GsCategory *category)
 
 /**
  * gs_category_get_subcategories:
+ * @category: a #GsCategory
+ *
+ * Gets the list if subcategories for a category.
  *
  * Return value: (element-type GsApp) (transfer container): A list of subcategories
  **/
@@ -128,13 +181,17 @@ gs_category_get_subcategories (GsCategory *category)
 
 /**
  * gs_category_add_subcategory:
+ * @category: a #GsCategory
+ * @subcategory: a #GsCategory
+ *
+ * Adds a child category to a parent category.
  **/
 void
 gs_category_add_subcategory (GsCategory *category, GsCategory *subcategory)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
 	category->subcategories = g_list_prepend (category->subcategories,
-							g_object_ref (subcategory));
+						  g_object_ref (subcategory));
 }
 
 /**
@@ -170,6 +227,9 @@ gs_category_sort_subcategories_cb (gconstpointer a, gconstpointer b)
 
 /**
  * gs_category_sort_subcategories:
+ * @category: a #GsCategory
+ *
+ * Sorts the list of subcategories.
  **/
 void
 gs_category_sort_subcategories (GsCategory *category)
@@ -223,6 +283,16 @@ gs_category_init (GsCategory *category)
 {
 }
 
+/**
+ * gs_category_new:
+ * @parent: a #GsCategory
+ * @id: an ID, e.g. "all"
+ * @name: a localised name
+ *
+ * Creates a new category object.
+ *
+ * Returns: the new #GsCategory
+ **/
 GsCategory *
 gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
 {
