@@ -24,9 +24,9 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
-#include <appstream-glib.h>
+#include <gnome-software.h>
 
-#include "gs-utils.h"
+#include "gs-common.h"
 
 #include "gs-shell-details.h"
 #include "gs-app-addon-row.h"

@@ -30,7 +30,7 @@
 #include "gs-popular-tile.h"
 #include "gs-feature-tile.h"
 #include "gs-category-tile.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 #define N_TILES 8
 

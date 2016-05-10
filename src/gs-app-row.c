@@ -28,7 +28,7 @@
 #include "gs-app-row.h"
 #include "gs-star-widget.h"
 #include "gs-progress-button.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 #include "gs-folders.h"
 
 typedef struct

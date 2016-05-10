@@ -25,7 +25,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
-#include "gs-utils.h"
+#include "gs-common.h"
 #include "gs-app-tile.h"
 #include "gs-shell-category.h"
 

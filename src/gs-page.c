@@ -27,7 +27,7 @@
 #include "gs-app.h"
 #include "gs-page.h"
 #include "gs-shell.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 typedef struct
 {

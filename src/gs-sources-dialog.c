@@ -28,7 +28,7 @@
 #include "gs-sources-dialog.h"
 #include "gs-os-release.h"
 #include "gs-sources-dialog-row.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 struct _GsSourcesDialog
 {

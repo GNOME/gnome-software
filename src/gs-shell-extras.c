@@ -27,7 +27,7 @@
 #include "gs-app-row.h"
 #include "gs-language.h"
 #include "gs-shell.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 #include "gs-vendor.h"
 
 #include <glib/gi18n.h>

@@ -26,7 +26,7 @@
 
 #include "gs-shell.h"
 #include "gs-shell-updates.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 #include "gs-app.h"
 #include "gs-app-row.h"
 #include "gs-update-dialog.h"

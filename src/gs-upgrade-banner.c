@@ -27,7 +27,7 @@
 #include <stdlib.h>
 
 #include "gs-upgrade-banner.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 typedef struct
 {

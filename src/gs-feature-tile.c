@@ -25,7 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-feature-tile.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 struct _GsFeatureTile
 {

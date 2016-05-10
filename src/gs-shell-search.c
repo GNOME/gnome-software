@@ -27,7 +27,7 @@
 #include "gs-shell-search.h"
 #include "gs-shell.h"
 #include "gs-app.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 #include "gs-app-row.h"
 
 struct _GsShellSearch

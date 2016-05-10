@@ -30,7 +30,7 @@
 #include "gs-review-row.h"
 #include "gs-shell.h"
 #include "gs-shell-moderate.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 struct _GsShellModerate
 {

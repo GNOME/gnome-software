@@ -91,6 +91,7 @@ gnome_software_cmd_SOURCES =				\
 	gs-app-list.c					\
 	gs-review.c					\
 	gs-cmd.c					\
+	gs-common.c					\
 	gs-debug.c					\
 	gs-utils.c					\
 	gs-os-release.c					\
@@ -122,6 +123,8 @@ gnome_software_SOURCES =				\
 	gs-app-list.h					\
 	gs-category.c					\
 	gs-category.h					\
+	gs-common.c					\
+	gs-common.h					\
 	gs-debug.c					\
 	gs-debug.h					\
 	gs-app-addon-row.c				\
@@ -300,6 +303,7 @@ gs_self_test_SOURCES =						\
 	gs-app.c						\
 	gs-app-list.c						\
 	gs-category.c						\
+	gs-common.c						\
 	gs-os-release.c						\
 	gs-plugin-loader-sync.c					\
 	gs-plugin-loader.c					\

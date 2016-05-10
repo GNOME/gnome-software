@@ -24,13 +24,14 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
+#include <gnome-software.h>
 
 #define GNOME_DESKTOP_USE_UNSTABLE_API
 #include <libgnome-desktop/gnome-bg.h>
 #include <libgnome-desktop/gnome-desktop-thumbnail.h>
 
 #include "gs-screenshot-image.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 struct _GsScreenshotImage
 {

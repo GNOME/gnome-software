@@ -26,7 +26,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-history-dialog.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 struct _GsHistoryDialog
 {

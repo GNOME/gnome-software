@@ -29,7 +29,7 @@
 #include "gs-shell.h"
 #include "gs-shell-installed.h"
 #include "gs-app.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 #include "gs-app-row.h"
 #include "gs-app-folder-dialog.h"
 #include "gs-folders.h"

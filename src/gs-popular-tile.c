@@ -26,7 +26,7 @@
 
 #include "gs-popular-tile.h"
 #include "gs-star-widget.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 struct _GsPopularTile
 {

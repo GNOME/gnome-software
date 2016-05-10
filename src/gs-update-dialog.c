@@ -27,7 +27,7 @@
 #include "gs-update-dialog.h"
 #include "gs-app-row.h"
 #include "gs-update-list.h"
-#include "gs-utils.h"
+#include "gs-common.h"
 
 typedef struct {
 	gchar		*title;

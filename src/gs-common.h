@@ -19,40 +19,53 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_UTILS_H
-#define __GS_UTILS_H
+#ifndef __GS_COMMON_H
+#define __GS_COMMON_H
 
 #include <gio/gdesktopappinfo.h>
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-plugin-loader.h"
 
 G_BEGIN_DECLS
 
-typedef enum {
-	GS_UTILS_CACHE_FLAG_NONE	= 0,
-	GS_UTILS_CACHE_FLAG_WRITEABLE	= 1 << 0,
-	GS_UTILS_CACHE_FLAG_LAST
-} GsUtilsCacheFlags;
+void	 gs_start_spinner		(GtkSpinner	*spinner);
+void	 gs_stop_spinner		(GtkSpinner	*spinner);
+void	 gs_container_remove_all	(GtkContainer	*container);
+void	 gs_grab_focus_when_mapped	(GtkWidget	*widget);
 
-guint		 gs_utils_get_file_age		(GFile		*file);
-gchar		*gs_utils_get_content_type	(GFile		*file,
-						 GCancellable	*cancellable,
-						 GError		**error);
-gboolean	 gs_mkdir_parent		(const gchar	*path,
-						 GError		**error);
-gchar		*gs_utils_get_cache_filename	(const gchar	*kind,
-						 const gchar	*basename,
-						 GsUtilsCacheFlags flags,
-						 GError		**error);
-gchar		*gs_utils_get_user_hash		(GError		**error);
-GPermission	*gs_utils_get_permission	(const gchar	*id);
+void	 gs_app_notify_installed	(GsApp		*app);
+void	 gs_app_notify_failed_modal	(GsApp		*app,
+					 GtkWindow	*parent_window,
+					 GsPluginLoaderAction action,
+					 const GError	*error);
+GtkResponseType
+	gs_app_notify_unavailable	(GsApp		*app,
+					 GtkWindow	*parent);
+void	 gs_app_show_url		(GsApp		*app,
+					 AsUrlKind	 kind);
+
+void	gs_image_set_from_pixbuf_with_scale	(GtkImage		*image,
+						 const GdkPixbuf	*pixbuf,
+						 gint			 scale);
+void	gs_image_set_from_pixbuf		(GtkImage		*image,
+						 const GdkPixbuf	*pixbuf);
+
+#if AS_CHECK_VERSION(0,5,12)
+const gchar 	*gs_utils_get_content_rating	(void);
+#endif
+
+const gchar	*gs_user_agent			(void);
+gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
+void		 gs_utils_widget_set_custom_css	(GsApp		*app,
+						 GtkWidget	*widget,
+						 const gchar	*metadata_css);
 gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
 						 const gchar	*str);
-GDesktopAppInfo *gs_utils_get_desktop_app_info	(const gchar	*id);
 
 G_END_DECLS
 
-#endif /* __GS_UTILS_H */
+#endif /* __GS_COMMON_H */
 
 /* vim: set noexpandtab: */
