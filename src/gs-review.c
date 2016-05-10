@@ -19,6 +19,13 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+/**
+ * SECTION:gs-review
+ * @short_description: An application user review
+ *
+ * This object represents a user-submitted application review.
+ */
+
 #include "config.h"
 
 #include "gs-review.h"
@@ -56,6 +63,12 @@ G_DEFINE_TYPE (GsReview, gs_review, G_TYPE_OBJECT)
 
 /**
  * gs_review_get_karma:
+ * @review: a #GsReview
+ *
+ * Gets the karma for the review, where positive numbers indicate
+ * more positive feedback for the review.
+ *
+ * Returns: the karma value, or 0 for unset.
  */
 gint
 gs_review_get_karma (GsReview *review)
@@ -66,6 +79,13 @@ gs_review_get_karma (GsReview *review)
 
 /**
  * gs_review_set_karma:
+ * @review: a #GsReview
+ * @karma: a karma value
+ *
+ * Sets the karma for the review, where positive numbers indicate
+ * more positive feedback for the review.
+ *
+ * Karma can be positive or negative, or 0 for unset.
  */
 void
 gs_review_set_karma (GsReview *review, gint karma)
@@ -76,9 +96,12 @@ gs_review_set_karma (GsReview *review, gint karma)
 
 /**
  * gs_review_get_score:
+ * @review: a #GsReview
  *
  * This allows the UI to sort reviews into the correct order.
  * Higher numbers indicate a more important or relevant review.
+ *
+ * Returns: the review score, or 0 for unset.
  */
 gint
 gs_review_get_score (GsReview *review)
@@ -89,6 +112,11 @@ gs_review_get_score (GsReview *review)
 
 /**
  * gs_review_set_score:
+ * @review: a #GsReview
+ * @score: a score value
+ *
+ * Sets the score for the review, where positive numbers indicate
+ * a better review for the specific user.
  */
 void
 gs_review_set_score (GsReview *review, gint score)
@@ -99,6 +127,11 @@ gs_review_set_score (GsReview *review, gint score)
 
 /**
  * gs_review_get_summary:
+ * @review: a #GsReview
+ *
+ * Gets the review summary.
+ *
+ * Returns: the one-line summary, e.g. "Awesome application"
  */
 const gchar *
 gs_review_get_summary (GsReview *review)
@@ -109,6 +142,10 @@ gs_review_get_summary (GsReview *review)
 
 /**
  * gs_review_set_summary:
+ * @review: a #GsReview
+ * @summary: a one-line summary, e.g. "Awesome application"
+ *
+ * Sets the one-line summary that may be displayed in bold.
  */
 void
 gs_review_set_summary (GsReview *review, const gchar *summary)
@@ -120,6 +157,11 @@ gs_review_set_summary (GsReview *review, const gchar *summary)
 
 /**
  * gs_review_get_text:
+ * @review: a #GsReview
+ *
+ * Gets the multi-line review text that forms the body of the review.
+ *
+ * Returns: the string, or %NULL
  **/
 const gchar *
 gs_review_get_text (GsReview *review)
@@ -130,6 +172,10 @@ gs_review_get_text (GsReview *review)
 
 /**
  * gs_review_set_text:
+ * @review: a #GsReview
+ * @text: multi-line text
+ *
+ * Sets the multi-line review text that forms the body of the review.
  */
 void
 gs_review_set_text (GsReview *review, const gchar *text)
@@ -141,6 +187,11 @@ gs_review_set_text (GsReview *review, const gchar *text)
 
 /**
  * gs_review_get_rating:
+ * @review: a #GsReview
+ *
+ * Gets the star rating of the review, where 100 is 5 stars.
+ *
+ * Returns: integer as a percentage, or -1 for unset
  */
 gint
 gs_review_get_rating (GsReview *review)
@@ -151,6 +202,10 @@ gs_review_get_rating (GsReview *review)
 
 /**
  * gs_review_set_rating:
+ * @review: a #GsReview
+ * @rating: a integer as a percentage, or -1 for unset
+ *
+ * Sets the star rating of the review, where 100 is 5 stars..
  */
 void
 gs_review_set_rating (GsReview *review, gint rating)
@@ -161,6 +216,12 @@ gs_review_set_rating (GsReview *review, gint rating)
 
 /**
  * gs_review_get_flags:
+ * @review: a #GsReview
+ *
+ * Gets any flags set on the review, for example if the user has already
+ * voted on the review or if the user wrote the review themselves.
+ *
+ * Returns: a #GsReviewFlags, e.g. %GS_REVIEW_FLAG_SELF
  */
 GsReviewFlags
 gs_review_get_flags (GsReview *review)
@@ -171,6 +232,11 @@ gs_review_get_flags (GsReview *review)
 
 /**
  * gs_review_set_flags:
+ * @review: a #GsReview
+ * @flags: a #GsReviewFlags, e.g. %GS_REVIEW_FLAG_SELF
+ *
+ * Gets any flags set on the review, for example if the user has already
+ * voted on the review or if the user wrote the review themselves.
  */
 void
 gs_review_set_flags (GsReview *review, GsReviewFlags flags)
@@ -181,6 +247,10 @@ gs_review_set_flags (GsReview *review, GsReviewFlags flags)
 
 /**
  * gs_review_add_flags:
+ * @review: a #GsReview
+ * @flags: a #GsReviewFlags, e.g. %GS_REVIEW_FLAG_SELF
+ *
+ * Adds flags to an existing review without replacing the other flags.
  */
 void
 gs_review_add_flags (GsReview *review, GsReviewFlags flags)
@@ -191,6 +261,11 @@ gs_review_add_flags (GsReview *review, GsReviewFlags flags)
 
 /**
  * gs_review_get_reviewer:
+ * @review: a #GsReview
+ *
+ * Gets the name of the reviewer.
+ *
+ * Returns: the reviewer name, e.g. "David Smith", or %NULL
  **/
 const gchar *
 gs_review_get_reviewer (GsReview *review)
@@ -200,7 +275,26 @@ gs_review_get_reviewer (GsReview *review)
 }
 
 /**
+ * gs_review_set_reviewer:
+ * @review: a #GsReview
+ * @reviewer: the reviewer name, e.g. "David Smith"
+ *
+ * Sets the name of the reviewer, which can be left unset.
+ */
+void
+gs_review_set_reviewer (GsReview *review, const gchar *reviewer)
+{
+	g_return_if_fail (GS_IS_REVIEW (review));
+	g_free (review->reviewer);
+	review->reviewer = g_strdup (reviewer);
+}
+
+/**
  * gs_review_set_version:
+ * @review: a #GsReview
+ * @version: a version string, e.g. "0.1.2"
+ *
+ * Sets the version string for the application being reviewed.
  */
 void
 gs_review_set_version (GsReview *review, const gchar *version)
@@ -212,6 +306,11 @@ gs_review_set_version (GsReview *review, const gchar *version)
 
 /**
  * gs_review_get_version:
+ * @review: a #GsReview
+ *
+ * Gets the version string for the application being reviewed..
+ *
+ * Returns: the version string, e.g. "0.1.2", or %NULL for unset
  **/
 const gchar *
 gs_review_get_version (GsReview *review)
@@ -221,18 +320,12 @@ gs_review_get_version (GsReview *review)
 }
 
 /**
- * gs_review_set_reviewer:
- */
-void
-gs_review_set_reviewer (GsReview *review, const gchar *reviewer)
-{
-	g_return_if_fail (GS_IS_REVIEW (review));
-	g_free (review->reviewer);
-	review->reviewer = g_strdup (reviewer);
-}
-
-/**
  * gs_review_get_date:
+ * @review: a #GsReview
+ *
+ * Gets the date the review was originally submitted.
+ *
+ * Returns: the #GDateTime, or %NULL for unset
  **/
 GDateTime *
 gs_review_get_date (GsReview *review)
@@ -243,6 +336,10 @@ gs_review_get_date (GsReview *review)
 
 /**
  * gs_review_set_date:
+ * @review: a #GsReview
+ * @date: a #GDateTime, or %NULL
+ *
+ * Sets the date the review was originally submitted.
  */
 void
 gs_review_set_date (GsReview *review, GDateTime *date)
@@ -255,16 +352,32 @@ gs_review_set_date (GsReview *review, GDateTime *date)
 
 /**
  * gs_review_get_metadata_item:
+ * @review: a #GsReview
+ * @key: a string
+ *
+ * Gets some metadata from a review object.
+ * It is left for the the plugin to use this method as required, but a
+ * typical use would be to retrieve some secure authentication token.
+ *
+ * Returns: A string value, or %NULL for not found
  */
 const gchar *
 gs_review_get_metadata_item (GsReview *review, const gchar *key)
 {
 	g_return_val_if_fail (GS_IS_REVIEW (review), NULL);
+	g_return_val_if_fail (key != NULL, NULL);
 	return g_hash_table_lookup (review->metadata, key);
 }
 
 /**
  * gs_review_add_metadata:
+ * @review: a #GsReview
+ * @key: a string
+ * @value: a string
+ *
+ * Adds metadata to the review object.
+ * It is left for the the plugin to use this method as required, but a
+ * typical use would be to store some secure authentication token.
  */
 void
 gs_review_add_metadata (GsReview *review, const gchar *key, const gchar *value)
@@ -381,7 +494,7 @@ gs_review_class_init (GsReviewClass *klass)
 	object_class->set_property = gs_review_set_property;
 
 	/**
-	 * GsApp:karma:
+	 * GsReview:karma:
 	 */
 	pspec = g_param_spec_int ("karma", NULL, NULL,
 				  G_MININT, G_MAXINT, 0,
@@ -389,7 +502,7 @@ gs_review_class_init (GsReviewClass *klass)
 	g_object_class_install_property (object_class, PROP_KARMA, pspec);
 
 	/**
-	 * GsApp:summary:
+	 * GsReview:summary:
 	 */
 	pspec = g_param_spec_string ("summary", NULL, NULL,
 				     NULL,
@@ -397,7 +510,7 @@ gs_review_class_init (GsReviewClass *klass)
 	g_object_class_install_property (object_class, PROP_SUMMARY, pspec);
 
 	/**
-	 * GsApp:text:
+	 * GsReview:text:
 	 */
 	pspec = g_param_spec_string ("text", NULL, NULL,
 				     NULL,
@@ -405,7 +518,7 @@ gs_review_class_init (GsReviewClass *klass)
 	g_object_class_install_property (object_class, PROP_TEXT, pspec);
 
 	/**
-	 * GsApp:rating:
+	 * GsReview:rating:
 	 */
 	pspec = g_param_spec_int ("rating", NULL, NULL,
 				  -1, 100, -1,
@@ -413,7 +526,7 @@ gs_review_class_init (GsReviewClass *klass)
 	g_object_class_install_property (object_class, PROP_RATING, pspec);
 
 	/**
-	 * GsApp:flags:
+	 * GsReview:flags:
 	 */
 	pspec = g_param_spec_uint64 ("flags", NULL, NULL,
 				     GS_REVIEW_FLAG_NONE,
@@ -423,7 +536,7 @@ gs_review_class_init (GsReviewClass *klass)
 	g_object_class_install_property (object_class, PROP_FLAGS, pspec);
 
 	/**
-	 * GsApp:version:
+	 * GsReview:version:
 	 */
 	pspec = g_param_spec_string ("version", NULL, NULL,
 				     NULL,
@@ -431,7 +544,7 @@ gs_review_class_init (GsReviewClass *klass)
 	g_object_class_install_property (object_class, PROP_VERSION, pspec);
 
 	/**
-	 * GsApp:reviewer:
+	 * GsReview:reviewer:
 	 */
 	pspec = g_param_spec_string ("reviewer", NULL, NULL,
 				     NULL,
@@ -439,7 +552,7 @@ gs_review_class_init (GsReviewClass *klass)
 	g_object_class_install_property (object_class, PROP_REVIEWER, pspec);
 
 	/**
-	 * GsApp:date:
+	 * GsReview:date:
 	 */
 	pspec = g_param_spec_object ("date", NULL, NULL,
 				     GS_TYPE_REVIEW,

@@ -1,6 +1,7 @@
  /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Canonical Ltd.
+ * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -30,6 +31,17 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsReview, gs_review, GS, REVIEW, GObject)
 
+/**
+ * GsReviewAction:
+ * @GS_REVIEW_ACTION_SUBMIT:	Submit a new review
+ * @GS_REVIEW_ACTION_UPVOTE:	Upvote an existing review
+ * @GS_REVIEW_ACTION_DOWNVOTE:	Downvote an existing review
+ * @GS_REVIEW_ACTION_REPORT:	Report an existing review
+ * @GS_REVIEW_ACTION_REMOVE:	Remove a review written by the user
+ * @GS_REVIEW_ACTION_DISMISS:	Dismiss (ignore) a review when moderating
+ *
+ * The review action.
+ **/
 typedef enum {
 	GS_REVIEW_ACTION_SUBMIT,
 	GS_REVIEW_ACTION_UPVOTE,
@@ -37,13 +49,23 @@ typedef enum {
 	GS_REVIEW_ACTION_REPORT,
 	GS_REVIEW_ACTION_REMOVE,
 	GS_REVIEW_ACTION_DISMISS,
+	/*< private >*/
 	GS_REVIEW_ACTION_LAST
 } GsReviewAction;
 
+/**
+ * GsReviewFlags:
+ * @GS_REVIEW_FLAG_NONE:	No special flags set
+ * @GS_REVIEW_FLAG_SELF:	The user wrote the review themselves
+ * @GS_REVIEW_FLAG_VOTED:	The user voted on the review
+ *
+ * The flags for the review.
+ **/
 typedef enum {
 	GS_REVIEW_FLAG_NONE	= 0,
-	GS_REVIEW_FLAG_SELF	= 1 << 0,	/* user wrote the review themselves */
-	GS_REVIEW_FLAG_VOTED	= 1 << 1,	/* user voted on the review */
+	GS_REVIEW_FLAG_SELF	= 1 << 0,
+	GS_REVIEW_FLAG_VOTED	= 1 << 1,
+	/*< private >*/
 	GS_REVIEW_FLAG_LAST
 } GsReviewFlags;
 
@@ -83,9 +105,9 @@ void		 gs_review_set_date			(GsReview	*review,
 
 GsReviewFlags	 gs_review_get_flags			(GsReview	*review);
 void		 gs_review_set_flags			(GsReview	*review,
-							 GsReviewFlags	 state);
+							 GsReviewFlags	 flags);
 void		 gs_review_add_flags			(GsReview	*review,
-							 GsReviewFlags	 state);
+							 GsReviewFlags	 flags);
 
 const gchar	*gs_review_get_metadata_item		(GsReview	*review,
 							 const gchar	*key);
