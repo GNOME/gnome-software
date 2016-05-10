@@ -1566,7 +1566,6 @@ gs_app_get_license_token_is_nonfree (const gchar *token)
 void
 gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 {
-	GString *urld;
 	guint i;
 	g_auto(GStrv) tokens = NULL;
 
@@ -1579,104 +1578,23 @@ gs_app_set_license (GsApp *app, GsAppQuality quality, const gchar *license)
 		return;
 	app->license_quality = quality;
 
-	/* assume free software until we find an unmatched SPDX token */
+	/* assume free software until we find a nonfree SPDX token */
 	app->license_is_free = TRUE;
-
-	/* tokenize the license string and URLify any SPDX IDs */
-	urld = g_string_sized_new (strlen (license) + 1);
 	tokens = as_utils_spdx_license_tokenize (license);
 	for (i = 0; tokens[i] != NULL; i++) {
-
-		/* translated join */
-		if (g_strcmp0 (tokens[i], "&") == 0) {
-			/* TRANSLATORS: This is how we join the licenses and can
-			 * be considered a "Conjunctive AND Operator" according
-			 * to the SPDX specification. For example:
-			 * "LGPL-2.1 and MIT and BSD-2-Clause" */
-			g_string_append (urld, _(" and "));
+		if (g_strcmp0 (tokens[i], "&") == 0 ||
+		    g_strcmp0 (tokens[i], "|") == 0)
 			continue;
-		}
-		if (g_strcmp0 (tokens[i], "|") == 0) {
-			/* TRANSLATORS: This is how we join the licenses and can
-			 * be considered a "Disjunctive OR Operator" according
-			 * to the SPDX specification. For example:
-			 * "LGPL-2.1 or MIT" */
-			g_string_append (urld, _(" or "));
-			continue;
-		}
-
-		/* do the best we can */
 		if (gs_app_get_license_token_is_nonfree (tokens[i])) {
 			g_debug ("nonfree license from %s: '%s'",
 				 gs_app_get_id (app), tokens[i]);
 			app->license_is_free = FALSE;
+			break;
 		}
-
-		/* legacy literal text */
-		if (g_str_has_prefix (tokens[i], "#")) {
-			g_string_append (urld, tokens[i] + 1);
-			continue;
-		}
-
-		/* proprietary software */
-		if (g_strcmp0 (tokens[i], "@LicenseRef-proprietary") == 0) {
-			const gchar *url = "https://en.wikipedia.org/wiki/Proprietary_software";
-			g_string_append_printf (urld,
-						"<a href=\"%s\">%s</a>",
-						/* TRANSLATORS: non-free app */
-						url, _("Proprietary"));
-			continue;
-		}
-
-		/* public domain */
-		if (g_strcmp0 (tokens[i], "@LicenseRef-public-domain") == 0) {
-			const gchar *url = "https://en.wikipedia.org/wiki/Public_domain";
-			g_string_append_printf (urld,
-						"<a href=\"%s\">%s</a>",
-						/* TRANSLATORS: see the wikipedia page */
-						url, _("Public domain"));
-			continue;
-		}
-
-		/* free software, license unspecified */
-		if (g_str_has_prefix (tokens[i], "@LicenseRef-free")) {
-			const gchar *url = "https://www.gnu.org/philosophy/free-sw";
-			gchar *tmp;
-
-			/* we support putting a custom URL in the
-			 * token string, e.g. @LicenseRef-free=http://ubuntu.com */
-			tmp = g_strstr_len (tokens[i], -1, "=");
-			if (tmp != NULL)
-				url = tmp + 1;
-			g_string_append_printf (urld,
-						"<a href=\"%s\">%s</a>",
-						/* TRANSLATORS: see GNU page */
-						url, _("Free Software"));
-			continue;
-		}
-
-		/* SPDX value */
-		if (g_str_has_prefix (tokens[i], "@")) {
-			g_string_append_printf (urld,
-						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
-						tokens[i] + 1, tokens[i] + 1);
-			continue;
-		}
-
-		/* new SPDX value the extractor didn't know about */
-		if (as_utils_is_spdx_license_id (tokens[i])) {
-			g_string_append_printf (urld,
-						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
-						tokens[i], tokens[i]);
-			continue;
-		}
-
-		/* unknown value */
-		g_string_append (urld, tokens[i]);
 	}
 
 	g_free (app->license);
-	app->license = g_string_free (urld, FALSE);
+	app->license = g_strdup (license);
 }
 
 /**

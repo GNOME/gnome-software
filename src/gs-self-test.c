@@ -238,8 +238,7 @@ gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
 	g_assert_no_error (error);
 	g_assert (ret);
 
-	g_assert_cmpstr (gs_app_get_license (app), ==,
-			 "<a href=\"http://spdx.org/licenses/GPL-2.0+\">GPL-2.0+</a>");
+	g_assert_cmpstr (gs_app_get_license (app), ==, "GPL-2.0+");
 	g_assert_cmpstr (gs_app_get_description (app), !=, NULL);
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://www.test.org/");
 }
@@ -378,8 +377,7 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 
 	/* check various bitfields */
 	g_assert (gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE));
-	g_assert_cmpstr (gs_app_get_license (app), ==,
-			 "<a href=\"http://spdx.org/licenses/GPL-2.0+\">GPL-2.0+</a>");
+	g_assert_cmpstr (gs_app_get_license (app), ==, "GPL-2.0+");
 	g_assert (gs_app_get_license_is_free (app));
 
 	/* check kudos */
@@ -405,7 +403,7 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpstr (gs_app_get_name (addon), ==, "Spell Check");
 	g_assert_cmpstr (gs_app_get_source_default (addon), ==, "zeus-spell");
 	g_assert_cmpstr (gs_app_get_license (addon), ==,
-			 "<a href=\"https://www.debian.org/\">Free Software</a>");
+			 "LicenseRef-free=https://www.debian.org/");
 	g_assert (gs_app_get_pixbuf (addon) == NULL);
 }
 

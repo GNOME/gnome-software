@@ -668,6 +668,105 @@ gs_shell_details_history_cb (GtkLabel *label,
 }
 
 /**
+ * gs_shell_details_get_license_markup:
+ **/
+static gchar *
+gs_shell_details_get_license_markup (const gchar *license)
+{
+	GString *urld;
+	guint i;
+	g_auto(GStrv) tokens = NULL;
+
+	/* URLify any SPDX IDs */
+	urld = g_string_new ("");
+	tokens = as_utils_spdx_license_tokenize (license);
+	for (i = 0; tokens[i] != NULL; i++) {
+
+		/* translated join */
+		if (g_strcmp0 (tokens[i], "&") == 0) {
+			/* TRANSLATORS: This is how we join the licenses and can
+			 * be considered a "Conjunctive AND Operator" according
+			 * to the SPDX specification. For example:
+			 * "LGPL-2.1 and MIT and BSD-2-Clause" */
+			g_string_append (urld, _(" and "));
+			continue;
+		}
+		if (g_strcmp0 (tokens[i], "|") == 0) {
+			/* TRANSLATORS: This is how we join the licenses and can
+			 * be considered a "Disjunctive OR Operator" according
+			 * to the SPDX specification. For example:
+			 * "LGPL-2.1 or MIT" */
+			g_string_append (urld, _(" or "));
+			continue;
+		}
+
+		/* legacy literal text */
+		if (g_str_has_prefix (tokens[i], "#")) {
+			g_string_append (urld, tokens[i] + 1);
+			continue;
+		}
+
+		/* proprietary software */
+		if (g_strcmp0 (tokens[i], "@LicenseRef-proprietary") == 0) {
+			const gchar *url = "https://en.wikipedia.org/wiki/Proprietary_software";
+			g_string_append_printf (urld,
+						"<a href=\"%s\">%s</a>",
+						/* TRANSLATORS: non-free app */
+						url, _("Proprietary"));
+			continue;
+		}
+
+		/* public domain */
+		if (g_strcmp0 (tokens[i], "@LicenseRef-public-domain") == 0) {
+			const gchar *url = "https://en.wikipedia.org/wiki/Public_domain";
+			g_string_append_printf (urld,
+						"<a href=\"%s\">%s</a>",
+						/* TRANSLATORS: see the wikipedia page */
+						url, _("Public domain"));
+			continue;
+		}
+
+		/* free software, license unspecified */
+		if (g_str_has_prefix (tokens[i], "@LicenseRef-free")) {
+			const gchar *url = "https://www.gnu.org/philosophy/free-sw";
+			gchar *tmp;
+
+			/* we support putting a custom URL in the
+			 * token string, e.g. @LicenseRef-free=http://ubuntu.com */
+			tmp = g_strstr_len (tokens[i], -1, "=");
+			if (tmp != NULL)
+				url = tmp + 1;
+			g_string_append_printf (urld,
+						"<a href=\"%s\">%s</a>",
+						/* TRANSLATORS: see GNU page */
+						url, _("Free Software"));
+			continue;
+		}
+
+		/* SPDX value */
+		if (g_str_has_prefix (tokens[i], "@")) {
+			g_string_append_printf (urld,
+						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
+						tokens[i] + 1, tokens[i] + 1);
+			continue;
+		}
+
+		/* new SPDX value the extractor didn't know about */
+		if (as_utils_is_spdx_license_id (tokens[i])) {
+			g_string_append_printf (urld,
+						"<a href=\"http://spdx.org/licenses/%s\">%s</a>",
+						tokens[i], tokens[i]);
+			continue;
+		}
+
+		/* unknown value */
+		g_string_append (urld, tokens[i]);
+	}
+
+	return g_string_free (urld, FALSE);
+}
+
+/**
  * gs_shell_details_refresh_all:
  **/
 static void
@@ -742,7 +841,10 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		gtk_label_set_label (GTK_LABEL (self->label_details_license_value), C_("license", "Unknown"));
 		gtk_widget_set_tooltip_text (self->label_details_license_value, NULL);
 	} else {
-		gtk_label_set_markup (GTK_LABEL (self->label_details_license_value), tmp);
+		g_autofree gchar *license_markup = NULL;
+		license_markup = gs_shell_details_get_license_markup (tmp);
+		gtk_label_set_markup (GTK_LABEL (self->label_details_license_value),
+				      license_markup);
 		gtk_widget_set_tooltip_text (self->label_details_license_value, NULL);
 	}
 
