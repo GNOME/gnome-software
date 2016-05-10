@@ -24,7 +24,7 @@
 #include <glib-object.h>
 #include <stdlib.h>
 
-#include "gs-app.h"
+#include "gs-app-private.h"
 #include "gs-plugin.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"

@@ -29,6 +29,7 @@
 #include "gs-common.h"
 
 #include "gs-shell-details.h"
+#include "gs-app-private.h"
 #include "gs-app-addon-row.h"
 #include "gs-history-dialog.h"
 #include "gs-screenshot-image.h"

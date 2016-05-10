@@ -47,7 +47,7 @@
 #include <gtk/gtk.h>
 #include <glib/gi18n.h>
 
-#include "gs-app.h"
+#include "gs-app-private.h"
 #include "gs-plugin.h"
 #include "gs-utils.h"
 

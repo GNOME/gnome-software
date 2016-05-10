@@ -274,9 +274,6 @@ void		 gs_app_add_quirk		(GsApp		*app,
 						 AsAppQuirk	 quirk);
 void		 gs_app_remove_quirk		(GsApp		*app,
 						 AsAppQuirk	 quirk);
-GError		*gs_app_get_last_error		(GsApp		*app);
-void		 gs_app_set_last_error		(GsApp		*app,
-						 GError		*error);
 G_END_DECLS
 
 #endif /* __GS_APP_H */

@@ -119,6 +119,7 @@ gnome_software_SOURCES =				\
 	gs-utils.h					\
 	gs-app.c					\
 	gs-app.h					\
+	gs-app-private.h				\
 	gs-app-list.c					\
 	gs-app-list.h					\
 	gs-category.c					\
