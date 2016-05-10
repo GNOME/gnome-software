@@ -1172,12 +1172,13 @@ gs_app_get_ui_version (const gchar *version, guint64 flags)
 
 	/* then remove any git suffix */
 	if ((flags & GS_APP_VERSION_FIXUP_GIT_SUFFIX) > 0) {
-		f = g_strrstr_len (new, -1, ".2012");
-		if (f != NULL)
-			*f= '\0';
-		f = g_strrstr_len (new, -1, ".2013");
-		if (f != NULL)
-			*f= '\0';
+		for (i = 1999; i < 2020; i++) {
+			g_autofree gchar *suffix = NULL;
+			suffix = g_strdup_printf (".%i", i);
+			f = g_strrstr_len (new, -1, suffix);
+			if (f != NULL)
+				*f= '\0';
+		}
 	}
 
 	return new;
