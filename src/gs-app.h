@@ -36,11 +36,6 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsApp, gs_app, GS, APP, GObject)
 
 typedef enum {
-	GS_APP_ERROR_FAILED,
-	GS_APP_ERROR_LAST
-} GsAppError;
-
-typedef enum {
 	GS_APP_KUDO_MY_LANGUAGE			= 1 << 0,
 	GS_APP_KUDO_RECENT_RELEASE		= 1 << 1,
 	GS_APP_KUDO_FEATURED_RECOMMENDED	= 1 << 2,
@@ -86,8 +81,6 @@ typedef enum {
 #define AS_APP_QUIRK_HAS_SHORTCUT		(1 << 6)
 #define AS_APP_QUIRK_NOT_LAUNCHABLE		(1 << 7)
 #endif
-
-GQuark		 gs_app_error_quark		(void);
 
 GsApp		*gs_app_new			(const gchar	*id);
 gchar		*gs_app_to_string		(GsApp		*app);

@@ -130,12 +130,6 @@ enum {
 G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
 
 /**
- * gs_app_error_quark:
- * Return value: Our personal error quark.
- **/
-G_DEFINE_QUARK (gs-app-error-quark, gs_app_error)
-
-/**
  * gs_app_kv_lpad:
  **/
 static void
