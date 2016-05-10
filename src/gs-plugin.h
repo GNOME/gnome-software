@@ -50,6 +50,19 @@ struct _GsPluginClass
 
 typedef struct	GsPluginData	GsPluginData;
 
+/**
+ * GsPluginStatus:
+ * @GS_PLUGIN_STATUS_UNKNOWN:		Unknown status
+ * @GS_PLUGIN_STATUS_WAITING:		Waiting
+ * @GS_PLUGIN_STATUS_FINISHED:		Finished
+ * @GS_PLUGIN_STATUS_SETUP:		Setup in progress
+ * @GS_PLUGIN_STATUS_DOWNLOADING:	Downloading in progress
+ * @GS_PLUGIN_STATUS_QUERYING:		Querying in progress
+ * @GS_PLUGIN_STATUS_INSTALLING:	Installing in progress
+ * @GS_PLUGIN_STATUS_REMOVING:		Removing in progress
+ *
+ * The ststus of the plugin.
+ **/
 typedef enum {
 	GS_PLUGIN_STATUS_UNKNOWN,
 	GS_PLUGIN_STATUS_WAITING,
@@ -59,18 +72,41 @@ typedef enum {
 	GS_PLUGIN_STATUS_QUERYING,
 	GS_PLUGIN_STATUS_INSTALLING,
 	GS_PLUGIN_STATUS_REMOVING,
+	/*< private >*/
 	GS_PLUGIN_STATUS_LAST
 } GsPluginStatus;
 
+/**
+ * GsPluginFlags:
+ * @GS_PLUGIN_FLAGS_NONE:		No flags set
+ * @GS_PLUGIN_FLAGS_RUNNING_SELF:	The plugin is running
+ * @GS_PLUGIN_FLAGS_RUNNING_OTHER:	Another plugin is running
+ * @GS_PLUGIN_FLAGS_EXCLUSIVE:		An exclusive action is running
+ * @GS_PLUGIN_FLAGS_RECENT:		This plugin recently ran
+ *
+ * The flags for the plugin at this point in time.
+ **/
 typedef enum {
 	GS_PLUGIN_FLAGS_NONE		= 0,
 	GS_PLUGIN_FLAGS_RUNNING_SELF	= 1 << 0,
 	GS_PLUGIN_FLAGS_RUNNING_OTHER	= 1 << 1,
 	GS_PLUGIN_FLAGS_EXCLUSIVE	= 1 << 2,
 	GS_PLUGIN_FLAGS_RECENT		= 1 << 3,
+	/*< private >*/
 	GS_PLUGIN_FLAGS_LAST
 } GsPluginFlags;
 
+/**
+ * GsPluginError:
+ * @GS_PLUGIN_ERROR_FAILED:		Generic failure
+ * @GS_PLUGIN_ERROR_NOT_SUPPORTED:	Action not supported
+ * @GS_PLUGIN_ERROR_CANCELLED:		Action was cancelled
+ * @GS_PLUGIN_ERROR_NO_NETWORK:		No network connection available
+ * @GS_PLUGIN_ERROR_NO_SECURITY:	Security policy forbid action
+ * @GS_PLUGIN_ERROR_NO_SPACE:		No disk space to allow action
+ *
+ * The failure error types.
+ **/
 typedef enum {
 	GS_PLUGIN_ERROR_FAILED,
 	GS_PLUGIN_ERROR_NOT_SUPPORTED,
@@ -78,9 +114,37 @@ typedef enum {
 	GS_PLUGIN_ERROR_NO_NETWORK,
 	GS_PLUGIN_ERROR_NO_SECURITY,
 	GS_PLUGIN_ERROR_NO_SPACE,
+	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;
 
+/**
+ * GsPluginRefineFlags:
+ * @GS_PLUGIN_REFINE_FLAGS_DEFAULT:			No explicit flags set
+ * @GS_PLUGIN_REFINE_FLAGS_USE_HISTORY:			Get the historical view
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE:		Require the license
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_URL:			Require the URL
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION:		Require the long description
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE:		Require the installed and download sizes
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING:		Require the rating
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION:		Require the version
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY:		Require the history
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION:	Require enough to install or remove the package
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS:	Require update details
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN:		Require the origin
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_RELATED:		Require related packages
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH:		Require the menu path
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS:		Require available addons
+ * @GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES:		Allow packages to be returned
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_SEVERITY:	Require update severity
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPGRADE_REMOVED:	Require distro upgrades
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE:		Require the provenance
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS:		Require user-reviews
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS:	Require user-ratings
+ * @GS_PLUGIN_REFINE_FLAGS_REQUIRE_KEY_COLORS:		Require the key colors
+ *
+ * The refine flags.
+ **/
 typedef enum {
 	GS_PLUGIN_REFINE_FLAGS_DEFAULT			= 0,
 	GS_PLUGIN_REFINE_FLAGS_USE_HISTORY		= 1 << 0,
