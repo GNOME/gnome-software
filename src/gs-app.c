@@ -2392,6 +2392,12 @@ gs_app_get_kudos_percentage (GsApp *app)
  *
  * Gets if the application is queued for installation.
  *
+ * This is only set for addons when the user has selected some addons to be
+ * installed before installing the main application.
+ * Plugins should check all the addons for this property when installing
+ * main applications so that the chosen set of addons is also installed at the
+ * same time. This is never set when applications do not have addons.
+ *
  * Returns: %TRUE for success
  **/
 gboolean
