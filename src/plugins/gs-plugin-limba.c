@@ -23,8 +23,7 @@
 #include <config.h>
 
 #include <limba.h>
-#include <appstream-glib.h>
-#include <gs-plugin.h>
+#include <gnome-software.h>
 
 /*
  * SECTION:

@@ -24,9 +24,7 @@
 #include <string.h>
 #include <sqlite3.h>
 #include <stdlib.h>
-
-#include <gs-plugin.h>
-#include <gs-utils.h>
+#include <gnome-software.h>
 
 /*
  * SECTION:

@@ -22,10 +22,7 @@
 #include <config.h>
 
 #include <json-glib/json-glib.h>
-
-#include <gs-plugin.h>
-#include <gs-os-release.h>
-#include <gs-utils.h>
+#include <gnome-software.h>
 
 #define FEDORA_PKGDB_COLLECTIONS_API_URI "https://admin.fedoraproject.org/pkgdb/api/collections/"
 

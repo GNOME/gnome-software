@@ -20,12 +20,8 @@
  */
 
 #include <config.h>
-#include <glib/gi18n.h>
-#include <appstream-glib.h>
 
-#include <gs-utils.h>
-#include <gs-plugin.h>
-#include <gs-plugin-loader.h>
+#include <gnome-software.h>
 
 #include "gs-appstream.h"
 

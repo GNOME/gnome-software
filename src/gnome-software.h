@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -19,27 +19,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __APPSTREAM_CACHE_H
-#define __APPSTREAM_CACHE_H
+#ifndef __GNOME_SOFTWARE_H__
+#define __GNOME_SOFTWARE_H__
 
-#include <glib.h>
-#include <gnome-software.h>
+#include <gs-app.h>
+#include <gs-app-list.h>
+#include <gs-category.h>
+#include <gs-os-release.h>
+#include <gs-plugin.h>
+#include <gs-utils.h>
 
-#define I_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE
-#include <packagekit-glib2/packagekit.h>
+#endif /* __GNOME_SOFTWARE_H__ */
 
-G_BEGIN_DECLS
-
-GsPluginStatus 	packagekit_status_enum_to_plugin_status	(PkStatusEnum	 status);
-
-gboolean	gs_plugin_packagekit_add_results	(GsPlugin	*plugin,
-							 GList		**list,
-							 PkResults	*results,
-							 GError		**error);
-gboolean	gs_plugin_packagekit_convert_gerror	(GError		**error);
-gboolean	gs_plugin_packagekit_results_valid	(PkResults	*results,
-							 GError		**error);
-
-G_END_DECLS
-
-#endif /* __APPSTREAM_CACHE_H */

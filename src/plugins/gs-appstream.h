@@ -22,9 +22,7 @@
 #ifndef __APPSTREAM_COMMON_H
 #define __APPSTREAM_COMMON_H
 
-#include <glib.h>
-#include <gs-plugin.h>
-#include <appstream-glib.h>
+#include <gnome-software.h>
 
 G_BEGIN_DECLS
 

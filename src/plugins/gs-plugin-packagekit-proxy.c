@@ -26,9 +26,7 @@
 #include <packagekit-glib2/packagekit.h>
 #include <string.h>
 #include <gsettings-desktop-schemas/gdesktop-enums.h>
-
-#include <gs-plugin.h>
-#include <gs-utils.h>
+#include <gnome-software.h>
 
 /*
  * SECTION:

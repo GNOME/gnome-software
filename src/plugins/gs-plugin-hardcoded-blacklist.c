@@ -20,8 +20,9 @@
  */
 
 #include <config.h>
+
 #include <fnmatch.h>
-#include <gs-plugin.h>
+#include <gnome-software.h>
 
 /*
  * SECTION:

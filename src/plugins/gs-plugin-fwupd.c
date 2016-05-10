@@ -22,15 +22,12 @@
 #include <config.h>
 
 #include <fwupd.h>
-#include <appstream-glib.h>
 #include <fcntl.h>
 #include <gio/gio.h>
 #include <gio/gunixfdlist.h>
 #include <glib/gstdio.h>
 
-#include <gs-plugin.h>
-
-#include "gs-utils.h"
+#include <gnome-software.h>
 
 /*
  * SECTION:

@@ -24,10 +24,7 @@
 #define _GNU_SOURCE
 #include <string.h>
 
-#include <glib/gi18n.h>
-
-#include <gs-plugin.h>
-#include <gs-utils.h>
+#include <gnome-software.h>
 
 /*
  * SECTION:

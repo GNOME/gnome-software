@@ -21,10 +21,8 @@
 
 #include <config.h>
 
-#include <gs-plugin.h>
+#include <gnome-software.h>
 #include <string.h>
-
-#include "gs-utils.h"
 
 #define GS_PLUGIN_STEAM_SCREENSHOT_URI	"http://cdn.akamai.steamstatic.com/steam/apps"
 

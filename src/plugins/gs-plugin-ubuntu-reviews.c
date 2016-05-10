@@ -23,14 +23,9 @@
 
 #include <string.h>
 #include <math.h>
-#include <libsoup/soup.h>
 #include <json-glib/json-glib.h>
 #include <sqlite3.h>
-
-#include <gs-plugin.h>
-#include <gs-utils.h>
-
-#include "gs-os-release.h"
+#include <gnome-software.h>
 
 struct GsPluginData {
 	gchar		*db_path;

@@ -25,9 +25,7 @@
 #include <gio/gio.h>
 #include <glib/gstdio.h>
 
-#include <gs-plugin.h>
-
-#include "gs-utils.h"
+#include <gnome-software.h>
 
 struct GsPluginData {
 	OstreeRepo		*ostree_repo;

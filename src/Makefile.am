@@ -113,6 +113,7 @@ bin_PROGRAMS =						\
 	gnome-software
 
 gnome_software_SOURCES =				\
+	gnome-software.h				\
 	gs-utils.c					\
 	gs-utils.h					\
 	gs-app.c					\

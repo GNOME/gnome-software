@@ -22,9 +22,7 @@
 #include <config.h>
 
 #include <stdlib.h>
-
-#include <gs-plugin.h>
-#include <gs-utils.h>
+#include <gnome-software.h>
 
 #define DPKG_DEB_BINARY		"/usr/bin/dpkg-deb"
 

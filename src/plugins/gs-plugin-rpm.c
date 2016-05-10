@@ -26,7 +26,7 @@
 #include <rpm/rpmlib.h>
 #include <rpm/rpmts.h>
 
-#include <gs-plugin.h>
+#include <gnome-software.h>
 
 /**
  * gs_plugin_order_after:

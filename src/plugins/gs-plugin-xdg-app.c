@@ -33,11 +33,9 @@
 #include <config.h>
 
 #include <xdg-app.h>
-
-#include <gs-plugin.h>
+#include <gnome-software.h>
 
 #include "gs-appstream.h"
-#include "gs-utils.h"
 
 static gboolean		gs_plugin_refine_item_metadata (GsPlugin *plugin,
 							GsApp *app,

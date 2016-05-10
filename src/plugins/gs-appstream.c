@@ -21,8 +21,7 @@
 
 #include "config.h"
 
-#include <gs-plugin.h>
-#include <gs-utils.h>
+#include <gnome-software.h>
 
 #include "gs-appstream.h"
 

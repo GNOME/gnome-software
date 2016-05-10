@@ -21,7 +21,7 @@
 
 #include <config.h>
 
-#include <gs-plugin.h>
+#include <gnome-software.h>
 #include <glib/gi18n.h>
 
 #include "menu-spec-common.h"

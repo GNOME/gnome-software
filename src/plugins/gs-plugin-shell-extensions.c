@@ -24,9 +24,7 @@
 #include <errno.h>
 #include <json-glib/json-glib.h>
 
-#include <gs-plugin.h>
-#include <gs-os-release.h>
-#include <gs-utils.h>
+#include <gnome-software.h>
 
 #define SHELL_EXTENSIONS_API_URI 		"https://extensions.gnome.org/"
 

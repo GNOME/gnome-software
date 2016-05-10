@@ -21,15 +21,9 @@
 
 #include <config.h>
 
-#include <gs-plugin.h>
+#include <gnome-software.h>
 #include <json-glib/json-glib.h>
 #include <string.h>
-
-#include "gs-app.h"
-#include "gs-os-release.h"
-#include "gs-plugin.h"
-#include "gs-review.h"
-#include "gs-utils.h"
 
 /*
  * SECTION:
