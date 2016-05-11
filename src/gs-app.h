@@ -95,20 +95,6 @@ typedef enum {
 	GS_APP_QUALITY_LAST
 } GsAppQuality;
 
-#if !AS_CHECK_VERSION(0,5,12)
-#define AS_APP_QUIRK_MATCH_ANY_PREFIX		(1 << 3)
-#endif
-
-#if !AS_CHECK_VERSION(0,5,14)
-#define AS_APP_QUIRK_NEEDS_REBOOT		(1 << 4)
-#define AS_APP_QUIRK_NOT_REVIEWABLE		(1 << 5)
-#endif
-
-#if !AS_CHECK_VERSION(0,5,15)
-#define AS_APP_QUIRK_HAS_SHORTCUT		(1 << 6)
-#define AS_APP_QUIRK_NOT_LAUNCHABLE		(1 << 7)
-#endif
-
 GsApp		*gs_app_new			(const gchar	*id);
 gchar		*gs_app_to_string		(GsApp		*app);
 

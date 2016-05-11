@@ -423,7 +423,6 @@ gs_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
 	gs_image_set_from_pixbuf_with_scale (image, pixbuf, scale);
 }
 
-#if AS_CHECK_VERSION(0,5,12)
 /**
  * gs_utils_get_content_rating:
  *
@@ -642,7 +641,6 @@ gs_utils_get_content_rating (void)
 	{ NULL, 0, NULL } };
 	return content_rating_oars[0].desc;
 }
-#endif
 
 /**
  * gs_utils_is_current_desktop:

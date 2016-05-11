@@ -52,9 +52,7 @@ void	gs_image_set_from_pixbuf_with_scale	(GtkImage		*image,
 void	gs_image_set_from_pixbuf		(GtkImage		*image,
 						 const GdkPixbuf	*pixbuf);
 
-#if AS_CHECK_VERSION(0,5,12)
 const gchar 	*gs_utils_get_content_rating	(void);
-#endif
 
 const gchar	*gs_user_agent			(void);
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
