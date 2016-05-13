@@ -118,6 +118,7 @@ gs_application_init (GsApplication *application)
 	g_application_add_main_option_entries (G_APPLICATION (application), options);
 
 	application->profile = as_profile_new ();
+	application->network_changed_handler = 0;
 }
 
 static void
@@ -181,7 +182,7 @@ gs_application_monitor_network (GsApplication *app)
 	GNetworkMonitor *network_monitor;
 
 	network_monitor = g_network_monitor_get_default ();
-	if (network_monitor == NULL)
+	if (network_monitor == NULL || app->network_changed_handler != 0)
 		return;
 	app->network_monitor = g_object_ref (network_monitor);
 
@@ -758,7 +759,6 @@ gs_application_startup (GApplication *application)
 
 	gs_application_monitor_permission (GS_APPLICATION (application));
 	gs_application_monitor_updates (GS_APPLICATION (application));
-	gs_application_monitor_network (GS_APPLICATION (application));
 	gs_folders_convert ();
 
 	gs_application_update_software_sources_presence (application);
@@ -776,6 +776,7 @@ gs_application_activate (GApplication *application)
 	GsApplication *app = GS_APPLICATION (application);
 
 	gs_application_initialize_ui (GS_APPLICATION (application));
+	gs_application_monitor_network (GS_APPLICATION (application));
 
 	/* start metadata loading screen */
 	if (gs_shell_get_mode (app->shell) == GS_SHELL_MODE_UNKNOWN) {
