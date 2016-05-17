@@ -6,7 +6,7 @@
 %global libsoup_version 2.51.92
 %global gsettings_desktop_schemas_version 3.11.5
 %global gnome_desktop_version 3.17.92
-%global xdg_app_version 0.4.14
+%global flatpak_version 0.5.2
 
 %define alphatag                        #ALPHATAG#
 %define distrotag                       23
@@ -52,7 +52,7 @@ BuildRequires: libappstream-glib-devel >= %{appstream_glib_version}
 BuildRequires: libsoup-devel
 BuildRequires: PackageKit-glib-devel >= %{packagekit_version}
 BuildRequires: polkit-devel
-BuildRequires: xdg-app-devel >= %{xdg_app_version}
+BuildRequires: flatpak-devel >= %{flatpak_version}
 
 # this is not a library version
 %define gs_plugin_version               10
