@@ -293,11 +293,14 @@ gs_refine_item_management_plugin (GsApp *app, AsApp *item)
 	bundles = as_app_get_bundles (item);
 	for (i = 0; i < bundles->len; i++) {
 		AsBundle *bundle = g_ptr_array_index (bundles, i);
-		if (as_bundle_get_kind (bundle) == AS_BUNDLE_KIND_XDG_APP) {
-			gs_app_set_management_plugin (app, "xdg-app");
-			gs_app_add_source (app, as_bundle_get_id (bundle));
+		AsBundleKind kind = as_bundle_get_kind (bundle);
 
-			/* automatically add runtime */
+		/* common to all bundle formats */
+		gs_app_set_management_plugin (app, as_bundle_kind_to_string (kind));
+		gs_app_add_source (app, as_bundle_get_id (bundle));
+
+		/* automatically add runtime */
+		if (kind == AS_BUNDLE_KIND_XDG_APP) {
 			runtime = as_bundle_get_runtime (bundle);
 			if (runtime != NULL) {
 				g_autoptr(GsApp) app2 = NULL;
@@ -308,11 +311,6 @@ gs_refine_item_management_plugin (GsApp *app, AsApp *item)
 					gs_app_set_runtime (app, app2);
 				}
 			}
-			break;
-		}
-		if (as_bundle_get_kind (bundle) == AS_BUNDLE_KIND_LIMBA) {
-			gs_app_set_management_plugin (app, "limba");
-			gs_app_add_source (app, as_bundle_get_id (bundle));
 			break;
 		}
 	}
