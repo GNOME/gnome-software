@@ -148,7 +148,8 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	GPtrArray *items;
 	gboolean ret;
 	const gchar *origin;
-	const gchar *tmp;
+	const gchar *test_xml;
+	const gchar *test_icon_root;
 	guint *perc;
 	guint i;
 	g_autoptr(GHashTable) origins = NULL;
@@ -160,10 +161,12 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	}
 
 	/* only when in self test */
-	tmp = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
-	if (tmp != NULL) {
-		g_debug ("using self test data of %s", tmp);
-		if (!as_store_from_xml (priv->store, tmp, NULL, error))
+	test_xml = g_getenv ("GS_SELF_TEST_APPSTREAM_XML");
+	if (test_xml != NULL) {
+		test_icon_root = g_getenv ("GS_SELF_TEST_APPSTREAM_ICON_ROOT");
+		g_debug ("using self test data of %s... with icon root %s",
+			 test_xml, test_icon_root);
+		if (!as_store_from_xml (priv->store, test_xml, test_icon_root, error))
 			return FALSE;
 	} else {
 		ret = as_store_load (priv->store,
