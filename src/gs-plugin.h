@@ -352,6 +352,10 @@ gboolean	 gs_plugin_update_app			(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_add_source			(GsPlugin	*plugin,
+							 GsApp		*app,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_app_upgrade_download		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GCancellable	*cancellable,
