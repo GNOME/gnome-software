@@ -32,61 +32,121 @@
 
 #include "gs-app-list.h"
 
+struct _GsAppList
+{
+	GObject			 parent_instance;
+	GPtrArray		*array;
+};
+
+G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
+
 /**
  * gs_app_list_add:
- * @list: A pointer to a #GsAppList
+ * @list: A #GsAppList
  * @app: A #GsApp
  *
  * Adds an application to the list, adding a reference.
  **/
 void
-gs_app_list_add (GsAppList **list, GsApp *app)
+gs_app_list_add (GsAppList *list, GsApp *app)
 {
-	g_return_if_fail (list != NULL);
+	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (GS_IS_APP (app));
-	*list = g_list_prepend (*list, g_object_ref (app));
+	g_ptr_array_add (list->array, g_object_ref (app));
 }
 
 /**
- * gs_app_list_free:
+ * gs_app_list_index:
+ * @list: A #GsAppList
+ * @idx: An index into the list
+ *
+ * Gets an application at a specific position in the list.
+ *
+ * Returns: (transfer none): a #GsApp, or %NULL if invalid
+ **/
+GsApp *
+gs_app_list_index (GsAppList *list, guint idx)
+{
+	return GS_APP (g_ptr_array_index (list->array, idx));
+}
+
+/**
+ * gs_app_list_length:
  * @list: A #GsAppList
  *
- * Frees the application list.
+ * Gets the length of the application list.
+ *
+ * Returns: Integer
  **/
-void
-gs_app_list_free (GsAppList *list)
+guint
+gs_app_list_length (GsAppList *list)
 {
-	g_list_free_full (list, (GDestroyNotify) g_object_unref);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), 0);
+	return list->array->len;
 }
 
 /**
  * gs_app_list_filter:
- * @list: A pointer to a #GsAppList
+ * @list: A #GsAppList
  * @func: A #GsAppListFilterFunc
  * @user_data: the user pointer to pass to @func
  *
  * If func() returns TRUE for the GsApp, then the app is kept.
  **/
 void
-gs_app_list_filter (GsAppList **list, GsAppListFilterFunc func, gpointer user_data)
+gs_app_list_filter (GsAppList *list, GsAppListFilterFunc func, gpointer user_data)
 {
-	GsAppList *l;
-	GsAppList *new = NULL;
+	guint i;
 	GsApp *app;
+	g_autoptr(GsAppList) old = NULL;
 
-	g_return_if_fail (list != NULL);
+	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (func != NULL);
 
-	/* see if any of the apps need filtering */
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (func (app, user_data))
-			gs_app_list_add (&new, app);
-	}
+	/* deep copy to a temp list and clear the current one */
+	old = gs_app_list_copy (list);
+	g_ptr_array_set_size (list->array, 0);
 
-	/* replace the list */
-	gs_app_list_free (*list);
-	*list = new;
+	/* see if any of the apps need filtering */
+	for (i = 0; i < old->array->len; i++) {
+		app = gs_app_list_index (old, i);
+		if (func (app, user_data))
+			gs_app_list_add (list, app);
+	}
+}
+
+typedef struct {
+	GsAppListSortFunc	 func;
+	gpointer		 user_data;
+} GsAppListSortHelper;
+
+/**
+ * gs_app_list_sort_cb:
+ **/
+static gint
+gs_app_list_sort_cb (gconstpointer a, gconstpointer b, gpointer user_data)
+{
+	GsApp *app1 = GS_APP (*(GsApp **) a);
+	GsApp *app2 = GS_APP (*(GsApp **) b);
+	GsAppListSortHelper *helper = (GsAppListSortHelper *) user_data;
+	return helper->func (app1, app2, user_data);
+}
+
+/**
+ * gs_app_list_sort:
+ * @list: A #GsAppList
+ * @func: A #GCompareFunc
+ *
+ * Sorts the application list.
+ **/
+void
+gs_app_list_sort (GsAppList *list, GsAppListSortFunc func, gpointer user_data)
+{
+	GsAppListSortHelper helper;
+	g_return_if_fail (GS_IS_APP_LIST (list));
+	helper.func = func;
+	helper.user_data = user_data;
+	g_ptr_array_sort_with_data (list->array, gs_app_list_sort_cb, &helper);
 }
 
 /**
@@ -95,49 +155,51 @@ gs_app_list_filter (GsAppList **list, GsAppListFilterFunc func, gpointer user_da
 static gint
 gs_app_list_randomize_cb (gconstpointer a, gconstpointer b, gpointer user_data)
 {
+	GsApp *app1 = GS_APP (*(GsApp **) a);
+	GsApp *app2 = GS_APP (*(GsApp **) b);
 	const gchar *k1;
 	const gchar *k2;
 	g_autofree gchar *key = NULL;
 
 	key = g_strdup_printf ("Plugin::sort-key[%p]", user_data);
-	k1 = gs_app_get_metadata_item ((GsApp *) a, key);
-	k2 = gs_app_get_metadata_item ((GsApp *) b, key);
+	k1 = gs_app_get_metadata_item (app1, key);
+	k2 = gs_app_get_metadata_item (app2, key);
 	return g_strcmp0 (k1, k2);
 }
 
 /**
  * gs_app_list_randomize:
- * @list: A pointer to a #GsAppList
+ * @list: A #GsAppList
  *
  * Randomize the order of the list, but don't change the order until
  * the next day.
  **/
 void
-gs_app_list_randomize (GsAppList **list)
+gs_app_list_randomize (GsAppList *list)
 {
-	GsAppList *l;
+	guint i;
 	GRand *rand;
 	GsApp *app;
 	gchar sort_key[] = { '\0', '\0', '\0', '\0' };
 	g_autoptr(GDateTime) date = NULL;
 	g_autofree gchar *key = NULL;
 
-	g_return_if_fail (list != NULL);
+	g_return_if_fail (GS_IS_APP_LIST (list));
 
 	key = g_strdup_printf ("Plugin::sort-key[%p]", list);
 	rand = g_rand_new ();
 	date = g_date_time_new_now_utc ();
 	g_rand_set_seed (rand, g_date_time_get_day_of_year (date));
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		app = gs_app_list_index (list, i);
 		sort_key[0] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
 		sort_key[1] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
 		sort_key[2] = g_rand_int_range (rand, (gint32) 'A', (gint32) 'Z');
 		gs_app_set_metadata (app, key, sort_key);
 	}
-	*list = g_list_sort_with_data (*list, gs_app_list_randomize_cb, list);
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	g_ptr_array_sort_with_data (list->array, gs_app_list_randomize_cb, list);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		app = gs_app_list_index (list, i);
 		gs_app_set_metadata (app, key, NULL);
 	}
 	g_rand_free (rand);
@@ -145,44 +207,44 @@ gs_app_list_randomize (GsAppList **list)
 
 /**
  * gs_app_list_filter_duplicates:
- * @list: A pointer to a #GsAppList
+ * @list: A #GsAppList
  *
  * Filter any duplicate applications from the list.
  **/
 void
-gs_app_list_filter_duplicates (GsAppList **list)
+gs_app_list_filter_duplicates (GsAppList *list)
 {
-	GsAppList *l;
-	GsAppList *new = NULL;
+	guint i;
 	GsApp *app;
 	GsApp *found;
 	const gchar *id;
 	g_autoptr(GHashTable) hash = NULL;
+	g_autoptr(GsAppList) old = NULL;
 
-	g_return_if_fail (list != NULL);
+	g_return_if_fail (GS_IS_APP_LIST (list));
+
+	/* deep copy to a temp list and clear the current one */
+	old = gs_app_list_copy (list);
+	g_ptr_array_set_size (list->array, 0);
 
 	/* create a new list with just the unique items */
 	hash = g_hash_table_new (g_str_hash, g_str_equal);
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	for (i = 0; i < old->array->len; i++) {
+		app = gs_app_list_index (old, i);
 		id = gs_app_get_id (app);
 		if (id == NULL) {
-			gs_app_list_add (&new, app);
+			gs_app_list_add (list, app);
 			continue;
 		}
 		found = g_hash_table_lookup (hash, id);
 		if (found == NULL) {
-			gs_app_list_add (&new, app);
+			gs_app_list_add (list, app);
 			g_hash_table_insert (hash, (gpointer) id,
 					     GUINT_TO_POINTER (1));
 			continue;
 		}
 		g_debug ("ignoring duplicate %s", id);
 	}
-
-	/* replace the list */
-	gs_app_list_free (*list);
-	*list = new;
 }
 
 /**
@@ -196,7 +258,62 @@ gs_app_list_filter_duplicates (GsAppList **list)
 GsAppList *
 gs_app_list_copy (GsAppList *list)
 {
-	return g_list_copy_deep (list, (GCopyFunc) g_object_ref, NULL);
+	GsAppList *new;
+	guint i;
+
+	g_return_val_if_fail (GS_IS_APP_LIST (list), NULL);
+
+	new = gs_app_list_new ();
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		gs_app_list_add (new, app);
+	}
+	return new;
+}
+
+/**
+ * gs_app_list_finalize:
+ **/
+static void
+gs_app_list_finalize (GObject *object)
+{
+	GsAppList *list = GS_APP_LIST (object);
+	g_ptr_array_unref (list->array);
+	G_OBJECT_CLASS (gs_app_list_parent_class)->finalize (object);
+}
+
+/**
+ * gs_app_list_class_init:
+ **/
+static void
+gs_app_list_class_init (GsAppListClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->finalize = gs_app_list_finalize;
+}
+
+/**
+ * gs_app_list_init:
+ **/
+static void
+gs_app_list_init (GsAppList *list)
+{
+	list->array = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+}
+
+/**
+ * gs_app_list_new:
+ *
+ * Creates a new list.
+ *
+ * Returns: A newly allocated #GsAppList
+ **/
+GsAppList *
+gs_app_list_new (void)
+{
+	GsApp *app;
+	app = g_object_new (GS_TYPE_APP_LIST, NULL);
+	return GS_APP_LIST (app);
 }
 
 /* vim: set noexpandtab: */

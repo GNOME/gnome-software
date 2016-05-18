@@ -334,7 +334,7 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
-			       GList **list,
+			       GsAppList *list,
 			       GCancellable *cancellable,
 			       GError **error)
 {
@@ -392,7 +392,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 gboolean
 gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GsCategory *category,
-			     GList **list,
+			     GsAppList *list,
 			     GCancellable *cancellable,
 			     GError **error)
 {
@@ -446,7 +446,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
  */
 static gboolean
 gs_plugin_add_search_item (GsPlugin *plugin,
-			   GList **list,
+			   GsAppList *list,
 			   AsApp *item,
 			   gchar **values,
 			   GCancellable *cancellable,
@@ -485,7 +485,7 @@ gs_plugin_add_search_item (GsPlugin *plugin,
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,
-		      GList **list,
+		      GsAppList *list,
 		      GCancellable *cancellable,
 		      GError **error)
 {
@@ -517,7 +517,7 @@ gs_plugin_add_search (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
-			 GList **list,
+			 GsAppList *list,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -548,27 +548,26 @@ gs_plugin_add_installed (GsPlugin *plugin,
  * gs_plugin_add_categories_for_app:
  */
 static void
-gs_plugin_add_categories_for_app (GList *list, AsApp *app)
+gs_plugin_add_categories_for_app (GPtrArray *list, AsApp *app)
 {
-	GList *l;
-	GList *l2;
+	guint i, j;
 	GsCategory *category;
 	GsCategory *parent;
 	gboolean found_subcat;
 
 	/* does it match the main category */
-	for (l = list; l != NULL; l = l->next) {
-		g_autoptr(GList) children = NULL;
-		parent = GS_CATEGORY (l->data);
+	for (i = 0; i < list->len; i++) {
+		GPtrArray *children;
+		parent = GS_CATEGORY (g_ptr_array_index (list, i));
 		if (!as_app_has_category (app, gs_category_get_id (parent)))
 			continue;
 		gs_category_increment_size (parent);
 
 		/* does it match any sub-categories */
 		found_subcat = FALSE;
-		children = gs_category_get_subcategories (parent);
-		for (l2 = children; l2 != NULL; l2 = l2->next) {
-			category = GS_CATEGORY (l2->data);
+		children = gs_category_get_children (parent);
+		for (j = 0; j < children->len; j++) {
+			category = GS_CATEGORY (g_ptr_array_index (children, j));
 			if (!as_app_has_category (app, gs_category_get_id (category)))
 				continue;
 			gs_category_increment_size (category);
@@ -580,8 +579,8 @@ gs_plugin_add_categories_for_app (GList *list, AsApp *app)
 		if (!found_subcat) {
 			category = gs_category_find_child (parent, "other");
 			if (category == NULL) {
-				category = gs_category_new (parent, "other", NULL);
-				gs_category_add_subcategory (parent, category);
+				category = gs_category_new ("other", NULL);
+				gs_category_add_child (parent, category);
 				g_object_unref (category);
 			}
 			as_app_add_category (app, gs_category_get_id (category));
@@ -595,7 +594,7 @@ gs_plugin_add_categories_for_app (GList *list, AsApp *app)
  */
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
-			  GList **list,
+			  GPtrArray *list,
 			  GCancellable *cancellable,
 			  GError **error)
 {
@@ -615,7 +614,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			continue;
 		if (as_app_get_priority (app) < 0)
 			continue;
-		gs_plugin_add_categories_for_app (*list, app);
+		gs_plugin_add_categories_for_app (list, app);
 	}
 	return TRUE;
 }
@@ -625,7 +624,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -658,7 +657,7 @@ gs_plugin_add_popular (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_featured (GsPlugin *plugin,
-			GList **list,
+			GsAppList *list,
 			GCancellable *cancellable,
 			GError **error)
 {

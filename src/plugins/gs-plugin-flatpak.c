@@ -147,7 +147,7 @@ gs_app_set_flatpak_kind (GsApp *app, FlatpakRefKind kind)
  */
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -466,7 +466,7 @@ gs_plugin_flatpak_progress_cb (const gchar *status,
  */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
-			 GList **list,
+			 GsAppList *list,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -515,7 +515,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -600,7 +600,7 @@ gs_plugin_add_source (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -1434,7 +1434,7 @@ gs_plugin_update_app (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GFile *file,
 		       GCancellable *cancellable,
 		       GError **error)

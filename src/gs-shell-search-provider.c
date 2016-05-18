@@ -60,11 +60,11 @@ pending_search_free (PendingSearch *search)
  * search_sort_by_kudo_cb:
  **/
 static gint
-search_sort_by_kudo_cb (gconstpointer a, gconstpointer b)
+search_sort_by_kudo_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
 	guint pa, pb;
-	pa = gs_app_get_kudos_percentage (GS_APP ((gpointer) a));
-	pb = gs_app_get_kudos_percentage (GS_APP ((gpointer) b));
+	pa = gs_app_get_kudos_percentage (app1);
+	pb = gs_app_get_kudos_percentage (app2);
 	if (pa < pb)
 		return 1;
 	else if (pa > pb)
@@ -79,7 +79,7 @@ search_done_cb (GObject *source,
 {
 	PendingSearch *search = user_data;
 	GsShellSearchProvider *self = search->provider;
-	GList *l;
+	guint i;
 	GVariantBuilder builder;
 	g_autoptr(GsAppList) list = NULL;
 
@@ -92,11 +92,11 @@ search_done_cb (GObject *source,
 	}
 
 	/* sort by kudos, as there is no ratings data by default */
-	list = g_list_sort (list, search_sort_by_kudo_cb);
+	gs_app_list_sort (list, search_sort_by_kudo_cb, NULL);
 
 	g_variant_builder_init (&builder, G_VARIANT_TYPE ("as"));
-	for (l = list; l != NULL; l = l->next) {
-		GsApp *app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
 		if (gs_app_get_state (app) != AS_APP_STATE_AVAILABLE)
 			continue;
 		g_variant_builder_add (&builder, "s", gs_app_get_id (app));

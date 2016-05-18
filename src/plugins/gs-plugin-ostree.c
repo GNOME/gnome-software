@@ -100,7 +100,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
  */
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {

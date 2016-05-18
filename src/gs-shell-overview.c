@@ -127,9 +127,8 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 	GsShellOverview *self = GS_SHELL_OVERVIEW (user_data);
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GList *l;
+	guint i;
 	GsApp *app;
-	gint i;
 	GtkWidget *tile;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -144,13 +143,13 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 		goto out;
 	}
 	/* Don't show apps from the category that's currently featured as the category of the day */
-	gs_app_list_filter (&list, filter_category, priv->category_of_day);
-	gs_app_list_randomize (&list);
+	gs_app_list_filter (list, filter_category, priv->category_of_day);
+	gs_app_list_randomize (list);
 
 	gs_container_remove_all (GTK_CONTAINER (priv->box_popular));
 
-	for (l = list, i = 0; l != NULL && i < N_TILES; l = l->next, i++) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
+		app = gs_app_list_index (list, i);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (popular_tile_clicked), self);
@@ -177,9 +176,8 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 	GsShellOverview *self = load_data->self;
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GList *l;
+	guint i;
 	GsApp *app;
-	gint i;
 	GtkWidget *tile;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -192,21 +190,23 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 		gtk_widget_hide (priv->popular_rotating_heading);
 		gtk_widget_hide (priv->box_popular_rotating);
 		goto out;
-	} else if (g_list_length (list) < N_TILES) {
-		g_warning ("hiding recommended applications: found only %d to show, need at least %d", g_list_length (list), N_TILES);
+	} else if (gs_app_list_length (list) < N_TILES) {
+		g_warning ("hiding recommended applications: "
+			   "found only %d to show, need at least %d",
+			   gs_app_list_length (list), N_TILES);
 		gtk_widget_hide (priv->popular_rotating_heading);
 		gtk_widget_hide (priv->box_popular_rotating);
 		goto out;
 	}
-	gs_app_list_randomize (&list);
+	gs_app_list_randomize (list);
 
 	gtk_widget_show (priv->popular_rotating_heading);
 	gtk_widget_show (priv->box_popular_rotating);
 
 	gs_container_remove_all (GTK_CONTAINER (priv->box_popular_rotating));
 
-	for (l = list, i = 0; l != NULL && i < N_TILES; l = l->next, i++) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list) && i < N_TILES; i++) {
+		app = gs_app_list_index (list, i);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
 			  G_CALLBACK (popular_tile_clicked), self);
@@ -255,19 +255,25 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 
 	if (g_getenv ("GNOME_SOFTWARE_FEATURED") == NULL) {
 		/* Don't show apps from the category that's currently featured as the category of the day */
-		gs_app_list_filter (&list, filter_category, priv->category_of_day);
-		gs_app_list_randomize (&list);
+		gs_app_list_filter (list, filter_category, priv->category_of_day);
+		gs_app_list_randomize (list);
 	}
 
 	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
 	gtk_widget_set_visible (priv->featured_heading, list != NULL);
 	if (list == NULL) {
-		g_warning ("failed to get featured apps: %s", error ? error->message : "no apps to show");
+		g_warning ("failed to get featured apps: %s",
+			   error->message);
+		goto out;
+	}
+	if (gs_app_list_length (list) == 0) {
+		g_warning ("failed to get featured apps: "
+			   "no apps to show");
 		goto out;
 	}
 
 	/* at the moment, we only care about the first app */
-	app = GS_APP (list->data);
+	app = gs_app_list_index (list, 0);
 	tile = gs_feature_tile_new (app);
 	g_signal_connect (tile, "clicked",
 			  G_CALLBACK (feature_tile_clicked), self);
@@ -307,12 +313,12 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GsShellOverview *self = GS_SHELL_OVERVIEW (user_data);
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
-	GList *l;
+	guint i;
 	GsCategory *cat;
 	GtkWidget *tile;
 	gboolean has_category = FALSE;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GPtrArray) list = NULL;
 
 	list = gs_plugin_loader_get_categories_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -322,8 +328,8 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	}
 	gs_container_remove_all (GTK_CONTAINER (priv->flowbox_categories));
 
-	for (l = list; l; l = l->next) {
-		cat = GS_CATEGORY (l->data);
+	for (i = 0; i < list->len; i++) {
+		cat = GS_CATEGORY (g_ptr_array_index (list, i));
 		if (gs_category_get_size (cat) == 0)
 			continue;
 		tile = gs_category_tile_new (cat);
@@ -413,8 +419,9 @@ gs_shell_overview_load (GsShellOverview *self)
 		g_autoptr(GsCategory) category = NULL;
 		g_autoptr(GsCategory) featured_category = NULL;
 
-		category = gs_category_new (NULL, category_of_day, NULL);
-		featured_category = gs_category_new (category, "featured", NULL);
+		category = gs_category_new (category_of_day, NULL);
+		featured_category = gs_category_new ("featured", NULL);
+		gs_category_add_child (category, featured_category);
 
 		load_data = g_slice_new0 (LoadData);
 		load_data->category = g_object_ref (category);

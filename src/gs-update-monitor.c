@@ -108,11 +108,11 @@ notify_offline_update_available (GsUpdateMonitor *monitor)
 static gboolean
 has_important_updates (GsAppList *apps)
 {
-	GList *l;
+	guint i;
 	GsApp *app;
 
-	for (l = apps; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (apps); i++) {
+		app = gs_app_list_index (apps, i);
 		if (gs_app_get_update_urgency (app) == AS_URGENCY_KIND_CRITICAL ||
 		    gs_app_get_update_urgency (app) == AS_URGENCY_KIND_HIGH)
 			return TRUE;
@@ -153,7 +153,7 @@ get_updates_finished_cb (GObject *object,
 			 gpointer data)
 {
 	GsUpdateMonitor *monitor = data;
-	GList *l;
+	guint i;
 	GsApp *app;
 	guint64 security_timestamp = 0;
 	guint64 security_timestamp_old = 0;
@@ -174,8 +174,8 @@ get_updates_finished_cb (GObject *object,
 	/* find security updates, or clear timestamp if there are now none */
 	g_settings_get (monitor->settings,
 			"security-timestamp", "x", &security_timestamp_old);
-	for (l = apps; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (apps); i++) {
+		app = gs_app_list_index (apps, i);
 		if (gs_app_get_metadata_item (app, "is-security") != NULL) {
 			security_timestamp = g_get_monotonic_time ();
 			break;
@@ -186,7 +186,7 @@ get_updates_finished_cb (GObject *object,
 				"security-timestamp", "x", security_timestamp);
 	}
 
-	g_debug ("Got %d updates", g_list_length (apps));
+	g_debug ("Got %d updates", gs_app_list_length (apps));
 
 	if (has_important_updates (apps) ||
 	    no_updates_for_a_week (monitor)) {
@@ -227,7 +227,7 @@ get_upgrades_finished_cb (GObject *object,
 		return;
 
 	/* just get the first result : FIXME, do we sort these by date? */
-	app = GS_APP (apps->data);
+	app = gs_app_list_index (apps, 0);
 
 	/* TRANSLATORS: this is a distro upgrade, the replacement would be the
 	 * distro name, e.g. 'Fedora' */
@@ -441,8 +441,16 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		return;
 	}
 
+	/* no results */
+	if (gs_app_list_length (apps) == 0) {
+		g_debug ("no historical updates; withdrawing notification");
+		g_application_withdraw_notification (monitor->application,
+						     "updates-available");
+		return;
+	}
+
 	/* have we notified about this before */
-	app = GS_APP (apps->data);
+	app = gs_app_list_index (apps, 0);
 	g_settings_get (monitor->settings,
 			"install-timestamp", "x", &time_last_notified);
 	if (time_last_notified >= gs_app_get_install_date (app))
@@ -451,11 +459,11 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	/* TRANSLATORS: title when we've done offline updates */
 	title = ngettext ("Software Update Installed",
 			  "Software Updates Installed",
-			  g_list_length (apps));
+			  gs_app_list_length (apps));
 	/* TRANSLATORS: message when we've done offline updates */
 	message = ngettext ("An important OS update has been installed.",
 			    "Important OS updates have been installed.",
-			    g_list_length (apps));
+			    gs_app_list_length (apps));
 
 	notification = g_notification_new (title);
 	g_notification_set_body (notification, message);

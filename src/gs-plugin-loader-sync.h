@@ -28,40 +28,40 @@
 
 G_BEGIN_DECLS
 
-GList		*gs_plugin_loader_get_installed		(GsPluginLoader	*plugin_loader,
+GsAppList	*gs_plugin_loader_get_installed		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GList		*gs_plugin_loader_search		(GsPluginLoader	*plugin_loader,
+GsAppList	*gs_plugin_loader_search		(GsPluginLoader	*plugin_loader,
 							 const gchar	*value,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GList		*gs_plugin_loader_get_updates		(GsPluginLoader	*plugin_loader,
+GsAppList	*gs_plugin_loader_get_updates		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GList		*gs_plugin_loader_get_distro_upgrades	(GsPluginLoader	*plugin_loader,
+GsAppList	*gs_plugin_loader_get_distro_upgrades	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GList		*gs_plugin_loader_get_sources		(GsPluginLoader	*plugin_loader,
+GsAppList	*gs_plugin_loader_get_sources		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GList		*gs_plugin_loader_get_popular		(GsPluginLoader	*plugin_loader,
+GsAppList	*gs_plugin_loader_get_popular		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GList		*gs_plugin_loader_get_featured		(GsPluginLoader	*plugin_loader,
+GsAppList	*gs_plugin_loader_get_featured		(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GList		*gs_plugin_loader_get_categories	(GsPluginLoader	*plugin_loader,
+GPtrArray	*gs_plugin_loader_get_categories	(GsPluginLoader	*plugin_loader,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
-GList		*gs_plugin_loader_get_category_apps	(GsPluginLoader	*plugin_loader,
+GsAppList	*gs_plugin_loader_get_category_apps	(GsPluginLoader	*plugin_loader,
 							 GsCategory	*category,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,

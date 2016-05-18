@@ -952,7 +952,7 @@ gs_plugin_create_app_dummy (const gchar *id)
  */
 gboolean
 gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
-			       GList **list,
+			       GsAppList *list,
 			       GCancellable *cancellable,
 			       GError **error)
 {

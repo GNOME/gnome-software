@@ -86,8 +86,7 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 			       GAsyncResult *res,
 			       gpointer user_data)
 {
-	gint i = 0;
-	GList *l;
+	guint i;
 	GsApp *app;
 	GtkWidget *tile;
 	GsShellCategory *self = GS_SHELL_CATEGORY (user_data);
@@ -107,8 +106,8 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 		return;
 	}
 
-	for (l = list, i = 0; l != NULL; l = l->next, i++) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		app = gs_app_list_index (list, i);
 		tile = gs_app_tile_new (app);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (app_tile_clicked), self);
@@ -180,20 +179,16 @@ gs_shell_category_create_filter_list (GsShellCategory *self,
 				      GsCategory *subcategory)
 {
 	GtkWidget *row;
-	GList *l;
 	GsCategory *s;
-	g_autoptr(GList) list = NULL;
+	guint i;
+	GPtrArray *children;
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
-
-	list = gs_category_get_subcategories (category);
-	if (!list)
-		return;
-
 	gs_container_remove_all (GTK_CONTAINER (self->listbox_filter));
 
-	for  (l = list; l; l = l->next) {
-		s = l->data;
+	children = gs_category_get_children (category);
+	for (i = 0; i < children->len; i++) {
+		s = GS_CATEGORY (g_ptr_array_index (children, i));
 		if (gs_category_get_size (s) < 1)
 			continue;
 		row = gtk_label_new (gs_category_get_name (s));
@@ -209,10 +204,10 @@ gs_shell_category_create_filter_list (GsShellCategory *self,
 void
 gs_shell_category_set_category (GsShellCategory *self, GsCategory *category)
 {
+	GPtrArray *children = NULL;
 	GsCategory *sub;
 	GsCategory *selected = NULL;
-	GList *l;
-	g_autoptr(GList) list = NULL;
+	guint i;
 
 	/* this means we've come from the app-view -> back */
 	if (self->category == category)
@@ -223,9 +218,9 @@ gs_shell_category_set_category (GsShellCategory *self, GsCategory *category)
 	self->category = g_object_ref (category);
 
 	/* select favourites by default */
-	list = gs_category_get_subcategories (category);
-	for (l = list; l != NULL; l = l->next) {
-		sub = GS_CATEGORY (l->data);
+	children = gs_category_get_children (category);
+	for (i = 0; i < children->len; i++) {
+		sub = GS_CATEGORY (g_ptr_array_index (children, i));
 		if (g_strcmp0 (gs_category_get_id (sub), "favourites") == 0) {
 			selected = sub;
 			break;
@@ -233,8 +228,8 @@ gs_shell_category_set_category (GsShellCategory *self, GsCategory *category)
 	}
 
 	/* okay, no favourites, so just select the first entry */
-	if (selected == NULL && list != NULL)
-		selected = GS_CATEGORY (list->data);
+	if (selected == NULL && children->len > 0)
+		selected = GS_CATEGORY (g_ptr_array_index (children, 0));
 
 	/* find apps in this group */
 	gs_shell_category_create_filter_list (self, category, selected);

@@ -250,17 +250,17 @@ void		 gs_plugin_adopt_app			(GsPlugin	*plugin,
 							 GsApp		*app);
 gboolean	 gs_plugin_add_search			(GsPlugin	*plugin,
 							 gchar		**values,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_search_files		(GsPlugin	*plugin,
 							 gchar		**values,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
 							 gchar		**values,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 const gchar	**gs_plugin_order_after			(GsPlugin	*plugin);
@@ -270,48 +270,48 @@ gboolean	 gs_plugin_setup			(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_installed		(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_updates			(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_distro_upgrades		(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_sources			(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_updates_historical	(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_categories		(GsPlugin	*plugin,
-							 GList		**list,
+							 GPtrArray	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
 							 GsCategory	*category,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_popular			(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_featured			(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_add_unvoted_reviews		(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_refine			(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GsPluginRefineFlags flags,
 							 GCancellable	*cancellable,
 							 GError		**error);
@@ -400,12 +400,12 @@ gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_file_to_app			(GsPlugin	*plugin,
-							 GList		**list,
+							 GsAppList	*list,
 							 GFile		*file,
 							 GCancellable	*cancellable,
 							 GError		**error);
 gboolean	 gs_plugin_update			(GsPlugin	*plugin,
-							 GList		*apps,
+							 GsAppList	*apps,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

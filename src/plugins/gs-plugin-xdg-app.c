@@ -139,7 +139,7 @@ gs_app_set_xdgapp_kind (GsApp *app, XdgAppRefKind kind)
  */
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -445,7 +445,7 @@ gs_plugin_xdg_app_progress_cb (const gchar *status,
  */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
-			 GList **list,
+			 GsAppList *list,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -494,7 +494,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -539,7 +539,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -1363,7 +1363,7 @@ gs_plugin_update_app (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GFile *file,
 		       GCancellable *cancellable,
 		       GError **error)

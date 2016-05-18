@@ -22,26 +22,37 @@
 #ifndef __GS_APP_LIST_H
 #define __GS_APP_LIST_H
 
+#include <glib-object.h>
+
 #include "gs-app.h"
 
 G_BEGIN_DECLS
 
-typedef GList GsAppList;
+#define GS_TYPE_APP_LIST (gs_app_list_get_type ())
+
+G_DECLARE_FINAL_TYPE (GsAppList, gs_app_list, GS, APP_LIST, GObject)
 
 typedef gboolean (*GsAppListFilterFunc)		(GsApp		*app,
 						 gpointer	 user_data);
+typedef gboolean (*GsAppListSortFunc)		(GsApp		*app1,
+						 GsApp		*app2,
+						 gpointer	 user_data);
 
-void		 gs_app_list_add		(GsAppList	**list,
+void		 gs_app_list_add		(GsAppList	*list,
 						 GsApp		*app);
-void		 gs_app_list_free		(GsAppList	*list);
-GList		*gs_app_list_copy		(GsAppList	*list);
-void		 gs_app_list_filter		(GsAppList	**list,
+GsApp		*gs_app_list_index		(GsAppList	*list,
+						 guint		 idx);
+guint		 gs_app_list_length		(GsAppList	*list);
+GsAppList	*gs_app_list_new		(void);
+GsAppList	*gs_app_list_copy		(GsAppList	*list);
+void		 gs_app_list_filter		(GsAppList	*list,
 						 GsAppListFilterFunc func,
 						 gpointer	 user_data);
-void		 gs_app_list_filter_duplicates	(GsAppList	**list);
-void		 gs_app_list_randomize		(GsAppList	**list);
-
-G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsAppList, gs_app_list_free)
+void		 gs_app_list_sort		(GsAppList	*list,
+						 GsAppListSortFunc func,
+						 gpointer	 user_data);
+void		 gs_app_list_filter_duplicates	(GsAppList	*list);
+void		 gs_app_list_randomize		(GsAppList	*list);
 
 G_END_DECLS
 

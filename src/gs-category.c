@@ -42,7 +42,7 @@ struct _GsCategory
 	gchar		*name;
 	GsCategory	*parent;
 	guint		 size;
-	GList		*subcategories;
+	GPtrArray	*children;
 };
 
 G_DEFINE_TYPE (GsCategory, gs_category, G_TYPE_OBJECT)
@@ -130,19 +130,17 @@ gs_category_get_name (GsCategory *category)
  *
  * Find a child category with a specific ID.
  *
- * Returns: the #GsCategory, or %NULL
+ * Returns: (transfer none): the #GsCategory, or %NULL
  **/
 GsCategory *
 gs_category_find_child (GsCategory *category, const gchar *id)
 {
-	GList *l;
 	GsCategory *tmp;
+	guint i;
 
 	/* find the subcategory */
-	if (category->subcategories == NULL)
-		return NULL;
-	for (l = category->subcategories; l != NULL; l = l->next) {
-		tmp = GS_CATEGORY (l->data);
+	for (i = 0; i < category->children->len; i++) {
+		tmp = GS_CATEGORY (g_ptr_array_index (category->children, i));
 		if (g_strcmp0 (id, gs_category_get_id (tmp)) == 0)
 			return tmp;
 	}
@@ -165,33 +163,40 @@ gs_category_get_parent (GsCategory *category)
 }
 
 /**
- * gs_category_get_subcategories:
+ * gs_category_get_children:
  * @category: a #GsCategory
  *
- * Gets the list if subcategories for a category.
+ * Gets the list if children for a category.
  *
- * Return value: (element-type GsApp) (transfer container): A list of subcategories
+ * Return value: (element-type GsApp) (transfer none): A list of children
  **/
-GList *
-gs_category_get_subcategories (GsCategory *category)
+GPtrArray *
+gs_category_get_children (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
-	return g_list_copy (category->subcategories);
+	return category->children;
 }
 
 /**
- * gs_category_add_subcategory:
+ * gs_category_add_child:
  * @category: a #GsCategory
  * @subcategory: a #GsCategory
  *
  * Adds a child category to a parent category.
  **/
 void
-gs_category_add_subcategory (GsCategory *category, GsCategory *subcategory)
+gs_category_add_child (GsCategory *category, GsCategory *subcategory)
 {
 	g_return_if_fail (GS_IS_CATEGORY (category));
-	category->subcategories = g_list_prepend (category->subcategories,
-						  g_object_ref (subcategory));
+	g_return_if_fail (GS_IS_CATEGORY (subcategory));
+
+	/* FIXME: do we need this? */
+	subcategory->parent = category;
+	g_object_add_weak_pointer (G_OBJECT (subcategory->parent),
+				   (gpointer *) &subcategory->parent);
+
+	g_ptr_array_add (category->children,
+			 g_object_ref (subcategory));
 }
 
 /**
@@ -213,47 +218,29 @@ gs_category_get_sort_key (GsCategory *category)
 }
 
 /**
- * gs_category_sort_subcategories_cb:
+ * gs_category_sort_children_cb:
  **/
 static gint
-gs_category_sort_subcategories_cb (gconstpointer a, gconstpointer b)
+gs_category_sort_children_cb (gconstpointer a, gconstpointer b)
 {
-	GsCategory *ca = GS_CATEGORY ((gpointer) a);
-	GsCategory *cb = GS_CATEGORY ((gpointer) b);
+	GsCategory *ca = GS_CATEGORY (*(GsCategory **) a);
+	GsCategory *cb = GS_CATEGORY (*(GsCategory **) b);
 	g_autofree gchar *id_a = gs_category_get_sort_key (ca);
 	g_autofree gchar *id_b = gs_category_get_sort_key (cb);
 	return g_strcmp0 (id_a, id_b);
 }
 
 /**
- * gs_category_sort_subcategories:
+ * gs_category_sort_children:
  * @category: a #GsCategory
  *
- * Sorts the list of subcategories.
+ * Sorts the list of children.
  **/
 void
-gs_category_sort_subcategories (GsCategory *category)
+gs_category_sort_children (GsCategory *category)
 {
-	/* nothing here */
-	if (category->subcategories == NULL)
-		return;
-
-	/* actually sort the data */
-	category->subcategories = g_list_sort (category->subcategories,
-					   gs_category_sort_subcategories_cb);
-}
-
-static void
-gs_category_dispose (GObject *object)
-{
-	GsCategory *category = GS_CATEGORY (object);
-
-	if (category->subcategories != NULL) {
-		g_list_free_full (category->subcategories, g_object_unref);
-		category->subcategories = NULL;
-	}
-
-	G_OBJECT_CLASS (gs_category_parent_class)->dispose (object);
+	g_ptr_array_sort (category->children,
+			  gs_category_sort_children_cb);
 }
 
 static void
@@ -264,6 +251,7 @@ gs_category_finalize (GObject *object)
 	if (category->parent != NULL)
 		g_object_remove_weak_pointer (G_OBJECT (category->parent),
 		                              (gpointer *) &category->parent);
+	g_ptr_array_unref (category->children);
 	g_free (category->id);
 	g_free (category->name);
 
@@ -274,18 +262,17 @@ static void
 gs_category_class_init (GsCategoryClass *klass)
 {
 	GObjectClass *object_class = G_OBJECT_CLASS (klass);
-	object_class->dispose = gs_category_dispose;
 	object_class->finalize = gs_category_finalize;
 }
 
 static void
 gs_category_init (GsCategory *category)
 {
+	category->children = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 }
 
 /**
  * gs_category_new:
- * @parent: a #GsCategory
  * @id: an ID, e.g. "all"
  * @name: a localised name
  *
@@ -294,7 +281,7 @@ gs_category_init (GsCategory *category)
  * Returns: the new #GsCategory
  **/
 GsCategory *
-gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
+gs_category_new (const gchar *id, const gchar *name)
 {
 	GsCategory *category;
 
@@ -313,10 +300,6 @@ gs_category_new (GsCategory *parent, const gchar *id, const gchar *name)
 	}
 
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
-	category->parent = parent;
-	if (category->parent != NULL)
-		g_object_add_weak_pointer (G_OBJECT (category->parent),
-		                           (gpointer *) &category->parent);
 	category->id = g_strdup (id);
 	category->name = g_strdup (name);
 	return GS_CATEGORY (category);

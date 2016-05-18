@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-app-list.h"
 
 G_BEGIN_DECLS
 
@@ -42,7 +43,7 @@ struct _GsUpdateListClass
 GtkWidget	*gs_update_list_new		(void);
 void		 gs_update_list_add_app		(GsUpdateList	*update_list,
 						 GsApp		*app);
-GList		*gs_update_list_get_apps	(GsUpdateList	*update_list);
+GsAppList	*gs_update_list_get_apps	(GsUpdateList	*update_list);
 
 G_END_DECLS
 

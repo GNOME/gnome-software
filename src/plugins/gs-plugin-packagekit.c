@@ -112,7 +112,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
  */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
-			 GList **list,
+			 GsAppList *list,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -157,7 +157,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 			       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	GList *l;
+	guint i;
 	GsApp *app;
 	GsApp *app_tmp;
 	PkBitfield filter;
@@ -187,14 +187,14 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	if (!gs_plugin_packagekit_results_valid (results, error))
 		return FALSE;
 	ret = gs_plugin_packagekit_add_results (plugin,
-						&installed,
+						installed,
 						results,
 						error);
 	if (!ret)
 		return FALSE;
-	for (l = installed; l != NULL; l = l->next) {
+	for (i = 0; i < gs_app_list_length (installed); i++) {
 		g_auto(GStrv) split = NULL;
-		app = GS_APP (l->data);
+		app = gs_app_list_index (installed, i);
 		split = pk_package_id_split (gs_app_get_source_id_default (app));
 		if (g_str_has_prefix (split[PK_PACKAGE_ID_DATA], "installed:")) {
 			id = split[PK_PACKAGE_ID_DATA] + 10;
@@ -214,7 +214,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -632,7 +632,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 gboolean
 gs_plugin_add_search_files (GsPlugin *plugin,
                             gchar **search,
-                            GList **list,
+                            GsAppList *list,
                             GCancellable *cancellable,
                             GError **error)
 {
@@ -669,7 +669,7 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 gboolean
 gs_plugin_add_search_what_provides (GsPlugin *plugin,
                                     gchar **search,
-                                    GList **list,
+                                    GsAppList *list,
                                     GCancellable *cancellable,
                                     GError **error)
 {

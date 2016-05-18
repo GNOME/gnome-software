@@ -985,7 +985,7 @@ gs_plugin_launch (GsPlugin *plugin, GsApp *app,
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,
-		      GList **list,
+		      GsAppList *list,
 		      GCancellable *cancellable,
 		      GError **error)
 {

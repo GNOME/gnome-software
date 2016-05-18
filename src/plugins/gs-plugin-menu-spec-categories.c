@@ -37,7 +37,7 @@
  */
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
-			  GList **list,
+			  GPtrArray *list,
 			  GCancellable *cancellable,
 			  GError **error)
 {
@@ -51,17 +51,15 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	for (i = 0; msdata[i].path != NULL; i++) {
 		tmp = g_strstr_len (msdata[i].path, -1, "::");
 		if (tmp == NULL) {
-			category = gs_category_new (NULL,
-						    msdata[i].path,
+			category = gs_category_new (msdata[i].path,
 						    gettext(msdata[i].text));
-			*list = g_list_prepend (*list, category);
+			g_ptr_array_add (list, category);
 			g_snprintf(msgctxt, 100, "Menu subcategory of %s", msdata[i].text);
 		} else {
 			g_autoptr(GsCategory) sub = NULL;
-			sub = gs_category_new (category,
-					       tmp + 2,
+			sub = gs_category_new (tmp + 2,
 					       g_dpgettext2(GETTEXT_PACKAGE, msgctxt, msdata[i].text));
-			gs_category_add_subcategory (category, sub);
+			gs_category_add_child (category, sub);
 		}
 	}
 

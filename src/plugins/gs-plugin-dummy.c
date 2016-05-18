@@ -147,7 +147,7 @@ gs_plugin_dummy_poll_cb (gpointer user_data)
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,
-		      GList **list,
+		      GsAppList *list,
 		      GCancellable *cancellable,
 		      GError **error)
 {
@@ -199,7 +199,7 @@ gs_plugin_add_search (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -267,7 +267,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
-			 GList **list,
+			 GsAppList *list,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -472,7 +472,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 gboolean
 gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GsCategory *category,
-			     GList **list,
+			     GsAppList *list,
 			     GCancellable *cancellable,
 			     GError **error)
 {
@@ -494,7 +494,7 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
-			       GList **list,
+			       GsAppList *list,
 			       GCancellable *cancellable,
 			       GError **error)
 {

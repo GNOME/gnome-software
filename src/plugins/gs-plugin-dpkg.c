@@ -44,7 +44,7 @@ gs_plugin_initialize (GsPlugin *plugin)
  */
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GFile *file,
 		       GCancellable *cancellable,
 		       GError **error)

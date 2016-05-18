@@ -185,7 +185,7 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GFile *file,
 		       GCancellable *cancellable,
 		       GError **error)

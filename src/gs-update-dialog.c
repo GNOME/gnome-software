@@ -168,7 +168,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
                           GAsyncResult *res,
                           GsUpdateDialog *dialog)
 {
-	GList *l;
+	guint i;
 	guint64 install_date;
 	g_autoptr(GsAppList) list = NULL;
 	g_autoptr(GError) error = NULL;
@@ -198,7 +198,7 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	}
 
 	/* set the header title using any one of the applications */
-	install_date = gs_app_get_install_date (GS_APP (list->data));
+	install_date = gs_app_get_install_date (gs_app_list_index (list, 0));
 	if (install_date > 0) {
 		GtkWidget *header;
 		g_autoptr(GDateTime) date = NULL;
@@ -220,9 +220,9 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "installed-updates-list");
 
 	gs_container_remove_all (GTK_CONTAINER (dialog->list_box_installed_updates));
-	for (l = list; l != NULL; l = l->next) {
+	for (i = 0; i < gs_app_list_length (list); i++) {
 		gs_update_list_add_app (GS_UPDATE_LIST (dialog->list_box_installed_updates),
-					GS_APP (l->data));
+					gs_app_list_index (list, i));
 	}
 }
 

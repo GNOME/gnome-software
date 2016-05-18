@@ -273,7 +273,7 @@ gs_plugin_app_install (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -355,7 +355,7 @@ gs_plugin_app_from_pki (LiPkgInfo *pki)
  */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
-			 GList **list,
+			 GsAppList *list,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -392,7 +392,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
-			GList **list,
+			GsAppList *list,
 			GCancellable *cancellable,
 			GError **error)
 {

@@ -143,7 +143,7 @@ gs_shell_moderate_get_unvoted_reviews_cb (GObject *source_object,
 					  GAsyncResult *res,
 					  gpointer user_data)
 {
-	GList *l;
+	guint i;
 	GsApp *app;
 	GsShellModerate *self = GS_SHELL_MODERATE (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
@@ -168,8 +168,8 @@ gs_shell_moderate_get_unvoted_reviews_cb (GObject *source_object,
 			g_warning ("failed to get moderate apps: %s", error->message);
 		return;
 	}
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		app = gs_app_list_index (list, i);
 		gs_shell_moderate_add_app (self, app);
 	}
 }

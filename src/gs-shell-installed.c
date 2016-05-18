@@ -188,7 +188,7 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 				     GAsyncResult *res,
 				     gpointer user_data)
 {
-	GList *l;
+	guint i;
 	GsApp *app;
 	GsShellInstalled *self = GS_SHELL_INSTALLED (user_data);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
@@ -209,8 +209,8 @@ gs_shell_installed_get_installed_cb (GObject *source_object,
 			g_warning ("failed to get installed apps: %s", error->message);
 		goto out;
 	}
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		app = gs_app_list_index (list, i);
 		gs_shell_installed_add_app (self, app);
 	}
 out:
@@ -480,21 +480,21 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	GsApp *app;
 	GtkWidget *widget;
 	guint i;
-	g_autoptr(GPtrArray) pending = NULL;
+	g_autoptr(GsAppList) pending = NULL;
 
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
 						     "button_installed_counter"));
 	pending = gs_plugin_loader_get_pending (plugin_loader);
-	if (pending->len == 0) {
+	if (gs_app_list_length (pending) == 0) {
 		gtk_widget_hide (widget);
 	} else {
 		g_autofree gchar *label = NULL;
 		gtk_widget_show (widget);
-		label = g_strdup_printf ("%d", pending->len);
+		label = g_strdup_printf ("%d", gs_app_list_length (pending));
 		gtk_label_set_label (GTK_LABEL (widget), label);
 	}
-	for (i = 0; i < pending->len; i++) {
-		app = GS_APP (g_ptr_array_index (pending, i));
+	for (i = 0; i < gs_app_list_length (pending); i++) {
+		app = gs_app_list_index (pending, i);
 		/* Be careful not to add pending apps more than once. */
 		if (gs_shell_installed_has_app (self, app) == FALSE)
 			gs_shell_installed_add_app (self, app);

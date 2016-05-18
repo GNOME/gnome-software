@@ -90,7 +90,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
  */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
-		       GList **list,
+		       GsAppList *list,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -137,15 +137,15 @@ gs_plugin_add_updates (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_update (GsPlugin *plugin,
-		  GList *apps,
+		  GsAppList *apps,
 		  GCancellable *cancellable,
 		  GError **error)
 {
-	GList *l;
+	guint i;
 
 	/* any apps to process offline */
-	for (l = apps; l != NULL; l = l->next) {
-		GsApp *app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (apps); i++) {
+		GsApp *app = gs_app_list_index (apps, i);
 
 		/* only process this app if was created by this plugin */
 		if (g_strcmp0 (gs_app_get_management_plugin (app), "packagekit") != 0)

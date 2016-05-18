@@ -300,7 +300,7 @@ parse_pkgdb_collections_data (const gchar *data,
  */
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
-			       GList **list,
+			       GsAppList *list,
 			       GCancellable *cancellable,
 			       GError **error)
 {

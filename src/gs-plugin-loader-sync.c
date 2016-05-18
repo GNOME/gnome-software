@@ -47,7 +47,8 @@ gs_plugin_loader_get_app_by_id (GsPluginLoader *plugin_loader,
 /* tiny helper to help us do the async operation */
 typedef struct {
 	GError		**error;
-	GList		*list;
+	GsAppList	*list;
+	GPtrArray	*catlist;
 	GMainContext    *context;
 	GMainLoop	*loop;
 	gboolean	 ret;
@@ -68,7 +69,7 @@ gs_plugin_loader_get_installed_finish_sync (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_get_installed:
  **/
-GList *
+GsAppList *
 gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader,
 				GsPluginRefineFlags flags,
 				GCancellable *cancellable,
@@ -113,7 +114,7 @@ gs_plugin_loader_search_finish_sync (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_search:
  **/
-GList *
+GsAppList *
 gs_plugin_loader_search (GsPluginLoader *plugin_loader,
 			 const gchar *value,
 			 GsPluginRefineFlags flags,
@@ -160,7 +161,7 @@ gs_plugin_loader_get_updates_finish_sync (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_get_updates:
  **/
-GList *
+GsAppList *
 gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader,
 			      GsPluginRefineFlags flags,
 			      GCancellable *cancellable,
@@ -205,7 +206,7 @@ gs_plugin_loader_get_distro_upgrades_finish_sync (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_get_distro_upgrades:
  **/
-GList *
+GsAppList *
 gs_plugin_loader_get_distro_upgrades (GsPluginLoader *plugin_loader,
 			      GsPluginRefineFlags flags,
 			      GCancellable *cancellable,
@@ -250,7 +251,7 @@ gs_plugin_loader_get_sources_finish_sync (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_get_sources:
  **/
-GList *
+GsAppList *
 gs_plugin_loader_get_sources (GsPluginLoader *plugin_loader,
 			      GsPluginRefineFlags flags,
 			      GCancellable *cancellable,
@@ -295,7 +296,7 @@ gs_plugin_loader_get_popular_finish_sync (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_get_popular:
  **/
-GList *
+GsAppList *
 gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
 			      GsPluginRefineFlags flags,
 			      GCancellable *cancellable,
@@ -340,7 +341,7 @@ gs_plugin_loader_get_featured_finish_sync (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_get_featured:
  **/
-GList *
+GsAppList *
 gs_plugin_loader_get_featured (GsPluginLoader *plugin_loader,
 			       GsPluginRefineFlags flags,
 			       GCancellable *cancellable,
@@ -376,7 +377,7 @@ gs_plugin_loader_get_categories_finish_sync (GsPluginLoader *plugin_loader,
 					     GAsyncResult *res,
 					     GsPluginLoaderHelper *helper)
 {
-	helper->list = gs_plugin_loader_get_categories_finish (plugin_loader,
+	helper->catlist = gs_plugin_loader_get_categories_finish (plugin_loader,
 							       res,
 							       helper->error);
 	g_main_loop_quit (helper->loop);
@@ -385,7 +386,7 @@ gs_plugin_loader_get_categories_finish_sync (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_get_categories:
  **/
-GList *
+GPtrArray *
 gs_plugin_loader_get_categories (GsPluginLoader *plugin_loader,
 				 GsPluginRefineFlags flags,
 				 GCancellable *cancellable,
@@ -413,7 +414,7 @@ gs_plugin_loader_get_categories (GsPluginLoader *plugin_loader,
 	g_main_loop_unref (helper.loop);
 	g_main_context_unref (helper.context);
 
-	return helper.list;
+	return helper.catlist;
 }
 
 static void
@@ -430,7 +431,7 @@ gs_plugin_loader_get_category_apps_finish_sync (GsPluginLoader *plugin_loader,
 /**
  * gs_plugin_loader_get_category_apps:
  **/
-GList *
+GsAppList *
 gs_plugin_loader_get_category_apps (GsPluginLoader *plugin_loader,
 				    GsCategory *category,
 				    GsPluginRefineFlags flags,

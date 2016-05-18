@@ -473,7 +473,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 				 GAsyncResult *res,
 				 GsShellUpdates *self)
 {
-	GList *l;
+	guint i;
 	GtkWidget *widget;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -484,8 +484,8 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 	self->all_updates_are_live = TRUE;
 	self->any_require_reboot = FALSE;
-	for (l = list; l != NULL; l = l->next) {
-		GsApp *app = GS_APP (l->data);
+	for (i = 0; list != NULL && i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
 		if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE_LIVE)
 			self->all_updates_are_live = FALSE;
 		if (gs_app_has_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT))
@@ -508,7 +508,7 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_updates_counter"));
 	if (list != NULL && !gs_update_monitor_is_managed ()) {
 		g_autofree gchar *text = NULL;
-		text = g_strdup_printf ("%d", g_list_length (list));
+		text = g_strdup_printf ("%d", gs_app_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
 		gtk_widget_show (widget);
 	} else {
@@ -568,8 +568,10 @@ gs_shell_updates_get_upgrades_cb (GObject *source_object,
 					   error->message);
 			}
 		}
+	} else if (gs_app_list_length (list) == 0) {
+		g_debug ("updates-shell: no upgrades to show");
 	} else {
-		GsApp *app = GS_APP (list->data);
+		GsApp *app = gs_app_list_index (list, 0);
 		g_debug ("got upgrade %s", gs_app_get_id (app));
 		gs_upgrade_banner_set_app (GS_UPGRADE_BANNER (self->upgrade_banner), app);
 		gs_shell_updates_set_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPGRADES);
@@ -937,7 +939,7 @@ gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer 
 {
 	GsShellUpdates *self = GS_SHELL_UPDATES (user_data);
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GList) apps = NULL;
+	g_autoptr(GsAppList) apps = NULL;
 	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
@@ -953,7 +955,7 @@ gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer 
 	/* cancel trigger */
 	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
 	gs_plugin_loader_app_action_async (self->plugin_loader,
-					   GS_APP (apps->data),
+					   gs_app_list_index (apps, 0),
 					   GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL,
 					   self->cancellable,
 					   cancel_trigger_failed_cb,
@@ -1012,7 +1014,7 @@ gs_shell_updates_button_update_all_cb (GtkButton      *button,
 				       GsShellUpdates *self)
 {
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GList) apps = NULL;
+	g_autoptr(GsAppList) apps = NULL;
 
 	/* do the offline update */
 	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
@@ -1110,7 +1112,7 @@ upgrade_reboot_failed_cb (GObject *source,
 {
 	GsShellUpdates *self = (GsShellUpdates *) user_data;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GList) apps = NULL;
+	g_autoptr(GsAppList) apps = NULL;
 	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
@@ -1126,7 +1128,7 @@ upgrade_reboot_failed_cb (GObject *source,
 	/* cancel trigger */
 	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
 	gs_plugin_loader_app_action_async (self->plugin_loader,
-					   GS_APP (apps->data),
+					   gs_app_list_index (apps, 0),
 					   GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL,
 					   self->cancellable,
 					   cancel_trigger_failed_cb,

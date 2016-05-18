@@ -101,7 +101,7 @@ gs_plugin_packagekit_convert_error (GError **error,
  */
 gboolean
 gs_plugin_add_updates_historical (GsPlugin *plugin,
-				  GList **list,
+				  GsAppList *list,
 				  GCancellable *cancellable,
 				  GError **error)
 {

@@ -138,14 +138,14 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 
 static gboolean
 gs_plugin_packagekit_refine (GsPlugin *plugin,
-			     GList *list,
+			     GsAppList *list,
 			     GCancellable *cancellable,
 			     GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	gboolean ret;
 	GError *error_local = NULL;
-	GList *l;
+	guint j;
 	GsApp *app;
 	guint i = 0;
 	GVariantIter iter;
@@ -155,13 +155,13 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	g_autoptr(GVariant) tuple = NULL;
 
 	/* get an array of package names */
-	package_names = g_new0 (const gchar *, g_list_length (list) + 1);
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	package_names = g_new0 (const gchar *, gs_app_list_length (list) + 1);
+	for (j = 0; j < gs_app_list_length (list); j++) {
+		app = gs_app_list_index (list, j);
 		package_names[i++] = gs_app_get_source_default (app);
 	}
 
-	g_debug ("getting history for %i packages", g_list_length (list));
+	g_debug ("getting history for %i packages", gs_app_list_length (list));
 	result = g_dbus_connection_call_sync (priv->connection,
 					      "org.freedesktop.PackageKit",
 					      "/org/freedesktop/PackageKit",
@@ -182,8 +182,8 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 
 			/* just set this to something non-zero so we don't keep
 			 * trying to call GetPackageHistory */
-			for (l = list; l != NULL; l = l->next) {
-				app = GS_APP (l->data);
+			for (i = 0; i < gs_app_list_length (list); i++) {
+				app = gs_app_list_index (list, i);
 				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			}
 		} else if (g_error_matches (error_local,
@@ -191,8 +191,8 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 					    G_IO_ERROR_TIMED_OUT)) {
 			g_debug ("No history as PackageKit took too long: %s",
 				 error_local->message);
-			for (l = list; l != NULL; l = l->next) {
-				app = GS_APP (l->data);
+			for (i = 0; i < gs_app_list_length (list); i++) {
+				app = gs_app_list_index (list, i);
 				gs_app_set_install_date (app, GS_APP_INSTALL_DATE_UNKNOWN);
 			}
 		}
@@ -206,8 +206,8 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 
 	/* get any results */
 	tuple = g_variant_get_child_value (result, 0);
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		app = gs_app_list_index (list, i);
 		ret = g_variant_lookup (tuple,
 					gs_app_get_source_default (app),
 					"@aa{sv}",
@@ -243,31 +243,32 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
-		  GList **list,
+		  GsAppList *list,
 		  GsPluginRefineFlags flags,
 		  GCancellable *cancellable,
 		  GError **error)
 {
 	gboolean ret;
-	GList *l;
+	guint i;
 	GsApp *app;
 	GPtrArray *sources;
-	g_autoptr(GList) packages = NULL;
+	g_autoptr(GsAppList) packages = NULL;
 
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY) == 0)
 		return TRUE;
 
 	/* add any missing history data */
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	packages = gs_app_list_new ();
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		app = gs_app_list_index (list, i);
 		sources = gs_app_get_sources (app);
 		if (sources->len == 0)
 			continue;
 		if (gs_app_get_install_date (app) != 0)
 			continue;
-		packages = g_list_prepend (packages, app);
+		gs_app_list_add (packages, app);
 	}
-	if (packages != NULL) {
+	if (gs_app_list_length (packages) > 0) {
 		ret = gs_plugin_packagekit_refine (plugin,
 						   packages,
 						   cancellable,

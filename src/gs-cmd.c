@@ -34,17 +34,17 @@
  * gs_cmd_show_results_apps:
  **/
 static void
-gs_cmd_show_results_apps (GList *list)
+gs_cmd_show_results_apps (GsAppList *list)
 {
-	GList *l;
 	GPtrArray *related;
 	GsApp *app;
 	GsApp *app_rel;
 	guint i;
+	guint j;
 
-	for (l = list; l != NULL; l = l->next) {
+	for (j = 0; j < gs_app_list_length (list); j++) {
 		g_autofree gchar *tmp = NULL;
-		app = GS_APP (l->data);
+		app = gs_app_list_index (list, j);
 		tmp = gs_app_to_string (app);
 		g_print ("%s\n", tmp);
 		related = gs_app_get_related (app);
@@ -76,16 +76,16 @@ gs_cmd_pad_spaces (const gchar *text, guint length)
  * gs_cmd_show_results_categories:
  **/
 static void
-gs_cmd_show_results_categories (GList *list)
+gs_cmd_show_results_categories (GPtrArray *list)
 {
-	GList *l;
-	GList *subcats;
+	GPtrArray *subcats;
 	GsCategory *cat;
 	GsCategory *parent;
+	guint i;
 
-	for (l = list; l != NULL; l = l->next) {
+	for (i = 0; i < list->len; i++) {
 		g_autofree gchar *tmp = NULL;
-		cat = GS_CATEGORY (l->data);
+		cat = GS_CATEGORY (g_ptr_array_index (list, i));
 		parent = gs_category_get_parent (cat);
 		if (parent != NULL){
 			g_autofree gchar *id = NULL;
@@ -99,7 +99,7 @@ gs_cmd_show_results_categories (GList *list)
 			tmp = gs_cmd_pad_spaces (gs_category_get_id (cat), 32);
 			g_print ("%s : %s\n",
 				 tmp, gs_category_get_name (cat));
-			subcats = gs_category_get_subcategories (cat);
+			subcats = gs_category_get_children (cat);
 			gs_cmd_show_results_categories (subcats);
 		}
 	}
@@ -196,8 +196,6 @@ gs_cmd_refresh_flag_from_string (const gchar *flag)
 int
 main (int argc, char **argv)
 {
-	GList *list = NULL;
-	GList *categories = NULL;
 	GOptionContext *context;
 	gboolean prefer_local = FALSE;
 	gboolean ret;
@@ -210,6 +208,8 @@ main (int argc, char **argv)
 	int status = 0;
 	g_auto(GStrv) plugin_names = NULL;
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+	g_autoptr(GPtrArray) categories = NULL;
 	g_autoptr(GsDebug) debug = gs_debug_new ();
 	g_autofree gchar *plugin_names_str = NULL;
 	g_autofree gchar *refine_flags_str = NULL;
@@ -287,7 +287,7 @@ main (int argc, char **argv)
 	if (argc == 2 && g_strcmp0 (argv[1], "installed") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_app_list_free (list);
+				g_object_unref (list);
 			list = gs_plugin_loader_get_installed (plugin_loader,
 							       refine_flags,
 							       NULL,
@@ -300,7 +300,7 @@ main (int argc, char **argv)
 	} else if (argc == 3 && g_strcmp0 (argv[1], "search") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_app_list_free (list);
+				g_object_unref (list);
 			list = gs_plugin_loader_search (plugin_loader,
 							argv[2],
 							refine_flags,
@@ -320,7 +320,7 @@ main (int argc, char **argv)
 						   NULL,
 						   &error);
 		if (ret)
-			gs_app_list_add (&list, app);
+			gs_app_list_add (list, app);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "refine") == 0) {
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {
@@ -332,7 +332,7 @@ main (int argc, char **argv)
 			if (!ret)
 				break;
 		}
-		gs_app_list_add (&list, app);
+		gs_app_list_add (list, app);
 	} else if (argc == 3 && g_strcmp0 (argv[1], "launch") == 0) {
 		app = gs_app_new (argv[2]);
 		for (i = 0; i < repeat; i++) {
@@ -354,12 +354,12 @@ main (int argc, char **argv)
 		if (app == NULL) {
 			ret = FALSE;
 		} else {
-			gs_app_list_add (&list, app);
+			gs_app_list_add (list, app);
 		}
 	} else if (argc == 2 && g_strcmp0 (argv[1], "updates") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_app_list_free (list);
+				g_object_unref (list);
 			list = gs_plugin_loader_get_updates (plugin_loader,
 							     refine_flags,
 							     NULL,
@@ -372,7 +372,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "upgrades") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_app_list_free (list);
+				g_object_unref (list);
 			list = gs_plugin_loader_get_distro_upgrades (plugin_loader,
 								     refine_flags,
 								     NULL,
@@ -392,7 +392,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "popular") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_app_list_free (list);
+				g_object_unref (list);
 			list = gs_plugin_loader_get_popular (plugin_loader,
 							     refine_flags,
 							     NULL,
@@ -405,7 +405,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "featured") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_app_list_free (list);
+				g_object_unref (list);
 			list = gs_plugin_loader_get_featured (plugin_loader,
 							      refine_flags,
 							      NULL,
@@ -418,7 +418,7 @@ main (int argc, char **argv)
 	} else if (argc == 2 && g_strcmp0 (argv[1], "get-categories") == 0) {
 		for (i = 0; i < repeat; i++) {
 			if (categories != NULL)
-				gs_app_list_free (categories);
+				g_ptr_array_unref (categories);
 			categories = gs_plugin_loader_get_categories (plugin_loader,
 								      refine_flags,
 								      NULL,
@@ -432,16 +432,15 @@ main (int argc, char **argv)
 		g_autoptr(GsCategory) category = NULL;
 		g_auto(GStrv) split = NULL;
 		split = g_strsplit (argv[2], "/", 2);
-		if (g_strv_length (split) == 1) {
-			category = gs_category_new (NULL, split[0], NULL);
-		} else {
-			g_autoptr(GsCategory) parent = NULL;
-			parent = gs_category_new (NULL, split[0], NULL);
-			category = gs_category_new (parent, split[1], NULL);
+		category = gs_category_new (split[0], NULL);
+		if (g_strv_length (split) == 2) {
+			g_autoptr(GsCategory) child = NULL;
+			child = gs_category_new (split[1], NULL);
+			gs_category_add_child (category, child);
 		}
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
-				gs_app_list_free (list);
+				g_object_unref (list);
 			list = gs_plugin_loader_get_category_apps (plugin_loader,
 								   category,
 								   refine_flags,
@@ -473,15 +472,15 @@ main (int argc, char **argv)
 	}
 
 	if (show_results) {
-		gs_cmd_show_results_apps (list);
-		gs_cmd_show_results_categories (categories);
+		if (list != NULL)
+			gs_cmd_show_results_apps (list);
+		if (categories != NULL)
+			gs_cmd_show_results_categories (categories);
 	}
 out:
 	if (profile != NULL)
 		as_profile_dump (profile);
 	g_option_context_free (context);
-	gs_app_list_free (list);
-	gs_app_list_free (categories);
 	return status;
 }
 

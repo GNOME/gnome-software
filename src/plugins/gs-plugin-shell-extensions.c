@@ -255,7 +255,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
  */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
-			 GList **list,
+			 GsAppList *list,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -856,7 +856,7 @@ gs_plugin_launch (GsPlugin *plugin,
  */
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
-			  GList **list,
+			  GPtrArray *list,
 			  GCancellable *cancellable,
 			  GError **error)
 {

@@ -516,7 +516,7 @@ search_files_cb (GObject *source_object,
 	SearchData *search_data = (SearchData *) user_data;
 	GsShellExtras *self = search_data->self;
 	g_autoptr(GsAppList) list = NULL;
-	GList *l;
+	guint i;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 
@@ -533,7 +533,7 @@ search_files_cb (GObject *source_object,
 
 			g_debug ("extras: no search result for %s, showing as missing", search_data->title);
 			app = create_missing_app (search_data);
-			list = g_list_prepend (list, app);
+			gs_app_list_add (list, app);
 		} else {
 			g_autofree gchar *str = NULL;
 
@@ -546,8 +546,8 @@ search_files_cb (GObject *source_object,
 		}
 	}
 
-	for (l = list; l != NULL; l = l->next) {
-		GsApp *app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
 		gs_shell_extras_add_app (self, app, search_data);
@@ -614,7 +614,7 @@ get_search_what_provides_cb (GObject *source_object,
 	SearchData *search_data = (SearchData *) user_data;
 	GsShellExtras *self = search_data->self;
 	g_autoptr(GsAppList) list = NULL;
-	GList *l;
+	guint i;
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	g_autoptr(GError) error = NULL;
 
@@ -631,7 +631,7 @@ get_search_what_provides_cb (GObject *source_object,
 
 			g_debug ("extras: no search result for %s, showing as missing", search_data->title);
 			app = create_missing_app (search_data);
-			list = g_list_prepend (list, app);
+			gs_app_list_add (list, app);
 		} else {
 			g_autofree gchar *str = NULL;
 
@@ -644,8 +644,8 @@ get_search_what_provides_cb (GObject *source_object,
 		}
 	}
 
-	for (l = list; l != NULL; l = l->next) {
-		GsApp *app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
 
 		g_debug ("%s\n\n", gs_app_to_string (app));
 		gs_shell_extras_add_app (self, app, search_data);

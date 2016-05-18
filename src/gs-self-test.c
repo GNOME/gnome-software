@@ -105,50 +105,52 @@ gs_app_list_filter_cb (GsApp *app, gpointer user_data)
 static void
 gs_plugin_func (void)
 {
-	GList *list = NULL;
-	GList *list_dup;
-	GList *list_remove = NULL;
+	GsAppList *list;
+	GsAppList *list_dup;
+	GsAppList *list_remove;
 	GsApp *app;
 
 	/* add a couple of duplicate IDs */
 	app = gs_app_new ("a");
-	gs_app_list_add (&list, app);
+	list = gs_app_list_new ();
+	gs_app_list_add (list, app);
 	g_object_unref (app);
 
 	/* test refcounting */
-	g_assert_cmpstr (gs_app_get_id (GS_APP (list->data)), ==, "a");
+	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list, 0)), ==, "a");
 	list_dup = gs_app_list_copy (list);
-	gs_app_list_free (list);
-	g_assert_cmpint (g_list_length (list_dup), ==, 1);
-	g_assert_cmpstr (gs_app_get_id (GS_APP (list_dup->data)), ==, "a");
-	gs_app_list_free (list_dup);
+	g_object_unref (list);
+	g_assert_cmpint (gs_app_list_length (list_dup), ==, 1);
+	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list_dup, 0)), ==, "a");
+	g_object_unref (list_dup);
 
 	/* test removing obects */
 	app = gs_app_new ("a");
-	gs_app_list_add (&list_remove, app);
+	list_remove = gs_app_list_new ();
+	gs_app_list_add (list_remove, app);
 	g_object_unref (app);
 	app = gs_app_new ("b");
-	gs_app_list_add (&list_remove, app);
+	gs_app_list_add (list_remove, app);
 	g_object_unref (app);
 	app = gs_app_new ("c");
-	gs_app_list_add (&list_remove, app);
+	gs_app_list_add (list_remove, app);
 	g_object_unref (app);
-	g_assert_cmpint (g_list_length (list_remove), ==, 3);
-	gs_app_list_filter (&list_remove, gs_app_list_filter_cb, NULL);
-	g_assert_cmpint (g_list_length (list_remove), ==, 1);
-	g_assert_cmpstr (gs_app_get_id (GS_APP (list_remove->data)), ==, "b");
+	g_assert_cmpint (gs_app_list_length (list_remove), ==, 3);
+	gs_app_list_filter (list_remove, gs_app_list_filter_cb, NULL);
+	g_assert_cmpint (gs_app_list_length (list_remove), ==, 1);
+	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list_remove, 0)), ==, "b");
 
 	/* test removing duplicates */
 	app = gs_app_new ("b");
-	gs_app_list_add (&list_remove, app);
+	gs_app_list_add (list_remove, app);
 	g_object_unref (app);
 	app = gs_app_new ("b");
-	gs_app_list_add (&list_remove, app);
+	gs_app_list_add (list_remove, app);
 	g_object_unref (app);
-	gs_app_list_filter_duplicates (&list_remove);
-	g_assert_cmpint (g_list_length (list_remove), ==, 1);
-	g_assert_cmpstr (gs_app_get_id (GS_APP (list_remove->data)), ==, "b");
-	gs_app_list_free (list_remove);
+	gs_app_list_filter_duplicates (list_remove);
+	g_assert_cmpint (gs_app_list_length (list_remove), ==, 1);
+	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list_remove, 0)), ==, "b");
+	g_object_unref (list_remove);
 }
 
 static void
@@ -323,8 +325,8 @@ gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 	g_assert (list != NULL);
 
 	/* make sure there are two entries */
-	g_assert_cmpint (g_list_length (list), ==, 2);
-	app = g_list_nth_data (list, 0);
+	g_assert_cmpint (gs_app_list_length (list), ==, 2);
+	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UPDATABLE_LIVE);
@@ -332,7 +334,7 @@ gs_plugin_loader_updates_func (GsPluginLoader *plugin_loader)
 	g_assert_cmpint (gs_app_get_update_urgency (app), ==, AS_URGENCY_KIND_HIGH);
 
 	/* get the virtual non-apps OS update */
-	app = g_list_nth_data (list, 1);
+	app = gs_app_list_index (list, 1);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "os-update.virtual");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "OS Updates");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Includes performance, stability and security improvements.");
@@ -358,8 +360,8 @@ gs_plugin_loader_distro_upgrades_func (GsPluginLoader *plugin_loader)
 	g_assert (list != NULL);
 
 	/* make sure there is one entry */
-	g_assert_cmpint (g_list_length (list), ==, 1);
-	app = GS_APP (list->data);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.fedoraproject.release-rawhide.upgrade");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_OS_UPGRADE);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);
@@ -412,8 +414,8 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 	g_assert (list != NULL);
 
 	/* make sure there is one entry */
-	g_assert_cmpint (g_list_length (list), ==, 1);
-	app = GS_APP (list->data);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "zeus.desktop");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_INSTALLED);
@@ -471,8 +473,8 @@ gs_plugin_loader_search_func (GsPluginLoader *plugin_loader)
 	g_assert (list != NULL);
 
 	/* make sure there is one entry, the parent app */
-	g_assert_cmpint (g_list_length (list), ==, 1);
-	app = GS_APP (list->data);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "zeus.desktop");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 }
@@ -682,8 +684,8 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 						&error);
 	g_assert_no_error (error);
 	g_assert (sources != NULL);
-	g_assert_cmpint (g_list_length (sources), ==, 1);
-	app = GS_APP (sources->data);
+	g_assert_cmpint (gs_app_list_length (sources), ==, 1);
+	app = gs_app_list_index (sources, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "test");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_SOURCE);
 
@@ -706,8 +708,8 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	g_assert (list != NULL);
 
 	/* make sure there is one entry, the flatpak app */
-	g_assert_cmpint (g_list_length (list), ==, 1);
-	app = GS_APP (list->data);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	app = gs_app_list_index (list, 0);
 	g_assert_cmpstr (gs_app_get_id (app), ==, "org.test.Chiron.desktop");
 	g_assert_cmpint (gs_app_get_kind (app), ==, AS_APP_KIND_DESKTOP);
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_AVAILABLE);

@@ -147,7 +147,7 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		GAsyncResult *res,
 		GsSourcesDialog *dialog)
 {
-	GList *l;
+	guint i;
 	GsApp *app;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
@@ -180,8 +180,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 
 	/* add each */
 	gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "sources");
-	for (l = list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		app = gs_app_list_index (list, i);
 		add_source (GTK_LIST_BOX (dialog->listbox), app);
 	}
 }
