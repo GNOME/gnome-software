@@ -788,6 +788,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *content_type = NULL;
+	g_autofree gchar *filename = NULL;
 	g_autoptr(FwupdResult) res = NULL;
 	g_autoptr(GsApp) app = NULL;
 	const gchar *mimetypes[] = {
@@ -802,8 +803,9 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		return TRUE;
 
 	/* get results */
+	filename = g_file_get_path (file);
 	res = fwupd_client_get_details (priv->client,
-					g_file_get_path (file),
+					filename,
 					cancellable,
 					error);
 	if (res == NULL)
