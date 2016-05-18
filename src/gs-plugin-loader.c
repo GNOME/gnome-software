@@ -414,15 +414,6 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		}
 	}
 
-	/* show a warning if nothing adopted this */
-	for (l = *list; l != NULL; l = l->next) {
-		app = GS_APP (l->data);
-		if (gs_app_get_management_plugin (app) != NULL)
-			continue;
-		g_warning ("nothing adopted %s", gs_app_get_id (app));
-		g_print ("%s", gs_app_to_string (app));
-	}
-
 	/* success */
 	ret = TRUE;
 out:
