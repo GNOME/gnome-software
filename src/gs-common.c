@@ -680,11 +680,11 @@ gs_utils_widget_set_custom_css (GsApp *app, GtkWidget *widget, const gchar *meta
 {
 	GPtrArray *key_colors;
 	GString *str = g_string_sized_new (1024);
-	GString *css_str = g_string_new ("");
 	GtkStyleContext *context;
 	const gchar *css;
 	guint i;
 	g_autofree gchar *class_name = NULL;
+	g_autoptr(GString) css_str = NULL;
 	g_autoptr(GtkCssProvider) provider = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
