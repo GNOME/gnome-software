@@ -3172,15 +3172,23 @@ gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 
-	/* same as last time */
-	if (app == NULL && status == priv->status_last)
+	/* nothing specific */
+	if (gs_app_get_id (app) == NULL) {
+		if (status == priv->status_last)
+			return;
+		g_debug ("emitting global %s",
+			 gs_plugin_status_to_string (status));
+		priv->status_last = status;
+		g_signal_emit (plugin_loader,
+			       signals[SIGNAL_STATUS_CHANGED],
+			       0, app, status);
 		return;
+	}
 
-	/* new, or an app, so emit */
+	/* a specific app */
 	g_debug ("emitting %s(%s)",
 		 gs_plugin_status_to_string (status),
-		 app != NULL ? gs_app_get_id (app) : "<general>");
-	priv->status_last = status;
+		 gs_app_get_id (app));
 	g_signal_emit (plugin_loader,
 		       signals[SIGNAL_STATUS_CHANGED],
 		       0, app, status);
