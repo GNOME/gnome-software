@@ -209,16 +209,18 @@ get_upgrades_finished_cb (GObject *object,
 	/* get result */
 	apps = gs_plugin_loader_get_distro_upgrades_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
+			g_warning ("failed to get upgrades: %s",
+				   error->message);
+		}
+		return;
+	}
+
+	/* no results */
+	if (gs_app_list_length (apps) == 0) {
 		g_debug ("no upgrades; withdrawing upgrades-available notification");
 		g_application_withdraw_notification (monitor->application,
 						     "upgrades-available");
-		if (g_error_matches (error,
-		                     GS_PLUGIN_LOADER_ERROR,
-		                     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
-			g_debug ("no upgrades to show");
-		} else if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED)) {
-			g_warning ("failed to get upgrades: %s", error->message);
-		}
 		return;
 	}
 
@@ -416,28 +418,19 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 	apps = gs_plugin_loader_get_updates_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
 
-		/* nothing has been updated offline */
-		if (g_error_matches (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
-			g_debug ("no historical updates; withdrawing notification");
-			g_application_withdraw_notification (monitor->application,
-							     "updates-available");
-		} else {
-			/* save this in case the user clicks the
-			 * 'Show Details' button from the notification below */
-			g_clear_error (&monitor->last_offline_error);
-			monitor->last_offline_error = g_error_copy (error);
+		/* save this in case the user clicks the
+		 * 'Show Details' button from the notification below */
+		g_clear_error (&monitor->last_offline_error);
+		monitor->last_offline_error = g_error_copy (error);
 
-			/* TRANSLATORS: title when we offline updates have failed */
-			notification = g_notification_new (_("Software Updates Failed"));
-			/* TRANSLATORS: message when we offline updates have failed */
-			g_notification_set_body (notification, _("An important OS update failed to be installed."));
-			g_application_send_notification (monitor->application, "offline-updates", notification);
-			g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
-			g_notification_set_default_action (notification, "app.show-offline-update-error");
-			g_application_send_notification (monitor->application, "offline-updates", notification);
-		}
+		/* TRANSLATORS: title when we offline updates have failed */
+		notification = g_notification_new (_("Software Updates Failed"));
+		/* TRANSLATORS: message when we offline updates have failed */
+		g_notification_set_body (notification, _("An important OS update failed to be installed."));
+		g_application_send_notification (monitor->application, "offline-updates", notification);
+		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
+		g_notification_set_default_action (notification, "app.show-offline-update-error");
+		g_application_send_notification (monitor->application, "offline-updates", notification);
 		return;
 	}
 

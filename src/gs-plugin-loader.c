@@ -275,6 +275,10 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	gboolean ret = TRUE;
 	g_autoptr(GsAppList) freeze_list = NULL;
 
+	/* nothing to do */
+	if (gs_app_list_length (list) == 0)
+		return TRUE;
+
 	/* freeze all apps */
 	freeze_list = gs_app_list_copy (list);
 	for (i = 0; i < gs_app_list_length (freeze_list); i++) {
@@ -540,14 +544,6 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	/* filter package list */
 	gs_app_list_filter_duplicates (list);
 
-	/* no results */
-	if (gs_app_list_length (list) == 0) {
-		g_set_error (error,
-			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-			     "no results to show");
-		return NULL;
-	}
 	return g_steal_pointer (&list);
 }
 
@@ -967,13 +963,6 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 	/* remove any packages that are not proper applications or
 	 * OS updates */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no updates to show after invalid");
-		return;
-	}
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1228,15 +1217,6 @@ gs_plugin_loader_get_sources_thread_cb (GTask *task,
 	/* filter package list */
 	gs_app_list_filter_duplicates (state->list);
 
-	/* none left? */
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no sources to show");
-		return;
-	}
-
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
 }
@@ -1320,13 +1300,6 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
 	/* filter package list */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid_installed, state);
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no installed applications to show after invalid");
-		return;
-	}
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1442,13 +1415,6 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no popular apps to show");
-		return;
-	}
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1542,13 +1508,6 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
 	} else {
 		gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 		gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	}
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no featured apps to show");
-		return;
 	}
 
 	/* success */
@@ -1708,7 +1667,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	if (values == NULL) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+					 GS_PLUGIN_LOADER_ERROR_FAILED,
 					 "no valid search terms");
 		return;
 	}
@@ -1771,17 +1730,10 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no search results to show");
-		return;
-	}
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+					 GS_PLUGIN_LOADER_ERROR_FAILED,
 					 "Too many search results returned");
 		return;
 	}
@@ -1941,17 +1893,10 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no search results to show");
-		return;
-	}
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+					 GS_PLUGIN_LOADER_ERROR_FAILED,
 					 "Too many search results returned");
 		return;
 	}
@@ -2111,17 +2056,10 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no search results to show");
-		return;
-	}
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+					 GS_PLUGIN_LOADER_ERROR_FAILED,
 					 "Too many search results returned");
 		return;
 	}
@@ -2299,7 +2237,7 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 	if (state->catlist->len == 0) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+					 GS_PLUGIN_LOADER_ERROR_FAILED,
 					 "no categories to show");
 		return;
 	}
@@ -2435,13 +2373,6 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no get_category_apps results to show");
-		return;
-	}
 
 	/* sort, just in case the UI doesn't do this */
 	gs_app_list_sort (state->list, gs_plugin_loader_app_sort_cb, NULL);
@@ -4005,13 +3936,6 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 
 	/* filter package list */
 	gs_app_list_filter_duplicates (state->list);
-	if (gs_app_list_length (state->list) == 0) {
-		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
-					 "no file_to_app results to show");
-		return;
-	}
 
 	/* check the apps have an icon set */
 	for (j = 0; j < gs_app_list_length (state->list); j++) {
@@ -4043,7 +3967,7 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 	if (gs_app_list_length (state->list) != 1) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_NO_RESULTS,
+					 GS_PLUGIN_LOADER_ERROR_FAILED,
 					 "no application was created for %s",
 					 g_file_get_path (state->file));
 		return;

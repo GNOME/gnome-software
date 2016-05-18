@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013-2014 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -179,20 +179,21 @@ get_installed_updates_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
-			g_debug ("no installed updates to show");
-			gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
-			return;
-		} else if (g_error_matches (error,
-					    G_IO_ERROR,
-					    G_IO_ERROR_CANCELLED)) {
+				    G_IO_ERROR,
+				    G_IO_ERROR_CANCELLED)) {
 			/* This should only ever happen while the dialog is being closed */
 			g_debug ("get installed updates cancelled");
 			return;
 		}
 
 		g_warning ("failed to get installed updates: %s", error->message);
+		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
+		return;
+	}
+
+	/* no results */
+	if (gs_app_list_length (list) == 0) {
+		g_debug ("no installed updates to show");
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
 		return;
 	}

@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -157,17 +157,18 @@ gs_shell_moderate_get_unvoted_reviews_cb (GObject *source_object,
 							    res,
 							    &error);
 	if (list == NULL) {
-		if (g_error_matches (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
-			gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install),
-							  "uptodate");
-			return;
-		}
 		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			g_warning ("failed to get moderate apps: %s", error->message);
 		return;
 	}
+
+	/* no results */
+	if (gs_app_list_length (list) == 0) {
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install),
+						  "uptodate");
+		return;
+	}
+
 	for (i = 0; i < gs_app_list_length (list); i++) {
 		app = gs_app_list_index (list, i);
 		gs_shell_moderate_add_app (self, app);

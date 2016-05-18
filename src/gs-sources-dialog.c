@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -159,12 +159,8 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 	list = gs_plugin_loader_get_sources_finish (plugin_loader, res, &error);
 	if (list == NULL) {
 		if (g_error_matches (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
-			g_debug ("no sources to show");
-		} else if (g_error_matches (error,
-					    G_IO_ERROR,
-					    G_IO_ERROR_CANCELLED)) {
+				     G_IO_ERROR,
+				     G_IO_ERROR_CANCELLED)) {
 			g_debug ("get sources cancelled");
 		} else {
 			g_warning ("failed to get sources: %s", error->message);
@@ -172,6 +168,12 @@ get_sources_cb (GsPluginLoader *plugin_loader,
 		gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "empty");
 		gtk_style_context_add_class (gtk_widget_get_style_context (dialog->label_header),
 		                             "dim-label");
+		return;
+	}
+
+	/* no results */
+	if (gs_app_list_length (list) == 0) {
+		g_debug ("no sources to show");
 		return;
 	}
 

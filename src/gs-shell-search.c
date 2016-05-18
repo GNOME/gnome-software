@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -89,8 +89,8 @@ gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
  **/
 static void
 gs_shell_search_get_search_cb (GObject *source_object,
-				     GAsyncResult *res,
-				     gpointer user_data)
+			       GAsyncResult *res,
+			       gpointer user_data)
 {
 	guint i;
 	GsApp *app;
@@ -106,14 +106,15 @@ gs_shell_search_get_search_cb (GObject *source_object,
 			g_debug ("search cancelled");
 			return;
 		}
-		if (g_error_matches (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
-			g_debug ("no search results to show");
-		} else {
-			g_warning ("failed to get search apps: %s", error->message);
-		}
+		g_warning ("failed to get search apps: %s", error->message);
 		gs_stop_spinner (GTK_SPINNER (self->spinner_search));
+		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-results");
+		return;
+	}
+
+	/* no results */
+	if (gs_app_list_length (list) == 0) {
+		g_debug ("no search results to show");
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-results");
 		return;
 	}

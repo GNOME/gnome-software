@@ -1376,7 +1376,7 @@ gs_shell_details_file_to_app_cb (GObject *source,
 
 		if (g_error_matches (error,
 				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_NO_RESULTS)) {
+				     GS_PLUGIN_LOADER_ERROR_FAILED)) {
 			/* TRANSLATORS: the file format was not recognised by
 			 * any plugin, e.g. if you try installing a .tar.gz */
 			msg = _("The file is not supported.");
