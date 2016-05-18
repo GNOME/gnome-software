@@ -31,7 +31,6 @@
 G_BEGIN_DECLS
 
 #define GS_TYPE_PLUGIN_LOADER		(gs_plugin_loader_get_type ())
-#define GS_PLUGIN_LOADER_ERROR		(gs_plugin_loader_error_quark ())
 
 G_DECLARE_DERIVABLE_TYPE (GsPluginLoader, gs_plugin_loader, GS, PLUGIN_LOADER, GObject)
 
@@ -44,12 +43,6 @@ struct _GsPluginLoaderClass
 	void			(*pending_apps_changed)	(GsPluginLoader	*plugin_loader);
 	void			(*updates_changed)	(GsPluginLoader	*plugin_loader);
 };
-
-typedef enum
-{
-	GS_PLUGIN_LOADER_ERROR_FAILED,
-	GS_PLUGIN_LOADER_ERROR_LAST
-} GsPluginLoaderError;
 
 typedef enum {
 	GS_PLUGIN_LOADER_ACTION_INSTALL,
@@ -69,8 +62,6 @@ typedef enum {
 typedef void	 (*GsPluginLoaderFinishedFunc)		(GsPluginLoader	*plugin_loader,
 							 GsApp		*app,
 							 gpointer	 user_data);
-
-GQuark		 gs_plugin_loader_error_quark		(void);
 
 GsPluginLoader	*gs_plugin_loader_new			(void);
 void		 gs_plugin_loader_get_installed_async	(GsPluginLoader	*plugin_loader,

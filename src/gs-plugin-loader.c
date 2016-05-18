@@ -158,12 +158,6 @@ gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
 }
 
 /**
- * gs_plugin_loader_error_quark:
- * Return value: Our personal error quark.
- **/
-G_DEFINE_QUARK (gs-plugin-loader-error-quark, gs_plugin_loader_error)
-
-/**
  * gs_plugin_loader_app_sort_cb:
  **/
 static gint
@@ -849,8 +843,8 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 	/* nothing ran */
 	if (!anything_ran) {
 		g_set_error (error,
-			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "no plugin could handle %s",
 			     function_name);
 		return FALSE;
@@ -1666,8 +1660,8 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	values = as_utils_search_tokenize (state->value);
 	if (values == NULL) {
 		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_FAILED,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					 "no valid search terms");
 		return;
 	}
@@ -1732,8 +1726,8 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_FAILED,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					 "Too many search results returned");
 		return;
 	}
@@ -1895,8 +1889,8 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_FAILED,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					 "Too many search results returned");
 		return;
 	}
@@ -2058,8 +2052,8 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_FAILED,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_NOT_SUPPORTED,
 					 "Too many search results returned");
 		return;
 	}
@@ -2236,8 +2230,8 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 	/* success */
 	if (state->catlist->len == 0) {
 		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_FAILED,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_FAILED,
 					 "no categories to show");
 		return;
 	}
@@ -2690,8 +2684,8 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 	/* nothing ran */
 	if (!anything_ran) {
 		g_set_error (&error,
-			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "no plugin could handle %s",
 			     state->function_name);
 		g_task_return_error (task, error);
@@ -3393,8 +3387,8 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		/* check we're not stuck */
 		if (dep_loop_check++ > 100) {
 			g_set_error (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_FAILED,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
 				     "got stuck in dep loop");
 			return FALSE;
 		}
@@ -3768,8 +3762,8 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 	/* nothing ran */
 	if (!anything_ran) {
 		g_set_error (error,
-			     GS_PLUGIN_LOADER_ERROR,
-			     GS_PLUGIN_LOADER_ERROR_FAILED,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_NOT_SUPPORTED,
 			     "no plugin could handle refresh");
 		return FALSE;
 	}
@@ -3966,8 +3960,8 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 	/* success */
 	if (gs_app_list_length (state->list) != 1) {
 		g_task_return_new_error (task,
-					 GS_PLUGIN_LOADER_ERROR,
-					 GS_PLUGIN_LOADER_ERROR_FAILED,
+					 GS_PLUGIN_ERROR,
+					 GS_PLUGIN_ERROR_FAILED,
 					 "no application was created for %s",
 					 g_file_get_path (state->file));
 		return;

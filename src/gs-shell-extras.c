@@ -527,8 +527,8 @@ search_files_cb (GObject *source_object,
 			return;
 		}
 		if (g_error_matches (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_FAILED)) {
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED)) {
 			GsApp *app;
 
 			g_debug ("extras: no search result for %s, showing as missing", search_data->title);
@@ -578,8 +578,8 @@ file_to_app_cb (GObject *source_object,
 			return;
 		}
 		if (g_error_matches (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_FAILED)) {
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED)) {
 			g_debug ("extras: no search result for %s, showing as missing", search_data->title);
 			app = create_missing_app (search_data);
 		} else {
@@ -625,8 +625,8 @@ get_search_what_provides_cb (GObject *source_object,
 			return;
 		}
 		if (g_error_matches (error,
-				     GS_PLUGIN_LOADER_ERROR,
-				     GS_PLUGIN_LOADER_ERROR_FAILED)) {
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED)) {
 			GsApp *app;
 
 			g_debug ("extras: no search result for %s, showing as missing", search_data->title);
