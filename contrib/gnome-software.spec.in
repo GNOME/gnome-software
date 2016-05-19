@@ -61,6 +61,14 @@ BuildRequires: flatpak-devel >= %{flatpak_version}
 gnome-software is an application that makes it easy to add, remove
 and update software in the GNOME desktop.
 
+%package devel
+Summary: Headers for building external gnome-software plugins
+Requires: libappstream-glib-devel%{?_isa}
+
+%description devel
+These development files are for building gnome-software plugins outside
+the source tree. Most users do not need this subpackage installed.
+
 %prep
 %setup -q
 
@@ -125,6 +133,12 @@ glib-compile-schemas %{_datadir}/glib-2.0/schemas &> /dev/null || :
 %{_datadir}/gnome-shell/search-providers/org.gnome.Software-search-provider.ini
 %{_datadir}/glib-2.0/schemas/org.gnome.software.gschema.xml
 %{_datadir}/glib-2.0/schemas/org.gnome.software-fedora.gschema.override
+
+%files devel
+%{_libdir}/pkgconfig/gnome-software.pc
+%dir %{_includedir}/gnome-software
+%{_includedir}/gnome-software/*.h
+#%{_datadir}/gtk-doc/html/gnome-software
 
 %changelog
 * #LONGDATE# Richard Hughes <richard@hughsie.com> #VERSION#-0.#BUILD##ALPHATAG#

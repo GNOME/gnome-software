@@ -19,19 +19,38 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GNOME_SOFTWARE_H__
-#define __GNOME_SOFTWARE_H__
+#include <gnome-software.h>
 
-#ifndef I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
-#error You have to define I_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE
-#endif
+/*
+ * Compile and install with:
+ *
+gcc -shared -o libgs_plugin_example.so gs-plugin-example.c -fPIC \
+ `pkg-config --libs --cflags gnome-software` \
+ -DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE &&
+ sudo cp libgs_plugin_example.so `pkg-config gnome-software --variable=plugindir`
+ */
 
-#include <gs-app.h>
-#include <gs-app-list.h>
-#include <gs-category.h>
-#include <gs-os-release.h>
-#include <gs-plugin.h>
-#include <gs-utils.h>
+const gchar **
+gs_plugin_order_before (GsPlugin *plugin)
+{
+	static const gchar *deps[] = { "appstream", NULL };
+	return deps;
+}
 
-#endif /* __GNOME_SOFTWARE_H__ */
-
+gboolean
+gs_plugin_add_search (GsPlugin *plugin,
+		      gchar **values,
+		      GsAppList *list,
+		      GCancellable *cancellable,
+		      GError **error)
+{
+	guint i;
+	for (i = 0; values[i] != NULL; i++) {
+		if (g_strcmp0 (values[i], "fotoshop") == 0) {
+			g_autoptr(GsApp) app = gs_app_new ("gimp.desktop");
+			gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+			gs_app_list_add (list, app);
+		}
+	}
+	return TRUE;
+}

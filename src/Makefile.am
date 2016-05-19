@@ -20,6 +20,20 @@ AM_CPPFLAGS =						\
 	-DTESTDATADIR=\""$(top_srcdir)/data"\"		\
 	-DGS_DATA=\"$(pkgdatadir)\"
 
+pkgconfigdir = $(libdir)/pkgconfig
+pkgconfig_DATA = gnome-software.pc
+
+gnomesoftware_includedir = $(includedir)/gnome-software
+gnomesoftware_include_HEADERS =				\
+	gnome-software.h				\
+	gs-app.h					\
+	gs-app-list.h					\
+	gs-category.h					\
+	gs-os-release.h					\
+	gs-plugin.h					\
+	gs-review.h					\
+	gs-utils.h
+
 @INTLTOOL_DESKTOP_RULE@
 desktopdir = $(datadir)/applications
 desktop_in_files =					\
@@ -330,6 +344,7 @@ EXTRA_DIST =						\
 	org.freedesktop.PackageKit.xml			\
 	org.freedesktop.PackageKit.Modify2.xml		\
 	gnome-software.gresource.xml			\
+	gnome-software.pc.in				\
 	gnome-software.xml				\
 	gtk-style.css					\
 	gtk-style-hc.css				\

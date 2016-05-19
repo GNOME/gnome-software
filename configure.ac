@@ -15,9 +15,9 @@ AC_PROG_INSTALL
 LT_INIT
 AM_PROG_CC_C_O
 IT_PROG_INTLTOOL([0.35.0])
-#YELP_HELP_INIT
 
-#GNOME_DOC_INIT
+# set up gtk-doc
+GTK_DOC_CHECK([1.11],[--flavour no-tmpl])
 
 dnl ---------------------------------------------------------------------------
 dnl - Extra verbose warning switches
@@ -334,6 +334,7 @@ data/icons/hicolor/48x48/Makefile
 data/icons/hicolor/256x256/Makefile
 data/icons/hicolor/scalable/Makefile
 data/tests/Makefile
+src/gnome-software.pc
 src/Makefile
 src/plugins/Makefile
 tests/Makefile

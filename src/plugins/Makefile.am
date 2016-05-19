@@ -16,6 +16,7 @@ AM_CPPFLAGS =						\
 	$(XDG_APP_CFLAGS)				\
 	$(FLATPAK_CFLAGS)				\
 	$(RPM_CFLAGS)					\
+	-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE	\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
 	-DG_LOG_DOMAIN=\"GsPlugin\"			\

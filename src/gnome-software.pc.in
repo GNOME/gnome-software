@@ -1,0 +1,13 @@
+prefix=@prefix@
+exec_prefix=@exec_prefix@
+libdir=@libdir@
+includedir=@includedir@
+plugindir=@libdir@/gs-plugins-@GS_PLUGIN_API_VERSION@
+
+Name: gnome-software
+Description: GNOME Software is a software center for GNOME
+Version: @VERSION@
+Requires.private: gthread-2.0 atk
+Requires: gobject-2.0 gdk-3.0 appstream-glib libsoup-2.4 gio-unix-2.0
+Libs: -L${libdir}
+Cflags: -I${includedir}/gnome-software

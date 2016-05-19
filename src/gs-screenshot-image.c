@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  * Copyright (C) 2013 Matthias Clasen <mclasen@redhat.com>
  *
  * Licensed under the GNU General Public License Version 2
@@ -24,7 +24,6 @@
 
 #include <glib/gi18n.h>
 #include <gtk/gtk.h>
-#include <gnome-software.h>
 
 #define GNOME_DESKTOP_USE_UNSTABLE_API
 #include <libgnome-desktop/gnome-bg.h>
@@ -32,6 +31,7 @@
 
 #include "gs-screenshot-image.h"
 #include "gs-common.h"
+#include "gs-utils.h"
 
 struct _GsScreenshotImage
 {

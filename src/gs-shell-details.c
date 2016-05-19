@@ -24,7 +24,6 @@
 
 #include <string.h>
 #include <glib/gi18n.h>
-#include <gnome-software.h>
 
 #include "gs-common.h"
 
