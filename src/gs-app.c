@@ -22,20 +22,23 @@
 
 /**
  * SECTION:gs-app
+ * @title: GsApp
+ * @include: gnome-software.h
+ * @stability: Unstable
  * @short_description: An application that is either installed or that can be installed
  *
  * This object represents a 1:1 mapping to a .desktop file. The design is such
  * so you can't have different GsApp's for different versions or architectures
- * of a package. This rule really only applies to GsApps of kind AS_APP_KIND_DESKTOP
- * and AS_APP_KIND_GENERIC. We allow GsApps of kind AS_APP_KIND_OS_UPDATE or
- * AS_APP_KIND_GENERIC, which don't correspond to desktop files, but instead
+ * of a package. This rule really only applies to GsApps of kind %AS_APP_KIND_DESKTOP
+ * and %AS_APP_KIND_GENERIC. We allow GsApps of kind %AS_APP_KIND_OS_UPDATE or
+ * %AS_APP_KIND_GENERIC, which don't correspond to desktop files, but instead
  * represent a system update and its individual components.
  *
  * The #GsPluginLoader de-duplicates the GsApp instances that are produced by
  * plugins to ensure that there is a single instance of GsApp for each id, making
  * the id the primary key for this object. This ensures that actions triggered on
- * a GsApp in different parts of gnome-software can be observed by connecting to
- * signals on the GsApp.
+ * a #GsApp in different parts of gnome-software can be observed by connecting to
+ * signals on the #GsApp.
  *
  * Information about other #GsApp objects can be stored in this object, for
  * instance in the gs_app_add_related() method or gs_app_get_history().
@@ -158,6 +161,13 @@ gs_app_kv_printf (GString *str, const gchar *key, const gchar *fmt, ...)
 
 /**
  * gs_app_to_string:
+ * @app: a #GsApp
+ *
+ * Converts the application to a string.
+ * This is not designed to serialize the object but to produce a string suitable
+ * for debugging.
+ *
+ * Returns: A multi-line string
  **/
 gchar *
 gs_app_to_string (GsApp *app)
@@ -397,6 +407,11 @@ gs_app_queue_notify (GsApp *app, const gchar *property_name)
 
 /**
  * gs_app_get_id:
+ * @app: a #GsApp
+ *
+ * Gets the application ID.
+ *
+ * Returns: The whole ID, e.g. "gimp.desktop" or "flatpak:org.gnome.Gimp.desktop"
  **/
 const gchar *
 gs_app_get_id (GsApp *app)
@@ -407,6 +422,11 @@ gs_app_get_id (GsApp *app)
 
 /**
  * gs_app_get_id_no_prefix:
+ * @app: a #GsApp
+ *
+ * Gets the application ID without any prefix set.
+ *
+ * Returns: The whole ID, e.g. gimp.desktop" or "org.gnome.Gimp.desktop"
  **/
 const gchar *
 gs_app_get_id_no_prefix (GsApp *app)
@@ -423,6 +443,10 @@ gs_app_get_id_no_prefix (GsApp *app)
 
 /**
  * gs_app_set_id:
+ * @app: a #GsApp
+ * @id: a application ID, e.g. "gimp.desktop"
+ *
+ * Sets the application ID.
  */
 void
 gs_app_set_id (GsApp *app, const gchar *id)
@@ -644,12 +668,14 @@ gs_app_set_progress (GsApp *app, guint percentage)
  * Plugins are reponsible for changing the state to one of the other
  * states before the GsApp is passed to the frontend.
  *
+ * |[
  * UPDATABLE --> INSTALLING --> INSTALLED
  * UPDATABLE --> REMOVING   --> AVAILABLE
  * INSTALLED --> REMOVING   --> AVAILABLE
  * AVAILABLE --> INSTALLING --> INSTALLED
  * AVAILABLE <--> QUEUED --> INSTALLING --> INSTALLED
  * UNKNOWN   --> UNAVAILABLE
+ * ]|
  **/
 void
 gs_app_set_state (GsApp *app, AsAppState state)
@@ -684,9 +710,11 @@ gs_app_get_kind (GsApp *app)
  * The following state diagram explains the typical states.
  * All applications start with kind %AS_APP_KIND_UNKNOWN.
  *
+ * |[
  * PACKAGE --> NORMAL
  * PACKAGE --> SYSTEM
  * NORMAL  --> SYSTEM
+ * ]|
  **/
 void
 gs_app_set_kind (GsApp *app, AsAppKind kind)

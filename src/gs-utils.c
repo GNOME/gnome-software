@@ -21,6 +21,9 @@
 
 /**
  * SECTION:gs-utils
+ * @title: GsUtils
+ * @include: gnome-software.h
+ * @stability: Unstable
  * @short_description: Utilities that plugins can use
  *
  * These functions provide useful functionality that makes it easy to

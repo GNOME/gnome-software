@@ -21,6 +21,9 @@
 
 /**
  * SECTION:gs-review
+ * @title: GsReview
+ * @include: gnome-software.h
+ * @stability: Unstable
  * @short_description: An application user review
  *
  * This object represents a user-submitted application review.

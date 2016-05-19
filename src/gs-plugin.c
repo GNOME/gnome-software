@@ -19,7 +19,12 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-/* Introduction:
+/**
+ * SECTION:gs-plugin
+ * @title: GsPlugin
+ * @include: gnome-software.h
+ * @stability: Unstable
+ * @short_description: Runtime-loaded modules providing functionality
  *
  * Plugins are modules that are loaded at runtime to provide information
  * about requests and to service user actions like installing, removing

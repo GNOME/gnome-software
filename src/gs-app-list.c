@@ -21,6 +21,9 @@
 
 /**
  * SECTION:gs-app-list
+ * @title: GsAppList
+ * @include: gnome-software.h
+ * @stability: Unstable
  * @short_description: An application list
  *
  * These functions provide a refcounted list of #GsApp objects.
