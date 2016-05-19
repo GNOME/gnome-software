@@ -314,9 +314,9 @@ gs_app_list_init (GsAppList *list)
 GsAppList *
 gs_app_list_new (void)
 {
-	GsApp *app;
-	app = g_object_new (GS_TYPE_APP_LIST, NULL);
-	return GS_APP_LIST (app);
+	GsAppList *list;
+	list = g_object_new (GS_TYPE_APP_LIST, NULL);
+	return GS_APP_LIST (list);
 }
 
 /* vim: set noexpandtab: */
