@@ -30,7 +30,7 @@
 
 #include <glib.h>
 
-#include "gs-app-list.h"
+#include "gs-app-list-private.h"
 
 struct _GsAppList
 {

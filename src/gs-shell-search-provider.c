@@ -27,6 +27,7 @@
 #include <string.h>
 #include <glib/gi18n.h>
 
+#include "gs-app-list-private.h"
 #include "gs-plugin-loader-sync.h"
 
 #include "gs-shell-search-provider-generated.h"

@@ -26,6 +26,7 @@
 #include <appstream-glib.h>
 
 #include "gs-app-private.h"
+#include "gs-app-list-private.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin.h"
 #include "gs-plugin-private.h"
