@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Kalev Lember <klember@redhat.com>
+ * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU Lesser General Public License Version 2.1
  *
@@ -22,23 +23,22 @@
 #ifndef __GS_OS_RELEASE_H
 #define __GS_OS_RELEASE_H
 
-#include <glib.h>
+#include <glib-object.h>
+
+#include "gs-app.h"
 
 G_BEGIN_DECLS
 
-#define GS_OS_RELEASE_ERROR gs_os_release_error_quark ()
+#define GS_TYPE_OS_RELEASE (gs_os_release_get_type ())
 
-typedef enum
-{
-	GS_OS_RELEASE_ERROR_FAILED
-} GsOsReleaseError;
+G_DECLARE_FINAL_TYPE (GsOsRelease, gs_os_release, GS, OS_RELEASE, GObject)
 
-GQuark		  gs_os_release_error_quark			(void);
-gchar		 *gs_os_release_get_name		(GError		**error);
-gchar		 *gs_os_release_get_version		(GError		**error);
-gchar		 *gs_os_release_get_id			(GError		**error);
-gchar		 *gs_os_release_get_version_id		(GError		**error);
-gchar		 *gs_os_release_get_pretty_name		(GError		**error);
+GsOsRelease	*gs_os_release_new		(GError		**error);
+const gchar	*gs_os_release_get_name		(GsOsRelease	*os_release);
+const gchar	*gs_os_release_get_version	(GsOsRelease	*os_release);
+const gchar	*gs_os_release_get_id		(GsOsRelease	*os_release);
+const gchar	*gs_os_release_get_version_id	(GsOsRelease	*os_release);
+const gchar	*gs_os_release_get_pretty_name	(GsOsRelease	*os_release);
 
 G_END_DECLS
 

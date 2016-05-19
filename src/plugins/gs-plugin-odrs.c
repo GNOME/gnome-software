@@ -48,6 +48,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
 
 	priv->settings = g_settings_new ("org.gnome.software");
 	priv->review_server = g_settings_get_string (priv->settings,
@@ -61,9 +62,14 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 
 	/* get the distro name (e.g. 'Fedora') but allow a fallback */
-	priv->distro = gs_os_release_get_name (&error);
+	os_release = gs_os_release_new (&error);
+	if (os_release == NULL) {
+		g_warning ("failed to get distro name: %s", error->message);
+		priv->distro = g_strdup ("Unknown");
+	}
+	priv->distro = g_strdup (gs_os_release_get_name (os_release));
 	if (priv->distro == NULL) {
-		g_warning ("Failed to get distro name: %s", error->message);
+		g_warning ("failed to get distro name");
 		priv->distro = g_strdup ("Unknown");
 	}
 }

@@ -611,12 +611,20 @@ gboolean
 gs_plugin_check_distro_id (GsPlugin *plugin, const gchar *distro_id)
 {
 	g_autoptr(GError) error = NULL;
-	g_autofree gchar *id = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
+	const gchar *id = NULL;
+
+	/* load /etc/os-release */
+	os_release = gs_os_release_new (&error);
+	if (os_release == NULL) {
+		g_debug ("could not parse os-release: %s", error->message);
+		return FALSE;
+	}
 
 	/* check that we are running on Fedora */
-	id = gs_os_release_get_id (&error);
+	id = gs_os_release_get_id (os_release);
 	if (id == NULL) {
-		g_debug ("could not parse os-release: %s", error->message);
+		g_debug ("could not get distro ID");
 		return FALSE;
 	}
 	if (g_strcmp0 (id, distro_id) != 0)

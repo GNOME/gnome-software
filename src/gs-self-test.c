@@ -28,6 +28,7 @@
 
 #include "gs-app-private.h"
 #include "gs-app-list-private.h"
+#include "gs-os-release.h"
 #include "gs-plugin.h"
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
@@ -101,6 +102,27 @@ gs_app_list_filter_cb (GsApp *app, gpointer user_data)
 	if (g_strcmp0 (gs_app_get_id (app), "c") == 0)
 		return FALSE;
 	return TRUE;
+}
+
+static void
+gs_os_release_func (void)
+{
+	g_autofree gchar *fn = NULL;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
+
+	fn = gs_test_get_filename ("tests/os-release");
+	g_assert (fn != NULL);
+	g_setenv ("GS_SELF_TEST_OS_RELEASE_FILENAME", fn, TRUE);
+
+	os_release = gs_os_release_new (&error);
+	g_assert_no_error (error);
+	g_assert (os_release != NULL);
+	g_assert_cmpstr (gs_os_release_get_id (os_release), ==, "fedora");
+	g_assert_cmpstr (gs_os_release_get_name (os_release), ==, "Fedora");
+	g_assert_cmpstr (gs_os_release_get_version (os_release), ==, "25 (Workstation Edition)");
+	g_assert_cmpstr (gs_os_release_get_version_id (os_release), ==, "25");
+	g_assert_cmpstr (gs_os_release_get_pretty_name (os_release), ==, "Fedora 25 (Workstation Edition)");
 }
 
 static void
@@ -891,6 +913,7 @@ main (int argc, char **argv)
 	g_log_set_fatal_mask (NULL, G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL);
 
 	/* generic tests go here */
+	g_test_add_func ("/gnome-software/os-release", gs_os_release_func);
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
 

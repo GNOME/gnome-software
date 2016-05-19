@@ -94,9 +94,10 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	const gchar *verstr = NULL;
 	gchar *endptr = NULL;
-	g_autofree gchar *verstr = NULL;
 	g_autoptr(GFile) file = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
 
 	/* get the file to cache */
 	priv->cachefn = gs_utils_get_cache_filename ("upgrades",
@@ -118,10 +119,13 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			  G_CALLBACK (gs_plugin_fedora_distro_upgrades_changed_cb), plugin);
 
 	/* read os-release for the current versions */
-	priv->os_name = gs_os_release_get_name (error);
+	os_release = gs_os_release_new (error);
+	if (os_release == NULL)
+		return FALSE;
+	priv->os_name = g_strdup (gs_os_release_get_name (os_release));
 	if (priv->os_name == NULL)
 		return FALSE;
-	verstr = gs_os_release_get_version_id (error);
+	verstr = gs_os_release_get_version_id (os_release);
 	if (verstr == NULL)
 		return FALSE;
 
