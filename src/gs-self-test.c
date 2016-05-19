@@ -159,10 +159,11 @@ gs_app_func (void)
 {
 	g_autoptr(GsApp) app = NULL;
 
-	app = gs_app_new ("gnome-software");
+	app = gs_app_new ("flatpak:gnome-software");
 	g_assert (GS_IS_APP (app));
 
-	g_assert_cmpstr (gs_app_get_id (app), ==, "gnome-software");
+	g_assert_cmpstr (gs_app_get_id (app), ==, "flatpak:gnome-software");
+	g_assert_cmpstr (gs_app_get_id_no_prefix (app), ==, "gnome-software");
 
 	/* check we clean up the version, but not at the expense of having
 	 * the same string as the update version */
