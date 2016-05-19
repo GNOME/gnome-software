@@ -3428,7 +3428,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				}
 				if (!gs_plugin_get_enabled (dep))
 					continue;
-				if (gs_plugin_get_priority (plugin) <= gs_plugin_get_priority (dep)) {
+				if (gs_plugin_get_priority (plugin) >= gs_plugin_get_priority (dep)) {
 					g_debug ("%s [%i] to be ordered before %s [%i] "
 						 "so promoting to [%i]",
 						 gs_plugin_get_name (plugin),
