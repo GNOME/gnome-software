@@ -1018,7 +1018,8 @@ gboolean	 gs_plugin_refresh			(GsPlugin	*plugin,
  * gs_plugin_file_to_app:
  * @plugin: a #GsPlugin
  * @list: a #GsAppList
- * @file: a #GFile * @cancellable: a #GCancellable, or %NULL
+ * @file: a #GFile
+ * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
  * Converts a local file to a #GsApp. It's expected that only one plugin will
@@ -1043,7 +1044,8 @@ gboolean	 gs_plugin_file_to_app			(GsPlugin	*plugin,
 /**
  * gs_plugin_update:
  * @plugin: a #GsPlugin
- * @apps: a #GsAppList * @cancellable: a #GCancellable, or %NULL
+ * @apps: a #GsAppList
+ * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
  * Updates a list of applications, typically scheduling them for offline update.

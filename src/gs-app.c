@@ -840,7 +840,7 @@ gs_app_add_source (GsApp *app, const gchar *source)
  *
  * Gets the list of sources for the application.
  *
- * Returns: (element-type utf8): a list
+ * Returns: (element-type utf8) (transfer none): a list
  **/
 GPtrArray *
 gs_app_get_sources (GsApp *app)
@@ -890,7 +890,7 @@ gs_app_get_source_id_default (GsApp *app)
  *
  * Gets the list of source IDs.
  *
- * Returns: (element-type utf8): a list
+ * Returns: (element-type utf8) (transfer none): a list
  **/
 GPtrArray *
 gs_app_get_source_ids (GsApp *app)
@@ -991,7 +991,7 @@ gs_app_set_project_group (GsApp *app, const gchar *project_group)
  *
  * Gets a pixbuf to represent the application.
  *
- * Returns: a #GdkPixbuf, or %NULL
+ * Returns: (transfer none): a #GdkPixbuf, or %NULL
  **/
 GdkPixbuf *
 gs_app_get_pixbuf (GsApp *app)
@@ -1038,7 +1038,7 @@ gs_app_set_icon (GsApp *app, AsIcon *icon)
  * Gets the file that backs this application, for instance this might
  * be a local file in ~/Downloads that we are installing.
  *
- * Returns: a #GFile, or %NULL
+ * Returns: (transfer none): a #GFile, or %NULL
  **/
 GFile *
 gs_app_get_local_file (GsApp *app)
@@ -1068,7 +1068,7 @@ gs_app_set_local_file (GsApp *app, GFile *local_file)
  *
  * Gets the runtime for the application.
  *
- * Returns: a #GsApp, or %NULL for unset
+ * Returns: (transfer none): a #GsApp, or %NULL for unset
  **/
 GsApp *
 gs_app_get_runtime (GsApp *app)
@@ -1615,7 +1615,7 @@ gs_app_add_screenshot (GsApp *app, AsScreenshot *screenshot)
  *
  * Gets the list of screenshots.
  *
- * Returns: (element-type AsScreenshot): a list
+ * Returns: (element-type AsScreenshot) (transfer none): a list
  **/
 GPtrArray *
 gs_app_get_screenshots (GsApp *app)
@@ -1819,7 +1819,7 @@ gs_app_set_rating (GsApp *app, gint rating)
  *
  * Gets the review ratings.
  *
- * Returns: (element-type gint): a list
+ * Returns: (element-type gint) (transfer none): a list
  **/
 GArray *
 gs_app_get_review_ratings (GsApp *app)
@@ -1850,7 +1850,7 @@ gs_app_set_review_ratings (GsApp *app, GArray *review_ratings)
  *
  * Gets all the user-submitted reviews for the application.
  *
- * Returns: (element-type GsReview): the list of reviews
+ * Returns: (element-type GsReview) (transfer none): the list of reviews
  **/
 GPtrArray *
 gs_app_get_reviews (GsApp *app)
@@ -2042,7 +2042,7 @@ gs_app_set_metadata (GsApp *app, const gchar *key, const gchar *value)
  *
  * Gets the list of addons for the application.
  *
- * Returns: (element-type GsApp): a list of addons
+ * Returns: (element-type GsApp) (transfer none): a list of addons
  **/
 GPtrArray *
 gs_app_get_addons (GsApp *app)
@@ -2082,7 +2082,7 @@ gs_app_add_addon (GsApp *app, GsApp *addon)
  *
  * Gets any related applications.
  *
- * Returns: (element-type GsApp): a list of applications
+ * Returns: (element-type GsApp) (transfer none): a list of applications
  **/
 GPtrArray *
 gs_app_get_related (GsApp *app)
@@ -2132,7 +2132,7 @@ gs_app_add_related (GsApp *app, GsApp *app2)
  *
  * Gets the history of this application.
  *
- * Returns: (element-type GsApp): a list
+ * Returns: (element-type GsApp) (transfer none): a list
  **/
 GPtrArray *
 gs_app_get_history (GsApp *app)
@@ -2190,7 +2190,7 @@ gs_app_set_install_date (GsApp *app, guint64 install_date)
  *
  * Gets the list of categories for an application.
  *
- * Returns: (element-type utf8): a list
+ * Returns: (element-type utf8) (transfer none): a list
  **/
 GPtrArray *
 gs_app_get_categories (GsApp *app)
@@ -2263,7 +2263,7 @@ gs_app_add_category (GsApp *app, const gchar *category)
  *
  * Gets the key colors used in the application icon.
  *
- * Returns: (element-type GdkRGBA): a list
+ * Returns: (element-type GdkRGBA) (transfer none): a list
  **/
 GPtrArray *
 gs_app_get_key_colors (GsApp *app)
@@ -2310,7 +2310,7 @@ gs_app_add_key_color (GsApp *app, GdkRGBA *key_color)
  *
  * Gets the list of application keywords in the users locale.
  *
- * Returns: (element-type utf8): a list
+ * Returns: (element-type utf8) (transfer none): a list
  **/
 GPtrArray *
 gs_app_get_keywords (GsApp *app)

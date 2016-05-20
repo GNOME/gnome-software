@@ -246,7 +246,7 @@ gs_os_release_init (GsOsRelease *os_release)
  *
  * Creates a new os_release.
  *
- * Returns: A newly allocated #GsOsRelease
+ * Returns: (transfer full): A newly allocated #GsOsRelease, or %NULL for error
  **/
 GsOsRelease *
 gs_os_release_new (GError **error)

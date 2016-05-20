@@ -328,7 +328,7 @@ gs_review_get_version (GsReview *review)
  *
  * Gets the date the review was originally submitted.
  *
- * Returns: the #GDateTime, or %NULL for unset
+ * Returns: (transfer none): the #GDateTime, or %NULL for unset
  **/
 GDateTime *
 gs_review_get_date (GsReview *review)
