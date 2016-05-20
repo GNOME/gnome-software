@@ -19,6 +19,15 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
+
+/**
+ * SECTION:gs-plugin-vfuncs
+ * @title: GsPlugin Exports
+ * @include: gnome-software.h
+ * @stability: Unstable
+ * @short_description: Vfuncs that plugins can implement
+ */
+
 #ifndef __GS_PLUGIN_VFUNCS_H
 #define __GS_PLUGIN_VFUNCS_H
 

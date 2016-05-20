@@ -21,7 +21,7 @@
 
 /**
  * SECTION:gs-plugin
- * @title: GsPlugin
+ * @title: GsPlugin Helpers
  * @include: gnome-software.h
  * @stability: Unstable
  * @short_description: Runtime-loaded modules providing functionality

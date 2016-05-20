@@ -4,6 +4,9 @@ SUBDIRS =						\
 	src						\
 	tests
 
+# we need objects in src
+SUBDIRS += doc
+
 snapshot:
 	$(MAKE) dist distdir=$(PACKAGE)-$(VERSION)-`date +"%Y%m%d"`
 
@@ -40,6 +43,7 @@ EXTRA_DIST =						\
 	README
 
 DISTCHECK_CONFIGURE_FLAGS = 				\
+	--enable-gtk-doc				\
 	--disable-tests					\
 	--disable-dogtail
 

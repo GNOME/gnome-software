@@ -334,6 +334,8 @@ data/icons/hicolor/48x48/Makefile
 data/icons/hicolor/256x256/Makefile
 data/icons/hicolor/scalable/Makefile
 data/tests/Makefile
+doc/Makefile
+doc/api/Makefile
 src/gnome-software.pc
 src/Makefile
 src/plugins/Makefile
