@@ -546,7 +546,15 @@ gboolean	 gs_plugin_add_category_apps		(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Get popular applications.
+ * Get popular applications that should be featured on the main page as
+ * "Editors Picks".
+ * This is expected to be a curated list of applications that are high quality
+ * and feature-complete.
+ *
+ * The returned list of popular applications are not sorted, but each #GsApp has
+ * to be valid, for instance having a known state and a valid icon.
+ * If an insufficient number of applications are added by plugins then the
+ * section on the overview shell may be hidden.
  *
  * Plugins are expected to add new apps using gs_app_list_add().
  *
@@ -564,7 +572,16 @@ gboolean	 gs_plugin_add_popular			(GsPlugin	*plugin,
  * @cancellable: a #GCancellable, or %NULL
  * @error: a #GError, or %NULL
  *
- * Get applications that should be featured.
+ * Get applications that should be featured as a large full-width banner on the
+ * overview page.
+ * This is expected to be a curated list of applications that are high quality
+ * and feature-complete.
+ *
+ * The returned list of popular applications are randomized in a way so that
+ * the same application is featured for the entire calendar day.
+ *
+ * NOTE: The UI code may expect that applications have additional metadata set on
+ * results, for instance <code>GnomeSoftware::FeatureTile-css</code>.
  *
  * Plugins are expected to add new apps using gs_app_list_add().
  *
@@ -732,6 +749,10 @@ gboolean	 gs_plugin_update_cancel		(GsPlugin	*plugin,
  * gs_plugin_progress_update() if they will take more than tens of milliseconds
  * to complete.
  *
+ * On failure the error message returned will usually only be shown on the
+ * console, but it may also be retained on the #GsApp object.
+ * The UI code can retrieve the error using gs_app_get_last_error().
+ *
  * NOTE: Once the action is complete, the plugin must set the new state of @app
  * to %AS_APP_STATE_INSTALLED.
  *
@@ -757,6 +778,10 @@ gboolean	 gs_plugin_app_install			(GsPlugin	*plugin,
  * All functions can block, but should sent progress notifications, e.g. using
  * gs_plugin_progress_update() if they will take more than tens of milliseconds
  * to complete.
+ *
+ * On failure the error message returned will usually only be shown on the
+ * console, but it may also be retained on the #GsApp object.
+ * The UI code can retrieve the error using gs_app_get_last_error().
  *
  * NOTE: Once the action is complete, the plugin must set the new state of @app
  * to %AS_APP_STATE_AVAILABLE or %AS_APP_STATE_UNKNOWN if not known.
@@ -801,6 +826,10 @@ gboolean	 gs_plugin_app_set_rating		(GsPlugin	*plugin,
  * All functions can block, but should sent progress notifications, e.g. using
  * gs_plugin_progress_update() if they will take more than tens of milliseconds
  * to complete.
+ *
+ * On failure the error message returned will usually only be shown on the
+ * console, but it may also be retained on the #GsApp object.
+ * The UI code can retrieve the error using gs_app_get_last_error().
  *
  * NOTE: Once the action is complete, the plugin must set the new state of @app
  * to %AS_APP_STATE_INSTALLED or %AS_APP_STATE_UNKNOWN if not known.

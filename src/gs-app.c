@@ -2868,9 +2868,20 @@ gs_app_init (GsApp *app)
 
 /**
  * gs_app_new:
- * @id: an ID, or %NULL
+ * @id: an application ID, or %NULL, e.g. "flatpak:org.gnome.Software.desktop"
  *
  * Creates a new application object.
+ *
+ * The ID should only be set when the application ID (with optional prefix) is
+ * known; it is perfectly valid to use gs_app_new() with an @id of %NULL, and
+ * then relying on another plugin to set the @id using gs_app_set_id() based on
+ * some other information.
+ *
+ * For instance, a #GsApp is created with no ID when returning results from the
+ * packagekit plugin, but with the default source name set as the package name.
+ * The source name is read by the appstream plugin, and if matched in the
+ * AppStream XML the correct ID is set, along with other higher quality data
+ * like the application icon and long description.
  *
  * Returns: a new #GsApp
  **/
