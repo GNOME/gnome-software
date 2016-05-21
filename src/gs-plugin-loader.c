@@ -3395,10 +3395,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		}
 	} while (changes);
 
-	/* sort by priority */
-	g_ptr_array_sort (priv->plugins,
-			  gs_plugin_loader_plugin_sort_fn);
-
 	/* run the plugins */
 	gs_plugin_loader_run (plugin_loader, "gs_plugin_initialize");
 
@@ -3423,6 +3419,10 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			gs_plugin_set_enabled (dep, FALSE);
 		}
 	}
+
+	/* sort by priority */
+	g_ptr_array_sort (priv->plugins,
+			  gs_plugin_loader_plugin_sort_fn);
 
 	/* run setup */
 	for (i = 0; i < priv->plugins->len; i++) {
