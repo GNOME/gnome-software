@@ -3325,6 +3325,9 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		}
 	}
 
+	/* run the plugins */
+	gs_plugin_loader_run (plugin_loader, "gs_plugin_initialize");
+
 	/* order by deps */
 	do {
 		changes = FALSE;
@@ -3394,9 +3397,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			return FALSE;
 		}
 	} while (changes);
-
-	/* run the plugins */
-	gs_plugin_loader_run (plugin_loader, "gs_plugin_initialize");
 
 	/* check for conflicts */
 	for (i = 0; i < priv->plugins->len; i++) {
