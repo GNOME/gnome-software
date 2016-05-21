@@ -31,6 +31,7 @@
 #include <gs-category.h>
 #include <gs-os-release.h>
 #include <gs-plugin.h>
+#include <gs-plugin-vfuncs.h>
 #include <gs-utils.h>
 
 #endif /* __GNOME_SOFTWARE_H__ */

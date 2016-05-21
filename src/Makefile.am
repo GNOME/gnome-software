@@ -31,6 +31,7 @@ gnomesoftware_include_HEADERS =				\
 	gs-category.h					\
 	gs-os-release.h					\
 	gs-plugin.h					\
+	gs-plugin-vfuncs.h				\
 	gs-review.h					\
 	gs-utils.h
 
@@ -178,6 +179,7 @@ gnome_software_SOURCES =				\
 	gs-plugin.c					\
 	gs-plugin.h					\
 	gs-plugin-private.h				\
+	gs-plugin-vfuncs.h				\
 	gs-progress-button.c				\
 	gs-progress-button.h				\
 	gs-review.c					\
