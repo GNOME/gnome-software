@@ -34,18 +34,6 @@
  */
 
 /**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"appstream",
-		NULL };
-	return deps;
-}
-
-/**
  * gs_plugin_initialize:
  */
 void
@@ -60,6 +48,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		g_debug ("disabling '%s' as epiphany does not exist",
 			 gs_plugin_get_name (plugin));
 	}
+
+	/* need help from appstream */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
 /**

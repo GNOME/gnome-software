@@ -106,18 +106,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 			  G_CALLBACK (gs_plugin_provenance_license_changed_cb), plugin);
 	priv->sources = gs_plugin_provenance_license_get_sources (plugin);
 	priv->license_id = gs_plugin_provenance_license_get_id (plugin);
-}
 
-/**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"provenance",
-		NULL };
-	return deps;
+	/* need this set */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "provenance");
 }
 
 /**

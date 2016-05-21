@@ -3279,10 +3279,11 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *filename_tmp;
+	const gchar *plugin_name;
 	gboolean changes;
+	GPtrArray *deps;
 	GsPlugin *dep;
 	GsPlugin *plugin;
-	const gchar **deps;
 	guint dep_loop_check = 0;
 	guint i;
 	guint j;
@@ -3333,15 +3334,14 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		changes = FALSE;
 		for (i = 0; i < priv->plugins->len; i++) {
 			plugin = g_ptr_array_index (priv->plugins, i);
-			deps = gs_plugin_get_order_after (plugin);
-			if (deps == NULL)
-				continue;
-			for (j = 0; deps[j] != NULL && !changes; j++) {
+			deps = gs_plugin_get_rules (plugin, GS_PLUGIN_RULE_RUN_AFTER);
+			for (j = 0; j < deps->len && !changes; j++) {
+				plugin_name = g_ptr_array_index (deps, j);
 				dep = gs_plugin_loader_find_plugin (plugin_loader,
-								    deps[j]);
+								    plugin_name);
 				if (dep == NULL) {
 					g_debug ("cannot find plugin '%s'",
-						 deps[j]);
+						 plugin_name);
 					continue;
 				}
 				if (!gs_plugin_get_enabled (dep))
@@ -3361,15 +3361,14 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		}
 		for (i = 0; i < priv->plugins->len; i++) {
 			plugin = g_ptr_array_index (priv->plugins, i);
-			deps = gs_plugin_get_order_before (plugin);
-			if (deps == NULL)
-				continue;
-			for (j = 0; deps[j] != NULL && !changes; j++) {
+			deps = gs_plugin_get_rules (plugin, GS_PLUGIN_RULE_RUN_BEFORE);
+			for (j = 0; j < deps->len && !changes; j++) {
+				plugin_name = g_ptr_array_index (deps, j);
 				dep = gs_plugin_loader_find_plugin (plugin_loader,
-								    deps[j]);
+								    plugin_name);
 				if (dep == NULL) {
 					g_debug ("cannot find plugin '%s'",
-						 deps[j]);
+						 plugin_name);
 					continue;
 				}
 				if (!gs_plugin_get_enabled (dep))
@@ -3403,12 +3402,11 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		plugin = g_ptr_array_index (priv->plugins, i);
 		if (!gs_plugin_get_enabled (plugin))
 			continue;
-		deps = gs_plugin_get_conflicts (plugin);
-		if (deps == NULL)
-			continue;
-		for (j = 0; deps[j] != NULL && !changes; j++) {
+		deps = gs_plugin_get_rules (plugin, GS_PLUGIN_RULE_CONFLICTS);
+		for (j = 0; j < deps->len && !changes; j++) {
+			plugin_name = g_ptr_array_index (deps, j);
 			dep = gs_plugin_loader_find_plugin (plugin_loader,
-							    deps[j]);
+							    plugin_name);
 			if (dep == NULL)
 				continue;
 			if (!gs_plugin_get_enabled (dep))

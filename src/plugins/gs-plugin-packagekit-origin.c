@@ -56,18 +56,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 						       g_str_equal,
 						       g_free,
 						       g_free);
-}
 
-/**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"packagekit-refine",	/* need origin */
-		NULL };
-	return deps;
+	/* need origin */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refine");
 }
 
 /**

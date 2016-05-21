@@ -35,18 +35,6 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = { "appstream",
-				       "packagekit",
-				       NULL };
-	return deps;
-}
-
-/**
  * gs_plugin_initialize:
  */
 void
@@ -54,6 +42,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	priv->mgr = li_manager_new ();
+
+	/* need help from appstream */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 }
 
 /**

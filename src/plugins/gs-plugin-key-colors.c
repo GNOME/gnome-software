@@ -24,15 +24,13 @@
 #include <gnome-software.h>
 
 /**
- * gs_plugin_order_after:
+ * gs_plugin_initialize:
  */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
+void
+gs_plugin_initialize (GsPlugin *plugin)
 {
-	static const gchar *deps[] = {
-		"icons",	/* need icon */
-		NULL };
-	return deps;
+	/* need icon */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "icons");
 }
 
 typedef struct {

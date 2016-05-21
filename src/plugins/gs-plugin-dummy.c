@@ -33,17 +33,6 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = { "appstream",
-				       NULL };
-	return deps;
-}
-
-/**
  * gs_plugin_initialize:
  */
 void
@@ -55,6 +44,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 			 gs_plugin_get_name (plugin));
 		gs_plugin_set_enabled (plugin, FALSE);
 	}
+
+	/* need help from appstream */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
 /**

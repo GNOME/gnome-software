@@ -61,9 +61,7 @@ typedef struct
 	GsPluginData		*data;			/* for gs-plugin-{name}.c */
 	GsPluginFlags		 flags;
 	SoupSession		*soup_session;
-	const gchar		**conflicts;		/* allow-none */
-	const gchar		**order_after;		/* allow-none */
-	const gchar		**order_before;		/* allow-none */
+	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
 	gboolean		 enabled;
 	gchar			*locale;		/* allow-none */
 	gchar			*name;
@@ -130,9 +128,6 @@ GsPlugin *
 gs_plugin_create (const gchar *filename, GError **error)
 {
 	GModule *module;
-	GsPluginGetDepsFunc order_after = NULL;
-	GsPluginGetDepsFunc order_before = NULL;
-	GsPluginGetDepsFunc plugin_conflicts = NULL;
 	GsPlugin *plugin = NULL;
 	GsPluginPrivate *priv;
 	g_autofree gchar *basename = NULL;
@@ -159,24 +154,10 @@ gs_plugin_create (const gchar *filename, GError **error)
 	}
 	g_strdelimit (basename, ".", '\0');
 
-	/* get plugins this plugin depends on */
-	g_module_symbol (module,
-			 "gs_plugin_order_after",
-			 (gpointer *) &order_after);
-	g_module_symbol (module,
-			 "gs_plugin_order_before",
-			 (gpointer *) &order_before);
-	g_module_symbol (module,
-			 "gs_plugin_get_conflicts",
-			 (gpointer *) &plugin_conflicts);
-
 	/* create new plugin */
 	plugin = gs_plugin_new ();
 	priv = gs_plugin_get_instance_private (plugin);
 	priv->module = module;
-	priv->order_after = order_after != NULL ? order_after (plugin) : NULL;
-	priv->order_before = order_before != NULL ? order_before (plugin) : NULL;
-	priv->conflicts = plugin_conflicts != NULL ? plugin_conflicts (plugin) : NULL;
 	priv->name = g_strdup (basename + 13);
 	return plugin;
 }
@@ -189,6 +170,10 @@ gs_plugin_finalize (GObject *object)
 {
 	GsPlugin *plugin = GS_PLUGIN (object);
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	guint i;
+
+	for (i = 0; i < GS_PLUGIN_RULE_LAST; i++)
+		g_ptr_array_unref (priv->rules[i]);
 
 	if (priv->timer_id > 0)
 		g_source_remove (priv->timer_id);
@@ -554,48 +539,39 @@ gs_plugin_set_running_other (GsPlugin *plugin, gboolean running_other)
 }
 
 /**
- * gs_plugin_get_order_after:
+ * gs_plugin_add_rule:
  * @plugin: a #GsPlugin
+ * @rule: a #GsPluginRule, e.g. %GS_PLUGIN_RULE_CONFLICTS
+ * @name: a plugin name, e.g. "appstream"
+ *
+ * If the plugin name is found, the rule will be used to sort the plugin list,
+ * for example the plugin specified by @name will be ordered after this plugin
+ * when %GS_PLUGIN_RULE_RUN_AFTER is used.
+ *
+ * NOTE: The depsolver is iterative and may not solve overly-complicated rules;
+ * If depsolving fails then gnome-software will not start.
+ **/
+void
+gs_plugin_add_rule (GsPlugin *plugin, GsPluginRule rule, const gchar *name)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_ptr_array_add (priv->rules[rule], g_strdup (name));
+}
+
+/**
+ * gs_plugin_get_rules:
+ * @plugin: a #GsPlugin
+ * @rule: a #GsPluginRule, e.g. %GS_PLUGIN_RULE_CONFLICTS
  *
  * Gets the plugin IDs that should be run after this plugin.
  *
- * Returns: the NULL terminated list of IDs, e.g. ['appstream']
+ * Returns: (element-type utf8) (transfer none): the list of plugin names, e.g. ['appstream']
  **/
-const gchar **
-gs_plugin_get_order_after (GsPlugin *plugin)
+GPtrArray *
+gs_plugin_get_rules (GsPlugin *plugin, GsPluginRule rule)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->order_after;
-}
-
-/**
- * gs_plugin_get_order_before:
- * @plugin: a #GsPlugin
- *
- * Gets the plugin IDs that should be run before this plugin.
- *
- * Returns: the NULL terminated list of IDs, e.g. ['appstream']
- **/
-const gchar **
-gs_plugin_get_order_before (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->order_before;
-}
-
-/**
- * gs_plugin_get_conflicts:
- * @plugin: a #GsPlugin
- *
- * Gets the plugin IDs that should be disabled if this plugin is enabled.
- *
- * Returns: the NULL terminated list of IDs, e.g. ['appstream']
- **/
-const gchar **
-gs_plugin_get_conflicts (GsPlugin *plugin)
-{
-	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->conflicts;
+	return priv->rules[rule];
 }
 
 /**
@@ -1032,6 +1008,11 @@ static void
 gs_plugin_init (GsPlugin *plugin)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	guint i;
+
+	for (i = 0; i < GS_PLUGIN_RULE_LAST; i++)
+		priv->rules[i] = g_ptr_array_new_with_free_func (g_free);
+
 	priv->enabled = TRUE;
 	priv->priority = 0.f;
 	priv->scale = 1;

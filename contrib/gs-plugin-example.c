@@ -30,11 +30,10 @@ gcc -shared -o libgs_plugin_example.so gs-plugin-example.c -fPIC \
  sudo cp libgs_plugin_example.so `pkg-config gnome-software --variable=plugindir`
  */
 
-const gchar **
-gs_plugin_order_before (GsPlugin *plugin)
+void
+gs_plugin_initialize (GsPlugin *plugin)
 {
-	static const gchar *deps[] = { "appstream", NULL };
-	return deps;
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_BEFORE, "appstream");
 }
 
 gboolean

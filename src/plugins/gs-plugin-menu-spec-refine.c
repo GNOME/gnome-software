@@ -33,16 +33,14 @@
  */
 
 /**
- * gs_plugin_order_after:
+ * gs_plugin_initialize:
  */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
+void
+gs_plugin_initialize (GsPlugin *plugin)
 {
-	static const gchar *deps[] = {
-		"appstream",		/* need GsApp category data */
-		"menu-spec-categories",	/* need menu-spec data */
-		NULL };
-	return deps;
+	/* need category and menu-spec data */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "menu-spec-categories");
 }
 
 /**

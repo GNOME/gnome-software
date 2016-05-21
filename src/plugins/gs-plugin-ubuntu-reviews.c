@@ -63,25 +63,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 						  "gnome-software",
 						  "ubuntu-reviews.db",
 						  NULL);
-}
 
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = { NULL };
-	return deps;
-}
-
-/**
- * gs_plugin_get_conflicts:
- */
-const gchar **
-gs_plugin_get_conflicts (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"odrs",
-		NULL };
-	return deps;
+	/* we have more reviews than ORDS */
+	gs_plugin_add_conflict (plugin, "odrs");
 }
 
 void

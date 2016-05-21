@@ -50,6 +50,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 	priv->icon_theme = gtk_icon_theme_new ();
 	priv->icon_theme_paths = g_hash_table_new_full (g_str_hash, g_str_equal, g_free, NULL);
 	g_mutex_init (&priv->icon_theme_lock);
+
+	/* needs remote icons downloaded */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "epiphany");
 }
 
 /**
@@ -62,19 +66,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->icon_theme);
 	g_hash_table_unref (priv->icon_theme_paths);
 	g_mutex_clear (&priv->icon_theme_lock);
-}
-
-/**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"appstream",		/* needs remote icons downloaded */
-		"epiphany",		/* "" */
-		NULL };
-	return deps;
 }
 
 /**

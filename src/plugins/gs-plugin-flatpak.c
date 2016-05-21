@@ -44,36 +44,18 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"appstream",
-		NULL };
-	return deps;
-}
-
-/**
- * gs_plugin_get_conflicts:
- */
-const gchar **
-gs_plugin_get_conflicts (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"xdg-app",
-		NULL };
-	return deps;
-}
-
-/**
  * gs_plugin_initialize:
  */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+
+	/* getting app properties from appstream is quicker */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+
+	/* this is the old name */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "xdg-app");
 }
 
 /**

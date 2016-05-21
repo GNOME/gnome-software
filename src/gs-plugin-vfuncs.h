@@ -137,43 +137,6 @@ gboolean	 gs_plugin_add_search_what_provides	(GsPlugin	*plugin,
 							 GError		**error);
 
 /**
- * gs_plugin_order_after:
- * @plugin: a #GsPlugin
- *
- * Any plugin names returned with this method will be ordered after this plugin.
- *
- * NOTE: If depsolving fails then gnome-software will not start.
- *
- * Returns: (element-type utf8): A list of deps
- **/
-const gchar	**gs_plugin_order_after			(GsPlugin	*plugin);
-
-/**
- * gs_plugin_order_before:
- * @plugin: a #GsPlugin
- *
- * Any plugin names returned with this method will be ordered before this plugin.
- *
- * NOTE: If depsolving fails then gnome-software will not start.
- *
- * Returns: (element-type utf8): A list of deps
- **/
-const gchar	**gs_plugin_order_before		(GsPlugin	*plugin);
-
-/**
- * gs_plugin_get_conflicts:
- * @plugin: a #GsPlugin
- *
- * Any plugin names returned with this method will be disabled if this plugin
- * is enabled.
- *
- * NOTE: The depsolver is iterative and may not solve overly-complicated rules.
- *
- * Returns: (element-type utf8): A list of deps
- **/
-const gchar	**gs_plugin_get_conflicts		(GsPlugin	*plugin);
-
-/**
  * gs_plugin_setup:
  * @plugin: a #GsPlugin
  * @cancellable: a #GCancellable, or %NULL

@@ -51,10 +51,8 @@ void		 gs_plugin_set_soup_session		(GsPlugin	*plugin,
 							 SoupSession	*soup_session);
 void		 gs_plugin_set_running_other		(GsPlugin	*plugin,
 							 gboolean	 running_other);
-const gchar	**gs_plugin_get_order_after		(GsPlugin	*plugin);
-const gchar	**gs_plugin_get_order_before		(GsPlugin	*plugin);
-const gchar	**gs_plugin_get_conflicts		(GsPlugin	*plugin);
-
+GPtrArray	*gs_plugin_get_rules			(GsPlugin	*plugin,
+							 GsPluginRule	 rule);
 GModule		*gs_plugin_get_module			(GsPlugin	*plugin);
 
 G_END_DECLS

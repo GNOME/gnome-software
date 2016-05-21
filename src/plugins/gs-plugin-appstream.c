@@ -65,19 +65,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 	as_store_set_watch_flags (priv->store,
 				  AS_STORE_WATCH_FLAG_ADDED |
 				  AS_STORE_WATCH_FLAG_REMOVED);
-}
 
-/**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"menu-spec-categories",	/* need category list */
-		"dpkg",			/* need package name */
-		NULL };
-	return deps;
+	/* need category list and package name */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "menu-spec-categories");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "dpkg");
 }
 
 /**

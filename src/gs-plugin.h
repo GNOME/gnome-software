@@ -197,6 +197,23 @@ typedef enum {
 	GS_PLUGIN_REFRESH_FLAGS_LAST
 } GsPluginRefreshFlags;
 
+/**
+ * GsPluginRule:
+ * @GS_PLUGIN_RULE_CONFLICTS:		The plugin conflicts with another
+ * @GS_PLUGIN_RULE_RUN_AFTER:		Order the plugin after another
+ * @GS_PLUGIN_RULE_RUN_BEFORE:		Order the plugin before another
+ *
+ * The rules used for ordering plugins.
+ * Plugins are expected to add rules in gs_plugin_initialize().
+ **/
+typedef enum {
+	GS_PLUGIN_RULE_CONFLICTS,
+	GS_PLUGIN_RULE_RUN_AFTER,
+	GS_PLUGIN_RULE_RUN_BEFORE,
+	/*< private >*/
+	GS_PLUGIN_RULE_LAST
+} GsPluginRule;
+
 /* helpers */
 #define	GS_PLUGIN_ERROR					1
 
@@ -214,6 +231,9 @@ guint		 gs_plugin_get_scale			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_locale			(GsPlugin	*plugin);
 AsProfile	*gs_plugin_get_profile			(GsPlugin	*plugin);
 SoupSession	*gs_plugin_get_soup_session		(GsPlugin	*plugin);
+void		 gs_plugin_add_rule			(GsPlugin	*plugin,
+							 GsPluginRule	 rule,
+							 const gchar	*name);
 
 /* helpers */
 GBytes		*gs_plugin_download_data		(GsPlugin	*plugin,

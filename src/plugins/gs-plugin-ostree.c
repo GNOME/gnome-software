@@ -44,25 +44,16 @@ gs_plugin_initialize (GsPlugin *plugin)
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
-}
 
-/**
- * gs_plugin_get_conflicts:
- */
-const gchar **
-gs_plugin_get_conflicts (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"packagekit",
-		"packagekit-history",
-		"packagekit-offline",
-		"packagekit-origin",
-		"packagekit-proxy",
-		"packagekit-refine",
-		"packagekit-refresh",
-		"systemd-updates",
-		NULL };
-	return deps;
+	/* ostree can't install packages live */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-history");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-offline");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-origin");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-proxy");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-refine");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "packagekit-refresh");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "systemd-updates");
 }
 
 /**

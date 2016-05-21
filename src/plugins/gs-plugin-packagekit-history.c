@@ -44,19 +44,10 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
-}
 
-/**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"appstream",		/* need pkgname */
-		"packagekit-refine",	/* need pkgname */
-		NULL };
-	return deps;
+	/* need pkgname */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refine");
 }
 
 /**

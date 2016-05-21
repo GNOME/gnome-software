@@ -27,15 +27,13 @@
 #define GS_PLUGIN_STEAM_SCREENSHOT_URI	"http://cdn.akamai.steamstatic.com/steam/apps"
 
 /**
- * gs_plugin_order_after:
+ * gs_plugin_initialize:
  */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
+void
+gs_plugin_initialize (GsPlugin *plugin)
 {
-	static const gchar *deps[] = {
-		"appstream",		/* need metadata */
-		NULL };
-	return deps;
+	/* need metadata */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
 typedef enum {

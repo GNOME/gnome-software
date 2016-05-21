@@ -38,18 +38,6 @@ struct GsPluginData {
 };
 
 /**
- * gs_plugin_get_conflicts:
- */
-const gchar **
-gs_plugin_get_conflicts (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"dpkg",
-		NULL };
-	return deps;
-}
-
-/**
  * gs_plugin_initialize:
  */
 void
@@ -60,6 +48,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_task_set_only_download (priv->task, TRUE);
 	pk_client_set_background (PK_CLIENT (priv->task), TRUE);
 	pk_client_set_interactive (PK_CLIENT (priv->task), FALSE);
+
+	/* we can return better results than dpkg directly */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "dpkg");
 }
 
 /**

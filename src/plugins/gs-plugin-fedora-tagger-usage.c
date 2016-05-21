@@ -58,18 +58,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 		g_debug ("disabling '%s' as we're not Fedora", gs_plugin_get_name (plugin));
 		return;
 	}
-}
 
-/**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"packagekit",		/* after the install/remove has succeeded */
-		NULL };
-	return deps;
+	/* after the install/remove has succeeded */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 }
 
 /**

@@ -76,19 +76,10 @@ gs_plugin_initialize (GsPlugin *plugin)
 	g_signal_connect (priv->settings, "changed",
 			  G_CALLBACK (gs_plugin_provenance_settings_changed_cb), plugin);
 	priv->sources = gs_plugin_provenance_get_sources (plugin);
-}
 
-/**
- * gs_plugin_order_after:
- */
-const gchar **
-gs_plugin_order_after (GsPlugin *plugin)
-{
-	static const gchar *deps[] = {
-		"dummy",
-		"packagekit-refine",	/* after the package source is set */
-		NULL };
-	return deps;
+	/* after the package source is set */
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "dummy");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refine");
 }
 
 /**
