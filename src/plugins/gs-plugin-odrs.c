@@ -30,8 +30,8 @@
  * Provides review data from the Open Desktop Ratings Serice.
  */
 
-#define XDG_APP_REVIEW_CACHE_AGE_MAX		237000 /* 1 week */
-#define XDG_APP_REVIEW_NUMBER_RESULTS_MAX	5
+#define ODRS_REVIEW_CACHE_AGE_MAX		237000 /* 1 week */
+#define ODRS_REVIEW_NUMBER_RESULTS_MAX		5
 
 struct GsPluginData {
 	GSettings		*settings;
@@ -385,7 +385,7 @@ gs_plugin_odrs_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 	if (cachefn == NULL)
 		return NULL;
 	cachefn_file = g_file_new_for_path (cachefn);
-	if (gs_utils_get_file_age (cachefn_file) < XDG_APP_REVIEW_CACHE_AGE_MAX) {
+	if (gs_utils_get_file_age (cachefn_file) < ODRS_REVIEW_CACHE_AGE_MAX) {
 		g_autofree gchar *json_data = NULL;
 		if (!g_file_get_contents (cachefn, &json_data, NULL, error))
 			return NULL;
@@ -489,7 +489,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	if (cachefn == NULL)
 		return NULL;
 	cachefn_file = g_file_new_for_path (cachefn);
-	if (gs_utils_get_file_age (cachefn_file) < XDG_APP_REVIEW_CACHE_AGE_MAX) {
+	if (gs_utils_get_file_age (cachefn_file) < ODRS_REVIEW_CACHE_AGE_MAX) {
 		g_autofree gchar *json_data = NULL;
 		if (!g_file_get_contents (cachefn, &json_data, NULL, error))
 			return NULL;
@@ -517,7 +517,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	json_builder_set_member_name (builder, "version");
 	json_builder_add_string_value (builder, version);
 	json_builder_set_member_name (builder, "limit");
-	json_builder_add_int_value (builder, XDG_APP_REVIEW_NUMBER_RESULTS_MAX);
+	json_builder_add_int_value (builder, ODRS_REVIEW_NUMBER_RESULTS_MAX);
 	json_builder_set_member_name (builder, "karma");
 	karma_min = g_settings_get_int (priv->settings,
 					"review-karma-required");
