@@ -620,6 +620,8 @@ gs_plugin_add_featured (GsPlugin *plugin,
 		if (as_app_get_metadata_item (item, "GnomeSoftware::FeatureTile-css") == NULL)
 			continue;
 		app = gs_app_new (as_app_get_id_no_prefix (item));
+		if (!gs_appstream_refine_app (plugin, app, item, error))
+			return FALSE;
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 		gs_app_list_add (list, app);
 	}
