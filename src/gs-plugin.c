@@ -903,7 +903,7 @@ gs_plugin_download_file (GsPlugin *plugin,
  *
  * Looks up an application object from the per-plugin cache
  *
- * Returns: the #GsApp, or %NULL
+ * Returns: (transfer full) (nullable): the #GsApp, or %NULL
  **/
 GsApp *
 gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
@@ -931,6 +931,20 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 	if (g_hash_table_lookup (priv->cache, key) == app)
 		return;
 	g_hash_table_insert (priv->cache, g_strdup (key), g_object_ref (app));
+}
+
+/**
+ * gs_plugin_cache_invalidate:
+ * @plugin: a #GsPlugin
+ *
+ * Invalidate the per-plugin cache by marking all entries as invalid.
+ * This is optional, and the plugin can evict the cache whenever it likes.
+ **/
+void
+gs_plugin_cache_invalidate (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_hash_table_remove_all (priv->cache);
 }
 
 /**

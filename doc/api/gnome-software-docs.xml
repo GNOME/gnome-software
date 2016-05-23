@@ -559,9 +559,55 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
         <title>Using The Plugin Cache</title>
 
         <para>
-          TODO: Example for using the cache
+          GNOME Software used to provide a per-process plugin cache,
+          automatically de-duplicating applications and trying to be smarter
+          than the plugins themselves.
+          This involved merging applications created by different plugins and
+          really didn't work very well.
+          For versions 3.20 and later we moved to a per-plugin cache which
+          allows the plugin to control getting and adding applications to the
+          cache and invalidating it when it made sense.
+          This seems to work a lot better and is an order of magnitude less
+          complicated.
+          Plugins can trivially be ported to using the cache using something
+          like this:
         </para>
-
+        <informalexample>
+          <programlisting>
+   /* create new object */
+   id = gs_plugin_flatpak_build_id (inst, xref);
+-  app = gs_app_new (id);
++  app = gs_plugin_cache_lookup (plugin, id);
++  if (app == NULL) {
++     app = gs_app_new (id);
++     gs_plugin_cache_add (plugin, id, app);
++  }
+          </programlisting>
+        </informalexample>
+        <para>
+          Using the cache has two main benefits for plugins.
+          The first is that we avoid creating duplicate GsApp objects for the
+          same logical thing.
+          This means we can query the installed list, start installing an
+          application, then query it again before the install has finished.
+          The GsApp returned from the second <code>add_installed()</code>
+          request will be the same GObject, and thus all the signals connecting
+          up to the UI will still be correct.
+          This means we don't have to care about <em>migrating</em> the UI
+          widgets as the object changes and things like progress bars just
+          magically work.
+        </para>
+        <para>
+          The other benefit is more obvious.
+          If we know the application state from a previous request we don't have
+          to query a daemon or do another blocking library call to get it.
+          This does of course imply that the plugin is properly invalidating
+          the cache using <code>gs_plugin_cache_invalidate()</code> which it
+          should do whenever a change is detected.
+          Whether a plugin uses the cache for this reason is up to the plugin,
+          but if it does it is up to the plugin to make sure the cache doesn't
+          get out of sync.
+        </para>
       </section>
 
     </partintro>
