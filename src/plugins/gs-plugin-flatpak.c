@@ -105,36 +105,6 @@ gs_app_set_flatpak_kind (GsApp *app, FlatpakRefKind kind)
 		g_assert_not_reached ();
 }
 
-#ifndef HAVE_PACKAGEKIT
-gboolean
-gs_plugin_add_popular (GsPlugin *plugin,
-		       GsAppList *list,
-		       GCancellable *cancellable,
-		       GError **error)
-{
-	guint i;
-	const gchar *apps[] = {
-		"org.gnome.Builder.desktop",
-		"org.gnome.Calculator.desktop",
-		"org.gnome.clocks.desktop",
-		"org.gnome.Dictionary.desktop",
-		"org.gnome.Documents.desktop",
-		"org.gnome.Evince.desktop",
-		"org.gnome.gedit.desktop",
-		"org.gnome.Maps.desktop",
-		"org.gnome.Weather.desktop",
-		NULL };
-
-	/* just add all */
-	for (i = 0; apps[i] != NULL; i++) {
-		g_autoptr(GsApp) app = NULL;
-		app = gs_app_new (apps[i]);
-		gs_app_list_add (list, app);
-	}
-	return TRUE;
-}
-#endif
-
 static void
 gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GFile *child,
