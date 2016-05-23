@@ -56,6 +56,7 @@ typedef struct
 {
 	AsProfile		*profile;
 	GHashTable		*cache;
+	GMutex			 cache_mutex;
 	GModule			*module;
 	GRWLock			 rwlock;
 	GsPluginData		*data;			/* for gs-plugin-{name}.c */
@@ -184,6 +185,7 @@ gs_plugin_finalize (GObject *object)
 	g_object_unref (priv->profile);
 	g_object_unref (priv->soup_session);
 	g_hash_table_unref (priv->cache);
+	g_mutex_clear (&priv->cache_mutex);
 	g_module_close (priv->module);
 }
 
@@ -910,6 +912,7 @@ gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	GsApp *app;
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->cache_mutex);
 
 	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
 	g_return_val_if_fail (key != NULL, NULL);
@@ -933,6 +936,7 @@ void
 gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->cache_mutex);
 
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
 	g_return_if_fail (key != NULL);
@@ -954,7 +958,10 @@ void
 gs_plugin_cache_invalidate (GsPlugin *plugin)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->cache_mutex);
+
 	g_return_if_fail (GS_IS_PLUGIN (plugin));
+
 	g_hash_table_remove_all (priv->cache);
 }
 
@@ -1046,6 +1053,7 @@ gs_plugin_init (GsPlugin *plugin)
 					     g_str_equal,
 					     g_free,
 					     (GDestroyNotify) g_object_unref);
+	g_mutex_init (&priv->cache_mutex);
 	g_rw_lock_init (&priv->rwlock);
 }
 
