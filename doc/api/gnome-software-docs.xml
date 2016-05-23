@@ -446,7 +446,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
                       GError **error)
 {
   /* not required */
-  if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0)
+  if ((flags &amp; GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE) == 0)
     return TRUE;
 
   /* already set */
@@ -593,8 +593,8 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
           The GsApp returned from the second <code>add_installed()</code>
           request will be the same GObject, and thus all the signals connecting
           up to the UI will still be correct.
-          This means we don't have to care about <em>migrating</em> the UI
-          widgets as the object changes and things like progress bars just
+          This means we don't have to care about <emphasis>migrating</emphasis>
+          the UI widgets as the object changes and things like progress bars just
           magically work.
         </para>
         <para>
