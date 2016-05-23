@@ -909,7 +909,12 @@ GsApp *
 gs_plugin_cache_lookup (GsPlugin *plugin, const gchar *key)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	GsApp *app = g_hash_table_lookup (priv->cache, key);
+	GsApp *app;
+
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), NULL);
+	g_return_val_if_fail (key != NULL, NULL);
+
+	app = g_hash_table_lookup (priv->cache, key);
 	if (app == NULL)
 		return NULL;
 	return g_object_ref (app);
@@ -928,6 +933,11 @@ void
 gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
+	g_return_if_fail (key != NULL);
+	g_return_if_fail (GS_IS_APP (app));
+
 	if (g_hash_table_lookup (priv->cache, key) == app)
 		return;
 	g_hash_table_insert (priv->cache, g_strdup (key), g_object_ref (app));
@@ -944,6 +954,7 @@ void
 gs_plugin_cache_invalidate (GsPlugin *plugin)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_return_if_fail (GS_IS_PLUGIN (plugin));
 	g_hash_table_remove_all (priv->cache);
 }
 

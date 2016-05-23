@@ -214,7 +214,9 @@ gs_appstream_copy_metadata (GsApp *app, AsApp *item)
 }
 
 GsApp *
-gs_appstream_create_runtime (GsApp *parent, const gchar *runtime)
+gs_appstream_create_runtime (GsPlugin *plugin,
+			     GsApp *parent,
+			     const gchar *runtime)
 {
 	const gchar *id_parent;
 	g_autofree gchar *id = NULL;
@@ -241,6 +243,11 @@ gs_appstream_create_runtime (GsApp *parent, const gchar *runtime)
 		id = g_strdup_printf ("%s.runtime", runtime_split[0]);
 	}
 
+	/* search in the cache */
+	app = gs_plugin_cache_lookup (plugin, id);
+	if (app != NULL)
+		return g_steal_pointer (&app);
+
 	/* create the complete GsApp from the single string */
 	app = gs_app_new (id);
 	source = g_strdup_printf ("runtime/%s", runtime);
@@ -248,11 +255,14 @@ gs_appstream_create_runtime (GsApp *parent, const gchar *runtime)
 	gs_app_set_kind (app, AS_APP_KIND_RUNTIME);
 	gs_app_set_version (app, runtime_split[2]);
 
+	/* save in the cache */
+	gs_plugin_cache_add (plugin, id, app);
+
 	return g_steal_pointer (&app);
 }
 
 static void
-gs_refine_item_management_plugin (GsApp *app, AsApp *item)
+gs_refine_item_management_plugin (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
 	GPtrArray *bundles;
 	const gchar *management_plugin = NULL;
@@ -281,7 +291,7 @@ gs_refine_item_management_plugin (GsApp *app, AsApp *item)
 			runtime = as_bundle_get_runtime (bundle);
 			if (runtime != NULL) {
 				g_autoptr(GsApp) app2 = NULL;
-				app2 = gs_appstream_create_runtime (app, runtime);
+				app2 = gs_appstream_create_runtime (plugin, app, runtime);
 				if (app2 != NULL) {
 					g_debug ("runtime for %s is %s",
 						 gs_app_get_id (app), runtime);
@@ -429,7 +439,7 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* set management plugin automatically */
-	gs_refine_item_management_plugin (app, item);
+	gs_refine_item_management_plugin (plugin, app, item);
 
 	/* set id */
 	if (as_app_get_id (item) != NULL && gs_app_get_id (app) == NULL)

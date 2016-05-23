@@ -847,7 +847,8 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_flatpak_set_app_metadata (GsApp *app,
+gs_plugin_flatpak_set_app_metadata (GsPlugin *plugin,
+				    GsApp *app,
 				    const gchar *data,
 				    gsize length,
 				    GError **error)
@@ -871,7 +872,7 @@ gs_plugin_flatpak_set_app_metadata (GsApp *app,
 	g_debug ("runtime for %s is %s", name, runtime);
 
 	/* create runtime */
-	app_runtime = gs_appstream_create_runtime (app, runtime);
+	app_runtime = gs_appstream_create_runtime (plugin, app, runtime);
 	if (app_runtime != NULL)
 		gs_app_set_runtime (app, app_runtime);
 
@@ -934,7 +935,7 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 	}
 
 	/* parse key file */
-	if (!gs_plugin_flatpak_set_app_metadata (app, str, len, error))
+	if (!gs_plugin_flatpak_set_app_metadata (plugin, app, str, len, error))
 		return FALSE;
 	return TRUE;
 }
@@ -1323,7 +1324,8 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_size_installed (app, flatpak_bundle_ref_get_installed_size (xref_bundle));
 	gs_plugin_flatpak_set_metadata (app, FLATPAK_REF (xref_bundle));
 	metadata = flatpak_bundle_ref_get_metadata (xref_bundle);
-	if (!gs_plugin_flatpak_set_app_metadata (app,
+	if (!gs_plugin_flatpak_set_app_metadata (plugin,
+						 app,
 						 g_bytes_get_data (metadata, NULL),
 						 g_bytes_get_size (metadata),
 						 error))

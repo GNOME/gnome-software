@@ -182,7 +182,8 @@ gs_app_to_string (GsApp *app)
 
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
 
-	str = g_string_new ("GsApp:\n");
+	str = g_string_new ("GsApp:");
+	g_string_append_printf (str, " [%p]\n", app);
 	gs_app_kv_lpad (str, "kind", as_app_kind_to_string (app->kind));
 	if (app->last_error != NULL)
 		gs_app_kv_lpad (str, "last-error", app->last_error->message);

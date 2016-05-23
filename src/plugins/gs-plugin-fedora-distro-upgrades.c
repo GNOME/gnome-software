@@ -64,6 +64,9 @@ gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 
+	/* cache no longer valid */
+	gs_plugin_cache_invalidate (plugin);
+
 	/* only reload the update list if the plugin is NOT running itself
 	 * and the time since it ran is greater than 5 seconds (inotify FTW) */
 	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_SELF)) {
@@ -312,6 +315,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		DistroInfo *distro_info = g_ptr_array_index (distros, i);
 		g_autofree gchar *app_id = NULL;
 		g_autofree gchar *app_version = NULL;
+		g_autofree gchar *cache_key = NULL;
 		g_autofree gchar *url = NULL;
 		g_autofree gchar *css = NULL;
 		g_autoptr(GsApp) app = NULL;
@@ -328,6 +332,14 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		/* only interested in non-devel distros */
 		if (distro_info->status == DISTRO_STATUS_DEVEL)
 			continue;
+
+		/* search in the cache */
+		cache_key = g_strdup_printf ("release-%d", distro_info->version);
+		app = gs_plugin_cache_lookup (plugin, cache_key);
+		if (app != NULL) {
+			gs_app_list_add (list, app);
+			continue;
+		}
 
 		app_id = g_strdup_printf ("org.fedoraproject.release-%d.upgrade",
 					  distro_info->version);
@@ -378,6 +390,9 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
 
 		gs_app_list_add (list, app);
+
+		/* save in the cache */
+		gs_plugin_cache_add (plugin, cache_key, app);
 	}
 
 	return TRUE;

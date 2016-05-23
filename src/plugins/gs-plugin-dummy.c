@@ -99,7 +99,7 @@ gs_plugin_dummy_poll_cb (gpointer user_data)
 
 	/* find the app in the per-plugin cache -- this assumes that we can
 	 * calculate the same key as used when calling gs_plugin_cache_add() */
-	app = gs_plugin_cache_lookup (plugin, "example:chiron");
+	app = gs_plugin_cache_lookup (plugin, "chiron");
 	if (app == NULL) {
 		g_warning ("app not found in cache!");
 		return FALSE;
@@ -134,7 +134,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		return TRUE;
 
 	/* does the app already exist? */
-	app = gs_plugin_cache_lookup (plugin, "example:chiron");
+	app = gs_plugin_cache_lookup (plugin, "chiron");
 	if (app != NULL) {
 		g_debug ("using %s fom the cache", gs_app_get_id (app));
 		gs_app_list_add (list, app);
@@ -163,7 +163,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	gs_app_list_add (list, app);
 
 	/* add to cache so it can be found by the flashing callback */
-	gs_plugin_cache_add (plugin, "example:chiron", app);
+	gs_plugin_cache_add (plugin, "chiron", app);
 
 	return TRUE;
 }
@@ -456,6 +456,13 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
 	as_icon_set_name (ic, "application-x-addon");
 
+	/* get existing item from the cache */
+	app = gs_plugin_cache_lookup (plugin, "release-rawhide");
+	if (app != NULL) {
+		gs_app_list_add (list, app);
+		return TRUE;
+	}
+
 	app = gs_app_new ("org.fedoraproject.release-rawhide.upgrade");
 	gs_app_set_kind (app, AS_APP_KIND_OS_UPGRADE);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
@@ -484,6 +491,9 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			     "background-size: 100% 100%;");
 	gs_app_set_icon (app, ic);
 	gs_app_list_add (list, app);
+
+	gs_plugin_cache_add (plugin, "release-rawhide", app);
+
 	return TRUE;
 }
 

@@ -207,6 +207,17 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 	return g_steal_pointer (&app);
 }
 
+static void
+gs_plugin_shell_extensions_changed_cb (GDBusProxy *proxy,
+				       const gchar *sender_name,
+				       const gchar *signal_name,
+				       GVariant *parameters,
+				       GsPlugin *plugin)
+{
+	if (g_strcmp0 (signal_name, "ExtensionStatusChanged") == 0)
+		gs_plugin_cache_invalidate (plugin);
+}
+
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -216,13 +227,17 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	if (priv->proxy != NULL)
 		return TRUE;
 	priv->proxy = g_dbus_proxy_new_for_bus_sync (G_BUS_TYPE_SESSION,
-							     G_DBUS_PROXY_FLAGS_NONE,
-							     NULL,
-							     "org.gnome.Shell",
-							     "/org/gnome/Shell",
-							     "org.gnome.Shell.Extensions",
-							     cancellable,
-							     error);
+						     G_DBUS_PROXY_FLAGS_NONE,
+						     NULL,
+						     "org.gnome.Shell",
+						     "/org/gnome/Shell",
+						     "org.gnome.Shell.Extensions",
+						     cancellable,
+						     error);
+	if (priv->proxy == NULL)
+		return FALSE;
+	g_signal_connect (priv->proxy, "g-signal",
+			  G_CALLBACK (gs_plugin_shell_extensions_changed_cb), plugin);
 
 	/* get the GNOME Shell version */
 	version = g_dbus_proxy_get_cached_property (priv->proxy,
@@ -260,12 +275,22 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	while (g_variant_iter_loop (iter, "{sa{sv}}", &ext_uuid, &ext_iter)) {
 		g_autoptr(GsApp) app = NULL;
 
+		/* search in the cache */
+		app = gs_plugin_cache_lookup (plugin, ext_uuid);
+		if (app != NULL) {
+			gs_app_list_add (list, app);
+			continue;
+		}
+
 		/* parse the data into an GsApp */
 		app = gs_plugin_shell_extensions_add_app (ext_uuid,
 							  ext_iter,
 							  error);
 		if (app == NULL)
 			return FALSE;
+
+		/* save in the cache */
+		gs_plugin_cache_add (plugin, ext_uuid, app);
 
 		/* add to results */
 		gs_app_list_add (list, app);

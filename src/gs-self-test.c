@@ -797,6 +797,39 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	g_assert (!g_file_test (desktop_fn, G_FILE_TEST_IS_REGULAR));
 }
 
+static void
+gs_plugin_loader_plugin_cache_func (GsPluginLoader *plugin_loader)
+{
+	GsApp *app1;
+	GsApp *app2;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list1 = NULL;
+	g_autoptr(GsAppList) list2 = NULL;
+
+	/* ensure we get the same results back from calling the methods twice */
+	list1 = gs_plugin_loader_get_distro_upgrades (plugin_loader,
+						      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						      NULL,
+						      &error);
+	g_assert_no_error (error);
+	g_assert (list1 != NULL);
+	g_assert_cmpint (gs_app_list_length (list1), ==, 1);
+	app1 = gs_app_list_index (list1, 0);
+
+	list2 = gs_plugin_loader_get_distro_upgrades (plugin_loader,
+						      GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+						      NULL,
+						      &error);
+	g_assert_no_error (error);
+	g_assert (list2 != NULL);
+	g_assert_cmpint (gs_app_list_length (list2), ==, 1);
+	app2 = gs_app_list_index (list2, 0);
+
+	/* make sure there is one GObject */
+	g_assert_cmpstr (gs_app_get_id (app1), ==, gs_app_get_id (app2));
+	g_assert (app1 == app2);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -932,6 +965,9 @@ main (int argc, char **argv)
 	g_assert (gs_plugin_loader_get_enabled (plugin_loader, "dummy"));
 
 	/* plugin tests go here */
+	g_test_add_data_func ("/gnome-software/plugin-loader{plugin-cache}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_plugin_cache_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{flatpak}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_flatpak_func);

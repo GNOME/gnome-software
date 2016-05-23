@@ -57,6 +57,11 @@ gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 				      gpointer user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
+
+	/* cache no longer valid */
+	gs_plugin_cache_invalidate (plugin);
+
+	/* update UI */
 	gs_plugin_updates_changed (plugin);
 }
 
@@ -103,6 +108,15 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	for (i = 0; package_ids[i] != NULL; i++) {
 		g_autoptr(GsApp) app = NULL;
 		g_auto(GStrv) split = NULL;
+
+		/* search in the cache */
+		app = gs_plugin_cache_lookup (plugin, package_ids[i]);
+		if (app != NULL) {
+			gs_app_list_add (list, app);
+			continue;
+		}
+
+		/* create new app */
 		app = gs_app_new (NULL);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NEEDS_REBOOT);
 		gs_app_set_management_plugin (app, "packagekit");
@@ -113,6 +127,9 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
 		gs_app_set_kind (app, AS_APP_KIND_GENERIC);
 		gs_app_list_add (list, app);
+
+		/* save in the cache */
+		gs_plugin_cache_add (plugin, package_ids[i], app);
 	}
 	return TRUE;
 }

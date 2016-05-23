@@ -30,7 +30,8 @@ gboolean	 gs_appstream_refine_app		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 AsApp		*item,
 							 GError		**error);
-GsApp		*gs_appstream_create_runtime		(GsApp		*parent,
+GsApp		*gs_appstream_create_runtime		(GsPlugin	*plugin,
+							 GsApp		*parent,
 							 const gchar	*runtime);
 
 G_END_DECLS

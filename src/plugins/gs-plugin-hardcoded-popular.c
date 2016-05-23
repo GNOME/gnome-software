@@ -57,9 +57,21 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	g_debug ("using hardcoded as only %i apps", gs_app_list_length (list));
 	for (i = 0; apps[i] != NULL; i++) {
 		g_autoptr(GsApp) app = NULL;
+
+		/* look in the cache */
+		app = gs_plugin_cache_lookup (plugin, apps[i]);
+		if (app != NULL) {
+			gs_app_list_add (list, app);
+			continue;
+		}
+
+		/* create new */
 		app = gs_app_new (apps[i]);
 		gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 		gs_app_list_add (list, app);
+
+		/* save in the cache */
+		gs_plugin_cache_add (plugin, apps[i], app);
 	}
 	return TRUE;
 }
