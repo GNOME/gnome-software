@@ -427,7 +427,6 @@ get_updates_historical_cb (GObject *object, GAsyncResult *res, gpointer data)
 		notification = g_notification_new (_("Software Updates Failed"));
 		/* TRANSLATORS: message when we offline updates have failed */
 		g_notification_set_body (notification, _("An important OS update failed to be installed."));
-		g_application_send_notification (monitor->application, "offline-updates", notification);
 		g_notification_add_button (notification, _("Show Details"), "app.show-offline-update-error");
 		g_notification_set_default_action (notification, "app.show-offline-update-error");
 		g_application_send_notification (monitor->application, "offline-updates", notification);
