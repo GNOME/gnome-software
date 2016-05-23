@@ -30,6 +30,33 @@
    Validate with `appstream-util validate *.appdata.xml`
   -->
   <releases>
+    <release version="3.21.2" date="2016-05-23">
+      <description>
+        <p>
+          This is an unstable release in the 3.19 development series,
+          with the following improvements:
+        </p>
+        <ul>
+          <li>Add a --details-pkg option to the gnome-software binary</li>
+          <li>Add support for flatpak packages</li>
+          <li>Add a plugin to auto-add some license information</li>
+          <li>Add depends, requires and conflicts at initialize time</li>
+          <li>Add support for application key colors</li>
+          <li>Export a set of headers to allow external plugins to be built</li>
+        </ul>
+        <p>The following bugs are also fixed:</p>
+        <ul>
+          <li>Do not crash if plugins are badly behaved</li>
+          <li>Do not directly load pixbufs in the AppStream plugin</li>
+          <li>Do not unconditionally invalidate the updates list on hardware hotplug</li>
+          <li>Find the best AppSteam component when matching any prefixes</li>
+          <li>Fix crash due to network change before app activation</li>
+          <li>Fix launching various KDE4 applications</li>
+          <li>Support getting cached content from /var/cache and /usr/share</li>
+        </ul>
+        <p>This release also updates translations.</p>
+      </description>
+    </release>
     <release version="3.21.1" date="2016-04-25">
       <description>
         <p>
