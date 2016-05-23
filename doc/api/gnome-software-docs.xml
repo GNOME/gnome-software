@@ -496,9 +496,63 @@ gs_plugin_refine_app (GsPlugin *plugin,
         <title>Adopting AppStream Applications</title>
 
         <para>
-          TODO: Example for adopt
+          There's a lot of flexibility in the gnome-software plugin structure;
+          a plugin can add custom applications and handle things like search and
+          icon loading in a totally custom way.
+          Most of the time you don't care about how search is implemented or how
+          icons are going to be loaded, and you can re-use a lot of the existing
+          code in the <code>appstream</code> plugin.
+          To do this you just save an AppStream-format XML file in either
+          <filename>/usr/share/app-info/xmls/</filename>,
+          <filename>/var/cache/app-info/xmls/</filename> or
+          <filename>~/.local/share/app-info/xmls/</filename>.
+          GNOME Software will immediately notice any new files, or changes to
+          existing files as it has set up the various inotify watches.
+        </para>
+        <para>
+          This allows plugins to care a lot less about how applications are
+          going to be shown.
+          For example, the <code>steam</code> plugin downloads and parses the
+          descriptions from a remote service during
+          <code>gs_plugin_refresh()</code>, and also finds the best icon types
+          and downloads them too.
+          Then it exports the data to an AppStream XML file, saving it to your
+          home directory.
+          This allows all the applications to be easily created (and then refined)
+          using something as simple as <code>gs_app_new("steam:foo.desktop")</code>.
+          All the search tokenisation and matching is done automatically,
+          so it makes the plugin much simpler and faster.
+        </para>
+        <para>
+          The only extra step the steam plugin needs to do is implement the
+          <code>gs_plugin_adopt_app()</code> function.
+          This is called when an application does not have a management plugin
+          set, and allows the plugin to <emphasis>claim</emphasis> the
+          application for itself so it can handle installation, removal and
+          updating.
+          In the case of steam it could check the ID has a prefix of
+          <code>steam:</code> or could check some other plugin-specific metadata
+          using <code>gs_app_get_metadata_item()</code>.
+        </para>
+        <para>
+          Another good example is the <code>fwupd</code> that wants to handle
+          any firmware we've discovered in the AppStream XML.
+          This might be shipped by the vendor in a package using Satellite,
+          or downloaded from the LVFS. It wouldn't be kind to set a management
+          plugin explicitly in case XFCE or KDE want to handle this in a
+          different way. This adoption function in this case is trivial:
         </para>
 
+        <informalexample>
+          <programlisting>
+void
+gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
+{
+  if (gs_app_get_kind (app) == AS_APP_KIND_FIRMWARE)
+    gs_app_set_management_plugin (app, "fwupd");
+}
+          </programlisting>
+        </informalexample>
       </section>
 
       <section>
