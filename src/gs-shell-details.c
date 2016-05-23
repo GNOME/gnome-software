@@ -80,6 +80,7 @@ struct _GsShellDetails
 	GtkWidget		*infobar_details_package_baseos;
 	GtkWidget		*infobar_details_repo;
 	GtkWidget		*label_addons_uninstalled_app;
+	GtkWidget		*label_details_category_title;
 	GtkWidget		*label_details_category_value;
 	GtkWidget		*label_details_developer_title;
 	GtkWidget		*label_details_developer_value;
@@ -910,9 +911,8 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 	/* set the category */
 	menu_path = gs_app_get_menu_path (self->app);
 	if (menu_path == NULL || menu_path[0] == NULL || menu_path[0][0] == '\0') {
-		/* TRANSLATORS: this is the application isn't in any
-		 * defined menu category */
-		gtk_label_set_label (GTK_LABEL (self->label_details_category_value), C_("menu category", "None"));
+		gtk_widget_set_visible (self->label_details_category_title, FALSE);
+		gtk_widget_set_visible (self->label_details_category_value, FALSE);
 	} else {
 		g_autofree gchar *path = NULL;
 		if (gtk_widget_get_direction (self->label_details_category_value) == GTK_TEXT_DIR_RTL)
@@ -920,6 +920,8 @@ gs_shell_details_refresh_all (GsShellDetails *self)
 		else
 			path = g_strjoinv (" → ", menu_path);
 		gtk_label_set_label (GTK_LABEL (self->label_details_category_value), path);
+		gtk_widget_set_visible (self->label_details_category_title, TRUE);
+		gtk_widget_set_visible (self->label_details_category_value, TRUE);
 	}
 
 	/* set the origin */
@@ -1808,6 +1810,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_package_baseos);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_addons_uninstalled_app);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_category_title);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_category_value);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_title);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_developer_value);
