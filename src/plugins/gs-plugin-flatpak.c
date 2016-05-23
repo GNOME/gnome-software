@@ -400,7 +400,11 @@ gs_plugin_flatpak_create_installed (GsPlugin *plugin,
 
 	/* create new object */
 	id = gs_plugin_flatpak_build_id (priv->installation, FLATPAK_REF (xref));
-	app = gs_app_new (id);
+	app = gs_plugin_cache_lookup (plugin, id);
+	if (app == NULL) {
+		app = gs_app_new (id);
+		gs_plugin_cache_add (plugin, id, app);
+	}
 	gs_plugin_flatpak_set_metadata_installed (app, xref);
 
 	switch (flatpak_ref_get_kind (FLATPAK_REF(xref))) {
