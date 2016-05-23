@@ -295,10 +295,11 @@ gs_app_to_string (GsApp *app)
 	tmp = g_hash_table_lookup (app->urls, as_url_kind_to_string (AS_URL_KIND_HOMEPAGE));
 	if (tmp != NULL)
 		gs_app_kv_lpad (str, "url{homepage}", tmp);
-	if (app->license != NULL)
+	if (app->license != NULL) {
 		gs_app_kv_lpad (str, "license", app->license);
-	gs_app_kv_lpad (str, "license-is-free",
-			gs_app_get_license_is_free (app) ? "yes" : "no");
+		gs_app_kv_lpad (str, "license-is-free",
+				gs_app_get_license_is_free (app) ? "yes" : "no");
+	}
 	if (app->management_plugin != NULL)
 		gs_app_kv_lpad (str, "management-plugin", app->management_plugin);
 	if (app->summary_missing != NULL)
