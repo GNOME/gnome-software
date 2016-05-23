@@ -50,9 +50,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 
 	/* getting app properties from appstream is quicker */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
-
-	/* this is the old name */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "xdg-app");
 }
 
 void

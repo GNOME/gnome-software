@@ -277,7 +277,7 @@ gs_refine_item_management_plugin (GsApp *app, AsApp *item)
 		gs_app_add_source (app, as_bundle_get_id (bundle));
 
 		/* automatically add runtime */
-		if (kind == AS_BUNDLE_KIND_XDG_APP) {
+		if (kind == AS_BUNDLE_KIND_FLATPAK) {
 			runtime = as_bundle_get_runtime (bundle);
 			if (runtime != NULL) {
 				g_autoptr(GsApp) app2 = NULL;

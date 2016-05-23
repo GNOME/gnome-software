@@ -13,7 +13,6 @@ AM_CPPFLAGS =						\
 	$(JSON_GLIB_CFLAGS)				\
 	$(LIMBA_CFLAGS)					\
 	$(OSTREE_CFLAGS)				\
-	$(XDG_APP_CFLAGS)				\
 	$(FLATPAK_CFLAGS)				\
 	$(RPM_CFLAGS)					\
 	-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE	\
@@ -67,10 +66,6 @@ endif
 
 if HAVE_FIRMWARE
 plugin_LTLIBRARIES += libgs_plugin_fwupd.la
-endif
-
-if HAVE_XDG_APP
-plugin_LTLIBRARIES += libgs_plugin_xdg-app.la
 endif
 
 if HAVE_FLATPAK
@@ -162,16 +157,6 @@ libgs_plugin_limba_la_SOURCES = gs-plugin-limba.c
 libgs_plugin_limba_la_LIBADD = $(GS_PLUGIN_LIBS) $(LIMBA_LIBS)
 libgs_plugin_limba_la_LDFLAGS = -module -avoid-version
 libgs_plugin_limba_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
-endif
-
-if HAVE_XDG_APP
-libgs_plugin_xdg_app_la_SOURCES =			\
-	gs-appstream.c					\
-	gs-appstream.h					\
-	gs-plugin-xdg-app.c
-libgs_plugin_xdg_app_la_LIBADD = $(GS_PLUGIN_LIBS) $(XDG_APP_LIBS)
-libgs_plugin_xdg_app_la_LDFLAGS = -module -avoid-version
-libgs_plugin_xdg_app_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
 if HAVE_FLATPAK

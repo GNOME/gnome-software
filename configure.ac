@@ -163,28 +163,6 @@ AS_IF([test "x$have_firmware" = "xyes"], [
 ])
 AM_CONDITIONAL(HAVE_FIRMWARE, test x$have_firmware = xyes)
 
-# xdg-app
-AC_ARG_ENABLE(xdg-app,
-              [AS_HELP_STRING([--enable-xdg-app],
-                              [enable xdg-app support [default=auto]])],,
-              enable_xdg_app=maybe)
-AS_IF([test "x$enable_xdg_app" != "xno"], [
-    PKG_CHECK_MODULES(XDG_APP,
-                      [xdg-app >= 0.4.14],
-                      [have_xdg_app=yes],
-                      [have_xdg_app=no])
-], [
-    have_xdg_app=no
-])
-AS_IF([test "x$have_xdg_app" = "xyes"], [
-    AC_DEFINE(HAVE_XDG_APP,1,[Build xdg-app support])
-], [
-    AS_IF([test "x$enable_xdg_app" = "xyes"], [
-          AC_MSG_ERROR([xdg-app support requested but 'xdg-app' was not found])
-    ])
-])
-AM_CONDITIONAL(HAVE_XDG_APP, test "$have_xdg_app" != no)
-
 # flatpak
 AC_ARG_ENABLE(flatpak,
               [AS_HELP_STRING([--enable-flatpak],
@@ -359,7 +337,6 @@ echo "
         PolicyKit support:         ${have_polkit}
         Firmware support:          ${have_firmware}
         Limba support:             ${have_limba}
-        XDG-APP support:           ${have_xdg_app}
         Flatpak support:           ${have_flatpak}
         OSTree support:            ${have_ostree}
         RPM support:               ${have_rpm}
