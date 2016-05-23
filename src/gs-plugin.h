@@ -254,7 +254,7 @@ GsApp		*gs_plugin_cache_lookup			(GsPlugin	*plugin,
 void		 gs_plugin_cache_add			(GsPlugin	*plugin,
 							 const gchar	*key,
 							 GsApp		*app);
-GsApp		*gs_plugin_cache_invalidate		(GsPlugin	*plugin);
+void		 gs_plugin_cache_invalidate		(GsPlugin	*plugin);
 void		 gs_plugin_status_update		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 GsPluginStatus	 status);
