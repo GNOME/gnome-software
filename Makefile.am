@@ -25,6 +25,7 @@ MAINTAINERCLEANFILES =					\
 	config.sub					\
 	configure					\
 	depcomp						\
+	gtk-doc.make					\
 	install-sh					\
 	ltmain.sh					\
 	Makefile.in					\
