@@ -46,6 +46,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	guint i;
 	const gchar *app_globs[] = {
 		"freeciv-server.desktop",
+		"links.desktop",
 		"nm-connection-editor.desktop",
 		"plank.desktop",
 		"*release-notes*.desktop",
