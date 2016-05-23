@@ -32,9 +32,6 @@ struct GsPluginData {
 	guint			 quirk_id;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -49,9 +46,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -60,9 +54,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_source_remove (priv->quirk_id);
 }
 
-/**
- * gs_plugin_adopt_app:
- */
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
@@ -74,9 +65,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 }
 
-/**
- * gs_plugin_dummy_delay:
- */
 static gboolean
 gs_plugin_dummy_delay (GsPlugin *plugin,
 		       GsApp *app,
@@ -103,9 +91,6 @@ gs_plugin_dummy_delay (GsPlugin *plugin,
 	return ret;
 }
 
-/**
- * gs_plugin_dummy_poll_cb:
- */
 static gboolean
 gs_plugin_dummy_poll_cb (gpointer user_data)
 {
@@ -133,9 +118,6 @@ gs_plugin_dummy_poll_cb (gpointer user_data)
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_search:
- */
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,
@@ -186,9 +168,6 @@ gs_plugin_add_search (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_updates:
- */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
 		       GsAppList *list,
@@ -254,9 +233,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_installed:
- */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
 			 GsAppList *list,
@@ -290,9 +266,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_remove:
- */
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
@@ -316,9 +289,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_install:
- */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -342,9 +312,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_update_app:
- */
 gboolean
 gs_plugin_update_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -364,9 +331,6 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return FALSE;
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -458,9 +422,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_category_apps:
- */
 gboolean
 gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GsCategory *category,
@@ -481,9 +442,6 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_distro_upgrades:
- */
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GsAppList *list,
@@ -529,9 +487,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refresh:
- */
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -552,9 +507,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	return gs_plugin_dummy_delay (plugin, app, delay_ms, cancellable, error);
 }
 
-/**
- * gs_plugin_app_upgrade_download:
- */
 gboolean
 gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
 			        GCancellable *cancellable, GError **error)
@@ -574,9 +526,6 @@ gs_plugin_app_upgrade_download (GsPlugin *plugin, GsApp *app,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_upgrade_trigger:
- */
 gboolean
 gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
 			       GCancellable *cancellable, GError **error)
@@ -590,9 +539,6 @@ gs_plugin_app_upgrade_trigger (GsPlugin *plugin, GsApp *app,
 	return TRUE;
 }
 
-/**
- * gs_plugin_update_cancel:
- */
 gboolean
 gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
 			 GCancellable *cancellable, GError **error)
@@ -600,9 +546,6 @@ gs_plugin_update_cancel (GsPlugin *plugin, GsApp *app,
 	return TRUE;
 }
 
-/**
- * gs_plugin_review_submit:
- */
 gboolean
 gs_plugin_review_submit (GsPlugin *plugin,
 			 GsApp *app,
@@ -614,9 +557,6 @@ gs_plugin_review_submit (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_review_report:
- */
 gboolean
 gs_plugin_review_report (GsPlugin *plugin,
 			 GsApp *app,
@@ -629,9 +569,6 @@ gs_plugin_review_report (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_review_upvote:
- */
 gboolean
 gs_plugin_review_upvote (GsPlugin *plugin,
 			 GsApp *app,
@@ -644,9 +581,6 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_review_downvote:
- */
 gboolean
 gs_plugin_review_downvote (GsPlugin *plugin,
 			   GsApp *app,
@@ -659,9 +593,6 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_review_remove:
- */
 gboolean
 gs_plugin_review_remove (GsPlugin *plugin,
 			 GsApp *app,

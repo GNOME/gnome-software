@@ -41,9 +41,6 @@ struct GsPluginData {
 	GHashTable		*sources;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -61,9 +58,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refine");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -72,9 +66,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->client);
 }
 
-/**
- * gs_plugin_packagekit_origin_ensure_sources:
- **/
 static gboolean
 gs_plugin_packagekit_origin_ensure_sources (GsPlugin *plugin,
 					    GCancellable *cancellable,
@@ -108,9 +99,6 @@ gs_plugin_packagekit_origin_ensure_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,

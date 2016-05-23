@@ -27,9 +27,6 @@
 
 #define	GS_APPSTREAM_MAX_SCREENSHOTS	5
 
-/**
- * gs_refine_item_pixbuf:
- */
 static void
 gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
@@ -83,9 +80,6 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 	}
 }
 
-/**
- * gs_appstream_refine_add_addons:
- */
 static void
 gs_appstream_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
@@ -111,9 +105,7 @@ gs_appstream_refine_add_addons (GsPlugin *plugin, GsApp *app, AsApp *item)
 		gs_app_add_addon (app, addon);
 	}
 }
-/**
- * gs_appstream_refine_add_screenshots:
- */
+
 static void
 gs_appstream_refine_add_screenshots (GsApp *app, AsApp *item)
 {
@@ -145,9 +137,6 @@ gs_appstream_refine_add_screenshots (GsApp *app, AsApp *item)
 	}
 }
 
-/**
- * gs_appstream_is_recent_release:
- */
 static gboolean
 gs_appstream_is_recent_release (AsApp *app)
 {
@@ -167,9 +156,6 @@ gs_appstream_is_recent_release (AsApp *app)
 	return secs / (60 * 60 * 24) < 365;
 }
 
-/**
- * gs_appstream_are_screenshots_perfect:
- */
 static gboolean
 gs_appstream_are_screenshots_perfect (AsApp *app)
 {
@@ -209,9 +195,6 @@ gs_appstream_are_screenshots_perfect (AsApp *app)
 	return TRUE;
 }
 
-/**
- * gs_appstream_copy_metadata:
- */
 static void
 gs_appstream_copy_metadata (GsApp *app, AsApp *item)
 {
@@ -230,9 +213,6 @@ gs_appstream_copy_metadata (GsApp *app, AsApp *item)
 	}
 }
 
-/**
- * gs_appstream_create_runtime:
- */
 GsApp *
 gs_appstream_create_runtime (GsApp *parent, const gchar *runtime)
 {
@@ -271,9 +251,6 @@ gs_appstream_create_runtime (GsApp *parent, const gchar *runtime)
 	return g_steal_pointer (&app);
 }
 
-/**
- * gs_refine_item_management_plugin:
- */
 static void
 gs_refine_item_management_plugin (GsApp *app, AsApp *item)
 {
@@ -316,9 +293,6 @@ gs_refine_item_management_plugin (GsApp *app, AsApp *item)
 	}
 }
 
-/**
- * gs_appstream_refine_app_updates:
- */
 static gboolean
 gs_appstream_refine_app_updates (GsPlugin *plugin,
 				 GsApp *app,
@@ -399,9 +373,6 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_appstream_refine_app:
- */
 gboolean
 gs_appstream_refine_app (GsPlugin *plugin,
 			 GsApp *app,

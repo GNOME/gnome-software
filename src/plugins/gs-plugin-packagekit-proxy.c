@@ -154,9 +154,6 @@ reload_proxy_settings (GsPlugin *plugin, GCancellable *cancellable)
 				    plugin);
 }
 
-/**
- * gs_plugin_packagekit_proxy_changed_cb:
- */
 static void
 gs_plugin_packagekit_proxy_changed_cb (GSettings *settings,
 				       const gchar *key,
@@ -167,9 +164,6 @@ gs_plugin_packagekit_proxy_changed_cb (GSettings *settings,
 	reload_proxy_settings (plugin, NULL);
 }
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -186,9 +180,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 			  G_CALLBACK (gs_plugin_packagekit_proxy_changed_cb), plugin);
 }
 
-/**
- * gs_plugin_setup:
- */
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -196,9 +187,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {

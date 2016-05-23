@@ -26,9 +26,6 @@
 
 #define GS_PLUGIN_STEAM_SCREENSHOT_URI	"http://cdn.akamai.steamstatic.com/steam/apps"
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -44,9 +41,6 @@ typedef enum {
 	GS_PLUGIN_STEAM_TOKEN_LAST,
 } GsPluginSteamToken;
 
-/**
- * gs_plugin_steam_token_kind_to_str:
- **/
 static const gchar *
 gs_plugin_steam_token_kind_to_str (guint8 data)
 {
@@ -83,9 +77,6 @@ gs_plugin_steam_token_kind_to_str (guint8 data)
 	return "[?]";
 }
 
-/**
- * gs_plugin_steam_consume_uint32:
- **/
 static guint32
 gs_plugin_steam_consume_uint32 (guint8 *data, gsize data_len, guint *idx)
 {
@@ -94,9 +85,6 @@ gs_plugin_steam_consume_uint32 (guint8 *data, gsize data_len, guint *idx)
 	return tmp;
 }
 
-/**
- * gs_plugin_steam_consume_string:
- **/
 static const gchar *
 gs_plugin_steam_consume_string (guint8 *data, gsize data_len, guint *idx)
 {
@@ -112,9 +100,6 @@ gs_plugin_steam_consume_string (guint8 *data, gsize data_len, guint *idx)
 	return tmp;
 }
 
-/**
- * gs_plugin_steam_find_next_sync_point:
- **/
 static void
 gs_plugin_steam_find_next_sync_point (guint8 *data, gsize data_len, guint *idx)
 {
@@ -128,9 +113,6 @@ gs_plugin_steam_find_next_sync_point (guint8 *data, gsize data_len, guint *idx)
 	*idx = 0xfffffffe;
 }
 
-/**
- * gs_plugin_steam_add_app:
- **/
 static GHashTable *
 gs_plugin_steam_add_app (GPtrArray *apps)
 {
@@ -141,9 +123,6 @@ gs_plugin_steam_add_app (GPtrArray *apps)
 	return app;
 }
 
-/**
- * gs_plugin_steam_parse_appinfo_file:
- **/
 static GPtrArray *
 gs_plugin_steam_parse_appinfo_file (const gchar *filename, GError **error)
 {
@@ -231,9 +210,6 @@ gs_plugin_steam_parse_appinfo_file (const gchar *filename, GError **error)
 	return apps;
 }
 
-/**
- * gs_plugin_steam_dump_apps:
- **/
 static void
 gs_plugin_steam_dump_apps (GPtrArray *apps)
 {
@@ -259,7 +235,7 @@ gs_plugin_steam_dump_apps (GPtrArray *apps)
 	}
 }
 
-/**
+/*
  * gs_plugin_steam_capture:
  *
  * Returns: A string between @start and @end, or %NULL
@@ -297,9 +273,6 @@ gs_plugin_steam_capture (const gchar *html,
 	return NULL;
 }
 
-/**
- * gs_plugin_steam_update_screenshots:
- **/
 static gboolean
 gs_plugin_steam_update_screenshots (AsApp *app, const gchar *html, GError **error)
 {
@@ -337,9 +310,6 @@ gs_plugin_steam_update_screenshots (AsApp *app, const gchar *html, GError **erro
 	return TRUE;
 }
 
-/**
- * gs_plugin_steam_update_description:
- **/
 static gboolean
 gs_plugin_steam_update_description (AsApp *app,
 				    const gchar *html,
@@ -384,9 +354,6 @@ gs_plugin_steam_update_description (AsApp *app,
 	return TRUE;
 }
 
-/**
- * gs_plugin_steam_download_icon:
- **/
 static gboolean
 gs_plugin_steam_download_icon (GsPlugin *plugin,
 			       AsApp *app,
@@ -460,9 +427,6 @@ gs_plugin_steam_download_icon (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_steam_update_store_app:
- **/
 static gboolean
 gs_plugin_steam_update_store_app (GsPlugin *plugin,
 				  AsStore *store,
@@ -642,9 +606,6 @@ gs_plugin_steam_update_store_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_steam_update_store:
- */
 static gboolean
 gs_plugin_steam_update_store (GsPlugin *plugin, AsStore *store, GPtrArray *apps, GError **error)
 {
@@ -664,9 +625,6 @@ gs_plugin_steam_update_store (GsPlugin *plugin, AsStore *store, GPtrArray *apps,
 	return TRUE;
 }
 
-/**
- * gs_plugin_steam_refresh:
- */
 static gboolean
 gs_plugin_steam_refresh (GsPlugin *plugin,
 			 guint cache_age,
@@ -730,9 +688,6 @@ gs_plugin_steam_refresh (GsPlugin *plugin,
 				 error);
 }
 
-/**
- * gs_plugin_refresh:
- */
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -743,9 +698,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	return gs_plugin_steam_refresh (plugin, cache_age, cancellable, error);
 }
 
-/**
- * gs_plugin_steam_load_app_manifest:
- */
 static GHashTable *
 gs_plugin_steam_load_app_manifest (const gchar *fn, GError **error)
 {
@@ -817,9 +769,6 @@ typedef enum {
 	GS_STEAM_STATE_FLAG_LAST
 } GsSteamStateFlags;
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -912,9 +861,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_install:
- */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 		       GCancellable *cancellable, GError **error)
@@ -934,9 +880,6 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	return g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error);
 }
 
-/**
- * gs_plugin_app_remove:
- */
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 		      GCancellable *cancellable, GError **error)
@@ -956,9 +899,6 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	return g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error);
 }
 
-/**
- * gs_plugin_launch:
- */
 gboolean
 gs_plugin_launch (GsPlugin *plugin, GsApp *app,
 		  GCancellable *cancellable, GError **error)
@@ -977,9 +917,6 @@ gs_plugin_launch (GsPlugin *plugin, GsApp *app,
 	return g_spawn_command_line_sync (cmdline, NULL, NULL, NULL, error);
 }
 
-/**
- * gs_plugin_add_search:
- */
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,

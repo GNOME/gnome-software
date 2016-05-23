@@ -47,9 +47,6 @@ struct GsPluginData {
 	GFileMonitor		*monitor;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -59,9 +56,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -72,9 +66,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (priv->monitor);
 }
 
-/**
- * gs_plugin_adopt_app:
- */
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
@@ -95,9 +86,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 #define gs_app_set_xdgapp_branch(app,val)	gs_app_set_metadata(app,"xdg-app::branch",val)
 #define gs_app_set_xdgapp_commit(app,val)	gs_app_set_metadata(app,"xdg-app::commit",val)
 
-/**
- * gs_app_get_xdgapp_kind:
- */
 static XdgAppRefKind
 gs_app_get_xdgapp_kind (GsApp *app)
 {
@@ -110,9 +98,6 @@ gs_app_get_xdgapp_kind (GsApp *app)
 	return XDG_APP_REF_KIND_APP;
 }
 
-/**
- * gs_app_set_xdgapp_kind:
- */
 static void
 gs_app_set_xdgapp_kind (GsApp *app, XdgAppRefKind kind)
 {
@@ -125,9 +110,6 @@ gs_app_set_xdgapp_kind (GsApp *app, XdgAppRefKind kind)
 }
 
 #ifndef HAVE_PACKAGEKIT
-/**
- * gs_plugin_add_popular:
- */
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
 		       GsAppList *list,
@@ -157,9 +139,6 @@ gs_plugin_add_popular (GsPlugin *plugin,
 }
 #endif
 
-/**
- * gs_plugin_xdg_app_changed_cb:
- */
 static void
 gs_plugin_xdg_app_changed_cb (GFileMonitor *monitor,
 			      GFile *child,
@@ -170,9 +149,6 @@ gs_plugin_xdg_app_changed_cb (GFileMonitor *monitor,
 	gs_plugin_updates_changed (plugin);
 }
 
-/**
- * gs_plugin_refresh_appstream:
- */
 static gboolean
 gs_plugin_refresh_appstream (GsPlugin *plugin,
 			     guint cache_age,
@@ -244,9 +220,6 @@ gs_plugin_refresh_appstream (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_setup:
- */
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -290,9 +263,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_xdg_app_set_metadata:
- */
 static void
 gs_plugin_xdg_app_set_metadata (GsApp *app, XdgAppRef *xref)
 {
@@ -304,9 +274,6 @@ gs_plugin_xdg_app_set_metadata (GsApp *app, XdgAppRef *xref)
 	gs_app_set_xdgapp_commit (app, xdg_app_ref_get_commit (xref));
 }
 
-/**
- * gs_plugin_xdg_app_set_metadata_installed:
- */
 static void
 gs_plugin_xdg_app_set_metadata_installed (GsApp *app, XdgAppInstalledRef *xref)
 {
@@ -343,9 +310,6 @@ gs_plugin_xdg_app_set_metadata_installed (GsApp *app, XdgAppInstalledRef *xref)
 		gs_app_set_size_installed (app, size_installed);
 }
 
-/**
- * gs_plugin_xdg_app_build_id:
- */
 static gchar *
 gs_plugin_xdg_app_build_id (XdgAppRef *xref)
 {
@@ -354,9 +318,6 @@ gs_plugin_xdg_app_build_id (XdgAppRef *xref)
 	return g_strdup_printf ("user-xdgapp:%s.runtime", xdg_app_ref_get_name (xref));
 }
 
-/**
- * gs_plugin_xdg_app_create_installed:
- */
 static GsApp *
 gs_plugin_xdg_app_create_installed (GsPlugin *plugin,
 				    XdgAppInstalledRef *xref,
@@ -418,9 +379,6 @@ gs_plugin_xdg_app_create_installed (GsPlugin *plugin,
 	return g_object_ref (app);
 }
 
-/**
- * gs_plugin_xdg_app_progress_cb:
- */
 static void
 gs_plugin_xdg_app_progress_cb (const gchar *status,
 			       guint progress,
@@ -431,9 +389,6 @@ gs_plugin_xdg_app_progress_cb (const gchar *status,
 	gs_app_set_progress (app, progress);
 }
 
-/**
- * gs_plugin_add_installed:
- */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
 			 GsAppList *list,
@@ -480,9 +435,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_sources:
- */
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
 		       GsAppList *list,
@@ -525,9 +477,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_updates:
- */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
 		       GsAppList *list,
@@ -578,9 +527,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refresh:
- */
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -635,9 +581,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_item_origin_ui:
- */
 static gboolean
 gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
 				 GsApp *app,
@@ -675,9 +618,6 @@ gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_item_origin:
- */
 static gboolean
 gs_plugin_refine_item_origin (GsPlugin *plugin,
 			      GsApp *app,
@@ -739,9 +679,6 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 	return FALSE;
 }
 
-/**
- * gs_plugin_refine_item_commit:
- */
 static gboolean
 gs_plugin_refine_item_commit (GsPlugin *plugin,
 			      GsApp *app,
@@ -776,9 +713,6 @@ gs_plugin_refine_item_commit (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_xdg_app_is_xref:
- */
 static gboolean
 gs_plugin_xdg_app_is_xref (GsApp *app, XdgAppRef *xref)
 {
@@ -806,9 +740,6 @@ gs_plugin_xdg_app_is_xref (GsApp *app, XdgAppRef *xref)
 	return FALSE;
 }
 
-/**
- * gs_plugin_refine_item_metadata:
- */
 static gboolean
 gs_plugin_refine_item_metadata (GsPlugin *plugin,
 				GsApp *app,
@@ -841,9 +772,6 @@ gs_plugin_refine_item_metadata (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_item_state:
- */
 static gboolean
 gs_plugin_refine_item_state (GsPlugin *plugin,
 			      GsApp *app,
@@ -903,9 +831,6 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_xdg_app_set_app_metadata:
- */
 static gboolean
 gs_plugin_xdg_app_set_app_metadata (GsApp *app,
 				    const gchar *data,
@@ -938,9 +863,6 @@ gs_plugin_xdg_app_set_app_metadata (GsApp *app,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_item_runtime:
- */
 static gboolean
 gs_plugin_refine_item_runtime (GsPlugin *plugin,
 			       GsApp *app,
@@ -1005,9 +927,6 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_item_size:
- */
 static gboolean
 gs_plugin_refine_item_size (GsPlugin *plugin,
 			    GsApp *app,
@@ -1086,9 +1005,6 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_xdg_app_refine_app:
- */
 static gboolean
 gs_plugin_xdg_app_refine_app (GsPlugin *plugin,
 			      GsApp *app,
@@ -1140,9 +1056,6 @@ gs_plugin_xdg_app_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -1152,9 +1065,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {	return gs_plugin_xdg_app_refine_app (plugin, app, flags, cancellable, error);
 }
 
-/**
- * gs_plugin_launch:
- */
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
 		  GsApp *app,
@@ -1181,9 +1091,6 @@ gs_plugin_launch (GsPlugin *plugin,
 					    error);
 }
 
-/**
- * gs_plugin_app_remove:
- */
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
@@ -1215,9 +1122,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_install:
- */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -1312,9 +1216,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_update_app:
- */
 gboolean
 gs_plugin_update_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -1349,9 +1250,6 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_file_to_app:
- */
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
 		       GsAppList *list,

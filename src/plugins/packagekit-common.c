@@ -28,9 +28,6 @@
 
 #include "packagekit-common.h"
 
-/**
- * packagekit_status_enum_to_plugin_status:
- **/
 GsPluginStatus
 packagekit_status_enum_to_plugin_status (PkStatusEnum status)
 {
@@ -84,9 +81,6 @@ packagekit_status_enum_to_plugin_status (PkStatusEnum status)
 	return plugin_status;
 }
 
-/**
- * gs_plugin_packagekit_convert_gerror:
- */
 gboolean
 gs_plugin_packagekit_convert_gerror (GError **error)
 {
@@ -156,9 +150,6 @@ gs_plugin_packagekit_convert_gerror (GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_packagekit_results_valid:
- */
 gboolean
 gs_plugin_packagekit_results_valid (PkResults *results, GError **error)
 {
@@ -184,9 +175,6 @@ gs_plugin_packagekit_results_valid (PkResults *results, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_packagekit_add_results:
- */
 gboolean
 gs_plugin_packagekit_add_results (GsPlugin *plugin,
 				  GsAppList *list,

@@ -37,9 +37,6 @@ struct GsPluginData {
 	PkTask			*task;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -53,9 +50,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "dpkg");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -68,9 +62,6 @@ typedef struct {
 	AsProfileTask	*ptask;
 } ProgressData;
 
-/**
- * gs_plugin_packagekit_progress_cb:
- **/
 static void
 gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
@@ -100,9 +91,6 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		gs_plugin_status_update (plugin, NULL, plugin_status);
 }
 
-/**
- * gs_plugin_refresh:
- */
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,

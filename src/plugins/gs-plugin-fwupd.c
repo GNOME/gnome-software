@@ -46,9 +46,6 @@ struct GsPluginData {
 	gchar			*config_fn;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -67,9 +64,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -82,9 +76,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_ptr_array_unref (priv->to_ignore);
 }
 
-/**
- * gs_plugin_adopt_app:
- */
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
@@ -92,9 +83,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 }
 
-/**
- * gs_plugin_fwupd_changed_cb:
- */
 static void
 gs_plugin_fwupd_changed_cb (FwupdClient *client, GsPlugin *plugin)
 {
@@ -105,9 +93,6 @@ gs_plugin_fwupd_changed_cb (FwupdClient *client, GsPlugin *plugin)
 }
 
 #if FWUPD_CHECK_VERSION(0,7,1)
-/**
- * gs_plugin_fwupd_device_changed_cb:
- */
 static void
 gs_plugin_fwupd_device_changed_cb (FwupdClient *client,
 				   FwupdResult *device,
@@ -129,9 +114,6 @@ gs_plugin_fwupd_device_changed_cb (FwupdClient *client,
 }
 #endif
 
-/**
- * gs_plugin_setup:
- */
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -170,9 +152,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_fwupd_add_required_location:
- */
 static void
 gs_plugin_fwupd_add_required_location (GsPlugin *plugin, const gchar *location)
 {
@@ -192,9 +171,6 @@ gs_plugin_fwupd_add_required_location (GsPlugin *plugin, const gchar *location)
 	g_ptr_array_add (priv->to_download, g_strdup (location));
 }
 
-/**
- * gs_plugin_fwupd_get_file_checksum:
- */
 static gchar *
 gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 				   GChecksumType checksum_type,
@@ -208,9 +184,6 @@ gs_plugin_fwupd_get_file_checksum (const gchar *filename,
 	return g_compute_checksum_for_data (checksum_type, (const guchar *)data, len);
 }
 
-/**
- * gs_plugin_fwupd_new_app_from_results:
- */
 static GsApp *
 gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 {
@@ -303,9 +276,6 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 	return app;
 }
 
-/**
- * gs_plugin_add_update_app:
- */
 static gboolean
 gs_plugin_add_update_app (GsPlugin *plugin,
 			  GsAppList *list,
@@ -415,9 +385,6 @@ gs_plugin_add_update_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_updates_historical:
- */
 gboolean
 gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GsAppList *list,
@@ -456,9 +423,6 @@ gs_plugin_add_updates_historical (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_updates:
- */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
 		       GsAppList *list,
@@ -496,9 +460,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_fwupd_check_lvfs_metadata:
- */
 static gboolean
 gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 				     guint cache_age,
@@ -604,9 +565,6 @@ gs_plugin_fwupd_check_lvfs_metadata (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refresh:
- */
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -677,9 +635,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_fwupd_install:
- */
 static gboolean
 gs_plugin_fwupd_install (GsPlugin *plugin,
 			 GsApp *app,
@@ -722,11 +677,6 @@ gs_plugin_fwupd_install (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_install:
- *
- * Called when a user double clicks on a .cab file
- */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -741,11 +691,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
 }
 
-/**
- * gs_plugin_update_app:
- *
- * Called when a user clicks [Update] in the updates panel
- */
 gboolean
 gs_plugin_update_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -776,9 +721,6 @@ gs_plugin_update_app (GsPlugin *plugin,
 	return gs_plugin_fwupd_install (plugin, app, cancellable, error);
 }
 
-/**
- * gs_plugin_file_to_app:
- */
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
 		       GsAppList *list,

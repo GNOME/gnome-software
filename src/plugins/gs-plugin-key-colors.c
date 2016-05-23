@@ -23,9 +23,6 @@
 
 #include <gnome-software.h>
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -39,9 +36,6 @@ typedef struct {
 	guint8		 B;
 } CdColorRGB8;
 
-/**
- * cd_color_rgb8_to_uint32:
- */
 static guint32
 cd_color_rgb8_to_uint32 (CdColorRGB8 *rgb)
 {
@@ -55,9 +49,6 @@ typedef struct {
 	guint		cnt;
 } GsColorBin;
 
-/**
- * gs_color_bin_sort_cb:
- */
 static gint
 gs_color_bin_sort_cb (gconstpointer a, gconstpointer b)
 {
@@ -70,9 +61,6 @@ gs_color_bin_sort_cb (gconstpointer a, gconstpointer b)
 	return 0;
 }
 
-/**
- * gs_plugin_key_colors_set_for_pixbuf:
- */
 static void
 gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 {
@@ -160,9 +148,6 @@ gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 	}
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,

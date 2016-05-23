@@ -31,9 +31,6 @@ struct GsPluginData {
 	OstreeRepo		*ostree_repo;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -56,9 +53,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "systemd-updates");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -67,9 +61,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (priv->ostree_repo);
 }
 
-/**
- * gs_plugin_setup:
- */
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -86,9 +77,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_sources:
- */
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
 		       GsAppList *list,
@@ -124,9 +112,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refresh:
- */
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,

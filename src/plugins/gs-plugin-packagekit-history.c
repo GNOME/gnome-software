@@ -37,9 +37,6 @@ struct GsPluginData {
 	GDBusConnection		*connection;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -50,9 +47,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refine");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -61,9 +55,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (priv->connection);
 }
 
-/**
- * gs_plugin_packagekit_refine_add_history:
- */
 static void
 gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 {
@@ -114,9 +105,6 @@ gs_plugin_packagekit_refine_add_history (GsApp *app, GVariant *dict)
 	gs_app_set_install_date (app, timestamp);
 }
 
-/**
- * gs_plugin_setup:
- */
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -229,9 +217,6 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine:
- */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
 		  GsAppList *list,

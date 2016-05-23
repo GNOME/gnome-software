@@ -34,9 +34,6 @@ struct GsPluginData {
 	gchar			**sources;
 };
 
-/**
- * gs_plugin_provenance_get_sources:
- */
 static gchar **
 gs_plugin_provenance_get_sources (GsPlugin *plugin)
 {
@@ -50,9 +47,6 @@ gs_plugin_provenance_get_sources (GsPlugin *plugin)
 	return g_settings_get_strv (priv->settings, "official-sources");
 }
 
-/**
- * gs_plugin_provenance_settings_changed_cb:
- */
 static void
 gs_plugin_provenance_settings_changed_cb (GSettings *settings,
 					  const gchar *key,
@@ -65,9 +59,6 @@ gs_plugin_provenance_settings_changed_cb (GSettings *settings,
 	}
 }
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -82,9 +73,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit-refine");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -93,9 +81,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->settings);
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,

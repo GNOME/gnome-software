@@ -33,9 +33,6 @@ struct GsPluginData {
 	guint64		 os_version;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -48,9 +45,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -61,9 +55,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_free (priv->cachefn);
 }
 
-/**
- * gs_plugin_fedora_distro_upgrades_changed_cb:
- */
 static void
 gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
 					     GFile *file,
@@ -87,9 +78,6 @@ gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
 	gs_plugin_updates_changed (plugin);
 }
 
-/**
- * gs_plugin_setup:
- */
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -143,9 +131,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_fedora_distro_upgrades_refresh:
- */
 static gboolean
 gs_plugin_fedora_distro_upgrades_refresh (GsPlugin *plugin,
 					  guint cache_age,
@@ -173,9 +158,6 @@ gs_plugin_fedora_distro_upgrades_refresh (GsPlugin *plugin,
 					error);
 }
 
-/**
- * gs_plugin_refresh:
- */
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -299,9 +281,6 @@ parse_pkgdb_collections_data (const gchar *data,
 	return distros;
 }
 
-/**
- * gs_plugin_add_distro_upgrades:
- */
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GsAppList *list,

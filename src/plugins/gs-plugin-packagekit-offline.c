@@ -37,9 +37,6 @@
 #define PK_OFFLINE_UPDATE_RESULTS_GROUP		"PackageKit Offline Update Results"
 #define PK_OFFLINE_UPDATE_RESULTS_FILENAME	"/var/lib/PackageKit/offline-update-competed"
 
-/**
- * gs_plugin_packagekit_convert_error:
- */
 static gboolean
 gs_plugin_packagekit_convert_error (GError **error,
 				    PkErrorEnum error_enum,
@@ -96,9 +93,6 @@ gs_plugin_packagekit_convert_error (GError **error,
 	return FALSE;
 }
 
-/**
- * gs_plugin_add_updates_historical:
- */
 gboolean
 gs_plugin_add_updates_historical (GsPlugin *plugin,
 				  GsAppList *list,

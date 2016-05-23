@@ -32,9 +32,6 @@
  * specification.
  */
 
-/**
- * gs_plugin_add_categories:
- */
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
 			  GPtrArray *list,

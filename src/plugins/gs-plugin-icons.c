@@ -40,9 +40,6 @@ struct GsPluginData {
 	GHashTable		*icon_theme_paths;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -56,9 +53,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "epiphany");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -68,9 +62,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_mutex_clear (&priv->icon_theme_lock);
 }
 
-/**
- * gs_plugin_icons_download:
- */
 static gboolean
 gs_plugin_icons_download (GsPlugin *plugin, const gchar *uri, const gchar *filename, GError **error)
 {
@@ -120,9 +111,6 @@ gs_plugin_icons_download (GsPlugin *plugin, const gchar *uri, const gchar *filen
 	return gdk_pixbuf_save (pixbuf_new, filename, "png", error, NULL);
 }
 
-/**
- * gs_plugin_icons_load_local:
- */
 static gboolean
 gs_plugin_icons_load_local (GsPlugin *plugin, GsApp *app, GError **error)
 {
@@ -148,9 +136,6 @@ gs_plugin_icons_load_local (GsPlugin *plugin, GsApp *app, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_icons_add_theme_path:
- */
 static void
 gs_plugin_icons_add_theme_path (GsPlugin *plugin, const gchar *path)
 {
@@ -163,9 +148,6 @@ gs_plugin_icons_add_theme_path (GsPlugin *plugin, const gchar *path)
 	}
 }
 
-/**
- * gs_plugin_icons_load_stock:
- */
 static gboolean
 gs_plugin_icons_load_stock (GsPlugin *plugin, GsApp *app, GError **error)
 {
@@ -196,9 +178,6 @@ gs_plugin_icons_load_stock (GsPlugin *plugin, GsApp *app, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,

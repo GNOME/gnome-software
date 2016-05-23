@@ -35,9 +35,6 @@
 
 #define GS_PLUGIN_FEDORA_TAGGER_SERVER		"https://apps.fedoraproject.org/tagger"
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -63,9 +60,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 }
 
-/**
- * gs_plugin_app_set_usage_pkg:
- */
 static gboolean
 gs_plugin_app_set_usage_pkg (GsPlugin *plugin,
 			     const gchar *pkgname,
@@ -103,9 +97,6 @@ gs_plugin_app_set_usage_pkg (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_set_usage_app:
- */
 static gboolean
 gs_plugin_app_set_usage_app (GsPlugin *plugin,
 			     GsApp *app,
@@ -135,9 +126,6 @@ gs_plugin_app_set_usage_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_install:
- */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -149,9 +137,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return gs_plugin_app_set_usage_app (plugin, app, TRUE, error);
 }
 
-/**
- * gs_plugin_app_remove:
- */
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,

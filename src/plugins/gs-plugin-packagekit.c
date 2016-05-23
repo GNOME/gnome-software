@@ -41,9 +41,6 @@ struct GsPluginData {
 	PkTask			*task;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -54,9 +51,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_client_set_cache_age (PK_CLIENT (priv->task), G_MAXUINT);
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -70,9 +64,6 @@ typedef struct {
 	AsProfileTask	*ptask;
 } ProgressData;
 
-/**
- * gs_plugin_packagekit_progress_cb:
- **/
 static void
 gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
@@ -107,9 +98,6 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 	}
 }
 
-/**
- * gs_plugin_add_installed:
- */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
 			 GsAppList *list,
@@ -147,9 +135,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	return gs_plugin_packagekit_add_results (plugin, list, results, error);
 }
 
-/**
- * gs_plugin_add_sources_related:
- */
 static gboolean
 gs_plugin_add_sources_related (GsPlugin *plugin,
 			       GHashTable *hash,
@@ -209,9 +194,6 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_sources:
- */
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
 		       GsAppList *list,
@@ -271,9 +253,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return gs_plugin_add_sources_related (plugin, hash, cancellable, error);
 }
 
-/**
- * gs_plugin_app_source_enable:
- */
 static gboolean
 gs_plugin_app_source_enable (GsPlugin *plugin,
 			     GsApp *app,
@@ -301,9 +280,6 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_install:
- */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -480,9 +456,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_source_disable:
- */
 static gboolean
 gs_plugin_app_source_disable (GsPlugin *plugin,
 			      GsApp *app,
@@ -510,9 +483,6 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_source_remove:
- */
 static gboolean
 gs_plugin_app_source_remove (GsPlugin *plugin,
 			     GsApp *app,
@@ -547,9 +517,6 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_remove:
- */
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
@@ -626,9 +593,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_search_files:
- */
 gboolean
 gs_plugin_add_search_files (GsPlugin *plugin,
                             gchar **search,
@@ -663,9 +627,6 @@ gs_plugin_add_search_files (GsPlugin *plugin,
 	return gs_plugin_packagekit_add_results (plugin, list, results, error);
 }
 
-/**
- * gs_plugin_add_search_what_provides:
- */
 gboolean
 gs_plugin_add_search_what_provides (GsPlugin *plugin,
                                     gchar **search,
@@ -700,9 +661,6 @@ gs_plugin_add_search_what_provides (GsPlugin *plugin,
 	return gs_plugin_packagekit_add_results (plugin, list, results, error);
 }
 
-/**
- * gs_plugin_launch:
- */
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
 		  GsApp *app,

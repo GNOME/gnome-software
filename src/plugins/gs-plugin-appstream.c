@@ -40,9 +40,6 @@ struct GsPluginData {
 	AsStore			*store;
 };
 
-/**
- * gs_plugin_appstream_store_changed_cb:
- */
 static void
 gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 {
@@ -54,9 +51,6 @@ gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 		gs_plugin_updates_changed (plugin);
 }
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -71,9 +65,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "dpkg");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -81,9 +72,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->store);
 }
 
-/**
- * gs_plugin_appstream_get_origins_hash:
- *
+/*
  * Returns: A hash table with a string key of the application origin and a
  * value of the guint percentage of the store is made up by that origin.
  */
@@ -128,9 +117,6 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 	return origins;
 }
 
-/**
- * gs_plugin_setup:
- */
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -227,9 +213,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_from_id:
- */
 static gboolean
 gs_plugin_refine_from_id (GsPlugin *plugin,
 			  GsApp *app,
@@ -288,9 +271,6 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_from_pkgname:
- */
 static gboolean
 gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 			       GsApp *app,
@@ -320,9 +300,6 @@ gs_plugin_refine_from_pkgname (GsPlugin *plugin,
 	return gs_appstream_refine_app (plugin, app, item, error);
 }
 
-/**
- * gs_plugin_add_distro_upgrades:
- */
 gboolean
 gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			       GsAppList *list,
@@ -353,9 +330,6 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -377,9 +351,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_category_apps:
- */
 gboolean
 gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GsCategory *category,
@@ -432,9 +403,6 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_search_item:
- */
 static gboolean
 gs_plugin_add_search_item (GsPlugin *plugin,
 			   GsAppList *list,
@@ -470,9 +438,6 @@ gs_plugin_add_search_item (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_search:
- */
 gboolean
 gs_plugin_add_search (GsPlugin *plugin,
 		      gchar **values,
@@ -503,9 +468,6 @@ gs_plugin_add_search (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_installed:
- */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
 			 GsAppList *list,
@@ -535,9 +497,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_categories_for_app:
- */
 static void
 gs_plugin_add_categories_for_app (GPtrArray *list, AsApp *app)
 {
@@ -580,9 +539,6 @@ gs_plugin_add_categories_for_app (GPtrArray *list, AsApp *app)
 	}
 }
 
-/**
- * gs_plugin_add_categories:
- */
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
 			  GPtrArray *list,
@@ -610,9 +566,6 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_popular:
- */
 gboolean
 gs_plugin_add_popular (GsPlugin *plugin,
 		       GsAppList *list,
@@ -643,9 +596,6 @@ gs_plugin_add_popular (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_featured:
- */
 gboolean
 gs_plugin_add_featured (GsPlugin *plugin,
 			GsAppList *list,

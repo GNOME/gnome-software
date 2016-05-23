@@ -33,9 +33,6 @@
  * If the epiphany binary is not present then it self-disables.
  */
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -53,9 +50,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
 }
 
-/**
- * gs_plugin_adopt_app:
- */
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
@@ -63,9 +57,6 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 }
 
-/**
- * _gs_app_get_id_nonfull:
- */
 static gchar *
 _gs_app_get_id_nonfull (GsApp *app)
 {
@@ -79,9 +70,6 @@ _gs_app_get_id_nonfull (GsApp *app)
 	return id;
 }
 
-/**
- * gs_plugin_app_install:
- */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 		       GCancellable *cancellable, GError **error)
@@ -209,9 +197,6 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_remove:
- */
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 		      GCancellable *cancellable, GError **error)
@@ -247,9 +232,6 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -296,9 +278,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_launch:
- */
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
 		  GsApp *app,

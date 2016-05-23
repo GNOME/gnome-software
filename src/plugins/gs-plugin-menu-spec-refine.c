@@ -32,9 +32,6 @@
  * previously set.
  */
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -43,9 +40,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "menu-spec-categories");
 }
 
-/**
- * gs_plugin_refine_app_category:
- */
 static void
 gs_plugin_refine_app_category (GsPlugin *plugin,
 			       GsApp *app,
@@ -79,9 +73,6 @@ gs_plugin_refine_app_category (GsPlugin *plugin,
 	gs_app_set_menu_path (app, (gchar **) menu_path);
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,

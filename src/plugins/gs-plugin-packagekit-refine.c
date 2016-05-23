@@ -44,18 +44,12 @@ struct GsPluginData {
 	AsProfileTask		*ptask;
 };
 
-/**
- * gs_plugin_initialize:
- */
 static void
 gs_plugin_packagekit_cache_invalid_cb (PkControl *control, GsPlugin *plugin)
 {
 	gs_plugin_updates_changed (plugin);
 }
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -78,9 +72,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -89,9 +80,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->control);
 }
 
-/**
- * gs_plugin_adopt_app:
- */
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
@@ -112,9 +100,6 @@ typedef struct {
 	gchar		*profile_id;
 } ProgressData;
 
-/**
- * gs_plugin_packagekit_progress_cb:
- **/
 static void
 gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
@@ -187,9 +172,6 @@ gs_plugin_packagekit_set_metadata_from_package (GsPlugin *plugin,
 			    pk_package_get_summary (package));
 }
 
-/**
- * gs_plugin_packagekit_resolve_packages_app:
- **/
 static void
 gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 					   GPtrArray *packages,
@@ -254,9 +236,6 @@ gs_plugin_packagekit_resolve_packages_app (GsPlugin *plugin,
 	}
 }
 
-/**
- * gs_plugin_packagekit_resolve_packages:
- **/
 static gboolean
 gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 				       GsAppList *list,
@@ -350,7 +329,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
+/*
  * gs_plugin_packagekit_fixup_update_description:
  *
  * Lets assume Fedora is sending us valid markdown, but fall back to
@@ -377,9 +356,6 @@ gs_plugin_packagekit_fixup_update_description (const gchar *text)
 	return g_strdup (text);
 }
 
-/**
- * gs_plugin_packagekit_refine_updatedetails:
- */
 static gboolean
 gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 					   GsAppList *list,
@@ -439,7 +415,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
+/*
  * gs_pk_compare_ids:
  *
  * Do not compare the repo. Some backends do not append the origin.
@@ -462,9 +438,6 @@ gs_pk_compare_ids (const gchar *package_id1, const gchar *package_id2)
 	return ret;
 }
 
-/**
- * gs_plugin_packagekit_refine_details_app:
- */
 static void
 gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 					 GPtrArray *array,
@@ -519,9 +492,6 @@ gs_plugin_packagekit_refine_details_app (GsPlugin *plugin,
 	}
 }
 
-/**
- * gs_plugin_packagekit_refine_details:
- */
 static gboolean
 gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 				     GsAppList *list,
@@ -571,9 +541,6 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_packagekit_refine_update_urgency:
- */
 static gboolean
 gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 					    GsAppList *list,
@@ -640,9 +607,6 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_app_needs_details:
- */
 static gboolean
 gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsPluginRefineFlags flags, GsApp *app)
 {
@@ -661,9 +625,6 @@ gs_plugin_refine_app_needs_details (GsPlugin *plugin, GsPluginRefineFlags flags,
 	return FALSE;
 }
 
-/**
- * gs_plugin_refine_require_details:
- */
 static gboolean
 gs_plugin_refine_require_details (GsPlugin *plugin,
 				  GsAppList *list,
@@ -703,9 +664,6 @@ gs_plugin_refine_require_details (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_requires_version:
- */
 static gboolean
 gs_plugin_refine_requires_version (GsApp *app, GsPluginRefineFlags flags)
 {
@@ -716,9 +674,6 @@ gs_plugin_refine_requires_version (GsApp *app, GsPluginRefineFlags flags)
 	return (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) > 0;
 }
 
-/**
- * gs_plugin_refine_requires_update_details:
- */
 static gboolean
 gs_plugin_refine_requires_update_details (GsApp *app, GsPluginRefineFlags flags)
 {
@@ -729,9 +684,6 @@ gs_plugin_refine_requires_update_details (GsApp *app, GsPluginRefineFlags flags)
 	return (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_UPDATE_DETAILS) > 0;
 }
 
-/**
- * gs_plugin_refine_requires_origin:
- */
 static gboolean
 gs_plugin_refine_requires_origin (GsApp *app, GsPluginRefineFlags flags)
 {
@@ -744,9 +696,6 @@ gs_plugin_refine_requires_origin (GsApp *app, GsPluginRefineFlags flags)
 	return FALSE;
 }
 
-/**
- * gs_plugin_refine_requires_package_id:
- */
 static gboolean
 gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
 {
@@ -773,9 +722,6 @@ gs_plugin_refine_requires_package_id (GsApp *app, GsPluginRefineFlags flags)
 	return FALSE;
 }
 
-/**
- * gs_plugin_packagekit_refine_distro_upgrade:
- **/
 static gboolean
 gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 					    GsApp *app,
@@ -817,9 +763,6 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine:
- */
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
 		  GsAppList *list,

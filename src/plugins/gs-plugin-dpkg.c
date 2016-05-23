@@ -26,9 +26,6 @@
 
 #define DPKG_DEB_BINARY		"/usr/bin/dpkg-deb"
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -39,9 +36,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 }
 
-/**
- * gs_plugin_file_to_app:
- */
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
 		       GsAppList *list,

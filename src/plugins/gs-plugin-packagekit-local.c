@@ -33,9 +33,6 @@ struct GsPluginData {
 	PkTask			*task;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -45,9 +42,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_client_set_interactive (PK_CLIENT (priv->task), FALSE);
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -60,9 +54,6 @@ typedef struct {
 	GsPlugin	*plugin;
 } ProgressData;
 
-/**
- * gs_plugin_packagekit_progress_cb:
- **/
 static void
 gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
@@ -85,7 +76,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 	}
 }
 
-/**
+/*
  * gs_plugin_packagekit_refresh_set_text:
  *
  * The cases we have to deal with:
@@ -118,9 +109,6 @@ gs_plugin_packagekit_refresh_set_text (GsApp *app, const gchar *text)
 	gs_app_set_description (app, GS_APP_QUALITY_LOWEST, nl + 1);
 }
 
-/**
- * gs_plugin_packagekit_refresh_guess_app_id:
- */
 static gboolean
 gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 					   GsApp *app,
@@ -180,9 +168,6 @@ gs_plugin_packagekit_refresh_guess_app_id (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_file_to_app:
- */
 gboolean
 gs_plugin_file_to_app (GsPlugin *plugin,
 		       GsAppList *list,

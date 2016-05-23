@@ -217,9 +217,6 @@ static const MenuSpecData msdata[] = {
 	{ NULL,					NULL, NULL }
 };
 
-/**
- * menu_spec_get_data:
- */
 const MenuSpecData *
 menu_spec_get_data (void)
 {

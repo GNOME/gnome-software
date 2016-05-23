@@ -40,9 +40,6 @@ struct GsPluginData {
 	gchar			*review_server;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -79,9 +76,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "flatpak");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -91,9 +85,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->settings);
 }
 
-/**
- * gs_plugin_odrs_parse_review_object:
- */
 static GsReview *
 gs_plugin_odrs_parse_review_object (JsonObject *item)
 {
@@ -151,9 +142,6 @@ gs_plugin_odrs_parse_review_object (JsonObject *item)
 	return rev;
 }
 
-/**
- * gs_plugin_odrs_parse_reviews:
- */
 static GPtrArray *
 gs_plugin_odrs_parse_reviews (const gchar *data, gsize data_len, GError **error)
 {
@@ -225,9 +213,6 @@ gs_plugin_odrs_parse_reviews (const gchar *data, gsize data_len, GError **error)
 	return g_steal_pointer (&reviews);
 }
 
-/**
- * gs_plugin_odrs_parse_success:
- */
 static gboolean
 gs_plugin_odrs_parse_success (const gchar *data, gsize data_len, GError **error)
 {
@@ -290,9 +275,6 @@ gs_plugin_odrs_parse_success (const gchar *data, gsize data_len, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_odrs_json_post:
- */
 static gboolean
 gs_plugin_odrs_json_post (SoupSession *session,
 			  const gchar *uri,
@@ -322,9 +304,6 @@ gs_plugin_odrs_json_post (SoupSession *session,
 					     error);
 }
 
-/**
- * gs_plugin_odrs_parse_ratings:
- */
 static GArray *
 gs_plugin_odrs_parse_ratings (const gchar *data, gsize data_len, GError **error)
 {
@@ -385,9 +364,6 @@ gs_plugin_odrs_parse_ratings (const gchar *data, gsize data_len, GError **error)
 	return ratings;
 }
 
-/**
- * gs_plugin_odrs_get_ratings:
- */
 static GArray *
 gs_plugin_odrs_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 {
@@ -455,9 +431,6 @@ gs_plugin_odrs_get_ratings (GsPlugin *plugin, GsApp *app, GError **error)
 	return ratings;
 }
 
-/**
- * gs_plugin_refine_ratings:
- */
 static gboolean
 gs_plugin_refine_ratings (GsPlugin *plugin,
 			  GsApp *app,
@@ -490,9 +463,6 @@ gs_plugin_refine_ratings (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_odrs_fetch_for_app:
- */
 static GPtrArray *
 gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 {
@@ -598,9 +568,6 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 	return g_steal_pointer (&reviews);
 }
 
-/**
- * gs_plugin_refine_reviews:
- */
 static gboolean
 gs_plugin_refine_reviews (GsPlugin *plugin,
 			  GsApp *app,
@@ -642,9 +609,6 @@ gs_plugin_refine_reviews (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -679,9 +643,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_odrs_sanitize_version:
- */
 static gchar *
 gs_plugin_odrs_sanitize_version (const gchar *version)
 {
@@ -692,9 +653,6 @@ gs_plugin_odrs_sanitize_version (const gchar *version)
 	return tmp;
 }
 
-/**
- * gs_plugin_odrs_invalidate_cache:
- */
 static gboolean
 gs_plugin_odrs_invalidate_cache (GsReview *review, GError **error)
 {
@@ -717,9 +675,6 @@ gs_plugin_odrs_invalidate_cache (GsReview *review, GError **error)
 	return g_file_delete (cachefn_file, NULL, error);
 }
 
-/**
- * gs_plugin_review_submit:
- */
 gboolean
 gs_plugin_review_submit (GsPlugin *plugin,
 			 GsApp *app,
@@ -786,9 +741,6 @@ gs_plugin_review_submit (GsPlugin *plugin,
 						    uri, data, error);
 }
 
-/**
- * gs_plugin_odrs_vote:
- */
 static gboolean
 gs_plugin_odrs_vote (GsPlugin *plugin, GsReview *review,
 		     const gchar *uri, GError **error)
@@ -846,9 +798,6 @@ gs_plugin_odrs_vote (GsPlugin *plugin, GsReview *review,
 	return TRUE;
 }
 
-/**
- * gs_plugin_review_report:
- */
 gboolean
 gs_plugin_review_report (GsPlugin *plugin,
 			 GsApp *app,
@@ -862,9 +811,6 @@ gs_plugin_review_report (GsPlugin *plugin,
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
-/**
- * gs_plugin_review_upvote:
- */
 gboolean
 gs_plugin_review_upvote (GsPlugin *plugin,
 			 GsApp *app,
@@ -878,9 +824,6 @@ gs_plugin_review_upvote (GsPlugin *plugin,
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
-/**
- * gs_plugin_review_downvote:
- */
 gboolean
 gs_plugin_review_downvote (GsPlugin *plugin,
 			   GsApp *app,
@@ -894,9 +837,6 @@ gs_plugin_review_downvote (GsPlugin *plugin,
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
-/**
- * gs_plugin_review_dismiss:
- */
 gboolean
 gs_plugin_review_dismiss (GsPlugin *plugin,
 			  GsApp *app,
@@ -910,9 +850,6 @@ gs_plugin_review_dismiss (GsPlugin *plugin,
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
-/**
- * gs_plugin_review_remove:
- */
 gboolean
 gs_plugin_review_remove (GsPlugin *plugin,
 			 GsApp *app,
@@ -926,9 +863,6 @@ gs_plugin_review_remove (GsPlugin *plugin,
 	return gs_plugin_odrs_vote (plugin, review, uri, error);
 }
 
-/**
- * gs_plugin_create_app_dummy:
- */
 static GsApp *
 gs_plugin_create_app_dummy (const gchar *id)
 {
@@ -943,9 +877,6 @@ gs_plugin_create_app_dummy (const gchar *id)
 	return app;
 }
 
-/**
- * gs_plugin_add_unvoted_reviews:
- */
 gboolean
 gs_plugin_add_unvoted_reviews (GsPlugin *plugin,
 			       GsAppList *list,

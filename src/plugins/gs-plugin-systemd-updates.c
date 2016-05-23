@@ -36,18 +36,12 @@ struct GsPluginData {
 	GFileMonitor		*monitor;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -56,9 +50,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (priv->monitor);
 }
 
-/**
- * gs_plugin_systemd_updates_changed_cb:
- */
 static void
 gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 				      GFile *file, GFile *other_file,
@@ -69,9 +60,6 @@ gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 	gs_plugin_updates_changed (plugin);
 }
 
-/**
- * gs_plugin_setup:
- */
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -85,9 +73,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_updates:
- */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
 		       GsAppList *list,
@@ -132,9 +117,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_update:
- */
 gboolean
 gs_plugin_update (GsPlugin *plugin,
 		  GsAppList *apps,
@@ -159,9 +141,6 @@ gs_plugin_update (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_update_cancel:
- */
 gboolean
 gs_plugin_update_cancel (GsPlugin *plugin,
 			 GsApp *app,
@@ -174,9 +153,6 @@ gs_plugin_update_cancel (GsPlugin *plugin,
 	return pk_offline_cancel (NULL, error);
 }
 
-/**
- * gs_plugin_app_upgrade_trigger:
- */
 gboolean
 gs_plugin_app_upgrade_trigger (GsPlugin *plugin,
                                GsApp *app,

@@ -32,9 +32,6 @@ struct GsPluginData {
 	PkTask			*task;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -46,9 +43,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	pk_client_set_interactive (PK_CLIENT (priv->task), FALSE);
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -61,9 +55,6 @@ typedef struct {
 	GsPlugin	*plugin;
 } ProgressData;
 
-/**
- * gs_plugin_packagekit_progress_cb:
- **/
 static void
 gs_plugin_packagekit_progress_cb (PkProgress *progress,
 				  PkProgressType type,
@@ -84,9 +75,6 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 	}
 }
 
-/**
- * gs_plugin_app_upgrade_download:
- */
 gboolean
 gs_plugin_app_upgrade_download (GsPlugin *plugin,
 				GsApp *app,

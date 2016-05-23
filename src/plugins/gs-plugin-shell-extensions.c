@@ -62,18 +62,12 @@ typedef enum {
 	GS_PLUGIN_SHELL_EXTENSION_KIND_LAST
 } GsPluginShellExtensionKind;
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -83,9 +77,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 		g_object_unref (priv->proxy);
 }
 
-/**
- * gs_plugin_adopt_app:
- */
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
@@ -93,18 +84,12 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 }
 
-/**
- * gs_plugin_shell_extensions_id_from_uuid:
- */
 static gchar *
 gs_plugin_shell_extensions_id_from_uuid (const gchar *uuid)
 {
 	return g_strdup_printf ("%s.shell-extension", uuid);
 }
 
-/**
- * gs_plugin_shell_extensions_add_app:
- */
 static GsApp *
 gs_plugin_shell_extensions_add_app (const gchar *uuid,
 				    GVariantIter *iter,
@@ -222,9 +207,6 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 	return g_steal_pointer (&app);
 }
 
-/**
- * gs_plugin_setup:
- */
 gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
@@ -250,9 +232,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_installed:
- */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
 			 GsAppList *list,
@@ -294,9 +273,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -325,9 +301,6 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_shell_extensions_parse_version:
- */
 static gboolean
 gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 					  AsApp *app,
@@ -384,9 +357,6 @@ gs_plugin_shell_extensions_parse_version (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_shell_extensions_parse_app:
- */
 static AsApp *
 gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 				      JsonObject *json_app,
@@ -482,9 +452,6 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	return app;
 }
 
-/**
- * gs_plugin_shell_extensions_parse_apps:
- */
 static GPtrArray *
 gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 				       const gchar *data,
@@ -573,9 +540,6 @@ gs_plugin_shell_extensions_parse_apps (GsPlugin *plugin,
 	return apps;
 }
 
-/**
- * gs_plugin_shell_extensions_get_apps:
- */
 static GPtrArray *
 gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 				     guint cache_age,
@@ -643,9 +607,6 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 	return apps;
 }
 
-/**
- * gs_plugin_refresh:
- */
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -708,9 +669,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 				 error);
 }
 
-/**
- * gs_plugin_app_remove:
- */
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
@@ -760,9 +718,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_install:
- */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 		       GsApp *app,
@@ -812,9 +767,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_launch:
- */
 gboolean
 gs_plugin_launch (GsPlugin *plugin,
 		  GsApp *app,
@@ -851,9 +803,6 @@ gs_plugin_launch (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_categories:
- */
 gboolean
 gs_plugin_add_categories (GsPlugin *plugin,
 			  GPtrArray *list,

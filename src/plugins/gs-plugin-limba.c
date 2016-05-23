@@ -34,9 +34,6 @@ struct GsPluginData {
 	LiManager	*mgr;
 };
 
-/**
- * gs_plugin_initialize:
- */
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -48,9 +45,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "packagekit");
 }
 
-/**
- * gs_plugin_destroy:
- */
 void
 gs_plugin_destroy (GsPlugin *plugin)
 {
@@ -58,9 +52,6 @@ gs_plugin_destroy (GsPlugin *plugin)
 	g_object_unref (priv->mgr);
 }
 
-/**
- * gs_plugin_refine_app:
- */
 gboolean
 gs_plugin_refine_app (GsPlugin *plugin,
 		      GsApp *app,
@@ -112,8 +103,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * GsPluginHelper:
+/*
  * Helper structure for Limba callbacks.
  */
 typedef struct {
@@ -121,9 +111,6 @@ typedef struct {
 	GsPlugin	*plugin;
 } GsPluginHelper;
 
-/**
- * gs_plugin_installer_progress_cb:
- */
 static void
 gs_plugin_installer_progress_cb (LiInstaller *inst, guint percentage, const gchar *id, gpointer user_data)
 {
@@ -138,9 +125,6 @@ gs_plugin_installer_progress_cb (LiInstaller *inst, guint percentage, const gcha
 	gs_app_set_progress (helper->app, percentage);
 }
 
-/**
- * gs_plugin_manager_progress_cb:
- */
 static void
 gs_plugin_manager_progress_cb (LiManager *mgr, guint percentage, const gchar *id, gpointer user_data)
 {
@@ -155,9 +139,6 @@ gs_plugin_manager_progress_cb (LiManager *mgr, guint percentage, const gchar *id
 	gs_app_set_progress (helper->app, percentage);
 }
 
-/**
- * gs_plugin_app_remove:
- */
 gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 			GsApp *app,
@@ -202,9 +183,6 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_install:
- */
 gboolean
 gs_plugin_app_install (GsPlugin *plugin,
 			GsApp *app,
@@ -260,9 +238,6 @@ gs_plugin_app_install (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_sources:
- */
 gboolean
 gs_plugin_add_sources (GsPlugin *plugin,
 		       GsAppList *list,
@@ -274,9 +249,6 @@ gs_plugin_add_sources (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_refresh:
- */
 gboolean
 gs_plugin_refresh (GsPlugin *plugin,
 		   guint cache_age,
@@ -305,9 +277,6 @@ gs_plugin_refresh (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_app_from_pki:
- */
 static GsApp*
 gs_plugin_app_from_pki (LiPkgInfo *pki)
 {
@@ -342,9 +311,6 @@ gs_plugin_app_from_pki (LiPkgInfo *pki)
 	return app;
 }
 
-/**
- * gs_plugin_add_sources:
- */
 gboolean
 gs_plugin_add_installed (GsPlugin *plugin,
 			 GsAppList *list,
@@ -379,9 +345,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_add_updates:
- */
 gboolean
 gs_plugin_add_updates (GsPlugin *plugin,
 			GsAppList *list,
@@ -421,11 +384,6 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	return TRUE;
 }
 
-/**
- * gs_plugin_update_app:
- *
- * Used only for online-updates.
- */
 gboolean
 gs_plugin_update_app (GsPlugin *plugin,
 		      GsApp *app,

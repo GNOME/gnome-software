@@ -91,7 +91,7 @@ struct _GsMarkdown {
 
 G_DEFINE_TYPE (GsMarkdown, gs_markdown, G_TYPE_OBJECT)
 
-/**
+/*
  * gs_markdown_to_text_line_is_rule:
  *
  * Horizontal rules are created by placing three or more hyphens, asterisks,
@@ -126,9 +126,6 @@ gs_markdown_to_text_line_is_rule (const gchar *line)
 	return FALSE;
 }
 
-/**
- * gs_markdown_to_text_line_is_bullet:
- **/
 static gboolean
 gs_markdown_to_text_line_is_bullet (const gchar *line)
 {
@@ -140,36 +137,24 @@ gs_markdown_to_text_line_is_bullet (const gchar *line)
 		g_str_has_prefix (line, " + "));
 }
 
-/**
- * gs_markdown_to_text_line_is_header1:
- **/
 static gboolean
 gs_markdown_to_text_line_is_header1 (const gchar *line)
 {
 	return g_str_has_prefix (line, "# ");
 }
 
-/**
- * gs_markdown_to_text_line_is_header2:
- **/
 static gboolean
 gs_markdown_to_text_line_is_header2 (const gchar *line)
 {
 	return g_str_has_prefix (line, "## ");
 }
 
-/**
- * gs_markdown_to_text_line_is_header1_type2:
- **/
 static gboolean
 gs_markdown_to_text_line_is_header1_type2 (const gchar *line)
 {
 	return g_str_has_prefix (line, "===");
 }
 
-/**
- * gs_markdown_to_text_line_is_header2_type2:
- **/
 static gboolean
 gs_markdown_to_text_line_is_header2_type2 (const gchar *line)
 {
@@ -177,9 +162,6 @@ gs_markdown_to_text_line_is_header2_type2 (const gchar *line)
 }
 
 #if 0
-/**
- * gs_markdown_to_text_line_is_code:
- **/
 static gboolean
 gs_markdown_to_text_line_is_code (const gchar *line)
 {
@@ -187,9 +169,6 @@ gs_markdown_to_text_line_is_code (const gchar *line)
 		g_str_has_prefix (line, "\t"));
 }
 
-/**
- * gs_markdown_to_text_line_is_blockquote:
- **/
 static gboolean
 gs_markdown_to_text_line_is_blockquote (const gchar *line)
 {
@@ -197,9 +176,6 @@ gs_markdown_to_text_line_is_blockquote (const gchar *line)
 }
 #endif
 
-/**
- * gs_markdown_to_text_line_is_blank:
- **/
 static gboolean
 gs_markdown_to_text_line_is_blank (const gchar *line)
 {
@@ -221,9 +197,6 @@ gs_markdown_to_text_line_is_blank (const gchar *line)
 	return TRUE;
 }
 
-/**
- * gs_markdown_replace:
- **/
 static gchar *
 gs_markdown_replace (const gchar *haystack,
 		     const gchar *needle,
@@ -234,9 +207,6 @@ gs_markdown_replace (const gchar *haystack,
 	return g_strjoinv (replace, split);
 }
 
-/**
- * gs_markdown_strstr_spaces:
- **/
 static gchar *
 gs_markdown_strstr_spaces (const gchar *haystack, const gchar *needle)
 {
@@ -261,9 +231,6 @@ retry:
 	return found;
 }
 
-/**
- * gs_markdown_to_text_line_formatter:
- **/
 static gchar *
 gs_markdown_to_text_line_formatter (const gchar *line,
 				    const gchar *formatter,
@@ -309,9 +276,6 @@ gs_markdown_to_text_line_formatter (const gchar *line,
 	return g_strdup (line);
 }
 
-/**
- * gs_markdown_to_text_line_format_sections:
- **/
 static gchar *
 gs_markdown_to_text_line_format_sections (GsMarkdown *self, const gchar *line)
 {
@@ -365,9 +329,6 @@ gs_markdown_to_text_line_format_sections (GsMarkdown *self, const gchar *line)
 	return data;
 }
 
-/**
- * gs_markdown_to_text_line_format:
- **/
 static gchar *
 gs_markdown_to_text_line_format (GsMarkdown *self, const gchar *line)
 {
@@ -402,9 +363,6 @@ gs_markdown_to_text_line_format (GsMarkdown *self, const gchar *line)
 	return g_string_free (string, FALSE);
 }
 
-/**
- * gs_markdown_add_pending:
- **/
 static gboolean
 gs_markdown_add_pending (GsMarkdown *self, const gchar *line)
 {
@@ -424,9 +382,6 @@ gs_markdown_add_pending (GsMarkdown *self, const gchar *line)
 	return TRUE;
 }
 
-/**
- * gs_markdown_add_pending_header:
- **/
 static gboolean
 gs_markdown_add_pending_header (GsMarkdown *self, const gchar *line)
 {
@@ -438,9 +393,6 @@ gs_markdown_add_pending_header (GsMarkdown *self, const gchar *line)
 	return gs_markdown_add_pending (self, copy);
 }
 
-/**
- * gs_markdown_count_chars_in_word:
- **/
 static guint
 gs_markdown_count_chars_in_word (const gchar *text, gchar find)
 {
@@ -461,9 +413,6 @@ gs_markdown_count_chars_in_word (const gchar *text, gchar find)
 	return count;
 }
 
-/**
- * gs_markdown_word_is_code:
- **/
 static gboolean
 gs_markdown_word_is_code (const gchar *text)
 {
@@ -504,9 +453,6 @@ gs_markdown_word_is_code (const gchar *text)
 	return FALSE;
 }
 
-/**
- * gs_markdown_word_auto_format_code:
- **/
 static gchar *
 gs_markdown_word_auto_format_code (const gchar *text)
 {
@@ -536,9 +482,6 @@ gs_markdown_word_auto_format_code (const gchar *text)
 	return g_strjoinv (" ", words);
 }
 
-/**
- * gs_markdown_word_is_url:
- **/
 static gboolean
 gs_markdown_word_is_url (const gchar *text)
 {
@@ -551,9 +494,6 @@ gs_markdown_word_is_url (const gchar *text)
 	return FALSE;
 }
 
-/**
- * gs_markdown_word_auto_format_urls:
- **/
 static gchar *
 gs_markdown_word_auto_format_urls (const gchar *text)
 {
@@ -584,9 +524,6 @@ gs_markdown_word_auto_format_urls (const gchar *text)
 	return g_strjoinv (" ", words);
 }
 
-/**
- * gs_markdown_flush_pending:
- **/
 static void
 gs_markdown_flush_pending (GsMarkdown *self)
 {
@@ -663,9 +600,6 @@ gs_markdown_flush_pending (GsMarkdown *self)
 	g_string_truncate (self->pending, 0);
 }
 
-/**
- * gs_markdown_to_text_line_process:
- **/
 static gboolean
 gs_markdown_to_text_line_process (GsMarkdown *self, const gchar *line)
 {
@@ -750,9 +684,6 @@ out:
 	return ret;
 }
 
-/**
- * gs_markdown_set_output_kind:
- **/
 static void
 gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 {
@@ -820,9 +751,6 @@ gs_markdown_set_output_kind (GsMarkdown *self, GsMarkdownOutputKind output)
 	}
 }
 
-/**
- * gs_markdown_set_max_lines:
- **/
 void
 gs_markdown_set_max_lines (GsMarkdown *self, gint max_lines)
 {
@@ -830,9 +758,6 @@ gs_markdown_set_max_lines (GsMarkdown *self, gint max_lines)
 	self->max_lines = max_lines;
 }
 
-/**
- * gs_markdown_set_smart_quoting:
- **/
 void
 gs_markdown_set_smart_quoting (GsMarkdown *self, gboolean smart_quoting)
 {
@@ -840,9 +765,6 @@ gs_markdown_set_smart_quoting (GsMarkdown *self, gboolean smart_quoting)
 	self->smart_quoting = smart_quoting;
 }
 
-/**
- * gs_markdown_set_escape:
- **/
 void
 gs_markdown_set_escape (GsMarkdown *self, gboolean escape)
 {
@@ -850,9 +772,6 @@ gs_markdown_set_escape (GsMarkdown *self, gboolean escape)
 	self->escape = escape;
 }
 
-/**
- * gs_markdown_set_autocode:
- **/
 void
 gs_markdown_set_autocode (GsMarkdown *self, gboolean autocode)
 {
@@ -860,9 +779,6 @@ gs_markdown_set_autocode (GsMarkdown *self, gboolean autocode)
 	self->autocode = autocode;
 }
 
-/**
- * gs_markdown_set_autolinkify:
- **/
 void
 gs_markdown_set_autolinkify (GsMarkdown *self, gboolean autolinkify)
 {
@@ -870,9 +786,6 @@ gs_markdown_set_autolinkify (GsMarkdown *self, gboolean autolinkify)
 	self->autolinkify = autolinkify;
 }
 
-/**
- * gs_markdown_parse:
- **/
 gchar *
 gs_markdown_parse (GsMarkdown *self, const gchar *markdown)
 {
