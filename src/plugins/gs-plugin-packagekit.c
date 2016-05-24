@@ -98,43 +98,6 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 	}
 }
 
-gboolean
-gs_plugin_add_installed (GsPlugin *plugin,
-			 GsAppList *list,
-			 GCancellable *cancellable,
-			 GError **error)
-{
-	GsPluginData *priv = gs_plugin_get_data (plugin);
-	PkBitfield filter;
-	ProgressData data;
-	g_autoptr(PkResults) results = NULL;
-
-	data.app = NULL;
-	data.plugin = plugin;
-	data.ptask = NULL;
-
-	/* update UI as this might take some time */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
-
-	/* do sync call */
-	filter = pk_bitfield_from_enums (PK_FILTER_ENUM_INSTALLED,
-					 PK_FILTER_ENUM_NEWEST,
-					 PK_FILTER_ENUM_ARCH,
-					 PK_FILTER_ENUM_APPLICATION,
-					 PK_FILTER_ENUM_NOT_COLLECTIONS,
-					 -1);
-	results = pk_client_get_packages (PK_CLIENT(priv->task),
-					  filter,
-					  cancellable,
-					  gs_plugin_packagekit_progress_cb, &data,
-					  error);
-	if (!gs_plugin_packagekit_results_valid (results, error))
-		return FALSE;
-
-	/* add results */
-	return gs_plugin_packagekit_add_results (plugin, list, results, error);
-}
-
 static gboolean
 gs_plugin_add_sources_related (GsPlugin *plugin,
 			       GHashTable *hash,
