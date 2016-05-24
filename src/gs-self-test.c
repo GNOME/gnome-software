@@ -163,16 +163,30 @@ gs_plugin_func (void)
 	g_assert_cmpint (gs_app_list_length (list_remove), ==, 1);
 	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list_remove, 0)), ==, "b");
 
-	/* test removing duplicates */
+	/* test removing duplicates at runtime */
 	app = gs_app_new ("b");
 	gs_app_list_add (list_remove, app);
 	g_object_unref (app);
 	app = gs_app_new ("b");
 	gs_app_list_add (list_remove, app);
 	g_object_unref (app);
-	gs_app_list_filter_duplicates (list_remove);
 	g_assert_cmpint (gs_app_list_length (list_remove), ==, 1);
 	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list_remove, 0)), ==, "b");
+	g_object_unref (list_remove);
+
+	/* test removing duplicates when lazy-loading */
+	list_remove = gs_app_list_new ();
+	app = gs_app_new (NULL);
+	gs_app_list_add (list_remove, app);
+	gs_app_set_id (app, "e");
+	g_object_unref (app);
+	app = gs_app_new (NULL);
+	gs_app_list_add (list_remove, app);
+	gs_app_set_id (app, "e");
+	g_object_unref (app);
+	g_assert_cmpint (gs_app_list_length (list_remove), ==, 2);
+	gs_app_list_filter_duplicates (list_remove);
+	g_assert_cmpint (gs_app_list_length (list_remove), ==, 1);
 	g_object_unref (list_remove);
 }
 

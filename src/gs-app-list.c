@@ -39,6 +39,7 @@ struct _GsAppList
 {
 	GObject			 parent_instance;
 	GPtrArray		*array;
+	GHashTable		*hash_by_id;		/* app-id : app */
 };
 
 G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
@@ -48,14 +49,38 @@ G_DEFINE_TYPE (GsAppList, gs_app_list, G_TYPE_OBJECT)
  * @list: A #GsAppList
  * @app: A #GsApp
  *
- * Adds an application to the list, adding a reference.
+ * If the application does not already exist in the list then it is added,
+ * incrementing the reference count.
+ * If the application already exists then a warning is printed to the console.
+ *
+ * Applications that have the application ID lazy-loaded will always be addded
+ * to the list, and to clean these up the plugin loader will also call the
+ * gs_app_list_filter_duplicates() method when all plugins have run.
  **/
 void
 gs_app_list_add (GsAppList *list, GsApp *app)
 {
+	const gchar *id;
+
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_return_if_fail (GS_IS_APP (app));
+
+	/* if we're lazy-loading the ID then we can't filter for duplicates */
+	id = gs_app_get_id (app);
+	if (id == NULL) {
+		g_ptr_array_add (list->array, g_object_ref (app));
+		return;
+	}
+
+	/* check for hash_by_id */
+	if (g_hash_table_lookup (list->hash_by_id, id) != NULL) {
+		g_debug ("not adding duplicate %s", id);
+		return;
+	}
+
+	/* just use the ref */
 	g_ptr_array_add (list->array, g_object_ref (app));
+	g_hash_table_insert (list->hash_by_id, (gpointer) id, (gpointer) app);
 }
 
 /**
@@ -99,6 +124,7 @@ gs_app_list_remove_all (GsAppList *list)
 {
 	g_return_if_fail (GS_IS_APP_LIST (list));
 	g_ptr_array_set_size (list->array, 0);
+	g_hash_table_remove_all (list->hash_by_id);
 }
 
 /**
@@ -295,6 +321,7 @@ gs_app_list_finalize (GObject *object)
 {
 	GsAppList *list = GS_APP_LIST (object);
 	g_ptr_array_unref (list->array);
+	g_hash_table_unref (list->hash_by_id);
 	G_OBJECT_CLASS (gs_app_list_parent_class)->finalize (object);
 }
 
@@ -315,6 +342,7 @@ static void
 gs_app_list_init (GsAppList *list)
 {
 	list->array = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	list->hash_by_id = g_hash_table_new (g_str_hash, g_str_equal);
 }
 
 /**
