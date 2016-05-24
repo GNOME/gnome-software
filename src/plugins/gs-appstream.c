@@ -374,10 +374,12 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 		gs_app_set_update_details (app, update_desc->str);
 	}
 
-	/* newest release only */
-	rel = as_app_get_release_default (item);
-	if (rel != NULL)
-		gs_app_set_update_version (app, as_release_get_version (rel));
+	/* if there is no already set update version use the newest */
+	if (gs_app_get_update_version (app) == NULL) {
+		rel = as_app_get_release_default (item);
+		if (rel != NULL)
+			gs_app_set_update_version (app, as_release_get_version (rel));
+	}
 
 	/* success */
 	return TRUE;
