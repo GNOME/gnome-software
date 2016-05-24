@@ -315,6 +315,14 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 	guint i;
 	g_autoptr(GPtrArray) updates_list = NULL;
 
+	/* not enough data to make sense */
+	if (gs_app_get_version (app) == NULL) {
+		g_debug ("no installed version for %s, "
+			 "so unable to add AppStream releases",
+			 gs_app_get_id (app));
+		return TRUE;
+	}
+
 	/* make a list of valid updates */
 	updates_list = g_ptr_array_new ();
 	releases = as_app_get_releases (item);
@@ -322,6 +330,10 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 		rel = g_ptr_array_index (releases, i);
 
 		/* is newer than what's installed */
+		g_debug ("installed %s update is %s [%i]",
+			 gs_app_get_version (app),
+			 as_release_get_version (rel),
+			 as_release_get_state (rel));
 		if (as_utils_vercmp (as_release_get_version (rel),
 				     gs_app_get_version (app)) < 0)
 			continue;
