@@ -197,6 +197,8 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 			if (gs_app_get_state (app) == AS_APP_STATE_INSTALLED) {
 				g_autoptr(GsApp) app_dummy = NULL;
 				app_dummy = gs_app_new (gs_app_get_id (app));
+				gs_app_set_metadata (app_dummy, "GnomeSoftware::Creator",
+						     gs_plugin_get_name (plugin));
 				gs_app_set_install_date (app_dummy, GS_APP_INSTALL_DATE_UNKNOWN);
 				gs_app_set_kind (app_dummy, AS_APP_KIND_GENERIC);
 				gs_app_set_state (app_dummy, AS_APP_STATE_INSTALLED);

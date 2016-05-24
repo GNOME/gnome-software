@@ -241,7 +241,9 @@ gs_plugin_flatpak_set_metadata (GsApp *app, FlatpakRef *xref)
 }
 
 static void
-gs_plugin_flatpak_set_metadata_installed (GsApp *app, FlatpakInstalledRef *xref)
+gs_plugin_flatpak_set_metadata_installed (GsPlugin *plugin,
+					  GsApp *app,
+					  FlatpakInstalledRef *xref)
 {
 	guint64 mtime;
 	guint64 size_installed;
@@ -251,6 +253,8 @@ gs_plugin_flatpak_set_metadata_installed (GsApp *app, FlatpakInstalledRef *xref)
 
 	/* for all types */
 	gs_plugin_flatpak_set_metadata (app, FLATPAK_REF (xref));
+	gs_app_set_metadata (app, "GnomeSoftware::Creator",
+			     gs_plugin_get_name (plugin));
 
 	/* get the last time the app was updated */
 	metadata_fn = g_build_filename (flatpak_installed_ref_get_deploy_dir (xref),
@@ -333,7 +337,7 @@ gs_plugin_flatpak_create_installed (GsPlugin *plugin,
 		app = gs_app_new (id);
 		gs_plugin_cache_add (plugin, id, app);
 	}
-	gs_plugin_flatpak_set_metadata_installed (app, xref);
+	gs_plugin_flatpak_set_metadata_installed (plugin, app, xref);
 
 	switch (flatpak_ref_get_kind (FLATPAK_REF(xref))) {
 	case FLATPAK_REF_KIND_APP:
@@ -815,7 +819,7 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 		/* mark as installed */
 		g_debug ("marking %s as installed with flatpak",
 			 gs_app_get_id (app));
-		gs_plugin_flatpak_set_metadata_installed (app, xref);
+		gs_plugin_flatpak_set_metadata_installed (plugin, app, xref);
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	}

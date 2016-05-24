@@ -160,6 +160,8 @@ gs_plugin_add_search (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_metadata (app, "GnomeSoftware::Creator",
+			     gs_plugin_get_name (plugin));
 	gs_app_list_add (list, app);
 
 	/* add to cache so it can be found by the flashing callback */

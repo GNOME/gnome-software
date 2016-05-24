@@ -91,7 +91,8 @@ gs_plugin_shell_extensions_id_from_uuid (const gchar *uuid)
 }
 
 static GsApp *
-gs_plugin_shell_extensions_add_app (const gchar *uuid,
+gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
+				    const gchar *uuid,
 				    GVariantIter *iter,
 				    GError **error)
 {
@@ -106,7 +107,9 @@ gs_plugin_shell_extensions_add_app (const gchar *uuid,
 	id = gs_plugin_shell_extensions_id_from_uuid (uuid);
 	id_prefix = g_strdup_printf ("user:%s", id);
 	app = gs_app_new (id_prefix);
-	gs_app_set_management_plugin (app, "shell-extensions");
+	gs_app_set_metadata (app, "GnomeSoftware::Creator",
+			     gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	gs_app_set_metadata (app, "shell-extensions::uuid", uuid);
 	gs_app_set_kind (app, AS_APP_KIND_SHELL_EXTENSION);
 	gs_app_set_license (app, GS_APP_QUALITY_NORMAL, "GPL-2.0+");
@@ -283,7 +286,8 @@ gs_plugin_add_installed (GsPlugin *plugin,
 		}
 
 		/* parse the data into an GsApp */
-		app = gs_plugin_shell_extensions_add_app (ext_uuid,
+		app = gs_plugin_shell_extensions_add_app (plugin,
+							  ext_uuid,
 							  ext_iter,
 							  error);
 		if (app == NULL)

@@ -309,6 +309,8 @@ gs_plugin_appstream_create_app (GsPlugin *plugin, const gchar *id)
 	GsApp *app = gs_plugin_cache_lookup (plugin, id);
 	if (app == NULL) {
 		app = gs_app_new (id);
+		gs_app_set_metadata (app, "GnomeSoftware::Creator",
+				     gs_plugin_get_name (plugin));
 		gs_plugin_cache_add (plugin, id, app);
 	}
 	return app;

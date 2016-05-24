@@ -241,6 +241,8 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 		gs_app_set_summary (app,
 				    GS_APP_QUALITY_LOWEST,
 				    pk_package_get_summary (package));
+		gs_app_set_metadata (app, "GnomeSoftware::Creator",
+				     gs_plugin_get_name (plugin));
 		gs_app_set_management_plugin (app, "packagekit");
 		gs_app_set_version (app, pk_package_get_version (package));
 		switch (pk_package_get_info (package)) {
