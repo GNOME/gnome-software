@@ -41,6 +41,7 @@ void		 gs_app_list_sort		(GsAppList	*list,
 						 gpointer	 user_data);
 void		 gs_app_list_filter_duplicates	(GsAppList	*list);
 void		 gs_app_list_randomize		(GsAppList	*list);
+void		 gs_app_list_remove_all		(GsAppList	*list);
 
 G_END_DECLS
 

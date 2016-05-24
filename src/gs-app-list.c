@@ -89,6 +89,19 @@ gs_app_list_length (GsAppList *list)
 }
 
 /**
+ * gs_app_list_randomize:
+ * @list: A #GsAppList
+ *
+ * Removes all applications from the list.
+ **/
+void
+gs_app_list_remove_all (GsAppList *list)
+{
+	g_return_if_fail (GS_IS_APP_LIST (list));
+	g_ptr_array_set_size (list->array, 0);
+}
+
+/**
  * gs_app_list_filter:
  * @list: A #GsAppList
  * @func: A #GsAppListFilterFunc
@@ -108,7 +121,7 @@ gs_app_list_filter (GsAppList *list, GsAppListFilterFunc func, gpointer user_dat
 
 	/* deep copy to a temp list and clear the current one */
 	old = gs_app_list_copy (list);
-	g_ptr_array_set_size (list->array, 0);
+	gs_app_list_remove_all (list);
 
 	/* see if any of the apps need filtering */
 	for (i = 0; i < old->array->len; i++) {
@@ -228,7 +241,7 @@ gs_app_list_filter_duplicates (GsAppList *list)
 
 	/* deep copy to a temp list and clear the current one */
 	old = gs_app_list_copy (list);
-	g_ptr_array_set_size (list->array, 0);
+	gs_app_list_remove_all (list);
 
 	/* create a new list with just the unique items */
 	hash = g_hash_table_new (g_str_hash, g_str_equal);
