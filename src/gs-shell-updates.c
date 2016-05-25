@@ -1210,6 +1210,7 @@ gs_shell_updates_invalidate_downloaded_upgrade (GsShellUpdates *self)
 		return;
 	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
 		return;
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	g_debug ("resetting %s to AVAILABLE as the updates have changed",
 		 gs_app_get_id (app));
 }
