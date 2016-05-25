@@ -471,24 +471,37 @@ gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	GsApp *app;
 	GtkWidget *widget;
 	guint i;
+	guint cnt = 0;
 	g_autoptr(GPtrArray) pending = NULL;
 
+	/* add new apps to the list */
+	pending = gs_plugin_loader_get_pending (plugin_loader);
+	for (i = 0; i < pending->len; i++) {
+		app = GS_APP (g_ptr_array_index (pending, i));
+
+		/* never show OS upgrades, we handle the scheduling and
+		 * cancellation in GsUpgradeBanner */
+		if (gs_app_get_kind (app) == AS_APP_KIND_OS_UPGRADE)
+			continue;
+
+		/* do not to add pending apps more than once. */
+		if (gs_shell_installed_has_app (self, app) == FALSE)
+			gs_shell_installed_add_app (self, app);
+
+		/* incremement the label */
+		cnt++;
+	}
+
+	/* show a label with the number of on-going operations */
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
 						     "button_installed_counter"));
-	pending = gs_plugin_loader_get_pending (plugin_loader);
-	if (pending->len == 0) {
+	if (cnt == 0) {
 		gtk_widget_hide (widget);
 	} else {
 		g_autofree gchar *label = NULL;
-		gtk_widget_show (widget);
-		label = g_strdup_printf ("%d", pending->len);
+		label = g_strdup_printf ("%d", cnt);
 		gtk_label_set_label (GTK_LABEL (widget), label);
-	}
-	for (i = 0; i < pending->len; i++) {
-		app = GS_APP (g_ptr_array_index (pending, i));
-		/* Be careful not to add pending apps more than once. */
-		if (gs_shell_installed_has_app (self, app) == FALSE)
-			gs_shell_installed_add_app (self, app);
+		gtk_widget_show (widget);
 	}
 }
 
