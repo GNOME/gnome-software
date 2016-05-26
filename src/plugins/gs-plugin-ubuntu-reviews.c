@@ -65,7 +65,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 						  NULL);
 
 	/* we have more reviews than ORDS */
-	gs_plugin_add_conflict (plugin, "odrs");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "odrs");
 
 	/* need source */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
