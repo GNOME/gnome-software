@@ -156,7 +156,6 @@ gs_app_notify_failed_modal (GsApp *app,
 			    GsPluginLoaderAction action,
 			    const GError *error)
 {
-	GtkWidget *dialog;
 	const gchar *title;
 	gboolean show_detailed_error;
 	g_autoptr(GString) msg = NULL;
@@ -213,41 +212,10 @@ gs_app_notify_failed_modal (GsApp *app,
 		show_detailed_error = TRUE;
 	}
 
-	dialog = gtk_message_dialog_new (parent_window,
-					 GTK_DIALOG_MODAL |
-					 GTK_DIALOG_USE_HEADER_BAR |
-					 GTK_DIALOG_DESTROY_WITH_PARENT,
-					 GTK_MESSAGE_ERROR,
-					 GTK_BUTTONS_CLOSE,
-					 "%s", title);
-	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
-						  "%s", msg->str);
-
-	/* detailed error in an expander */
-	if (show_detailed_error) {
-		GtkWidget *vbox;
-		GtkWidget *expander;
-		GtkWidget *scrolled_window;
-		GtkWidget *label;
-
-		vbox = gtk_dialog_get_content_area (GTK_DIALOG (dialog));
-		/* TRANSLATORS: this is an expander title */
-		expander = gtk_expander_new (_("Show Details"));
-		gtk_widget_set_margin_start (expander, 36);
-		gtk_widget_set_margin_end (expander, 36);
-		scrolled_window = gtk_scrolled_window_new (NULL, NULL);
-		gtk_container_add (GTK_CONTAINER (expander), scrolled_window);
-		label = gtk_label_new (error->message);
-		gtk_label_set_selectable (GTK_LABEL (label), TRUE);
-		gtk_container_add (GTK_CONTAINER (scrolled_window), label);
-		gtk_box_pack_end (GTK_BOX (vbox), expander, FALSE, TRUE, 4);
-		gtk_widget_show_all (expander);
-
-	}
-
-	g_signal_connect (dialog, "response",
-			  G_CALLBACK (gtk_widget_destroy), NULL);
-	gtk_window_present (GTK_WINDOW (dialog));
+	gs_utils_show_error_dialog (parent_window,
+	                            title,
+	                            msg->str,
+	                            show_detailed_error ? error->message : NULL);
 }
 
 typedef enum {
@@ -743,6 +711,128 @@ const gchar *
 gs_user_agent (void)
 {
 	return PACKAGE_NAME "/" PACKAGE_VERSION;
+}
+
+static void
+do_not_expand (GtkWidget *child, gpointer data)
+{
+	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (child)),
+				 child, "expand", FALSE, "fill", FALSE, NULL);
+}
+
+static gboolean
+unset_focus (GtkWidget *widget, GdkEvent *event, gpointer data)
+{
+	if (GTK_IS_WINDOW (widget))
+		gtk_window_set_focus (GTK_WINDOW (widget), NULL);
+	return FALSE;
+}
+
+/**
+ * insert_details_widget:
+ * @dialog: the message dialog where the widget will be inserted
+ * @details: the detailed message text to display
+ *
+ * Inserts a widget displaying the detailed message into the message dialog.
+ */
+static void
+insert_details_widget (GtkMessageDialog *dialog, const gchar *details)
+{
+	GtkWidget *message_area, *sw, *label;
+	GtkWidget *box, *tv;
+	GtkTextBuffer *buffer;
+	GList *children;
+	g_autoptr(GString) msg = NULL;
+
+	g_assert (GTK_IS_MESSAGE_DIALOG (dialog));
+	g_assert (details != NULL);
+
+	gtk_window_set_resizable (GTK_WINDOW (dialog), TRUE);
+
+	msg = g_string_new ("");
+	g_string_append_printf (msg, "%s\n\n%s",
+	                        /* TRANSLATORS: these are show_detailed_error messages from the
+	                         * package manager no mortal is supposed to understand,
+	                         * but google might know what they mean */
+	                        _("Detailed errors from the package manager follow:"),
+	                        details);
+
+	message_area = gtk_message_dialog_get_message_area (dialog);
+	g_assert (GTK_IS_BOX (message_area));
+	/* make the hbox expand */
+	box = gtk_widget_get_parent (message_area);
+	gtk_container_child_set (GTK_CONTAINER (gtk_widget_get_parent (box)), box,
+	                         "expand", TRUE, "fill", TRUE, NULL);
+	/* make the labels not expand */
+	gtk_container_foreach (GTK_CONTAINER (message_area), do_not_expand, NULL);
+
+	/* Find the secondary label and set its width_chars.   */
+	/* Otherwise the label will tend to expand vertically. */
+	children = gtk_container_get_children (GTK_CONTAINER (message_area));
+	if (children && children->next && GTK_IS_LABEL (children->next->data)) {
+		gtk_label_set_width_chars (GTK_LABEL (children->next->data), 40);
+	}
+
+	label = gtk_label_new (_("Details"));
+	gtk_widget_set_halign (label, GTK_ALIGN_START);
+	gtk_widget_set_visible (label, TRUE);
+	gtk_box_pack_start (GTK_BOX (message_area), label, FALSE, FALSE, 0);
+
+	sw = gtk_scrolled_window_new (NULL, NULL);
+	gtk_scrolled_window_set_shadow_type (GTK_SCROLLED_WINDOW (sw),
+	                                     GTK_SHADOW_IN);
+	gtk_scrolled_window_set_policy (GTK_SCROLLED_WINDOW (sw),
+	                                GTK_POLICY_NEVER,
+	                                GTK_POLICY_AUTOMATIC);
+	gtk_scrolled_window_set_min_content_height (GTK_SCROLLED_WINDOW (sw), 150);
+	gtk_widget_set_visible (sw, TRUE);
+
+	tv = gtk_text_view_new ();
+	buffer = gtk_text_view_get_buffer (GTK_TEXT_VIEW (tv));
+	gtk_text_view_set_editable (GTK_TEXT_VIEW (tv), FALSE);
+	gtk_text_view_set_wrap_mode (GTK_TEXT_VIEW (tv), GTK_WRAP_WORD);
+	gtk_style_context_add_class (gtk_widget_get_style_context (tv),
+	                             "update-failed-details");
+	gtk_text_buffer_set_text (buffer, msg->str, -1);
+	gtk_widget_set_visible (tv, TRUE);
+
+	gtk_container_add (GTK_CONTAINER (sw), tv);
+	gtk_box_pack_end (GTK_BOX (message_area), sw, TRUE, TRUE, 0);
+
+	g_signal_connect (dialog, "map-event", G_CALLBACK (unset_focus), NULL);
+}
+
+/**
+ * gs_utils_show_error_dialog:
+ * @parent: transient parent, or NULL for none
+ * @title: the title for the dialog
+ * @msg: the message for the dialog
+ * @details: (allow-none): the detailed error message, or NULL for none
+ *
+ * Shows a message dialog for displaying error messages.
+ */
+void
+gs_utils_show_error_dialog (GtkWindow *parent,
+                            const gchar *title,
+                            const gchar *msg,
+                            const gchar *details)
+{
+	GtkWidget *dialog;
+
+	dialog = gtk_message_dialog_new_with_markup (parent,
+	                                             0,
+	                                             GTK_MESSAGE_INFO,
+	                                             GTK_BUTTONS_CLOSE,
+	                                             "<big><b>%s</b></big>", title);
+	gtk_message_dialog_format_secondary_text (GTK_MESSAGE_DIALOG (dialog),
+	                                          "%s", msg);
+	if (details != NULL)
+		insert_details_widget (GTK_MESSAGE_DIALOG (dialog), details);
+
+	g_signal_connect_swapped (dialog, "response",
+	                          G_CALLBACK (gtk_widget_destroy),
+	                          dialog);
+	gtk_widget_show (dialog);
 }
 
 /* vim: set noexpandtab: */

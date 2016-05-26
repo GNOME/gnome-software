@@ -61,6 +61,10 @@ void		 gs_utils_widget_set_custom_css	(GsApp		*app,
 						 const gchar	*metadata_css);
 gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
 						 const gchar	*str);
+void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
+						 const gchar	*title,
+						 const gchar	*msg,
+						 const gchar	*details);
 
 G_END_DECLS
 
