@@ -3,14 +3,6 @@ SUBDIRS =						\
 	tests						\
 	icons
 
-appstreamdir = $(datadir)/app-info/xmls
-appstream_DATA = org.gnome.Software.xml.gz
-appstream_files =					\
-	org.gnome.Software-featured.xml
-org.gnome.Software.xml.gz: $(appstream_files)
-	$(AM_V_GEN) appstream-util merge-appstream $@	\
-	$(srcdir)/org.gnome.Software-*.xml
-
 resourcesdir = $(datadir)/gnome-software
 dist_resources_DATA =					\
 	upgrade-bg.png					\
@@ -47,14 +39,7 @@ install-sample-data:
 	rm fedora-20-icons.tar.gz; \
 	cd -
 
-BUILT_SOURCES =						\
-	org.gnome.Software.xml.gz
-
-CLEANFILES =						\
-	$(BUILT_SOURCES)
-
 EXTRA_DIST =						\
-	$(appstream_files)				\
 	$(gsettings_SCHEMAS)
 
 MAINTAINERCLEANFILES =					\

@@ -34,6 +34,7 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_dpkg.la				\
 	libgs_plugin_hardcoded-blacklist.la		\
 	libgs_plugin_hardcoded-popular.la		\
+	libgs_plugin_hardcoded-featured.la		\
 	libgs_plugin_menu-spec-categories.la		\
 	libgs_plugin_menu-spec-refine.la		\
 	libgs_plugin_fedora-distro-upgrades.la		\
@@ -223,6 +224,11 @@ libgs_plugin_hardcoded_popular_la_SOURCES = gs-plugin-hardcoded-popular.c
 libgs_plugin_hardcoded_popular_la_LIBADD = $(GS_PLUGIN_LIBS)
 libgs_plugin_hardcoded_popular_la_LDFLAGS = -module -avoid-version
 libgs_plugin_hardcoded_popular_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_hardcoded_featured_la_SOURCES = gs-plugin-hardcoded-featured.c
+libgs_plugin_hardcoded_featured_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_hardcoded_featured_la_LDFLAGS = -module -avoid-version
+libgs_plugin_hardcoded_featured_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 if HAVE_UBUNTU_REVIEWS
 libgs_plugin_ubuntu_reviews_la_SOURCES =		\
