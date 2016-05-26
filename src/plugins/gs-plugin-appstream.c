@@ -238,6 +238,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	/* find the best app when matching any prefixes */
 	if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
 		g_autoptr(GPtrArray) items = NULL;
+
 		items = as_store_get_apps_by_id (priv->store, id);
 		for (i = 0; i < items->len; i++) {
 			AsApp *item_tmp = NULL;
@@ -252,10 +253,20 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 				continue;
 			}
 
-			/* we could match more than one, so list all and return
-			 * the last entry -- fingers crossed it's only one... */
+
+			/* already set! */
+			if (item != NULL) {
+				g_warning ("found duplicate %s for wildcard %s",
+					   as_app_get_id (item_tmp),
+					   id);
+				continue;
+			}
+
+			/* only match the first entry */
 			g_debug ("found %s for wildcard %s",
 				 as_app_get_id (item_tmp), id);
+
+			/* refine using this */
 			item = item_tmp;
 		}
 	} else {
