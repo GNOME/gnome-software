@@ -1051,17 +1051,11 @@ upgrade_download_finished_cb (GObject *source,
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
 
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to upgrade-download: %s", error->message);
 		if (g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
 			return;
-		gs_app_notify_failed_modal (helper->app,
-					    gs_shell_get_window (helper->self->shell),
-					    GS_PLUGIN_LOADER_ACTION_UPGRADE_DOWNLOAD,
-					    error);
-		return;
+		g_warning ("failed to upgrade-download: %s", error->message);
 	}
 
-	/* non-fatal error */
 	last_error = gs_app_get_last_error (helper->app);
 	if (last_error != NULL) {
 		g_warning ("failed to upgrade-download %s: %s",
