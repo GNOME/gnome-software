@@ -61,7 +61,7 @@ gs_review_row_refresh (GsReviewRow *row)
 	GsReviewRowPrivate *priv = gs_review_row_get_instance_private (row);
 	const gchar *reviewer;
 	GDateTime *date;
-	g_autofree gchar *text;
+	g_autofree gchar *text = NULL;
 
 	gs_star_widget_set_rating (GS_STAR_WIDGET (priv->stars),
 				   gs_review_get_rating (priv->review));
