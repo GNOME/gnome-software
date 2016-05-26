@@ -6,9 +6,7 @@ SUBDIRS =						\
 appstreamdir = $(datadir)/app-info/xmls
 appstream_DATA = org.gnome.Software.xml.gz
 appstream_files =					\
-	org.gnome.Software-categories.xml		\
-	org.gnome.Software-featured.xml			\
-	org.gnome.Software-popular.xml
+	org.gnome.Software-featured.xml
 org.gnome.Software.xml.gz: $(appstream_files)
 	$(AM_V_GEN) appstream-util merge-appstream $@	\
 	$(srcdir)/org.gnome.Software-*.xml
