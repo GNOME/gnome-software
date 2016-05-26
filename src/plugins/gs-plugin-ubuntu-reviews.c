@@ -123,6 +123,7 @@ set_timestamp (GsPlugin *plugin,
 	       const gchar *type,
 	       GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
 	char *error_msg = NULL;
 	gint result;
 	g_autofree gchar *statement = NULL;
