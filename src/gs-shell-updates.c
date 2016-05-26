@@ -1164,6 +1164,29 @@ gs_shell_updates_upgrade_help_cb (GsUpgradeBanner *upgrade_banner,
 		g_warning ("failed to open %s: %s", uri, error->message);
 }
 
+static void
+gs_shell_updates_invalidate_downloaded_upgrade (GsShellUpdates *self)
+{
+	GsApp *app;
+	app = gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner));
+	if (app == NULL)
+		return;
+	if (gs_app_get_state (app) != AS_APP_STATE_UPDATABLE)
+		return;
+	gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+	g_debug ("resetting %s to AVAILABLE as the updates have changed",
+		 gs_app_get_id (app));
+}
+
+static void
+gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
+			     GsShellUpdates *self)
+{
+	/* if we do a live update and the upgrade is waiting to be deployed
+	 * then make sure all new packages are downloaded */
+	gs_shell_updates_invalidate_downloaded_upgrade (self);
+}
+
 /**
  * gs_shell_updates_status_changed_cb:
  **/
@@ -1173,6 +1196,20 @@ gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
 				    GsPluginStatus status,
 				    GsShellUpdates *self)
 {
+	switch (status) {
+	case GS_PLUGIN_STATUS_INSTALLING:
+	case GS_PLUGIN_STATUS_REMOVING:
+		if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE &&
+		    gs_app_get_id (app) != NULL) {
+			/* if we do a install or remove then make sure all new
+			 * packages are downloaded */
+			gs_shell_updates_invalidate_downloaded_upgrade (self);
+		}
+		break;
+	default:
+		break;
+	}
+
 	self->last_status = status;
 	gs_shell_updates_update_ui_state (self);
 }
@@ -1227,6 +1264,9 @@ gs_shell_updates_setup (GsShellUpdates *self,
 			  self);
 	g_signal_connect (self->plugin_loader, "status-changed",
 			  G_CALLBACK (gs_shell_updates_status_changed_cb),
+			  self);
+	g_signal_connect (self->plugin_loader, "updates-changed",
+			  G_CALLBACK (gs_shell_updates_changed_cb),
 			  self);
 	self->builder = g_object_ref (builder);
 	self->cancellable = g_object_ref (cancellable);
