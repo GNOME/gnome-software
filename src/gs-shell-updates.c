@@ -1213,8 +1213,8 @@ static void
 gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
 			     GsShellUpdates *self)
 {
-	/* if we do a install, remove or live update and the upgrade is waiting
-	 * to be deployed then make sure all new packages are downloaded */
+	/* if we do a live update and the upgrade is waiting to be deployed
+	 * then make sure all new packages are downloaded */
 	gs_shell_updates_invalidate_downloaded_upgrade (self);
 }
 
@@ -1227,6 +1227,20 @@ gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
 				    GsPluginStatus status,
 				    GsShellUpdates *self)
 {
+	switch (status) {
+	case GS_PLUGIN_STATUS_INSTALLING:
+	case GS_PLUGIN_STATUS_REMOVING:
+		if (gs_app_get_kind (app) != AS_APP_KIND_OS_UPGRADE &&
+		    gs_app_get_id (app) != NULL) {
+			/* if we do a install or remove then make sure all new
+			 * packages are downloaded */
+			gs_shell_updates_invalidate_downloaded_upgrade (self);
+		}
+		break;
+	default:
+		break;
+	}
+
 	self->last_status = status;
 	gs_shell_updates_update_ui_state (self);
 }
