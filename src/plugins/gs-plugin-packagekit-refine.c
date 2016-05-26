@@ -95,6 +95,7 @@ gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 }
 
 typedef struct {
+	GsApp		*app;
 	GsPlugin	*plugin;
 	AsProfileTask	*ptask;
 	gchar		*profile_id;
@@ -130,7 +131,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 	plugin_status = packagekit_status_enum_to_plugin_status (status);
 	if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-		gs_plugin_status_update (plugin, NULL, plugin_status);
+		gs_plugin_status_update (plugin, data->app, plugin_status);
 }
 
 static void
@@ -264,6 +265,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 	}
 	g_ptr_array_add (package_ids, NULL);
 
+	data.app = NULL;
 	data.plugin = plugin;
 	data.ptask = NULL;
 	data.profile_id = NULL;
@@ -291,7 +293,7 @@ gs_plugin_packagekit_resolve_packages (GsPlugin *plugin,
 
 static gboolean
 gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
-					  GsApp	 *app,
+					  GsApp *app,
 					  const gchar *filename,
 					  GCancellable *cancellable,
 					  GError **error)
@@ -302,6 +304,7 @@ gs_plugin_packagekit_refine_from_desktop (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GPtrArray) packages = NULL;
 
+	data.app = app;
 	data.plugin = plugin;
 	data.ptask = NULL;
 	data.profile_id = g_path_get_basename (filename);
@@ -380,6 +383,7 @@ gs_plugin_packagekit_refine_updatedetails (GsPlugin *plugin,
 		package_ids[i++] = package_id;
 	}
 
+	data.app = NULL;
 	data.plugin = plugin;
 	data.ptask = NULL;
 	data.profile_id = NULL;
@@ -519,6 +523,7 @@ gs_plugin_packagekit_refine_details (GsPlugin *plugin,
 	}
 	g_ptr_array_add (package_ids, NULL);
 
+	data.app = NULL;
 	data.plugin = plugin;
 	data.ptask = NULL;
 	data.profile_id = g_strjoinv (",", (gchar **) package_ids->pdata);
@@ -556,6 +561,7 @@ gs_plugin_packagekit_refine_update_urgency (GsPlugin *plugin,
 	g_autoptr(PkPackageSack) sack = NULL;
 	g_autoptr(PkResults) results = NULL;
 
+	data.app = NULL;
 	data.plugin = plugin;
 	data.ptask = NULL;
 	data.profile_id = NULL;
@@ -735,6 +741,7 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(GsAppList) list = NULL;
 
+	data.app = app;
 	data.plugin = plugin;
 	data.ptask = NULL;
 	data.profile_id = NULL;

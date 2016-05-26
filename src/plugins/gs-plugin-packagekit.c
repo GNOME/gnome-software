@@ -89,7 +89,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 
 		plugin_status = packagekit_status_enum_to_plugin_status (status);
 		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-			gs_plugin_status_update (plugin, NULL, plugin_status);
+			gs_plugin_status_update (plugin, data->app, plugin_status);
 
 	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
 		gint percentage = pk_progress_get_percentage (progress);
@@ -226,12 +226,12 @@ gs_plugin_app_source_enable (GsPlugin *plugin,
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
 
-	data.app = NULL;
+	data.app = app;
 	data.plugin = plugin;
 	data.ptask = NULL;
 
 	/* do sync call */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_origin (app),
 					 TRUE,
@@ -429,12 +429,12 @@ gs_plugin_app_source_disable (GsPlugin *plugin,
 	ProgressData data;
 	g_autoptr(PkResults) results = NULL;
 
-	data.app = NULL;
+	data.app = app;
 	data.plugin = plugin;
 	data.ptask = NULL;
 
 	/* do sync call */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 	results = pk_client_repo_enable (PK_CLIENT (priv->task),
 					 gs_app_get_id (app),
 					 FALSE,
@@ -462,7 +462,7 @@ gs_plugin_app_source_remove (GsPlugin *plugin,
 	data.ptask = NULL;
 
 	/* do sync call */
-	gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_WAITING);
+	gs_plugin_status_update (plugin, app, GS_PLUGIN_STATUS_WAITING);
 	results = pk_client_repo_remove (PK_CLIENT (priv->task),
 					 pk_bitfield_from_enums (PK_TRANSACTION_FLAG_ENUM_NONE, -1),
 					 gs_app_get_id (app),
@@ -495,7 +495,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 	g_autoptr(PkResults) results = NULL;
 	g_auto(GStrv) package_ids = NULL;
 
-	data.app = NULL;
+	data.app = app;
 	data.plugin = plugin;
 	data.ptask = NULL;
 

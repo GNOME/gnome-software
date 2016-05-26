@@ -66,7 +66,7 @@ gs_plugin_packagekit_progress_cb (PkProgress *progress,
 		PkStatusEnum status = pk_progress_get_status (progress);
 		plugin_status = packagekit_status_enum_to_plugin_status (status);
 		if (plugin_status != GS_PLUGIN_STATUS_UNKNOWN)
-			gs_plugin_status_update (plugin, NULL, plugin_status);
+			gs_plugin_status_update (plugin, data->app, plugin_status);
 	} else if (type == PK_PROGRESS_TYPE_PERCENTAGE) {
 		gint percentage = pk_progress_get_percentage (progress);
 		if (percentage >= 0 && percentage <= 100) {
