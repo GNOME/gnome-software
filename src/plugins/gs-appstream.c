@@ -27,15 +27,80 @@
 
 #define	GS_APPSTREAM_MAX_SCREENSHOTS	5
 
+static AsIcon *
+gs_appstream_get_icon_by_kind (AsApp *app, AsIconKind icon_kind)
+{
+	GPtrArray *icons;
+	guint i;
+
+	icons = as_app_get_icons (app);
+	for (i = 0; i < icons->len; i++) {
+		AsIcon *icon = g_ptr_array_index (icons, i);
+		if (as_icon_get_kind (icon) == icon_kind)
+			return icon;
+	}
+	return NULL;
+}
+
+static AsIcon *
+gs_appstream_get_icon_by_kind_and_size (AsApp *app, AsIconKind icon_kind, guint sz)
+{
+	GPtrArray *icons;
+	guint i;
+
+	icons = as_app_get_icons (app);
+	for (i = 0; i < icons->len; i++) {
+		AsIcon *icon = g_ptr_array_index (icons, i);
+		if (as_icon_get_kind (icon) == icon_kind &&
+		    as_icon_get_width (icon) == sz &&
+		    as_icon_get_height (icon) == sz)
+			return icon;
+	}
+	return NULL;
+}
+
 static void
 gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
 	AsIcon *icon;
-	g_autoptr(GError) error = NULL;
 
-	icon = as_app_get_icon_default (item);
-	switch (as_icon_get_kind (icon)) {
-	case AS_ICON_KIND_REMOTE:
+	/* try a stock icon first */
+	icon = gs_appstream_get_icon_by_kind (item, AS_ICON_KIND_STOCK);
+	if (icon != NULL)
+		gs_app_add_icon (app, icon);
+
+	/* if HiDPI get a 128px cached icon */
+	if (gs_plugin_get_scale (plugin) == 2) {
+		icon = gs_appstream_get_icon_by_kind_and_size (item,
+							       AS_ICON_KIND_CACHED,
+							       128);
+		if (icon != NULL)
+			gs_app_add_icon (app, icon);
+	}
+
+	/* non-HiDPI cached icon */
+	icon = gs_appstream_get_icon_by_kind_and_size (item,
+						       AS_ICON_KIND_CACHED,
+						       64);
+	if (icon != NULL)
+		gs_app_add_icon (app, icon);
+
+	/* prefer local */
+	icon = gs_appstream_get_icon_by_kind (item, AS_ICON_KIND_LOCAL);
+	if (icon != NULL) {
+		/* does not exist, so try to find using the icon theme */
+		if (as_icon_get_kind (icon) == AS_ICON_KIND_LOCAL &&
+		    as_icon_get_filename (icon) == NULL) {
+			g_debug ("converting missing LOCAL icon %s to STOCK",
+				 as_icon_get_name (icon));
+			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
+		}
+		gs_app_add_icon (app, icon);
+	}
+
+	/* remote as a last resort */
+	icon = gs_appstream_get_icon_by_kind (item, AS_ICON_KIND_REMOTE);
+	if (icon != NULL) {
 		if (as_icon_get_filename (icon) == NULL) {
 			g_autofree gchar *fn = NULL;
 			g_autofree gchar *cachedir = NULL;
@@ -48,35 +113,6 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 			as_icon_set_prefix (icon, cachedir);
 		}
 		gs_app_add_icon (app, icon);
-		break;
-	case AS_ICON_KIND_STOCK:
-		gs_app_add_icon (app, icon);
-		break;
-	case AS_ICON_KIND_LOCAL:
-		/* does not exist, so try to find using the icon theme */
-		if (as_icon_get_kind (icon) == AS_ICON_KIND_LOCAL &&
-		    as_icon_get_filename (icon) == NULL) {
-			g_debug ("converting missing LOCAL icon %s to STOCK",
-				 as_icon_get_name (icon));
-			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
-		}
-		gs_app_add_icon (app, icon);
-		break;
-	case AS_ICON_KIND_CACHED:
-		if (gs_plugin_get_scale (plugin) == 2)
-			icon = as_app_get_icon_for_size (item, 128, 128);
-		if (icon == NULL)
-			icon = as_app_get_icon_for_size (item, 64, 64);
-		if (icon == NULL) {
-			g_warning ("failed to find cached icon %s",
-				   as_app_get_id (item));
-			return;
-		}
-		gs_app_add_icon (app, icon);
-		break;
-	default:
-		g_warning ("icon kind unknown for %s", as_app_get_id (item));
-		break;
 	}
 }
 
