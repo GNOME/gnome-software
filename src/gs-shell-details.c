@@ -1349,7 +1349,7 @@ gs_shell_details_failed_response_cb (GtkDialog *dialog,
 }
 
 /**
- * gs_shell_details_filen_to_app_cb:
+ * gs_shell_details_file_to_app_cb:
  **/
 static void
 gs_shell_details_file_to_app_cb (GObject *source,
