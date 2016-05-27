@@ -221,8 +221,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	AsIcon *icon;
-	g_autoptr(GdkPixbuf) pixbuf = NULL;
+	GPtrArray *icons;
+	guint i;
 
 	/* not required */
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON) == 0)
@@ -231,34 +231,46 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* invalid */
 	if (gs_app_get_pixbuf (app) != NULL)
 		return TRUE;
-	icon = gs_app_get_icon (app);
-	if (icon == NULL)
-		return TRUE;
 
-	/* handle different icon types */
-	switch (as_icon_get_kind (icon)) {
-	case AS_ICON_KIND_LOCAL:
-		pixbuf = gs_plugin_icons_load_local (plugin, icon, error);
-		break;
-	case AS_ICON_KIND_STOCK:
-		pixbuf = gs_plugin_icons_load_stock (plugin, icon, error);
-		break;
-	case AS_ICON_KIND_REMOTE:
-		pixbuf = gs_plugin_icons_load_remote (plugin, icon, error);
-		break;
-	case AS_ICON_KIND_CACHED:
-		pixbuf = gs_plugin_icons_load_cached (plugin, icon, error);
-		break;
-	default:
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "icon kind '%s' unknown",
-			     as_icon_kind_to_string (as_icon_get_kind (icon)));
-		break;
+	/* process all icons */
+	icons = gs_app_get_icons (app);
+	for (i = 0; i < icons->len; i++) {
+		AsIcon *icon = g_ptr_array_index (icons, i);
+		g_autoptr(GdkPixbuf) pixbuf = NULL;
+		g_autoptr(GError) error_local = NULL;
+
+		/* handle different icon types */
+		switch (as_icon_get_kind (icon)) {
+		case AS_ICON_KIND_LOCAL:
+			pixbuf = gs_plugin_icons_load_local (plugin, icon, &error_local);
+			break;
+		case AS_ICON_KIND_STOCK:
+			pixbuf = gs_plugin_icons_load_stock (plugin, icon, &error_local);
+			break;
+		case AS_ICON_KIND_REMOTE:
+			pixbuf = gs_plugin_icons_load_remote (plugin, icon, &error_local);
+			break;
+		case AS_ICON_KIND_CACHED:
+			pixbuf = gs_plugin_icons_load_cached (plugin, icon, &error_local);
+			break;
+		default:
+			g_set_error (&error_local,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "icon kind '%s' unknown",
+				     as_icon_kind_to_string (as_icon_get_kind (icon)));
+			break;
+		}
+		if (pixbuf != NULL) {
+			gs_app_set_pixbuf (app, pixbuf);
+			break;
+		}
+
+		/* we failed, but keep going */
+		g_debug ("failed to load icon for %s: %s",
+			 gs_app_get_id (app),
+			 error_local->message);
 	}
-	if (pixbuf == NULL)
-		return FALSE;
-	gs_app_set_pixbuf (app, pixbuf);
+
 	return TRUE;
 }

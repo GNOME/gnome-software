@@ -75,6 +75,7 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 		       GCancellable *cancellable, GError **error)
 {
 	AsIcon *icon;
+	GPtrArray *icons;
 	gboolean ret = TRUE;
 	gsize kf_length;
 	g_autoptr(GError) error_local = NULL;
@@ -108,7 +109,16 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	/* symlink icon */
 	epi_icon = g_build_filename (epi_dir, "app-icon.png", NULL);
 	symlink_icon = g_file_new_for_path (epi_icon);
-	icon = gs_app_get_icon (app);
+	icons = gs_app_get_icons (app);
+	if (icons->len == 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "no icons for %s",
+			     gs_app_get_id (app));
+		return FALSE;
+	}
+	icon = g_ptr_array_index (icons, 0);
 	ret = g_file_make_symbolic_link (symlink_icon,
 					 as_icon_get_filename (icon),
 					 NULL,

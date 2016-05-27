@@ -154,7 +154,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 	app = gs_app_new ("chiron.desktop");
 	gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "Chiron");
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
-	gs_app_set_icon (app, ic);
+	gs_app_add_icon (app, ic);
 	gs_app_set_size_installed (app, 42 * 1024 * 1024);
 	gs_app_set_size_download (app, 50 * 1024 * 1024);
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
@@ -197,7 +197,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 	gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "A teaching application");
 	gs_app_set_update_details (app, "Do not crash when using libvirt.");
 	gs_app_set_update_urgency (app, AS_URGENCY_KIND_HIGH);
-	gs_app_set_icon (app, ic);
+	gs_app_add_icon (app, ic);
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_UPDATABLE_LIVE);
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
@@ -491,7 +491,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css",
 			     "background: url('" DATADIR "/gnome-software/upgrade-bg.png');"
 			     "background-size: 100% 100%;");
-	gs_app_set_icon (app, ic);
+	gs_app_add_icon (app, ic);
 	gs_app_list_add (list, app);
 
 	gs_plugin_cache_add (plugin, "release-rawhide", app);

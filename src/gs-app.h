@@ -185,8 +185,8 @@ void		 gs_app_set_management_plugin	(GsApp		*app,
 GdkPixbuf	*gs_app_get_pixbuf		(GsApp		*app);
 void		 gs_app_set_pixbuf		(GsApp		*app,
 						 GdkPixbuf	*pixbuf);
-AsIcon		*gs_app_get_icon		(GsApp		*app);
-void		 gs_app_set_icon		(GsApp		*app,
+GPtrArray	*gs_app_get_icons		(GsApp		*app);
+void		 gs_app_add_icon		(GsApp		*app,
 						 AsIcon		*icon);
 GFile		*gs_app_get_local_file		(GsApp		*app);
 void		 gs_app_set_local_file		(GsApp		*app,

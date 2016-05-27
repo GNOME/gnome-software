@@ -214,7 +214,7 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 	icon = as_icon_new ();
 	as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 	as_icon_set_name (icon, "application-x-firmware");
-	gs_app_set_icon (app, icon);
+	gs_app_add_icon (app, icon);
 
 	if (fwupd_result_get_update_id (res) != NULL) {
 		gs_app_set_id (app, fwupd_result_get_update_id (res));

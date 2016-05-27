@@ -920,7 +920,7 @@ gs_plugin_loader_add_os_update_item (GsAppList *list)
 	ic = as_icon_new ();
 	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
 	as_icon_set_name (ic, "software-update-available-symbolic");
-	gs_app_set_icon (app_os, ic);
+	gs_app_add_icon (app_os, ic);
 	gs_app_list_add (list, app_os);
 }
 
@@ -3933,14 +3933,14 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 	/* check the apps have an icon set */
 	for (j = 0; j < gs_app_list_length (state->list); j++) {
 		GsApp *app = gs_app_list_index (state->list, j);
-		if (gs_app_get_icon (app) == NULL) {
+		if (gs_app_get_icons(app)->len == 0) {
 			g_autoptr(AsIcon) ic = as_icon_new ();
 			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
 			if (gs_app_get_kind (app) == AS_APP_KIND_SOURCE)
 				as_icon_set_name (ic, "x-package-repository");
 			else
 				as_icon_set_name (ic, "application-x-executable");
-			gs_app_set_icon (app, ic);
+			gs_app_add_icon (app, ic);
 		}
 	}
 

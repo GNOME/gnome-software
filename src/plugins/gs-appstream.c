@@ -47,10 +47,10 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 			cachedir = g_path_get_basename (fn);
 			as_icon_set_prefix (icon, cachedir);
 		}
-		gs_app_set_icon (app, icon);
+		gs_app_add_icon (app, icon);
 		break;
 	case AS_ICON_KIND_STOCK:
-		gs_app_set_icon (app, icon);
+		gs_app_add_icon (app, icon);
 		break;
 	case AS_ICON_KIND_LOCAL:
 		/* does not exist, so try to find using the icon theme */
@@ -60,7 +60,7 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 				 as_icon_get_name (icon));
 			as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 		}
-		gs_app_set_icon (app, icon);
+		gs_app_add_icon (app, icon);
 		break;
 	case AS_ICON_KIND_CACHED:
 		if (gs_plugin_get_scale (plugin) == 2)
@@ -72,7 +72,7 @@ gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
 				   as_app_get_id (item));
 			return;
 		}
-		gs_app_set_icon (app, icon);
+		gs_app_add_icon (app, icon);
 		break;
 	default:
 		g_warning ("icon kind unknown for %s", as_app_get_id (item));

@@ -354,7 +354,7 @@ gs_plugin_flatpak_create_installed (GsPlugin *plugin,
 		icon = as_icon_new ();
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 		as_icon_set_name (icon, "system-run-symbolic");
-		gs_app_set_icon (app, icon);
+		gs_app_add_icon (app, icon);
 		break;
 	default:
 		g_set_error_literal (error,
@@ -1399,7 +1399,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		icon = as_icon_new ();
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 		as_icon_set_name (icon, "application-x-executable");
-		gs_app_set_icon (app, icon);
+		gs_app_add_icon (app, icon);
 	}
 
 	/* not quite true: this just means we can update this specific app */

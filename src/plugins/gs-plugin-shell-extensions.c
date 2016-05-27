@@ -201,7 +201,7 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 	ic = as_icon_new ();
 	as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
 	as_icon_set_name (ic, "application-x-addon-symbolic");
-	gs_app_set_icon (app, ic);
+	gs_app_add_icon (app, ic);
 
 	/* add categories */
 	gs_app_add_category (app, "Addons");

@@ -61,7 +61,7 @@ struct _GsApp
 	gchar			*id;
 	gchar			*name;
 	GsAppQuality		 name_quality;
-	AsIcon			*icon;
+	GPtrArray		*icons;
 	GPtrArray		*sources;
 	GPtrArray		*source_ids;
 	gchar			*project_group;
@@ -111,6 +111,7 @@ struct _GsApp
 	gboolean		 license_is_free;
 	GsApp			*runtime;
 	GFile			*local_file;
+	GdkPixbuf		*pixbuf;
 };
 
 enum {
@@ -230,20 +231,22 @@ gs_app_to_string (GsApp *app)
 			  gs_app_get_kudos_percentage (app));
 	if (app->name != NULL)
 		gs_app_kv_lpad (str, "name", app->name);
-	if (app->icon != NULL) {
+	gs_app_kv_printf (str, "pixbuf", "%p", app->pixbuf);
+	for (i = 0; i < app->icons->len; i++) {
+		AsIcon *icon = g_ptr_array_index (app->icons, i);
 		gs_app_kv_lpad (str, "icon-kind",
-				as_icon_kind_to_string (as_icon_get_kind (app->icon)));
+				as_icon_kind_to_string (as_icon_get_kind (icon)));
 		gs_app_kv_printf (str, "icon-pixbuf", "%p",
-				  as_icon_get_pixbuf (app->icon));
-		if (as_icon_get_name (app->icon) != NULL)
+				  as_icon_get_pixbuf (icon));
+		if (as_icon_get_name (icon) != NULL)
 			gs_app_kv_lpad (str, "icon-name",
-					as_icon_get_name (app->icon));
-		if (as_icon_get_prefix (app->icon) != NULL)
+					as_icon_get_name (icon));
+		if (as_icon_get_prefix (icon) != NULL)
 			gs_app_kv_lpad (str, "icon-prefix",
-					as_icon_get_prefix (app->icon));
-		if (as_icon_get_filename (app->icon) != NULL)
+					as_icon_get_prefix (icon));
+		if (as_icon_get_filename (icon) != NULL)
 			gs_app_kv_lpad (str, "icon-filename",
-					as_icon_get_filename (app->icon));
+					as_icon_get_filename (icon));
 	}
 	if (app->match_value != 0)
 		gs_app_kv_printf (str, "match-value", "%05x", app->match_value);
@@ -1004,38 +1007,41 @@ GdkPixbuf *
 gs_app_get_pixbuf (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	if (app->icon == NULL)
-		return NULL;
-	return as_icon_get_pixbuf (app->icon);
+	return app->pixbuf;
 }
 
 /**
- * gs_app_get_icon:
+ * gs_app_get_icons:
  * @app: a #GsApp
  *
- * Gets the icon for the application.
+ * Gets the icons for the application.
  *
- * Returns: a #AsIcon, or %NULL for unset
+ * Returns: (transfer none) (element-type AsIcon): an array of icons
  **/
-AsIcon *
-gs_app_get_icon (GsApp *app)
+GPtrArray *
+gs_app_get_icons (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), NULL);
-	return app->icon;
+	return app->icons;
 }
 
 /**
- * gs_app_set_icon:
+ * gs_app_add_icon:
  * @app: a #GsApp
- * @icon: a #AsIcon
+ * @icon: a #AsIcon, or %NULL to remove all icons
  *
- * Sets an icon to use for the application.
+ * Adds an icon to use for the application.
+ * If the first icon added cannot be loaded then the next one is tried.
  **/
 void
-gs_app_set_icon (GsApp *app, AsIcon *icon)
+gs_app_add_icon (GsApp *app, AsIcon *icon)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	g_set_object (&app->icon, icon);
+	if (icon == NULL) {
+		g_ptr_array_set_size (app->icons, 0);
+		return;
+	}
+	g_ptr_array_add (app->icons, g_object_ref (icon));
 }
 
 /**
@@ -1109,11 +1115,7 @@ void
 gs_app_set_pixbuf (GsApp *app, GdkPixbuf *pixbuf)
 {
 	g_return_if_fail (GS_IS_APP (app));
-	if (app->icon == NULL) {
-		g_warning ("trying to set pixbuf on %s with no icon", app->id);
-		return;
-	}
-	as_icon_set_pixbuf (app->icon, pixbuf);
+	g_set_object (&app->pixbuf, pixbuf);
 }
 
 typedef enum {
@@ -2685,7 +2687,6 @@ gs_app_dispose (GObject *object)
 {
 	GsApp *app = GS_APP (object);
 
-	g_clear_object (&app->icon);
 	g_clear_object (&app->runtime);
 
 	g_clear_pointer (&app->addons, g_ptr_array_unref);
@@ -2693,6 +2694,7 @@ gs_app_dispose (GObject *object)
 	g_clear_pointer (&app->related, g_ptr_array_unref);
 	g_clear_pointer (&app->screenshots, g_ptr_array_unref);
 	g_clear_pointer (&app->reviews, g_ptr_array_unref);
+	g_clear_pointer (&app->icons, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->dispose (object);
 }
@@ -2736,6 +2738,8 @@ gs_app_finalize (GObject *object)
 		g_error_free (app->last_error);
 	if (app->local_file != NULL)
 		g_object_unref (app->local_file);
+	if (app->pixbuf != NULL)
+		g_object_unref (app->pixbuf);
 
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
@@ -2859,6 +2863,7 @@ gs_app_init (GsApp *app)
 	app->history = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->screenshots = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->reviews = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
+	app->icons = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	app->metadata = g_hash_table_new_full (g_str_hash,
 	                                        g_str_equal,
 	                                        g_free,

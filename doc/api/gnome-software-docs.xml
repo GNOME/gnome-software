@@ -225,7 +225,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
   icon = as_icon_new ();
   as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
   as_icon_set_name (icon, "input-gaming");
-  gs_app_set_icon (app, icon);
+  gs_app_add_icon (app, icon);
 
   /* return new app */
   gs_app_list_add (list, app);
