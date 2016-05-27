@@ -445,6 +445,7 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ADDONS |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_MENU_PATH |
+					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 					       GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE,
 					       NULL,
 					       &error);
@@ -504,7 +505,7 @@ gs_plugin_loader_search_func (GsPluginLoader *plugin_loader)
 	/* get search result based on addon keyword */
 	list = gs_plugin_loader_search (plugin_loader,
 					"spell",
-					GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					NULL,
 					&error);
 	g_assert_no_error (error);
@@ -739,7 +740,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	/* find available application */
 	list = gs_plugin_loader_search (plugin_loader,
 					"Bingo",
-					GS_PLUGIN_REFINE_FLAGS_DEFAULT,
+					GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
 					NULL,
 					&error);
 	g_assert_no_error (error);
