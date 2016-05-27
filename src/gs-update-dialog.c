@@ -120,7 +120,7 @@ set_updates_description_ui (GsUpdateDialog *dialog, GsApp *app)
 		 * a description for the update */
 		update_details = _("No update description available.");
 	}
-	gtk_label_set_markup (GTK_LABEL (dialog->label_details), update_details);
+	gtk_label_set_label (GTK_LABEL (dialog->label_details), update_details);
 	gtk_label_set_label (GTK_LABEL (dialog->label_name), gs_app_get_name (app));
 	gtk_label_set_label (GTK_LABEL (dialog->label_summary), gs_app_get_summary (app));
 

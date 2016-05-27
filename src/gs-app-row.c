@@ -82,7 +82,6 @@ gs_app_row_get_description (GsAppRow *app_row)
 {
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	const gchar *tmp = NULL;
-	g_autofree gchar *escaped = NULL;
 
 	/* convert the markdown update description into PangoMarkup */
 	if (priv->show_update &&
@@ -105,8 +104,7 @@ gs_app_row_get_description (GsAppRow *app_row)
 		tmp = gs_app_get_name (priv->app);
 	if (tmp == NULL)
 		return NULL;
-	escaped = g_markup_escape_text (tmp, -1);
-	return g_string_new (escaped);
+	return g_string_new (tmp);
 }
 
 /**
@@ -138,7 +136,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	str = gs_app_row_get_description (app_row);
 	if (str != NULL) {
 		as_utils_string_replace (str, "\n", " ");
-		gtk_label_set_markup (GTK_LABEL (priv->description_label), str->str);
+		gtk_label_set_label (GTK_LABEL (priv->description_label), str->str);
 		g_string_free (str, TRUE);
 	} else {
 		gtk_label_set_text (GTK_LABEL (priv->description_label), NULL);

@@ -427,7 +427,7 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 			if (desc == NULL)
 				return FALSE;
 			g_string_append_printf (update_desc,
-						"<b>Version %s:</b>\n%s\n\n",
+						"Version %s:\n%s\n\n",
 						as_release_get_version (rel),
 						desc);
 		}
