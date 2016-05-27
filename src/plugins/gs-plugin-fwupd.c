@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -189,6 +189,9 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 {
 	FwupdDeviceFlags flags;
 	GsApp *app;
+#if FWUPD_CHECK_VERSION(0,7,2)
+	GPtrArray *guids;
+#endif
 	g_autoptr(AsIcon) icon = NULL;
 
 	/* default stuff */
@@ -219,10 +222,24 @@ gs_plugin_fwupd_new_app_from_results (FwupdResult *res)
 	if (fwupd_result_get_update_id (res) != NULL) {
 		gs_app_set_id (app, fwupd_result_get_update_id (res));
 	}
+
+#if FWUPD_CHECK_VERSION(0,7,2)
+	guids = fwupd_result_get_guids (res);
+	if (guids->len > 0) {
+		guint i;
+		g_autofree gchar *guid_str = NULL;
+		g_auto(GStrv) tmp = g_new0 (gchar *, guids->len + 1);
+		for (i = 0; i < guids->len; i++)
+			tmp[i] = g_strdup (g_ptr_array_index (guids, i));
+		guid_str = g_strjoinv (",", tmp);
+		gs_app_set_metadata (app, "fwupd::Guid", guid_str);
+	}
+#else
 	if (fwupd_result_get_guid (res) != NULL) {
 		gs_app_set_metadata (app, "fwupd::Guid",
 				     fwupd_result_get_guid (res));
 	}
+#endif
 	if (fwupd_result_get_update_name (res) != NULL) {
 		gs_app_set_name (app, GS_APP_QUALITY_NORMAL,
 				 fwupd_result_get_update_name (res));
