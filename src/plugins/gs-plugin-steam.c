@@ -104,7 +104,7 @@ static void
 gs_plugin_steam_find_next_sync_point (guint8 *data, gsize data_len, guint *idx)
 {
 	guint i;
-	for (i = *idx; i < data_len; i++) {
+	for (i = *idx; i < data_len - 9; i++) {
 		if (memcmp (&data[i], "\0\x02\0common\0", 8) == 0) {
 			*idx = i - 1;
 			return;
