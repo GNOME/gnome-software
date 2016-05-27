@@ -69,6 +69,7 @@ typedef struct
 	gint			 scale;
 	guint			 priority;
 	guint			 timer_id;
+	GMutex			 timer_mutex;
 } GsPluginPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsPlugin, gs_plugin, G_TYPE_OBJECT)
@@ -186,6 +187,7 @@ gs_plugin_finalize (GObject *object)
 	g_object_unref (priv->soup_session);
 	g_hash_table_unref (priv->cache);
 	g_mutex_clear (&priv->cache_mutex);
+	g_mutex_clear (&priv->timer_mutex);
 	g_module_close (priv->module);
 }
 
@@ -259,6 +261,7 @@ gs_plugin_action_delay_cb (gpointer user_data)
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->timer_mutex);
 
 	g_debug ("plugin no longer recently active: %s", priv->name);
 	priv->flags &= ~GS_PLUGIN_FLAGS_RECENT;
@@ -276,6 +279,7 @@ void
 gs_plugin_action_stop (GsPlugin *plugin)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_autoptr(GMutexLocker) locker = g_mutex_locker_new (&priv->timer_mutex);
 
 	/* clear plugin as SELF */
 	priv->flags &= ~GS_PLUGIN_FLAGS_RUNNING_SELF;
@@ -1054,6 +1058,7 @@ gs_plugin_init (GsPlugin *plugin)
 					     g_free,
 					     (GDestroyNotify) g_object_unref);
 	g_mutex_init (&priv->cache_mutex);
+	g_mutex_init (&priv->timer_mutex);
 	g_rw_lock_init (&priv->rwlock);
 }
 
