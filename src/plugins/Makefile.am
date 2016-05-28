@@ -236,7 +236,7 @@ libgs_plugin_packagekit_origin_la_SOURCES =		\
 	gs-plugin-packagekit-origin.c			\
 	packagekit-common.c				\
 	packagekit-common.h
-libgs_plugin_packagekit_origin_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_packagekit_origin_la_LIBADD = $(GS_PLUGIN_LIBS) $(PACKAGEKIT_LIBS)
 libgs_plugin_packagekit_origin_la_LDFLAGS = -module -avoid-version
 libgs_plugin_packagekit_origin_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
