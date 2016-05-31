@@ -1,6 +1,6 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
- * Copyright (C) 2013 Richard Hughes <richard@hughsie.com>
+ * Copyright (C) 2013-2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -501,6 +501,10 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	gtk_entry_set_text (GTK_ENTRY (widget), "");
+
+	/* hide the expander */
+	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_expander), TRUE);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), FALSE);
 
 	if (scroll_up) {
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (priv->scrolledwindow_overview));
