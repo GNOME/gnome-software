@@ -56,10 +56,8 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	if (priv->installation != NULL)
-		g_object_unref (priv->installation);
-	if (priv->monitor != NULL)
-		g_object_unref (priv->monitor);
+	g_clear_object (&priv->installation);
+	g_clear_object (&priv->monitor);
 }
 
 void
