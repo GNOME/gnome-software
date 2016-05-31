@@ -416,10 +416,17 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	/* can we load a blurred smaller version of this straight away */
 	if (ssimg->width > AS_IMAGE_THUMBNAIL_WIDTH &&
 	    ssimg->height > AS_IMAGE_THUMBNAIL_HEIGHT) {
+		const gchar *url_thumb;
+		g_autofree gchar *basename_thumb = NULL;
 		g_autofree gchar *cache_kind_thumb = NULL;
+		im = as_screenshot_get_image (ssimg->screenshot,
+					      AS_IMAGE_THUMBNAIL_WIDTH * ssimg->scale,
+					      AS_IMAGE_THUMBNAIL_HEIGHT * ssimg->scale);
+		url_thumb = as_image_get_url (im);
+		basename_thumb = gs_screenshot_get_cachefn_for_url (url_thumb);
 		cache_kind_thumb = g_build_filename ("screenshots", "112x63", NULL);
 		cachefn_thumb = gs_utils_get_cache_filename (cache_kind_thumb,
-							     basename,
+							     basename_thumb,
 							     GS_UTILS_CACHE_FLAG_NONE,
 							     NULL);
 		if (cachefn_thumb == NULL)
