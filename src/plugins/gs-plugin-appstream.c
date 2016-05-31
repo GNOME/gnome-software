@@ -560,7 +560,7 @@ gs_plugin_add_categories_for_app (GPtrArray *list, AsApp *app)
 		if (!found_subcat) {
 			category = gs_category_find_child (parent, "other");
 			if (category == NULL) {
-				category = gs_category_new ("other", NULL);
+				category = gs_category_new ("other");
 				gs_category_add_child (parent, category);
 				g_object_unref (category);
 			}

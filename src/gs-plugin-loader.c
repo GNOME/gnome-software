@@ -2207,14 +2207,14 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 			continue;
 		if (gs_category_find_child (parent, "all") == NULL) {
 			g_autoptr(GsCategory) child = NULL;
-			child = gs_category_new ("all", NULL);
+			child = gs_category_new ("all");
 			gs_category_add_child (parent, child);
 			/* this is probably valid... */
 			gs_category_set_size (child, gs_category_get_size (parent));
 		}
 		if (gs_category_find_child (parent, "featured") == NULL) {
 			g_autoptr(GsCategory) child = NULL;
-			child = gs_category_new ("featured", NULL);
+			child = gs_category_new ("featured");
 			gs_category_add_child (parent, child);
 			/* this is probably valid... */
 			gs_category_set_size (child, 5);

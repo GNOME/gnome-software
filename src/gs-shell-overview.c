@@ -420,8 +420,8 @@ gs_shell_overview_load (GsShellOverview *self)
 		g_autoptr(GsCategory) category = NULL;
 		g_autoptr(GsCategory) featured_category = NULL;
 
-		category = gs_category_new (category_of_day, NULL);
-		featured_category = gs_category_new ("featured", NULL);
+		category = gs_category_new (category_of_day);
+		featured_category = gs_category_new ("featured");
 		gs_category_add_child (category, featured_category);
 
 		load_data = g_slice_new0 (LoadData);

@@ -432,10 +432,10 @@ main (int argc, char **argv)
 		g_autoptr(GsCategory) category = NULL;
 		g_auto(GStrv) split = NULL;
 		split = g_strsplit (argv[2], "/", 2);
-		category = gs_category_new (split[0], NULL);
+		category = gs_category_new (split[0]);
 		if (g_strv_length (split) == 2) {
 			g_autoptr(GsCategory) child = NULL;
-			child = gs_category_new (split[1], NULL);
+			child = gs_category_new (split[1]);
 			gs_category_add_child (category, child);
 		}
 		for (i = 0; i < repeat; i++) {

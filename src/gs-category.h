@@ -31,11 +31,13 @@ G_BEGIN_DECLS
 
 G_DECLARE_FINAL_TYPE (GsCategory, gs_category, GS, CATEGORY, GObject)
 
-GsCategory	*gs_category_new		(const gchar	*id,
-						 const gchar	*name);
+GsCategory	*gs_category_new		(const gchar	*id);
 const gchar	*gs_category_get_id		(GsCategory	*category);
 GsCategory	*gs_category_get_parent		(GsCategory	*category);
+
 const gchar	*gs_category_get_name		(GsCategory	*category);
+void		 gs_category_set_name		(GsCategory	*category,
+						 const gchar	*name);
 
 GsCategory	*gs_category_find_child		(GsCategory	*category,
 						 const gchar	*id);

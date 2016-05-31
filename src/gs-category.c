@@ -120,7 +120,39 @@ const gchar *
 gs_category_get_name (GsCategory *category)
 {
 	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
+
+	/* special case, we don't want translations in the plugins */
+	if (g_strcmp0 (category->id, "other") == 0) {
+		/* TRANSLATORS: this is where all applications that don't
+		 * fit in other groups are put */
+		return _("Other");
+	}
+	if (g_strcmp0 (category->id, "all") == 0) {
+		/* TRANSLATORS: this is a subcategory matching all the
+		 * different apps in the parent category, e.g. "Games" */
+		return _("All");
+	}
+	if (g_strcmp0 (category->id, "featured") == 0) {
+		/* TRANSLATORS: this is a subcategory of featured apps */
+		return _("Featured");
+	}
+
 	return category->name;
+}
+
+/**
+ * gs_category_set_name:
+ * @category: a #GsCategory
+ * @name: a category name, or %NULL
+ *
+ * Sets the category name.
+ **/
+void
+gs_category_set_name (GsCategory *category, const gchar *name)
+{
+	g_return_if_fail (GS_IS_CATEGORY (category));
+	g_free (category->name);
+	category->name = g_strdup (name);
 }
 
 /**
@@ -281,27 +313,11 @@ gs_category_init (GsCategory *category)
  * Returns: the new #GsCategory
  **/
 GsCategory *
-gs_category_new (const gchar *id, const gchar *name)
+gs_category_new (const gchar *id)
 {
 	GsCategory *category;
-
-	/* special case, we don't want translations in the plugins */
-	if (g_strcmp0 (id, "other") == 0) {
-		/* TRANSLATORS: this is where all applications that don't
-		 * fit in other groups are put */
-		name =_("Other");
-	} else if (g_strcmp0 (id, "all") == 0) {
-		/* TRANSLATORS: this is a subcategory matching all the
-		 * different apps in the parent category, e.g. "Games" */
-		name =_("All");
-	} else if (g_strcmp0 (id, "featured") == 0) {
-		/* TRANSLATORS: this is a subcategory of featured apps */
-		name =_("Featured");
-	}
-
 	category = g_object_new (GS_TYPE_CATEGORY, NULL);
 	category->id = g_strdup (id);
-	category->name = g_strdup (name);
 	return GS_CATEGORY (category);
 }
 
