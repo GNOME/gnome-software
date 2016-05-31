@@ -3504,6 +3504,11 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, cache_age, flags, cancellable, &error_local);
 		g_rw_lock_writer_unlock (&plugin->rwlock);
 		if (!ret) {
+			if (flags & GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE) {
+				g_propagate_error (error, error_local);
+				error_local = NULL;
+				return FALSE;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
 				   error_local->message);

@@ -123,6 +123,7 @@ typedef enum {
  * @GS_PLUGIN_REFRESH_FLAGS_NONE:	Generate new metadata if possible
  * @GS_PLUGIN_REFRESH_FLAGS_METADATA:	Download new metadata
  * @GS_PLUGIN_REFRESH_FLAGS_PAYLOAD:	Download any pending payload
+ * @GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE: Running by user request
  *
  * The flags used for refresh. Regeneration and downloading is only
  * done if the cache is older than the %cache_age.
@@ -137,6 +138,7 @@ typedef enum {
 	GS_PLUGIN_REFRESH_FLAGS_NONE			= 0,
 	GS_PLUGIN_REFRESH_FLAGS_METADATA		= 1 << 0,
 	GS_PLUGIN_REFRESH_FLAGS_PAYLOAD			= 1 << 1,
+	GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE		= 1 << 2,
 	/*< private >*/
 	GS_PLUGIN_REFRESH_FLAGS_LAST
 } GsPluginRefreshFlags;
