@@ -20,39 +20,19 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#ifndef __GS_CATEGORY_H
-#define __GS_CATEGORY_H
+#ifndef __GS_CATEGORY_PRIVATE_H
+#define __GS_CATEGORY_PRIVATE_H
 
-#include <glib-object.h>
+#include "gs-category.h"
 
 G_BEGIN_DECLS
 
-#define GS_TYPE_CATEGORY (gs_category_get_type ())
-
-G_DECLARE_FINAL_TYPE (GsCategory, gs_category, GS, CATEGORY, GObject)
-
-GsCategory	*gs_category_new		(const gchar	*id);
-const gchar	*gs_category_get_id		(GsCategory	*category);
-GsCategory	*gs_category_get_parent		(GsCategory	*category);
-
-const gchar	*gs_category_get_name		(GsCategory	*category);
-void		 gs_category_set_name		(GsCategory	*category,
-						 const gchar	*name);
-const gchar	*gs_category_get_icon		(GsCategory	*category);
-void		 gs_category_set_icon		(GsCategory	*category,
-						 const gchar	*icon);
-
-GsCategory	*gs_category_find_child		(GsCategory	*category,
-						 const gchar	*id);
-GPtrArray	*gs_category_get_children	(GsCategory	*category);
-void		 gs_category_add_child		(GsCategory	*category,
-						 GsCategory	*subcategory);
-
-guint		 gs_category_get_size		(GsCategory	*category);
-void		 gs_category_increment_size	(GsCategory	*category);
+void		 gs_category_sort_children	(GsCategory	*category);
+void		 gs_category_set_size		(GsCategory	*category,
+						 guint		 size);
 
 G_END_DECLS
 
-#endif /* __GS_CATEGORY_H */
+#endif /* __GS_CATEGORY_PRIVATE_H */
 
 /* vim: set noexpandtab: */

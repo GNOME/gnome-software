@@ -32,7 +32,7 @@
 
 #include <glib/gi18n.h>
 
-#include "gs-category.h"
+#include "gs-category-private.h"
 
 struct _GsCategory
 {

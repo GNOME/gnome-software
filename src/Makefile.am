@@ -140,6 +140,7 @@ gnome_software_SOURCES =				\
 	gs-app-list-private.h				\
 	gs-category.c					\
 	gs-category.h					\
+	gs-category-private.h				\
 	gs-common.c					\
 	gs-common.h					\
 	gs-debug.c					\
