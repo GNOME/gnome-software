@@ -32,6 +32,7 @@ struct _GsCategoryTile
 
 	GsCategory	*cat;
 	GtkWidget	*label;
+	GtkWidget	*image;
 };
 
 G_DEFINE_TYPE (GsCategoryTile, gs_category_tile, GTK_TYPE_BUTTON)
@@ -54,6 +55,9 @@ gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 	tile->cat = g_object_ref (cat);
 
 	gtk_label_set_label (GTK_LABEL (tile->label), gs_category_get_name (cat));
+	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
+				      gs_category_get_icon (cat),
+				      GTK_ICON_SIZE_MENU);
 }
 
 static void
@@ -83,6 +87,7 @@ gs_category_tile_class_init (GsCategoryTileClass *klass)
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-category-tile.ui");
 
 	gtk_widget_class_bind_template_child (widget_class, GsCategoryTile, label);
+	gtk_widget_class_bind_template_child (widget_class, GsCategoryTile, image);
 }
 
 GtkWidget *

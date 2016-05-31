@@ -49,6 +49,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 		tmp = g_strstr_len (msdata[i].path, -1, "::");
 		if (tmp == NULL) {
 			category = gs_category_new (msdata[i].path);
+			gs_category_set_icon (category, msdata[i].icon);
 			gs_category_set_name (category, gettext (msdata[i].text));
 			g_ptr_array_add (list, category);
 			g_snprintf (msgctxt, 100, "Menu subcategory of %s", msdata[i].text);

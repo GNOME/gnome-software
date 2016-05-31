@@ -40,6 +40,7 @@ struct _GsCategory
 
 	gchar		*id;
 	gchar		*name;
+	gchar		*icon;
 	GsCategory	*parent;
 	guint		 size;
 	GPtrArray	*children;
@@ -153,6 +154,53 @@ gs_category_set_name (GsCategory *category, const gchar *name)
 	g_return_if_fail (GS_IS_CATEGORY (category));
 	g_free (category->name);
 	category->name = g_strdup (name);
+}
+
+/**
+ * gs_category_get_icon:
+ * @category: a #GsCategory
+ *
+ * Gets the category icon.
+ *
+ * Returns: the string, or %NULL
+ **/
+const gchar *
+gs_category_get_icon (GsCategory *category)
+{
+	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
+
+	/* special case, we don't want translations in the plugins */
+	if (g_strcmp0 (category->id, "other") == 0) {
+		/* TRANSLATORS: this is where all applications that don't
+		 * fit in other groups are put */
+		return _("Other");
+	}
+	if (g_strcmp0 (category->id, "all") == 0) {
+		/* TRANSLATORS: this is a subcategory matching all the
+		 * different apps in the parent category, e.g. "Games" */
+		return _("All");
+	}
+	if (g_strcmp0 (category->id, "featured") == 0) {
+		/* TRANSLATORS: this is a subcategory of featured apps */
+		return _("Featured");
+	}
+
+	return category->icon;
+}
+
+/**
+ * gs_category_set_icon:
+ * @category: a #GsCategory
+ * @icon: a category icon, or %NULL
+ *
+ * Sets the category icon.
+ **/
+void
+gs_category_set_icon (GsCategory *category, const gchar *icon)
+{
+	g_return_if_fail (GS_IS_CATEGORY (category));
+	g_free (category->icon);
+	category->icon = g_strdup (icon);
 }
 
 /**
@@ -286,6 +334,7 @@ gs_category_finalize (GObject *object)
 	g_ptr_array_unref (category->children);
 	g_free (category->id);
 	g_free (category->name);
+	g_free (category->icon);
 
 	G_OBJECT_CLASS (gs_category_parent_class)->finalize (object);
 }

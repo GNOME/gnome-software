@@ -38,6 +38,9 @@ GsCategory	*gs_category_get_parent		(GsCategory	*category);
 const gchar	*gs_category_get_name		(GsCategory	*category);
 void		 gs_category_set_name		(GsCategory	*category,
 						 const gchar	*name);
+const gchar	*gs_category_get_icon		(GsCategory	*category);
+void		 gs_category_set_icon		(GsCategory	*category,
+						 const gchar	*icon);
 
 GsCategory	*gs_category_find_child		(GsCategory	*category,
 						 const gchar	*id);
