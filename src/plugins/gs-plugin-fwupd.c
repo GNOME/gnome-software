@@ -748,8 +748,13 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *filename = NULL;
+#if FWUPD_CHECK_VERSION(0,7,2)
+	guint i;
+	g_autoptr(GPtrArray) results = NULL;
+#else
 	g_autoptr(FwupdResult) res = NULL;
 	g_autoptr(GsApp) app = NULL;
+#endif
 	const gchar *mimetypes[] = {
 		"application/vnd.ms-cab-compressed",
 		NULL };
@@ -763,6 +768,27 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 
 	/* get results */
 	filename = g_file_get_path (file);
+#if FWUPD_CHECK_VERSION(0,7,2)
+	results = fwupd_client_get_details_local (priv->client,
+						  filename,
+						  cancellable,
+						  error);
+	if (results == NULL)
+		return FALSE;
+	for (i = 0; i < results->len; i++) {
+		FwupdResult *res = g_ptr_array_index (results, i);
+		g_autoptr(GsApp) app = NULL;
+
+		/* create each app */
+		app = gs_plugin_fwupd_new_app_from_results (res);
+
+		/* we have no update view for local files */
+		gs_app_set_version (app, gs_app_get_update_version (app));
+		gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
+					gs_app_get_update_details (app));
+		gs_app_list_add (list, app);
+	}
+#else
 	res = fwupd_client_get_details (priv->client,
 					filename,
 					cancellable,
@@ -776,5 +802,7 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 	gs_app_set_description (app, GS_APP_QUALITY_NORMAL,
 				gs_app_get_update_details (app));
 	gs_app_list_add (list, app);
+#endif
+
 	return TRUE;
 }
