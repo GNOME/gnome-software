@@ -62,9 +62,9 @@ gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 				      gs_category_get_icon (cat),
 				      GTK_ICON_SIZE_MENU);
 
-	/* set custom CSS */
+	/* set custom CSS for important tiles */
 	key_colors = gs_category_get_key_colors (cat);
-	if (key_colors->len > 0) {
+	if (gs_category_get_important (cat) && key_colors->len > 0) {
 		GdkRGBA *tmp = g_ptr_array_index (key_colors, 0);
 		g_autofree gchar *css = NULL;
 		css = g_strdup_printf ("border-bottom: 3px solid "

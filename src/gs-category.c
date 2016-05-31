@@ -41,6 +41,7 @@ struct _GsCategory
 	gchar		*id;
 	gchar		*name;
 	gchar		*icon;
+	gboolean	 important;
 	GPtrArray	*key_colors;
 	GsCategory	*parent;
 	guint		 size;
@@ -202,6 +203,37 @@ gs_category_set_icon (GsCategory *category, const gchar *icon)
 	g_return_if_fail (GS_IS_CATEGORY (category));
 	g_free (category->icon);
 	category->icon = g_strdup (icon);
+}
+
+/**
+ * gs_category_get_important:
+ * @category: a #GsCategory
+ *
+ * Gets if the category is important.
+ * Important categories may be shown before other categories, or tagged in a
+ * different way, for example with color or in a different section.
+ *
+ * Returns: the string, or %NULL
+ **/
+gboolean
+gs_category_get_important (GsCategory *category)
+{
+	g_return_val_if_fail (GS_IS_CATEGORY (category), FALSE);
+	return category->important;
+}
+
+/**
+ * gs_category_set_important:
+ * @category: a #GsCategory
+ * @important: a category important, or %NULL
+ *
+ * Sets if the category is important.
+ **/
+void
+gs_category_set_important (GsCategory *category, gboolean important)
+{
+	g_return_if_fail (GS_IS_CATEGORY (category));
+	category->important = important;
 }
 
 /**

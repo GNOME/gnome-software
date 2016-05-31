@@ -29,17 +29,32 @@
                     <property name="hexpand">False</property>
                     <property name="orientation">vertical</property>
                     <child>
-                      <object class="GtkLabel" id="featured_heading">
+                      <object class="GtkAlignment" id="bin_featured">
+                        <property name="visible">True</property>
+                        <property name="halign">fill</property>
+                        <property name="margin_start">12</property>
+                        <property name="margin_end">12</property>
+                        <property name="margin-top">6</property>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">0</property>
+                      </packing>
+                    </child>
+
+                    <child>
+                      <object class="GtkLabel" id="category_heading">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="xalign">0</property>
+                        <property name="label" translatable="yes">Categories</property>
                         <property name="margin-top">24</property>
-                        <property name="margin-bottom">12</property>
+                        <property name="margin-bottom">6</property>
                         <property name="margin-start">12</property>
                         <property name="margin-end">24</property>
-                        <property name="label" translatable="yes">Featured Application</property>
                         <accessibility>
-                          <relation target="bin_featured" type="label-for"/>
+                          <relation target="flowbox_categories" type="label-for"/>
                         </accessibility>
                         <style>
                           <class name="index-title-alignment-software"/>
@@ -48,33 +63,139 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">0</property>
+                        <property name="position">1</property>
                       </packing>
                     </child>
                     <child>
-                      <object class="GtkAlignment" id="bin_featured">
+                      <object class="GtkFlowBox" id="flowbox_categories">
                         <property name="visible">True</property>
-                        <property name="halign">fill</property>
-                        <property name="margin_start">12</property>
-                        <property name="margin_end">12</property>
+                        <property name="can_focus">False</property>
+                        <property name="margin_start">9</property>
+                        <property name="margin_end">9</property>
+                        <property name="margin-bottom">9</property>
+                        <property name="row_spacing">6</property>
+                        <property name="column_spacing">6</property>
+                        <property name="homogeneous">True</property>
+                        <property name="max_children_per_line">3</property>
+                        <property name="selection_mode">none</property>
                         <accessibility>
-                          <relation target="featured_heading" type="labelled-by"/>
+                          <relation target="category_heading" type="labelled-by"/>
                         </accessibility>
                       </object>
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">1</property>
+                        <property name="position">2</property>
                       </packing>
                     </child>
+                    <child>
+                      <object class="GtkRevealer" id="categories_more">
+                        <property name="visible">True</property>
+                        <property name="transition-type">slide-up</property>
+                        <child>
+                          <object class="GtkFlowBox" id="flowbox_categories2">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="margin_start">12</property>
+                            <property name="margin_end">12</property>
+                            <property name="margin-bottom">24</property>
+                            <property name="row_spacing">8</property>
+                            <property name="column_spacing">8</property>
+                            <property name="homogeneous">True</property>
+                            <property name="max_children_per_line">3</property>
+                            <property name="selection_mode">none</property>
+                            <accessibility>
+                              <relation target="category_heading" type="labelled-by"/>
+                            </accessibility>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">3</property>
+                      </packing>
+                    </child>
+                    <child>
+                      <object class="GtkRevealer" id="categories_expander">
+                        <property name="visible">True</property>
+                        <property name="transition-type">slide-up</property>
+                        <property name="reveal-child">True</property>
+                        <child>
+                          <object class="GtkBox" id="categories_expander_box">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="vexpand">False</property>
+                            <property name="orientation">horizontal</property>
+                            <property name="margin_start">24</property>
+                            <property name="margin_end">24</property>
+                            <property name="margin-bottom">12</property>
+                            <child>
+                              <object class="GtkSeparator" id="categories_expander_lsep">
+                                <property name="visible">True</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="expand">True</property>
+                                <property name="valign">center</property>
+                              </object>
+                              <packing>
+                                <property name="position">0</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkButton" id="categories_expander_button">
+                                <property name="visible">True</property>
+                                <property name="can_focus">True</property>
+                                <property name="receives_default">False</property>
+                                <property name="margin-start">9</property>
+                                <property name="margin-end">9</property>
+                                <property name="valign">center</property>
+                                <style>
+                                  <class name="round-button"/>
+                                </style>
+                                <child>
+                                  <object class="GtkImage" id="categories_expander_image">
+                                    <property name="visible">True</property>
+                                    <property name="can_focus">False</property>
+                                    <property name="icon_name">view-more-symbolic</property>
+                                    <property name="icon_size">1</property>
+                                  </object>
+                                </child>
+                              </object>
+                              <packing>
+                                <property name="expand">False</property>
+                                <property name="fill">True</property>
+                                <property name="position">1</property>
+                              </packing>
+                            </child>
+                            <child>
+                              <object class="GtkSeparator" id="categories_expander_rsep">
+                                <property name="visible">True</property>
+                                <property name="orientation">horizontal</property>
+                                <property name="expand">True</property>
+                                <property name="valign">center</property>
+                              </object>
+                              <packing>
+                                <property name="position">2</property>
+                              </packing>
+                            </child>
+                          </object>
+                        </child>
+                      </object>
+                      <packing>
+                        <property name="expand">False</property>
+                        <property name="fill">True</property>
+                        <property name="position">4</property>
+                      </packing>
+                    </child>
+
                     <child>
                       <object class="GtkLabel" id="popular_heading">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
                         <property name="xalign">0</property>
                         <property name="label" translatable="yes" comments="Translators: This is a heading for software which has been featured (&apos;picked&apos;) by the distribution.">Editor's Picks</property>
-                        <property name="margin-top">24</property>
-                        <property name="margin-bottom">12</property>
+                        <property name="margin-top">0</property>
+                        <property name="margin-bottom">6</property>
                         <property name="margin-start">12</property>
                         <property name="margin-end">24</property>
                         <accessibility>
@@ -87,7 +208,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">2</property>
+                        <property name="position">5</property>
                       </packing>
                     </child>
                     <child>
@@ -105,7 +226,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">3</property>
+                        <property name="position">6</property>
                       </packing>
                     </child>
                     <child>
@@ -115,7 +236,7 @@
                         <property name="xalign">0</property>
                         <property name="label" comments="Don&apos;t translate, this is just a placeholder">Recommended Games</property>
                         <property name="margin-top">24</property>
-                        <property name="margin-bottom">12</property>
+                        <property name="margin-bottom">6</property>
                         <property name="margin-start">12</property>
                         <property name="margin-end">24</property>
                         <accessibility>
@@ -128,7 +249,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">4</property>
+                        <property name="position">7</property>
                       </packing>
                     </child>
                     <child>
@@ -146,52 +267,7 @@
                       <packing>
                         <property name="expand">False</property>
                         <property name="fill">True</property>
-                        <property name="position">5</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkLabel" id="category_heading">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="xalign">0</property>
-                        <property name="label" translatable="yes">Categories</property>
-                        <property name="margin-top">24</property>
-                        <property name="margin-bottom">12</property>
-                        <property name="margin-start">12</property>
-                        <property name="margin-end">24</property>
-                        <accessibility>
-                          <relation target="flowbox_categories" type="label-for"/>
-                        </accessibility>
-                        <style>
-                          <class name="index-title-alignment-software"/>
-                        </style>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">6</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkFlowBox" id="flowbox_categories">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="margin_start">12</property>
-                        <property name="margin_end">12</property>
-                        <property name="margin-bottom">24</property>
-                        <property name="row_spacing">8</property>
-                        <property name="column_spacing">8</property>
-                        <property name="homogeneous">True</property>
-                        <property name="max_children_per_line">4</property>
-                        <property name="selection_mode">none</property>
-                        <accessibility>
-                          <relation target="category_heading" type="labelled-by"/>
-                        </accessibility>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">7</property>
+                        <property name="position">8</property>
                       </packing>
                     </child>
                   </object>

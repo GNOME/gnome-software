@@ -2139,6 +2139,13 @@ gs_plugin_loader_category_sort_cb (gconstpointer a, gconstpointer b)
 {
 	GsCategory *cata = GS_CATEGORY (*(GsCategory **) a);
 	GsCategory *catb = GS_CATEGORY (*(GsCategory **) b);
+
+	/* addons always go last */
+	if (g_strcmp0 (gs_category_get_id (cata), "Addons") == 0)
+		return 1;
+	if (g_strcmp0 (gs_category_get_id (catb), "Addons") == 0)
+		return -1;
+
 	return g_strcmp0 (gs_category_get_name (cata),
 			  gs_category_get_name (catb));
 }

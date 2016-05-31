@@ -33,7 +33,7 @@
 #include "gs-category-tile.h"
 #include "gs-common.h"
 
-#define N_TILES 8
+#define N_TILES 9
 
 typedef struct
 {
@@ -55,12 +55,15 @@ typedef struct
 	GtkWidget		*box_popular;
 	GtkWidget		*box_popular_rotating;
 	GtkWidget		*category_heading;
-	GtkWidget		*featured_heading;
 	GtkWidget		*flowbox_categories;
+	GtkWidget		*flowbox_categories2;
 	GtkWidget		*popular_heading;
 	GtkWidget		*popular_rotating_heading;
 	GtkWidget		*scrolledwindow_overview;
 	GtkWidget		*stack_overview;
+	GtkWidget		*categories_expander_button;
+	GtkWidget		*categories_expander;
+	GtkWidget		*categories_more;
 } GsShellOverviewPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsShellOverview, gs_shell_overview, GS_TYPE_PAGE)
@@ -261,7 +264,6 @@ gs_shell_overview_get_featured_cb (GObject *source_object,
 	}
 
 	gs_container_remove_all (GTK_CONTAINER (priv->bin_featured));
-	gtk_widget_set_visible (priv->featured_heading, list != NULL);
 	if (list == NULL) {
 		g_warning ("failed to get featured apps: %s",
 			   error->message);
@@ -318,6 +320,7 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GsCategory *cat;
 	GtkWidget *tile;
 	gboolean has_category = FALSE;
+	gboolean use_expander = FALSE;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GPtrArray) list = NULL;
 
@@ -328,18 +331,29 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 		goto out;
 	}
 	gs_container_remove_all (GTK_CONTAINER (priv->flowbox_categories));
+	gs_container_remove_all (GTK_CONTAINER (priv->flowbox_categories2));
 
 	for (i = 0; i < list->len; i++) {
+		GtkFlowBox *flowbox;
 		cat = GS_CATEGORY (g_ptr_array_index (list, i));
 		if (gs_category_get_size (cat) == 0)
 			continue;
 		tile = gs_category_tile_new (cat);
 		g_signal_connect (tile, "clicked",
 				  G_CALLBACK (category_tile_clicked), self);
-		gtk_flow_box_insert (GTK_FLOW_BOX (priv->flowbox_categories), tile, -1);
+		if (gs_category_get_important (cat)) {
+			flowbox = GTK_FLOW_BOX (priv->flowbox_categories);
+		} else {
+			flowbox = GTK_FLOW_BOX (priv->flowbox_categories2);
+			use_expander = TRUE;
+		}
+		gtk_flow_box_insert (flowbox, tile, -1);
 		gtk_widget_set_can_focus (gtk_widget_get_parent (tile), FALSE);
 		has_category = TRUE;
 	}
+
+	/* show the expander if we have too many children */
+	gtk_widget_set_visible (priv->categories_expander, use_expander);
 out:
 	if (has_category) {
 		priv->empty = FALSE;
@@ -495,6 +509,14 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 	gs_shell_overview_load (self);
 }
 
+static void
+gs_shell_overview_categories_expander_cb (GtkButton *button, GsShellOverview *self)
+{
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_expander), FALSE);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), TRUE);
+}
+
 void
 gs_shell_overview_setup (GsShellOverview *self,
 			 GsShell *shell,
@@ -529,6 +551,11 @@ gs_shell_overview_setup (GsShellOverview *self,
 		tile = gs_popular_tile_new (NULL);
 		gtk_container_add (GTK_CONTAINER (priv->box_popular_rotating), tile);
 	}
+
+	/* handle category expander */
+	g_signal_connect (priv->categories_expander_button, "clicked",
+			  G_CALLBACK (gs_shell_overview_categories_expander_cb), self);
+
 
 	/* chain up */
 	gs_page_setup (GS_PAGE (self),
@@ -597,12 +624,15 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, box_popular_rotating);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, category_heading);
-	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, featured_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, flowbox_categories);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, flowbox_categories2);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, popular_rotating_heading);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, scrolledwindow_overview);
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, stack_overview);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander_button);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_expander);
+	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_more);
 }
 
 /**

@@ -26,19 +26,21 @@
 #include "menu-spec-common.h"
 
 static const MenuSpecData msdata[] = {
-	/* TRANSLATORS: this is the menu spec main category for Audio */
-	{ "Audio", 				N_("Audio"), "folder-music-symbolic", "#cc29ae" },
-	{ "Audio::AudioVideoEditing",		NC_("Menu subcategory of Audio", "Editing") },
-	{ "Audio::Database",			NC_("Menu subcategory of Audio", "Databases") },
-	{ "Audio::DiscBurning",			NC_("Menu subcategory of Audio", "Disc Burning") },
-	{ "Audio::HamRadio",			NC_("Menu subcategory of Audio", "Ham Radio") },
-	{ "Audio::Midi",			NC_("Menu subcategory of Audio", "MIDI") },
-	{ "Audio::Mixer",			NC_("Menu subcategory of Audio", "Mixer") },
-	{ "Audio::Music",			NC_("Menu subcategory of Audio", "Music") },
-	{ "Audio::Player",			NC_("Menu subcategory of Audio", "Players") },
-	{ "Audio::Recorder",			NC_("Menu subcategory of Audio", "Recorders") },
-	{ "Audio::Sequencer",			NC_("Menu subcategory of Audio", "Sequencers") },
-	{ "Audio::Tuner",			NC_("Menu subcategory of Audio", "Tuners") },
+	/* TRANSLATORS: this is the menu spec main category for Audio & Video */
+	{ "AudioVideo", 			N_("Audio & Video"), "folder-music-symbolic", "#215d9c", TRUE },
+	{ "AudioVideo::AudioVideoEditing",	NC_("Menu subcategory of AudioVideo", "Editing") },
+	{ "AudioVideo::Database",		NC_("Menu subcategory of AudioVideo", "Databases") },
+	{ "AudioVideo::DiscBurning",		NC_("Menu subcategory of AudioVideo", "Disc Burning") },
+	{ "AudioVideo::HamRadio",		NC_("Menu subcategory of AudioVideo", "Ham Radio") },
+	{ "AudioVideo::Midi",			NC_("Menu subcategory of AudioVideo", "MIDI") },
+	{ "AudioVideo::Mixer",			NC_("Menu subcategory of AudioVideo", "Mixer") },
+	{ "AudioVideo::Music",			NC_("Menu subcategory of AudioVideo", "Music") },
+	{ "AudioVideo::Player",			NC_("Menu subcategory of AudioVideo", "Players") },
+	{ "AudioVideo::Player",			NC_("Menu subcategory of AudioVideo", "Players") },
+	{ "AudioVideo::Recorder",		NC_("Menu subcategory of AudioVideo", "Recorders") },
+	{ "AudioVideo::Sequencer",		NC_("Menu subcategory of AudioVideo", "Sequencers") },
+	{ "AudioVideo::Tuner",			NC_("Menu subcategory of AudioVideo", "Tuners") },
+	{ "AudioVideo::TV",			NC_("Menu subcategory of AudioVideo", "TV") },
 	/* TRANSLATORS: this is the menu spec main category for Development */
 	{ "Development", 			N_("Development Tools"), "applications-engineering-symbolic", "#297bcc" },
 	{ "Development::Building",		NC_("Menu subcategory of Development Tools", "Building") },
@@ -84,7 +86,7 @@ static const MenuSpecData msdata[] = {
 	{ "Education::Spirituality",		NC_("Menu subcategory of Education", "Spirituality") },
 	{ "Education::Sports",			NC_("Menu subcategory of Education", "Sports") },
 	/* TRANSLATORS: this is the menu spec main category for Games */
-	{ "Game", 				N_("Games"), "applications-games-symbolic", "#cc8529" },
+	{ "Game", 				N_("Games"), "applications-games-symbolic", "#c4a000", TRUE },
 	{ "Game::ActionGame",			NC_("Menu subcategory of Games", "Action") },
 	{ "Game::AdventureGame",		NC_("Menu subcategory of Games", "Adventure") },
 	{ "Game::ArcadeGame",			NC_("Menu subcategory of Games", "Arcade") },
@@ -100,7 +102,7 @@ static const MenuSpecData msdata[] = {
 	{ "Game::SportsGame",			NC_("Menu subcategory of Games", "Sports") },
 	{ "Game::StrategyGame",			NC_("Menu subcategory of Games", "Strategy") },
 	/* TRANSLATORS: this is the menu spec main category for Graphics */
-	{ "Graphics", 				N_("Graphics"), "applications-graphics-symbolic", "#ccbe29" },
+	{ "Graphics", 				N_("Graphics & Photography"), "applications-graphics-symbolic", "#75507b", TRUE },
 	{ "Graphics::2DGraphics",		NC_("Menu subcategory of Graphics", "2D Graphics") },
 	{ "Graphics::3DGraphics",		NC_("Menu subcategory of Graphics", "3D Graphics") },
 	{ "Graphics::OCR",			NC_("Menu subcategory of Graphics", "OCR") },
@@ -111,7 +113,7 @@ static const MenuSpecData msdata[] = {
 	{ "Graphics::VectorGraphics",		NC_("Menu subcategory of Graphics", "Vector Graphics") },
 	{ "Graphics::Viewer",			NC_("Menu subcategory of Graphics", "Viewer") },
 	/* TRANSLATORS: this is the menu spec main category for Network */
-	{ "Network", 				N_("Internet"), "network-wireless-symbolic", "#cc2929" },
+	{ "Network", 				N_("Communication"), "user-available-symbolic", "#729fcf", TRUE },
 	{ "Network::Chat",			NC_("Menu subcategory of Internet", "Chat") },
 	{ "Network::Dialup",			NC_("Menu subcategory of Internet", "Dialup") },
 	{ "Network::Email",			NC_("Menu subcategory of Internet", "Email") },
@@ -129,7 +131,7 @@ static const MenuSpecData msdata[] = {
 	{ "Network::WebBrowser",		NC_("Menu subcategory of Internet", "Web Browser") },
 	{ "Network::WebDevelopment",		NC_("Menu subcategory of Internet", "Web Development") },
 	/* TRANSLATORS: this is the menu spec main category for Office */
-	{ "Office", 				N_("Office"), "text-editor-symbolic", "#5d29cc" },
+	{ "Office", 				N_("Productivity"), "text-editor-symbolic", "#cc0000", TRUE },
 	{ "Office::Calendar",			NC_("Menu subcategory of Office", "Calendar") },
 	{ "Office::Chart",			NC_("Menu subcategory of Office", "Chart") },
 	{ "Office::ContactManagement",		NC_("Menu subcategory of Office", "Contact Management") },
@@ -198,16 +200,8 @@ static const MenuSpecData msdata[] = {
 	{ "Utility::Spirituality",		NC_("Menu subcategory of Utilities", "Spirituality") },
 	{ "Utility::TelephonyTools",		NC_("Menu subcategory of Utilities", "Telephony Tools") },
 	{ "Utility::TextEditor",		NC_("Menu subcategory of Utilities", "Text Editor") },
-	/* TRANSLATORS: this is the menu spec main category for Video */
-	{ "Video", 				N_("Video"), "folder-videos-symbolic", "#cc29ae" },
-	{ "Video::AudioVideoEditing",		NC_("Menu subcategory of Video", "Editing") },
-	{ "Video::Database",			NC_("Menu subcategory of Video", "Database") },
-	{ "Video::DiscBurning",			NC_("Menu subcategory of Video", "Disc Burning") },
-	{ "Video::Player",			NC_("Menu subcategory of Video", "Players") },
-	{ "Video::Recorder",			NC_("Menu subcategory of Video", "Recorders") },
-	{ "Video::TV",				NC_("Menu subcategory of Video", "TV") },
 	/* TRANSLATORS: this is the main category for Add-ons */
-	{ "Addons", 				N_("Add-ons"), "list-add-symbolic", "#cc5a29" },
+	{ "Addons", 				N_("Add-ons"), "application-x-addon-symbolic", "#4e9a06", TRUE },
 	{ "Addons::Fonts",			NC_("Menu subcategory of Add-ons", "Fonts") },
 	{ "Addons::Codecs",			NC_("Menu subcategory of Add-ons", "Codecs") },
 	{ "Addons::InputSources",		NC_("Menu subcategory of Add-ons", "Input Sources") },
