@@ -3748,6 +3748,11 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 					    function_name);
 				continue;
 			}
+			if (flags & GS_PLUGIN_REFRESH_FLAGS_INTERACTIVE) {
+				g_propagate_error (error, error_local);
+				error_local = NULL;
+				return FALSE;
+			}
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
