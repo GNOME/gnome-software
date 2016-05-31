@@ -248,7 +248,7 @@ gs_shell_change_mode (GsShell *shell,
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "header_selection_menu_button"));
 	gtk_widget_hide (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	gtk_widget_hide (widget);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
 
 	context = gtk_widget_get_style_context (GTK_WIDGET (gtk_builder_get_object (priv->builder, "header")));
 	gtk_style_context_remove_class (context, "selection-mode");
@@ -496,6 +496,7 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GtkWidget *entry;
+	GtkWidget *widget;
 	guint keyval;
 	gboolean handled;
 	gboolean preedit_changed;
@@ -513,6 +514,9 @@ window_keypress_handler (GtkWidget *window, GdkEvent *event, GsShell *shell)
 	    keyval == GDK_KEY_space ||
 	    keyval == GDK_KEY_Menu)
 		return GDK_EVENT_PROPAGATE;
+
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), TRUE);
 
 	entry = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 

@@ -50,6 +50,8 @@ typedef struct
 	gboolean		 empty;
 	gchar			*category_of_day;
 
+	GtkWidget		*search_button;
+
 	GtkWidget		*bin_featured;
 	GtkWidget		*box_overview;
 	GtkWidget		*box_popular;
@@ -490,10 +492,13 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 		return;
 	}
 
+	/* we hid the search bar */
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->search_button), FALSE);
+
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	gtk_widget_show (widget);
+	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
 	gtk_entry_set_text (GTK_ENTRY (widget), "");
 
@@ -507,6 +512,24 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 	if (priv->cache_valid || priv->refresh_count > 0)
 		return;
 	gs_shell_overview_load (self);
+}
+
+static void
+gs_shell_overview_search_button_cb (GtkButton *button, GsShellOverview *self)
+{
+	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GtkWidget *widget;
+
+	/* show search */
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->search_button))) {
+		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+		gtk_revealer_set_reveal_child (GTK_REVEALER (widget), TRUE);
+		return;
+	}
+
+	/* hide search */
+	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
+	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
 }
 
 static void
@@ -527,6 +550,7 @@ gs_shell_overview_setup (GsShellOverview *self,
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GtkAdjustment *adj;
 	GtkWidget *tile;
+	GtkWidget *im;
 	gint i;
 
 	g_return_if_fail (GS_IS_SHELL_OVERVIEW (self));
@@ -556,6 +580,16 @@ gs_shell_overview_setup (GsShellOverview *self,
 	g_signal_connect (priv->categories_expander_button, "clicked",
 			  G_CALLBACK (gs_shell_overview_categories_expander_cb), self);
 
+	/* search button */
+	priv->search_button = gtk_toggle_button_new ();
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->search_button), FALSE);
+	im = gtk_image_new_from_icon_name ("edit-find-symbolic", GTK_ICON_SIZE_BUTTON);
+	gtk_widget_set_visible (im, TRUE);
+	gtk_container_add (GTK_CONTAINER (priv->search_button), im);
+	gtk_widget_set_visible (priv->search_button, TRUE);
+	gs_page_set_header_end_widget (GS_PAGE (self), priv->search_button);
+	g_signal_connect (priv->search_button, "clicked",
+			  G_CALLBACK (gs_shell_overview_search_button_cb), self);
 
 	/* chain up */
 	gs_page_setup (GS_PAGE (self),

@@ -248,76 +248,84 @@
             <property name="position">0</property>
           </packing>
         </child>
+
         <child>
-          <object class="GtkToolbar" id="search_bar">
-            <property name="visible">False</property>
-            <property name="can_focus">False</property>
-            <style>
-              <class name="search-bar"/>
-            </style>
+          <object class="GtkRevealer" id="search_bar">
+            <property name="visible">True</property>
+            <property name="transition-type">slide-up</property>
+
             <child>
-              <object class="GtkToolItem" id="search_toolitem">
+              <object class="GtkToolbar" id="search_bar_toolbar">
                 <property name="visible">True</property>
                 <property name="can_focus">False</property>
+                <style>
+                  <class name="search-bar"/>
+                </style>
                 <child>
-                  <object class="GtkBox" id="search_toolbox">
+                  <object class="GtkToolItem" id="search_toolitem">
                     <property name="visible">True</property>
                     <property name="can_focus">False</property>
                     <child>
-                      <object class="GtkBox" id="box_left">
+                      <object class="GtkBox" id="search_toolbox">
                         <property name="visible">True</property>
                         <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="hexpand">True</property>
-                        <property name="orientation">vertical</property>
                         <child>
-                          <placeholder/>
+                          <object class="GtkBox" id="box_left">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="hexpand">True</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">0</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkSearchEntry" id="entry_search">
+                            <property name="visible">True</property>
+                            <property name="can_focus">True</property>
+                            <property name="activates_default">True</property>
+                            <property name="width_request">500</property>
+                            <property name="hexpand">True</property>
+                            <property name="halign">center</property>
+                          </object>
+                          <packing>
+                            <property name="expand">False</property>
+                            <property name="fill">True</property>
+                            <property name="position">1</property>
+                          </packing>
+                        </child>
+                        <child>
+                          <object class="GtkBox" id="box_right">
+                            <property name="visible">True</property>
+                            <property name="can_focus">False</property>
+                            <property name="halign">start</property>
+                            <property name="hexpand">True</property>
+                            <property name="orientation">vertical</property>
+                            <child>
+                              <placeholder/>
+                            </child>
+                          </object>
+                          <packing>
+                            <property name="expand">True</property>
+                            <property name="fill">True</property>
+                            <property name="position">2</property>
+                          </packing>
                         </child>
                       </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">0</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkSearchEntry" id="entry_search">
-                        <property name="visible">True</property>
-                        <property name="can_focus">True</property>
-                        <property name="activates_default">True</property>
-                        <property name="width_request">500</property>
-                        <property name="hexpand">True</property>
-                        <property name="halign">center</property>
-                      </object>
-                      <packing>
-                        <property name="expand">False</property>
-                        <property name="fill">True</property>
-                        <property name="position">1</property>
-                      </packing>
-                    </child>
-                    <child>
-                      <object class="GtkBox" id="box_right">
-                        <property name="visible">True</property>
-                        <property name="can_focus">False</property>
-                        <property name="halign">start</property>
-                        <property name="hexpand">True</property>
-                        <property name="orientation">vertical</property>
-                        <child>
-                          <placeholder/>
-                        </child>
-                      </object>
-                      <packing>
-                        <property name="expand">True</property>
-                        <property name="fill">True</property>
-                        <property name="position">2</property>
-                      </packing>
                     </child>
                   </object>
+                  <packing>
+                    <property name="expand">True</property>
+                  </packing>
                 </child>
               </object>
-              <packing>
-                <property name="expand">True</property>
-              </packing>
             </child>
           </object>
           <packing>
@@ -326,6 +334,7 @@
             <property name="position">1</property>
           </packing>
         </child>
+
         <child>
           <object class="GtkStack" id="stack_main">
             <property name="visible">True</property>
