@@ -24,6 +24,7 @@
 #define __GS_CATEGORY_H
 
 #include <glib-object.h>
+#include <gdk/gdk.h>
 
 G_BEGIN_DECLS
 
@@ -41,6 +42,9 @@ void		 gs_category_set_name		(GsCategory	*category,
 const gchar	*gs_category_get_icon		(GsCategory	*category);
 void		 gs_category_set_icon		(GsCategory	*category,
 						 const gchar	*icon);
+GPtrArray	*gs_category_get_key_colors	(GsCategory	*category);
+void		 gs_category_add_key_color	(GsCategory	*category,
+						 const GdkRGBA	*key_color);
 
 GsCategory	*gs_category_find_child		(GsCategory	*category,
 						 const gchar	*id);

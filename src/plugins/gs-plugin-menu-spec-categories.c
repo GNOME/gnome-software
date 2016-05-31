@@ -48,19 +48,21 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	for (i = 0; msdata[i].path != NULL; i++) {
 		tmp = g_strstr_len (msdata[i].path, -1, "::");
 		if (tmp == NULL) {
+			GdkRGBA key_color;
 			category = gs_category_new (msdata[i].path);
 			gs_category_set_icon (category, msdata[i].icon);
-			gs_category_set_name (category, gettext (msdata[i].text));
+			gs_category_set_name (category, gettext (msdata[i].name));
+			if (gdk_rgba_parse (&key_color, msdata[i].key_colors))
+				gs_category_add_key_color (category, &key_color);
 			g_ptr_array_add (list, category);
-			g_snprintf (msgctxt, 100, "Menu subcategory of %s", msdata[i].text);
+			g_snprintf (msgctxt, 100, "Menu subcategory of %s", msdata[i].name);
 		} else {
 			g_autoptr(GsCategory) sub = gs_category_new (tmp + 2);
 			gs_category_set_name (sub, g_dpgettext2 (GETTEXT_PACKAGE,
 								 msgctxt,
-								 msdata[i].text));
+								 msdata[i].name));
 			gs_category_add_child (category, sub);
 		}
 	}
-
 	return TRUE;
 }

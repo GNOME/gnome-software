@@ -62,14 +62,14 @@ gs_plugin_refine_app_category (GsPlugin *plugin,
 		ret = gs_app_has_category (app, tmp + 2);
 		if (ret) {
 			g_autofree gchar *msgctxt = NULL;
-			msgctxt = g_strdup_printf ("Menu subcategory of %s", cat->text);
-			menu_path[1] = g_dpgettext2 (GETTEXT_PACKAGE, msgctxt, msdata[i].text);
+			msgctxt = g_strdup_printf ("Menu subcategory of %s", cat->name);
+			menu_path[1] = g_dpgettext2 (GETTEXT_PACKAGE, msgctxt, msdata[i].name);
 			break;
 		}
 	}
 
 	/* the top-level category always exists */
-	menu_path[0] = gettext (cat->text);
+	menu_path[0] = gettext (cat->name);
 	gs_app_set_menu_path (app, (gchar **) menu_path);
 }
 

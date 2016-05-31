@@ -56,9 +56,11 @@ const gchar 	*gs_utils_get_content_rating	(void);
 
 const gchar	*gs_user_agent			(void);
 gboolean	 gs_utils_is_current_desktop	(const gchar	*name);
-void		 gs_utils_widget_set_custom_css	(GsApp		*app,
+void		 gs_utils_widget_set_css_app	(GsApp		*app,
 						 GtkWidget	*widget,
 						 const gchar	*metadata_css);
+void		 gs_utils_widget_set_css_simple	(GtkWidget	*widget,
+						 const gchar	*css);
 gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
 						 const gchar	*str);
 void		 gs_utils_show_error_dialog	(GtkWindow	*parent,

@@ -227,8 +227,8 @@ gs_upgrade_banner_set_app (GsUpgradeBanner *self, GsApp *app)
 	                  G_CALLBACK (app_progress_changed), self);
 
 	/* perhaps set custom css */
-	gs_utils_widget_set_custom_css (app, priv->box_upgrades,
-					"GnomeSoftware::UpgradeBanner-css");
+	gs_utils_widget_set_css_app (app, priv->box_upgrades,
+				     "GnomeSoftware::UpgradeBanner-css");
 
 	gs_upgrade_banner_refresh (self);
 }

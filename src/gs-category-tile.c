@@ -25,6 +25,7 @@
 #include <gtk/gtk.h>
 
 #include "gs-category-tile.h"
+#include "gs-common.h"
 
 struct _GsCategoryTile
 {
@@ -48,6 +49,8 @@ gs_category_tile_get_category (GsCategoryTile *tile)
 void
 gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 {
+	GPtrArray *key_colors;
+
 	g_return_if_fail (GS_IS_CATEGORY_TILE (tile));
 	g_return_if_fail (GS_IS_CATEGORY (cat));
 
@@ -58,6 +61,20 @@ gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 	gtk_image_set_from_icon_name (GTK_IMAGE (tile->image),
 				      gs_category_get_icon (cat),
 				      GTK_ICON_SIZE_MENU);
+
+	/* set custom CSS */
+	key_colors = gs_category_get_key_colors (cat);
+	if (key_colors->len > 0) {
+		GdkRGBA *tmp = g_ptr_array_index (key_colors, 0);
+		g_autofree gchar *css = NULL;
+		css = g_strdup_printf ("border-bottom: 3px solid "
+				       "rgba(%.0f,%.0f,%.0f,%.2f);",
+				       tmp->red * 255,
+				       tmp->green * 255,
+				       tmp->blue * 255,
+				       tmp->alpha);
+		gs_utils_widget_set_css_simple (GTK_WIDGET (tile), css);
+	}
 }
 
 static void

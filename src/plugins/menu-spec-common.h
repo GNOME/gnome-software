@@ -29,8 +29,9 @@ G_BEGIN_DECLS
 
 typedef struct {
 	const gchar *path;
+	const gchar *name;
 	const gchar *icon;
-	const gchar *text;
+	const gchar *key_colors;
 } MenuSpecData;
 
 const MenuSpecData	*menu_spec_get_data		(void);

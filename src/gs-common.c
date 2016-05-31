@@ -644,20 +644,65 @@ gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
 		   error->message);
 }
 
+static void
+gs_utils_widget_set_css_internal (GtkWidget *widget,
+				  const gchar *class_name,
+				  const gchar *css)
+{
+	GtkStyleContext *context;
+	g_autoptr(GtkCssProvider) provider = NULL;
+
+	g_debug ("using custom CSS %s", css);
+
+	/* set the custom CSS class */
+	context = gtk_widget_get_style_context (widget);
+	gtk_style_context_add_class (context, class_name);
+
+	/* set up custom provider and store on the widget */
+	provider = gtk_css_provider_new ();
+	g_signal_connect (provider, "parsing-error",
+			  G_CALLBACK (gs_utils_widget_css_parsing_error_cb), NULL);
+	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
+						   GTK_STYLE_PROVIDER (provider),
+						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
+	gtk_css_provider_load_from_data (provider, css, -1, NULL);
+	g_object_set_data_full (G_OBJECT (widget),
+				"GnomeSoftware::provider",
+				g_object_ref (provider),
+				g_object_unref);
+}
+
 /**
- * gs_utils_widget_set_custom_css:
+ * gs_utils_widget_set_css_simple:
  **/
 void
-gs_utils_widget_set_custom_css (GsApp *app, GtkWidget *widget, const gchar *metadata_css)
+gs_utils_widget_set_css_simple (GtkWidget *widget, const gchar *css)
+{
+	g_autofree gchar *class_name = NULL;
+	GString *str = g_string_sized_new (1024);
+
+	class_name = g_strdup_printf ("themed-widget_%p", widget);
+	g_string_append_printf (str, ".%s {\n", class_name);
+	g_string_append_printf (str, "%s\n", css);
+	g_string_append (str, "}");
+
+	gs_utils_widget_set_css_internal (widget, class_name, str->str);
+}
+
+/**
+ * gs_utils_widget_set_css_app:
+ **/
+void
+gs_utils_widget_set_css_app (GsApp *app,
+			     GtkWidget *widget,
+			     const gchar *metadata_css)
 {
 	GPtrArray *key_colors;
 	GString *str = g_string_sized_new (1024);
-	GtkStyleContext *context;
 	const gchar *css;
 	guint i;
 	g_autofree gchar *class_name = NULL;
 	g_autoptr(GString) css_str = NULL;
-	g_autoptr(GtkCssProvider) provider = NULL;
 
 	g_return_if_fail (GS_IS_APP (app));
 
@@ -690,25 +735,7 @@ gs_utils_widget_set_custom_css (GsApp *app, GtkWidget *widget, const gchar *meta
 	g_string_append_printf (str, ".%s:hover {\n", class_name);
 	g_string_append (str, "  opacity: 0.9;\n");
 	g_string_append (str, "}\n");
-
-	g_debug ("using custom CSS %s", str->str);
-
-	/* set the custom CSS class */
-	context = gtk_widget_get_style_context (widget);
-	gtk_style_context_add_class (context, class_name);
-
-	/* set up custom provider and store on the widget */
-	provider = gtk_css_provider_new ();
-	g_signal_connect (provider, "parsing-error",
-			  G_CALLBACK (gs_utils_widget_css_parsing_error_cb), NULL);
-	gtk_style_context_add_provider_for_screen (gdk_screen_get_default (),
-						   GTK_STYLE_PROVIDER (provider),
-						   GTK_STYLE_PROVIDER_PRIORITY_APPLICATION);
-	gtk_css_provider_load_from_data (provider, str->str, -1, NULL);
-	g_object_set_data_full (G_OBJECT (widget),
-				"GnomeSoftware::provider",
-				g_object_ref (provider),
-				g_object_unref);
+	gs_utils_widget_set_css_internal (widget, class_name, str->str);
 }
 
 const gchar *

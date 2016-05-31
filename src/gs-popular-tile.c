@@ -127,8 +127,8 @@ gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
 	app_state_changed (tile->app, NULL, tile);
 
 	/* perhaps set custom css */
-	gs_utils_widget_set_custom_css (app, GTK_WIDGET (tile),
-					"GnomeSoftware::PopularTile-css");
+	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile),
+				     "GnomeSoftware::PopularTile-css");
 
 	gs_image_set_from_pixbuf (GTK_IMAGE (tile->image), gs_app_get_pixbuf (tile->app));
 

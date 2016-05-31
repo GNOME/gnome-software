@@ -113,8 +113,8 @@ gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (tile->subtitle), gs_app_get_summary (app));
 
 	/* perhaps set custom css */
-	gs_utils_widget_set_custom_css (app, GTK_WIDGET (tile),
-					"GnomeSoftware::FeatureTile-css");
+	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile),
+				     "GnomeSoftware::FeatureTile-css");
 }
 
 static void

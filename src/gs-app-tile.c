@@ -154,8 +154,8 @@ gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
 	gtk_label_set_label (GTK_LABEL (tile->name), gs_app_get_name (app));
 
 	/* perhaps set custom css */
-	gs_utils_widget_set_custom_css (app, GTK_WIDGET (tile),
-					"GnomeSoftware::AppTile-css");
+	gs_utils_widget_set_css_app (app, GTK_WIDGET (tile),
+				     "GnomeSoftware::AppTile-css");
 
 	/* some kinds have boring summaries */
 	switch (gs_app_get_kind (app)) {
