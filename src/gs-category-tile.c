@@ -67,12 +67,8 @@ gs_category_tile_set_category (GsCategoryTile *tile, GsCategory *cat)
 	if (gs_category_get_important (cat) && key_colors->len > 0) {
 		GdkRGBA *tmp = g_ptr_array_index (key_colors, 0);
 		g_autofree gchar *css = NULL;
-		css = g_strdup_printf ("border-bottom: 3px solid "
-				       "rgba(%.0f,%.0f,%.0f,%.2f);",
-				       tmp->red * 255,
-				       tmp->green * 255,
-				       tmp->blue * 255,
-				       tmp->alpha);
+		g_autofree gchar *color = gdk_rgba_to_string (tmp);;
+		css = g_strdup_printf ("border-bottom: 3px solid %s", color);
 		gs_utils_widget_set_css_simple (GTK_WIDGET (tile), css);
 	}
 }
