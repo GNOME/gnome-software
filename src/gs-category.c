@@ -256,9 +256,7 @@ gs_category_get_key_colors (GsCategory *category)
  * @category: a #GsCategory
  * @key_color: a #GdkRGBA
  *
- * Adds a key color to the category icon.
- *
- * Returns: the string, or %NULL
+ * Adds a key color to the category.
  **/
 void
 gs_category_add_key_color (GsCategory *category, const GdkRGBA *key_color)
