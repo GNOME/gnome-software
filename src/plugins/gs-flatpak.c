@@ -1291,13 +1291,13 @@ gs_flatpak_update_app (GsPlugin *plugin,
 	return TRUE;
 }
 
-gboolean
-gs_flatpak_file_to_app (GsPlugin *plugin,
-			FlatpakInstallation *installation,
-			GsAppList *list,
-			GFile *file,
-			GCancellable *cancellable,
-			GError **error)
+static gboolean
+gs_flatpak_file_to_app_bundle (GsPlugin *plugin,
+			       FlatpakInstallation *installation,
+			       GsAppList *list,
+			       GFile *file,
+			       GCancellable *cancellable,
+			       GError **error)
 {
 	g_autofree gchar *content_type = NULL;
 	g_autofree gchar *id_prefixed = NULL;
@@ -1306,16 +1306,6 @@ gs_flatpak_file_to_app (GsPlugin *plugin,
 	g_autoptr(GBytes) metadata = NULL;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(FlatpakBundleRef) xref_bundle = NULL;
-	const gchar *mimetypes[] = {
-		"application/vnd.flatpak",
-		NULL };
-
-	/* does this match any of the mimetypes we support */
-	content_type = gs_utils_get_content_type (file, cancellable, error);
-	if (content_type == NULL)
-		return FALSE;
-	if (!g_strv_contains (mimetypes, content_type))
-		return TRUE;
 
 	/* load bundle */
 	xref_bundle = flatpak_bundle_ref_new (file, error);
@@ -1414,5 +1404,33 @@ gs_flatpak_file_to_app (GsPlugin *plugin,
 
 	g_debug ("created local app: %s", gs_app_to_string (app));
 	gs_app_list_add (list, app);
+	return TRUE;
+}
+
+gboolean
+gs_flatpak_file_to_app (GsPlugin *plugin,
+			FlatpakInstallation *installation,
+			GsAppList *list,
+			GFile *file,
+			GCancellable *cancellable,
+			GError **error)
+{
+	g_autofree gchar *content_type = NULL;
+	const gchar *mimetypes_bundle[] = {
+		"application/vnd.flatpak",
+		NULL };
+
+	/* does this match any of the mimetypes_bundle we support */
+	content_type = gs_utils_get_content_type (file, cancellable, error);
+	if (content_type == NULL)
+		return FALSE;
+	if (g_strv_contains (mimetypes_bundle, content_type)) {
+		return gs_flatpak_file_to_app_bundle (plugin,
+						      installation,
+						      list,
+						      file,
+						      cancellable,
+						      error);
+	}
 	return TRUE;
 }
