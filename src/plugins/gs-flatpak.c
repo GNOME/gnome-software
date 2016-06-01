@@ -369,9 +369,19 @@ gs_flatpak_add_sources (GsPlugin *plugin,
 			GCancellable *cancellable,
 			GError **error)
 {
+	g_autoptr(GPtrArray) xrefs = NULL;
 	g_autoptr(GPtrArray) xremotes = NULL;
 	guint i;
+	guint j;
 
+	/* get installed apps and runtimes */
+	xrefs = flatpak_installation_list_installed_refs (installation,
+							  cancellable,
+							  error);
+	if (xrefs == NULL)
+		return FALSE;
+
+	/* get available remotes */
 	xremotes = flatpak_installation_list_remotes (installation,
 						      cancellable,
 						      error);
@@ -400,6 +410,31 @@ gs_flatpak_add_sources (GsPlugin *plugin,
 				AS_URL_KIND_HOMEPAGE,
 				flatpak_remote_get_url (xremote));
 		gs_app_list_add (list, app);
+
+		/* add related apps, i.e. what was installed from there */
+		for (j = 0; j < xrefs->len; j++) {
+			FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, j);
+			g_autoptr(GError) error_local = NULL;
+			g_autoptr(GsApp) related = NULL;
+
+			/* only apps */
+			if (flatpak_ref_get_kind (FLATPAK_REF (xref)) != FLATPAK_REF_KIND_APP)
+				continue;
+			if (g_strcmp0 (flatpak_installed_ref_get_origin (xref),
+				       flatpak_remote_get_name (xremote)) != 0)
+				continue;
+			related = gs_flatpak_create_installed (plugin,
+							       installation,
+							       xref,
+							       &error_local);
+			if (related == NULL) {
+				g_warning ("failed to add flatpak: %s",
+					   error_local->message);
+				continue;
+			}
+			gs_app_set_state (related, AS_APP_STATE_INSTALLED);
+			gs_app_add_related (app, related);
+		}
 	}
 	return TRUE;
 }
