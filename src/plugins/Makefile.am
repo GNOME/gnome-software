@@ -72,6 +72,7 @@ endif
 
 if HAVE_FLATPAK
 plugin_LTLIBRARIES += libgs_plugin_flatpak.la
+plugin_LTLIBRARIES += libgs_plugin_flatpak-user.la
 endif
 
 if HAVE_OSTREE
@@ -169,6 +170,16 @@ libgs_plugin_flatpak_la_SOURCES =			\
 libgs_plugin_flatpak_la_LIBADD = $(GS_PLUGIN_LIBS) $(FLATPAK_LIBS)
 libgs_plugin_flatpak_la_LDFLAGS = -module -avoid-version
 libgs_plugin_flatpak_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_flatpak_user_la_SOURCES =			\
+	gs-appstream.c					\
+	gs-appstream.h					\
+	gs-flatpak.c					\
+	gs-flatpak.h					\
+	gs-plugin-flatpak-user.c
+libgs_plugin_flatpak_user_la_LIBADD = $(GS_PLUGIN_LIBS) $(FLATPAK_LIBS)
+libgs_plugin_flatpak_user_la_LDFLAGS = -module -avoid-version
+libgs_plugin_flatpak_user_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
 if HAVE_OSTREE
