@@ -59,8 +59,8 @@ gs_plugin_destroy (GsPlugin *plugin)
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
-	if (g_str_has_prefix (gs_app_get_id (app),
-			      GS_FLATPAK_SYSTEM_PREFIX ":")) {
+	const gchar *id = gs_app_get_id (app);
+	if (id != NULL && g_str_has_prefix (id, GS_FLATPAK_SYSTEM_PREFIX ":")) {
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 	}
 }

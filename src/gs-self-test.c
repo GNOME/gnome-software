@@ -859,7 +859,7 @@ main (int argc, char **argv)
 		"dpkg",
 		"dummy",
 		"epiphany",
-		"flatpak",
+		"flatpak-user",
 		"fwupd",
 		"hardcoded-blacklist",
 		"icons",
