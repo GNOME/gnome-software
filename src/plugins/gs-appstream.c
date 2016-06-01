@@ -318,8 +318,6 @@ gs_refine_item_management_plugin (GsPlugin *plugin, GsApp *app, AsApp *item)
 		AsBundle *bundle = g_ptr_array_index (bundles, i);
 		AsBundleKind kind = as_bundle_get_kind (bundle);
 
-		/* common to all bundle formats */
-		gs_app_set_management_plugin (app, as_bundle_kind_to_string (kind));
 		gs_app_add_source (app, as_bundle_get_id (bundle));
 
 		/* automatically add runtime */
