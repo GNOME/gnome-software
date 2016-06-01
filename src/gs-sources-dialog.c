@@ -396,8 +396,11 @@ static gchar *
 get_os_name (void)
 {
 	gchar *name = NULL;
+	g_autoptr(GsOsRelease) os_release = NULL;
 
-	name = gs_os_release_get_name (NULL);
+	os_release = gs_os_release_new (NULL);
+	if (os_release != NULL)
+		name = g_strdup (gs_os_release_get_name (os_release));
 	if (name == NULL) {
 		/* TRANSLATORS: this is the fallback text we use if we can't
 		   figure out the name of the operating system */
