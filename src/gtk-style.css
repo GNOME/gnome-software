@@ -5,6 +5,9 @@
 	color: @theme_selected_fg_color;
 	text-shadow: 0 1px 0 rgba(0,0,0,0.5);
 }
+  .installed-overlay-box:backdrop label {
+        color: @theme_selected_fg_color;
+  }
 
 .popular-installed-overlay-box {
 	font-size: 80%;
@@ -13,6 +16,9 @@
 	color: @theme_selected_fg_color;
 	text-shadow: none;
 }
+  .popular-installed-overlay-box:backdrop label {
+	color: @theme_selected_fg_color;
+  }
 
 .index-title-alignment-software {
 	font-weight: bold;
@@ -107,6 +113,10 @@
 	border-image: none;
 	/* box-shadow: inset 0 0 0 1px alpha(@theme_fg_color,0.3), 0 0 1px alpha(black,0.4); */
 }
+  .featured-tile:backdrop label {
+    color: inherit;
+    text-shadow: none;
+  }
 
 .application-details-infobar.info {
 	background-color: #d3d7cf;
