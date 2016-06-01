@@ -408,8 +408,8 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		for (i = 0; i < gs_app_list_length (list); i++) {
 			app = gs_app_list_index (list, i);
 			related = gs_app_get_related (app);
-			for (i = 0; i < related->len; i++) {
-				app = g_ptr_array_index (related, i);
+			for (j = 0; j < related->len; j++) {
+				app = g_ptr_array_index (related, j);
 				g_debug ("refining related: %s[%s]",
 					 gs_app_get_id (app),
 					 gs_app_get_source_default (app));
