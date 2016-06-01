@@ -189,6 +189,9 @@ gs_plugin_packagekit_add_results (GsPlugin *plugin,
 	g_autoptr(GPtrArray) array_filtered = NULL;
 	g_autoptr(GPtrArray) array = NULL;
 
+	g_return_val_if_fail (GS_IS_PLUGIN (plugin), FALSE);
+	g_return_val_if_fail (GS_IS_APP_LIST (list), FALSE);
+
 	/* check error code */
 	error_code = pk_results_get_error_code (results);
 	if (error_code != NULL) {
