@@ -112,7 +112,7 @@ gs_plugin_add_sources_related (GsPlugin *plugin,
 	ProgressData data;
 	const gchar *id;
 	gboolean ret = TRUE;
-	g_autoptr(GsAppList) installed = NULL;
+	g_autoptr(GsAppList) installed = gs_app_list_new ();
 	g_autoptr(PkResults) results = NULL;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
