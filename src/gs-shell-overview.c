@@ -503,6 +503,8 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 	gtk_entry_set_text (GTK_ENTRY (widget), "");
 
 	/* hide the expander */
+	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_expander), 0);
+	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 0);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_expander), TRUE);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), FALSE);
 
@@ -540,6 +542,8 @@ static void
 gs_shell_overview_categories_expander_cb (GtkButton *button, GsShellOverview *self)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_expander), 250);
+	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_more), 250);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_expander), FALSE);
 	gtk_revealer_set_reveal_child (GTK_REVEALER (priv->categories_more), TRUE);
 }
