@@ -164,7 +164,7 @@ gs_plugin_add_featured (GsPlugin *plugin,
 			" 10% 20% / 427px auto no-repeat, -gtk-gradient (radial,"
 			" center bottom, 0, center center, 0.8,"
 			" from(#ffc124), to(#b75200));" },
-		{ "Xorg.gnome.Builder.desktop",
+		{ "org.gnome.Builder.desktop",
 			"border-color: #000000;\n"
 			"text-shadow: 0 1px 1px rgba(0,0,0,0.5);\n"
 			"color: #ffffff;\n"
