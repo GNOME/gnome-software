@@ -49,6 +49,12 @@ GPtrArray	*gs_category_get_key_colors	(GsCategory	*category);
 void		 gs_category_add_key_color	(GsCategory	*category,
 						 const GdkRGBA	*key_color);
 
+GPtrArray	*gs_category_get_desktop_groups	(GsCategory	*category);
+gboolean	 gs_category_has_desktop_group	(GsCategory	*category,
+						 const gchar	*desktop_group);
+void		 gs_category_add_desktop_group	(GsCategory	*category,
+						 const gchar	*desktop_group);
+
 GsCategory	*gs_category_find_child		(GsCategory	*category,
 						 const gchar	*id);
 GPtrArray	*gs_category_get_children	(GsCategory	*category);

@@ -43,6 +43,7 @@ struct _GsCategory
 	gchar		*icon;
 	gboolean	 important;
 	GPtrArray	*key_colors;
+	GPtrArray	*desktop_groups;
 	GsCategory	*parent;
 	guint		 size;
 	GPtrArray	*children;
@@ -267,6 +268,66 @@ gs_category_add_key_color (GsCategory *category, const GdkRGBA *key_color)
 }
 
 /**
+ * gs_category_get_desktop_groups:
+ * @category: a #GsCategory
+ *
+ * Gets the list of AppStream groups for the category.
+ *
+ * Returns: (element-type utf8) (transfer none): An array
+ **/
+GPtrArray *
+gs_category_get_desktop_groups (GsCategory *category)
+{
+	g_return_val_if_fail (GS_IS_CATEGORY (category), NULL);
+	return category->desktop_groups;
+}
+
+/**
+ * gs_category_has_desktop_group:
+ * @category: a #GsCategory
+ * @desktop_group: a group of categories found in AppStream, e.g. "AudioVisual::Player"
+ *
+ * Finds out if the category has the specific AppStream desktop group.
+ *
+ * Returns: %TRUE if found, %FALSE otherwise
+ **/
+gboolean
+gs_category_has_desktop_group (GsCategory *category, const gchar *desktop_group)
+{
+	guint i;
+
+	g_return_val_if_fail (GS_IS_CATEGORY (category), FALSE);
+	g_return_val_if_fail (desktop_group != NULL, FALSE);
+
+	for (i = 0; i < category->desktop_groups->len; i++) {
+		const gchar *tmp = g_ptr_array_index (category->desktop_groups, i);
+		if (g_strcmp0 (tmp, desktop_group) == 0)
+			return TRUE;
+	}
+	return FALSE;
+}
+
+/**
+ * gs_category_add_desktop_group:
+ * @category: a #GsCategory
+ * @desktop_group: a group of categories found in AppStream, e.g. "AudioVisual::Player"
+ *
+ * Adds a desktop group to the category.
+ * A desktop group is a set of category strings that all must exist.
+ **/
+void
+gs_category_add_desktop_group (GsCategory *category, const gchar *desktop_group)
+{
+	g_return_if_fail (GS_IS_CATEGORY (category));
+	g_return_if_fail (desktop_group != NULL);
+
+	/* add if not already found */
+	if (gs_category_has_desktop_group (category, desktop_group))
+		return;
+	g_ptr_array_add (category->desktop_groups, g_strdup (desktop_group));
+}
+
+/**
  * gs_category_find_child:
  * @category: a #GsCategory
  * @id: a category ID, e.g. "other"
@@ -396,6 +457,7 @@ gs_category_finalize (GObject *object)
 		                              (gpointer *) &category->parent);
 	g_ptr_array_unref (category->children);
 	g_ptr_array_unref (category->key_colors);
+	g_ptr_array_unref (category->desktop_groups);
 	g_free (category->id);
 	g_free (category->name);
 	g_free (category->icon);
@@ -415,6 +477,7 @@ gs_category_init (GsCategory *category)
 {
 	category->children = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	category->key_colors = g_ptr_array_new_with_free_func ((GDestroyNotify) gdk_rgba_free);
+	category->desktop_groups = g_ptr_array_new_with_free_func (g_free);
 }
 
 /**
