@@ -43,6 +43,7 @@ struct _GsShellSearch
 	GsShell			*shell;
 	gchar			*appid_to_show;
 	gchar			*value;
+	guint			 waiting_id;
 
 	GtkWidget		*list_box_search;
 	GtkWidget		*scrolledwindow_search;
@@ -84,6 +85,14 @@ gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
 	}
 }
 
+static void
+gs_shell_search_waiting_cancel (GsShellSearch *self)
+{
+	if (self->waiting_id > 0)
+		g_source_remove (self->waiting_id);
+	self->waiting_id = 0;
+}
+
 /**
  * gs_shell_search_get_search_cb:
  **/
@@ -99,6 +108,9 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	GtkWidget *app_row;
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GsAppList) list = NULL;
+
+	/* don't do the delayed spinner */
+	gs_shell_search_waiting_cancel (self);
 
 	list = gs_plugin_loader_search_finish (plugin_loader, res, &error);
 	if (list == NULL) {
@@ -118,6 +130,9 @@ gs_shell_search_get_search_cb (GObject *source_object,
 		gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "no-results");
 		return;
 	}
+
+	/* remove old entries */
+	gs_container_remove_all (GTK_CONTAINER (self->list_box_search));
 
 	gs_stop_spinner (GTK_SPINNER (self->spinner_search));
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "results");
@@ -142,15 +157,24 @@ gs_shell_search_get_search_cb (GObject *source_object,
 	}
 }
 
+static gboolean
+gs_shell_search_waiting_show_cb (gpointer user_data)
+{
+	GsShellSearch *self = GS_SHELL_SEARCH (user_data);
+
+	/* show spinner */
+	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "spinner");
+	gs_start_spinner (GTK_SPINNER (self->spinner_search));
+	gs_shell_search_waiting_cancel (self);
+	return FALSE;
+}
+
 /**
  * gs_shell_search_load:
  */
 static void
 gs_shell_search_load (GsShellSearch *self)
 {
-	/* remove old entries */
-	gs_container_remove_all (GTK_CONTAINER (self->list_box_search));
-
 	/* cancel any pending searches */
 	if (self->search_cancellable != NULL) {
 		g_cancellable_cancel (self->search_cancellable);
@@ -159,6 +183,9 @@ gs_shell_search_load (GsShellSearch *self)
 	self->search_cancellable = g_cancellable_new ();
 
 	/* search for apps */
+	gs_shell_search_waiting_cancel (self);
+	self->waiting_id = g_timeout_add (250, gs_shell_search_waiting_show_cb, self);
+
 	gs_plugin_loader_search_async (self->plugin_loader,
 				       self->value,
 				       GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
@@ -172,9 +199,6 @@ gs_shell_search_load (GsShellSearch *self)
 				       self->search_cancellable,
 				       gs_shell_search_get_search_cb,
 				       self);
-
-	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_search), "spinner");
-	gs_start_spinner (GTK_SPINNER (self->spinner_search));
 }
 
 /**
