@@ -89,9 +89,10 @@ gs_cmd_show_results_categories (GPtrArray *list)
 		parent = gs_category_get_parent (cat);
 		if (parent != NULL){
 			g_autofree gchar *id = NULL;
-			id = g_strdup_printf ("%s/%s",
+			id = g_strdup_printf ("%s/%s [%i]",
 					      gs_category_get_id (parent),
-					      gs_category_get_id (cat));
+					      gs_category_get_id (cat),
+					      gs_category_get_size (cat));
 			tmp = gs_cmd_pad_spaces (id, 32);
 			g_print ("%s : %s\n",
 				 tmp, gs_category_get_name (cat));
