@@ -161,6 +161,70 @@ gs_app_kv_printf (GString *str, const gchar *key, const gchar *fmt, ...)
 }
 
 /**
+ * _as_app_quirk_flag_to_string:
+ **/
+static const gchar *
+_as_app_quirk_flag_to_string (AsAppQuirk quirk)
+{
+	if (quirk == AS_APP_QUIRK_PROVENANCE)
+		return "provenance";
+	if (quirk == AS_APP_QUIRK_COMPULSORY)
+		return "compulsory";
+	if (quirk == AS_APP_QUIRK_HAS_SOURCE)
+		return "has-source";
+	if (quirk == AS_APP_QUIRK_MATCH_ANY_PREFIX)
+		return "match-any-prefix";
+	if (quirk == AS_APP_QUIRK_NEEDS_REBOOT)
+		return "needs-reboot";
+	if (quirk == AS_APP_QUIRK_NOT_REVIEWABLE)
+		return "not-reviewable";
+	if (quirk == AS_APP_QUIRK_HAS_SHORTCUT)
+		return "has-shortcut";
+	if (quirk == AS_APP_QUIRK_NOT_LAUNCHABLE)
+		return "not-launchable";
+	return NULL;
+}
+
+/**
+ * _as_app_quirk_to_string:
+ * @quirk: a #AsAppQuirk
+ *
+ * Returns the quirk bitfield as a string.
+ *
+ * Returns: (transfer full): a string
+ **/
+static gchar *
+_as_app_quirk_to_string (AsAppQuirk quirk)
+{
+	GString *str = g_string_new ("");
+	guint64 i;
+
+	/* nothing set */
+	if (quirk == AS_APP_QUIRK_NONE) {
+		g_string_append (str, "none");
+		return g_string_free (str, FALSE);
+	}
+
+	/* get flags */
+	for (i = 1; i < AS_APP_QUIRK_LAST; i *= 2) {
+		if ((quirk & i) == 0)
+			continue;
+		g_string_append_printf (str, "%s,",
+					_as_app_quirk_flag_to_string (i));
+	}
+
+	/* nothing recognised */
+	if (str->len == 0) {
+		g_string_append (str, "unknown");
+		return g_string_free (str, FALSE);
+	}
+
+	/* remove trailing comma */
+	g_string_truncate (str, str->len - 1);
+	return g_string_free (str, FALSE);
+}
+
+/**
  * gs_app_to_string:
  * @app: a #GsApp
  *
@@ -189,12 +253,7 @@ gs_app_to_string (GsApp *app)
 	if (app->last_error != NULL)
 		gs_app_kv_lpad (str, "last-error", app->last_error->message);
 	gs_app_kv_lpad (str, "state", as_app_state_to_string (app->state));
-	gs_app_kv_lpad (str, "compulsory",
-			gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY)
-			? "yes" : "no");
-	gs_app_kv_lpad (str, "provenance",
-			gs_app_has_quirk (app, AS_APP_QUIRK_PROVENANCE)
-			? "yes" : "no");
+	gs_app_kv_lpad (str, "quirk", _as_app_quirk_to_string (app->quirk));
 	if (app->progress > 0)
 		gs_app_kv_printf (str, "progress", "%i%%", app->progress);
 	if (app->id != NULL)
