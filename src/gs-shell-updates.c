@@ -482,6 +482,21 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 
 	/* get the results */
 	list = gs_plugin_loader_get_updates_finish (plugin_loader, res, &error);
+	if (list == NULL) {
+		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPDATES);
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("updates-shell: failed to get updates: %s", error->message);
+		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
+				     error->message);
+		gs_shell_updates_set_state (self,
+					    GS_SHELL_UPDATES_STATE_FAILED);
+		widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
+							     "button_updates_counter"));
+		gtk_widget_hide (widget);
+		return;
+	}
+
+	/* add the results */
 	self->all_updates_are_live = TRUE;
 	self->any_require_reboot = FALSE;
 	for (i = 0; list != NULL && i < gs_app_list_length (list); i++) {
@@ -505,8 +520,10 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 				      _("Restart & _Install"));
 	}
 
-	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "button_updates_counter"));
-	if (list != NULL && !gs_update_monitor_is_managed ()) {
+	/* update the counter */
+	widget = GTK_WIDGET (gtk_builder_get_object (self->builder,
+						     "button_updates_counter"));
+	if (gs_app_list_length (list) > 0 && !gs_update_monitor_is_managed ()) {
 		g_autofree gchar *text = NULL;
 		text = g_strdup_printf ("%d", gs_app_list_length (list));
 		gtk_label_set_label (GTK_LABEL (widget), text);
@@ -515,21 +532,12 @@ gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 		gtk_widget_hide (widget);
 	}
 
-	if (list != NULL &&
+	/* update the tab style */
+	if (gs_app_list_length (list) > 0 &&
 	    gs_shell_get_mode (self->shell) != GS_SHELL_MODE_UPDATES)
 		gtk_style_context_add_class (gtk_widget_get_style_context (widget), "needs-attention");
 	else
 		gtk_style_context_remove_class (gtk_widget_get_style_context (widget), "needs-attention");
-
-	if (list == NULL) {
-		gs_shell_updates_clear_flag (self, GS_SHELL_UPDATES_FLAG_HAS_UPDATES);
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("updates-shell: failed to get updates: %s", error->message);
-		gtk_label_set_label (GTK_LABEL (self->label_updates_failed),
-				     error->message);
-		gs_shell_updates_set_state (self,
-					    GS_SHELL_UPDATES_STATE_FAILED);
-	}
 
 	/* no results */
 	if (gs_app_list_length (list) == 0) {
