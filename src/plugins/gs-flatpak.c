@@ -115,6 +115,10 @@ gs_flatpak_refresh_appstream (GsPlugin *plugin,
 		g_autofree gchar *appstream_fn = NULL;
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
 
+		/* not enabled */
+		if (flatpak_remote_get_disabled (xremote))
+			continue;
+
 		/* skip known-broken repos */
 		if (g_strcmp0 (flatpak_remote_get_name (xremote), "gnome-sdk") == 0)
 			continue;
@@ -396,6 +400,10 @@ gs_flatpak_add_sources (GsPlugin *plugin,
 		if (flatpak_remote_get_noenumerate (xremote))
 			continue;
 
+		/* not enabled */
+		if (flatpak_remote_get_disabled (xremote))
+			continue;
+
 		app = gs_app_new (flatpak_remote_get_name (xremote));
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
@@ -640,6 +648,8 @@ gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
 		return FALSE;
 	for (i = 0; i < xremotes->len; i++) {
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
+		if (flatpak_remote_get_disabled (xremote))
+			continue;
 		if (g_strcmp0 (gs_app_get_origin (app),
 			       flatpak_remote_get_name (xremote)) == 0) {
 			gs_app_set_origin_ui (app, flatpak_remote_get_title (xremote));
@@ -734,6 +744,12 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 		const gchar *remote_name;
 		FlatpakRemote *xremote = g_ptr_array_index (xremotes, i);
 		g_autoptr(FlatpakRemoteRef) xref = NULL;
+
+		/* not enabled */
+		if (flatpak_remote_get_disabled (xremote))
+			continue;
+
+		/* sync */
 		remote_name = flatpak_remote_get_name (xremote);
 		g_debug ("looking at remote %s", remote_name);
 		xref = flatpak_installation_fetch_remote_ref_sync (installation,
