@@ -869,9 +869,17 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 								   gs_app_get_origin (app),
 								   cancellable, NULL);
 		if (xremote != NULL) {
-			g_debug ("marking %s as available with flatpak",
-				 gs_app_get_id (app));
-			gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+			if (flatpak_remote_get_disabled (xremote)) {
+				g_debug ("%s is available with flatpak "
+					 "but %s is disabled",
+					 gs_app_get_id (app),
+					 flatpak_remote_get_name (xremote));
+				gs_app_set_state (app, AS_APP_STATE_UNAVAILABLE);
+			} else {
+				g_debug ("marking %s as available with flatpak",
+					 gs_app_get_id (app));
+				gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
+			}
 		} else {
 			g_warning ("failed to find flatpak user remote %s for %s",
 				   gs_app_get_origin (app),
