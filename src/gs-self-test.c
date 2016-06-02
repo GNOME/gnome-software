@@ -478,7 +478,7 @@ gs_plugin_loader_installed_func (GsPluginLoader *plugin_loader)
 	g_assert (!gs_app_has_category (app, "ImageProcessing"));
 	g_assert (gs_app_get_menu_path (app) != NULL);
 	menu_path = g_strjoinv ("->", gs_app_get_menu_path (app));
-	g_assert_cmpstr (menu_path, ==, "Audio & Video->Players");
+	g_assert_cmpstr (menu_path, ==, "Audio & Video->Music Players");
 
 	/* check addon */
 	addons = gs_app_get_addons (app);
@@ -862,8 +862,9 @@ main (int argc, char **argv)
 		"flatpak-user",
 		"fwupd",
 		"hardcoded-blacklist",
+		"desktop-categories",
+		"desktop-menu-path",
 		"icons",
-		"menu-spec-refine",
 		"key-colors",
 		"provenance",
 		"provenance-license",

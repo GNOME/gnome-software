@@ -30,10 +30,11 @@ plugindir = $(libdir)/gs-plugins-${GS_PLUGIN_API_VERSION}
 plugin_LTLIBRARIES =					\
 	libgs_plugin_appstream.la			\
 	libgs_plugin_key-colors.la			\
+	libgs_plugin_desktop-categories.la		\
+	libgs_plugin_desktop-menu-path.la		\
 	libgs_plugin_dummy.la				\
 	libgs_plugin_dpkg.la				\
 	libgs_plugin_hardcoded-blacklist.la		\
-	libgs_plugin_hardcoded-categories.la		\
 	libgs_plugin_hardcoded-popular.la		\
 	libgs_plugin_hardcoded-featured.la		\
 	libgs_plugin_fedora-distro-upgrades.la		\
@@ -209,10 +210,21 @@ libgs_plugin_steam_la_LDFLAGS = -module -avoid-version
 libgs_plugin_steam_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
-libgs_plugin_hardcoded_categories_la_SOURCES = gs-plugin-hardcoded-categories.c
-libgs_plugin_hardcoded_categories_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_hardcoded_categories_la_LDFLAGS = -module -avoid-version
-libgs_plugin_hardcoded_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+libgs_plugin_desktop_categories_la_SOURCES =		\
+	gs-plugin-desktop-categories.c			\
+	gs-desktop-common.c				\
+	gs-desktop-common.h
+libgs_plugin_desktop_categories_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_desktop_categories_la_LDFLAGS = -module -avoid-version
+libgs_plugin_desktop_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_desktop_menu_path_la_SOURCES =		\
+	gs-plugin-desktop-menu-path.c			\
+	gs-desktop-common.c				\
+	gs-desktop-common.h
+libgs_plugin_desktop_menu_path_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_desktop_menu_path_la_LDFLAGS = -module -avoid-version
+libgs_plugin_desktop_menu_path_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_hardcoded_blacklist_la_SOURCES = gs-plugin-hardcoded-blacklist.c
 libgs_plugin_hardcoded_blacklist_la_LIBADD = $(GS_PLUGIN_LIBS)
