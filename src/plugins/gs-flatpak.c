@@ -1079,6 +1079,7 @@ gs_flatpak_refine_app (GsPlugin *plugin,
 		       GError **error)
 {
 	g_autoptr(AsProfileTask) ptask = NULL;
+	GsApp *app_runtime;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
@@ -1101,6 +1102,15 @@ gs_flatpak_refine_app (GsPlugin *plugin,
 	if (!gs_plugin_refine_item_state (plugin, installation, app,
 					  cancellable, error))
 		return FALSE;
+	app_runtime = gs_app_get_runtime (app);
+	if (app_runtime != NULL) {
+		if (!gs_plugin_refine_item_state (plugin,
+						  installation,
+						  app_runtime,
+						  cancellable,
+						  error))
+			return FALSE;
+	}
 
 	/* version fallback */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) {
