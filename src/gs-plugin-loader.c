@@ -249,15 +249,15 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 }
 
 /**
- * gs_plugin_loader_run_refine:
+ * gs_plugin_loader_run_refine_internal:
  **/
 static gboolean
-gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
-			     const gchar *function_name_parent,
-			     GsAppList *list,
-			     GsPluginRefineFlags flags,
-			     GCancellable *cancellable,
-			     GError **error)
+gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
+				      const gchar *function_name_parent,
+				      GsAppList *list,
+				      GsPluginRefineFlags flags,
+				      GCancellable *cancellable,
+				      GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	guint i;
@@ -269,18 +269,6 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 	const gchar *function_name_app = "gs_plugin_refine_app";
 	const gchar *function_name = "gs_plugin_refine";
 	gboolean ret = TRUE;
-	g_autoptr(GsAppList) freeze_list = NULL;
-
-	/* nothing to do */
-	if (gs_app_list_length (list) == 0)
-		return TRUE;
-
-	/* freeze all apps */
-	freeze_list = gs_app_list_copy (list);
-	for (i = 0; i < gs_app_list_length (freeze_list); i++) {
-		app = gs_app_list_index (freeze_list, i);
-		g_object_freeze_notify (G_OBJECT (app));
-	}
 
 	/* try to adopt each application with a plugin */
 	gs_plugin_loader_run_adopt (plugin_loader, list);
@@ -388,14 +376,14 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			}
 		}
 		if (gs_app_list_length (addons_list) > 0) {
-			ret = gs_plugin_loader_run_refine (plugin_loader,
-							   function_name_parent,
-							   addons_list,
-							   flags,
-							   cancellable,
-							   error);
+			ret = gs_plugin_loader_run_refine_internal (plugin_loader,
+								    function_name_parent,
+								    addons_list,
+								    flags,
+								    cancellable,
+								    error);
 			if (!ret)
-				goto out;
+				return FALSE;
 		}
 	}
 
@@ -417,26 +405,60 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			}
 		}
 		if (related_list != NULL) {
-			ret = gs_plugin_loader_run_refine (plugin_loader,
-							   function_name_parent,
-							   related_list,
-							   flags,
-							   cancellable,
-							   error);
+			ret = gs_plugin_loader_run_refine_internal (plugin_loader,
+								    function_name_parent,
+								    related_list,
+								    flags,
+								    cancellable,
+								    error);
 			if (!ret)
-				goto out;
+				return FALSE;
 		}
 	}
 
 	/* success */
-	ret = TRUE;
-out:
-	/* now emit all the changed signals */
+	return TRUE;
+}
+
+/**
+ * gs_plugin_loader_run_refine:
+ **/
+static gboolean
+gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
+			     const gchar *function_name_parent,
+			     GsAppList *list,
+			     GsPluginRefineFlags flags,
+			     GCancellable *cancellable,
+			     GError **error)
+{
+	gboolean ret;
+	guint i;
+	g_autoptr(GsAppList) freeze_list = NULL;
+
+	/* nothing to do */
+	if (gs_app_list_length (list) == 0)
+		return TRUE;
+
+	/* freeze all apps */
+	freeze_list = gs_app_list_copy (list);
 	for (i = 0; i < gs_app_list_length (freeze_list); i++) {
-		app = gs_app_list_index (freeze_list, i);
-		g_object_thaw_notify (G_OBJECT (app));
+		GsApp *app = gs_app_list_index (freeze_list, i);
+		g_object_freeze_notify (G_OBJECT (app));
 	}
 
+	/* first pass */
+	ret = gs_plugin_loader_run_refine_internal (plugin_loader,
+						    function_name_parent,
+						    list,
+						    flags,
+						    cancellable,
+						    error);
+
+	/* now emit all the changed signals */
+	for (i = 0; i < gs_app_list_length (freeze_list); i++) {
+		GsApp *app = gs_app_list_index (freeze_list, i);
+		g_object_thaw_notify (G_OBJECT (app));
+	}
 	return ret;
 }
 
