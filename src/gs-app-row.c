@@ -122,9 +122,14 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
 	GtkStyleContext *context;
 	GString *str = NULL;
+	gboolean missing_search_result;
 
 	if (priv->app == NULL)
 		return;
+
+	/* is this a missing search result from the extras page? */
+	missing_search_result = (gs_app_get_state (priv->app) == AS_APP_STATE_UNAVAILABLE &&
+	                         gs_app_get_url (priv->app, AS_URL_KIND_MISSING) != NULL);
 
 	/* do a fill bar for the current progress */
 	switch (gs_app_get_state (priv->app)) {
@@ -158,7 +163,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	}
 
 	/* add tags */
-	if (priv->show_update) {
+	if (priv->show_update || missing_search_result) {
 		gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
 		gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
 		gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
@@ -206,8 +211,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 				     gs_app_get_update_version_ui (priv->app));
 	} else {
 		gtk_widget_hide (priv->version_label);
-		if (gs_app_get_state (priv->app) == AS_APP_STATE_UNAVAILABLE ||
-		    gs_app_get_rating (priv->app) <= 0) {
+		if (missing_search_result || gs_app_get_rating (priv->app) <= 0) {
 			gtk_widget_hide (priv->star);
 		} else {
 			gtk_widget_show (priv->star);
@@ -242,7 +246,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 					  gs_app_get_pixbuf (priv->app));
 
 	context = gtk_widget_get_style_context (priv->image);
-	if (gs_app_get_state (priv->app) == AS_APP_STATE_UNAVAILABLE)
+	if (missing_search_result)
 		gtk_style_context_add_class (context, "dimmer-label");
 	else
 		gtk_style_context_remove_class (context, "dimmer-label");
@@ -258,7 +262,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	switch (gs_app_get_state (priv->app)) {
 	case AS_APP_STATE_UNAVAILABLE:
 		gtk_widget_set_visible (priv->button, TRUE);
-		if (gs_app_get_url (priv->app, AS_URL_KIND_MISSING) != NULL) {
+		if (missing_search_result) {
 			/* TRANSLATORS: this is a button next to the search results that
 			 * allows the application to be easily installed */
 			gtk_button_set_label (GTK_BUTTON (priv->button), _("Visit website"));
