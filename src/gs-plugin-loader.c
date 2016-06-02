@@ -3366,8 +3366,10 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				dep = gs_plugin_loader_find_plugin (plugin_loader,
 								    plugin_name);
 				if (dep == NULL) {
-					g_debug ("cannot find plugin '%s'",
-						 plugin_name);
+					g_debug ("cannot find plugin '%s' "
+						 "requested by '%s'",
+						 plugin_name,
+						 gs_plugin_get_name (plugin));
 					continue;
 				}
 				if (!gs_plugin_get_enabled (dep))
@@ -3393,8 +3395,10 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				dep = gs_plugin_loader_find_plugin (plugin_loader,
 								    plugin_name);
 				if (dep == NULL) {
-					g_debug ("cannot find plugin '%s'",
-						 plugin_name);
+					g_debug ("cannot find plugin '%s' "
+						 "requested by '%s'",
+						 plugin_name,
+						 gs_plugin_get_name (plugin));
 					continue;
 				}
 				if (!gs_plugin_get_enabled (dep))
