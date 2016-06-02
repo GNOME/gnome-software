@@ -524,18 +524,15 @@ static void
 gs_shell_overview_search_button_cb (GtkButton *button, GsShellOverview *self)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
-	GtkWidget *widget;
+	GtkToggleButton *search_button = GTK_TOGGLE_BUTTON (priv->search_button);
+	GtkRevealer *search_bar;
+	gboolean show_search;
 
-	/* show search */
-	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (priv->search_button))) {
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-		gtk_revealer_set_reveal_child (GTK_REVEALER (widget), TRUE);
-		return;
-	}
+	show_search = gtk_toggle_button_get_active (search_button);
 
-	/* hide search */
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
+	search_bar = GTK_REVEALER (gtk_builder_get_object (priv->builder,
+							   "search_bar"));
+	gtk_revealer_set_reveal_child (search_bar, show_search);
 }
 
 static void
