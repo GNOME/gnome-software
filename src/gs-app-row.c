@@ -93,8 +93,13 @@ gs_app_row_get_description (GsAppRow *app_row)
 			return g_string_new (tmp);
 	}
 
-	if (gs_app_get_state (priv->app) == AS_APP_STATE_UNAVAILABLE)
-		return g_string_new (gs_app_get_summary_missing (priv->app));
+	/* if missing summary is set, return it without escaping in order to
+	 * correctly show hyperlinks */
+	if (gs_app_get_state (priv->app) == AS_APP_STATE_UNAVAILABLE) {
+		tmp = gs_app_get_summary_missing (priv->app);
+		if (tmp != NULL && tmp[0] != '\0')
+			return g_string_new (tmp);
+	}
 
 	/* try all these things in order */
 	if (tmp == NULL || (tmp != NULL && tmp[0] == '\0'))
