@@ -497,10 +497,6 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 
 	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "search_bar"));
-	gtk_revealer_set_reveal_child (GTK_REVEALER (widget), FALSE);
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_entry_set_text (GTK_ENTRY (widget), "");
 
 	/* hide the expander */
 	gtk_revealer_set_transition_duration (GTK_REVEALER (priv->categories_expander), 0);
@@ -524,15 +520,14 @@ static void
 gs_shell_overview_search_button_cb (GtkButton *button, GsShellOverview *self)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
-	GtkToggleButton *search_button = GTK_TOGGLE_BUTTON (priv->search_button);
-	GtkRevealer *search_bar;
-	gboolean show_search;
+	GtkSearchBar *search_bar;
+	GtkToggleButton *search_button;
 
-	show_search = gtk_toggle_button_get_active (search_button);
-
-	search_bar = GTK_REVEALER (gtk_builder_get_object (priv->builder,
-							   "search_bar"));
-	gtk_revealer_set_reveal_child (search_bar, show_search);
+	search_button = GTK_TOGGLE_BUTTON (priv->search_button);
+	search_bar = GTK_SEARCH_BAR (gtk_builder_get_object (priv->builder,
+							     "search_bar"));
+	gtk_search_bar_set_search_mode (search_bar,
+					gtk_toggle_button_get_active (search_button));
 }
 
 static void
