@@ -33,10 +33,9 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_dummy.la				\
 	libgs_plugin_dpkg.la				\
 	libgs_plugin_hardcoded-blacklist.la		\
+	libgs_plugin_hardcoded-categories.la		\
 	libgs_plugin_hardcoded-popular.la		\
 	libgs_plugin_hardcoded-featured.la		\
-	libgs_plugin_menu-spec-categories.la		\
-	libgs_plugin_menu-spec-refine.la		\
 	libgs_plugin_fedora-distro-upgrades.la		\
 	libgs_plugin_provenance.la			\
 	libgs_plugin_provenance-license.la		\
@@ -210,21 +209,10 @@ libgs_plugin_steam_la_LDFLAGS = -module -avoid-version
 libgs_plugin_steam_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
 
-libgs_plugin_menu_spec_categories_la_SOURCES =		\
-	gs-plugin-menu-spec-categories.c		\
-	menu-spec-common.c				\
-	menu-spec-common.h
-libgs_plugin_menu_spec_categories_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_menu_spec_categories_la_LDFLAGS = -module -avoid-version
-libgs_plugin_menu_spec_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
-
-libgs_plugin_menu_spec_refine_la_SOURCES =		\
-	gs-plugin-menu-spec-refine.c			\
-	menu-spec-common.c				\
-	menu-spec-common.h
-libgs_plugin_menu_spec_refine_la_LIBADD = $(GS_PLUGIN_LIBS)
-libgs_plugin_menu_spec_refine_la_LDFLAGS = -module -avoid-version
-libgs_plugin_menu_spec_refine_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+libgs_plugin_hardcoded_categories_la_SOURCES = gs-plugin-hardcoded-categories.c
+libgs_plugin_hardcoded_categories_la_LIBADD = $(GS_PLUGIN_LIBS)
+libgs_plugin_hardcoded_categories_la_LDFLAGS = -module -avoid-version
+libgs_plugin_hardcoded_categories_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 libgs_plugin_hardcoded_blacklist_la_SOURCES = gs-plugin-hardcoded-blacklist.c
 libgs_plugin_hardcoded_blacklist_la_LIBADD = $(GS_PLUGIN_LIBS)

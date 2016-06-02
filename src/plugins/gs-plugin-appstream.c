@@ -63,8 +63,7 @@ gs_plugin_initialize (GsPlugin *plugin)
 				  AS_STORE_WATCH_FLAG_ADDED |
 				  AS_STORE_WATCH_FLAG_REMOVED);
 
-	/* need category list and package name */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "menu-spec-categories");
+	/* need package name */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "dpkg");
 }
 
@@ -390,46 +389,52 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	const gchar *search_id1;
-	const gchar *search_id2 = NULL;
-	AsApp *item;
-	GsCategory *parent;
 	GPtrArray *array;
+	GPtrArray *desktop_groups;
 	guint i;
+	guint j;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
-	/* get the two search terms */
+	/* just look at each app in turn */
 	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
 					  "appstream::add-category-apps");
-	search_id1 = gs_category_get_id (category);
-	parent = gs_category_get_parent (category);
-	if (parent != NULL)
-		search_id2 = gs_category_get_id (parent);
-
-	/* the "General" item has no ID */
-	if (search_id1 == NULL) {
-		search_id1 = search_id2;
-		search_id2 = NULL;
-	}
-
-	/* just look at each app in turn */
 	array = as_store_get_apps (priv->store);
-	for (i = 0; i < array->len; i++) {
-		g_autoptr(GsApp) app = NULL;
-		item = g_ptr_array_index (array, i);
-		if (as_app_get_id (item) == NULL)
-			continue;
-		if (g_strcmp0 (search_id1, "all") != 0 &&
-		    !as_app_has_category (item, search_id1))
-			continue;
-		if (search_id2 != NULL && !as_app_has_category (item, search_id2))
+	desktop_groups = gs_category_get_desktop_groups (category);
+	if (desktop_groups->len == 0) {
+		g_warning ("no desktop_groups for %s", gs_category_get_id (category));
+		return TRUE;
+	}
+	for (j = 0; j < desktop_groups->len; j++) {
+		const gchar *desktop_group = g_ptr_array_index (desktop_groups, j);
+		g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
+		if (g_strv_length (split) != 2)
 			continue;
 
-		/* got a search match, so add all the data we can */
-		app = gs_plugin_appstream_create_app (plugin, as_app_get_id (item));
-		if (!gs_appstream_refine_app (plugin, app, item, error))
-			return FALSE;
-		gs_app_list_add (list, app);
+		/* match the app */
+		for (i = 0; i < array->len; i++) {
+			AsApp *item;
+			g_autoptr(GsApp) app = NULL;
+
+			/* no ID is invalid */
+			item = g_ptr_array_index (array, i);
+			if (as_app_get_id (item) == NULL)
+				continue;
+
+			/* match the parent */
+			if (!as_app_has_category (item, split[0]))
+				continue;
+
+			/* match the child */
+			if (!as_app_has_category (item, split[1]))
+				continue;
+
+			/* add all the data we can */
+			app = gs_plugin_appstream_create_app (plugin,
+							      as_app_get_id (item));
+			if (!gs_appstream_refine_app (plugin, app, item, error))
+				return FALSE;
+			gs_app_list_add (list, app);
+		}
 	}
 	return TRUE;
 }
@@ -528,44 +533,44 @@ gs_plugin_add_installed (GsPlugin *plugin,
 	return TRUE;
 }
 
-static void
-gs_plugin_add_categories_for_app (GPtrArray *list, AsApp *app)
+static gboolean
+_as_app_matches_desktop_group (AsApp *app, const gchar *desktop_group)
 {
-	guint i, j;
+	guint i;
+	g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
+	for (i = 0; split[i] != NULL; i++) {
+		if (!as_app_has_category (app, split[i]))
+			return FALSE;
+	}
+	return TRUE;
+}
+
+static void
+gs_plugin_add_categories_for_app (GsCategory *parent, AsApp *app)
+{
+	GPtrArray *children;
+	GPtrArray *desktop_groups;
 	GsCategory *category;
-	GsCategory *parent;
-	gboolean found_subcat;
+	guint i, j;
 
-	/* does it match the main category */
-	for (i = 0; i < list->len; i++) {
-		GPtrArray *children;
-		parent = GS_CATEGORY (g_ptr_array_index (list, i));
-		if (!as_app_has_category (app, gs_category_get_id (parent)))
-			continue;
-		gs_category_increment_size (parent);
+	/* find all the sub-categories */
+	children = gs_category_get_children (parent);
+	for (j = 0; j < children->len; j++) {
+		gboolean matched = FALSE;
+		category = GS_CATEGORY (g_ptr_array_index (children, j));
 
-		/* does it match any sub-categories */
-		found_subcat = FALSE;
-		children = gs_category_get_children (parent);
-		for (j = 0; j < children->len; j++) {
-			category = GS_CATEGORY (g_ptr_array_index (children, j));
-			if (!as_app_has_category (app, gs_category_get_id (category)))
-				continue;
-			gs_category_increment_size (category);
-			found_subcat = TRUE;
-		}
-
-		/* matching the main category but no subcategories means we have
-		 * to create a new 'Other' subcategory manually */
-		if (!found_subcat) {
-			category = gs_category_find_child (parent, "other");
-			if (category == NULL) {
-				category = gs_category_new ("other");
-				gs_category_add_child (parent, category);
-				g_object_unref (category);
+		/* do any desktop_groups match this application */
+		desktop_groups = gs_category_get_desktop_groups (category);
+		for (i = 0; i < desktop_groups->len; i++) {
+			const gchar *desktop_group = g_ptr_array_index (desktop_groups, i);
+			if (_as_app_matches_desktop_group (app, desktop_group)) {
+				matched = TRUE;
+				break;
 			}
-			as_app_add_category (app, gs_category_get_id (category));
+		}
+		if (matched) {
 			gs_category_increment_size (category);
+			gs_category_increment_size (parent);
 		}
 	}
 }
@@ -580,6 +585,7 @@ gs_plugin_add_categories (GsPlugin *plugin,
 	AsApp *app;
 	GPtrArray *array;
 	guint i;
+	guint j;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* find out how many packages are in each category */
@@ -592,7 +598,10 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			continue;
 		if (as_app_get_priority (app) < 0)
 			continue;
-		gs_plugin_add_categories_for_app (list, app);
+		for (j = 0; j < list->len; j++) {
+			GsCategory *parent = GS_CATEGORY (g_ptr_array_index (list, j));
+			gs_plugin_add_categories_for_app (parent, app);
+		}
 	}
 	return TRUE;
 }

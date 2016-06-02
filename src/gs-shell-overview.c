@@ -385,24 +385,24 @@ gs_shell_overview_load (GsShellOverview *self)
 	date = g_date_time_new_now_utc ();
 	switch (g_date_time_get_day_of_year (date) % 4) {
 	case 0:
-		category_of_day = "Audio";
+		category_of_day = "audio-video";
 		/* TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution */
-		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Audio Applications"));
+		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Audio & Video Applications"));
 		break;
 	case 1:
-		category_of_day = "Game";
+		category_of_day = "games";
 		/* TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution */
 		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Games"));
 		break;
 	case 2:
-		category_of_day = "Graphics";
+		category_of_day = "graphics";
 		/* TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution */
 		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Graphics Applications"));
 		break;
 	case 3:
-		category_of_day = "Office";
+		category_of_day = "productivity";
 		/* TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution */
-		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Office Applications"));
+		gtk_label_set_label (GTK_LABEL (priv->popular_rotating_heading), _("Recommended Productivity Applications"));
 		break;
 	default:
 		g_assert_not_reached ();
