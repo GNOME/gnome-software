@@ -67,6 +67,7 @@ void		 gs_utils_show_error_dialog	(GtkWindow	*parent,
 						 const gchar	*title,
 						 const gchar	*msg,
 						 const gchar	*details);
+GtkWidget	*gs_search_button_new		(GtkSearchBar	*search_bar);
 
 G_END_DECLS
 

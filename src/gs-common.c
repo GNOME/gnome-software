@@ -866,4 +866,51 @@ gs_utils_show_error_dialog (GtkWindow *parent,
 	gtk_widget_show (dialog);
 }
 
+static void
+gs_search_button_cb (GtkToggleButton *toggle_button, GtkSearchBar *search_bar)
+{
+	gtk_search_bar_set_search_mode (search_bar,
+					gtk_toggle_button_get_active (toggle_button));
+}
+
+static void
+gs_search_mode_enabled_cb (GtkSearchBar *search_bar,
+			   GParamSpec *pspec,
+			   GtkToggleButton *toggle_button)
+{
+	gtk_toggle_button_set_active (toggle_button,
+				      gtk_search_bar_get_search_mode (search_bar));
+}
+
+/**
+ * gs_search_button_new:
+ *
+ * Creates a new search toggle button.
+ */
+GtkWidget *
+gs_search_button_new (GtkSearchBar *search_bar)
+{
+	GtkWidget *widget;
+	GtkWidget *im;
+
+	widget = gtk_toggle_button_new ();
+	im = gtk_image_new_from_icon_name ("edit-find-symbolic", GTK_ICON_SIZE_BUTTON);
+	gtk_widget_set_visible (im, TRUE);
+	gtk_container_add (GTK_CONTAINER (widget), im);
+	gtk_widget_set_visible (widget, TRUE);
+
+	if (search_bar != NULL) {
+		/* show the search bar when clicked */
+		g_signal_connect (widget, "clicked",
+				  G_CALLBACK (gs_search_button_cb),
+				  search_bar);
+		/* set the button enabled when search appears */
+		g_signal_connect (search_bar, "notify::search-mode-enabled",
+				  G_CALLBACK (gs_search_mode_enabled_cb),
+				  widget);
+	}
+
+	return widget;
+}
+
 /* vim: set noexpandtab: */

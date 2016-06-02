@@ -44,6 +44,7 @@ struct _GsShellSearch
 	gchar			*appid_to_show;
 	gchar			*value;
 	guint			 waiting_id;
+	GtkWidget		*search_button;
 
 	GtkWidget		*list_box_search;
 	GtkWidget		*scrolledwindow_search;
@@ -252,6 +253,9 @@ gs_shell_search_switch_to (GsPage *page, gboolean scroll_up)
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "search_bar"));
 	gtk_widget_show (widget);
 
+	/* hardcode */
+	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (self->search_button), TRUE);
+
 	if (scroll_up) {
 		GtkAdjustment *adj;
 		adj = gtk_scrolled_window_get_vadjustment (GTK_SCROLLED_WINDOW (self->scrolledwindow_search));
@@ -386,6 +390,14 @@ gs_shell_search_app_removed (GsPage *page, GsApp *app)
 	gs_shell_search_reload (GS_SHELL_SEARCH (page));
 }
 
+static void
+gs_shell_search_search_button_cb (GtkButton *button, GsShellSearch *self)
+{
+	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
+		return;
+	gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
+}
+
 /**
  * gs_shell_search_setup:
  */
@@ -417,6 +429,12 @@ gs_shell_search_setup (GsShellSearch *self,
 	gtk_list_box_set_sort_func (GTK_LIST_BOX (self->list_box_search),
 				    gs_shell_search_sort_func,
 				    self, NULL);
+
+	/* search button */
+	self->search_button = gs_search_button_new (NULL);
+	gs_page_set_header_end_widget (GS_PAGE (self), self->search_button);
+	g_signal_connect (self->search_button, "clicked",
+			  G_CALLBACK (gs_shell_search_search_button_cb), self);
 
 	/* chain up */
 	gs_page_setup (GS_PAGE (self),

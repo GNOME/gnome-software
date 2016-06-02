@@ -49,7 +49,6 @@ typedef struct
 	gboolean		 loading_categories;
 	gboolean		 empty;
 	gchar			*category_of_day;
-
 	GtkWidget		*search_button;
 
 	GtkWidget		*bin_featured;
@@ -517,20 +516,6 @@ gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 }
 
 static void
-gs_shell_overview_search_button_cb (GtkButton *button, GsShellOverview *self)
-{
-	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
-	GtkSearchBar *search_bar;
-	GtkToggleButton *search_button;
-
-	search_button = GTK_TOGGLE_BUTTON (priv->search_button);
-	search_bar = GTK_SEARCH_BAR (gtk_builder_get_object (priv->builder,
-							     "search_bar"));
-	gtk_search_bar_set_search_mode (search_bar,
-					gtk_toggle_button_get_active (search_button));
-}
-
-static void
 gs_shell_overview_categories_expander_cb (GtkButton *button, GsShellOverview *self)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
@@ -548,9 +533,9 @@ gs_shell_overview_setup (GsShellOverview *self,
 			 GCancellable *cancellable)
 {
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
+	GtkSearchBar *search_bar;
 	GtkAdjustment *adj;
 	GtkWidget *tile;
-	GtkWidget *im;
 	gint i;
 
 	g_return_if_fail (GS_IS_SHELL_OVERVIEW (self));
@@ -581,15 +566,10 @@ gs_shell_overview_setup (GsShellOverview *self,
 			  G_CALLBACK (gs_shell_overview_categories_expander_cb), self);
 
 	/* search button */
-	priv->search_button = gtk_toggle_button_new ();
-	gtk_toggle_button_set_active (GTK_TOGGLE_BUTTON (priv->search_button), FALSE);
-	im = gtk_image_new_from_icon_name ("edit-find-symbolic", GTK_ICON_SIZE_BUTTON);
-	gtk_widget_set_visible (im, TRUE);
-	gtk_container_add (GTK_CONTAINER (priv->search_button), im);
-	gtk_widget_set_visible (priv->search_button, TRUE);
+	search_bar = GTK_SEARCH_BAR (gtk_builder_get_object (priv->builder,
+							     "search_bar"));
+	priv->search_button = gs_search_button_new (search_bar);
 	gs_page_set_header_end_widget (GS_PAGE (self), priv->search_button);
-	g_signal_connect (priv->search_button, "clicked",
-			  G_CALLBACK (gs_shell_overview_search_button_cb), self);
 
 	/* chain up */
 	gs_page_setup (GS_PAGE (self),
