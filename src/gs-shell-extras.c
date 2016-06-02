@@ -717,9 +717,11 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 			                                             search_data->search,
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
+			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_PROVENANCE |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_HISTORY |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_SETUP_ACTION |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_DESCRIPTION |
+			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_LICENSE |
 			                                             GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING |
 			                                             GS_PLUGIN_REFINE_FLAGS_ALLOW_PACKAGES,
 			                                             self->search_cancellable,
