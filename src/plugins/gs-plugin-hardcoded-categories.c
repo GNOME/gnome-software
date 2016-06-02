@@ -58,8 +58,9 @@ typedef struct {
 
 /* AudioVideo */
 static const GsCategoryMap map_audiovisual[] = {
-//	{ "all",		NC_("Menu of AudioVideo", "All"),
-//					{ NULL } },
+	{ "all",		NC_("Menu of AudioVideo", "All"),
+					{ "AudioVideo",
+					  NULL } },
 	{ "featured",		NC_("Menu of AudioVideo", "Featured"),
 					{ "AudioVideo::featured",
 					  NULL} },
@@ -78,6 +79,9 @@ static const GsCategoryMap map_audiovisual[] = {
 
 /* Development */
 static const GsCategoryMap map_developertools[] = {
+	{ "all",		NC_("Menu of Development", "All"),
+					{ "Development",
+					  NULL } },
 	{ "featured",		NC_("Menu of Development", "Featured"),
 					{ "Development::featured",
 					  NULL} },
@@ -93,6 +97,9 @@ static const GsCategoryMap map_developertools[] = {
 
 /* Education */
 static const GsCategoryMap map_education[] = {
+	{ "all",		NC_("Menu of Education", "All"),
+					{ "Education",
+					  NULL } },
 	{ "featured",		NC_("Menu of Education", "Featured"),
 					{ "Education::featured",
 					  NULL} },
@@ -115,6 +122,9 @@ static const GsCategoryMap map_education[] = {
 
 /* Games */
 static const GsCategoryMap map_games[] = {
+	{ "all",		NC_("Menu of Games", "All"),
+					{ "Game",
+					  NULL } },
 	{ "featured",		NC_("Menu of Games", "Featured"),
 					{ "Game::featured",
 					  NULL} },
@@ -160,6 +170,9 @@ static const GsCategoryMap map_games[] = {
 
 /* Graphics */
 static const GsCategoryMap map_graphics[] = {
+	{ "all",		NC_("Menu of Graphics", "All"),
+					{ "Graphics",
+					  NULL } },
 	{ "featured",		NC_("Menu of Graphics", "Featured"),
 					{ "Graphics::featured",
 					  NULL} },
@@ -183,6 +196,9 @@ static const GsCategoryMap map_graphics[] = {
 
 /* Office */
 static const GsCategoryMap map_productivity[] = {
+	{ "all",		NC_("Menu of Office", "All"),
+					{ "Office",
+					  NULL } },
 	{ "featured",		NC_("Menu of Office", "Featured"),
 					{ "Office::featured",
 					  NULL} },
@@ -229,6 +245,9 @@ static const GsCategoryMap map_addons[] = {
 
 /* Science */
 static const GsCategoryMap map_science[] = {
+	{ "all",		NC_("Menu of Science", "All"),
+					{ "Science",
+					  NULL } },
 	{ "featured",		NC_("Menu of Science", "Featured"),
 					{ "Science::featured",
 					  NULL} },
@@ -254,6 +273,9 @@ static const GsCategoryMap map_science[] = {
 
 /* Communication */
 static const GsCategoryMap map_communication[] = {
+	{ "all",		NC_("Menu of Communication", "All"),
+					{ "Network",
+					  NULL } },
 	{ "featured",		NC_("Menu of Communication", "Featured"),
 					{ "Network::featured",
 					  NULL} },
@@ -276,6 +298,9 @@ static const GsCategoryMap map_communication[] = {
 
 /* Utility */
 static const GsCategoryMap map_utilities[] = {
+	{ "all",		NC_("Menu of Utility", "All"),
+					{ "Utility",
+					  NULL } },
 	{ "featured",		NC_("Menu of Utility", "Featured"),
 					{ "Utility::featured",
 					  NULL} },

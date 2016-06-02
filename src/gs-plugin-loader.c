@@ -2150,6 +2150,39 @@ gs_plugin_loader_category_sort_cb (gconstpointer a, gconstpointer b)
 			  gs_category_get_name (catb));
 }
 
+static void
+gs_plugin_loader_fix_category_all (GsCategory *category)
+{
+	GPtrArray *children;
+	GsCategory *cat_all;
+	guint i, j;
+
+	/* set correct size */
+	cat_all = gs_category_find_child (category, "all");
+	if (cat_all == NULL)
+		return;
+	gs_category_set_size (cat_all, gs_category_get_size (category));
+
+	/* add the desktop groups from all children */
+	children = gs_category_get_children (category);
+	for (i = 0; i < children->len; i++) {
+		GPtrArray *desktop_groups;
+		GsCategory *child;
+
+		/* ignore the all category */
+		child = g_ptr_array_index (children, i);
+		if (g_strcmp0 (gs_category_get_id (child), "all") == 0)
+			continue;
+
+		/* add all desktop groups */
+		desktop_groups = gs_category_get_desktop_groups (child);
+		for (j = 0; j < desktop_groups->len; j++) {
+			const gchar *tmp = g_ptr_array_index (desktop_groups, j);
+			gs_category_add_desktop_group (cat_all, tmp);
+		}
+	}
+}
+
 /**
  * gs_plugin_loader_get_categories_thread_cb:
  **/
@@ -2206,6 +2239,12 @@ gs_plugin_loader_get_categories_thread_cb (GTask *task,
 			continue;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+	}
+
+	/* make sure 'All' has the right categories */
+	for (i = 0; i < state->catlist->len; i++) {
+		GsCategory *cat = g_ptr_array_index (state->catlist, i);
+		gs_plugin_loader_fix_category_all (cat);
 	}
 
 	/* sort by name */
