@@ -60,7 +60,7 @@ gs_appstream_get_icon_by_kind_and_size (AsApp *app, AsIconKind icon_kind, guint 
 }
 
 static void
-gs_refine_item_pixbuf (GsPlugin *plugin, GsApp *app, AsApp *item)
+gs_refine_item_icon (GsPlugin *plugin, GsApp *app, AsApp *item)
 {
 	AsIcon *icon;
 
@@ -554,8 +554,9 @@ gs_appstream_refine_app (GsPlugin *plugin,
 	}
 
 	/* set icon */
-	if (as_app_get_icon_default (item) != NULL && gs_app_get_pixbuf (app) == NULL)
-		gs_refine_item_pixbuf (plugin, app, item);
+	if (as_app_get_icon_default (item) != NULL &&
+	    gs_app_get_icons(app)->len == 0)
+		gs_refine_item_icon (plugin, app, item);
 
 	/* set categories */
 	if (as_app_get_categories (item) != NULL &&
