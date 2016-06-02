@@ -431,6 +431,7 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     GCancellable *cancellable,
 			     GError **error)
 {
+	gboolean has_match_any_prefix = FALSE;
 	gboolean ret;
 	guint i;
 	g_autoptr(GsAppList) freeze_list = NULL;
@@ -453,7 +454,36 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 						    flags,
 						    cancellable,
 						    error);
+	if (!ret)
+		goto out;
 
+	/* second pass for any unadopted apps in the wildcard state */
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+
+		/* not needing to resolve */
+		if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			continue;
+		if (gs_app_get_management_plugin (app) != NULL)
+			continue;
+
+		/* this doesn't make sense outside the plugin loader */
+		gs_app_remove_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+		has_match_any_prefix = TRUE;
+	}
+	if (has_match_any_prefix) {
+		g_debug ("2nd resolve pass for unadopted wildcards");
+		ret = gs_plugin_loader_run_refine_internal (plugin_loader,
+							    function_name_parent,
+							    list,
+							    flags,
+							    cancellable,
+							    error);
+		if (!ret)
+			goto out;
+	}
+
+out:
 	/* now emit all the changed signals */
 	for (i = 0; i < gs_app_list_length (freeze_list); i++) {
 		GsApp *app = gs_app_list_index (freeze_list, i);
