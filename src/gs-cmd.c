@@ -433,13 +433,15 @@ main (int argc, char **argv)
 		}
 	} else if (argc == 3 && g_strcmp0 (argv[1], "get-category-apps") == 0) {
 		g_autoptr(GsCategory) category = NULL;
+		g_autoptr(GsCategory) parent = NULL;
 		g_auto(GStrv) split = NULL;
 		split = g_strsplit (argv[2], "/", 2);
-		category = gs_category_new (split[0]);
-		if (g_strv_length (split) == 2) {
-			g_autoptr(GsCategory) child = NULL;
-			child = gs_category_new (split[1]);
-			gs_category_add_child (category, child);
+		if (g_strv_length (split) == 1) {
+			category = gs_category_new (split[0]);
+		} else {
+			parent = gs_category_new (split[0]);
+			category = gs_category_new (split[1]);
+			gs_category_add_child (parent, category);
 		}
 		for (i = 0; i < repeat; i++) {
 			if (list != NULL)
