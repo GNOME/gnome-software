@@ -262,6 +262,24 @@ parse_pkgdb_collections_data (const gchar *data,
 	return distros;
 }
 
+static gchar *
+get_upgrade_css_background (guint version)
+{
+	g_autofree gchar *filename1 = NULL;
+	g_autofree gchar *filename2 = NULL;
+
+	filename1 = g_strdup_printf ("/usr/share/backgrounds/f%d/default/standard/f%d.png", version, version);
+	if (g_file_test (filename1, G_FILE_TEST_EXISTS))
+		return g_strdup_printf ("url('%s')", filename1);
+
+	filename2 = g_strdup_printf ("/usr/share/gnome-software/backgrounds/f%d.png", version);
+	if (g_file_test (filename2, G_FILE_TEST_EXISTS))
+		return g_strdup_printf ("url('%s')", filename2);
+
+	/* fall back to solid colour */
+	return g_strdup_printf ("#151E65");
+}
+
 /**
  * gs_plugin_add_distro_upgrades:
  */
@@ -295,6 +313,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		DistroInfo *distro_info = g_ptr_array_index (distros, i);
 		g_autofree gchar *app_id = NULL;
 		g_autofree gchar *app_version = NULL;
+		g_autofree gchar *background = NULL;
 		g_autofree gchar *url = NULL;
 		g_autofree gchar *css = NULL;
 		g_autoptr(GsApp) app = NULL;
@@ -352,11 +371,11 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
 
 		/* use a fancy background */
-		css = g_strdup_printf ("background: url('/usr/share/backgrounds/f%i/default/standard/f%i.png');"
+		background = get_upgrade_css_background (distro_info->version);
+		css = g_strdup_printf ("background: %s;"
 				       "background-position: center;"
 				       "background-size: cover;",
-				       distro_info->version,
-				       distro_info->version);
+				       background);
 		gs_app_set_metadata (app, "GnomeSoftware::UpgradeBanner-css", css);
 
 		gs_plugin_add_app (list, app);
