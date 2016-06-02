@@ -288,7 +288,7 @@ AC_DEFINE(HAVE_UBUNTU_REVIEWS,1,[Build Ubuntu reviews])
 
 # this refers to the gnome-software plugin API version
 # this is not in any way related to a package or soname version
-GS_PLUGIN_API_VERSION=10
+GS_PLUGIN_API_VERSION=11
 AC_SUBST(GS_PLUGIN_API_VERSION)
 AC_DEFINE_UNQUOTED([GS_PLUGIN_API_VERSION], "$GS_PLUGIN_API_VERSION", [the plugin API version])
 

@@ -36,9 +36,6 @@ gs_plugin_initialize (GsPlugin *plugin)
 {
 	/* need categories */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
-
-	/* the old name for this plugin */
-	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "menu-spec-refine");
 }
 
 static gboolean
