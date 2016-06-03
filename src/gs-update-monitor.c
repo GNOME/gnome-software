@@ -164,11 +164,16 @@ get_updates_finished_cb (GObject *object,
 	/* get result */
 	apps = gs_plugin_loader_get_updates_finish (GS_PLUGIN_LOADER (object), res, &error);
 	if (apps == NULL) {
+		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
+			g_warning ("failed to get updates: %s", error->message);
+		return;
+	}
+
+	/* no updates */
+	if (gs_app_list_length (apps) == 0) {
 		g_debug ("no updates; withdrawing updates-available notification");
 		g_application_withdraw_notification (monitor->application,
 						     "updates-available");
-		if (!g_error_matches (error, G_IO_ERROR, G_IO_ERROR_CANCELLED))
-			g_warning ("failed to get updates: %s", error->message);
 		return;
 	}
 
