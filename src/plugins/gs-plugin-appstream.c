@@ -381,6 +381,24 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gboolean
+_as_app_matches_desktop_group_set (AsApp *app, gchar **desktop_groups)
+{
+	guint i;
+	for (i = 0; desktop_groups[i] != NULL; i++) {
+		if (!as_app_has_category (app, desktop_groups[i]))
+			return FALSE;
+	}
+	return TRUE;
+}
+
+static gboolean
+_as_app_matches_desktop_group (AsApp *app, const gchar *desktop_group)
+{
+	g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
+	return _as_app_matches_desktop_group_set (app, split);
+}
+
 gboolean
 gs_plugin_add_category_apps (GsPlugin *plugin,
 			     GsCategory *category,
@@ -407,8 +425,6 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 	for (j = 0; j < desktop_groups->len; j++) {
 		const gchar *desktop_group = g_ptr_array_index (desktop_groups, j);
 		g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
-		if (g_strv_length (split) != 2)
-			continue;
 
 		/* match the app */
 		for (i = 0; i < array->len; i++) {
@@ -420,12 +436,8 @@ gs_plugin_add_category_apps (GsPlugin *plugin,
 			if (as_app_get_id (item) == NULL)
 				continue;
 
-			/* match the parent */
-			if (!as_app_has_category (item, split[0]))
-				continue;
-
-			/* match the child */
-			if (!as_app_has_category (item, split[1]))
+			/* match all the desktop groups */
+			if (!_as_app_matches_desktop_group_set (item, split))
 				continue;
 
 			/* add all the data we can */
@@ -529,18 +541,6 @@ gs_plugin_add_installed (GsPlugin *plugin,
 				return FALSE;
 			gs_app_list_add (list, app);
 		}
-	}
-	return TRUE;
-}
-
-static gboolean
-_as_app_matches_desktop_group (AsApp *app, const gchar *desktop_group)
-{
-	guint i;
-	g_auto(GStrv) split = g_strsplit (desktop_group, "::", -1);
-	for (i = 0; split[i] != NULL; i++) {
-		if (!as_app_has_category (app, split[i]))
-			return FALSE;
 	}
 	return TRUE;
 }
