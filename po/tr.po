@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-01-09 10:22+0000\n"
-"PO-Revision-Date: 2016-01-09 23:34+0200\n"
+"POT-Creation-Date: 2016-06-02 06:52+0000\n"
+"PO-Revision-Date: 2016-06-05 00:31+0300\n"
 "Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -53,47 +53,118 @@ msgstr ""
 "Ayrıca çevrimdışı bir güncellemeyi kullanarak sisteminizi güncellemenize "
 "olanak tanır."
 
-#: ../src/app-folder-dialog.ui.h:1
+#: ../data/org.gnome.software.gschema.xml.h:1
+msgid "A list of compatible projects"
+msgstr "Uyumlu projeler listesi"
+
+#: ../data/org.gnome.software.gschema.xml.h:2
+msgid ""
+"This is a list of compatible projects we should show such as GNOME, KDE and "
+"XFCE."
+msgstr ""
+"Bu; GNOME, KDE ve XFCE gibi, göstermemiz gereken uyumlu projelerin "
+"listesidir."
+
+#: ../data/org.gnome.software.gschema.xml.h:3
+msgid "Whether to automatically download updates"
+msgstr "Güncellemelerin otomatik olarak indirilmesi"
+
+#: ../data/org.gnome.software.gschema.xml.h:4
+msgid ""
+"If enabled, GNOME Software automatically downloads updates in the background "
+"and prompts the user to install them when ready."
+msgstr ""
+"Eğer etkinleştirilirse, GNOME Software güncellemeleri otomatik olarak arka "
+"planda indirir ve hazır olduğunda kurulması için kullanıcıya haber verir."
+
+#: ../data/org.gnome.software.gschema.xml.h:5
+msgid "Whether it's the very first run of GNOME Software"
+msgstr "GNOME Software'in ilk kez çalıştırılışı olup olmadığı"
+
+#: ../data/org.gnome.software.gschema.xml.h:6
+msgid "Show star ratings next to applications"
+msgstr "Uygulamaların yanında yıldızlı puanlamaları göster"
+
+#: ../data/org.gnome.software.gschema.xml.h:7
+msgid "Non-free applications show a warning dialog before install"
+msgstr "Özgür olmayan uygulamalar kurulmadan önce bir uyarı penceresi gösterir"
+
+#: ../data/org.gnome.software.gschema.xml.h:8
+msgid ""
+"When non-free applications are installed a warning dialog can be shown. This "
+"controls if that dialog is suppressed."
+msgstr ""
+"Özgür olmayan uygulamalar kurulduğunda, bir uyarı penceresi gösterilebilir. "
+"Bu, o iletişim penceresinin baskılanıp baskılanmayacağını kontrol eder."
+
+#: ../data/org.gnome.software.gschema.xml.h:9
+msgid "A list of popular applications"
+msgstr "Popüler uygulamalar listesi"
+
+#: ../data/org.gnome.software.gschema.xml.h:10
+msgid "A list of applications to use, overriding the system defined ones."
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:11
+msgid "The list of extra sources that have been previously enabled"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:12
+msgid ""
+"The list of sources that have been previously enabled when installing third-"
+"party applications."
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:13
+msgid "The last update check timestamp"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:14
+msgid "The timestamp of the first security update, cleared after update"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:15
+msgid "The last update timestamp"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:16
+msgid "The server to use for application reviews"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:17
+msgid "The minimum karma score for reviews"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:18
+msgid "Reviews with karma less than this number will not be shown."
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:19
+msgid "A list of official sources that should not be considered 3rd party"
+msgstr ""
+
+#: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Uygulama Klasörüne Ekle"
 
-#: ../src/app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-shell-details.c:273 ../src/gs-shell-installed.c:524
+#: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:305
+#: ../src/gs-shell-installed.c:528 ../src/gs-upgrade-banner.ui.h:5
 msgid "_Cancel"
 msgstr "_İptal"
 
-#: ../src/app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:321
+#: ../src/gs-app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:321
 msgid "_Add"
 msgstr "_Ekle"
 
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is installed
-#: ../src/app-tile.ui.h:1 ../src/gs-app-addon-row.c:97 ../src/gs-app-tile.c:73
-#: ../src/gs-app-tile.c:76 ../src/gs-feature-tile.c:68
+#: ../src/gs-app-tile.ui.h:1 ../src/gs-app-addon-row.c:97
+#: ../src/gs-app-tile.c:78 ../src/gs-app-tile.c:81 ../src/gs-feature-tile.c:68
 #: ../src/gs-popular-tile.c:74 ../src/gs-popular-tile.c:77
-#: ../src/popular-tile.ui.h:1
+#: ../src/gs-popular-tile.ui.h:1
 msgid "Installed"
 msgstr "Kuruldu"
-
-#. TRANSLATORS: this is the application name
-#. set the window title back to default
-#. TRANSLATORS: this is the main window title
-#: ../src/org.gnome.Software.desktop.in.h:1 ../src/gnome-software.ui.h:3
-#: ../src/gs-application.c:350 ../src/gs-shell.c:159
-msgid "Software"
-msgstr "Yazılımlar"
-
-#: ../src/org.gnome.Software.desktop.in.h:2
-msgid "Add, remove or update software on this computer"
-msgstr "Bu bilgisayarda yazılım ekleyin, kaldırın ya da güncelleyin"
-
-#: ../src/org.gnome.Software.desktop.in.h:3
-msgid ""
-"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
-"Software;App;Store;"
-msgstr ""
-"Güncellemeler;Güncelleştirmeler;Yükseltme;Kaynaklar;Sürüm Depoları;Tercihler;"
-"Yükle;Kur;Kaldır;Program;Yazılım;Uygulama;Mağaza;"
 
 #: ../src/gnome-software-local-file.desktop.in.h:1
 msgid "Software Install"
@@ -110,6 +181,14 @@ msgstr "Tümünü Seç"
 #: ../src/gnome-software.ui.h:2
 msgid "Select None"
 msgstr "Hiçbirini Seçme"
+
+#. TRANSLATORS: this is the application name
+#. set the window title back to default
+#. TRANSLATORS: this is the main window title
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:374
+#: ../src/gs-shell.c:253 ../src/org.gnome.Software.desktop.in.h:1
+msgid "Software"
+msgstr "Yazılımlar"
 
 #. vim: set noexpandtab:
 #: ../src/gnome-software.ui.h:4 ../src/gs-sources-dialog.ui.h:2
@@ -132,90 +211,9 @@ msgstr "_Kuruldu"
 msgid "_Updates"
 msgstr "_Güncellemeler"
 
-#: ../src/gnome-software.ui.h:11
-msgid "Restart & _Install"
-msgstr "Yeniden Başlat ve _Kur"
-
-#: ../src/gnome-software.ui.h:12
-msgid "Select"
-msgstr "Seç"
-
-#: ../src/gnome-software.ui.h:13
-msgid "Check for updates"
-msgstr "Güncellemeleri denetle"
-
-#: ../src/gs-app-folder-dialog.c:305
-msgid "Folder Name"
-msgstr "Klasör Adı"
-
-#. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:96
-msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
-msgstr ""
-"Başlangıç kipi: ‘updates’ (güncellemeler), ‘updated’ (güncellendi), "
-"‘installed’ (kuruldu) ya da ‘overview’ (genel görünüm)"
-
-#: ../src/gs-application.c:96
-msgid "MODE"
-msgstr "KİP"
-
-#: ../src/gs-application.c:98
-msgid "Search for applications"
-msgstr "Uygulamalarda ara"
-
-#: ../src/gs-application.c:98
-msgid "SEARCH"
-msgstr "ARA"
-
-#: ../src/gs-application.c:100
-msgid "Show application details"
-msgstr "Uygulama ayrıntılarını göster"
-
-#: ../src/gs-application.c:100
-msgid "ID"
-msgstr "Kimlik"
-
-#: ../src/gs-application.c:102
-msgid "Open a local package file"
-msgstr "Yerel paket dosyası aç"
-
-#: ../src/gs-application.c:102
-msgid "FILENAME"
-msgstr "DOSYAADI"
-
-#: ../src/gs-application.c:104
-msgid "Show verbose debugging information"
-msgstr "Ayrıntılı hata ayıklama bilgilerini göster"
-
-#: ../src/gs-application.c:106
-msgid "Show profiling information for the service"
-msgstr "Hizmetin profil oluşturma bilgilerini göster"
-
-#: ../src/gs-application.c:108
-msgid "Prefer local file sources to AppStream"
-msgstr "AppStream yerine yerel dosya kaynaklarını tercih et."
-
-#: ../src/gs-application.c:110
-msgid "Show version number"
-msgstr "Sürüm numarasını göster"
-
-#. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:348
-msgid "About Software"
-msgstr "Yazılımlar Hakkında"
-
-#. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:353
-msgid "A nice way to manage the software on your system."
-msgstr "Sisteminizdeki yazılımları yönetmenin güzel bir yolu."
-
-#: ../src/gs-application.c:357
-msgid "translator-credits"
-msgstr "Muhammet Kara <muhammetk@gmail.com>"
-
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:256
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:266
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Beklemede"
@@ -224,8 +222,8 @@ msgstr "Beklemede"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:292
-#: ../src/gs-app-tile.c:82 ../src/gs-app-tile.c:85
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:304
+#: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
 msgid "Installing"
 msgstr "Kuruluyor"
 
@@ -233,60 +231,129 @@ msgstr "Kuruluyor"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:301
-#: ../src/gs-app-tile.c:91 ../src/gs-app-tile.c:94
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:313
+#: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
 msgid "Removing"
 msgstr "Kaldırılıyor"
 
-#. TRANSLATORS: This is how we join the licences and can
+#. TRANSLATORS: This is how we join the licenses and can
 #. * be considered a "Conjunctive AND Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1349 ../src/gs-shell-extras.c:146
+#: ../src/gs-app.c:1391 ../src/gs-shell-extras.c:145
 msgid " and "
 msgstr "ve"
 
-#. TRANSLATORS: This is how we join the licences and can
+#. TRANSLATORS: This is how we join the licenses and can
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1357
+#: ../src/gs-app.c:1399
 msgid " or "
 msgstr "veya"
 
 #. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1380
+#: ../src/gs-app.c:1422
 msgid "Proprietary"
 msgstr "Sahipli"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1390
+#: ../src/gs-app.c:1432
 msgid "Public domain"
 msgstr "Kamu malı"
 
+#: ../src/gs-app-folder-dialog.c:305
+msgid "Folder Name"
+msgstr "Klasör Adı"
+
+#. TRANSLATORS: this is a command line option
+#: ../src/gs-application.c:97
+msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
+msgstr ""
+"Başlangıç kipi: ‘updates’ (güncellemeler), ‘updated’ (güncellendi), "
+"‘installed’ (kuruldu) ya da ‘overview’ (genel görünüm)"
+
+#: ../src/gs-application.c:97
+msgid "MODE"
+msgstr "KİP"
+
+#: ../src/gs-application.c:99
+msgid "Search for applications"
+msgstr "Uygulamalarda ara"
+
+#: ../src/gs-application.c:99
+msgid "SEARCH"
+msgstr "ARA"
+
+#: ../src/gs-application.c:101
+msgid "Show application details"
+msgstr "Uygulama ayrıntılarını göster"
+
+#: ../src/gs-application.c:101
+msgid "ID"
+msgstr "Kimlik"
+
+#: ../src/gs-application.c:103
+msgid "Open a local package file"
+msgstr "Yerel paket dosyası aç"
+
+#: ../src/gs-application.c:103
+msgid "FILENAME"
+msgstr "DOSYAADI"
+
+#: ../src/gs-application.c:105
+msgid "Show verbose debugging information"
+msgstr "Ayrıntılı hata ayıklama bilgilerini göster"
+
+#: ../src/gs-application.c:107
+msgid "Show profiling information for the service"
+msgstr "Hizmetin profil oluşturma bilgilerini göster"
+
+#: ../src/gs-application.c:109
+msgid "Prefer local file sources to AppStream"
+msgstr "AppStream yerine yerel dosya kaynaklarını tercih et."
+
+#: ../src/gs-application.c:111
+msgid "Show version number"
+msgstr "Sürüm numarasını göster"
+
+#: ../src/gs-application.c:367
+msgid "translator-credits"
+msgstr "Muhammet Kara <muhammetk@gmail.com>"
+
+#. TRANSLATORS: this is the title of the about window
+#: ../src/gs-application.c:371
+msgid "About Software"
+msgstr "Yazılımlar Hakkında"
+
+#. TRANSLATORS: well, we seem to think so, anyway
+#: ../src/gs-application.c:377
+msgid "A nice way to manage the software on your system."
+msgstr "Sisteminizdeki yazılımları yönetmenin güzel bir yolu."
+
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: ../src/gs-app-row.c:154
+#: ../src/gs-app-row.c:152
 msgid "Device cannot be used during update."
 msgstr "Cihaz güncelleme sırasında kullanılamaz."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:240
+#: ../src/gs-app-row.c:250
 msgid "Visit website"
 msgstr "Web sitesini ziyaret et"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:245
+#: ../src/gs-app-row.c:255
 msgid "Install…"
 msgstr "Kur…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:253
+#: ../src/gs-app-row.c:263
 msgid "Cancel"
 msgstr "İptal"
 
@@ -296,33 +363,26 @@ msgstr "İptal"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:263 ../src/gs-app-row.c:270 ../src/gs-page.c:204
-#: ../src/gs-utils.c:313
+#: ../src/gs-app-row.c:273 ../src/gs-app-row.c:280 ../src/gs-page.c:282
+#: ../src/gs-utils.c:312
 msgid "Install"
 msgstr "Kur"
-
-#. TRANSLATORS: this is a button next to the search
-#. * results that allows the app to be easily updated live
-#: ../src/gs-app-row.c:274
-#| msgid "Updated"
-msgid "Update"
-msgstr "Güncelle"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:283 ../src/gs-page.c:231
+#: ../src/gs-app-row.c:284 ../src/gs-app-row.c:295 ../src/gs-page.c:350
 msgid "Remove"
 msgstr "Kaldır"
 
 #. vim: set noexpandtab:
 #. This is shown in the search result row as a tag
-#: ../src/gs-app-row.ui.h:2
+#: ../src/gs-app-row.ui.h:2 ../src/gs-shell-details.ui.h:31
 msgid "3rd party"
 msgstr "3üncü taraf"
 
 #. This is shown in the search result row as a tag
-#: ../src/gs-app-row.ui.h:4
+#: ../src/gs-app-row.ui.h:4 ../src/gs-shell-details.ui.h:32
 msgid "web app"
 msgstr "web uygulaması"
 
@@ -333,9 +393,20 @@ msgstr "özgür olmayan"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:228
+#: ../src/gs-category.c:235
 msgid "Other"
 msgstr "Diğer"
+
+#. TRANSLATORS: this is a subcategory matching all the
+#. * different apps in the parent category, e.g. "Games"
+#: ../src/gs-category.c:239
+msgid "All"
+msgstr "Tümü"
+
+#. TRANSLATORS: this is a subcategory of featured apps
+#: ../src/gs-category.c:242
+msgid "Featured"
+msgstr "Vitrin"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
 #: ../src/gs-dbus-helper.c:307
@@ -469,130 +540,46 @@ msgstr "Bilinmiyor"
 msgid "History"
 msgstr "Geçmiş"
 
-#. TRANSLATORS: the transaction could not be completed
-#. * as a previous transaction was unfinished
-#: ../src/gs-offline-updates.c:47
-msgid "A previous update was unfinished."
-msgstr "Tamamlanmamış bir güncelleme var."
-
-#. TRANSLATORS: the package manager needed to download
-#. * something with no network available
-#: ../src/gs-offline-updates.c:56
-msgid ""
-"Internet access was required but wasn’t available. Please make sure that you "
-"have internet access and try again."
-msgstr ""
-"İnternet erişimine gereksinim duyuldu fakat bulunamadı. Lütfen internet "
-"erişiminiz olduğuna emin olun ve tekrar deneyin."
-
-#. TRANSLATORS: if the package is not signed correctly
-#. *
-#: ../src/gs-offline-updates.c:66
-msgid ""
-"There were security issues with the update. Please consult your software "
-"provider for more details."
-msgstr ""
-"Güncellemede güvenlik sorunları mevcut. Lütfen daha fazla ayrıntı için "
-"yazılım sağlayıcınızla iletişime geçin."
-
-#. TRANSLATORS: the transaction failed in a way the user
-#. * probably cannot comprehend. Package management systems
-#. * really are teh suck.
-#. TRANSLATORS: the update process failed in a general
-#. * way, usually this message will come from source distros
-#. * like gentoo
-#: ../src/gs-offline-updates.c:76 ../src/gs-offline-updates.c:99
-msgid ""
-"The update couldn’t be installed; this is often a problem with the update "
-"itself. Please wait for another update and try again."
-msgstr ""
-"Güncelleme yüklenemedi; bu genellikle güncellemenin kendisiyle ilgili bir "
-"sorundur. Lütfen başka bir güncellemeyi bekleyin ve tekrar deneyin."
-
-#. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-offline-updates.c:81
-msgid "The update was cancelled."
-msgstr "Güncelleme iptal edildi."
-
-#. TRANSLATORS: the user must have updated manually after
-#. * the updates were prepared
-#: ../src/gs-offline-updates.c:87
-msgid "The system was already up to date."
-msgstr "Sistem zaten güncel."
-
-#. TRANSLATORS: we ran out of disk space
-#: ../src/gs-offline-updates.c:91
-msgid ""
-"There wasn’t enough disk space. Please free up some space and try again."
-msgstr ""
-"Yeteri kadar boş disk alanı yok. Lütfen biraz yer açın ve tekrar deneyin."
-
-#. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-offline-updates.c:104
-msgid ""
-"We’re sorry: the update failed to install. Please wait for another update "
-"and try again. If the problem persists, contact your software provider."
-msgstr ""
-"Özür dileriz: güncelleme yükleme başarısız. Lütfen başka bir güncellemeyi "
-"bekleyin ve tekrar deneyim. Eğer sorun devam ederse, yazılım sağlayıcınızla "
-"görüşün."
-
-#. TRANSLATORS: these are geeky messages from the
-#. * package manager no mortal is supposed to understand,
-#. * but google might know what they mean
-#: ../src/gs-offline-updates.c:212
-msgid "Detailed errors from the package manager follow:"
-msgstr "Paket yöneticisinden gelen hata ayrıntıları:"
-
-#: ../src/gs-offline-updates.c:231 ../src/gs-shell-details.ui.h:20
-msgid "Details"
-msgstr "Ayrıntılar"
-
-#. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-offline-updates.c:282
-msgid "Failed To Update"
-msgstr "Güncelleme Başarısız Oldu"
-
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:199
+#: ../src/gs-page.c:276
 #, c-format
 msgid "Prepare %s"
 msgstr "%s Uygulamasını Hazırla"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:224
+#: ../src/gs-page.c:341
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "%s uygulamasını kaldırmak istediğinizden emin misiniz?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:228
+#: ../src/gs-page.c:346
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s kaldırılacak ve tekrar kullanmak için yeniden kurmanız gerekecek."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:814
+#: ../src/gs-plugin-loader.c:675
 msgid "OS Updates"
 msgstr "İşletim Sistemi Güncellemeleri"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:819
+#: ../src/gs-plugin-loader.c:680
 msgid "Includes performance, stability and security improvements."
 msgstr "Performans, kararlılık ve güvenlik geliştirmeleri içerir."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1462 ../src/gs-shell-extras.c:387
+#: ../src/gs-plugin-loader.c:1387 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s biçimi için kullanılabilir ek kodek yok."
 
-#: ../src/gs-plugin-loader.c:1465
+#: ../src/gs-plugin-loader.c:1390
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -601,230 +588,235 @@ msgstr ""
 "Hem %s hakkındaki bilgiler hem de bu biçimi oynatabilen bir kod çözücüyü "
 "nasıl edinebileceğinizle ilgili seçenekleri, web sitesinde bulabilirsiniz."
 
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really bad application
+#: ../src/gs-review-dialog.c:93
+msgid "Hate it"
+msgstr "Berbat"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		Not a great application
+#: ../src/gs-review-dialog.c:97
+msgid "Don't like it"
+msgstr "Pek iyi değil"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A fairly-good application
+#: ../src/gs-review-dialog.c:101
+msgid "It's OK"
+msgstr "İdare eder"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A good application
+#: ../src/gs-review-dialog.c:105
+msgid "Like it"
+msgstr "Güzel"
+
+#. TRANSLATORS: lighthearted star rating description;
+#. *		A really awesome application
+#: ../src/gs-review-dialog.c:109
+msgid "Love it"
+msgstr "Harika"
+
+#. TRANSLATORS: the review can't just be copied and pasted
+#: ../src/gs-review-dialog.c:131
+msgid "Please take more time writing the review"
+msgstr "Lütfen incelemeyi yazmaya biraz daha fazla zaman ayırın"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:135
+msgid "Please choose a star rating"
+msgstr "Lütfen bir yıldız puanlaması seçin"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:139
+msgid "The summary is too short"
+msgstr "Özet çok kısa"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:143
+msgid "The summary is too long"
+msgstr "Özet çok uzun"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:147
+msgid "The description is too short"
+msgstr "Açıklama çok kısa"
+
+#. TRANSLATORS: the review is not acceptable
+#: ../src/gs-review-dialog.c:151
+msgid "The description is too long"
+msgstr "Açıklama çok uzun"
+
+#. vim: set noexpandtab:
+#. Translators: Title of the dialog box where the users can write and publish their opinions about the apps.
+#: ../src/gs-review-dialog.ui.h:2
+msgid "Post Review"
+msgstr "İnceleme Gönder"
+
+#. Translators: A button to publish the user's opinion about the app.
+#: ../src/gs-review-dialog.ui.h:5
+msgid "_Post"
+msgstr "_Gönder"
+
+#: ../src/gs-review-dialog.ui.h:6
+msgid "Rating"
+msgstr "Puanlama"
+
+#: ../src/gs-review-dialog.ui.h:7
+msgid "Summary"
+msgstr "Özet"
+
+#: ../src/gs-review-dialog.ui.h:8
+msgid ""
+"Give a short summary of your review, for example: “Great app, would "
+"recommend”."
+msgstr ""
+"İncelemenizin kısa bir özetini girin, öreğin: “Harika bir uygulama, tavsiye "
+"ediyorum”."
+
+#. Translators: This is where the users enter their opinions about the apps.
+#: ../src/gs-review-dialog.ui.h:10
+#| msgid "Review"
+msgctxt "app review"
+msgid "Review"
+msgstr "İnceleme"
+
+#: ../src/gs-review-dialog.ui.h:11
+msgid "What do you think of the app? Try to give reasons for your views."
+msgstr ""
+"Uygulama hakkında ne düşünüyorsunuz? Görüşleriniz için neden belirtmeye "
+"çalışın."
+
+#: ../src/gs-review-histogram.ui.h:1
+msgid "Total"
+msgstr "Toplam"
+
+#. TRANSLATORS: we explain what the action is going to do
+#: ../src/gs-review-row.c:207
+msgid "You can report reviews for abusive, rude, or discriminatory behavior."
+msgstr ""
+"Küfürlü, kaba veya ayrımcı tutum içeren incelemeleri rapor edebilirsiniz."
+
+#. TRANSLATORS: we ask the user if they really want to do this
+#: ../src/gs-review-row.c:212
+msgid ""
+"Once reported, a review will be hidden until it has been checked by an "
+"administrator."
+msgstr ""
+"Bir kere rapor edildikten sonra; inceleme, bir yönetici tarafından "
+"denetlenene kadar gizlenecektir."
+
+#. TRANSLATORS: window title when
+#. * reporting a user-submitted review
+#. * for moderation
+#: ../src/gs-review-row.c:226
+#| msgid "Review"
+msgid "Report Review?"
+msgstr "İnceleme Rapor Edilsin Mi?"
+
+#. TRANSLATORS: button text when
+#. * sending a review for moderation
+#: ../src/gs-review-row.c:230
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Sports"
+msgid "Report"
+msgstr "Rapor Et"
+
+#. vim: set noexpandtab:
+#. Translators: Users can express their opinions about other users' opinions about the apps.
+#: ../src/gs-review-row.ui.h:2
+msgid "Was this review useful to you?"
+msgstr "Bu inceleme işinize yaradı mı?"
+
+#: ../src/gs-review-row.ui.h:3
+msgid "Yes"
+msgstr "Evet"
+
+#: ../src/gs-review-row.ui.h:4
+msgid "No"
+msgstr "Hayır"
+
+#. Translators: Button text for indifference, only used when moderating
+#: ../src/gs-review-row.ui.h:6
+msgid "Meh"
+msgstr "Eh İşte"
+
+#: ../src/gs-review-row.ui.h:7
+msgid "Report…"
+msgstr "Rapor Et…"
+
+#: ../src/gs-review-row.ui.h:8
+#| msgid "Remove"
+msgid "Remove…"
+msgstr "Kaldır…"
+
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:233
+#: ../src/gs-screenshot-image.c:232
 msgid "Screenshot not found"
 msgstr "Ekran görüntüsü bulunamadı"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:249
+#: ../src/gs-screenshot-image.c:248
 msgid "Failed to load image"
 msgstr "Resim yüklenemedi"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:376
+#: ../src/gs-screenshot-image.c:379
 msgid "Screenshot size not found"
 msgstr "Ekran görüntüsü boyutu bulunamadı"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:395
+#: ../src/gs-screenshot-image.c:405
 msgid "Could not create cache"
 msgstr "Önbellek oluşturulamadı"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:425
+#: ../src/gs-screenshot-image.c:433
 msgid "Screenshot not valid"
 msgstr "Ekran görüntüsü geçerli değil"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:441
+#: ../src/gs-screenshot-image.c:449
 msgid "Screenshot not available"
 msgstr "Ekran görüntüsü kullanılabilir değil"
 
-#: ../src/gs-screenshot-image.c:493
+#: ../src/gs-screenshot-image.c:500
 msgid "Screenshot"
 msgstr "Ekran Görüntüsü"
 
-#. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-extras.c:149
-msgid ", "
-msgstr ", "
-
-#. TRANSLATORS: Application window title for fonts installation.
-#. %s will be replaced by name of the script we're searching for.
-#: ../src/gs-shell-extras.c:175
-#, c-format
-msgid "Available fonts for the %s script"
-msgid_plural "Available fonts for the %s scripts"
-msgstr[0] "%s betiği/betikleri için kullanılabilir yazı tipleri"
-
-#. TRANSLATORS: Application window title for codec installation.
-#. %s will be replaced by actual codec name(s)
-#: ../src/gs-shell-extras.c:183
-#, c-format
-msgid "Available software for %s"
-msgid_plural "Available software for %s"
-msgstr[0] "%s için kullanılabilir yazılım"
-
-#: ../src/gs-shell-extras.c:225
-msgid "Unable to Find Requested Software"
-msgstr "Talep Edilen Yazılım Bulunamadı"
-
-#. TRANSLATORS: This string is used for codecs that weren't found
-#: ../src/gs-shell-extras.c:321
-#, c-format
-msgid "%s not found"
-msgstr "%s bulunamadı"
-
-#. TRANSLATORS: hyperlink title
-#: ../src/gs-shell-extras.c:325
-msgid "on the website"
-msgstr "web sitesinde"
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:332
-#, c-format
-msgid "No applications are available that provide the file %s."
-msgstr "%s dosyasını sağlayan, kullanılabilir uygulama yok."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:336 ../src/gs-shell-extras.c:347
-#: ../src/gs-shell-extras.c:358
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get missing applications "
-"might be found %s."
-msgstr ""
-"Eksik uygulamaları nasıl edinebileceğinizle ilgili seçeneklerin yanında, %s "
-"hakkındaki bilgileri şurada bulabilirsiniz: %s."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:343 ../src/gs-shell-extras.c:365
-#, c-format
-msgid "No applications are available for %s support."
-msgstr "%s desteği için kullanılabilir uygulama yok."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:354
-#, c-format
-msgid "%s is not available."
-msgstr "%s kullanılabilir değil"
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:369
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get an application that "
-"can support this format might be found %s."
-msgstr ""
-"Hem %s hakkındaki bilgiler hem de bu biçimi oynatabilen uygulamayı nasıl "
-"edinebileceğinizle ilgili seçenekleri %s adresinde bulabilirsiniz."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:376
-#, c-format
-msgid "No fonts are available for the %s script support."
-msgstr "%s betik desteği için kullanılabilir yazı tipi yok."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:380
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get additional fonts "
-"might be found %s."
-msgstr ""
-"Hem %s hakkındaki bilgiler hem de ek yazı tiplerini nasıl edinebileceğinizi "
-"%s adresinde bulabilirsiniz."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:391
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get a codec that can "
-"play this format might be found %s."
-msgstr ""
-"Hem %s hakkındaki bilgiler hem de bu biçimi oynatabilen bir kod çözücüyü "
-"nasıl edinebileceğinizle ilgili bilgiyi %s adresinde bulabilirsiniz."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:398
-#, c-format
-msgid "No Plasma resources are available for %s support."
-msgstr "%s desteği için kullanılabilir Plazma kaynağı yok."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:402
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get additional Plasma "
-"resources might be found %s."
-msgstr ""
-"Hem %s hakkındaki bilgiler hem de ek Plazma kaynaklarını nasıl "
-"edinebileceğinizle ilgili bilgiyi %s adresinde bulabilirsiniz."
-
-#. TRANSLATORS: this is when we know about an application or
-#. * addon, but it can't be listed for some reason
-#: ../src/gs-shell-extras.c:409
-#, c-format
-msgid "No printer drivers are available for %s."
-msgstr "%s için kullanılabilir yazıcı sürücüsü yok."
-
-#. TRANSLATORS: first %s is the codec name, and second %s is a
-#. * hyperlink with the "on the website" text
-#: ../src/gs-shell-extras.c:413
-#, c-format
-msgid ""
-"Information about %s, as well as options for how to get a driver that "
-"supports this printer might be found %s."
-msgstr ""
-"Hem %s hakkındaki bilgiler hem de bu sürücüyü nasıl edinebileceğinizi %s "
-"adresinde bulabilirsiniz."
-
-#: ../src/gs-shell-extras.c:458
-msgid "this website"
-msgstr "bu web sitesi"
-
-#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: ../src/gs-shell-extras.c:462
-#, c-format
-msgid ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
-msgid_plural ""
-"Unfortunately, the %s you were searching for could not be found. Please see "
-"%s for more information."
-msgstr[0] ""
-"Ne yazık ki, aradığınız %s bulunamadı. Daha fazla bilgi için lütfen %s'ni "
-"ziyaret edin."
-
-#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
-#: ../src/gs-shell-extras.c:640
-msgid "Failed to find any search results"
-msgstr "Herhangi bir arama sonucu bulunamadı"
-
-#: ../src/gs-shell-extras.c:809
-#, c-format
-msgid "%s file format"
-msgstr "%s dosya biçimi"
-
 #. vim: set noexpandtab:
-#: ../src/gs-shell-extras.ui.h:1
-msgid "Codecs page"
-msgstr "Kod çözücüler sayfası"
+#: ../src/gs-shell-category.ui.h:1
+msgid ""
+"Extensions are used at your own risk. If you have any system problems, it is "
+"recommended to disable them."
+msgstr ""
+"Uzantıları kullanırken tüm sorumluluk size aittir. Eğer herhangi bir sistem "
+"sorunu yaşarsanız, bunları devre dışı bırakmanız önerilir."
+
+#: ../src/gs-shell-category.ui.h:2
+msgid "Extension Settings"
+msgstr "Uzantı Ayarları"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
-#: ../src/gs-shell-details.c:185 ../src/gs-shell-details.ui.h:2
+#. TRANSLATORS: button text in the header when firmware
+#. * can be live-installed
+#. TRANSLATORS: button text in the header when an application
+#. * can be live-updated
+#: ../src/gs-shell-details.c:201 ../src/gs-shell-details.c:227
+#: ../src/gs-shell-details.c:232 ../src/gs-shell-details.ui.h:2
+#: ../src/gs-upgrade-banner.ui.h:6
 msgid "_Install"
 msgstr "_Kur"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:196
+#: ../src/gs-shell-details.c:212
 msgid "_Installing"
 msgstr "_Kuruluyor"
 
@@ -832,70 +824,96 @@ msgstr "_Kuruluyor"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:214
+#: ../src/gs-shell-details.c:245
 msgid "_Install…"
 msgstr "_Kur…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:260 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:292 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "Kaldı_r"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:267
+#: ../src/gs-shell-details.c:299
 msgid "_Removing"
 msgstr "_Kaldırılıyor"
 
-#. TRANSLATORS: this is where the licence is not known
-#: ../src/gs-shell-details.c:656
+#. TRANSLATORS: this is where the license is not known
+#: ../src/gs-shell-details.c:669
 msgctxt "license"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:669
+#: ../src/gs-shell-details.c:682
 msgctxt "version"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
 #. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:675
+#: ../src/gs-shell-details.c:688
 msgctxt "size"
 msgid "Calculating…"
 msgstr "Hesaplanıyor..."
 
 #. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:678
+#: ../src/gs-shell-details.c:691
 msgctxt "size"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:690
+#: ../src/gs-shell-details.c:703
 msgctxt "updated"
 msgid "Never"
 msgstr "Hiçbir zaman"
 
 #. TRANSLATORS: this is the application isn't in any
 #. * defined menu category
-#: ../src/gs-shell-details.c:704
+#: ../src/gs-shell-details.c:717
 msgctxt "menu category"
 msgid "None"
 msgstr "Hiçbiri"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:719
+#: ../src/gs-shell-details.c:734
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
-#: ../src/gs-shell-details.c:959
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:780
+msgid ""
+"This application can only be used when there is an active internet "
+"connection."
+msgstr ""
+"Bu uygulama, yalnızca etkin bir İnternet bağlantınız olduğunda "
+"kullanılabilir."
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:791
+msgid "This software comes from a 3rd party."
+msgstr ""
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:800
+msgid ""
+"This software comes from a 3rd party and may contain non-free components."
+msgstr ""
+
+#. TRANSLATORS: this is the warning box
+#: ../src/gs-shell-details.c:809
+msgid "This software may contain non-free components."
+msgstr "Bu yazılım, özgür olmayan bileşenler içerebilir."
+
+#: ../src/gs-shell-details.c:1135
 #, c-format
 msgid "Could not find '%s'"
 msgstr "'%s' bulunamadı"
 
-#: ../src/gs-shell-details.c:1006 ../src/gs-utils.c:162
+#. TRANSLATORS: install or removed failed
+#: ../src/gs-shell-details.c:1195 ../src/gs-utils.c:166
 msgid "Sorry, this did not work"
 msgstr "Üzgünüm, bu işe yaramadı"
 
@@ -959,90 +977,282 @@ msgid "Only use software sources that you trust."
 msgstr "Yalnızca güvendiğiniz yazılım kaynaklarını kullanın."
 
 #: ../src/gs-shell-details.ui.h:16
-msgid "Internet Only Application"
-msgstr "Sadece İnternet Uygulaması"
-
-#: ../src/gs-shell-details.ui.h:17
-msgid ""
-"This application can only be used when there is an active internet "
-"connection."
-msgstr ""
-"Bu uygulama, yalnızca etkin bir İnternet bağlantınız olduğunda "
-"kullanılabilir."
-
-#: ../src/gs-shell-details.ui.h:18
 msgid "_Website"
 msgstr "_Web Sitesi"
 
-#: ../src/gs-shell-details.ui.h:19
+#: ../src/gs-shell-details.ui.h:17
 msgid "_History"
 msgstr "_Geçmiş"
 
-#: ../src/gs-shell-details.ui.h:21
+#: ../src/gs-shell-details.ui.h:18 ../src/gs-utils.c:650
+msgid "Details"
+msgstr "Ayrıntılar"
+
+#: ../src/gs-shell-details.ui.h:19
 msgid "Localized in your Language"
 msgstr "Dilinize Çevrilmiş"
 
-#: ../src/gs-shell-details.ui.h:22
+#: ../src/gs-shell-details.ui.h:20
 msgid "Documentation"
 msgstr "Belgelendirme"
 
-#: ../src/gs-shell-details.ui.h:23
+#: ../src/gs-shell-details.ui.h:21
 msgid "Release Activity"
 msgstr "Yayım Etkinliği"
 
-#: ../src/gs-shell-details.ui.h:24
+#: ../src/gs-shell-details.ui.h:22
 msgid "System Integration"
 msgstr "Sistem Bütünleşmesi"
 
-#: ../src/gs-shell-details.ui.h:25 ../src/gs-sources-dialog.ui.h:8
+#: ../src/gs-shell-details.ui.h:23 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
 msgstr "Sürüm"
 
-#: ../src/gs-shell-details.ui.h:26
+#: ../src/gs-shell-details.ui.h:24
 msgid "Updated"
 msgstr "Güncellendi"
 
-#: ../src/gs-shell-details.ui.h:27
+#: ../src/gs-shell-details.ui.h:25
 msgid "Category"
 msgstr "Kategori"
 
-#: ../src/gs-shell-details.ui.h:28
+#: ../src/gs-shell-details.ui.h:26
 msgid "Size"
 msgstr "Boyut"
 
-#: ../src/gs-shell-details.ui.h:29
+#: ../src/gs-shell-details.ui.h:27
 msgid "Source"
 msgstr "Kaynak"
 
-#: ../src/gs-shell-details.ui.h:30
+#: ../src/gs-shell-details.ui.h:28
 msgid "Developer"
 msgstr "Geliştirici"
 
-#: ../src/gs-shell-details.ui.h:31
+#: ../src/gs-shell-details.ui.h:29
 msgid "License"
 msgstr "Lisans"
+
+#: ../src/gs-shell-details.ui.h:30
+msgid "non-free"
+msgstr "özgür olmayan"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
 #. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:32 ../src/gs-shell-installed.c:441
-#: ../src/gs-update-list.c:127 ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-shell-details.ui.h:33 ../src/gs-shell-installed.c:433
+#: ../src/gs-update-list.c:129 ../src/plugins/menu-spec-common.c:210
 msgid "Add-ons"
 msgstr "Eklentiler"
 
-#: ../src/gs-shell-details.ui.h:33
+#: ../src/gs-shell-details.ui.h:34
 msgid "Selected add-ons will be installed with the application."
 msgstr "Seçilen eklentiler, uygulama ile birlikte yüklenecek."
 
+#. Translators: Header of the section with other users' opinions about the app.
+#: ../src/gs-shell-details.ui.h:36
+msgid "Reviews"
+msgstr "İncelemeler"
+
+#. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
+#: ../src/gs-shell-details.ui.h:38
+msgid "_Write a Review"
+msgstr "_İnceleme Yaz"
+
+#. Translators: Button to return more application-submitted reviews.
+#: ../src/gs-shell-details.ui.h:40
+msgid "_Show More"
+msgstr "Daha Fazlasını Gö_ster"
+
+#. TRANSLATORS: separator for a list of items
+#: ../src/gs-shell-extras.c:148
+msgid ", "
+msgstr ", "
+
+#. TRANSLATORS: Application window title for fonts installation.
+#. %s will be replaced by name of the script we're searching for.
+#: ../src/gs-shell-extras.c:174
+#, c-format
+msgid "Available fonts for the %s script"
+msgid_plural "Available fonts for the %s scripts"
+msgstr[0] "%s betiği/betikleri için kullanılabilir yazı tipleri"
+
+#. TRANSLATORS: Application window title for codec installation.
+#. %s will be replaced by actual codec name(s)
+#: ../src/gs-shell-extras.c:182
+#, c-format
+msgid "Available software for %s"
+msgid_plural "Available software for %s"
+msgstr[0] "%s için kullanılabilir yazılım"
+
+#: ../src/gs-shell-extras.c:224
+msgid "Unable to Find Requested Software"
+msgstr "Talep Edilen Yazılım Bulunamadı"
+
+#. TRANSLATORS: This string is used for codecs that weren't found
+#: ../src/gs-shell-extras.c:320
+#, c-format
+msgid "%s not found"
+msgstr "%s bulunamadı"
+
+#. TRANSLATORS: hyperlink title
+#: ../src/gs-shell-extras.c:324
+msgid "on the website"
+msgstr "web sitesinde"
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:331
+#, c-format
+msgid "No applications are available that provide the file %s."
+msgstr "%s dosyasını sağlayan, kullanılabilir uygulama yok."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:335 ../src/gs-shell-extras.c:346
+#: ../src/gs-shell-extras.c:357
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get missing applications "
+"might be found %s."
+msgstr ""
+"Eksik uygulamaları nasıl edinebileceğinizle ilgili seçeneklerin yanında, %s "
+"hakkındaki bilgileri şurada bulabilirsiniz: %s."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:342 ../src/gs-shell-extras.c:364
+#, c-format
+msgid "No applications are available for %s support."
+msgstr "%s desteği için kullanılabilir uygulama yok."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:353
+#, c-format
+msgid "%s is not available."
+msgstr "%s kullanılabilir değil"
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:368
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get an application that "
+"can support this format might be found %s."
+msgstr ""
+"Hem %s hakkındaki bilgiler hem de bu biçimi oynatabilen uygulamayı nasıl "
+"edinebileceğinizle ilgili seçenekleri %s adresinde bulabilirsiniz."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:375
+#, c-format
+msgid "No fonts are available for the %s script support."
+msgstr "%s betik desteği için kullanılabilir yazı tipi yok."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:379
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get additional fonts "
+"might be found %s."
+msgstr ""
+"Hem %s hakkındaki bilgiler hem de ek yazı tiplerini nasıl edinebileceğinizi "
+"%s adresinde bulabilirsiniz."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:390
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a codec that can "
+"play this format might be found %s."
+msgstr ""
+"Hem %s hakkındaki bilgiler hem de bu biçimi oynatabilen bir kod çözücüyü "
+"nasıl edinebileceğinizle ilgili bilgiyi %s adresinde bulabilirsiniz."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:397
+#, c-format
+msgid "No Plasma resources are available for %s support."
+msgstr "%s desteği için kullanılabilir Plazma kaynağı yok."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:401
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get additional Plasma "
+"resources might be found %s."
+msgstr ""
+"Hem %s hakkındaki bilgiler hem de ek Plazma kaynaklarını nasıl "
+"edinebileceğinizle ilgili bilgiyi %s adresinde bulabilirsiniz."
+
+#. TRANSLATORS: this is when we know about an application or
+#. * addon, but it can't be listed for some reason
+#: ../src/gs-shell-extras.c:408
+#, c-format
+msgid "No printer drivers are available for %s."
+msgstr "%s için kullanılabilir yazıcı sürücüsü yok."
+
+#. TRANSLATORS: first %s is the codec name, and second %s is a
+#. * hyperlink with the "on the website" text
+#: ../src/gs-shell-extras.c:412
+#, c-format
+msgid ""
+"Information about %s, as well as options for how to get a driver that "
+"supports this printer might be found %s."
+msgstr ""
+"Hem %s hakkındaki bilgiler hem de bu sürücüyü nasıl edinebileceğinizi %s "
+"adresinde bulabilirsiniz."
+
+#: ../src/gs-shell-extras.c:458
+msgid "this website"
+msgstr "bu web sitesi"
+
+#. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
+#: ../src/gs-shell-extras.c:462
+#, c-format
+msgid ""
+"Unfortunately, the %s you were searching for could not be found. Please see "
+"%s for more information."
+msgid_plural ""
+"Unfortunately, the %s you were searching for could not be found. Please see "
+"%s for more information."
+msgstr[0] ""
+"Ne yazık ki, aradığınız %s bulunamadı. Daha fazla bilgi için lütfen %s'ni "
+"ziyaret edin."
+
+#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
+#: ../src/gs-shell-extras.c:640
+msgid "Failed to find any search results"
+msgstr "Herhangi bir arama sonucu bulunamadı"
+
+#: ../src/gs-shell-extras.c:809
+#, c-format
+msgid "%s file format"
+msgstr "%s dosya biçimi"
+
+#. vim: set noexpandtab:
+#: ../src/gs-shell-extras.ui.h:1
+msgid "Codecs page"
+msgstr "Kod çözücüler sayfası"
+
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:431
+#: ../src/gs-shell-installed.c:423
 msgid "System Applications"
 msgstr "Sistem Uygulamaları"
 
-#: ../src/gs-shell-installed.c:532
+#: ../src/gs-shell-installed.c:536
 msgid "Click on items to select them"
 msgstr "Öğeleri seçmek için tıklayın"
+
+#: ../src/gs-shell-installed.c:727
+msgid "Select"
+msgstr "Seç"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-installed.ui.h:1
@@ -1060,6 +1270,16 @@ msgstr "Klasöre _Taşı…"
 #: ../src/gs-shell-installed.ui.h:4
 msgid "_Remove from Folder"
 msgstr "Klasörden _Kaldır"
+
+#: ../src/gs-shell-moderate.ui.h:1
+#, fuzzy
+#| msgid "Updates page"
+msgid "Moderate page"
+msgstr "Güncellemeler sayfası"
+
+#: ../src/gs-shell-moderate.ui.h:2
+msgid "There are no reviews to moderate"
+msgstr ""
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
 #: ../src/gs-shell-overview.c:367
@@ -1090,7 +1310,7 @@ msgstr "Genel bakış sayfası"
 msgid "Featured Application"
 msgstr "Öne Çıkan Uygulama"
 
-#. Translators: This is a heading for software which has been featured (
+#. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: ../src/gs-shell-overview.ui.h:4
 msgid "Editor's Picks"
 msgstr "Editörün Seçtikleri"
@@ -1113,112 +1333,95 @@ msgid "No Application Found"
 msgstr "Uygulama Bulunamadı"
 
 #. TRANSLATORS: Time in 24h format
-#: ../src/gs-shell-updates.c:144
+#: ../src/gs-shell-updates.c:201
 msgid "%R"
 msgstr "%R"
 
 #. TRANSLATORS: Time in 12h format
-#: ../src/gs-shell-updates.c:147
+#: ../src/gs-shell-updates.c:204
 msgid "%l:%M %p"
 msgstr "%l:%M %p"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 24h format. i.e. "Yesterday, 14:30"
-#: ../src/gs-shell-updates.c:153
+#: ../src/gs-shell-updates.c:210
 msgid "Yesterday, %R"
 msgstr "Dün, %R"
 
 #. TRANSLATORS: This is the word "Yesterday" followed by a
 #. time string in 12h format. i.e. "Yesterday, 2:30 PM"
-#: ../src/gs-shell-updates.c:157
+#: ../src/gs-shell-updates.c:214
 msgid "Yesterday, %l:%M %p"
 msgstr "Dün, %l:%M %p"
 
-#: ../src/gs-shell-updates.c:160
+#: ../src/gs-shell-updates.c:217
 msgid "Two days ago"
 msgstr "İki gün önce"
 
-#: ../src/gs-shell-updates.c:162
+#: ../src/gs-shell-updates.c:219
 msgid "Three days ago"
 msgstr "Üç gün önce"
 
-#: ../src/gs-shell-updates.c:164
+#: ../src/gs-shell-updates.c:221
 msgid "Four days ago"
 msgstr "Dört gün önce"
 
-#: ../src/gs-shell-updates.c:166
+#: ../src/gs-shell-updates.c:223
 msgid "Five days ago"
 msgstr "Beş gün önce"
 
-#: ../src/gs-shell-updates.c:168
+#: ../src/gs-shell-updates.c:225
 msgid "Six days ago"
 msgstr "Altı gün önce"
 
-#: ../src/gs-shell-updates.c:170
+#: ../src/gs-shell-updates.c:227
 msgid "One week ago"
 msgstr "Bir hafta önce"
 
-#: ../src/gs-shell-updates.c:172
+#: ../src/gs-shell-updates.c:229
 msgid "Two weeks ago"
 msgstr "İki hafta önce"
 
 #. TRANSLATORS: This is the date string with: day number, month name, year.
 #. i.e. "25 May 2012"
-#: ../src/gs-shell-updates.c:176
+#: ../src/gs-shell-updates.c:233
 msgid "%e %B %Y"
 msgstr "%e %B %Y"
 
 #. TRANSLATORS: the updates are being downloaded
-#: ../src/gs-shell-updates.c:192
+#: ../src/gs-shell-updates.c:249
 msgid "Downloading new updates…"
 msgstr "Yeni güncellemeler indiriliyor..."
 
 #. TRANSLATORS: the update panel is doing *something* vague
-#: ../src/gs-shell-updates.c:196
+#: ../src/gs-shell-updates.c:253
 msgid "Looking for new updates…"
 msgstr "Yeni güncellemeler aranıyor..."
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:251
+#: ../src/gs-shell-updates.c:296
 msgid "Setting up updates…"
 msgstr "Güncellemeler ayarlanıyor..."
 
 #. TRANSLATORS: the updates panel is starting up
-#: ../src/gs-shell-updates.c:252 ../src/gs-shell-updates.c:259
+#: ../src/gs-shell-updates.c:297 ../src/gs-shell-updates.c:304
 msgid "(This could take a while)"
 msgstr "(Biraz uzun sürebilir)"
 
 #. TRANSLATORS: This is the time when we last checked for updates
-#: ../src/gs-shell-updates.c:402
+#: ../src/gs-shell-updates.c:434
 #, c-format
 msgid "Last checked: %s"
 msgstr "Son kontrol: %s"
 
-#. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:781
-msgid "No Network"
-msgstr "Ağ Yok"
-
-#. TRANSLATORS: we need network
-#. * to do the updates check
-#: ../src/gs-shell-updates.c:785
-msgid "Internet access is required to check for updates."
-msgstr "Güncellemeleri denetlemek için İnternet erişimi gerekir."
-
-#. TRANSLATORS: this is a link to the
-#. * control-center network panel
-#: ../src/gs-shell-updates.c:789
-msgid "Network Settings"
-msgstr "Ağ Ayarları"
-
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:808
+#: ../src/gs-shell-updates.c:850
 msgid "Charges may apply"
 msgstr "Ücret uygulanabilir"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:812
+#: ../src/gs-shell-updates.c:854
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1228,9 +1431,34 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:816
+#: ../src/gs-shell-updates.c:858
 msgid "Check Anyway"
 msgstr "Yine de Denetle"
+
+#. TRANSLATORS: can't do updates check
+#: ../src/gs-shell-updates.c:874
+msgid "No Network"
+msgstr "Ağ Yok"
+
+#. TRANSLATORS: we need network
+#. * to do the updates check
+#: ../src/gs-shell-updates.c:878
+msgid "Internet access is required to check for updates."
+msgstr "Güncellemeleri denetlemek için İnternet erişimi gerekir."
+
+#. TRANSLATORS: this is a link to the
+#. * control-center network panel
+#: ../src/gs-shell-updates.c:882
+msgid "Network Settings"
+msgstr "Ağ Ayarları"
+
+#: ../src/gs-shell-updates.c:1295
+msgid "Restart & _Install"
+msgstr "Yeniden Başlat ve _Kur"
+
+#: ../src/gs-shell-updates.c:1313
+msgid "Check for updates"
+msgstr "Güncellemeleri denetle"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-updates.ui.h:1
@@ -1238,10 +1466,14 @@ msgid "Updates page"
 msgstr "Güncellemeler sayfası"
 
 #: ../src/gs-shell-updates.ui.h:2
+msgid "Other Updates"
+msgstr "Diğer Güncellemeler"
+
+#: ../src/gs-shell-updates.ui.h:3
 msgid "Software is up to date"
 msgstr "Yazılım güncel"
 
-#: ../src/gs-shell-updates.ui.h:3
+#: ../src/gs-shell-updates.ui.h:4
 msgid ""
 "Checking for updates when using mobile broadband could cause you to incur "
 "charges"
@@ -1249,25 +1481,25 @@ msgstr ""
 "Mobil geniş bant kullanımı sırasında güncellemeleri denetlemek sizin için ek "
 "masrafa neden olabilir."
 
-#: ../src/gs-shell-updates.ui.h:4
+#: ../src/gs-shell-updates.ui.h:5
 msgid "_Check Anyway"
 msgstr "Yine de _Denetle"
 
-#: ../src/gs-shell-updates.ui.h:5
+#: ../src/gs-shell-updates.ui.h:6
 msgid "Go online to check for updates"
 msgstr "Güncellemeleri denetlemek için çevrimiçi olun"
 
-#: ../src/gs-shell-updates.ui.h:6
+#: ../src/gs-shell-updates.ui.h:7
 msgid "_Network Settings"
 msgstr "_Ağ Ayarları"
 
-#: ../src/gs-shell-updates.ui.h:7
+#: ../src/gs-shell-updates.ui.h:8
 msgid "Updates are automatically managed"
 msgstr "Güncellemeler otomatik olarak yüklenir"
 
 #. TRANSLATORS: This string describes a software source that
 #. has no software installed from it.
-#: ../src/gs-sources-dialog.c:93
+#: ../src/gs-sources-dialog.c:94
 msgid "No applications or addons installed; other software might still be"
 msgstr ""
 "Hiçbir uygulama ya da eklenti kurulmadı; başka yazılımlar halen kurulu "
@@ -1275,7 +1507,7 @@ msgstr ""
 
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:97
+#: ../src/gs-sources-dialog.c:98
 #, c-format
 msgid "%i application installed"
 msgid_plural "%i applications installed"
@@ -1283,7 +1515,7 @@ msgstr[0] "%i uygulama kuruldu"
 
 #. TRANSLATORS: This string is used to construct the 'X add-ons
 #. installed' sentence, describing a software source.
-#: ../src/gs-sources-dialog.c:103
+#: ../src/gs-sources-dialog.c:104
 #, c-format
 msgid "%i add-on installed"
 msgid_plural "%i add-ons installed"
@@ -1292,7 +1524,7 @@ msgstr[0] "%i eklenti kuruldu"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of applications.
-#: ../src/gs-sources-dialog.c:110
+#: ../src/gs-sources-dialog.c:111
 #, c-format
 msgid "%i application"
 msgid_plural "%i applications"
@@ -1301,7 +1533,7 @@ msgstr[0] "%i uygulama"
 #. TRANSLATORS: This string is used to construct the 'X applications
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the number of add-ons.
-#: ../src/gs-sources-dialog.c:116
+#: ../src/gs-sources-dialog.c:117
 #, c-format
 msgid "%i add-on"
 msgid_plural "%i add-ons"
@@ -1311,7 +1543,7 @@ msgstr[0] "%i eklenti"
 #. and y add-ons installed' sentence, describing a software source.
 #. The correct form here depends on the total number of
 #. applications and add-ons.
-#: ../src/gs-sources-dialog.c:123
+#: ../src/gs-sources-dialog.c:124
 #, c-format
 msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
@@ -1327,14 +1559,14 @@ msgstr "Kaldırılıyor…"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:416
+#: ../src/gs-sources-dialog.c:402
 msgid "the operating system"
 msgstr "işletim sistemi"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:487
+#: ../src/gs-sources-dialog.c:473
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1383,99 +1615,6 @@ msgstr "Eklendi"
 msgid "Website"
 msgstr "Web Sitesi"
 
-#. TRANSLATORS: this is where the packager did not write a
-#. * description for the update
-#: ../src/gs-update-dialog.c:120
-msgid "No update description available."
-msgstr "Güncelleme tanımı mevcut değil."
-
-#. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:223
-msgid "Installed Updates"
-msgstr "Yüklü Güncellemeler"
-
-#. TRANSLATORS: this is the subtitle of the installed updates dialog window.
-#. %s will be replaced by the date when the updates were installed.
-#. The date format is defined by the locale's preferred date representation
-#. ("%x" in strftime.)
-#: ../src/gs-update-dialog.c:239
-#, c-format
-msgid "Installed on %s"
-msgstr "%s'de yüklendi"
-
-#: ../src/gs-update-dialog.ui.h:2
-msgid "No updates have been installed on this system."
-msgstr "Bu sisteme hiç bir güncelleme kurulmadı."
-
-#: ../src/gs-update-monitor.c:90
-msgid "Security Updates Pending"
-msgstr "Güvenlik Güncellemeleri Beklemede"
-
-#: ../src/gs-update-monitor.c:91
-msgid "It is recommended that you install important updates now"
-msgstr "Önemli güncellemeleri şimdi kurmanız önerilir"
-
-#: ../src/gs-update-monitor.c:94
-msgid "Restart & Install"
-msgstr "Yeniden Başlat ve Kur"
-
-#: ../src/gs-update-monitor.c:98
-msgid "Software Updates Available"
-msgstr "Yazılım Güncellemeleri Mevcut"
-
-#: ../src/gs-update-monitor.c:99
-msgid "Important OS and application updates are ready to be installed"
-msgstr "Önemli işletim sistemi ve uygulama güncellemeleri kurulmaya hazır"
-
-#: ../src/gs-update-monitor.c:102
-msgid "Not Now"
-msgstr "Şimdi Değil"
-
-#: ../src/gs-update-monitor.c:103
-msgid "View"
-msgstr "Görüntüle"
-
-#. TRANSLATORS: this is a distro upgrade, the replacement would be the
-#. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:227
-#, c-format
-msgid "A new version of %s is available to install"
-msgstr "%s dağıtımının yeni bir sürümü kurulmaya hazır"
-
-#. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:231
-msgid "Software Upgrade Available"
-msgstr "Yazılım Yükseltmesi Mevcut"
-
-#: ../src/gs-update-monitor.c:419
-msgid "Software Update Installed"
-msgid_plural "Software Updates Installed"
-msgstr[0] "Yazılım Güncellemeleri Kuruldu"
-
-#. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:423
-msgid "An important OS update has been installed."
-msgid_plural "Important OS updates have been installed."
-msgstr[0] "Önemli işletim sistemi güncellemeleri kuruldu."
-
-#: ../src/gs-update-monitor.c:429
-msgid "Software Updates Failed"
-msgstr "Yazılım Güncellemeleri Başarısız Oldu"
-
-#. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:431
-msgid "An important OS update failed to be installed."
-msgstr "Önemli bir işletim sistemi güncellemesinin kurulması başarısız oldu."
-
-#: ../src/gs-update-monitor.c:437
-msgid "Review"
-msgstr "İncele"
-
-#: ../src/gs-update-monitor.c:440
-msgid "Show Details"
-msgstr "Ayrıntıları Göster"
-
-#. vim: set noexpandtab:
 #: ../src/gs-star-widget.ui.h:1
 msgid "One Star"
 msgstr "Tek Yıldız"
@@ -1496,37 +1635,238 @@ msgstr "Dört Yıldız"
 msgid "Five Stars"
 msgstr "Beş Yıldız"
 
+#. TRANSLATORS: this is where the packager did not write
+#. * a description for the update
+#: ../src/gs-update-dialog.c:121
+msgid "No update description available."
+msgstr "Güncelleme tanımı mevcut değil."
+
+#. TRANSLATORS: this is the subtitle of the installed updates dialog window.
+#. %s will be replaced by the date when the updates were installed.
+#. The date format is defined by the locale's preferred date representation
+#. ("%x" in strftime.)
+#: ../src/gs-update-dialog.c:215
+#, c-format
+msgid "Installed on %s"
+msgstr "%s'de yüklendi"
+
+#. TRANSLATORS: this is the title of the installed updates dialog window
+#: ../src/gs-update-dialog.c:235
+msgid "Installed Updates"
+msgstr "Yüklü Güncellemeler"
+
+#: ../src/gs-update-dialog.ui.h:2
+msgid "No updates have been installed on this system."
+msgstr "Bu sisteme hiç bir güncelleme kurulmadı."
+
+#: ../src/gs-update-monitor.c:89
+msgid "Security Updates Pending"
+msgstr "Güvenlik Güncellemeleri Beklemede"
+
+#: ../src/gs-update-monitor.c:90
+msgid "It is recommended that you install important updates now"
+msgstr "Önemli güncellemeleri şimdi kurmanız önerilir"
+
+#: ../src/gs-update-monitor.c:93
+msgid "Restart & Install"
+msgstr "Yeniden Başlat ve Kur"
+
+#: ../src/gs-update-monitor.c:97
+msgid "Software Updates Available"
+msgstr "Yazılım Güncellemeleri Mevcut"
+
+#: ../src/gs-update-monitor.c:98
+msgid "Important OS and application updates are ready to be installed"
+msgstr "Önemli işletim sistemi ve uygulama güncellemeleri kurulmaya hazır"
+
+#: ../src/gs-update-monitor.c:101
+msgid "Not Now"
+msgstr "Şimdi Değil"
+
+#: ../src/gs-update-monitor.c:102
+msgid "View"
+msgstr "Görüntüle"
+
+#. TRANSLATORS: this is a distro upgrade, the replacement would be the
+#. * distro name, e.g. 'Fedora'
+#: ../src/gs-update-monitor.c:234
+#, c-format
+msgid "A new version of %s is available to install"
+msgstr "%s dağıtımının yeni bir sürümü kurulmaya hazır"
+
+#. TRANSLATORS: this is a distro upgrade
+#: ../src/gs-update-monitor.c:238
+msgid "Software Upgrade Available"
+msgstr "Yazılım Yükseltmesi Mevcut"
+
+#. TRANSLATORS: title when we offline updates have failed
+#: ../src/gs-update-monitor.c:433
+msgid "Software Updates Failed"
+msgstr "Yazılım Güncellemeleri Başarısız Oldu"
+
+#. TRANSLATORS: message when we offline updates have failed
+#: ../src/gs-update-monitor.c:435
+msgid "An important OS update failed to be installed."
+msgstr "Önemli bir işletim sistemi güncellemesinin kurulması başarısız oldu."
+
+#: ../src/gs-update-monitor.c:436
+msgid "Show Details"
+msgstr "Ayrıntıları Göster"
+
+#. TRANSLATORS: title when we've done offline updates
+#: ../src/gs-update-monitor.c:451
+msgid "Software Update Installed"
+msgid_plural "Software Updates Installed"
+msgstr[0] "Yazılım Güncellemeleri Kuruldu"
+
+#. TRANSLATORS: message when we've done offline updates
+#: ../src/gs-update-monitor.c:455
+msgid "An important OS update has been installed."
+msgid_plural "Important OS updates have been installed."
+msgstr[0] "Önemli işletim sistemi güncellemeleri kuruldu."
+
+#. TRANSLATORS: Button to look at the updates that were installed.
+#. * Note that it has nothing to do with the application reviews, the
+#. * users can't express their opinions here. In some languages
+#. * "Review (evaluate) something" is a different translation than
+#. * "Review (browse) something."
+#: ../src/gs-update-monitor.c:466
+#| msgid "Review"
+msgctxt "updates"
+msgid "Review"
+msgstr "Gözden Geçir"
+
+#. TRANSLATORS: this is when the offline update failed
+#: ../src/gs-update-monitor.c:510
+msgid "Failed To Update"
+msgstr "Güncelleme Başarısız Oldu"
+
+#. TRANSLATORS: the user must have updated manually after
+#. * the updates were prepared
+#: ../src/gs-update-monitor.c:516
+msgid "The system was already up to date."
+msgstr "Sistem zaten güncel."
+
+#. TRANSLATORS: the user aborted the update manually
+#: ../src/gs-update-monitor.c:521
+msgid "The update was cancelled."
+msgstr "Güncelleme iptal edildi."
+
+#. TRANSLATORS: the package manager needed to download
+#. * something with no network available
+#: ../src/gs-update-monitor.c:527
+msgid ""
+"Internet access was required but wasn’t available. Please make sure that you "
+"have internet access and try again."
+msgstr ""
+"İnternet erişimine gereksinim duyuldu fakat bulunamadı. Lütfen internet "
+"erişiminiz olduğuna emin olun ve tekrar deneyin."
+
+#. TRANSLATORS: if the package is not signed correctly
+#: ../src/gs-update-monitor.c:533
+msgid ""
+"There were security issues with the update. Please consult your software "
+"provider for more details."
+msgstr ""
+"Güncellemede güvenlik sorunları mevcut. Lütfen daha fazla ayrıntı için "
+"yazılım sağlayıcınızla iletişime geçin."
+
+#. TRANSLATORS: we ran out of disk space
+#: ../src/gs-update-monitor.c:539
+msgid ""
+"There wasn’t enough disk space. Please free up some space and try again."
+msgstr ""
+"Yeteri kadar boş disk alanı yok. Lütfen biraz yer açın ve tekrar deneyin."
+
+#. TRANSLATORS: We didn't handle the error type
+#: ../src/gs-update-monitor.c:544
+msgid ""
+"We’re sorry: the update failed to install. Please wait for another update "
+"and try again. If the problem persists, contact your software provider."
+msgstr ""
+"Özür dileriz: güncelleme yükleme başarısız. Lütfen başka bir güncellemeyi "
+"bekleyin ve tekrar deneyim. Eğer sorun devam ederse, yazılım sağlayıcınızla "
+"görüşün."
+
+#. TRANSLATORS: This is the text displayed when a distro
+#. * upgrade is available. First %s is the distro name and the
+#. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
+#: ../src/gs-upgrade-banner.c:86
+#, c-format
+#| msgid "%s is not available."
+msgid "%s %s Now Available"
+msgstr "%s %s Şimdi Kullanılabilir Durumda"
+
+#. TRANSLATORS: This is the text displayed while downloading a
+#. * distro upgrade. First %s is the distro name and the 2nd %s
+#. * is the version, e.g. "Downloading Fedora 23"
+#: ../src/gs-upgrade-banner.c:96
+#, c-format
+#| msgid "Downloading new updates…"
+msgid "Downloading %s %s"
+msgstr "%s %s İndiriliyor"
+
+#. TRANSLATORS: This is the text displayed when a distro
+#. * upgrade has been downloaded and is ready to be installed.
+#. * First %s is the distro name and the 2nd %s is the version,
+#. * e.g. "Fedora 23 Ready to be Installed"
+#: ../src/gs-upgrade-banner.c:107
+#, c-format
+#| msgid "%s and %s installed"
+#| msgid_plural "%s and %s installed"
+msgid "%s %s Ready to be Installed"
+msgstr "%s %s Kurulmaya Hazır"
+
+#. vim: set noexpandtab:
+#: ../src/gs-upgrade-banner.ui.h:1
+msgid "A major upgrade, with new features and added polish."
+msgstr "Yeni özellikler eklenmiş ve makyajlanmış büyük bir yükseltme."
+
+#: ../src/gs-upgrade-banner.ui.h:2
+msgid "_Learn More"
+msgstr "Daha Fazlasını _Öğren"
+
+#: ../src/gs-upgrade-banner.ui.h:3
+#| msgid "It is recommended that you install important updates now"
+msgid ""
+"It is recommended that you back up your data and files before upgrading."
+msgstr "Yükseltmeden önce verilerinizi ve dosyalarınızı yedeklemeniz önerilir."
+
+#: ../src/gs-upgrade-banner.ui.h:4
+msgid "_Download"
+msgstr "_İndir"
+
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:136
+#: ../src/gs-utils.c:140
 #, c-format
 msgid "%s is now installed"
 msgstr "%s şimdi kuruldu"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:140
+#: ../src/gs-utils.c:144
 msgid "Launch"
 msgstr "Başlat"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:166
+#: ../src/gs-utils.c:174
 #, c-format
 msgid "Installation of %s failed."
 msgstr "%s kurulumu başarısız oldu."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:171
+#: ../src/gs-utils.c:179
 #, c-format
 msgid "Removal of %s failed."
 msgstr "%s uygulaması kaldırılamadı."
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:244
+#: ../src/gs-utils.c:243
 msgid "Install Third-Party Software?"
 msgstr "Üçüncü Taraf Yazılım Kurulsun mu?"
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:248
+#: ../src/gs-utils.c:247
 msgid "Enable Third-Party Software Source?"
 msgstr "Üçüncü Taraf Yazılım Kaynakları Etkinleştirilsin mi?"
 
@@ -1534,7 +1874,7 @@ msgstr "Üçüncü Taraf Yazılım Kaynakları Etkinleştirilsin mi?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
 #.
-#: ../src/gs-utils.c:266
+#: ../src/gs-utils.c:265
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1547,47 +1887,70 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:276
+#: ../src/gs-utils.c:275
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s, “%s” tarafından sağlanıyor."
 
 #. TRANSLATORS: a software source is a repo
-#: ../src/gs-utils.c:286
+#: ../src/gs-utils.c:285
 msgid "This software source must be enabled to continue installation."
 msgstr "Kuruluma devam etmek için bu yazılım kaynağı etkinleştirilmelidir."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:296
+#: ../src/gs-utils.c:295
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
 "%s yazılımını kurmak ya da kullanmak, bazı ülkelerde yasa dışı olabilir."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:302
+#: ../src/gs-utils.c:301
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Bu kod çözücüyü kurmak ya da kullanmak, bazı ülkelerde yasa dışı olabilir."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:309
+#: ../src/gs-utils.c:308
 msgid "Don't Warn Again"
 msgstr "Bir Daha Uyarma"
 
 #. TRANSLATORS: button text
-#: ../src/gs-utils.c:318
+#: ../src/gs-utils.c:317
 msgid "Enable and Install"
 msgstr "Etkinleştir ve Kur"
 
-#: ../src/plugins/gs-plugin-appstream.c:194
-#, c-format
-msgid "No AppStream data found"
-msgstr "AppStream verisi bulunamadı"
+#. TRANSLATORS: these are show_detailed_error messages from the
+#. * package manager no mortal is supposed to understand,
+#. * but google might know what they mean
+#: ../src/gs-utils.c:631
+msgid "Detailed errors from the package manager follow:"
+msgstr "Paket yöneticisinden gelen hata ayrıntıları:"
 
-#: ../src/plugins/gs-plugin-moduleset.c:130
-msgid "Featured"
-msgstr "Vitrin"
+#. vim: set noexpandtab:
+#: ../src/gs-menus.ui.h:1
+msgid "_Software Sources"
+msgstr "_Yazılım Kaynakları"
+
+#: ../src/gs-menus.ui.h:2
+msgid "_About"
+msgstr "_Hakkında"
+
+#: ../src/gs-menus.ui.h:3
+msgid "_Quit"
+msgstr "_Çıkış"
+
+#: ../src/org.gnome.Software.desktop.in.h:2
+msgid "Add, remove or update software on this computer"
+msgstr "Bu bilgisayarda yazılım ekleyin, kaldırın ya da güncelleyin"
+
+#: ../src/org.gnome.Software.desktop.in.h:3
+msgid ""
+"Updates;Upgrade;Sources;Repositories;Preferences;Install;Uninstall;Program;"
+"Software;App;Store;"
+msgstr ""
+"Güncellemeler;Güncelleştirmeler;Yükseltme;Kaynaklar;Sürüm Depoları;Tercihler;"
+"Yükle;Kur;Kaldır;Program;Yazılım;Uygulama;Mağaza;"
 
 #. TRANSLATORS: this is the menu spec main category for Audio
 #: ../src/plugins/menu-spec-common.c:30
@@ -2454,17 +2817,35 @@ msgctxt "Menu subcategory of Add-ons"
 msgid "Language Packs"
 msgstr "Dil Paketleri"
 
-#: ../src/menus.ui.h:1
-msgid "_Software Sources"
-msgstr "_Yazılım Kaynakları"
+#: ../src/plugins/menu-spec-common.c:215
+msgctxt "Menu subcategory of Add-ons"
+msgid "Shell Extensions"
+msgstr "Kabuk Uzantıları"
 
-#: ../src/menus.ui.h:2
-msgid "_About"
-msgstr "_Hakkında"
+#: ../src/plugins/menu-spec-common.c:216
+msgctxt "Menu subcategory of Add-ons"
+msgid "Localization"
+msgstr "Yerelleştirme"
 
-#: ../src/menus.ui.h:3
-msgid "_Quit"
-msgstr "_Çıkış"
+#~ msgid "No AppStream data found"
+#~ msgstr "AppStream verisi bulunamadı"
+
+#~| msgid "Updated"
+#~ msgid "Update"
+#~ msgstr "Güncelle"
+
+#~ msgid "A previous update was unfinished."
+#~ msgstr "Tamamlanmamış bir güncelleme var."
+
+#~ msgid ""
+#~ "The update couldn’t be installed; this is often a problem with the update "
+#~ "itself. Please wait for another update and try again."
+#~ msgstr ""
+#~ "Güncelleme yüklenemedi; bu genellikle güncellemenin kendisiyle ilgili bir "
+#~ "sorundur. Lütfen başka bir güncellemeyi bekleyin ve tekrar deneyin."
+
+#~ msgid "Internet Only Application"
+#~ msgstr "Sadece İnternet Uygulaması"
 
 #~ msgid "Enter GApplication service mode"
 #~ msgstr "GApplication hizmet kipine gir"
