@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-06-02 06:52+0000\n"
-"PO-Revision-Date: 2016-06-05 00:31+0300\n"
+"POT-Creation-Date: 2016-06-04 21:34+0000\n"
+"PO-Revision-Date: 2016-06-05 12:15+0300\n"
 "Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -143,13 +143,30 @@ msgstr ""
 msgid "A list of official sources that should not be considered 3rd party"
 msgstr ""
 
+#: ../data/org.gnome.software.gschema.xml.h:20
+msgid "A list of official sources that should be considered free software"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:21
+msgid ""
+"The licence URL to use when an application should be considered free software"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:22
+msgid "Show the folder management UI"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:23
+msgid "Allow access to the Software Sources dialog"
+msgstr ""
+
 #: ../src/gs-app-folder-dialog.ui.h:1
 msgid "Add to Application Folder"
 msgstr "Uygulama Klasörüne Ekle"
 
 #: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:305
-#: ../src/gs-shell-installed.c:528 ../src/gs-upgrade-banner.ui.h:5
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:362
+#: ../src/gs-shell-installed.c:537 ../src/gs-upgrade-banner.ui.h:5
 msgid "_Cancel"
 msgstr "_İptal"
 
@@ -185,8 +202,8 @@ msgstr "Hiçbirini Seçme"
 #. TRANSLATORS: this is the application name
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
-#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:374
-#: ../src/gs-shell.c:253 ../src/org.gnome.Software.desktop.in.h:1
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:375
+#: ../src/gs-shell.c:261 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Yazılımlar"
 
@@ -213,7 +230,7 @@ msgstr "_Güncellemeler"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:266
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:284
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Beklemede"
@@ -222,7 +239,7 @@ msgstr "Beklemede"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:304
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:322
 #: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
 msgid "Installing"
 msgstr "Kuruluyor"
@@ -231,129 +248,112 @@ msgstr "Kuruluyor"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:313
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:331
 #: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
 msgid "Removing"
 msgstr "Kaldırılıyor"
-
-#. TRANSLATORS: This is how we join the licenses and can
-#. * be considered a "Conjunctive AND Operator" according
-#. * to the SPDX specification. For example:
-#. * "LGPL-2.1 and MIT and BSD-2-Clause"
-#. TRANSLATORS: separator for a list of items
-#: ../src/gs-app.c:1391 ../src/gs-shell-extras.c:145
-msgid " and "
-msgstr "ve"
-
-#. TRANSLATORS: This is how we join the licenses and can
-#. * be considered a "Disjunctive OR Operator" according
-#. * to the SPDX specification. For example:
-#. * "LGPL-2.1 or MIT"
-#: ../src/gs-app.c:1399
-msgid " or "
-msgstr "veya"
-
-#. TRANSLATORS: non-free app
-#: ../src/gs-app.c:1422
-msgid "Proprietary"
-msgstr "Sahipli"
-
-#. TRANSLATORS: see the wikipedia page
-#: ../src/gs-app.c:1432
-msgid "Public domain"
-msgstr "Kamu malı"
 
 #: ../src/gs-app-folder-dialog.c:305
 msgid "Folder Name"
 msgstr "Klasör Adı"
 
 #. TRANSLATORS: this is a command line option
-#: ../src/gs-application.c:97
+#: ../src/gs-application.c:98
 msgid "Start up mode: either ‘updates’, ‘updated’, ‘installed’ or ‘overview’"
 msgstr ""
 "Başlangıç kipi: ‘updates’ (güncellemeler), ‘updated’ (güncellendi), "
 "‘installed’ (kuruldu) ya da ‘overview’ (genel görünüm)"
 
-#: ../src/gs-application.c:97
+#: ../src/gs-application.c:98
 msgid "MODE"
 msgstr "KİP"
 
-#: ../src/gs-application.c:99
+#: ../src/gs-application.c:100
 msgid "Search for applications"
 msgstr "Uygulamalarda ara"
 
-#: ../src/gs-application.c:99
+#: ../src/gs-application.c:100
 msgid "SEARCH"
 msgstr "ARA"
 
-#: ../src/gs-application.c:101
-msgid "Show application details"
-msgstr "Uygulama ayrıntılarını göster"
+#: ../src/gs-application.c:102
+#| msgid "Show application details"
+msgid "Show application details (using application ID)"
+msgstr "Uygulama ayrıntılarını göster (uygulama kimliğini kullanarak)"
 
-#: ../src/gs-application.c:101
+#: ../src/gs-application.c:102
 msgid "ID"
 msgstr "Kimlik"
 
-#: ../src/gs-application.c:103
+#: ../src/gs-application.c:104
+#| msgid "Show application details"
+msgid "Show application details (using package name)"
+msgstr "Uygulama ayrıntılarını göster (paket adını kullanarak)"
+
+#: ../src/gs-application.c:104
+msgid "PKGNAME"
+msgstr "PKTADI"
+
+#: ../src/gs-application.c:106
 msgid "Open a local package file"
 msgstr "Yerel paket dosyası aç"
 
-#: ../src/gs-application.c:103
+#: ../src/gs-application.c:106
 msgid "FILENAME"
 msgstr "DOSYAADI"
 
-#: ../src/gs-application.c:105
+#: ../src/gs-application.c:108
 msgid "Show verbose debugging information"
 msgstr "Ayrıntılı hata ayıklama bilgilerini göster"
 
-#: ../src/gs-application.c:107
+#: ../src/gs-application.c:110
 msgid "Show profiling information for the service"
 msgstr "Hizmetin profil oluşturma bilgilerini göster"
 
-#: ../src/gs-application.c:109
+#: ../src/gs-application.c:112
 msgid "Prefer local file sources to AppStream"
 msgstr "AppStream yerine yerel dosya kaynaklarını tercih et."
 
-#: ../src/gs-application.c:111
+#: ../src/gs-application.c:114
 msgid "Show version number"
 msgstr "Sürüm numarasını göster"
 
-#: ../src/gs-application.c:367
+#: ../src/gs-application.c:368
 msgid "translator-credits"
 msgstr "Muhammet Kara <muhammetk@gmail.com>"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:371
+#: ../src/gs-application.c:372
 msgid "About Software"
 msgstr "Yazılımlar Hakkında"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:377
+#: ../src/gs-application.c:378
 msgid "A nice way to manage the software on your system."
 msgstr "Sisteminizdeki yazılımları yönetmenin güzel bir yolu."
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: ../src/gs-app-row.c:152
+#: ../src/gs-app-row.c:161
 msgid "Device cannot be used during update."
 msgstr "Cihaz güncelleme sırasında kullanılamaz."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:250
+#: ../src/gs-app-row.c:268
 msgid "Visit website"
 msgstr "Web sitesini ziyaret et"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:255
+#: ../src/gs-app-row.c:273
 msgid "Install…"
 msgstr "Kur…"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:263
+#: ../src/gs-app-row.c:281
 msgid "Cancel"
 msgstr "İptal"
 
@@ -363,26 +363,26 @@ msgstr "İptal"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:273 ../src/gs-app-row.c:280 ../src/gs-page.c:282
-#: ../src/gs-utils.c:312
+#: ../src/gs-app-row.c:291 ../src/gs-app-row.c:298 ../src/gs-page.c:278
+#: ../src/gs-common.c:347
 msgid "Install"
 msgstr "Kur"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:284 ../src/gs-app-row.c:295 ../src/gs-page.c:350
+#: ../src/gs-app-row.c:302 ../src/gs-app-row.c:313 ../src/gs-page.c:346
 msgid "Remove"
 msgstr "Kaldır"
 
 #. vim: set noexpandtab:
 #. This is shown in the search result row as a tag
-#: ../src/gs-app-row.ui.h:2 ../src/gs-shell-details.ui.h:31
+#: ../src/gs-app-row.ui.h:2 ../src/gs-shell-details.ui.h:35
 msgid "3rd party"
 msgstr "3üncü taraf"
 
 #. This is shown in the search result row as a tag
-#: ../src/gs-app-row.ui.h:4 ../src/gs-shell-details.ui.h:32
+#: ../src/gs-app-row.ui.h:4 ../src/gs-shell-details.ui.h:36
 msgid "web app"
 msgstr "web uygulaması"
 
@@ -391,85 +391,92 @@ msgstr "web uygulaması"
 msgid "nonfree"
 msgstr "özgür olmayan"
 
+#. This is shown in the search result row as a tag
+#: ../src/gs-app-row.ui.h:8 ../src/gs-shell-details.ui.h:37
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Shell Extensions"
+msgid "shell extension"
+msgstr "kabuk uzantısı"
+
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:235
+#: ../src/gs-category.c:132 ../src/gs-category.c:179
 msgid "Other"
 msgstr "Diğer"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:239
+#: ../src/gs-category.c:137 ../src/gs-category.c:184
 msgid "All"
 msgstr "Tümü"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:242
+#: ../src/gs-category.c:141 ../src/gs-category.c:188
 msgid "Featured"
 msgstr "Vitrin"
 
 #. TRANSLATORS: this is a what we use in notifications if the app's name is unknown
-#: ../src/gs-dbus-helper.c:307
+#: ../src/gs-dbus-helper.c:308
 msgid "An application"
 msgstr "Bir uygulama"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional MIME types.
-#: ../src/gs-dbus-helper.c:313
+#: ../src/gs-dbus-helper.c:314
 #, c-format
 msgid "%s is requesting additional file format support."
 msgstr "%s, ek dosya biçimi desteği talep ediyor."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:315
+#: ../src/gs-dbus-helper.c:316
 msgid "Additional MIME Types Required"
 msgstr "Ek MIME (Dosya) Türleri Gerekli"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional fonts.
-#: ../src/gs-dbus-helper.c:319
+#: ../src/gs-dbus-helper.c:320
 #, c-format
 msgid "%s is requesting additional fonts."
 msgstr "%s, ek yazı tipleri talep ediyor."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:321
+#: ../src/gs-dbus-helper.c:322
 msgid "Additional Fonts Required"
 msgstr "Ek Yazı Tipleri Gerekli"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional codecs.
-#: ../src/gs-dbus-helper.c:325
+#: ../src/gs-dbus-helper.c:326
 #, c-format
 msgid "%s is requesting additional multimedia codecs."
 msgstr "%s, ek çokluortam kod çözücüleri (kodek) talep ediyor."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:327
+#: ../src/gs-dbus-helper.c:328
 msgid "Additional Multimedia Codecs Required"
 msgstr "Ek Çokluortam Kod Çözücüleri Gerekli"
 
 #. TRANSLATORS: this is a notification displayed when an app needs additional printer drivers.
-#: ../src/gs-dbus-helper.c:331
+#: ../src/gs-dbus-helper.c:332
 #, c-format
 msgid "%s is requesting additional printer drivers."
 msgstr "%s, ek yazıcı sürücüleri talep ediyor."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:333
+#: ../src/gs-dbus-helper.c:334
 msgid "Additional Printer Drivers Required"
 msgstr "Ek Yazıcı Sürücüleri Gerekli"
 
 #. TRANSLATORS: this is a notification displayed when an app wants to install additional packages.
-#: ../src/gs-dbus-helper.c:337
+#: ../src/gs-dbus-helper.c:338
 #, c-format
 msgid "%s is requesting additional packages."
 msgstr "%s, ek paketler talep ediyor."
 
 #. TRANSLATORS: notification title
-#: ../src/gs-dbus-helper.c:339
+#: ../src/gs-dbus-helper.c:340
 msgid "Additional Packages Required"
 msgstr "Ek Paketler Gerekli"
 
 #. TRANSLATORS: this is a button that launches gnome-software
-#: ../src/gs-dbus-helper.c:348
+#: ../src/gs-dbus-helper.c:349
 msgid "Find in Software"
 msgstr "Yazılımlar'da Bul"
 
@@ -542,44 +549,44 @@ msgstr "Geçmiş"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:276
+#: ../src/gs-page.c:272
 #, c-format
 msgid "Prepare %s"
 msgstr "%s Uygulamasını Hazırla"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:341
+#: ../src/gs-page.c:337
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "%s uygulamasını kaldırmak istediğinizden emin misiniz?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:346
+#: ../src/gs-page.c:342
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s kaldırılacak ve tekrar kullanmak için yeniden kurmanız gerekecek."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:675
+#: ../src/gs-plugin-loader.c:958
 msgid "OS Updates"
 msgstr "İşletim Sistemi Güncellemeleri"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:680
+#: ../src/gs-plugin-loader.c:963
 msgid "Includes performance, stability and security improvements."
 msgstr "Performans, kararlılık ve güvenlik geliştirmeleri içerir."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1387 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1653 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s biçimi için kullanılabilir ek kodek yok."
 
-#: ../src/gs-plugin-loader.c:1390
+#: ../src/gs-plugin-loader.c:1656
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -677,7 +684,6 @@ msgstr ""
 
 #. Translators: This is where the users enter their opinions about the apps.
 #: ../src/gs-review-dialog.ui.h:10
-#| msgid "Review"
 msgctxt "app review"
 msgid "Review"
 msgstr "İnceleme"
@@ -711,15 +717,12 @@ msgstr ""
 #. * reporting a user-submitted review
 #. * for moderation
 #: ../src/gs-review-row.c:226
-#| msgid "Review"
 msgid "Report Review?"
 msgstr "İnceleme Rapor Edilsin Mi?"
 
 #. TRANSLATORS: button text when
 #. * sending a review for moderation
 #: ../src/gs-review-row.c:230
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Sports"
 msgid "Report"
 msgstr "Rapor Et"
 
@@ -747,50 +750,53 @@ msgid "Report…"
 msgstr "Rapor Et…"
 
 #: ../src/gs-review-row.ui.h:8
-#| msgid "Remove"
 msgid "Remove…"
 msgstr "Kaldır…"
 
 #. TRANSLATORS: this is when we try to download a screenshot and
 #. * we get back 404
-#: ../src/gs-screenshot-image.c:232
+#: ../src/gs-screenshot-image.c:233
 msgid "Screenshot not found"
 msgstr "Ekran görüntüsü bulunamadı"
 
 #. TRANSLATORS: possibly image file corrupt or not an image
-#: ../src/gs-screenshot-image.c:248
+#: ../src/gs-screenshot-image.c:249
 msgid "Failed to load image"
 msgstr "Resim yüklenemedi"
 
 #. TRANSLATORS: this is when we request a screenshot size that
 #. * the generator did not create or the parser did not add
-#: ../src/gs-screenshot-image.c:379
+#: ../src/gs-screenshot-image.c:378
 msgid "Screenshot size not found"
 msgstr "Ekran görüntüsü boyutu bulunamadı"
 
 #. TRANSLATORS: this is when we try create the cache directory
 #. * but we were out of space or permission was denied
-#: ../src/gs-screenshot-image.c:405
+#: ../src/gs-screenshot-image.c:406
 msgid "Could not create cache"
 msgstr "Önbellek oluşturulamadı"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:433
+#: ../src/gs-screenshot-image.c:452
 msgid "Screenshot not valid"
 msgstr "Ekran görüntüsü geçerli değil"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:449
+#: ../src/gs-screenshot-image.c:468
 msgid "Screenshot not available"
 msgstr "Ekran görüntüsü kullanılabilir değil"
 
-#: ../src/gs-screenshot-image.c:500
+#: ../src/gs-screenshot-image.c:519
 msgid "Screenshot"
 msgstr "Ekran Görüntüsü"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-category.ui.h:1
+msgid "Extension Settings"
+msgstr "Uzantı Ayarları"
+
+#: ../src/gs-shell-category.ui.h:2
 msgid ""
 "Extensions are used at your own risk. If you have any system problems, it is "
 "recommended to disable them."
@@ -798,92 +804,106 @@ msgstr ""
 "Uzantıları kullanırken tüm sorumluluk size aittir. Eğer herhangi bir sistem "
 "sorunu yaşarsanız, bunları devre dışı bırakmanız önerilir."
 
-#: ../src/gs-shell-category.ui.h:2
-msgid "Extension Settings"
-msgstr "Uzantı Ayarları"
-
 #. TRANSLATORS: button text in the header when an application
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#. TRANSLATORS: button text in the header when an application
-#. * can be live-updated
-#: ../src/gs-shell-details.c:201 ../src/gs-shell-details.c:227
-#: ../src/gs-shell-details.c:232 ../src/gs-shell-details.ui.h:2
-#: ../src/gs-upgrade-banner.ui.h:6
+#: ../src/gs-shell-details.c:258 ../src/gs-shell-details.c:284
+#: ../src/gs-shell-details.ui.h:2 ../src/gs-upgrade-banner.ui.h:6
 msgid "_Install"
 msgstr "_Kur"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:212
+#: ../src/gs-shell-details.c:269
 msgid "_Installing"
 msgstr "_Kuruluyor"
+
+#. TRANSLATORS: button text in the header when an application
+#. * can be live-updated
+#: ../src/gs-shell-details.c:289
+#| msgid "_Updates"
+msgid "_Update"
+msgstr "_Güncelle"
 
 #. TRANSLATORS: this is a button that allows the apps to
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:245
+#: ../src/gs-shell-details.c:302
 msgid "_Install…"
 msgstr "_Kur…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:292 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:349 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "Kaldı_r"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:299
+#: ../src/gs-shell-details.c:356
 msgid "_Removing"
 msgstr "_Kaldırılıyor"
 
+#. TRANSLATORS: This is how we join the licenses and can
+#. * be considered a "Conjunctive AND Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 and MIT and BSD-2-Clause"
+#. TRANSLATORS: separator for a list of items
+#: ../src/gs-shell-details.c:692 ../src/gs-shell-extras.c:145
+msgid " and "
+msgstr "ve"
+
+#. TRANSLATORS: This is how we join the licenses and can
+#. * be considered a "Disjunctive OR Operator" according
+#. * to the SPDX specification. For example:
+#. * "LGPL-2.1 or MIT"
+#: ../src/gs-shell-details.c:700
+msgid " or "
+msgstr "veya"
+
+#. TRANSLATORS: non-free app
+#: ../src/gs-shell-details.c:716
+msgid "Proprietary"
+msgstr "Sahipli"
+
+#. TRANSLATORS: see the wikipedia page
+#: ../src/gs-shell-details.c:726
+msgid "Public domain"
+msgstr "Kamu malı"
+
+#. TRANSLATORS: see GNU page
+#: ../src/gs-shell-details.c:743
+#| msgid "Software"
+msgid "Free Software"
+msgstr "Özgür Yazılım"
+
 #. TRANSLATORS: this is where the license is not known
-#: ../src/gs-shell-details.c:669
+#: ../src/gs-shell-details.c:842
 msgctxt "license"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:682
+#: ../src/gs-shell-details.c:858
 msgctxt "version"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
-#. TRANSLATORS: this is where the size is being worked out
-#: ../src/gs-shell-details.c:688
-msgctxt "size"
-msgid "Calculating…"
-msgstr "Hesaplanıyor..."
-
-#. TRANSLATORS: this is where the size is not known
-#: ../src/gs-shell-details.c:691
-msgctxt "size"
-msgid "Unknown"
-msgstr "Bilinmiyor"
-
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:703
+#: ../src/gs-shell-details.c:890
 msgctxt "updated"
 msgid "Never"
 msgstr "Hiçbir zaman"
 
-#. TRANSLATORS: this is the application isn't in any
-#. * defined menu category
-#: ../src/gs-shell-details.c:717
-msgctxt "menu category"
-msgid "None"
-msgstr "Hiçbiri"
-
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:734
+#: ../src/gs-shell-details.c:934
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:780
+#: ../src/gs-shell-details.c:980
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -892,28 +912,34 @@ msgstr ""
 "kullanılabilir."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:791
+#: ../src/gs-shell-details.c:991
 msgid "This software comes from a 3rd party."
 msgstr ""
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:800
+#: ../src/gs-shell-details.c:1000
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:809
+#: ../src/gs-shell-details.c:1009
 msgid "This software may contain non-free components."
 msgstr "Bu yazılım, özgür olmayan bileşenler içerebilir."
 
-#: ../src/gs-shell-details.c:1135
+#: ../src/gs-shell-details.c:1322
 #, c-format
 msgid "Could not find '%s'"
 msgstr "'%s' bulunamadı"
 
+#. TRANSLATORS: the file format was not recognised by
+#. * any plugin, e.g. if you try installing a .tar.gz
+#: ../src/gs-shell-details.c:1383
+msgid "The file is not supported."
+msgstr ""
+
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1195 ../src/gs-utils.c:166
+#: ../src/gs-shell-details.c:1393 ../src/gs-common.c:164
 msgid "Sorry, this did not work"
 msgstr "Üzgünüm, bu işe yaramadı"
 
@@ -927,11 +953,22 @@ msgstr "Ayrıntılar sayfası"
 msgid "_Launch"
 msgstr "_Başlat"
 
-#: ../src/gs-shell-details.ui.h:7
+#. Translators: A label for a button to add a shortcut to the selected application.
+#: ../src/gs-shell-details.ui.h:8
+msgid "_Add shortcut"
+msgstr "Kısayol _ekle"
+
+#. Translators: A label for a button to remove a shortcut to the selected application.
+#: ../src/gs-shell-details.ui.h:10
+#| msgid "Remove Source"
+msgid "Re_move shortcut"
+msgstr "Kısayolu _kaldır"
+
+#: ../src/gs-shell-details.ui.h:11
 msgid "Software Source Included"
 msgstr "Yazılımı Kaynağı Dahildir"
 
-#: ../src/gs-shell-details.ui.h:8
+#: ../src/gs-shell-details.ui.h:12
 msgid ""
 "This application includes a software source which provides updates, as well "
 "as access to other software."
@@ -939,11 +976,11 @@ msgstr ""
 "Bu uygulama; güncellemelerin yanı sıra, başka yazılımlara erişim sağlayan "
 "bir yazılım kaynağı içerir."
 
-#: ../src/gs-shell-details.ui.h:9
+#: ../src/gs-shell-details.ui.h:13
 msgid "No Software Source Included"
 msgstr "Yazılım Kaynağı Dahil Değildir"
 
-#: ../src/gs-shell-details.ui.h:10
+#: ../src/gs-shell-details.ui.h:14
 msgid ""
 "This application does not include a software source. It will not be updated "
 "with new versions."
@@ -951,7 +988,7 @@ msgstr ""
 "Bu uygulamada yazılım kaynağı bulunmuyor. Yeni sürümleri çıktığında "
 "güncellenmeyecek."
 
-#: ../src/gs-shell-details.ui.h:11
+#: ../src/gs-shell-details.ui.h:15
 msgid ""
 "This software is already provided by your distribution and should not be "
 "replaced."
@@ -960,11 +997,11 @@ msgstr ""
 "değiştirilmemelidir."
 
 #. Translators: a repository file used for installing software has been discovered.
-#: ../src/gs-shell-details.ui.h:13
+#: ../src/gs-shell-details.ui.h:17
 msgid "Software Source Identified"
 msgstr "Yazılım Kaynağı Belirlendi"
 
-#: ../src/gs-shell-details.ui.h:14
+#: ../src/gs-shell-details.ui.h:18
 msgid ""
 "Adding this software source will give you access to additional software and "
 "upgrades."
@@ -972,94 +1009,96 @@ msgstr ""
 "Bu yazılım kaynağını eklemek, ek yazılımlara ve yükseltmelere erişmenizi "
 "sağlar."
 
-#: ../src/gs-shell-details.ui.h:15
+#: ../src/gs-shell-details.ui.h:19
 msgid "Only use software sources that you trust."
 msgstr "Yalnızca güvendiğiniz yazılım kaynaklarını kullanın."
 
-#: ../src/gs-shell-details.ui.h:16
+#: ../src/gs-shell-details.ui.h:20
 msgid "_Website"
 msgstr "_Web Sitesi"
 
-#: ../src/gs-shell-details.ui.h:17
-msgid "_History"
-msgstr "_Geçmiş"
-
-#: ../src/gs-shell-details.ui.h:18 ../src/gs-utils.c:650
+#: ../src/gs-shell-details.ui.h:21 ../src/gs-common.c:807
 msgid "Details"
 msgstr "Ayrıntılar"
 
-#: ../src/gs-shell-details.ui.h:19
+#: ../src/gs-shell-details.ui.h:22
 msgid "Localized in your Language"
 msgstr "Dilinize Çevrilmiş"
 
-#: ../src/gs-shell-details.ui.h:20
+#: ../src/gs-shell-details.ui.h:23
 msgid "Documentation"
 msgstr "Belgelendirme"
 
-#: ../src/gs-shell-details.ui.h:21
+#: ../src/gs-shell-details.ui.h:24
 msgid "Release Activity"
 msgstr "Yayım Etkinliği"
 
-#: ../src/gs-shell-details.ui.h:22
+#: ../src/gs-shell-details.ui.h:25
 msgid "System Integration"
 msgstr "Sistem Bütünleşmesi"
 
-#: ../src/gs-shell-details.ui.h:23 ../src/gs-sources-dialog.ui.h:8
+#: ../src/gs-shell-details.ui.h:26 ../src/gs-sources-dialog.ui.h:8
 msgid "Version"
 msgstr "Sürüm"
 
-#: ../src/gs-shell-details.ui.h:24
+#: ../src/gs-shell-details.ui.h:27
 msgid "Updated"
 msgstr "Güncellendi"
 
-#: ../src/gs-shell-details.ui.h:25
+#: ../src/gs-shell-details.ui.h:28
 msgid "Category"
 msgstr "Kategori"
 
-#: ../src/gs-shell-details.ui.h:26
-msgid "Size"
-msgstr "Boyut"
+#: ../src/gs-shell-details.ui.h:29
+#| msgid "Installed page"
+msgid "Installed Size"
+msgstr "Kurulu Boyut"
 
-#: ../src/gs-shell-details.ui.h:27
+#: ../src/gs-shell-details.ui.h:30
+#| msgid "_Download"
+msgid "Download Size"
+msgstr "İndirme Boyutu"
+
+#: ../src/gs-shell-details.ui.h:31
 msgid "Source"
 msgstr "Kaynak"
 
-#: ../src/gs-shell-details.ui.h:28
+#: ../src/gs-shell-details.ui.h:32
 msgid "Developer"
 msgstr "Geliştirici"
 
-#: ../src/gs-shell-details.ui.h:29
+#: ../src/gs-shell-details.ui.h:33
 msgid "License"
 msgstr "Lisans"
 
-#: ../src/gs-shell-details.ui.h:30
+#: ../src/gs-shell-details.ui.h:34
 msgid "non-free"
 msgstr "özgür olmayan"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
-#. TRANSLATORS: this is the main category for Add-ons
-#: ../src/gs-shell-details.ui.h:33 ../src/gs-shell-installed.c:433
-#: ../src/gs-update-list.c:129 ../src/plugins/menu-spec-common.c:210
+#. TRANSLATORS: this is the menu spec main category for Add-ons
+#: ../src/gs-shell-details.ui.h:38 ../src/gs-shell-installed.c:442
+#: ../src/gs-update-list.c:130 ../src/plugins/gs-desktop-common.c:303
 msgid "Add-ons"
 msgstr "Eklentiler"
 
-#: ../src/gs-shell-details.ui.h:34
+#: ../src/gs-shell-details.ui.h:39
 msgid "Selected add-ons will be installed with the application."
 msgstr "Seçilen eklentiler, uygulama ile birlikte yüklenecek."
 
 #. Translators: Header of the section with other users' opinions about the app.
-#: ../src/gs-shell-details.ui.h:36
+#: ../src/gs-shell-details.ui.h:41
 msgid "Reviews"
 msgstr "İncelemeler"
 
 #. Translators: Button opening a dialog where the users can write and publish their opinions about the apps.
-#: ../src/gs-shell-details.ui.h:38
+#: ../src/gs-shell-details.ui.h:43
 msgid "_Write a Review"
 msgstr "_İnceleme Yaz"
 
 #. Translators: Button to return more application-submitted reviews.
-#: ../src/gs-shell-details.ui.h:40
+#: ../src/gs-shell-details.ui.h:45
 msgid "_Show More"
 msgstr "Daha Fazlasını Gö_ster"
 
@@ -1208,12 +1247,12 @@ msgstr ""
 "Hem %s hakkındaki bilgiler hem de bu sürücüyü nasıl edinebileceğinizi %s "
 "adresinde bulabilirsiniz."
 
-#: ../src/gs-shell-extras.c:458
+#: ../src/gs-shell-extras.c:457
 msgid "this website"
 msgstr "bu web sitesi"
 
 #. TRANSLATORS: no codecs were found. First %s will be replaced by actual codec name(s), second %s is a link titled "this website"
-#: ../src/gs-shell-extras.c:462
+#: ../src/gs-shell-extras.c:461
 #, c-format
 msgid ""
 "Unfortunately, the %s you were searching for could not be found. Please see "
@@ -1225,12 +1264,12 @@ msgstr[0] ""
 "Ne yazık ki, aradığınız %s bulunamadı. Daha fazla bilgi için lütfen %s'ni "
 "ziyaret edin."
 
-#: ../src/gs-shell-extras.c:542 ../src/gs-shell-extras.c:590
-#: ../src/gs-shell-extras.c:640
+#: ../src/gs-shell-extras.c:541 ../src/gs-shell-extras.c:589
+#: ../src/gs-shell-extras.c:639
 msgid "Failed to find any search results"
 msgstr "Herhangi bir arama sonucu bulunamadı"
 
-#: ../src/gs-shell-extras.c:809
+#: ../src/gs-shell-extras.c:812
 #, c-format
 msgid "%s file format"
 msgstr "%s dosya biçimi"
@@ -1242,15 +1281,15 @@ msgstr "Kod çözücüler sayfası"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the system ones
-#: ../src/gs-shell-installed.c:423
+#: ../src/gs-shell-installed.c:432
 msgid "System Applications"
 msgstr "Sistem Uygulamaları"
 
-#: ../src/gs-shell-installed.c:536
+#: ../src/gs-shell-installed.c:545
 msgid "Click on items to select them"
 msgstr "Öğeleri seçmek için tıklayın"
 
-#: ../src/gs-shell-installed.c:727
+#: ../src/gs-shell-installed.c:746
 msgid "Select"
 msgstr "Seç"
 
@@ -1272,34 +1311,35 @@ msgid "_Remove from Folder"
 msgstr "Klasörden _Kaldır"
 
 #: ../src/gs-shell-moderate.ui.h:1
-#, fuzzy
 #| msgid "Updates page"
 msgid "Moderate page"
-msgstr "Güncellemeler sayfası"
+msgstr "Sayfayı yönet"
 
 #: ../src/gs-shell-moderate.ui.h:2
 msgid "There are no reviews to moderate"
-msgstr ""
+msgstr "Yönetilecek inceleme yok"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:367
-msgid "Recommended Audio Applications"
-msgstr "Önerilen Ses Uygulamaları"
+#: ../src/gs-shell-overview.c:389
+#| msgid "Recommended Audio Applications"
+msgid "Recommended Audio & Video Applications"
+msgstr "Önerilen Ses ve Görüntü Uygulamaları"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:372
+#: ../src/gs-shell-overview.c:394
 msgid "Recommended Games"
 msgstr "Önerilen Oyunlar"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:377
+#: ../src/gs-shell-overview.c:399
 msgid "Recommended Graphics Applications"
 msgstr "Önerilen Grafik Uygulamaları"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:382
-msgid "Recommended Office Applications"
-msgstr "Önerilen Ofis Uygulamaları"
+#: ../src/gs-shell-overview.c:404
+#| msgid "Recommended Audio Applications"
+msgid "Recommended Productivity Applications"
+msgstr "Önerilen Verimlilik Uygulamaları"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-overview.ui.h:1
@@ -1307,8 +1347,8 @@ msgid "Overview page"
 msgstr "Genel bakış sayfası"
 
 #: ../src/gs-shell-overview.ui.h:2
-msgid "Featured Application"
-msgstr "Öne Çıkan Uygulama"
+msgid "Categories"
+msgstr "Kategoriler"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: ../src/gs-shell-overview.ui.h:4
@@ -1316,10 +1356,6 @@ msgid "Editor's Picks"
 msgstr "Editörün Seçtikleri"
 
 #: ../src/gs-shell-overview.ui.h:5
-msgid "Categories"
-msgstr "Kategoriler"
-
-#: ../src/gs-shell-overview.ui.h:6
 msgid "No Application Data Found"
 msgstr "Uygulama Verisi Bulunamadı"
 
@@ -1414,14 +1450,25 @@ msgstr "(Biraz uzun sürebilir)"
 msgid "Last checked: %s"
 msgstr "Son kontrol: %s"
 
+#. TRANSLATORS: all updates will be installed
+#: ../src/gs-shell-updates.c:516
+#| msgid "_Install"
+msgid "_Install All"
+msgstr "Tümünü _Kur"
+
+#. TRANSLATORS: this is an offline update
+#: ../src/gs-shell-updates.c:520 ../src/gs-shell-updates.c:1334
+msgid "Restart & _Install"
+msgstr "Yeniden Başlat ve _Kur"
+
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:850
+#: ../src/gs-shell-updates.c:872
 msgid "Charges may apply"
 msgstr "Ücret uygulanabilir"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:854
+#: ../src/gs-shell-updates.c:876
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1431,32 +1478,49 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:858
+#: ../src/gs-shell-updates.c:880
 msgid "Check Anyway"
 msgstr "Yine de Denetle"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:874
+#: ../src/gs-shell-updates.c:896
 msgid "No Network"
 msgstr "Ağ Yok"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:878
+#: ../src/gs-shell-updates.c:900
 msgid "Internet access is required to check for updates."
 msgstr "Güncellemeleri denetlemek için İnternet erişimi gerekir."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:882
+#: ../src/gs-shell-updates.c:904
 msgid "Network Settings"
 msgstr "Ağ Ayarları"
 
-#: ../src/gs-shell-updates.c:1295
-msgid "Restart & _Install"
-msgstr "Yeniden Başlat ve _Kur"
+#. TRANSLATORS: we've just live-updated some apps
+#: ../src/gs-shell-updates.c:1006
+#| msgid "No updates have been installed on this system."
+msgid "Updates have been installed"
+msgstr "Güncellemeler kuruldu."
 
-#: ../src/gs-shell-updates.c:1313
+#. TRANSLATORS: the new apps will not be run until we restart
+#: ../src/gs-shell-updates.c:1008
+msgid "A restart is required for them to take effect."
+msgstr "Bunların etkili olması için yeniden başlatmanız gerekiyor."
+
+#. TRANSLATORS: button text
+#: ../src/gs-shell-updates.c:1010 ../src/gs-update-monitor.c:102
+msgid "Not Now"
+msgstr "Şimdi Değil"
+
+#. TRANSLATORS: button text
+#: ../src/gs-shell-updates.c:1012
+msgid "Restart"
+msgstr "Yeniden Başlat"
+
+#: ../src/gs-shell-updates.c:1352
 msgid "Check for updates"
 msgstr "Güncellemeleri denetle"
 
@@ -1549,24 +1613,24 @@ msgid "%s and %s installed"
 msgid_plural "%s and %s installed"
 msgstr[0] "%s ve %s kuruldu"
 
-#: ../src/gs-sources-dialog.c:322 ../src/gs-sources-dialog.ui.h:12
+#: ../src/gs-sources-dialog.c:324 ../src/gs-sources-dialog.ui.h:12
 msgid "Remove Source"
 msgstr "Kaynağı Kaldır"
 
-#: ../src/gs-sources-dialog.c:336
+#: ../src/gs-sources-dialog.c:338
 msgid "Removing…"
 msgstr "Kaldırılıyor…"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:402
+#: ../src/gs-sources-dialog.c:407
 msgid "the operating system"
 msgstr "işletim sistemi"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:473
+#: ../src/gs-sources-dialog.c:478
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1645,13 +1709,13 @@ msgstr "Güncelleme tanımı mevcut değil."
 #. %s will be replaced by the date when the updates were installed.
 #. The date format is defined by the locale's preferred date representation
 #. ("%x" in strftime.)
-#: ../src/gs-update-dialog.c:215
+#: ../src/gs-update-dialog.c:216
 #, c-format
 msgid "Installed on %s"
 msgstr "%s'de yüklendi"
 
 #. TRANSLATORS: this is the title of the installed updates dialog window
-#: ../src/gs-update-dialog.c:235
+#: ../src/gs-update-dialog.c:236
 msgid "Installed Updates"
 msgstr "Yüklü Güncellemeler"
 
@@ -1659,43 +1723,39 @@ msgstr "Yüklü Güncellemeler"
 msgid "No updates have been installed on this system."
 msgstr "Bu sisteme hiç bir güncelleme kurulmadı."
 
-#: ../src/gs-update-monitor.c:89
+#: ../src/gs-update-monitor.c:90
 msgid "Security Updates Pending"
 msgstr "Güvenlik Güncellemeleri Beklemede"
 
-#: ../src/gs-update-monitor.c:90
+#: ../src/gs-update-monitor.c:91
 msgid "It is recommended that you install important updates now"
 msgstr "Önemli güncellemeleri şimdi kurmanız önerilir"
 
-#: ../src/gs-update-monitor.c:93
+#: ../src/gs-update-monitor.c:94
 msgid "Restart & Install"
 msgstr "Yeniden Başlat ve Kur"
 
-#: ../src/gs-update-monitor.c:97
+#: ../src/gs-update-monitor.c:98
 msgid "Software Updates Available"
 msgstr "Yazılım Güncellemeleri Mevcut"
 
-#: ../src/gs-update-monitor.c:98
+#: ../src/gs-update-monitor.c:99
 msgid "Important OS and application updates are ready to be installed"
 msgstr "Önemli işletim sistemi ve uygulama güncellemeleri kurulmaya hazır"
 
-#: ../src/gs-update-monitor.c:101
-msgid "Not Now"
-msgstr "Şimdi Değil"
-
-#: ../src/gs-update-monitor.c:102
+#: ../src/gs-update-monitor.c:103
 msgid "View"
 msgstr "Görüntüle"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:234
+#: ../src/gs-update-monitor.c:242
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "%s dağıtımının yeni bir sürümü kurulmaya hazır"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:238
+#: ../src/gs-update-monitor.c:246
 msgid "Software Upgrade Available"
 msgstr "Yazılım Yükseltmesi Mevcut"
 
@@ -1714,13 +1774,13 @@ msgid "Show Details"
 msgstr "Ayrıntıları Göster"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:451
+#: ../src/gs-update-monitor.c:458
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "Yazılım Güncellemeleri Kuruldu"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:455
+#: ../src/gs-update-monitor.c:462
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "Önemli işletim sistemi güncellemeleri kuruldu."
@@ -1730,31 +1790,30 @@ msgstr[0] "Önemli işletim sistemi güncellemeleri kuruldu."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: ../src/gs-update-monitor.c:466
-#| msgid "Review"
+#: ../src/gs-update-monitor.c:473
 msgctxt "updates"
 msgid "Review"
 msgstr "Gözden Geçir"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:510
+#: ../src/gs-update-monitor.c:517
 msgid "Failed To Update"
 msgstr "Güncelleme Başarısız Oldu"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:516
+#: ../src/gs-update-monitor.c:523
 msgid "The system was already up to date."
 msgstr "Sistem zaten güncel."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:521
+#: ../src/gs-update-monitor.c:528
 msgid "The update was cancelled."
 msgstr "Güncelleme iptal edildi."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:527
+#: ../src/gs-update-monitor.c:534
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1763,7 +1822,7 @@ msgstr ""
 "erişiminiz olduğuna emin olun ve tekrar deneyin."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:533
+#: ../src/gs-update-monitor.c:540
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -1772,14 +1831,14 @@ msgstr ""
 "yazılım sağlayıcınızla iletişime geçin."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:539
+#: ../src/gs-update-monitor.c:546
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "Yeteri kadar boş disk alanı yok. Lütfen biraz yer açın ve tekrar deneyin."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:544
+#: ../src/gs-update-monitor.c:551
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -1793,7 +1852,6 @@ msgstr ""
 #. * 2nd %s is the version, e.g. "Fedora 23 Now Available"
 #: ../src/gs-upgrade-banner.c:86
 #, c-format
-#| msgid "%s is not available."
 msgid "%s %s Now Available"
 msgstr "%s %s Şimdi Kullanılabilir Durumda"
 
@@ -1802,7 +1860,6 @@ msgstr "%s %s Şimdi Kullanılabilir Durumda"
 #. * is the version, e.g. "Downloading Fedora 23"
 #: ../src/gs-upgrade-banner.c:96
 #, c-format
-#| msgid "Downloading new updates…"
 msgid "Downloading %s %s"
 msgstr "%s %s İndiriliyor"
 
@@ -1812,8 +1869,6 @@ msgstr "%s %s İndiriliyor"
 #. * e.g. "Fedora 23 Ready to be Installed"
 #: ../src/gs-upgrade-banner.c:107
 #, c-format
-#| msgid "%s and %s installed"
-#| msgid_plural "%s and %s installed"
 msgid "%s %s Ready to be Installed"
 msgstr "%s %s Kurulmaya Hazır"
 
@@ -1827,7 +1882,6 @@ msgid "_Learn More"
 msgstr "Daha Fazlasını _Öğren"
 
 #: ../src/gs-upgrade-banner.ui.h:3
-#| msgid "It is recommended that you install important updates now"
 msgid ""
 "It is recommended that you back up your data and files before upgrading."
 msgstr "Yükseltmeden önce verilerinizi ve dosyalarınızı yedeklemeniz önerilir."
@@ -1838,35 +1892,76 @@ msgstr "_İndir"
 
 #. TRANSLATORS: this is the summary of a notification that an application
 #. * has been successfully installed
-#: ../src/gs-utils.c:140
+#: ../src/gs-common.c:137
 #, c-format
 msgid "%s is now installed"
 msgstr "%s şimdi kuruldu"
 
 #. TRANSLATORS: this is button that opens the newly installed application
-#: ../src/gs-utils.c:144
+#: ../src/gs-common.c:141
 msgid "Launch"
 msgstr "Başlat"
 
 #. TRANSLATORS: this is when the install fails
-#: ../src/gs-utils.c:174
+#: ../src/gs-common.c:171
 #, c-format
 msgid "Installation of %s failed."
 msgstr "%s kurulumu başarısız oldu."
 
 #. TRANSLATORS: this is when the remove fails
-#: ../src/gs-utils.c:179
+#: ../src/gs-common.c:176
 #, c-format
 msgid "Removal of %s failed."
 msgstr "%s uygulaması kaldırılamadı."
 
+#. TRANSLATORS: this is when the upgrade download fails
+#: ../src/gs-common.c:185
+#, c-format
+#| msgid "Removal of %s failed."
+msgid "Upgrade to %s failed."
+msgstr "%s'e yükseltme başarısız oldu."
+
+#. TRANSLATORS: the package manager needed to download
+#. * something with no network available
+#: ../src/gs-common.c:199
+#| msgid "Network access was required but not available."
+msgid "Internet access was required but wasn’t available."
+msgstr "İnternet bağlantısı gerekiyordu fakat kullanılabilir değildi."
+
+#. TRANSLATORS: plug in the network cable...
+#: ../src/gs-common.c:202
+#| msgid ""
+#| "Internet access was required but wasn’t available. Please make sure that "
+#| "you have internet access and try again."
+msgid "Please make sure that you have internet access and try again."
+msgstr "Lütfen internet erişiminiz olduğundan emin olun ve tekrar deneyin."
+
+#. TRANSLATORS: we ran out of disk space
+#: ../src/gs-common.c:207
+#| msgid ""
+#| "There wasn’t enough disk space. Please free up some space and try again."
+msgid "There wasn’t enough disk space."
+msgstr "Yeteri kadar boş disk alanı yoktu."
+
+#. TRANSLATORS: delete some stuff!
+#: ../src/gs-common.c:210
+#| msgid ""
+#| "There wasn’t enough disk space. Please free up some space and try again."
+msgid "Please free up some space and try again."
+msgstr "Lütfen biraz yer açın ve tekrar deneyin."
+
+#. TRANSLATORS: we didn't handle the error type
+#: ../src/gs-common.c:215
+msgid "If the problem persists, contact your software provider."
+msgstr "Eğer sorun devam ederse, yazılım sağlayıcınızla iletişime geçin."
+
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:243
+#: ../src/gs-common.c:278
 msgid "Install Third-Party Software?"
 msgstr "Üçüncü Taraf Yazılım Kurulsun mu?"
 
 #. TRANSLATORS: window title
-#: ../src/gs-utils.c:247
+#: ../src/gs-common.c:282
 msgid "Enable Third-Party Software Source?"
 msgstr "Üçüncü Taraf Yazılım Kaynakları Etkinleştirilsin mi?"
 
@@ -1874,7 +1969,7 @@ msgstr "Üçüncü Taraf Yazılım Kaynakları Etkinleştirilsin mi?"
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
 #.
-#: ../src/gs-utils.c:265
+#: ../src/gs-common.c:300
 #, c-format
 msgid ""
 "%s is not <a href=\"https://en.wikipedia.org/wiki/Free_and_open-"
@@ -1887,43 +1982,464 @@ msgstr ""
 #. TRANSLATORS: the replacements are as follows:
 #. * 1. Application name, e.g. "Firefox"
 #. * 2. Software source name, e.g. fedora-optional
-#: ../src/gs-utils.c:275
+#: ../src/gs-common.c:310
 #, c-format
 msgid "%s is provided by “%s”."
 msgstr "%s, “%s” tarafından sağlanıyor."
 
 #. TRANSLATORS: a software source is a repo
-#: ../src/gs-utils.c:285
+#: ../src/gs-common.c:320
 msgid "This software source must be enabled to continue installation."
 msgstr "Kuruluma devam etmek için bu yazılım kaynağı etkinleştirilmelidir."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:295
+#: ../src/gs-common.c:330
 #, c-format
 msgid "It may be illegal to install or use %s in some countries."
 msgstr ""
 "%s yazılımını kurmak ya da kullanmak, bazı ülkelerde yasa dışı olabilir."
 
 #. TRANSLATORS: Laws are geographical, urgh...
-#: ../src/gs-utils.c:301
+#: ../src/gs-common.c:336
 msgid "It may be illegal to install or use this codec in some countries."
 msgstr ""
 "Bu kod çözücüyü kurmak ya da kullanmak, bazı ülkelerde yasa dışı olabilir."
 
 #. TRANSLATORS: this is button text to not ask about non-free content again
-#: ../src/gs-utils.c:308
+#: ../src/gs-common.c:343
 msgid "Don't Warn Again"
 msgstr "Bir Daha Uyarma"
 
 #. TRANSLATORS: button text
-#: ../src/gs-utils.c:317
+#: ../src/gs-common.c:352
 msgid "Enable and Install"
 msgstr "Etkinleştir ve Kur"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:414
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-cartoon"
+msgid "None"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:417
+msgid "Cartoon characters in unsafe situations"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:420
+msgid "Cartoon characters in aggressive conflict"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:423
+msgid "Graphic violence involving cartoon characters"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:426
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-fantasy"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:429
+msgid "Characters in unsafe situations easily distinguishable from reality"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:432
+msgid "Characters in aggressive conflict easily distinguishable from reality"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:435
+msgid "Graphic violence easily distinguishable from reality"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:438
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-realistic"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:441
+msgid "Mild realistic characters in unsafe situations"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:444
+msgid "Depictions of realistic characters in aggressive conflict"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:447
+msgid "Graphic violence involving realistic characters"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:450
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-bloodshed"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:453
+msgid "Unrealistic bloodshed"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:456
+msgid "Realistic bloodshed"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:459
+msgid "Depictions of bloodshed and the mutilation of body parts"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:462
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating violence-sexual"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:465
+msgid "Rape or other violent sexual behavior"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:468
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating drugs-alcohol"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:471
+msgid "References to alcoholic beverages"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:474
+msgid "Use of alcoholic beverages"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:477
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating drugs-narcotics"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:480
+msgid "References to illicit drugs"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:483
+msgid "Use of illicit drugs"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:486
+msgid "References to tobacco products"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:489
+msgid "Use of tobacco products"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:492
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating sex-nudity"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:495
+msgid "Brief artistic nudity"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:498
+msgid "Prolonged nudity"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:501
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating sex-themes"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:504
+msgid "Provocative references or depictions"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:507
+#, fuzzy
+#| msgid "Search for applications"
+msgid "Sexual references or depictions"
+msgstr "Uygulamalarda ara"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:510
+msgid "Graphic sexual behavior"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:513
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating language-profanity"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:516
+msgid "Mild or infrequent use of profanity"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:519
+msgid "Moderate use of profanity"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:522
+msgid "Strong or frequent use of profanity"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:525
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating language-humor"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:528
+msgid "Slapstick humor"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:531
+msgid "Vulgar or bathroom humor"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:534
+msgid "Mature or sexual humor"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:537
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating language-discrimination"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:540
+msgid "Negativity towards a specific group of people"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:543
+msgid "Discrimation designed to cause emotional harm"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:546
+msgid "Explicit discrimination based on gender, sexuality, race or religion"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:549
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating money-advertising"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:552
+#, fuzzy
+#| msgctxt "Menu subcategory of Development Tools"
+#| msgid "Project Management"
+msgid "Product placement"
+msgstr "Proje Yönetimi"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:555
+msgid "Explicit references to specific brands or trademarked products"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:558
+msgid "Players are encouraged to purchase specific real-world items"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:561
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating money-gambling"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:564
+msgid "Gambling on random events using tokens or credits"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:567
+msgid "Gambling using \"play\" money"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:570
+msgid "Gambling using real money"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:573
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating money-purchasing"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:576
+msgid "Ability to spend real money in-game"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:579
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-chat"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:582
+msgid "Player-to-player game interactions without chat functionality"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:585
+msgid "Player-to-player preset interactions without chat functionality"
+msgstr ""
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:588
+msgid "Uncontrolled chat functionality between players"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:591
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-audio"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:594
+msgid "Uncontrolled audio or video chat functionality between players"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:597
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-contacts"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:600
+msgid "Sharing social network usernames or email addresses"
+msgstr ""
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:603
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-info"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:606
+#, fuzzy
+#| msgid "Show profiling information for the service"
+msgid "Sharing user information with 3rd parties"
+msgstr "Hizmetin profil oluşturma bilgilerini göster"
+
+#. TRANSLATORS: content rating description
+#: ../src/gs-common.c:609
+#, fuzzy
+#| msgctxt "menu category"
+#| msgid "None"
+msgctxt "content rating social-location"
+msgid "None"
+msgstr "Hiçbiri"
+
+#. TRANSLATORS: content rating description: comments welcome
+#: ../src/gs-common.c:612
+msgid "Sharing physical location to other users"
+msgstr ""
 
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-utils.c:631
+#: ../src/gs-common.c:788
 msgid "Detailed errors from the package manager follow:"
 msgstr "Paket yöneticisinden gelen hata ayrıntıları:"
 
@@ -1952,880 +2468,1080 @@ msgstr ""
 "Güncellemeler;Güncelleştirmeler;Yükseltme;Kaynaklar;Sürüm Depoları;Tercihler;"
 "Yükle;Kur;Kaldır;Program;Yazılım;Uygulama;Mağaza;"
 
-#. TRANSLATORS: this is the menu spec main category for Audio
-#: ../src/plugins/menu-spec-common.c:30
-msgid "Audio"
-msgstr "Ses"
+#. TRANSLATORS: initial start
+#: ../src/gs-shell-loading.c:66
+msgid "Software catalog is being downloaded"
+msgstr ""
 
-#: ../src/plugins/menu-spec-common.c:31
-msgctxt "Menu subcategory of Audio"
-msgid "Editing"
-msgstr "Düzenleme"
+#. TRANSLATORS: initial start
+#: ../src/gs-shell-loading.c:71
+#, fuzzy
+#| msgid "Software Updates Failed"
+msgid "Software catalog is being loaded"
+msgstr "Yazılım Güncellemeleri Başarısız Oldu"
 
-#: ../src/plugins/menu-spec-common.c:32
-msgctxt "Menu subcategory of Audio"
-msgid "Databases"
-msgstr "Veritabanları"
+#. vim: set noexpandtab:
+#: ../src/gs-shell-loading.ui.h:1
+#| msgid "Codecs page"
+msgid "Loading page"
+msgstr "Sayfa yükleniyor"
 
-#: ../src/plugins/menu-spec-common.c:33
-msgctxt "Menu subcategory of Audio"
-msgid "Disc Burning"
-msgstr "Disk Yazdırma"
+#: ../src/gs-shell-loading.ui.h:2
+#, fuzzy
+#| msgid "Setting up updates…"
+msgid "Starting up…"
+msgstr "Güncellemeler ayarlanıyor..."
 
-#: ../src/plugins/menu-spec-common.c:34
-msgctxt "Menu subcategory of Audio"
-msgid "Ham Radio"
-msgstr "Ham Radyo"
+#: ../src/plugins/gs-desktop-common.c:30
+#| msgid "All"
+msgctxt "Menu of AudioVideo"
+msgid "All"
+msgstr "Tümü"
 
-#: ../src/plugins/menu-spec-common.c:35
-msgctxt "Menu subcategory of Audio"
-msgid "MIDI"
-msgstr "MIDI"
+#: ../src/plugins/gs-desktop-common.c:33
+#| msgid "Featured"
+msgctxt "Menu of AudioVideo"
+msgid "Featured"
+msgstr "Öne Çıkan"
 
-#: ../src/plugins/menu-spec-common.c:36
-msgctxt "Menu subcategory of Audio"
-msgid "Mixer"
-msgstr "Karıştırıcı"
+#: ../src/plugins/gs-desktop-common.c:36
+msgctxt "Menu of AudioVideo"
+msgid "Audio Creation & Editing"
+msgstr "Ses Oluşturma ve Düzenleme"
 
-#: ../src/plugins/menu-spec-common.c:37
-msgctxt "Menu subcategory of Audio"
-msgid "Music"
-msgstr "Müzik"
+#: ../src/plugins/gs-desktop-common.c:42
+#| msgctxt "Menu subcategory of Audio"
+#| msgid "Players"
+msgctxt "Menu of AudioVideo"
+msgid "Music Players"
+msgstr "Müzik Oynatıcılar"
 
-#: ../src/plugins/menu-spec-common.c:38
-msgctxt "Menu subcategory of Audio"
-msgid "Players"
-msgstr "Oynatıcılar"
+#: ../src/plugins/gs-desktop-common.c:51
+#| msgid "All"
+msgctxt "Menu of Development"
+msgid "All"
+msgstr "Tümü"
 
-#: ../src/plugins/menu-spec-common.c:39
-msgctxt "Menu subcategory of Audio"
-msgid "Recorders"
-msgstr "Kaydediciler"
+#: ../src/plugins/gs-desktop-common.c:54
+#, fuzzy
+#| msgid "Featured"
+msgctxt "Menu of Development"
+msgid "Featured"
+msgstr "Vitrin"
 
-#: ../src/plugins/menu-spec-common.c:40
-msgctxt "Menu subcategory of Audio"
-msgid "Sequencers"
-msgstr "Ardıştırıcılar"
-
-#: ../src/plugins/menu-spec-common.c:41
-msgctxt "Menu subcategory of Audio"
-msgid "Tuners"
-msgstr "Radyo/TV Tarayıcıları"
-
-#. TRANSLATORS: this is the menu spec main category for Development
-#: ../src/plugins/menu-spec-common.c:43
-msgid "Development Tools"
-msgstr "Geliştirme Araçları"
-
-#: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development Tools"
-msgid "Building"
-msgstr "İnşa"
-
-#: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development Tools"
-msgid "Databases"
-msgstr "Veritabanları"
-
-#: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development Tools"
+#: ../src/plugins/gs-desktop-common.c:57
+#, fuzzy
+#| msgctxt "Menu subcategory of Development Tools"
+#| msgid "Debuggers"
+msgctxt "Menu of Development"
 msgid "Debuggers"
 msgstr "Hata Ayıklayıcılar"
 
-#: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development Tools"
-msgid "GUI Designers"
-msgstr "GUI Tasarımcıları"
+#: ../src/plugins/gs-desktop-common.c:60
+msgctxt "Menu of Development"
+msgid "IDEs"
+msgstr ""
 
-#: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development Tools"
-msgid "IDE"
-msgstr "IDE"
+#: ../src/plugins/gs-desktop-common.c:69
+#| msgid "All"
+msgctxt "Menu of Education"
+msgid "All"
+msgstr "Tümü"
 
-#: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development Tools"
-msgid "Profiling"
-msgstr "Profilleme"
+#: ../src/plugins/gs-desktop-common.c:72
+#, fuzzy
+#| msgid "Featured"
+msgctxt "Menu of Education"
+msgid "Featured"
+msgstr "Vitrin"
 
-#: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development Tools"
-msgid "Project Management"
-msgstr "Proje Yönetimi"
-
-#: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development Tools"
-msgid "Revision Control"
-msgstr "Revizyon Kontrolü"
-
-#: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development Tools"
-msgid "Translation"
-msgstr "Çeviri"
-
-#: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development Tools"
-msgid "Web Development"
-msgstr "Web Geliştirme"
-
-#. TRANSLATORS: this is the menu spec main category for Education
-#: ../src/plugins/menu-spec-common.c:55
-msgid "Education"
-msgstr "Eğitim"
-
-#: ../src/plugins/menu-spec-common.c:56
-msgctxt "Menu subcategory of Education"
-msgid "Art"
-msgstr "Sanat"
-
-#: ../src/plugins/menu-spec-common.c:57
-msgctxt "Menu subcategory of Education"
-msgid "Artificial Intelligence"
-msgstr "Yapay Zeka"
-
-#: ../src/plugins/menu-spec-common.c:58
-msgctxt "Menu subcategory of Education"
+#: ../src/plugins/gs-desktop-common.c:75
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Astronomy"
+msgctxt "Menu of Education"
 msgid "Astronomy"
 msgstr "Astronomi"
 
-#: ../src/plugins/menu-spec-common.c:59
-msgctxt "Menu subcategory of Education"
-msgid "Biology"
-msgstr "Biyoloji"
-
-#: ../src/plugins/menu-spec-common.c:60
-msgctxt "Menu subcategory of Education"
+#: ../src/plugins/gs-desktop-common.c:78
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Chemistry"
+msgctxt "Menu of Education"
 msgid "Chemistry"
 msgstr "Kimya"
 
-#: ../src/plugins/menu-spec-common.c:61
-msgctxt "Menu subcategory of Education"
-msgid "Computer Science"
-msgstr "Bilgisayar Bilimleri"
-
-#: ../src/plugins/menu-spec-common.c:62
-msgctxt "Menu subcategory of Education"
-msgid "Construction"
-msgstr "İnşaat"
-
-#: ../src/plugins/menu-spec-common.c:63
-msgctxt "Menu subcategory of Education"
-msgid "Data Visualization"
-msgstr "Veri Görselleştirme"
-
-#: ../src/plugins/menu-spec-common.c:64
-msgctxt "Menu subcategory of Education"
-msgid "Economy"
-msgstr "Ekonomi"
-
-#: ../src/plugins/menu-spec-common.c:65
-msgctxt "Menu subcategory of Education"
-msgid "Electricity"
-msgstr "Elektrik"
-
-#: ../src/plugins/menu-spec-common.c:66
-msgctxt "Menu subcategory of Education"
-msgid "Electronics"
-msgstr "Elektronik"
-
-#: ../src/plugins/menu-spec-common.c:67
-msgctxt "Menu subcategory of Education"
-msgid "Engineering"
-msgstr "Mühendislik"
-
-#: ../src/plugins/menu-spec-common.c:68
-msgctxt "Menu subcategory of Education"
-msgid "Geography"
-msgstr "Coğrafya"
-
-#: ../src/plugins/menu-spec-common.c:69
-msgctxt "Menu subcategory of Education"
-msgid "Geology"
-msgstr "Jeoloji"
-
-#: ../src/plugins/menu-spec-common.c:70
-msgctxt "Menu subcategory of Education"
-msgid "Geoscience"
-msgstr "Yerbilimleri"
-
-#: ../src/plugins/menu-spec-common.c:71
-msgctxt "Menu subcategory of Education"
-msgid "History"
-msgstr "Tarih"
-
-#: ../src/plugins/menu-spec-common.c:72
-msgctxt "Menu subcategory of Education"
-msgid "Humanities"
-msgstr "Beşeri Bilimler"
-
-#: ../src/plugins/menu-spec-common.c:73
-msgctxt "Menu subcategory of Education"
-msgid "Image Processing"
-msgstr "Görüntü İşleme"
-
-#: ../src/plugins/menu-spec-common.c:74
-msgctxt "Menu subcategory of Education"
+#: ../src/plugins/gs-desktop-common.c:81
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Languages"
+msgctxt "Menu of Education"
 msgid "Languages"
 msgstr "Diller"
 
-#: ../src/plugins/menu-spec-common.c:75
-msgctxt "Menu subcategory of Education"
-msgid "Literature"
-msgstr "Edebiyat"
-
-#: ../src/plugins/menu-spec-common.c:76
-msgctxt "Menu subcategory of Education"
-msgid "Maps"
-msgstr "Haritalar"
-
-#: ../src/plugins/menu-spec-common.c:77
-msgctxt "Menu subcategory of Education"
+#: ../src/plugins/gs-desktop-common.c:85
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Math"
+msgctxt "Menu of Education"
 msgid "Math"
 msgstr "Matematik"
 
-#: ../src/plugins/menu-spec-common.c:78
-msgctxt "Menu subcategory of Education"
-msgid "Medical"
-msgstr "Tıp"
+#: ../src/plugins/gs-desktop-common.c:94
+#, fuzzy
+#| msgid "All"
+msgctxt "Menu of Games"
+msgid "All"
+msgstr "Tümü"
 
-#: ../src/plugins/menu-spec-common.c:79
-msgctxt "Menu subcategory of Education"
-msgid "Music"
-msgstr "Müzik"
+#: ../src/plugins/gs-desktop-common.c:97
+#, fuzzy
+#| msgid "Featured"
+msgctxt "Menu of Games"
+msgid "Featured"
+msgstr "Vitrin"
 
-#: ../src/plugins/menu-spec-common.c:80
-msgctxt "Menu subcategory of Education"
-msgid "Numerical Analysis"
-msgstr "Sayısal Analiz"
-
-#: ../src/plugins/menu-spec-common.c:81
-msgctxt "Menu subcategory of Education"
-msgid "Parallel Computing"
-msgstr "Paralel Hesaplama"
-
-#: ../src/plugins/menu-spec-common.c:82
-msgctxt "Menu subcategory of Education"
-msgid "Physics"
-msgstr "Fizik"
-
-#: ../src/plugins/menu-spec-common.c:83
-msgctxt "Menu subcategory of Education"
-msgid "Robotics"
-msgstr "Robotik"
-
-#: ../src/plugins/menu-spec-common.c:84
-msgctxt "Menu subcategory of Education"
-msgid "Spirituality"
-msgstr "Maneviyat"
-
-#: ../src/plugins/menu-spec-common.c:85
-msgctxt "Menu subcategory of Education"
-msgid "Sports"
-msgstr "Spor"
-
-#. TRANSLATORS: this is the menu spec main category for Games
-#: ../src/plugins/menu-spec-common.c:87
-msgid "Games"
-msgstr "Oyunlar"
-
-#: ../src/plugins/menu-spec-common.c:88
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:100
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Action"
+msgctxt "Menu of Games"
 msgid "Action"
 msgstr "Aksiyon"
 
-#: ../src/plugins/menu-spec-common.c:89
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:103
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Adventure"
+msgctxt "Menu of Games"
 msgid "Adventure"
 msgstr "Macera"
 
-#: ../src/plugins/menu-spec-common.c:90
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:106
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Arcade"
+msgctxt "Menu of Games"
 msgid "Arcade"
 msgstr "Arcade"
 
-#: ../src/plugins/menu-spec-common.c:91
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:109
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Blocks"
+msgctxt "Menu of Games"
 msgid "Blocks"
 msgstr "Bloklar"
 
-#: ../src/plugins/menu-spec-common.c:92
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:112
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Board"
+msgctxt "Menu of Games"
 msgid "Board"
 msgstr "Tahta"
 
-#: ../src/plugins/menu-spec-common.c:93
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:115
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Card"
+msgctxt "Menu of Games"
 msgid "Card"
 msgstr "Kart"
 
-#: ../src/plugins/menu-spec-common.c:94
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:118
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Emulators"
+msgctxt "Menu of Games"
 msgid "Emulators"
 msgstr "Emülatörler"
 
-#: ../src/plugins/menu-spec-common.c:95
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:121
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Kids"
+msgctxt "Menu of Games"
 msgid "Kids"
 msgstr "Çocuklar"
 
-#: ../src/plugins/menu-spec-common.c:96
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:124
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Logic"
+msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "Mantık"
 
-#: ../src/plugins/menu-spec-common.c:97
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:127
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Role Playing"
+msgctxt "Menu of Games"
 msgid "Role Playing"
 msgstr "Rol Yapma"
 
-#: ../src/plugins/menu-spec-common.c:98
-msgctxt "Menu subcategory of Games"
-msgid "Shooter"
-msgstr "Nişancı"
-
-#: ../src/plugins/menu-spec-common.c:99
-msgctxt "Menu subcategory of Games"
-msgid "Simulation"
-msgstr "Simülasyon"
-
-#: ../src/plugins/menu-spec-common.c:100
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:130
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Sports"
+msgctxt "Menu of Games"
 msgid "Sports"
 msgstr "Spor"
 
-#: ../src/plugins/menu-spec-common.c:101
-msgctxt "Menu subcategory of Games"
+#: ../src/plugins/gs-desktop-common.c:134
+#, fuzzy
+#| msgctxt "Menu subcategory of Games"
+#| msgid "Strategy"
+msgctxt "Menu of Games"
 msgid "Strategy"
 msgstr "Strateji"
 
-#. TRANSLATORS: this is the menu spec main category for Graphics
-#: ../src/plugins/menu-spec-common.c:103
-msgid "Graphics"
-msgstr "Grafik"
+#: ../src/plugins/gs-desktop-common.c:142
+#, fuzzy
+#| msgid "All"
+msgctxt "Menu of Graphics"
+msgid "All"
+msgstr "Tümü"
 
-#: ../src/plugins/menu-spec-common.c:104
-msgctxt "Menu subcategory of Graphics"
-msgid "2D Graphics"
-msgstr "2B Grafik"
+#: ../src/plugins/gs-desktop-common.c:145
+#, fuzzy
+#| msgid "Featured"
+msgctxt "Menu of Graphics"
+msgid "Featured"
+msgstr "Vitrin"
 
-#: ../src/plugins/menu-spec-common.c:105
-msgctxt "Menu subcategory of Graphics"
+#: ../src/plugins/gs-desktop-common.c:148
+#, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "3D Graphics"
+msgctxt "Menu of Graphics"
 msgid "3D Graphics"
 msgstr "3B Grafik"
 
-#: ../src/plugins/menu-spec-common.c:106
-msgctxt "Menu subcategory of Graphics"
-msgid "OCR"
-msgstr "OCR"
-
-#: ../src/plugins/menu-spec-common.c:107
-msgctxt "Menu subcategory of Graphics"
+#: ../src/plugins/gs-desktop-common.c:151
+#, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Photography"
+msgctxt "Menu of Graphics"
 msgid "Photography"
 msgstr "Fotoğrafçılık"
 
-#: ../src/plugins/menu-spec-common.c:108
-msgctxt "Menu subcategory of Graphics"
-msgid "Publishing"
-msgstr "Yayıncılık"
-
-#: ../src/plugins/menu-spec-common.c:109
-msgctxt "Menu subcategory of Graphics"
-msgid "Raster Graphics"
-msgstr "Raster Grafikler"
-
-#: ../src/plugins/menu-spec-common.c:110
-msgctxt "Menu subcategory of Graphics"
+#: ../src/plugins/gs-desktop-common.c:154
+#, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Scanning"
+msgctxt "Menu of Graphics"
 msgid "Scanning"
 msgstr "Tarama"
 
-#: ../src/plugins/menu-spec-common.c:111
-msgctxt "Menu subcategory of Graphics"
+#: ../src/plugins/gs-desktop-common.c:157
+#, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Vector Graphics"
+msgctxt "Menu of Graphics"
 msgid "Vector Graphics"
 msgstr "Vektör Grafikleri"
 
-#: ../src/plugins/menu-spec-common.c:112
-msgctxt "Menu subcategory of Graphics"
-msgid "Viewer"
+#: ../src/plugins/gs-desktop-common.c:160
+#, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Viewer"
+msgctxt "Menu of Graphics"
+msgid "Viewers"
 msgstr "Görüntüleyici"
 
-#. TRANSLATORS: this is the menu spec main category for Network
-#: ../src/plugins/menu-spec-common.c:114
-msgid "Internet"
-msgstr "İnternet"
+#: ../src/plugins/gs-desktop-common.c:168
+#, fuzzy
+#| msgid "All"
+msgctxt "Menu of Office"
+msgid "All"
+msgstr "Tümü"
 
-#: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Internet"
-msgid "Chat"
-msgstr "Sohbet"
+#: ../src/plugins/gs-desktop-common.c:171
+#, fuzzy
+#| msgid "Featured"
+msgctxt "Menu of Office"
+msgid "Featured"
+msgstr "Vitrin"
 
-#: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Internet"
-msgid "Dialup"
-msgstr "Çevirmeli Ağ"
-
-#: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Internet"
-msgid "Email"
-msgstr "E-posta"
-
-#: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Internet"
-msgid "Feed"
-msgstr "Özet Akışı"
-
-#: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Internet"
-msgid "File Transfer"
-msgstr "Dosya Aktarımı"
-
-#: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Internet"
-msgid "Ham Radio"
-msgstr "Ham Radyo"
-
-#: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Internet"
-msgid "Instant Messaging"
-msgstr "Anlık Mesajlaşma"
-
-#: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Internet"
-msgid "IRC Clients"
-msgstr "IRC İstemcileri"
-
-#: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Internet"
-msgid "Monitor"
-msgstr "İzleyici"
-
-#: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Internet"
-msgid "News"
-msgstr "Haberler"
-
-#: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Internet"
-msgid "P2P"
-msgstr "P2P"
-
-#: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Internet"
-msgid "Remote Access"
-msgstr "Uzaktan Erişim"
-
-#: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Internet"
-msgid "Telephony"
-msgstr "Telefon"
-
-#: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Internet"
-msgid "Video Conference"
-msgstr "Video Konferans"
-
-#: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Internet"
-msgid "Web Browser"
-msgstr "Web Tarayıcısı"
-
-#: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Internet"
-msgid "Web Development"
-msgstr "Web Geliştirme"
-
-#. TRANSLATORS: this is the menu spec main category for Office
-#: ../src/plugins/menu-spec-common.c:132
-msgid "Office"
-msgstr "Ofis"
-
-#: ../src/plugins/menu-spec-common.c:133
-msgctxt "Menu subcategory of Office"
+#: ../src/plugins/gs-desktop-common.c:174
+#, fuzzy
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Calendar"
+msgctxt "Menu of Office"
 msgid "Calendar"
 msgstr "Takvim"
 
-#: ../src/plugins/menu-spec-common.c:134
-msgctxt "Menu subcategory of Office"
-msgid "Chart"
-msgstr "Grafik"
-
-#: ../src/plugins/menu-spec-common.c:135
-msgctxt "Menu subcategory of Office"
-msgid "Contact Management"
-msgstr "Adres Yönetimi"
-
-#: ../src/plugins/menu-spec-common.c:136
-msgctxt "Menu subcategory of Office"
+#: ../src/plugins/gs-desktop-common.c:178
+#, fuzzy
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Database"
+msgctxt "Menu of Office"
 msgid "Database"
 msgstr "Veritabanı"
 
-#: ../src/plugins/menu-spec-common.c:137
-msgctxt "Menu subcategory of Office"
-msgid "Dictionary"
-msgstr "Sözlük"
-
-#: ../src/plugins/menu-spec-common.c:138
-msgctxt "Menu subcategory of Office"
-msgid "Email"
-msgstr "E-posta"
-
-#: ../src/plugins/menu-spec-common.c:139
-msgctxt "Menu subcategory of Office"
+#: ../src/plugins/gs-desktop-common.c:181
+#, fuzzy
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Finance"
+msgctxt "Menu of Office"
 msgid "Finance"
 msgstr "Finans"
 
-#: ../src/plugins/menu-spec-common.c:140
-msgctxt "Menu subcategory of Office"
-msgid "Flow Chart"
-msgstr "Akış Şeması"
-
-#: ../src/plugins/menu-spec-common.c:141
-msgctxt "Menu subcategory of Office"
-msgid "PDA"
-msgstr "PDA"
-
-#: ../src/plugins/menu-spec-common.c:142
-msgctxt "Menu subcategory of Office"
-msgid "Photography"
-msgstr "Fotoğrafçılık"
-
-#: ../src/plugins/menu-spec-common.c:143
-msgctxt "Menu subcategory of Office"
-msgid "Presentation"
-msgstr "Sunum"
-
-#: ../src/plugins/menu-spec-common.c:144
-msgctxt "Menu subcategory of Office"
-msgid "Project Management"
-msgstr "Proje Yönetimi"
-
-#: ../src/plugins/menu-spec-common.c:145
-msgctxt "Menu subcategory of Office"
-msgid "Publishing"
-msgstr "Yayıncılık"
-
-#: ../src/plugins/menu-spec-common.c:146
-msgctxt "Menu subcategory of Office"
-msgid "Spreadsheet"
-msgstr "Elektronik Tablo"
-
-#: ../src/plugins/menu-spec-common.c:147
-msgctxt "Menu subcategory of Office"
-msgid "Viewer"
-msgstr "Görüntüleyici"
-
-#: ../src/plugins/menu-spec-common.c:148
-msgctxt "Menu subcategory of Office"
+#: ../src/plugins/gs-desktop-common.c:185
+#, fuzzy
+#| msgctxt "Menu subcategory of Office"
+#| msgid "Word Processor"
+msgctxt "Menu of Office"
 msgid "Word Processor"
 msgstr "Kelime İşlemci"
 
-#. TRANSLATORS: this is the menu spec main category for Science
-#: ../src/plugins/menu-spec-common.c:150
-msgid "Science"
-msgstr "Bilim"
-
-#: ../src/plugins/menu-spec-common.c:151
-msgctxt "Menu subcategory of Science"
-msgid "Art"
-msgstr "Sanat"
-
-#: ../src/plugins/menu-spec-common.c:152
-msgctxt "Menu subcategory of Science"
-msgid "Artificial Intelligence"
-msgstr "Yapay Zeka"
-
-#: ../src/plugins/menu-spec-common.c:153
-msgctxt "Menu subcategory of Science"
-msgid "Astronomy"
-msgstr "Astronomi"
-
-#: ../src/plugins/menu-spec-common.c:154
-msgctxt "Menu subcategory of Science"
-msgid "Biology"
-msgstr "Biyoloji"
-
-#: ../src/plugins/menu-spec-common.c:155
-msgctxt "Menu subcategory of Science"
-msgid "Chemistry"
-msgstr "Kimya"
-
-#: ../src/plugins/menu-spec-common.c:156
-msgctxt "Menu subcategory of Science"
-msgid "Computer Science"
-msgstr "Bilgisayar Bilimleri"
-
-#: ../src/plugins/menu-spec-common.c:157
-msgctxt "Menu subcategory of Science"
-msgid "Construction"
-msgstr "İnşaat"
-
-#: ../src/plugins/menu-spec-common.c:158
-msgctxt "Menu subcategory of Science"
-msgid "Data Visualization"
-msgstr "Veri Görselleştirme"
-
-#: ../src/plugins/menu-spec-common.c:159
-msgctxt "Menu subcategory of Science"
-msgid "Economy"
-msgstr "Ekonomi"
-
-#: ../src/plugins/menu-spec-common.c:160
-msgctxt "Menu subcategory of Science"
-msgid "Electricity"
-msgstr "Elektrik"
-
-#: ../src/plugins/menu-spec-common.c:161
-msgctxt "Menu subcategory of Science"
-msgid "Electronics"
-msgstr "Elektronik"
-
-#: ../src/plugins/menu-spec-common.c:162
-msgctxt "Menu subcategory of Science"
-msgid "Engineering"
-msgstr "Mühendislik"
-
-#: ../src/plugins/menu-spec-common.c:163
-msgctxt "Menu subcategory of Science"
-msgid "Geography"
-msgstr "Coğrafya"
-
-#: ../src/plugins/menu-spec-common.c:164
-msgctxt "Menu subcategory of Science"
-msgid "Geology"
-msgstr "Jeoloji"
-
-#: ../src/plugins/menu-spec-common.c:165
-msgctxt "Menu subcategory of Science"
-msgid "Geoscience"
-msgstr "Yerbilimleri"
-
-#: ../src/plugins/menu-spec-common.c:166
-msgctxt "Menu subcategory of Science"
-msgid "History"
-msgstr "Tarih"
-
-#: ../src/plugins/menu-spec-common.c:167
-msgctxt "Menu subcategory of Science"
-msgid "Humanities"
-msgstr "Beşeri Bilimler"
-
-#: ../src/plugins/menu-spec-common.c:168
-msgctxt "Menu subcategory of Science"
-msgid "Image Processing"
-msgstr "Görüntü İşleme"
-
-#: ../src/plugins/menu-spec-common.c:169
-msgctxt "Menu subcategory of Science"
-msgid "Languages"
-msgstr "Diller"
-
-#: ../src/plugins/menu-spec-common.c:170
-msgctxt "Menu subcategory of Science"
-msgid "Literature"
-msgstr "Edebiyat"
-
-#: ../src/plugins/menu-spec-common.c:171
-msgctxt "Menu subcategory of Science"
-msgid "Maps"
-msgstr "Haritalar"
-
-#: ../src/plugins/menu-spec-common.c:172
-msgctxt "Menu subcategory of Science"
-msgid "Math"
-msgstr "Matematik"
-
-#: ../src/plugins/menu-spec-common.c:173
-msgctxt "Menu subcategory of Science"
-msgid "Medical"
-msgstr "Tıp"
-
-#: ../src/plugins/menu-spec-common.c:174
-msgctxt "Menu subcategory of Science"
-msgid "Numerical Analysis"
-msgstr "Sayısal Analiz"
-
-#: ../src/plugins/menu-spec-common.c:175
-msgctxt "Menu subcategory of Science"
-msgid "Parallel Computing"
-msgstr "Paralel Hesaplama"
-
-#: ../src/plugins/menu-spec-common.c:176
-msgctxt "Menu subcategory of Science"
-msgid "Physics"
-msgstr "Fizik"
-
-#: ../src/plugins/menu-spec-common.c:177
-msgctxt "Menu subcategory of Science"
-msgid "Robotics"
-msgstr "Robotik"
-
-#: ../src/plugins/menu-spec-common.c:178
-msgctxt "Menu subcategory of Science"
-msgid "Spirituality"
-msgstr "Maneviyat"
-
-#: ../src/plugins/menu-spec-common.c:179
-msgctxt "Menu subcategory of Science"
-msgid "Sports"
-msgstr "Spor"
-
-#. TRANSLATORS: this is the menu spec main category for System
-#: ../src/plugins/menu-spec-common.c:181
-msgid "System"
-msgstr "Sistem"
-
-#: ../src/plugins/menu-spec-common.c:182
-msgctxt "Menu subcategory of System"
-msgid "Emulator"
-msgstr "Emülatör"
-
-#: ../src/plugins/menu-spec-common.c:183
-msgctxt "Menu subcategory of System"
-msgid "File Manager"
-msgstr "Dosya Yöneticisi"
-
-#: ../src/plugins/menu-spec-common.c:184
-msgctxt "Menu subcategory of System"
-msgid "File System"
-msgstr "Dosya Sistemi"
-
-#: ../src/plugins/menu-spec-common.c:185
-msgctxt "Menu subcategory of System"
-msgid "File Tools"
-msgstr "Dosya Araçları"
-
-#: ../src/plugins/menu-spec-common.c:186
-msgctxt "Menu subcategory of System"
-msgid "Monitor"
-msgstr "İzleyici"
-
-#: ../src/plugins/menu-spec-common.c:187
-msgctxt "Menu subcategory of System"
-msgid "Security"
-msgstr "Güvenlik"
-
-#: ../src/plugins/menu-spec-common.c:188
-msgctxt "Menu subcategory of System"
-msgid "Terminal Emulator"
-msgstr "Uçbirim Emülatörü"
-
-#. TRANSLATORS: this is the menu spec main category for Utility
-#: ../src/plugins/menu-spec-common.c:190
-msgid "Utilities"
-msgstr "Araçlar"
-
-#: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utilities"
-msgid "Accessibility"
-msgstr "Erişilebilirlik"
-
-#: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utilities"
-msgid "Archiving"
-msgstr "Arşivleme"
-
-#: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utilities"
-msgid "Calculator"
-msgstr "Hesap Makinesi"
-
-#: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utilities"
-msgid "Clock"
-msgstr "Saat"
-
-#: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utilities"
-msgid "Compression"
-msgstr "Sıkıştırma"
-
-#: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utilities"
-msgid "File Tools"
-msgstr "Dosya Araçları"
-
-#: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utilities"
-msgid "Maps"
-msgstr "Haritalar"
-
-#: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utilities"
-msgid "Spirituality"
-msgstr "Maneviyat"
-
-#: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utilities"
-msgid "Telephony Tools"
-msgstr "Telefon Araçları"
-
-#: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utilities"
-msgid "Text Editor"
-msgstr "Metin Düzenleyici"
-
-#. TRANSLATORS: this is the menu spec main category for Video
-#: ../src/plugins/menu-spec-common.c:202
-msgid "Video"
-msgstr "Video"
-
-#: ../src/plugins/menu-spec-common.c:203
-msgctxt "Menu subcategory of Video"
-msgid "Editing"
-msgstr "Düzenleme"
-
-#: ../src/plugins/menu-spec-common.c:204
-msgctxt "Menu subcategory of Video"
-msgid "Database"
-msgstr "Veritabanı"
-
-#: ../src/plugins/menu-spec-common.c:205
-msgctxt "Menu subcategory of Video"
-msgid "Disc Burning"
-msgstr "Disk Yazdırma"
-
-#: ../src/plugins/menu-spec-common.c:206
-msgctxt "Menu subcategory of Video"
-msgid "Players"
-msgstr "Oynatıcılar"
-
-#: ../src/plugins/menu-spec-common.c:207
-msgctxt "Menu subcategory of Video"
-msgid "Recorders"
-msgstr "Kaydediciler"
-
-#: ../src/plugins/menu-spec-common.c:208
-msgctxt "Menu subcategory of Video"
-msgid "TV"
-msgstr "TV"
-
-#: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:194
+#, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Fonts"
+msgctxt "Menu of Addons"
 msgid "Fonts"
 msgstr "Yazı Tipleri"
 
-#: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:197
+#, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Codecs"
+msgctxt "Menu of Addons"
 msgid "Codecs"
 msgstr "Kod Çözücüler (Kodekler)"
 
-#: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:200
+#, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Input Sources"
+msgctxt "Menu of Addons"
 msgid "Input Sources"
 msgstr "Girdi Kaynakları"
 
-#: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:203
+#, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Language Packs"
+msgctxt "Menu of Addons"
 msgid "Language Packs"
 msgstr "Dil Paketleri"
 
-#: ../src/plugins/menu-spec-common.c:215
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:206
+#, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Shell Extensions"
+msgctxt "Menu of Addons"
 msgid "Shell Extensions"
 msgstr "Kabuk Uzantıları"
 
-#: ../src/plugins/menu-spec-common.c:216
-msgctxt "Menu subcategory of Add-ons"
+#: ../src/plugins/gs-desktop-common.c:209
+#, fuzzy
+#| msgctxt "Menu subcategory of Add-ons"
+#| msgid "Localization"
+msgctxt "Menu of Addons"
 msgid "Localization"
 msgstr "Yerelleştirme"
+
+#: ../src/plugins/gs-desktop-common.c:217
+#, fuzzy
+#| msgid "All"
+msgctxt "Menu of Science"
+msgid "All"
+msgstr "Tümü"
+
+#: ../src/plugins/gs-desktop-common.c:220
+#, fuzzy
+#| msgid "Featured"
+msgctxt "Menu of Science"
+msgid "Featured"
+msgstr "Vitrin"
+
+#: ../src/plugins/gs-desktop-common.c:223
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Artificial Intelligence"
+msgctxt "Menu of Science"
+msgid "Artificial Intelligence"
+msgstr "Yapay Zeka"
+
+#: ../src/plugins/gs-desktop-common.c:226
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Astronomy"
+msgctxt "Menu of Science"
+msgid "Astronomy"
+msgstr "Astronomi"
+
+#: ../src/plugins/gs-desktop-common.c:229
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Chemistry"
+msgctxt "Menu of Science"
+msgid "Chemistry"
+msgstr "Kimya"
+
+#: ../src/plugins/gs-desktop-common.c:232
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Math"
+msgctxt "Menu of Science"
+msgid "Math"
+msgstr "Matematik"
+
+#: ../src/plugins/gs-desktop-common.c:237
+#, fuzzy
+#| msgctxt "Menu subcategory of Education"
+#| msgid "Robotics"
+msgctxt "Menu of Science"
+msgid "Robotics"
+msgstr "Robotik"
+
+#: ../src/plugins/gs-desktop-common.c:245
+#, fuzzy
+#| msgid "All"
+msgctxt "Menu of Communication"
+msgid "All"
+msgstr "Tümü"
+
+#: ../src/plugins/gs-desktop-common.c:248
+#, fuzzy
+#| msgid "Featured"
+msgctxt "Menu of Communication"
+msgid "Featured"
+msgstr "Vitrin"
+
+#: ../src/plugins/gs-desktop-common.c:251
+#, fuzzy
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "Chat"
+msgctxt "Menu of Communication"
+msgid "Chat"
+msgstr "Sohbet"
+
+#: ../src/plugins/gs-desktop-common.c:258
+#, fuzzy
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "News"
+msgctxt "Menu of Communication"
+msgid "News"
+msgstr "Haberler"
+
+#: ../src/plugins/gs-desktop-common.c:262
+#, fuzzy
+#| msgctxt "Menu subcategory of Internet"
+#| msgid "Web Browser"
+msgctxt "Menu of Communication"
+msgid "Web Browsers"
+msgstr "Web Tarayıcısı"
+
+#: ../src/plugins/gs-desktop-common.c:270
+#, fuzzy
+#| msgid "All"
+msgctxt "Menu of Utility"
+msgid "All"
+msgstr "Tümü"
+
+#: ../src/plugins/gs-desktop-common.c:273
+#, fuzzy
+#| msgid "Featured"
+msgctxt "Menu of Utility"
+msgid "Featured"
+msgstr "Vitrin"
+
+#: ../src/plugins/gs-desktop-common.c:276
+#, fuzzy
+#| msgctxt "Menu subcategory of Utilities"
+#| msgid "Text Editor"
+msgctxt "Menu of Utility"
+msgid "Text Editors"
+msgstr "Metin Düzenleyici"
+
+#. TRANSLATORS: this is the menu spec main category for Audio & Video
+#: ../src/plugins/gs-desktop-common.c:285
+msgid "Audio & Video"
+msgstr ""
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/gs-desktop-common.c:288
+#, fuzzy
+#| msgid "Development Tools"
+msgid "Developer Tools"
+msgstr "Geliştirme Araçları"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/gs-desktop-common.c:291
+msgid "Education"
+msgstr "Eğitim"
+
+#. TRANSLATORS: this is the menu spec main category for Game
+#: ../src/plugins/gs-desktop-common.c:294
+msgid "Games"
+msgstr "Oyunlar"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/gs-desktop-common.c:297
+#, fuzzy
+#| msgctxt "Menu subcategory of Graphics"
+#| msgid "Photography"
+msgid "Graphics & Photography"
+msgstr "Fotoğrafçılık"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/gs-desktop-common.c:300
+msgid "Productivity"
+msgstr ""
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/gs-desktop-common.c:306
+msgid "Science"
+msgstr "Bilim"
+
+#. TRANSLATORS: this is the menu spec main category for Communication
+#: ../src/plugins/gs-desktop-common.c:309
+msgid "Communication & News"
+msgstr ""
+
+#. TRANSLATORS: this is the menu spec main category for Utilities
+#: ../src/plugins/gs-desktop-common.c:312
+msgid "Utilities"
+msgstr "Araçlar"
+
+#~ msgctxt "size"
+#~ msgid "Calculating…"
+#~ msgstr "Hesaplanıyor..."
+
+#~ msgctxt "size"
+#~ msgid "Unknown"
+#~ msgstr "Bilinmiyor"
+
+#~ msgid "_History"
+#~ msgstr "_Geçmiş"
+
+#~ msgid "Size"
+#~ msgstr "Boyut"
+
+#~ msgid "Recommended Office Applications"
+#~ msgstr "Önerilen Ofis Uygulamaları"
+
+#~ msgid "Featured Application"
+#~ msgstr "Öne Çıkan Uygulama"
+
+#~ msgid "Audio"
+#~ msgstr "Ses"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Editing"
+#~ msgstr "Düzenleme"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Databases"
+#~ msgstr "Veritabanları"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Disc Burning"
+#~ msgstr "Disk Yazdırma"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Ham Radio"
+#~ msgstr "Ham Radyo"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "MIDI"
+#~ msgstr "MIDI"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Mixer"
+#~ msgstr "Karıştırıcı"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Music"
+#~ msgstr "Müzik"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Recorders"
+#~ msgstr "Kaydediciler"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Sequencers"
+#~ msgstr "Ardıştırıcılar"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Tuners"
+#~ msgstr "Radyo/TV Tarayıcıları"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Building"
+#~ msgstr "İnşa"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Databases"
+#~ msgstr "Veritabanları"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "GUI Designers"
+#~ msgstr "GUI Tasarımcıları"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "IDE"
+#~ msgstr "IDE"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Profiling"
+#~ msgstr "Profilleme"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Revision Control"
+#~ msgstr "Revizyon Kontrolü"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Translation"
+#~ msgstr "Çeviri"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Web Development"
+#~ msgstr "Web Geliştirme"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Art"
+#~ msgstr "Sanat"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Biology"
+#~ msgstr "Biyoloji"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Computer Science"
+#~ msgstr "Bilgisayar Bilimleri"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Construction"
+#~ msgstr "İnşaat"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Data Visualization"
+#~ msgstr "Veri Görselleştirme"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Economy"
+#~ msgstr "Ekonomi"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Electricity"
+#~ msgstr "Elektrik"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Electronics"
+#~ msgstr "Elektronik"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Engineering"
+#~ msgstr "Mühendislik"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Geography"
+#~ msgstr "Coğrafya"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Geology"
+#~ msgstr "Jeoloji"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Geoscience"
+#~ msgstr "Yerbilimleri"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "History"
+#~ msgstr "Tarih"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Humanities"
+#~ msgstr "Beşeri Bilimler"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Image Processing"
+#~ msgstr "Görüntü İşleme"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Literature"
+#~ msgstr "Edebiyat"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Maps"
+#~ msgstr "Haritalar"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Medical"
+#~ msgstr "Tıp"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Music"
+#~ msgstr "Müzik"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Numerical Analysis"
+#~ msgstr "Sayısal Analiz"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Parallel Computing"
+#~ msgstr "Paralel Hesaplama"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Physics"
+#~ msgstr "Fizik"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Spirituality"
+#~ msgstr "Maneviyat"
+
+#~ msgctxt "Menu subcategory of Games"
+#~ msgid "Shooter"
+#~ msgstr "Nişancı"
+
+#~ msgctxt "Menu subcategory of Games"
+#~ msgid "Simulation"
+#~ msgstr "Simülasyon"
+
+#~ msgctxt "Menu subcategory of Games"
+#~ msgid "Sports"
+#~ msgstr "Spor"
+
+#~ msgid "Graphics"
+#~ msgstr "Grafik"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "2D Graphics"
+#~ msgstr "2B Grafik"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "OCR"
+#~ msgstr "OCR"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "Publishing"
+#~ msgstr "Yayıncılık"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "Raster Graphics"
+#~ msgstr "Raster Grafikler"
+
+#~ msgid "Internet"
+#~ msgstr "İnternet"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Dialup"
+#~ msgstr "Çevirmeli Ağ"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Email"
+#~ msgstr "E-posta"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Feed"
+#~ msgstr "Özet Akışı"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "File Transfer"
+#~ msgstr "Dosya Aktarımı"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Ham Radio"
+#~ msgstr "Ham Radyo"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Instant Messaging"
+#~ msgstr "Anlık Mesajlaşma"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "IRC Clients"
+#~ msgstr "IRC İstemcileri"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Monitor"
+#~ msgstr "İzleyici"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "P2P"
+#~ msgstr "P2P"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Remote Access"
+#~ msgstr "Uzaktan Erişim"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Telephony"
+#~ msgstr "Telefon"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Video Conference"
+#~ msgstr "Video Konferans"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Web Development"
+#~ msgstr "Web Geliştirme"
+
+#~ msgid "Office"
+#~ msgstr "Ofis"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Chart"
+#~ msgstr "Grafik"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Contact Management"
+#~ msgstr "Adres Yönetimi"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Dictionary"
+#~ msgstr "Sözlük"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Email"
+#~ msgstr "E-posta"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Flow Chart"
+#~ msgstr "Akış Şeması"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "PDA"
+#~ msgstr "PDA"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Photography"
+#~ msgstr "Fotoğrafçılık"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Presentation"
+#~ msgstr "Sunum"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Project Management"
+#~ msgstr "Proje Yönetimi"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Publishing"
+#~ msgstr "Yayıncılık"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Spreadsheet"
+#~ msgstr "Elektronik Tablo"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Viewer"
+#~ msgstr "Görüntüleyici"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Art"
+#~ msgstr "Sanat"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Artificial Intelligence"
+#~ msgstr "Yapay Zeka"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Astronomy"
+#~ msgstr "Astronomi"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Biology"
+#~ msgstr "Biyoloji"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Chemistry"
+#~ msgstr "Kimya"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Computer Science"
+#~ msgstr "Bilgisayar Bilimleri"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Construction"
+#~ msgstr "İnşaat"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Data Visualization"
+#~ msgstr "Veri Görselleştirme"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Economy"
+#~ msgstr "Ekonomi"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Electricity"
+#~ msgstr "Elektrik"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Electronics"
+#~ msgstr "Elektronik"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Engineering"
+#~ msgstr "Mühendislik"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Geography"
+#~ msgstr "Coğrafya"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Geology"
+#~ msgstr "Jeoloji"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Geoscience"
+#~ msgstr "Yerbilimleri"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "History"
+#~ msgstr "Tarih"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Humanities"
+#~ msgstr "Beşeri Bilimler"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Image Processing"
+#~ msgstr "Görüntü İşleme"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Languages"
+#~ msgstr "Diller"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Literature"
+#~ msgstr "Edebiyat"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Maps"
+#~ msgstr "Haritalar"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Math"
+#~ msgstr "Matematik"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Medical"
+#~ msgstr "Tıp"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Numerical Analysis"
+#~ msgstr "Sayısal Analiz"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Parallel Computing"
+#~ msgstr "Paralel Hesaplama"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Physics"
+#~ msgstr "Fizik"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Robotics"
+#~ msgstr "Robotik"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Spirituality"
+#~ msgstr "Maneviyat"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Sports"
+#~ msgstr "Spor"
+
+#~ msgid "System"
+#~ msgstr "Sistem"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Emulator"
+#~ msgstr "Emülatör"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "File Manager"
+#~ msgstr "Dosya Yöneticisi"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "File System"
+#~ msgstr "Dosya Sistemi"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "File Tools"
+#~ msgstr "Dosya Araçları"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Monitor"
+#~ msgstr "İzleyici"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Security"
+#~ msgstr "Güvenlik"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Terminal Emulator"
+#~ msgstr "Uçbirim Emülatörü"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Accessibility"
+#~ msgstr "Erişilebilirlik"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Archiving"
+#~ msgstr "Arşivleme"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Calculator"
+#~ msgstr "Hesap Makinesi"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Clock"
+#~ msgstr "Saat"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Compression"
+#~ msgstr "Sıkıştırma"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "File Tools"
+#~ msgstr "Dosya Araçları"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Maps"
+#~ msgstr "Haritalar"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Spirituality"
+#~ msgstr "Maneviyat"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Telephony Tools"
+#~ msgstr "Telefon Araçları"
+
+#~ msgid "Video"
+#~ msgstr "Video"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Editing"
+#~ msgstr "Düzenleme"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Database"
+#~ msgstr "Veritabanı"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Disc Burning"
+#~ msgstr "Disk Yazdırma"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Players"
+#~ msgstr "Oynatıcılar"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Recorders"
+#~ msgstr "Kaydediciler"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "TV"
+#~ msgstr "TV"
 
 #~ msgid "No AppStream data found"
 #~ msgstr "AppStream verisi bulunamadı"
@@ -2855,9 +3571,6 @@ msgstr "Yerelleştirme"
 
 #~ msgid "No software installed"
 #~ msgstr "Hiçbir yazılım kurulmadı"
-
-#~ msgid "Network access was required but not available."
-#~ msgstr "Ağ bağlantısı gerekiyor fakat ağ kullanılabilir değil."
 
 #~ msgid "An update was not signed in the correct way."
 #~ msgstr "Güncelleme doğru şekilde imzalanmamış."
