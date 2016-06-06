@@ -196,6 +196,13 @@ gs_shell_category_create_filter_list (GsShellCategory *self,
 		g_object_set (row, "xalign", 0.0, "margin", 10, NULL);
 		gtk_widget_show (row);
 		gtk_list_box_insert (GTK_LIST_BOX (self->listbox_filter), row, -1);
+
+		/* if no subcategory was passed, then set it to the first one
+		 * that gets inserted in the list in order for the first
+		 * row/subcategory to be selected */
+		if (!subcategory)
+			subcategory = s;
+
 		if (subcategory == s)
 			gtk_list_box_select_row (GTK_LIST_BOX (self->listbox_filter), GTK_LIST_BOX_ROW (gtk_widget_get_parent (row)));
 	}
@@ -217,7 +224,8 @@ gs_shell_category_set_category (GsShellCategory *self, GsCategory *category)
 	g_clear_object (&self->category);
 	self->category = g_object_ref (category);
 
-	/* select favourites by default */
+	/* select favourites by default, otherwise the first subcategory in the
+	 * list will be selected */
 	children = gs_category_get_children (category);
 	for (i = 0; i < children->len; i++) {
 		sub = GS_CATEGORY (g_ptr_array_index (children, i));
@@ -226,10 +234,6 @@ gs_shell_category_set_category (GsShellCategory *self, GsCategory *category)
 			break;
 		}
 	}
-
-	/* okay, no favourites, so just select the first entry */
-	if (selected == NULL && children->len > 0)
-		selected = GS_CATEGORY (g_ptr_array_index (children, 0));
 
 	/* find apps in this group */
 	gs_shell_category_create_filter_list (self, category, selected);
