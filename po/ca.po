@@ -2,14 +2,14 @@
 # Copyright (C) 2012 gnome-software's COPYRIGHT HOLDER
 # This file is distributed under the same license as the gnome-calendar package.
 #
-# Jordi Mas i Hernandez <jmas@softcatala.org>, 2013-2015.
+# Jordi Mas i Hernandez <jmas@softcatala.org>, 2013, 2015, 2016.
 # Gil Forcada <gilforcada@guifi.net>, 2014.
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: \n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-06-01 22:49+0200\n"
+"POT-Creation-Date: 2016-06-06 20:15+0200\n"
 "PO-Revision-Date: 2015-12-03 23:34+0100\n"
 "Last-Translator: Robert Antoni Buj Gelonch <rbuj@fedoraproject.org>\n"
 "Language-Team: Catalan <tradgnome@softcatala.org>\n"
@@ -205,7 +205,7 @@ msgstr "No seleccionis res"
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
 #: ../src/gnome-software.ui.h:3 ../src/gs-application.c:375
-#: ../src/gs-shell.c:257 ../src/org.gnome.Software.desktop.in.h:1
+#: ../src/gs-shell.c:261 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Programari"
 
@@ -232,7 +232,7 @@ msgstr "Act_ualitzacions"
 
 #. TRANSLATORS: this is a label that describes an application
 #. * that has been queued for installation
-#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:275
+#: ../src/gs-app-addon-row.c:91 ../src/gs-app-row.c:284
 #: ../src/gs-shell-details.ui.h:4
 msgid "Pending"
 msgstr "Pendent"
@@ -241,7 +241,7 @@ msgstr "Pendent"
 #. * shows the status of an application being installed
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being installed
-#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:313
+#: ../src/gs-app-addon-row.c:101 ../src/gs-app-row.c:322
 #: ../src/gs-app-tile.c:87 ../src/gs-app-tile.c:90
 msgid "Installing"
 msgstr "S'està instal·lant"
@@ -250,7 +250,7 @@ msgstr "S'està instal·lant"
 #. * shows the status of an application being erased
 #. TRANSLATORS: this is the small blue label on the tile
 #. * that tells the user the application is being removed
-#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:322
+#: ../src/gs-app-addon-row.c:105 ../src/gs-app-row.c:331
 #: ../src/gs-app-tile.c:96 ../src/gs-app-tile.c:99
 msgid "Removing"
 msgstr "S'està suprimint"
@@ -334,26 +334,26 @@ msgstr "Una forma atractiva de gestionar el programari del sistema."
 
 #. TRANSLATORS: during the update the device
 #. * will restart into a special update-only mode
-#: ../src/gs-app-row.c:151
+#: ../src/gs-app-row.c:161
 msgid "Device cannot be used during update."
 msgstr "El dispositiu no pot utilitzar-se durant l'actualització."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed
-#: ../src/gs-app-row.c:259
+#: ../src/gs-app-row.c:268
 msgid "Visit website"
 msgstr "Visiteu el lloc web"
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily installed.
 #. * The ellipsis indicates that further steps are required
-#: ../src/gs-app-row.c:264
+#: ../src/gs-app-row.c:273
 msgid "Install…"
 msgstr "Instal·la..."
 
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows to cancel a queued install of the application
-#: ../src/gs-app-row.c:272
+#: ../src/gs-app-row.c:281
 msgid "Cancel"
 msgstr "Cancel·la"
 
@@ -363,7 +363,7 @@ msgstr "Cancel·la"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:282 ../src/gs-app-row.c:289 ../src/gs-page.c:278
+#: ../src/gs-app-row.c:291 ../src/gs-app-row.c:298 ../src/gs-page.c:278
 #: ../src/gs-common.c:347
 msgid "Install"
 msgstr "Instal·la"
@@ -371,7 +371,7 @@ msgstr "Instal·la"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:293 ../src/gs-app-row.c:304 ../src/gs-page.c:346
+#: ../src/gs-app-row.c:302 ../src/gs-app-row.c:313 ../src/gs-page.c:346
 msgid "Remove"
 msgstr "Suprimeix"
 
@@ -398,18 +398,18 @@ msgstr "Extensió del Shell"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
-#: ../src/gs-category.c:292
+#: ../src/gs-category.c:132 ../src/gs-category.c:179
 msgid "Other"
 msgstr "Altres"
 
 #. TRANSLATORS: this is a subcategory matching all the
 #. * different apps in the parent category, e.g. "Games"
-#: ../src/gs-category.c:296
+#: ../src/gs-category.c:137 ../src/gs-category.c:184
 msgid "All"
 msgstr "Tots"
 
 #. TRANSLATORS: this is a subcategory of featured apps
-#: ../src/gs-category.c:299
+#: ../src/gs-category.c:141 ../src/gs-category.c:188
 msgid "Featured"
 msgstr "Destacat"
 
@@ -567,24 +567,24 @@ msgstr "Se suprimirà %s i haureu d'instal·lar-la per utilitzar-la de nou."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:905
+#: ../src/gs-plugin-loader.c:958
 msgid "OS Updates"
 msgstr "Actualitzacions del SO"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:910
+#: ../src/gs-plugin-loader.c:963
 msgid "Includes performance, stability and security improvements."
 msgstr "Inclou millores de rendiment, d'estabilitat i de seguretat."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1600 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1653 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "No s'ha trobat cap còdec disponible per al format %s."
 
-#: ../src/gs-plugin-loader.c:1603
+#: ../src/gs-plugin-loader.c:1656
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -774,16 +774,16 @@ msgstr "No s'ha pogut crear la memòria cau"
 
 #. TRANSLATORS: this is when we try to download a screenshot
 #. * that was not a valid URL
-#: ../src/gs-screenshot-image.c:445
+#: ../src/gs-screenshot-image.c:452
 msgid "Screenshot not valid"
 msgstr "La captura de pantalla no és vàlida"
 
 #. TRANSLATORS: this is when networking is not available
-#: ../src/gs-screenshot-image.c:461
+#: ../src/gs-screenshot-image.c:468
 msgid "Screenshot not available"
 msgstr "La captura de pantalla no està disponible"
 
-#: ../src/gs-screenshot-image.c:512
+#: ../src/gs-screenshot-image.c:519
 msgid "Screenshot"
 msgstr "Captura de pantalla"
 
@@ -1011,7 +1011,7 @@ msgstr "Utilitzeu només fonts de confiança."
 msgid "_Website"
 msgstr "Lloc _web"
 
-#: ../src/gs-shell-details.ui.h:21 ../src/gs-common.c:780
+#: ../src/gs-shell-details.ui.h:21 ../src/gs-common.c:807
 msgid "Details"
 msgstr "Detalls"
 
@@ -1069,9 +1069,9 @@ msgstr "no lliure"
 
 #. TRANSLATORS: This is the header dividing the normal
 #. * applications and the addons
-#. TRANSLATORS: this is the main category for Add-ons
+#. TRANSLATORS: this is the menu spec main category for Add-ons
 #: ../src/gs-shell-details.ui.h:38 ../src/gs-shell-installed.c:442
-#: ../src/gs-update-list.c:130 ../src/plugins/menu-spec-common.c:210
+#: ../src/gs-update-list.c:130 ../src/plugins/gs-desktop-common.c:303
 msgid "Add-ons"
 msgstr "Complements"
 
@@ -1269,7 +1269,7 @@ msgstr[1] ""
 msgid "Failed to find any search results"
 msgstr "No s'ha pogut trobar cap resultat de cerca"
 
-#: ../src/gs-shell-extras.c:810
+#: ../src/gs-shell-extras.c:812
 #, c-format
 msgid "%s file format"
 msgstr "Format de fitxer %s"
@@ -1319,24 +1319,24 @@ msgid "There are no reviews to moderate"
 msgstr "No hi ha ressenyes per moderar"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:374
-msgid "Recommended Audio Applications"
-msgstr "Aplicacions d'àudio recomanades"
+#: ../src/gs-shell-overview.c:389
+msgid "Recommended Audio & Video Applications"
+msgstr "Aplicacions d'àudio i vídeo recomanades"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:379
+#: ../src/gs-shell-overview.c:394
 msgid "Recommended Games"
 msgstr "Jocs recomanats"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:384
+#: ../src/gs-shell-overview.c:399
 msgid "Recommended Graphics Applications"
 msgstr "Aplicacions gràfiques recomanades"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:389
-msgid "Recommended Office Applications"
-msgstr "Aplicacions d'ofimàtica recomanades"
+#: ../src/gs-shell-overview.c:404
+msgid "Recommended Productivity Applications"
+msgstr "Aplicacions de productivitat recomanades"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-overview.ui.h:1
@@ -1344,8 +1344,8 @@ msgid "Overview page"
 msgstr "Pàgina de resum"
 
 #: ../src/gs-shell-overview.ui.h:2
-msgid "Featured Application"
-msgstr "Aplicacions destacades"
+msgid "Categories"
+msgstr "Categories"
 
 #. Translators: This is a heading for software which has been featured ('picked') by the distribution.
 #: ../src/gs-shell-overview.ui.h:4
@@ -1353,10 +1353,6 @@ msgid "Editor's Picks"
 msgstr "Selecció de l'editor"
 
 #: ../src/gs-shell-overview.ui.h:5
-msgid "Categories"
-msgstr "Categories"
-
-#: ../src/gs-shell-overview.ui.h:6
 msgid "No Application Data Found"
 msgstr "No s'ha trobat cap descripció detallada de l'aplicació"
 
@@ -1452,23 +1448,23 @@ msgid "Last checked: %s"
 msgstr "Darrera comprovació: %s"
 
 #. TRANSLATORS: all updates will be installed
-#: ../src/gs-shell-updates.c:501
+#: ../src/gs-shell-updates.c:516
 msgid "_Install All"
 msgstr "_Instal·la-ho tot"
 
 #. TRANSLATORS: this is an offline update
-#: ../src/gs-shell-updates.c:505 ../src/gs-shell-updates.c:1325
+#: ../src/gs-shell-updates.c:520 ../src/gs-shell-updates.c:1334
 msgid "Restart & _Install"
 msgstr "Reinicia i _instal·la"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:863
+#: ../src/gs-shell-updates.c:872
 msgid "Charges may apply"
 msgstr "Es poden aplicar càrrecs"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:867
+#: ../src/gs-shell-updates.c:876
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1478,48 +1474,48 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:871
+#: ../src/gs-shell-updates.c:880
 msgid "Check Anyway"
 msgstr "Comprova-ho de totes maneres"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:887
+#: ../src/gs-shell-updates.c:896
 msgid "No Network"
 msgstr "Sense xarxa"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:891
+#: ../src/gs-shell-updates.c:900
 msgid "Internet access is required to check for updates."
 msgstr "Es requereix accés a Internet per comprovar si hi ha actualitzacions."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:895
+#: ../src/gs-shell-updates.c:904
 msgid "Network Settings"
 msgstr "Paràmetres de xarxa"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: ../src/gs-shell-updates.c:997
+#: ../src/gs-shell-updates.c:1006
 msgid "Updates have been installed"
 msgstr "S'han instal·lat les actualitzacions."
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: ../src/gs-shell-updates.c:999
+#: ../src/gs-shell-updates.c:1008
 msgid "A restart is required for them to take effect."
 msgstr "Es necessari un reinici perquè els canvis tinguin efecte."
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:1001 ../src/gs-update-monitor.c:102
+#: ../src/gs-shell-updates.c:1010 ../src/gs-update-monitor.c:102
 msgid "Not Now"
 msgstr "Ara no"
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:1003
+#: ../src/gs-shell-updates.c:1012
 msgid "Restart"
 msgstr "Reinicia"
 
-#: ../src/gs-shell-updates.c:1343
+#: ../src/gs-shell-updates.c:1352
 msgid "Check for updates"
 msgstr "Comprova si hi ha actualitzacions"
 
@@ -1627,14 +1623,14 @@ msgstr "S'està suprimint…"
 
 #. TRANSLATORS: this is the fallback text we use if we can't
 #. figure out the name of the operating system
-#: ../src/gs-sources-dialog.c:404
+#: ../src/gs-sources-dialog.c:407
 msgid "the operating system"
 msgstr "el sistema operatiu"
 
 #. TRANSLATORS: This is the text displayed in the Software Sources
 #. dialog when no OS-provided software sources are enabled. %s gets
 #. replaced by the name of the actual distro, e.g. Fedora.
-#: ../src/gs-sources-dialog.c:475
+#: ../src/gs-sources-dialog.c:478
 #, c-format
 msgid ""
 "Software sources can be downloaded from the internet. They give you access "
@@ -1755,40 +1751,40 @@ msgstr "Mostra"
 
 #. TRANSLATORS: this is a distro upgrade, the replacement would be the
 #. * distro name, e.g. 'Fedora'
-#: ../src/gs-update-monitor.c:237
+#: ../src/gs-update-monitor.c:242
 #, c-format
 msgid "A new version of %s is available to install"
 msgstr "Una nova versió de %s està disponible per instal·lar"
 
 #. TRANSLATORS: this is a distro upgrade
-#: ../src/gs-update-monitor.c:241
+#: ../src/gs-update-monitor.c:246
 msgid "Software Upgrade Available"
 msgstr "Hi ha actualitzacions disponibles"
 
 #. TRANSLATORS: title when we offline updates have failed
-#: ../src/gs-update-monitor.c:428
+#: ../src/gs-update-monitor.c:433
 msgid "Software Updates Failed"
 msgstr "No s'ha pogut realitzar l'actualització de programari"
 
 #. TRANSLATORS: message when we offline updates have failed
-#: ../src/gs-update-monitor.c:430
+#: ../src/gs-update-monitor.c:435
 msgid "An important OS update failed to be installed."
 msgstr ""
 "No s'ha pogut realitzar una actualització important del sistema operatiu."
 
-#: ../src/gs-update-monitor.c:431
+#: ../src/gs-update-monitor.c:436
 msgid "Show Details"
 msgstr "Mostra els detalls"
 
 #. TRANSLATORS: title when we've done offline updates
-#: ../src/gs-update-monitor.c:453
+#: ../src/gs-update-monitor.c:458
 msgid "Software Update Installed"
 msgid_plural "Software Updates Installed"
 msgstr[0] "S'ha instal·lat l'actualització de programari"
 msgstr[1] "S'han instal·lat les actualitzacions de programari"
 
 #. TRANSLATORS: message when we've done offline updates
-#: ../src/gs-update-monitor.c:457
+#: ../src/gs-update-monitor.c:462
 msgid "An important OS update has been installed."
 msgid_plural "Important OS updates have been installed."
 msgstr[0] "S'ha instal·lat una actualització important del sistema operatiu."
@@ -1799,30 +1795,30 @@ msgstr[1] "S'han instal·lat actualitzacions importants del sistema operatiu."
 #. * users can't express their opinions here. In some languages
 #. * "Review (evaluate) something" is a different translation than
 #. * "Review (browse) something."
-#: ../src/gs-update-monitor.c:468
+#: ../src/gs-update-monitor.c:473
 msgctxt "updates"
 msgid "Review"
 msgstr "Revisa"
 
 #. TRANSLATORS: this is when the offline update failed
-#: ../src/gs-update-monitor.c:512
+#: ../src/gs-update-monitor.c:517
 msgid "Failed To Update"
 msgstr "No s'ha pogut actualitzar"
 
 #. TRANSLATORS: the user must have updated manually after
 #. * the updates were prepared
-#: ../src/gs-update-monitor.c:518
+#: ../src/gs-update-monitor.c:523
 msgid "The system was already up to date."
 msgstr "El sistema ja estava actualitzat."
 
 #. TRANSLATORS: the user aborted the update manually
-#: ../src/gs-update-monitor.c:523
+#: ../src/gs-update-monitor.c:528
 msgid "The update was cancelled."
 msgstr "Es va cancel·lar l'actualització."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
-#: ../src/gs-update-monitor.c:529
+#: ../src/gs-update-monitor.c:534
 msgid ""
 "Internet access was required but wasn’t available. Please make sure that you "
 "have internet access and try again."
@@ -1831,7 +1827,7 @@ msgstr ""
 "accés a Internet i torneu-ho a provar."
 
 #. TRANSLATORS: if the package is not signed correctly
-#: ../src/gs-update-monitor.c:535
+#: ../src/gs-update-monitor.c:540
 msgid ""
 "There were security issues with the update. Please consult your software "
 "provider for more details."
@@ -1840,14 +1836,14 @@ msgstr ""
 "proveïdor per a més detalls."
 
 #. TRANSLATORS: we ran out of disk space
-#: ../src/gs-update-monitor.c:541
+#: ../src/gs-update-monitor.c:546
 msgid ""
 "There wasn’t enough disk space. Please free up some space and try again."
 msgstr ""
 "No hi havia prou espai a disc. Allibereu espai a disc i torneu-ho a provar."
 
 #. TRANSLATORS: We didn't handle the error type
-#: ../src/gs-update-monitor.c:546
+#: ../src/gs-update-monitor.c:551
 msgid ""
 "We’re sorry: the update failed to install. Please wait for another update "
 "and try again. If the problem persists, contact your software provider."
@@ -2194,7 +2190,6 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:513
-#, fuzzy
 msgctxt "content rating language-profanity"
 msgid "None"
 msgstr "Cap"
@@ -2216,7 +2211,6 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:525
-#, fuzzy
 msgctxt "content rating language-humor"
 msgid "None"
 msgstr "Cap"
@@ -2238,7 +2232,6 @@ msgstr ""
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:537
-#, fuzzy
 msgctxt "content rating language-discrimination"
 msgid "None"
 msgstr "Cap"
@@ -2246,40 +2239,40 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:540
 msgid "Negativity towards a specific group of people"
-msgstr ""
+msgstr "Negatiu respecte a un grup específic de gent"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:543
 msgid "Discrimation designed to cause emotional harm"
-msgstr ""
+msgstr "Discriminació pensada per causar dany emocional"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:546
 msgid "Explicit discrimination based on gender, sexuality, race or religion"
-msgstr ""
+msgstr "Discriminació explicita basada en genere, sexualitat, raça o religió"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:549
-#, fuzzy
 msgctxt "content rating money-advertising"
 msgid "None"
 msgstr "Cap"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:552
-#, fuzzy
 msgid "Product placement"
-msgstr "Gestió de projectes"
+msgstr "﻿Emplaçament de producte"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:555
 msgid "Explicit references to specific brands or trademarked products"
 msgstr ""
+"Referències explícites a marques específiques o productes de marques "
+"registrades"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:558
 msgid "Players are encouraged to purchase specific real-world items"
-msgstr ""
+msgstr "S'anima als jugadors a comprar coses específiques del món real"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:561
@@ -2290,17 +2283,17 @@ msgstr "Cap"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:564
 msgid "Gambling on random events using tokens or credits"
-msgstr ""
+msgstr "Apostes en esdeveniments aleatoris utilitzant testimonis o crèdits"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:567
 msgid "Gambling using \"play\" money"
-msgstr ""
+msgstr "Apostes usant diners al joc"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:570
 msgid "Gambling using real money"
-msgstr ""
+msgstr "Apostes usant diners reals"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:573
@@ -2367,9 +2360,8 @@ msgstr "Cap"
 
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:606
-#, fuzzy
 msgid "Sharing user information with 3rd parties"
-msgstr "Mostra informació de depuració per al servei"
+msgstr "Compartició d'informació de l'usuari amb terceres parts"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:609
@@ -2385,7 +2377,7 @@ msgstr "Compartició la ubicació física amb altres usuaris"
 #. TRANSLATORS: these are show_detailed_error messages from the
 #. * package manager no mortal is supposed to understand,
 #. * but google might know what they mean
-#: ../src/gs-common.c:761
+#: ../src/gs-common.c:788
 msgid "Detailed errors from the package manager follow:"
 msgstr "Els errors detallats del gestor de paquets es mostren a continuació:"
 
@@ -2414,881 +2406,6 @@ msgstr ""
 "Actualitzacions;Actualització;Fonts;Dipòsits;Preferències;Instal·lació;"
 "Desinstal·lació;Aplicació;Programa;Apli;Botiga;"
 
-#. TRANSLATORS: this is the menu spec main category for Audio
-#: ../src/plugins/menu-spec-common.c:30
-msgid "Audio"
-msgstr "Àudio"
-
-#: ../src/plugins/menu-spec-common.c:31
-msgctxt "Menu subcategory of Audio"
-msgid "Editing"
-msgstr "Edició"
-
-#: ../src/plugins/menu-spec-common.c:32
-msgctxt "Menu subcategory of Audio"
-msgid "Databases"
-msgstr "Bases de dades"
-
-#: ../src/plugins/menu-spec-common.c:33
-msgctxt "Menu subcategory of Audio"
-msgid "Disc Burning"
-msgstr "Enregistrament de disc"
-
-#: ../src/plugins/menu-spec-common.c:34
-msgctxt "Menu subcategory of Audio"
-msgid "Ham Radio"
-msgstr "Radioaficionat"
-
-#: ../src/plugins/menu-spec-common.c:35
-msgctxt "Menu subcategory of Audio"
-msgid "MIDI"
-msgstr "MIDI"
-
-#: ../src/plugins/menu-spec-common.c:36
-msgctxt "Menu subcategory of Audio"
-msgid "Mixer"
-msgstr "Mesclador"
-
-#: ../src/plugins/menu-spec-common.c:37
-msgctxt "Menu subcategory of Audio"
-msgid "Music"
-msgstr "Música"
-
-#: ../src/plugins/menu-spec-common.c:38
-msgctxt "Menu subcategory of Audio"
-msgid "Players"
-msgstr "Reproductors"
-
-#: ../src/plugins/menu-spec-common.c:39
-msgctxt "Menu subcategory of Audio"
-msgid "Recorders"
-msgstr "Enregistradores"
-
-#: ../src/plugins/menu-spec-common.c:40
-msgctxt "Menu subcategory of Audio"
-msgid "Sequencers"
-msgstr "Seqüenciadors"
-
-#: ../src/plugins/menu-spec-common.c:41
-msgctxt "Menu subcategory of Audio"
-msgid "Tuners"
-msgstr "Sintonitzadors"
-
-#. TRANSLATORS: this is the menu spec main category for Development
-#: ../src/plugins/menu-spec-common.c:43
-msgid "Development Tools"
-msgstr "Eines de desenvolupament"
-
-#: ../src/plugins/menu-spec-common.c:44
-msgctxt "Menu subcategory of Development Tools"
-msgid "Building"
-msgstr "Construcció"
-
-#: ../src/plugins/menu-spec-common.c:45
-msgctxt "Menu subcategory of Development Tools"
-msgid "Databases"
-msgstr "Bases de dades"
-
-#: ../src/plugins/menu-spec-common.c:46
-msgctxt "Menu subcategory of Development Tools"
-msgid "Debuggers"
-msgstr "Depuradors"
-
-#: ../src/plugins/menu-spec-common.c:47
-msgctxt "Menu subcategory of Development Tools"
-msgid "GUI Designers"
-msgstr "Dissenyadors d'interfícies gràfiques"
-
-#: ../src/plugins/menu-spec-common.c:48
-msgctxt "Menu subcategory of Development Tools"
-msgid "IDE"
-msgstr "Entorn de desenvolupament integrat"
-
-#: ../src/plugins/menu-spec-common.c:49
-msgctxt "Menu subcategory of Development Tools"
-msgid "Profiling"
-msgstr "Depuració"
-
-#: ../src/plugins/menu-spec-common.c:50
-msgctxt "Menu subcategory of Development Tools"
-msgid "Project Management"
-msgstr "Gestió de projectes"
-
-#: ../src/plugins/menu-spec-common.c:51
-msgctxt "Menu subcategory of Development Tools"
-msgid "Revision Control"
-msgstr "Control de versions"
-
-#: ../src/plugins/menu-spec-common.c:52
-msgctxt "Menu subcategory of Development Tools"
-msgid "Translation"
-msgstr "Traducció"
-
-#: ../src/plugins/menu-spec-common.c:53
-msgctxt "Menu subcategory of Development Tools"
-msgid "Web Development"
-msgstr "Desenvolupament web"
-
-#. TRANSLATORS: this is the menu spec main category for Education
-#: ../src/plugins/menu-spec-common.c:55
-msgid "Education"
-msgstr "Educació"
-
-#: ../src/plugins/menu-spec-common.c:56
-msgctxt "Menu subcategory of Education"
-msgid "Art"
-msgstr "Art"
-
-#: ../src/plugins/menu-spec-common.c:57
-msgctxt "Menu subcategory of Education"
-msgid "Artificial Intelligence"
-msgstr "Intel·ligència artificial"
-
-#: ../src/plugins/menu-spec-common.c:58
-msgctxt "Menu subcategory of Education"
-msgid "Astronomy"
-msgstr "Astronomia"
-
-#: ../src/plugins/menu-spec-common.c:59
-msgctxt "Menu subcategory of Education"
-msgid "Biology"
-msgstr "Biologia"
-
-#: ../src/plugins/menu-spec-common.c:60
-msgctxt "Menu subcategory of Education"
-msgid "Chemistry"
-msgstr "Química"
-
-#: ../src/plugins/menu-spec-common.c:61
-msgctxt "Menu subcategory of Education"
-msgid "Computer Science"
-msgstr "Informàtica"
-
-#: ../src/plugins/menu-spec-common.c:62
-msgctxt "Menu subcategory of Education"
-msgid "Construction"
-msgstr "Construcció"
-
-#: ../src/plugins/menu-spec-common.c:63
-msgctxt "Menu subcategory of Education"
-msgid "Data Visualization"
-msgstr "Visualització de dades"
-
-#: ../src/plugins/menu-spec-common.c:64
-msgctxt "Menu subcategory of Education"
-msgid "Economy"
-msgstr "Economia"
-
-#: ../src/plugins/menu-spec-common.c:65
-msgctxt "Menu subcategory of Education"
-msgid "Electricity"
-msgstr "Electricitat"
-
-#: ../src/plugins/menu-spec-common.c:66
-msgctxt "Menu subcategory of Education"
-msgid "Electronics"
-msgstr "Electrònica"
-
-#: ../src/plugins/menu-spec-common.c:67
-msgctxt "Menu subcategory of Education"
-msgid "Engineering"
-msgstr "Enginyeria"
-
-#: ../src/plugins/menu-spec-common.c:68
-msgctxt "Menu subcategory of Education"
-msgid "Geography"
-msgstr "Geografia"
-
-#: ../src/plugins/menu-spec-common.c:69
-msgctxt "Menu subcategory of Education"
-msgid "Geology"
-msgstr "Geologia"
-
-#: ../src/plugins/menu-spec-common.c:70
-msgctxt "Menu subcategory of Education"
-msgid "Geoscience"
-msgstr "Ciències de la terra"
-
-#: ../src/plugins/menu-spec-common.c:71
-msgctxt "Menu subcategory of Education"
-msgid "History"
-msgstr "Història"
-
-#: ../src/plugins/menu-spec-common.c:72
-msgctxt "Menu subcategory of Education"
-msgid "Humanities"
-msgstr "Humanitats"
-
-#: ../src/plugins/menu-spec-common.c:73
-msgctxt "Menu subcategory of Education"
-msgid "Image Processing"
-msgstr "Processament d'imatge"
-
-#: ../src/plugins/menu-spec-common.c:74
-msgctxt "Menu subcategory of Education"
-msgid "Languages"
-msgstr "Llengües"
-
-#: ../src/plugins/menu-spec-common.c:75
-msgctxt "Menu subcategory of Education"
-msgid "Literature"
-msgstr "Literatura"
-
-#: ../src/plugins/menu-spec-common.c:76
-msgctxt "Menu subcategory of Education"
-msgid "Maps"
-msgstr "Mapes"
-
-#: ../src/plugins/menu-spec-common.c:77
-msgctxt "Menu subcategory of Education"
-msgid "Math"
-msgstr "Matemàtiques"
-
-#: ../src/plugins/menu-spec-common.c:78
-msgctxt "Menu subcategory of Education"
-msgid "Medical"
-msgstr "Medicina"
-
-#: ../src/plugins/menu-spec-common.c:79
-msgctxt "Menu subcategory of Education"
-msgid "Music"
-msgstr "Música"
-
-#: ../src/plugins/menu-spec-common.c:80
-msgctxt "Menu subcategory of Education"
-msgid "Numerical Analysis"
-msgstr "Anàlisi numèrica"
-
-#: ../src/plugins/menu-spec-common.c:81
-msgctxt "Menu subcategory of Education"
-msgid "Parallel Computing"
-msgstr "Computació paral·lela"
-
-#: ../src/plugins/menu-spec-common.c:82
-msgctxt "Menu subcategory of Education"
-msgid "Physics"
-msgstr "Física"
-
-#: ../src/plugins/menu-spec-common.c:83
-msgctxt "Menu subcategory of Education"
-msgid "Robotics"
-msgstr "Robòtica"
-
-#: ../src/plugins/menu-spec-common.c:84
-msgctxt "Menu subcategory of Education"
-msgid "Spirituality"
-msgstr "Espiritualitat"
-
-#: ../src/plugins/menu-spec-common.c:85
-msgctxt "Menu subcategory of Education"
-msgid "Sports"
-msgstr "Esports"
-
-#. TRANSLATORS: this is the menu spec main category for Games
-#: ../src/plugins/menu-spec-common.c:87
-msgid "Games"
-msgstr "Jocs"
-
-#: ../src/plugins/menu-spec-common.c:88
-msgctxt "Menu subcategory of Games"
-msgid "Action"
-msgstr "Acció"
-
-#: ../src/plugins/menu-spec-common.c:89
-msgctxt "Menu subcategory of Games"
-msgid "Adventure"
-msgstr "Aventura"
-
-#: ../src/plugins/menu-spec-common.c:90
-msgctxt "Menu subcategory of Games"
-msgid "Arcade"
-msgstr "Arcade"
-
-#: ../src/plugins/menu-spec-common.c:91
-msgctxt "Menu subcategory of Games"
-msgid "Blocks"
-msgstr "Blocs"
-
-#: ../src/plugins/menu-spec-common.c:92
-msgctxt "Menu subcategory of Games"
-msgid "Board"
-msgstr "Taula"
-
-#: ../src/plugins/menu-spec-common.c:93
-msgctxt "Menu subcategory of Games"
-msgid "Card"
-msgstr "Cartes"
-
-#: ../src/plugins/menu-spec-common.c:94
-msgctxt "Menu subcategory of Games"
-msgid "Emulators"
-msgstr "Emuladors"
-
-#: ../src/plugins/menu-spec-common.c:95
-msgctxt "Menu subcategory of Games"
-msgid "Kids"
-msgstr "Nens"
-
-#: ../src/plugins/menu-spec-common.c:96
-msgctxt "Menu subcategory of Games"
-msgid "Logic"
-msgstr "Lògica"
-
-#: ../src/plugins/menu-spec-common.c:97
-msgctxt "Menu subcategory of Games"
-msgid "Role Playing"
-msgstr "Rol"
-
-#: ../src/plugins/menu-spec-common.c:98
-msgctxt "Menu subcategory of Games"
-msgid "Shooter"
-msgstr "Trets"
-
-#: ../src/plugins/menu-spec-common.c:99
-msgctxt "Menu subcategory of Games"
-msgid "Simulation"
-msgstr "Simulació"
-
-#: ../src/plugins/menu-spec-common.c:100
-msgctxt "Menu subcategory of Games"
-msgid "Sports"
-msgstr "Esports"
-
-#: ../src/plugins/menu-spec-common.c:101
-msgctxt "Menu subcategory of Games"
-msgid "Strategy"
-msgstr "Estratègia"
-
-#. TRANSLATORS: this is the menu spec main category for Graphics
-#: ../src/plugins/menu-spec-common.c:103
-msgid "Graphics"
-msgstr "Gràfics"
-
-#: ../src/plugins/menu-spec-common.c:104
-msgctxt "Menu subcategory of Graphics"
-msgid "2D Graphics"
-msgstr "Gràfics 2D"
-
-#: ../src/plugins/menu-spec-common.c:105
-msgctxt "Menu subcategory of Graphics"
-msgid "3D Graphics"
-msgstr "Gràfics 3D"
-
-#: ../src/plugins/menu-spec-common.c:106
-msgctxt "Menu subcategory of Graphics"
-msgid "OCR"
-msgstr "OCR"
-
-#: ../src/plugins/menu-spec-common.c:107
-msgctxt "Menu subcategory of Graphics"
-msgid "Photography"
-msgstr "Fotografia"
-
-#: ../src/plugins/menu-spec-common.c:108
-msgctxt "Menu subcategory of Graphics"
-msgid "Publishing"
-msgstr "Edició"
-
-#: ../src/plugins/menu-spec-common.c:109
-msgctxt "Menu subcategory of Graphics"
-msgid "Raster Graphics"
-msgstr "Gràfics matricials"
-
-#: ../src/plugins/menu-spec-common.c:110
-msgctxt "Menu subcategory of Graphics"
-msgid "Scanning"
-msgstr "Escaneig"
-
-#: ../src/plugins/menu-spec-common.c:111
-msgctxt "Menu subcategory of Graphics"
-msgid "Vector Graphics"
-msgstr "Gràfics vectorials"
-
-#: ../src/plugins/menu-spec-common.c:112
-msgctxt "Menu subcategory of Graphics"
-msgid "Viewer"
-msgstr "Visualitzador"
-
-#. TRANSLATORS: this is the menu spec main category for Network
-#: ../src/plugins/menu-spec-common.c:114
-msgid "Internet"
-msgstr "Internet"
-
-#: ../src/plugins/menu-spec-common.c:115
-msgctxt "Menu subcategory of Internet"
-msgid "Chat"
-msgstr "Xat"
-
-#: ../src/plugins/menu-spec-common.c:116
-msgctxt "Menu subcategory of Internet"
-msgid "Dialup"
-msgstr "Marcatge"
-
-#: ../src/plugins/menu-spec-common.c:117
-msgctxt "Menu subcategory of Internet"
-msgid "Email"
-msgstr "Correu electrònic"
-
-#: ../src/plugins/menu-spec-common.c:118
-msgctxt "Menu subcategory of Internet"
-msgid "Feed"
-msgstr "Canals de difusió"
-
-#: ../src/plugins/menu-spec-common.c:119
-msgctxt "Menu subcategory of Internet"
-msgid "File Transfer"
-msgstr "Transferència de fitxers"
-
-#: ../src/plugins/menu-spec-common.c:120
-msgctxt "Menu subcategory of Internet"
-msgid "Ham Radio"
-msgstr "Radioafició"
-
-#: ../src/plugins/menu-spec-common.c:121
-msgctxt "Menu subcategory of Internet"
-msgid "Instant Messaging"
-msgstr "Missatgeria instantània"
-
-#: ../src/plugins/menu-spec-common.c:122
-msgctxt "Menu subcategory of Internet"
-msgid "IRC Clients"
-msgstr "Clients IRC"
-
-#: ../src/plugins/menu-spec-common.c:123
-msgctxt "Menu subcategory of Internet"
-msgid "Monitor"
-msgstr "Monitorització"
-
-#: ../src/plugins/menu-spec-common.c:124
-msgctxt "Menu subcategory of Internet"
-msgid "News"
-msgstr "Notícies"
-
-#: ../src/plugins/menu-spec-common.c:125
-msgctxt "Menu subcategory of Internet"
-msgid "P2P"
-msgstr "P2P"
-
-#: ../src/plugins/menu-spec-common.c:126
-msgctxt "Menu subcategory of Internet"
-msgid "Remote Access"
-msgstr "Accés remot"
-
-#: ../src/plugins/menu-spec-common.c:127
-msgctxt "Menu subcategory of Internet"
-msgid "Telephony"
-msgstr "Telefonia"
-
-#: ../src/plugins/menu-spec-common.c:128
-msgctxt "Menu subcategory of Internet"
-msgid "Video Conference"
-msgstr "Videoconferència"
-
-#: ../src/plugins/menu-spec-common.c:129
-msgctxt "Menu subcategory of Internet"
-msgid "Web Browser"
-msgstr "Navegador web"
-
-#: ../src/plugins/menu-spec-common.c:130
-msgctxt "Menu subcategory of Internet"
-msgid "Web Development"
-msgstr "Desenvolupament web"
-
-#. TRANSLATORS: this is the menu spec main category for Office
-#: ../src/plugins/menu-spec-common.c:132
-msgid "Office"
-msgstr "Oficina"
-
-#: ../src/plugins/menu-spec-common.c:133
-msgctxt "Menu subcategory of Office"
-msgid "Calendar"
-msgstr "Calendari"
-
-#: ../src/plugins/menu-spec-common.c:134
-msgctxt "Menu subcategory of Office"
-msgid "Chart"
-msgstr "Diagrames"
-
-#: ../src/plugins/menu-spec-common.c:135
-msgctxt "Menu subcategory of Office"
-msgid "Contact Management"
-msgstr "Gestió de contactes"
-
-#: ../src/plugins/menu-spec-common.c:136
-msgctxt "Menu subcategory of Office"
-msgid "Database"
-msgstr "Base de dades"
-
-#: ../src/plugins/menu-spec-common.c:137
-msgctxt "Menu subcategory of Office"
-msgid "Dictionary"
-msgstr "Diccionaris"
-
-#: ../src/plugins/menu-spec-common.c:138
-msgctxt "Menu subcategory of Office"
-msgid "Email"
-msgstr "Correu electrònic"
-
-#: ../src/plugins/menu-spec-common.c:139
-msgctxt "Menu subcategory of Office"
-msgid "Finance"
-msgstr "Finances"
-
-#: ../src/plugins/menu-spec-common.c:140
-msgctxt "Menu subcategory of Office"
-msgid "Flow Chart"
-msgstr "Diagrames de flux"
-
-#: ../src/plugins/menu-spec-common.c:141
-msgctxt "Menu subcategory of Office"
-msgid "PDA"
-msgstr "PDA"
-
-#: ../src/plugins/menu-spec-common.c:142
-msgctxt "Menu subcategory of Office"
-msgid "Photography"
-msgstr "Fotografia"
-
-#: ../src/plugins/menu-spec-common.c:143
-msgctxt "Menu subcategory of Office"
-msgid "Presentation"
-msgstr "Presentacions"
-
-#: ../src/plugins/menu-spec-common.c:144
-msgctxt "Menu subcategory of Office"
-msgid "Project Management"
-msgstr "Gestió de projectes"
-
-#: ../src/plugins/menu-spec-common.c:145
-msgctxt "Menu subcategory of Office"
-msgid "Publishing"
-msgstr "Edició"
-
-#: ../src/plugins/menu-spec-common.c:146
-msgctxt "Menu subcategory of Office"
-msgid "Spreadsheet"
-msgstr "Fulls de càlcul"
-
-#: ../src/plugins/menu-spec-common.c:147
-msgctxt "Menu subcategory of Office"
-msgid "Viewer"
-msgstr "Visualitzadors"
-
-#: ../src/plugins/menu-spec-common.c:148
-msgctxt "Menu subcategory of Office"
-msgid "Word Processor"
-msgstr "Processadors de textos"
-
-#. TRANSLATORS: this is the menu spec main category for Science
-#: ../src/plugins/menu-spec-common.c:150
-msgid "Science"
-msgstr "Ciència"
-
-#: ../src/plugins/menu-spec-common.c:151
-msgctxt "Menu subcategory of Science"
-msgid "Art"
-msgstr "Art"
-
-#: ../src/plugins/menu-spec-common.c:152
-msgctxt "Menu subcategory of Science"
-msgid "Artificial Intelligence"
-msgstr "Intel·ligència artificial"
-
-#: ../src/plugins/menu-spec-common.c:153
-msgctxt "Menu subcategory of Science"
-msgid "Astronomy"
-msgstr "Astronomia"
-
-#: ../src/plugins/menu-spec-common.c:154
-msgctxt "Menu subcategory of Science"
-msgid "Biology"
-msgstr "Biologia"
-
-#: ../src/plugins/menu-spec-common.c:155
-msgctxt "Menu subcategory of Science"
-msgid "Chemistry"
-msgstr "Química"
-
-#: ../src/plugins/menu-spec-common.c:156
-msgctxt "Menu subcategory of Science"
-msgid "Computer Science"
-msgstr "Informàtica"
-
-#: ../src/plugins/menu-spec-common.c:157
-msgctxt "Menu subcategory of Science"
-msgid "Construction"
-msgstr "Construcció"
-
-#: ../src/plugins/menu-spec-common.c:158
-msgctxt "Menu subcategory of Science"
-msgid "Data Visualization"
-msgstr "Visualització de dades"
-
-#: ../src/plugins/menu-spec-common.c:159
-msgctxt "Menu subcategory of Science"
-msgid "Economy"
-msgstr "Economia"
-
-#: ../src/plugins/menu-spec-common.c:160
-msgctxt "Menu subcategory of Science"
-msgid "Electricity"
-msgstr "Electricitat"
-
-#: ../src/plugins/menu-spec-common.c:161
-msgctxt "Menu subcategory of Science"
-msgid "Electronics"
-msgstr "Electrònica"
-
-#: ../src/plugins/menu-spec-common.c:162
-msgctxt "Menu subcategory of Science"
-msgid "Engineering"
-msgstr "Enginyeria"
-
-#: ../src/plugins/menu-spec-common.c:163
-msgctxt "Menu subcategory of Science"
-msgid "Geography"
-msgstr "Geografia"
-
-#: ../src/plugins/menu-spec-common.c:164
-msgctxt "Menu subcategory of Science"
-msgid "Geology"
-msgstr "Geologia"
-
-#: ../src/plugins/menu-spec-common.c:165
-msgctxt "Menu subcategory of Science"
-msgid "Geoscience"
-msgstr "Ciències de la terra"
-
-#: ../src/plugins/menu-spec-common.c:166
-msgctxt "Menu subcategory of Science"
-msgid "History"
-msgstr "Història"
-
-#: ../src/plugins/menu-spec-common.c:167
-msgctxt "Menu subcategory of Science"
-msgid "Humanities"
-msgstr "Humanitats"
-
-#: ../src/plugins/menu-spec-common.c:168
-msgctxt "Menu subcategory of Science"
-msgid "Image Processing"
-msgstr "Processament d'imatges"
-
-#: ../src/plugins/menu-spec-common.c:169
-msgctxt "Menu subcategory of Science"
-msgid "Languages"
-msgstr "Llengües"
-
-#: ../src/plugins/menu-spec-common.c:170
-msgctxt "Menu subcategory of Science"
-msgid "Literature"
-msgstr "Literatura"
-
-#: ../src/plugins/menu-spec-common.c:171
-msgctxt "Menu subcategory of Science"
-msgid "Maps"
-msgstr "Mapes"
-
-#: ../src/plugins/menu-spec-common.c:172
-msgctxt "Menu subcategory of Science"
-msgid "Math"
-msgstr "Matemàtiques"
-
-#: ../src/plugins/menu-spec-common.c:173
-msgctxt "Menu subcategory of Science"
-msgid "Medical"
-msgstr "Medicina"
-
-#: ../src/plugins/menu-spec-common.c:174
-msgctxt "Menu subcategory of Science"
-msgid "Numerical Analysis"
-msgstr "Anàlisi numèrica"
-
-#: ../src/plugins/menu-spec-common.c:175
-msgctxt "Menu subcategory of Science"
-msgid "Parallel Computing"
-msgstr "Computació paral·lela"
-
-#: ../src/plugins/menu-spec-common.c:176
-msgctxt "Menu subcategory of Science"
-msgid "Physics"
-msgstr "Física"
-
-#: ../src/plugins/menu-spec-common.c:177
-msgctxt "Menu subcategory of Science"
-msgid "Robotics"
-msgstr "Robòtica"
-
-#: ../src/plugins/menu-spec-common.c:178
-msgctxt "Menu subcategory of Science"
-msgid "Spirituality"
-msgstr "Espiritualitat"
-
-#: ../src/plugins/menu-spec-common.c:179
-msgctxt "Menu subcategory of Science"
-msgid "Sports"
-msgstr "Esports"
-
-#. TRANSLATORS: this is the menu spec main category for System
-#: ../src/plugins/menu-spec-common.c:181
-msgid "System"
-msgstr "Sistema"
-
-#: ../src/plugins/menu-spec-common.c:182
-msgctxt "Menu subcategory of System"
-msgid "Emulator"
-msgstr "Emuladors"
-
-#: ../src/plugins/menu-spec-common.c:183
-msgctxt "Menu subcategory of System"
-msgid "File Manager"
-msgstr "Gestors de fitxers"
-
-#: ../src/plugins/menu-spec-common.c:184
-msgctxt "Menu subcategory of System"
-msgid "File System"
-msgstr "Sistema de fitxers"
-
-#: ../src/plugins/menu-spec-common.c:185
-msgctxt "Menu subcategory of System"
-msgid "File Tools"
-msgstr "Eines de fitxers"
-
-#: ../src/plugins/menu-spec-common.c:186
-msgctxt "Menu subcategory of System"
-msgid "Monitor"
-msgstr "Monitorització"
-
-#: ../src/plugins/menu-spec-common.c:187
-msgctxt "Menu subcategory of System"
-msgid "Security"
-msgstr "Seguretat"
-
-#: ../src/plugins/menu-spec-common.c:188
-msgctxt "Menu subcategory of System"
-msgid "Terminal Emulator"
-msgstr "Emuladors de terminal"
-
-#. TRANSLATORS: this is the menu spec main category for Utility
-#: ../src/plugins/menu-spec-common.c:190
-msgid "Utilities"
-msgstr "Utilitats"
-
-#: ../src/plugins/menu-spec-common.c:191
-msgctxt "Menu subcategory of Utilities"
-msgid "Accessibility"
-msgstr "Accessibilitat"
-
-#: ../src/plugins/menu-spec-common.c:192
-msgctxt "Menu subcategory of Utilities"
-msgid "Archiving"
-msgstr "Arxivament"
-
-#: ../src/plugins/menu-spec-common.c:193
-msgctxt "Menu subcategory of Utilities"
-msgid "Calculator"
-msgstr "Calculadores"
-
-#: ../src/plugins/menu-spec-common.c:194
-msgctxt "Menu subcategory of Utilities"
-msgid "Clock"
-msgstr "Rellotges"
-
-#: ../src/plugins/menu-spec-common.c:195
-msgctxt "Menu subcategory of Utilities"
-msgid "Compression"
-msgstr "Compressió"
-
-#: ../src/plugins/menu-spec-common.c:196
-msgctxt "Menu subcategory of Utilities"
-msgid "File Tools"
-msgstr "Eines de fitxers"
-
-#: ../src/plugins/menu-spec-common.c:197
-msgctxt "Menu subcategory of Utilities"
-msgid "Maps"
-msgstr "Mapes"
-
-#: ../src/plugins/menu-spec-common.c:198
-msgctxt "Menu subcategory of Utilities"
-msgid "Spirituality"
-msgstr "Espiritualitat"
-
-#: ../src/plugins/menu-spec-common.c:199
-msgctxt "Menu subcategory of Utilities"
-msgid "Telephony Tools"
-msgstr "Eines de telefonia"
-
-#: ../src/plugins/menu-spec-common.c:200
-msgctxt "Menu subcategory of Utilities"
-msgid "Text Editor"
-msgstr "Editors de text"
-
-#. TRANSLATORS: this is the menu spec main category for Video
-#: ../src/plugins/menu-spec-common.c:202
-msgid "Video"
-msgstr "Vídeo"
-
-#: ../src/plugins/menu-spec-common.c:203
-msgctxt "Menu subcategory of Video"
-msgid "Editing"
-msgstr "Edició"
-
-#: ../src/plugins/menu-spec-common.c:204
-msgctxt "Menu subcategory of Video"
-msgid "Database"
-msgstr "Base de dades"
-
-#: ../src/plugins/menu-spec-common.c:205
-msgctxt "Menu subcategory of Video"
-msgid "Disc Burning"
-msgstr "Enregistrament de discos"
-
-#: ../src/plugins/menu-spec-common.c:206
-msgctxt "Menu subcategory of Video"
-msgid "Players"
-msgstr "Reproductors"
-
-#: ../src/plugins/menu-spec-common.c:207
-msgctxt "Menu subcategory of Video"
-msgid "Recorders"
-msgstr "Enregistradores"
-
-#: ../src/plugins/menu-spec-common.c:208
-msgctxt "Menu subcategory of Video"
-msgid "TV"
-msgstr "TV"
-
-#: ../src/plugins/menu-spec-common.c:211
-msgctxt "Menu subcategory of Add-ons"
-msgid "Fonts"
-msgstr "Tipus de lletra"
-
-#: ../src/plugins/menu-spec-common.c:212
-msgctxt "Menu subcategory of Add-ons"
-msgid "Codecs"
-msgstr "Còdecs"
-
-#: ../src/plugins/menu-spec-common.c:213
-msgctxt "Menu subcategory of Add-ons"
-msgid "Input Sources"
-msgstr "Fonts d'entrada"
-
-#: ../src/plugins/menu-spec-common.c:214
-msgctxt "Menu subcategory of Add-ons"
-msgid "Language Packs"
-msgstr "Paquets d'idioma"
-
-#: ../src/plugins/menu-spec-common.c:215
-msgctxt "Menu subcategory of Add-ons"
-msgid "Shell Extensions"
-msgstr "Extensions del Shell"
-
-#: ../src/plugins/menu-spec-common.c:216
-msgctxt "Menu subcategory of Add-ons"
-msgid "Localization"
-msgstr "Localització"
-
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:66
 msgid "Software catalog is being downloaded"
@@ -3307,6 +2424,885 @@ msgstr "S'està carregant la pàgina"
 #: ../src/gs-shell-loading.ui.h:2
 msgid "Starting up…"
 msgstr "S'està iniciant…"
+
+#: ../src/plugins/gs-desktop-common.c:30
+msgctxt "Menu of AudioVideo"
+msgid "All"
+msgstr "Tots"
+
+#: ../src/plugins/gs-desktop-common.c:33
+msgctxt "Menu of AudioVideo"
+msgid "Featured"
+msgstr "Destacat"
+
+#: ../src/plugins/gs-desktop-common.c:36
+msgctxt "Menu of AudioVideo"
+msgid "Audio Creation & Editing"
+msgstr "Edició i creació d'àudio"
+
+#: ../src/plugins/gs-desktop-common.c:42
+msgctxt "Menu of AudioVideo"
+msgid "Music Players"
+msgstr "Reproductors de músicaa"
+
+#: ../src/plugins/gs-desktop-common.c:51
+msgctxt "Menu of Development"
+msgid "All"
+msgstr "Tots"
+
+#: ../src/plugins/gs-desktop-common.c:54
+msgctxt "Menu of Development"
+msgid "Featured"
+msgstr "Destacat"
+
+#: ../src/plugins/gs-desktop-common.c:57
+msgctxt "Menu of Development"
+msgid "Debuggers"
+msgstr "Depuradors"
+
+#: ../src/plugins/gs-desktop-common.c:60
+msgctxt "Menu of Development"
+msgid "IDEs"
+msgstr ""
+
+#: ../src/plugins/gs-desktop-common.c:69
+msgctxt "Menu of Education"
+msgid "All"
+msgstr "Tots"
+
+#: ../src/plugins/gs-desktop-common.c:72
+msgctxt "Menu of Education"
+msgid "Featured"
+msgstr "Destacat"
+
+#: ../src/plugins/gs-desktop-common.c:75
+msgctxt "Menu of Education"
+msgid "Astronomy"
+msgstr "Astronomia"
+
+#: ../src/plugins/gs-desktop-common.c:78
+msgctxt "Menu of Education"
+msgid "Chemistry"
+msgstr "Química"
+
+#: ../src/plugins/gs-desktop-common.c:81
+msgctxt "Menu of Education"
+msgid "Languages"
+msgstr "Llengües"
+
+#: ../src/plugins/gs-desktop-common.c:85
+msgctxt "Menu of Education"
+msgid "Math"
+msgstr "Matemàtiques"
+
+#: ../src/plugins/gs-desktop-common.c:94
+msgctxt "Menu of Games"
+msgid "All"
+msgstr "Tots"
+
+#: ../src/plugins/gs-desktop-common.c:97
+msgctxt "Menu of Games"
+msgid "Featured"
+msgstr "Destacat"
+
+#: ../src/plugins/gs-desktop-common.c:100
+msgctxt "Menu of Games"
+msgid "Action"
+msgstr "Acció"
+
+#: ../src/plugins/gs-desktop-common.c:103
+msgctxt "Menu of Games"
+msgid "Adventure"
+msgstr "Aventura"
+
+#: ../src/plugins/gs-desktop-common.c:106
+msgctxt "Menu of Games"
+msgid "Arcade"
+msgstr "Arcade"
+
+#: ../src/plugins/gs-desktop-common.c:109
+msgctxt "Menu of Games"
+msgid "Blocks"
+msgstr "Blocs"
+
+#: ../src/plugins/gs-desktop-common.c:112
+msgctxt "Menu of Games"
+msgid "Board"
+msgstr "Taula"
+
+#: ../src/plugins/gs-desktop-common.c:115
+msgctxt "Menu of Games"
+msgid "Card"
+msgstr "Cartes"
+
+#: ../src/plugins/gs-desktop-common.c:118
+msgctxt "Menu of Games"
+msgid "Emulators"
+msgstr "Emuladors"
+
+#: ../src/plugins/gs-desktop-common.c:121
+msgctxt "Menu of Games"
+msgid "Kids"
+msgstr "Mainada"
+
+#: ../src/plugins/gs-desktop-common.c:124
+msgctxt "Menu of Games"
+msgid "Logic"
+msgstr "Lògica"
+
+#: ../src/plugins/gs-desktop-common.c:127
+msgctxt "Menu of Games"
+msgid "Role Playing"
+msgstr "Jocs de rol"
+
+#: ../src/plugins/gs-desktop-common.c:130
+msgctxt "Menu of Games"
+msgid "Sports"
+msgstr "Esports"
+
+#: ../src/plugins/gs-desktop-common.c:134
+msgctxt "Menu of Games"
+msgid "Strategy"
+msgstr "Estratègia"
+
+#: ../src/plugins/gs-desktop-common.c:142
+msgctxt "Menu of Graphics"
+msgid "All"
+msgstr "Tots"
+
+#: ../src/plugins/gs-desktop-common.c:145
+msgctxt "Menu of Graphics"
+msgid "Featured"
+msgstr "Destacat"
+
+#: ../src/plugins/gs-desktop-common.c:148
+msgctxt "Menu of Graphics"
+msgid "3D Graphics"
+msgstr "Gràfics 3D"
+
+#: ../src/plugins/gs-desktop-common.c:151
+msgctxt "Menu of Graphics"
+msgid "Photography"
+msgstr "Fotografia"
+
+#: ../src/plugins/gs-desktop-common.c:154
+msgctxt "Menu of Graphics"
+msgid "Scanning"
+msgstr "Escaneig"
+
+#: ../src/plugins/gs-desktop-common.c:157
+msgctxt "Menu of Graphics"
+msgid "Vector Graphics"
+msgstr "Gràfics vectorials"
+
+#: ../src/plugins/gs-desktop-common.c:160
+msgctxt "Menu of Graphics"
+msgid "Viewers"
+msgstr "Visualitzador"
+
+#: ../src/plugins/gs-desktop-common.c:168
+msgctxt "Menu of Office"
+msgid "All"
+msgstr "Tots"
+
+#: ../src/plugins/gs-desktop-common.c:171
+msgctxt "Menu of Office"
+msgid "Featured"
+msgstr "Destacat"
+
+#: ../src/plugins/gs-desktop-common.c:174
+msgctxt "Menu of Office"
+msgid "Calendar"
+msgstr "Calendari"
+
+#: ../src/plugins/gs-desktop-common.c:178
+msgctxt "Menu of Office"
+msgid "Database"
+msgstr "Base de dades"
+
+#: ../src/plugins/gs-desktop-common.c:181
+msgctxt "Menu of Office"
+msgid "Finance"
+msgstr "Finances"
+
+#: ../src/plugins/gs-desktop-common.c:185
+msgctxt "Menu of Office"
+msgid "Word Processor"
+msgstr "Processadors de textos"
+
+#: ../src/plugins/gs-desktop-common.c:194
+msgctxt "Menu of Addons"
+msgid "Fonts"
+msgstr "Tipus de lletra"
+
+#: ../src/plugins/gs-desktop-common.c:197
+msgctxt "Menu of Addons"
+msgid "Codecs"
+msgstr "Còdecs"
+
+#: ../src/plugins/gs-desktop-common.c:200
+msgctxt "Menu of Addons"
+msgid "Input Sources"
+msgstr "Fonts d'entrada"
+
+#: ../src/plugins/gs-desktop-common.c:203
+msgctxt "Menu of Addons"
+msgid "Language Packs"
+msgstr "Paquets d'idioma"
+
+#: ../src/plugins/gs-desktop-common.c:206
+msgctxt "Menu of Addons"
+msgid "Shell Extensions"
+msgstr "Extensions del Shell"
+
+#: ../src/plugins/gs-desktop-common.c:209
+msgctxt "Menu of Addons"
+msgid "Localization"
+msgstr "Localització"
+
+#: ../src/plugins/gs-desktop-common.c:217
+msgctxt "Menu of Science"
+msgid "All"
+msgstr "Tots"
+
+#: ../src/plugins/gs-desktop-common.c:220
+msgctxt "Menu of Science"
+msgid "Featured"
+msgstr "Destacat"
+
+#: ../src/plugins/gs-desktop-common.c:223
+msgctxt "Menu of Science"
+msgid "Artificial Intelligence"
+msgstr "Intel·ligència artificial"
+
+#: ../src/plugins/gs-desktop-common.c:226
+msgctxt "Menu of Science"
+msgid "Astronomy"
+msgstr "Astronomia"
+
+#: ../src/plugins/gs-desktop-common.c:229
+msgctxt "Menu of Science"
+msgid "Chemistry"
+msgstr "Química"
+
+#: ../src/plugins/gs-desktop-common.c:232
+msgctxt "Menu of Science"
+msgid "Math"
+msgstr "Matemàtiques"
+
+#: ../src/plugins/gs-desktop-common.c:237
+msgctxt "Menu of Science"
+msgid "Robotics"
+msgstr "Robòtica"
+
+#: ../src/plugins/gs-desktop-common.c:245
+msgctxt "Menu of Communication"
+msgid "All"
+msgstr "Tots"
+
+#: ../src/plugins/gs-desktop-common.c:248
+msgctxt "Menu of Communication"
+msgid "Featured"
+msgstr "Destacat"
+
+#: ../src/plugins/gs-desktop-common.c:251
+msgctxt "Menu of Communication"
+msgid "Chat"
+msgstr "Xat"
+
+#: ../src/plugins/gs-desktop-common.c:258
+msgctxt "Menu of Communication"
+msgid "News"
+msgstr "Notícies"
+
+#: ../src/plugins/gs-desktop-common.c:262
+msgctxt "Menu of Communication"
+msgid "Web Browsers"
+msgstr "Navegador web"
+
+#: ../src/plugins/gs-desktop-common.c:270
+msgctxt "Menu of Utility"
+msgid "All"
+msgstr "Tots"
+
+#: ../src/plugins/gs-desktop-common.c:273
+msgctxt "Menu of Utility"
+msgid "Featured"
+msgstr "Destacat"
+
+#: ../src/plugins/gs-desktop-common.c:276
+msgctxt "Menu of Utility"
+msgid "Text Editors"
+msgstr "Editors de text"
+
+#. TRANSLATORS: this is the menu spec main category for Audio & Video
+#: ../src/plugins/gs-desktop-common.c:285
+msgid "Audio & Video"
+msgstr "Àudio i vídeo"
+
+#. TRANSLATORS: this is the menu spec main category for Development
+#: ../src/plugins/gs-desktop-common.c:288
+msgid "Developer Tools"
+msgstr "Eines de desenvolupament"
+
+#. TRANSLATORS: this is the menu spec main category for Education
+#: ../src/plugins/gs-desktop-common.c:291
+msgid "Education"
+msgstr "Educació"
+
+#. TRANSLATORS: this is the menu spec main category for Game
+#: ../src/plugins/gs-desktop-common.c:294
+msgid "Games"
+msgstr "Jocs"
+
+#. TRANSLATORS: this is the menu spec main category for Graphics
+#: ../src/plugins/gs-desktop-common.c:297
+msgid "Graphics & Photography"
+msgstr "Gràfics i fotografia"
+
+#. TRANSLATORS: this is the menu spec main category for Office
+#: ../src/plugins/gs-desktop-common.c:300
+msgid "Productivity"
+msgstr "Productivitat"
+
+#. TRANSLATORS: this is the menu spec main category for Science
+#: ../src/plugins/gs-desktop-common.c:306
+msgid "Science"
+msgstr "Ciència"
+
+#. TRANSLATORS: this is the menu spec main category for Communication
+#: ../src/plugins/gs-desktop-common.c:309
+msgid "Communication & News"
+msgstr "Notícies i comunicació"
+
+#. TRANSLATORS: this is the menu spec main category for Utilities
+#: ../src/plugins/gs-desktop-common.c:312
+msgid "Utilities"
+msgstr "Utilitats"
+
+#~ msgid "Recommended Office Applications"
+#~ msgstr "Aplicacions d'ofimàtica recomanades"
+
+#~ msgid "Featured Application"
+#~ msgstr "Aplicacions destacades"
+
+#~ msgid "Audio"
+#~ msgstr "Àudio"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Editing"
+#~ msgstr "Edició"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Databases"
+#~ msgstr "Bases de dades"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Disc Burning"
+#~ msgstr "Enregistrament de disc"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Ham Radio"
+#~ msgstr "Radioaficionat"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "MIDI"
+#~ msgstr "MIDI"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Mixer"
+#~ msgstr "Mesclador"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Music"
+#~ msgstr "Música"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Recorders"
+#~ msgstr "Enregistradores"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Sequencers"
+#~ msgstr "Seqüenciadors"
+
+#~ msgctxt "Menu subcategory of Audio"
+#~ msgid "Tuners"
+#~ msgstr "Sintonitzadors"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Building"
+#~ msgstr "Construcció"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Databases"
+#~ msgstr "Bases de dades"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "GUI Designers"
+#~ msgstr "Dissenyadors d'interfícies gràfiques"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "IDE"
+#~ msgstr "Entorn de desenvolupament integrat"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Profiling"
+#~ msgstr "Depuració"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Project Management"
+#~ msgstr "Gestió de projectes"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Revision Control"
+#~ msgstr "Control de versions"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Translation"
+#~ msgstr "Traducció"
+
+#~ msgctxt "Menu subcategory of Development Tools"
+#~ msgid "Web Development"
+#~ msgstr "Desenvolupament web"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Art"
+#~ msgstr "Art"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Biology"
+#~ msgstr "Biologia"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Computer Science"
+#~ msgstr "Informàtica"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Construction"
+#~ msgstr "Construcció"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Data Visualization"
+#~ msgstr "Visualització de dades"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Economy"
+#~ msgstr "Economia"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Electricity"
+#~ msgstr "Electricitat"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Electronics"
+#~ msgstr "Electrònica"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Engineering"
+#~ msgstr "Enginyeria"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Geography"
+#~ msgstr "Geografia"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Geology"
+#~ msgstr "Geologia"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Geoscience"
+#~ msgstr "Ciències de la terra"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "History"
+#~ msgstr "Història"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Humanities"
+#~ msgstr "Humanitats"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Image Processing"
+#~ msgstr "Processament d'imatge"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Literature"
+#~ msgstr "Literatura"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Maps"
+#~ msgstr "Mapes"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Medical"
+#~ msgstr "Medicina"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Music"
+#~ msgstr "Música"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Numerical Analysis"
+#~ msgstr "Anàlisi numèrica"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Parallel Computing"
+#~ msgstr "Computació paral·lela"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Physics"
+#~ msgstr "Física"
+
+#~ msgctxt "Menu subcategory of Education"
+#~ msgid "Spirituality"
+#~ msgstr "Espiritualitat"
+
+#~ msgctxt "Menu subcategory of Games"
+#~ msgid "Shooter"
+#~ msgstr "Trets"
+
+#~ msgctxt "Menu subcategory of Games"
+#~ msgid "Simulation"
+#~ msgstr "Simulació"
+
+#~ msgctxt "Menu subcategory of Games"
+#~ msgid "Sports"
+#~ msgstr "Esports"
+
+#~ msgid "Graphics"
+#~ msgstr "Gràfics"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "2D Graphics"
+#~ msgstr "Gràfics 2D"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "OCR"
+#~ msgstr "OCR"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "Publishing"
+#~ msgstr "Edició"
+
+#~ msgctxt "Menu subcategory of Graphics"
+#~ msgid "Raster Graphics"
+#~ msgstr "Gràfics matricials"
+
+#~ msgid "Internet"
+#~ msgstr "Internet"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Dialup"
+#~ msgstr "Marcatge"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Email"
+#~ msgstr "Correu electrònic"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Feed"
+#~ msgstr "Canals de difusió"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "File Transfer"
+#~ msgstr "Transferència de fitxers"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Ham Radio"
+#~ msgstr "Radioafició"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Instant Messaging"
+#~ msgstr "Missatgeria instantània"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "IRC Clients"
+#~ msgstr "Clients IRC"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Monitor"
+#~ msgstr "Monitorització"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "P2P"
+#~ msgstr "P2P"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Remote Access"
+#~ msgstr "Accés remot"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Telephony"
+#~ msgstr "Telefonia"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Video Conference"
+#~ msgstr "Videoconferència"
+
+#~ msgctxt "Menu subcategory of Internet"
+#~ msgid "Web Development"
+#~ msgstr "Desenvolupament web"
+
+#~ msgid "Office"
+#~ msgstr "Oficina"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Chart"
+#~ msgstr "Diagrames"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Contact Management"
+#~ msgstr "Gestió de contactes"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Dictionary"
+#~ msgstr "Diccionaris"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Email"
+#~ msgstr "Correu electrònic"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Flow Chart"
+#~ msgstr "Diagrames de flux"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "PDA"
+#~ msgstr "PDA"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Photography"
+#~ msgstr "Fotografia"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Presentation"
+#~ msgstr "Presentacions"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Project Management"
+#~ msgstr "Gestió de projectes"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Publishing"
+#~ msgstr "Edició"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Spreadsheet"
+#~ msgstr "Fulls de càlcul"
+
+#~ msgctxt "Menu subcategory of Office"
+#~ msgid "Viewer"
+#~ msgstr "Visualitzadors"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Art"
+#~ msgstr "Art"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Artificial Intelligence"
+#~ msgstr "Intel·ligència artificial"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Astronomy"
+#~ msgstr "Astronomia"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Biology"
+#~ msgstr "Biologia"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Chemistry"
+#~ msgstr "Química"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Computer Science"
+#~ msgstr "Informàtica"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Construction"
+#~ msgstr "Construcció"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Data Visualization"
+#~ msgstr "Visualització de dades"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Economy"
+#~ msgstr "Economia"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Electricity"
+#~ msgstr "Electricitat"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Electronics"
+#~ msgstr "Electrònica"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Engineering"
+#~ msgstr "Enginyeria"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Geography"
+#~ msgstr "Geografia"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Geology"
+#~ msgstr "Geologia"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Geoscience"
+#~ msgstr "Ciències de la terra"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "History"
+#~ msgstr "Història"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Humanities"
+#~ msgstr "Humanitats"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Image Processing"
+#~ msgstr "Processament d'imatges"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Languages"
+#~ msgstr "Llengües"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Literature"
+#~ msgstr "Literatura"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Maps"
+#~ msgstr "Mapes"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Math"
+#~ msgstr "Matemàtiques"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Medical"
+#~ msgstr "Medicina"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Numerical Analysis"
+#~ msgstr "Anàlisi numèrica"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Parallel Computing"
+#~ msgstr "Computació paral·lela"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Physics"
+#~ msgstr "Física"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Robotics"
+#~ msgstr "Robòtica"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Spirituality"
+#~ msgstr "Espiritualitat"
+
+#~ msgctxt "Menu subcategory of Science"
+#~ msgid "Sports"
+#~ msgstr "Esports"
+
+#~ msgid "System"
+#~ msgstr "Sistema"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Emulator"
+#~ msgstr "Emuladors"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "File Manager"
+#~ msgstr "Gestors de fitxers"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "File System"
+#~ msgstr "Sistema de fitxers"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "File Tools"
+#~ msgstr "Eines de fitxers"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Monitor"
+#~ msgstr "Monitorització"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Security"
+#~ msgstr "Seguretat"
+
+#~ msgctxt "Menu subcategory of System"
+#~ msgid "Terminal Emulator"
+#~ msgstr "Emuladors de terminal"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Accessibility"
+#~ msgstr "Accessibilitat"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Archiving"
+#~ msgstr "Arxivament"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Calculator"
+#~ msgstr "Calculadores"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Clock"
+#~ msgstr "Rellotges"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Compression"
+#~ msgstr "Compressió"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "File Tools"
+#~ msgstr "Eines de fitxers"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Maps"
+#~ msgstr "Mapes"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Spirituality"
+#~ msgstr "Espiritualitat"
+
+#~ msgctxt "Menu subcategory of Utilities"
+#~ msgid "Telephony Tools"
+#~ msgstr "Eines de telefonia"
+
+#~ msgid "Video"
+#~ msgstr "Vídeo"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Editing"
+#~ msgstr "Edició"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Database"
+#~ msgstr "Base de dades"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Disc Burning"
+#~ msgstr "Enregistrament de discos"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Players"
+#~ msgstr "Reproductors"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "Recorders"
+#~ msgstr "Enregistradores"
+
+#~ msgctxt "Menu subcategory of Video"
+#~ msgid "TV"
+#~ msgstr "TV"
 
 #~ msgctxt "size"
 #~ msgid "Calculating…"
