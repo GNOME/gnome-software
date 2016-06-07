@@ -93,17 +93,12 @@ enum {
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
-/**
- * gs_shell_modal_dialog_present:
- **/
 static void
-gs_shell_modal_dialog_response_cb (GtkDialog *dialog,
-				   gint response_id,
-				   GsShell *shell)
+modal_dialog_unmapped_cb (GtkWidget *dialog,
+                          GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	g_debug ("handling modal dialog response %i for %p",
-		 response_id, dialog);
+	g_debug ("modal dialog %p unmapped", dialog);
 	g_ptr_array_remove (priv->modal_dialogs, dialog);
 }
 
@@ -129,10 +124,10 @@ gs_shell_modal_dialog_present (GsShell *shell, GtkDialog *dialog)
 
 	/* add to stack, transfer ownership to here */
 	g_ptr_array_add (priv->modal_dialogs, dialog);
+	g_signal_connect (GTK_WIDGET (dialog), "unmap",
+	                  G_CALLBACK (modal_dialog_unmapped_cb), shell);
 
 	/* present the new one */
-	g_signal_connect (dialog, "response",
-			  G_CALLBACK (gs_shell_modal_dialog_response_cb), shell);
 	gtk_window_set_modal (GTK_WINDOW (dialog), TRUE);
 	gtk_window_present (GTK_WINDOW (dialog));
 }
