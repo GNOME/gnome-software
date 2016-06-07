@@ -153,8 +153,6 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 				     AS_STORE_LOAD_FLAG_APP_INFO_USER |
 				     AS_STORE_LOAD_FLAG_APPDATA |
 				     AS_STORE_LOAD_FLAG_DESKTOP |
-				     AS_STORE_LOAD_FLAG_FLATPAK_USER |
-				     AS_STORE_LOAD_FLAG_FLATPAK_SYSTEM |
 				     AS_STORE_LOAD_FLAG_APP_INSTALL,
 				     NULL,
 				     error);

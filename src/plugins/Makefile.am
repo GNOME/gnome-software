@@ -168,6 +168,8 @@ libgs_plugin_flatpak_system_la_SOURCES =		\
 	gs-appstream.h					\
 	gs-flatpak.c					\
 	gs-flatpak.h					\
+	gs-flatpak-symlinks.c				\
+	gs-flatpak-symlinks.h				\
 	gs-plugin-flatpak-system.c
 libgs_plugin_flatpak_system_la_LIBADD = $(GS_PLUGIN_LIBS) $(FLATPAK_LIBS)
 libgs_plugin_flatpak_system_la_LDFLAGS = -module -avoid-version
@@ -178,6 +180,8 @@ libgs_plugin_flatpak_user_la_SOURCES =			\
 	gs-appstream.h					\
 	gs-flatpak.c					\
 	gs-flatpak.h					\
+	gs-flatpak-symlinks.c				\
+	gs-flatpak-symlinks.h				\
 	gs-plugin-flatpak-user.c
 libgs_plugin_flatpak_user_la_LIBADD = $(GS_PLUGIN_LIBS) $(FLATPAK_LIBS)
 libgs_plugin_flatpak_user_la_LDFLAGS = -module -avoid-version

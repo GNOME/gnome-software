@@ -33,6 +33,7 @@
 
 #include "gs-appstream.h"
 #include "gs-flatpak.h"
+#include "gs-flatpak-symlinks.h"
 
 struct _GsFlatpak {
 	GObject			 parent_instance;
@@ -51,7 +52,13 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GFileMonitorEvent event_type,
 			      GsFlatpak *self)
 {
+	g_autoptr(GError) error = NULL;
+
 	gs_plugin_updates_changed (self->plugin);
+
+	/* ensure the AppStream symlink cache is up to date */
+	if (!gs_flatpak_symlinks_rebuild (self->installation, NULL, &error))
+		g_warning ("failed to check symlinks: %s", error->message);
 }
 
 gboolean
@@ -92,6 +99,10 @@ gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 		return FALSE;
 	g_signal_connect (self->monitor, "changed",
 			  G_CALLBACK (gs_plugin_flatpak_changed_cb), self);
+
+	/* ensure the AppStream symlink cache is up to date */
+	if (!gs_flatpak_symlinks_rebuild (self->installation, cancellable, error))
+		return FALSE;
 
 	/* success */
 	return TRUE;
