@@ -60,12 +60,6 @@ gs_app_folder_dialog_destroy (GtkWidget *widget)
 }
 
 static void
-cancel_cb (GsAppFolderDialog *dialog)
-{
-	gtk_window_close (GTK_WINDOW (dialog));
-}
-
-static void
 apply_changes (GsAppFolderDialog *dialog)
 {
 	const gchar *folder;
@@ -88,10 +82,23 @@ apply_changes (GsAppFolderDialog *dialog)
 }
 
 static void
-done_cb (GsAppFolderDialog *dialog)
+response_cb (GtkDialog *dialog,
+             GtkResponseType response_type,
+             gpointer user_data)
 {
-	apply_changes (dialog);	
-	gtk_window_close (GTK_WINDOW (dialog));
+	switch (response_type) {
+	case GTK_RESPONSE_APPLY:
+		apply_changes (GS_APP_FOLDER_DIALOG (dialog));
+		gtk_window_close (GTK_WINDOW (dialog));
+		break;
+	case GTK_RESPONSE_CANCEL:
+		gtk_window_close (GTK_WINDOW (dialog));
+		break;
+	case GTK_RESPONSE_DELETE_EVENT:
+		break;
+	default:
+		g_assert_not_reached ();
+	}
 }
 
 static GtkWidget *create_row (GsAppFolderDialog *dialog, const gchar *folder);
@@ -129,10 +136,9 @@ gs_app_folder_dialog_init (GsAppFolderDialog *dialog)
 	dialog->folders = gs_folders_get ();
 	gtk_widget_init_template (GTK_WIDGET (dialog));
 
-	g_signal_connect_swapped (dialog->cancel_button, "clicked",
-				  G_CALLBACK (cancel_cb), dialog);
-	g_signal_connect_swapped (dialog->done_button, "clicked",
-				  G_CALLBACK (done_cb), dialog);
+	g_signal_connect (dialog, "response",
+	                  G_CALLBACK (response_cb),
+	                  NULL);
 	dialog->rows = gtk_size_group_new (GTK_SIZE_GROUP_VERTICAL);
 
 	gtk_list_box_set_header_func (GTK_LIST_BOX (dialog->app_folder_list),
