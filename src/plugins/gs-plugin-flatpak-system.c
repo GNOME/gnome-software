@@ -37,12 +37,14 @@
 struct GsPluginData {
 	FlatpakInstallation	*installation;
 	GFileMonitor		*monitor;
+	GSettings		*settings;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->settings = g_settings_new ("org.gnome.software");
 
 	/* getting app properties from appstream is quicker */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
@@ -54,6 +56,7 @@ gs_plugin_destroy (GsPlugin *plugin)
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	g_clear_object (&priv->installation);
 	g_clear_object (&priv->monitor);
+	g_clear_object (&priv->settings);
 }
 
 void
@@ -194,6 +197,14 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* only handle when installing bundles system-wide */
+	if (!g_settings_get_boolean (priv->settings,
+				     "install-bundles-system-wide")) {
+		g_debug ("not handling bundle as per-user specified");
+		return TRUE;
+	}
+
 	return gs_flatpak_file_to_app (plugin, priv->installation, list, file,
 				       cancellable, error);
 }
