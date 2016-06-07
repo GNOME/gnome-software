@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
+ * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -24,6 +25,12 @@
 
 #include <gnome-software.h>
 
+G_BEGIN_DECLS
+
+#define GS_TYPE_FLATPAK (gs_flatpak_get_type ())
+
+G_DECLARE_FINAL_TYPE (GsFlatpak, gs_flatpak, GS, FLATPAK, GObject)
+
 /* helpers */
 #define	gs_app_get_flatpak_kind_as_str(app)	gs_app_get_metadata_item(app,"flatpak::kind")
 #define	gs_app_get_flatpak_name(app)		gs_app_get_metadata_item(app,"flatpak::name")
@@ -35,87 +42,62 @@
 #define	gs_app_set_flatpak_branch(app,val)	gs_app_set_metadata(app,"flatpak::branch",val)
 #define	gs_app_set_flatpak_commit(app,val)	gs_app_set_metadata(app,"flatpak::commit",val)
 
-G_BEGIN_DECLS
-
 typedef enum {
-	GS_FLATPAK_TYPE_SYSTEM,
-	GS_FLATPAK_TYPE_USER
-} GsFlatpakType;
+	GS_FLATPAK_SCOPE_SYSTEM,
+	GS_FLATPAK_SCOPE_USER
+} GsFlatpakScope;
 
 #define	GS_FLATPAK_SYSTEM_PREFIX	"flatpak"
 #define	GS_FLATPAK_USER_PREFIX		"user-flatpak"
 
-gboolean	gs_flatpak_setup		(GsPlugin		*plugin,
-						 GsFlatpakType		type,
-						 FlatpakInstallation	**installation,
-						 GFileMonitor		**monitor,
+GsFlatpak	*gs_flatpak_new			(GsPlugin		*plugin,
+						 GsFlatpakScope		 scope);
+gboolean	gs_flatpak_setup		(GsFlatpak		*self,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_add_installed	(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_add_installed	(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_add_sources		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_add_sources		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_add_source		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_add_source		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_add_updates		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_add_updates		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_refresh		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_refresh		(GsFlatpak		*self,
 						 guint			cache_age,
 						 GsPluginRefreshFlags	flags,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_refine_app		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_refine_app		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GsPluginRefineFlags	flags,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_launch		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_launch		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_app_remove		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_app_remove		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_app_install		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_app_install		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_update_app		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_update_app		(GsFlatpak		*self,
 						 GsApp			*app,
 						 GCancellable		*cancellable,
 						 GError			**error);
-
-gboolean	gs_flatpak_file_to_app		(GsPlugin		*plugin,
-						 FlatpakInstallation	*installation,
+gboolean	gs_flatpak_file_to_app		(GsFlatpak		*self,
 						 GsAppList		*list,
 						 GFile			*file,
 						 GCancellable		*cancellable,
@@ -124,3 +106,4 @@ gboolean	gs_flatpak_file_to_app		(GsPlugin		*plugin,
 G_END_DECLS
 
 #endif /* __GS_FLATPAK_H */
+

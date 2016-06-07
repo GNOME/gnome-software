@@ -1,6 +1,7 @@
 /* -*- Mode: C; tab-width: 8; indent-tabs-mode: t; c-basic-offset: 8 -*-
  *
  * Copyright (C) 2016 Joaquim Rocha <jrocha@endlessm.com>
+ * Copyright (C) 2016 Richard Hughes <richard@hughsie.com>
  *
  * Licensed under the GNU General Public License Version 2
  *
@@ -29,34 +30,38 @@
 #include <config.h>
 
 #include <flatpak.h>
-#include <gnome-software.h>
 
 #include "gs-appstream.h"
 #include "gs-flatpak.h"
+
+struct _GsFlatpak {
+	GObject			 parent_instance;
+	FlatpakInstallation	*installation;
+	GFileMonitor		*monitor;
+	GsFlatpakScope		 scope;
+	GsPlugin		*plugin;
+};
+
+G_DEFINE_TYPE (GsFlatpak, gs_flatpak, G_TYPE_OBJECT)
 
 static void
 gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GFile *child,
 			      GFile *other_file,
 			      GFileMonitorEvent event_type,
-			      GsPlugin *plugin)
+			      GsFlatpak *self)
 {
-	gs_plugin_updates_changed (plugin);
+	gs_plugin_updates_changed (self->plugin);
 }
 
 gboolean
-gs_flatpak_setup (GsPlugin *plugin,
-		  GsFlatpakType type,
-		  FlatpakInstallation **installation,
-		  GFileMonitor **monitor,
-		  GCancellable *cancellable,
-		  GError **error)
+gs_flatpak_setup (GsFlatpak *self, GCancellable *cancellable, GError **error)
 {
 	const gchar *destdir;
 	g_autoptr(AsProfileTask) ptask = NULL;
 
 	/* we use a permissions helper to elevate privs */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::ensure-origin");
 	destdir = g_getenv ("GS_SELF_TEST_FLATPACK_DATADIR");
 	if (destdir != NULL) {
@@ -65,45 +70,42 @@ gs_flatpak_setup (GsPlugin *plugin,
 								NULL);
 		g_autoptr(GFile) file = g_file_new_for_path (full_path);
 		g_debug ("using custom flatpak path %s", full_path);
-		*installation = flatpak_installation_new_for_path (file, TRUE,
-								   cancellable,
-								   error);
-	} else if (type == GS_FLATPAK_TYPE_SYSTEM) {
-		*installation = flatpak_installation_new_system (cancellable,
-								 error);
-	} else if (type == GS_FLATPAK_TYPE_USER) {
-		*installation = flatpak_installation_new_user (cancellable,
-							       error);
+		self->installation = flatpak_installation_new_for_path (file, TRUE,
+									cancellable,
+									error);
+	} else if (self->scope == GS_FLATPAK_SCOPE_SYSTEM) {
+		self->installation = flatpak_installation_new_system (cancellable,
+								      error);
+	} else if (self->scope == GS_FLATPAK_SCOPE_USER) {
+		self->installation = flatpak_installation_new_user (cancellable,
+								    error);
 	}
 
-	if (*installation == NULL)
+	if (self->installation == NULL)
 		return FALSE;
 
 	/* watch for changes */
-	*monitor = flatpak_installation_create_monitor (*installation,
-							cancellable,
-							error);
-	if (*monitor == NULL)
+	self->monitor = flatpak_installation_create_monitor (self->installation,
+							     cancellable,
+							     error);
+	if (self->monitor == NULL)
 		return FALSE;
-	g_signal_connect (*monitor, "changed",
-			  G_CALLBACK (gs_plugin_flatpak_changed_cb), plugin);
+	g_signal_connect (self->monitor, "changed",
+			  G_CALLBACK (gs_plugin_flatpak_changed_cb), self);
 
 	/* success */
 	return TRUE;
 }
 
 static gboolean
-gs_flatpak_refresh_appstream (GsPlugin *plugin,
-			      FlatpakInstallation *installation,
-			      guint cache_age,
-			      GCancellable *cancellable,
-			      GError **error)
+gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
+			      GCancellable *cancellable, GError **error)
 {
 	gboolean ret;
 	guint i;
 	g_autoptr(GPtrArray) xremotes = NULL;
 
-	xremotes = flatpak_installation_list_remotes (installation, cancellable,
+	xremotes = flatpak_installation_list_remotes (self->installation, cancellable,
 						      error);
 	if (xremotes == NULL)
 		return FALSE;
@@ -138,7 +140,7 @@ gs_flatpak_refresh_appstream (GsPlugin *plugin,
 		/* download new data */
 		g_debug ("%s is %i seconds old, so downloading new data",
 			 flatpak_remote_get_name (xremote), tmp);
-		ret = flatpak_installation_update_appstream_sync (installation,
+		ret = flatpak_installation_update_appstream_sync (self->installation,
 								  flatpak_remote_get_name (xremote),
 								  NULL, /* arch */
 								  NULL, /* out_changed */
@@ -180,9 +182,9 @@ gs_app_set_flatpak_kind (GsApp *app, FlatpakRefKind kind)
 }
 
 static void
-gs_flatpak_set_metadata (GsPlugin *plugin, GsApp *app, FlatpakRef *xref)
+gs_flatpak_set_metadata (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
-	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+	gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 	gs_app_set_flatpak_kind (app, flatpak_ref_get_kind (xref));
 	gs_app_set_flatpak_name (app, flatpak_ref_get_name (xref));
 	gs_app_set_flatpak_arch (app, flatpak_ref_get_arch (xref));
@@ -191,8 +193,7 @@ gs_flatpak_set_metadata (GsPlugin *plugin, GsApp *app, FlatpakRef *xref)
 }
 
 static void
-gs_flatpak_set_metadata_installed (GsPlugin *plugin,
-				   GsApp *app,
+gs_flatpak_set_metadata_installed (GsFlatpak *self, GsApp *app,
 				   FlatpakInstalledRef *xref)
 {
 	guint64 mtime;
@@ -202,9 +203,9 @@ gs_flatpak_set_metadata_installed (GsPlugin *plugin,
 	g_autoptr(GFileInfo) info = NULL;
 
 	/* for all types */
-	gs_flatpak_set_metadata (plugin, app, FLATPAK_REF (xref));
+	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref));
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
-			     gs_plugin_get_name (plugin));
+			     gs_plugin_get_name (self->plugin));
 
 	/* get the last time the app was updated */
 	metadata_fn = g_build_filename (flatpak_installed_ref_get_deploy_dir (xref),
@@ -251,8 +252,7 @@ gs_flatpak_build_id (FlatpakInstallation *installation, FlatpakRef *xref)
 }
 
 static GsApp *
-gs_flatpak_create_installed (GsPlugin *plugin,
-			     FlatpakInstallation *installation,
+gs_flatpak_create_installed (GsFlatpak *self,
 			     FlatpakInstalledRef *xref,
 			     GError **error)
 {
@@ -281,13 +281,13 @@ gs_flatpak_create_installed (GsPlugin *plugin,
 	}
 
 	/* create new object */
-	id = gs_flatpak_build_id (installation, FLATPAK_REF (xref));
-	app = gs_plugin_cache_lookup (plugin, id);
+	id = gs_flatpak_build_id (self->installation, FLATPAK_REF (xref));
+	app = gs_plugin_cache_lookup (self->plugin, id);
 	if (app == NULL) {
 		app = gs_app_new (id);
-		gs_plugin_cache_add (plugin, id, app);
+		gs_plugin_cache_add (self->plugin, id, app);
 	}
-	gs_flatpak_set_metadata_installed (plugin, app, xref);
+	gs_flatpak_set_metadata_installed (self, app, xref);
 
 	switch (flatpak_ref_get_kind (FLATPAK_REF(xref))) {
 	case FLATPAK_REF_KIND_APP:
@@ -317,9 +317,7 @@ gs_flatpak_create_installed (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_add_installed (GsPlugin *plugin,
-			  FlatpakInstallation *installation,
-			  GsAppList *list,
+gs_flatpak_add_installed (GsFlatpak *self, GsAppList *list,
 			  GCancellable *cancellable,
 			  GError **error)
 {
@@ -328,9 +326,7 @@ gs_flatpak_add_installed (GsPlugin *plugin,
 	guint i;
 
 	/* if we've never ever run before, get the AppStream data */
-	if (!gs_flatpak_refresh_appstream (plugin,
-					   installation,
-					   G_MAXUINT,
+	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT,
 					   cancellable,
 					   &error_md)) {
 		g_warning ("failed to get initial available data: %s",
@@ -338,7 +334,7 @@ gs_flatpak_add_installed (GsPlugin *plugin,
 	}
 
 	/* get apps and runtimes */
-	xrefs = flatpak_installation_list_installed_refs (installation,
+	xrefs = flatpak_installation_list_installed_refs (self->installation,
 							  cancellable, error);
 	if (xrefs == NULL)
 		return FALSE;
@@ -351,10 +347,7 @@ gs_flatpak_add_installed (GsPlugin *plugin,
 		if (flatpak_ref_get_kind (FLATPAK_REF (xref)) != FLATPAK_REF_KIND_APP)
 			continue;
 
-		app = gs_flatpak_create_installed (plugin,
-						   installation,
-						   xref,
-						   &error_local);
+		app = gs_flatpak_create_installed (self, xref, &error_local);
 		if (app == NULL) {
 			g_warning ("failed to add flatpak: %s", error_local->message);
 			continue;
@@ -367,9 +360,7 @@ gs_flatpak_add_installed (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_add_sources (GsPlugin *plugin,
-			FlatpakInstallation *installation,
-			GsAppList *list,
+gs_flatpak_add_sources (GsFlatpak *self, GsAppList *list,
 			GCancellable *cancellable,
 			GError **error)
 {
@@ -379,14 +370,14 @@ gs_flatpak_add_sources (GsPlugin *plugin,
 	guint j;
 
 	/* get installed apps and runtimes */
-	xrefs = flatpak_installation_list_installed_refs (installation,
+	xrefs = flatpak_installation_list_installed_refs (self->installation,
 							  cancellable,
 							  error);
 	if (xrefs == NULL)
 		return FALSE;
 
 	/* get available remotes */
-	xremotes = flatpak_installation_list_remotes (installation,
+	xremotes = flatpak_installation_list_remotes (self->installation,
 						      cancellable,
 						      error);
 	if (xremotes == NULL)
@@ -405,7 +396,7 @@ gs_flatpak_add_sources (GsPlugin *plugin,
 			continue;
 
 		app = gs_app_new (flatpak_remote_get_name (xremote));
-		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		gs_app_set_management_plugin (app, gs_plugin_get_name (self->plugin));
 		gs_app_set_kind (app, AS_APP_KIND_SOURCE);
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_set_name (app,
@@ -431,8 +422,7 @@ gs_flatpak_add_sources (GsPlugin *plugin,
 			if (g_strcmp0 (flatpak_installed_ref_get_origin (xref),
 				       flatpak_remote_get_name (xremote)) != 0)
 				continue;
-			related = gs_flatpak_create_installed (plugin,
-							       installation,
+			related = gs_flatpak_create_installed (self,
 							       xref,
 							       &error_local);
 			if (related == NULL) {
@@ -448,9 +438,7 @@ gs_flatpak_add_sources (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_add_source (GsPlugin *plugin,
-		       FlatpakInstallation *installation,
-		       GsApp *app,
+gs_flatpak_add_source (GsFlatpak *self, GsApp *app,
 		       GCancellable *cancellable,
 		       GError **error)
 {
@@ -459,7 +447,7 @@ gs_flatpak_add_source (GsPlugin *plugin,
 
 	/* only process this source if was created for this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+		       gs_plugin_get_name (self->plugin)) != 0)
 		return TRUE;
 
 	/* create a new remote */
@@ -484,7 +472,7 @@ gs_flatpak_add_source (GsPlugin *plugin,
 
 	/* install it */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	if (!flatpak_installation_modify_remote (installation,
+	if (!flatpak_installation_modify_remote (self->installation,
 						 xremote,
 						 cancellable,
 						 error)) {
@@ -498,9 +486,7 @@ gs_flatpak_add_source (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_add_updates (GsPlugin *plugin,
-			FlatpakInstallation *installation,
-			GsAppList *list,
+gs_flatpak_add_updates (GsFlatpak *self, GsAppList *list,
 			GCancellable *cancellable,
 			GError **error)
 {
@@ -508,14 +494,14 @@ gs_flatpak_add_updates (GsPlugin *plugin,
 	g_autoptr(GPtrArray) xrefs = NULL;
 
 	/* manually drop the cache */
-	if (0&&!flatpak_installation_drop_caches (installation,
+	if (0&&!flatpak_installation_drop_caches (self->installation,
 						  cancellable,
 						  error)) {
 		return FALSE;
 	}
 
 	/* get all the installed apps (no network I/O) */
-	xrefs = flatpak_installation_list_installed_refs (installation,
+	xrefs = flatpak_installation_list_installed_refs (self->installation,
 							  cancellable,
 							  error);
 	if (xrefs == NULL)
@@ -540,8 +526,7 @@ gs_flatpak_add_updates (GsPlugin *plugin,
 		g_debug ("%s has a downloaded update %s->%s",
 			 flatpak_ref_get_name (FLATPAK_REF (xref)),
 			 commit, latest_commit);
-		app = gs_flatpak_create_installed (plugin, installation,
-						   xref, &error_local);
+		app = gs_flatpak_create_installed (self, xref, &error_local);
 		if (app == NULL) {
 			g_warning ("failed to add flatpak: %s", error_local->message);
 			continue;
@@ -566,8 +551,7 @@ gs_flatpak_progress_cb (const gchar *status,
 }
 
 gboolean
-gs_flatpak_refresh (GsPlugin *plugin,
-		    FlatpakInstallation *installation,
+gs_flatpak_refresh (GsFlatpak *self,
 		    guint cache_age,
 		    GsPluginRefreshFlags flags,
 		    GCancellable *cancellable,
@@ -578,7 +562,7 @@ gs_flatpak_refresh (GsPlugin *plugin,
 
 	/* update AppStream metadata */
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
-		if (!gs_flatpak_refresh_appstream (plugin, installation,
+		if (!gs_flatpak_refresh_appstream (self,
 						   cache_age, cancellable,
 						   error))
 			return FALSE;
@@ -589,7 +573,7 @@ gs_flatpak_refresh (GsPlugin *plugin,
 		return TRUE;
 
 	/* get all the updates available from all remotes */
-	xrefs = flatpak_installation_list_installed_refs_for_update (installation,
+	xrefs = flatpak_installation_list_installed_refs_for_update (self->installation,
 								     cancellable,
 								     error);
 	if (xrefs == NULL)
@@ -600,13 +584,13 @@ gs_flatpak_refresh (GsPlugin *plugin,
 		g_autoptr(FlatpakInstalledRef) xref2 = NULL;
 
 		/* try to create a GsApp so we can do progress reporting */
-		app = gs_flatpak_create_installed (plugin, installation, xref,
+		app = gs_flatpak_create_installed (self, xref,
 						   NULL);
 
 		/* fetch but do not deploy */
 		g_debug ("pulling update for %s",
 			 flatpak_ref_get_name (FLATPAK_REF (xref)));
-		xref2 = flatpak_installation_update (installation,
+		xref2 = flatpak_installation_update (self->installation,
 						     FLATPAK_UPDATE_FLAGS_NO_DEPLOY,
 						     flatpak_ref_get_kind (FLATPAK_REF (xref)),
 						     flatpak_ref_get_name (FLATPAK_REF (xref)),
@@ -622,9 +606,7 @@ gs_flatpak_refresh (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
-				 FlatpakInstallation *installation,
-				 GsApp *app,
+gs_plugin_refine_item_origin_ui (GsFlatpak *self, GsApp *app,
 				 GCancellable *cancellable,
 				 GError **error)
 {
@@ -639,9 +621,9 @@ gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
 		return TRUE;
 
 	/* find list of remotes */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::refine-origin-ui");
-	xremotes = flatpak_installation_list_remotes (installation,
+	xremotes = flatpak_installation_list_remotes (self->installation,
 						      cancellable,
 						      error);
 	if (xremotes == NULL)
@@ -661,8 +643,7 @@ gs_plugin_refine_item_origin_ui (GsPlugin *plugin,
 }
 
 static gboolean
-gs_refine_item_metadata (GsPlugin *plugin,
-			 GsApp *app,
+gs_refine_item_metadata (GsFlatpak *self, GsApp *app,
 			 GCancellable *cancellable,
 			 GError **error)
 {
@@ -681,7 +662,7 @@ gs_refine_item_metadata (GsPlugin *plugin,
 	if (gs_app_get_source_default (app) == NULL) {
 		g_autofree gchar *tmp = gs_app_to_string (app);
 		g_warning ("no source set by appstream for %s: %s",
-			   gs_plugin_get_name (plugin), tmp);
+			   gs_plugin_get_name (self->plugin), tmp);
 		return TRUE;
 	}
 
@@ -692,7 +673,7 @@ gs_refine_item_metadata (GsPlugin *plugin,
 				gs_app_get_source_default (app));
 		return FALSE;
 	}
-	gs_flatpak_set_metadata (plugin, app, xref);
+	gs_flatpak_set_metadata (self, app, xref);
 
 	/* success */
 	return TRUE;
@@ -711,8 +692,7 @@ gs_app_get_flatpak_kind (GsApp *app)
 }
 
 static gboolean
-gs_plugin_refine_item_origin (GsPlugin *plugin,
-			      FlatpakInstallation *installation,
+gs_plugin_refine_item_origin (GsFlatpak *self,
 			      GsApp *app,
 			      GCancellable *cancellable,
 			      GError **error)
@@ -726,9 +706,9 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 		return TRUE;
 
 	/* ensure metadata exists */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::refine-origin");
-	if (!gs_refine_item_metadata (plugin, app, cancellable, error))
+	if (!gs_refine_item_metadata (self, app, cancellable, error))
 		return FALSE;
 
 	/* find list of remotes */
@@ -736,7 +716,7 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 		 gs_app_get_flatpak_name (app),
 		 gs_app_get_flatpak_arch (app),
 		 gs_app_get_flatpak_branch (app));
-	xremotes = flatpak_installation_list_remotes (installation, cancellable,
+	xremotes = flatpak_installation_list_remotes (self->installation, cancellable,
 						      error);
 	if (xremotes == NULL)
 		return FALSE;
@@ -752,7 +732,7 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 		/* sync */
 		remote_name = flatpak_remote_get_name (xremote);
 		g_debug ("looking at remote %s", remote_name);
-		xref = flatpak_installation_fetch_remote_ref_sync (installation,
+		xref = flatpak_installation_fetch_remote_ref_sync (self->installation,
 								   remote_name,
 								   gs_app_get_flatpak_kind (app),
 								   gs_app_get_flatpak_name (app),
@@ -777,15 +757,12 @@ gs_plugin_refine_item_origin (GsPlugin *plugin,
 }
 
 static gboolean
-gs_flatpak_app_matches_xref (GsPlugin *plugin,
-			     FlatpakInstallation *installation,
-			     GsApp *app,
-			     FlatpakRef *xref)
+gs_flatpak_app_matches_xref (GsFlatpak *self, GsApp *app, FlatpakRef *xref)
 {
 	g_autofree gchar *id = NULL;
 
 	/* check ID */
-	id = gs_flatpak_build_id (installation, xref);
+	id = gs_flatpak_build_id (self->installation, xref);
 	if (g_strcmp0 (id, gs_app_get_id (app)) == 0)
 		return TRUE;
 
@@ -815,8 +792,7 @@ gs_flatpak_create_fake_ref (GsApp *app, GError **error)
 }
 
 static gboolean
-gs_plugin_refine_item_state (GsPlugin *plugin,
-			     FlatpakInstallation *installation,
+gs_plugin_refine_item_state (GsFlatpak *self,
 			     GsApp *app,
 			     GCancellable *cancellable,
 			     GError **error)
@@ -830,13 +806,13 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 		return TRUE;
 
 	/* need broken out metadata */
-	if (!gs_refine_item_metadata (plugin, app, cancellable, error))
+	if (!gs_refine_item_metadata (self, app, cancellable, error))
 		return FALSE;
 
 	/* get apps and runtimes */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::refine-action");
-	xrefs = flatpak_installation_list_installed_refs (installation,
+	xrefs = flatpak_installation_list_installed_refs (self->installation,
 							  cancellable, error);
 	if (xrefs == NULL)
 		return FALSE;
@@ -844,20 +820,20 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 
 		/* check xref is app */
-		if (!gs_flatpak_app_matches_xref (plugin, installation, app,
+		if (!gs_flatpak_app_matches_xref (self, app,
 						  FLATPAK_REF(xref)))
 			continue;
 
 		/* mark as installed */
 		g_debug ("marking %s as installed with flatpak",
 			 gs_app_get_id (app));
-		gs_flatpak_set_metadata_installed (plugin, app, xref);
+		gs_flatpak_set_metadata_installed (self, app, xref);
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	}
 
 	/* ensure origin set */
-	if (!gs_plugin_refine_item_origin (plugin, installation, app,
+	if (!gs_plugin_refine_item_origin (self, app,
 					   cancellable, error))
 		return FALSE;
 
@@ -865,7 +841,7 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN &&
 	    gs_app_get_origin (app) != NULL) {
 		g_autoptr(FlatpakRemote) xremote = NULL;
-		xremote = flatpak_installation_get_remote_by_name (installation,
+		xremote = flatpak_installation_get_remote_by_name (self->installation,
 								   gs_app_get_origin (app),
 								   cancellable, NULL);
 		if (xremote != NULL) {
@@ -892,7 +868,7 @@ gs_plugin_refine_item_state (GsPlugin *plugin,
 }
 
 static gboolean
-gs_flatpak_set_app_metadata (GsPlugin *plugin,
+gs_flatpak_set_app_metadata (GsFlatpak *self,
 			     GsApp *app,
 			     const gchar *data,
 			     gsize length,
@@ -917,7 +893,7 @@ gs_flatpak_set_app_metadata (GsPlugin *plugin,
 	g_debug ("runtime for %s is %s", name, runtime);
 
 	/* create runtime */
-	app_runtime = gs_appstream_create_runtime (plugin, app, runtime);
+	app_runtime = gs_appstream_create_runtime (self->plugin, app, runtime);
 	if (app_runtime != NULL)
 		gs_app_set_runtime (app, app_runtime);
 
@@ -925,8 +901,7 @@ gs_flatpak_set_app_metadata (GsPlugin *plugin,
 }
 
 static gboolean
-gs_plugin_refine_item_runtime (GsPlugin *plugin,
-			       FlatpakInstallation *installation,
+gs_plugin_refine_item_runtime (GsFlatpak *self,
 			       GsApp *app,
 			       GCancellable *cancellable,
 			       GError **error)
@@ -948,7 +923,7 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 		return TRUE;
 
 	/* this is quicker than doing network IO */
-	installation_path = flatpak_installation_get_path (installation);
+	installation_path = flatpak_installation_get_path (self->installation);
 	installation_path_str = g_file_get_path (installation_path);
 	install_path = g_build_filename (installation_path_str,
 					 gs_app_get_flatpak_kind_as_str (app),
@@ -969,7 +944,7 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 		xref = gs_flatpak_create_fake_ref (app, error);
 		if (xref == NULL)
 			return FALSE;
-		data = flatpak_installation_fetch_remote_metadata_sync (installation,
+		data = flatpak_installation_fetch_remote_metadata_sync (self->installation,
 									gs_app_get_origin (app),
 									xref,
 									cancellable,
@@ -980,14 +955,13 @@ gs_plugin_refine_item_runtime (GsPlugin *plugin,
 	}
 
 	/* parse key file */
-	if (!gs_flatpak_set_app_metadata (plugin, app, str, len, error))
+	if (!gs_flatpak_set_app_metadata (self, app, str, len, error))
 		return FALSE;
 	return TRUE;
 }
 
 static gboolean
-gs_plugin_refine_item_size (GsPlugin *plugin,
-			    FlatpakInstallation *installation,
+gs_plugin_refine_item_size (GsFlatpak *self,
 			    GsApp *app,
 			    GCancellable *cancellable,
 			    GError **error)
@@ -1005,8 +979,7 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 		return TRUE;
 
 	/* need runtime */
-	if (!gs_plugin_refine_item_runtime (plugin, installation, app,
-					    cancellable, error))
+	if (!gs_plugin_refine_item_runtime (self, app, cancellable, error))
 		return FALSE;
 
 	/* calculate the platform size too if the app is not installed */
@@ -1015,8 +988,7 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 		GsApp *app_runtime;
 
 		/* find out what runtime the application depends on */
-		if (!gs_plugin_refine_item_runtime (plugin,
-						    installation,
+		if (!gs_plugin_refine_item_runtime (self,
 						    app,
 						    cancellable,
 						    error))
@@ -1024,8 +996,7 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 
 		/* is the app_runtime already installed? */
 		app_runtime = gs_app_get_runtime (app);
-		if (!gs_plugin_refine_item_state (plugin,
-						  installation,
+		if (!gs_plugin_refine_item_state (self,
 						  app_runtime,
 						  cancellable,
 						  error))
@@ -1034,8 +1005,7 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 			g_debug ("runtime %s is already installed, so not adding size",
 				 gs_app_get_id (app_runtime));
 		} else {
-			if (!gs_plugin_refine_item_size (plugin,
-							 installation,
+			if (!gs_plugin_refine_item_size (self,
 							 app_runtime,
 							 cancellable,
 							 error))
@@ -1044,15 +1014,15 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 	}
 
 	/* just get the size of the app */
-	ptask = as_profile_start_literal (gs_plugin_get_profile (plugin),
+	ptask = as_profile_start_literal (gs_plugin_get_profile (self->plugin),
 					  "flatpak::refine-size");
-	if (!gs_plugin_refine_item_origin (plugin, installation, app,
+	if (!gs_plugin_refine_item_origin (self, app,
 					   cancellable, error))
 		return FALSE;
 	xref = gs_flatpak_create_fake_ref (app, error);
 	if (xref == NULL)
 		return FALSE;
-	ret = flatpak_installation_fetch_remote_size_sync (installation,
+	ret = flatpak_installation_fetch_remote_size_sync (self->installation,
 							   gs_app_get_origin (app),
 							   xref,
 							   &download_size,
@@ -1071,23 +1041,21 @@ gs_plugin_refine_item_size (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_refine_app (GsPlugin *plugin,
-		       FlatpakInstallation *installation,
+gs_flatpak_refine_app (GsFlatpak *self,
 		       GsApp *app,
 		       GsPluginRefineFlags flags,
 		       GCancellable *cancellable,
 		       GError **error)
 {
 	g_autoptr(AsProfileTask) ptask = NULL;
-	GsApp *app_runtime;
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+		       gs_plugin_get_name (self->plugin)) != 0)
 		return TRUE;
 
 	/* profile */
-	ptask = as_profile_start (gs_plugin_get_profile (plugin),
+	ptask = as_profile_start (gs_plugin_get_profile (self->plugin),
 				  "flatpak::refine{%s}",
 				  gs_app_get_id (app));
 
@@ -1095,22 +1063,13 @@ gs_flatpak_refine_app (GsPlugin *plugin,
 	gs_app_remove_quirk (app, AS_APP_QUIRK_COMPULSORY);
 
 	/* AppStream sets the source to appname/arch/branch */
-	if (!gs_refine_item_metadata (plugin, app, cancellable, error))
+	if (!gs_refine_item_metadata (self, app, cancellable, error))
 		return FALSE;
 
 	/* check the installed state */
-	if (!gs_plugin_refine_item_state (plugin, installation, app,
+	if (!gs_plugin_refine_item_state (self, app,
 					  cancellable, error))
 		return FALSE;
-	app_runtime = gs_app_get_runtime (app);
-	if (app_runtime != NULL) {
-		if (!gs_plugin_refine_item_state (plugin,
-						  installation,
-						  app_runtime,
-						  cancellable,
-						  error))
-			return FALSE;
-	}
 
 	/* version fallback */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION) {
@@ -1123,14 +1082,14 @@ gs_flatpak_refine_app (GsPlugin *plugin,
 
 	/* size */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_SIZE) {
-		if (!gs_plugin_refine_item_size (plugin, installation, app,
+		if (!gs_plugin_refine_item_size (self, app,
 						 cancellable, error))
 			return FALSE;
 	}
 
 	/* origin */
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
-		if (!gs_plugin_refine_item_origin_ui (plugin, installation, app,
+		if (!gs_plugin_refine_item_origin_ui (self, app,
 						      cancellable, error))
 			return FALSE;
 	}
@@ -1139,8 +1098,7 @@ gs_flatpak_refine_app (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_launch (GsPlugin *plugin,
-		   FlatpakInstallation *installation,
+gs_flatpak_launch (GsFlatpak *self,
 		   GsApp *app,
 		   GCancellable *cancellable,
 		   GError **error)
@@ -1149,13 +1107,13 @@ gs_flatpak_launch (GsPlugin *plugin,
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+		       gs_plugin_get_name (self->plugin)) != 0)
 		return TRUE;
 
 	branch = gs_app_get_flatpak_branch (app);
 	if (branch == NULL)
 		branch = "master";
-	return flatpak_installation_launch (installation,
+	return flatpak_installation_launch (self->installation,
 					    gs_app_get_flatpak_name (app),
 					    NULL,
 					    branch,
@@ -1165,26 +1123,25 @@ gs_flatpak_launch (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_app_remove (GsPlugin *plugin,
-		       FlatpakInstallation *installation,
+gs_flatpak_app_remove (GsFlatpak *self,
 		       GsApp *app,
 		       GCancellable *cancellable,
 		       GError **error)
 {
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+		       gs_plugin_get_name (self->plugin)) != 0)
 		return TRUE;
 
 	/* refine to get basics */
-	if (!gs_flatpak_refine_app (plugin, installation, app,
+	if (!gs_flatpak_refine_app (self, app,
 				    GS_PLUGIN_REFINE_FLAGS_DEFAULT,
 				    cancellable, error))
 		return FALSE;
 
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	if (!flatpak_installation_uninstall (installation,
+	if (!flatpak_installation_uninstall (self->installation,
 					     FLATPAK_REF_KIND_APP,
 					     gs_app_get_flatpak_name (app),
 					     gs_app_get_flatpak_arch (app),
@@ -1199,7 +1156,7 @@ gs_flatpak_app_remove (GsPlugin *plugin,
 	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 
 	/* refresh the state */
-	if (!gs_plugin_refine_item_state (plugin, installation, app,
+	if (!gs_plugin_refine_item_state (self, app,
 					  cancellable, error))
 		return FALSE;
 
@@ -1208,8 +1165,7 @@ gs_flatpak_app_remove (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_app_install (GsPlugin *plugin,
-			FlatpakInstallation *installation,
+gs_flatpak_app_install (GsFlatpak *self,
 			GsApp *app,
 			GCancellable *cancellable,
 			GError **error)
@@ -1218,11 +1174,11 @@ gs_flatpak_app_install (GsPlugin *plugin,
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+		       gs_plugin_get_name (self->plugin)) != 0)
 		return TRUE;
 
 	/* ensure we have metadata and state */
-	if (!gs_flatpak_refine_app (plugin, installation, app, 0, cancellable,
+	if (!gs_flatpak_refine_app (self, app, 0, cancellable,
 				    error))
 		return FALSE;
 
@@ -1235,13 +1191,13 @@ gs_flatpak_app_install (GsPlugin *plugin,
 		runtime = gs_app_get_runtime (app);
 
 		/* the runtime could come from a different remote to the app */
-		if (!gs_refine_item_metadata (plugin, runtime, cancellable,
+		if (!gs_refine_item_metadata (self, runtime, cancellable,
 					      error))
 			return FALSE;
-		if (!gs_plugin_refine_item_origin (plugin, installation,
+		if (!gs_plugin_refine_item_origin (self,
 						   runtime, cancellable, error))
 			return FALSE;
-		if (!gs_plugin_refine_item_state (plugin, installation, runtime,
+		if (!gs_plugin_refine_item_state (self, runtime,
 						  cancellable, error))
 			return FALSE;
 		if (gs_app_get_state (runtime) == AS_APP_STATE_UNKNOWN) {
@@ -1258,7 +1214,7 @@ gs_flatpak_app_install (GsPlugin *plugin,
 			g_debug ("%s is not already installed, so installing",
 				 gs_app_get_id (runtime));
 			gs_app_set_state (runtime, AS_APP_STATE_INSTALLING);
-			xref = flatpak_installation_install (installation,
+			xref = flatpak_installation_install (self->installation,
 							     gs_app_get_origin (runtime),
 							     gs_app_get_flatpak_kind (runtime),
 							     gs_app_get_flatpak_name (runtime),
@@ -1279,14 +1235,14 @@ gs_flatpak_app_install (GsPlugin *plugin,
 
 	/* use the source for local apps */
 	if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE_LOCAL) {
-		xref = flatpak_installation_install_bundle (installation,
+		xref = flatpak_installation_install_bundle (self->installation,
 							    gs_app_get_local_file (app),
 							    gs_flatpak_progress_cb,
 							    app,
 							    cancellable, error);
 	} else {
 		g_debug ("installing %s", gs_app_get_id (app));
-		xref = flatpak_installation_install (installation,
+		xref = flatpak_installation_install (self->installation,
 						     gs_app_get_origin (app),
 						     gs_app_get_flatpak_kind (app),
 						     gs_app_get_flatpak_name (app),
@@ -1306,8 +1262,7 @@ gs_flatpak_app_install (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_update_app (GsPlugin *plugin,
-		       FlatpakInstallation *installation,
+gs_flatpak_update_app (GsFlatpak *self,
 		       GsApp *app,
 		       GCancellable *cancellable,
 		       GError **error)
@@ -1316,12 +1271,12 @@ gs_flatpak_update_app (GsPlugin *plugin,
 
 	/* only process this app if was created by this plugin */
 	if (g_strcmp0 (gs_app_get_management_plugin (app),
-		       gs_plugin_get_name (plugin)) != 0)
+		       gs_plugin_get_name (self->plugin)) != 0)
 		return TRUE;
 
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	xref = flatpak_installation_update (installation,
+	xref = flatpak_installation_update (self->installation,
 					    FLATPAK_UPDATE_FLAGS_NONE,
 					    gs_app_get_flatpak_kind (app),
 					    gs_app_get_flatpak_name (app),
@@ -1340,8 +1295,7 @@ gs_flatpak_update_app (GsPlugin *plugin,
 }
 
 static gboolean
-gs_flatpak_file_to_app_bundle (GsPlugin *plugin,
-			       FlatpakInstallation *installation,
+gs_flatpak_file_to_app_bundle (GsFlatpak *self,
 			       GsAppList *list,
 			       GFile *file,
 			       GCancellable *cancellable,
@@ -1363,7 +1317,7 @@ gs_flatpak_file_to_app_bundle (GsPlugin *plugin,
 	}
 
 	/* create a virtual ID */
-	id_prefixed = gs_flatpak_build_id (installation,
+	id_prefixed = gs_flatpak_build_id (self->installation,
 					   FLATPAK_REF (xref_bundle));
 
 	/* load metadata */
@@ -1371,9 +1325,9 @@ gs_flatpak_file_to_app_bundle (GsPlugin *plugin,
 	gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	gs_app_set_state (app, AS_APP_STATE_AVAILABLE_LOCAL);
 	gs_app_set_size_installed (app, flatpak_bundle_ref_get_installed_size (xref_bundle));
-	gs_flatpak_set_metadata (plugin, app, FLATPAK_REF (xref_bundle));
+	gs_flatpak_set_metadata (self, app, FLATPAK_REF (xref_bundle));
 	metadata = flatpak_bundle_ref_get_metadata (xref_bundle);
-	if (!gs_flatpak_set_app_metadata (plugin, app,
+	if (!gs_flatpak_set_app_metadata (self, app,
 					  g_bytes_get_data (metadata, NULL),
 					  g_bytes_get_size (metadata),
 					  error))
@@ -1421,13 +1375,13 @@ gs_flatpak_file_to_app_bundle (GsPlugin *plugin,
 		}
 
 		/* copy details from AppStream to app */
-		if (!gs_appstream_refine_app (plugin, app, item, error))
+		if (!gs_appstream_refine_app (self->plugin, app, item, error))
 			return FALSE;
 	}
 
 	/* load icon */
 	icon_data = flatpak_bundle_ref_get_icon (xref_bundle,
-						 64 * gs_plugin_get_scale (plugin));
+						 64 * gs_plugin_get_scale (self->plugin));
 	if (icon_data == NULL)
 		icon_data = flatpak_bundle_ref_get_icon (xref_bundle, 64);
 	if (icon_data != NULL) {
@@ -1456,8 +1410,7 @@ gs_flatpak_file_to_app_bundle (GsPlugin *plugin,
 }
 
 static gboolean
-gs_flatpak_file_to_app_repo (GsPlugin *plugin,
-			     FlatpakInstallation *installation,
+gs_flatpak_file_to_app_repo (GsFlatpak *self,
 			     GsAppList *list,
 			     GFile *file,
 			     GCancellable *cancellable,
@@ -1533,7 +1486,7 @@ gs_flatpak_file_to_app_repo (GsPlugin *plugin,
 	}
 
 	/* check to see if the repo ID already exists */
-	xremote = flatpak_installation_get_remote_by_name (installation,
+	xremote = flatpak_installation_get_remote_by_name (self->installation,
 							   repo_id,
 							   cancellable, NULL);
 	if (xremote != NULL) {
@@ -1546,8 +1499,7 @@ gs_flatpak_file_to_app_repo (GsPlugin *plugin,
 }
 
 gboolean
-gs_flatpak_file_to_app (GsPlugin *plugin,
-			FlatpakInstallation *installation,
+gs_flatpak_file_to_app (GsFlatpak *self,
 			GsAppList *list,
 			GFile *file,
 			GCancellable *cancellable,
@@ -1566,20 +1518,52 @@ gs_flatpak_file_to_app (GsPlugin *plugin,
 	if (content_type == NULL)
 		return FALSE;
 	if (g_strv_contains (mimetypes_bundle, content_type)) {
-		return gs_flatpak_file_to_app_bundle (plugin,
-						      installation,
+		return gs_flatpak_file_to_app_bundle (self,
 						      list,
 						      file,
 						      cancellable,
 						      error);
 	}
 	if (g_strv_contains (mimetypes_repo, content_type)) {
-		return gs_flatpak_file_to_app_repo (plugin,
-						    installation,
+		return gs_flatpak_file_to_app_repo (self,
 						    list,
 						    file,
 						    cancellable,
 						    error);
 	}
 	return TRUE;
+}
+
+static void
+gs_flatpak_finalize (GObject *object)
+{
+	GsFlatpak *self;
+	g_return_if_fail (GS_IS_FLATPAK (object));
+	self = GS_FLATPAK (object);
+
+	g_object_unref (self->plugin);
+
+	G_OBJECT_CLASS (gs_flatpak_parent_class)->finalize (object);
+}
+
+static void
+gs_flatpak_class_init (GsFlatpakClass *klass)
+{
+	GObjectClass *object_class = G_OBJECT_CLASS (klass);
+	object_class->finalize = gs_flatpak_finalize;
+}
+
+static void
+gs_flatpak_init (GsFlatpak *self)
+{
+}
+
+GsFlatpak *
+gs_flatpak_new (GsPlugin *plugin, GsFlatpakScope scope)
+{
+	GsFlatpak *self;
+	self = g_object_new (GS_TYPE_FLATPAK, NULL);
+	self->scope = scope;
+	self->plugin = g_object_ref (plugin);
+	return GS_FLATPAK (self);
 }

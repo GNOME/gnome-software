@@ -35,8 +35,7 @@
 #include "gs-flatpak.h"
 
 struct GsPluginData {
-	FlatpakInstallation	*installation;
-	GFileMonitor		*monitor;
+	GsFlatpak		*flatpak;
 	GSettings		*settings;
 };
 
@@ -44,6 +43,7 @@ void
 gs_plugin_initialize (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	priv->flatpak = gs_flatpak_new (plugin, GS_FLATPAK_SCOPE_SYSTEM);
 	priv->settings = g_settings_new ("org.gnome.software");
 
 	/* getting app properties from appstream is quicker */
@@ -54,8 +54,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	g_clear_object (&priv->installation);
-	g_clear_object (&priv->monitor);
+	g_clear_object (&priv->flatpak);
 	g_clear_object (&priv->settings);
 }
 
@@ -72,9 +71,7 @@ gboolean
 gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_setup (plugin, GS_FLATPAK_TYPE_SYSTEM,
-				 &priv->installation, &priv->monitor,
-				 cancellable, error);
+	return gs_flatpak_setup (priv->flatpak, cancellable, error);
 }
 
 gboolean
@@ -84,8 +81,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_add_installed (plugin, priv->installation, list,
-					 cancellable, error);
+	return gs_flatpak_add_installed (priv->flatpak, list, cancellable, error);
 }
 
 gboolean
@@ -95,8 +91,7 @@ gs_plugin_add_sources (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_add_sources (plugin, priv->installation, list,
-				       cancellable, error);
+	return gs_flatpak_add_sources (priv->flatpak, list, cancellable, error);
 }
 
 gboolean
@@ -106,8 +101,7 @@ gs_plugin_add_source (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_add_source (plugin, priv->installation, app,
-				      cancellable, error);
+	return gs_flatpak_add_source (priv->flatpak, app, cancellable, error);
 }
 
 gboolean
@@ -117,8 +111,7 @@ gs_plugin_add_updates (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_add_updates (plugin, priv->installation, list,
-				       cancellable, error);
+	return gs_flatpak_add_updates (priv->flatpak, list, cancellable, error);
 }
 
 gboolean
@@ -129,7 +122,7 @@ gs_plugin_refresh (GsPlugin *plugin,
 		   GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_refresh (plugin, priv->installation, cache_age, flags,
+	return gs_flatpak_refresh (priv->flatpak, cache_age, flags,
 				   cancellable, error);
 }
 
@@ -141,7 +134,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_refine_app (plugin, priv->installation, app, flags,
+	return gs_flatpak_refine_app (priv->flatpak, app, flags,
 				      cancellable, error);
 }
 
@@ -152,8 +145,7 @@ gs_plugin_launch (GsPlugin *plugin,
 		  GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_launch (plugin, priv->installation, app, cancellable,
-				  error);
+	return gs_flatpak_launch (priv->flatpak, app, cancellable, error);
 }
 
 gboolean
@@ -163,8 +155,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_app_remove (plugin, priv->installation, app,
-				      cancellable, error);
+	return gs_flatpak_app_remove (priv->flatpak, app, cancellable, error);
 }
 
 gboolean
@@ -174,8 +165,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		       GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_app_install (plugin, priv->installation, app,
-				       cancellable, error);
+	return gs_flatpak_app_install (priv->flatpak, app, cancellable, error);
 }
 
 gboolean
@@ -185,8 +175,7 @@ gs_plugin_update_app (GsPlugin *plugin,
 		      GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
-	return gs_flatpak_update_app (plugin, priv->installation, app,
-				      cancellable, error);
+	return gs_flatpak_update_app (priv->flatpak, app, cancellable, error);
 }
 
 gboolean
@@ -205,6 +194,6 @@ gs_plugin_file_to_app (GsPlugin *plugin,
 		return TRUE;
 	}
 
-	return gs_flatpak_file_to_app (plugin, priv->installation, list, file,
+	return gs_flatpak_file_to_app (priv->flatpak, list, file,
 				       cancellable, error);
 }
