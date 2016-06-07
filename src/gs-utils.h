@@ -47,6 +47,11 @@ guint		 gs_utils_get_file_age		(GFile		*file);
 gchar		*gs_utils_get_content_type	(GFile		*file,
 						 GCancellable	*cancellable,
 						 GError		**error);
+gboolean	 gs_utils_symlink		(const gchar	*target,
+						 const gchar	*linkpath,
+						 GError		**error);
+gboolean	 gs_utils_unlink		(const gchar	*filename,
+						 GError		**error);
 gboolean	 gs_mkdir_parent		(const gchar	*path,
 						 GError		**error);
 gchar		*gs_utils_get_cache_filename	(const gchar	*kind,

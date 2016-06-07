@@ -34,6 +34,7 @@
 
 #include <errno.h>
 #include <fnmatch.h>
+#include <glib/gstdio.h>
 
 #ifdef HAVE_POLKIT
 #include <polkit/polkit.h>
@@ -304,6 +305,56 @@ gs_utils_get_desktop_app_info (const gchar *id)
 	}
 
 	return app_info;
+}
+
+/**
+ * gs_utils_symlink:
+ * @target: the full path of the symlink to create
+ * @source: where the symlink should point to
+ * @error: A #GError, or %NULL
+ *
+ * Creates a symlink that can cross filesystem boundaries.
+ * Any parent directories needed for target to exist are also created.
+ *
+ * Returns: %TRUE for success
+ **/
+gboolean
+gs_utils_symlink (const gchar *target, const gchar *linkpath, GError **error)
+{
+	if (!gs_mkdir_parent (target, error))
+		return FALSE;
+	if (symlink (target, linkpath) != 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to create symlink from %s to %s",
+			     linkpath, target);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+/**
+ * gs_utils_unlink:
+ * @filename: A full pathname to delete
+ * @error: A #GError, or %NULL
+ *
+ * Deletes a file from disk.
+ *
+ * Returns: %TRUE for success
+ **/
+gboolean
+gs_utils_unlink (const gchar *filename, GError **error)
+{
+	if (g_unlink (filename) != 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "failed to delete %s",
+			     filename);
+		return FALSE;
+	}
+	return TRUE;
 }
 
 /* vim: set noexpandtab: */
