@@ -820,8 +820,7 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 		FlatpakInstalledRef *xref = g_ptr_array_index (xrefs, i);
 
 		/* check xref is app */
-		if (!gs_flatpak_app_matches_xref (self, app,
-						  FLATPAK_REF(xref)))
+		if (!gs_flatpak_app_matches_xref (self, app, FLATPAK_REF(xref)))
 			continue;
 
 		/* mark as installed */
@@ -833,8 +832,7 @@ gs_plugin_refine_item_state (GsFlatpak *self,
 	}
 
 	/* ensure origin set */
-	if (!gs_plugin_refine_item_origin (self, app,
-					   cancellable, error))
+	if (!gs_plugin_refine_item_origin (self, app, cancellable, error))
 		return FALSE;
 
 	/* anything not installed just check the remote is still present */
@@ -1067,8 +1065,7 @@ gs_flatpak_refine_app (GsFlatpak *self,
 		return FALSE;
 
 	/* check the installed state */
-	if (!gs_plugin_refine_item_state (self, app,
-					  cancellable, error))
+	if (!gs_plugin_refine_item_state (self, app, cancellable, error))
 		return FALSE;
 
 	/* version fallback */
@@ -1156,8 +1153,7 @@ gs_flatpak_app_remove (GsFlatpak *self,
 	gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 
 	/* refresh the state */
-	if (!gs_plugin_refine_item_state (self, app,
-					  cancellable, error))
+	if (!gs_plugin_refine_item_state (self, app, cancellable, error))
 		return FALSE;
 
 	/* success */
