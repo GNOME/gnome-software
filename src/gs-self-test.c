@@ -673,7 +673,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 	g_autoptr(GsAppList) sources = NULL;
 
 	/* no flatpak, abort */
-	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak"))
+	if (!gs_plugin_loader_get_enabled (plugin_loader, "flatpak-user"))
 		return;
 
 	/* check changed file exists */
@@ -697,7 +697,7 @@ gs_plugin_loader_flatpak_func (GsPluginLoader *plugin_loader)
 		return;
 	testdir_repourl = g_strdup_printf ("file://%s/repo", testdir);
 	gs_app_set_kind (app_source, AS_APP_KIND_SOURCE);
-	gs_app_set_management_plugin (app_source, "flatpak");
+	gs_app_set_management_plugin (app_source, "flatpak-user");
 	gs_app_set_state (app_source, AS_APP_STATE_AVAILABLE);
 	gs_app_set_url (app_source, AS_URL_KIND_HOMEPAGE, testdir_repourl);
 	ret = gs_plugin_loader_app_action (plugin_loader, app_source,
@@ -949,6 +949,9 @@ main (int argc, char **argv)
 		"    <keywords>\n"
 		"      <keyword>Bingo</keyword>\n"
 		"    </keywords>\n"
+		"    <metadata>\n"
+		"      <value key=\"GnomeSoftware::Plugin\">flatpak-user</value>\n"
+		"    </metadata>\n"
 		"    <project_license>GPL-2.0+</project_license>\n"
 		"    <url type=\"homepage\">http://127.0.0.1/</url>\n"
 		"    <bundle type=\"flatpak\" runtime=\"org.test.Runtime/x86_64/master\">app/org.test.Chiron/x86_64/master</bundle>\n"
