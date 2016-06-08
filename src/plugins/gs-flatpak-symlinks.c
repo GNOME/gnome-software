@@ -148,9 +148,13 @@ gs_flatpak_symlinks_check_valid (FlatpakInstallation *installation,
 		g_autofree gchar *prefix_colon = g_strdup_printf ("%s:", prefix);
 		g_autoptr(FlatpakRemote) xremote = NULL;
 
+		/* not interesting */
 		if (!g_str_has_prefix (tmp, prefix_colon))
 			continue;
-		if (!g_file_test (tmp, G_FILE_TEST_IS_SYMLINK))
+
+		/* only a symlink */
+		fn = g_build_filename (subdir, tmp, NULL);
+		if (!g_file_test (fn, G_FILE_TEST_IS_SYMLINK))
 			continue;
 
 		/* can we find a valid remote for this file */
@@ -166,7 +170,6 @@ gs_flatpak_symlinks_check_valid (FlatpakInstallation *installation,
 			g_debug ("%s remote symlink is valid", origin);
 			continue;
 		}
-		fn = g_build_filename (subdir, tmp, NULL);
 		g_debug ("deleting %s symlink as no longer valid", fn);
 		if (!gs_utils_unlink (fn, error))
 			return FALSE;
