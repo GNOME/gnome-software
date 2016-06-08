@@ -29,6 +29,10 @@ G_BEGIN_DECLS
 GError		*gs_app_get_last_error		(GsApp		*app);
 void		 gs_app_set_last_error		(GsApp		*app,
 						 GError		*error);
+void		 gs_app_set_priority		(GsApp		*app,
+						 guint		 priority);
+guint		 gs_app_get_priority		(GsApp		*app);
+
 G_END_DECLS
 
 #endif /* __GS_APP_PRIVATE_H */

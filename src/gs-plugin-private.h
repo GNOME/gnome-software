@@ -43,6 +43,9 @@ void		 gs_plugin_set_scale			(GsPlugin	*plugin,
 guint		 gs_plugin_get_order			(GsPlugin	*plugin);
 void		 gs_plugin_set_order			(GsPlugin	*plugin,
 							 guint		 order);
+guint		 gs_plugin_get_priority			(GsPlugin	*plugin);
+void		 gs_plugin_set_priority			(GsPlugin	*plugin,
+							 guint		 priority);
 void		 gs_plugin_set_locale			(GsPlugin	*plugin,
 							 const gchar	*locale);
 void		 gs_plugin_set_profile			(GsPlugin	*plugin,

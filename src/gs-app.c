@@ -89,6 +89,7 @@ struct _GsApp
 	AsUrgencyKind		 update_urgency;
 	gchar			*management_plugin;
 	guint			 match_value;
+	guint			 priority;
 	gint			 rating;
 	GArray			*review_ratings;
 	GPtrArray		*reviews; /* of GsReview */
@@ -309,6 +310,8 @@ gs_app_to_string (GsApp *app)
 	}
 	if (app->match_value != 0)
 		gs_app_kv_printf (str, "match-value", "%05x", app->match_value);
+	if (app->priority != 0)
+		gs_app_kv_printf (str, "priority", "%i", app->priority);
 	if (app->version != NULL)
 		gs_app_kv_lpad (str, "version", app->version);
 	if (app->version_ui != NULL)
@@ -2607,6 +2610,36 @@ gs_app_get_match_value (GsApp *app)
 {
 	g_return_val_if_fail (GS_IS_APP (app), 0);
 	return app->match_value;
+}
+
+/**
+ * gs_app_set_priority:
+ * @app: a #GsApp
+ * @priority: a value
+ *
+ * Set a priority value.
+ **/
+void
+gs_app_set_priority (GsApp *app, guint priority)
+{
+	g_return_if_fail (GS_IS_APP (app));
+	app->priority = priority;
+}
+
+/**
+ * gs_app_get_priority:
+ * @app: a #GsApp
+ *
+ * Get a priority value, where higher values will be chosen where
+ * multiple #GsApp's match a specific rule.
+ *
+ * Returns: a value, where higher is better
+ **/
+guint
+gs_app_get_priority (GsApp *app)
+{
+	g_return_val_if_fail (GS_IS_APP (app), 0);
+	return app->priority;
 }
 
 /**

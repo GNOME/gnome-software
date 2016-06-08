@@ -180,6 +180,22 @@ gs_plugin_loader_app_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 			  gs_app_get_name (app2));
 }
 
+static GsPlugin *
+gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
+			      const gchar *plugin_name)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GsPlugin *plugin;
+	guint i;
+
+	for (i = 0; i < priv->plugins->len; i++) {
+		plugin = g_ptr_array_index (priv->plugins, i);
+		if (g_strcmp0 (gs_plugin_get_name (plugin), plugin_name) == 0)
+			return plugin;
+	}
+	return NULL;
+}
+
 /**
  * gs_plugin_loader_action_start:
  **/
@@ -633,6 +649,24 @@ gs_plugin_loader_get_app_str (GsApp *app)
 	return "<invalid>";
 }
 
+static gboolean
+gs_plugin_loader_app_set_prio (GsApp *app, gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+	GsPlugin *plugin;
+	const gchar *tmp;
+
+	/* if set, copy the priority */
+	tmp = gs_app_get_management_plugin (app);
+	if (tmp == NULL)
+		return TRUE;
+	plugin = gs_plugin_loader_find_plugin (plugin_loader, tmp);
+	if (plugin == NULL)
+		return TRUE;
+	gs_app_set_priority (app, gs_plugin_get_priority (plugin));
+	return TRUE;
+}
+
 /**
  * gs_plugin_loader_app_is_valid_installed:
  **/
@@ -1040,6 +1074,7 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 	/* remove any packages that are not proper applications or
 	 * OS updates */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1377,6 +1412,7 @@ gs_plugin_loader_get_installed_thread_cb (GTask *task,
 	/* filter package list */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid_installed, state);
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1492,6 +1528,7 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1586,6 +1623,7 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
 		gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 		gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	}
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1807,6 +1845,7 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
@@ -1970,6 +2009,7 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
@@ -2133,6 +2173,7 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
@@ -2475,6 +2516,7 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
 
 	/* sort, just in case the UI doesn't do this */
 	gs_app_list_sort (state->list, gs_plugin_loader_app_sort_cb, NULL);
@@ -3330,25 +3372,6 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 }
 
 /**
- * gs_plugin_loader_find_plugin:
- */
-static GsPlugin *
-gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
-			      const gchar *plugin_name)
-{
-	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
-	GsPlugin *plugin;
-	guint i;
-
-	for (i = 0; i < priv->plugins->len; i++) {
-		plugin = g_ptr_array_index (priv->plugins, i);
-		if (g_strcmp0 (gs_plugin_get_name (plugin), plugin_name) == 0)
-			return plugin;
-	}
-	return NULL;
-}
-
-/**
  * gs_plugin_loader_get_enabled:
  */
 gboolean
@@ -3757,6 +3780,49 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	/* sort by order */
 	g_ptr_array_sort (priv->plugins,
 			  gs_plugin_loader_plugin_sort_fn);
+
+	/* assign priority values */
+	do {
+		changes = FALSE;
+		for (i = 0; i < priv->plugins->len; i++) {
+			plugin = g_ptr_array_index (priv->plugins, i);
+			deps = gs_plugin_get_rules (plugin, GS_PLUGIN_RULE_BETTER_THAN);
+			for (j = 0; j < deps->len && !changes; j++) {
+				plugin_name = g_ptr_array_index (deps, j);
+				dep = gs_plugin_loader_find_plugin (plugin_loader,
+								    plugin_name);
+				if (dep == NULL) {
+					g_debug ("cannot find plugin '%s' "
+						 "requested by '%s'",
+						 plugin_name,
+						 gs_plugin_get_name (plugin));
+					continue;
+				}
+				if (!gs_plugin_get_enabled (dep))
+					continue;
+				if (gs_plugin_get_priority (plugin) <= gs_plugin_get_priority (dep)) {
+					g_debug ("%s [%i] is better than %s [%i] "
+						 "so promoting to [%i]",
+						 gs_plugin_get_name (plugin),
+						 gs_plugin_get_priority (plugin),
+						 gs_plugin_get_name (dep),
+						 gs_plugin_get_priority (dep),
+						 gs_plugin_get_priority (dep) + 1);
+					gs_plugin_set_priority (plugin, gs_plugin_get_priority (dep) + 1);
+					changes = TRUE;
+				}
+			}
+		}
+
+		/* check we're not stuck */
+		if (dep_loop_check++ > 100) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "got stuck in priority loop");
+			return FALSE;
+		}
+	} while (changes);
 
 	/* run setup */
 	for (i = 0; i < priv->plugins->len; i++) {

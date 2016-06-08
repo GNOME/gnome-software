@@ -69,6 +69,7 @@ typedef struct
 	gchar			*name;
 	gint			 scale;
 	guint			 order;
+	guint			 priority;
 	guint			 timer_id;
 	GMutex			 timer_mutex;
 } GsPluginPrivate;
@@ -422,6 +423,37 @@ gs_plugin_set_order (GsPlugin *plugin, guint order)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	priv->order = order;
+}
+
+/**
+ * gs_plugin_get_priority:
+ * @plugin: a #GsPlugin
+ *
+ * Gets the plugin priority, where higher values will be chosen where
+ * multiple #GsApp's match a specific rule.
+ *
+ * Returns: the integer value
+ **/
+guint
+gs_plugin_get_priority (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->priority;
+}
+
+/**
+ * gs_plugin_set_priority:
+ * @plugin: a #GsPlugin
+ * @priority: a integer value
+ *
+ * Sets the plugin priority, where higher values will be chosen where
+ * multiple #GsApp's match a specific rule.
+ **/
+void
+gs_plugin_set_priority (GsPlugin *plugin, guint priority)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	priv->priority = priority;
 }
 
 /**

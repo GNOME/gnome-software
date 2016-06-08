@@ -210,6 +210,7 @@ typedef enum {
  * @GS_PLUGIN_RULE_CONFLICTS:		The plugin conflicts with another
  * @GS_PLUGIN_RULE_RUN_AFTER:		Order the plugin after another
  * @GS_PLUGIN_RULE_RUN_BEFORE:		Order the plugin before another
+ * @GS_PLUGIN_RULE_BETTER_THAN:		Results are better than another
  *
  * The rules used for ordering plugins.
  * Plugins are expected to add rules in gs_plugin_initialize().
@@ -218,6 +219,7 @@ typedef enum {
 	GS_PLUGIN_RULE_CONFLICTS,
 	GS_PLUGIN_RULE_RUN_AFTER,
 	GS_PLUGIN_RULE_RUN_BEFORE,
+	GS_PLUGIN_RULE_BETTER_THAN,
 	/*< private >*/
 	GS_PLUGIN_RULE_LAST
 } GsPluginRule;
