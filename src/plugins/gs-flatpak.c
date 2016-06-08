@@ -45,6 +45,10 @@ struct _GsFlatpak {
 
 G_DEFINE_TYPE (GsFlatpak, gs_flatpak, G_TYPE_OBJECT)
 
+static gboolean
+gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
+			      GCancellable *cancellable, GError **error);
+
 static void
 gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GFile *child,
@@ -53,8 +57,15 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 			      GsFlatpak *self)
 {
 	g_autoptr(GError) error = NULL;
+	g_autoptr(GError) error_md = NULL;
 
 	gs_plugin_updates_changed (self->plugin);
+
+	/* if this is a new remote, get the AppStream data */
+	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, NULL, &error_md)) {
+		g_warning ("failed to get initial available data: %s",
+			   error_md->message);
+	}
 
 	/* ensure the AppStream symlink cache is up to date */
 	if (!gs_flatpak_symlinks_rebuild (self->installation, NULL, &error))
