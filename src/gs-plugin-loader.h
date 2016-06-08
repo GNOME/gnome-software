@@ -183,6 +183,7 @@ gboolean	 gs_plugin_loader_update_finish		(GsPluginLoader	*plugin_loader,
 							 GError		**error);
 gboolean	 gs_plugin_loader_setup			(GsPluginLoader	*plugin_loader,
 							 gchar		**whitelist,
+							 gchar		**blacklist,
 							 GError		**error);
 void		 gs_plugin_loader_dump_state		(GsPluginLoader	*plugin_loader);
 gboolean	 gs_plugin_loader_get_enabled		(GsPluginLoader	*plugin_loader,

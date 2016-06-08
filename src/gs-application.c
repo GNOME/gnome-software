@@ -198,16 +198,30 @@ static void
 gs_application_initialize_plugins (GsApplication *app)
 {
 	static gboolean initialized = FALSE;
+	g_auto(GStrv) plugin_blacklist = NULL;
+	g_auto(GStrv) plugin_whitelist = NULL;
 	g_autoptr(GError) error = NULL;
+	const gchar *tmp;
 
 	if (initialized)
 		return;
 
 	initialized = TRUE;
 
+	/* allow for debugging */
+	tmp = g_getenv ("GNOME_SOFTWARE_PLUGINS_BLACKLIST");
+	if (tmp != NULL)
+		plugin_blacklist = g_strsplit (tmp, ",", -1);
+	tmp = g_getenv ("GNOME_SOFTWARE_PLUGINS_WHITELIST");
+	if (tmp != NULL)
+		plugin_whitelist = g_strsplit (tmp, ",", -1);
+
 	app->plugin_loader = gs_plugin_loader_new ();
 	gs_plugin_loader_set_location (app->plugin_loader, NULL);
-	if (!gs_plugin_loader_setup (app->plugin_loader, NULL, &error)) {
+	if (!gs_plugin_loader_setup (app->plugin_loader,
+				     plugin_whitelist,
+				     plugin_blacklist,
+				     &error)) {
 		g_warning ("Failed to setup plugins: %s", error->message);
 		exit (1);
 	}

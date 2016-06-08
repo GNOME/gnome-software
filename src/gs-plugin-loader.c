@@ -3349,10 +3349,19 @@ gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
 
 /**
  * gs_plugin_loader_setup:
+ * @plugin_loader: a #GsPluginLoader
+ * @whitelist: list of plugin names, or %NULL
+ * @blacklist: list of plugin names, or %NULL
+ * @error: A #GError, or %NULL
+ *
+ * Sets up the plugin loader ready for use.
+ *
+ * Returns: %TRUE for success
  */
 gboolean
 gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			gchar **whitelist,
+			gchar **blacklist,
 			GError **error)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
@@ -3401,6 +3410,20 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 			ret = g_strv_contains ((const gchar * const *) whitelist,
 					       gs_plugin_get_name (plugin));
 			gs_plugin_set_enabled (plugin, ret);
+		}
+	}
+
+	/* optional blacklist */
+	if (blacklist != NULL) {
+		for (i = 0; i < priv->plugins->len; i++) {
+			gboolean ret;
+			plugin = g_ptr_array_index (priv->plugins, i);
+			if (!gs_plugin_get_enabled (plugin))
+				continue;
+			ret = g_strv_contains ((const gchar * const *) blacklist,
+					       gs_plugin_get_name (plugin));
+			if (ret)
+				gs_plugin_set_enabled (plugin, FALSE);
 		}
 	}
 

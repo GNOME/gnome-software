@@ -975,7 +975,7 @@ main (int argc, char **argv)
 	g_signal_connect (plugin_loader, "status-changed",
 			  G_CALLBACK (gs_plugin_loader_status_changed_cb), NULL);
 	gs_plugin_loader_set_location (plugin_loader, "./plugins/.libs");
-	ret = gs_plugin_loader_setup (plugin_loader, (gchar**) whitelist, &error);
+	ret = gs_plugin_loader_setup (plugin_loader, (gchar**) whitelist, NULL, &error);
 	g_assert_no_error (error);
 	g_assert (ret);
 	g_assert (!gs_plugin_loader_get_enabled (plugin_loader, "notgoingtoexist"));
