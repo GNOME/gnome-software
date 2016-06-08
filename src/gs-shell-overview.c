@@ -318,7 +318,10 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source_object);
 	guint i;
+	guint important_cnt = 0;
+	guint important_aim;
 	GsCategory *cat;
+	GtkFlowBox *flowbox;
 	GtkWidget *tile;
 	gboolean has_category = FALSE;
 	gboolean use_expander = FALSE;
@@ -334,8 +337,33 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	gs_container_remove_all (GTK_CONTAINER (priv->flowbox_categories));
 	gs_container_remove_all (GTK_CONTAINER (priv->flowbox_categories2));
 
+	/* ensure there are no more than two rows of curated categories */
+	flowbox = GTK_FLOW_BOX (priv->flowbox_categories);
+	important_aim = 2 * gtk_flow_box_get_max_children_per_line (flowbox);
 	for (i = 0; i < list->len; i++) {
-		GtkFlowBox *flowbox;
+		cat = GS_CATEGORY (g_ptr_array_index (list, i));
+		if (gs_category_get_important (cat)) {
+			if (++important_cnt > important_aim) {
+				g_debug ("overriding %s as unimportant",
+					 gs_category_get_id (cat));
+				gs_category_set_important (cat, FALSE);
+			}
+		}
+	}
+
+	/* ensure we show a full first flowbox if we don't have enough */
+	for (i = 0; i < list->len && important_cnt < important_aim; i++) {
+		cat = GS_CATEGORY (g_ptr_array_index (list, i));
+		if (!gs_category_get_important (cat)) {
+			important_cnt++;
+			g_debug ("overriding %s as important",
+				 gs_category_get_id (cat));
+			gs_category_set_important (cat, TRUE);
+		}
+	}
+
+	/* add categories to the correct flowboxes, the second being hidden */
+	for (i = 0; i < list->len; i++) {
 		cat = GS_CATEGORY (g_ptr_array_index (list, i));
 		if (gs_category_get_size (cat) == 0)
 			continue;
