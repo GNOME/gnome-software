@@ -212,6 +212,9 @@ gs_page_update_app_response_cb (GtkDialog *dialog,
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
 
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK) {
 		gs_page_helper_free (helper);
@@ -289,6 +292,9 @@ gs_page_remove_app_response_cb (GtkDialog *dialog,
 				GsPageHelper *helper)
 {
 	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK) {

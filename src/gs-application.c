@@ -255,6 +255,8 @@ gs_application_show_first_run_dialog (GsApplication *app)
 		dialog = gs_first_run_dialog_new ();
 		gs_shell_modal_dialog_present (app->shell, GTK_DIALOG (dialog));
 		g_settings_set_boolean (app->settings, "first-run", FALSE);
+		g_signal_connect_swapped (dialog, "response",
+					  G_CALLBACK (gtk_widget_destroy), dialog);
 	}
 }
 
@@ -379,6 +381,10 @@ about_activated (GSimpleAction *action,
 						 "software on your system."));
 
 	gs_shell_modal_dialog_present (app->shell, GTK_DIALOG (dialog));
+
+	/* just destroy */
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy), dialog);
 }
 
 static void

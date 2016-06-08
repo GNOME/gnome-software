@@ -772,6 +772,10 @@ gs_shell_show_sources (GsShell *shell)
 
 	dialog = gs_sources_dialog_new (priv->main_window, priv->plugin_loader);
 	gs_shell_modal_dialog_present (shell, GTK_DIALOG (dialog));
+
+	/* just destroy */
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy), dialog);
 }
 
 void
