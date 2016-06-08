@@ -212,11 +212,10 @@ get_rating (gint64 one_star_count, gint64 two_star_count, gint64 three_star_coun
 
 	// Use a Wilson score which is a method of ensuring small numbers of ratings don't give high scores
 	// https://en.wikipedia.org/wiki/Binomial_proportion_confidence_interval
-	return ((wilson_score (one_star_count, n_ratings, 0.1) * 20) +
-		(wilson_score (two_star_count, n_ratings, 0.1) * 40) +
-		(wilson_score (three_star_count, n_ratings, 0.1) * 60) +
-		(wilson_score (four_star_count, n_ratings, 0.1) * 80) +
-		(wilson_score (five_star_count, n_ratings, 0.1) * 100));
+	return (((wilson_score (one_star_count, n_ratings, 0.1) * -2) +
+		 (wilson_score (two_star_count, n_ratings, 0.1) * -1) +
+		 (wilson_score (four_star_count, n_ratings, 0.1) * 1) +
+		 (wilson_score (five_star_count, n_ratings, 0.1) * 2)) + 3) * 20;
 }
 
 static gboolean
