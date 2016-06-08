@@ -626,6 +626,8 @@ show_folder_dialog (GtkButton *button, GsShellInstalled *self)
 	dialog = gs_app_folder_dialog_new (GTK_WINDOW (toplevel), apps);
 	g_signal_connect_swapped (dialog, "delete-event",
 				  G_CALLBACK (folder_dialog_done), self);
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy), dialog);
 	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
 }
 

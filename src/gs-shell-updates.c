@@ -655,6 +655,10 @@ show_update_details (GsApp *app, GsShellUpdates *self)
 	dialog = gs_update_dialog_new (self->plugin_loader);
 	gs_update_dialog_show_update_details (GS_UPDATE_DIALOG (dialog), app);
 	gs_shell_modal_dialog_present (self->shell, GTK_DIALOG (dialog));
+
+	/* just destroy */
+	g_signal_connect_swapped (dialog, "response",
+				  G_CALLBACK (gtk_widget_destroy), dialog);
 }
 
 /**
@@ -768,6 +772,9 @@ gs_shell_updates_refresh_confirm_cb (GtkDialog *dialog,
 				     GtkResponseType response_type,
 				     GsShellUpdates *self)
 {
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
 	switch (response_type) {
 	case GTK_RESPONSE_REJECT:
 		/* open the control center */

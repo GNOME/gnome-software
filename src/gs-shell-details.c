@@ -1157,6 +1157,9 @@ gs_shell_details_failed_response_cb (GtkDialog *dialog,
 				     gint response,
 				     GsShellDetails *self)
 {
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
 	/* switch away from the details view that failed to load */
 	gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
 }
@@ -1427,6 +1430,9 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(GsReview) review = NULL;
 	GsReviewDialog *rdialog = GS_REVIEW_DIALOG (dialog);
+
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 
 	/* not agreed */
 	if (response != GTK_RESPONSE_OK)
