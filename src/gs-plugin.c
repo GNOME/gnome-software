@@ -67,7 +67,7 @@ typedef struct
 	gchar			*locale;		/* allow-none */
 	gchar			*name;
 	gint			 scale;
-	guint			 priority;
+	guint			 order;
 	guint			 timer_id;
 	GMutex			 timer_mutex;
 } GsPluginPrivate;
@@ -391,34 +391,34 @@ gs_plugin_set_scale (GsPlugin *plugin, guint scale)
 }
 
 /**
- * gs_plugin_get_priority:
+ * gs_plugin_get_order:
  * @plugin: a #GsPlugin
  *
- * Gets the plugin priority, where higher numbers are run after lower
+ * Gets the plugin order, where higher numbers are run after lower
  * numbers.
  *
  * Returns: the integer value
  **/
 guint
-gs_plugin_get_priority (GsPlugin *plugin)
+gs_plugin_get_order (GsPlugin *plugin)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	return priv->priority;
+	return priv->order;
 }
 
 /**
- * gs_plugin_set_priority:
+ * gs_plugin_set_order:
  * @plugin: a #GsPlugin
- * @priority: a integer value
+ * @order: a integer value
  *
- * Sets the plugin priority, where higher numbers are run after lower
+ * Sets the plugin order, where higher numbers are run after lower
  * numbers.
  **/
 void
-gs_plugin_set_priority (GsPlugin *plugin, guint priority)
+gs_plugin_set_order (GsPlugin *plugin, guint order)
 {
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
-	priv->priority = priority;
+	priv->order = order;
 }
 
 /**
@@ -1050,7 +1050,6 @@ gs_plugin_init (GsPlugin *plugin)
 		priv->rules[i] = g_ptr_array_new_with_free_func (g_free);
 
 	priv->enabled = TRUE;
-	priv->priority = 0.f;
 	priv->scale = 1;
 	priv->profile = as_profile_new ();
 	priv->cache = g_hash_table_new_full (g_str_hash,

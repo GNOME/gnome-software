@@ -221,7 +221,7 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 	guint i;
 	guint j;
 
-	/* go through each plugin in priority order */
+	/* go through each plugin in order */
 	for (i = 0; i < priv->plugins->len; i++) {
 		GsPluginAdoptAppFunc adopt_app_func = NULL;
 		GsPlugin *plugin = g_ptr_array_index (priv->plugins, i);
@@ -3340,9 +3340,9 @@ gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
 {
 	GsPlugin **pa = (GsPlugin **) a;
 	GsPlugin **pb = (GsPlugin **) b;
-	if (gs_plugin_get_priority (*pa) < gs_plugin_get_priority (*pb))
+	if (gs_plugin_get_order (*pa) < gs_plugin_get_order (*pb))
 		return -1;
-	if (gs_plugin_get_priority (*pa) > gs_plugin_get_priority (*pb))
+	if (gs_plugin_get_order (*pa) > gs_plugin_get_order (*pb))
 		return 1;
 	return 0;
 }
@@ -3449,15 +3449,15 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				}
 				if (!gs_plugin_get_enabled (dep))
 					continue;
-				if (gs_plugin_get_priority (plugin) <= gs_plugin_get_priority (dep)) {
+				if (gs_plugin_get_order (plugin) <= gs_plugin_get_order (dep)) {
 					g_debug ("%s [%i] to be ordered after %s [%i] "
 						 "so promoting to [%i]",
 						 gs_plugin_get_name (plugin),
-						 gs_plugin_get_priority (plugin),
+						 gs_plugin_get_order (plugin),
 						 gs_plugin_get_name (dep),
-						 gs_plugin_get_priority (dep),
-						 gs_plugin_get_priority (dep) + 1);
-					gs_plugin_set_priority (plugin, gs_plugin_get_priority (dep) + 1);
+						 gs_plugin_get_order (dep),
+						 gs_plugin_get_order (dep) + 1);
+					gs_plugin_set_order (plugin, gs_plugin_get_order (dep) + 1);
 					changes = TRUE;
 				}
 			}
@@ -3478,15 +3478,15 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 				}
 				if (!gs_plugin_get_enabled (dep))
 					continue;
-				if (gs_plugin_get_priority (plugin) >= gs_plugin_get_priority (dep)) {
+				if (gs_plugin_get_order (plugin) >= gs_plugin_get_order (dep)) {
 					g_debug ("%s [%i] to be ordered before %s [%i] "
 						 "so promoting to [%i]",
 						 gs_plugin_get_name (plugin),
-						 gs_plugin_get_priority (plugin),
+						 gs_plugin_get_order (plugin),
 						 gs_plugin_get_name (dep),
-						 gs_plugin_get_priority (dep),
-						 gs_plugin_get_priority (dep) + 1);
-					gs_plugin_set_priority (dep, gs_plugin_get_priority (plugin) + 1);
+						 gs_plugin_get_order (dep),
+						 gs_plugin_get_order (dep) + 1);
+					gs_plugin_set_order (dep, gs_plugin_get_order (plugin) + 1);
 					changes = TRUE;
 				}
 			}
@@ -3523,7 +3523,7 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 		}
 	}
 
-	/* sort by priority */
+	/* sort by order */
 	g_ptr_array_sort (priv->plugins,
 			  gs_plugin_loader_plugin_sort_fn);
 
@@ -3587,7 +3587,7 @@ gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 		plugin = g_ptr_array_index (priv->plugins, i);
 		g_debug ("[%s]\t%i\t->\t%s",
 			 gs_plugin_get_enabled (plugin) ? "enabled" : "disabld",
-			 gs_plugin_get_priority (plugin),
+			 gs_plugin_get_order (plugin),
 			 gs_plugin_get_name (plugin));
 	}
 }
