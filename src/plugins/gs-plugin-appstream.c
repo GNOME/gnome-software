@@ -110,6 +110,8 @@ gs_plugin_appstream_get_origins_hash (GPtrArray *array)
 	keys = g_hash_table_get_keys (origins);
 	for (l = keys; l != NULL; l = l->next) {
 		tmp = l->data;
+		if (tmp == NULL || tmp[0] == '\0')
+			continue;
 		cnt = g_hash_table_lookup (origins, tmp);
 		perc = (100.f / (gdouble) array->len) * (gdouble) (*cnt);
 		g_debug ("origin %s provides %i apps (%.0f%%)", tmp, *cnt, perc);
