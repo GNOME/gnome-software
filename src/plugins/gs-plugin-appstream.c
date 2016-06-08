@@ -149,6 +149,7 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			return FALSE;
 	} else {
 		ret = as_store_load (priv->store,
+				     AS_STORE_LOAD_FLAG_IGNORE_INVALID |
 				     AS_STORE_LOAD_FLAG_APP_INFO_SYSTEM |
 				     AS_STORE_LOAD_FLAG_APP_INFO_USER |
 				     AS_STORE_LOAD_FLAG_APPDATA |
