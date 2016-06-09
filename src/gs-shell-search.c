@@ -225,9 +225,17 @@ gs_shell_search_set_appid_to_show (GsShellSearch *self, const gchar *appid)
 	self->appid_to_show = g_strdup (appid);
 }
 
+const gchar *
+gs_shell_search_get_text (GsShellSearch *self)
+{
+	return self->value;
+}
+
 void
 gs_shell_search_set_text (GsShellSearch *self, const gchar *value)
 {
+	if (value == self->value)
+		return;
 	g_free (self->value);
 	self->value = g_strdup (value);
 }
@@ -395,7 +403,7 @@ gs_shell_search_search_button_cb (GtkButton *button, GsShellSearch *self)
 {
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (button)))
 		return;
-	gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
+	gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
 }
 
 /**

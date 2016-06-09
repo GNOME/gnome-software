@@ -58,6 +58,7 @@ typedef struct {
 	GtkWidget	*focus;
 	GsApp		*app;
 	GsCategory	*category;
+	gchar		*search;
 } BackEntry;
 
 typedef struct
@@ -80,7 +81,6 @@ typedef struct
 	GtkBuilder		*builder;
 	GtkWindow		*main_window;
 	GQueue			*back_entry_stack;
-	gboolean		 ignore_next_search_changed_signal;
 	GPtrArray		*modal_dialogs;
 } GsShellPrivate;
 
@@ -217,14 +217,12 @@ gs_shell_set_header_end_widget (GsShell *shell, GtkWidget *widget)
 void
 gs_shell_change_mode (GsShell *shell,
 		      GsShellMode mode,
-		      GsApp *app,
 		      gpointer data,
 		      gboolean scroll_up)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	GsPage *new_page;
 	GtkWidget *widget;
-	const gchar *text;
 	GtkStyleContext *context;
 
 	if (priv->ignore_primary_buttons)
@@ -293,18 +291,16 @@ gs_shell_change_mode (GsShell *shell,
 		new_page = GS_PAGE (priv->shell_loading);
 		break;
 	case GS_SHELL_MODE_SEARCH:
-		widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-		text = gtk_entry_get_text (GTK_ENTRY (widget));
-		gs_shell_search_set_text (priv->shell_search, text);
+		gs_shell_search_set_text (priv->shell_search, data);
 		new_page = GS_PAGE (priv->shell_search);
 		break;
 	case GS_SHELL_MODE_UPDATES:
 		new_page = GS_PAGE (priv->shell_updates);
 		break;
 	case GS_SHELL_MODE_DETAILS:
-		if (app != NULL)
-			gs_shell_details_set_app (priv->shell_details, app);
-		if (data != NULL)
+		if (GS_IS_APP (data))
+			gs_shell_details_set_app (priv->shell_details, data);
+		else
 			gs_shell_details_set_filename (priv->shell_details, data);
 		new_page = GS_PAGE (priv->shell_details);
 		break;
@@ -343,7 +339,7 @@ gs_shell_overview_button_cb (GtkWidget *widget, GsShell *shell)
 	GsShellMode mode;
 	mode = GPOINTER_TO_INT (g_object_get_data (G_OBJECT (widget),
 						   "gnome-software::overview-mode"));
-	gs_shell_change_mode (shell, mode, NULL, NULL, TRUE);
+	gs_shell_change_mode (shell, mode, NULL, TRUE);
 }
 
 static void
@@ -360,13 +356,29 @@ save_back_entry (GsShell *shell)
 		g_object_add_weak_pointer (G_OBJECT (entry->focus),
 					   (gpointer *) &entry->focus);
 
-	if (priv->mode == GS_SHELL_MODE_CATEGORY) {
+	switch (priv->mode) {
+	case GS_SHELL_MODE_CATEGORY:
 		entry->category = gs_shell_category_get_category (priv->shell_category);
 		g_object_ref (entry->category);
-	}
-	else if (priv->mode == GS_SHELL_MODE_DETAILS) {
+		g_debug ("pushing back entry for %s with %s",
+			 page_name[entry->mode],
+			 gs_category_get_id (entry->category));
+		break;
+	case GS_SHELL_MODE_DETAILS:
 		entry->app = gs_shell_details_get_app (priv->shell_details);
 		g_object_ref (entry->app);
+		g_debug ("pushing back entry for %s with %s",
+			 page_name[entry->mode],
+			 gs_app_get_id (entry->app));
+		break;
+	case GS_SHELL_MODE_SEARCH:
+		entry->search = g_strdup (gs_shell_search_get_text (priv->shell_search));
+		g_debug ("pushing back entry for %s with %s",
+			 page_name[entry->mode], entry->search);
+		break;
+	default:
+		g_debug ("pushing back entry for %s", page_name[entry->mode]);
+		break;
 	}
 
 	g_queue_push_head (priv->back_entry_stack, entry);
@@ -380,6 +392,7 @@ free_back_entry (BackEntry *entry)
 		                              (gpointer *) &entry->focus);
 	g_clear_object (&entry->category);
 	g_clear_object (&entry->app);
+	g_free (entry->search);
 	g_free (entry);
 }
 
@@ -396,7 +409,33 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 
 	entry = g_queue_pop_head (priv->back_entry_stack);
 
-	gs_shell_change_mode (shell, entry->mode, entry->app, entry->category, FALSE);
+	switch (entry->mode) {
+	case GS_SHELL_MODE_UNKNOWN:
+		/* only happens when the user does --search foobar */
+		g_debug ("popping back entry for %s", page_name[entry->mode]);
+		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, FALSE);
+		break;
+	case GS_SHELL_MODE_CATEGORY:
+		g_debug ("popping back entry for %s with %s",
+			 page_name[entry->mode],
+			 gs_category_get_id (entry->category));
+		gs_shell_change_mode (shell, entry->mode, entry->category, FALSE);
+		break;
+	case GS_SHELL_MODE_DETAILS:
+		g_debug ("popping back entry for %s with %p",
+			 page_name[entry->mode], entry->app);
+		gs_shell_change_mode (shell, entry->mode, entry->app, FALSE);
+		break;
+	case GS_SHELL_MODE_SEARCH:
+		g_debug ("popping back entry for %s with %s",
+			 page_name[entry->mode], entry->search);
+		gs_shell_change_mode (shell, entry->mode, entry->search, FALSE);
+		break;
+	default:
+		g_debug ("popping back entry for %s", page_name[entry->mode]);
+		gs_shell_change_mode (shell, entry->mode, NULL, FALSE);
+		break;
+	}
 
 	if (entry->focus != NULL)
 		gtk_widget_grab_focus (entry->focus);
@@ -433,21 +472,10 @@ search_changed_handler (GObject *entry, GsShell *shell)
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	const gchar *text;
 
-	if (priv->ignore_next_search_changed_signal) {
-		priv->ignore_next_search_changed_signal = FALSE;
-		return;
-	}
-
 	text = gtk_entry_get_text (GTK_ENTRY (entry));
-
-	if (text[0] == '\0' && gs_shell_get_mode (shell) == GS_SHELL_MODE_SEARCH) {
-		gs_shell_change_mode (shell, GS_SHELL_MODE_OVERVIEW, NULL, NULL, TRUE);
-		return;
-	}
-
-	if (strlen(text) > 2) {
+	if (strlen (text) > 2) {
 		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH) {
-			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
+			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, text, TRUE);
 		} else {
 			gs_shell_search_set_text (priv->shell_search, text);
 			gs_page_switch_to (GS_PAGE (priv->shell_search), TRUE);
@@ -729,7 +757,7 @@ gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 		if (matched > 0)
 			g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 	}
-	gs_shell_change_mode (shell, mode, NULL, NULL, TRUE);
+	gs_shell_change_mode (shell, mode, NULL, TRUE);
 }
 
 GsShellMode
@@ -782,7 +810,7 @@ void
 gs_shell_show_app (GsShell *shell, GsApp *app)
 {
 	save_back_entry (shell);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, app, NULL, TRUE);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, app, TRUE);
 	gs_shell_activate (shell);
 }
 
@@ -790,35 +818,29 @@ void
 gs_shell_show_category (GsShell *shell, GsCategory *category)
 {
 	save_back_entry (shell);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, NULL, category, TRUE);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_CATEGORY, category, TRUE);
 }
 
 void gs_shell_show_extras_search (GsShell *shell, const gchar *mode, gchar **resources)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-
-	save_back_entry (shell);
 	gs_shell_extras_search (priv->shell_extras, mode, resources);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_EXTRAS, NULL, NULL, TRUE);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_EXTRAS, NULL, TRUE);
 	gs_shell_activate (shell);
 }
 
 void
 gs_shell_show_search (GsShell *shell, const gchar *search)
 {
-	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	GtkWidget *widget;
-
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-	gtk_entry_set_text (GTK_ENTRY (widget), search);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
+	save_back_entry (shell);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, search, TRUE);
 }
 
 void
 gs_shell_show_filename (GsShell *shell, const gchar *filename)
 {
 	save_back_entry (shell);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, NULL, (gpointer) filename, TRUE);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, (gpointer) filename, TRUE);
 	gs_shell_activate (shell);
 }
 
@@ -826,17 +848,10 @@ void
 gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *search)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	GtkWidget *widget;
 
-	widget = GTK_WIDGET (gtk_builder_get_object (priv->builder, "entry_search"));
-
-	/* ignore next "search-changed" signal to avoid getting a callback
-	 * after 150 ms and messing up the state */
-	priv->ignore_next_search_changed_signal = TRUE;
-	gtk_entry_set_text (GTK_ENTRY (widget), search);
-
+	save_back_entry (shell);
 	gs_shell_search_set_appid_to_show (priv->shell_search, id);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, NULL, NULL, TRUE);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, search, TRUE);
 }
 
 /**

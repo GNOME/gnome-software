@@ -38,6 +38,7 @@ G_DECLARE_FINAL_TYPE (GsShellSearch, gs_shell_search, GS, SHELL_SEARCH, GsPage)
 GsShellSearch	*gs_shell_search_new		(void);
 void		 gs_shell_search_set_appid_to_show (GsShellSearch	*self,
 						 const gchar		*appid);
+const gchar	*gs_shell_search_get_text	(GsShellSearch		*self);
 void		 gs_shell_search_set_text	(GsShellSearch		*self,
 						 const gchar		*value);
 void		 gs_shell_search_reload		(GsShellSearch		*self);

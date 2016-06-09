@@ -499,7 +499,7 @@ show_search_results (GsShellExtras *self)
 		/* switch directly to details view */
 		g_debug ("extras: found one result, showing in details view");
 		app = gs_app_row_get_app (GS_APP_ROW (list->data));
-		gs_shell_change_mode (self->shell, GS_SHELL_MODE_DETAILS, app, NULL, TRUE);
+		gs_shell_change_mode (self->shell, GS_SHELL_MODE_DETAILS, app, TRUE);
 	} else {
 		/* show what we got */
 		g_debug ("extras: got %d search results, showing", n_children);

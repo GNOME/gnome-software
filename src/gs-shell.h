@@ -62,7 +62,6 @@ void		 gs_shell_refresh		(GsShell	*shell,
 						 GCancellable	*cancellable);
 void		 gs_shell_change_mode		(GsShell	*shell,
 						 GsShellMode	 mode,
-						 GsApp		*app,
 						 gpointer	 data,
 						 gboolean	 scroll_up);
 void		 gs_shell_set_mode		(GsShell	*shell,
