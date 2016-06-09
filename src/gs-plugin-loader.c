@@ -3689,6 +3689,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 
 	/* share a soup session (also disable the double-compression) */
 	priv->soup_session = soup_session_new_with_options (SOUP_SESSION_USER_AGENT, gs_user_agent (),
+							    SOUP_SESSION_TIMEOUT, 10,
 							    NULL);
 	soup_session_remove_feature_by_type (priv->soup_session,
 					     SOUP_TYPE_CONTENT_DECODER);
