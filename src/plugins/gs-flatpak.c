@@ -1295,7 +1295,7 @@ gs_flatpak_update_app (GsFlatpak *self,
 	/* install */
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
 	xref = flatpak_installation_update (self->installation,
-					    FLATPAK_UPDATE_FLAGS_NONE,
+					    FLATPAK_UPDATE_FLAGS_NO_PULL,
 					    gs_app_get_flatpak_kind (app),
 					    gs_app_get_flatpak_name (app),
 					    gs_app_get_flatpak_arch (app),
