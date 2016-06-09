@@ -475,6 +475,7 @@ search_changed_handler (GObject *entry, GsShell *shell)
 	text = gtk_entry_get_text (GTK_ENTRY (entry));
 	if (strlen (text) > 2) {
 		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH) {
+			save_back_entry (shell);
 			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, text, TRUE);
 		} else {
 			gs_shell_search_set_text (priv->shell_search, text);
