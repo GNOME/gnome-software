@@ -819,7 +819,7 @@ gs_plugin_download_data (GsPlugin *plugin,
 	guint status_code;
 	g_autoptr(SoupMessage) msg = NULL;
 
-	g_debug ("downloading %s from %s", uri, priv->name);
+	g_debug ("downloading %s from plugin %s", uri, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	if (app != NULL) {
 		helper.plugin = plugin;
@@ -831,11 +831,17 @@ gs_plugin_download_data (GsPlugin *plugin,
 	}
 	status_code = soup_session_send_message (priv->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
+		g_autoptr(GString) str = g_string_new (NULL);
+		g_string_append (str, soup_status_get_phrase (status_code));
+		if (msg->response_body->data != NULL) {
+			g_string_append (str, ": ");
+			g_string_append (str, msg->response_body->data);
+		}
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to get shell extensions: %s",
-			     msg->response_body->data);
+			     "failed to download %s: %s",
+			     uri, str->str);
 		return NULL;
 	}
 	return g_bytes_new (msg->response_body->data,
@@ -869,7 +875,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 	g_autoptr(GError) error_local = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
 
-	g_debug ("downloading %s to %s from %s", uri, filename, priv->name);
+	g_debug ("downloading %s to %s from plugin %s", uri, filename, priv->name);
 	msg = soup_message_new (SOUP_METHOD_GET, uri);
 	if (app != NULL) {
 		helper.plugin = plugin;
@@ -881,12 +887,18 @@ gs_plugin_download_file (GsPlugin *plugin,
 	}
 	status_code = soup_session_send_message (priv->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
+		g_autoptr(GString) str = g_string_new (NULL);
+		g_string_append (str, soup_status_get_phrase (status_code));
+		if (msg->response_body->data != NULL) {
+			g_string_append (str, ": ");
+			g_string_append (str, msg->response_body->data);
+		}
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "failed to get shell extensions: %s",
-			     msg->response_body->data);
-		return FALSE;
+			     "failed to download %s: %s",
+			     uri, str->str);
+		return NULL;
 	}
 	if (!g_file_set_contents (filename,
 				  msg->response_body->data,
@@ -895,7 +907,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to save firmware: %s",
+			     "Failed to save file: %s",
 			     error_local->message);
 		return FALSE;
 	}
