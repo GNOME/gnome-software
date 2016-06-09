@@ -1161,7 +1161,7 @@ gs_flatpak_app_remove (GsFlatpak *self,
 	/* remove */
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
 	if (!flatpak_installation_uninstall (self->installation,
-					     FLATPAK_REF_KIND_APP,
+					     gs_app_get_flatpak_kind (app),
 					     gs_app_get_flatpak_name (app),
 					     gs_app_get_flatpak_arch (app),
 					     gs_app_get_flatpak_branch (app),
