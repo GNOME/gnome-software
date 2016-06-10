@@ -49,6 +49,7 @@ UI_FILES =						\
 	gs-app-folder-dialog.ui				\
 	gs-app-row.ui					\
 	gs-app-tile.ui					\
+	gs-auth-dialog.ui				\
 	gs-category-tile.ui				\
 	gs-feature-tile.ui				\
 	gs-first-run-dialog.ui				\
@@ -142,6 +143,8 @@ gnome_software_SOURCES =				\
 	gs-app-list-private.h				\
 	gs-auth.c					\
 	gs-auth.h					\
+	gs-auth-dialog.c				\
+	gs-auth-dialog.h				\
 	gs-category.c					\
 	gs-category.h					\
 	gs-category-private.h				\
