@@ -3077,6 +3077,22 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 }
 
 /**
+ * gs_plugin_loader_review_action_finish:
+ **/
+gboolean
+gs_plugin_loader_review_action_finish (GsPluginLoader *plugin_loader,
+				       GAsyncResult *res,
+				       GError **error)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+	g_return_val_if_fail (G_IS_TASK (res), FALSE);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	return g_task_propagate_boolean (G_TASK (res), error);
+}
+
+/**
  * gs_plugin_loader_app_action_finish:
  *
  * Return value: success

@@ -76,6 +76,12 @@ gboolean	 gs_plugin_loader_app_action		(GsPluginLoader	*plugin_loader,
 							 GsPluginLoaderAction action,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_loader_review_action		(GsPluginLoader	*plugin_loader,
+							 GsApp		*app,
+							 GsReview	*review,
+							 GsReviewAction	 action,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_loader_refresh		(GsPluginLoader	*plugin_loader,
 							 guint		 cache_age,
 							 GsPluginRefreshFlags flags,
