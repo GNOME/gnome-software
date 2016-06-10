@@ -59,6 +59,12 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 	g_autoptr(GError) error = NULL;
 	g_autoptr(GError) error_md = NULL;
 
+	/* manually drop the cache */
+	if (!flatpak_installation_drop_caches (self->installation,
+					       cancellable,
+					       error))
+		return FALSE;
+
 	/* if this is a new remote, get the AppStream data */
 	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, NULL, &error_md)) {
 		g_warning ("failed to get initial available data: %s",
