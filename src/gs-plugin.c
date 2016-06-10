@@ -55,6 +55,7 @@
 typedef struct
 {
 	AsProfile		*profile;
+	GPtrArray		*auth_array;
 	GHashTable		*cache;
 	GMutex			 cache_mutex;
 	GModule			*module;
@@ -184,6 +185,7 @@ gs_plugin_finalize (GObject *object)
 	g_free (priv->locale);
 	g_rw_lock_clear (&priv->rwlock);
 	g_object_unref (priv->profile);
+	g_ptr_array_unref (priv->auth_array);
 	g_object_unref (priv->soup_session);
 	g_hash_table_unref (priv->cache);
 	g_mutex_clear (&priv->cache_mutex);
@@ -449,6 +451,34 @@ gs_plugin_set_locale (GsPlugin *plugin, const gchar *locale)
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	g_free (priv->locale);
 	priv->locale = g_strdup (locale);
+}
+
+/**
+ * gs_plugin_set_auth_array:
+ * @plugin: a #GsPlugin
+ * @auth_array: (element-type GsAuth): an array
+ *
+ * Sets the authentication objects that can be added by the plugin.
+ **/
+void
+gs_plugin_set_auth_array (GsPlugin *plugin, GPtrArray *auth_array)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	priv->auth_array = g_ptr_array_ref (auth_array);
+}
+
+/**
+ * gs_plugin_add_auth:
+ * @plugin: a #GsPlugin
+ * @auth: a #GsAuth
+ *
+ * Adds an authentication object that can be used for all the plugins.
+ **/
+void
+gs_plugin_add_auth (GsPlugin *plugin, GsAuth *auth)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_ptr_array_add (priv->auth_array, g_object_ref (auth));
 }
 
 /**

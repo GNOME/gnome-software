@@ -30,6 +30,7 @@
 
 #include "gs-app.h"
 #include "gs-app-list.h"
+#include "gs-auth.h"
 #include "gs-category.h"
 
 G_BEGIN_DECLS
@@ -237,6 +238,8 @@ guint		 gs_plugin_get_scale			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_locale			(GsPlugin	*plugin);
 AsProfile	*gs_plugin_get_profile			(GsPlugin	*plugin);
 SoupSession	*gs_plugin_get_soup_session		(GsPlugin	*plugin);
+void		 gs_plugin_add_auth			(GsPlugin	*plugin,
+							 GsAuth		*auth);
 void		 gs_plugin_add_rule			(GsPlugin	*plugin,
 							 GsPluginRule	 rule,
 							 const gchar	*name);

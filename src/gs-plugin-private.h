@@ -47,6 +47,8 @@ void		 gs_plugin_set_locale			(GsPlugin	*plugin,
 							 const gchar	*locale);
 void		 gs_plugin_set_profile			(GsPlugin	*plugin,
 							 AsProfile	*profile);
+void		 gs_plugin_set_auth_array		(GsPlugin	*plugin,
+							 GPtrArray	*auth_array);
 void		 gs_plugin_set_soup_session		(GsPlugin	*plugin,
 							 SoupSession	*soup_session);
 void		 gs_plugin_set_running_other		(GsPlugin	*plugin,

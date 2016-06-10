@@ -43,6 +43,7 @@ typedef struct
 	GsPluginStatus		 status_last;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
+	GPtrArray		*auth_array;
 
 	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
@@ -3314,6 +3315,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			  G_CALLBACK (gs_plugin_loader_status_changed_cb),
 			  plugin_loader);
 	gs_plugin_set_soup_session (plugin, priv->soup_session);
+	gs_plugin_set_auth_array (plugin, priv->auth_array);
 	gs_plugin_set_profile (plugin, priv->profile);
 	gs_plugin_set_locale (plugin, priv->locale);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
@@ -3349,6 +3351,25 @@ gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	return priv->scale;
+}
+
+/**
+ * gs_plugin_loader_get_auth_by_id:
+ */
+GsAuth *
+gs_plugin_loader_get_auth_by_id (GsPluginLoader *plugin_loader,
+				 const gchar *provider_id)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	guint i;
+
+	/* match on ID */
+	for (i = 0; i < priv->auth_array->len; i++) {
+		GsAuth *auth = g_ptr_array_index (priv->auth_array, i);
+		if (g_strcmp0 (gs_auth_get_provider_id (auth), provider_id) == 0)
+			return auth;
+	}
+	return NULL;
 }
 
 /**
@@ -3654,6 +3675,7 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->profile);
 	g_clear_object (&priv->settings);
+	g_clear_pointer (&priv->auth_array, g_ptr_array_unref);
 	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
@@ -3725,6 +3747,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) g_object_unref);
 	priv->status_last = GS_PLUGIN_STATUS_LAST;
 	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	priv->auth_array = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->profile = as_profile_new ();
 	priv->settings = g_settings_new ("org.gnome.software");
 
