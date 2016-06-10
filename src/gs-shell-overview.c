@@ -342,6 +342,8 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	important_aim = 2 * gtk_flow_box_get_max_children_per_line (flowbox);
 	for (i = 0; i < list->len; i++) {
 		cat = GS_CATEGORY (g_ptr_array_index (list, i));
+		if (gs_category_get_size (cat) == 0)
+			continue;
 		if (gs_category_get_important (cat)) {
 			if (++important_cnt > important_aim) {
 				g_debug ("overriding %s as unimportant",
@@ -354,6 +356,8 @@ gs_shell_overview_get_categories_cb (GObject *source_object,
 	/* ensure we show a full first flowbox if we don't have enough */
 	for (i = 0; i < list->len && important_cnt < important_aim; i++) {
 		cat = GS_CATEGORY (g_ptr_array_index (list, i));
+		if (gs_category_get_size (cat) == 0)
+			continue;
 		if (!gs_category_get_important (cat)) {
 			important_cnt++;
 			g_debug ("overriding %s as important",
