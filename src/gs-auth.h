@@ -46,6 +46,24 @@ typedef enum {
 	GS_AUTH_FLAG_LAST
 } GsAuthFlags;
 
+/**
+ * GsAuthAction:
+ * @GS_AUTH_ACTION_LOGIN:		Login action
+ * @GS_AUTH_ACTION_LOGOUT:		Logout action
+ * @GS_AUTH_ACTION_REGISTER:		Register action
+ * @GS_AUTH_ACTION_LOST_PASSWORD:	Lost password action
+ *
+ * The actions that can be performed on an authentication.
+ **/
+typedef enum {
+	GS_AUTH_ACTION_LOGIN,
+	GS_AUTH_ACTION_LOGOUT,
+	GS_AUTH_ACTION_REGISTER,
+	GS_AUTH_ACTION_LOST_PASSWORD,
+	/*< private >*/
+	GS_AUTH_ACTION_LAST
+} GsAuthAction;
+
 GsAuth		*gs_auth_new			(const gchar	*provider_id);
 const gchar	*gs_auth_get_provider_id	(GsAuth		*auth);
 const gchar	*gs_auth_get_provider_name	(GsAuth		*auth);
