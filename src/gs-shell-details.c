@@ -30,6 +30,7 @@
 #include "gs-shell-details.h"
 #include "gs-app-private.h"
 #include "gs-app-addon-row.h"
+#include "gs-auth-dialog.h"
 #include "gs-history-dialog.h"
 #include "gs-screenshot-image.h"
 #include "gs-progress-button.h"
@@ -1150,24 +1151,89 @@ gs_shell_details_refresh_addons (GsShellDetails *self)
 
 static void gs_shell_details_refresh_reviews (GsShellDetails *self);
 
+typedef struct {
+	GsShellDetails		*self;
+	GsReview		*review;
+	GsApp			*app;
+	GsReviewAction		 action;
+} GsShellDetailsReviewHelper;
+
+static void
+gs_shell_details_review_helper_free (GsShellDetailsReviewHelper *helper)
+{
+	g_object_unref (helper->self);
+	g_object_unref (helper->review);
+	g_object_unref (helper->app);
+	g_free (helper);
+}
+
+static void
+gs_shell_details_app_set_review_cb (GObject *source,
+				    GAsyncResult *res,
+				    gpointer user_data);
+
+static void
+gs_shell_details_authenticate_cb (GtkDialog *dialog,
+				  GtkResponseType response_type,
+				  GsShellDetailsReviewHelper *helper)
+{
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	if (response_type != GTK_RESPONSE_OK) {
+		gs_shell_details_review_helper_free (helper);
+		return;
+	}
+	gs_plugin_loader_review_action_async (helper->self->plugin_loader,
+					      helper->app,
+					      helper->review,
+					      helper->action,
+					      helper->self->cancellable,
+					      gs_shell_details_app_set_review_cb,
+					      helper);
+}
+
 /**
  * gs_shell_details_app_set_review_cb:
  **/
 static void
 gs_shell_details_app_set_review_cb (GObject *source,
-				GAsyncResult *res,
-				gpointer user_data)
+				    GAsyncResult *res,
+				    gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellDetails *self = GS_SHELL_DETAILS (user_data);
+	GsShellDetailsReviewHelper *helper = (GsShellDetailsReviewHelper *) user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
-		g_warning ("failed to set review %s: %s",
-			   gs_app_get_id (self->app), error->message);
+		/* try to authenticate then retry */
+		if (g_error_matches (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
+			g_autoptr(GError) error_local = NULL;
+			GtkWidget *dialog;
+			dialog = gs_auth_dialog_new (helper->self->plugin_loader,
+						     helper->app,
+						     gs_utils_get_error_value (error),
+						     &error_local);
+			if (dialog == NULL) {
+				g_warning ("%s", error_local->message);
+				gs_shell_details_review_helper_free (helper);
+				return;
+			}
+			gs_shell_modal_dialog_present (helper->self->shell, GTK_DIALOG (dialog));
+			g_signal_connect (dialog, "response",
+					  G_CALLBACK (gs_shell_details_authenticate_cb),
+					  helper);
+			return;
+		}
+		g_warning ("failed to set review on %s: %s",
+			   gs_app_get_id (helper->self->app), error->message);
+		gs_shell_details_review_helper_free (helper);
 		return;
 	}
-	gs_shell_details_refresh_reviews (self);
+	gs_shell_details_refresh_reviews (helper->self);
+	gs_shell_details_review_helper_free (helper);
 }
 
 static void
@@ -1175,13 +1241,18 @@ gs_shell_details_review_button_clicked_cb (GsReviewRow *row,
 					   GsReviewAction action,
 					   GsShellDetails *self)
 {
+	GsShellDetailsReviewHelper *helper = g_new0 (GsShellDetailsReviewHelper, 1);
+	helper->self = g_object_ref (self);
+	helper->app = g_object_ref (self->app);
+	helper->review = g_object_ref (gs_review_row_get_review (row));
+	helper->action = action;
 	gs_plugin_loader_review_action_async (self->plugin_loader,
-					      self->app,
-					      gs_review_row_get_review (row),
-					      action,
+					      helper->app,
+					      helper->review,
+					      helper->action,
 					      self->cancellable,
 					      gs_shell_details_app_set_review_cb,
-					      self);
+					      helper);
 }
 
 static void
