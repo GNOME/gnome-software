@@ -104,6 +104,8 @@ typedef enum {
  * @GS_PLUGIN_ERROR_NO_NETWORK:		No network connection available
  * @GS_PLUGIN_ERROR_NO_SECURITY:	Security policy forbid action
  * @GS_PLUGIN_ERROR_NO_SPACE:		No disk space to allow action
+ * @GS_PLUGIN_ERROR_AUTH_REQUIRED:	Authentication was required
+ * @GS_PLUGIN_ERROR_AUTH_INVALID:	Provided authentication was invalid
  *
  * The failure error types.
  **/
@@ -114,6 +116,8 @@ typedef enum {
 	GS_PLUGIN_ERROR_NO_NETWORK,
 	GS_PLUGIN_ERROR_NO_SECURITY,
 	GS_PLUGIN_ERROR_NO_SPACE,
+	GS_PLUGIN_ERROR_AUTH_REQUIRED,
+	GS_PLUGIN_ERROR_AUTH_INVALID,
 	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;

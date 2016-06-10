@@ -835,6 +835,16 @@ gs_plugin_loader_set_app_error (GsApp *app, GError *error)
 	}
 }
 
+static gboolean
+gs_plugin_loader_is_auth_error (GError *err)
+{
+	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED))
+		return TRUE;
+	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID))
+		return TRUE;
+	return FALSE;
+}
+
 /**
  * gs_plugin_loader_run_action:
  **/
@@ -883,6 +893,14 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 					    function_name);
 				continue;
 			}
+
+			/* abort early to allow main thread to process */
+			if (gs_plugin_loader_is_auth_error (error_local)) {
+				g_propagate_error (error, error_local);
+				error_local = NULL;
+				return FALSE;
+			}
+
 			g_warning ("failed to call %s on %s: %s",
 				   function_name,
 				   gs_plugin_get_name (plugin),
@@ -2749,6 +2767,13 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 					    gs_plugin_get_name (plugin),
 					    state->function_name);
 				continue;
+			}
+
+			/* abort early to allow main thread to process */
+			if (gs_plugin_loader_is_auth_error (error_local)) {
+				g_task_return_error (task, error_local);
+				error_local = NULL;
+				return;
 			}
 			g_warning ("failed to call %s on %s: %s",
 				   state->function_name,
