@@ -849,6 +849,70 @@ gboolean	 gs_plugin_update			(GsPlugin	*plugin,
 							 GCancellable	*cancellable,
 							 GError		**error);
 
+/**
+ * gs_plugin_auth_login:
+ * @plugin: a #GsPlugin
+ * @auth: a #GsAuth
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Performs a login using the given authentication details.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_auth_login			(GsPlugin	*plugin,
+							 GsAuth		*auth,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
+ * gs_plugin_auth_logout:
+ * @plugin: a #GsPlugin
+ * @auth: a #GsAuth
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Performs a logout using the given authentication details.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_auth_logout			(GsPlugin	*plugin,
+							 GsAuth		*auth,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
+ * gs_plugin_auth_lost_password:
+ * @plugin: a #GsPlugin
+ * @auth: a #GsAuth
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Performs the lost password action using the given authentication details.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_auth_lost_password		(GsPlugin	*plugin,
+							 GsAuth		*auth,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
+/**
+ * gs_plugin_auth_register:
+ * @plugin: a #GsPlugin
+ * @auth: a #GsAuth
+ * @cancellable: a #GCancellable, or %NULL
+ * @error: a #GError, or %NULL
+ *
+ * Performs the registration action using the given authentication details.
+ *
+ * Returns: %TRUE for success or if not relevant
+ **/
+gboolean	 gs_plugin_auth_register		(GsPlugin	*plugin,
+							 GsAuth		*auth,
+							 GCancellable	*cancellable,
+							 GError		**error);
+
 G_END_DECLS
 
 #endif /* __GS_PLUGIN_VFUNCS_H */

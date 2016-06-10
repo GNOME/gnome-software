@@ -224,6 +224,15 @@ void		 gs_plugin_loader_review_action_async	(GsPluginLoader	*plugin_loader,
 							 GCancellable	*cancellable,
 							 GAsyncReadyCallback callback,
 							 gpointer	 user_data);
+gboolean	 gs_plugin_loader_auth_action_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
+void		 gs_plugin_loader_auth_action_async	(GsPluginLoader	*plugin_loader,
+							 GsAuth		*auth,
+							 GsAuthAction	 action,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
 gboolean	 gs_plugin_loader_refresh_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
