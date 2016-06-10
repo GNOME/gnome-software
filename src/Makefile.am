@@ -28,6 +28,7 @@ gnomesoftware_include_HEADERS =				\
 	gnome-software.h				\
 	gs-app.h					\
 	gs-app-list.h					\
+	gs-auth.h					\
 	gs-category.h					\
 	gs-os-release.h					\
 	gs-plugin.h					\
@@ -104,6 +105,7 @@ noinst_PROGRAMS =					\
 gnome_software_cmd_SOURCES =				\
 	gs-app.c					\
 	gs-app-list.c					\
+	gs-auth.c					\
 	gs-review.c					\
 	gs-cmd.c					\
 	gs-common.c					\
@@ -138,6 +140,8 @@ gnome_software_SOURCES =				\
 	gs-app-list.c					\
 	gs-app-list.h					\
 	gs-app-list-private.h				\
+	gs-auth.c					\
+	gs-auth.h					\
 	gs-category.c					\
 	gs-category.h					\
 	gs-category-private.h				\
@@ -321,6 +325,7 @@ check_PROGRAMS =						\
 gs_self_test_SOURCES =						\
 	gs-app.c						\
 	gs-app-list.c						\
+	gs-auth.c						\
 	gs-category.c						\
 	gs-common.c						\
 	gs-os-release.c						\
