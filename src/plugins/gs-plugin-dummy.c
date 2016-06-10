@@ -30,18 +30,30 @@
 
 struct GsPluginData {
 	guint			 quirk_id;
+	guint			 has_auth;
+	GsAuth			*auth;
 };
 
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
-	gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
+	GsPluginData *priv = gs_plugin_alloc_data (plugin, sizeof(GsPluginData));
 	if (g_getenv ("GS_SELF_TEST_DUMMY_ENABLE") == NULL) {
 		g_debug ("disabling '%s' as not in self test",
 			 gs_plugin_get_name (plugin));
 		gs_plugin_set_enabled (plugin, FALSE);
 		return;
 	}
+
+	/* set up a dummy authentication provider */
+	priv->auth = gs_auth_new (gs_plugin_get_name (plugin));
+	gs_auth_set_provider_name (priv->auth, "GNOME SSO");
+	gs_auth_set_provider_logo (priv->auth, "/usr/share/pixmaps/gnome-about-logo.png");
+	gs_auth_set_provider_uri (priv->auth, "http://www.gnome.org/sso");
+	gs_plugin_add_auth (plugin, priv->auth);
+
+	/* lets assume we read this from disk somewhere */
+	gs_auth_set_username (priv->auth, "dummy");
 
 	/* need help from appstream */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
@@ -614,6 +626,118 @@ gs_plugin_review_remove (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* simulate an auth check */
+	if (!priv->has_auth) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_AUTH_REQUIRED,
+			     "authentication is required using @%s",
+			     gs_plugin_get_name (plugin));
+		return FALSE;
+	}
+
+	/* all okay */
 	g_debug ("Removing dummy self-review");
 	return TRUE;
+}
+
+gboolean
+gs_plugin_auth_login (GsPlugin *plugin, GsAuth *auth,
+		      GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* not us */
+	if (g_strcmp0 (gs_auth_get_provider_id (auth),
+		       gs_auth_get_provider_id (priv->auth)) != 0)
+		return TRUE;
+
+	/* already done */
+	if (priv->has_auth) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "authentication already done");
+		return FALSE;
+	}
+
+	/* check username and password */
+	if (g_strcmp0 (gs_auth_get_username (priv->auth), "dummy") != 0 ||
+	    g_strcmp0 (gs_auth_get_password (priv->auth), "dummy") != 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_AUTH_INVALID,
+			     "The password was not correct.");
+		return FALSE;
+	}
+
+	priv->has_auth = TRUE;
+	gs_auth_add_flags (priv->auth, GS_AUTH_FLAG_VALID);
+	g_debug ("dummy now authenticated");
+	return TRUE;
+}
+
+gboolean
+gs_plugin_auth_logout (GsPlugin *plugin, GsAuth *auth,
+		       GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* not us */
+	if (g_strcmp0 (gs_auth_get_provider_id (auth),
+		       gs_auth_get_provider_id (priv->auth)) != 0)
+		return TRUE;
+
+	/* not done */
+	if (!priv->has_auth) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "authentication not already done");
+		return FALSE;
+	}
+	priv->has_auth = FALSE;
+	gs_auth_set_flags (priv->auth, 0);
+	g_debug ("dummy now not authenticated");
+	return TRUE;
+}
+
+gboolean
+gs_plugin_auth_lost_password (GsPlugin *plugin, GsAuth *auth,
+			      GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* not us */
+	if (g_strcmp0 (gs_auth_get_provider_id (auth),
+		       gs_auth_get_provider_id (priv->auth)) != 0)
+		return TRUE;
+
+	/* return with data */
+	g_set_error_literal (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_AUTH_INVALID,
+			     "do online using @http://www.gnome.org/lost-password/");
+	return FALSE;
+}
+
+gboolean
+gs_plugin_auth_register (GsPlugin *plugin, GsAuth *auth,
+			 GCancellable *cancellable, GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+
+	/* not us */
+	if (g_strcmp0 (gs_auth_get_provider_id (auth),
+		       gs_auth_get_provider_id (priv->auth)) != 0)
+		return TRUE;
+
+	/* return with data */
+	g_set_error_literal (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_AUTH_INVALID,
+			     "do online using @http://www.gnome.org/register/");
+	return FALSE;
 }

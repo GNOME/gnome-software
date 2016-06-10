@@ -845,6 +845,68 @@ gs_plugin_loader_plugin_cache_func (GsPluginLoader *plugin_loader)
 	g_assert (app1 == app2);
 }
 
+static void
+gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
+{
+	GsAuth *auth;
+	gboolean ret;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsApp) app = NULL;
+	g_autoptr(GsReview) review = NULL;
+
+	/* check initial state */
+	auth = gs_plugin_loader_get_auth_by_id (plugin_loader, "dummy");
+	g_assert (GS_IS_AUTH (auth));
+	g_assert_cmpint (gs_auth_get_flags (auth), ==, 0);
+
+	/* do an action that returns a URL */
+	review = gs_review_new ();
+	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
+					    GS_AUTH_ACTION_REGISTER,
+					    NULL, &error);
+	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
+	g_assert (!ret);
+	g_clear_error (&error);
+	g_assert (!gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
+
+	/* do an action that requires a login */
+	app = gs_app_new (NULL);
+	review = gs_review_new ();
+	ret = gs_plugin_loader_review_action (plugin_loader, app, review,
+					      GS_REVIEW_ACTION_REMOVE,
+					      NULL, &error);
+	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED);
+	g_assert (!ret);
+	g_clear_error (&error);
+
+	/* pretend to auth with no credentials */
+	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
+					    GS_AUTH_ACTION_LOGIN,
+					    NULL, &error);
+	g_assert_error (error, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID);
+	g_assert (!ret);
+	g_clear_error (&error);
+	g_assert (!gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
+
+	/* auth again with correct credentials */
+	gs_auth_set_username (auth, "dummy");
+	gs_auth_set_password (auth, "dummy");
+	ret = gs_plugin_loader_auth_action (plugin_loader, auth,
+					    GS_AUTH_ACTION_LOGIN,
+					    NULL, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert (gs_auth_has_flag (auth, GS_AUTH_FLAG_VALID));
+
+	/* do the action that requires a login */
+	review = gs_review_new ();
+	ret = gs_plugin_loader_review_action (plugin_loader, app, review,
+					      GS_REVIEW_ACTION_REMOVE,
+					      NULL, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -984,6 +1046,9 @@ main (int argc, char **argv)
 	g_assert (gs_plugin_loader_get_enabled (plugin_loader, "dummy"));
 
 	/* plugin tests go here */
+	g_test_add_data_func ("/gnome-software/plugin-loader{authentication}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_authentication_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{plugin-cache}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_plugin_cache_func);
