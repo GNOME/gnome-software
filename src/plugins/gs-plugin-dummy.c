@@ -40,10 +40,12 @@ gs_plugin_initialize (GsPlugin *plugin)
 		g_debug ("disabling '%s' as not in self test",
 			 gs_plugin_get_name (plugin));
 		gs_plugin_set_enabled (plugin, FALSE);
+		return;
 	}
 
 	/* need help from appstream */
 	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_RUN_AFTER, "appstream");
+	gs_plugin_add_rule (plugin, GS_PLUGIN_RULE_CONFLICTS, "odrs");
 }
 
 void
