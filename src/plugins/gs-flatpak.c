@@ -61,9 +61,10 @@ gs_plugin_flatpak_changed_cb (GFileMonitor *monitor,
 
 	/* manually drop the cache */
 	if (!flatpak_installation_drop_caches (self->installation,
-					       cancellable,
-					       error))
-		return FALSE;
+					       NULL, &error)) {
+		g_warning ("failed to drop cache: %s", error->message);
+		return;
+	}
 
 	/* if this is a new remote, get the AppStream data */
 	if (!gs_flatpak_refresh_appstream (self, G_MAXUINT, NULL, &error_md)) {
