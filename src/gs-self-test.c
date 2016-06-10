@@ -423,6 +423,45 @@ gs_plugin_loader_webapps_func (GsPluginLoader *plugin_loader)
 	g_assert (gs_app_get_pixbuf (app) != NULL);
 }
 
+static void
+gs_auth_secret_func (void)
+{
+	gboolean ret;
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAuth) auth1 = NULL;
+	g_autoptr(GsAuth) auth2 = NULL;
+
+	/* save secrets to disk */
+	auth1 = gs_auth_new ("self-test");
+	gs_auth_set_provider_schema (auth1, "org.gnome.Software.Dummy");
+	gs_auth_set_username (auth1, "hughsie");
+	gs_auth_set_password (auth1, "foobarbaz");
+	gs_auth_add_metadata (auth1, "day", "monday");
+	ret = gs_auth_store_save (auth1,
+				  GS_AUTH_STORE_FLAG_USERNAME |
+				  GS_AUTH_STORE_FLAG_PASSWORD |
+				  GS_AUTH_STORE_FLAG_METADATA,
+				  NULL, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+
+	/* load secrets from disk */
+	auth2 = gs_auth_new ("self-test");
+	gs_auth_add_metadata (auth2, "day", NULL);
+	gs_auth_add_metadata (auth2, "notgoingtoexist", NULL);
+	gs_auth_set_provider_schema (auth2, "org.gnome.Software.Dummy");
+	ret = gs_auth_store_load (auth2,
+				  GS_AUTH_STORE_FLAG_USERNAME |
+				  GS_AUTH_STORE_FLAG_PASSWORD |
+				  GS_AUTH_STORE_FLAG_METADATA,
+				  NULL, &error);
+	g_assert_no_error (error);
+	g_assert (ret);
+	g_assert_cmpstr (gs_auth_get_username (auth2), ==, "hughsie");
+	g_assert_cmpstr (gs_auth_get_password (auth2), ==, "foobarbaz");
+	g_assert_cmpstr (gs_auth_get_metadata_item (auth2, "day"), ==, "monday");
+}
+
 int
 main (int argc, char **argv)
 {
@@ -507,6 +546,7 @@ main (int argc, char **argv)
 	/* generic tests go here */
 	g_test_add_func ("/gnome-software/app", gs_app_func);
 	g_test_add_func ("/gnome-software/plugin", gs_plugin_func);
+	g_test_add_func ("/gnome-software/auth{secret}", gs_auth_secret_func);
 
 	/* we can only load this once per process */
 	plugin_loader = gs_plugin_loader_new ();

@@ -39,6 +39,7 @@ typedef struct
 	GsPluginStatus		 status_last;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
+	GPtrArray		*auth_array;
 
 	GMutex			 pending_apps_mutex;
 	GPtrArray		*pending_apps;
@@ -74,6 +75,7 @@ typedef struct {
 	GsCategory			*category;
 	GsApp				*app;
 	GsReview			*review;
+	GsAuth				*auth;
 } GsPluginLoaderAsyncState;
 
 static void
@@ -83,6 +85,8 @@ gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
 		g_object_unref (state->category);
 	if (state->app != NULL)
 		g_object_unref (state->app);
+	if (state->auth != NULL)
+		g_object_unref (state->auth);
 	if (state->review != NULL)
 		g_object_unref (state->review);
 
@@ -589,6 +593,16 @@ gs_plugin_loader_set_app_error (GsApp *app, GError *error)
 	}
 }
 
+static gboolean
+gs_plugin_loader_is_auth_error (GError *err)
+{
+	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_REQUIRED))
+		return TRUE;
+	if (g_error_matches (err, GS_PLUGIN_ERROR, GS_PLUGIN_ERROR_AUTH_INVALID))
+		return TRUE;
+	return FALSE;
+}
+
 /**
  * gs_plugin_loader_run_action:
  **/
@@ -630,6 +644,13 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 		ret = plugin_func (plugin, app, cancellable, &error_local);
 		g_rw_lock_reader_unlock (&plugin->rwlock);
 		if (!ret) {
+			/* abort early to allow main thread to process */
+			if (gs_plugin_loader_is_auth_error (error_local)) {
+				g_propagate_error (error, error_local);
+				error_local = NULL;
+				return FALSE;
+			}
+
 			g_warning ("failed to call %s on %s: %s",
 				   function_name, plugin->name,
 				   error_local->message);
@@ -2445,6 +2466,13 @@ gs_plugin_loader_review_action_thread_cb (GTask *task,
 				   cancellable, &error_local);
 		g_rw_lock_reader_unlock (&plugin->rwlock);
 		if (!ret) {
+			/* abort early to allow main thread to process */
+			if (gs_plugin_loader_is_auth_error (error_local)) {
+				g_task_return_error (task, error_local);
+				error_local = NULL;
+				return;
+			}
+
 			g_warning ("failed to call %s on %s: %s",
 				   state->function_name, plugin->name,
 				   error_local->message);
@@ -2756,6 +2784,134 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 	g_task_run_in_thread (task, gs_plugin_loader_review_action_thread_cb);
 }
 
+/******************************************************************************/
+
+/**
+ * gs_plugin_loader_auth_action_thread_cb:
+ **/
+static void
+gs_plugin_loader_auth_action_thread_cb (GTask *task,
+					  gpointer object,
+					  gpointer task_data,
+					  GCancellable *cancellable)
+{
+	GError *error = NULL;
+	GsPluginLoaderAsyncState *state = (GsPluginLoaderAsyncState *) task_data;
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (object);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	GsPlugin *plugin;
+	GsPluginAuthFunc plugin_func = NULL;
+	gboolean exists;
+	gboolean ret;
+	guint i;
+
+	/* run each plugin */
+	for (i = 0; i < priv->plugins->len; i++) {
+		g_autoptr(AsProfileTask) ptask = NULL;
+		g_autoptr(GError) error_local = NULL;
+
+		plugin = g_ptr_array_index (priv->plugins, i);
+		if (!plugin->enabled)
+			continue;
+		if (g_cancellable_set_error_if_cancelled (cancellable, &error))
+			g_task_return_error (task, error);
+
+		exists = g_module_symbol (plugin->module,
+					  state->function_name,
+					  (gpointer *) &plugin_func);
+		if (!exists)
+			continue;
+		ptask = as_profile_start (priv->profile,
+					  "GsPlugin::%s(%s)",
+					  plugin->name,
+					  state->function_name);
+		g_rw_lock_reader_lock (&plugin->rwlock);
+		ret = plugin_func (plugin, state->auth, cancellable, &error_local);
+		g_rw_lock_reader_unlock (&plugin->rwlock);
+		if (!ret) {
+			/* badly behaved plugin */
+			if (error_local == NULL) {
+				g_critical ("%s did not set error for %s",
+					    plugin->name,
+					    state->function_name);
+				continue;
+			}
+
+			/* stop running other plugins on failure */
+			g_task_return_error (task, error_local);
+			error_local = NULL;
+			return;
+		}
+		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+	}
+
+	g_task_return_boolean (task, TRUE);
+}
+
+/**
+ * gs_plugin_loader_auth_action_async:
+ **/
+void
+gs_plugin_loader_auth_action_async (GsPluginLoader *plugin_loader,
+				    GsAuth *auth,
+				    GsAuthAction action,
+				    GCancellable *cancellable,
+				    GAsyncReadyCallback callback,
+				    gpointer user_data)
+{
+	GsPluginLoaderAsyncState *state;
+	g_autoptr(GTask) task = NULL;
+
+	g_return_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader));
+	g_return_if_fail (GS_IS_AUTH (auth));
+	g_return_if_fail (cancellable == NULL || G_IS_CANCELLABLE (cancellable));
+
+	/* save state */
+	state = g_slice_new0 (GsPluginLoaderAsyncState);
+	state->auth = g_object_ref (auth);
+
+	switch (action) {
+	case GS_AUTH_ACTION_LOGIN:
+		state->function_name = "gs_plugin_auth_login";
+		break;
+	case GS_AUTH_ACTION_LOGOUT:
+		state->function_name = "gs_plugin_auth_logout";
+		break;
+	case GS_AUTH_ACTION_REGISTER:
+		state->function_name = "gs_plugin_auth_register";
+		break;
+	case GS_AUTH_ACTION_LOST_PASSWORD:
+		state->function_name = "gs_plugin_auth_lost_password";
+		break;
+	default:
+		g_assert_not_reached ();
+		break;
+	}
+
+	/* run in a thread */
+	task = g_task_new (plugin_loader, cancellable, callback, user_data);
+	g_task_set_task_data (task, state, (GDestroyNotify) gs_plugin_loader_free_async_state);
+	g_task_run_in_thread (task, gs_plugin_loader_auth_action_thread_cb);
+}
+
+/**
+ * gs_plugin_loader_auth_action_finish:
+ **/
+gboolean
+gs_plugin_loader_auth_action_finish (GsPluginLoader *plugin_loader,
+				     GAsyncResult *res,
+				     GError **error)
+{
+	g_return_val_if_fail (GS_IS_PLUGIN_LOADER (plugin_loader), FALSE);
+	g_return_val_if_fail (G_IS_TASK (res), FALSE);
+	g_return_val_if_fail (g_task_is_valid (res, plugin_loader), FALSE);
+	g_return_val_if_fail (error == NULL || *error == NULL, FALSE);
+
+	return g_task_propagate_boolean (G_TASK (res), error);
+}
+
+/******************************************************************************/
+
 /**
  * gs_plugin_loader_app_action_finish:
  *
@@ -2984,6 +3140,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	plugin->updates_changed_user_data = plugin_loader;
 	plugin->profile = g_object_ref (priv->profile);
 	plugin->soup_session = g_object_ref (priv->soup_session);
+	plugin->auth_array = g_ptr_array_ref (priv->auth_array);
 	plugin->scale = gs_plugin_loader_get_scale (plugin_loader);
 	g_debug ("opened plugin %s: %s", filename, plugin->name);
 
@@ -3021,6 +3178,25 @@ gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	return priv->scale;
+}
+
+/**
+ * gs_plugin_loader_get_auth_by_id:
+ */
+GsAuth *
+gs_plugin_loader_get_auth_by_id (GsPluginLoader *plugin_loader,
+				 const gchar *provider_id)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	guint i;
+
+	/* match on ID */
+	for (i = 0; i < priv->auth_array->len; i++) {
+		GsAuth *auth = g_ptr_array_index (priv->auth_array, i);
+		if (g_strcmp0 (gs_auth_get_provider_id (auth), provider_id) == 0)
+			return auth;
+	}
+	return NULL;
 }
 
 /**
@@ -3298,6 +3474,7 @@ gs_plugin_loader_dispose (GObject *object)
 	g_clear_object (&priv->soup_session);
 	g_clear_object (&priv->profile);
 	g_clear_object (&priv->settings);
+	g_clear_pointer (&priv->auth_array, g_ptr_array_unref);
 	g_clear_pointer (&priv->pending_apps, g_ptr_array_unref);
 
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
@@ -3369,6 +3546,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 	priv->plugins = g_ptr_array_new_with_free_func ((GDestroyNotify) gs_plugin_loader_plugin_free);
 	priv->status_last = GS_PLUGIN_STATUS_LAST;
 	priv->pending_apps = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
+	priv->auth_array = g_ptr_array_new_with_free_func ((GFreeFunc) g_object_unref);
 	priv->profile = as_profile_new ();
 	priv->settings = g_settings_new ("org.gnome.software");
 

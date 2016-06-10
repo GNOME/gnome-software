@@ -31,6 +31,7 @@
 
 #include "gs-app.h"
 #include "gs-category.h"
+#include "gs-auth.h"
 
 G_BEGIN_DECLS
 
@@ -79,6 +80,7 @@ struct GsPlugin {
 	gpointer		 updates_changed_user_data;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
+	GPtrArray		*auth_array;
 	GRWLock			 rwlock;
 };
 
@@ -89,6 +91,10 @@ typedef enum {
 	GS_PLUGIN_ERROR_NO_NETWORK,
 	GS_PLUGIN_ERROR_NO_SECURITY,
 	GS_PLUGIN_ERROR_NO_SPACE,
+	GS_PLUGIN_ERROR_AUTH_REQUIRED,
+	GS_PLUGIN_ERROR_AUTH_INVALID,
+	GS_PLUGIN_ERROR_PIN_REQUIRED,
+	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;
 
@@ -177,6 +183,10 @@ typedef gboolean	 (*GsPluginReviewFunc)		(GsPlugin	*plugin,
 							 GsReview	*review,
 							 GCancellable	*cancellable,
 							 GError		**error);
+typedef gboolean	 (*GsPluginAuthFunc)		(GsPlugin	*plugin,
+							 GsAuth		*auth,
+							 GCancellable   *cancellable,
+							 GError		**error);
 typedef gboolean	 (*GsPluginRefineFunc)		(GsPlugin	*plugin,
 							 GList		**list,
 							 GsPluginRefineFlags flags,
@@ -207,6 +217,10 @@ void		 gs_plugin_initialize			(GsPlugin	*plugin);
 void		 gs_plugin_destroy			(GsPlugin	*plugin);
 void		 gs_plugin_set_enabled			(GsPlugin	*plugin,
 							 gboolean	 enabled);
+void		 gs_plugin_add_auth			(GsPlugin	*plugin,
+							 GsAuth		*auth);
+GsAuth		*gs_plugin_get_auth_by_id		(GsPlugin	*plugin,
+							 const gchar	*provider_id);
 GBytes		*gs_plugin_download_data		(GsPlugin	*plugin,
 							 GsApp		*app,
 							 const gchar	*uri,
@@ -387,6 +401,22 @@ gboolean	 gs_plugin_filename_to_app		(GsPlugin	*plugin,
 							 GError		**error);
 gboolean	 gs_plugin_offline_update		(GsPlugin	*plugin,
 							 GList		*apps,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_auth_login			(GsPlugin	*plugin,
+							 GsAuth		*auth,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_auth_logout			(GsPlugin	*plugin,
+							 GsAuth		*auth,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_auth_lost_password		(GsPlugin	*plugin,
+							 GsAuth		*auth,
+							 GCancellable	*cancellable,
+							 GError		**error);
+gboolean	 gs_plugin_auth_register		(GsPlugin	*plugin,
+							 GsAuth		*auth,
 							 GCancellable	*cancellable,
 							 GError		**error);
 

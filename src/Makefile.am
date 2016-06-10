@@ -9,6 +9,7 @@ AM_CPPFLAGS =						\
 	$(PACKAGEKIT_CFLAGS)				\
 	$(GNOME_DESKTOP_CFLAGS)				\
 	$(POLKIT_CFLAGS)				\
+	$(LIBSECRET_CFLAGS)				\
 	-DG_LOG_DOMAIN=\"Gs\"				\
 	-DI_KNOW_THE_PACKAGEKIT_GLIB2_API_IS_SUBJECT_TO_CHANGE	\
 	-DGS_MODULESETDIR=\"$(datadir)/gnome-software/modulesets.d\" \
@@ -33,6 +34,7 @@ UI_FILES =						\
 	gs-app-folder-dialog.ui				\
 	gs-app-row.ui					\
 	gs-app-tile.ui					\
+	gs-auth-dialog.ui				\
 	gs-category-tile.ui				\
 	gs-feature-tile.ui				\
 	gs-first-run-dialog.ui				\
@@ -86,6 +88,7 @@ noinst_PROGRAMS =					\
 
 gnome_software_cmd_SOURCES =				\
 	gs-app.c					\
+	gs-auth.c					\
 	gs-review.c					\
 	gs-cmd.c					\
 	gs-utils.c					\
@@ -99,6 +102,7 @@ gnome_software_cmd_LDADD =				\
 	$(APPSTREAM_LIBS)				\
 	$(POLKIT_LIBS)					\
 	$(SOUP_LIBS)					\
+	$(LIBSECRET_LIBS)				\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)
 
@@ -113,6 +117,10 @@ gnome_software_SOURCES =				\
 	gs-utils.h					\
 	gs-app.c					\
 	gs-app.h					\
+	gs-auth.c					\
+	gs-auth.h					\
+	gs-auth-dialog.c				\
+	gs-auth-dialog.h				\
 	gs-category.c					\
 	gs-category.h					\
 	gs-app-addon-row.c				\
@@ -226,6 +234,7 @@ gnome_software_LDADD =					\
 	$(GLIB_LIBS)					\
 	$(GTK_LIBS)					\
 	$(SOUP_LIBS)					\
+	$(LIBSECRET_LIBS)				\
 	$(PACKAGEKIT_LIBS)				\
 	$(GNOME_DESKTOP_LIBS)				\
 	$(POLKIT_LIBS)					\
@@ -283,6 +292,7 @@ check_PROGRAMS =						\
 
 gs_self_test_SOURCES =						\
 	gs-app.c						\
+	gs-auth.c						\
 	gs-category.c						\
 	gs-os-release.c						\
 	gs-plugin-loader-sync.c					\
@@ -296,6 +306,7 @@ gs_self_test_LDADD =						\
 	$(APPSTREAM_LIBS)					\
 	$(POLKIT_LIBS)						\
 	$(SOUP_LIBS)						\
+	$(LIBSECRET_LIBS)					\
 	$(GLIB_LIBS)						\
 	$(GTK_LIBS)
 

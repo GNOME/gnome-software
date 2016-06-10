@@ -25,6 +25,7 @@
 #include <glib-object.h>
 
 #include "gs-app.h"
+#include "gs-auth.h"
 #include "gs-category.h"
 #include "gs-plugin.h"
 
@@ -196,6 +197,8 @@ gboolean	 gs_plugin_loader_get_enabled		(GsPluginLoader	*plugin_loader,
 							 const gchar	*plugin_name);
 void		 gs_plugin_loader_set_location		(GsPluginLoader	*plugin_loader,
 							 const gchar	*location);
+GsAuth		*gs_plugin_loader_get_auth_by_id	(GsPluginLoader	*plugin_loader,
+							 const gchar	*provider_id);
 gint		 gs_plugin_loader_get_scale		(GsPluginLoader	*plugin_loader);
 void		 gs_plugin_loader_set_scale		(GsPluginLoader	*plugin_loader,
 							 gint		 scale);
@@ -227,6 +230,15 @@ void		 gs_plugin_loader_review_action_async	(GsPluginLoader	*plugin_loader,
 gboolean	 gs_plugin_loader_review_action_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);
+gboolean	 gs_plugin_loader_auth_action_finish	(GsPluginLoader	*plugin_loader,
+							 GAsyncResult	*res,
+							 GError		**error);
+void		 gs_plugin_loader_auth_action_async	(GsPluginLoader	*plugin_loader,
+							 GsAuth		*auth,
+							 GsAuthAction	 action,
+							 GCancellable	*cancellable,
+							 GAsyncReadyCallback callback,
+							 gpointer	 user_data);
 gboolean	 gs_plugin_loader_refresh_finish	(GsPluginLoader	*plugin_loader,
 							 GAsyncResult	*res,
 							 GError		**error);

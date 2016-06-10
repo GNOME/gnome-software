@@ -79,6 +79,32 @@ gs_plugin_set_enabled (GsPlugin *plugin, gboolean enabled)
 }
 
 /**
+ * gs_plugin_add_auth:
+ **/
+void
+gs_plugin_add_auth (GsPlugin *plugin, GsAuth *auth)
+{
+	g_ptr_array_add (plugin->auth_array, g_object_ref (auth));
+}
+
+/**
+ * gs_plugin_get_auth_by_id:
+ **/
+GsAuth *
+gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *provider_id)
+{
+	guint i;
+
+	/* match on ID */
+	for (i = 0; i < plugin->auth_array->len; i++) {
+		GsAuth *auth = g_ptr_array_index (plugin->auth_array, i);
+		if (g_strcmp0 (gs_auth_get_provider_id (auth), provider_id) == 0)
+			return auth;
+	}
+	return NULL;
+}
+
+/**
  * gs_plugin_check_distro_id:
  **/
 gboolean
