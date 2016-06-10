@@ -928,7 +928,7 @@ gs_plugin_download_file (GsPlugin *plugin,
 			     GS_PLUGIN_ERROR_FAILED,
 			     "failed to download %s: %s",
 			     uri, str->str);
-		return NULL;
+		return FALSE;
 	}
 	if (!g_file_set_contents (filename,
 				  msg->response_body->data,
