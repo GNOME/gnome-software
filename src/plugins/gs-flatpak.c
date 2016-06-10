@@ -124,6 +124,7 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 			      GCancellable *cancellable, GError **error)
 {
 	gboolean ret;
+	gboolean something_changed = FALSE;
 	guint i;
 	g_autoptr(GPtrArray) xremotes = NULL;
 
@@ -188,7 +189,20 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 		file = flatpak_remote_get_appstream_dir (xremote, NULL);
 		appstream_fn = g_file_get_path (file);
 		g_debug ("using AppStream metadata found at: %s", appstream_fn);
+
+		/* trigger the symlink rebuild */
+		something_changed = TRUE;
 	}
+
+	/* ensure the AppStream symlink cache is up to date */
+	if (something_changed) {
+		if (!gs_flatpak_symlinks_rebuild (self->installation,
+						  cancellable,
+						  error))
+			return FALSE;
+		gs_plugin_updates_changed (self->plugin);
+	}
+
 	return TRUE;
 }
 
