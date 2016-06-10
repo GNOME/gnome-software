@@ -3174,11 +3174,11 @@ gs_plugin_loader_auth_action_thread_cb (GTask *task,
 					    state->function_name);
 				continue;
 			}
-			g_warning ("failed to call %s on %s: %s",
-				   state->function_name,
-				   gs_plugin_get_name (plugin),
-				   error_local->message);
-			continue;
+
+			/* stop running other plugins on failure */
+			g_task_return_error (task, error_local);
+			error_local = NULL;
+			return;
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
 	}
