@@ -617,6 +617,56 @@ gs_plugin_loader_review_action (GsPluginLoader *plugin_loader,
 }
 
 /**
+ * gs_plugin_loader_auth_action_finish_sync:
+ **/
+static void
+gs_plugin_loader_auth_action_finish_sync (GsPluginLoader *plugin_loader,
+					  GAsyncResult *res,
+					  GsPluginLoaderHelper *helper)
+{
+	helper->ret = gs_plugin_loader_auth_action_finish (plugin_loader,
+							   res,
+							   helper->error);
+	g_main_loop_quit (helper->loop);
+}
+
+/**
+ * gs_plugin_loader_auth_action:
+ **/
+gboolean
+gs_plugin_loader_auth_action (GsPluginLoader *plugin_loader,
+			      GsAuth *auth,
+			      GsAuthAction action,
+			      GCancellable *cancellable,
+			      GError **error)
+{
+	GsPluginLoaderHelper helper;
+
+	/* create temp object */
+	helper.context = g_main_context_new ();
+	helper.loop = g_main_loop_new (helper.context, FALSE);
+	helper.error = error;
+
+	g_main_context_push_thread_default (helper.context);
+
+	/* run async method */
+	gs_plugin_loader_auth_action_async (plugin_loader,
+					    auth,
+					    action,
+					    cancellable,
+					    (GAsyncReadyCallback) gs_plugin_loader_auth_action_finish_sync,
+					    &helper);
+	g_main_loop_run (helper.loop);
+
+	g_main_context_pop_thread_default (helper.context);
+
+	g_main_loop_unref (helper.loop);
+	g_main_context_unref (helper.context);
+
+	return helper.ret;
+}
+
+/**
  * gs_plugin_loader_refresh_finish_sync:
  **/
 static void

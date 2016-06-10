@@ -82,6 +82,11 @@ gboolean	 gs_plugin_loader_review_action		(GsPluginLoader	*plugin_loader,
 							 GsReviewAction	 action,
 							 GCancellable	*cancellable,
 							 GError		**error);
+gboolean	 gs_plugin_loader_auth_action		(GsPluginLoader	*plugin_loader,
+							 GsAuth		*auth,
+							 GsAuthAction	 action,
+							 GCancellable	*cancellable,
+							 GError		**error);
 gboolean	 gs_plugin_loader_refresh		(GsPluginLoader	*plugin_loader,
 							 guint		 cache_age,
 							 GsPluginRefreshFlags flags,
