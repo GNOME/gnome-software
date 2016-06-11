@@ -64,9 +64,6 @@ gs_plugin_fedora_distro_upgrades_changed_cb (GFileMonitor *monitor,
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 
-	/* cache no longer valid */
-	gs_plugin_cache_invalidate (plugin);
-
 	/* only reload the update list if the plugin is NOT running itself
 	 * and the time since it ran is greater than 5 seconds (inotify FTW) */
 	if (gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_SELF)) {

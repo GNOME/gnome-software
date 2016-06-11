@@ -90,8 +90,9 @@ gs_plugin_shell_extensions_id_from_uuid (const gchar *uuid)
 	return g_strdup_printf ("%s.shell-extension", uuid);
 }
 
-static GsApp *
+static gboolean
 gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
+				    GsApp *app,
 				    const gchar *uuid,
 				    GVariantIter *iter,
 				    GError **error)
@@ -102,11 +103,10 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 	g_autofree gchar *id = NULL;
 	g_autofree gchar *id_prefix = NULL;
 	g_autoptr(AsIcon) ic = NULL;
-	g_autoptr(GsApp) app = NULL;
 
 	id = gs_plugin_shell_extensions_id_from_uuid (uuid);
 	id_prefix = g_strdup_printf ("user:%s", id);
-	app = gs_app_new (id_prefix);
+	gs_app_set_id (app, id_prefix);
 	gs_app_set_metadata (app, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
 	gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
@@ -123,7 +123,7 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 						 NULL);
 			tmp2 = as_markup_convert_simple (tmp1, error);
 			if (tmp2 == NULL)
-				return NULL;
+				return FALSE;
 			gs_app_set_description (app, GS_APP_QUALITY_NORMAL, tmp2);
 			continue;
 		}
@@ -207,7 +207,7 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 	gs_app_add_category (app, "Addons");
 	gs_app_add_category (app, "ShellExtensions");
 
-	return g_steal_pointer (&app);
+	return TRUE;
 }
 
 static void
@@ -218,7 +218,7 @@ gs_plugin_shell_extensions_changed_cb (GDBusProxy *proxy,
 				       GsPlugin *plugin)
 {
 	if (g_strcmp0 (signal_name, "ExtensionStatusChanged") == 0)
-		gs_plugin_cache_invalidate (plugin);
+		gs_plugin_updates_changed (plugin);
 }
 
 gboolean
@@ -258,6 +258,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GVariantIter *ext_iter;
+	gboolean ret;
 	gchar *ext_uuid;
 	g_autoptr(GVariantIter) iter = NULL;
 	g_autoptr(GVariant) retval = NULL;
@@ -280,17 +281,18 @@ gs_plugin_add_installed (GsPlugin *plugin,
 
 		/* search in the cache */
 		app = gs_plugin_cache_lookup (plugin, ext_uuid);
-		if (app != NULL) {
+		if (app == NULL) {
+			app = gs_app_new (NULL);
 			gs_app_list_add (list, app);
-			continue;
 		}
 
 		/* parse the data into an GsApp */
-		app = gs_plugin_shell_extensions_add_app (plugin,
+		ret = gs_plugin_shell_extensions_add_app (plugin,
+							  app,
 							  ext_uuid,
 							  ext_iter,
 							  error);
-		if (app == NULL)
+		if (!ret)
 			return FALSE;
 
 		/* save in the cache */

@@ -58,9 +58,6 @@ gs_plugin_systemd_updates_changed_cb (GFileMonitor *monitor,
 {
 	GsPlugin *plugin = GS_PLUGIN (user_data);
 
-	/* cache no longer valid */
-	gs_plugin_cache_invalidate (plugin);
-
 	/* update UI */
 	gs_plugin_updates_changed (plugin);
 }

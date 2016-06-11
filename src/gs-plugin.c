@@ -998,7 +998,12 @@ gs_plugin_cache_add (GsPlugin *plugin, const gchar *key, GsApp *app)
  * @plugin: a #GsPlugin
  *
  * Invalidate the per-plugin cache by marking all entries as invalid.
- * This is optional, and the plugin can evict the cache whenever it likes.
+ * This is optional, and the plugin can evict the cache whenever it
+ * likes. Using this function may mean the front-end and the plugin
+ * may be operating on a different GsApp with the same cache ID.
+ *
+ * Most plugins do not need to call this funtion; if a suitable cache
+ * key is being used the old cache item can remain.
  **/
 void
 gs_plugin_cache_invalidate (GsPlugin *plugin)

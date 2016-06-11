@@ -45,9 +45,6 @@ gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 {
 	g_debug ("AppStream metadata changed");
 
-	/* cache no longer valid */
-	gs_plugin_cache_invalidate (plugin);
-
 	/* this is not strictly true, but it causes all the UI to be reloaded
 	 * which is what we really want */
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_OTHER))
