@@ -612,8 +612,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	priv->plugin_loader = g_object_ref (plugin_loader);
 	g_signal_connect (priv->plugin_loader, "reload",
 			  G_CALLBACK (gs_shell_reload_cb), shell);
-	g_signal_connect (priv->plugin_loader, "updates-changed",
-			  G_CALLBACK (gs_shell_reload_cb), shell);
 	priv->cancellable = g_object_ref (cancellable);
 
 	gs_shell_monitor_permission (shell);

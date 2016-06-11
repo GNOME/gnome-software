@@ -1233,6 +1233,9 @@ gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
 	/* if we do a live update and the upgrade is waiting to be deployed
 	 * then make sure all new packages are downloaded */
 	gs_shell_updates_invalidate_downloaded_upgrade (self);
+
+	/* refresh updates list */
+	gs_shell_updates_reload (GS_PAGE (self));
 }
 
 /**
