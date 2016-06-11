@@ -38,6 +38,7 @@ struct _GsShellCategory
 	GCancellable	*cancellable;
 	GsShell		*shell;
 	GsCategory	*category;
+	GsCategory	*subcategory;
 
 	GtkWidget	*infobar_category_shell_extensions;
 	GtkWidget	*button_category_shell_extensions;
@@ -109,12 +110,14 @@ gs_shell_category_get_apps_cb (GObject *source_object,
 }
 
 static void
-gs_shell_category_populate_filtered (GsShellCategory *self, GsCategory *subcategory)
+gs_shell_category_reload (GsPage *page)
 {
+	GsShellCategory *self = GS_SHELL_CATEGORY (page);
 	GtkWidget *tile;
 	guint i, count;
 
-	g_assert (subcategory != NULL);
+	if (self->subcategory == NULL)
+		return;
 
 	if (self->cancellable != NULL) {
 		g_cancellable_cancel (self->cancellable);
@@ -124,18 +127,18 @@ gs_shell_category_populate_filtered (GsShellCategory *self, GsCategory *subcateg
 
 	g_debug ("search using %s/%s",
 	         gs_category_get_id (self->category),
-	         gs_category_get_id (subcategory));
+	         gs_category_get_id (self->subcategory));
 
 	/* show the shell extensions header */
 	if (g_strcmp0 (gs_category_get_id (self->category), "Addons") == 0 &&
-	    g_strcmp0 (gs_category_get_id (subcategory), "ShellExtensions") == 0) {
+	    g_strcmp0 (gs_category_get_id (self->subcategory), "ShellExtensions") == 0) {
 		gtk_widget_set_visible (self->infobar_category_shell_extensions, TRUE);
 	} else {
 		gtk_widget_set_visible (self->infobar_category_shell_extensions, FALSE);
 	}
 
 	gs_container_remove_all (GTK_CONTAINER (self->category_detail_box));
-	count = MIN(30, gs_category_get_size (subcategory));
+	count = MIN(30, gs_category_get_size (self->subcategory));
 	for (i = 0; i < count; i++) {
 		tile = gs_app_tile_new (NULL);
 		gtk_container_add (GTK_CONTAINER (self->category_detail_box), tile);
@@ -143,7 +146,7 @@ gs_shell_category_populate_filtered (GsShellCategory *self, GsCategory *subcateg
 	}
 
 	gs_plugin_loader_get_category_apps_async (self->plugin_loader,
-						  subcategory,
+						  self->subcategory,
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_VERSION |
 						  GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING,
@@ -153,9 +156,11 @@ gs_shell_category_populate_filtered (GsShellCategory *self, GsCategory *subcateg
 }
 
 static void
-gs_shell_category_reload (GsPage *page)
+gs_shell_category_populate_filtered (GsShellCategory *self, GsCategory *subcategory)
 {
-	//GsShellCategory *self = GS_SHELL_CATEGORY (page);
+	g_assert (subcategory != NULL);
+	g_set_object (&self->subcategory, subcategory);
+	gs_shell_category_reload (GS_PAGE (self));
 }
 
 static void
@@ -261,6 +266,7 @@ gs_shell_category_dispose (GObject *object)
 
 	g_clear_object (&self->builder);
 	g_clear_object (&self->category);
+	g_clear_object (&self->subcategory);
 	g_clear_object (&self->plugin_loader);
 
 	G_OBJECT_CLASS (gs_shell_category_parent_class)->dispose (object);
