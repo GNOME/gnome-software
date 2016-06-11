@@ -7,8 +7,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-06-10 15:02+0000\n"
-"PO-Revision-Date: 2016-06-11 08:44+0100\n"
+"POT-Creation-Date: 2016-06-11 07:44+0000\n"
+"PO-Revision-Date: 2016-06-11 08:47+0100\n"
 "Last-Translator: GunChleoc <fios@foramnagaidhlig.net>\n"
 "Language-Team: Fòram na Gàidhlig\n"
 "Language: gd\n"
@@ -161,12 +161,11 @@ msgstr ""
 "URL a' cheadachais ri chleachdadh gus bathar-bog a mheasadh mar fhear saor"
 
 #: ../data/org.gnome.software.gschema.xml.h:22
-#, fuzzy
 #| msgid "A list of applications to use, overriding the system defined ones."
 msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
-"Liosta dhe na h-aplacaidean ri an cleachdadh seach an fheadhainn a mhìnich "
-"an siostam."
+"Stàlaich aplacaidean an trusgain airson a h-uile cleachdaiche air an "
+"t-siostam far an gabh seo dèanamh"
 
 #: ../data/org.gnome.software.gschema.xml.h:23
 msgid "Show the folder management UI"
@@ -415,37 +414,34 @@ msgstr "leudachain shell"
 #. TRANSLATORS: this is when the service name is not known
 #: ../src/gs-auth-dialog.c:69
 msgid "To continue you need to sign in."
-msgstr ""
+msgstr "Feumaidh tu clàradh a-steach mus lean thu air adhart."
 
 #. TRANSLATORS: the %s is a service name, e.g. "Ubuntu One"
 #: ../src/gs-auth-dialog.c:73
 #, c-format
 msgid "To continue you need to sign in to %s."
-msgstr ""
+msgstr "Feumaidh tu clàradh a-steach dha %s mus lean thu air adhart."
 
 #. vim: set noexpandtab:
 #: ../src/gs-auth-dialog.ui.h:1
-#, fuzzy
 #| msgid "_Email address:"
 msgid "Email address"
-msgstr "Seòladh _puist-d:"
+msgstr "Seòladh puist-d"
 
 #: ../src/gs-auth-dialog.ui.h:2
 msgid "I have an account already"
-msgstr ""
+msgstr "Tha cunntas agam mar-thà"
 
 #: ../src/gs-auth-dialog.ui.h:3
-#, fuzzy
 #| msgid "_Password:"
 msgid "Password"
-msgstr "_Facal-faire:"
+msgstr "Facal-faire"
 
 #: ../src/gs-auth-dialog.ui.h:4
 msgid "I want to register for an account now"
 msgstr "Tha mi airson cunntas a chlàradh an-dràsta"
 
 #: ../src/gs-auth-dialog.ui.h:5
-#, fuzzy
 #| msgid "I've forgotten my password"
 msgid "I have forgotten my password"
 msgstr "Dhìochuimhnich mi am facal-faire agam"
@@ -456,29 +452,27 @@ msgstr "Clàraich a-steach gu fèin-obrachail an ath-thuras"
 
 #: ../src/gs-auth-dialog.ui.h:7
 msgid "page0"
-msgstr ""
+msgstr "duilleag0"
 
 #: ../src/gs-auth-dialog.ui.h:8
-#, fuzzy
 #| msgid "Enter your one-time password for two-factor authentication."
 msgid "Enter your one-time pin for two-factor authentication."
 msgstr ""
-"Cuir a-steach am facal-faire aon turais agad a chum a' chlàraidh a-steach "
+"Cuir a-steach am PIN aon turais agad a chum a' chlàraidh a-steach "
 "dhà-cheumnaich"
 
 #: ../src/gs-auth-dialog.ui.h:9
 msgid "PIN"
-msgstr ""
+msgstr "PIN"
 
 #: ../src/gs-auth-dialog.ui.h:10
 msgid "page1"
-msgstr ""
+msgstr "duilleag1"
 
 #: ../src/gs-auth-dialog.ui.h:11
-#, fuzzy
 #| msgid "_Continue"
 msgid "Continue"
-msgstr "_Lean air adhart"
+msgstr "Lean air adhart"
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -653,13 +647,13 @@ msgstr ""
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:984
+#: ../src/gs-plugin-loader.c:981
 msgid "OS Updates"
 msgstr "Ùrachaidhean an t-siostaim-obrachaidh"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:989
+#: ../src/gs-plugin-loader.c:986
 msgid "Includes performance, stability and security improvements."
 msgstr ""
 "Gabhaidh seo a-steach piseach air an dèanadas, an t-seasmhachd agus an "
@@ -667,12 +661,12 @@ msgstr ""
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1679 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1676 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "Chan eil codec ri làimh 'na thuilleadan airson an fhòrmait %s."
 
-#: ../src/gs-plugin-loader.c:1682
+#: ../src/gs-plugin-loader.c:1679
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -1418,28 +1412,26 @@ msgid "There are no reviews to moderate"
 msgstr "Chan eil lèirmheas sam bith feumach air maorsainneachd"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:417
-#, fuzzy
+#: ../src/gs-shell-overview.c:421
 #| msgid "Recommended Audio Applications"
 msgid "Recommended Audio & Video Applications"
-msgstr "Aplacaidean fuaime a mholamaid"
+msgstr "Aplacaidean fuaime ⁊ video a mholamaid"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:422
+#: ../src/gs-shell-overview.c:426
 msgid "Recommended Games"
 msgstr "Geamannan a mholamaid"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:427
+#: ../src/gs-shell-overview.c:431
 msgid "Recommended Graphics Applications"
 msgstr "Aplacaidean grafaigeachd a mholamaid"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:432
-#, fuzzy
+#: ../src/gs-shell-overview.c:436
 #| msgid "Recommended Audio Applications"
 msgid "Recommended Productivity Applications"
-msgstr "Aplacaidean fuaime a mholamaid"
+msgstr "Aplacaidean dèanadais a mholamaid"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-overview.ui.h:1
@@ -2465,7 +2457,8 @@ msgstr "Chan eil gin"
 #. TRANSLATORS: content rating description: comments welcome
 #: ../src/gs-common.c:594
 msgid "Uncontrolled audio or video chat functionality between players"
-msgstr "Gleus cabadaich fuaime no video gun stiùireadh eadar na cluicheadairean"
+msgstr ""
+"Gleus cabadaich fuaime no video gun stiùireadh eadar na cluicheadairean"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:597
@@ -2556,13 +2549,11 @@ msgid "Starting up…"
 msgstr "A' tòiseachadh…"
 
 #: ../src/plugins/gs-desktop-common.c:30
-#| msgid "All"
 msgctxt "Menu of AudioVideo"
 msgid "All"
 msgstr "Na h-uile"
 
 #: ../src/plugins/gs-desktop-common.c:33
-#| msgid "Featured"
 msgctxt "Menu of AudioVideo"
 msgid "Featured"
 msgstr "Brosnaichte"
@@ -2573,27 +2564,21 @@ msgid "Audio Creation & Editing"
 msgstr "Clàradh ⁊ deasachadh fuaime"
 
 #: ../src/plugins/gs-desktop-common.c:42
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Players"
 msgctxt "Menu of AudioVideo"
 msgid "Music Players"
 msgstr "Cluicheadairean ciùil"
 
 #: ../src/plugins/gs-desktop-common.c:51
-#| msgid "All"
 msgctxt "Menu of Development"
 msgid "All"
 msgstr "Na h-uile"
 
 #: ../src/plugins/gs-desktop-common.c:54
-#| msgid "Featured"
 msgctxt "Menu of Development"
 msgid "Featured"
 msgstr "Brosnaichte"
 
 #: ../src/plugins/gs-desktop-common.c:57
-#| msgctxt "Menu subcategory of Development Tools"
-#| msgid "Debuggers"
 msgctxt "Menu of Development"
 msgid "Debuggers"
 msgstr "Dì-bhugadairean"
@@ -2604,365 +2589,271 @@ msgid "IDEs"
 msgstr "Àrainneachdan leasachaidh co-fhillte"
 
 #: ../src/plugins/gs-desktop-common.c:69
-#| msgid "All"
 msgctxt "Menu of Education"
 msgid "All"
 msgstr "Na h-uile"
 
 #: ../src/plugins/gs-desktop-common.c:72
-#| msgid "Featured"
 msgctxt "Menu of Education"
 msgid "Featured"
 msgstr "Brosnaichte"
 
 #: ../src/plugins/gs-desktop-common.c:75
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Astronomy"
 msgctxt "Menu of Education"
 msgid "Astronomy"
 msgstr "Reul-eòlas"
 
 #: ../src/plugins/gs-desktop-common.c:78
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Chemistry"
 msgctxt "Menu of Education"
 msgid "Chemistry"
 msgstr "Ceimigeachd"
 
 #: ../src/plugins/gs-desktop-common.c:81
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Languages"
 msgctxt "Menu of Education"
 msgid "Languages"
 msgstr "Cànain"
 
 #: ../src/plugins/gs-desktop-common.c:85
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Math"
 msgctxt "Menu of Education"
 msgid "Math"
 msgstr "Matamataig"
 
 #: ../src/plugins/gs-desktop-common.c:94
-#| msgid "All"
 msgctxt "Menu of Games"
 msgid "All"
 msgstr "Na h-uile"
 
 #: ../src/plugins/gs-desktop-common.c:97
-#| msgid "Featured"
 msgctxt "Menu of Games"
 msgid "Featured"
 msgstr "Brosnaichte"
 
 #: ../src/plugins/gs-desktop-common.c:100
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Action"
 msgctxt "Menu of Games"
 msgid "Action"
 msgstr "Action"
 
 #: ../src/plugins/gs-desktop-common.c:103
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Adventure"
 msgctxt "Menu of Games"
 msgid "Adventure"
 msgstr "Dàna-thuras"
 
 #: ../src/plugins/gs-desktop-common.c:106
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Arcade"
 msgctxt "Menu of Games"
 msgid "Arcade"
 msgstr "Faoin-chleasan"
 
 #: ../src/plugins/gs-desktop-common.c:109
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Blocks"
 msgctxt "Menu of Games"
 msgid "Blocks"
 msgstr "Blocaichean"
 
 #: ../src/plugins/gs-desktop-common.c:112
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Board"
 msgctxt "Menu of Games"
 msgid "Board"
 msgstr "Bòrd"
 
 #: ../src/plugins/gs-desktop-common.c:115
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Card"
 msgctxt "Menu of Games"
 msgid "Card"
 msgstr "Cairt"
 
 #: ../src/plugins/gs-desktop-common.c:118
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Emulators"
 msgctxt "Menu of Games"
 msgid "Emulators"
 msgstr "Aithrisichean"
 
 #: ../src/plugins/gs-desktop-common.c:121
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Kids"
 msgctxt "Menu of Games"
 msgid "Kids"
 msgstr "Clann"
 
 #: ../src/plugins/gs-desktop-common.c:124
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Logic"
 msgctxt "Menu of Games"
 msgid "Logic"
 msgstr "Loidig"
 
 #: ../src/plugins/gs-desktop-common.c:127
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Role Playing"
 msgctxt "Menu of Games"
 msgid "Role Playing"
 msgstr "Cluich mas-fhìor"
 
 #: ../src/plugins/gs-desktop-common.c:130
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Sports"
 msgctxt "Menu of Games"
 msgid "Sports"
 msgstr "Spòrs"
 
 #: ../src/plugins/gs-desktop-common.c:134
-#| msgctxt "Menu subcategory of Games"
-#| msgid "Strategy"
 msgctxt "Menu of Games"
 msgid "Strategy"
 msgstr "Ro-innleachd"
 
 #: ../src/plugins/gs-desktop-common.c:142
-#| msgid "All"
 msgctxt "Menu of Graphics"
 msgid "All"
 msgstr "Na h-uile"
 
 #: ../src/plugins/gs-desktop-common.c:145
-#| msgid "Featured"
 msgctxt "Menu of Graphics"
 msgid "Featured"
 msgstr "Brosnaichte"
 
 #: ../src/plugins/gs-desktop-common.c:148
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "3D Graphics"
 msgctxt "Menu of Graphics"
 msgid "3D Graphics"
 msgstr "Grafaigeachd 3D"
 
 #: ../src/plugins/gs-desktop-common.c:151
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "Photography"
 msgctxt "Menu of Graphics"
 msgid "Photography"
 msgstr "Togail dhealbhan"
 
 #: ../src/plugins/gs-desktop-common.c:154
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "Scanning"
 msgctxt "Menu of Graphics"
 msgid "Scanning"
 msgstr "Sganadh"
 
 #: ../src/plugins/gs-desktop-common.c:157
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "Vector Graphics"
 msgctxt "Menu of Graphics"
 msgid "Vector Graphics"
 msgstr "Grafaigeachd vectoran"
 
 #: ../src/plugins/gs-desktop-common.c:160
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "Viewer"
 msgctxt "Menu of Graphics"
 msgid "Viewers"
 msgstr "Sealladairean"
 
 #: ../src/plugins/gs-desktop-common.c:168
-#| msgid "All"
 msgctxt "Menu of Office"
 msgid "All"
 msgstr "Na h-uile"
 
 #: ../src/plugins/gs-desktop-common.c:171
-#| msgid "Featured"
 msgctxt "Menu of Office"
 msgid "Featured"
 msgstr "Brosnaichte"
 
 #: ../src/plugins/gs-desktop-common.c:174
-#| msgctxt "Menu subcategory of Office"
-#| msgid "Calendar"
 msgctxt "Menu of Office"
 msgid "Calendar"
 msgstr "Mìosachan"
 
 #: ../src/plugins/gs-desktop-common.c:178
-#| msgctxt "Menu subcategory of Office"
-#| msgid "Database"
 msgctxt "Menu of Office"
 msgid "Database"
 msgstr "Stòr-dàta"
 
 #: ../src/plugins/gs-desktop-common.c:181
-#| msgctxt "Menu subcategory of Office"
-#| msgid "Finance"
 msgctxt "Menu of Office"
 msgid "Finance"
 msgstr "Ionmhas"
 
 #: ../src/plugins/gs-desktop-common.c:185
-#| msgctxt "Menu subcategory of Office"
-#| msgid "Word Processor"
 msgctxt "Menu of Office"
 msgid "Word Processor"
 msgstr "Pròiseasadh fhaclan"
 
 #: ../src/plugins/gs-desktop-common.c:194
-#| msgctxt "Menu subcategory of Add-ons"
-#| msgid "Fonts"
 msgctxt "Menu of Addons"
 msgid "Fonts"
 msgstr "Cruthan-clò"
 
 #: ../src/plugins/gs-desktop-common.c:197
-#| msgctxt "Menu subcategory of Add-ons"
-#| msgid "Codecs"
 msgctxt "Menu of Addons"
 msgid "Codecs"
 msgstr "Codecs"
 
 #: ../src/plugins/gs-desktop-common.c:200
-#| msgctxt "Menu subcategory of Add-ons"
-#| msgid "Input Sources"
 msgctxt "Menu of Addons"
 msgid "Input Sources"
 msgstr "Tùsan ion-chuir"
 
 #: ../src/plugins/gs-desktop-common.c:203
-#| msgctxt "Menu subcategory of Add-ons"
-#| msgid "Language Packs"
 msgctxt "Menu of Addons"
 msgid "Language Packs"
 msgstr "Pacaidean cànain"
 
 #: ../src/plugins/gs-desktop-common.c:206
-#| msgctxt "Menu subcategory of Add-ons"
-#| msgid "Shell Extensions"
 msgctxt "Menu of Addons"
 msgid "Shell Extensions"
 msgstr "Leudachain slige"
 
 #: ../src/plugins/gs-desktop-common.c:209
-#| msgctxt "Menu subcategory of Add-ons"
-#| msgid "Localization"
 msgctxt "Menu of Addons"
 msgid "Localization"
 msgstr "Ionadaileadh"
 
 #: ../src/plugins/gs-desktop-common.c:217
-#| msgid "All"
 msgctxt "Menu of Science"
 msgid "All"
 msgstr "Na h-uile"
 
 #: ../src/plugins/gs-desktop-common.c:220
-#| msgid "Featured"
 msgctxt "Menu of Science"
 msgid "Featured"
 msgstr "Brosnaichte"
 
 #: ../src/plugins/gs-desktop-common.c:223
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Artificial Intelligence"
 msgctxt "Menu of Science"
 msgid "Artificial Intelligence"
 msgstr "Inntinn fhuadain"
 
 #: ../src/plugins/gs-desktop-common.c:226
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Astronomy"
 msgctxt "Menu of Science"
 msgid "Astronomy"
 msgstr "Reul-eòlas"
 
 #: ../src/plugins/gs-desktop-common.c:229
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Chemistry"
 msgctxt "Menu of Science"
 msgid "Chemistry"
 msgstr "Ceimigeachd"
 
 #: ../src/plugins/gs-desktop-common.c:232
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Math"
 msgctxt "Menu of Science"
 msgid "Math"
 msgstr "Matamataig"
 
 #: ../src/plugins/gs-desktop-common.c:237
-#| msgctxt "Menu subcategory of Education"
-#| msgid "Robotics"
 msgctxt "Menu of Science"
 msgid "Robotics"
 msgstr "Robotaireachd"
 
 #: ../src/plugins/gs-desktop-common.c:245
-#| msgid "All"
 msgctxt "Menu of Communication"
 msgid "All"
 msgstr "Na h-uile"
 
 #: ../src/plugins/gs-desktop-common.c:248
-#| msgid "Featured"
 msgctxt "Menu of Communication"
 msgid "Featured"
 msgstr "Brosnaichte"
 
 #: ../src/plugins/gs-desktop-common.c:251
-#| msgctxt "Menu subcategory of Internet"
-#| msgid "Chat"
 msgctxt "Menu of Communication"
 msgid "Chat"
 msgstr "Cabadaich"
 
 #: ../src/plugins/gs-desktop-common.c:258
-#| msgctxt "Menu subcategory of Internet"
-#| msgid "News"
 msgctxt "Menu of Communication"
 msgid "News"
 msgstr "Naidheachdan"
 
 #: ../src/plugins/gs-desktop-common.c:262
-#| msgctxt "Menu subcategory of Internet"
-#| msgid "Web Browser"
 msgctxt "Menu of Communication"
 msgid "Web Browsers"
 msgstr "Brabhsairean-lìn"
 
 #: ../src/plugins/gs-desktop-common.c:270
-#| msgid "All"
 msgctxt "Menu of Utility"
 msgid "All"
 msgstr "Na h-uile"
 
 #: ../src/plugins/gs-desktop-common.c:273
-#| msgid "Featured"
 msgctxt "Menu of Utility"
 msgid "Featured"
 msgstr "Brosnaichte"
 
 #: ../src/plugins/gs-desktop-common.c:276
-#| msgctxt "Menu subcategory of Utilities"
-#| msgid "Text Editor"
 msgctxt "Menu of Utility"
 msgid "Text Editors"
 msgstr "Deasaichean teacsa"
@@ -2974,7 +2865,6 @@ msgstr "Fuaim ⁊ video"
 
 #. TRANSLATORS: this is the menu spec main category for Development
 #: ../src/plugins/gs-desktop-common.c:288
-#| msgid "Development Tools"
 msgid "Developer Tools"
 msgstr "Innealan leasachaidh"
 
@@ -2990,8 +2880,6 @@ msgstr "Geamannan"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
 #: ../src/plugins/gs-desktop-common.c:297
-#| msgctxt "Menu subcategory of Graphics"
-#| msgid "Photography"
 msgid "Graphics & Photography"
 msgstr "Grafaigeachd ⁊ togail dhealbhan"
 
