@@ -38,12 +38,81 @@
 
 struct GsPluginData {
 	AsStore			*store;
+	GHashTable		*app_hash_old;
 };
+
+#define GS_PLUGIN_NUMBER_CHANGED_RELOAD	10
+
+static GHashTable *
+gs_plugin_appstream_create_app_hash (AsStore *store)
+{
+	GHashTable *hash;
+	GPtrArray *apps;
+	guint i;
+
+	hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+				      g_free, (GDestroyNotify) g_object_unref);
+	apps = as_store_get_apps (store);
+	for (i = 0; i < apps->len; i++) {
+		AsApp *app = g_ptr_array_index (apps, i);
+		gchar *key = g_strdup (as_app_get_id (app));
+		g_hash_table_insert (hash, key, g_object_ref (app));
+	}
+	return hash;
+}
+
+static void
+gs_plugin_detect_reload_apps (GsPlugin *plugin)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	AsApp *item;
+	GList *l;
+	guint cnt = 0;
+	g_autoptr(GHashTable) app_hash = NULL;
+	g_autoptr(GList) keys = NULL;
+	g_autoptr(GList) keys_old = NULL;
+
+	/* find packages that have been added */
+	app_hash = gs_plugin_appstream_create_app_hash (priv->store);
+	keys = g_hash_table_get_keys (app_hash);
+	for (l = keys; l != NULL; l = l->next) {
+		const gchar *key = l->data;
+		item = g_hash_table_lookup (priv->app_hash_old, key);
+		if (item == NULL)
+			cnt++;
+	}
+
+	/* find packages that have been removed */
+	keys_old = g_hash_table_get_keys (priv->app_hash_old);
+	for (l = keys_old; l != NULL; l = l->next) {
+		const gchar *key = l->data;
+		item = g_hash_table_lookup (app_hash, key);
+		if (item == NULL)
+			cnt++;
+	}
+
+	/* replace if any changes */
+	if (cnt > 0) {
+		if (priv->app_hash_old != NULL)
+			g_hash_table_unref (priv->app_hash_old);
+		priv->app_hash_old = g_hash_table_ref (app_hash);
+	}
+
+	/* invalidate all if a large number of apps changed */
+	if (cnt > GS_PLUGIN_NUMBER_CHANGED_RELOAD) {
+		g_debug ("%i is more than %i AsApps changed",
+			 cnt, GS_PLUGIN_NUMBER_CHANGED_RELOAD);
+		gs_plugin_reload (plugin);
+	}
+}
 
 static void
 gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 {
 	g_debug ("AppStream metadata changed");
+
+	/* send ::reload-apps */
+	gs_plugin_detect_reload_apps (plugin);
 
 	/* all the UI is reloaded as something external has happened */
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_OTHER))
@@ -67,6 +136,7 @@ void
 gs_plugin_destroy (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
+	g_hash_table_unref (priv->app_hash_old);
 	g_object_unref (priv->store);
 }
 
@@ -167,6 +237,9 @@ gs_plugin_setup (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 			     "No AppStream data found");
 		return FALSE;
 	}
+
+	/* prime the cache */
+	priv->app_hash_old = gs_plugin_appstream_create_app_hash (priv->store);
 
 	/* watch for changes */
 	g_signal_connect (priv->store, "changed",
