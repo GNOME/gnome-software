@@ -453,6 +453,16 @@ gs_page_switch_to (GsPage *page,
 }
 
 void
+gs_page_reload (GsPage *page)
+{
+	GsPageClass *klass;
+	g_return_if_fail (GS_IS_PAGE (page));
+	klass = GS_PAGE_GET_CLASS (page);
+	g_assert (klass->reload != NULL);
+	klass->reload (page);
+}
+
+void
 gs_page_setup (GsPage *page,
                GsShell *shell,
                GsPluginLoader *plugin_loader,

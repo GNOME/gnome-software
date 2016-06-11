@@ -41,7 +41,6 @@ void		 gs_shell_search_set_appid_to_show (GsShellSearch	*self,
 const gchar	*gs_shell_search_get_text	(GsShellSearch		*self);
 void		 gs_shell_search_set_text	(GsShellSearch		*self,
 						 const gchar		*value);
-void		 gs_shell_search_reload		(GsShellSearch		*self);
 void		 gs_shell_search_setup		(GsShellSearch		*self,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,

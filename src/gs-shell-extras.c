@@ -732,9 +732,10 @@ gs_shell_extras_load (GsShellExtras *self, GPtrArray *array_search_data)
 	}
 }
 
-void
-gs_shell_extras_reload (GsShellExtras *self)
+static void
+gs_shell_extras_reload (GsPage *page)
 {
+	GsShellExtras *self = GS_SHELL_EXTRAS (page);
 	if (self->array_search_data != NULL)
 		gs_shell_extras_load (self, NULL);
 }
@@ -1195,6 +1196,7 @@ gs_shell_extras_class_init (GsShellExtrasClass *klass)
 
 	object_class->dispose = gs_shell_extras_dispose;
 	page_class->switch_to = gs_shell_extras_switch_to;
+	page_class->reload = gs_shell_extras_reload;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-extras.ui");
 

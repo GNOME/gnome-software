@@ -622,9 +622,10 @@ gs_shell_updates_load (GsShellUpdates *self)
 /**
  * gs_shell_updates_reload:
  */
-void
-gs_shell_updates_reload (GsShellUpdates *self)
+static void
+gs_shell_updates_reload (GsPage *page)
 {
+	GsShellUpdates *self = GS_SHELL_UPDATES (page);
 	gs_shell_updates_invalidate (self);
 	gs_shell_updates_load (self);
 }
@@ -1426,6 +1427,7 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 
 	object_class->dispose = gs_shell_updates_dispose;
 	page_class->switch_to = gs_shell_updates_switch_to;
+	page_class->reload = gs_shell_updates_reload;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-updates.ui");
 

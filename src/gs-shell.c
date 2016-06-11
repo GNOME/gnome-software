@@ -451,8 +451,8 @@ initial_overview_load_done (GsShellOverview *shell_overview, gpointer data)
 
 	g_signal_handlers_disconnect_by_func (shell_overview, initial_overview_load_done, data);
 
-	gs_shell_updates_reload (priv->shell_updates);
-	gs_shell_installed_reload (priv->shell_installed);
+	gs_page_reload (GS_PAGE (priv->shell_updates));
+	gs_page_reload (GS_PAGE (priv->shell_installed));
 
 	g_signal_emit (shell, signals[SIGNAL_LOADED], 0);
 }
@@ -557,13 +557,13 @@ static void
 gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
-	gs_shell_category_reload (priv->shell_category);
-	gs_shell_extras_reload (priv->shell_extras);
-	gs_shell_details_reload (priv->shell_details);
-	gs_shell_installed_reload (priv->shell_installed);
-	gs_shell_overview_reload (priv->shell_overview);
-	gs_shell_search_reload (priv->shell_search);
-	gs_shell_updates_reload (priv->shell_updates);
+	gs_page_reload (GS_PAGE (priv->shell_category));
+	gs_page_reload (GS_PAGE (priv->shell_extras));
+	gs_page_reload (GS_PAGE (priv->shell_details));
+	gs_page_reload (GS_PAGE (priv->shell_installed));
+	gs_page_reload (GS_PAGE (priv->shell_overview));
+	gs_page_reload (GS_PAGE (priv->shell_search));
+	gs_page_reload (GS_PAGE (priv->shell_updates));
 }
 
 /**

@@ -1553,12 +1553,10 @@ gs_shell_details_load (GsShellDetails *self)
 					   self);
 }
 
-/**
- * gs_shell_details_reload:
- **/
-void
-gs_shell_details_reload (GsShellDetails *self)
+static void
+gs_shell_details_reload (GsPage *page)
 {
+	GsShellDetails *self = GS_SHELL_DETAILS (page);
 	if (self->app != NULL)
 		gs_shell_details_load (self);
 }
@@ -1761,13 +1759,13 @@ gs_shell_details_write_review_cb (GtkButton *button,
 static void
 gs_shell_details_app_installed (GsPage *page, GsApp *app)
 {
-	gs_shell_details_reload (GS_SHELL_DETAILS (page));
+	gs_shell_details_reload (page);
 }
 
 static void
 gs_shell_details_app_removed (GsPage *page, GsApp *app)
 {
-	gs_shell_details_reload (GS_SHELL_DETAILS (page));
+	gs_shell_details_reload (page);
 }
 
 /**
@@ -1866,6 +1864,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	page_class->app_installed = gs_shell_details_app_installed;
 	page_class->app_removed = gs_shell_details_app_removed;
 	page_class->switch_to = gs_shell_details_switch_to;
+	page_class->reload = gs_shell_details_reload;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-details.ui");
 

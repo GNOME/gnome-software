@@ -496,12 +496,10 @@ gs_shell_overview_load (GsShellOverview *self)
 	}
 }
 
-/**
- * gs_shell_overview_reload:
- */
-void
-gs_shell_overview_reload (GsShellOverview *self)
+static void
+gs_shell_overview_reload (GsPage *page)
 {
+	GsShellOverview *self = GS_SHELL_OVERVIEW (page);
 	gs_shell_overview_invalidate (self);
 	gs_shell_overview_load (self);
 }
@@ -654,6 +652,7 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 
 	object_class->dispose = gs_shell_overview_dispose;
 	page_class->switch_to = gs_shell_overview_switch_to;
+	page_class->reload = gs_shell_overview_reload;
 	klass->refreshed = gs_shell_overview_refreshed;
 
 	signals [SIGNAL_REFRESHED] =

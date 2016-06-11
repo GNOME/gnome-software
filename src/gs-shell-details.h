@@ -43,7 +43,6 @@ void		 gs_shell_details_set_app	(GsShellDetails		*self,
 void		 gs_shell_details_set_filename	(GsShellDetails		*self,
 						 const gchar		*filename);
 GsApp		*gs_shell_details_get_app       (GsShellDetails		*self);
-void		 gs_shell_details_reload	(GsShellDetails		*self);
 void		 gs_shell_details_setup		(GsShellDetails		*self,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,

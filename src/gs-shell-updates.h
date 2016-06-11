@@ -36,7 +36,6 @@ G_BEGIN_DECLS
 G_DECLARE_FINAL_TYPE (GsShellUpdates, gs_shell_updates, GS, SHELL_UPDATES, GsPage)
 
 GsShellUpdates	*gs_shell_updates_new		(void);
-void		 gs_shell_updates_reload	(GsShellUpdates		*self);
 void		 gs_shell_updates_setup		(GsShellUpdates		*self,
 						 GsShell		*shell,
 						 GsPluginLoader		*plugin_loader,

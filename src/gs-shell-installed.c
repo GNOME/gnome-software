@@ -247,12 +247,10 @@ gs_shell_installed_load (GsShellInstalled *self)
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
 }
 
-/**
- * gs_shell_installed_reload:
- */
-void
-gs_shell_installed_reload (GsShellInstalled *self)
+static void
+gs_shell_installed_reload (GsPage *page)
 {
+	GsShellInstalled *self = GS_SHELL_INSTALLED (page);
 	gs_shell_installed_invalidate (self);
 	gs_shell_installed_load (self);
 }
@@ -796,6 +794,7 @@ gs_shell_installed_class_init (GsShellInstalledClass *klass)
 	object_class->dispose = gs_shell_installed_dispose;
 	page_class->app_removed = gs_shell_installed_app_removed;
 	page_class->switch_to = gs_shell_installed_switch_to;
+	page_class->reload = gs_shell_installed_reload;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-installed.ui");
 

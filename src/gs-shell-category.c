@@ -49,14 +49,6 @@ struct _GsShellCategory
 
 G_DEFINE_TYPE (GsShellCategory, gs_shell_category, GS_TYPE_PAGE)
 
-/**
- * gs_shell_category_reload:
- */
-void
-gs_shell_category_reload (GsShellCategory *self)
-{
-}
-
 static void
 gs_shell_category_switch_to (GsPage *page, gboolean scroll_up)
 {
@@ -158,6 +150,12 @@ gs_shell_category_populate_filtered (GsShellCategory *self, GsCategory *subcateg
 						  self->cancellable,
 						  gs_shell_category_get_apps_cb,
 						  self);
+}
+
+static void
+gs_shell_category_reload (GsPage *page)
+{
+	//GsShellCategory *self = GS_SHELL_CATEGORY (page);
 }
 
 static void
@@ -277,6 +275,7 @@ gs_shell_category_class_init (GsShellCategoryClass *klass)
 
 	object_class->dispose = gs_shell_category_dispose;
 	page_class->switch_to = gs_shell_category_switch_to;
+	page_class->reload = gs_shell_category_reload;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-category.ui");
 

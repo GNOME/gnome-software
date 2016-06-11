@@ -44,6 +44,7 @@ struct _GsPageClass
 						 GsApp		 *app);
 	void		(*switch_to)		(GsPage		 *page,
 						 gboolean	  scroll_up);
+	void		(*reload)		(GsPage		 *page);
 };
 
 GsPage		*gs_page_new				(void);
@@ -67,6 +68,7 @@ void		 gs_page_shortcut_remove		(GsPage		*page,
 							 GsApp		*app);
 void		 gs_page_switch_to			(GsPage		*page,
 							 gboolean	 scroll_up);
+void		 gs_page_reload				(GsPage		*page);
 void		 gs_page_setup				(GsPage		*page,
 							 GsShell	*shell,
 							 GsPluginLoader	*plugin_loader,

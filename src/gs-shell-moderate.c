@@ -200,12 +200,10 @@ gs_shell_moderate_load (GsShellModerate *self)
 	gtk_stack_set_visible_child_name (GTK_STACK (self->stack_install), "spinner");
 }
 
-/**
- * gs_shell_moderate_reload:
- */
-void
-gs_shell_moderate_reload (GsShellModerate *self)
+static void
+gs_shell_moderate_reload (GsPage *page)
 {
+	GsShellModerate *self = GS_SHELL_MODERATE (page);
 	gs_shell_moderate_load (self);
 }
 
@@ -300,6 +298,7 @@ gs_shell_moderate_class_init (GsShellModerateClass *klass)
 
 	object_class->dispose = gs_shell_moderate_dispose;
 	page_class->switch_to = gs_shell_moderate_switch_to;
+	page_class->reload = gs_shell_moderate_reload;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-shell-moderate.ui");
 
