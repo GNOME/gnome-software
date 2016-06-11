@@ -34,6 +34,7 @@
 #include "gs-common.h"
 
 #define GS_PLUGIN_LOADER_UPDATES_CHANGED_DELAY	3	/* s */
+#define GS_PLUGIN_LOADER_RELOAD_DELAY		5	/* s */
 
 typedef struct
 {
@@ -54,6 +55,7 @@ typedef struct
 	gint			 scale;
 
 	guint			 updates_changed_id;
+	guint			 reload_id;
 	gboolean		 online; 
 } GsPluginLoaderPrivate;
 
@@ -63,6 +65,7 @@ enum {
 	SIGNAL_STATUS_CHANGED,
 	SIGNAL_PENDING_APPS_CHANGED,
 	SIGNAL_UPDATES_CHANGED,
+	SIGNAL_RELOAD,
 	SIGNAL_LAST
 };
 
@@ -3423,6 +3426,34 @@ gs_plugin_loader_updates_changed_cb (GsPlugin *plugin,
 				       g_object_ref (plugin_loader));
 }
 
+static gboolean
+gs_plugin_loader_reload_delay_cb (gpointer user_data)
+{
+	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (user_data);
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+
+	/* notify shells */
+	g_debug ("emitting ::reload");
+	g_signal_emit (plugin_loader, signals[SIGNAL_RELOAD], 0);
+	priv->reload_id = 0;
+
+	g_object_unref (plugin_loader);
+	return FALSE;
+}
+
+static void
+gs_plugin_loader_reload_cb (GsPlugin *plugin,
+			    GsPluginLoader *plugin_loader)
+{
+	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
+	if (priv->reload_id != 0)
+		return;
+	priv->reload_id =
+		g_timeout_add_seconds (GS_PLUGIN_LOADER_RELOAD_DELAY,
+				       gs_plugin_loader_reload_delay_cb,
+				       g_object_ref (plugin_loader));
+}
+
 /**
  * gs_plugin_loader_open_plugin:
  */
@@ -3442,6 +3473,9 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	}
 	g_signal_connect (plugin, "updates-changed",
 			  G_CALLBACK (gs_plugin_loader_updates_changed_cb),
+			  plugin_loader);
+	g_signal_connect (plugin, "reload",
+			  G_CALLBACK (gs_plugin_loader_reload_cb),
 			  plugin_loader);
 	g_signal_connect (plugin, "status-changed",
 			  G_CALLBACK (gs_plugin_loader_status_changed_cb),
@@ -3860,6 +3894,12 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 		g_signal_new ("updates-changed",
 			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
 			      G_STRUCT_OFFSET (GsPluginLoaderClass, updates_changed),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
+	signals [SIGNAL_RELOAD] =
+		g_signal_new ("reload",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginLoaderClass, reload),
 			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
 			      G_TYPE_NONE, 0);
 }

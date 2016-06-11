@@ -84,6 +84,7 @@ enum {
 enum {
 	SIGNAL_UPDATES_CHANGED,
 	SIGNAL_STATUS_CHANGED,
+	SIGNAL_RELOAD,
 	SIGNAL_LAST
 };
 
@@ -773,6 +774,31 @@ gs_plugin_updates_changed (GsPlugin *plugin)
 	g_idle_add (gs_plugin_updates_changed_cb, plugin);
 }
 
+static gboolean
+gs_plugin_reload_cb (gpointer user_data)
+{
+	GsPlugin *plugin = GS_PLUGIN (user_data);
+	g_signal_emit (plugin, signals[SIGNAL_RELOAD], 0);
+	return FALSE;
+}
+
+/**
+ * gs_plugin_reload:
+ * @plugin: a #GsPlugin
+ *
+ * Plugins that call this function should expect that all panels will
+ * reload after a small delay, causing mush flashing, wailing and
+ * gnashing of teeth.
+ *
+ * Plugins should not call this unless absolutely required.
+ **/
+void
+gs_plugin_reload (GsPlugin *plugin)
+{
+	g_debug ("emitting ::reload in idle");
+	g_idle_add (gs_plugin_reload_cb, plugin);
+}
+
 typedef struct {
 	GsPlugin	*plugin;
 	GsApp		*app;
@@ -1082,6 +1108,13 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_STRUCT_OFFSET (GsPluginClass, status_changed),
 			      NULL, NULL, g_cclosure_marshal_generic,
 			      G_TYPE_NONE, 2, GS_TYPE_APP, G_TYPE_UINT);
+
+	signals [SIGNAL_RELOAD] =
+		g_signal_new ("reload",
+			      G_TYPE_FROM_CLASS (object_class), G_SIGNAL_RUN_LAST,
+			      G_STRUCT_OFFSET (GsPluginClass, reload),
+			      NULL, NULL, g_cclosure_marshal_VOID__VOID,
+			      G_TYPE_NONE, 0);
 }
 
 /**

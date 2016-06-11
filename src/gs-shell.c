@@ -550,11 +550,8 @@ main_window_closed_cb (GtkWidget *dialog, GdkEvent *event, gpointer user_data)
 	return TRUE;
 }
 
-/**
- * gs_shell_updates_changed_cb:
- */
 static void
-gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader, GsShell *shell)
+gs_shell_reload_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 {
 	GsShellPrivate *priv = gs_shell_get_instance_private (shell);
 	gs_page_reload (GS_PAGE (priv->shell_category));
@@ -613,8 +610,10 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 	g_return_if_fail (GS_IS_SHELL (shell));
 
 	priv->plugin_loader = g_object_ref (plugin_loader);
+	g_signal_connect (priv->plugin_loader, "reload",
+			  G_CALLBACK (gs_shell_reload_cb), shell);
 	g_signal_connect (priv->plugin_loader, "updates-changed",
-			  G_CALLBACK (gs_shell_updates_changed_cb), shell);
+			  G_CALLBACK (gs_shell_reload_cb), shell);
 	priv->cancellable = g_object_ref (cancellable);
 
 	gs_shell_monitor_permission (shell);

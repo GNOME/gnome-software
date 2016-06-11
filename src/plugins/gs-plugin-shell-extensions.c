@@ -217,8 +217,10 @@ gs_plugin_shell_extensions_changed_cb (GDBusProxy *proxy,
 				       GVariant *parameters,
 				       GsPlugin *plugin)
 {
-	if (g_strcmp0 (signal_name, "ExtensionStatusChanged") == 0)
-		gs_plugin_updates_changed (plugin);
+	if (g_strcmp0 (signal_name, "ExtensionStatusChanged") == 0) {
+		/* FIXME: we want to only reload specific GsApps */
+		gs_plugin_reload (plugin);
+	}
 }
 
 gboolean

@@ -45,10 +45,9 @@ gs_plugin_appstream_store_changed_cb (AsStore *store, GsPlugin *plugin)
 {
 	g_debug ("AppStream metadata changed");
 
-	/* this is not strictly true, but it causes all the UI to be reloaded
-	 * which is what we really want */
+	/* all the UI is reloaded as something external has happened */
 	if (!gs_plugin_has_flags (plugin, GS_PLUGIN_FLAGS_RUNNING_OTHER))
-		gs_plugin_updates_changed (plugin);
+		gs_plugin_reload (plugin);
 }
 
 void

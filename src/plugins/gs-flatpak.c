@@ -205,7 +205,8 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 						  cancellable,
 						  error))
 			return FALSE;
-		gs_plugin_updates_changed (self->plugin);
+		/* FIXME: we don't want to do this; rely on AppStream */
+		gs_plugin_reload (self->plugin);
 	}
 
 	return TRUE;

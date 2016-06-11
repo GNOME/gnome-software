@@ -43,6 +43,7 @@ struct _GsPluginLoaderClass
 							 GsPluginStatus	 status);
 	void			(*pending_apps_changed)	(GsPluginLoader	*plugin_loader);
 	void			(*updates_changed)	(GsPluginLoader	*plugin_loader);
+	void			(*reload)		(GsPluginLoader	*plugin_loader);
 };
 
 typedef enum {
