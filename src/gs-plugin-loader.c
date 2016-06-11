@@ -477,6 +477,9 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			continue;
 		if (gs_app_get_management_plugin (app) != NULL)
 			continue;
+
+		/* this doesn't make sense outside the plugin loader */
+		gs_app_remove_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
 		has_match_any_prefix = TRUE;
 	}
 	if (has_match_any_prefix) {
