@@ -66,6 +66,7 @@ gs_plugin_detect_reload_apps (GsPlugin *plugin)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	AsApp *item;
+	GsApp *app;
 	GList *l;
 	guint cnt = 0;
 	g_autoptr(GHashTable) app_hash = NULL;
@@ -78,8 +79,14 @@ gs_plugin_detect_reload_apps (GsPlugin *plugin)
 	for (l = keys; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		item = g_hash_table_lookup (priv->app_hash_old, key);
-		if (item == NULL)
+		if (item == NULL) {
+			item = g_hash_table_lookup (app_hash, key);
+			app = gs_plugin_cache_lookup (plugin,
+						      as_app_get_id (item));
+			if (app != NULL)
+				g_debug ("added GsApp %s", gs_app_get_id (app));
 			cnt++;
+		}
 	}
 
 	/* find packages that have been removed */
@@ -87,8 +94,14 @@ gs_plugin_detect_reload_apps (GsPlugin *plugin)
 	for (l = keys_old; l != NULL; l = l->next) {
 		const gchar *key = l->data;
 		item = g_hash_table_lookup (app_hash, key);
-		if (item == NULL)
+		if (item == NULL) {
+			item = g_hash_table_lookup (priv->app_hash_old, key);
+			app = gs_plugin_cache_lookup (plugin,
+						      as_app_get_id (item));
+			if (app != NULL)
+				g_debug ("removed GsApp %s", gs_app_get_id (app));
 			cnt++;
+		}
 	}
 
 	/* replace if any changes */
