@@ -430,19 +430,12 @@ gs_plugin_shell_extensions_parse_app (GsPlugin *plugin,
 	}
 	tmp = json_object_get_string_member (json_app, "icon");
 	if (tmp != NULL) {
-		g_autofree gchar *uri = NULL;
 		g_autoptr(AsIcon) ic = NULL;
-
-		/* use stock icon for generic */
+		/* just use a stock icon as the remote icons are
+		 * sometimes missing, poor quality and low resolution */
 		ic = as_icon_new ();
-		if (g_strcmp0 (tmp, "/static/images/plugin.png") == 0) {
-			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
-			as_icon_set_name (ic, "application-x-addon-symbolic");
-		} else {
-			uri = g_build_filename (SHELL_EXTENSIONS_API_URI, tmp, NULL);
-			as_icon_set_kind (ic, AS_ICON_KIND_REMOTE);
-			as_icon_set_url (ic, uri);
-		}
+		as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+		as_icon_set_name (ic, "application-x-addon-symbolic");
 		as_app_add_icon (app, ic);
 	}
 
