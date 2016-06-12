@@ -770,6 +770,14 @@ gs_plugin_packagekit_refine_distro_upgrade (GsPlugin *plugin,
 	return TRUE;
 }
 
+static gboolean
+gs_plugin_packagekit_refine_valid_package_name (const gchar *source)
+{
+	if (g_strstr_len (source, -1, "/") != NULL)
+		return FALSE;
+	return TRUE;
+}
+
 gboolean
 gs_plugin_refine (GsPlugin *plugin,
 		  GsAppList *list,
@@ -815,6 +823,9 @@ gs_plugin_refine (GsPlugin *plugin,
 			continue;
 		sources = gs_app_get_sources (app);
 		if (sources->len == 0)
+			continue;
+		tmp = g_ptr_array_index (sources, 0);
+		if (!gs_plugin_packagekit_refine_valid_package_name (tmp))
 			continue;
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN ||
 		    gs_plugin_refine_requires_package_id (app, flags) ||
