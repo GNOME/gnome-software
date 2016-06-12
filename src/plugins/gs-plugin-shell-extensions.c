@@ -221,8 +221,33 @@ gs_plugin_shell_extensions_changed_cb (GDBusProxy *proxy,
 				       GsPlugin *plugin)
 {
 	if (g_strcmp0 (signal_name, "ExtensionStatusChanged") == 0) {
-		/* FIXME: we want to only reload specific GsApps */
-		gs_plugin_reload (plugin);
+		AsAppState st;
+		GsApp *app;
+		const gchar *error_str;
+		const gchar *uuid;
+		guint state;
+
+		/* get what changed */
+		g_variant_get (parameters, "(&si&s)",
+			       &uuid, &state, &error_str);
+
+		/* find it in the cache; do we care? */
+		app = gs_plugin_cache_lookup (plugin, uuid);
+		if (app == NULL) {
+			g_warning ("no app for changed %s", uuid);
+			return;
+		}
+
+		/* set the new state in the UI */
+		st = gs_plugin_shell_extensions_convert_state (state);
+		gs_app_set_state (app, st);
+
+		/* not sure what to do here */
+		if (error_str != NULL) {
+			g_warning ("%s has error: %s",
+				   gs_app_get_id (app),
+				   error_str);
+		}
 	}
 }
 
