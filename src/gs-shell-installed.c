@@ -259,7 +259,12 @@ static void
 gs_shell_update_button_select_visibility (GsShellInstalled *self)
 {
 	gboolean show_button_select;
-	show_button_select = g_settings_get_boolean (self->settings, "show-folder-management");
+	if (gs_utils_is_current_desktop ("GNOME")) {
+		show_button_select = g_settings_get_boolean (self->settings,
+							     "show-folder-management");
+	} else {
+		show_button_select = FALSE;
+	}
 	gtk_widget_set_visible (self->button_select, show_button_select);
 }
 
