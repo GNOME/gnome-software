@@ -2326,6 +2326,8 @@ gs_app_add_category (GsApp *app, const gchar *category)
 {
 	g_return_if_fail (GS_IS_APP (app));
 	g_return_if_fail (category != NULL);
+	if (gs_app_has_category (app, category))
+		return;
 	g_ptr_array_add (app->categories, g_strdup (category));
 }
 
