@@ -12,8 +12,8 @@ msgstr ""
 "Project-Id-Version: gnome-software master\n"
 "Report-Msgid-Bugs-To: http://bugzilla.gnome.org/enter_bug.cgi?product=gnome-"
 "software&keywords=I18N+L10N&component=general\n"
-"POT-Creation-Date: 2016-06-04 21:34+0000\n"
-"PO-Revision-Date: 2016-06-05 12:15+0300\n"
+"POT-Creation-Date: 2016-06-10 15:02+0000\n"
+"PO-Revision-Date: 2016-06-12 11:47+0300\n"
 "Last-Translator: Muhammet Kara <muhammetk@gmail.com>\n"
 "Language-Team: Türkçe <gnome-turk@gnome.org>\n"
 "Language: tr\n"
@@ -153,10 +153,14 @@ msgid ""
 msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:22
-msgid "Show the folder management UI"
+msgid "Install bundled applications for all users on the system where possible"
 msgstr ""
 
 #: ../data/org.gnome.software.gschema.xml.h:23
+msgid "Show the folder management UI"
+msgstr ""
+
+#: ../data/org.gnome.software.gschema.xml.h:24
 msgid "Allow access to the Software Sources dialog"
 msgstr ""
 
@@ -164,13 +168,13 @@ msgstr ""
 msgid "Add to Application Folder"
 msgstr "Uygulama Klasörüne Ekle"
 
-#: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:316
-#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:362
+#: ../src/gs-app-folder-dialog.ui.h:2 ../src/gs-app-folder-dialog.c:322
+#: ../src/gs-review-dialog.ui.h:3 ../src/gs-shell-details.c:363
 #: ../src/gs-shell-installed.c:537 ../src/gs-upgrade-banner.ui.h:5
 msgid "_Cancel"
 msgstr "_İptal"
 
-#: ../src/gs-app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:321
+#: ../src/gs-app-folder-dialog.ui.h:3 ../src/gs-app-folder-dialog.c:327
 msgid "_Add"
 msgstr "_Ekle"
 
@@ -202,8 +206,8 @@ msgstr "Hiçbirini Seçme"
 #. TRANSLATORS: this is the application name
 #. set the window title back to default
 #. TRANSLATORS: this is the main window title
-#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:375
-#: ../src/gs-shell.c:261 ../src/org.gnome.Software.desktop.in.h:1
+#: ../src/gnome-software.ui.h:3 ../src/gs-application.c:391
+#: ../src/gs-shell.c:254 ../src/org.gnome.Software.desktop.in.h:1
 msgid "Software"
 msgstr "Yazılımlar"
 
@@ -253,7 +257,7 @@ msgstr "Kuruluyor"
 msgid "Removing"
 msgstr "Kaldırılıyor"
 
-#: ../src/gs-app-folder-dialog.c:305
+#: ../src/gs-app-folder-dialog.c:311
 msgid "Folder Name"
 msgstr "Klasör Adı"
 
@@ -277,7 +281,6 @@ msgid "SEARCH"
 msgstr "ARA"
 
 #: ../src/gs-application.c:102
-#| msgid "Show application details"
 msgid "Show application details (using application ID)"
 msgstr "Uygulama ayrıntılarını göster (uygulama kimliğini kullanarak)"
 
@@ -286,7 +289,6 @@ msgid "ID"
 msgstr "Kimlik"
 
 #: ../src/gs-application.c:104
-#| msgid "Show application details"
 msgid "Show application details (using package name)"
 msgstr "Uygulama ayrıntılarını göster (paket adını kullanarak)"
 
@@ -318,17 +320,17 @@ msgstr "AppStream yerine yerel dosya kaynaklarını tercih et."
 msgid "Show version number"
 msgstr "Sürüm numarasını göster"
 
-#: ../src/gs-application.c:368
+#: ../src/gs-application.c:384
 msgid "translator-credits"
 msgstr "Muhammet Kara <muhammetk@gmail.com>"
 
 #. TRANSLATORS: this is the title of the about window
-#: ../src/gs-application.c:372
+#: ../src/gs-application.c:388
 msgid "About Software"
 msgstr "Yazılımlar Hakkında"
 
 #. TRANSLATORS: well, we seem to think so, anyway
-#: ../src/gs-application.c:378
+#: ../src/gs-application.c:394
 msgid "A nice way to manage the software on your system."
 msgstr "Sisteminizdeki yazılımları yönetmenin güzel bir yolu."
 
@@ -363,7 +365,7 @@ msgstr "İptal"
 #. * that allows the app to be easily updated live
 #. TRANSLATORS: this is button text to update the firware
 #. TRANSLATORS: button text
-#: ../src/gs-app-row.c:291 ../src/gs-app-row.c:298 ../src/gs-page.c:278
+#: ../src/gs-app-row.c:291 ../src/gs-app-row.c:298 ../src/gs-page.c:281
 #: ../src/gs-common.c:347
 msgid "Install"
 msgstr "Kur"
@@ -371,7 +373,7 @@ msgstr "Kur"
 #. TRANSLATORS: this is a button next to the search results that
 #. * allows the application to be easily removed
 #. TRANSLATORS: this is button text to remove the application
-#: ../src/gs-app-row.c:302 ../src/gs-app-row.c:313 ../src/gs-page.c:346
+#: ../src/gs-app-row.c:302 ../src/gs-app-row.c:313 ../src/gs-page.c:352
 msgid "Remove"
 msgstr "Kaldır"
 
@@ -393,10 +395,64 @@ msgstr "özgür olmayan"
 
 #. This is shown in the search result row as a tag
 #: ../src/gs-app-row.ui.h:8 ../src/gs-shell-details.ui.h:37
-#| msgctxt "Menu subcategory of Add-ons"
-#| msgid "Shell Extensions"
 msgid "shell extension"
 msgstr "kabuk uzantısı"
+
+#. TRANSLATORS: this is when the service name is not known
+#: ../src/gs-auth-dialog.c:69
+msgid "To continue you need to sign in."
+msgstr ""
+
+#. TRANSLATORS: the %s is a service name, e.g. "Ubuntu One"
+#: ../src/gs-auth-dialog.c:73
+#, c-format
+msgid "To continue you need to sign in to %s."
+msgstr ""
+
+#. vim: set noexpandtab:
+#: ../src/gs-auth-dialog.ui.h:1
+msgid "Email address"
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:2
+msgid "I have an account already"
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:3
+msgid "Password"
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:4
+msgid "I want to register for an account now"
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:5
+msgid "I have forgotten my password"
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:6
+msgid "Sign in automatically next time"
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:7
+msgid "page0"
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:8
+msgid "Enter your one-time pin for two-factor authentication."
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:9
+msgid "PIN"
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:10
+msgid "page1"
+msgstr ""
+
+#: ../src/gs-auth-dialog.ui.h:11
+msgid "Continue"
+msgstr ""
 
 #. TRANSLATORS: this is where all applications that don't
 #. * fit in other groups are put
@@ -549,44 +605,44 @@ msgstr "Geçmiş"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:272
+#: ../src/gs-page.c:275
 #, c-format
 msgid "Prepare %s"
 msgstr "%s Uygulamasını Hazırla"
 
 #. TRANSLATORS: this is a prompt message, and
 #. * '%s' is an application summary, e.g. 'GNOME Clocks'
-#: ../src/gs-page.c:337
+#: ../src/gs-page.c:343
 #, c-format
 msgid "Are you sure you want to remove %s?"
 msgstr "%s uygulamasını kaldırmak istediğinizden emin misiniz?"
 
 #. TRANSLATORS: longer dialog text
-#: ../src/gs-page.c:342
+#: ../src/gs-page.c:348
 #, c-format
 msgid "%s will be removed, and you will have to install it to use it again."
 msgstr "%s kaldırılacak ve tekrar kullanmak için yeniden kurmanız gerekecek."
 
 #. TRANSLATORS: this is a group of updates that are not
 #. * packages and are not shown in the main list
-#: ../src/gs-plugin-loader.c:958
+#: ../src/gs-plugin-loader.c:984
 msgid "OS Updates"
 msgstr "İşletim Sistemi Güncellemeleri"
 
 #. TRANSLATORS: this is a longer description of the
 #. * "OS Updates" string
-#: ../src/gs-plugin-loader.c:963
+#: ../src/gs-plugin-loader.c:989
 msgid "Includes performance, stability and security improvements."
 msgstr "Performans, kararlılık ve güvenlik geliştirmeleri içerir."
 
 #. TRANSLATORS: this is when we know about an application or
 #. * addon, but it can't be listed for some reason
-#: ../src/gs-plugin-loader.c:1653 ../src/gs-shell-extras.c:386
+#: ../src/gs-plugin-loader.c:1679 ../src/gs-shell-extras.c:386
 #, c-format
 msgid "No addon codecs are available for the %s format."
 msgstr "%s biçimi için kullanılabilir ek kodek yok."
 
-#: ../src/gs-plugin-loader.c:1656
+#: ../src/gs-plugin-loader.c:1682
 #, c-format
 msgid ""
 "Information about %s, as well as options for how to get a codec that can "
@@ -808,21 +864,20 @@ msgstr ""
 #. * can be installed
 #. TRANSLATORS: button text in the header when firmware
 #. * can be live-installed
-#: ../src/gs-shell-details.c:258 ../src/gs-shell-details.c:284
+#: ../src/gs-shell-details.c:259 ../src/gs-shell-details.c:285
 #: ../src/gs-shell-details.ui.h:2 ../src/gs-upgrade-banner.ui.h:6
 msgid "_Install"
 msgstr "_Kur"
 
 #. TRANSLATORS: button text in the header when an application
 #. * is in the process of being installed
-#: ../src/gs-shell-details.c:269
+#: ../src/gs-shell-details.c:270
 msgid "_Installing"
 msgstr "_Kuruluyor"
 
 #. TRANSLATORS: button text in the header when an application
 #. * can be live-updated
-#: ../src/gs-shell-details.c:289
-#| msgid "_Updates"
+#: ../src/gs-shell-details.c:290
 msgid "_Update"
 msgstr "_Güncelle"
 
@@ -830,17 +885,17 @@ msgstr "_Güncelle"
 #. * be installed.
 #. * The ellipsis indicates that further steps are required,
 #. * e.g. enabling software sources or the like
-#: ../src/gs-shell-details.c:302
+#: ../src/gs-shell-details.c:303
 msgid "_Install…"
 msgstr "_Kur…"
 
 #. TRANSLATORS: button text in the header when an application can be erased
-#: ../src/gs-shell-details.c:349 ../src/gs-shell-details.ui.h:3
+#: ../src/gs-shell-details.c:350 ../src/gs-shell-details.ui.h:3
 msgid "_Remove"
 msgstr "Kaldı_r"
 
 #. TRANSLATORS: button text in the header when an application can be installed
-#: ../src/gs-shell-details.c:356
+#: ../src/gs-shell-details.c:357
 msgid "_Removing"
 msgstr "_Kaldırılıyor"
 
@@ -849,7 +904,7 @@ msgstr "_Kaldırılıyor"
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 and MIT and BSD-2-Clause"
 #. TRANSLATORS: separator for a list of items
-#: ../src/gs-shell-details.c:692 ../src/gs-shell-extras.c:145
+#: ../src/gs-shell-details.c:697 ../src/gs-shell-extras.c:145
 msgid " and "
 msgstr "ve"
 
@@ -857,53 +912,52 @@ msgstr "ve"
 #. * be considered a "Disjunctive OR Operator" according
 #. * to the SPDX specification. For example:
 #. * "LGPL-2.1 or MIT"
-#: ../src/gs-shell-details.c:700
+#: ../src/gs-shell-details.c:705
 msgid " or "
 msgstr "veya"
 
 #. TRANSLATORS: non-free app
-#: ../src/gs-shell-details.c:716
+#: ../src/gs-shell-details.c:721
 msgid "Proprietary"
 msgstr "Sahipli"
 
 #. TRANSLATORS: see the wikipedia page
-#: ../src/gs-shell-details.c:726
+#: ../src/gs-shell-details.c:731
 msgid "Public domain"
 msgstr "Kamu malı"
 
 #. TRANSLATORS: see GNU page
-#: ../src/gs-shell-details.c:743
-#| msgid "Software"
+#: ../src/gs-shell-details.c:748
 msgid "Free Software"
 msgstr "Özgür Yazılım"
 
 #. TRANSLATORS: this is where the license is not known
-#: ../src/gs-shell-details.c:842
+#: ../src/gs-shell-details.c:847
 msgctxt "license"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
 #. TRANSLATORS: this is where the version is not known
-#: ../src/gs-shell-details.c:858
+#: ../src/gs-shell-details.c:863
 msgctxt "version"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
 #. TRANSLATORS: this is where the updated date is not known
-#: ../src/gs-shell-details.c:890
+#: ../src/gs-shell-details.c:895
 msgctxt "updated"
 msgid "Never"
 msgstr "Hiçbir zaman"
 
 #. TRANSLATORS: this is where we don't know the origin of the
 #. * application
-#: ../src/gs-shell-details.c:934
+#: ../src/gs-shell-details.c:939
 msgctxt "origin"
 msgid "Unknown"
 msgstr "Bilinmiyor"
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:980
+#: ../src/gs-shell-details.c:985
 msgid ""
 "This application can only be used when there is an active internet "
 "connection."
@@ -912,34 +966,34 @@ msgstr ""
 "kullanılabilir."
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:991
+#: ../src/gs-shell-details.c:996
 msgid "This software comes from a 3rd party."
 msgstr ""
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:1000
+#: ../src/gs-shell-details.c:1005
 msgid ""
 "This software comes from a 3rd party and may contain non-free components."
 msgstr ""
 
 #. TRANSLATORS: this is the warning box
-#: ../src/gs-shell-details.c:1009
+#: ../src/gs-shell-details.c:1014
 msgid "This software may contain non-free components."
 msgstr "Bu yazılım, özgür olmayan bileşenler içerebilir."
 
-#: ../src/gs-shell-details.c:1322
+#: ../src/gs-shell-details.c:1397
 #, c-format
 msgid "Could not find '%s'"
 msgstr "'%s' bulunamadı"
 
 #. TRANSLATORS: the file format was not recognised by
 #. * any plugin, e.g. if you try installing a .tar.gz
-#: ../src/gs-shell-details.c:1383
+#: ../src/gs-shell-details.c:1461
 msgid "The file is not supported."
 msgstr ""
 
 #. TRANSLATORS: install or removed failed
-#: ../src/gs-shell-details.c:1393 ../src/gs-common.c:164
+#: ../src/gs-shell-details.c:1471 ../src/gs-common.c:164
 msgid "Sorry, this did not work"
 msgstr "Üzgünüm, bu işe yaramadı"
 
@@ -960,7 +1014,6 @@ msgstr "Kısayol _ekle"
 
 #. Translators: A label for a button to remove a shortcut to the selected application.
 #: ../src/gs-shell-details.ui.h:10
-#| msgid "Remove Source"
 msgid "Re_move shortcut"
 msgstr "Kısayolu _kaldır"
 
@@ -1050,12 +1103,10 @@ msgid "Category"
 msgstr "Kategori"
 
 #: ../src/gs-shell-details.ui.h:29
-#| msgid "Installed page"
 msgid "Installed Size"
 msgstr "Kurulu Boyut"
 
 #: ../src/gs-shell-details.ui.h:30
-#| msgid "_Download"
 msgid "Download Size"
 msgstr "İndirme Boyutu"
 
@@ -1289,7 +1340,7 @@ msgstr "Sistem Uygulamaları"
 msgid "Click on items to select them"
 msgstr "Öğeleri seçmek için tıklayın"
 
-#: ../src/gs-shell-installed.c:746
+#: ../src/gs-shell-installed.c:748
 msgid "Select"
 msgstr "Seç"
 
@@ -1311,7 +1362,6 @@ msgid "_Remove from Folder"
 msgstr "Klasörden _Kaldır"
 
 #: ../src/gs-shell-moderate.ui.h:1
-#| msgid "Updates page"
 msgid "Moderate page"
 msgstr "Sayfayı yönet"
 
@@ -1320,24 +1370,22 @@ msgid "There are no reviews to moderate"
 msgstr "Yönetilecek inceleme yok"
 
 #. TRANSLATORS: this is a heading for audio applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:389
-#| msgid "Recommended Audio Applications"
+#: ../src/gs-shell-overview.c:417
 msgid "Recommended Audio & Video Applications"
 msgstr "Önerilen Ses ve Görüntü Uygulamaları"
 
 #. TRANSLATORS: this is a heading for games which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:394
+#: ../src/gs-shell-overview.c:422
 msgid "Recommended Games"
 msgstr "Önerilen Oyunlar"
 
 #. TRANSLATORS: this is a heading for graphics applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:399
+#: ../src/gs-shell-overview.c:427
 msgid "Recommended Graphics Applications"
 msgstr "Önerilen Grafik Uygulamaları"
 
 #. TRANSLATORS: this is a heading for office applications which have been featured ('recommended') by the distribution
-#: ../src/gs-shell-overview.c:404
-#| msgid "Recommended Audio Applications"
+#: ../src/gs-shell-overview.c:432
 msgid "Recommended Productivity Applications"
 msgstr "Önerilen Verimlilik Uygulamaları"
 
@@ -1452,23 +1500,22 @@ msgstr "Son kontrol: %s"
 
 #. TRANSLATORS: all updates will be installed
 #: ../src/gs-shell-updates.c:516
-#| msgid "_Install"
 msgid "_Install All"
 msgstr "Tümünü _Kur"
 
 #. TRANSLATORS: this is an offline update
-#: ../src/gs-shell-updates.c:520 ../src/gs-shell-updates.c:1334
+#: ../src/gs-shell-updates.c:520 ../src/gs-shell-updates.c:1341
 msgid "Restart & _Install"
 msgstr "Yeniden Başlat ve _Kur"
 
 #. TRANSLATORS: this is to explain that downloading updates may cost money
-#: ../src/gs-shell-updates.c:872
+#: ../src/gs-shell-updates.c:879
 msgid "Charges may apply"
 msgstr "Ücret uygulanabilir"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:876
+#: ../src/gs-shell-updates.c:883
 msgid ""
 "Checking for updates while using mobile broadband could cause you to incur "
 "charges."
@@ -1478,49 +1525,48 @@ msgstr ""
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:880
+#: ../src/gs-shell-updates.c:887
 msgid "Check Anyway"
 msgstr "Yine de Denetle"
 
 #. TRANSLATORS: can't do updates check
-#: ../src/gs-shell-updates.c:896
+#: ../src/gs-shell-updates.c:903
 msgid "No Network"
 msgstr "Ağ Yok"
 
 #. TRANSLATORS: we need network
 #. * to do the updates check
-#: ../src/gs-shell-updates.c:900
+#: ../src/gs-shell-updates.c:907
 msgid "Internet access is required to check for updates."
 msgstr "Güncellemeleri denetlemek için İnternet erişimi gerekir."
 
 #. TRANSLATORS: this is a link to the
 #. * control-center network panel
-#: ../src/gs-shell-updates.c:904
+#: ../src/gs-shell-updates.c:911
 msgid "Network Settings"
 msgstr "Ağ Ayarları"
 
 #. TRANSLATORS: we've just live-updated some apps
-#: ../src/gs-shell-updates.c:1006
-#| msgid "No updates have been installed on this system."
+#: ../src/gs-shell-updates.c:1013
 msgid "Updates have been installed"
 msgstr "Güncellemeler kuruldu."
 
 #. TRANSLATORS: the new apps will not be run until we restart
-#: ../src/gs-shell-updates.c:1008
+#: ../src/gs-shell-updates.c:1015
 msgid "A restart is required for them to take effect."
 msgstr "Bunların etkili olması için yeniden başlatmanız gerekiyor."
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:1010 ../src/gs-update-monitor.c:102
+#: ../src/gs-shell-updates.c:1017 ../src/gs-update-monitor.c:102
 msgid "Not Now"
 msgstr "Şimdi Değil"
 
 #. TRANSLATORS: button text
-#: ../src/gs-shell-updates.c:1012
+#: ../src/gs-shell-updates.c:1019
 msgid "Restart"
 msgstr "Yeniden Başlat"
 
-#: ../src/gs-shell-updates.c:1352
+#: ../src/gs-shell-updates.c:1359
 msgid "Check for updates"
 msgstr "Güncellemeleri denetle"
 
@@ -1917,36 +1963,27 @@ msgstr "%s uygulaması kaldırılamadı."
 #. TRANSLATORS: this is when the upgrade download fails
 #: ../src/gs-common.c:185
 #, c-format
-#| msgid "Removal of %s failed."
 msgid "Upgrade to %s failed."
 msgstr "%s'e yükseltme başarısız oldu."
 
 #. TRANSLATORS: the package manager needed to download
 #. * something with no network available
 #: ../src/gs-common.c:199
-#| msgid "Network access was required but not available."
 msgid "Internet access was required but wasn’t available."
 msgstr "İnternet bağlantısı gerekiyordu fakat kullanılabilir değildi."
 
 #. TRANSLATORS: plug in the network cable...
 #: ../src/gs-common.c:202
-#| msgid ""
-#| "Internet access was required but wasn’t available. Please make sure that "
-#| "you have internet access and try again."
 msgid "Please make sure that you have internet access and try again."
 msgstr "Lütfen internet erişiminiz olduğundan emin olun ve tekrar deneyin."
 
 #. TRANSLATORS: we ran out of disk space
 #: ../src/gs-common.c:207
-#| msgid ""
-#| "There wasn’t enough disk space. Please free up some space and try again."
 msgid "There wasn’t enough disk space."
 msgstr "Yeteri kadar boş disk alanı yoktu."
 
 #. TRANSLATORS: delete some stuff!
 #: ../src/gs-common.c:210
-#| msgid ""
-#| "There wasn’t enough disk space. Please free up some space and try again."
 msgid "Please free up some space and try again."
 msgstr "Lütfen biraz yer açın ve tekrar deneyin."
 
@@ -2017,8 +2054,6 @@ msgstr "Etkinleştir ve Kur"
 
 #. TRANSLATORS: content rating description
 #: ../src/gs-common.c:414
-#| msgctxt "menu category"
-#| msgid "None"
 msgctxt "content rating violence-cartoon"
 msgid "None"
 msgstr ""
@@ -2471,35 +2506,30 @@ msgstr ""
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:66
 msgid "Software catalog is being downloaded"
-msgstr ""
+msgstr "Yazılım kataloğu indiriliyor"
 
 #. TRANSLATORS: initial start
 #: ../src/gs-shell-loading.c:71
-#, fuzzy
 #| msgid "Software Updates Failed"
 msgid "Software catalog is being loaded"
-msgstr "Yazılım Güncellemeleri Başarısız Oldu"
+msgstr "Yazılım kataloğu yükleniyor"
 
 #. vim: set noexpandtab:
 #: ../src/gs-shell-loading.ui.h:1
-#| msgid "Codecs page"
 msgid "Loading page"
 msgstr "Sayfa yükleniyor"
 
 #: ../src/gs-shell-loading.ui.h:2
-#, fuzzy
 #| msgid "Setting up updates…"
 msgid "Starting up…"
-msgstr "Güncellemeler ayarlanıyor..."
+msgstr "Başlatılıyor…"
 
 #: ../src/plugins/gs-desktop-common.c:30
-#| msgid "All"
 msgctxt "Menu of AudioVideo"
 msgid "All"
 msgstr "Tümü"
 
 #: ../src/plugins/gs-desktop-common.c:33
-#| msgid "Featured"
 msgctxt "Menu of AudioVideo"
 msgid "Featured"
 msgstr "Öne Çıkan"
@@ -2510,27 +2540,22 @@ msgid "Audio Creation & Editing"
 msgstr "Ses Oluşturma ve Düzenleme"
 
 #: ../src/plugins/gs-desktop-common.c:42
-#| msgctxt "Menu subcategory of Audio"
-#| msgid "Players"
 msgctxt "Menu of AudioVideo"
 msgid "Music Players"
 msgstr "Müzik Oynatıcılar"
 
 #: ../src/plugins/gs-desktop-common.c:51
-#| msgid "All"
 msgctxt "Menu of Development"
 msgid "All"
 msgstr "Tümü"
 
 #: ../src/plugins/gs-desktop-common.c:54
-#, fuzzy
 #| msgid "Featured"
 msgctxt "Menu of Development"
 msgid "Featured"
-msgstr "Vitrin"
+msgstr "Öne Çıkanlar"
 
 #: ../src/plugins/gs-desktop-common.c:57
-#, fuzzy
 #| msgctxt "Menu subcategory of Development Tools"
 #| msgid "Debuggers"
 msgctxt "Menu of Development"
@@ -2540,23 +2565,20 @@ msgstr "Hata Ayıklayıcılar"
 #: ../src/plugins/gs-desktop-common.c:60
 msgctxt "Menu of Development"
 msgid "IDEs"
-msgstr ""
+msgstr "IDE'ler"
 
 #: ../src/plugins/gs-desktop-common.c:69
-#| msgid "All"
 msgctxt "Menu of Education"
 msgid "All"
 msgstr "Tümü"
 
 #: ../src/plugins/gs-desktop-common.c:72
-#, fuzzy
 #| msgid "Featured"
 msgctxt "Menu of Education"
 msgid "Featured"
-msgstr "Vitrin"
+msgstr "Öne Çıkanlar"
 
 #: ../src/plugins/gs-desktop-common.c:75
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Astronomy"
 msgctxt "Menu of Education"
@@ -2564,7 +2586,6 @@ msgid "Astronomy"
 msgstr "Astronomi"
 
 #: ../src/plugins/gs-desktop-common.c:78
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Chemistry"
 msgctxt "Menu of Education"
@@ -2572,7 +2593,6 @@ msgid "Chemistry"
 msgstr "Kimya"
 
 #: ../src/plugins/gs-desktop-common.c:81
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Languages"
 msgctxt "Menu of Education"
@@ -2580,7 +2600,6 @@ msgid "Languages"
 msgstr "Diller"
 
 #: ../src/plugins/gs-desktop-common.c:85
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Math"
 msgctxt "Menu of Education"
@@ -2588,21 +2607,18 @@ msgid "Math"
 msgstr "Matematik"
 
 #: ../src/plugins/gs-desktop-common.c:94
-#, fuzzy
 #| msgid "All"
 msgctxt "Menu of Games"
 msgid "All"
 msgstr "Tümü"
 
 #: ../src/plugins/gs-desktop-common.c:97
-#, fuzzy
 #| msgid "Featured"
 msgctxt "Menu of Games"
 msgid "Featured"
-msgstr "Vitrin"
+msgstr "Öne Çıkanlar"
 
 #: ../src/plugins/gs-desktop-common.c:100
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Action"
 msgctxt "Menu of Games"
@@ -2610,7 +2626,6 @@ msgid "Action"
 msgstr "Aksiyon"
 
 #: ../src/plugins/gs-desktop-common.c:103
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Adventure"
 msgctxt "Menu of Games"
@@ -2618,7 +2633,6 @@ msgid "Adventure"
 msgstr "Macera"
 
 #: ../src/plugins/gs-desktop-common.c:106
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Arcade"
 msgctxt "Menu of Games"
@@ -2626,7 +2640,6 @@ msgid "Arcade"
 msgstr "Arcade"
 
 #: ../src/plugins/gs-desktop-common.c:109
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Blocks"
 msgctxt "Menu of Games"
@@ -2634,7 +2647,6 @@ msgid "Blocks"
 msgstr "Bloklar"
 
 #: ../src/plugins/gs-desktop-common.c:112
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Board"
 msgctxt "Menu of Games"
@@ -2642,7 +2654,6 @@ msgid "Board"
 msgstr "Tahta"
 
 #: ../src/plugins/gs-desktop-common.c:115
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Card"
 msgctxt "Menu of Games"
@@ -2650,7 +2661,6 @@ msgid "Card"
 msgstr "Kart"
 
 #: ../src/plugins/gs-desktop-common.c:118
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Emulators"
 msgctxt "Menu of Games"
@@ -2658,7 +2668,6 @@ msgid "Emulators"
 msgstr "Emülatörler"
 
 #: ../src/plugins/gs-desktop-common.c:121
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Kids"
 msgctxt "Menu of Games"
@@ -2666,7 +2675,6 @@ msgid "Kids"
 msgstr "Çocuklar"
 
 #: ../src/plugins/gs-desktop-common.c:124
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Logic"
 msgctxt "Menu of Games"
@@ -2674,7 +2682,6 @@ msgid "Logic"
 msgstr "Mantık"
 
 #: ../src/plugins/gs-desktop-common.c:127
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Role Playing"
 msgctxt "Menu of Games"
@@ -2682,7 +2689,6 @@ msgid "Role Playing"
 msgstr "Rol Yapma"
 
 #: ../src/plugins/gs-desktop-common.c:130
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Sports"
 msgctxt "Menu of Games"
@@ -2690,7 +2696,6 @@ msgid "Sports"
 msgstr "Spor"
 
 #: ../src/plugins/gs-desktop-common.c:134
-#, fuzzy
 #| msgctxt "Menu subcategory of Games"
 #| msgid "Strategy"
 msgctxt "Menu of Games"
@@ -2698,21 +2703,18 @@ msgid "Strategy"
 msgstr "Strateji"
 
 #: ../src/plugins/gs-desktop-common.c:142
-#, fuzzy
 #| msgid "All"
 msgctxt "Menu of Graphics"
 msgid "All"
 msgstr "Tümü"
 
 #: ../src/plugins/gs-desktop-common.c:145
-#, fuzzy
 #| msgid "Featured"
 msgctxt "Menu of Graphics"
 msgid "Featured"
-msgstr "Vitrin"
+msgstr "Öne Çıkanlar"
 
 #: ../src/plugins/gs-desktop-common.c:148
-#, fuzzy
 #| msgctxt "Menu subcategory of Graphics"
 #| msgid "3D Graphics"
 msgctxt "Menu of Graphics"
@@ -2720,15 +2722,13 @@ msgid "3D Graphics"
 msgstr "3B Grafik"
 
 #: ../src/plugins/gs-desktop-common.c:151
-#, fuzzy
 #| msgctxt "Menu subcategory of Graphics"
 #| msgid "Photography"
 msgctxt "Menu of Graphics"
 msgid "Photography"
-msgstr "Fotoğrafçılık"
+msgstr "Fotoğrafçılık"
 
 #: ../src/plugins/gs-desktop-common.c:154
-#, fuzzy
 #| msgctxt "Menu subcategory of Graphics"
 #| msgid "Scanning"
 msgctxt "Menu of Graphics"
@@ -2736,7 +2736,6 @@ msgid "Scanning"
 msgstr "Tarama"
 
 #: ../src/plugins/gs-desktop-common.c:157
-#, fuzzy
 #| msgctxt "Menu subcategory of Graphics"
 #| msgid "Vector Graphics"
 msgctxt "Menu of Graphics"
@@ -2744,29 +2743,25 @@ msgid "Vector Graphics"
 msgstr "Vektör Grafikleri"
 
 #: ../src/plugins/gs-desktop-common.c:160
-#, fuzzy
 #| msgctxt "Menu subcategory of Graphics"
 #| msgid "Viewer"
 msgctxt "Menu of Graphics"
 msgid "Viewers"
-msgstr "Görüntüleyici"
+msgstr "Görüntüleyiciler"
 
 #: ../src/plugins/gs-desktop-common.c:168
-#, fuzzy
 #| msgid "All"
 msgctxt "Menu of Office"
 msgid "All"
 msgstr "Tümü"
 
 #: ../src/plugins/gs-desktop-common.c:171
-#, fuzzy
 #| msgid "Featured"
 msgctxt "Menu of Office"
 msgid "Featured"
-msgstr "Vitrin"
+msgstr "Öne Çıkanlar"
 
 #: ../src/plugins/gs-desktop-common.c:174
-#, fuzzy
 #| msgctxt "Menu subcategory of Office"
 #| msgid "Calendar"
 msgctxt "Menu of Office"
@@ -2774,15 +2769,13 @@ msgid "Calendar"
 msgstr "Takvim"
 
 #: ../src/plugins/gs-desktop-common.c:178
-#, fuzzy
 #| msgctxt "Menu subcategory of Office"
 #| msgid "Database"
 msgctxt "Menu of Office"
 msgid "Database"
-msgstr "Veritabanı"
+msgstr "Veri Tabanı"
 
 #: ../src/plugins/gs-desktop-common.c:181
-#, fuzzy
 #| msgctxt "Menu subcategory of Office"
 #| msgid "Finance"
 msgctxt "Menu of Office"
@@ -2790,7 +2783,6 @@ msgid "Finance"
 msgstr "Finans"
 
 #: ../src/plugins/gs-desktop-common.c:185
-#, fuzzy
 #| msgctxt "Menu subcategory of Office"
 #| msgid "Word Processor"
 msgctxt "Menu of Office"
@@ -2798,7 +2790,6 @@ msgid "Word Processor"
 msgstr "Kelime İşlemci"
 
 #: ../src/plugins/gs-desktop-common.c:194
-#, fuzzy
 #| msgctxt "Menu subcategory of Add-ons"
 #| msgid "Fonts"
 msgctxt "Menu of Addons"
@@ -2806,7 +2797,6 @@ msgid "Fonts"
 msgstr "Yazı Tipleri"
 
 #: ../src/plugins/gs-desktop-common.c:197
-#, fuzzy
 #| msgctxt "Menu subcategory of Add-ons"
 #| msgid "Codecs"
 msgctxt "Menu of Addons"
@@ -2814,7 +2804,6 @@ msgid "Codecs"
 msgstr "Kod Çözücüler (Kodekler)"
 
 #: ../src/plugins/gs-desktop-common.c:200
-#, fuzzy
 #| msgctxt "Menu subcategory of Add-ons"
 #| msgid "Input Sources"
 msgctxt "Menu of Addons"
@@ -2822,7 +2811,6 @@ msgid "Input Sources"
 msgstr "Girdi Kaynakları"
 
 #: ../src/plugins/gs-desktop-common.c:203
-#, fuzzy
 #| msgctxt "Menu subcategory of Add-ons"
 #| msgid "Language Packs"
 msgctxt "Menu of Addons"
@@ -2830,7 +2818,6 @@ msgid "Language Packs"
 msgstr "Dil Paketleri"
 
 #: ../src/plugins/gs-desktop-common.c:206
-#, fuzzy
 #| msgctxt "Menu subcategory of Add-ons"
 #| msgid "Shell Extensions"
 msgctxt "Menu of Addons"
@@ -2838,7 +2825,6 @@ msgid "Shell Extensions"
 msgstr "Kabuk Uzantıları"
 
 #: ../src/plugins/gs-desktop-common.c:209
-#, fuzzy
 #| msgctxt "Menu subcategory of Add-ons"
 #| msgid "Localization"
 msgctxt "Menu of Addons"
@@ -2846,21 +2832,18 @@ msgid "Localization"
 msgstr "Yerelleştirme"
 
 #: ../src/plugins/gs-desktop-common.c:217
-#, fuzzy
 #| msgid "All"
 msgctxt "Menu of Science"
 msgid "All"
 msgstr "Tümü"
 
 #: ../src/plugins/gs-desktop-common.c:220
-#, fuzzy
 #| msgid "Featured"
 msgctxt "Menu of Science"
 msgid "Featured"
-msgstr "Vitrin"
+msgstr "Öne Çıkanlar"
 
 #: ../src/plugins/gs-desktop-common.c:223
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Artificial Intelligence"
 msgctxt "Menu of Science"
@@ -2868,7 +2851,6 @@ msgid "Artificial Intelligence"
 msgstr "Yapay Zeka"
 
 #: ../src/plugins/gs-desktop-common.c:226
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Astronomy"
 msgctxt "Menu of Science"
@@ -2876,7 +2858,6 @@ msgid "Astronomy"
 msgstr "Astronomi"
 
 #: ../src/plugins/gs-desktop-common.c:229
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Chemistry"
 msgctxt "Menu of Science"
@@ -2884,7 +2865,6 @@ msgid "Chemistry"
 msgstr "Kimya"
 
 #: ../src/plugins/gs-desktop-common.c:232
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Math"
 msgctxt "Menu of Science"
@@ -2892,7 +2872,6 @@ msgid "Math"
 msgstr "Matematik"
 
 #: ../src/plugins/gs-desktop-common.c:237
-#, fuzzy
 #| msgctxt "Menu subcategory of Education"
 #| msgid "Robotics"
 msgctxt "Menu of Science"
@@ -2900,21 +2879,18 @@ msgid "Robotics"
 msgstr "Robotik"
 
 #: ../src/plugins/gs-desktop-common.c:245
-#, fuzzy
 #| msgid "All"
 msgctxt "Menu of Communication"
 msgid "All"
 msgstr "Tümü"
 
 #: ../src/plugins/gs-desktop-common.c:248
-#, fuzzy
 #| msgid "Featured"
 msgctxt "Menu of Communication"
 msgid "Featured"
-msgstr "Vitrin"
+msgstr "Öne Çıkanlar"
 
 #: ../src/plugins/gs-desktop-common.c:251
-#, fuzzy
 #| msgctxt "Menu subcategory of Internet"
 #| msgid "Chat"
 msgctxt "Menu of Communication"
@@ -2922,7 +2898,6 @@ msgid "Chat"
 msgstr "Sohbet"
 
 #: ../src/plugins/gs-desktop-common.c:258
-#, fuzzy
 #| msgctxt "Menu subcategory of Internet"
 #| msgid "News"
 msgctxt "Menu of Communication"
@@ -2930,43 +2905,38 @@ msgid "News"
 msgstr "Haberler"
 
 #: ../src/plugins/gs-desktop-common.c:262
-#, fuzzy
 #| msgctxt "Menu subcategory of Internet"
 #| msgid "Web Browser"
 msgctxt "Menu of Communication"
 msgid "Web Browsers"
-msgstr "Web Tarayıcısı"
+msgstr "Web Tarayıcıları"
 
 #: ../src/plugins/gs-desktop-common.c:270
-#, fuzzy
 #| msgid "All"
 msgctxt "Menu of Utility"
 msgid "All"
 msgstr "Tümü"
 
 #: ../src/plugins/gs-desktop-common.c:273
-#, fuzzy
 #| msgid "Featured"
 msgctxt "Menu of Utility"
 msgid "Featured"
-msgstr "Vitrin"
+msgstr "Öne Çıkanlar"
 
 #: ../src/plugins/gs-desktop-common.c:276
-#, fuzzy
 #| msgctxt "Menu subcategory of Utilities"
 #| msgid "Text Editor"
 msgctxt "Menu of Utility"
 msgid "Text Editors"
-msgstr "Metin Düzenleyici"
+msgstr "Metin Düzenleyiciler"
 
 #. TRANSLATORS: this is the menu spec main category for Audio & Video
 #: ../src/plugins/gs-desktop-common.c:285
 msgid "Audio & Video"
-msgstr ""
+msgstr "Ses ve Görüntü"
 
 #. TRANSLATORS: this is the menu spec main category for Development
 #: ../src/plugins/gs-desktop-common.c:288
-#, fuzzy
 #| msgid "Development Tools"
 msgid "Developer Tools"
 msgstr "Geliştirme Araçları"
@@ -2983,16 +2953,15 @@ msgstr "Oyunlar"
 
 #. TRANSLATORS: this is the menu spec main category for Graphics
 #: ../src/plugins/gs-desktop-common.c:297
-#, fuzzy
 #| msgctxt "Menu subcategory of Graphics"
 #| msgid "Photography"
 msgid "Graphics & Photography"
-msgstr "Fotoğrafçılık"
+msgstr "Grafik ve Fotoğrafçılık"
 
 #. TRANSLATORS: this is the menu spec main category for Office
 #: ../src/plugins/gs-desktop-common.c:300
 msgid "Productivity"
-msgstr ""
+msgstr "Verimlilik"
 
 #. TRANSLATORS: this is the menu spec main category for Science
 #: ../src/plugins/gs-desktop-common.c:306
@@ -3002,7 +2971,7 @@ msgstr "Bilim"
 #. TRANSLATORS: this is the menu spec main category for Communication
 #: ../src/plugins/gs-desktop-common.c:309
 msgid "Communication & News"
-msgstr ""
+msgstr "İletişim ve Haberler"
 
 #. TRANSLATORS: this is the menu spec main category for Utilities
 #: ../src/plugins/gs-desktop-common.c:312
