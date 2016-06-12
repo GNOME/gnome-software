@@ -90,6 +90,25 @@ gs_plugin_shell_extensions_id_from_uuid (const gchar *uuid)
 	return g_strdup_printf ("%s.shell-extension", uuid);
 }
 
+static AsAppState
+gs_plugin_shell_extensions_convert_state (guint value)
+{
+	switch (value) {
+	case GS_PLUGIN_SHELL_EXTENSION_STATE_DISABLED:
+	case GS_PLUGIN_SHELL_EXTENSION_STATE_DOWNLOADING:
+	case GS_PLUGIN_SHELL_EXTENSION_STATE_ENABLED:
+	case GS_PLUGIN_SHELL_EXTENSION_STATE_ERROR:
+	case GS_PLUGIN_SHELL_EXTENSION_STATE_INITIALIZED:
+	case GS_PLUGIN_SHELL_EXTENSION_STATE_OUT_OF_DATE:
+		return AS_APP_STATE_INSTALLED;
+	case GS_PLUGIN_SHELL_EXTENSION_STATE_UNINSTALLED:
+		return AS_APP_STATE_AVAILABLE;
+	default:
+		g_warning ("unknown state %i", value);
+	}
+	return AS_APP_STATE_UNKNOWN;
+}
+
 static gboolean
 gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 				    GsApp *app,
@@ -151,26 +170,10 @@ gs_plugin_shell_extensions_add_app (GsPlugin *plugin,
 			continue;
 		}
 		if (g_strcmp0 (str, "state") == 0) {
+			AsAppState st;
 			guint val_int = g_variant_get_double (val);
-			switch (val_int) {
-			case GS_PLUGIN_SHELL_EXTENSION_STATE_DISABLED:
-			case GS_PLUGIN_SHELL_EXTENSION_STATE_DOWNLOADING:
-			case GS_PLUGIN_SHELL_EXTENSION_STATE_ENABLED:
-			case GS_PLUGIN_SHELL_EXTENSION_STATE_INITIALIZED:
-			case GS_PLUGIN_SHELL_EXTENSION_STATE_OUT_OF_DATE:
-				gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-				break;
-			case GS_PLUGIN_SHELL_EXTENSION_STATE_UNINSTALLED:
-				gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
-				break;
-			case GS_PLUGIN_SHELL_EXTENSION_STATE_ERROR:
-				g_warning ("%s unhandled error state", uuid);
-				gs_app_set_state (app, AS_APP_STATE_INSTALLED);
-				break;
-			default:
-				g_warning ("%s unknown state %i", uuid, val_int);
-				break;
-			}
+			st = gs_plugin_shell_extensions_convert_state (val_int);
+			gs_app_set_state (app, st);
 			continue;
 		}
 		if (g_strcmp0 (str, "error") == 0) {
