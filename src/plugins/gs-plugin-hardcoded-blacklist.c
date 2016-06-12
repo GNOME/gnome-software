@@ -57,6 +57,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		"system-config-keyboard.desktop",
 		"tracker-preferences.desktop",
 		"Uninstall*.desktop",
+		"wine-*.desktop",
 		NULL };
 
 	/* not set yet */
