@@ -341,6 +341,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	const gchar *uuid;
+
 	/* only process this these kinds */
 	if (gs_app_get_kind (app) != AS_APP_KIND_SHELL_EXTENSION)
 		return TRUE;
@@ -348,6 +350,17 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	/* adopt any here */
 	if (gs_app_get_management_plugin (app) == NULL)
 		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+
+	/* can we get the AppStream-created app state using the cache */
+	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
+	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
+		GsApp *app_cache = gs_plugin_cache_lookup (plugin, uuid);
+		if (app_cache != NULL) {
+			g_debug ("copy cached state for %s",
+				 gs_app_get_id (app));
+			gs_app_set_state (app, gs_app_get_state (app_cache));
+		}
+	}
 
 	/* assume apps are available if they exist in AppStream metadata */
 	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
