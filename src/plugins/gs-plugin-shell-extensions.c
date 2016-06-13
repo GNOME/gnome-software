@@ -243,7 +243,7 @@ gs_plugin_shell_extensions_changed_cb (GDBusProxy *proxy,
 		gs_app_set_state (app, st);
 
 		/* not sure what to do here */
-		if (error_str != NULL) {
+		if (error_str != NULL && error_str[0] != '\0') {
 			g_warning ("%s has error: %s",
 				   gs_app_get_id (app),
 				   error_str);
