@@ -275,7 +275,8 @@ gs_shell_installed_switch_to (GsPage *page, gboolean scroll_up)
 	widget = GTK_WIDGET (gtk_builder_get_object (self->builder, "buttonbox_main"));
 	gtk_widget_show (widget);
 
-	gtk_widget_show (self->button_select);
+	gtk_widget_set_visible (self->button_select,
+				gs_utils_is_current_desktop ("GNOME"));
 
 	if (scroll_up) {
 		GtkAdjustment *adj;
