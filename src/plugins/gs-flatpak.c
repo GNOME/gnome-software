@@ -38,6 +38,7 @@
 struct _GsFlatpak {
 	GObject			 parent_instance;
 	FlatpakInstallation	*installation;
+	GHashTable		*broken_remotes;
 	GFileMonitor		*monitor;
 	GsFlatpakScope		 scope;
 	GsPlugin		*plugin;
@@ -138,6 +139,7 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 	if (xremotes == NULL)
 		return FALSE;
 	for (i = 0; i < xremotes->len; i++) {
+		const gchar *remote_name;
 		guint tmp;
 		g_autoptr(GError) error_local = NULL;
 		g_autoptr(GFile) file = NULL;
@@ -150,10 +152,11 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 			continue;
 
 		/* skip known-broken repos */
-		if (g_strcmp0 (flatpak_remote_get_name (xremote), "gnome-sdk") == 0)
+		remote_name = flatpak_remote_get_name (xremote);
+		if (g_hash_table_lookup (self->broken_remotes, remote_name) != NULL) {
+			g_debug ("skipping known broken remote: %s", remote_name);
 			continue;
-		if (g_strcmp0 (flatpak_remote_get_name (xremote), "test-apps") == 0)
-			continue;
+		}
 
 		/* is the timestamp new enough */
 		file_timestamp = flatpak_remote_get_appstream_timestamp (xremote, NULL);
@@ -167,9 +170,9 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 
 		/* download new data */
 		g_debug ("%s is %i seconds old, so downloading new data",
-			 flatpak_remote_get_name (xremote), tmp);
+			 remote_name, tmp);
 		ret = flatpak_installation_update_appstream_sync (self->installation,
-								  flatpak_remote_get_name (xremote),
+								  remote_name,
 								  NULL, /* arch */
 								  NULL, /* out_changed */
 								  cancellable,
@@ -180,6 +183,10 @@ gs_flatpak_refresh_appstream (GsFlatpak *self, guint cache_age,
 					     G_IO_ERROR_FAILED)) {
 				g_debug ("Failed to get AppStream metadata: %s",
 					 error_local->message);
+				/* don't try to fetch this again until refresh() */
+				g_hash_table_insert (self->broken_remotes,
+						     g_strdup (remote_name),
+						     GUINT_TO_POINTER (1));
 				continue;
 			}
 			g_set_error (error,
@@ -599,6 +606,9 @@ gs_flatpak_refresh (GsFlatpak *self,
 {
 	guint i;
 	g_autoptr(GPtrArray) xrefs = NULL;
+
+	/* give all the repos a second chance */
+	g_hash_table_remove_all (self->broken_remotes);
 
 	/* update AppStream metadata */
 	if (flags & GS_PLUGIN_REFRESH_FLAGS_METADATA) {
@@ -1578,6 +1588,7 @@ gs_flatpak_finalize (GObject *object)
 	self = GS_FLATPAK (object);
 
 	g_object_unref (self->plugin);
+	g_hash_table_unref (self->broken_remotes);
 
 	G_OBJECT_CLASS (gs_flatpak_parent_class)->finalize (object);
 }
@@ -1592,6 +1603,8 @@ gs_flatpak_class_init (GsFlatpakClass *klass)
 static void
 gs_flatpak_init (GsFlatpak *self)
 {
+	self->broken_remotes = g_hash_table_new_full (g_str_hash, g_str_equal,
+						      g_free, NULL);
 }
 
 GsFlatpak *
