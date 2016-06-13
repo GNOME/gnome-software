@@ -674,12 +674,12 @@ gs_plugin_shell_extensions_get_apps (GsPlugin *plugin,
 	return apps;
 }
 
-gboolean
-gs_plugin_refresh (GsPlugin *plugin,
-		   guint cache_age,
-		   GsPluginRefreshFlags flags,
-		   GCancellable *cancellable,
-		   GError **error)
+static gboolean
+gs_plugin_shell_extensions_refresh (GsPlugin *plugin,
+				    guint cache_age,
+				    GsPluginRefreshFlags flags,
+				    GCancellable *cancellable,
+				    GError **error)
 {
 	AsApp *app;
 	guint i;
@@ -734,6 +734,20 @@ gs_plugin_refresh (GsPlugin *plugin,
 				 AS_NODE_TO_XML_FLAG_FORMAT_MULTILINE,
 				 cancellable,
 				 error);
+}
+
+gboolean
+gs_plugin_refresh (GsPlugin *plugin,
+		   guint cache_age,
+		   GsPluginRefreshFlags flags,
+		   GCancellable *cancellable,
+		   GError **error)
+{
+	return gs_plugin_shell_extensions_refresh (plugin,
+						   cache_age,
+						   flags,
+						   cancellable,
+						   error);
 }
 
 gboolean
@@ -877,7 +891,9 @@ gs_plugin_add_categories (GsPlugin *plugin,
 			  GError **error)
 {
 	/* just ensure there is any data, no matter how old */
-	return gs_plugin_refresh (plugin, G_MAXUINT,
-				  GS_PLUGIN_REFRESH_FLAGS_NONE,
-				  cancellable, error);
+	return gs_plugin_shell_extensions_refresh (plugin,
+						   G_MAXUINT,
+						   GS_PLUGIN_REFRESH_FLAGS_NONE,
+						   cancellable,
+						   error);
 }
