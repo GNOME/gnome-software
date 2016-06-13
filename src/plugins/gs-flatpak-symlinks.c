@@ -108,7 +108,7 @@ gs_flatpak_symlinks_check_exist (FlatpakRemote *xremote,
 			   symlink_source,
 			   symlink_target,
 			   symlink_target_actual);
-		if (!gs_utils_unlink (symlink_target_actual, error))
+		if (!gs_utils_unlink (symlink_source, error))
 			return FALSE;
 	}
 
