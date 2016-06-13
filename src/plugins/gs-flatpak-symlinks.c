@@ -80,12 +80,6 @@ gs_flatpak_symlinks_check_exist (FlatpakRemote *xremote,
 						   "icons",
 						   NULL);
 	}
-	if (!g_file_test (symlink_target, G_FILE_TEST_EXISTS)) {
-		g_debug ("remote %s has no %s, skipping",
-			 flatpak_remote_get_name (xremote),
-			 symlink_target);
-		return TRUE;
-	}
 	symlink_source = g_build_filename (subdir,
 					   flatpak_remote_fn,
 					   NULL);
@@ -93,11 +87,18 @@ gs_flatpak_symlinks_check_exist (FlatpakRemote *xremote,
 		return FALSE;
 
 	/* check XML symbolic link is correct */
-	if (g_file_test (symlink_source, G_FILE_TEST_EXISTS)) {
+	if (g_file_test (symlink_source, G_FILE_TEST_IS_SYMLINK)) {
 		g_autofree gchar *symlink_target_actual = NULL;
 
-		/* same */
+		/* target does not exist */
 		symlink_target_actual = g_file_read_link (symlink_source, NULL);
+		if (!g_file_test (symlink_target_actual, G_FILE_TEST_EXISTS)) {
+			g_debug ("symlink %s is dangling (no %s), deleting",
+				  symlink_source, symlink_target_actual);
+			return gs_utils_unlink (symlink_source, error);
+		}
+
+		/* same */
 		if (g_strcmp0 (symlink_target_actual, symlink_target) == 0) {
 			g_debug ("symlink %s already points to %s",
 				 symlink_source, symlink_target);
