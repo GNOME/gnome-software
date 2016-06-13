@@ -63,7 +63,8 @@ GPermission	*gs_utils_get_permission	(const gchar	*id);
 gboolean	 gs_utils_strv_fnmatch		(gchar		**strv,
 						 const gchar	*str);
 GDesktopAppInfo *gs_utils_get_desktop_app_info	(const gchar	*id);
-
+gboolean	 gs_utils_rmtree		(const gchar	*directory,
+						 GError		**error);
 G_END_DECLS
 
 #endif /* __GS_UTILS_H */

@@ -357,4 +357,60 @@ gs_utils_unlink (const gchar *filename, GError **error)
 	return TRUE;
 }
 
+static gboolean
+gs_utils_rmtree_real (const gchar *directory, GError **error)
+{
+	const gchar *filename;
+	g_autoptr(GDir) dir = NULL;
+
+	/* try to open */
+	dir = g_dir_open (directory, 0, error);
+	if (dir == NULL)
+		return FALSE;
+
+	/* find each */
+	while ((filename = g_dir_read_name (dir))) {
+		g_autofree gchar *src = NULL;
+		src = g_build_filename (directory, filename, NULL);
+		if (g_file_test (src, G_FILE_TEST_IS_DIR) &&
+		    !g_file_test (src, G_FILE_TEST_IS_SYMLINK)) {
+			if (!gs_utils_rmtree_real (src, error))
+				return FALSE;
+		} else {
+			if (g_unlink (src) != 0) {
+				g_set_error (error,
+					     GS_PLUGIN_ERROR,
+					     GS_PLUGIN_ERROR_FAILED,
+					     "Failed to delete: %s", src);
+				return FALSE;
+			}
+		}
+	}
+
+	if (g_rmdir (directory) != 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Failed to remove: %s", directory);
+		return FALSE;
+	}
+	return TRUE;
+}
+
+/**
+ * gs_utils_rmtree:
+ * @directory: A full directory pathname to delete
+ * @error: A #GError, or %NULL
+ *
+ * Deletes a directory from disk and all its contents.
+ *
+ * Returns: %TRUE for success
+ **/
+gboolean
+gs_utils_rmtree (const gchar *directory, GError **error)
+{
+	g_debug ("recursively removing directory '%s'", directory);
+	return gs_utils_rmtree_real (directory, error);
+}
+
 /* vim: set noexpandtab: */

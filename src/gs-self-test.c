@@ -50,50 +50,6 @@ gs_test_get_filename (const gchar *filename)
 	return g_strdup (full_tmp);
 }
 
-/**
- * gs_test_rmtree:
- **/
-static gboolean
-gs_test_rmtree (const gchar *directory, GError **error)
-{
-	const gchar *filename;
-	g_autoptr(GDir) dir = NULL;
-
-	/* try to open */
-	dir = g_dir_open (directory, 0, error);
-	if (dir == NULL)
-		return FALSE;
-
-	/* find each */
-	while ((filename = g_dir_read_name (dir))) {
-		g_autofree gchar *src = NULL;
-		src = g_build_filename (directory, filename, NULL);
-		if (g_file_test (src, G_FILE_TEST_IS_DIR) &&
-		    !g_file_test (src, G_FILE_TEST_IS_SYMLINK)) {
-			if (!gs_test_rmtree (src, error))
-				return FALSE;
-		} else {
-			g_debug ("deleting %s", src);
-			if (g_unlink (src) != 0) {
-				g_set_error (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
-					     "Failed to delete: %s", src);
-				return FALSE;
-			}
-		}
-	}
-	g_debug ("removing empty %s", directory);
-	if (g_rmdir (directory) != 0) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Failed to remove: %s", directory);
-		return FALSE;
-	}
-	return TRUE;
-}
-
 static gboolean
 gs_app_list_filter_cb (GsApp *app, gpointer user_data)
 {
@@ -963,7 +919,7 @@ main (int argc, char **argv)
 
 	/* ensure test root does not exist */
 	if (g_file_test (tmp_root, G_FILE_TEST_EXISTS)) {
-		ret = gs_test_rmtree (tmp_root, &error);
+		ret = gs_utils_rmtree (tmp_root, &error);
 		g_assert_no_error (error);
 		g_assert (ret);
 		g_assert (!g_file_test (tmp_root, G_FILE_TEST_EXISTS));
