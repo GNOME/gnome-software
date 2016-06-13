@@ -1120,8 +1120,8 @@ upgrade_reboot_failed_cb (GObject *source,
                           gpointer user_data)
 {
 	GsShellUpdates *self = (GsShellUpdates *) user_data;
+	GsApp *app;
 	g_autoptr(GError) error = NULL;
-	g_autoptr(GsAppList) apps = NULL;
 	g_autoptr(GVariant) retval = NULL;
 
 	/* get result */
@@ -1134,10 +1134,15 @@ upgrade_reboot_failed_cb (GObject *source,
 			   error->message);
 	}
 
+	app = gs_upgrade_banner_get_app (GS_UPGRADE_BANNER (self->upgrade_banner));
+	if (app == NULL) {
+		g_warning ("no upgrade to cancel");
+		return;
+	}
+
 	/* cancel trigger */
-	apps = gs_update_list_get_apps (GS_UPDATE_LIST (self->list_box_updates));
 	gs_plugin_loader_app_action_async (self->plugin_loader,
-					   gs_app_list_index (apps, 0),
+					   app,
 					   GS_PLUGIN_LOADER_ACTION_UPDATE_CANCEL,
 					   self->cancellable,
 					   cancel_trigger_failed_cb,
