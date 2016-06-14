@@ -1855,6 +1855,10 @@ void
 gs_app_set_management_plugin (GsApp *app, const gchar *management_plugin)
 {
 	g_return_if_fail (GS_IS_APP (app));
+
+	if (g_strcmp0 (app->management_plugin, management_plugin) == 0)
+		return;
+
 	g_free (app->management_plugin);
 	app->management_plugin = g_strdup (management_plugin);
 }
