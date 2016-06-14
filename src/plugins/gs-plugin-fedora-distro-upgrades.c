@@ -364,10 +364,9 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		gs_app_set_icon (app, ic);
 		gs_app_set_management_plugin (app, "packagekit");
 
-		/* just use the release notes */
-		url = g_strdup_printf ("https://docs.fedoraproject.org/en-US/"
-				       "Fedora/%i/html/Release_Notes/",
-				       distro_info->version);
+		/* show a Fedora magazine article for the release */
+		url = g_strdup_printf ("https://fedoramagazine.org/whats-new-fedora-%d-workstation",
+		                       distro_info->version);
 		gs_app_set_url (app, AS_URL_KIND_HOMEPAGE, url);
 
 		/* use a fancy background */
