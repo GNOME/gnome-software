@@ -793,7 +793,13 @@ gs_application_open (GApplication  *application,
 			continue;
 
 		if (g_strcmp0 (soup_uri_get_scheme (uri), "appstream") == 0) {
+			const gchar *host = soup_uri_get_host (uri);
 			const gchar *path = soup_uri_get_path (uri);
+
+			/* appstream://foo -> scheme: appstream, host: foo, path: / */
+			/* appstream:foo -> scheme: appstream, host: (empty string), path: /foo */
+			if (host != NULL && (strlen (host) > 0))
+				path = host;
 
 			/* trim any leading slashes */
 			while (*path == '/')
