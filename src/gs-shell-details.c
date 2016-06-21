@@ -1228,7 +1228,7 @@ gs_shell_details_app_set_review_cb (GObject *source,
 			return;
 		}
 		g_warning ("failed to set review on %s: %s",
-			   gs_app_get_id (helper->self->app), error->message);
+			   gs_app_get_id (helper->app), error->message);
 		gs_shell_details_review_helper_free (helper);
 		return;
 	}
@@ -1714,14 +1714,14 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 	g_autofree gchar *text = NULL;
 	g_autoptr(GDateTime) now = NULL;
 	g_autoptr(GsReview) review = NULL;
+	GsShellDetailsReviewHelper *helper;
 	GsReviewDialog *rdialog = GS_REVIEW_DIALOG (dialog);
 
-	/* unmap the dialog */
-	gtk_widget_destroy (GTK_WIDGET (dialog));
-
 	/* not agreed */
-	if (response != GTK_RESPONSE_OK)
+	if (response != GTK_RESPONSE_OK) {
+		gtk_widget_destroy (GTK_WIDGET (dialog));
 		return;
+	}
 
 	review = gs_review_new ();
 	gs_review_set_summary (review, gs_review_dialog_get_summary (rdialog));
@@ -1733,13 +1733,21 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 	gs_review_set_date (review, now);
 
 	/* call into the plugins to set the new value */
+	helper = g_new0 (GsShellDetailsReviewHelper, 1);
+	helper->self = g_object_ref (self);
+	helper->app = g_object_ref (self->app);
+	helper->review = g_object_ref (review);
+	helper->action = GS_REVIEW_ACTION_SUBMIT;
 	gs_plugin_loader_review_action_async (self->plugin_loader,
-					      self->app,
-					      review,
-					      GS_REVIEW_ACTION_SUBMIT,
+					      helper->app,
+					      helper->review,
+					      helper->action,
 					      self->cancellable,
 					      gs_shell_details_app_set_review_cb,
-					      self);
+					      helper);
+
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
 /**
