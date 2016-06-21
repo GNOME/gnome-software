@@ -321,7 +321,7 @@ gs_plugin_odrs_json_post (SoupSession *session,
 	/* create the GET data */
 	g_debug ("odrs sending: %s", data);
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
-	soup_message_set_request (msg, "application/json",
+	soup_message_set_request (msg, "application/json; charset=utf-8",
 				  SOUP_MEMORY_COPY, data, strlen (data));
 
 	/* set sync request */
@@ -573,7 +573,7 @@ gs_plugin_odrs_fetch_for_app (GsPlugin *plugin, GsApp *app, GError **error)
 		return NULL;
 	uri = g_strdup_printf ("%s/fetch", plugin->priv->review_server);
 	msg = soup_message_new (SOUP_METHOD_POST, uri);
-	soup_message_set_request (msg, "application/json",
+	soup_message_set_request (msg, "application/json; charset=utf-8",
 				  SOUP_MEMORY_COPY, data, strlen (data));
 	status_code = soup_session_send_message (plugin->soup_session, msg);
 	if (status_code != SOUP_STATUS_OK) {
