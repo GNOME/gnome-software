@@ -84,9 +84,9 @@ parse_result (const gchar *response, const gchar *response_type, GError **error)
 }
 
 static void
-refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, GCancellable *cancellable)
+refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_search, GCancellable *cancellable)
 {
-	const gchar *status, *icon_url;
+	const gchar *status, *icon_url, *launch_name = NULL;
 	g_autoptr(GdkPixbuf) icon_pixbuf = NULL;
 	gint64 size = -1;
 
@@ -165,6 +165,19 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, GCancellable *can
 		as_icon_set_kind (icon, AS_ICON_KIND_STOCK);
 		as_icon_set_name (icon, "package-x-generic");
 		gs_app_add_icon (app, icon);
+	}
+
+	if (!from_search) {
+		JsonArray *apps;
+
+		apps = json_object_get_array_member (package, "apps");
+		if (apps && json_array_get_length (apps) > 0)
+			launch_name = json_object_get_string_member (json_array_get_object_element (apps, 0), "name");
+
+		if (launch_name)
+			gs_app_set_metadata (app, "snap::launch-name", launch_name);
+		else
+			gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
 	}
 }
 
@@ -257,8 +270,7 @@ get_apps (GsPlugin *plugin,
 		gs_app_set_management_plugin (app, "snap");
 		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
-		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
-		refine_app (plugin, app, package, cancellable);
+		refine_app (plugin, app, package, TRUE, cancellable);
 		gs_app_list_add (list, app);
 	}
 
@@ -335,13 +347,13 @@ get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error
 			result_object = json_node_get_object (result_element);
 			if (g_strcmp0 (json_object_get_string_member (result_object, "name"),
 				       gs_app_get_id (app)) == 0) {
-				refine_app (plugin, app, result_object, cancellable);
+				refine_app (plugin, app, result_object, FALSE, cancellable);
 				break;
 			}
 		}
 	} else if (JSON_NODE_HOLDS_OBJECT (result)) {
 		result_object = json_node_get_object (result);
-		refine_app (plugin, app, result_object, cancellable);
+		refine_app (plugin, app, result_object, FALSE, cancellable);
 	}
 
 	return TRUE;
@@ -535,6 +547,38 @@ gs_plugin_app_install (GsPlugin *plugin,
 	}
 	gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 	return TRUE;
+}
+
+gboolean
+gs_plugin_launch (GsPlugin *plugin,
+		  GsApp *app,
+		  GCancellable *cancellable,
+		  GError **error)
+{
+	const gchar *launch_name;
+	g_autofree gchar *binary_name = NULL;
+	g_autoptr(GAppInfo) info = NULL;
+
+	/* We can only launch apps we know of */
+	if (g_strcmp0 (gs_app_get_management_plugin (app), "snap") != 0)
+		return TRUE;
+
+	launch_name = gs_app_get_metadata_item (app, "snap::launch-name");
+	if (!launch_name)
+		return TRUE;
+
+	if (g_strcmp0 (launch_name, gs_app_get_id (app)) == 0)
+		binary_name = g_strdup_printf ("/snap/bin/%s", launch_name);
+	else
+		binary_name = g_strdup_printf ("/snap/bin/%s.%s", gs_app_get_id (app), launch_name);
+
+	// FIXME: Since we don't currently know if this app needs a terminal or not we launch everything with one
+	// https://bugs.launchpad.net/bugs/1595023
+	info = g_app_info_create_from_commandline (binary_name, NULL, G_APP_INFO_CREATE_NEEDS_TERMINAL, error);
+	if (info == NULL)
+		return FALSE;
+
+	return g_app_info_launch (info, NULL, NULL, error);
 }
 
 gboolean
