@@ -29,7 +29,7 @@
 
 struct _GsFeatureTile
 {
-	GtkButton	 parent_instance;
+	GsAppTile	 parent_instance;
 
 	GsApp		*app;
 	GtkWidget	*image;
@@ -38,14 +38,12 @@ struct _GsFeatureTile
 	GtkWidget	*subtitle;
 };
 
-G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GTK_TYPE_BUTTON)
+G_DEFINE_TYPE (GsFeatureTile, gs_feature_tile, GS_TYPE_APP_TILE)
 
-GsApp *
-gs_feature_tile_get_app (GsFeatureTile *tile)
+static GsApp *
+gs_feature_tile_get_app (GsAppTile *tile)
 {
-	g_return_val_if_fail (GS_IS_FEATURE_TILE (tile), NULL);
-
-	return tile->app;
+	return GS_FEATURE_TILE (tile)->app;
 }
 
 static gboolean
@@ -88,12 +86,12 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsFeatureTile *tile)
 	g_idle_add (app_state_changed_idle, g_object_ref (tile));
 }
 
-void
-gs_feature_tile_set_app (GsFeatureTile *tile, GsApp *app)
+static void
+gs_feature_tile_set_app (GsAppTile *app_tile, GsApp *app)
 {
+	GsFeatureTile *tile = GS_FEATURE_TILE (app_tile);
 	g_autoptr(GString) data = NULL;
 
-	g_return_if_fail (GS_IS_FEATURE_TILE (tile));
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
 	if (tile->app)
@@ -141,8 +139,12 @@ static void
 gs_feature_tile_class_init (GsFeatureTileClass *klass)
 {
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+	GsAppTileClass *app_tile_class = GS_APP_TILE_CLASS (klass);
 
 	widget_class->destroy = gs_feature_tile_destroy;
+
+	app_tile_class->set_app = gs_feature_tile_set_app;
+	app_tile_class->get_app = gs_feature_tile_get_app;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-feature-tile.ui");
 
@@ -158,7 +160,7 @@ gs_feature_tile_new (GsApp *app)
 	GsFeatureTile *tile;
 
 	tile = g_object_new (GS_TYPE_FEATURE_TILE, NULL);
-	gs_feature_tile_set_app (tile, app);
+	gs_app_tile_set_app (GS_APP_TILE (tile), app);
 
 	return GTK_WIDGET (tile);
 }
