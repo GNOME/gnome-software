@@ -19,61 +19,24 @@
  * Foundation, Inc., 51 Franklin Street, Fifth Floor, Boston, MA 02110-1301 USA.
  */
 
-#include "config.h"
+#ifndef GS_SUMMARY_TILE_H
+#define GS_SUMMARY_TILE_H
 
-#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
+#include "gs-app.h"
 #include "gs-app-tile.h"
-#include "gs-star-widget.h"
-#include "gs-common.h"
 
-G_DEFINE_ABSTRACT_TYPE (GsAppTile, gs_app_tile, GTK_TYPE_BUTTON)
+G_BEGIN_DECLS
 
-GsApp *
-gs_app_tile_get_app (GsAppTile *tile)
-{
-	GsAppTileClass *klass;
+#define GS_TYPE_SUMMARY_TILE (gs_summary_tile_get_type ())
 
-	g_return_val_if_fail (GS_IS_APP_TILE (tile), NULL);
+G_DECLARE_FINAL_TYPE (GsSummaryTile, gs_summary_tile, GS, SUMMARY_TILE, GsAppTile)
 
-	klass = GS_APP_TILE_GET_CLASS (tile);
-	g_assert (klass->get_app);
+GtkWidget	*gs_summary_tile_new	(GsApp		*app);
 
-	return klass->get_app(tile);
-}
+G_END_DECLS
 
-void
-gs_app_tile_set_app (GsAppTile *tile, GsApp *app)
-{
-	GsAppTileClass *klass;
-
-	g_return_if_fail (GS_IS_APP_TILE (tile));
-	g_return_if_fail (!app || GS_IS_APP (app));
-
-	klass = GS_APP_TILE_GET_CLASS (tile);
-	g_assert (klass->get_app);
-
-	klass->set_app(tile, app);
-}
-
-void
-gs_app_tile_class_init (GsAppTileClass *klass)
-{}
-
-void
-gs_app_tile_init (GsAppTile *tile)
-{}
-
-GtkWidget *
-gs_app_tile_new (GsApp *app)
-{
-	GsAppTile *tile;
-
-	tile = g_object_new (GS_TYPE_APP_TILE, NULL);
-	gs_app_tile_set_app (tile, app);
-
-	return GTK_WIDGET (tile);
-}
+#endif /* GS_SUMMARY_TILE_H */
 
 /* vim: set noexpandtab: */

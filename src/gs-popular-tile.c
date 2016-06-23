@@ -40,12 +40,12 @@ struct _GsPopularTile
 	GtkWidget	*stars;
 };
 
-G_DEFINE_TYPE (GsPopularTile, gs_popular_tile, GTK_TYPE_BUTTON)
+G_DEFINE_TYPE (GsPopularTile, gs_popular_tile, GS_TYPE_APP_TILE)
 
-GsApp *
-gs_popular_tile_get_app (GsPopularTile *tile)
+static GsApp *
+gs_popular_tile_get_app (GsAppTile *app_tile)
 {
-	g_return_val_if_fail (GS_IS_POPULAR_TILE (tile), NULL);
+	GsPopularTile *tile = GS_POPULAR_TILE (app_tile);
 
 	return tile->app;
 }
@@ -100,10 +100,11 @@ app_state_changed (GsApp *app, GParamSpec *pspec, GsPopularTile *tile)
 	g_idle_add (app_state_changed_idle, g_object_ref (tile));
 }
 
-void
-gs_popular_tile_set_app (GsPopularTile *tile, GsApp *app)
+static void
+gs_popular_tile_set_app (GsAppTile *app_tile, GsApp *app)
 {
-	g_return_if_fail (GS_IS_POPULAR_TILE (tile));
+	GsPopularTile *tile = GS_POPULAR_TILE (app_tile);
+
 	g_return_if_fail (GS_IS_APP (app) || app == NULL);
 
 	if (tile->app)
@@ -160,8 +161,12 @@ static void
 gs_popular_tile_class_init (GsPopularTileClass *klass)
 {
 	GtkWidgetClass *widget_class = GTK_WIDGET_CLASS (klass);
+	GsAppTileClass *app_tile_class = GS_APP_TILE_CLASS (klass);
 
 	widget_class->destroy = gs_popular_tile_destroy;
+
+	app_tile_class->set_app = gs_popular_tile_set_app;
+	app_tile_class->get_app = gs_popular_tile_get_app;
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-popular-tile.ui");
 
@@ -178,7 +183,7 @@ gs_popular_tile_new (GsApp *app)
 	GsPopularTile *tile;
 
 	tile = g_object_new (GS_TYPE_POPULAR_TILE, NULL);
-	gs_popular_tile_set_app (tile, app);
+	gs_app_tile_set_app (GS_APP_TILE (tile), app);
 
 	return GTK_WIDGET (tile);
 }
