@@ -30,7 +30,7 @@
 
 struct _GsPopularTile
 {
-	GtkButton	 parent_instance;
+	GsAppTile	 parent_instance;
 
 	GsApp		*app;
 	GtkWidget	*label;
@@ -43,11 +43,9 @@ struct _GsPopularTile
 G_DEFINE_TYPE (GsPopularTile, gs_popular_tile, GS_TYPE_APP_TILE)
 
 static GsApp *
-gs_popular_tile_get_app (GsAppTile *app_tile)
+gs_popular_tile_get_app (GsAppTile *tile)
 {
-	GsPopularTile *tile = GS_POPULAR_TILE (app_tile);
-
-	return tile->app;
+	return GS_POPULAR_TILE (tile)->app;
 }
 
 static gboolean

@@ -25,17 +25,15 @@
 #include <gtk/gtk.h>
 
 #include "gs-app.h"
+#include "gs-app-tile.h"
 
 G_BEGIN_DECLS
 
 #define GS_TYPE_POPULAR_TILE (gs_popular_tile_get_type ())
 
-G_DECLARE_FINAL_TYPE (GsPopularTile, gs_popular_tile, GS, POPULAR_TILE, GtkButton)
+G_DECLARE_FINAL_TYPE (GsPopularTile, gs_popular_tile, GS, POPULAR_TILE, GsAppTile)
 
 GtkWidget	*gs_popular_tile_new			(GsApp		*app);
-GsApp		*gs_popular_tile_get_app		(GsPopularTile	*tile);
-void		 gs_popular_tile_set_app		(GsPopularTile	*tile,
-							 GsApp		*app);
 
 G_END_DECLS
 

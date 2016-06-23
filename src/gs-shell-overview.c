@@ -103,13 +103,13 @@ gs_shell_overview_invalidate (GsShellOverview *self)
 }
 
 static void
-popular_tile_clicked (GsPopularTile *tile, gpointer data)
+app_tile_clicked (GsAppTile *tile, gpointer data)
 {
 	GsShellOverview *self = GS_SHELL_OVERVIEW (data);
 	GsShellOverviewPrivate *priv = gs_shell_overview_get_instance_private (self);
 	GsApp *app;
 
-	app = gs_popular_tile_get_app (tile);
+	app = gs_app_tile_get_app (tile);
 	gs_shell_show_app (priv->shell, app);
 }
 
@@ -157,7 +157,7 @@ gs_shell_overview_get_popular_cb (GObject *source_object,
 		app = gs_app_list_index (list, i);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
-			  G_CALLBACK (popular_tile_clicked), self);
+			  G_CALLBACK (app_tile_clicked), self);
 		gtk_container_add (GTK_CONTAINER (priv->box_popular), tile);
 	}
 
@@ -214,7 +214,7 @@ gs_shell_overview_get_popular_rotating_cb (GObject *source_object,
 		app = gs_app_list_index (list, i);
 		tile = gs_popular_tile_new (app);
 		g_signal_connect (tile, "clicked",
-			  G_CALLBACK (popular_tile_clicked), self);
+			  G_CALLBACK (app_tile_clicked), self);
 		gtk_container_add (GTK_CONTAINER (priv->box_popular_rotating), tile);
 	}
 
