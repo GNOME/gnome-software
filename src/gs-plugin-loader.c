@@ -275,6 +275,18 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 	}
 }
 
+static gint
+gs_plugin_loader_review_score_sort_cb (gconstpointer a, gconstpointer b)
+{
+	GsReview *ra = *((GsReview **) a);
+	GsReview *rb = *((GsReview **) b);
+	if (gs_review_get_score (ra) < gs_review_get_score (rb))
+		return 1;
+	if (gs_review_get_score (ra) > gs_review_get_score (rb))
+		return -1;
+	return 0;
+}
+
 /**
  * gs_plugin_loader_run_refine_internal:
  **/
@@ -381,6 +393,17 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 			}
 		}
 		gs_plugin_status_update (plugin, NULL, GS_PLUGIN_STATUS_FINISHED);
+	}
+
+	/* ensure these are sorted by score */
+	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) > 0) {
+		GPtrArray *reviews;
+		for (i = 0; i < gs_app_list_length (list); i++) {
+			app = gs_app_list_index (list, i);
+			reviews = gs_app_get_reviews (app);
+			g_ptr_array_sort (reviews,
+					  gs_plugin_loader_review_score_sort_cb);
+		}
 	}
 
 	/* refine addons one layer deep */
