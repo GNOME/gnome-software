@@ -332,7 +332,9 @@ gs_plugin_loader_refine_func (GsPluginLoader *plugin_loader)
 static void
 gs_plugin_loader_key_colors_func (GsPluginLoader *plugin_loader)
 {
+	GPtrArray *array;
 	gboolean ret;
+	guint i;
 	g_autoptr(GsApp) app = NULL;
 	g_autoptr(GError) error = NULL;
 
@@ -344,7 +346,21 @@ gs_plugin_loader_key_colors_func (GsPluginLoader *plugin_loader)
 					   &error);
 	g_assert_no_error (error);
 	g_assert (ret);
-	g_assert_cmpint (gs_app_get_key_colors(app)->len, >=, 3);
+	array = gs_app_get_key_colors (app);
+	g_assert_cmpint (array->len, >=, 3);
+
+	/* check values are in range */
+	for (i = 0; i < array->len; i++) {
+		GdkRGBA *kc = g_ptr_array_index (array, i);
+		g_assert_cmpfloat (kc->red, >=, 0.f);
+		g_assert_cmpfloat (kc->red, <=, 1.f);
+		g_assert_cmpfloat (kc->green, >=, 0.f);
+		g_assert_cmpfloat (kc->green, <=, 1.f);
+		g_assert_cmpfloat (kc->blue, >=, 0.f);
+		g_assert_cmpfloat (kc->blue, <=, 1.f);
+		g_assert_cmpfloat (kc->alpha, >=, 0.f);
+		g_assert_cmpfloat (kc->alpha, <=, 1.f);
+	}
 }
 
 static void

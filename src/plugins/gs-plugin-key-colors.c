@@ -61,6 +61,13 @@ gs_color_bin_sort_cb (gconstpointer a, gconstpointer b)
 	return 0;
 }
 
+/* convert range of 0..255 to 0..1 */
+static gdouble
+_convert_from_rgb8 (guchar val)
+{
+	return (gdouble) val / 255.f;
+}
+
 static void
 gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 {
@@ -99,18 +106,18 @@ gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 				key = GUINT_TO_POINTER (cd_color_rgb8_to_uint32 (&tmp));
 				s = g_hash_table_lookup (hash, key);
 				if (s != NULL) {
-					s->color.red += p[0];
-					s->color.green += p[1];
-					s->color.blue += p[2];
+					s->color.red += _convert_from_rgb8 (p[0]);
+					s->color.green += _convert_from_rgb8 (p[1]);
+					s->color.blue += _convert_from_rgb8 (p[2]);
 					s->cnt++;
 					continue;
 				}
 
 				/* add to hash table */
 				s = g_new0 (GsColorBin, 1);
-				s->color.red = p[0];
-				s->color.green = p[1];
-				s->color.blue = p[2];
+				s->color.red = _convert_from_rgb8 (p[0]);
+				s->color.green = _convert_from_rgb8 (p[1]);
+				s->color.blue = _convert_from_rgb8 (p[2]);
 				s->color.alpha = 1.0;
 				s->cnt = 1;
 				g_hash_table_insert (hash, key, s);
@@ -140,7 +147,7 @@ gs_plugin_key_colors_set_for_pixbuf (GsApp *app, GdkPixbuf *pb, guint number)
 	/* the algorithm failed, so just return a monochrome ramp */
 	for (i = 0; i < 3; i++) {
 		g_autofree GdkRGBA *color = g_new0 (GdkRGBA, 1);
-		color->red = 255 * i / 3;
+		color->red = (gdouble) i / 3.f;
 		color->green = color->red;
 		color->blue = color->red;
 		color->alpha = 1.0f;

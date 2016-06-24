@@ -720,9 +720,9 @@ gs_utils_widget_set_css_app (GsApp *app,
 		g_autofree gchar *value = NULL;
 		key = g_strdup_printf ("@keycolor-%02i@", i);
 		value = g_strdup_printf ("rgb(%.0f,%.0f,%.0f)",
-					 color->red,
-					 color->green,
-					 color->blue);
+					 color->red * 255.f,
+					 color->green * 255.f,
+					 color->blue * 255.f);
 		as_utils_string_replace (css_str, key, value);
 	}
 
