@@ -298,7 +298,8 @@ gs_shell_change_mode (GsShell *shell,
 		new_page = GS_PAGE (priv->shell_updates);
 		break;
 	case GS_SHELL_MODE_DETAILS:
-		if (GS_IS_APP (data))
+		/* FIXME: this is a hack */
+		if (memcmp (data, "/", 1) != 0)
 			gs_shell_details_set_app (priv->shell_details, data);
 		else
 			gs_shell_details_set_filename (priv->shell_details, data);
