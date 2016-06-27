@@ -232,13 +232,15 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
+	const gchar *key = "GnomeSoftware::FeatureTile-css";
 	guint i;
 	for (i = 0; myapps[i].id != NULL; i++) {
 		if (g_strcmp0 (gs_app_get_id_no_prefix (app),
 			       myapps[i].id) != 0)
 			continue;
-		gs_app_set_metadata (app, "GnomeSoftware::FeatureTile-css",
-				     myapps[i].css);
+		if (gs_app_get_metadata_item (app, key) != NULL)
+			continue;
+		gs_app_set_metadata (app, key, myapps[i].css);
 	}
 	return TRUE;
 }
