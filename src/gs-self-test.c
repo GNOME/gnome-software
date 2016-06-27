@@ -533,7 +533,7 @@ gs_plugin_loader_dpkg_func (GsPluginLoader *plugin_loader)
 					    &error);
 	g_assert_no_error (error);
 	g_assert (app != NULL);
-	g_assert_cmpstr (gs_app_get_id (app), ==, NULL);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
 	g_assert_cmpstr (gs_app_get_source_default (app), ==, "chiron");
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "chiron");
@@ -568,7 +568,7 @@ gs_plugin_loader_packagekit_local_func (GsPluginLoader *plugin_loader)
 					    &error);
 	g_assert_no_error (error);
 	g_assert (app != NULL);
-	g_assert_cmpstr (gs_app_get_id (app), ==, NULL);
+	g_assert_cmpstr (gs_app_get_id (app), ==, "chiron.desktop");
 	g_assert_cmpstr (gs_app_get_source_default (app), ==, "chiron");
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "chiron");
@@ -944,6 +944,10 @@ main (int argc, char **argv)
 	g_assert (fn != NULL);
 	xml = g_strdup_printf ("<?xml version=\"1.0\"?>\n"
 		"<components version=\"0.9\">\n"
+		"  <component type=\"desktop\">\n"
+		"    <id>chiron.desktop</id>\n"
+		"    <pkgname>chiron</pkgname>\n"
+		"  </component>\n"
 		"  <component type=\"desktop\">\n"
 		"    <id>zeus.desktop</id>\n"
 		"    <name>Zeus</name>\n"
