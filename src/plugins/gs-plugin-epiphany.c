@@ -84,7 +84,7 @@ _gs_app_get_id_nonfull (GsApp *app)
 	gchar *id;
 	gchar *tmp;
 
-	id = g_strdup (gs_app_get_id (app));
+	id = g_strdup (gs_app_get_id_no_prefix (app));
 	tmp = g_strrstr (id, ".desktop");
 	if (tmp != NULL)
 		*tmp = '\0';
@@ -204,7 +204,7 @@ gs_plugin_app_install (GsPlugin *plugin, GsApp *app,
 	/* symlink it to somewhere the shell will notice */
 	app_desktop = g_build_filename (g_get_user_data_dir (),
 	                                "applications",
-	                                gs_app_get_id (app),
+	                                gs_app_get_id_no_prefix (app),
 	                                NULL);
 	symlink_desktop = g_file_new_for_path (app_desktop);
 	ret = g_file_make_symbolic_link (symlink_desktop,
@@ -250,7 +250,7 @@ gs_plugin_app_remove (GsPlugin *plugin, GsApp *app,
 	basename = g_file_get_basename (file_epi);
 	app_desktop = g_build_filename (g_get_user_data_dir (),
 	                                "applications",
-	                                gs_app_get_id (app),
+	                                gs_app_get_id_no_prefix (app),
 	                                NULL);
 	file_app = g_file_new_for_path (app_desktop);
 	if (!g_file_delete (file_app, NULL, error))
