@@ -26,6 +26,20 @@
 
 G_BEGIN_DECLS
 
+/**
+ * GsAppListFilterFlags:
+ * @GS_APP_LIST_FILTER_FLAG_NONE:	No flags set
+ * @GS_APP_LIST_FILTER_FLAG_PRIORITY:	Filter by application priority
+ *
+ * Flags to use when filtering.
+ **/
+typedef enum {
+	GS_APP_LIST_FILTER_FLAG_NONE		= 0,
+	GS_APP_LIST_FILTER_FLAG_PRIORITY	= 1 << 0,
+	/*< private >*/
+	GS_APP_LIST_FILTER_FLAG_LAST
+} GsAppListFilterFlags;
+
 typedef gboolean (*GsAppListFilterFunc)		(GsApp		*app,
 						 gpointer	 user_data);
 typedef gboolean (*GsAppListSortFunc)		(GsApp		*app1,
@@ -39,7 +53,8 @@ void		 gs_app_list_filter		(GsAppList	*list,
 void		 gs_app_list_sort		(GsAppList	*list,
 						 GsAppListSortFunc func,
 						 gpointer	 user_data);
-void		 gs_app_list_filter_duplicates	(GsAppList	*list);
+void		 gs_app_list_filter_duplicates	(GsAppList	*list,
+						 GsAppListFilterFlags flags);
 void		 gs_app_list_randomize		(GsAppList	*list);
 void		 gs_app_list_remove_all		(GsAppList	*list);
 

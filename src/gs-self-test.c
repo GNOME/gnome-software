@@ -141,9 +141,29 @@ gs_plugin_func (void)
 	gs_app_set_id (app, "e");
 	g_object_unref (app);
 	g_assert_cmpint (gs_app_list_length (list_remove), ==, 2);
-	gs_app_list_filter_duplicates (list_remove);
+	gs_app_list_filter_duplicates (list_remove, GS_APP_LIST_FILTER_FLAG_NONE);
 	g_assert_cmpint (gs_app_list_length (list_remove), ==, 1);
 	g_object_unref (list_remove);
+
+	/* respect priority when deduplicating */
+	list = gs_app_list_new ();
+	app = gs_app_new ("foo:e");
+	gs_app_list_add (list, app);
+	gs_app_set_priority (app, 0);
+	g_object_unref (app);
+	app = gs_app_new ("bar:e");
+	gs_app_list_add (list, app);
+	gs_app_set_priority (app, 99);
+	g_object_unref (app);
+	app = gs_app_new ("baz:e");
+	gs_app_list_add (list, app);
+	gs_app_set_priority (app, 50);
+	g_object_unref (app);
+	g_assert_cmpint (gs_app_list_length (list), ==, 3);
+	gs_app_list_filter_duplicates (list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+	g_assert_cmpstr (gs_app_get_id (gs_app_list_index (list, 0)), ==, "bar:e");
+	g_object_unref (list);
 }
 
 static void

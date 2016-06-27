@@ -639,9 +639,6 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			return NULL;
 	}
 
-	/* filter package list */
-	gs_app_list_filter_duplicates (list);
-
 	return g_steal_pointer (&list);
 }
 
@@ -1091,13 +1088,13 @@ gs_plugin_loader_get_updates_thread_cb (GTask *task,
 		return;
 	}
 
-	/* filter package list */
-	gs_app_list_filter_duplicates (state->list);
-
 	/* remove any packages that are not proper applications or
 	 * OS updates */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
+
+	/* filter duplicates with priority */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_NONE);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1191,8 +1188,9 @@ gs_plugin_loader_get_distro_upgrades_thread_cb (GTask *task,
 		return;
 	}
 
-	/* filter package list */
-	gs_app_list_filter_duplicates (state->list);
+	/* filter duplicates with priority */
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_NONE);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1270,8 +1268,9 @@ gs_plugin_loader_get_unvoted_reviews_thread_cb (GTask *task,
 		return;
 	}
 
-	/* filter package list */
-	gs_app_list_filter_duplicates (state->list);
+	/* filter duplicates with priority */
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_NONE);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1349,8 +1348,9 @@ gs_plugin_loader_get_sources_thread_cb (GTask *task,
 		return;
 	}
 
-	/* filter package list */
-	gs_app_list_filter_duplicates (state->list);
+	/* filter duplicates with priority */
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_NONE);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1551,7 +1551,10 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+
+	/* filter duplicates with priority */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1646,7 +1649,10 @@ gs_plugin_loader_get_featured_thread_cb (GTask *task,
 		gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 		gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
 	}
+
+	/* filter duplicates with priority */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
 
 	/* success */
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
@@ -1864,11 +1870,15 @@ gs_plugin_loader_search_thread_cb (GTask *task,
 	gs_plugin_loader_convert_unavailable (state->list, state->value);
 
 	/* filter package list */
-	gs_app_list_filter_duplicates (state->list);
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+
+	/* filter duplicates with priority */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_NONE);
+
+	/* too many */
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
@@ -2027,12 +2037,16 @@ gs_plugin_loader_search_files_thread_cb (GTask *task,
 	gs_plugin_loader_convert_unavailable (state->list, state->value);
 
 	/* filter package list */
-	gs_app_list_filter_duplicates (state->list);
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+
+	/* filter duplicates with priority */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_NONE);
+
+	/* too many */
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
@@ -2191,12 +2205,16 @@ gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
 	gs_plugin_loader_convert_unavailable (state->list, state->value);
 
 	/* filter package list */
-	gs_app_list_filter_duplicates (state->list);
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_non_installed, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+
+	/* filter duplicates with priority */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_NONE);
+
+	/* too many */
 	if (gs_app_list_length (state->list) > 500) {
 		g_task_return_new_error (task,
 					 GS_PLUGIN_ERROR,
@@ -2534,12 +2552,14 @@ gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 	}
 
 	/* filter package list */
-	gs_app_list_filter_duplicates (state->list);
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_non_compulsory, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_app_is_valid, state);
 	gs_app_list_filter (state->list, gs_plugin_loader_filter_qt_for_gtk, NULL);
 	gs_app_list_filter (state->list, gs_plugin_loader_get_app_is_compatible, plugin_loader);
+
+	/* filter duplicates with priority */
 	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
 
 	/* sort, just in case the UI doesn't do this */
 	gs_app_list_sort (state->list, gs_plugin_loader_app_sort_cb, NULL);
@@ -4367,7 +4387,8 @@ gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 	}
 
 	/* filter package list */
-	gs_app_list_filter_duplicates (state->list);
+	gs_app_list_filter (state->list, gs_plugin_loader_app_set_prio, plugin_loader);
+	gs_app_list_filter_duplicates (state->list, GS_APP_LIST_FILTER_FLAG_PRIORITY);
 
 	/* check the apps have an icon set */
 	for (j = 0; j < gs_app_list_length (state->list); j++) {

@@ -33,6 +33,7 @@
 
 #include <glib.h>
 
+#include "gs-app-private.h"
 #include "gs-app-list-private.h"
 
 struct _GsAppList
@@ -254,38 +255,69 @@ gs_app_list_randomize (GsAppList *list)
  * Filter any duplicate applications from the list.
  **/
 void
-gs_app_list_filter_duplicates (GsAppList *list)
+gs_app_list_filter_duplicates (GsAppList *list, GsAppListFilterFlags flags)
 {
 	guint i;
 	GsApp *app;
 	GsApp *found;
 	const gchar *id;
 	g_autoptr(GHashTable) hash = NULL;
-	g_autoptr(GsAppList) old = NULL;
+	g_autoptr(GList) values = NULL;
+	GList *l;
 
 	g_return_if_fail (GS_IS_APP_LIST (list));
 
-	/* deep copy to a temp list and clear the current one */
-	old = gs_app_list_copy (list);
-	gs_app_list_remove_all (list);
-
 	/* create a new list with just the unique items */
-	hash = g_hash_table_new (g_str_hash, g_str_equal);
-	for (i = 0; i < old->array->len; i++) {
-		app = gs_app_list_index (old, i);
+	hash = g_hash_table_new_full (g_str_hash, g_str_equal,
+				      g_free, (GDestroyNotify) g_object_unref);
+	for (i = 0; i < list->array->len; i++) {
+		app = gs_app_list_index (list, i);
 		id = gs_app_get_id (app);
+		if (flags & GS_APP_LIST_FILTER_FLAG_PRIORITY)
+			id = gs_app_get_id_no_prefix (app);
 		if (id == NULL) {
-			gs_app_list_add (list, app);
+			g_autofree gchar *str = gs_app_to_string (app);
+			g_debug ("ignoring as no application id for: %s", str);
 			continue;
 		}
 		found = g_hash_table_lookup (hash, id);
 		if (found == NULL) {
-			gs_app_list_add (list, app);
-			g_hash_table_insert (hash, (gpointer) id,
-					     GUINT_TO_POINTER (1));
+			g_debug ("found new %s", gs_app_get_id (app));
+			g_hash_table_insert (hash,
+					     g_strdup (id),
+					     g_object_ref (app));
 			continue;
 		}
-		g_debug ("ignoring duplicate %s", id);
+
+		/* better? */
+		if (flags & GS_APP_LIST_FILTER_FLAG_PRIORITY) {
+			if (gs_app_get_priority (app) >
+			    gs_app_get_priority (found)) {
+				g_debug ("using better %s (priority %u > %u)",
+					 gs_app_get_id (app),
+					 gs_app_get_priority (app),
+					 gs_app_get_priority (found));
+				g_hash_table_insert (hash,
+						     g_strdup (id),
+						     g_object_ref (app));
+				continue;
+			}
+			g_debug ("ignoring worse duplicate %s (priority %u > %u)",
+				 gs_app_get_id (app),
+				 gs_app_get_priority (app),
+				 gs_app_get_priority (found));
+			continue;
+		}
+		g_debug ("ignoring duplicate %s", gs_app_get_id (app));
+		continue;
+	}
+
+	/* add back the best results to the existing list */
+	gs_app_list_remove_all (list);
+	values = g_hash_table_get_values (hash);
+	for (l = values; l != NULL; l = l->next) {
+		app = GS_APP (l->data);
+		gs_app_list_add (list, app);
 	}
 }
 
