@@ -306,8 +306,7 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *id;
-	guint i;
-	AsApp *item = NULL;
+	AsApp *item;
 
 	/* unfound */
 	*found = FALSE;
@@ -317,49 +316,8 @@ gs_plugin_refine_from_id (GsPlugin *plugin,
 	if (id == NULL)
 		return TRUE;
 
-	/* find the best app when matching any prefixes */
-	if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX)) {
-		g_autoptr(GPtrArray) items = NULL;
-		g_autofree gchar *id_wildcard = g_strdup (id);
-
-		items = as_store_get_apps_by_id (priv->store, id);
-		for (i = 0; i < items->len; i++) {
-			AsApp *item_tmp = NULL;
-
-			/* does the app have an installation method */
-			item_tmp = g_ptr_array_index (items, i);
-			if (as_app_get_pkgname_default (item_tmp) == NULL &&
-			    as_app_get_bundle_default (item_tmp) == NULL) {
-				g_debug ("not using %s for wildcard as "
-					 "no bundle or pkgname",
-					 as_app_get_id (item_tmp));
-				continue;
-			}
-
-
-			/* already set! */
-			if (item != NULL) {
-				g_warning ("found duplicate %s for wildcard %s",
-					   as_app_get_id (item_tmp),
-					   id_wildcard);
-				continue;
-			}
-
-			/* only match the first entry */
-			g_debug ("found %s for wildcard %s",
-				 as_app_get_id (item_tmp), id_wildcard);
-
-			/* adopt the new prefix */
-			gs_app_set_id (app, as_app_get_id (item_tmp));
-
-			/* refine using this */
-			item = item_tmp;
-		}
-	} else {
-		item = as_store_get_app_by_id (priv->store, id);
-	}
-
 	/* nothing found */
+	item = as_store_get_app_by_id (priv->store, id);
 	if (item == NULL)
 		return TRUE;
 
@@ -452,6 +410,10 @@ gs_plugin_refine_app (GsPlugin *plugin,
 {
 	gboolean found = FALSE;
 
+	/* handled already */
+	if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+		return TRUE;
+
 	/* find by ID then package name */
 	if (!gs_plugin_refine_from_id (plugin, app, &found, error))
 		return FALSE;
@@ -461,6 +423,73 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	}
 
 	/* sucess */
+	return TRUE;
+}
+
+static gboolean
+gs_plugin_appstream_add_wildcards (GsPlugin *plugin,
+				   GsAppList *list,
+				   GsApp *app,
+				   GError **error)
+{
+	GsPluginData *priv = gs_plugin_get_data (plugin);
+	const gchar *id;
+	guint i;
+	g_autoptr(GPtrArray) items = NULL;
+
+	id = gs_app_get_id (app);
+	if (id == NULL)
+		return TRUE;
+
+	/* find all apps when matching any prefixes */
+	items = as_store_get_apps_by_id (priv->store, id);
+	for (i = 0; i < items->len; i++) {
+		AsApp *item = NULL;
+		g_autoptr(GsApp) new = NULL;
+
+		/* does the app have an installation method */
+		item = g_ptr_array_index (items, i);
+		if (as_app_get_pkgname_default (item) == NULL &&
+		    as_app_get_bundle_default (item) == NULL) {
+			g_debug ("not using %s for wildcard as "
+				 "no bundle or pkgname",
+				 as_app_get_id (item));
+			continue;
+		}
+
+		/* new app */
+		g_debug ("found %s for wildcard %s",
+			 as_app_get_id (item), id);
+		new = gs_plugin_appstream_create_app (plugin,
+						      as_app_get_id (item));
+		if (!gs_appstream_refine_app (plugin, new, item, error))
+			return FALSE;
+		gs_app_list_add (list, new);
+	}
+	return TRUE;
+}
+
+/* wildcard results get added to the list, not replaced */
+gboolean
+gs_plugin_refine (GsPlugin *plugin,
+		  GsAppList *list,
+		  GsPluginRefineFlags flags,
+		  GCancellable *cancellable,
+		  GError **error)
+{
+	guint i;
+
+	for (i = 0; i < gs_app_list_length (list); i++) {
+		GsApp *app = gs_app_list_index (list, i);
+		if (!gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+			continue;
+		if (!gs_plugin_appstream_add_wildcards (plugin,
+							list,
+							app,
+							error))
+			return FALSE;
+	}
+
 	return TRUE;
 }
 

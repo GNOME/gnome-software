@@ -71,6 +71,11 @@ gs_plugin_destroy (GsPlugin *plugin)
 void
 gs_plugin_adopt_app (GsPlugin *plugin, GsApp *app)
 {
+	if (gs_app_get_id (app) != NULL &&
+	    g_str_has_prefix (gs_app_get_id (app), "dummy:")) {
+		gs_app_set_management_plugin (app, gs_plugin_get_name (plugin));
+		return;
+	}
 	if (g_strcmp0 (gs_app_get_id (app), "mate-spell.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
 	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0 ||
@@ -288,11 +293,21 @@ gs_plugin_add_popular (GsPlugin *plugin,
 		       GCancellable *cancellable,
 		       GError **error)
 {
-	g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
-	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
-	gs_app_set_metadata (app, "GnomeSoftware::Creator",
+	g_autoptr(GsApp) app1 = NULL;
+	g_autoptr(GsApp) app2 = NULL;
+
+	/* add wildcard */
+	app1 = gs_app_new ("zeus.desktop");
+	gs_app_add_quirk (app1, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_set_metadata (app1, "GnomeSoftware::Creator",
 			     gs_plugin_get_name (plugin));
-	gs_app_list_add (list, app);
+	gs_app_list_add (list, app1);
+
+	/* add again, this time with a prefix so it gets deduplicated */
+	app2 = gs_app_new ("dummy:zeus.desktop");
+	gs_app_set_metadata (app2, "GnomeSoftware::Creator",
+			     gs_plugin_get_name (plugin));
+	gs_app_list_add (list, app2);
 	return TRUE;
 }
 
@@ -369,9 +384,9 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GError **error)
 {
 	/* default */
-	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id (app), "mate-spell.desktop") == 0 ||
-	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
+	if (g_strcmp0 (gs_app_get_id_no_prefix (app), "chiron.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id_no_prefix (app), "mate-spell.desktop") == 0 ||
+	    g_strcmp0 (gs_app_get_id_no_prefix (app), "zeus.desktop") == 0) {
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN)

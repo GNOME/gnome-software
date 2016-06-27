@@ -263,6 +263,8 @@ gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 			GsApp *app = gs_app_list_index (list, j);
 			if (gs_app_get_management_plugin (app) != NULL)
 				continue;
+			if (gs_app_has_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX))
+				continue;
 			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
 			adopt_app_func (plugin, app);
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
