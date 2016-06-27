@@ -278,6 +278,13 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			      hash,
 			      id_nonfull,
 			      hash);
+	/* try the new-style location */
+	if (!g_file_test (fn, G_FILE_TEST_EXISTS)) {
+		g_free (fn);
+		fn = g_strdup_printf ("%s/epiphany/app-%s/%s.desktop",
+				      g_get_user_config_dir (),
+				      id_nonfull, id_nonfull);
+	}
 	if (g_file_test (fn, G_FILE_TEST_EXISTS)) {
 		gs_app_set_state (app, AS_APP_STATE_INSTALLED);
 		gs_app_add_source_id (app, fn);
