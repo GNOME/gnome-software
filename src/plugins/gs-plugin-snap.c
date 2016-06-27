@@ -194,9 +194,11 @@ get_apps (GsPlugin *plugin,
 		g_autofree gchar *query = NULL;
 		query = g_strjoinv ("+", search_terms);
 		g_ptr_array_add (query_fields, g_strdup_printf ("q=%s", query));
+		path = g_string_new ("/v2/find");
 	}
+	else
+		path = g_string_new ("/v2/snaps");
 	g_ptr_array_add (query_fields, NULL);
-	path = g_string_new ("/v2/snaps");
 	if (query_fields->len > 1) {
 		g_autofree gchar *fields = NULL;
 		g_string_append (path, "?");
