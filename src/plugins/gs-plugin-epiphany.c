@@ -270,6 +270,11 @@ gs_plugin_refine_app (GsPlugin *plugin,
 			     gs_app_get_id (app));
 		return FALSE;
 	}
+	if (gs_app_get_summary (app) == NULL) {
+		g_debug ("faking summary for %s", gs_app_get_id (app));
+		gs_app_set_summary (app, GS_APP_QUALITY_LOWEST,
+				    "Web Application");
+	}
 	hash = g_compute_checksum_for_string (G_CHECKSUM_SHA1, name, -1);
 	id_nonfull = _gs_app_get_id_nonfull (app);
 	fn = g_strdup_printf ("%s/epiphany/app-%s-%s/%s-%s.desktop",
