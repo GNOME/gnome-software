@@ -606,6 +606,7 @@ gs_plugin_loader_fwupd_func (GsPluginLoader *plugin_loader)
 	g_assert (gs_app_get_pixbuf (app) != NULL);
 	g_assert (gs_app_get_license (app) != NULL);
 	g_assert (gs_app_has_category (app, "System"));
+	g_assert_cmpstr (gs_app_get_id (app), ==, "com.test.chiron.firmware");
 	g_assert_cmpstr (gs_app_get_url (app, AS_URL_KIND_HOMEPAGE), ==, "http://127.0.0.1/");
 	g_assert_cmpstr (gs_app_get_name (app), ==, "Chiron");
 	g_assert_cmpstr (gs_app_get_summary (app), ==, "Single line synopsis");
@@ -619,7 +620,6 @@ gs_plugin_loader_fwupd_func (GsPluginLoader *plugin_loader)
 
 	/* seems wrong, but this is only set if the update is available */
 	g_assert_cmpint (gs_app_get_state (app), ==, AS_APP_STATE_UNKNOWN);
-	g_assert_cmpstr (gs_app_get_id (app), ==, NULL);
 }
 
 static void
