@@ -353,7 +353,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 
 	/* can we get the AppStream-created app state using the cache */
 	uuid = gs_app_get_metadata_item (app, "shell-extensions::uuid");
-	if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
+	if (uuid != NULL && gs_app_get_state (app) == AS_APP_STATE_UNKNOWN) {
 		GsApp *app_cache = gs_plugin_cache_lookup (plugin, uuid);
 		if (app_cache != NULL) {
 			g_debug ("copy cached state for %s",
