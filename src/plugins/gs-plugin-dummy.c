@@ -283,6 +283,20 @@ gs_plugin_add_installed (GsPlugin *plugin,
 }
 
 gboolean
+gs_plugin_add_popular (GsPlugin *plugin,
+		       GsAppList *list,
+		       GCancellable *cancellable,
+		       GError **error)
+{
+	g_autoptr(GsApp) app = gs_app_new ("chiron.desktop");
+	gs_app_add_quirk (app, AS_APP_QUIRK_MATCH_ANY_PREFIX);
+	gs_app_set_metadata (app, "GnomeSoftware::Creator",
+			     gs_plugin_get_name (plugin));
+	gs_app_list_add (list, app);
+	return TRUE;
+}
+
+gboolean
 gs_plugin_app_remove (GsPlugin *plugin,
 		      GsApp *app,
 		      GCancellable *cancellable,
@@ -360,6 +374,8 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	    g_strcmp0 (gs_app_get_id (app), "zeus.desktop") == 0) {
 		if (gs_app_get_state (app) == AS_APP_STATE_UNKNOWN)
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		if (gs_app_get_kind (app) == AS_APP_KIND_UNKNOWN)
+			gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 	}
 
 	/* license */
@@ -381,6 +397,21 @@ gs_plugin_refine_app (GsPlugin *plugin,
 	if (flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_ORIGIN) {
 		if (g_strcmp0 (gs_app_get_id (app), "zeus-spell.addon") == 0)
 			gs_app_set_origin (app, "london-east");
+	}
+
+	/* default */
+	if (g_strcmp0 (gs_app_get_id (app), "chiron.desktop") == 0) {
+		if (gs_app_get_name (app) == NULL)
+			gs_app_set_name (app, GS_APP_QUALITY_NORMAL, "tmp");
+		if (gs_app_get_summary (app) == NULL)
+			gs_app_set_summary (app, GS_APP_QUALITY_NORMAL, "tmp");
+		if (gs_app_get_icons(app)->len == 0) {
+			g_autoptr(AsIcon) ic = NULL;
+			ic = as_icon_new ();
+			as_icon_set_kind (ic, AS_ICON_KIND_STOCK);
+			as_icon_set_name (ic, "drive-harddisk");
+			gs_app_add_icon (app, ic);
+		}
 	}
 
 	/* description */

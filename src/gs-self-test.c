@@ -879,6 +879,21 @@ gs_plugin_loader_authentication_func (GsPluginLoader *plugin_loader)
 	g_assert (ret);
 }
 
+static void
+gs_plugin_loader_wildcard_func (GsPluginLoader *plugin_loader)
+{
+	g_autoptr(GError) error = NULL;
+	g_autoptr(GsAppList) list = NULL;
+
+	list = gs_plugin_loader_get_popular (plugin_loader,
+					     GS_PLUGIN_REFINE_FLAGS_REQUIRE_ICON,
+					     NULL,
+					     &error);
+	g_assert_no_error (error);
+	g_assert (list != NULL);
+	g_assert_cmpint (gs_app_list_length (list), ==, 1);
+}
+
 int
 main (int argc, char **argv)
 {
@@ -1018,6 +1033,9 @@ main (int argc, char **argv)
 	g_assert (gs_plugin_loader_get_enabled (plugin_loader, "dummy"));
 
 	/* plugin tests go here */
+	g_test_add_data_func ("/gnome-software/plugin-loader{wildcard}",
+			      plugin_loader,
+			      (GTestDataFunc) gs_plugin_loader_wildcard_func);
 	g_test_add_data_func ("/gnome-software/plugin-loader{authentication}",
 			      plugin_loader,
 			      (GTestDataFunc) gs_plugin_loader_authentication_func);
