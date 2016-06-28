@@ -47,9 +47,6 @@ G_DEFINE_TYPE_WITH_PRIVATE (GsUpdateList, gs_update_list, GTK_TYPE_LIST_BOX)
 
 #define GET_PRIV(o)	gs_update_list_get_instance_private(o)
 
-/**
- * gs_update_list_button_clicked_cb:
- **/
 static void
 gs_update_list_button_clicked_cb (GsAppRow *app_row,
 				  GsUpdateList *update_list)

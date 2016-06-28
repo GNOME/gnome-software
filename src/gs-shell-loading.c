@@ -47,9 +47,6 @@ enum {
 
 static guint signals [SIGNAL_LAST] = { 0 };
 
-/**
- * gs_shell_loading_status_changed_cb:
- **/
 static void
 gs_shell_loading_status_changed_cb (GsPluginLoader *plugin_loader,
 				    GsApp *app,
@@ -79,9 +76,6 @@ gs_shell_loading_status_changed_cb (GsPluginLoader *plugin_loader,
 	}
 }
 
-/**
- * gs_shell_loading_refresh_cb:
- **/
 static void
 gs_shell_loading_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer user_data)
 {
@@ -102,9 +96,6 @@ gs_shell_loading_refresh_cb (GObject *source_object, GAsyncResult *res, gpointer
 	g_signal_emit (self, signals[SIGNAL_REFRESHED], 0);
 }
 
-/**
- * gs_shell_loading_load:
- */
 static void
 gs_shell_loading_load (GsShellLoading *self)
 {
@@ -122,9 +113,6 @@ gs_shell_loading_load (GsShellLoading *self)
 			  self);
 }
 
-/**
- * gs_shell_loading_switch_to:
- **/
 static void
 gs_shell_loading_switch_to (GsPage *page, gboolean scroll_up)
 {
@@ -139,9 +127,6 @@ gs_shell_loading_switch_to (GsPage *page, gboolean scroll_up)
 	gs_shell_loading_load (self);
 }
 
-/**
- * gs_shell_loading_setup:
- */
 void
 gs_shell_loading_setup (GsShellLoading *self,
 			GsShell *shell,
@@ -161,9 +146,6 @@ gs_shell_loading_setup (GsShellLoading *self,
 	gs_page_setup (GS_PAGE (self), shell, plugin_loader, cancellable);
 }
 
-/**
- * gs_shell_loading_dispose:
- **/
 static void
 gs_shell_loading_dispose (GObject *object)
 {
@@ -176,9 +158,6 @@ gs_shell_loading_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_loading_parent_class)->dispose (object);
 }
 
-/**
- * gs_shell_loading_class_init:
- **/
 static void
 gs_shell_loading_class_init (GsShellLoadingClass *klass)
 {
@@ -202,18 +181,12 @@ gs_shell_loading_class_init (GsShellLoadingClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellLoading, label);
 }
 
-/**
- * gs_shell_loading_init:
- **/
 static void
 gs_shell_loading_init (GsShellLoading *self)
 {
 	gtk_widget_init_template (GTK_WIDGET (self));
 }
 
-/**
- * gs_shell_loading_new:
- **/
 GsShellLoading *
 gs_shell_loading_new (void)
 {

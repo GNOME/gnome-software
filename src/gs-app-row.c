@@ -113,9 +113,6 @@ gs_app_row_get_description (GsAppRow *app_row)
 	return g_string_new (tmp);
 }
 
-/**
- * gs_app_row_refresh:
- **/
 void
 gs_app_row_refresh (GsAppRow *app_row)
 {
@@ -390,9 +387,6 @@ gs_app_row_unreveal (GsAppRow *app_row)
 	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), FALSE);
 }
 
-/**
- * gs_app_row_get_app:
- **/
 GsApp *
 gs_app_row_get_app (GsAppRow *app_row)
 {
@@ -401,9 +395,6 @@ gs_app_row_get_app (GsAppRow *app_row)
 	return priv->app;
 }
 
-/**
- * gs_app_row_refresh_idle_cb:
- **/
 static gboolean
 gs_app_row_refresh_idle_cb (gpointer user_data)
 {
@@ -414,9 +405,6 @@ gs_app_row_refresh_idle_cb (gpointer user_data)
 	return FALSE;
 }
 
-/**
- * gs_app_row_notify_props_changed_cb:
- **/
 static void
 gs_app_row_notify_props_changed_cb (GsApp *app,
 				    GParamSpec *pspec,
@@ -428,9 +416,6 @@ gs_app_row_notify_props_changed_cb (GsApp *app,
 	priv->pending_refresh_id = g_idle_add (gs_app_row_refresh_idle_cb, app_row);
 }
 
-/**
- * gs_app_row_set_app:
- **/
 static void
 gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 {
@@ -450,9 +435,6 @@ gs_app_row_set_app (GsAppRow *app_row, GsApp *app)
 	gs_app_row_refresh (app_row);
 }
 
-/**
- * gs_app_row_destroy:
- **/
 static void
 gs_app_row_destroy (GtkWidget *object)
 {

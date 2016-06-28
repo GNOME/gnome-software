@@ -170,9 +170,6 @@ gs_plugin_loader_free_async_state (GsPluginLoaderAsyncState *state)
 	g_slice_free (GsPluginLoaderAsyncState, state);
 }
 
-/**
- * gs_plugin_loader_app_sort_cb:
- **/
 static gint
 gs_plugin_loader_app_sort_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {
@@ -196,9 +193,6 @@ gs_plugin_loader_find_plugin (GsPluginLoader *plugin_loader,
 	return NULL;
 }
 
-/**
- * gs_plugin_loader_action_start:
- **/
 static void
 gs_plugin_loader_action_start (GsPluginLoader *plugin_loader,
 			       GsPlugin *plugin,
@@ -218,9 +212,6 @@ gs_plugin_loader_action_start (GsPluginLoader *plugin_loader,
 	}
 }
 
-/**
- * gs_plugin_loader_action_stop:
- **/
 static void
 gs_plugin_loader_action_stop (GsPluginLoader *plugin_loader, GsPlugin *plugin)
 {
@@ -238,9 +229,6 @@ gs_plugin_loader_action_stop (GsPluginLoader *plugin_loader, GsPlugin *plugin)
 	}
 }
 
-/**
- * gs_plugin_loader_run_adopt:
- **/
 static void
 gs_plugin_loader_run_adopt (GsPluginLoader *plugin_loader, GsAppList *list)
 {
@@ -289,9 +277,6 @@ gs_plugin_loader_review_score_sort_cb (gconstpointer a, gconstpointer b)
 	return 0;
 }
 
-/**
- * gs_plugin_loader_run_refine_internal:
- **/
 static gboolean
 gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 				      const gchar *function_name_parent,
@@ -472,9 +457,6 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 	return TRUE;
 }
 
-/**
- * gs_plugin_loader_run_refine:
- **/
 static gboolean
 gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 			     const gchar *function_name_parent,
@@ -546,9 +528,6 @@ out:
 
 static void gs_plugin_loader_add_os_update_item (GsAppList *list);
 
-/**
- * gs_plugin_loader_run_results:
- **/
 static GsAppList *
 gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 			      const gchar *function_name,
@@ -644,9 +623,6 @@ gs_plugin_loader_run_results (GsPluginLoader *plugin_loader,
 	return g_steal_pointer (&list);
 }
 
-/**
- * gs_plugin_loader_get_app_str:
- **/
 static const gchar *
 gs_plugin_loader_get_app_str (GsApp *app)
 {
@@ -689,9 +665,6 @@ gs_plugin_loader_app_set_prio (GsApp *app, gpointer user_data)
 	return TRUE;
 }
 
-/**
- * gs_plugin_loader_app_is_valid_installed:
- **/
 static gboolean
 gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 {
@@ -717,9 +690,6 @@ gs_plugin_loader_app_is_valid_installed (GsApp *app, gpointer user_data)
 	return TRUE;
 }
 
-/**
- * gs_plugin_loader_app_is_valid:
- **/
 static gboolean
 gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 {
@@ -797,9 +767,6 @@ gs_plugin_loader_app_is_valid (GsApp *app, gpointer user_data)
 	return TRUE;
 }
 
-/**
- * gs_plugin_loader_filter_qt_for_gtk:
- **/
 static gboolean
 gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 {
@@ -832,18 +799,12 @@ gs_plugin_loader_filter_qt_for_gtk (GsApp *app, gpointer user_data)
 	return TRUE;
 }
 
-/**
- * gs_plugin_loader_app_is_non_compulsory:
- **/
 static gboolean
 gs_plugin_loader_app_is_non_compulsory (GsApp *app, gpointer user_data)
 {
 	return !gs_app_has_quirk (app, AS_APP_QUIRK_COMPULSORY);
 }
 
-/**
- * gs_plugin_loader_app_is_non_installed:
- **/
 static gboolean
 gs_plugin_loader_app_is_non_installed (GsApp *app, gpointer user_data)
 {
@@ -856,9 +817,6 @@ gs_plugin_loader_app_is_non_installed (GsApp *app, gpointer user_data)
 	return TRUE;
 }
 
-/**
- * gs_plugin_loader_get_app_is_compatible:
- */
 static gboolean
 gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 {
@@ -880,9 +838,6 @@ gs_plugin_loader_get_app_is_compatible (GsApp *app, gpointer user_data)
 	return FALSE;
 }
 
-/**
- * gs_plugin_loader_set_app_error:
- **/
 static void
 gs_plugin_loader_set_app_error (GsApp *app, GError *error)
 {
@@ -912,9 +867,6 @@ gs_plugin_loader_is_auth_error (GError *err)
 	return FALSE;
 }
 
-/**
- * gs_plugin_loader_run_action:
- **/
 static gboolean
 gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 			     GsApp *app,
@@ -993,9 +945,6 @@ gs_plugin_loader_run_action (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_merge_into_os_update:
- **/
 static gboolean
 gs_plugin_loader_merge_into_os_update (GsApp *app)
 {
@@ -1006,9 +955,6 @@ gs_plugin_loader_merge_into_os_update (GsApp *app)
 	return FALSE;
 }
 
-/**
- * gs_plugin_loader_add_os_update_item:
- **/
 static void
 gs_plugin_loader_add_os_update_item (GsAppList *list)
 {
@@ -1062,9 +1008,6 @@ gs_plugin_loader_add_os_update_item (GsAppList *list)
 	gs_app_list_add (list, app_os);
 }
 
-/**
- * gs_plugin_loader_get_updates_thread_cb:
- **/
 static void
 gs_plugin_loader_get_updates_thread_cb (GTask *task,
 					gpointer object,
@@ -1167,9 +1110,6 @@ gs_plugin_loader_get_updates_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_get_distro_upgrades_thread_cb:
- **/
 static void
 gs_plugin_loader_get_distro_upgrades_thread_cb (GTask *task,
 						gpointer object,
@@ -1247,9 +1187,6 @@ gs_plugin_loader_get_distro_upgrades_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_get_unvoted_reviews_thread_cb:
- **/
 static void
 gs_plugin_loader_get_unvoted_reviews_thread_cb (GTask *task,
 						gpointer object,
@@ -1327,9 +1264,6 @@ gs_plugin_loader_get_unvoted_reviews_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_get_sources_thread_cb:
- **/
 static void
 gs_plugin_loader_get_sources_thread_cb (GTask *task,
 					gpointer object,
@@ -1410,9 +1344,6 @@ gs_plugin_loader_get_sources_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_get_installed_thread_cb:
- **/
 static void
 gs_plugin_loader_get_installed_thread_cb (GTask *task,
 					  gpointer object,
@@ -1506,9 +1437,6 @@ gs_plugin_loader_get_installed_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_get_popular_thread_cb:
- **/
 static void
 gs_plugin_loader_get_popular_thread_cb (GTask *task,
 					gpointer object,
@@ -1562,9 +1490,6 @@ gs_plugin_loader_get_popular_thread_cb (GTask *task,
 	g_task_return_pointer (task, g_object_ref (state->list), (GDestroyNotify) g_object_unref);
 }
 
-/**
- * gs_plugin_loader_get_popular_async:
- **/
 void
 gs_plugin_loader_get_popular_async (GsPluginLoader *plugin_loader,
 				    GsPluginRefineFlags flags,
@@ -1608,9 +1533,6 @@ gs_plugin_loader_get_popular_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_featured_debug:
- **/
 static gboolean
 gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
 {
@@ -1620,9 +1542,6 @@ gs_plugin_loader_featured_debug (GsApp *app, gpointer user_data)
 	return FALSE;
 }
 
-/**
- * gs_plugin_loader_get_featured_thread_cb:
- **/
 static void
 gs_plugin_loader_get_featured_thread_cb (GTask *task,
 					 gpointer object,
@@ -1724,9 +1643,6 @@ gs_plugin_loader_get_featured_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_convert_unavailable_app:
- **/
 static gboolean
 gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 {
@@ -1762,9 +1678,6 @@ gs_plugin_loader_convert_unavailable_app (GsApp *app, const gchar *search)
 	return TRUE;
 }
 
-/**
- * gs_plugin_loader_convert_unavailable:
- **/
 static void
 gs_plugin_loader_convert_unavailable (GsAppList *list, const gchar *search)
 {
@@ -1788,9 +1701,6 @@ gs_plugin_loader_convert_unavailable (GsAppList *list, const gchar *search)
 	}
 }
 
-/**
- * gs_plugin_loader_search_thread_cb:
- **/
 static void
 gs_plugin_loader_search_thread_cb (GTask *task,
 				   gpointer object,
@@ -1960,9 +1870,6 @@ gs_plugin_loader_search_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_search_files_thread_cb:
- **/
 static void
 gs_plugin_loader_search_files_thread_cb (GTask *task,
                                          gpointer object,
@@ -2128,9 +2035,6 @@ gs_plugin_loader_search_files_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_search_what_provides_thread_cb:
- **/
 static void
 gs_plugin_loader_search_what_provides_thread_cb (GTask *task,
                                                  gpointer object,
@@ -2296,9 +2200,6 @@ gs_plugin_loader_search_what_provides_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_category_sort_cb:
- **/
 static gint
 gs_plugin_loader_category_sort_cb (gconstpointer a, gconstpointer b)
 {
@@ -2348,9 +2249,6 @@ gs_plugin_loader_fix_category_all (GsCategory *category)
 	}
 }
 
-/**
- * gs_plugin_loader_get_categories_thread_cb:
- **/
 static void
 gs_plugin_loader_get_categories_thread_cb (GTask *task,
 					   gpointer object,
@@ -2482,9 +2380,6 @@ gs_plugin_loader_get_categories_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_get_category_apps_thread_cb:
- **/
 static void
 gs_plugin_loader_get_category_apps_thread_cb (GTask *task,
 					      gpointer object,
@@ -2637,9 +2532,6 @@ gs_plugin_loader_get_category_apps_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_app_refine_thread_cb:
- **/
 static void
 gs_plugin_loader_app_refine_thread_cb (GTask *task,
 				       gpointer object,
@@ -2736,9 +2628,6 @@ emit_pending_apps_idle (gpointer loader)
 	return G_SOURCE_REMOVE;
 }
 
-/**
- * gs_plugin_loader_app_action_thread_cb:
- **/
 static void
 gs_plugin_loader_app_action_thread_cb (GTask *task,
 				       gpointer object,
@@ -2814,9 +2703,6 @@ gs_plugin_loader_app_action_thread_cb (GTask *task,
 	g_idle_add (emit_pending_apps_idle, g_object_ref (plugin_loader));
 }
 
-/**
- * gs_plugin_loader_review_action_thread_cb:
- **/
 static void
 gs_plugin_loader_review_action_thread_cb (GTask *task,
 					  gpointer object,
@@ -3145,9 +3031,6 @@ gs_plugin_loader_app_action_async (GsPluginLoader *plugin_loader,
 	g_task_run_in_thread (task, gs_plugin_loader_app_action_thread_cb);
 }
 
-/**
- * gs_plugin_loader_review_action_async:
- **/
 void
 gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 				      GsApp *app,
@@ -3199,9 +3082,6 @@ gs_plugin_loader_review_action_async (GsPluginLoader *plugin_loader,
 	g_task_run_in_thread (task, gs_plugin_loader_review_action_thread_cb);
 }
 
-/**
- * gs_plugin_loader_review_action_finish:
- **/
 gboolean
 gs_plugin_loader_review_action_finish (GsPluginLoader *plugin_loader,
 				       GAsyncResult *res,
@@ -3217,9 +3097,6 @@ gs_plugin_loader_review_action_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_auth_action_thread_cb:
- **/
 static void
 gs_plugin_loader_auth_action_thread_cb (GTask *task,
 					  gpointer object,
@@ -3279,9 +3156,6 @@ gs_plugin_loader_auth_action_thread_cb (GTask *task,
 	g_task_return_boolean (task, TRUE);
 }
 
-/**
- * gs_plugin_loader_auth_action_async:
- **/
 void
 gs_plugin_loader_auth_action_async (GsPluginLoader *plugin_loader,
 				    GsAuth *auth,
@@ -3325,9 +3199,6 @@ gs_plugin_loader_auth_action_async (GsPluginLoader *plugin_loader,
 	g_task_run_in_thread (task, gs_plugin_loader_auth_action_thread_cb);
 }
 
-/**
- * gs_plugin_loader_auth_action_finish:
- **/
 gboolean
 gs_plugin_loader_auth_action_finish (GsPluginLoader *plugin_loader,
 				     GAsyncResult *res,
@@ -3363,9 +3234,6 @@ gs_plugin_loader_app_action_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_get_pending:
- **/
 GsAppList *
 gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 {
@@ -3384,9 +3252,6 @@ gs_plugin_loader_get_pending (GsPluginLoader *plugin_loader)
 	return array;
 }
 
-/**
- * gs_plugin_loader_run:
- **/
 static void
 gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 {
@@ -3416,9 +3281,6 @@ gs_plugin_loader_run (GsPluginLoader *plugin_loader, const gchar *function_name)
 	}
 }
 
-/**
- * gs_plugin_loader_get_enabled:
- */
 gboolean
 gs_plugin_loader_get_enabled (GsPluginLoader *plugin_loader,
 			      const gchar *plugin_name)
@@ -3430,9 +3292,6 @@ gs_plugin_loader_get_enabled (GsPluginLoader *plugin_loader,
 	return gs_plugin_get_enabled (plugin);
 }
 
-/**
- * gs_plugin_loader_status_changed_cb:
- */
 static void
 gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 				    GsApp *app,
@@ -3463,9 +3322,6 @@ gs_plugin_loader_status_changed_cb (GsPlugin *plugin,
 		       0, app, status);
 }
 
-/**
- * gs_plugin_loader_updates_changed_delay_cb:
- */
 static gboolean
 gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 {
@@ -3481,9 +3337,6 @@ gs_plugin_loader_updates_changed_delay_cb (gpointer user_data)
 	return FALSE;
 }
 
-/**
- * gs_plugin_loader_updates_changed_cb:
- */
 static void
 gs_plugin_loader_updates_changed_cb (GsPlugin *plugin,
 				     GsPluginLoader *plugin_loader)
@@ -3525,9 +3378,6 @@ gs_plugin_loader_reload_cb (GsPlugin *plugin,
 				       g_object_ref (plugin_loader));
 }
 
-/**
- * gs_plugin_loader_open_plugin:
- */
 static void
 gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 			      const gchar *filename)
@@ -3562,9 +3412,6 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	g_ptr_array_add (priv->plugins, plugin);
 }
 
-/**
- * gs_plugin_loader_set_scale:
- */
 void
 gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, gint scale)
 {
@@ -3580,9 +3427,6 @@ gs_plugin_loader_set_scale (GsPluginLoader *plugin_loader, gint scale)
 	}
 }
 
-/**
- * gs_plugin_loader_get_scale:
- */
 gint
 gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 {
@@ -3590,9 +3434,6 @@ gs_plugin_loader_get_scale (GsPluginLoader *plugin_loader)
 	return priv->scale;
 }
 
-/**
- * gs_plugin_loader_get_auth_by_id:
- */
 GsAuth *
 gs_plugin_loader_get_auth_by_id (GsPluginLoader *plugin_loader,
 				 const gchar *provider_id)
@@ -3609,9 +3450,6 @@ gs_plugin_loader_get_auth_by_id (GsPluginLoader *plugin_loader,
 	return NULL;
 }
 
-/**
- * gs_plugin_loader_set_location:
- */
 void
 gs_plugin_loader_set_location (GsPluginLoader *plugin_loader, const gchar *location)
 {
@@ -3631,9 +3469,6 @@ gs_plugin_loader_set_location (GsPluginLoader *plugin_loader, const gchar *locat
 	priv->location = g_build_filename (LIBDIR, filename, NULL);
 }
 
-/**
- * gs_plugin_loader_plugin_sort_fn:
- */
 static gint
 gs_plugin_loader_plugin_sort_fn (gconstpointer a, gconstpointer b)
 {
@@ -3914,9 +3749,6 @@ gs_plugin_loader_setup (GsPluginLoader *plugin_loader,
 	return TRUE;
 }
 
-/**
- * gs_plugin_loader_dump_state:
- **/
 void
 gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 {
@@ -3934,10 +3766,6 @@ gs_plugin_loader_dump_state (GsPluginLoader *plugin_loader)
 	}
 }
 
-/**
- * gs_plugin_loader_dispose:
- * @object: The object to dispose
- **/
 static void
 gs_plugin_loader_dispose (GObject *object)
 {
@@ -3961,10 +3789,6 @@ gs_plugin_loader_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->dispose (object);
 }
 
-/**
- * gs_plugin_loader_finalize:
- * @object: The object to finalize
- **/
 static void
 gs_plugin_loader_finalize (GObject *object)
 {
@@ -3980,10 +3804,6 @@ gs_plugin_loader_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_plugin_loader_parent_class)->finalize (object);
 }
 
-/**
- * gs_plugin_loader_class_init:
- * @klass: The GsPluginLoaderClass
- **/
 static void
 gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 {
@@ -4018,9 +3838,6 @@ gs_plugin_loader_class_init (GsPluginLoaderClass *klass)
 			      G_TYPE_NONE, 0);
 }
 
-/**
- * gs_plugin_loader_init:
- **/
 static void
 gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
@@ -4088,9 +3905,6 @@ gs_plugin_loader_new (void)
 	return GS_PLUGIN_LOADER (plugin_loader);
 }
 
-/**
- * gs_plugin_loader_app_installed_cb:
- **/
 static void
 gs_plugin_loader_app_installed_cb (GObject *source,
 				   GAsyncResult *res,
@@ -4111,9 +3925,6 @@ gs_plugin_loader_app_installed_cb (GObject *source,
 	}
 }
 
-/**
- * gs_plugin_loader_set_network_status:
- **/
 void
 gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 				     gboolean online)
@@ -4154,9 +3965,6 @@ gs_plugin_loader_set_network_status (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_run_refresh:
- **/
 static gboolean
 gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 			      guint cache_age,
@@ -4230,9 +4038,6 @@ gs_plugin_loader_run_refresh (GsPluginLoader *plugin_loader,
 	return TRUE;
 }
 
-/**
- * gs_plugin_loader_refresh_thread_cb:
- **/
 static void
 gs_plugin_loader_refresh_thread_cb (GTask *task,
 				    gpointer object,
@@ -4309,9 +4114,6 @@ gs_plugin_loader_refresh_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_file_to_app_thread_cb:
- **/
 static void
 gs_plugin_loader_file_to_app_thread_cb (GTask *task,
 					gpointer object,
@@ -4491,9 +4293,6 @@ gs_plugin_loader_file_to_app_finish (GsPluginLoader *plugin_loader,
 
 /******************************************************************************/
 
-/**
- * gs_plugin_loader_update_thread_cb:
- **/
 static void
 gs_plugin_loader_update_thread_cb (GTask *task,
 				   gpointer object,
@@ -4633,9 +4432,6 @@ gs_plugin_loader_update_async (GsPluginLoader *plugin_loader,
 	g_task_run_in_thread (task, gs_plugin_loader_update_thread_cb);
 }
 
-/**
- * gs_plugin_loader_update_finish:
- **/
 gboolean
 gs_plugin_loader_update_finish (GsPluginLoader *plugin_loader,
 				GAsyncResult *res,

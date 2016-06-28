@@ -57,9 +57,6 @@ typedef struct {
 	gboolean		 show_warning;
 } GsDbusHelperTask;
 
-/**
- * gs_dbus_helper_task_free:
- **/
 static void
 gs_dbus_helper_task_free (GsDbusHelperTask *dtask)
 {
@@ -69,9 +66,6 @@ gs_dbus_helper_task_free (GsDbusHelperTask *dtask)
 	g_free (dtask);
 }
 
-/**
- * gs_dbus_helper_task_set_interaction:
- **/
 static void
 gs_dbus_helper_task_set_interaction (GsDbusHelperTask *dtask, const gchar *interaction)
 {
@@ -107,17 +101,11 @@ gs_dbus_helper_task_set_interaction (GsDbusHelperTask *dtask, const gchar *inter
 	}
 }
 
-/**
- * gs_dbus_helper_progress_cb:
- **/
 static void
 gs_dbus_helper_progress_cb (PkProgress *progress, PkProgressType type, gpointer data)
 {
 }
 
-/**
- * gs_dbus_helper_query_is_installed_cb:
- **/
 static void
 gs_dbus_helper_query_is_installed_cb (GObject *source, GAsyncResult *res, gpointer data)
 {
@@ -159,9 +147,6 @@ out:
 	gs_dbus_helper_task_free (dtask);
 }
 
-/**
- * gs_dbus_helper_query_search_file_cb:
- **/
 static void
 gs_dbus_helper_query_search_file_cb (GObject *source, GAsyncResult *res, gpointer data)
 {

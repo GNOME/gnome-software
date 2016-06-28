@@ -51,9 +51,6 @@ struct _GsShellModerate
 
 G_DEFINE_TYPE (GsShellModerate, gs_shell_moderate, GS_TYPE_PAGE)
 
-/**
- * gs_shell_moderate_app_set_review_cb:
- **/
 static void
 gs_shell_moderate_app_set_review_cb (GObject *source,
 				     GAsyncResult *res,
@@ -135,9 +132,6 @@ gs_shell_moderate_add_app (GsShellModerate *self, GsApp *app)
 	gtk_widget_show (app_row);
 }
 
-/**
- * gs_shell_moderate_get_unvoted_reviews_cb:
- **/
 static void
 gs_shell_moderate_get_unvoted_reviews_cb (GObject *source_object,
 					  GAsyncResult *res,
@@ -175,9 +169,6 @@ gs_shell_moderate_get_unvoted_reviews_cb (GObject *source_object,
 	}
 }
 
-/**
- * gs_shell_moderate_load:
- */
 static void
 gs_shell_moderate_load (GsShellModerate *self)
 {
@@ -207,9 +198,6 @@ gs_shell_moderate_reload (GsPage *page)
 	gs_shell_moderate_load (self);
 }
 
-/**
- * gs_shell_moderate_switch_to:
- **/
 static void
 gs_shell_moderate_switch_to (GsPage *page, gboolean scroll_up)
 {
@@ -225,9 +213,6 @@ gs_shell_moderate_switch_to (GsPage *page, gboolean scroll_up)
 	gs_shell_moderate_load (self);
 }
 
-/**
- * gs_shell_moderate_list_header_func
- **/
 static void
 gs_shell_moderate_list_header_func (GtkListBoxRow *row,
 				     GtkListBoxRow *before,
@@ -243,9 +228,6 @@ gs_shell_moderate_list_header_func (GtkListBoxRow *row,
 	}
 }
 
-/**
- * gs_shell_moderate_setup:
- */
 void
 gs_shell_moderate_setup (GsShellModerate *self,
 			  GsShell *shell,
@@ -268,9 +250,6 @@ gs_shell_moderate_setup (GsShellModerate *self,
 	gs_page_setup (GS_PAGE (self), shell, plugin_loader, cancellable);
 }
 
-/**
- * gs_shell_moderate_dispose:
- **/
 static void
 gs_shell_moderate_dispose (GObject *object)
 {
@@ -286,9 +265,6 @@ gs_shell_moderate_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_moderate_parent_class)->dispose (object);
 }
 
-/**
- * gs_shell_moderate_class_init:
- **/
 static void
 gs_shell_moderate_class_init (GsShellModerateClass *klass)
 {
@@ -308,9 +284,6 @@ gs_shell_moderate_class_init (GsShellModerateClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellModerate, stack_install);
 }
 
-/**
- * gs_shell_moderate_init:
- **/
 static void
 gs_shell_moderate_init (GsShellModerate *self)
 {
@@ -323,9 +296,6 @@ gs_shell_moderate_init (GsShellModerate *self)
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
-/**
- * gs_shell_moderate_new:
- **/
 GsShellModerate *
 gs_shell_moderate_new (void)
 {

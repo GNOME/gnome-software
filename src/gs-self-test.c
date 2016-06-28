@@ -34,9 +34,6 @@
 #include "gs-plugin-loader-sync.h"
 #include "gs-utils.h"
 
-/**
- * gs_test_get_filename:
- **/
 static gchar *
 gs_test_get_filename (const gchar *filename)
 {

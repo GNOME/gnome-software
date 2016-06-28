@@ -33,9 +33,6 @@ struct _GsReviewBar
 
 G_DEFINE_TYPE (GsReviewBar, gs_review_bar, GTK_TYPE_BIN)
 
-/**
- * gs_review_bar_set_fraction:
- **/
 void
 gs_review_bar_set_fraction (GsReviewBar *bar, gdouble fraction)
 {
@@ -43,17 +40,11 @@ gs_review_bar_set_fraction (GsReviewBar *bar, gdouble fraction)
 	bar->fraction = fraction;
 }
 
-/**
- * gs_review_bar_init:
- **/
 static void
 gs_review_bar_init (GsReviewBar *bar)
 {
 }
 
-/**
- * gs_review_bar_draw:
- **/
 static gboolean
 gs_review_bar_draw (GtkWidget *widget, cairo_t *cr)
 {
@@ -83,9 +74,6 @@ gs_review_bar_draw (GtkWidget *widget, cairo_t *cr)
 	return GTK_WIDGET_CLASS (gs_review_bar_parent_class)->draw (widget, cr);
 }
 
-/**
- * gs_review_bar_class_init:
- **/
 static void
 gs_review_bar_class_init (GsReviewBarClass *klass)
 {
@@ -93,9 +81,6 @@ gs_review_bar_class_init (GsReviewBarClass *klass)
 	widget_class->draw = gs_review_bar_draw;
 }
 
-/**
- * gs_review_bar_new:
- **/
 GtkWidget *
 gs_review_bar_new (void)
 {

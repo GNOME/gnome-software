@@ -66,9 +66,6 @@ static void gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_l
 							GsShellInstalled *self);
 static void set_selection_mode (GsShellInstalled *self, gboolean selection_mode);
 
-/**
- * gs_shell_installed_invalidate:
- **/
 void
 gs_shell_installed_invalidate (GsShellInstalled *self)
 {
@@ -118,9 +115,6 @@ gs_shell_installed_app_removed (GsPage *page, GsApp *app)
 	}
 }
 
-/**
- * gs_shell_installed_app_remove_cb:
- **/
 static void
 gs_shell_installed_app_remove_cb (GsAppRow *app_row,
 				  GsShellInstalled *self)
@@ -142,9 +136,6 @@ gs_shell_installed_invalidate_sort_idle (gpointer user_data)
 	return G_SOURCE_REMOVE;
 }
 
-/**
- * gs_shell_installed_notify_state_changed_cb:
- **/
 static void
 gs_shell_installed_notify_state_changed_cb (GsApp *app,
 					    GParamSpec *pspec,
@@ -180,9 +171,6 @@ gs_shell_installed_add_app (GsShellInstalled *self, GsApp *app)
 	gtk_widget_show (app_row);
 }
 
-/**
- * gs_shell_installed_get_installed_cb:
- **/
 static void
 gs_shell_installed_get_installed_cb (GObject *source_object,
 				     GAsyncResult *res,
@@ -217,9 +205,6 @@ out:
 	gs_shell_installed_pending_apps_changed_cb (plugin_loader, self);
 }
 
-/**
- * gs_shell_installed_load:
- */
 static void
 gs_shell_installed_load (GsShellInstalled *self)
 {
@@ -268,9 +253,6 @@ gs_shell_update_button_select_visibility (GsShellInstalled *self)
 	gtk_widget_set_visible (self->button_select, show_button_select);
 }
 
-/**
- * gs_shell_installed_switch_to:
- **/
 static void
 gs_shell_installed_switch_to (GsPage *page, gboolean scroll_up)
 {
@@ -368,9 +350,6 @@ gs_shell_installed_get_app_sort_key (GsApp *app)
 	return g_string_free (key, FALSE);
 }
 
-/**
- * gs_shell_installed_sort_func:
- **/
 static gint
 gs_shell_installed_sort_func (GtkListBoxRow *a,
 			      GtkListBoxRow *b,
@@ -395,9 +374,6 @@ gs_shell_installed_sort_func (GtkListBoxRow *a,
 	return g_strcmp0 (key1, key2);
 }
 
-/**
- * gs_shell_installed_is_addon_id_kind
- **/
 static gboolean
 gs_shell_installed_is_addon_id_kind (GsApp *app)
 {
@@ -410,9 +386,6 @@ gs_shell_installed_is_addon_id_kind (GsApp *app)
 	return TRUE;
 }
 
-/**
- * gs_shell_installed_list_header_func
- **/
 static void
 gs_shell_installed_list_header_func (GtkListBoxRow *row,
 				     GtkListBoxRow *before,
@@ -473,9 +446,6 @@ gs_shell_installed_has_app (GsShellInstalled *self,
 	return ret;
 }
 
-/**
- * gs_shell_installed_pending_apps_changed_cb:
- */
 static void
 gs_shell_installed_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 					    GsShellInstalled *self)
@@ -702,9 +672,6 @@ gs_shell_settings_changed_cb (GsShellInstalled *self,
 	}
 }
 
-/**
- * gs_shell_installed_setup:
- */
 void
 gs_shell_installed_setup (GsShellInstalled *self,
 			  GsShell *shell,
@@ -767,9 +734,6 @@ gs_shell_installed_setup (GsShellInstalled *self,
 	               cancellable);
 }
 
-/**
- * gs_shell_installed_dispose:
- **/
 static void
 gs_shell_installed_dispose (GObject *object)
 {
@@ -786,9 +750,6 @@ gs_shell_installed_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_installed_parent_class)->dispose (object);
 }
 
-/**
- * gs_shell_installed_class_init:
- **/
 static void
 gs_shell_installed_class_init (GsShellInstalledClass *klass)
 {
@@ -813,9 +774,6 @@ gs_shell_installed_class_init (GsShellInstalledClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellInstalled, stack_install);
 }
 
-/**
- * gs_shell_installed_init:
- **/
 static void
 gs_shell_installed_init (GsShellInstalled *self)
 {
@@ -830,9 +788,6 @@ gs_shell_installed_init (GsShellInstalled *self)
 				  self);
 }
 
-/**
- * gs_shell_installed_new:
- **/
 GsShellInstalled *
 gs_shell_installed_new (void)
 {

@@ -71,9 +71,6 @@ app_tile_clicked (GsAppTile *tile, gpointer data)
 	gs_shell_show_app (self->shell, app);
 }
 
-/**
- * gs_shell_category_get_apps_cb:
- **/
 static void
 gs_shell_category_get_apps_cb (GObject *source_object,
 			       GAsyncResult *res,

@@ -35,9 +35,6 @@ struct _GsLanguage
 
 G_DEFINE_TYPE (GsLanguage, gs_language, G_TYPE_OBJECT)
 
-/**
- * gs_language_parser_start_element:
- **/
 static void
 gs_language_parser_start_element (GMarkupParseContext *context, const gchar *element_name,
                                   const gchar **attribute_names, const gchar **attribute_values,
@@ -132,19 +129,12 @@ gs_language_populate (GsLanguage *language, GError **error)
 	return TRUE;;
 }
 
-/**
- * gs_language_iso639_to_language:
- **/
 gchar *
 gs_language_iso639_to_language (GsLanguage *language, const gchar *iso639)
 {
 	return g_strdup (g_hash_table_lookup (language->hash, iso639));
 }
 
-/**
- * gs_language_finalize:
- * @object: The object to finalize
- **/
 static void
 gs_language_finalize (GObject *object)
 {
@@ -159,20 +149,12 @@ gs_language_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_language_parent_class)->finalize (object);
 }
 
-/**
- * gs_language_init:
- * @language: This class instance
- **/
 static void
 gs_language_init (GsLanguage *language)
 {
 	language->hash = g_hash_table_new_full (g_str_hash, g_str_equal, (GDestroyNotify) g_free, (GDestroyNotify) g_free);
 }
 
-/**
- * gs_language_class_init:
- * @klass: The GsLanguageClass
- **/
 static void
 gs_language_class_init (GsLanguageClass *klass)
 {

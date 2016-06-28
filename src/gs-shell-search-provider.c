@@ -57,9 +57,6 @@ pending_search_free (PendingSearch *search)
 	g_slice_free (PendingSearch, search);
 }
 
-/**
- * search_sort_by_kudo_cb:
- **/
 static gint
 search_sort_by_kudo_cb (GsApp *app1, GsApp *app2, gpointer user_data)
 {

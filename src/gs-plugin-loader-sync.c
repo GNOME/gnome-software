@@ -23,9 +23,6 @@
 
 #include "gs-plugin-loader-sync.h"
 
-/**
- * gs_plugin_loader_get_app_by_id:
- */
 GsApp *
 gs_plugin_loader_get_app_by_id (GsPluginLoader *plugin_loader,
 				const gchar *id,
@@ -66,9 +63,6 @@ gs_plugin_loader_get_installed_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_get_installed:
- **/
 GsAppList *
 gs_plugin_loader_get_installed (GsPluginLoader *plugin_loader,
 				GsPluginRefineFlags flags,
@@ -111,9 +105,6 @@ gs_plugin_loader_search_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_search:
- **/
 GsAppList *
 gs_plugin_loader_search (GsPluginLoader *plugin_loader,
 			 const gchar *value,
@@ -158,9 +149,6 @@ gs_plugin_loader_get_updates_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_get_updates:
- **/
 GsAppList *
 gs_plugin_loader_get_updates (GsPluginLoader *plugin_loader,
 			      GsPluginRefineFlags flags,
@@ -203,9 +191,6 @@ gs_plugin_loader_get_distro_upgrades_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_get_distro_upgrades:
- **/
 GsAppList *
 gs_plugin_loader_get_distro_upgrades (GsPluginLoader *plugin_loader,
 			      GsPluginRefineFlags flags,
@@ -248,9 +233,6 @@ gs_plugin_loader_get_sources_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_get_sources:
- **/
 GsAppList *
 gs_plugin_loader_get_sources (GsPluginLoader *plugin_loader,
 			      GsPluginRefineFlags flags,
@@ -293,9 +275,6 @@ gs_plugin_loader_get_popular_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_get_popular:
- **/
 GsAppList *
 gs_plugin_loader_get_popular (GsPluginLoader *plugin_loader,
 			      GsPluginRefineFlags flags,
@@ -338,9 +317,6 @@ gs_plugin_loader_get_featured_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_get_featured:
- **/
 GsAppList *
 gs_plugin_loader_get_featured (GsPluginLoader *plugin_loader,
 			       GsPluginRefineFlags flags,
@@ -383,9 +359,6 @@ gs_plugin_loader_get_categories_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_get_categories:
- **/
 GPtrArray *
 gs_plugin_loader_get_categories (GsPluginLoader *plugin_loader,
 				 GsPluginRefineFlags flags,
@@ -428,9 +401,6 @@ gs_plugin_loader_get_category_apps_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_get_category_apps:
- **/
 GsAppList *
 gs_plugin_loader_get_category_apps (GsPluginLoader *plugin_loader,
 				    GsCategory *category,
@@ -464,9 +434,6 @@ gs_plugin_loader_get_category_apps (GsPluginLoader *plugin_loader,
 	return helper.list;
 }
 
-/**
- * gs_plugin_loader_app_refine_finish_sync:
- **/
 static void
 gs_plugin_loader_app_refine_finish_sync (GsPluginLoader *plugin_loader,
 					 GAsyncResult *res,
@@ -478,9 +445,6 @@ gs_plugin_loader_app_refine_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_app_refine:
- **/
 gboolean
 gs_plugin_loader_app_refine (GsPluginLoader *plugin_loader,
 			     GsApp *app,
@@ -514,9 +478,6 @@ gs_plugin_loader_app_refine (GsPluginLoader *plugin_loader,
 	return helper.ret;
 }
 
-/**
- * gs_plugin_loader_app_action_finish_sync:
- **/
 static void
 gs_plugin_loader_app_action_finish_sync (GsPluginLoader *plugin_loader,
 					 GAsyncResult *res,
@@ -528,9 +489,6 @@ gs_plugin_loader_app_action_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_app_action:
- **/
 gboolean
 gs_plugin_loader_app_action (GsPluginLoader *plugin_loader,
 			     GsApp *app,
@@ -564,9 +522,6 @@ gs_plugin_loader_app_action (GsPluginLoader *plugin_loader,
 	return helper.ret;
 }
 
-/**
- * gs_plugin_loader_review_action_finish_sync:
- **/
 static void
 gs_plugin_loader_review_action_finish_sync (GsPluginLoader *plugin_loader,
 					    GAsyncResult *res,
@@ -578,9 +533,6 @@ gs_plugin_loader_review_action_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_review_action:
- **/
 gboolean
 gs_plugin_loader_review_action (GsPluginLoader *plugin_loader,
 				GsApp *app,
@@ -616,9 +568,6 @@ gs_plugin_loader_review_action (GsPluginLoader *plugin_loader,
 	return helper.ret;
 }
 
-/**
- * gs_plugin_loader_auth_action_finish_sync:
- **/
 static void
 gs_plugin_loader_auth_action_finish_sync (GsPluginLoader *plugin_loader,
 					  GAsyncResult *res,
@@ -630,9 +579,6 @@ gs_plugin_loader_auth_action_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_auth_action:
- **/
 gboolean
 gs_plugin_loader_auth_action (GsPluginLoader *plugin_loader,
 			      GsAuth *auth,
@@ -666,9 +612,6 @@ gs_plugin_loader_auth_action (GsPluginLoader *plugin_loader,
 	return helper.ret;
 }
 
-/**
- * gs_plugin_loader_refresh_finish_sync:
- **/
 static void
 gs_plugin_loader_refresh_finish_sync (GsPluginLoader *plugin_loader,
 				      GAsyncResult *res,
@@ -680,9 +623,6 @@ gs_plugin_loader_refresh_finish_sync (GsPluginLoader *plugin_loader,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_refresh:
- **/
 gboolean
 gs_plugin_loader_refresh (GsPluginLoader *plugin_loader,
 			  guint cache_age,
@@ -729,9 +669,6 @@ gs_plugin_loader_file_to_app_finish_sync (GObject *source_object,
 	g_main_loop_quit (helper->loop);
 }
 
-/**
- * gs_plugin_loader_file_to_app:
- **/
 GsApp *
 gs_plugin_loader_file_to_app (GsPluginLoader *plugin_loader,
 			      GFile *file,

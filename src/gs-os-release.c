@@ -52,9 +52,6 @@ static void gs_os_release_initable_iface_init (GInitableIface *iface);
 G_DEFINE_TYPE_WITH_CODE (GsOsRelease, gs_os_release, G_TYPE_OBJECT,
 			 G_IMPLEMENT_INTERFACE(G_TYPE_INITABLE, gs_os_release_initable_iface_init))
 
-/**
- * gs_os_release_initable_init:
- **/
 static gboolean
 gs_os_release_initable_init (GInitable *initable,
 			     GCancellable *cancellable,
@@ -198,9 +195,6 @@ gs_os_release_get_pretty_name (GsOsRelease *os_release)
 	return os_release->pretty_name;
 }
 
-/**
- * gs_os_release_finalize:
- **/
 static void
 gs_os_release_finalize (GObject *object)
 {
@@ -213,9 +207,6 @@ gs_os_release_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_os_release_parent_class)->finalize (object);
 }
 
-/**
- * gs_os_release_class_init:
- **/
 static void
 gs_os_release_class_init (GsOsReleaseClass *klass)
 {
@@ -223,18 +214,12 @@ gs_os_release_class_init (GsOsReleaseClass *klass)
 	object_class->finalize = gs_os_release_finalize;
 }
 
-/**
- * gs_os_release_initable_iface_init:
- **/
 static void
 gs_os_release_initable_iface_init (GInitableIface *iface)
 {
 	iface->init = gs_os_release_initable_init;
 }
 
-/**
- * gs_os_release_init:
- **/
 static void
 gs_os_release_init (GsOsRelease *os_release)
 {

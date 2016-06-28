@@ -102,9 +102,6 @@ modal_dialog_unmapped_cb (GtkWidget *dialog,
 	g_ptr_array_remove (priv->modal_dialogs, dialog);
 }
 
-/**
- * gs_shell_modal_dialog_present:
- **/
 void
 gs_shell_modal_dialog_present (GsShell *shell, GtkDialog *dialog)
 {
@@ -132,9 +129,6 @@ gs_shell_modal_dialog_present (GsShell *shell, GtkDialog *dialog)
 	gtk_window_present (GTK_WINDOW (dialog));
 }
 
-/**
- * gs_shell_is_active:
- **/
 gboolean
 gs_shell_is_active (GsShell *shell)
 {
@@ -142,9 +136,6 @@ gs_shell_is_active (GsShell *shell)
 	return gtk_window_is_active (priv->main_window);
 }
 
-/**
- * gs_shell_get_window:
- **/
 GtkWindow *
 gs_shell_get_window (GsShell *shell)
 {
@@ -152,9 +143,6 @@ gs_shell_get_window (GsShell *shell)
 	return priv->main_window;
 }
 
-/**
- * gs_shell_activate:
- **/
 void
 gs_shell_activate (GsShell *shell)
 {
@@ -331,9 +319,6 @@ gs_shell_change_mode (GsShell *shell,
 		g_ptr_array_set_size (priv->modal_dialogs, 0);
 }
 
-/**
- * gs_shell_overview_button_cb:
- **/
 static void
 gs_shell_overview_button_cb (GtkWidget *widget, GsShell *shell)
 {
@@ -397,9 +382,6 @@ free_back_entry (BackEntry *entry)
 	g_free (entry);
 }
 
-/**
- * gs_shell_back_button_cb:
- **/
 static void
 gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 {
@@ -566,9 +548,6 @@ gs_shell_reload_cb (GsPluginLoader *plugin_loader, GsShell *shell)
 	gs_page_reload (GS_PAGE (priv->shell_updates));
 }
 
-/**
- * gs_shell_main_window_mapped_cb:
- */
 static void
 gs_shell_main_window_mapped_cb (GtkWidget *widget, GsShell *shell)
 {
@@ -601,9 +580,6 @@ gs_shell_monitor_permission (GsShell *shell)
 				  G_CALLBACK (on_permission_changed), shell);
 }
 
-/**
- * gs_shell_setup:
- */
 void
 gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *cancellable)
 {
@@ -740,9 +716,6 @@ gs_shell_setup (GsShell *shell, GsPluginLoader *plugin_loader, GCancellable *can
 			  G_CALLBACK (initial_overview_load_done), shell);
 }
 
-/**
- * gs_shell_set_mode:
- **/
 void
 gs_shell_set_mode (GsShell *shell, GsShellMode mode)
 {
@@ -858,9 +831,6 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 			      (gpointer) search, TRUE);
 }
 
-/**
- * gs_shell_dispose:
- **/
 static void
 gs_shell_dispose (GObject *object)
 {
@@ -881,9 +851,6 @@ gs_shell_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_parent_class)->dispose (object);
 }
 
-/**
- * gs_shell_class_init:
- **/
 static void
 gs_shell_class_init (GsShellClass *klass)
 {
@@ -898,9 +865,6 @@ gs_shell_class_init (GsShellClass *klass)
 			      G_TYPE_NONE, 0);
 }
 
-/**
- * gs_shell_init:
- **/
 static void
 gs_shell_init (GsShell *shell)
 {
@@ -911,9 +875,6 @@ gs_shell_init (GsShell *shell)
 	priv->modal_dialogs = g_ptr_array_new_with_free_func ((GDestroyNotify) gtk_widget_destroy);
 }
 
-/**
- * gs_shell_new:
- **/
 GsShell *
 gs_shell_new (void)
 {

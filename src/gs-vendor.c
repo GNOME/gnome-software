@@ -35,9 +35,6 @@ struct _GsVendor
 G_DEFINE_TYPE (GsVendor, gs_vendor, G_TYPE_OBJECT)
 
 #ifdef HAVE_PACKAGEKIT
-/**
- * gs_vendor_type_to_string:
- **/
 static const gchar *
 gs_vendor_type_to_string (GsVendorUrlType type)
 {
@@ -53,9 +50,6 @@ gs_vendor_type_to_string (GsVendorUrlType type)
 }
 #endif
 
-/**
- * gs_vendor_get_not_found_url:
- **/
 gchar *
 gs_vendor_get_not_found_url (GsVendor *vendor, GsVendorUrlType type)
 {
@@ -99,10 +93,6 @@ out:
 #endif
 }
 
-/**
- * gs_vendor_init:
- * @vendor: This class instance
- **/
 static void
 gs_vendor_init (GsVendor *vendor)
 {
@@ -117,10 +107,6 @@ gs_vendor_init (GsVendor *vendor)
 #endif
 }
 
-/**
- * gs_vendor_finalize:
- * @object: The object to finalize
- **/
 static void
 gs_vendor_finalize (GObject *object)
 {
@@ -132,10 +118,6 @@ gs_vendor_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_vendor_parent_class)->finalize (object);
 }
 
-/**
- * gs_vendor_class_init:
- * @klass: The GsVendorClass
- **/
 static void
 gs_vendor_class_init (GsVendorClass *klass)
 {

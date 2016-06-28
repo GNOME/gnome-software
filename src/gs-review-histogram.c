@@ -52,9 +52,6 @@ set_label (GtkWidget *label, guint value)
 	gtk_label_set_text (GTK_LABEL (label), text);
 }
 
-/**
- * gs_review_histogram_set_ratings:
- **/
 void
 gs_review_histogram_set_ratings (GsReviewHistogram *histogram,
 				 GArray *review_ratings)
@@ -117,9 +114,6 @@ gs_review_histogram_class_init (GsReviewHistogramClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewHistogram, label_total);
 }
 
-/**
- * gs_review_histogram_new:
- **/
 GtkWidget *
 gs_review_histogram_new (void)
 {

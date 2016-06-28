@@ -30,9 +30,6 @@
 #include "gs-plugin-loader.h"
 #include "gs-plugin-loader-sync.h"
 
-/**
- * gs_cmd_show_results_apps:
- **/
 static void
 gs_cmd_show_results_apps (GsAppList *list)
 {
@@ -57,9 +54,6 @@ gs_cmd_show_results_apps (GsAppList *list)
 	}
 }
 
-/**
- * gs_cmd_pad_spaces:
- **/
 static gchar *
 gs_cmd_pad_spaces (const gchar *text, guint length)
 {
@@ -72,9 +66,6 @@ gs_cmd_pad_spaces (const gchar *text, guint length)
 	return g_string_free (str, FALSE);
 }
 
-/**
- * gs_cmd_show_results_categories:
- **/
 static void
 gs_cmd_show_results_categories (GPtrArray *list)
 {
@@ -106,9 +97,6 @@ gs_cmd_show_results_categories (GPtrArray *list)
 	}
 }
 
-/**
- * gs_cmd_refine_flag_from_string:
- **/
 static GsPluginRefineFlags
 gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 {
@@ -157,9 +145,6 @@ gs_cmd_refine_flag_from_string (const gchar *flag, GError **error)
 	return 0;
 }
 
-/**
- * gs_cmd_parse_refine_flags:
- **/
 static guint64
 gs_cmd_parse_refine_flags (const gchar *extra, GError **error)
 {
@@ -181,9 +166,6 @@ gs_cmd_parse_refine_flags (const gchar *extra, GError **error)
 	return refine_flags;
 }
 
-/**
- * gs_cmd_refresh_flag_from_string:
- **/
 static GsPluginRefreshFlags
 gs_cmd_refresh_flag_from_string (const gchar *flag)
 {

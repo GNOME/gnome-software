@@ -55,9 +55,6 @@ struct _GsScreenshotImage
 
 G_DEFINE_TYPE (GsScreenshotImage, gs_screenshot_image, GTK_TYPE_BIN)
 
-/**
- * gs_screenshot_image_get_screenshot:
- **/
 AsScreenshot *
 gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
 {
@@ -65,9 +62,6 @@ gs_screenshot_image_get_screenshot (GsScreenshotImage *ssimg)
 	return ssimg->screenshot;
 }
 
-/**
- * gs_screenshot_image_set_error:
- **/
 static void
 gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 {
@@ -82,9 +76,6 @@ gs_screenshot_image_set_error (GsScreenshotImage *ssimg, const gchar *message)
 		gtk_widget_show (ssimg->label_error);
 }
 
-/**
- * gs_screenshot_image_get_desktop_pixbuf:
- **/
 static GdkPixbuf *
 gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 {
@@ -101,9 +92,6 @@ gs_screenshot_image_get_desktop_pixbuf (GsScreenshotImage *ssimg)
 					  ssimg->width, ssimg->height);
 }
 
-/**
- * gs_screenshot_image_use_desktop_background:
- **/
 static gboolean
 gs_screenshot_image_use_desktop_background (GsScreenshotImage *ssimg, GdkPixbuf *pixbuf)
 {
@@ -122,9 +110,6 @@ gs_screenshot_image_use_desktop_background (GsScreenshotImage *ssimg, GdkPixbuf 
 	return (as_image_get_alpha_flags (im) & AS_IMAGE_ALPHA_FLAG_INTERNAL) > 0;
 }
 
-/**
- * as_screenshot_show_image:
- **/
 static void
 as_screenshot_show_image (GsScreenshotImage *ssimg)
 {
@@ -178,9 +163,6 @@ as_screenshot_show_image (GsScreenshotImage *ssimg)
 	gtk_widget_show (GTK_WIDGET (ssimg));
 }
 
-/**
- * gs_screenshot_image_show_blurred:
- **/
 static void
 gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 				  const gchar *filename_thumb)
@@ -208,9 +190,6 @@ gs_screenshot_image_show_blurred (GsScreenshotImage *ssimg,
 	}
 }
 
-/**
- * gs_screenshot_image_complete_cb:
- **/
 static void
 gs_screenshot_image_complete_cb (SoupSession *session,
 				 SoupMessage *msg,
@@ -281,9 +260,6 @@ gs_screenshot_image_complete_cb (SoupSession *session,
 	as_screenshot_show_image (ssimg);
 }
 
-/**
- * gs_screenshot_image_set_screenshot:
- **/
 void
 gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 				    AsScreenshot *screenshot)
@@ -298,9 +274,6 @@ gs_screenshot_image_set_screenshot (GsScreenshotImage *ssimg,
 	ssimg->screenshot = g_object_ref (screenshot);
 }
 
-/**
- * gs_screenshot_image_set_size:
- **/
 void
 gs_screenshot_image_set_size (GsScreenshotImage *ssimg,
 			      guint width, guint height)
@@ -314,9 +287,6 @@ gs_screenshot_image_set_size (GsScreenshotImage *ssimg,
 	gtk_widget_set_size_request (ssimg->stack, width, height);
 }
 
-/**
- * gs_screenshot_image_set_use_desktop_background:
- **/
 void
 gs_screenshot_image_set_use_desktop_background (GsScreenshotImage *ssimg,
                                                 gboolean use_desktop_background)
@@ -325,9 +295,6 @@ gs_screenshot_image_set_use_desktop_background (GsScreenshotImage *ssimg,
 	ssimg->use_desktop_background = use_desktop_background;
 }
 
-/**
- * gs_screenshot_get_cachefn_for_url:
- **/
 static gchar *
 gs_screenshot_get_cachefn_for_url (const gchar *url)
 {
@@ -338,9 +305,6 @@ gs_screenshot_get_cachefn_for_url (const gchar *url)
 	return g_strdup_printf ("%s-%s", checksum, basename);
 }
 
-/**
- * gs_screenshot_image_load_async:
- **/
 void
 gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 				GCancellable *cancellable)
@@ -478,9 +442,6 @@ gs_screenshot_image_load_async (GsScreenshotImage *ssimg,
 	soup_uri_free (base_uri);
 }
 
-/**
- * gs_screenshot_image_destroy:
- **/
 static void
 gs_screenshot_image_destroy (GtkWidget *widget)
 {
@@ -500,9 +461,6 @@ gs_screenshot_image_destroy (GtkWidget *widget)
 	GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->destroy (widget);
 }
 
-/**
- * gs_screenshot_image_init:
- **/
 static void
 gs_screenshot_image_init (GsScreenshotImage *ssimg)
 {
@@ -520,9 +478,6 @@ gs_screenshot_image_init (GsScreenshotImage *ssimg)
 	}
 }
 
-/**
- * gs_screenshot_image_draw:
- **/
 static gboolean
 gs_screenshot_image_draw (GtkWidget *widget, cairo_t *cr)
 {
@@ -541,9 +496,6 @@ gs_screenshot_image_draw (GtkWidget *widget, cairo_t *cr)
 	return GTK_WIDGET_CLASS (gs_screenshot_image_parent_class)->draw (widget, cr);
 }
 
-/**
- * gs_screenshot_image_class_init:
- **/
 static void
 gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 {
@@ -562,9 +514,6 @@ gs_screenshot_image_class_init (GsScreenshotImageClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsScreenshotImage, label_error);
 }
 
-/**
- * gs_screenshot_image_new:
- **/
 GtkWidget *
 gs_screenshot_image_new (SoupSession *session)
 {

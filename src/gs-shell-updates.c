@@ -107,27 +107,18 @@ enum {
 
 G_DEFINE_TYPE (GsShellUpdates, gs_shell_updates, GS_TYPE_PAGE)
 
-/**
- * gs_shell_updates_set_flag:
- **/
 static void
 gs_shell_updates_set_flag (GsShellUpdates *self, GsShellUpdatesFlags flag)
 {
 	self->result_flags |= flag;
 }
 
-/**
- * gs_shell_updates_clear_flag:
- **/
 static void
 gs_shell_updates_clear_flag (GsShellUpdates *self, GsShellUpdatesFlags flag)
 {
 	self->result_flags &= ~flag;
 }
 
-/**
- * gs_shell_updates_state_to_string:
- **/
 static const gchar *
 gs_shell_updates_state_to_string (GsShellUpdatesState state)
 {
@@ -146,9 +137,6 @@ gs_shell_updates_state_to_string (GsShellUpdatesState state)
 	return NULL;
 }
 
-/**
- * gs_shell_updates_invalidate:
- **/
 static void
 gs_shell_updates_invalidate (GsShellUpdates *self)
 {
@@ -238,9 +226,6 @@ gs_shell_updates_last_checked_time_string (GsShellUpdates *self)
 	return time_string;
 }
 
-/**
- * gs_shell_updates_get_state_string:
- **/
 static const gchar *
 gs_shell_updates_get_state_string (GsPluginStatus status)
 {
@@ -253,9 +238,6 @@ gs_shell_updates_get_state_string (GsPluginStatus status)
 	return _("Looking for new updates…");
 }
 
-/**
- * gs_shell_updates_update_ui_state:
- **/
 static void
 gs_shell_updates_update_ui_state (GsShellUpdates *self)
 {
@@ -439,9 +421,6 @@ gs_shell_updates_update_ui_state (GsShellUpdates *self)
 	}
 }
 
-/**
- * gs_shell_updates_set_state:
- **/
 static void
 gs_shell_updates_set_state (GsShellUpdates *self, GsShellUpdatesState state)
 {
@@ -454,9 +433,6 @@ gs_shell_updates_set_state (GsShellUpdates *self, GsShellUpdatesState state)
 	gs_shell_updates_update_ui_state (self);
 }
 
-/**
- * gs_shell_updates_notify_network_state_cb:
- **/
 static void
 gs_shell_updates_notify_network_state_cb (GNetworkMonitor *network_monitor,
 					  gboolean available,
@@ -465,9 +441,6 @@ gs_shell_updates_notify_network_state_cb (GNetworkMonitor *network_monitor,
 	gs_shell_updates_update_ui_state (self);
 }
 
-/**
- * gs_shell_updates_get_updates_cb:
- **/
 static void
 gs_shell_updates_get_updates_cb (GsPluginLoader *plugin_loader,
 				 GAsyncResult *res,
@@ -584,9 +557,6 @@ gs_shell_updates_get_upgrades_cb (GObject *source_object,
 		gs_shell_updates_set_state (self, GS_SHELL_UPDATES_STATE_IDLE);
 }
 
-/**
- * gs_shell_updates_load:
- */
 static void
 gs_shell_updates_load (GsShellUpdates *self)
 {
@@ -619,9 +589,6 @@ gs_shell_updates_load (GsShellUpdates *self)
 	}
 }
 
-/**
- * gs_shell_updates_reload:
- */
 static void
 gs_shell_updates_reload (GsPage *page)
 {
@@ -630,9 +597,6 @@ gs_shell_updates_reload (GsPage *page)
 	gs_shell_updates_load (self);
 }
 
-/**
- * gs_shell_updates_switch_to:
- **/
 static void
 gs_shell_updates_switch_to (GsPage *page,
 			    gboolean scroll_up)
@@ -684,9 +648,6 @@ show_update_details (GsApp *app, GsShellUpdates *self)
 				  G_CALLBACK (gtk_widget_destroy), dialog);
 }
 
-/**
- * gs_shell_updates_activated_cb:
- **/
 static void
 gs_shell_updates_activated_cb (GtkListBox *list_box,
 			       GtkListBoxRow *row,
@@ -699,9 +660,6 @@ gs_shell_updates_activated_cb (GtkListBox *list_box,
 	show_update_details (app, self);
 }
 
-/**
- * gs_shell_updates_button_clicked_cb:
- **/
 static void
 gs_shell_updates_button_clicked_cb (GsUpdateList *update_list,
 				    GsApp *app,
@@ -711,9 +669,6 @@ gs_shell_updates_button_clicked_cb (GsUpdateList *update_list,
 		gs_page_update_app (GS_PAGE (self), app);
 }
 
-/**
- * gs_shell_updates_refresh_cb:
- **/
 static void
 gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 			     GAsyncResult *res,
@@ -751,9 +706,6 @@ gs_shell_updates_refresh_cb (GsPluginLoader *plugin_loader,
 	gs_page_switch_to (GS_PAGE (self), TRUE);
 }
 
-/**
- * gs_shell_updates_get_new_updates:
- **/
 static void
 gs_shell_updates_get_new_updates (GsShellUpdates *self)
 {
@@ -776,9 +728,6 @@ gs_shell_updates_get_new_updates (GsShellUpdates *self)
 					self);
 }
 
-/**
- * gs_shell_updates_show_network_settings:
- **/
 static void
 gs_shell_updates_show_network_settings (GsShellUpdates *self)
 {
@@ -787,9 +736,6 @@ gs_shell_updates_show_network_settings (GsShellUpdates *self)
 		g_warning ("Failed to open the control center: %s", error->message);
 }
 
-/**
- * gs_shell_updates_refresh_confirm_cb:
- **/
 static void
 gs_shell_updates_refresh_confirm_cb (GtkDialog *dialog,
 				     GtkResponseType response_type,
@@ -816,9 +762,6 @@ gs_shell_updates_refresh_confirm_cb (GtkDialog *dialog,
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
-/**
- * gs_shell_updates_button_network_settings_cb:
- **/
 static void
 gs_shell_updates_button_network_settings_cb (GtkWidget *widget,
 					     GsShellUpdates *self)
@@ -826,9 +769,6 @@ gs_shell_updates_button_network_settings_cb (GtkWidget *widget,
 	gs_shell_updates_show_network_settings (self);
 }
 
-/**
- * gs_shell_updates_button_mobile_refresh_cb:
- **/
 static void
 gs_shell_updates_button_mobile_refresh_cb (GtkWidget *widget,
 					   GsShellUpdates *self)
@@ -837,9 +777,6 @@ gs_shell_updates_button_mobile_refresh_cb (GtkWidget *widget,
 	gs_shell_updates_get_new_updates (self);
 }
 
-/**
- * gs_shell_updates_button_refresh_cb:
- **/
 static void
 gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 				    GsShellUpdates *self)
@@ -918,9 +855,6 @@ gs_shell_updates_button_refresh_cb (GtkWidget *widget,
 	}
 }
 
-/**
- * gs_shell_updates_pending_apps_changed_cb:
- */
 static void
 gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 					  GsShellUpdates *self)
@@ -928,9 +862,6 @@ gs_shell_updates_pending_apps_changed_cb (GsPluginLoader *plugin_loader,
 	gs_shell_updates_invalidate (self);
 }
 
-/**
- * cancel_trigger_failed_cb:
- **/
 static void
 cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
@@ -942,9 +873,6 @@ cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data
 	}
 }
 
-/**
- * gs_shell_updates_reboot_failed_cb:
- **/
 static void
 gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
@@ -973,9 +901,6 @@ gs_shell_updates_reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer 
 					   self);
 }
 
-/**
- * gs_shell_updates_perform_update_cb:
- **/
 static void
 gs_shell_updates_perform_update_cb (GsPluginLoader *plugin_loader,
                                     GAsyncResult *res,
@@ -1243,9 +1168,6 @@ gs_shell_updates_changed_cb (GsPluginLoader *plugin_loader,
 	gs_shell_updates_reload (GS_PAGE (self));
 }
 
-/**
- * gs_shell_updates_status_changed_cb:
- **/
 static void
 gs_shell_updates_status_changed_cb (GsPluginLoader *plugin_loader,
 				    GsApp *app,
@@ -1397,9 +1319,6 @@ gs_shell_updates_setup (GsShellUpdates *self,
 	               cancellable);
 }
 
-/**
- * gs_shell_updates_dispose:
- **/
 static void
 gs_shell_updates_dispose (GObject *object)
 {
@@ -1423,9 +1342,6 @@ gs_shell_updates_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_updates_parent_class)->dispose (object);
 }
 
-/**
- * gs_shell_updates_class_init:
- **/
 static void
 gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 {
@@ -1453,9 +1369,6 @@ gs_shell_updates_class_init (GsShellUpdatesClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellUpdates, upgrade_banner);
 }
 
-/**
- * gs_shell_updates_init:
- **/
 static void
 gs_shell_updates_init (GsShellUpdates *self)
 {
@@ -1473,9 +1386,6 @@ gs_shell_updates_init (GsShellUpdates *self)
 		self->ampm_available = TRUE;
 }
 
-/**
- * gs_shell_updates_new:
- **/
 GsShellUpdates *
 gs_shell_updates_new (void)
 {

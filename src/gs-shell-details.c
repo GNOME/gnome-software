@@ -123,9 +123,6 @@ struct _GsShellDetails
 
 G_DEFINE_TYPE (GsShellDetails, gs_shell_details, GS_TYPE_PAGE)
 
-/**
- * gs_shell_details_set_state:
- **/
 static void
 gs_shell_details_set_state (GsShellDetails *self,
 			    GsShellDetailsState state)
@@ -210,9 +207,6 @@ gs_shell_details_update_shortcut_button (GsShellDetails *self)
 	}
 }
 
-/**
- * gs_shell_details_switch_to:
- **/
 static void
 gs_shell_details_switch_to (GsPage *page, gboolean scroll_up)
 {
@@ -456,9 +450,6 @@ gs_shell_details_switch_to_idle (gpointer user_data)
 	return G_SOURCE_REMOVE;
 }
 
-/**
- * gs_shell_details_notify_state_changed_cb:
- **/
 static void
 gs_shell_details_notify_state_changed_cb (GsApp *app,
 					  GParamSpec *pspec,
@@ -489,9 +480,6 @@ gs_shell_details_screenshot_selected_cb (GtkListBox *list,
 	gs_screenshot_image_load_async (ssmain, NULL);
 }
 
-/**
- * gs_shell_details_refresh_screenshots:
- **/
 static void
 gs_shell_details_refresh_screenshots (GsShellDetails *self)
 {
@@ -594,18 +582,12 @@ gs_shell_details_refresh_screenshots (GsShellDetails *self)
 			  self);
 }
 
-/**
- * gs_shell_details_website_cb:
- **/
 static void
 gs_shell_details_website_cb (GtkWidget *widget, GsShellDetails *self)
 {
 	gs_app_show_url (self->app, AS_URL_KIND_HOMEPAGE);
 }
 
-/**
- * gs_shell_details_set_description:
- **/
 static void
 gs_shell_details_set_description (GsShellDetails *self, const gchar *tmp)
 {
@@ -673,9 +655,6 @@ gs_shell_details_history_cb (GtkLabel *label,
 	return TRUE;
 }
 
-/**
- * gs_shell_details_get_license_markup:
- **/
 static gchar *
 gs_shell_details_get_license_markup (const gchar *license)
 {
@@ -772,9 +751,6 @@ gs_shell_details_get_license_markup (const gchar *license)
 	return g_string_free (urld, FALSE);
 }
 
-/**
- * gs_shell_details_refresh_all:
- **/
 static void
 gs_shell_details_refresh_all (GsShellDetails *self)
 {
@@ -1193,9 +1169,6 @@ gs_shell_details_authenticate_cb (GtkDialog *dialog,
 					      helper);
 }
 
-/**
- * gs_shell_details_app_set_review_cb:
- **/
 static void
 gs_shell_details_app_set_review_cb (GObject *source,
 				    GAsyncResult *res,
@@ -1367,9 +1340,6 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 	gtk_widget_set_visible (self->button_review, show_review_button);
 }
 
-/**
- * gs_shell_details_app_refine_cb:
- **/
 static void
 gs_shell_details_app_refine_cb (GObject *source,
 				GAsyncResult *res,
@@ -1411,9 +1381,6 @@ gs_shell_details_app_refine_cb (GObject *source,
 	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_READY);
 }
 
-/**
- * gs_shell_details_failed_response_cb:
- **/
 static void
 gs_shell_details_failed_response_cb (GtkDialog *dialog,
 				     gint response,
@@ -1426,9 +1393,6 @@ gs_shell_details_failed_response_cb (GtkDialog *dialog,
 	gs_shell_set_mode (self->shell, GS_SHELL_MODE_OVERVIEW);
 }
 
-/**
- * gs_shell_details_file_to_app_cb:
- **/
 static void
 gs_shell_details_file_to_app_cb (GObject *source,
 				 GAsyncResult *res,
@@ -1505,9 +1469,6 @@ gs_shell_details_file_to_app_cb (GObject *source,
 	gs_shell_details_set_state (self, GS_SHELL_DETAILS_STATE_READY);
 }
 
-/**
- * gs_shell_details_set_filename:
- **/
 void
 gs_shell_details_set_filename (GsShellDetails *self, const gchar *filename)
 {
@@ -1526,9 +1487,6 @@ gs_shell_details_set_filename (GsShellDetails *self, const gchar *filename)
 					    self);
 }
 
-/**
- * gs_shell_details_load:
- **/
 static void
 gs_shell_details_load (GsShellDetails *self)
 {
@@ -1561,9 +1519,6 @@ gs_shell_details_reload (GsPage *page)
 		gs_shell_details_load (self);
 }
 
-/**
- * gs_shell_details_set_app:
- **/
 void
 gs_shell_details_set_app (GsShellDetails *self, GsApp *app)
 {
@@ -1608,18 +1563,12 @@ gs_shell_details_get_app (GsShellDetails *self)
 	return self->app;
 }
 
-/**
- * gs_shell_details_app_remove_button_cb:
- **/
 static void
 gs_shell_details_app_remove_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
 	gs_page_remove_app (GS_PAGE (self), self->app);
 }
 
-/**
- * gs_shell_details_app_install_button_cb:
- **/
 static void
 gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
@@ -1640,9 +1589,6 @@ gs_shell_details_app_install_button_cb (GtkWidget *widget, GsShellDetails *self)
 	gs_page_install_app (GS_PAGE (self), self->app);
 }
 
-/**
- * gs_shell_details_addon_selected_cb:
- **/
 static void
 gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 				    GParamSpec *pspec,
@@ -1674,18 +1620,12 @@ gs_shell_details_addon_selected_cb (GsAppAddonRow *row,
 	}
 }
 
-/**
- * gs_shell_details_app_launch_button_cb:
- **/
 static void
 gs_shell_details_app_launch_button_cb (GtkWidget *widget, GsShellDetails *self)
 {
 	gs_page_launch_app (GS_PAGE (self), self->app);
 }
 
-/**
- * gs_shell_details_app_add_shortcut_button_cb:
- **/
 static void
 gs_shell_details_app_add_shortcut_button_cb (GtkWidget *widget,
 					     GsShellDetails *self)
@@ -1693,9 +1633,6 @@ gs_shell_details_app_add_shortcut_button_cb (GtkWidget *widget,
 	gs_page_shortcut_add (GS_PAGE (self), self->app);
 }
 
-/**
- * gs_shell_details_app_remove_shortcut_button_cb:
- **/
 static void
 gs_shell_details_app_remove_shortcut_button_cb (GtkWidget *widget,
 						GsShellDetails *self)
@@ -1703,9 +1640,6 @@ gs_shell_details_app_remove_shortcut_button_cb (GtkWidget *widget,
 	gs_page_shortcut_remove (GS_PAGE (self), self->app);
 }
 
-/**
- * gs_shell_details_review_response_cb:
- **/
 static void
 gs_shell_details_review_response_cb (GtkDialog *dialog,
 				     gint response,
@@ -1750,9 +1684,6 @@ gs_shell_details_review_response_cb (GtkDialog *dialog,
 	gtk_widget_destroy (GTK_WIDGET (dialog));
 }
 
-/**
- * gs_shell_details_write_review_cb:
- **/
 static void
 gs_shell_details_write_review_cb (GtkButton *button,
 				  GsShellDetails *self)
@@ -1776,9 +1707,6 @@ gs_shell_details_app_removed (GsPage *page, GsApp *app)
 	gs_shell_details_reload (page);
 }
 
-/**
- * gs_shell_details_setup:
- */
 void
 gs_shell_details_setup (GsShellDetails *self,
 			GsShell	*shell,
@@ -1837,9 +1765,6 @@ gs_shell_details_setup (GsShellDetails *self,
 	               cancellable);
 }
 
-/**
- * gs_shell_details_dispose:
- **/
 static void
 gs_shell_details_dispose (GObject *object)
 {
@@ -1858,9 +1783,6 @@ gs_shell_details_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_details_parent_class)->dispose (object);
 }
 
-/**
- * gs_shell_details_class_init:
- **/
 static void
 gs_shell_details_class_init (GsShellDetailsClass *klass)
 {
@@ -1938,9 +1860,6 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, label_details_kudo_updated);
 }
 
-/**
- * gs_shell_details_init:
- **/
 static void
 gs_shell_details_init (GsShellDetails *self)
 {
@@ -1958,9 +1877,6 @@ gs_shell_details_init (GsShellDetails *self)
 				    self, NULL);
 }
 
-/**
- * gs_shell_details_new:
- **/
 GsShellDetails *
 gs_shell_details_new (void)
 {

@@ -53,9 +53,6 @@ static guint signals [SIGNAL_LAST] = { 0 };
 
 static const gint rate_to_star[] = {20, 40, 60, 80, 100, -1};
 
-/**
- * gs_star_widget_get_rating:
- **/
 gint
 gs_star_widget_get_rating (GsStarWidget *star)
 {
@@ -65,9 +62,6 @@ gs_star_widget_get_rating (GsStarWidget *star)
 	return priv->rating;
 }
 
-/**
- * gs_star_widget_set_icon_size:
- **/
 void
 gs_star_widget_set_icon_size (GsStarWidget *star, guint pixel_size)
 {
@@ -95,9 +89,6 @@ gs_star_widget_style_class_enable (GtkWidget *widget, gboolean val)
 	}
 }
 
-/**
- * gs_star_widget_refresh:
- **/
 static void
 gs_star_widget_refresh (GsStarWidget *star)
 {
@@ -117,9 +108,6 @@ gs_star_widget_refresh (GsStarWidget *star)
 	gs_star_widget_style_class_enable (priv->image5, priv->rating > 80);
 }
 
-/**
- * gs_star_widget_set_interactive:
- **/
 void
 gs_star_widget_set_interactive (GsStarWidget *star, gboolean interactive)
 {
@@ -130,9 +118,6 @@ gs_star_widget_set_interactive (GsStarWidget *star, gboolean interactive)
 	gs_star_widget_refresh (star);
 }
 
-/**
- * gs_star_widget_set_rating:
- **/
 void
 gs_star_widget_set_rating (GsStarWidget *star,
 			   gint rating)
@@ -144,18 +129,12 @@ gs_star_widget_set_rating (GsStarWidget *star,
 	gs_star_widget_refresh (star);
 }
 
-/**
- * gs_star_widget_destroy:
- **/
 static void
 gs_star_widget_destroy (GtkWidget *widget)
 {
 	GTK_WIDGET_CLASS (gs_star_widget_parent_class)->destroy (widget);
 }
 
-/**
- * gs_star_widget_button_clicked_cb:
- **/
 static void
 gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
 {
@@ -173,9 +152,6 @@ gs_star_widget_button_clicked_cb (GtkButton *button, GsStarWidget *star)
 	gs_star_widget_refresh (star);
 }
 
-/**
- * gs_star_widget_init:
- **/
 static void
 gs_star_widget_init (GsStarWidget *star)
 {
@@ -213,9 +189,6 @@ gs_star_widget_init (GsStarWidget *star)
 			   GINT_TO_POINTER (rate_to_star[4]));
 }
 
-/**
- * gs_star_widget_class_init:
- **/
 static void
 gs_star_widget_class_init (GsStarWidgetClass *klass)
 {
@@ -245,9 +218,6 @@ gs_star_widget_class_init (GsStarWidgetClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsStarWidget, image5);
 }
 
-/**
- * gs_star_widget_new:
- **/
 GtkWidget *
 gs_star_widget_new (void)
 {

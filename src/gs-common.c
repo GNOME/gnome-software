@@ -147,9 +147,6 @@ gs_app_notify_installed (GsApp *app)
 	g_application_send_notification (g_application_get_default (), "installed", n);
 }
 
-/**
- * gs_app_notify_failed_modal:
- **/
 void
 gs_app_notify_failed_modal (GsApp *app,
 			    GtkWindow *parent_window,
@@ -228,9 +225,6 @@ typedef enum {
 	GS_APP_LICENSE_PATENT_CONCERN	= 2
 } GsAppLicenseHint;
 
-/**
- * gs_app_notify_unavailable:
- **/
 GtkResponseType
 gs_app_notify_unavailable (GsApp *app, GtkWindow *parent)
 {
@@ -372,9 +366,6 @@ gs_app_show_url (GsApp *app, AsUrlKind kind)
 		g_warning ("spawn of '%s' failed", url);
 }
 
-/**
- * gs_image_set_from_pixbuf_with_scale:
- **/
 void
 gs_image_set_from_pixbuf_with_scale (GtkImage *image, const GdkPixbuf *pixbuf, gint scale)
 {
@@ -384,9 +375,6 @@ gs_image_set_from_pixbuf_with_scale (GtkImage *image, const GdkPixbuf *pixbuf, g
 	cairo_surface_destroy (surface);
 }
 
-/**
- * gs_image_set_from_pixbuf:
- **/
 void
 gs_image_set_from_pixbuf (GtkImage *image, const GdkPixbuf *pixbuf)
 {
@@ -614,9 +602,6 @@ gs_utils_get_content_rating (void)
 	return content_rating_oars[0].desc;
 }
 
-/**
- * gs_utils_is_current_desktop:
- */
 gboolean
 gs_utils_is_current_desktop (const gchar *name)
 {
@@ -629,9 +614,6 @@ gs_utils_is_current_desktop (const gchar *name)
 	return g_strv_contains ((const gchar * const *) names, name);
 }
 
-/**
- * gs_utils_widget_css_parsing_error_cb:
- */
 static void
 gs_utils_widget_css_parsing_error_cb (GtkCssProvider *provider,
 				      GtkCssSection *section,
@@ -672,9 +654,6 @@ gs_utils_widget_set_css_internal (GtkWidget *widget,
 				g_object_unref);
 }
 
-/**
- * gs_utils_widget_set_css_simple:
- **/
 void
 gs_utils_widget_set_css_simple (GtkWidget *widget, const gchar *css)
 {
@@ -689,9 +668,6 @@ gs_utils_widget_set_css_simple (GtkWidget *widget, const gchar *css)
 	gs_utils_widget_set_css_internal (widget, class_name, str->str);
 }
 
-/**
- * gs_utils_widget_set_css_app:
- **/
 void
 gs_utils_widget_set_css_app (GsApp *app,
 			     GtkWidget *widget,

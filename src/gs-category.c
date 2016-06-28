@@ -403,9 +403,6 @@ gs_category_add_child (GsCategory *category, GsCategory *subcategory)
 			 g_object_ref (subcategory));
 }
 
-/**
- * gs_category_get_sort_key:
- **/
 static gchar *
 gs_category_get_sort_key (GsCategory *category)
 {
@@ -421,9 +418,6 @@ gs_category_get_sort_key (GsCategory *category)
 				gs_category_get_name (category));
 }
 
-/**
- * gs_category_sort_children_cb:
- **/
 static gint
 gs_category_sort_children_cb (gconstpointer a, gconstpointer b)
 {

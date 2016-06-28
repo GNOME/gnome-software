@@ -37,9 +37,6 @@ struct _GsDebug
 
 G_DEFINE_TYPE (GsDebug, gs_debug, G_TYPE_OBJECT)
 
-/**
- * gs_debug_handler_cb:
- **/
 static void
 gs_debug_handler_cb (const gchar *log_domain,
 		     GLogLevelFlags log_level,
@@ -111,9 +108,6 @@ gs_debug_handler_cb (const gchar *log_domain,
 	}
 }
 
-/**
- * gs_debug_finalize:
- **/
 static void
 gs_debug_finalize (GObject *object)
 {
@@ -126,9 +120,6 @@ gs_debug_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_debug_parent_class)->finalize (object);
 }
 
-/**
- * gs_debug_class_init:
- **/
 static void
 gs_debug_class_init (GsDebugClass *klass)
 {
@@ -136,9 +127,6 @@ gs_debug_class_init (GsDebugClass *klass)
 	object_class->finalize = gs_debug_finalize;
 }
 
-/**
- * gs_debug_init:
- **/
 static void
 gs_debug_init (GsDebug *debug)
 {
@@ -148,9 +136,6 @@ gs_debug_init (GsDebug *debug)
 	debug->log_func_old = g_log_set_default_handler (gs_debug_handler_cb, debug);
 }
 
-/**
- * gs_debug_new:
- **/
 GsDebug *
 gs_debug_new (void)
 {

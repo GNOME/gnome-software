@@ -133,9 +133,6 @@ enum {
 
 G_DEFINE_TYPE (GsApp, gs_app, G_TYPE_OBJECT)
 
-/**
- * gs_app_kv_lpad:
- **/
 static void
 gs_app_kv_lpad (GString *str, const gchar *key, const gchar *value)
 {
@@ -146,9 +143,6 @@ gs_app_kv_lpad (GString *str, const gchar *key, const gchar *value)
 	g_string_append_printf (str, " %s\n", value);
 }
 
-/**
- * gs_app_kv_printf:
- **/
 G_GNUC_PRINTF (3, 4)
 static void
 gs_app_kv_printf (GString *str, const gchar *key, const gchar *fmt, ...)
@@ -161,9 +155,6 @@ gs_app_kv_printf (GString *str, const gchar *key, const gchar *fmt, ...)
 	gs_app_kv_lpad (str, key, tmp);
 }
 
-/**
- * _as_app_quirk_flag_to_string:
- **/
 static const gchar *
 _as_app_quirk_flag_to_string (AsAppQuirk quirk)
 {
@@ -585,9 +576,6 @@ gs_app_set_state_recover (GsApp *app)
 	gs_app_queue_notify (app, "state");
 }
 
-/**
- * gs_app_set_state_internal:
- */
 static gboolean
 gs_app_set_state_internal (GsApp *app, AsAppState state)
 {
@@ -1248,9 +1236,6 @@ gs_app_get_ui_version (const gchar *version, guint64 flags)
 	return new;
 }
 
-/**
- * gs_app_ui_versions_invalidate:
- */
 static void
 gs_app_ui_versions_invalidate (GsApp *app)
 {
@@ -1260,9 +1245,6 @@ gs_app_ui_versions_invalidate (GsApp *app)
 	app->update_version_ui = NULL;
 }
 
-/**
- * gs_app_ui_versions_populate:
- */
 static void
 gs_app_ui_versions_populate (GsApp *app)
 {
@@ -1483,9 +1465,6 @@ gs_app_get_license_is_free (GsApp *app)
 	return app->license_is_free;
 }
 
-/**
- * gs_app_get_license_token_is_nonfree:
- */
 static gboolean
 gs_app_get_license_token_is_nonfree (const gchar *token)
 {
@@ -1740,9 +1719,6 @@ gs_app_get_update_version_ui (GsApp *app)
 	return app->update_version_ui;
 }
 
-/**
- * gs_app_set_update_version_internal:
- */
 static void
 gs_app_set_update_version_internal (GsApp *app, const gchar *update_version)
 {
@@ -2678,9 +2654,6 @@ gs_app_set_last_error (GsApp *app, GError *error)
 	app->last_error = g_error_copy (error);
 }
 
-/**
- * gs_app_get_property:
- */
 static void
 gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -2726,9 +2699,6 @@ gs_app_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *
 	}
 }
 
-/**
- * gs_app_set_property:
- */
 static void
 gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
@@ -2780,10 +2750,6 @@ gs_app_set_property (GObject *object, guint prop_id, const GValue *value, GParam
 	}
 }
 
-/**
- * gs_app_dispose:
- * @object: The object to dispose
- **/
 static void
 gs_app_dispose (GObject *object)
 {
@@ -2801,10 +2767,6 @@ gs_app_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_app_parent_class)->dispose (object);
 }
 
-/**
- * gs_app_finalize:
- * @object: The object to finalize
- **/
 static void
 gs_app_finalize (GObject *object)
 {
@@ -2846,10 +2808,6 @@ gs_app_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_app_parent_class)->finalize (object);
 }
 
-/**
- * gs_app_class_init:
- * @klass: The GsAppClass
- **/
 static void
 gs_app_class_init (GsAppClass *klass)
 {
@@ -2949,9 +2907,6 @@ gs_app_class_init (GsAppClass *klass)
 	g_object_class_install_property (object_class, PROP_QUIRK, pspec);
 }
 
-/**
- * gs_app_init:
- **/
 static void
 gs_app_init (GsApp *app)
 {

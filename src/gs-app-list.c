@@ -163,9 +163,6 @@ typedef struct {
 	gpointer		 user_data;
 } GsAppListSortHelper;
 
-/**
- * gs_app_list_sort_cb:
- **/
 static gint
 gs_app_list_sort_cb (gconstpointer a, gconstpointer b, gpointer user_data)
 {
@@ -192,9 +189,6 @@ gs_app_list_sort (GsAppList *list, GsAppListSortFunc func, gpointer user_data)
 	g_ptr_array_sort_with_data (list->array, gs_app_list_sort_cb, &helper);
 }
 
-/**
- * gs_app_list_randomize_cb:
- */
 static gint
 gs_app_list_randomize_cb (gconstpointer a, gconstpointer b, gpointer user_data)
 {
@@ -345,9 +339,6 @@ gs_app_list_copy (GsAppList *list)
 	return new;
 }
 
-/**
- * gs_app_list_finalize:
- **/
 static void
 gs_app_list_finalize (GObject *object)
 {
@@ -357,9 +348,6 @@ gs_app_list_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_app_list_parent_class)->finalize (object);
 }
 
-/**
- * gs_app_list_class_init:
- **/
 static void
 gs_app_list_class_init (GsAppListClass *klass)
 {
@@ -367,9 +355,6 @@ gs_app_list_class_init (GsAppListClass *klass)
 	object_class->finalize = gs_app_list_finalize;
 }
 
-/**
- * gs_app_list_init:
- **/
 static void
 gs_app_list_init (GsAppList *list)
 {

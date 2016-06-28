@@ -91,9 +91,6 @@ load_data_free (LoadData *data)
         g_slice_free (LoadData, data);
 }
 
-/**
- * gs_shell_overview_invalidate:
- **/
 void
 gs_shell_overview_invalidate (GsShellOverview *self)
 {
@@ -121,9 +118,6 @@ filter_category (GsApp *app, gpointer user_data)
 	return !gs_app_has_category (app, category);
 }
 
-/**
- * gs_shell_overview_get_popular_cb:
- **/
 static void
 gs_shell_overview_get_popular_cb (GObject *source_object,
 				  GAsyncResult *res,
@@ -295,9 +289,6 @@ category_tile_clicked (GsCategoryTile *tile, gpointer data)
 	gs_shell_show_category (priv->shell, category);
 }
 
-/**
- * gs_shell_overview_get_categories_cb:
- **/
 static void
 gs_shell_overview_get_categories_cb (GObject *source_object,
 				     GAsyncResult *res,
@@ -390,9 +381,6 @@ out:
 	}
 }
 
-/**
- * gs_shell_overview_load:
- */
 static void
 gs_shell_overview_load (GsShellOverview *self)
 {
@@ -493,9 +481,6 @@ gs_shell_overview_reload (GsPage *page)
 	gs_shell_overview_load (self);
 }
 
-/**
- * gs_shell_overview_switch_to:
- **/
 static void
 gs_shell_overview_switch_to (GsPage *page, gboolean scroll_up)
 {
@@ -629,9 +614,6 @@ gs_shell_overview_refreshed (GsShellOverview *self)
 	}
 }
 
-/**
- * gs_shell_overview_class_init:
- **/
 static void
 gs_shell_overview_class_init (GsShellOverviewClass *klass)
 {
@@ -669,9 +651,6 @@ gs_shell_overview_class_init (GsShellOverviewClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsShellOverview, categories_more);
 }
 
-/**
- * gs_shell_overview_new:
- **/
 GsShellOverview *
 gs_shell_overview_new (void)
 {

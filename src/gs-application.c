@@ -412,9 +412,6 @@ profile_activated (GSimpleAction *action,
 	as_profile_dump (app->profile);
 }
 
-/**
- * cancel_trigger_failed_cb:
- **/
 static void
 cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
@@ -426,9 +423,6 @@ cancel_trigger_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data
 	}
 }
 
-/**
- * reboot_failed_cb:
- **/
 static void
 reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 {
@@ -455,9 +449,6 @@ reboot_failed_cb (GObject *source, GAsyncResult *res, gpointer user_data)
 					   app);
 }
 
-/**
- * offline_update_cb:
- **/
 static void
 offline_update_cb (GsPluginLoader *plugin_loader,
 		   GAsyncResult *res,
@@ -483,9 +474,6 @@ offline_update_cb (GsPluginLoader *plugin_loader,
 				app);
 }
 
-/**
- * gs_application_reboot_failed_cb:
- **/
 static void
 gs_application_reboot_failed_cb (GObject *source,
 				 GAsyncResult *res,

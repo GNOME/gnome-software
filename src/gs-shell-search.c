@@ -64,9 +64,6 @@ gs_shell_search_app_row_activated_cb (GtkListBox *list_box,
 	gs_shell_show_app (self->shell, app);
 }
 
-/**
- * gs_shell_search_app_row_clicked_cb:
- **/
 static void
 gs_shell_search_app_row_clicked_cb (GsAppRow *app_row,
 				    GsShellSearch *self)
@@ -94,9 +91,6 @@ gs_shell_search_waiting_cancel (GsShellSearch *self)
 	self->waiting_id = 0;
 }
 
-/**
- * gs_shell_search_get_search_cb:
- **/
 static void
 gs_shell_search_get_search_cb (GObject *source_object,
 			       GAsyncResult *res,
@@ -170,9 +164,6 @@ gs_shell_search_waiting_show_cb (gpointer user_data)
 	return FALSE;
 }
 
-/**
- * gs_shell_search_load:
- */
 static void
 gs_shell_search_load (GsShellSearch *self)
 {
@@ -237,9 +228,6 @@ gs_shell_search_set_text (GsShellSearch *self, const gchar *value)
 	self->value = g_strdup (value);
 }
 
-/**
- * gs_shell_search_switch_to:
- **/
 static void
 gs_shell_search_switch_to (GsPage *page, gboolean scroll_up)
 {
@@ -329,9 +317,6 @@ gs_shell_search_get_app_sort_key (GsApp *app)
 	return g_string_free (key, FALSE);
 }
 
-/**
- * gs_shell_search_sort_func:
- **/
 static gint
 gs_shell_search_sort_func (GtkListBoxRow *a,
 			   GtkListBoxRow *b,
@@ -346,9 +331,6 @@ gs_shell_search_sort_func (GtkListBoxRow *a,
 	return g_strcmp0 (key2, key1);
 }
 
-/**
- * gs_shell_search_list_header_func
- **/
 static void
 gs_shell_search_list_header_func (GtkListBoxRow *row,
 				     GtkListBoxRow *before,
@@ -372,9 +354,6 @@ gs_shell_search_list_header_func (GtkListBoxRow *row,
 	gtk_list_box_row_set_header (row, header);
 }
 
-/**
- * gs_shell_search_cancel_cb:
- */
 static void
 gs_shell_search_cancel_cb (GCancellable *cancellable,
 			   GsShellSearch *self)
@@ -403,9 +382,6 @@ gs_shell_search_search_button_cb (GtkButton *button, GsShellSearch *self)
 	gs_shell_change_mode (self->shell, GS_SHELL_MODE_OVERVIEW, NULL, TRUE);
 }
 
-/**
- * gs_shell_search_setup:
- */
 void
 gs_shell_search_setup (GsShellSearch *self,
 		       GsShell *shell,
@@ -448,9 +424,6 @@ gs_shell_search_setup (GsShellSearch *self,
 	               cancellable);
 }
 
-/**
- * gs_shell_search_dispose:
- **/
 static void
 gs_shell_search_dispose (GObject *object)
 {
@@ -467,9 +440,6 @@ gs_shell_search_dispose (GObject *object)
 	G_OBJECT_CLASS (gs_shell_search_parent_class)->dispose (object);
 }
 
-/**
- * gs_shell_search_finalize:
- **/
 static void
 gs_shell_search_finalize (GObject *object)
 {
@@ -481,9 +451,6 @@ gs_shell_search_finalize (GObject *object)
 	G_OBJECT_CLASS (gs_shell_search_parent_class)->finalize (object);
 }
 
-/**
- * gs_shell_search_class_init:
- **/
 static void
 gs_shell_search_class_init (GsShellSearchClass *klass)
 {
@@ -506,9 +473,6 @@ gs_shell_search_class_init (GsShellSearchClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellSearch, stack_search);
 }
 
-/**
- * gs_shell_search_init:
- **/
 static void
 gs_shell_search_init (GsShellSearch *self)
 {
@@ -518,9 +482,6 @@ gs_shell_search_init (GsShellSearch *self)
 	self->sizegroup_name = gtk_size_group_new (GTK_SIZE_GROUP_HORIZONTAL);
 }
 
-/**
- * gs_shell_search_new:
- **/
 GsShellSearch *
 gs_shell_search_new (void)
 {

@@ -167,9 +167,6 @@ gs_plugin_create (const gchar *filename, GError **error)
 	return plugin;
 }
 
-/**
- * gs_plugin_finalize:
- **/
 static void
 gs_plugin_finalize (GObject *object)
 {
@@ -257,9 +254,6 @@ gs_plugin_action_start (GsPlugin *plugin, gboolean exclusive)
 	priv->flags |= GS_PLUGIN_FLAGS_RUNNING_SELF;
 }
 
-/**
- * gs_plugin_action_delay_cb:
- **/
 static gboolean
 gs_plugin_action_delay_cb (gpointer user_data)
 {
@@ -684,9 +678,6 @@ typedef struct {
 	guint		 percentage;
 } GsPluginStatusHelper;
 
-/**
- * gs_plugin_status_update_cb:
- **/
 static gboolean
 gs_plugin_status_update_cb (gpointer user_data)
 {
@@ -722,9 +713,6 @@ gs_plugin_status_update (GsPlugin *plugin, GsApp *app, GsPluginStatus status)
 	g_idle_add (gs_plugin_status_update_cb, helper);
 }
 
-/**
- * gs_plugin_app_launch_cb:
- **/
 static gboolean
 gs_plugin_app_launch_cb (gpointer user_data)
 {
@@ -782,9 +770,6 @@ gs_plugin_app_launch (GsPlugin *plugin, GsApp *app, GError **error)
 	return TRUE;
 }
 
-/**
- * gs_plugin_updates_changed_cb:
- **/
 static gboolean
 gs_plugin_updates_changed_cb (gpointer user_data)
 {
@@ -837,9 +822,6 @@ typedef struct {
 	GCancellable	*cancellable;
 } GsPluginDownloadHelper;
 
-/**
- * gs_plugin_download_chunk_cb:
- **/
 static void
 gs_plugin_download_chunk_cb (SoupMessage *msg, SoupBuffer *chunk,
 			     GsPluginDownloadHelper *helper)
@@ -1074,9 +1056,6 @@ gs_plugin_cache_invalidate (GsPlugin *plugin)
 	g_hash_table_remove_all (priv->cache);
 }
 
-/**
- * gs_plugin_set_property:
- */
 static void
 gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GParamSpec *pspec)
 {
@@ -1092,9 +1071,6 @@ gs_plugin_set_property (GObject *object, guint prop_id, const GValue *value, GPa
 	}
 }
 
-/**
- * gs_plugin_get_property:
- */
 static void
 gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpec *pspec)
 {
@@ -1110,9 +1086,6 @@ gs_plugin_get_property (GObject *object, guint prop_id, GValue *value, GParamSpe
 	}
 }
 
-/**
- * gs_plugin_class_init:
- */
 static void
 gs_plugin_class_init (GsPluginClass *klass)
 {
@@ -1149,9 +1122,6 @@ gs_plugin_class_init (GsPluginClass *klass)
 			      G_TYPE_NONE, 0);
 }
 
-/**
- * gs_plugin_init:
- */
 static void
 gs_plugin_init (GsPlugin *plugin)
 {
