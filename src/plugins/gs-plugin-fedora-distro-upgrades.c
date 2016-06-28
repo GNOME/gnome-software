@@ -310,6 +310,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 	guint i;
 	g_autofree gchar *data = NULL;
 	g_autoptr(GPtrArray) distros = NULL;
+	g_autoptr(GSettings) settings = NULL;
 
 	/* just ensure there is any data, no matter how old */
 	if (!gs_plugin_fedora_distro_upgrades_refresh (plugin,
@@ -323,6 +324,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 		return FALSE;
 
 	/* parse data */
+	settings = g_settings_new ("org.gnome.software");
 	distros = parse_pkgdb_collections_data (data, len, error);
 	if (distros == NULL)
 		return FALSE;
@@ -346,8 +348,10 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			continue;
 
 		/* only interested in non-devel distros */
-		if (distro_info->status == DISTRO_STATUS_DEVEL)
-			continue;
+		if (!g_settings_get_boolean (settings, "upgrade-allow-prerelease")) {
+			if (distro_info->status != DISTRO_STATUS_ACTIVE)
+				continue;
+		}
 
 		/* search in the cache */
 		cache_key = g_strdup_printf ("release-%d", distro_info->version);
