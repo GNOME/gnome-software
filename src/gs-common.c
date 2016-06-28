@@ -679,7 +679,7 @@ void
 gs_utils_widget_set_css_simple (GtkWidget *widget, const gchar *css)
 {
 	g_autofree gchar *class_name = NULL;
-	GString *str = g_string_sized_new (1024);
+	g_autoptr(GString) str = g_string_sized_new (1024);
 
 	class_name = g_strdup_printf ("themed-widget_%p", widget);
 	g_string_append_printf (str, ".%s {\n", class_name);
@@ -698,11 +698,11 @@ gs_utils_widget_set_css_app (GsApp *app,
 			     const gchar *metadata_css)
 {
 	GPtrArray *key_colors;
-	GString *str = g_string_sized_new (1024);
 	const gchar *css;
 	guint i;
 	g_autofree gchar *class_name = NULL;
 	g_autoptr(GString) css_str = NULL;
+	g_autoptr(GString) str = g_string_sized_new (1024);
 
 	g_return_if_fail (GS_IS_APP (app));
 
