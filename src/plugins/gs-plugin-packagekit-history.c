@@ -186,11 +186,12 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 	/* get any results */
 	tuple = g_variant_get_child_value (result, 0);
 	for (i = 0; i < gs_app_list_length (list); i++) {
+		g_autoptr(GVariant) entries = NULL;
 		app = gs_app_list_index (list, i);
 		ret = g_variant_lookup (tuple,
 					gs_app_get_source_default (app),
 					"@aa{sv}",
-					&value);
+					&entries);
 		if (!ret) {
 			/* make up a fake entry as we know this package was at
 			 * least installed at some point in time */
@@ -210,7 +211,7 @@ gs_plugin_packagekit_refine (GsPlugin *plugin,
 		}
 
 		/* add history for application */
-		g_variant_iter_init (&iter, value);
+		g_variant_iter_init (&iter, entries);
 		while ((value = g_variant_iter_next_value (&iter))) {
 			gs_plugin_packagekit_refine_add_history (app, value);
 			g_variant_unref (value);
