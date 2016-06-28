@@ -348,7 +348,7 @@ gs_plugin_add_distro_upgrades (GsPlugin *plugin,
 			continue;
 
 		/* only interested in non-devel distros */
-		if (!g_settings_get_boolean (settings, "upgrade-allow-prerelease")) {
+		if (!g_settings_get_boolean (settings, "show-upgrade-prerelease")) {
 			if (distro_info->status != DISTRO_STATUS_ACTIVE)
 				continue;
 		}
