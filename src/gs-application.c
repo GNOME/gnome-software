@@ -108,6 +108,8 @@ gs_application_init (GsApplication *application)
 		  _("Show verbose debugging information"), NULL },
 		{ "profile", 0, 0, G_OPTION_ARG_NONE, NULL,
 		  _("Show profiling information for the service"), NULL },
+		{ "quit", 0, 0, G_OPTION_ARG_NONE, NULL,
+		  _("Quit the running instance"), NULL },
 		{ "prefer-local", '\0', 0, G_OPTION_ARG_NONE, NULL,
 		  _("Prefer local file sources to AppStream"), NULL },
 		{ "version", 0, 0, G_OPTION_ARG_NONE, NULL,
@@ -871,6 +873,12 @@ gs_application_handle_local_options (GApplication *app, GVariantDict *options)
 	if (g_variant_dict_contains (options, "profile")) {
 		g_action_group_activate_action (G_ACTION_GROUP (app),
 						"profile",
+						NULL);
+		return 0;
+	}
+	if (g_variant_dict_contains (options, "quit")) {
+		g_action_group_activate_action (G_ACTION_GROUP (app),
+						"quit",
 						NULL);
 		return 0;
 	}
