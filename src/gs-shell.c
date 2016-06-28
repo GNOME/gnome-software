@@ -430,7 +430,8 @@ gs_shell_back_button_cb (GtkWidget *widget, GsShell *shell)
 	case GS_SHELL_MODE_SEARCH:
 		g_debug ("popping back entry for %s with %s",
 			 page_name[entry->mode], entry->search);
-		gs_shell_change_mode (shell, entry->mode, entry->search, FALSE);
+		gs_shell_change_mode (shell, entry->mode,
+				      (gpointer) entry->search, FALSE);
 		break;
 	default:
 		g_debug ("popping back entry for %s", page_name[entry->mode]);
@@ -477,7 +478,8 @@ search_changed_handler (GObject *entry, GsShell *shell)
 	if (strlen (text) > 2) {
 		if (gs_shell_get_mode (shell) != GS_SHELL_MODE_SEARCH) {
 			save_back_entry (shell);
-			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, text, TRUE);
+			gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH,
+					      (gpointer) text, TRUE);
 		} else {
 			gs_shell_search_set_text (priv->shell_search, text);
 			gs_page_switch_to (GS_PAGE (priv->shell_search), TRUE);
@@ -832,14 +834,16 @@ void
 gs_shell_show_search (GsShell *shell, const gchar *search)
 {
 	save_back_entry (shell);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, search, TRUE);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH,
+			      (gpointer) search, TRUE);
 }
 
 void
 gs_shell_show_filename (GsShell *shell, const gchar *filename)
 {
 	save_back_entry (shell);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS, (gpointer) filename, TRUE);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_DETAILS,
+			      (gpointer) filename, TRUE);
 	gs_shell_activate (shell);
 }
 
@@ -850,7 +854,8 @@ gs_shell_show_search_result (GsShell *shell, const gchar *id, const gchar *searc
 
 	save_back_entry (shell);
 	gs_shell_search_set_appid_to_show (priv->shell_search, id);
-	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH, search, TRUE);
+	gs_shell_change_mode (shell, GS_SHELL_MODE_SEARCH,
+			      (gpointer) search, TRUE);
 }
 
 /**
