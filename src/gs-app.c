@@ -254,7 +254,10 @@ gs_app_to_string (GsApp *app)
 	if (app->last_error != NULL)
 		gs_app_kv_lpad (str, "last-error", app->last_error->message);
 	gs_app_kv_lpad (str, "state", as_app_state_to_string (app->state));
-	gs_app_kv_lpad (str, "quirk", _as_app_quirk_to_string (app->quirk));
+	if (app->quirk > 0) {
+		g_autofree gchar *qstr = _as_app_quirk_to_string (app->quirk);
+		gs_app_kv_lpad (str, "quirk", qstr);
+	}
 	if (app->progress > 0)
 		gs_app_kv_printf (str, "progress", "%i%%", app->progress);
 	if (app->id != NULL)
