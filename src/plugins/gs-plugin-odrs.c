@@ -31,7 +31,7 @@
  */
 
 #define ODRS_REVIEW_CACHE_AGE_MAX		237000 /* 1 week */
-#define ODRS_REVIEW_NUMBER_RESULTS_MAX		5
+#define ODRS_REVIEW_NUMBER_RESULTS_MAX		20
 
 struct GsPluginData {
 	GSettings		*settings;

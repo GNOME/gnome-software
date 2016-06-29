@@ -39,6 +39,9 @@
 #include "gs-review-dialog.h"
 #include "gs-review-row.h"
 
+/* the number of reviews to show before clicking the 'More Reviews' button */
+#define SHOW_NR_REVIEWS_INITIAL		4
+
 static void gs_shell_details_refresh_all (GsShellDetails *self);
 
 typedef enum {
@@ -76,6 +79,7 @@ struct _GsShellDetails
 	GtkWidget		*button_details_website;
 	GtkWidget		*button_install;
 	GtkWidget		*button_remove;
+	GtkWidget		*button_more_reviews;
 	GtkWidget		*infobar_details_app_norepo;
 	GtkWidget		*infobar_details_app_repo;
 	GtkWidget		*infobar_details_package_baseos;
@@ -1315,6 +1319,10 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		}
 	}
 
+	/* only show the button if there are more to show */
+	gtk_widget_set_visible (self->button_more_reviews,
+				n_reviews > SHOW_NR_REVIEWS_INITIAL);
+
 	/* add all the reviews */
 	gs_container_remove_all (GTK_CONTAINER (self->list_box_reviews));
 	reviews = gs_app_get_reviews (self->app);
@@ -1333,7 +1341,7 @@ gs_shell_details_refresh_reviews (GsShellDetails *self)
 		}
 		gs_review_row_set_actions (GS_REVIEW_ROW (row), actions);
 		gtk_container_add (GTK_CONTAINER (self->list_box_reviews), row);
-		gtk_widget_show (row);
+		gtk_widget_set_visible (row, i < SHOW_NR_REVIEWS_INITIAL);
 	}
 
 	/* show the button only if the user never reviewed */
@@ -1707,6 +1715,14 @@ gs_shell_details_app_removed (GsPage *page, GsApp *app)
 	gs_shell_details_reload (page);
 }
 
+static void
+gs_shell_details_more_reviews_button_cb (GtkWidget *widget, GsShellDetails *self)
+{
+	gtk_container_foreach (GTK_CONTAINER (self->list_box_reviews),
+			       (GtkCallback) gtk_widget_show, NULL);
+	gtk_widget_set_visible (self->button_more_reviews, FALSE);
+}
+
 void
 gs_shell_details_setup (GsShellDetails *self,
 			GsShell	*shell,
@@ -1738,6 +1754,9 @@ gs_shell_details_setup (GsShellDetails *self,
 			  self);
 	g_signal_connect (self->button_remove, "clicked",
 			  G_CALLBACK (gs_shell_details_app_remove_button_cb),
+			  self);
+	g_signal_connect (self->button_more_reviews, "clicked",
+			  G_CALLBACK (gs_shell_details_more_reviews_button_cb),
 			  self);
 	g_signal_connect (self->label_details_updated_value, "activate-link",
 			  G_CALLBACK (gs_shell_details_history_cb),
@@ -1815,6 +1834,7 @@ gs_shell_details_class_init (GsShellDetailsClass *klass)
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_details_website);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_install);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_remove);
+	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, button_more_reviews);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_app_norepo);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_app_repo);
 	gtk_widget_class_bind_template_child (widget_class, GsShellDetails, infobar_details_package_baseos);
