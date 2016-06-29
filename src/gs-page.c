@@ -28,6 +28,7 @@
 #include "gs-page.h"
 #include "gs-shell.h"
 #include "gs-common.h"
+#include "gs-auth-dialog.h"
 
 typedef struct
 {
@@ -60,6 +61,60 @@ G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsPageHelper, gs_page_helper_free);
 static void
 gs_page_app_installed_cb (GObject *source,
                           GAsyncResult *res,
+                          gpointer user_data);
+
+static void
+gs_page_install_authenticate_cb (GtkDialog *dialog,
+				 GtkResponseType response_type,
+				 GsPageHelper *helper)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	if (response_type != GTK_RESPONSE_OK) {
+		gs_page_helper_free (helper);
+		return;
+	}
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+					   helper->app,
+	                                   GS_PLUGIN_LOADER_ACTION_INSTALL,
+					   priv->cancellable,
+					   gs_page_app_installed_cb,
+					   helper);
+}
+
+static void
+gs_page_app_removed_cb (GObject *source,
+                        GAsyncResult *res,
+                        gpointer user_data);
+
+static void
+gs_page_remove_authenticate_cb (GtkDialog *dialog,
+				GtkResponseType response_type,
+				GsPageHelper *helper)
+{
+	GsPagePrivate *priv = gs_page_get_instance_private (helper->page);
+
+	/* unmap the dialog */
+	gtk_widget_destroy (GTK_WIDGET (dialog));
+
+	if (response_type != GTK_RESPONSE_OK) {
+		gs_page_helper_free (helper);
+		return;
+	}
+	gs_plugin_loader_app_action_async (priv->plugin_loader,
+					   helper->app,
+	                                   GS_PLUGIN_LOADER_ACTION_REMOVE,
+					   priv->cancellable,
+					   gs_page_app_removed_cb,
+					   helper);
+}
+
+static void
+gs_page_app_installed_cb (GObject *source,
+                          GAsyncResult *res,
                           gpointer user_data)
 {
 	g_autoptr(GsPageHelper) helper = (GsPageHelper *) user_data;
@@ -74,6 +129,28 @@ gs_page_app_installed_cb (GObject *source,
 	                                          res,
 	                                          &error);
 	if (!ret) {
+		/* try to authenticate then retry */
+		if (g_error_matches (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
+			g_autoptr(GError) error_local = NULL;
+			GtkWidget *dialog;
+			dialog = gs_auth_dialog_new (priv->plugin_loader,
+						     helper->app,
+						     gs_utils_get_error_value (error),
+						     &error_local);
+			if (dialog == NULL) {
+				g_warning ("%s", error_local->message);
+				gs_page_helper_free (helper);
+				return;
+			}
+			gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+			g_signal_connect (dialog, "response",
+					  G_CALLBACK (gs_page_install_authenticate_cb),
+					  helper);
+			return;
+		}
+
 		g_warning ("failed to install %s: %s",
 		           gs_app_get_id (helper->app),
 		           error->message);
@@ -123,6 +200,28 @@ gs_page_app_removed_cb (GObject *source,
 	                                          res,
 	                                          &error);
 	if (!ret) {
+		/* try to authenticate then retry */
+		if (g_error_matches (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_AUTH_REQUIRED)) {
+			g_autoptr(GError) error_local = NULL;
+			GtkWidget *dialog;
+			dialog = gs_auth_dialog_new (priv->plugin_loader,
+						     helper->app,
+						     gs_utils_get_error_value (error),
+						     &error_local);
+			if (dialog == NULL) {
+				g_warning ("%s", error_local->message);
+				gs_page_helper_free (helper);
+				return;
+			}
+			gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
+			g_signal_connect (dialog, "response",
+					  G_CALLBACK (gs_page_remove_authenticate_cb),
+					  helper);
+			return;
+		}
+
 		g_warning ("failed to remove: %s", error->message);
 		gs_app_notify_failed_modal (helper->app,
 		                            gs_shell_get_window (priv->shell),
