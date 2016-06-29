@@ -15,6 +15,7 @@ AM_CPPFLAGS =						\
 	$(OSTREE_CFLAGS)				\
 	$(FLATPAK_CFLAGS)				\
 	$(RPM_CFLAGS)					\
+	$(OAUTH_CFLAGS)					\
 	-DI_KNOW_THE_GNOME_SOFTWARE_API_IS_SUBJECT_TO_CHANGE	\
 	-DBINDIR=\"$(bindir)\"				\
 	-DDATADIR=\"$(datadir)\"			\
@@ -43,7 +44,8 @@ plugin_LTLIBRARIES =					\
 	libgs_plugin_fedora-tagger-usage.la		\
 	libgs_plugin_epiphany.la			\
 	libgs_plugin_icons.la				\
-	libgs_plugin_snap.la
+	libgs_plugin_snap.la				\
+	libgs_plugin_ubuntuone.la
 
 if HAVE_PACKAGEKIT
 plugin_LTLIBRARIES +=					\
@@ -251,7 +253,7 @@ libgs_plugin_hardcoded_featured_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 if HAVE_UBUNTU_REVIEWS
 libgs_plugin_ubuntu_reviews_la_SOURCES =		\
 	gs-plugin-ubuntu-reviews.c
-libgs_plugin_ubuntu_reviews_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(JSON_GLIB_LIBS) $(SQLITE_LIBS)
+libgs_plugin_ubuntu_reviews_la_LIBADD = $(GS_PLUGIN_LIBS) $(SOUP_LIBS) $(JSON_GLIB_LIBS) $(SQLITE_LIBS) $(OAUTH_LIBS)
 libgs_plugin_ubuntu_reviews_la_LDFLAGS = -module -avoid-version
 libgs_plugin_ubuntu_reviews_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 endif
@@ -343,6 +345,15 @@ libgs_plugin_snap_la_LIBADD =				\
 	$(JSON_GLIB_LIBS)
 libgs_plugin_snap_la_LDFLAGS = -module -avoid-version
 libgs_plugin_snap_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
+
+libgs_plugin_ubuntuone_la_SOURCES =			\
+	gs-plugin-ubuntuone.c
+libgs_plugin_ubuntuone_la_LIBADD =			\
+	$(GS_PLUGIN_LIBS)				\
+	$(SOUP_LIBS)					\
+	$(JSON_GLIB_LIBS)
+libgs_plugin_ubuntuone_la_LDFLAGS = -module -avoid-version
+libgs_plugin_ubuntuone_la_CFLAGS = $(GS_PLUGIN_CFLAGS) $(WARN_CFLAGS)
 
 if ENABLE_TESTS
 check_PROGRAMS =						\

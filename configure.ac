@@ -284,6 +284,9 @@ AC_ARG_ENABLE(ubuntu-reviews,
               [AS_HELP_STRING([--enable-ubuntu-reviews],
                               [enable Ubuntu reviews [default=no]])],,
               enable_ubuntu_reviews=no)
+AS_IF([test "x$enable_ubuntu_reviews" = "xyes"], [
+    PKG_CHECK_MODULES(OAUTH, oauth)
+])
 AM_CONDITIONAL(HAVE_UBUNTU_REVIEWS, [test "x$enable_ubuntu_reviews" = "xyes"])
 AC_DEFINE(HAVE_UBUNTU_REVIEWS,1,[Build Ubuntu reviews])
 
