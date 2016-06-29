@@ -95,11 +95,11 @@ gs_star_widget_refresh (GsStarWidget *star)
 	GsStarWidgetPrivate *priv;
 	priv = gs_star_widget_get_instance_private (star);
 
-	gtk_widget_set_sensitive (priv->image1, priv->interactive);
-	gtk_widget_set_sensitive (priv->image2, priv->interactive);
-	gtk_widget_set_sensitive (priv->image3, priv->interactive);
-	gtk_widget_set_sensitive (priv->image4, priv->interactive);
-	gtk_widget_set_sensitive (priv->image5, priv->interactive);
+	gtk_widget_set_sensitive (priv->button1, priv->interactive);
+	gtk_widget_set_sensitive (priv->button2, priv->interactive);
+	gtk_widget_set_sensitive (priv->button3, priv->interactive);
+	gtk_widget_set_sensitive (priv->button4, priv->interactive);
+	gtk_widget_set_sensitive (priv->button5, priv->interactive);
 
 	gs_star_widget_style_class_enable (priv->image1, priv->rating > 0);
 	gs_star_widget_style_class_enable (priv->image2, priv->rating > 20);
