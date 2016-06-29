@@ -450,6 +450,26 @@ gs_appstream_refine_app_updates (GsPlugin *plugin,
 }
 
 /**
+ * _gs_utils_locale_has_translations:
+ * @locale: A locale, e.g. "en_GB"
+ *
+ * Looks up if the locale is likely to have translations.
+ *
+ * Returns: %TRUE if the locale should have translations
+ **/
+static gboolean
+_gs_utils_locale_has_translations (const gchar *locale)
+{
+	if (g_strcmp0 (locale, "C") == 0)
+		return FALSE;
+	if (g_strcmp0 (locale, "en") == 0)
+		return FALSE;
+	if (g_strcmp0 (locale, "en_US") == 0)
+		return FALSE;
+	return TRUE;
+}
+
+/**
  * gs_appstream_refine_app:
  */
 gboolean
@@ -603,7 +623,8 @@ gs_appstream_refine_app (GsPlugin *plugin,
 		gs_app_add_kudo (app, GS_APP_KUDO_RECENT_RELEASE);
 
 	/* add kudos */
-	if (as_app_get_language (item, plugin->locale) > 50)
+	if (!_gs_utils_locale_has_translations (plugin->locale) ||
+	    as_app_get_language (item, plugin->locale) > 50)
 		gs_app_add_kudo (app, GS_APP_KUDO_MY_LANGUAGE);
 
 	/* add new-style kudos */
