@@ -161,8 +161,9 @@
 	all: unset;
 }
 
-.review-row button { font-size: smaller; }
+.review-row button, .review-row .button { font-size: smaller; }
 
+/* gtk+ 3.20+ only +/
 .review-row .vote-buttons button {
 	margin-right: -1px;
 
@@ -170,12 +171,12 @@
 	transition-property: background, box-shadow, border-style, text-shadow;
 }
 
-/* this is the separator between yes and no vote buttons */
+/* this is the separator between yes and no vote buttons, gtk+ 3.20 only */
 .review-row .vote-buttons button:not(:first-child):not(:hover):not(:active):not(:backdrop) {
-	border-image: image(@borders) 0 0 0 1 / 5px 0 5px 1px;
+	border-image: linear-gradient(to top, @borders, @borders) 0 0 0 1 / 5px 0 5px 1px;
 }
   .review-row .vote-buttons button:not(:first-child):backdrop {
-	border-image: image(@unfocused_borders) 0 0 0 1 / 5px 0 5px 1px;
+	border-image: linear-gradent(to top, @unfocused_borders, @unfocused_border) 0 0 0 1 / 5px 0 5px 1px;
   }
 
 .reviewbar {
