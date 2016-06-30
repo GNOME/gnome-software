@@ -47,6 +47,9 @@ typedef struct {
 // FIXME: Much shorter time?
 #define REVIEW_STATS_AGE_MAX		(60 * 60 * 24 * 7 * 4 * 3)
 
+/* Number of pages of reviews to download */
+#define N_PAGES				3
+
 void
 gs_plugin_initialize (GsPlugin *plugin)
 {
@@ -606,7 +609,9 @@ get_language (GsPlugin *plugin)
 }
 
 static gboolean
-download_reviews (GsPlugin *plugin, GsApp *app, const gchar *package_name, GCancellable *cancellable, GError **error)
+download_reviews (GsPlugin *plugin, GsApp *app,
+		  const gchar *package_name, gint page_number,
+		  GCancellable *cancellable, GError **error)
 {
 	g_autofree gchar *language = NULL, *path = NULL;
 	g_autoptr(JsonParser) result = NULL;
@@ -614,8 +619,8 @@ download_reviews (GsPlugin *plugin, GsApp *app, const gchar *package_name, GCanc
 	/* Get the review stats using HTTP */
 	// FIXME: This will only get the first page of reviews
 	language = get_language (plugin);
-	path = g_strdup_printf ("/api/1.0/reviews/filter/%s/any/any/any/%s/", language, package_name);
-	if (!send_review_request (plugin, SOUP_METHOD_GET, path, NULL, &result, cancellable, error))
+	path = g_strdup_printf ("/api/1.0/reviews/filter/%s/any/any/any/%s/page/%d/", language, package_name, page_number + 1);
+	if (!send_review_request (plugin, SOUP_METHOD_GET, path, NULL, FALSE, &result, cancellable, error))
 		return FALSE;
 
 	/* Extract the stats from the data */
@@ -677,7 +682,7 @@ static gboolean
 refine_reviews (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
 {
 	GPtrArray *sources;
-	guint i;
+	guint i, j;
 
 	/* Skip if already has reviews */
 	if (gs_app_get_reviews (app)->len > 0)
@@ -686,12 +691,15 @@ refine_reviews (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError 
 	sources = gs_app_get_sources (app);
 	for (i = 0; i < sources->len; i++) {
 		const gchar *package_name;
-		gboolean ret;
 
 		package_name = g_ptr_array_index (sources, i);
-		ret = download_reviews (plugin, app, package_name, cancellable, error);
-		if (!ret)
-			return FALSE;
+		for (j = 0; j < N_PAGES; j++) {
+			gboolean ret;
+
+			ret = download_reviews (plugin, app, package_name, j, cancellable, error);
+			if (!ret)
+				return FALSE;
+		}
 	}
 
 	return TRUE;
