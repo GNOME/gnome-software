@@ -43,7 +43,7 @@ typedef struct
 	GtkWidget	*button_dismiss;
 	GtkWidget	*button_report;
 	GtkWidget	*button_remove;
-	GtkWidget	*box_vote_buttons;
+	GtkWidget	*box_voting;
 } GsReviewRowPrivate;
 
 enum {
@@ -86,9 +86,9 @@ gs_review_row_refresh (GsReviewRow *row)
 	if ((priv->actions & (1 << GS_REVIEW_ACTION_UPVOTE |
 			      1 << GS_REVIEW_ACTION_DOWNVOTE |
 			      1 << GS_REVIEW_ACTION_DISMISS)) == 0) {
-		gtk_widget_set_visible (priv->box_vote_buttons, FALSE);
+		gtk_widget_set_visible (priv->box_voting, FALSE);
 	} else {
-		gtk_widget_set_visible (priv->box_vote_buttons, TRUE);
+		gtk_widget_set_visible (priv->box_voting, TRUE);
 		gtk_widget_set_visible (priv->button_yes,
 					priv->actions & 1 << GS_REVIEW_ACTION_UPVOTE);
 		gtk_widget_set_visible (priv->button_no,
@@ -166,7 +166,7 @@ gs_review_row_class_init (GsReviewRowClass *klass)
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_dismiss);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_report);
 	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, button_remove);
-	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, box_vote_buttons);
+	gtk_widget_class_bind_template_child_private (widget_class, GsReviewRow, box_voting);
 }
 
 static void
