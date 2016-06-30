@@ -196,18 +196,10 @@
 
 /* this is the separator between yes and no vote buttons */
 .review-row .vote-buttons button:not(:first-child):not(:hover):not(:active):not(:backdrop) {
-	border-image: linear-gradient(to bottom,
-	                              transparent 5px,
-	                              @borders 5px,
-	                              @borders calc(100% -5px),
-	                              transparent calc(100% -5px)) 0 0 0 1 stretch;
+	border-image: image(@borders) 0 0 0 1 / 5px 0 5px 1px;
 }
   .review-row .vote-buttons button:not(:first-child):backdrop {
-	border-image-source: linear-gradient(to bottom,
-                                             transparent 5px,
-                                             @unfocused_borders 5px,
-                                             @unfocused_borders calc(100% -5px),
-                                             transparent calc(100% -5px));
+	border-image: image(@unfocused_borders) 0 0 0 1 / 5px 0 5px 1px;
   }
 
 .reviewbar {
