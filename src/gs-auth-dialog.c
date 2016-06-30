@@ -115,6 +115,15 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
 		const gchar *url;
 
+		if (g_error_matches (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_PIN_REQUIRED)) {
+			gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "2fa");
+			return;
+		}
+
+		url = gs_utils_get_error_value (error);
+
 		/* have we been given a link */
 		url = gs_utils_get_error_value (error);
 		if (url != NULL) {
