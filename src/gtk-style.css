@@ -45,7 +45,8 @@
 
 /* should be :disabled but we need to support older versions of GTK */
 .kudo-pill:insensitive {
-	background-color: shade(@theme_bg_color, 0.8);
+	color: @theme_bg_color;
+	background-color: mix(@insensitive_fg_color, @theme_bg_color, 0.6);
 }
 
 .kudo-label {
