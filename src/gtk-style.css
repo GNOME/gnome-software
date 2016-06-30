@@ -49,6 +49,11 @@
 	background-color: mix(@insensitive_fg_color, @theme_bg_color, 0.6);
 }
 
+.kudo-pill:insensitive:backdrop {
+	color: @theme_unfocused_bg_color;
+	background-color: mix(@insensitive_fg_color, @theme_unfocused_bg_color, 0.8);
+}
+
 .kudo-label {
 	background-image: none;
 	background-color: shade(@theme_selected_bg_color, 1.2);
