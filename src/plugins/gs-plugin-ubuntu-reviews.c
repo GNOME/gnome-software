@@ -223,6 +223,7 @@ get_review_stats (GsPlugin *plugin,
 		  const gchar *package_name,
 		  gint *rating,
 		  gint *review_ratings,
+		  GCancellable *cancellable,
 		  GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
@@ -332,7 +333,7 @@ parse_review_entries (GsPlugin *plugin, JsonParser *parser, GError **error)
 }
 
 static gboolean
-send_review_request (GsPlugin *plugin, const gchar *method, const gchar *path, JsonBuilder *request, JsonParser **result, GError **error)
+send_review_request (GsPlugin *plugin, const gchar *method, const gchar *path, JsonBuilder *request, JsonParser **result, GCancellable *cancellable, GError **error)
 {
 	g_autofree gchar *uri = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
@@ -388,13 +389,13 @@ send_review_request (GsPlugin *plugin, const gchar *method, const gchar *path, J
 }
 
 static gboolean
-download_review_stats (GsPlugin *plugin, GError **error)
+download_review_stats (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	g_autofree gchar *uri = NULL;
 	g_autoptr(SoupMessage) msg = NULL;
 	g_autoptr(JsonParser) result = NULL;
 
-	if (!send_review_request (plugin, SOUP_METHOD_GET, "/api/1.0/review-stats/any/any/", NULL, &result, error))
+	if (!send_review_request (plugin, SOUP_METHOD_GET, "/api/1.0/review-stats/any/any/", NULL, &result, cancellable, error))
 		return FALSE;
 
 	/* Extract the stats from the data */
@@ -406,7 +407,7 @@ download_review_stats (GsPlugin *plugin, GError **error)
 }
 
 static gboolean
-load_database (GsPlugin *plugin, GError **error)
+load_database (GsPlugin *plugin, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	const gchar *statement;
@@ -489,7 +490,7 @@ load_database (GsPlugin *plugin, GError **error)
 	now = g_get_real_time () / G_USEC_PER_SEC;
 	if (stats_mtime == 0 || rebuild_ratings) {
 		g_debug ("No Ubuntu review statistics");
-		if (!download_review_stats (plugin, &error_local)) {
+		if (!download_review_stats (plugin, cancellable, &error_local)) {
 			g_warning ("Failed to get Ubuntu review statistics: %s",
 				   error_local->message);
 			return TRUE;
@@ -498,7 +499,7 @@ load_database (GsPlugin *plugin, GError **error)
 		g_debug ("Ubuntu review statistics was %" G_GINT64_FORMAT
 			 " days old, so regetting",
 			 (now - stats_mtime) / ( 60 * 60 * 24));
-		if (!download_review_stats (plugin, error))
+		if (!download_review_stats (plugin, cancellable, error))
 			return FALSE;
 	} else {
 		g_debug ("Ubuntu review statistics %" G_GINT64_FORMAT
@@ -605,7 +606,7 @@ get_language (GsPlugin *plugin)
 }
 
 static gboolean
-download_reviews (GsPlugin *plugin, GsApp *app, const gchar *package_name, GError **error)
+download_reviews (GsPlugin *plugin, GsApp *app, const gchar *package_name, GCancellable *cancellable, GError **error)
 {
 	g_autofree gchar *language = NULL, *path = NULL;
 	g_autoptr(JsonParser) result = NULL;
@@ -614,7 +615,7 @@ download_reviews (GsPlugin *plugin, GsApp *app, const gchar *package_name, GErro
 	// FIXME: This will only get the first page of reviews
 	language = get_language (plugin);
 	path = g_strdup_printf ("/api/1.0/reviews/filter/%s/any/any/any/%s/", language, package_name);
-	if (!send_review_request (plugin, SOUP_METHOD_GET, path, NULL, &result, error))
+	if (!send_review_request (plugin, SOUP_METHOD_GET, path, NULL, &result, cancellable, error))
 		return FALSE;
 
 	/* Extract the stats from the data */
@@ -622,7 +623,7 @@ download_reviews (GsPlugin *plugin, GsApp *app, const gchar *package_name, GErro
 }
 
 static gboolean
-refine_rating (GsPlugin *plugin, GsApp *app, GError **error)
+refine_rating (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
 {
 	GsPluginData *priv = gs_plugin_get_data (plugin);
 	GPtrArray *sources;
@@ -630,7 +631,7 @@ refine_rating (GsPlugin *plugin, GsApp *app, GError **error)
 
 	/* Load database once */
 	if (g_once_init_enter (&priv->db_loaded)) {
-		gboolean ret = load_database (plugin, error);
+		gboolean ret = load_database (plugin, cancellable, error);
 		g_once_init_leave (&priv->db_loaded, TRUE);
 		if (!ret)
 			return FALSE;
@@ -652,7 +653,7 @@ refine_rating (GsPlugin *plugin, GsApp *app, GError **error)
 
 		/* Otherwise use the statistics */
 		package_name = g_ptr_array_index (sources, i);
-		ret = get_review_stats (plugin, package_name, &rating, review_ratings, error);
+		ret = get_review_stats (plugin, package_name, &rating, review_ratings, cancellable, error);
 		if (!ret)
 			return FALSE;
 		if (rating != -1) {
@@ -673,7 +674,7 @@ refine_rating (GsPlugin *plugin, GsApp *app, GError **error)
 }
 
 static gboolean
-refine_reviews (GsPlugin *plugin, GsApp *app, GError **error)
+refine_reviews (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
 {
 	GPtrArray *sources;
 	guint i;
@@ -688,7 +689,7 @@ refine_reviews (GsPlugin *plugin, GsApp *app, GError **error)
 		gboolean ret;
 
 		package_name = g_ptr_array_index (sources, i);
-		ret = download_reviews (plugin, app, package_name, error);
+		ret = download_reviews (plugin, app, package_name, cancellable, error);
 		if (!ret)
 			return FALSE;
 	}
@@ -704,11 +705,11 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		      GError **error)
 {
 	if ((flags & (GS_PLUGIN_REFINE_FLAGS_REQUIRE_RATING | GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEW_RATINGS)) != 0) {
-		if (!refine_rating (plugin, app, error))
+		if (!refine_rating (plugin, app, cancellable, error))
 			return FALSE;
 	}
 	if ((flags & GS_PLUGIN_REFINE_FLAGS_REQUIRE_REVIEWS) != 0) {
-		if (!refine_reviews (plugin, app, error))
+		if (!refine_reviews (plugin, app, cancellable, error))
 			return FALSE;
 	}
 
