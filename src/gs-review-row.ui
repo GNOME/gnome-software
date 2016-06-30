@@ -4,7 +4,9 @@
   <template class="GsReviewRow" parent="GtkListBoxRow">
     <property name="visible">True</property>
     <property name="activatable">False</property>
-
+    <style>
+      <class name="review-row"/>
+    </style>
     <child>
       <object class="GtkGrid" id="grid">
         <property name="visible">True</property>
