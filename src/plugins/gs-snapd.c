@@ -95,6 +95,8 @@ gboolean
 gs_snapd_request (const gchar  *method,
 		  const gchar  *path,
 		  const gchar  *content,
+		  const gchar  *macaroon,
+		  gchar       **discharges,
 		  guint        *status_code,
 		  gchar       **reason_phrase,
 		  gchar       **response_type,
@@ -123,6 +125,14 @@ gs_snapd_request (const gchar  *method,
 	request = g_string_new ("");
 	g_string_append_printf (request, "%s %s HTTP/1.1\r\n", method, path);
 	g_string_append (request, "Host:\r\n");
+	if (macaroon != NULL) {
+		gint i;
+
+		g_string_append_printf (request, "Authorization: Macaroon root=\"%s\"", macaroon);
+		for (i = 0; discharges[i] != NULL; i++)
+			g_string_append_printf (request, ",discharge=\"%s\"", discharges[i]);
+		g_string_append (request, "\r\n");
+	}
 	if (content)
 		g_string_append_printf (request, "Content-Length: %zi\r\n", strlen (content));
 	g_string_append (request, "\r\n");
@@ -285,6 +295,82 @@ gs_snapd_request (const gchar  *method,
 	}
 	if (response_length)
 		*response_length = chunk_length;
+
+	return TRUE;
+}
+
+gboolean
+gs_snapd_parse_result (const gchar	*response_type,
+		       const gchar	*response,
+		       JsonObject	**result,
+		       GError		**error)
+{
+	g_autoptr(JsonParser) parser = NULL;
+	g_autoptr(GError) error_local = NULL;
+	JsonObject *root;
+
+	if (response_type == NULL) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "snapd returned no content type");
+		return FALSE;
+	}
+	if (g_strcmp0 (response_type, "application/json") != 0) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "snapd returned unexpected content type %s", response_type);
+		return FALSE;
+	}
+
+	parser = json_parser_new ();
+	if (!json_parser_load_from_data (parser, response, -1, &error_local)) {
+		g_set_error (error,
+			     GS_PLUGIN_ERROR,
+			     GS_PLUGIN_ERROR_FAILED,
+			     "Unable to parse snapd response: %s",
+			     error_local->message);
+		return FALSE;
+	}
+
+	if (!JSON_NODE_HOLDS_OBJECT (json_parser_get_root (parser))) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "snapd response does is not a valid JSON object");
+		return FALSE;
+	}
+	root = json_node_get_object (json_parser_get_root (parser));
+	if (!json_object_has_member (root, "result")) {
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "snapd response does not contain a \"result\" field");
+		return FALSE;
+	}
+	if (result != NULL)
+		*result = json_object_ref (json_object_get_object_member (root, "result"));
+
+	return TRUE;
+}
+
+gboolean
+gs_snapd_parse_error (const gchar	*response_type,
+		      const gchar	*response,
+		      gchar		**message,
+		      gchar		**kind,
+		      GError		**error)
+{
+	g_autoptr(JsonObject) result = NULL;
+
+	if (!gs_snapd_parse_result (response_type, response, &result, error))
+		return FALSE;
+
+	if (message != NULL)
+		*message = g_strdup (json_object_get_string_member (result, "message"));
+	if (kind != NULL)
+		*kind = json_object_has_member (result, "kind") ? g_strdup (json_object_get_string_member (result, "kind")) : NULL;
 
 	return TRUE;
 }
