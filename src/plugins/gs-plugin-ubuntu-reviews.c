@@ -218,7 +218,7 @@ get_rating (gint64 one_star_count, gint64 two_star_count, gint64 three_star_coun
 	return (((wilson_score (one_star_count, n_ratings, 0.1) * -2) +
 		 (wilson_score (two_star_count, n_ratings, 0.1) * -1) +
 		 (wilson_score (four_star_count, n_ratings, 0.1) * 1) +
-		 (wilson_score (five_star_count, n_ratings, 0.1) * 2)) + 3) * 20;
+		 (wilson_score (five_star_count, n_ratings, 0.1) * 2)) + 3) * 20 - 10;
 }
 
 static gboolean
