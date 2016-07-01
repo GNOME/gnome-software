@@ -620,7 +620,7 @@ download_reviews (GsPlugin *plugin, GsApp *app,
 	// FIXME: This will only get the first page of reviews
 	language = get_language (plugin);
 	path = g_strdup_printf ("/api/1.0/reviews/filter/%s/any/any/any/%s/page/%d/", language, package_name, page_number + 1);
-	if (!send_review_request (plugin, SOUP_METHOD_GET, path, NULL, FALSE, &result, cancellable, error))
+	if (!send_review_request (plugin, SOUP_METHOD_GET, path, NULL, &result, cancellable, error))
 		return FALSE;
 
 	/* Extract the stats from the data */
