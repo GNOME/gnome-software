@@ -56,6 +56,7 @@ typedef struct
 	gboolean	 show_update;
 	gboolean	 selectable;
 	guint		 pending_refresh_id;
+	GSettings	*settings;
 } GsAppRowPrivate;
 
 G_DEFINE_TYPE_WITH_PRIVATE (GsAppRow, gs_app_row, GTK_TYPE_LIST_BOX_ROW)
@@ -120,6 +121,7 @@ gs_app_row_refresh (GsAppRow *app_row)
 	GtkStyleContext *context;
 	GString *str = NULL;
 	gboolean missing_search_result;
+	gboolean show_nonfree = FALSE;
 
 	if (priv->app == NULL)
 		return;
@@ -162,40 +164,45 @@ gs_app_row_refresh (GsAppRow *app_row)
 	/* add tags */
 	if (priv->show_update || missing_search_result) {
 		gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
-		gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
+		show_nonfree = FALSE;
 		gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
 		gtk_widget_set_visible (priv->label_tag_extension, FALSE);
 	} else {
 		switch (gs_app_get_kind (priv->app)) {
 		case AS_APP_KIND_UNKNOWN:
 			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
-			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
+			show_nonfree = FALSE;
 			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
 			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
 			break;
 		case AS_APP_KIND_WEB_APP:
 			gtk_widget_set_visible (priv->label_tag_webapp, TRUE);
-			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
+			show_nonfree = FALSE;
 			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
 			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
 			break;
 		case AS_APP_KIND_SHELL_EXTENSION:
 			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
-			gtk_widget_set_visible (priv->label_tag_nonfree, FALSE);
+			show_nonfree = FALSE;
 			gtk_widget_set_visible (priv->label_tag_foreign, FALSE);
 			gtk_widget_set_visible (priv->label_tag_extension, TRUE);
 			break;
 		default:
 			gtk_widget_set_visible (priv->label_tag_webapp, FALSE);
 			gtk_widget_set_visible (priv->label_tag_extension, FALSE);
-			gtk_widget_set_visible (priv->label_tag_nonfree,
-						!gs_app_get_license_is_free (priv->app));
+			show_nonfree = !gs_app_get_license_is_free (priv->app);
 			gtk_widget_set_visible (priv->label_tag_foreign,
 						!gs_app_has_quirk (priv->app,
 								   AS_APP_QUIRK_PROVENANCE));
 			break;
 		}
 	}
+
+	/* Override the non-free label visibility from the settings if needed */
+	if (!g_settings_get_boolean (priv->settings, "show-nonfree-ui"))
+		show_nonfree = FALSE;
+
+	gtk_widget_set_visible (priv->label_tag_nonfree, show_nonfree);
 
 	gtk_label_set_label (GTK_LABEL (priv->name_label),
 			     gs_app_get_name (priv->app));
@@ -387,6 +394,16 @@ gs_app_row_unreveal (GsAppRow *app_row)
 	gtk_revealer_set_reveal_child (GTK_REVEALER (revealer), FALSE);
 }
 
+static void
+settings_changed_cb (GsAppRow *self,
+		     const gchar *key,
+		     gpointer data)
+{
+	if (g_strcmp0 (key, "show-nonfree-ui") == 0) {
+		gs_app_row_refresh (self);
+	}
+}
+
 GsApp *
 gs_app_row_get_app (GsAppRow *app_row)
 {
@@ -440,6 +457,8 @@ gs_app_row_destroy (GtkWidget *object)
 {
 	GsAppRow *app_row = GS_APP_ROW (object);
 	GsAppRowPrivate *priv = gs_app_row_get_instance_private (app_row);
+
+	g_clear_object (&priv->settings);
 
 	if (priv->app)
 		g_signal_handlers_disconnect_by_func (priv->app, gs_app_row_notify_props_changed_cb, app_row);
@@ -555,11 +574,15 @@ gs_app_row_init (GsAppRow *app_row)
 	gtk_widget_init_template (GTK_WIDGET (app_row));
 
 	priv->colorful = TRUE;
+	priv->settings = g_settings_new ("org.gnome.software");
 
 	g_signal_connect (priv->button, "clicked",
 			  G_CALLBACK (button_clicked), app_row);
 	g_signal_connect (priv->checkbox, "toggled",
 			  G_CALLBACK (checkbox_toggled), app_row);
+	g_signal_connect_swapped (priv->settings, "changed",
+				  G_CALLBACK (settings_changed_cb),
+				  app_row);
 }
 
 void
