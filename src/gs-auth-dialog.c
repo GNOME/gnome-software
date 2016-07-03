@@ -36,6 +36,7 @@ struct _GsAuthDialog
 	GsPluginLoader	*plugin_loader;
 	GsApp		*app;
 	GsAuth		*auth;
+	GtkWidget	*box_dialog;
 	GtkWidget	*box_error;
 	GtkWidget	*button_cancel;
 	GtkWidget	*button_continue;
@@ -111,6 +112,9 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 	GsAuthDialog *dialog = GS_AUTH_DIALOG (user_data);
 	g_autoptr(GError) error = NULL;
 
+	gtk_widget_set_sensitive (dialog->box_dialog, TRUE);
+	gtk_widget_set_sensitive (dialog->button_continue, TRUE);
+
 	gtk_widget_set_visible (dialog->box_error, FALSE);
 
 	/* we failed */
@@ -157,6 +161,9 @@ static void
 gs_auth_dialog_continue_button_cb (GtkWidget *widget, GsAuthDialog *dialog)
 {
 	GsPluginLoaderAction action = GS_AUTH_ACTION_LOGIN;
+
+	gtk_widget_set_sensitive (dialog->box_dialog, FALSE);
+	gtk_widget_set_sensitive (dialog->button_continue, FALSE);
 
 	/* alternate actions */
 	if (gtk_toggle_button_get_active (GTK_TOGGLE_BUTTON (dialog->radiobutton_lost_pwd)))
@@ -284,6 +291,7 @@ gs_auth_dialog_class_init (GsAuthDialogClass *klass)
 
 	gtk_widget_class_set_template_from_resource (widget_class, "/org/gnome/Software/gs-auth-dialog.ui");
 
+	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, box_dialog);
 	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, box_error);
 	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, button_cancel);
 	gtk_widget_class_bind_template_child (widget_class, GsAuthDialog, button_continue);
