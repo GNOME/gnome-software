@@ -158,7 +158,7 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 }
 
 static void
-gs_auth_dialog_continue_button_cb (GtkWidget *widget, GsAuthDialog *dialog)
+gs_auth_dialog_continue_cb (GtkWidget *widget, GsAuthDialog *dialog)
 {
 	GsPluginLoaderAction action = GS_AUTH_ACTION_LOGIN;
 
@@ -265,8 +265,12 @@ gs_auth_dialog_init (GsAuthDialog *dialog)
 			  G_CALLBACK (gs_auth_dialog_notify_username_cb), dialog);
 	g_signal_connect (dialog->entry_password, "notify::text",
 			  G_CALLBACK (gs_auth_dialog_notify_password_cb), dialog);
+	g_signal_connect (dialog->entry_password, "activate",
+			  G_CALLBACK (gs_auth_dialog_continue_cb), dialog);
 	g_signal_connect (dialog->entry_pin, "notify::text",
 			  G_CALLBACK (gs_auth_dialog_notify_pin_cb), dialog);
+	g_signal_connect (dialog->entry_pin, "activate",
+			  G_CALLBACK (gs_auth_dialog_continue_cb), dialog);
 	g_signal_connect (dialog->checkbutton_remember, "toggled",
 			  G_CALLBACK (gs_auth_dialog_remember_cb), dialog);
 	g_signal_connect (dialog->radiobutton_already, "toggled",
@@ -278,7 +282,7 @@ gs_auth_dialog_init (GsAuthDialog *dialog)
 	g_signal_connect (dialog->button_cancel, "clicked",
 			  G_CALLBACK (gs_auth_dialog_cancel_button_cb), dialog);
 	g_signal_connect (dialog->button_continue, "clicked",
-			  G_CALLBACK (gs_auth_dialog_continue_button_cb), dialog);
+			  G_CALLBACK (gs_auth_dialog_continue_cb), dialog);
 }
 
 static void
