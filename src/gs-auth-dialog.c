@@ -111,6 +111,8 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 	GsAuthDialog *dialog = GS_AUTH_DIALOG (user_data);
 	g_autoptr(GError) error = NULL;
 
+	gtk_widget_set_visible (dialog->box_error, FALSE);
+
 	/* we failed */
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
 		const gchar *url;
