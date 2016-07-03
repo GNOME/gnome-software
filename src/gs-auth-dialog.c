@@ -125,6 +125,7 @@ gs_auth_dialog_authenticate_cb (GObject *source,
 				     GS_PLUGIN_ERROR,
 				     GS_PLUGIN_ERROR_PIN_REQUIRED)) {
 			gtk_stack_set_visible_child_name (GTK_STACK (dialog->stack), "2fa");
+			gtk_widget_grab_focus (dialog->entry_pin);
 			return;
 		}
 
