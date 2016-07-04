@@ -41,6 +41,7 @@ UI_FILES =						\
 	gs-history-dialog.ui				\
 	gs-menus.ui					\
 	gs-popular-tile.ui				\
+	gs-removal-dialog.ui				\
 	gs-review-dialog.ui				\
 	gs-review-histogram.ui				\
 	gs-review-row.ui				\
@@ -157,6 +158,8 @@ gnome_software_SOURCES =				\
 	gs-plugin.h					\
 	gs-progress-button.c				\
 	gs-progress-button.h				\
+	gs-removal-dialog.c				\
+	gs-removal-dialog.h				\
 	gs-review.c					\
 	gs-review.h					\
 	gs-review-bar.c					\
