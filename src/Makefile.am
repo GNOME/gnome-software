@@ -48,6 +48,7 @@ UI_FILES =						\
 	gs-app-addon-row.ui				\
 	gs-app-folder-dialog.ui				\
 	gs-app-row.ui					\
+	gs-app-tile.ui					\
 	gs-summary-tile.ui				\
 	gs-auth-dialog.ui				\
 	gs-category-tile.ui				\
