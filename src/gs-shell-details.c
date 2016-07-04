@@ -1147,6 +1147,8 @@ gs_shell_details_review_helper_free (GsShellDetailsReviewHelper *helper)
 	g_free (helper);
 }
 
+G_DEFINE_AUTOPTR_CLEANUP_FUNC(GsShellDetailsReviewHelper, gs_shell_details_review_helper_free);
+
 static void
 gs_shell_details_app_set_review_cb (GObject *source,
 				    GAsyncResult *res,
@@ -1179,7 +1181,7 @@ gs_shell_details_app_set_review_cb (GObject *source,
 				    gpointer user_data)
 {
 	GsPluginLoader *plugin_loader = GS_PLUGIN_LOADER (source);
-	GsShellDetailsReviewHelper *helper = (GsShellDetailsReviewHelper *) user_data;
+	g_autoptr(GsShellDetailsReviewHelper) helper = (GsShellDetailsReviewHelper *) user_data;
 	g_autoptr(GError) error = NULL;
 
 	if (!gs_plugin_loader_app_action_finish (plugin_loader, res, &error)) {
@@ -1195,22 +1197,19 @@ gs_shell_details_app_set_review_cb (GObject *source,
 						     &error_local);
 			if (dialog == NULL) {
 				g_warning ("%s", error_local->message);
-				gs_shell_details_review_helper_free (helper);
 				return;
 			}
 			gs_shell_modal_dialog_present (helper->self->shell, GTK_DIALOG (dialog));
 			g_signal_connect (dialog, "response",
 					  G_CALLBACK (gs_shell_details_authenticate_cb),
-					  helper);
+					  g_steal_pointer (&helper));
 			return;
 		}
 		g_warning ("failed to set review on %s: %s",
 			   gs_app_get_id (helper->app), error->message);
-		gs_shell_details_review_helper_free (helper);
 		return;
 	}
 	gs_shell_details_refresh_reviews (helper->self);
-	gs_shell_details_review_helper_free (helper);
 }
 
 static void
