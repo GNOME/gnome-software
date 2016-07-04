@@ -509,6 +509,30 @@ gs_plugin_add_auth (GsPlugin *plugin, GsAuth *auth)
 }
 
 /**
+ * gs_plugin_get_auth_by_id:
+ * @plugin: a #GsPlugin
+ * @provider_id: an ID, e.g. "dummy-sso"
+ *
+ * Gets a specific authentication object.
+ *
+ * Returns: the #GsAuth, or %NULL if not found
+ **/
+GsAuth *
+gs_plugin_get_auth_by_id (GsPlugin *plugin, const gchar *provider_id)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	guint i;
+
+	/* match on ID */
+	for (i = 0; i < priv->auth_array->len; i++) {
+		GsAuth *auth = g_ptr_array_index (priv->auth_array, i);
+		if (g_strcmp0 (gs_auth_get_provider_id (auth), provider_id) == 0)
+			return auth;
+	}
+	return NULL;
+}
+
+/**
  * gs_plugin_get_profile:
  * @plugin: a #GsPlugin
  *
