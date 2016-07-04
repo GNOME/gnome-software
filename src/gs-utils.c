@@ -129,6 +129,7 @@ gs_utils_get_cache_filename (const gchar *kind,
 		cachefn = g_build_filename (LOCALSTATEDIR,
 					    "cache",
 					    "gnome-software",
+		                            kind,
 					    basename,
 					    NULL);
 		if (g_file_test (cachefn, G_FILE_TEST_EXISTS))
