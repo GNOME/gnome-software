@@ -337,11 +337,13 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 		/* run the batched plugin symbol then the per-app plugin */
 		if (plugin_func != NULL) {
 			g_autoptr(GError) error_local = NULL;
+			gboolean ret_local;
+
 			gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-			ret = plugin_func (plugin, list, flags,
-					   cancellable, &error_local);
+			ret_local = plugin_func (plugin, list, flags,
+			                         cancellable, &error_local);
 			gs_plugin_loader_action_stop (plugin_loader, plugin);
-			if (!ret) {
+			if (!ret_local) {
 				/* badly behaved plugin */
 				if (error_local == NULL) {
 					g_critical ("%s did not set error for %s",
@@ -359,12 +361,14 @@ gs_plugin_loader_run_refine_internal (GsPluginLoader *plugin_loader,
 		if (plugin_app_func != NULL) {
 			for (j = 0; j < gs_app_list_length (list); j++) {
 				g_autoptr(GError) error_local = NULL;
+				gboolean ret_local;
+
 				app = gs_app_list_index (list, j);
 				gs_plugin_loader_action_start (plugin_loader, plugin, FALSE);
-				ret = plugin_app_func (plugin, app, flags,
-						       cancellable, &error_local);
+				ret_local = plugin_app_func (plugin, app, flags,
+				                             cancellable, &error_local);
 				gs_plugin_loader_action_stop (plugin_loader, plugin);
-				if (!ret) {
+				if (!ret_local) {
 					/* badly behaved plugin */
 					if (error_local == NULL) {
 						g_critical ("%s did not set error for %s",
