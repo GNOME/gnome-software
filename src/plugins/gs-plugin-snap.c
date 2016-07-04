@@ -186,16 +186,28 @@ get_apps (GsPlugin *plugin,
 	JsonObject *root;
 	JsonArray *result;
 	GList *snaps;
-	GList *i;
+	GList *l;
 
 	/* Get all the apps */
 	query_fields = g_ptr_array_new_with_free_func (g_free);
-	if (sources != NULL)
-		g_ptr_array_add (query_fields, g_strdup_printf ("sources=%s", sources));
-	if (search_terms != NULL) {
-		g_autofree gchar *query = NULL;
-		query = g_strjoinv ("+", search_terms);
-		g_ptr_array_add (query_fields, g_strdup_printf ("q=%s", query));
+	if (sources != NULL) {
+		g_autofree gchar *escaped;
+		escaped = soup_uri_encode (sources, NULL);
+		g_ptr_array_add (query_fields, g_strdup_printf ("sources=%s", escaped));
+	}
+	if (search_terms != NULL && search_terms[0] != NULL) {
+		g_autoptr (GString) query = NULL;
+		g_autofree gchar *escaped = NULL;
+		gint i;
+
+		query = g_string_new ("q=");
+		escaped = soup_uri_encode (search_terms[0], NULL);
+		g_string_append (query, escaped);
+		for (i = 1; search_terms[i] != NULL; i++) {
+			g_autofree gchar *e = soup_uri_encode (search_terms[0], NULL);
+			g_string_append_printf (query, "+%s", e);
+		}
+		g_ptr_array_add (query_fields, g_strdup (query->str));
 		path = g_string_new ("/v2/find");
 	}
 	else
@@ -231,8 +243,8 @@ get_apps (GsPlugin *plugin,
 	result = json_object_get_array_member (root, "result");
 	snaps = json_array_get_elements (result);
 
-	for (i = snaps; i != NULL; i = i->next) {
-		JsonObject *package = json_node_get_object (i->data);
+	for (l = snaps; l != NULL; l = l->next) {
+		JsonObject *package = json_node_get_object (l->data);
 		g_autoptr(GsApp) app = NULL;
 		const gchar *id;
 
