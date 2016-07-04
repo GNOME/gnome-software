@@ -173,11 +173,13 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		/* run the batched plugin symbol then the per-app plugin */
 		if (plugin_func != NULL) {
 			g_autoptr(GError) error_local = NULL;
+			gboolean ret_local;
+
 			g_rw_lock_reader_lock (&plugin->rwlock);
-			ret = plugin_func (plugin, list, flags,
-					   cancellable, &error_local);
+			ret_local = plugin_func (plugin, list, flags,
+			                         cancellable, &error_local);
 			g_rw_lock_reader_unlock (&plugin->rwlock);
-			if (!ret) {
+			if (!ret_local) {
 				g_warning ("failed to call %s on %s: %s",
 					   function_name, plugin->name,
 					   error_local->message);
@@ -187,12 +189,14 @@ gs_plugin_loader_run_refine (GsPluginLoader *plugin_loader,
 		if (plugin_app_func != NULL) {
 			for (l = *list; l != NULL; l = l->next) {
 				g_autoptr(GError) error_local = NULL;
+				gboolean ret_local;
+
 				app = GS_APP (l->data);
 				g_rw_lock_reader_lock (&plugin->rwlock);
-				ret = plugin_app_func (plugin, app, flags,
-						       cancellable, &error_local);
+				ret_local = plugin_app_func (plugin, app, flags,
+				                             cancellable, &error_local);
 				g_rw_lock_reader_unlock (&plugin->rwlock);
-				if (!ret) {
+				if (!ret_local) {
 					g_warning ("failed to call %s on %s: %s",
 						   function_name_app, plugin->name,
 						   error_local->message);
