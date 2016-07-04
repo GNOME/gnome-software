@@ -107,7 +107,7 @@ gs_snapd_request (const gchar  *method,
 	gsize max_data_length = 65535, data_length = 0, header_length;
 	gchar data[max_data_length + 1], *body = NULL;
 	g_autoptr (SoupMessageHeaders) headers = NULL;
-	gsize chunk_length, n_required;
+	gsize chunk_length = 0, n_required;
 	gchar *chunk_start = NULL;
 	guint code;
 
@@ -170,9 +170,31 @@ gs_snapd_request (const gchar  *method,
 	if (status_code != NULL)
 		*status_code = code;
 
-	/* work out how much data to follow */
-	if (g_strcmp0 (soup_message_headers_get_one (headers, "Transfer-Encoding"),
-		       "chunked") == 0) {
+	/* read content */
+	switch (soup_message_headers_get_encoding (headers)) {
+	case SOUP_ENCODING_EOF:
+		while (TRUE) {
+			gsize n_read = data_length;
+			if (n_read == max_data_length) {
+				g_set_error_literal (error,
+						     GS_PLUGIN_ERROR,
+						     GS_PLUGIN_ERROR_FAILED,
+						     "Out of space reading snapd response");
+				return FALSE;
+			}
+			if (!read_from_snapd (socket, data,
+					      max_data_length - data_length,
+					      &data_length,
+					      error))
+				return FALSE;
+			g_printerr ("%zi -> %zi\n", n_read, data_length);
+			if (n_read == data_length)
+				break;
+			chunk_length += data_length - n_read;
+		}
+		break;
+	case SOUP_ENCODING_CHUNKED:
+		// FIXME: support multiple chunks
 		while (data_length < max_data_length) {
 			chunk_start = strstr (body, "\r\n");
 			if (chunk_start)
@@ -194,45 +216,61 @@ gs_snapd_request (const gchar  *method,
 		}
 		chunk_length = strtoul (body, NULL, 16);
 		chunk_start += 2;
-		// FIXME: support multiple chunks
-	}
-	else {
-		const gchar *value;
-		value = soup_message_headers_get_one (headers, "Content-Length");
-		if (!value) {
-			g_set_error_literal (error,
-					     GS_PLUGIN_ERROR,
-					     GS_PLUGIN_ERROR_FAILED,
-					     "Unable to determine content "
-					     "length of snapd response");
+
+		/* check if enough space to read chunk */
+		n_required = (chunk_start - data) + chunk_length;
+		if (n_required > max_data_length) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "Not enough space for snapd response, "
+				     "require %zi octets, have %zi",
+				     n_required, max_data_length);
 			return FALSE;
 		}
-		chunk_length = strtoul (value, NULL, 10);
-		chunk_start = body;
-	}
 
-	/* check if enough space to read chunk */
-	n_required = (chunk_start - data) + chunk_length;
-	if (n_required > max_data_length) {
-		g_set_error (error,
-			     GS_PLUGIN_ERROR,
-			     GS_PLUGIN_ERROR_FAILED,
-			     "Not enough space for snapd response, "
-			     "require %zi octets, have %zi",
-			     n_required, max_data_length);
+		while (data_length < n_required)
+			if (!read_from_snapd (socket, data,
+					      n_required - data_length,
+					      &data_length,
+					      error))
+				return FALSE;
+		break;
+	case SOUP_ENCODING_CONTENT_LENGTH:
+		chunk_length = soup_message_headers_get_content_length (headers);
+		chunk_start = body;
+		n_required = header_length + chunk_length;
+
+		/* check if enough space available */
+		if (n_required > max_data_length) {
+			g_set_error (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "Not enough space for snapd response, "
+				     "require %zi octets, have %zi",
+				     n_required, max_data_length);
+			return FALSE;
+		}
+
+		while (data_length < n_required) {
+			if (!read_from_snapd (socket, data,
+					      n_required - data_length,
+					      &data_length,
+					      error))
+				return FALSE;
+		}
+		break;
+	default:
+		g_set_error_literal (error,
+				     GS_PLUGIN_ERROR,
+				     GS_PLUGIN_ERROR_FAILED,
+				     "Unable to determine content "
+				     "length of snapd response");
 		return FALSE;
 	}
 
-	/* read chunk content */
-	while (data_length < n_required)
-		if (!read_from_snapd (socket, data,
-				      n_required - data_length,
-				      &data_length,
-				      error))
-			return FALSE;
-
 	if (response_type)
-		*response_type = g_strdup (soup_message_headers_get_one (headers, "Content-Type"));
+		*response_type = g_strdup (soup_message_headers_get_content_type (headers, NULL));
 	if (response) {
 		*response = g_malloc (chunk_length + 2);
 		memcpy (*response, chunk_start, chunk_length + 1);
