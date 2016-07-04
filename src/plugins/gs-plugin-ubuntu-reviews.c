@@ -70,9 +70,9 @@ gs_plugin_initialize (GsPlugin *plugin)
 	}
 
 	priv->db_path = g_build_filename (g_get_user_data_dir (),
-						  "gnome-software",
-						  "ubuntu-reviews.db",
-						  NULL);
+					  "gnome-software",
+					  "ubuntu-reviews.db",
+					  NULL);
 
 	os_release = gs_os_release_new (&error);
 	if (os_release == NULL) {
