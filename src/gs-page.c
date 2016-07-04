@@ -141,13 +141,12 @@ gs_page_app_installed_cb (GObject *source,
 						     &error_local);
 			if (dialog == NULL) {
 				g_warning ("%s", error_local->message);
-				gs_page_helper_free (helper);
 				return;
 			}
 			gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
 			g_signal_connect (dialog, "response",
 					  G_CALLBACK (gs_page_install_authenticate_cb),
-					  helper);
+					  g_steal_pointer (&helper));
 			return;
 		}
 
@@ -212,13 +211,12 @@ gs_page_app_removed_cb (GObject *source,
 						     &error_local);
 			if (dialog == NULL) {
 				g_warning ("%s", error_local->message);
-				gs_page_helper_free (helper);
 				return;
 			}
 			gs_shell_modal_dialog_present (priv->shell, GTK_DIALOG (dialog));
 			g_signal_connect (dialog, "response",
 					  G_CALLBACK (gs_page_remove_authenticate_cb),
-					  helper);
+					  g_steal_pointer (&helper));
 			return;
 		}
 
