@@ -84,7 +84,7 @@ parse_result (const gchar *response, const gchar *response_type, GError **error)
 }
 
 static void
-refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package)
+refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, GCancellable *cancellable)
 {
 	const gchar *status, *icon_url;
 	g_autoptr(GdkPixbuf) icon_pixbuf = NULL;
@@ -127,7 +127,7 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package)
 		if (gs_snapd_request ("GET", icon_url, NULL,
 				      NULL, NULL,
 				      NULL, &icon_response, &icon_response_length,
-				      NULL)) {
+				      cancellable, NULL)) {
 			g_autoptr(GdkPixbufLoader) loader = NULL;
 
 			loader = gdk_pixbuf_loader_new ();
@@ -175,6 +175,7 @@ get_apps (GsPlugin *plugin,
 	  GsAppList *list,
 	  AppFilterFunc filter_func,
 	  gpointer user_data,
+	  GCancellable *cancellable,
 	  GError **error)
 {
 	guint status_code;
@@ -210,7 +211,7 @@ get_apps (GsPlugin *plugin,
 	if (!gs_snapd_request ("GET", path->str, NULL,
 			       &status_code, &reason_phrase,
 			       &response_type, &response, NULL,
-			       error))
+			       cancellable, error))
 		return FALSE;
 
 	if (status_code != SOUP_STATUS_OK) {
@@ -245,7 +246,7 @@ get_apps (GsPlugin *plugin,
 		gs_app_set_kind (app, AS_APP_KIND_DESKTOP);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_REVIEWABLE);
 		gs_app_add_quirk (app, AS_APP_QUIRK_NOT_LAUNCHABLE);
-		refine_app (plugin, app, package);
+		refine_app (plugin, app, package, cancellable);
 		gs_app_list_add (list, app);
 	}
 
@@ -255,7 +256,7 @@ get_apps (GsPlugin *plugin,
 }
 
 static gboolean
-get_app (GsPlugin *plugin, GsApp *app, GError **error)
+get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error)
 {
 	guint status_code;
 	g_autofree gchar *path = NULL;
@@ -274,7 +275,7 @@ get_app (GsPlugin *plugin, GsApp *app, GError **error)
 	if (!gs_snapd_request ("GET", path, NULL,
 			       &status_code, &reason_phrase,
 			       &response_type, &response, NULL,
-			       error))
+			       cancellable, error))
 		return FALSE;
 
 	if (status_code == SOUP_STATUS_NOT_FOUND) {
@@ -287,7 +288,7 @@ get_app (GsPlugin *plugin, GsApp *app, GError **error)
 		if (!gs_snapd_request ("GET", path, NULL,
 				       &status_code, &reason_phrase,
 				       &response_type, &response, NULL,
-				       error))
+				       cancellable, error))
 			return FALSE;
 	}
 
@@ -322,13 +323,13 @@ get_app (GsPlugin *plugin, GsApp *app, GError **error)
 			result_object = json_node_get_object (result_element);
 			if (g_strcmp0 (json_object_get_string_member (result_object, "name"),
 				       gs_app_get_id (app)) == 0) {
-				refine_app (plugin, app, result_object);
+				refine_app (plugin, app, result_object, cancellable);
 				break;
 			}
 		}
 	} else if (JSON_NODE_HOLDS_OBJECT (result)) {
 		result_object = json_node_get_object (result);
-		refine_app (plugin, app, result_object);
+		refine_app (plugin, app, result_object, cancellable);
 	}
 
 	return TRUE;
@@ -352,7 +353,7 @@ gs_plugin_add_installed (GsPlugin *plugin,
 			 GCancellable *cancellable,
 			 GError **error)
 {
-	return get_apps (plugin, "local", NULL, list, is_active, NULL, error);
+	return get_apps (plugin, "local", NULL, list, is_active, NULL, cancellable, error);
 }
 
 gboolean
@@ -362,7 +363,7 @@ gs_plugin_add_search (GsPlugin *plugin,
 		      GCancellable *cancellable,
 		      GError **error)
 {
-	return get_apps (plugin, NULL, values, list, NULL, values, error);
+	return get_apps (plugin, NULL, values, list, NULL, values, cancellable, error);
 }
 
 gboolean
@@ -377,7 +378,7 @@ gs_plugin_refine_app (GsPlugin *plugin,
 		return TRUE;
 
 	// Get info from snapd
-	return get_app (plugin, app, error);
+	return get_app (plugin, app, cancellable, error);
 }
 
 static gboolean
@@ -385,6 +386,7 @@ send_package_action (GsPlugin *plugin,
 		     GsApp *app,
 		     const gchar *id,
 		     const gchar *action,
+		     GCancellable *cancellable,
 		     GError **error)
 {
 	g_autofree gchar *content = NULL, *path = NULL;
@@ -407,7 +409,7 @@ send_package_action (GsPlugin *plugin,
 	if (!gs_snapd_request ("POST", path, content,
 			       &status_code, &reason_phrase,
 			       &response_type, &response, NULL,
-			       error))
+			       cancellable, error))
 		return FALSE;
 
 	if (status_code != SOUP_STATUS_ACCEPTED) {
@@ -442,7 +444,7 @@ send_package_action (GsPlugin *plugin,
 			if (!gs_snapd_request ("GET", resource_path, NULL,
 					       &status_code, &status_reason_phrase,
 					       &status_response_type, &status_response, NULL,
-					       error)) {
+					       cancellable, error)) {
 				return FALSE;
 			}
 
@@ -514,7 +516,7 @@ gs_plugin_app_install (GsPlugin *plugin,
 		return TRUE;
 
 	gs_app_set_state (app, AS_APP_STATE_INSTALLING);
-	ret = send_package_action (plugin, app, gs_app_get_id (app), "install", error);
+	ret = send_package_action (plugin, app, gs_app_get_id (app), "install", cancellable, error);
 	if (!ret) {
 		gs_app_set_state_recover (app);
 		return FALSE;
@@ -536,7 +538,7 @@ gs_plugin_app_remove (GsPlugin *plugin,
 		return TRUE;
 
 	gs_app_set_state (app, AS_APP_STATE_REMOVING);
-	ret = send_package_action (plugin, app, gs_app_get_id (app), "remove", error);
+	ret = send_package_action (plugin, app, gs_app_get_id (app), "remove", cancellable, error);
 	if (!ret) {
 		gs_app_set_state_recover (app);
 		return FALSE;

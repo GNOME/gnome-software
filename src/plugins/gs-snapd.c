@@ -38,7 +38,7 @@ gs_snapd_exists (void)
 }
 
 static GSocket *
-open_snapd_socket (GError **error)
+open_snapd_socket (GCancellable *cancellable, GError **error)
 {
 	GSocket *socket;
 	g_autoptr(GSocketAddress) address = NULL;
@@ -57,7 +57,7 @@ open_snapd_socket (GError **error)
 		return NULL;
 	}
 	address = g_unix_socket_address_new (SNAPD_SOCKET);
-	if (!g_socket_connect (socket, address, NULL, &error_local)) {
+	if (!g_socket_connect (socket, address, cancellable, &error_local)) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
 			     GS_PLUGIN_ERROR_FAILED,
@@ -74,13 +74,14 @@ static gboolean
 read_from_snapd (GSocket *socket,
 		 gchar *buffer, gsize buffer_length,
 		 gsize *read_offset,
+		 GCancellable *cancellable,
 		 GError **error)
 {
 	gssize n_read;
 	n_read = g_socket_receive (socket,
 				   buffer + *read_offset,
 				   buffer_length - *read_offset,
-				   NULL,
+				   cancellable,
 				   error);
 	if (n_read < 0)
 		return FALSE;
@@ -99,6 +100,7 @@ gs_snapd_request (const gchar  *method,
 		  gchar       **response_type,
 		  gchar       **response,
 		  gsize        *response_length,
+		  GCancellable *cancellable,
 		  GError      **error)
 {
 	g_autoptr (GSocket) socket = NULL;
@@ -114,7 +116,7 @@ gs_snapd_request (const gchar  *method,
 	// NOTE: Would love to use libsoup but it doesn't support unix sockets
 	// https://bugzilla.gnome.org/show_bug.cgi?id=727563
 
-	socket = open_snapd_socket (error);
+	socket = open_snapd_socket (cancellable, error);
 	if (socket == NULL)
 		return FALSE;
 
@@ -130,7 +132,7 @@ gs_snapd_request (const gchar  *method,
 	g_debug ("begin snapd request: %s", request->str);
 
 	/* send HTTP request */
-	n_written = g_socket_send (socket, request->str, request->len, NULL, error);
+	n_written = g_socket_send (socket, request->str, request->len, cancellable, error);
 	if (n_written < 0)
 		return FALSE;
 
@@ -140,6 +142,7 @@ gs_snapd_request (const gchar  *method,
 				      data,
 				      max_data_length,
 				      &data_length,
+				      cancellable,
 				      error))
 			return FALSE;
 		body = strstr (data, "\r\n\r\n");
@@ -185,9 +188,9 @@ gs_snapd_request (const gchar  *method,
 			if (!read_from_snapd (socket, data,
 					      max_data_length - data_length,
 					      &data_length,
+					      cancellable,
 					      error))
 				return FALSE;
-			g_printerr ("%zi -> %zi\n", n_read, data_length);
 			if (n_read == data_length)
 				break;
 			chunk_length += data_length - n_read;
@@ -203,6 +206,7 @@ gs_snapd_request (const gchar  *method,
 					      data,
 					      max_data_length,
 					      &data_length,
+					      cancellable,
 					      error))
 				return FALSE;
 		}
@@ -233,6 +237,7 @@ gs_snapd_request (const gchar  *method,
 			if (!read_from_snapd (socket, data,
 					      n_required - data_length,
 					      &data_length,
+					      cancellable,
 					      error))
 				return FALSE;
 		break;
@@ -256,6 +261,7 @@ gs_snapd_request (const gchar  *method,
 			if (!read_from_snapd (socket, data,
 					      n_required - data_length,
 					      &data_length,
+					      cancellable,
 					      error))
 				return FALSE;
 		}
