@@ -289,11 +289,7 @@ get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error
 	g_autofree gchar *response_type = NULL;
 	g_autoptr(JsonParser) parser = NULL;
 	JsonObject *root;
-	JsonNode *result;
-	JsonArray *result_array;
-	JsonObject *result_object;
-	JsonNode *result_element;
-	guint i;
+	JsonObject *result;
 
 	path = g_strdup_printf ("/v2/snaps/%s", gs_app_get_id (app));
 	if (!gs_snapd_request ("GET", path, NULL,
@@ -301,20 +297,6 @@ get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error
 			       &response_type, &response, NULL,
 			       cancellable, error))
 		return FALSE;
-
-	if (status_code == SOUP_STATUS_NOT_FOUND) {
-		g_clear_pointer (&path, g_free);
-		g_clear_pointer (&reason_phrase, g_free);
-		g_clear_pointer (&response_type, g_free);
-		g_clear_pointer (&response, g_free);
-
-		path = g_strdup_printf ("/v2/find?q=%s", gs_app_get_id (app));
-		if (!gs_snapd_request ("GET", path, NULL,
-				       &status_code, &reason_phrase,
-				       &response_type, &response, NULL,
-				       cancellable, error))
-			return FALSE;
-	}
 
 	if (status_code != SOUP_STATUS_OK) {
 		g_set_error (error,
@@ -329,7 +311,7 @@ get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error
 	if (parser == NULL)
 		return FALSE;
 	root = json_node_get_object (json_parser_get_root (parser));
-	result = json_object_get_member (root, "result");
+	result = json_object_get_object_member (root, "result");
 	if (result == NULL) {
 		g_set_error (error,
 			     GS_PLUGIN_ERROR,
@@ -338,23 +320,7 @@ get_app (GsPlugin *plugin, GsApp *app, GCancellable *cancellable, GError **error
 		return FALSE;
 	}
 
-	if (JSON_NODE_HOLDS_ARRAY (result)) {
-		result_array = json_node_get_array (result);
-		for (i = 0; i < json_array_get_length (result_array); i++) {
-			result_element = json_array_get_element (result_array, i);
-			if (!JSON_NODE_HOLDS_OBJECT (result_element))
-				continue;
-			result_object = json_node_get_object (result_element);
-			if (g_strcmp0 (json_object_get_string_member (result_object, "name"),
-				       gs_app_get_id (app)) == 0) {
-				refine_app (plugin, app, result_object, FALSE, cancellable);
-				break;
-			}
-		}
-	} else if (JSON_NODE_HOLDS_OBJECT (result)) {
-		result_object = json_node_get_object (result);
-		refine_app (plugin, app, result_object, FALSE, cancellable);
-	}
+	refine_app (plugin, app, result, FALSE, cancellable);
 
 	return TRUE;
 }
