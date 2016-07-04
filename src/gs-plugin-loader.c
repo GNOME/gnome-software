@@ -41,6 +41,7 @@ typedef struct
 	GPtrArray		*plugins;
 	gchar			*location;
 	gchar			*locale;
+	gchar			*language;
 	GsPluginStatus		 status_last;
 	AsProfile		*profile;
 	SoupSession		*soup_session;
@@ -3405,6 +3406,7 @@ gs_plugin_loader_open_plugin (GsPluginLoader *plugin_loader,
 	gs_plugin_set_auth_array (plugin, priv->auth_array);
 	gs_plugin_set_profile (plugin, priv->profile);
 	gs_plugin_set_locale (plugin, priv->locale);
+	gs_plugin_set_language (plugin, priv->language);
 	gs_plugin_set_scale (plugin, gs_plugin_loader_get_scale (plugin_loader));
 	g_debug ("opened plugin %s: %s", filename, gs_plugin_get_name (plugin));
 
@@ -3798,6 +3800,7 @@ gs_plugin_loader_finalize (GObject *object)
 	g_strfreev (priv->compatible_projects);
 	g_free (priv->location);
 	g_free (priv->locale);
+	g_free (priv->language);
 
 	g_mutex_clear (&priv->pending_apps_mutex);
 
@@ -3843,6 +3846,7 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 {
 	GsPluginLoaderPrivate *priv = gs_plugin_loader_get_instance_private (plugin_loader);
 	const gchar *tmp;
+	gchar *match;
 	gchar **projects;
 	guint i;
 
@@ -3867,7 +3871,6 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 		g_debug ("using self test locale of %s", tmp);
 		priv->locale = g_strdup (tmp);
 	} else {
-		gchar *match;
 		priv->locale = g_strdup (setlocale (LC_MESSAGES, NULL));
 		match = g_strstr_len (priv->locale, -1, ".UTF-8");
 		if (match != NULL)
@@ -3876,6 +3879,12 @@ gs_plugin_loader_init (GsPluginLoader *plugin_loader)
 		if (match != NULL)
 			*match = '\0';
 	}
+
+	/* get the language from the locale */
+	priv->language = g_strdup (priv->locale);
+	match = g_strrstr (priv->language, "_");
+	if (match != NULL)
+		*match = '\0';
 
 	g_mutex_init (&priv->pending_apps_mutex);
 

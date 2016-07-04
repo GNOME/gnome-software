@@ -245,6 +245,7 @@ gboolean	 gs_plugin_has_flags			(GsPlugin	*plugin,
 							 GsPluginFlags	 flags);
 guint		 gs_plugin_get_scale			(GsPlugin	*plugin);
 const gchar	*gs_plugin_get_locale			(GsPlugin	*plugin);
+const gchar	*gs_plugin_get_language			(GsPlugin	*plugin);
 AsProfile	*gs_plugin_get_profile			(GsPlugin	*plugin);
 SoupSession	*gs_plugin_get_soup_session		(GsPlugin	*plugin);
 void		 gs_plugin_add_auth			(GsPlugin	*plugin,

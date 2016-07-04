@@ -66,6 +66,7 @@ typedef struct
 	GPtrArray		*rules[GS_PLUGIN_RULE_LAST];
 	gboolean		 enabled;
 	gchar			*locale;		/* allow-none */
+	gchar			*language;		/* allow-none */
 	gchar			*name;
 	gint			 scale;
 	guint			 order;
@@ -182,6 +183,7 @@ gs_plugin_finalize (GObject *object)
 	g_free (priv->name);
 	g_free (priv->data);
 	g_free (priv->locale);
+	g_free (priv->language);
 	g_rw_lock_clear (&priv->rwlock);
 	g_object_unref (priv->profile);
 	g_ptr_array_unref (priv->auth_array);
@@ -466,6 +468,21 @@ gs_plugin_get_locale (GsPlugin *plugin)
 }
 
 /**
+ * gs_plugin_get_language:
+ * @plugin: a #GsPlugin
+ *
+ * Gets the user language from the locale.
+ *
+ * Returns: the language string, e.g. "fr"
+ **/
+const gchar *
+gs_plugin_get_language (GsPlugin *plugin)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	return priv->language;
+}
+
+/**
  * gs_plugin_set_locale:
  * @plugin: a #GsPlugin
  * @locale: a locale string, e.g. "en_GB"
@@ -478,6 +495,21 @@ gs_plugin_set_locale (GsPlugin *plugin, const gchar *locale)
 	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
 	g_free (priv->locale);
 	priv->locale = g_strdup (locale);
+}
+
+/**
+ * gs_plugin_set_language:
+ * @plugin: a #GsPlugin
+ * @language: a language string, e.g. "fr"
+ *
+ * Sets the plugin language.
+ **/
+void
+gs_plugin_set_language (GsPlugin *plugin, const gchar *language)
+{
+	GsPluginPrivate *priv = gs_plugin_get_instance_private (plugin);
+	g_free (priv->language);
+	priv->language = g_strdup (language);
 }
 
 /**
