@@ -98,8 +98,11 @@ refine_app (GsPlugin *plugin, GsApp *app, JsonObject *package, gboolean from_sea
 			json_object_get_string_member (package, "update_available") : NULL;
 		if (update_available)
 			gs_app_set_state (app, AS_APP_STATE_UPDATABLE);
-		else
+		else {
+			if (gs_app_get_state (app) == AS_APP_STATE_AVAILABLE)
+				gs_app_set_state (app, AS_APP_STATE_UNKNOWN);
 			gs_app_set_state (app, AS_APP_STATE_INSTALLED);
+		}
 	} else if (g_strcmp0 (status, "not installed") == 0 || g_strcmp0 (status, "available") == 0) {
 		gs_app_set_state (app, AS_APP_STATE_AVAILABLE);
 	}
