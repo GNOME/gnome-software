@@ -100,15 +100,17 @@ typedef enum {
 
 /**
  * GsPluginError:
- * @GS_PLUGIN_ERROR_FAILED:		Generic failure
- * @GS_PLUGIN_ERROR_NOT_SUPPORTED:	Action not supported
- * @GS_PLUGIN_ERROR_CANCELLED:		Action was cancelled
- * @GS_PLUGIN_ERROR_NO_NETWORK:		No network connection available
- * @GS_PLUGIN_ERROR_NO_SECURITY:	Security policy forbid action
- * @GS_PLUGIN_ERROR_NO_SPACE:		No disk space to allow action
- * @GS_PLUGIN_ERROR_AUTH_REQUIRED:	Authentication was required
- * @GS_PLUGIN_ERROR_AUTH_INVALID:	Provided authentication was invalid
- * @GS_PLUGIN_ERROR_PIN_REQUIRED:	PIN required for authentication
+ * @GS_PLUGIN_ERROR_FAILED:			Generic failure
+ * @GS_PLUGIN_ERROR_NOT_SUPPORTED:		Action not supported
+ * @GS_PLUGIN_ERROR_CANCELLED:			Action was cancelled
+ * @GS_PLUGIN_ERROR_NO_NETWORK:			No network connection available
+ * @GS_PLUGIN_ERROR_NO_SECURITY:		Security policy forbid action
+ * @GS_PLUGIN_ERROR_NO_SPACE:			No disk space to allow action
+ * @GS_PLUGIN_ERROR_AUTH_REQUIRED:		Authentication was required
+ * @GS_PLUGIN_ERROR_AUTH_INVALID:		Provided authentication was invalid
+ * @GS_PLUGIN_ERROR_PIN_REQUIRED:		PIN required for authentication
+ * @GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED:		User account has been suspended
+ * @GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED:	User account has been deactivated
  *
  * The failure error types.
  **/
@@ -122,6 +124,8 @@ typedef enum {
 	GS_PLUGIN_ERROR_AUTH_REQUIRED,
 	GS_PLUGIN_ERROR_AUTH_INVALID,
 	GS_PLUGIN_ERROR_PIN_REQUIRED,
+	GS_PLUGIN_ERROR_ACCOUNT_SUSPENDED,
+	GS_PLUGIN_ERROR_ACCOUNT_DEACTIVATED,
 	/*< private >*/
 	GS_PLUGIN_ERROR_LAST
 } GsPluginError;
